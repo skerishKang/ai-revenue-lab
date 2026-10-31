@@ -1,0 +1,653 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JAS:chapter:005",
+  "unit_ordinal": 1151,
+  "unit_label": "JAS 5",
+  "book_code": "JAS",
+  "chapter_number": 5,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JAS:5:1",
+      "sequence": 30352,
+      "chapter_label": "JAS 5",
+      "verse_label": "1",
+      "locator": {
+        "book": "JAS",
+        "chapter": 5,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 5,
+          "verse": 1
+        }
+      ],
+      "en": "Come now, you rich, weep and howl for your miseries that are coming on you.",
+      "ko": "들으라 부한 자들아 너희에게 임할 고생을 인하여 울고 통곡하라",
+      "source_text_hash": "cb20db8e2b37f9c4c0f2c947a64efb3c62992131d3c5b5aff7252a46d392d61d",
+      "translation_text_hash": "c231bbaeef5d13a8fae471d533a11b69d7b5f33dd3fd5c503ed0830e9e70f131",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "들으라 부한 자들아 너희에게 임할 고생을 인하여 울고 통곡하라"
+      ],
+      "raw_text_hashes": [
+        "c231bbaeef5d13a8fae471d533a11b69d7b5f33dd3fd5c503ed0830e9e70f131"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:5:2",
+      "sequence": 30353,
+      "chapter_label": "JAS 5",
+      "verse_label": "2",
+      "locator": {
+        "book": "JAS",
+        "chapter": 5,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 5,
+          "verse": 2
+        }
+      ],
+      "en": "Your riches are corrupted and your garments are moth-eaten.",
+      "ko": "너희 재물은 썩었고 너희 옷은 좀먹었으며",
+      "source_text_hash": "683cff02e24c8b53af18b680ee5331a237f25281e8540987a8d3ad1313aa9343",
+      "translation_text_hash": "b442a1cd2394c7921065eb2336eb37b18265b51fcc8c56dacccb9085e0c91aa4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 재물은 썩었고 너희 옷은 좀먹었으며"
+      ],
+      "raw_text_hashes": [
+        "b442a1cd2394c7921065eb2336eb37b18265b51fcc8c56dacccb9085e0c91aa4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:5:3",
+      "sequence": 30354,
+      "chapter_label": "JAS 5",
+      "verse_label": "3",
+      "locator": {
+        "book": "JAS",
+        "chapter": 5,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 5,
+          "verse": 3
+        }
+      ],
+      "en": "Your gold and your silver are corroded, and their corrosion will be for a testimony against you and will eat your flesh like fire. You have laid up your treasure in the last days.",
+      "ko": "너희 금과 은은 녹이 슬었으니 이 녹이 너희에게 증거가 되며 불같이 너희 살을 먹으리라 너희가 말세에 재물을 쌓았도다",
+      "source_text_hash": "4b2a1179935f0c25b0059f6816a33eb5e61838f8ef613f58c8123e3bc2a3a284",
+      "translation_text_hash": "49a742bb2758c65e04c53d6465095b3c333efc29e2cf7ae201267cbf5b6000b2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 금과 은은 녹이 슬었으니 이 녹이 너희에게 증거가 되며 불같이 너희 살을 먹으리라 너희가 말세에 재물을 쌓았도다"
+      ],
+      "raw_text_hashes": [
+        "49a742bb2758c65e04c53d6465095b3c333efc29e2cf7ae201267cbf5b6000b2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:5:4",
+      "sequence": 30355,
+      "chapter_label": "JAS 5",
+      "verse_label": "4",
+      "locator": {
+        "book": "JAS",
+        "chapter": 5,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 5,
+          "verse": 4
+        }
+      ],
+      "en": "Behold, the wages of the laborers who mowed your fields, which you have kept back by fraud, cry out; and the cries of those who reaped have entered into the ears of the Lord of Armies.",
+      "ko": "보라 너희 밭에 추수한 품군에게 주지 아니한 삯이 소리 지르며 추수한 자의 우는 소리가 만군의 주의 귀에 들렸느니라",
+      "source_text_hash": "80f2ef6168fbcd54c52056f960693e3989a98a4c6c1f090f0ba7ebc4b85d8ef8",
+      "translation_text_hash": "aad7be723770e74cd0a5198c3df0fb284c5da79ae1f61721e29e4828e166eacf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보라 너희 밭에 추수한 품군에게 주지 아니한 삯이 소리 지르며 추수한 자의 우는 소리가 만군의 주의 귀에 들렸느니라"
+      ],
+      "raw_text_hashes": [
+        "aad7be723770e74cd0a5198c3df0fb284c5da79ae1f61721e29e4828e166eacf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:5:5",
+      "sequence": 30356,
+      "chapter_label": "JAS 5",
+      "verse_label": "5",
+      "locator": {
+        "book": "JAS",
+        "chapter": 5,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 5,
+          "verse": 5
+        }
+      ],
+      "en": "You have lived in luxury on the earth, and taken your pleasure. You have nourished your hearts as in a day of slaughter.",
+      "ko": "너희가 땅에서 사치하고 연락하여 도살의 날에 너희 마음을 살지게 하였도다",
+      "source_text_hash": "b85f8fa9775ab5b1745e3c54ccc46a14f96353fd6ffbf38e6fb9b2ce7882b274",
+      "translation_text_hash": "03d8fc376ea6f1f95cf66bfed2c7aef8286fc261a290da5b18f6d6408442361e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 땅에서 사치하고 연락하여 도살의 날에 너희 마음을 살지게 하였도다"
+      ],
+      "raw_text_hashes": [
+        "03d8fc376ea6f1f95cf66bfed2c7aef8286fc261a290da5b18f6d6408442361e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:5:6",
+      "sequence": 30357,
+      "chapter_label": "JAS 5",
+      "verse_label": "6",
+      "locator": {
+        "book": "JAS",
+        "chapter": 5,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 5,
+          "verse": 6
+        }
+      ],
+      "en": "You have condemned and you have murdered the righteous one. He doesn’t resist you.",
+      "ko": "너희가 옳은 자를 정죄하였도다 또 죽였도다 그는 너희에게 대항하지 아니하였느니라",
+      "source_text_hash": "6cc0e2dbd43cfedc5d41e77edf9470c60bc8b9243355ec251ac9f9007924f246",
+      "translation_text_hash": "919391a2dd69e2c1bc48dd4275c9c0d9a6fa72285985d09c74d445797604ab11",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 옳은 자를 정죄하였도다 또 죽였도다 그는 너희에게 대항하지 아니하였느니라"
+      ],
+      "raw_text_hashes": [
+        "919391a2dd69e2c1bc48dd4275c9c0d9a6fa72285985d09c74d445797604ab11"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:5:7",
+      "sequence": 30358,
+      "chapter_label": "JAS 5",
+      "verse_label": "7",
+      "locator": {
+        "book": "JAS",
+        "chapter": 5,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 5,
+          "verse": 7
+        }
+      ],
+      "en": "Be patient therefore, brothers, until the coming of the Lord. Behold, the farmer waits for the precious fruit of the earth, being patient over it, until it receives the early and late rain.",
+      "ko": "그러므로 형제들아 주의 강림하시기까지 길이 참으라 보라 농부가 땅에서 나는 귀한 열매를 바라고 길이 참아 이른 비와 늦은 비를 기다리나니",
+      "source_text_hash": "50e6aac4449ad706ef9cbd0636878b830acb5df3bcb442786891995a0588e975",
+      "translation_text_hash": "4bc053ab899a1495e7f74857fcebd60c7bc047c252c769ecfd867828caac5e30",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 형제들아 주의 강림하시기까지 길이 참으라 보라 농부가 땅에서 나는 귀한 열매를 바라고 길이 참아 이른 비와 늦은 비를 기다리나니"
+      ],
+      "raw_text_hashes": [
+        "4bc053ab899a1495e7f74857fcebd60c7bc047c252c769ecfd867828caac5e30"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:5:8",
+      "sequence": 30359,
+      "chapter_label": "JAS 5",
+      "verse_label": "8",
+      "locator": {
+        "book": "JAS",
+        "chapter": 5,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 5,
+          "verse": 8
+        }
+      ],
+      "en": "You also be patient. Establish your hearts, for the coming of the Lord is at hand.",
+      "ko": "너희도 길이 참고 마음을 굳게 하라 주의 강림이 가까우니라",
+      "source_text_hash": "137158553ae0b483ae4723ae77a14316f5938abe13ad272aa4a8216785b84102",
+      "translation_text_hash": "775d8d7d7ad35bf43a351385d08f68774745e8c3932e37218ab29d96c0812551",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희도 길이 참고 마음을 굳게 하라 주의 강림이 가까우니라"
+      ],
+      "raw_text_hashes": [
+        "775d8d7d7ad35bf43a351385d08f68774745e8c3932e37218ab29d96c0812551"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:5:9",
+      "sequence": 30360,
+      "chapter_label": "JAS 5",
+      "verse_label": "9",
+      "locator": {
+        "book": "JAS",
+        "chapter": 5,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 5,
+          "verse": 9
+        }
+      ],
+      "en": "Don’t grumble, brothers, against one another, so that you won’t be judged. Behold, the judge stands at the door.",
+      "ko": "형제들아 서로 원망하지 말라 그리하여야 심판을 면하리라 보라 심판자가 문밖에 서 계시니라",
+      "source_text_hash": "1e877824c22748b7f2e32588a09128c9812816be9bcaf8c240c94941fdf09903",
+      "translation_text_hash": "a3f58643b48e9618669acd26cc3f734324b052f37a3e5a64120d32312c10311e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "형제들아 서로 원망하지 말라 그리하여야 심판을 면하리라 보라 심판자가 문밖에 서 계시니라"
+      ],
+      "raw_text_hashes": [
+        "a3f58643b48e9618669acd26cc3f734324b052f37a3e5a64120d32312c10311e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:5:10",
+      "sequence": 30361,
+      "chapter_label": "JAS 5",
+      "verse_label": "10",
+      "locator": {
+        "book": "JAS",
+        "chapter": 5,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 5,
+          "verse": 10
+        }
+      ],
+      "en": "Take, brothers, for an example of suffering and of perseverance, the prophets who spoke in the name of the Lord.",
+      "ko": "형제들아 주의 이름으로 말한 선지자들로 고난과 오래 참음의 본을 삼으라",
+      "source_text_hash": "88c0e51967133480abe3555d2705fd186206a18ab88381a37f4076024a0a325a",
+      "translation_text_hash": "9865b468c510399e297b2f076427ee4608221b4ee12ced5d6bceecefd1eee3bd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "형제들아 주의 이름으로 말한 선지자들로 고난과 오래 참음의 본을 삼으라"
+      ],
+      "raw_text_hashes": [
+        "9865b468c510399e297b2f076427ee4608221b4ee12ced5d6bceecefd1eee3bd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:5:11",
+      "sequence": 30362,
+      "chapter_label": "JAS 5",
+      "verse_label": "11",
+      "locator": {
+        "book": "JAS",
+        "chapter": 5,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 5,
+          "verse": 11
+        }
+      ],
+      "en": "Behold, we call them blessed who endured. You have heard of the perseverance of Job and have seen the Lord in the outcome, and how the Lord is full of compassion and mercy.",
+      "ko": "보라 인내하는 자를 우리가 복되다 하나니 너희가 욥의 인내를 들었고 주께서 주신 결말을 보았거니와 주는 가장 자비하시고 긍휼히 여기는 자시니라",
+      "source_text_hash": "9cd7e0047471de8611e1fb44d9d9327759da16e6645f958519d622d80836da06",
+      "translation_text_hash": "91683fd99733d8cb9531ebd09af0320780948b28e22e5af9450e93944e23f99b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보라 인내하는 자를 우리가 복되다 하나니 너희가 욥의 인내를 들었고 주께서 주신 결말을 보았거니와 주는 가장 자비하시고 긍휼히 여기는 자시니라"
+      ],
+      "raw_text_hashes": [
+        "91683fd99733d8cb9531ebd09af0320780948b28e22e5af9450e93944e23f99b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:5:12",
+      "sequence": 30363,
+      "chapter_label": "JAS 5",
+      "verse_label": "12",
+      "locator": {
+        "book": "JAS",
+        "chapter": 5,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 5,
+          "verse": 12
+        }
+      ],
+      "en": "But above all things, my brothers, don’t swear—not by heaven, or by the earth, or by any other oath; but let your “yes” be “yes”, and your “no”, “no”, so that you don’t fall into hypocrisy.",
+      "ko": "내 형제들아 무엇보다도 맹세하지 말찌니 하늘로나 땅으로나 아무 다른 것으로도 맹세하지 말고 오직 너희의 그렇다 하는 것은 그렇다 하고 아니라 하는 것은 아니라 하여 죄 정함을 면하라",
+      "source_text_hash": "f706fd6db848ff8bb196330795ac182a7426fe2d87a6ae396a82214e03678e9a",
+      "translation_text_hash": "98cbabd07db9cea5f04875ccf054497f02b594331bb6ed2bdc82b53e19cd0880",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 형제들아 무엇보다도 맹세하지 말찌니 하늘로나 땅으로나 아무 다른 것으로도 맹세하지 말고 오직 너희의 그렇다 하는 것은 그렇다 하고 아니라 하는 것은 아니라 하여 죄 정함을 면하라"
+      ],
+      "raw_text_hashes": [
+        "98cbabd07db9cea5f04875ccf054497f02b594331bb6ed2bdc82b53e19cd0880"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:5:13",
+      "sequence": 30364,
+      "chapter_label": "JAS 5",
+      "verse_label": "13",
+      "locator": {
+        "book": "JAS",
+        "chapter": 5,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 5,
+          "verse": 13
+        }
+      ],
+      "en": "Is any among you suffering? Let him pray. Is any cheerful? Let him sing praises.",
+      "ko": "너희 중에 고난 당하는 자가 있느냐 저는 기도할 것이요 즐거워하는 자가 있느냐 저는 찬송할찌니라",
+      "source_text_hash": "c12a163c995baa89cd94d5a86653f2f27985a986b69d575b11c5a49928f14d45",
+      "translation_text_hash": "0983687c178b8b538d6943979535f8bc324c587b3e87625ac46f407684c44062",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 중에 고난 당하는 자가 있느냐 저는 기도할 것이요 즐거워하는 자가 있느냐 저는 찬송할찌니라"
+      ],
+      "raw_text_hashes": [
+        "0983687c178b8b538d6943979535f8bc324c587b3e87625ac46f407684c44062"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:5:14",
+      "sequence": 30365,
+      "chapter_label": "JAS 5",
+      "verse_label": "14",
+      "locator": {
+        "book": "JAS",
+        "chapter": 5,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 5,
+          "verse": 14
+        }
+      ],
+      "en": "Is any among you sick? Let him call for the elders of the assembly, and let them pray over him, anointing him with oil in the name of the Lord;",
+      "ko": "너희 중에 병든 자가 있느냐 저는 교회의 장로들을 청할 것이요 그들은 주의 이름으로 기름을 바르며 위하여 기도할찌니라",
+      "source_text_hash": "b37b02b4531a60c34f4dcc2a69b0a47ab4eefafc671eaeb4054c8cdc10f6deba",
+      "translation_text_hash": "5d30fc46f27b59bcb2ba30953516d3e96e8a9ab0305f25e500a2261eb0a04504",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 중에 병든 자가 있느냐 저는 교회의 장로들을 청할 것이요 그들은 주의 이름으로 기름을 바르며 위하여 기도할찌니라"
+      ],
+      "raw_text_hashes": [
+        "5d30fc46f27b59bcb2ba30953516d3e96e8a9ab0305f25e500a2261eb0a04504"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:5:15",
+      "sequence": 30366,
+      "chapter_label": "JAS 5",
+      "verse_label": "15",
+      "locator": {
+        "book": "JAS",
+        "chapter": 5,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 5,
+          "verse": 15
+        }
+      ],
+      "en": "and the prayer of faith will heal him who is sick, and the Lord will raise him up. If he has committed sins, he will be forgiven.",
+      "ko": "믿음의 기도는 병든 자를 구원하리니 주께서 저를 일으키시리라 혹시 죄를 범하였을찌라도 사하심을 얻으리라",
+      "source_text_hash": "5f62e9a113bf6c6bbf0001bc2baec1bf7d4b53a494d08791e06c600dfc6cd614",
+      "translation_text_hash": "2046a318bd4642ffbc0f01bfc38c8bf04e61f0f089464d0d3008c07affbd74d3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "믿음의 기도는 병든 자를 구원하리니 주께서 저를 일으키시리라 혹시 죄를 범하였을찌라도 사하심을 얻으리라"
+      ],
+      "raw_text_hashes": [
+        "2046a318bd4642ffbc0f01bfc38c8bf04e61f0f089464d0d3008c07affbd74d3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:5:16",
+      "sequence": 30367,
+      "chapter_label": "JAS 5",
+      "verse_label": "16",
+      "locator": {
+        "book": "JAS",
+        "chapter": 5,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 5,
+          "verse": 16
+        }
+      ],
+      "en": "Confess your sins to one another and pray for one another, that you may be healed. The insistent prayer of a righteous person is powerfully effective.",
+      "ko": "이러므로 너희 죄를 서로 고하며 병 낫기를 위하여 서로 기도하라 의인의 간구는 역사하는 힘이 많으니라",
+      "source_text_hash": "02f0d6dda8247d693cf5be77c2e49436ebf706cedf9f85a37fba2b9bae48e302",
+      "translation_text_hash": "9908443ed8c1e3b62e89f14be1d842c294b1838ceffb647b82271b069c9792f4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러므로 너희 죄를 서로 고하며 병 낫기를 위하여 서로 기도하라 의인의 간구는 역사하는 힘이 많으니라"
+      ],
+      "raw_text_hashes": [
+        "9908443ed8c1e3b62e89f14be1d842c294b1838ceffb647b82271b069c9792f4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:5:17",
+      "sequence": 30368,
+      "chapter_label": "JAS 5",
+      "verse_label": "17",
+      "locator": {
+        "book": "JAS",
+        "chapter": 5,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 5,
+          "verse": 17
+        }
+      ],
+      "en": "Elijah was a man with a nature like ours, and he prayed earnestly that it might not rain, and it didn’t rain on the earth for three years and six months.",
+      "ko": "엘리야는 우리와 성정이 같은 사람이로되 저가 비 오지 않기를 간절히 기도한즉 삼년 육개월 동안 땅에 비가 아니오고",
+      "source_text_hash": "83f882ab3a67ee7b8a2abc6ac0d0ed3506b90824edbb8d9fcb7e6ddd15783818",
+      "translation_text_hash": "db5e0bd7a352419b5d2d8f65b13e0f164c47c820c4a930c6bdc4765952830508",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "엘리야는 우리와 성정이 같은 사람이로되 저가 비 오지 않기를 간절히 기도한즉 삼년 육개월 동안 땅에 비가 아니오고"
+      ],
+      "raw_text_hashes": [
+        "db5e0bd7a352419b5d2d8f65b13e0f164c47c820c4a930c6bdc4765952830508"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:5:18",
+      "sequence": 30369,
+      "chapter_label": "JAS 5",
+      "verse_label": "18",
+      "locator": {
+        "book": "JAS",
+        "chapter": 5,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 5,
+          "verse": 18
+        }
+      ],
+      "en": "He prayed again, and the sky gave rain, and the earth produced its fruit.",
+      "ko": "다시 기도한즉 하늘이 비를 주고 땅이 열매를 내었느니라",
+      "source_text_hash": "ec16f751c8067bddaa21bf2242fff802edf60ba448dc38d41d6236af69f12c46",
+      "translation_text_hash": "c5a683c4303fef16866c21978942c51fd5fd2424543eeb29f720cf08f63148bf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다시 기도한즉 하늘이 비를 주고 땅이 열매를 내었느니라"
+      ],
+      "raw_text_hashes": [
+        "c5a683c4303fef16866c21978942c51fd5fd2424543eeb29f720cf08f63148bf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:5:19",
+      "sequence": 30370,
+      "chapter_label": "JAS 5",
+      "verse_label": "19",
+      "locator": {
+        "book": "JAS",
+        "chapter": 5,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 5,
+          "verse": 19
+        }
+      ],
+      "en": "Brothers, if any among you wanders from the truth and someone turns him back,",
+      "ko": "내 형제들아 너희 중에 미혹하여 진리를 떠난 자를 누가 돌아서게 하면",
+      "source_text_hash": "849f15f5baca8d1c386e4017b403a4fb86e5a8efbaa94678cf3a942732b06b80",
+      "translation_text_hash": "9917b945726b97e77ba5e16b7edf41f495777177d00f21414df65b1e46d8bdf4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 형제들아 너희 중에 미혹하여 진리를 떠난 자를 누가 돌아서게 하면"
+      ],
+      "raw_text_hashes": [
+        "9917b945726b97e77ba5e16b7edf41f495777177d00f21414df65b1e46d8bdf4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:5:20",
+      "sequence": 30371,
+      "chapter_label": "JAS 5",
+      "verse_label": "20",
+      "locator": {
+        "book": "JAS",
+        "chapter": 5,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 5,
+          "verse": 20
+        }
+      ],
+      "en": "let him know that he who turns a sinner from the error of his way will save a soul from death and will cover a multitude of sins.",
+      "ko": "너희가 알 것은 죄인을 미혹한 길에서 돌아서게 하는 자가 그 영혼을 사망에서 구원하며 허다한 죄를 덮을 것이니라",
+      "source_text_hash": "b6b65ca023940ff8d81770ba139ee6a936ec96a2292e83352f439fc23f94da98",
+      "translation_text_hash": "f29d1eaf1065e867212d233c0b5f9cbbe611e19d5977a1e1587d610314bbc480",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 알 것은 죄인을 미혹한 길에서 돌아서게 하는 자가 그 영혼을 사망에서 구원하며 허다한 죄를 덮을 것이니라"
+      ],
+      "raw_text_hashes": [
+        "f29d1eaf1065e867212d233c0b5f9cbbe611e19d5977a1e1587d610314bbc480"
+      ]
+    }
+  ]
+}

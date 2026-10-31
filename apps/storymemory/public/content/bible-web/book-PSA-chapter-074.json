@@ -1,0 +1,749 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:074",
+  "unit_ordinal": 552,
+  "unit_label": "PSA 74",
+  "book_code": "PSA",
+  "chapter_number": 74,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:74:1",
+      "sequence": 15050,
+      "chapter_label": "PSA 74",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 74,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 74,
+          "verse": 1
+        }
+      ],
+      "en": "God, why have you rejected us forever? Why does your anger smolder against the sheep of your pasture?",
+      "ko": "하나님이여 주께서 어찌하여 우리를 영원히 버리시나이까 어찌하여 주의 치시는 양을 향하여 진노의 연기를 발하시나이까",
+      "source_text_hash": "85b40152586425895f9134ff9ddb221b9df0a8fbbe37e22e028ae6e8f75c7830",
+      "translation_text_hash": "26da08cb4b397bc95d47432beb49420d26dede794ddb868c60bf945ea2840219",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이여 주께서 어찌하여 우리를 영원히 버리시나이까 어찌하여 주의 치시는 양을 향하여 진노의 연기를 발하시나이까"
+      ],
+      "raw_text_hashes": [
+        "26da08cb4b397bc95d47432beb49420d26dede794ddb868c60bf945ea2840219"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:74:2",
+      "sequence": 15051,
+      "chapter_label": "PSA 74",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 74,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 74,
+          "verse": 2
+        }
+      ],
+      "en": "Remember your congregation, which you purchased of old, which you have redeemed to be the tribe of your inheritance: Mount Zion, in which you have lived.",
+      "ko": "옛적부터 얻으시고 구속하사 주의 기업의 지파로 삼으신 주의 회중을 기억하시며 주의 거하신 시온산도 생각하소서",
+      "source_text_hash": "4ad0d2e448d8b5938b4fe213f3bd53eb123aed61198c998fe018ee3ca1366f30",
+      "translation_text_hash": "ba4827b1adaa8377286c3cf7376fcec5601ce7d6bc780d4b767ff077790848a0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "옛적부터 얻으시고 구속하사 주의 기업의 지파로 삼으신 주의 회중을 기억하시며 주의 거하신 시온산도 생각하소서"
+      ],
+      "raw_text_hashes": [
+        "ba4827b1adaa8377286c3cf7376fcec5601ce7d6bc780d4b767ff077790848a0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:74:3",
+      "sequence": 15052,
+      "chapter_label": "PSA 74",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 74,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 74,
+          "verse": 3
+        }
+      ],
+      "en": "Lift up your feet to the perpetual ruins, all the evil that the enemy has done in the sanctuary.",
+      "ko": "영구히 파멸된 곳으로 주의 발을 드십소서 원수가 성소에서 모든 악을 행하였나이다",
+      "source_text_hash": "c9fa5b57216034b5a08e3c4c3d94b9589f999cf7c1da2fc0505f78e016814d4d",
+      "translation_text_hash": "6e49b2fe0ed8e2d5ea7cd4341271706547c842260899151859e6a76cb81e9243",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "영구히 파멸된 곳으로 주의 발을 드십소서 원수가 성소에서 모든 악을 행하였나이다"
+      ],
+      "raw_text_hashes": [
+        "6e49b2fe0ed8e2d5ea7cd4341271706547c842260899151859e6a76cb81e9243"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:74:4",
+      "sequence": 15053,
+      "chapter_label": "PSA 74",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 74,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 74,
+          "verse": 4
+        }
+      ],
+      "en": "Your adversaries have roared in the middle of your assembly. They have set up their standards as signs.",
+      "ko": "주의 대적이 주의 회중에서 훤화하며 자기 기를 세워 표적을 삼았으니",
+      "source_text_hash": "ecb2879d2fd7926f7f430d9cef0b694473ae6ebe790b4d3651bcf21d27b487ca",
+      "translation_text_hash": "87d8f682b290e12fd17fa608a784062834f9bd509ee5480eb69fa697ff16a73d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 대적이 주의 회중에서 훤화하며 자기 기를 세워 표적을 삼았으니"
+      ],
+      "raw_text_hashes": [
+        "87d8f682b290e12fd17fa608a784062834f9bd509ee5480eb69fa697ff16a73d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:74:5",
+      "sequence": 15054,
+      "chapter_label": "PSA 74",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 74,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 74,
+          "verse": 5
+        }
+      ],
+      "en": "They behaved like men wielding axes, cutting through a thicket of trees.",
+      "ko": "저희는 마치 도끼를 들어 삼림을 베는 사람 같으니이다",
+      "source_text_hash": "de2ccae1346c4aba994f6b3d6f9088586f680c85e590cb43fab149374d2bff35",
+      "translation_text_hash": "7d0e169dd2b3c4a663c3df7610b26c5b0dd54b9d275e408ca531938ac3635351",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희는 마치 도끼를 들어 삼림을 베는 사람 같으니이다"
+      ],
+      "raw_text_hashes": [
+        "7d0e169dd2b3c4a663c3df7610b26c5b0dd54b9d275e408ca531938ac3635351"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:74:6",
+      "sequence": 15055,
+      "chapter_label": "PSA 74",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 74,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 74,
+          "verse": 6
+        }
+      ],
+      "en": "Now they break all its carved work down with hatchet and hammers.",
+      "ko": "이제 저희가 도끼와 철퇴로 성소의 모든 조각품을 쳐서 부수고",
+      "source_text_hash": "c1c29ad43de28b3f9ec072865e6e66b2265e5d6933e04c3d98de58e31e986ecc",
+      "translation_text_hash": "325bf4a642767c4ec6d66d99a288639617cfe6c8fd58c0185a3ad6a3b7a987f8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제 저희가 도끼와 철퇴로 성소의 모든 조각품을 쳐서 부수고"
+      ],
+      "raw_text_hashes": [
+        "325bf4a642767c4ec6d66d99a288639617cfe6c8fd58c0185a3ad6a3b7a987f8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:74:7",
+      "sequence": 15056,
+      "chapter_label": "PSA 74",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 74,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 74,
+          "verse": 7
+        }
+      ],
+      "en": "They have burned your sanctuary to the ground. They have profaned the dwelling place of your Name.",
+      "ko": "주의 성소를 불사르며 주의 이름이 계신 곳을 더럽혀 땅에 엎었나이다",
+      "source_text_hash": "3235052924aa983985ccb9fb73e96320c4efbc1372d0a2aa0fcb59f2ef252f29",
+      "translation_text_hash": "96ed24168b50b3355a24a4fbbc1be46a304d2d1e5ca4241dff014000fb71b056",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 성소를 불사르며 주의 이름이 계신 곳을 더럽혀 땅에 엎었나이다"
+      ],
+      "raw_text_hashes": [
+        "96ed24168b50b3355a24a4fbbc1be46a304d2d1e5ca4241dff014000fb71b056"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:74:8",
+      "sequence": 15057,
+      "chapter_label": "PSA 74",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 74,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 74,
+          "verse": 8
+        }
+      ],
+      "en": "They said in their heart, “We will crush them completely.” They have burned up all the places in the land where God was worshiped.",
+      "ko": "저희의 마음에 이르기를 우리가 그것을 진멸하자 하고 이 땅에 있는 하나님의 모든 회당을 불살랐나이다",
+      "source_text_hash": "cb32d2c2dcfa9c14cc3e1d4fa39d48e81c2b4bfed03ee927d6689e6dbb4467bf",
+      "translation_text_hash": "67251d0fbc8264967ec666d897f959854ebc1221453d21dc35584dd7cb6ebbf0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희의 마음에 이르기를 우리가 그것을 진멸하자 하고 이 땅에 있는 하나님의 모든 회당을 불살랐나이다"
+      ],
+      "raw_text_hashes": [
+        "67251d0fbc8264967ec666d897f959854ebc1221453d21dc35584dd7cb6ebbf0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:74:9",
+      "sequence": 15058,
+      "chapter_label": "PSA 74",
+      "verse_label": "9",
+      "locator": {
+        "book": "PSA",
+        "chapter": 74,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 74,
+          "verse": 9
+        }
+      ],
+      "en": "We see no miraculous signs. There is no longer any prophet, neither is there among us anyone who knows how long.",
+      "ko": "우리의 표적이 보이지 아니하며 선지자도 다시 없으며 이런 일이 얼마나 오랠는지 우리 중에 아는 자도 없나이다",
+      "source_text_hash": "1e4fd9d1141138696ceef498eecfab5b2dc89fd3b26d55b73302cd0bf02cf2fc",
+      "translation_text_hash": "8d036f572cb663d3e890f9222bc60ce5c287aaab43572d05106c4ee55529652b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리의 표적이 보이지 아니하며 선지자도 다시 없으며 이런 일이 얼마나 오랠는지 우리 중에 아는 자도 없나이다"
+      ],
+      "raw_text_hashes": [
+        "8d036f572cb663d3e890f9222bc60ce5c287aaab43572d05106c4ee55529652b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:74:10",
+      "sequence": 15059,
+      "chapter_label": "PSA 74",
+      "verse_label": "10",
+      "locator": {
+        "book": "PSA",
+        "chapter": 74,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 74,
+          "verse": 10
+        }
+      ],
+      "en": "How long, God, shall the adversary reproach? Shall the enemy blaspheme your name forever?",
+      "ko": "하나님이여 대적이 언제까지 훼방하겠으며 원수가 주의 이름을 영원히 능욕하리이까",
+      "source_text_hash": "be6a7eea73857d15f2b47593f23c2426c1f43484fdd217427420e3ec9f760eda",
+      "translation_text_hash": "82795154f58bfde3c1987565ba7b535b1606ecb9d0fd9974f0ae6f29415203c8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이여 대적이 언제까지 훼방하겠으며 원수가 주의 이름을 영원히 능욕하리이까"
+      ],
+      "raw_text_hashes": [
+        "82795154f58bfde3c1987565ba7b535b1606ecb9d0fd9974f0ae6f29415203c8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:74:11",
+      "sequence": 15060,
+      "chapter_label": "PSA 74",
+      "verse_label": "11",
+      "locator": {
+        "book": "PSA",
+        "chapter": 74,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 74,
+          "verse": 11
+        }
+      ],
+      "en": "Why do you draw back your hand, even your right hand? Take it from your chest and consume them!",
+      "ko": "주께서 어찌하여 주의 손 곧 오른손을 거두시나이까 주의 품에서 빼사 저희를 멸하소서",
+      "source_text_hash": "54936c3535283f6c731bc2f88c8c971262ee78382f1c3edec3c3651829f2d83a",
+      "translation_text_hash": "a3509e7c8ab9f4e085ed56defe08408e1f3c0accb50ee3fee1d5b59c6b0594f6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 어찌하여 주의 손 곧 오른손을 거두시나이까 주의 품에서 빼사 저희를 멸하소서"
+      ],
+      "raw_text_hashes": [
+        "a3509e7c8ab9f4e085ed56defe08408e1f3c0accb50ee3fee1d5b59c6b0594f6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:74:12",
+      "sequence": 15061,
+      "chapter_label": "PSA 74",
+      "verse_label": "12",
+      "locator": {
+        "book": "PSA",
+        "chapter": 74,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 74,
+          "verse": 12
+        }
+      ],
+      "en": "Yet God is my King of old, working salvation throughout the earth.",
+      "ko": "하나님은 예로부터 나의 왕이시라 인간에 구원을 베푸셨나이다",
+      "source_text_hash": "434c3b1ef2aa750ea56035789cfe41ecb6a65cba21eb593ed1d90c4ae79d1789",
+      "translation_text_hash": "195aaac69c32235ccb5a052e676bd814bb13dfb65eb217d8fc4ef2836d875b99",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님은 예로부터 나의 왕이시라 인간에 구원을 베푸셨나이다"
+      ],
+      "raw_text_hashes": [
+        "195aaac69c32235ccb5a052e676bd814bb13dfb65eb217d8fc4ef2836d875b99"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:74:13",
+      "sequence": 15062,
+      "chapter_label": "PSA 74",
+      "verse_label": "13",
+      "locator": {
+        "book": "PSA",
+        "chapter": 74,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 74,
+          "verse": 13
+        }
+      ],
+      "en": "You divided the sea by your strength. You broke the heads of the sea monsters in the waters.",
+      "ko": "주께서 주의 능력으로 바다를 나누시고 물 가운데 용들의 머리를 깨뜨리셨으며",
+      "source_text_hash": "df9d001c9ec7c533ce12c3df55bde269b08932f8c4f26c29ca56512e35ce4bbb",
+      "translation_text_hash": "130e2e6114d762095c29b478c03f8dbc5dcc78cbaaa2dbccbb402b0d77b862dc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 주의 능력으로 바다를 나누시고 물 가운데 용들의 머리를 깨뜨리셨으며"
+      ],
+      "raw_text_hashes": [
+        "130e2e6114d762095c29b478c03f8dbc5dcc78cbaaa2dbccbb402b0d77b862dc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:74:14",
+      "sequence": 15063,
+      "chapter_label": "PSA 74",
+      "verse_label": "14",
+      "locator": {
+        "book": "PSA",
+        "chapter": 74,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 74,
+          "verse": 14
+        }
+      ],
+      "en": "You broke the heads of Leviathan in pieces. You gave him as food to people and desert creatures.",
+      "ko": "악어의 머리를 파쇄하시고 그것을 사막에 거하는 자에게 식물로 주셨으며",
+      "source_text_hash": "4c9fc0a175fbd356ebe2f41ecbb6886107f400dde03043a7ab16e7bfa18997f5",
+      "translation_text_hash": "dbff908a3e9fd5923c81cb82b0abc5a1d0f690f682dfad4c99417f3ca79ae1d2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "악어의 머리를 파쇄하시고 그것을 사막에 거하는 자에게 식물로 주셨으며"
+      ],
+      "raw_text_hashes": [
+        "dbff908a3e9fd5923c81cb82b0abc5a1d0f690f682dfad4c99417f3ca79ae1d2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:74:15",
+      "sequence": 15064,
+      "chapter_label": "PSA 74",
+      "verse_label": "15",
+      "locator": {
+        "book": "PSA",
+        "chapter": 74,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 74,
+          "verse": 15
+        }
+      ],
+      "en": "You opened up spring and stream. You dried up mighty rivers.",
+      "ko": "바위를 쪼개사 큰 물을 내시며 길이 흐르는 강들을 말리우셨나이다",
+      "source_text_hash": "108b9c230cabf21ec850961b87bfe0ba6b98973a54b2c4c3bfe909616662ec3a",
+      "translation_text_hash": "2934f8dc921447464f7218e3d04a4454d73503d285a9059c173aab4aa0b161b1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바위를 쪼개사 큰 물을 내시며 길이 흐르는 강들을 말리우셨나이다"
+      ],
+      "raw_text_hashes": [
+        "2934f8dc921447464f7218e3d04a4454d73503d285a9059c173aab4aa0b161b1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:74:16",
+      "sequence": 15065,
+      "chapter_label": "PSA 74",
+      "verse_label": "16",
+      "locator": {
+        "book": "PSA",
+        "chapter": 74,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 74,
+          "verse": 16
+        }
+      ],
+      "en": "The day is yours, the night is also yours. You have prepared the light and the sun.",
+      "ko": "낮도 주의 것이요 밤도 주의 것이라 주께서 빛과 해를 예비하셨으며",
+      "source_text_hash": "c208dd7c0ff5156abc06ff02953853031a8d0d3bff916bb94c7f1e180fbb79df",
+      "translation_text_hash": "ab359597a533a24d3eacc0d688e774e68c00a201ed7dd781f544a649c75116fb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "낮도 주의 것이요 밤도 주의 것이라 주께서 빛과 해를 예비하셨으며"
+      ],
+      "raw_text_hashes": [
+        "ab359597a533a24d3eacc0d688e774e68c00a201ed7dd781f544a649c75116fb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:74:17",
+      "sequence": 15066,
+      "chapter_label": "PSA 74",
+      "verse_label": "17",
+      "locator": {
+        "book": "PSA",
+        "chapter": 74,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 74,
+          "verse": 17
+        }
+      ],
+      "en": "You have set all the boundaries of the earth. You have made summer and winter.",
+      "ko": "땅의 경계를 정하시며 여름과 겨울을 이루셨나이다",
+      "source_text_hash": "b28ba9350f8fa7737b2e3d75df0e8c49870ffadf82969e7d966f9fc2ee3431a8",
+      "translation_text_hash": "044804b7d2980dee27a02823f0130bdad8ac54adb83f1fd48e7416576dc0d413",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "땅의 경계를 정하시며 여름과 겨울을 이루셨나이다"
+      ],
+      "raw_text_hashes": [
+        "044804b7d2980dee27a02823f0130bdad8ac54adb83f1fd48e7416576dc0d413"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:74:18",
+      "sequence": 15067,
+      "chapter_label": "PSA 74",
+      "verse_label": "18",
+      "locator": {
+        "book": "PSA",
+        "chapter": 74,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 74,
+          "verse": 18
+        }
+      ],
+      "en": "Remember this, that the enemy has mocked you, LORD. Foolish people have blasphemed your name.",
+      "ko": "여호와여 이것을 기억하소서 원수가 주를 비방하며 우매한 백성이 주의 이름을 능욕하였나이다",
+      "source_text_hash": "d437cbc9bc0c7104908003c74414db9790846806561cb1e32c9f0d4a6da4cdec",
+      "translation_text_hash": "a6da7064c80c659c233f5ae8659a804f1f5acd28e5349d96f1136640ac340798",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 이것을 기억하소서 원수가 주를 비방하며 우매한 백성이 주의 이름을 능욕하였나이다"
+      ],
+      "raw_text_hashes": [
+        "a6da7064c80c659c233f5ae8659a804f1f5acd28e5349d96f1136640ac340798"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:74:19",
+      "sequence": 15068,
+      "chapter_label": "PSA 74",
+      "verse_label": "19",
+      "locator": {
+        "book": "PSA",
+        "chapter": 74,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 74,
+          "verse": 19
+        }
+      ],
+      "en": "Don’t deliver the soul of your dove to wild beasts. Don’t forget the life of your poor forever.",
+      "ko": "주의 멧비둘기의 생명을 들짐승에게 주지 마시며 주의 가난한 자의 목숨을 영영히 잊지 마소서",
+      "source_text_hash": "caa67cb47c84ca5ca4f5d8ae226495e1447a2bdaf5068845186b63633693bd32",
+      "translation_text_hash": "524a3b548c8a6dac81ea600a8bf891e441469c38a9dfb18932e57048c2a1f854",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 멧비둘기의 생명을 들짐승에게 주지 마시며 주의 가난한 자의 목숨을 영영히 잊지 마소서"
+      ],
+      "raw_text_hashes": [
+        "524a3b548c8a6dac81ea600a8bf891e441469c38a9dfb18932e57048c2a1f854"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:74:20",
+      "sequence": 15069,
+      "chapter_label": "PSA 74",
+      "verse_label": "20",
+      "locator": {
+        "book": "PSA",
+        "chapter": 74,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 74,
+          "verse": 20
+        }
+      ],
+      "en": "Honor your covenant, for haunts of violence fill the dark places of the earth.",
+      "ko": "언약을 돌아보소서 대저 땅 흑암한 곳에 강포한 자의 처소가 가득하였나이다",
+      "source_text_hash": "47edc56a1aea7477fb855a1493ff74b26a70adb7423312db3c5d6669db8c5882",
+      "translation_text_hash": "a9add853cd240a461819e293e540c942be6bbe53959a574bc4f350a03ce3e540",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "언약을 돌아보소서 대저 땅 흑암한 곳에 강포한 자의 처소가 가득하였나이다"
+      ],
+      "raw_text_hashes": [
+        "a9add853cd240a461819e293e540c942be6bbe53959a574bc4f350a03ce3e540"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:74:21",
+      "sequence": 15070,
+      "chapter_label": "PSA 74",
+      "verse_label": "21",
+      "locator": {
+        "book": "PSA",
+        "chapter": 74,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 74,
+          "verse": 21
+        }
+      ],
+      "en": "Don’t let the oppressed return ashamed. Let the poor and needy praise your name.",
+      "ko": "학대 받은 자로 부끄러이 돌아가게 마시고 가난한 자와 궁핍한 자로 주의 이름을 찬송케 하소서",
+      "source_text_hash": "32f1047e7cd3941f6f025e7fd5d20ef4537f02e2abb587971089e5ae14bf3747",
+      "translation_text_hash": "a10b177b39d0f977bb05fb05e3e71200baee12f9776913a7a364823a43190ffb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "학대 받은 자로 부끄러이 돌아가게 마시고 가난한 자와 궁핍한 자로 주의 이름을 찬송케 하소서"
+      ],
+      "raw_text_hashes": [
+        "a10b177b39d0f977bb05fb05e3e71200baee12f9776913a7a364823a43190ffb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:74:22",
+      "sequence": 15071,
+      "chapter_label": "PSA 74",
+      "verse_label": "22",
+      "locator": {
+        "book": "PSA",
+        "chapter": 74,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 74,
+          "verse": 22
+        }
+      ],
+      "en": "Arise, God! Plead your own cause. Remember how the foolish man mocks you all day.",
+      "ko": "하나님이여 일어나사 주의 원통을 푸시고 우매한 자가 종일 주를 비방하는 것을 기억하소서",
+      "source_text_hash": "f01108e81fa669e833f8ccb8f8060b4b0ce71d43b19b4d20aa9b8c26a083ec56",
+      "translation_text_hash": "273ddaddeb7680aaab70eaef97cb546dc7c2f8d08657026a250dc8f63c60ac78",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이여 일어나사 주의 원통을 푸시고 우매한 자가 종일 주를 비방하는 것을 기억하소서"
+      ],
+      "raw_text_hashes": [
+        "273ddaddeb7680aaab70eaef97cb546dc7c2f8d08657026a250dc8f63c60ac78"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:74:23",
+      "sequence": 15072,
+      "chapter_label": "PSA 74",
+      "verse_label": "23",
+      "locator": {
+        "book": "PSA",
+        "chapter": 74,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 74,
+          "verse": 23
+        }
+      ],
+      "en": "Don’t forget the voice of your adversaries. The tumult of those who rise up against you ascends continually.",
+      "ko": "주의 대적의 소리를 잊지 마소서 일어나 주를 항거하는 자의 훤화가 항상 상달하나이다",
+      "source_text_hash": "b2c19b0cc2932f7bf3b108bf87681a0e44d9e93347bbb777d1faeafe46b54d06",
+      "translation_text_hash": "35a6a5fdb4bdc5bb5628f525f4e53c0876c52a8c608f2f611ec621a483639902",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 대적의 소리를 잊지 마소서 일어나 주를 항거하는 자의 훤화가 항상 상달하나이다"
+      ],
+      "raw_text_hashes": [
+        "35a6a5fdb4bdc5bb5628f525f4e53c0876c52a8c608f2f611ec621a483639902"
+      ]
+    }
+  ]
+}

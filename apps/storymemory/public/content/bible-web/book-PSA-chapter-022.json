@@ -1,0 +1,1005 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:022",
+  "unit_ordinal": 500,
+  "unit_label": "PSA 22",
+  "book_code": "PSA",
+  "chapter_number": 22,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:22:1",
+      "sequence": 14206,
+      "chapter_label": "PSA 22",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 22,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 22,
+          "verse": 1
+        }
+      ],
+      "en": "My God, my God, why have you forsaken me? Why are you so far from helping me, and from the words of my groaning?",
+      "ko": "내 하나님이여 내 하나님이여 어찌 나를 버리셨나이까 어찌 나를 멀리하여 돕지 아니하옵시며 내 신음하는 소리를 듣지 아니하시나이까",
+      "source_text_hash": "949bcfaa5c6054a34f489d24b619a4f6cad1b7d48671f21e9d2910d88fc81ced",
+      "translation_text_hash": "cf1df558e215beba824a5be9e8fd0098c9949f6183cde40980b378d5b6da9f23",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 하나님이여 내 하나님이여 어찌 나를 버리셨나이까 어찌 나를 멀리하여 돕지 아니하옵시며 내 신음하는 소리를 듣지 아니하시나이까"
+      ],
+      "raw_text_hashes": [
+        "cf1df558e215beba824a5be9e8fd0098c9949f6183cde40980b378d5b6da9f23"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:22:2",
+      "sequence": 14207,
+      "chapter_label": "PSA 22",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 22,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 22,
+          "verse": 2
+        }
+      ],
+      "en": "My God, I cry in the daytime, but you don’t answer; in the night season, and am not silent.",
+      "ko": "내 하나님이여 내가 낮에도 부르짖고 밤에도 잠잠치 아니하오나 응답지 아니하시나이다",
+      "source_text_hash": "0e806d0315c66261e1dccb019c03230caae5dce4320bd5585d37522da609a2bf",
+      "translation_text_hash": "c7cda9484ee6cc3f030b0643181d6e85ece71f0720150eafb89a16b609f6e5e6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 하나님이여 내가 낮에도 부르짖고 밤에도 잠잠치 아니하오나 응답지 아니하시나이다"
+      ],
+      "raw_text_hashes": [
+        "c7cda9484ee6cc3f030b0643181d6e85ece71f0720150eafb89a16b609f6e5e6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:22:3",
+      "sequence": 14208,
+      "chapter_label": "PSA 22",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 22,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 22,
+          "verse": 3
+        }
+      ],
+      "en": "But you are holy, you who inhabit the praises of Israel.",
+      "ko": "이스라엘의 찬송 중에 거하시는 주여 주는 거룩하시니이다",
+      "source_text_hash": "f2f832061dbe2aa174bf47a4f3313e935e1d2f08b7f60c550bc84e1657f87e91",
+      "translation_text_hash": "ac576315f27760e48eb0dc5fa89cce6ddfdeaa6cb01316e666c1db861eefa390",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘의 찬송 중에 거하시는 주여 주는 거룩하시니이다"
+      ],
+      "raw_text_hashes": [
+        "ac576315f27760e48eb0dc5fa89cce6ddfdeaa6cb01316e666c1db861eefa390"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:22:4",
+      "sequence": 14209,
+      "chapter_label": "PSA 22",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 22,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 22,
+          "verse": 4
+        }
+      ],
+      "en": "Our fathers trusted in you. They trusted, and you delivered them.",
+      "ko": "우리 열조가 주께 의뢰하였고 의뢰하였으므로 저희를 건지셨나이다",
+      "source_text_hash": "ff7279f2dab09ffed3eac4b959530ecfaa2bc835396140ddee9fd1e3b3b045e3",
+      "translation_text_hash": "97882a28722c3027fc43909e0db4133f57394788ab7517577f1cc2270b151a3e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리 열조가 주께 의뢰하였고 의뢰하였으므로 저희를 건지셨나이다"
+      ],
+      "raw_text_hashes": [
+        "97882a28722c3027fc43909e0db4133f57394788ab7517577f1cc2270b151a3e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:22:5",
+      "sequence": 14210,
+      "chapter_label": "PSA 22",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 22,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 22,
+          "verse": 5
+        }
+      ],
+      "en": "They cried to you, and were delivered. They trusted in you, and were not disappointed.",
+      "ko": "저희가 주께 부르짖어 구원을 얻고 주께 의뢰하여 수치를 당치 아니하였나이다",
+      "source_text_hash": "4674039a0e5d08eb9909cf3d3c6809404053ffe6513ef61fa98d5bc826a88973",
+      "translation_text_hash": "007dd4a088491f9d13f95c6b38516dcbadc838a0810dbda7a776d263535afec7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 주께 부르짖어 구원을 얻고 주께 의뢰하여 수치를 당치 아니하였나이다"
+      ],
+      "raw_text_hashes": [
+        "007dd4a088491f9d13f95c6b38516dcbadc838a0810dbda7a776d263535afec7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:22:6",
+      "sequence": 14211,
+      "chapter_label": "PSA 22",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 22,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 22,
+          "verse": 6
+        }
+      ],
+      "en": "But I am a worm, and no man; a reproach of men, and despised by the people.",
+      "ko": "나는 벌레요 사람이 아니라 사람의 훼방거리요 백성의 조롱거리니이다",
+      "source_text_hash": "743ec85c0e9303ddf26dd4978dbcb84fb69f7926b4aea0b048d5ceb4a7ccd5ed",
+      "translation_text_hash": "efcf66dba7cbb6837d1c1974ace7b6a62d9da573e4872df81adf3954e360de6a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 벌레요 사람이 아니라 사람의 훼방거리요 백성의 조롱거리니이다"
+      ],
+      "raw_text_hashes": [
+        "efcf66dba7cbb6837d1c1974ace7b6a62d9da573e4872df81adf3954e360de6a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:22:7",
+      "sequence": 14212,
+      "chapter_label": "PSA 22",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 22,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 22,
+          "verse": 7
+        }
+      ],
+      "en": "All those who see me mock me. They insult me with their lips. They shake their heads, saying,",
+      "ko": "나를 보는 자는 다 비웃으며 입술을 비쭉이고 머리를 흔들며 말하되",
+      "source_text_hash": "3c329aec16ab35b0cb222bea440755bc994c4dd99f18b1eb42060338493dd179",
+      "translation_text_hash": "fc5934126469c12ce5e8c0f66f89aa25008413f808131be8961958c6b0503dd9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나를 보는 자는 다 비웃으며 입술을 비쭉이고 머리를 흔들며 말하되"
+      ],
+      "raw_text_hashes": [
+        "fc5934126469c12ce5e8c0f66f89aa25008413f808131be8961958c6b0503dd9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:22:8",
+      "sequence": 14213,
+      "chapter_label": "PSA 22",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 22,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 22,
+          "verse": 8
+        }
+      ],
+      "en": "“He trusts in the LORD. Let him deliver him. Let him rescue him, since he delights in him.”",
+      "ko": "저가 여호와께 의탁하니 구원하실걸, 저를 기뻐하시니 건지실걸 하나이다",
+      "source_text_hash": "58cd72e127430ea5ebf8127d36931a9c63326701e57dca37c83ce2253491dce2",
+      "translation_text_hash": "8af29c00e86c17492c8a4a5161a4b364ccb3c4c7aee511b30beeb6afda5e8ba3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 여호와께 의탁하니 구원하실걸, 저를 기뻐하시니 건지실걸 하나이다"
+      ],
+      "raw_text_hashes": [
+        "8af29c00e86c17492c8a4a5161a4b364ccb3c4c7aee511b30beeb6afda5e8ba3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:22:9",
+      "sequence": 14214,
+      "chapter_label": "PSA 22",
+      "verse_label": "9",
+      "locator": {
+        "book": "PSA",
+        "chapter": 22,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 22,
+          "verse": 9
+        }
+      ],
+      "en": "But you brought me out of the womb. You made me trust while at my mother’s breasts.",
+      "ko": "오직 주께서 나를 모태에서 나오게 하시고 내 모친의 젖을 먹을 때에 의지하게 하셨나이다",
+      "source_text_hash": "51aff6e19925172a4034db8324b31bd86d05257b960168c61dc8a11f244b928d",
+      "translation_text_hash": "50f7e13f2b5b479b9edb5463300428d0d23894aef39ed050ffbc0886977f1291",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 주께서 나를 모태에서 나오게 하시고 내 모친의 젖을 먹을 때에 의지하게 하셨나이다"
+      ],
+      "raw_text_hashes": [
+        "50f7e13f2b5b479b9edb5463300428d0d23894aef39ed050ffbc0886977f1291"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:22:10",
+      "sequence": 14215,
+      "chapter_label": "PSA 22",
+      "verse_label": "10",
+      "locator": {
+        "book": "PSA",
+        "chapter": 22,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 22,
+          "verse": 10
+        }
+      ],
+      "en": "I was thrown on you from my mother’s womb. You are my God since my mother bore me.",
+      "ko": "내가 날 때부터 주께 맡긴바 되었고 모태에서 나올 때부터 주는 내 하나님이 되셨사오니",
+      "source_text_hash": "77f13e8a72b33897ec00e86b8ecb8522190517d816095b93cc8ef6f06f3d5a02",
+      "translation_text_hash": "7e42ad462c38d7e620723912518ab7d0f072740d2c858874fede91fbc24be8a7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 날 때부터 주께 맡긴바 되었고 모태에서 나올 때부터 주는 내 하나님이 되셨사오니"
+      ],
+      "raw_text_hashes": [
+        "7e42ad462c38d7e620723912518ab7d0f072740d2c858874fede91fbc24be8a7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:22:11",
+      "sequence": 14216,
+      "chapter_label": "PSA 22",
+      "verse_label": "11",
+      "locator": {
+        "book": "PSA",
+        "chapter": 22,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 22,
+          "verse": 11
+        }
+      ],
+      "en": "Don’t be far from me, for trouble is near. For there is no one to help.",
+      "ko": "나를 멀리하지 마옵소서 환난이 가깝고 도울 자 없나이다",
+      "source_text_hash": "d6735f904df14125e2730f844cec9e70ddbb56227bf2ed35e3c65750d9ec4356",
+      "translation_text_hash": "fd84e33edd70ffd26bd9d5f7494ffebcb57720074958abcdb1167e1d192cebd5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나를 멀리하지 마옵소서 환난이 가깝고 도울 자 없나이다"
+      ],
+      "raw_text_hashes": [
+        "fd84e33edd70ffd26bd9d5f7494ffebcb57720074958abcdb1167e1d192cebd5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:22:12",
+      "sequence": 14217,
+      "chapter_label": "PSA 22",
+      "verse_label": "12",
+      "locator": {
+        "book": "PSA",
+        "chapter": 22,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 22,
+          "verse": 12
+        }
+      ],
+      "en": "Many bulls have surrounded me. Strong bulls of Bashan have encircled me.",
+      "ko": "많은 황소가 나를 에워싸며 바산의 힘센 소들이 나를 둘렀으며",
+      "source_text_hash": "c9027e33e1030f116b18d321711c2ea8efb4f5092a0426ebf34e155f22251758",
+      "translation_text_hash": "a5e717663a59718202516d21972145db63552e616f4cb37501b4e4599e3867cf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "많은 황소가 나를 에워싸며 바산의 힘센 소들이 나를 둘렀으며"
+      ],
+      "raw_text_hashes": [
+        "a5e717663a59718202516d21972145db63552e616f4cb37501b4e4599e3867cf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:22:13",
+      "sequence": 14218,
+      "chapter_label": "PSA 22",
+      "verse_label": "13",
+      "locator": {
+        "book": "PSA",
+        "chapter": 22,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 22,
+          "verse": 13
+        }
+      ],
+      "en": "They open their mouths wide against me, lions tearing prey and roaring.",
+      "ko": "내게 그 입을 벌림이 찢고 부르짖는 사자 같으니이다",
+      "source_text_hash": "d2fabdda5c28b8ef4ffb89ee05aa34f55aa6842747181ea28401dd5080c6ecd4",
+      "translation_text_hash": "23bf5486d15f4f6c77eba1bd8a15d9598cc235216c724aaf343c8ef973e1c801",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내게 그 입을 벌림이 찢고 부르짖는 사자 같으니이다"
+      ],
+      "raw_text_hashes": [
+        "23bf5486d15f4f6c77eba1bd8a15d9598cc235216c724aaf343c8ef973e1c801"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:22:14",
+      "sequence": 14219,
+      "chapter_label": "PSA 22",
+      "verse_label": "14",
+      "locator": {
+        "book": "PSA",
+        "chapter": 22,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 22,
+          "verse": 14
+        }
+      ],
+      "en": "I am poured out like water. All my bones are out of joint. My heart is like wax. It is melted within me.",
+      "ko": "나는 물같이 쏟아졌으며 내 모든 뼈는 어그러졌으며 내 마음은 촛밀 같아서 내 속에서 녹았으며",
+      "source_text_hash": "95d91ee65793665e89b43dea6a01fd632d9527ff6bc7d62572ad6bc8115886c4",
+      "translation_text_hash": "658616a6cf9c5ab4d1acdc8b06963d84d38767f9c19321e0bac7a8ed8588f9dd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 물같이 쏟아졌으며 내 모든 뼈는 어그러졌으며 내 마음은 촛밀 같아서 내 속에서 녹았으며"
+      ],
+      "raw_text_hashes": [
+        "658616a6cf9c5ab4d1acdc8b06963d84d38767f9c19321e0bac7a8ed8588f9dd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:22:15",
+      "sequence": 14220,
+      "chapter_label": "PSA 22",
+      "verse_label": "15",
+      "locator": {
+        "book": "PSA",
+        "chapter": 22,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 22,
+          "verse": 15
+        }
+      ],
+      "en": "My strength is dried up like a potsherd. My tongue sticks to the roof of my mouth. You have brought me into the dust of death.",
+      "ko": "내 힘이 말라 질그릇 조각 같고 내 혀가 잇틀에 붙었나이다 주께서 또 나를 사망의 진토에 두셨나이다",
+      "source_text_hash": "1839e656d8ea534d79a6ac9d34fb5651835afe478f43afe156e1663e930c1990",
+      "translation_text_hash": "0d649f5fa655a12bce71a361a8719d9c77b1106cc9b362f96ee4b5200f68117e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 힘이 말라 질그릇 조각 같고 내 혀가 잇틀에 붙었나이다 주께서 또 나를 사망의 진토에 두셨나이다"
+      ],
+      "raw_text_hashes": [
+        "0d649f5fa655a12bce71a361a8719d9c77b1106cc9b362f96ee4b5200f68117e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:22:16",
+      "sequence": 14221,
+      "chapter_label": "PSA 22",
+      "verse_label": "16",
+      "locator": {
+        "book": "PSA",
+        "chapter": 22,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 22,
+          "verse": 16
+        }
+      ],
+      "en": "For dogs have surrounded me. A company of evildoers have enclosed me. They have pierced my hands and feet.",
+      "ko": "개들이 나를 에워쌌으며 악한 무리가 나를 둘러 내 수족을 찔렀나이다",
+      "source_text_hash": "09fb0a6263555f84daea71dbcc8fbba724ac421a730432168b79ffda201c10a0",
+      "translation_text_hash": "847908c622ec81b8e4da6ae55532f71a2b84639502b191d7f6c8f91a3e4ddb5d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "개들이 나를 에워쌌으며 악한 무리가 나를 둘러 내 수족을 찔렀나이다"
+      ],
+      "raw_text_hashes": [
+        "847908c622ec81b8e4da6ae55532f71a2b84639502b191d7f6c8f91a3e4ddb5d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:22:17",
+      "sequence": 14222,
+      "chapter_label": "PSA 22",
+      "verse_label": "17",
+      "locator": {
+        "book": "PSA",
+        "chapter": 22,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 22,
+          "verse": 17
+        }
+      ],
+      "en": "I can count all of my bones. They look and stare at me.",
+      "ko": "내가 내 모든 뼈를 셀 수 있나이다 저희가 나를 주목하여 보고",
+      "source_text_hash": "b6b295c138a9c41bf958242165f484b117528d12515a876fca5e529fb80de101",
+      "translation_text_hash": "6097e738063dbba2f58a91046746fafbbd8f1457f521588f62052e793bfb2b87",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 내 모든 뼈를 셀 수 있나이다 저희가 나를 주목하여 보고"
+      ],
+      "raw_text_hashes": [
+        "6097e738063dbba2f58a91046746fafbbd8f1457f521588f62052e793bfb2b87"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:22:18",
+      "sequence": 14223,
+      "chapter_label": "PSA 22",
+      "verse_label": "18",
+      "locator": {
+        "book": "PSA",
+        "chapter": 22,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 22,
+          "verse": 18
+        }
+      ],
+      "en": "They divide my garments among them. They cast lots for my clothing.",
+      "ko": "내 겉옷을 나누며 속옷을 제비 뽑나이다",
+      "source_text_hash": "2693f7937bd6da209298f6944de33ca914e1eab01d5f7a06c8c954b338d304a9",
+      "translation_text_hash": "7815d55959ba8a25d6189af144eaeb72fab559209200aff1f71432be72c07589",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 겉옷을 나누며 속옷을 제비 뽑나이다"
+      ],
+      "raw_text_hashes": [
+        "7815d55959ba8a25d6189af144eaeb72fab559209200aff1f71432be72c07589"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:22:19",
+      "sequence": 14224,
+      "chapter_label": "PSA 22",
+      "verse_label": "19",
+      "locator": {
+        "book": "PSA",
+        "chapter": 22,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 22,
+          "verse": 19
+        }
+      ],
+      "en": "But don’t be far off, LORD. You are my help. Hurry to help me!",
+      "ko": "여호와여 멀리하지 마옵소서 나의 힘이시여 속히 나를 도우소서",
+      "source_text_hash": "724615856bbbc78d33698a8f064efbffffc3e52c1a16f00f9ddd91d70686502a",
+      "translation_text_hash": "c15f230a461a83b873232dfe674fccb1c71f0d0cb7fb8ba0568cb7b8864cbf8c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 멀리하지 마옵소서 나의 힘이시여 속히 나를 도우소서"
+      ],
+      "raw_text_hashes": [
+        "c15f230a461a83b873232dfe674fccb1c71f0d0cb7fb8ba0568cb7b8864cbf8c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:22:20",
+      "sequence": 14225,
+      "chapter_label": "PSA 22",
+      "verse_label": "20",
+      "locator": {
+        "book": "PSA",
+        "chapter": 22,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 22,
+          "verse": 20
+        }
+      ],
+      "en": "Deliver my soul from the sword, my precious life from the power of the dog.",
+      "ko": "내 영혼을 칼에서 건지시며 내 유일한 것을 개의 세력에서 구하소서",
+      "source_text_hash": "1e70e6c09edeaef8a00b932b4e0c5e3a77e3af08e2aa47b7a1e77986b16a26de",
+      "translation_text_hash": "6908188888ba63b8d18908811dca6ddd4fef11f6c3c22d1b61683aeb71aa0cdb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 영혼을 칼에서 건지시며 내 유일한 것을 개의 세력에서 구하소서"
+      ],
+      "raw_text_hashes": [
+        "6908188888ba63b8d18908811dca6ddd4fef11f6c3c22d1b61683aeb71aa0cdb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:22:21",
+      "sequence": 14226,
+      "chapter_label": "PSA 22",
+      "verse_label": "21",
+      "locator": {
+        "book": "PSA",
+        "chapter": 22,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 22,
+          "verse": 21
+        }
+      ],
+      "en": "Save me from the lion’s mouth! Yes, you have rescued me from the horns of the wild oxen.",
+      "ko": "나를 사자 입에서 구하소서 주께서 내게 응락하시고 들소 뿔에서 구원하셨나이다",
+      "source_text_hash": "3cb9f335ad7cb5dca356bdecb7df5466e4699ac530a37255de17c81c2a6cca04",
+      "translation_text_hash": "91ddca8a7a8bdfafd351aa0ee5278e08754bf9977d9baf11fd3f0eb5f7e7cd16",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나를 사자 입에서 구하소서 주께서 내게 응락하시고 들소 뿔에서 구원하셨나이다"
+      ],
+      "raw_text_hashes": [
+        "91ddca8a7a8bdfafd351aa0ee5278e08754bf9977d9baf11fd3f0eb5f7e7cd16"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:22:22",
+      "sequence": 14227,
+      "chapter_label": "PSA 22",
+      "verse_label": "22",
+      "locator": {
+        "book": "PSA",
+        "chapter": 22,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 22,
+          "verse": 22
+        }
+      ],
+      "en": "I will declare your name to my brothers. Among the assembly, I will praise you.",
+      "ko": "내가 주의 이름을 형제에게 선포하고 회중에서 주를 찬송하리이다",
+      "source_text_hash": "60a7e94bcd689d4b3328c9b0da009551571912a495392e3b61d772443f155d1d",
+      "translation_text_hash": "5eee094405ce3da5d126b9545794829a58ef551a662884cdacb260868ea978dc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 주의 이름을 형제에게 선포하고 회중에서 주를 찬송하리이다"
+      ],
+      "raw_text_hashes": [
+        "5eee094405ce3da5d126b9545794829a58ef551a662884cdacb260868ea978dc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:22:23",
+      "sequence": 14228,
+      "chapter_label": "PSA 22",
+      "verse_label": "23",
+      "locator": {
+        "book": "PSA",
+        "chapter": 22,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 22,
+          "verse": 23
+        }
+      ],
+      "en": "You who fear the LORD, praise him! All you descendants of Jacob, glorify him! Stand in awe of him, all you descendants of Israel!",
+      "ko": "여호와를 두려워하는 너희여 그를 찬송할찌어다 야곱의 모든 자손이여 그에게 영광을 돌릴찌어다 너희 이스라엘 모든 자손이여 그를 경외할찌어다",
+      "source_text_hash": "09a378ed49930987516599c69c662bd9880ee4a47ed9ce6cb4fced124c8787bf",
+      "translation_text_hash": "2a69198c2a4c3258400a2c6a569c74f036775a3499e6b06d62785288aa6b84ab",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와를 두려워하는 너희여 그를 찬송할찌어다 야곱의 모든 자손이여 그에게 영광을 돌릴찌어다 너희 이스라엘 모든 자손이여 그를 경외할찌어다"
+      ],
+      "raw_text_hashes": [
+        "2a69198c2a4c3258400a2c6a569c74f036775a3499e6b06d62785288aa6b84ab"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:22:24",
+      "sequence": 14229,
+      "chapter_label": "PSA 22",
+      "verse_label": "24",
+      "locator": {
+        "book": "PSA",
+        "chapter": 22,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 22,
+          "verse": 24
+        }
+      ],
+      "en": "For he has not despised nor abhorred the affliction of the afflicted, neither has he hidden his face from him; but when he cried to him, he heard.",
+      "ko": "그는 곤고한 자의 곤고를 멸시하거나 싫어하지 아니하시며 그 얼굴을 저에게서 숨기지 아니하시고 부르짖을 때에 들으셨도다",
+      "source_text_hash": "c2616c4dc03039ed4bfc8fb70d723aba27729c48c9ed84486e9065f9ed6972b3",
+      "translation_text_hash": "65ee3322fb99fd295b8792d8d60ba7be9401d93c39c2f187ad853ae2201c5da6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그는 곤고한 자의 곤고를 멸시하거나 싫어하지 아니하시며 그 얼굴을 저에게서 숨기지 아니하시고 부르짖을 때에 들으셨도다"
+      ],
+      "raw_text_hashes": [
+        "65ee3322fb99fd295b8792d8d60ba7be9401d93c39c2f187ad853ae2201c5da6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:22:25",
+      "sequence": 14230,
+      "chapter_label": "PSA 22",
+      "verse_label": "25",
+      "locator": {
+        "book": "PSA",
+        "chapter": 22,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 22,
+          "verse": 25
+        }
+      ],
+      "en": "My praise of you comes in the great assembly. I will pay my vows before those who fear him.",
+      "ko": "대회 중에 나의 찬송은 주께로서 온 것이니 주를 경외하는 자 앞에서 나의 서원을 갚으리이다",
+      "source_text_hash": "b2ade39f71bfcc8977f0f967113094746bc5c6fcc296144bd04ef9f85e12c91a",
+      "translation_text_hash": "b6a5df8d23b32142b07e566aaabe9b135787b03e3dff908ebc402d7c89749633",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대회 중에 나의 찬송은 주께로서 온 것이니 주를 경외하는 자 앞에서 나의 서원을 갚으리이다"
+      ],
+      "raw_text_hashes": [
+        "b6a5df8d23b32142b07e566aaabe9b135787b03e3dff908ebc402d7c89749633"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:22:26",
+      "sequence": 14231,
+      "chapter_label": "PSA 22",
+      "verse_label": "26",
+      "locator": {
+        "book": "PSA",
+        "chapter": 22,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 22,
+          "verse": 26
+        }
+      ],
+      "en": "The humble shall eat and be satisfied. They shall praise the LORD who seek after him. Let your hearts live forever.",
+      "ko": "겸손한 자는 먹고 배부를 것이며 여호와를 찾는 자는 그를 찬송할 것이라 너희 마음은 영원히 살찌어다",
+      "source_text_hash": "1e7d7f21ece6c5899a2fbec73af0b1f8ffb44235c950eb30953428ce1f4ce88c",
+      "translation_text_hash": "5728fa774783e57f5af042873a2d5eca796ba49a599f19f91dd81f9f6aeb3a22",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "겸손한 자는 먹고 배부를 것이며 여호와를 찾는 자는 그를 찬송할 것이라 너희 마음은 영원히 살찌어다"
+      ],
+      "raw_text_hashes": [
+        "5728fa774783e57f5af042873a2d5eca796ba49a599f19f91dd81f9f6aeb3a22"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:22:27",
+      "sequence": 14232,
+      "chapter_label": "PSA 22",
+      "verse_label": "27",
+      "locator": {
+        "book": "PSA",
+        "chapter": 22,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 22,
+          "verse": 27
+        }
+      ],
+      "en": "All the ends of the earth shall remember and turn to the LORD. All the relatives of the nations shall worship before you.",
+      "ko": "땅의 모든 끝이 여호와를 기억하고 돌아오며 열방의 모든 족속이 주의 앞에 경배하리니",
+      "source_text_hash": "185eec4a07ec38011f91404188bd33e0eddb147a1da987a36286aeaa2aabeb99",
+      "translation_text_hash": "5827056d727371442cc5ee4802206b3d9ba19c37fb6cfecea6da8844ccbe556b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "땅의 모든 끝이 여호와를 기억하고 돌아오며 열방의 모든 족속이 주의 앞에 경배하리니"
+      ],
+      "raw_text_hashes": [
+        "5827056d727371442cc5ee4802206b3d9ba19c37fb6cfecea6da8844ccbe556b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:22:28",
+      "sequence": 14233,
+      "chapter_label": "PSA 22",
+      "verse_label": "28",
+      "locator": {
+        "book": "PSA",
+        "chapter": 22,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 22,
+          "verse": 28
+        }
+      ],
+      "en": "For the kingdom is the LORD’s. He is the ruler over the nations.",
+      "ko": "나라는 여호와의 것이요 여호와는 열방의 주재심이로다",
+      "source_text_hash": "de6a427d03cc6ae4d9bb2500022b3378c4595ad4e9a5571efcdd3d2c195981f0",
+      "translation_text_hash": "bf2ebfdb775097f17a846eca5b13c405e8e74ca7b856e23266ebc73b4d1b6fe8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나라는 여호와의 것이요 여호와는 열방의 주재심이로다"
+      ],
+      "raw_text_hashes": [
+        "bf2ebfdb775097f17a846eca5b13c405e8e74ca7b856e23266ebc73b4d1b6fe8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:22:29",
+      "sequence": 14234,
+      "chapter_label": "PSA 22",
+      "verse_label": "29",
+      "locator": {
+        "book": "PSA",
+        "chapter": 22,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 22,
+          "verse": 29
+        }
+      ],
+      "en": "All the rich ones of the earth shall eat and worship. All those who go down to the dust shall bow before him, even he who can’t keep his soul alive.",
+      "ko": "세상의 모든 풍비한 자가 먹고 경배할 것이요 진토에 내려가는 자 곧 자기 영혼을 살리지 못할 자도 다 그 앞에 절하리로다",
+      "source_text_hash": "a4181a43501d1e21cea645b59cdbcd23108fea62a646149854c37ea505e140b8",
+      "translation_text_hash": "f3f94183001e8745c2517e5a637a9562ac9895f821c8d00b7eada5a68e9ef935",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "세상의 모든 풍비한 자가 먹고 경배할 것이요 진토에 내려가는 자 곧 자기 영혼을 살리지 못할 자도 다 그 앞에 절하리로다"
+      ],
+      "raw_text_hashes": [
+        "f3f94183001e8745c2517e5a637a9562ac9895f821c8d00b7eada5a68e9ef935"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:22:30",
+      "sequence": 14235,
+      "chapter_label": "PSA 22",
+      "verse_label": "30",
+      "locator": {
+        "book": "PSA",
+        "chapter": 22,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 22,
+          "verse": 30
+        }
+      ],
+      "en": "Posterity shall serve him. Future generations shall be told about the Lord.",
+      "ko": "후손이 그를 봉사할 것이요 대대에 주를 전할 것이며",
+      "source_text_hash": "249fbf64014ca5cc07a4842f0f8edb9a893a88378e26217293100af72a714521",
+      "translation_text_hash": "2dbe780fa8acc27cdcb4299fd976af0dcf6cc5ef6c0b3c06b305280b6728dc46",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "후손이 그를 봉사할 것이요 대대에 주를 전할 것이며"
+      ],
+      "raw_text_hashes": [
+        "2dbe780fa8acc27cdcb4299fd976af0dcf6cc5ef6c0b3c06b305280b6728dc46"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:22:31",
+      "sequence": 14236,
+      "chapter_label": "PSA 22",
+      "verse_label": "31",
+      "locator": {
+        "book": "PSA",
+        "chapter": 22,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 22,
+          "verse": 31
+        }
+      ],
+      "en": "They shall come and shall declare his righteousness to a people that shall be born, for he has done it.",
+      "ko": "와서 그 공의를 장차 날 백성에게 전함이여 주께서 이를 행하셨다 할 것이로다",
+      "source_text_hash": "f18dbc3cf0d75278b80c785cd2cb0686a489883ec7cc0bc8f266f10ef8026de8",
+      "translation_text_hash": "f507b5edd54a5ebaca1497eef75a18a0f045dc961d268acdeec00be64d346640",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "와서 그 공의를 장차 날 백성에게 전함이여 주께서 이를 행하셨다 할 것이로다"
+      ],
+      "raw_text_hashes": [
+        "f507b5edd54a5ebaca1497eef75a18a0f045dc961d268acdeec00be64d346640"
+      ]
+    }
+  ]
+}

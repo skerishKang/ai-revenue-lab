@@ -1,0 +1,813 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ISA:chapter:019",
+  "unit_ordinal": 698,
+  "unit_label": "ISA 19",
+  "book_code": "ISA",
+  "chapter_number": 19,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ISA:19:1",
+      "sequence": 18006,
+      "chapter_label": "ISA 19",
+      "verse_label": "1",
+      "locator": {
+        "book": "ISA",
+        "chapter": 19,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 19,
+          "verse": 1
+        }
+      ],
+      "en": "The burden of Egypt. “Behold, the LORD rides on a swift cloud, and comes to Egypt. The idols of Egypt will tremble at his presence; and the heart of Egypt will melt within it.",
+      "ko": "애굽에 관한 경고라 보라 여호와께서 빠른 구름을 타고 애굽에 임하시리니 애굽의 우상들이 그 앞에서 떨겠고 애굽인의 마음이 그 속에서 녹으리로다",
+      "source_text_hash": "9ea0f7129590013b08ca6404646ad462ae6ebd328bbb0ed9bd53994574382097",
+      "translation_text_hash": "af613f2d77222876c26aa971d94303f5aafa1d0714f2ee6f633d1dcae59ee56b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "애굽에 관한 경고라 보라 여호와께서 빠른 구름을 타고 애굽에 임하시리니 애굽의 우상들이 그 앞에서 떨겠고 애굽인의 마음이 그 속에서 녹으리로다"
+      ],
+      "raw_text_hashes": [
+        "af613f2d77222876c26aa971d94303f5aafa1d0714f2ee6f633d1dcae59ee56b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:19:2",
+      "sequence": 18007,
+      "chapter_label": "ISA 19",
+      "verse_label": "2",
+      "locator": {
+        "book": "ISA",
+        "chapter": 19,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 19,
+          "verse": 2
+        }
+      ],
+      "en": "I will stir up the Egyptians against the Egyptians, and they will fight everyone against his brother, and everyone against his neighbor; city against city, and kingdom against kingdom.",
+      "ko": "그가 애굽인을 격동하사 애굽인을 치게 하시리니 그들이 각기 형제를 치며 각기 이웃을 칠 것이요 성읍이 성읍을 치며 나라가 나라를 칠 것이며",
+      "source_text_hash": "af48578bd6ee68583ad2b2efe83c60bf3f98e89209076eb7ec9d0825ac100ea8",
+      "translation_text_hash": "65607ed78137233e1bb6af9b929b3d44a1bc04562f3d5eb081ef96c9010a873e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 애굽인을 격동하사 애굽인을 치게 하시리니 그들이 각기 형제를 치며 각기 이웃을 칠 것이요 성읍이 성읍을 치며 나라가 나라를 칠 것이며"
+      ],
+      "raw_text_hashes": [
+        "65607ed78137233e1bb6af9b929b3d44a1bc04562f3d5eb081ef96c9010a873e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:19:3",
+      "sequence": 18008,
+      "chapter_label": "ISA 19",
+      "verse_label": "3",
+      "locator": {
+        "book": "ISA",
+        "chapter": 19,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 19,
+          "verse": 3
+        }
+      ],
+      "en": "The spirit of the Egyptians will fail within them. I will destroy their counsel. They will seek the idols, the charmers, those who have familiar spirits, and the wizards.",
+      "ko": "애굽인의 정신이 그 속에서 쇠약할 것이요 그 도모는 그의 파하신바가 되리니 그들이 우상과 마술사와 신접한 자와 요술객에게 물으리로다",
+      "source_text_hash": "62e21521480a105c176b45c4043b40dfc407b32a16b8aeb96e28fab428b0ea5f",
+      "translation_text_hash": "c27573376ab32b9595b99fca12ebbc8971cdc02638d8e6236657963695c14ab6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "애굽인의 정신이 그 속에서 쇠약할 것이요 그 도모는 그의 파하신바가 되리니 그들이 우상과 마술사와 신접한 자와 요술객에게 물으리로다"
+      ],
+      "raw_text_hashes": [
+        "c27573376ab32b9595b99fca12ebbc8971cdc02638d8e6236657963695c14ab6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:19:4",
+      "sequence": 18009,
+      "chapter_label": "ISA 19",
+      "verse_label": "4",
+      "locator": {
+        "book": "ISA",
+        "chapter": 19,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 19,
+          "verse": 4
+        }
+      ],
+      "en": "I will give over the Egyptians into the hand of a cruel lord. A fierce king will rule over them,” says the Lord, GOD of Armies.",
+      "ko": "그가 애굽인을 잔인한 군주의 손에 붙이시리니 포학한 왕이 그들을 치리하리라 주 만군의 여호와의 말씀이니라",
+      "source_text_hash": "d19591360befeec188de0742253cfb760b6cff3e093780c92d208f70bef49d08",
+      "translation_text_hash": "c002e8338ccc75f75a6c5557fe7c77ffd7450e87730d73c35b3790d92573f0fa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 애굽인을 잔인한 군주의 손에 붙이시리니 포학한 왕이 그들을 치리하리라 주 만군의 여호와의 말씀이니라"
+      ],
+      "raw_text_hashes": [
+        "c002e8338ccc75f75a6c5557fe7c77ffd7450e87730d73c35b3790d92573f0fa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:19:5",
+      "sequence": 18010,
+      "chapter_label": "ISA 19",
+      "verse_label": "5",
+      "locator": {
+        "book": "ISA",
+        "chapter": 19,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 19,
+          "verse": 5
+        }
+      ],
+      "en": "The waters will fail from the sea, and the river will be wasted and become dry.",
+      "ko": "바닷물이 없어지겠고 강이 잦아서 마르겠고",
+      "source_text_hash": "81c6fb6882d377732af1d2d8e6ae03e4a6b3fbf97678d8c44e8ce50dec559b1a",
+      "translation_text_hash": "0498387358a190de864c13639461f6e976eeda8b49acc8fe2788842a5355c2d6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바닷물이 없어지겠고 강이 잦아서 마르겠고"
+      ],
+      "raw_text_hashes": [
+        "0498387358a190de864c13639461f6e976eeda8b49acc8fe2788842a5355c2d6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:19:6",
+      "sequence": 18011,
+      "chapter_label": "ISA 19",
+      "verse_label": "6",
+      "locator": {
+        "book": "ISA",
+        "chapter": 19,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 19,
+          "verse": 6
+        }
+      ],
+      "en": "The rivers will become foul. The streams of Egypt will be diminished and dried up. The reeds and flags will wither away.",
+      "ko": "강들에서는 악취가 나겠고 애굽 시냇물은 줄어들고 마르므로 달과 갈이 시들겠으며",
+      "source_text_hash": "574a0cd351a469b60c2ff69c5cec9f5c25e33f8be12b69ba21ce4d55c41c53b1",
+      "translation_text_hash": "921017b2e2d29a7eb3338fc7c2f522578916c114b0658d92315f61bea68bb20e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "강들에서는 악취가 나겠고 애굽 시냇물은 줄어들고 마르므로 달과 갈이 시들겠으며"
+      ],
+      "raw_text_hashes": [
+        "921017b2e2d29a7eb3338fc7c2f522578916c114b0658d92315f61bea68bb20e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:19:7",
+      "sequence": 18012,
+      "chapter_label": "ISA 19",
+      "verse_label": "7",
+      "locator": {
+        "book": "ISA",
+        "chapter": 19,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 19,
+          "verse": 7
+        }
+      ],
+      "en": "The meadows by the Nile, by the brink of the Nile, and all the sown fields of the Nile, will become dry, be driven away, and be no more.",
+      "ko": "나일 가까운 곳 나일 언덕의 초장과 나일강 가까운 곡식 밭이 다 말라서 날아 없어질 것이며",
+      "source_text_hash": "04f409db5cc981e7204938a2a510cc8292fbc6a206f51aba2af08813e8b71f4a",
+      "translation_text_hash": "7560c175f99f84e68c17b8b7fac64c1fd5cf3f4bb3e4d555ef43e53327e427a4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나일 가까운 곳 나일 언덕의 초장과 나일강 가까운 곡식 밭이 다 말라서 날아 없어질 것이며"
+      ],
+      "raw_text_hashes": [
+        "7560c175f99f84e68c17b8b7fac64c1fd5cf3f4bb3e4d555ef43e53327e427a4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:19:8",
+      "sequence": 18013,
+      "chapter_label": "ISA 19",
+      "verse_label": "8",
+      "locator": {
+        "book": "ISA",
+        "chapter": 19,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 19,
+          "verse": 8
+        }
+      ],
+      "en": "The fishermen will lament, and all those who fish in the Nile will mourn, and those who spread nets on the waters will languish.",
+      "ko": "어부들은 탄식하며 무릇 나일강에 낚시를 던지는 자는 슬퍼하며 물에 그물을 치는 자는 피곤할 것이며",
+      "source_text_hash": "cd9f52ecc71dc5e26acf675aa1a97d5e26869d3b01601ace62ccccc1041fe682",
+      "translation_text_hash": "24f0d0841948802b75cd9401b7e0eebd7138f477daad308f8f4c39ae59eeadca",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어부들은 탄식하며 무릇 나일강에 낚시를 던지는 자는 슬퍼하며 물에 그물을 치는 자는 피곤할 것이며"
+      ],
+      "raw_text_hashes": [
+        "24f0d0841948802b75cd9401b7e0eebd7138f477daad308f8f4c39ae59eeadca"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:19:9",
+      "sequence": 18014,
+      "chapter_label": "ISA 19",
+      "verse_label": "9",
+      "locator": {
+        "book": "ISA",
+        "chapter": 19,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 19,
+          "verse": 9
+        }
+      ],
+      "en": "Moreover those who work in combed flax, and those who weave white cloth, will be confounded.",
+      "ko": "세마포를 만드는 자와 백목을 짜는 자들이 수치를 당할 것이며",
+      "source_text_hash": "1651386f7e45c6648f4c66ca852874bd942233d0803b0d35e99caf7b9778008e",
+      "translation_text_hash": "a3fa571bff79821674dac8580f4764372a13616eb653cf39ae8d450bd85c83f8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "세마포를 만드는 자와 백목을 짜는 자들이 수치를 당할 것이며"
+      ],
+      "raw_text_hashes": [
+        "a3fa571bff79821674dac8580f4764372a13616eb653cf39ae8d450bd85c83f8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:19:10",
+      "sequence": 18015,
+      "chapter_label": "ISA 19",
+      "verse_label": "10",
+      "locator": {
+        "book": "ISA",
+        "chapter": 19,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 19,
+          "verse": 10
+        }
+      ],
+      "en": "The pillars will be broken in pieces. All those who work for hire will be grieved in soul.",
+      "ko": "애굽의 기둥이 부숴지고 품군들이 다 마음에 근심하리라",
+      "source_text_hash": "8066709411c2ac7d338877f3e1e8506db0dc536754aaec5599faa189ded26fd3",
+      "translation_text_hash": "f55fbdf9469ff288932e0414812485a5e8898c36f5db6146f89e7d5bd0112825",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "애굽의 기둥이 부숴지고 품군들이 다 마음에 근심하리라"
+      ],
+      "raw_text_hashes": [
+        "f55fbdf9469ff288932e0414812485a5e8898c36f5db6146f89e7d5bd0112825"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:19:11",
+      "sequence": 18016,
+      "chapter_label": "ISA 19",
+      "verse_label": "11",
+      "locator": {
+        "book": "ISA",
+        "chapter": 19,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 19,
+          "verse": 11
+        }
+      ],
+      "en": "The princes of Zoan are utterly foolish. The counsel of the wisest counselors of Pharaoh has become stupid. How do you say to Pharaoh, “I am the son of the wise, the son of ancient kings”?",
+      "ko": "소안의 방백은 지극히 어리석었고 바로의 가장 지혜로운 모사의 모략은 우준하여졌으니 너희가 어떻게 바로에게 이르기를 나는 지혜로운 자들의 자손이라 나는 옛 왕들의 후예라 할수 있으랴",
+      "source_text_hash": "91fbfaf8067f07cb82b15ed133c45d22ed4aa1ebe94f2d732cdb45b23c37ad8a",
+      "translation_text_hash": "175b75ce313a0faab4f7488fbc35ba63a71a98e5044b45888d7bdaa7bdc3b8c6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "소안의 방백은 지극히 어리석었고 바로의 가장 지혜로운 모사의 모략은 우준하여졌으니 너희가 어떻게 바로에게 이르기를 나는 지혜로운 자들의 자손이라 나는 옛 왕들의 후예라 할수 있으랴"
+      ],
+      "raw_text_hashes": [
+        "175b75ce313a0faab4f7488fbc35ba63a71a98e5044b45888d7bdaa7bdc3b8c6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:19:12",
+      "sequence": 18017,
+      "chapter_label": "ISA 19",
+      "verse_label": "12",
+      "locator": {
+        "book": "ISA",
+        "chapter": 19,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 19,
+          "verse": 12
+        }
+      ],
+      "en": "Where then are your wise men? Let them tell you now; and let them know what the LORD of Armies has purposed concerning Egypt.",
+      "ko": "너의 지혜로운 자가 어디 있느냐 그들이 만군의 여호와께서 애굽에 대하여 정하신 뜻을 알 것이요 곧 네게 고할 것이니라",
+      "source_text_hash": "0ddfd66bf95a8fc7796401f17b2cb69cb9c2c11795fa228157d2024318c0f97f",
+      "translation_text_hash": "9997bafd6fa4436d27f06f9f53f988fb4d32d83c898aa85257e7c336f081d002",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너의 지혜로운 자가 어디 있느냐 그들이 만군의 여호와께서 애굽에 대하여 정하신 뜻을 알 것이요 곧 네게 고할 것이니라"
+      ],
+      "raw_text_hashes": [
+        "9997bafd6fa4436d27f06f9f53f988fb4d32d83c898aa85257e7c336f081d002"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:19:13",
+      "sequence": 18018,
+      "chapter_label": "ISA 19",
+      "verse_label": "13",
+      "locator": {
+        "book": "ISA",
+        "chapter": 19,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 19,
+          "verse": 13
+        }
+      ],
+      "en": "The princes of Zoan have become fools. The princes of Memphis are deceived. They have caused Egypt to go astray, those who are the cornerstone of her tribes.",
+      "ko": "소안의 방백들은 어리석었고 놉의 방백들은 미혹되었도다 그들은 애굽 지파들의 모퉁이 돌이어늘 애굽으로 그릇가게 하였도다",
+      "source_text_hash": "f908ea95deab807a1959ce513d56290f29136770df9fab4fdf4675da19aa96ee",
+      "translation_text_hash": "732a43f8fce901d4afe74853584a7dfe0088b4f6c3f4a340704f8c5206e5b70a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "소안의 방백들은 어리석었고 놉의 방백들은 미혹되었도다 그들은 애굽 지파들의 모퉁이 돌이어늘 애굽으로 그릇가게 하였도다"
+      ],
+      "raw_text_hashes": [
+        "732a43f8fce901d4afe74853584a7dfe0088b4f6c3f4a340704f8c5206e5b70a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:19:14",
+      "sequence": 18019,
+      "chapter_label": "ISA 19",
+      "verse_label": "14",
+      "locator": {
+        "book": "ISA",
+        "chapter": 19,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 19,
+          "verse": 14
+        }
+      ],
+      "en": "The LORD has mixed a spirit of perverseness in the middle of her; and they have caused Egypt to go astray in all of its works, like a drunken man staggers in his vomit.",
+      "ko": "여호와께서 그 가운데 사특한 마음을 섞으셨으므로 그들이 애굽으로 매사에 잘못 가게 함이 취한 자가 토하면서 비틀거림 같게 하였으니",
+      "source_text_hash": "81d81c4f2ea83b5fc47ddd5056d7b692c19256b76d8ccfdcf26542f52650e77a",
+      "translation_text_hash": "dea4372a085910722576ac150c065d1c13fa508f5d19285818e9e5d01062a6af",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 그 가운데 사특한 마음을 섞으셨으므로 그들이 애굽으로 매사에 잘못 가게 함이 취한 자가 토하면서 비틀거림 같게 하였으니"
+      ],
+      "raw_text_hashes": [
+        "dea4372a085910722576ac150c065d1c13fa508f5d19285818e9e5d01062a6af"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:19:15",
+      "sequence": 18020,
+      "chapter_label": "ISA 19",
+      "verse_label": "15",
+      "locator": {
+        "book": "ISA",
+        "chapter": 19,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 19,
+          "verse": 15
+        }
+      ],
+      "en": "Neither shall there be any work for Egypt, which head or tail, palm branch or rush, may do.",
+      "ko": "애굽에서 머리나 꼬리나 종려나무 가지나 갈대나 아무 할 일이 없으리라",
+      "source_text_hash": "efc1ac4abda74af01423a158e4acaf29923cb983858d170473f74a063fbfb69d",
+      "translation_text_hash": "e73ac5357534d4cb2614659fac3b62d48deae39e3df19379af27336328de076f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "애굽에서 머리나 꼬리나 종려나무 가지나 갈대나 아무 할 일이 없으리라"
+      ],
+      "raw_text_hashes": [
+        "e73ac5357534d4cb2614659fac3b62d48deae39e3df19379af27336328de076f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:19:16",
+      "sequence": 18021,
+      "chapter_label": "ISA 19",
+      "verse_label": "16",
+      "locator": {
+        "book": "ISA",
+        "chapter": 19,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 19,
+          "verse": 16
+        }
+      ],
+      "en": "In that day the Egyptians will be like women. They will tremble and fear because of the shaking of the LORD of Armies’s hand, which he shakes over them.",
+      "ko": "그 날에 애굽인이 부녀와 같을 것이라 그들이 만군의 여호와의 흔드시는 손이 그 위에 흔들림을 인하여 떨며 두려워할 것이며",
+      "source_text_hash": "2eaceb337fa6c781e6de5424cc5a3ef674f9e25ad0d9bae57bb7f92fcb02f3ea",
+      "translation_text_hash": "f1320f15cfc901ac69102ac5e96675934ee8ce3182b41124ae41849a44c336e5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날에 애굽인이 부녀와 같을 것이라 그들이 만군의 여호와의 흔드시는 손이 그 위에 흔들림을 인하여 떨며 두려워할 것이며"
+      ],
+      "raw_text_hashes": [
+        "f1320f15cfc901ac69102ac5e96675934ee8ce3182b41124ae41849a44c336e5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:19:17",
+      "sequence": 18022,
+      "chapter_label": "ISA 19",
+      "verse_label": "17",
+      "locator": {
+        "book": "ISA",
+        "chapter": 19,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 19,
+          "verse": 17
+        }
+      ],
+      "en": "The land of Judah will become a terror to Egypt. Everyone to whom mention is made of it will be afraid, because of the plans of the LORD of Armies, which he determines against it.",
+      "ko": "유다의 땅은 애굽의 두려움이 되리니 이는 만군의 여호와께서 애굽에 대하여 정하신 모략을 인함이라 그 소문을 듣는 자마다 떨리라",
+      "source_text_hash": "e1b29599065a1148d0f7d86d1e146d7747257722178ab0a74cb06e3e174cf55a",
+      "translation_text_hash": "5f612c629e85d8d2f3d122ecbeaa6c994e43dd97edfab79678ade13f4e13bceb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다의 땅은 애굽의 두려움이 되리니 이는 만군의 여호와께서 애굽에 대하여 정하신 모략을 인함이라 그 소문을 듣는 자마다 떨리라"
+      ],
+      "raw_text_hashes": [
+        "5f612c629e85d8d2f3d122ecbeaa6c994e43dd97edfab79678ade13f4e13bceb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:19:18",
+      "sequence": 18023,
+      "chapter_label": "ISA 19",
+      "verse_label": "18",
+      "locator": {
+        "book": "ISA",
+        "chapter": 19,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 19,
+          "verse": 18
+        }
+      ],
+      "en": "In that day, there will be five cities in the land of Egypt that speak the language of Canaan, and swear to the LORD of Armies. One will be called “The city of destruction.”",
+      "ko": "그 날에 애굽 땅에 가나안 방언을 말하며 만군의 여호와를 가리켜 맹세하는 다섯 성읍이 있을 것이며 그 중 하나를 장망성이라 칭하리라",
+      "source_text_hash": "331debb5870bd0120336aa7d7bf8301a1ba56293be1f500cbbf087b06a33a49f",
+      "translation_text_hash": "e5094efefac106180e305236a2336cd6e0e5f0495a33f3007858ce880222ab2c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날에 애굽 땅에 가나안 방언을 말하며 만군의 여호와를 가리켜 맹세하는 다섯 성읍이 있을 것이며 그 중 하나를 장망성이라 칭하리라"
+      ],
+      "raw_text_hashes": [
+        "e5094efefac106180e305236a2336cd6e0e5f0495a33f3007858ce880222ab2c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:19:19",
+      "sequence": 18024,
+      "chapter_label": "ISA 19",
+      "verse_label": "19",
+      "locator": {
+        "book": "ISA",
+        "chapter": 19,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 19,
+          "verse": 19
+        }
+      ],
+      "en": "In that day, there will be an altar to the LORD in the middle of the land of Egypt, and a pillar to the LORD at its border.",
+      "ko": "그 날에 애굽 땅 중앙에는 여호와를 위하여 제단이 있겠고 그 변경에는 여호와를 위하여 기둥이 있을 것이요",
+      "source_text_hash": "3a69ae93a1440adacbf000c6f0aeab76d1c3c4b027272f1bac0f3de6d071d283",
+      "translation_text_hash": "5058a368d4b7320b5d1840e4ed0198302fd930904974bc08e5c46e60ed0a86b3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날에 애굽 땅 중앙에는 여호와를 위하여 제단이 있겠고 그 변경에는 여호와를 위하여 기둥이 있을 것이요"
+      ],
+      "raw_text_hashes": [
+        "5058a368d4b7320b5d1840e4ed0198302fd930904974bc08e5c46e60ed0a86b3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:19:20",
+      "sequence": 18025,
+      "chapter_label": "ISA 19",
+      "verse_label": "20",
+      "locator": {
+        "book": "ISA",
+        "chapter": 19,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 19,
+          "verse": 20
+        }
+      ],
+      "en": "It will be for a sign and for a witness to the LORD of Armies in the land of Egypt; for they will cry to the LORD because of oppressors, and he will send them a savior and a defender, and he will deliver them.",
+      "ko": "이것이 애굽 땅에서 만군의 여호와를 위하여 표적과 증거가 되리니 이는 그들이 그 압박하는 자의 연고로 여호와께 부르짖겠고 여호와께서는 한 구원자, 보호자를 보내사 그들을 건지실 것임이라",
+      "source_text_hash": "001bcfd9deaeedd11121568f0c6daa47108769cb50af6d122ff29f7b418dc5c9",
+      "translation_text_hash": "f2a83258c211f8d30673727f70415518ba6ec6c3c9a2d3c8a124c3cd4e9b8028",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이것이 애굽 땅에서 만군의 여호와를 위하여 표적과 증거가 되리니 이는 그들이 그 압박하는 자의 연고로 여호와께 부르짖겠고 여호와께서는 한 구원자, 보호자를 보내사 그들을 건지실 것임이라"
+      ],
+      "raw_text_hashes": [
+        "f2a83258c211f8d30673727f70415518ba6ec6c3c9a2d3c8a124c3cd4e9b8028"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:19:21",
+      "sequence": 18026,
+      "chapter_label": "ISA 19",
+      "verse_label": "21",
+      "locator": {
+        "book": "ISA",
+        "chapter": 19,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 19,
+          "verse": 21
+        }
+      ],
+      "en": "The LORD will be known to Egypt, and the Egyptians will know the LORD in that day. Yes, they will worship with sacrifice and offering, and will vow a vow to the LORD, and will perform it.",
+      "ko": "여호와께서 자기를 애굽에 알게 하시리니 그 날에 애굽인이 여호와를 알고 제물과 예물을 그에게 드리고 경배할 것이요 여호와께 서원하고 그대로 행하리라",
+      "source_text_hash": "a0d9f41dbc868f41c3bf0285e95d80934189c7edbd3cb93ea765ae6b88f927de",
+      "translation_text_hash": "89682fa970d211507768dde21ca6e2f68b27be3d9ad058c55579faf7ac33833b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 자기를 애굽에 알게 하시리니 그 날에 애굽인이 여호와를 알고 제물과 예물을 그에게 드리고 경배할 것이요 여호와께 서원하고 그대로 행하리라"
+      ],
+      "raw_text_hashes": [
+        "89682fa970d211507768dde21ca6e2f68b27be3d9ad058c55579faf7ac33833b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:19:22",
+      "sequence": 18027,
+      "chapter_label": "ISA 19",
+      "verse_label": "22",
+      "locator": {
+        "book": "ISA",
+        "chapter": 19,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 19,
+          "verse": 22
+        }
+      ],
+      "en": "The LORD will strike Egypt, striking and healing. They will return to the LORD, and he will be entreated by them, and will heal them.",
+      "ko": "여호와께서 애굽을 치실 것이라도 치시고는 고치실 것인고로 그들이 여호와께로 돌아올 것이라 여호와께서 그 간구함을 들으시고 그를 고쳐주시리라",
+      "source_text_hash": "59c3c44c680f0773b205d18317d47b4dc77b0c17d7f5a67c6d0e2c719b0dc4be",
+      "translation_text_hash": "4ac84779af5e6a9dfe3cc615a474941586e89fddcf77d6fcd7e41aaa65ddbd0b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 애굽을 치실 것이라도 치시고는 고치실 것인고로 그들이 여호와께로 돌아올 것이라 여호와께서 그 간구함을 들으시고 그를 고쳐주시리라"
+      ],
+      "raw_text_hashes": [
+        "4ac84779af5e6a9dfe3cc615a474941586e89fddcf77d6fcd7e41aaa65ddbd0b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:19:23",
+      "sequence": 18028,
+      "chapter_label": "ISA 19",
+      "verse_label": "23",
+      "locator": {
+        "book": "ISA",
+        "chapter": 19,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 19,
+          "verse": 23
+        }
+      ],
+      "en": "In that day there will be a highway out of Egypt to Assyria, and the Assyrian shall come into Egypt, and the Egyptian into Assyria; and the Egyptians will worship with the Assyrians.",
+      "ko": "그 날에 애굽에서 앗수르로 통하는 대로가 있어 앗수르 사람은 애굽으로 가겠고 애굽 사람은 앗수르로 갈 것이며 애굽 사람이 앗수르 사람과 함께 경배하리라",
+      "source_text_hash": "775db4e59daddbec0a3107c22af6a0eececee2baaa08eb85cdf2d2895c9576e6",
+      "translation_text_hash": "5457eb8f3237f575a606e5b06d346e52d28dc64035438b0923fc64454fe470f0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날에 애굽에서 앗수르로 통하는 대로가 있어 앗수르 사람은 애굽으로 가겠고 애굽 사람은 앗수르로 갈 것이며 애굽 사람이 앗수르 사람과 함께 경배하리라"
+      ],
+      "raw_text_hashes": [
+        "5457eb8f3237f575a606e5b06d346e52d28dc64035438b0923fc64454fe470f0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:19:24",
+      "sequence": 18029,
+      "chapter_label": "ISA 19",
+      "verse_label": "24",
+      "locator": {
+        "book": "ISA",
+        "chapter": 19,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 19,
+          "verse": 24
+        }
+      ],
+      "en": "In that day, Israel will be the third with Egypt and with Assyria, a blessing within the earth;",
+      "ko": "그 날에 이스라엘이 애굽과 앗수르로 더불어 셋이 세계 중에 복이 되리니",
+      "source_text_hash": "11d249549e639f09b5eb0c93cece8d85abe6f331b55355e6fc3828468262c4d6",
+      "translation_text_hash": "60ae16757d358ffb34a4c9cace529b1770658a1de6d156de874b852e4fa0671e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날에 이스라엘이 애굽과 앗수르로 더불어 셋이 세계 중에 복이 되리니"
+      ],
+      "raw_text_hashes": [
+        "60ae16757d358ffb34a4c9cace529b1770658a1de6d156de874b852e4fa0671e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:19:25",
+      "sequence": 18030,
+      "chapter_label": "ISA 19",
+      "verse_label": "25",
+      "locator": {
+        "book": "ISA",
+        "chapter": 19,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 19,
+          "verse": 25
+        }
+      ],
+      "en": "because the LORD of Armies has blessed them, saying, “Blessed be Egypt my people, Assyria the work of my hands, and Israel my inheritance.”",
+      "ko": "이는 만군의 여호와께서 복을 주어 가라사대 나의 백성 애굽이여, 나의 손으로 지은 앗수르여, 나의 산업 이스라엘이여, 복이 있을찌어다 하실 것임이니라",
+      "source_text_hash": "00eefdd9984f8e90b79c301df757f407b47d95837510507417d2e3ff3709ae2a",
+      "translation_text_hash": "f1b1babb4a303a7f84688db9ef1fe0a55d68a5d41a845291666cdb0d5d8faf25",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 만군의 여호와께서 복을 주어 가라사대 나의 백성 애굽이여, 나의 손으로 지은 앗수르여, 나의 산업 이스라엘이여, 복이 있을찌어다 하실 것임이니라"
+      ],
+      "raw_text_hashes": [
+        "f1b1babb4a303a7f84688db9ef1fe0a55d68a5d41a845291666cdb0d5d8faf25"
+      ]
+    }
+  ]
+}

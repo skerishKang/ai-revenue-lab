@@ -1,0 +1,909 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JOB:chapter:028",
+  "unit_ordinal": 464,
+  "unit_label": "JOB 28",
+  "book_code": "JOB",
+  "chapter_number": 28,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JOB:28:1",
+      "sequence": 13506,
+      "chapter_label": "JOB 28",
+      "verse_label": "1",
+      "locator": {
+        "book": "JOB",
+        "chapter": 28,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 28,
+          "verse": 1
+        }
+      ],
+      "en": "“Surely there is a mine for silver, and a place for gold which they refine.",
+      "ko": "은은 나는 광이 있고 연단하는 금은 나는 곳이 있으며",
+      "source_text_hash": "0c4d8c80358aa515736502e3444051a4be0efbb9e41b9572d26ead1461105fb2",
+      "translation_text_hash": "eaf5716cb9dc5bf417f5d34396a511ae3109c842a7d6a15e5732a2020efe6d13",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "은은 나는 광이 있고 연단하는 금은 나는 곳이 있으며"
+      ],
+      "raw_text_hashes": [
+        "eaf5716cb9dc5bf417f5d34396a511ae3109c842a7d6a15e5732a2020efe6d13"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:28:2",
+      "sequence": 13507,
+      "chapter_label": "JOB 28",
+      "verse_label": "2",
+      "locator": {
+        "book": "JOB",
+        "chapter": 28,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 28,
+          "verse": 2
+        }
+      ],
+      "en": "Iron is taken out of the earth, and copper is smelted out of the ore.",
+      "ko": "철은 흙에서 취하고 동은 돌에서 녹여 얻느니라",
+      "source_text_hash": "06f704877a41b065598f4ce49ae2ed366dcc3c101009a5f54ab92959ded1b98b",
+      "translation_text_hash": "8b8e4ce22ec0f0b1c383839a7604272e5d569a6cd71598c625a630240e984733",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "철은 흙에서 취하고 동은 돌에서 녹여 얻느니라"
+      ],
+      "raw_text_hashes": [
+        "8b8e4ce22ec0f0b1c383839a7604272e5d569a6cd71598c625a630240e984733"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:28:3",
+      "sequence": 13508,
+      "chapter_label": "JOB 28",
+      "verse_label": "3",
+      "locator": {
+        "book": "JOB",
+        "chapter": 28,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 28,
+          "verse": 3
+        }
+      ],
+      "en": "Man sets an end to darkness, and searches out, to the furthest bound, the stones of obscurity and of thick darkness.",
+      "ko": "사람이 흑암을 파하고 끝까지 궁구하여 음예와 유암 중의 광석을 구하되",
+      "source_text_hash": "0e04b4026f123e198e0879318d4a1fa73c9cd82f57ffc134f55271f3f3ed7c07",
+      "translation_text_hash": "2ba57912bc4230f4f53aaa77ffb05a90f8983a5cbfabe075807b8619daf7edbf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 흑암을 파하고 끝까지 궁구하여 음예와 유암 중의 광석을 구하되"
+      ],
+      "raw_text_hashes": [
+        "2ba57912bc4230f4f53aaa77ffb05a90f8983a5cbfabe075807b8619daf7edbf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:28:4",
+      "sequence": 13509,
+      "chapter_label": "JOB 28",
+      "verse_label": "4",
+      "locator": {
+        "book": "JOB",
+        "chapter": 28,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 28,
+          "verse": 4
+        }
+      ],
+      "en": "He breaks open a shaft away from where people live. They are forgotten by the foot. They hang far from men, they swing back and forth.",
+      "ko": "사람 사는 곳에서 멀리 떠나 구멍을 깊이 뚫고 발이 땅에 닿지 않게 달려 내리니 멀리 사람과 격절되고 흔들흔들 하느니라",
+      "source_text_hash": "802bf06f73a9b9d34dceb637b8f1c327e6111411cade25593312ade64ad98c89",
+      "translation_text_hash": "78c4ef60ea3383a3ce3deee0ecf703d293bc07744dbb2c1316989c101702954c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람 사는 곳에서 멀리 떠나 구멍을 깊이 뚫고 발이 땅에 닿지 않게 달려 내리니 멀리 사람과 격절되고 흔들흔들 하느니라"
+      ],
+      "raw_text_hashes": [
+        "78c4ef60ea3383a3ce3deee0ecf703d293bc07744dbb2c1316989c101702954c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:28:5",
+      "sequence": 13510,
+      "chapter_label": "JOB 28",
+      "verse_label": "5",
+      "locator": {
+        "book": "JOB",
+        "chapter": 28,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 28,
+          "verse": 5
+        }
+      ],
+      "en": "As for the earth, out of it comes bread. Underneath it is turned up as it were by fire.",
+      "ko": "지면은 식물을 내나 지하는 불로 뒤집는 것 같고",
+      "source_text_hash": "668b5ba57b0779cf66c33ecf0dbc32b6294f0109d064e980169a55fa2f391272",
+      "translation_text_hash": "fef843a3eda9bdaf0bcd51996223fd59f7921286390bf14719dddae00ee90aa3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "지면은 식물을 내나 지하는 불로 뒤집는 것 같고"
+      ],
+      "raw_text_hashes": [
+        "fef843a3eda9bdaf0bcd51996223fd59f7921286390bf14719dddae00ee90aa3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:28:6",
+      "sequence": 13511,
+      "chapter_label": "JOB 28",
+      "verse_label": "6",
+      "locator": {
+        "book": "JOB",
+        "chapter": 28,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 28,
+          "verse": 6
+        }
+      ],
+      "en": "Sapphires come from its rocks. It has dust of gold.",
+      "ko": "그 돌 가운데에는 남보석이 있고 사금도 있으며",
+      "source_text_hash": "488496eb5a6c10d0c7a1e44bd186579ddf3861998b5d35f38233bfaa13b7ed33",
+      "translation_text_hash": "19e3d66cf337823313e0ea7acc959539b4abd27dd660331e060b80815a44c7fe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 돌 가운데에는 남보석이 있고 사금도 있으며"
+      ],
+      "raw_text_hashes": [
+        "19e3d66cf337823313e0ea7acc959539b4abd27dd660331e060b80815a44c7fe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:28:7",
+      "sequence": 13512,
+      "chapter_label": "JOB 28",
+      "verse_label": "7",
+      "locator": {
+        "book": "JOB",
+        "chapter": 28,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 28,
+          "verse": 7
+        }
+      ],
+      "en": "That path no bird of prey knows, neither has the falcon’s eye seen it.",
+      "ko": "그 길은 솔개도 알지 못하고 매의 눈도 보지 못하며",
+      "source_text_hash": "503aadac03158827d468a2b2d1adba7c15a72279d000d1ddbcde1fc0df5b1b86",
+      "translation_text_hash": "f89668967f2c1750c6907d990cadf700f0f7df6cd911ac49758f49583d407683",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 길은 솔개도 알지 못하고 매의 눈도 보지 못하며"
+      ],
+      "raw_text_hashes": [
+        "f89668967f2c1750c6907d990cadf700f0f7df6cd911ac49758f49583d407683"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:28:8",
+      "sequence": 13513,
+      "chapter_label": "JOB 28",
+      "verse_label": "8",
+      "locator": {
+        "book": "JOB",
+        "chapter": 28,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 28,
+          "verse": 8
+        }
+      ],
+      "en": "The proud animals have not trodden it, nor has the fierce lion passed by there.",
+      "ko": "위엄스러운 짐승도 밟지 못하였고 사나운 사자도 그리로 지나가지 못하였느니라",
+      "source_text_hash": "6c53c9a17fc059285fdfd9ccbba47fb76bf76107a7b78d7766222df6da3b95e5",
+      "translation_text_hash": "da05d326b4792c96abca3a73816ed5e830e8f637211868ee40e8f59748c19755",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "위엄스러운 짐승도 밟지 못하였고 사나운 사자도 그리로 지나가지 못하였느니라"
+      ],
+      "raw_text_hashes": [
+        "da05d326b4792c96abca3a73816ed5e830e8f637211868ee40e8f59748c19755"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:28:9",
+      "sequence": 13514,
+      "chapter_label": "JOB 28",
+      "verse_label": "9",
+      "locator": {
+        "book": "JOB",
+        "chapter": 28,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 28,
+          "verse": 9
+        }
+      ],
+      "en": "He puts his hand on the flinty rock, and he overturns the mountains by the roots.",
+      "ko": "사람이 굳은 바위에 손을 대고 산을 뿌리까지 무너뜨리며",
+      "source_text_hash": "f2ff28e8fedff130cd0f00a745163ae59cce0dd5246dde748cf196cd4c74877e",
+      "translation_text_hash": "0e5bc2b990fb8f7d712f93ea72d19d2d680887414e0bd40a2729ce80e35d1c8a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 굳은 바위에 손을 대고 산을 뿌리까지 무너뜨리며"
+      ],
+      "raw_text_hashes": [
+        "0e5bc2b990fb8f7d712f93ea72d19d2d680887414e0bd40a2729ce80e35d1c8a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:28:10",
+      "sequence": 13515,
+      "chapter_label": "JOB 28",
+      "verse_label": "10",
+      "locator": {
+        "book": "JOB",
+        "chapter": 28,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 28,
+          "verse": 10
+        }
+      ],
+      "en": "He cuts out channels among the rocks. His eye sees every precious thing.",
+      "ko": "돌 가운데로 도랑을 파서 각종 보물을 눈으로 발견하고",
+      "source_text_hash": "610eff87318a809d0ce5e4ede75e6836c73698472ccd03a84389f698ed47bcf4",
+      "translation_text_hash": "8c41625a6c9e8eaee3f2469ef14c169cf5e24d69d9538475157c6ef5e720aea1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "돌 가운데로 도랑을 파서 각종 보물을 눈으로 발견하고"
+      ],
+      "raw_text_hashes": [
+        "8c41625a6c9e8eaee3f2469ef14c169cf5e24d69d9538475157c6ef5e720aea1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:28:11",
+      "sequence": 13516,
+      "chapter_label": "JOB 28",
+      "verse_label": "11",
+      "locator": {
+        "book": "JOB",
+        "chapter": 28,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 28,
+          "verse": 11
+        }
+      ],
+      "en": "He binds the streams that they don’t trickle. The thing that is hidden he brings out to light.",
+      "ko": "시냇물을 막아 스미지 않게 하고 감취었던 것을 밝은데로 내느니라",
+      "source_text_hash": "488eb50192e548e6263e3b5060b99e29ca58a43294ed7ec8d7922185450019da",
+      "translation_text_hash": "23fa291ca4a23ecbe5f39624411c211f5cc480a4de9ba3d02444048995362ecd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시냇물을 막아 스미지 않게 하고 감취었던 것을 밝은데로 내느니라"
+      ],
+      "raw_text_hashes": [
+        "23fa291ca4a23ecbe5f39624411c211f5cc480a4de9ba3d02444048995362ecd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:28:12",
+      "sequence": 13517,
+      "chapter_label": "JOB 28",
+      "verse_label": "12",
+      "locator": {
+        "book": "JOB",
+        "chapter": 28,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 28,
+          "verse": 12
+        }
+      ],
+      "en": "“But where will wisdom be found? Where is the place of understanding?",
+      "ko": "그러나 지혜는 어디서 얻으며 명철의 곳은 어디인고",
+      "source_text_hash": "7a0c46d9ad3b2a05459f28143712fff04347ac8cd5b249d626bb9f67f8269302",
+      "translation_text_hash": "7de21c31b1a774bffb5c073f29286dc21ccfe8e620ad366f9cb610e4e79e1fd3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 지혜는 어디서 얻으며 명철의 곳은 어디인고"
+      ],
+      "raw_text_hashes": [
+        "7de21c31b1a774bffb5c073f29286dc21ccfe8e620ad366f9cb610e4e79e1fd3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:28:13",
+      "sequence": 13518,
+      "chapter_label": "JOB 28",
+      "verse_label": "13",
+      "locator": {
+        "book": "JOB",
+        "chapter": 28,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 28,
+          "verse": 13
+        }
+      ],
+      "en": "Man doesn’t know its price, and it isn’t found in the land of the living.",
+      "ko": "그 값을 사람이 알지 못하나니 사람 사는 땅에서 찾을 수 없구나",
+      "source_text_hash": "5c2d64708d991950275197fbb8b1767ffdba9e54423a0918e6329b7fd73f20f9",
+      "translation_text_hash": "d1fbec2811796016fd13ab702a6b3e9358344dc41a363868affc6975f22abaef",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 값을 사람이 알지 못하나니 사람 사는 땅에서 찾을 수 없구나"
+      ],
+      "raw_text_hashes": [
+        "d1fbec2811796016fd13ab702a6b3e9358344dc41a363868affc6975f22abaef"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:28:14",
+      "sequence": 13519,
+      "chapter_label": "JOB 28",
+      "verse_label": "14",
+      "locator": {
+        "book": "JOB",
+        "chapter": 28,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 28,
+          "verse": 14
+        }
+      ],
+      "en": "The deep says, ‘It isn’t in me.’ The sea says, ‘It isn’t with me.’",
+      "ko": "깊은 물이 이르기를 내 속에 있지 아니하다 하며 바다가 이르기를 나와 함께 있지 아니하다 하느니라",
+      "source_text_hash": "43922e071b084e3fd171d6058b4b8afb160ed50f12e5108c6208499f02b0f270",
+      "translation_text_hash": "09cb24831292d4ef926c1b14baa923a3eae9c5a2452c22829fef72c61b1e06e5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "깊은 물이 이르기를 내 속에 있지 아니하다 하며 바다가 이르기를 나와 함께 있지 아니하다 하느니라"
+      ],
+      "raw_text_hashes": [
+        "09cb24831292d4ef926c1b14baa923a3eae9c5a2452c22829fef72c61b1e06e5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:28:15",
+      "sequence": 13520,
+      "chapter_label": "JOB 28",
+      "verse_label": "15",
+      "locator": {
+        "book": "JOB",
+        "chapter": 28,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 28,
+          "verse": 15
+        }
+      ],
+      "en": "It can’t be gotten for gold, neither will silver be weighed for its price.",
+      "ko": "정금으로도 바꿀 수 없고 은을 달아도 그 값을 당치 못하리니",
+      "source_text_hash": "bb1420a89369225c7527fe743949e79edd0c33315aa383b44e819a0aac5b1253",
+      "translation_text_hash": "a6218b1568f327ef2dff44275ddf777e014a1a08c5821182656033398247b60a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "정금으로도 바꿀 수 없고 은을 달아도 그 값을 당치 못하리니"
+      ],
+      "raw_text_hashes": [
+        "a6218b1568f327ef2dff44275ddf777e014a1a08c5821182656033398247b60a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:28:16",
+      "sequence": 13521,
+      "chapter_label": "JOB 28",
+      "verse_label": "16",
+      "locator": {
+        "book": "JOB",
+        "chapter": 28,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 28,
+          "verse": 16
+        }
+      ],
+      "en": "It can’t be valued with the gold of Ophir, with the precious onyx, or the sapphire.",
+      "ko": "오빌의 금이나 귀한 수마노나 남보석으로도 그 값을 당치 못하겠고",
+      "source_text_hash": "8593a9e008376942ad31dab8ccb005c43aab6d1aa540b1f5583aaca3191b1763",
+      "translation_text_hash": "f63d908e9b84a97f415a4bfa9c6751f79109c6f5b0cdd328e818db6a2da72f9d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오빌의 금이나 귀한 수마노나 남보석으로도 그 값을 당치 못하겠고"
+      ],
+      "raw_text_hashes": [
+        "f63d908e9b84a97f415a4bfa9c6751f79109c6f5b0cdd328e818db6a2da72f9d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:28:17",
+      "sequence": 13522,
+      "chapter_label": "JOB 28",
+      "verse_label": "17",
+      "locator": {
+        "book": "JOB",
+        "chapter": 28,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 28,
+          "verse": 17
+        }
+      ],
+      "en": "Gold and glass can’t equal it, neither will it be exchanged for jewels of fine gold.",
+      "ko": "황금이나 유리라도 비교할 수 없고 정금 장식으로도 바꿀 수 없으며",
+      "source_text_hash": "1ad05986fb93fc9c8486ebc56beffa98c7ade5046f048cc37d4c4c21b2bb0722",
+      "translation_text_hash": "b5ddb3718d5c848378ec7a6a20639fbf7f9a3c0186c6f42bc23fe8fdd6cc5e7f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "황금이나 유리라도 비교할 수 없고 정금 장식으로도 바꿀 수 없으며"
+      ],
+      "raw_text_hashes": [
+        "b5ddb3718d5c848378ec7a6a20639fbf7f9a3c0186c6f42bc23fe8fdd6cc5e7f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:28:18",
+      "sequence": 13523,
+      "chapter_label": "JOB 28",
+      "verse_label": "18",
+      "locator": {
+        "book": "JOB",
+        "chapter": 28,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 28,
+          "verse": 18
+        }
+      ],
+      "en": "No mention will be made of coral or of crystal. Yes, the price of wisdom is above rubies.",
+      "ko": "산호나 수정으로도 말할 수 없나니 지혜의 값은 홍보석보다 귀하구나",
+      "source_text_hash": "e157957af8b940233ae028ba1e427b90f0e0a8afd127b6cc1d8ec363184820c8",
+      "translation_text_hash": "4408165932adc766db09542cc171a6a907dd41b8c2759abe5727cba6b7c4916b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "산호나 수정으로도 말할 수 없나니 지혜의 값은 홍보석보다 귀하구나"
+      ],
+      "raw_text_hashes": [
+        "4408165932adc766db09542cc171a6a907dd41b8c2759abe5727cba6b7c4916b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:28:19",
+      "sequence": 13524,
+      "chapter_label": "JOB 28",
+      "verse_label": "19",
+      "locator": {
+        "book": "JOB",
+        "chapter": 28,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 28,
+          "verse": 19
+        }
+      ],
+      "en": "The topaz of Ethiopia will not equal it. It won’t be valued with pure gold.",
+      "ko": "구스의 황옥으로도 비교할 수 없고 순금으로도 그 값을 측량하지 못하리니",
+      "source_text_hash": "3fd2cd563ff9dd1f67b8e45023e00c9df7cdbcdda9df0286443b62c4678826df",
+      "translation_text_hash": "dbfbab89ceaa5b7d4addb7b281fc359a72de57fcaec9e485c69086220a8bf896",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "구스의 황옥으로도 비교할 수 없고 순금으로도 그 값을 측량하지 못하리니"
+      ],
+      "raw_text_hashes": [
+        "dbfbab89ceaa5b7d4addb7b281fc359a72de57fcaec9e485c69086220a8bf896"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:28:20",
+      "sequence": 13525,
+      "chapter_label": "JOB 28",
+      "verse_label": "20",
+      "locator": {
+        "book": "JOB",
+        "chapter": 28,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 28,
+          "verse": 20
+        }
+      ],
+      "en": "Where then does wisdom come from? Where is the place of understanding?",
+      "ko": "그런즉 지혜는 어디서 오며 명철의 곳은 어디인고",
+      "source_text_hash": "11565fb923d5169f18d379c5c0688218fd5b21b39bb4f3c857f52aed057b4937",
+      "translation_text_hash": "6101fdbf7e2e14d7cb3a4155d7096828a23d657fd1813862f71f26cfe075f3d7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 지혜는 어디서 오며 명철의 곳은 어디인고"
+      ],
+      "raw_text_hashes": [
+        "6101fdbf7e2e14d7cb3a4155d7096828a23d657fd1813862f71f26cfe075f3d7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:28:21",
+      "sequence": 13526,
+      "chapter_label": "JOB 28",
+      "verse_label": "21",
+      "locator": {
+        "book": "JOB",
+        "chapter": 28,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 28,
+          "verse": 21
+        }
+      ],
+      "en": "Seeing it is hidden from the eyes of all living, and kept close from the birds of the sky.",
+      "ko": "모든 생물의 눈에 숨겨졌고 공중의 새에게 가리워졌으며",
+      "source_text_hash": "037a7f5a02f7d7f89b788818d62fd73854ca8f6e80ea546470d40bf23ea8c434",
+      "translation_text_hash": "09cd319f06f56e6109c5bfe528add56ad89fbb4443abc090111f14f323be05ef",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 생물의 눈에 숨겨졌고 공중의 새에게 가리워졌으며"
+      ],
+      "raw_text_hashes": [
+        "09cd319f06f56e6109c5bfe528add56ad89fbb4443abc090111f14f323be05ef"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:28:22",
+      "sequence": 13527,
+      "chapter_label": "JOB 28",
+      "verse_label": "22",
+      "locator": {
+        "book": "JOB",
+        "chapter": 28,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 28,
+          "verse": 22
+        }
+      ],
+      "en": "Destruction and Death say, ‘We have heard a rumor of it with our ears.’",
+      "ko": "멸망과 사망도 이르기를 우리가 귀로 그 소문은 들었다 하느니라",
+      "source_text_hash": "dc7f698c27bd8222bbf3d270ec4b33fbbe09b793b0dde7bfde7e2c911269ddad",
+      "translation_text_hash": "264065dbae869c29125e1ff8296ac889713f1478e12305d6c230a0af1c0816d4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "멸망과 사망도 이르기를 우리가 귀로 그 소문은 들었다 하느니라"
+      ],
+      "raw_text_hashes": [
+        "264065dbae869c29125e1ff8296ac889713f1478e12305d6c230a0af1c0816d4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:28:23",
+      "sequence": 13528,
+      "chapter_label": "JOB 28",
+      "verse_label": "23",
+      "locator": {
+        "book": "JOB",
+        "chapter": 28,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 28,
+          "verse": 23
+        }
+      ],
+      "en": "“God understands its way, and he knows its place.",
+      "ko": "하나님이 그 길을 깨달으시며 있는 곳을 아시나니",
+      "source_text_hash": "661afe1ad85bf53aeb2696c2a7b832979a26001ba24eb139c6866e97269fd534",
+      "translation_text_hash": "8a61f529a4bea8dc9c7d46b92514f8e1cfc2280046298d171b27cde7450670e7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 그 길을 깨달으시며 있는 곳을 아시나니"
+      ],
+      "raw_text_hashes": [
+        "8a61f529a4bea8dc9c7d46b92514f8e1cfc2280046298d171b27cde7450670e7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:28:24",
+      "sequence": 13529,
+      "chapter_label": "JOB 28",
+      "verse_label": "24",
+      "locator": {
+        "book": "JOB",
+        "chapter": 28,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 28,
+          "verse": 24
+        }
+      ],
+      "en": "For he looks to the ends of the earth, and sees under the whole sky.",
+      "ko": "이는 그가 땅끝까지 감찰하시며 온 천하를 두루 보시며",
+      "source_text_hash": "ab86cf9a3be9489ccd0b5e715f489507cb39eb2d0ce49f198ab6befd4497f56c",
+      "translation_text_hash": "eecacba87cd82f4cac74fcd1d84ca6b1707ef13149ad3363b8a02341e6cbe722",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 그가 땅끝까지 감찰하시며 온 천하를 두루 보시며"
+      ],
+      "raw_text_hashes": [
+        "eecacba87cd82f4cac74fcd1d84ca6b1707ef13149ad3363b8a02341e6cbe722"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:28:25",
+      "sequence": 13530,
+      "chapter_label": "JOB 28",
+      "verse_label": "25",
+      "locator": {
+        "book": "JOB",
+        "chapter": 28,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 28,
+          "verse": 25
+        }
+      ],
+      "en": "He establishes the force of the wind. Yes, he measures out the waters by measure.",
+      "ko": "바람의 경중을 정하시며 물을 되어 그 분량을 정하시며",
+      "source_text_hash": "aab84345cc7fd1f1252603b93326a0bf132fd8fb3f61444a8506203e1aa9d827",
+      "translation_text_hash": "17814c18899d2c05e9f09291bfd0a02a6a9e0891228fdc5746342d25b7ff3b38",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바람의 경중을 정하시며 물을 되어 그 분량을 정하시며"
+      ],
+      "raw_text_hashes": [
+        "17814c18899d2c05e9f09291bfd0a02a6a9e0891228fdc5746342d25b7ff3b38"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:28:26",
+      "sequence": 13531,
+      "chapter_label": "JOB 28",
+      "verse_label": "26",
+      "locator": {
+        "book": "JOB",
+        "chapter": 28,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 28,
+          "verse": 26
+        }
+      ],
+      "en": "When he made a decree for the rain, and a way for the lightning of the thunder,",
+      "ko": "비를 위하여 명령하시고 우뢰의 번개를 위하여 길을 정하셨음이라",
+      "source_text_hash": "f1f1edeb0b534afaf2465c9be7ed0732de6f5614f687f7f0406142e1faeb8da9",
+      "translation_text_hash": "df8dbf744a464de09bb86352a600da906f9207b9568204aecf26387221191609",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "비를 위하여 명령하시고 우뢰의 번개를 위하여 길을 정하셨음이라"
+      ],
+      "raw_text_hashes": [
+        "df8dbf744a464de09bb86352a600da906f9207b9568204aecf26387221191609"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:28:27",
+      "sequence": 13532,
+      "chapter_label": "JOB 28",
+      "verse_label": "27",
+      "locator": {
+        "book": "JOB",
+        "chapter": 28,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 28,
+          "verse": 27
+        }
+      ],
+      "en": "then he saw it, and declared it. He established it, yes, and searched it out.",
+      "ko": "그 때에 지혜를 보시고 선포하시며 굳게 세우시며 궁구하셨고",
+      "source_text_hash": "63505dc95830e5a3f21b25d34ce52aa5e97c78c468b6320918824bb55c7a0ffa",
+      "translation_text_hash": "d522fcbc25d6c1d71f9a41bfa08efc58bfa5131914bc716a46b0825ad3a40cba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 지혜를 보시고 선포하시며 굳게 세우시며 궁구하셨고"
+      ],
+      "raw_text_hashes": [
+        "d522fcbc25d6c1d71f9a41bfa08efc58bfa5131914bc716a46b0825ad3a40cba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:28:28",
+      "sequence": 13533,
+      "chapter_label": "JOB 28",
+      "verse_label": "28",
+      "locator": {
+        "book": "JOB",
+        "chapter": 28,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 28,
+          "verse": 28
+        }
+      ],
+      "en": "To man he said, ‘Behold, the fear of the Lord, that is wisdom. To depart from evil is understanding.’”",
+      "ko": "또 사람에게 이르시기를 주를 경외함이 곧 지혜요 악을 떠남이 명철이라 하셨느니라",
+      "source_text_hash": "10d82dde6314f5e09082c54d7896622b8367a623300ffe17e2635763efd93ac6",
+      "translation_text_hash": "dcd9f7ebcd82764bc0dfa571fd3cac85e8bfd2db530ebb913fe1c29248a2e29a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 사람에게 이르시기를 주를 경외함이 곧 지혜요 악을 떠남이 명철이라 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "dcd9f7ebcd82764bc0dfa571fd3cac85e8bfd2db530ebb913fe1c29248a2e29a"
+      ]
+    }
+  ]
+}

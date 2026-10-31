@@ -1,0 +1,493 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JOS:chapter:005",
+  "unit_ordinal": 192,
+  "unit_label": "JOS 5",
+  "book_code": "JOS",
+  "chapter_number": 5,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JOS:5:1",
+      "sequence": 5936,
+      "chapter_label": "JOS 5",
+      "verse_label": "1",
+      "locator": {
+        "book": "JOS",
+        "chapter": 5,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 5,
+          "verse": 1
+        }
+      ],
+      "en": "When all the kings of the Amorites, who were beyond the Jordan westward, and all the kings of the Canaanites, who were by the sea, heard how the LORD had dried up the waters of the Jordan from before the children of Israel until we had crossed over, their heart melted, and there was no more spirit in them, because of the children of Israel.",
+      "ko": "요단 서편의 아모리 사람의 모든 왕과 해변의 가나안 사람의 모든 왕이 여호와께서 요단 물을 이스라엘 자손들 앞에서 말리시고 우리를 건네셨음을 듣고 마음이 녹았고 이스라엘 자손들의 연고로 정신을 잃었더라",
+      "source_text_hash": "853c3627243c2eaa4670517d5627fe2d5798b4f8259ff77e23fcc2794a5d917d",
+      "translation_text_hash": "a533d7e05f83a641ebae8e5a9748db8a6a9c2ba3b9c129e970cf689b7b2eb140",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요단 서편의 아모리 사람의 모든 왕과 해변의 가나안 사람의 모든 왕이 여호와께서 요단 물을 이스라엘 자손들 앞에서 말리시고 우리를 건네셨음을 듣고 마음이 녹았고 이스라엘 자손들의 연고로 정신을 잃었더라"
+      ],
+      "raw_text_hashes": [
+        "a533d7e05f83a641ebae8e5a9748db8a6a9c2ba3b9c129e970cf689b7b2eb140"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:5:2",
+      "sequence": 5937,
+      "chapter_label": "JOS 5",
+      "verse_label": "2",
+      "locator": {
+        "book": "JOS",
+        "chapter": 5,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 5,
+          "verse": 2
+        }
+      ],
+      "en": "At that time, the LORD said to Joshua, “Make flint knives, and circumcise again the sons of Israel the second time.”",
+      "ko": "그 때에 여호와께서 여호수아에게 이르시되 너는 부싯돌로 칼을 만들어 이스라엘 자손들에게 다시 할례를 행하라 하시매",
+      "source_text_hash": "b134a40733dabe51565751d64db9f0b890a6d6cd0dcf394b1e58980d2c8456d9",
+      "translation_text_hash": "47b69621e03d0619a552c2cbd62c7c4975e9eee9a9c497e32d2f4f42452c1478",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 여호와께서 여호수아에게 이르시되 너는 부싯돌로 칼을 만들어 이스라엘 자손들에게 다시 할례를 행하라 하시매"
+      ],
+      "raw_text_hashes": [
+        "47b69621e03d0619a552c2cbd62c7c4975e9eee9a9c497e32d2f4f42452c1478"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:5:3",
+      "sequence": 5938,
+      "chapter_label": "JOS 5",
+      "verse_label": "3",
+      "locator": {
+        "book": "JOS",
+        "chapter": 5,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 5,
+          "verse": 3
+        }
+      ],
+      "en": "Joshua made himself flint knives, and circumcised the sons of Israel at the hill of the foreskins.",
+      "ko": "여호수아가 부싯돌로 칼을 만들어 할례산에서 이스라엘 자손들에게 할례를 행하니라",
+      "source_text_hash": "dc9844ef6d439f9bb289fdfb71a016f0ecc8df193d53b3324060b1c7cf4f5e5e",
+      "translation_text_hash": "222669afc8eee7a12ec65f636a03b409ced4b94fdf4c95c3c6a3f4c7f615082c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호수아가 부싯돌로 칼을 만들어 할례산에서 이스라엘 자손들에게 할례를 행하니라"
+      ],
+      "raw_text_hashes": [
+        "222669afc8eee7a12ec65f636a03b409ced4b94fdf4c95c3c6a3f4c7f615082c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:5:4",
+      "sequence": 5939,
+      "chapter_label": "JOS 5",
+      "verse_label": "4",
+      "locator": {
+        "book": "JOS",
+        "chapter": 5,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 5,
+          "verse": 4
+        }
+      ],
+      "en": "This is the reason Joshua circumcised them: all the people who came out of Egypt, who were males, even all the men of war, died in the wilderness along the way, after they came out of Egypt.",
+      "ko": "여호수아가 할례를 시행한 까닭은 이것이니 애굽에서 나온 모든 백성 중 남자 곧 모든 군사는 애굽에서 나온 후 광야 노중에서 죽었는데",
+      "source_text_hash": "624278f68582a32e68a7453ab2017703e3c92d8af8e2318bd9715b2229a5b81c",
+      "translation_text_hash": "26074075ea8b0ad3356a413752a614e63682e8b22430461cb2366a93bd0304ae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호수아가 할례를 시행한 까닭은 이것이니 애굽에서 나온 모든 백성 중 남자 곧 모든 군사는 애굽에서 나온 후 광야 노중에서 죽었는데"
+      ],
+      "raw_text_hashes": [
+        "26074075ea8b0ad3356a413752a614e63682e8b22430461cb2366a93bd0304ae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:5:5",
+      "sequence": 5940,
+      "chapter_label": "JOS 5",
+      "verse_label": "5",
+      "locator": {
+        "book": "JOS",
+        "chapter": 5,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 5,
+          "verse": 5
+        }
+      ],
+      "en": "For all the people who came out were circumcised; but all the people who were born in the wilderness along the way as they came out of Egypt had not been circumcised.",
+      "ko": "그 나온 백성은 다 할례를 받았으나 오직 애굽에서 나온 후 광야 노중에서 난 자는 할례를 받지 못하였음이라",
+      "source_text_hash": "d7e667df1accfa131147eaecae255df328332b8096c2509cf8e96e3b4a199f6b",
+      "translation_text_hash": "6878db4d088bab9c2afc40e6f1359a0d9ec43d60c8c96d55d8737bf48b20a271",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 나온 백성은 다 할례를 받았으나 오직 애굽에서 나온 후 광야 노중에서 난 자는 할례를 받지 못하였음이라"
+      ],
+      "raw_text_hashes": [
+        "6878db4d088bab9c2afc40e6f1359a0d9ec43d60c8c96d55d8737bf48b20a271"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:5:6",
+      "sequence": 5941,
+      "chapter_label": "JOS 5",
+      "verse_label": "6",
+      "locator": {
+        "book": "JOS",
+        "chapter": 5,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 5,
+          "verse": 6
+        }
+      ],
+      "en": "For the children of Israel walked forty years in the wilderness until all the nation, even the men of war who came out of Egypt, were consumed, because they didn’t listen to the LORD’s voice. The LORD swore to them that he wouldn’t let them see the land which the LORD swore to their fathers that he would give us, a land flowing with milk and honey.",
+      "ko": "이스라엘 자손들이 여호와의 말씀을 청종치 아니하므로 여호와께서 그들에게 대하여 맹세하사 그들의 열조에게 맹세하여 우리에게 주마 하신 땅 곧 젖과 꿀이 흐르는 땅을 그들로 보지 못하게 하리라 하시매 애굽에서 나온 족속 곧 군사들이 다 멸절하기까지 사십년 동안을 광야에 행하였더니",
+      "source_text_hash": "b6d7879e936467937bbc87e8c17c086b28cd2852bf22542f737e680aa89729a1",
+      "translation_text_hash": "85a1a0b4daee7018527ec4eda0c1d5e3dbe0b3e0af199d8cab80b09384a177a0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손들이 여호와의 말씀을 청종치 아니하므로 여호와께서 그들에게 대하여 맹세하사 그들의 열조에게 맹세하여 우리에게 주마 하신 땅 곧 젖과 꿀이 흐르는 땅을 그들로 보지 못하게 하리라 하시매 애굽에서 나온 족속 곧 군사들이 다 멸절하기까지 사십년 동안을 광야에 행하였더니"
+      ],
+      "raw_text_hashes": [
+        "85a1a0b4daee7018527ec4eda0c1d5e3dbe0b3e0af199d8cab80b09384a177a0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:5:7",
+      "sequence": 5942,
+      "chapter_label": "JOS 5",
+      "verse_label": "7",
+      "locator": {
+        "book": "JOS",
+        "chapter": 5,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 5,
+          "verse": 7
+        }
+      ],
+      "en": "Their children, whom he raised up in their place, were circumcised by Joshua, for they were uncircumcised, because they had not circumcised them on the way.",
+      "ko": "그들의 대를 잇게 하신 이 자손에게 여호수아가 할례를 행하였으니 길에서는 그들에게 할례를 행치 못하였으므로 할례 없는 자가 되었음이었더라",
+      "source_text_hash": "d5b6f3ba49120bf8c463286e2c85668ba9cdfa839b9c3930cf79242e9faf083e",
+      "translation_text_hash": "58056e29e9541186374c22d137b79e1f7611164844b92cf6df557fcd9f79c0bb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들의 대를 잇게 하신 이 자손에게 여호수아가 할례를 행하였으니 길에서는 그들에게 할례를 행치 못하였으므로 할례 없는 자가 되었음이었더라"
+      ],
+      "raw_text_hashes": [
+        "58056e29e9541186374c22d137b79e1f7611164844b92cf6df557fcd9f79c0bb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:5:8",
+      "sequence": 5943,
+      "chapter_label": "JOS 5",
+      "verse_label": "8",
+      "locator": {
+        "book": "JOS",
+        "chapter": 5,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 5,
+          "verse": 8
+        }
+      ],
+      "en": "When they were done circumcising the whole nation, they stayed in their places in the camp until they were healed.",
+      "ko": "온 백성에게 할례 행하기를 필하매 백성이 진중 각 처소에 처하여 낫기를 기다릴 때에",
+      "source_text_hash": "abc05620ca9a13e9a2d1260a81471f584e6911c27263f4fbe9977f7b62daea2d",
+      "translation_text_hash": "fa4d41aa402d339214a8fa835da7ea21c39c4fd25445eab96aa613af32efc705",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "온 백성에게 할례 행하기를 필하매 백성이 진중 각 처소에 처하여 낫기를 기다릴 때에"
+      ],
+      "raw_text_hashes": [
+        "fa4d41aa402d339214a8fa835da7ea21c39c4fd25445eab96aa613af32efc705"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:5:9",
+      "sequence": 5944,
+      "chapter_label": "JOS 5",
+      "verse_label": "9",
+      "locator": {
+        "book": "JOS",
+        "chapter": 5,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 5,
+          "verse": 9
+        }
+      ],
+      "en": "The LORD said to Joshua, “Today I have rolled away the reproach of Egypt from you.” Therefore the name of that place was called Gilgal to this day.",
+      "ko": "여호와께서 여호수아에게 이르시되 내가 오늘날 애굽의 수치를 너희에게서 굴러가게 하였다 하셨으므로 그곳 이름을 오늘까지 길갈이라 하느니라",
+      "source_text_hash": "91019ea661c55ae004d97dc48a003550f79e0930fefc2c56572281601010e723",
+      "translation_text_hash": "21314faac9d8bccf83b0be8bf3d35da4c6b90bc2ff359e5ba76b94067c37279c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 여호수아에게 이르시되 내가 오늘날 애굽의 수치를 너희에게서 굴러가게 하였다 하셨으므로 그곳 이름을 오늘까지 길갈이라 하느니라"
+      ],
+      "raw_text_hashes": [
+        "21314faac9d8bccf83b0be8bf3d35da4c6b90bc2ff359e5ba76b94067c37279c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:5:10",
+      "sequence": 5945,
+      "chapter_label": "JOS 5",
+      "verse_label": "10",
+      "locator": {
+        "book": "JOS",
+        "chapter": 5,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 5,
+          "verse": 10
+        }
+      ],
+      "en": "The children of Israel encamped in Gilgal. They kept the Passover on the fourteenth day of the month at evening in the plains of Jericho.",
+      "ko": "이스라엘 자손들이 길갈에 진 쳤고 그 달 십 사일 저녁에는 여리고 평지에서 유월절을 지켰고",
+      "source_text_hash": "cb327cc6434fbb9358c466499bf2d210e97f17eac0f366fd7f5f37982dda04d7",
+      "translation_text_hash": "44db7ee386556625222a48f97c2e66430123200c7f184906ec0317f759a6d454",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손들이 길갈에 진 쳤고 그 달 십 사일 저녁에는 여리고 평지에서 유월절을 지켰고"
+      ],
+      "raw_text_hashes": [
+        "44db7ee386556625222a48f97c2e66430123200c7f184906ec0317f759a6d454"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:5:11",
+      "sequence": 5946,
+      "chapter_label": "JOS 5",
+      "verse_label": "11",
+      "locator": {
+        "book": "JOS",
+        "chapter": 5,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 5,
+          "verse": 11
+        }
+      ],
+      "en": "They ate unleavened cakes and parched grain of the produce of the land on the next day after the Passover, in the same day.",
+      "ko": "유월절 이튿날에 그 땅 소산을 먹되 그 날에 무교병과 볶은 곡식을 먹었더니",
+      "source_text_hash": "9442bea3ab9130394c7773b059f9ebca7adf0cb129c9b2de8b844314d8a8245f",
+      "translation_text_hash": "cf060be4ddc8518ce031bb1a9bc0e1a045eb7751a47c6e3d84d6e78cce728504",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유월절 이튿날에 그 땅 소산을 먹되 그 날에 무교병과 볶은 곡식을 먹었더니"
+      ],
+      "raw_text_hashes": [
+        "cf060be4ddc8518ce031bb1a9bc0e1a045eb7751a47c6e3d84d6e78cce728504"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:5:12",
+      "sequence": 5947,
+      "chapter_label": "JOS 5",
+      "verse_label": "12",
+      "locator": {
+        "book": "JOS",
+        "chapter": 5,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 5,
+          "verse": 12
+        }
+      ],
+      "en": "The manna ceased on the next day, after they had eaten of the produce of the land. The children of Israel didn’t have manna any more, but they ate of the fruit of the land of Canaan that year.",
+      "ko": "그 땅 소산을 먹은 다음 날에 만나가 그쳤으니 이스라엘 사람들이 다시는 만나를 얻지 못하였고 그 해에 가나안 땅의 열매를 먹었더라",
+      "source_text_hash": "37e11352ef5749e73f76f9fe16ee468dbcd10eea523034352cd31494601ed1bd",
+      "translation_text_hash": "73e1f615fdef16a90ccf01e7fbbcaab061cafe4ba455be343edbcbf10199931d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 땅 소산을 먹은 다음 날에 만나가 그쳤으니 이스라엘 사람들이 다시는 만나를 얻지 못하였고 그 해에 가나안 땅의 열매를 먹었더라"
+      ],
+      "raw_text_hashes": [
+        "73e1f615fdef16a90ccf01e7fbbcaab061cafe4ba455be343edbcbf10199931d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:5:13",
+      "sequence": 5948,
+      "chapter_label": "JOS 5",
+      "verse_label": "13",
+      "locator": {
+        "book": "JOS",
+        "chapter": 5,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 5,
+          "verse": 13
+        }
+      ],
+      "en": "When Joshua was by Jericho, he lifted up his eyes and looked, and behold, a man stood in front of him with his sword drawn in his hand. Joshua went to him and said to him, “Are you for us, or for our enemies?”",
+      "ko": "여호수아가 여리고에 가까왔을 때에 눈을 들어본즉 한 사람이 칼을 빼어 손에 들고 마주섰는지라 여호수아가 나아가서 그에게 묻되 너는 우리를 위하느냐 우리의 대적을 위하느냐",
+      "source_text_hash": "cf49ccd7360a436dcb13881f01c5e591b345be406a3ff8395dc5c5700b55fe72",
+      "translation_text_hash": "890b64bcec886b231bcc020243e1e2d7e63b7c2f8c98aadd69ac88a71edc67f6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호수아가 여리고에 가까왔을 때에 눈을 들어본즉 한 사람이 칼을 빼어 손에 들고 마주섰는지라 여호수아가 나아가서 그에게 묻되 너는 우리를 위하느냐 우리의 대적을 위하느냐"
+      ],
+      "raw_text_hashes": [
+        "890b64bcec886b231bcc020243e1e2d7e63b7c2f8c98aadd69ac88a71edc67f6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:5:14",
+      "sequence": 5949,
+      "chapter_label": "JOS 5",
+      "verse_label": "14",
+      "locator": {
+        "book": "JOS",
+        "chapter": 5,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 5,
+          "verse": 14
+        }
+      ],
+      "en": "He said, “No; but I have come now as commander of the LORD’s army.” Joshua fell on his face to the earth, and worshiped, and asked him, “What does my lord say to his servant?”",
+      "ko": "그가 가로되 아니라 나는 여호와의 군대장관으로 이제 왔느니라 여호수아가 땅에 엎드려 절하고 가로되 나의 주여 종에게 무슨 말씀을 하려 하시나이까",
+      "source_text_hash": "86bdda942de3c96821491747a212288ee7fd9fa07af59d09d13b2df6e444b0ec",
+      "translation_text_hash": "1525082323b9790bb5ac3ae4378db1afce37942bdf2f579c446b8a78ed412953",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 가로되 아니라 나는 여호와의 군대장관으로 이제 왔느니라 여호수아가 땅에 엎드려 절하고 가로되 나의 주여 종에게 무슨 말씀을 하려 하시나이까"
+      ],
+      "raw_text_hashes": [
+        "1525082323b9790bb5ac3ae4378db1afce37942bdf2f579c446b8a78ed412953"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:5:15",
+      "sequence": 5950,
+      "chapter_label": "JOS 5",
+      "verse_label": "15",
+      "locator": {
+        "book": "JOS",
+        "chapter": 5,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 5,
+          "verse": 15
+        }
+      ],
+      "en": "The prince of the LORD’s army said to Joshua, “Take off your sandals, for the place on which you stand is holy.” Joshua did so.",
+      "ko": "여호와의 군대장관이 여호수아에게 이르되 네 발에서 신을 벗으라 네가 선 곳은 거룩하니라 여호수아가 그대로 행하니라",
+      "source_text_hash": "49e600e4d72e44b6eb8c0ec1ff61b0b375ebba58b588020785f1663b593f6603",
+      "translation_text_hash": "3c4d0e975c1cb8924827f480471bba4f5ec0ba7b5c77c1759a8e631c15a66b4c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 군대장관이 여호수아에게 이르되 네 발에서 신을 벗으라 네가 선 곳은 거룩하니라 여호수아가 그대로 행하니라"
+      ],
+      "raw_text_hashes": [
+        "3c4d0e975c1cb8924827f480471bba4f5ec0ba7b5c77c1759a8e631c15a66b4c"
+      ]
+    }
+  ]
+}

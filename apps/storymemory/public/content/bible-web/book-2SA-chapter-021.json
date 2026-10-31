@@ -1,0 +1,717 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:2SA:chapter:021",
+  "unit_ordinal": 288,
+  "unit_label": "2SA 21",
+  "book_code": "2SA",
+  "chapter_number": 21,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:2SA:21:1",
+      "sequence": 8582,
+      "chapter_label": "2SA 21",
+      "verse_label": "1",
+      "locator": {
+        "book": "2SA",
+        "chapter": 21,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 21,
+          "verse": 1
+        }
+      ],
+      "en": "There was a famine in the days of David for three years, year after year; and David sought the face of the LORD. The LORD said, “It is for Saul, and for his bloody house, because he put the Gibeonites to death.”",
+      "ko": "다윗의 시대에 년부년 삼년 기근이 있으므로 다윗이 여호와 앞에 간구하매 여호와께서 가라사대 이는 사울과 피를 흘린 그 집을 인함이니 저가 기브온 사람을 죽였음이니라 하시니라",
+      "source_text_hash": "9a32b893e6989c7e1fa2d136336a577fa8629793236aa9b590d6805136452c2e",
+      "translation_text_hash": "24855383cb070f3ee0b16e989f5d091e11f0d2a156b10418c1633cdf99489ca0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗의 시대에 년부년 삼년 기근이 있으므로 다윗이 여호와 앞에 간구하매 여호와께서 가라사대 이는 사울과 피를 흘린 그 집을 인함이니 저가 기브온 사람을 죽였음이니라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "24855383cb070f3ee0b16e989f5d091e11f0d2a156b10418c1633cdf99489ca0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:21:2",
+      "sequence": 8583,
+      "chapter_label": "2SA 21",
+      "verse_label": "2",
+      "locator": {
+        "book": "2SA",
+        "chapter": 21,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 21,
+          "verse": 2
+        }
+      ],
+      "en": "The king called the Gibeonites and said to them (now the Gibeonites were not of the children of Israel, but of the remnant of the Amorites, and the children of Israel had sworn to them; and Saul sought to kill them in his zeal for the children of Israel and Judah);",
+      "ko": "기브온 사람은 이스라엘 족속이 아니요 아모리 사람 중에서 남은 자라 이스라엘 족속들이 전에 저희에게 맹세하였거늘 사울이 이스라엘과 유다 족속을 위하여 열심이 있으므로 저희 죽이기를 꾀하였더라 이에 왕이 기브온 사람을 불러 물으니라",
+      "source_text_hash": "2752ce45af482cced16aba5b0c81ee8ff95cfde9c0b483ee1cc10381240722e7",
+      "translation_text_hash": "f598b32889391d7806f8b0cfe06b8f50337595ce8e8fd855fb93aa68c37f53fd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "기브온 사람은 이스라엘 족속이 아니요 아모리 사람 중에서 남은 자라 이스라엘 족속들이 전에 저희에게 맹세하였거늘 사울이 이스라엘과 유다 족속을 위하여 열심이 있으므로 저희 죽이기를 꾀하였더라 이에 왕이 기브온 사람을 불러 물으니라"
+      ],
+      "raw_text_hashes": [
+        "f598b32889391d7806f8b0cfe06b8f50337595ce8e8fd855fb93aa68c37f53fd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:21:3",
+      "sequence": 8584,
+      "chapter_label": "2SA 21",
+      "verse_label": "3",
+      "locator": {
+        "book": "2SA",
+        "chapter": 21,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 21,
+          "verse": 3
+        }
+      ],
+      "en": "and David said to the Gibeonites, “What should I do for you? And with what should I make atonement, that you may bless the LORD’s inheritance?”",
+      "ko": "다윗이 저희에게 묻되 내가 너희를 위하여 어떻게 하랴 내가 어떻게 속죄하여야 너희가 여호와의 기업을 위하여 복을 빌겠느냐",
+      "source_text_hash": "f466fbb94b00d971148f4916331d8598e172d141cb650997e3c8110f51a075ef",
+      "translation_text_hash": "fa96525b07ea2f1d23f967ffdf52eab4d1b165cf223f11e6322515dbf0efaf7c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 저희에게 묻되 내가 너희를 위하여 어떻게 하랴 내가 어떻게 속죄하여야 너희가 여호와의 기업을 위하여 복을 빌겠느냐"
+      ],
+      "raw_text_hashes": [
+        "fa96525b07ea2f1d23f967ffdf52eab4d1b165cf223f11e6322515dbf0efaf7c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:21:4",
+      "sequence": 8585,
+      "chapter_label": "2SA 21",
+      "verse_label": "4",
+      "locator": {
+        "book": "2SA",
+        "chapter": 21,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 21,
+          "verse": 4
+        }
+      ],
+      "en": "The Gibeonites said to him, “It is no matter of silver or gold between us and Saul or his house; neither is it for us to put any man to death in Israel.” He said, “I will do for you whatever you say.”",
+      "ko": "기브온 사람이 대답하되 사울과 그 집과 우리 사이의 일은 은금에 있지 아니하오나 이스라엘 가운데서 사람을 죽이는 일은 우리에게 있지 아니하니이다 왕이 가로되 너희의 말하는대로 시행하리라",
+      "source_text_hash": "3295401e7cd605efe11b45bd7940f3aa45cdc2432dcfd3ef73f256bd36a0ef73",
+      "translation_text_hash": "e8b7d860df6e4cc259de9d0605930fcaff9e382a6a88caadf736f90d0e6b18d6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "기브온 사람이 대답하되 사울과 그 집과 우리 사이의 일은 은금에 있지 아니하오나 이스라엘 가운데서 사람을 죽이는 일은 우리에게 있지 아니하니이다 왕이 가로되 너희의 말하는대로 시행하리라"
+      ],
+      "raw_text_hashes": [
+        "e8b7d860df6e4cc259de9d0605930fcaff9e382a6a88caadf736f90d0e6b18d6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:21:5",
+      "sequence": 8586,
+      "chapter_label": "2SA 21",
+      "verse_label": "5",
+      "locator": {
+        "book": "2SA",
+        "chapter": 21,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 21,
+          "verse": 5
+        }
+      ],
+      "en": "They said to the king, “The man who consumed us and who plotted against us, that we should be destroyed from remaining in any of the borders of Israel,",
+      "ko": "저희가 왕께 고하되 우리를 학살하였고 또 우리를 멸하여 이스라엘 경내에 머물지 못하게 하려고 모해한 사람의",
+      "source_text_hash": "6c61b4deb94b3ac8202f39637394ce8867375d771abe40c17f8047f7271dc008",
+      "translation_text_hash": "828f0bddbd969b24fb76f0cd896b747bf50e5baed5428b35ce5b76db5a4dd4eb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 왕께 고하되 우리를 학살하였고 또 우리를 멸하여 이스라엘 경내에 머물지 못하게 하려고 모해한 사람의"
+      ],
+      "raw_text_hashes": [
+        "828f0bddbd969b24fb76f0cd896b747bf50e5baed5428b35ce5b76db5a4dd4eb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:21:6",
+      "sequence": 8587,
+      "chapter_label": "2SA 21",
+      "verse_label": "6",
+      "locator": {
+        "book": "2SA",
+        "chapter": 21,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 21,
+          "verse": 6
+        }
+      ],
+      "en": "let seven men of his sons be delivered to us, and we will hang them up to the LORD in Gibeah of Saul, the chosen of the LORD.” The king said, “I will give them.”",
+      "ko": "자손 일곱을 내어 주소서 여호와의 빼신 사울의 고을 기브아에서 우리가 저희를 여호와 앞에서 목매어 달겠나이다 왕이 가로되 내가 내어 주리라 하니라",
+      "source_text_hash": "629a6cc093e787eb270067e939c5bdfd8323d3eab21d29b1d4f7668a32c0ae5d",
+      "translation_text_hash": "7c9d14b5ea6a163dbf5267987d381504c118847940f6de22747ac54cdb2c7b7d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자손 일곱을 내어 주소서 여호와의 빼신 사울의 고을 기브아에서 우리가 저희를 여호와 앞에서 목매어 달겠나이다 왕이 가로되 내가 내어 주리라 하니라"
+      ],
+      "raw_text_hashes": [
+        "7c9d14b5ea6a163dbf5267987d381504c118847940f6de22747ac54cdb2c7b7d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:21:7",
+      "sequence": 8588,
+      "chapter_label": "2SA 21",
+      "verse_label": "7",
+      "locator": {
+        "book": "2SA",
+        "chapter": 21,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 21,
+          "verse": 7
+        }
+      ],
+      "en": "But the king spared Mephibosheth the son of Jonathan the son of Saul, because of the LORD’s oath that was between them, between David and Jonathan the son of Saul.",
+      "ko": "그러나 다윗과 사울의 아들 요나단 사이에 서로 여호와를 가리켜 맹세한 것이 있으므로 왕이 사울의 손자 요나단의 아들 므비보셋은 아끼고",
+      "source_text_hash": "ee42a3f6097572fa681b59f397855101a295f9bd963b39d837b43e6e06a92f07",
+      "translation_text_hash": "c2fde6da7e19a313911078ecd723ebcb04692f801c0797aebbbaab193e1b4994",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 다윗과 사울의 아들 요나단 사이에 서로 여호와를 가리켜 맹세한 것이 있으므로 왕이 사울의 손자 요나단의 아들 므비보셋은 아끼고"
+      ],
+      "raw_text_hashes": [
+        "c2fde6da7e19a313911078ecd723ebcb04692f801c0797aebbbaab193e1b4994"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:21:8",
+      "sequence": 8589,
+      "chapter_label": "2SA 21",
+      "verse_label": "8",
+      "locator": {
+        "book": "2SA",
+        "chapter": 21,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 21,
+          "verse": 8
+        }
+      ],
+      "en": "But the king took the two sons of Rizpah the daughter of Aiah, whom she bore to Saul, Armoni and Mephibosheth; and the five sons of Merab the daughter of Saul, whom she bore to Adriel the son of Barzillai the Meholathite.",
+      "ko": "이에 아야의 딸 리스바에게서 난 자 곧 사울의 두 아들 알모니와 므비보셋과 사울의 딸 메랍에게서 난 자 곧 므홀랏 사람 바실래의 아들 아드리엘의 다섯 아들을 잡고",
+      "source_text_hash": "62e859c124804ba6478f53a52cf86fcb137b2b61f2988c6754dede96d6ec193a",
+      "translation_text_hash": "a5b0cc33276126bf2f9508707e6cbfff8f45841037984b59e9969b51673c939a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 아야의 딸 리스바에게서 난 자 곧 사울의 두 아들 알모니와 므비보셋과 사울의 딸 메랍에게서 난 자 곧 므홀랏 사람 바실래의 아들 아드리엘의 다섯 아들을 잡고"
+      ],
+      "raw_text_hashes": [
+        "a5b0cc33276126bf2f9508707e6cbfff8f45841037984b59e9969b51673c939a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:21:9",
+      "sequence": 8590,
+      "chapter_label": "2SA 21",
+      "verse_label": "9",
+      "locator": {
+        "book": "2SA",
+        "chapter": 21,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 21,
+          "verse": 9
+        }
+      ],
+      "en": "He delivered them into the hands of the Gibeonites; and they hanged them on the mountain before the LORD, and all seven of them fell together. They were put to death in the days of harvest, in the first days, at the beginning of barley harvest.",
+      "ko": "저희를 기브온 사람의 손에 붙이니 기브온 사람이 저희를 산 위에서 여호와 앞에 목매어 달매 저희 일곱 사람이 함께 죽으니 죽은 때는 곡식 베는 처음날 곧 보리 베기 시작하는 때더라",
+      "source_text_hash": "5e68776ae33a4ce8f663d6f5b2f5b60823803744123f364beabe256e5f316d72",
+      "translation_text_hash": "cdfe33b036ea83b6804af911ba3fed8ffc38e13e5b280295738565d7213b90ba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희를 기브온 사람의 손에 붙이니 기브온 사람이 저희를 산 위에서 여호와 앞에 목매어 달매 저희 일곱 사람이 함께 죽으니 죽은 때는 곡식 베는 처음날 곧 보리 베기 시작하는 때더라"
+      ],
+      "raw_text_hashes": [
+        "cdfe33b036ea83b6804af911ba3fed8ffc38e13e5b280295738565d7213b90ba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:21:10",
+      "sequence": 8591,
+      "chapter_label": "2SA 21",
+      "verse_label": "10",
+      "locator": {
+        "book": "2SA",
+        "chapter": 21,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 21,
+          "verse": 10
+        }
+      ],
+      "en": "Rizpah the daughter of Aiah took sackcloth and spread it for herself on the rock, from the beginning of harvest until water poured on them from the sky. She allowed neither the birds of the sky to rest on them by day, nor the animals of the field by night.",
+      "ko": "아야의 딸 리스바가 굵은 베를 가져다가 자기를 위하여 반석 위에 펴고 곡식 베기 시작할 때부터 하늘에서 비가 시체에 쏟아지기까지 그 시체에 낮에는 공중의 새가 앉지 못하게 하고 밤에는 들짐승이 범하지 못하게 한지라",
+      "source_text_hash": "13e862987aa2c49fe796b1463b13642c4d9e00228c8cfe3faab46edca0a0b45d",
+      "translation_text_hash": "e9c44ef331a97bb9e2be12ef7e625599f7b3b4ef62034f3b6a5fe23c3b2be2b8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아야의 딸 리스바가 굵은 베를 가져다가 자기를 위하여 반석 위에 펴고 곡식 베기 시작할 때부터 하늘에서 비가 시체에 쏟아지기까지 그 시체에 낮에는 공중의 새가 앉지 못하게 하고 밤에는 들짐승이 범하지 못하게 한지라"
+      ],
+      "raw_text_hashes": [
+        "e9c44ef331a97bb9e2be12ef7e625599f7b3b4ef62034f3b6a5fe23c3b2be2b8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:21:11",
+      "sequence": 8592,
+      "chapter_label": "2SA 21",
+      "verse_label": "11",
+      "locator": {
+        "book": "2SA",
+        "chapter": 21,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 21,
+          "verse": 11
+        }
+      ],
+      "en": "David was told what Rizpah the daughter of Aiah, the concubine of Saul, had done.",
+      "ko": "이에 아야의 딸 사울의 첩 리스바의 행한 일이 다윗에게 들리매",
+      "source_text_hash": "996d0a573d598d3495609b19b546e8d0605fe6d15d27a5a2cf00ed369e6aeda0",
+      "translation_text_hash": "d7585b62ab9c320dcde92df59c9991371a297aa81927fcef3c41f14a2d00ffba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 아야의 딸 사울의 첩 리스바의 행한 일이 다윗에게 들리매"
+      ],
+      "raw_text_hashes": [
+        "d7585b62ab9c320dcde92df59c9991371a297aa81927fcef3c41f14a2d00ffba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:21:12",
+      "sequence": 8593,
+      "chapter_label": "2SA 21",
+      "verse_label": "12",
+      "locator": {
+        "book": "2SA",
+        "chapter": 21,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 21,
+          "verse": 12
+        }
+      ],
+      "en": "So David went and took the bones of Saul and the bones of Jonathan his son from the men of Jabesh Gilead, who had stolen them from the street of Beth Shan, where the Philistines had hanged them in the day that the Philistines killed Saul in Gilboa;",
+      "ko": "다윗이 가서 사울의 뼈와 그 아들 요나단의 뼈를 길르앗 야베스 사람에게서 취하니 이는 전에 블레셋 사람이 사울을 길보아에서 죽여 벳산 거리에 매어 단 것을 저희가 가만히 가져 온 것이라",
+      "source_text_hash": "2a2d94a8b6745740b9c80a2d1e060fbf58c929ba20a2625aa5c68aca4a2514dd",
+      "translation_text_hash": "18b93c29315ff19bdd631dbc819ee82bbe86f7737d0b6c56620ef5a1d589dd0c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 가서 사울의 뼈와 그 아들 요나단의 뼈를 길르앗 야베스 사람에게서 취하니 이는 전에 블레셋 사람이 사울을 길보아에서 죽여 벳산 거리에 매어 단 것을 저희가 가만히 가져 온 것이라"
+      ],
+      "raw_text_hashes": [
+        "18b93c29315ff19bdd631dbc819ee82bbe86f7737d0b6c56620ef5a1d589dd0c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:21:13",
+      "sequence": 8594,
+      "chapter_label": "2SA 21",
+      "verse_label": "13",
+      "locator": {
+        "book": "2SA",
+        "chapter": 21,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 21,
+          "verse": 13
+        }
+      ],
+      "en": "and he brought up from there the bones of Saul and the bones of Jonathan his son. They also gathered the bones of those who were hanged.",
+      "ko": "다윗이 그곳에서 사울의 뼈와 그 아들 요나단의 뼈를 가지고 올라 오매 사람들이 그 달려 죽은 자들의 뼈를 거두어다가",
+      "source_text_hash": "5b89c2095574b715407696eedc8229b8a42e2468e126f955ad1d088a0114b671",
+      "translation_text_hash": "146eb264b088fda1b1b0b5dc6b16f7d9e5cd96c69307006b87cc6dadba0b0aa3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 그곳에서 사울의 뼈와 그 아들 요나단의 뼈를 가지고 올라 오매 사람들이 그 달려 죽은 자들의 뼈를 거두어다가"
+      ],
+      "raw_text_hashes": [
+        "146eb264b088fda1b1b0b5dc6b16f7d9e5cd96c69307006b87cc6dadba0b0aa3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:21:14",
+      "sequence": 8595,
+      "chapter_label": "2SA 21",
+      "verse_label": "14",
+      "locator": {
+        "book": "2SA",
+        "chapter": 21,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 21,
+          "verse": 14
+        }
+      ],
+      "en": "They buried the bones of Saul and Jonathan his son in the country of Benjamin in Zela, in the tomb of Kish his father; and they performed all that the king commanded. After that, God answered prayer for the land.",
+      "ko": "사울과 그 아들 요나단의 뼈와 함께 베냐민 땅 셀라에서 그 아비 기스의 묘에 장사하되 모두 왕의 명대로 좇아 행하니라 그 후에야 하나님이 그 땅을 위하여 기도를 들으시니라",
+      "source_text_hash": "6782d21e94d6d73feb4bea7d80f95534beb2ff0350b2a0d53fb5f197d51f23d5",
+      "translation_text_hash": "88711b4edaf1c3bb0605669b4d26f004dd1a6c55e4974208eaee30751a21e9a2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울과 그 아들 요나단의 뼈와 함께 베냐민 땅 셀라에서 그 아비 기스의 묘에 장사하되 모두 왕의 명대로 좇아 행하니라 그 후에야 하나님이 그 땅을 위하여 기도를 들으시니라"
+      ],
+      "raw_text_hashes": [
+        "88711b4edaf1c3bb0605669b4d26f004dd1a6c55e4974208eaee30751a21e9a2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:21:15",
+      "sequence": 8596,
+      "chapter_label": "2SA 21",
+      "verse_label": "15",
+      "locator": {
+        "book": "2SA",
+        "chapter": 21,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 21,
+          "verse": 15
+        }
+      ],
+      "en": "The Philistines had war again with Israel; and David went down, and his servants with him, and fought against the Philistines. David grew faint;",
+      "ko": "블레셋 사람이 다시 이스라엘을 치거늘 다윗이 그 신복들과 함께 내려 가서 블레셋 사람과 싸우더니 다윗이 피곤하매",
+      "source_text_hash": "30e05ab5d3758320bab740b7fe4fa4bcadf7ea4e20e9ed3d4babf4245d440e89",
+      "translation_text_hash": "9a5228ee4bbc9d89015d930e0121b715bbf8f0f08aab800fbd0a75c28b58829d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "블레셋 사람이 다시 이스라엘을 치거늘 다윗이 그 신복들과 함께 내려 가서 블레셋 사람과 싸우더니 다윗이 피곤하매"
+      ],
+      "raw_text_hashes": [
+        "9a5228ee4bbc9d89015d930e0121b715bbf8f0f08aab800fbd0a75c28b58829d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:21:16",
+      "sequence": 8597,
+      "chapter_label": "2SA 21",
+      "verse_label": "16",
+      "locator": {
+        "book": "2SA",
+        "chapter": 21,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 21,
+          "verse": 16
+        }
+      ],
+      "en": "and Ishbibenob, who was of the sons of the giant, the weight of whose spear was three hundred shekels of bronze in weight, he being armed with a new sword, thought he would kill David.",
+      "ko": "장대한 자의 아들 중에 삼백 세겔중 되는 놋창을 들고 새 칼을 찬 이스비브놉이 다윗을 죽이려 하므로",
+      "source_text_hash": "da6ef59938917a97b7128e4cab896c05d3c3cc50a224b685d162a1ee7cd63bd5",
+      "translation_text_hash": "fc7459082e2a5733740fbe5b1833be8272f292ae0f40312bdf581214b3fbbeb4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "장대한 자의 아들 중에 삼백 세겔중 되는 놋창을 들고 새 칼을 찬 이스비브놉이 다윗을 죽이려 하므로"
+      ],
+      "raw_text_hashes": [
+        "fc7459082e2a5733740fbe5b1833be8272f292ae0f40312bdf581214b3fbbeb4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:21:17",
+      "sequence": 8598,
+      "chapter_label": "2SA 21",
+      "verse_label": "17",
+      "locator": {
+        "book": "2SA",
+        "chapter": 21,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 21,
+          "verse": 17
+        }
+      ],
+      "en": "But Abishai the son of Zeruiah helped him, and struck the Philistine and killed him. Then the men of David swore to him, saying, “Don’t go out with us to battle any more, so that you don’t quench the lamp of Israel.”",
+      "ko": "스루야의 아들 아비새가 다윗을 도와 그 블레셋 사람을 쳐 죽이니 다윗의 종자들이 다윗에게 맹세하여 가로되 왕은 다시 우리와 함께 전장에 나가지 마옵소서 이스라엘의 등불이 꺼지지 말게 하옵소서 하니라",
+      "source_text_hash": "9bd4c696205c4f2957bbdfa90f9afb7f2ec096987fb3a1ef65fdad69c2ab3981",
+      "translation_text_hash": "435e7c23f5343ce1a090533c74d6094ae94992470885e97a1d39d0c6c8f051f8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "스루야의 아들 아비새가 다윗을 도와 그 블레셋 사람을 쳐 죽이니 다윗의 종자들이 다윗에게 맹세하여 가로되 왕은 다시 우리와 함께 전장에 나가지 마옵소서 이스라엘의 등불이 꺼지지 말게 하옵소서 하니라"
+      ],
+      "raw_text_hashes": [
+        "435e7c23f5343ce1a090533c74d6094ae94992470885e97a1d39d0c6c8f051f8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:21:18",
+      "sequence": 8599,
+      "chapter_label": "2SA 21",
+      "verse_label": "18",
+      "locator": {
+        "book": "2SA",
+        "chapter": 21,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 21,
+          "verse": 18
+        }
+      ],
+      "en": "After this, there was again war with the Philistines at Gob. Then Sibbecai the Hushathite killed Saph, who was of the sons of the giant.",
+      "ko": "그 후에 다시 블레셋 사람과 곱에서 전쟁할 때에 후사 사람 십브개가 장대한 자의 아들 중에 삽을 쳐죽였고",
+      "source_text_hash": "7a0fd6c3010f803bed75278ad164e07a25656fc431230f0836c3ee1cfcc4c03b",
+      "translation_text_hash": "235c073544611e73d20005317639dabb3892548ed69885987adc7673e5353364",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 후에 다시 블레셋 사람과 곱에서 전쟁할 때에 후사 사람 십브개가 장대한 자의 아들 중에 삽을 쳐죽였고"
+      ],
+      "raw_text_hashes": [
+        "235c073544611e73d20005317639dabb3892548ed69885987adc7673e5353364"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:21:19",
+      "sequence": 8600,
+      "chapter_label": "2SA 21",
+      "verse_label": "19",
+      "locator": {
+        "book": "2SA",
+        "chapter": 21,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 21,
+          "verse": 19
+        }
+      ],
+      "en": "There was again war with the Philistines at Gob, and Elhanan the son of Jaare-Oregim the Bethlehemite killed Goliath the Gittite’s brother, the staff of whose spear was like a weaver’s beam.",
+      "ko": "또 다시 블레셋 사람과 곱에서 전쟁할 때에 베들레헴 사람 야레오르김의 아들 엘하난이 가드 골리앗의 아우 라흐미를 죽였는데 그 자의 창 자루는 베틀채 같았더라",
+      "source_text_hash": "53ae3b287f9d16741d5ac9fce516d02868ef9021f6ad8feb7c290e3904307f4a",
+      "translation_text_hash": "44d5f43af22de9b4a414c3e3941a8b90ff983de91c8e87fabbfaebd37d58e3f7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 다시 블레셋 사람과 곱에서 전쟁할 때에 베들레헴 사람 야레오르김의 아들 엘하난이 가드 골리앗의 아우 라흐미를 죽였는데 그 자의 창 자루는 베틀채 같았더라"
+      ],
+      "raw_text_hashes": [
+        "44d5f43af22de9b4a414c3e3941a8b90ff983de91c8e87fabbfaebd37d58e3f7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:21:20",
+      "sequence": 8601,
+      "chapter_label": "2SA 21",
+      "verse_label": "20",
+      "locator": {
+        "book": "2SA",
+        "chapter": 21,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 21,
+          "verse": 20
+        }
+      ],
+      "en": "There was again war at Gath, where there was a man of great stature, who had six fingers on every hand and six toes on every foot, twenty-four in number, and he also was born to the giant.",
+      "ko": "또 가드에서 전쟁할 때에 그곳에 키 큰 자 하나는 매 손과 매 발에 가락이 여섯씩 모두 스물 네 가락이 있는데 저도 장대한 자의 소생이라",
+      "source_text_hash": "b145d59de2f53b033f4bea84dff065c84d56b4b905a81115ed7b5f4c96488f19",
+      "translation_text_hash": "c2c808979335bfb5c288cfe9ae444e832d5a0946e80a2bd4854e4fb88676e451",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 가드에서 전쟁할 때에 그곳에 키 큰 자 하나는 매 손과 매 발에 가락이 여섯씩 모두 스물 네 가락이 있는데 저도 장대한 자의 소생이라"
+      ],
+      "raw_text_hashes": [
+        "c2c808979335bfb5c288cfe9ae444e832d5a0946e80a2bd4854e4fb88676e451"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:21:21",
+      "sequence": 8602,
+      "chapter_label": "2SA 21",
+      "verse_label": "21",
+      "locator": {
+        "book": "2SA",
+        "chapter": 21,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 21,
+          "verse": 21
+        }
+      ],
+      "en": "When he defied Israel, Jonathan the son of Shimei, David’s brother, killed him.",
+      "ko": "저가 이스라엘 사람을 능욕하므로 다윗의 형 삼마의 아들 요나단이 저를 죽이니라",
+      "source_text_hash": "f28bdb4869a88b4249599fea079bafe2b8e04930da01a3026ee59e1d3fe3d0b7",
+      "translation_text_hash": "229eaaf0023eac48170e75f9168d1fda6d55bc543e286a1fa9e08f631b200dc1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 이스라엘 사람을 능욕하므로 다윗의 형 삼마의 아들 요나단이 저를 죽이니라"
+      ],
+      "raw_text_hashes": [
+        "229eaaf0023eac48170e75f9168d1fda6d55bc543e286a1fa9e08f631b200dc1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:21:22",
+      "sequence": 8603,
+      "chapter_label": "2SA 21",
+      "verse_label": "22",
+      "locator": {
+        "book": "2SA",
+        "chapter": 21,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 21,
+          "verse": 22
+        }
+      ],
+      "en": "These four were born to the giant in Gath; and they fell by the hand of David and by the hand of his servants.",
+      "ko": "이 네 사람 가드의 장대한 자의 소생이 다윗의 손과 그 신복의 손에 다 죽었더라",
+      "source_text_hash": "6d4a69dc346cec1b94decb144141660b51180f10243593f460d618a8fd9919ae",
+      "translation_text_hash": "2b2b334d308ca168fdf8e684473736cae4fdbf6dd4d45dfcaef6541c503f7713",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 네 사람 가드의 장대한 자의 소생이 다윗의 손과 그 신복의 손에 다 죽었더라"
+      ],
+      "raw_text_hashes": [
+        "2b2b334d308ca168fdf8e684473736cae4fdbf6dd4d45dfcaef6541c503f7713"
+      ]
+    }
+  ]
+}

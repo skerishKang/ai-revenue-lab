@@ -1,0 +1,653 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:2KI:chapter:024",
+  "unit_ordinal": 337,
+  "unit_label": "2KI 24",
+  "book_code": "2KI",
+  "chapter_number": 24,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:2KI:24:1",
+      "sequence": 10204,
+      "chapter_label": "2KI 24",
+      "verse_label": "1",
+      "locator": {
+        "book": "2KI",
+        "chapter": 24,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 24,
+          "verse": 1
+        }
+      ],
+      "en": "In his days Nebuchadnezzar king of Babylon came up, and Jehoiakim became his servant for three years. Then he turned and rebelled against him.",
+      "ko": "여호야김 시대에 바벨론 왕 느부갓네살이 올라오매 여호야김이 삼년을 섬기다가 돌이켜 저를 배반하였더니",
+      "source_text_hash": "5a8ad194bec78f3dffe0fc541ec7e042c3530aab633fb9d4150deee94e8c9080",
+      "translation_text_hash": "f033c00ca3782b5cbedd7d24739ec3483bfbd41be2470ed126d7938cc517dae9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호야김 시대에 바벨론 왕 느부갓네살이 올라오매 여호야김이 삼년을 섬기다가 돌이켜 저를 배반하였더니"
+      ],
+      "raw_text_hashes": [
+        "f033c00ca3782b5cbedd7d24739ec3483bfbd41be2470ed126d7938cc517dae9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:24:2",
+      "sequence": 10205,
+      "chapter_label": "2KI 24",
+      "verse_label": "2",
+      "locator": {
+        "book": "2KI",
+        "chapter": 24,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 24,
+          "verse": 2
+        }
+      ],
+      "en": "The LORD sent against him bands of the Chaldeans, bands of the Syrians, bands of the Moabites, and bands of the children of Ammon, and sent them against Judah to destroy it, according to the LORD’s word which he spoke by his servants the prophets.",
+      "ko": "여호와께서 그 종 선지자들로 하신 말씀과 같이 갈대아의 부대와 아람의 부대와 모압의 부대와 암몬 자손의 부대를 여호야김에게로 보내어 유다를 쳐 멸하려 하시니",
+      "source_text_hash": "42bda299ee830d462ec4ddf3ad3999cd83fa17b3951e98175c1fb5384f0866fb",
+      "translation_text_hash": "546d2b603f6d0024c28acaf26ea1b04223bad744841976a2688c4076a8ef137c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 그 종 선지자들로 하신 말씀과 같이 갈대아의 부대와 아람의 부대와 모압의 부대와 암몬 자손의 부대를 여호야김에게로 보내어 유다를 쳐 멸하려 하시니"
+      ],
+      "raw_text_hashes": [
+        "546d2b603f6d0024c28acaf26ea1b04223bad744841976a2688c4076a8ef137c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:24:3",
+      "sequence": 10206,
+      "chapter_label": "2KI 24",
+      "verse_label": "3",
+      "locator": {
+        "book": "2KI",
+        "chapter": 24,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 24,
+          "verse": 3
+        }
+      ],
+      "en": "Surely at the commandment of the LORD this came on Judah, to remove them out of his sight for the sins of Manasseh, according to all that he did,",
+      "ko": "이 일이 유다에 임함은 곧 여호와의 명하신바로 저희를 자기 앞에서 물리치고자 하심이니 이는 므낫세의 지은 모든 죄로 인함이며",
+      "source_text_hash": "cdb928af75f6e2bf4f4cdec6805fc434ea7da311a6488ce57c841aad202c63b9",
+      "translation_text_hash": "7d39887372be68dc00cf1b63909ce6f35e7948806789624370a45d4d061eeebb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 일이 유다에 임함은 곧 여호와의 명하신바로 저희를 자기 앞에서 물리치고자 하심이니 이는 므낫세의 지은 모든 죄로 인함이며"
+      ],
+      "raw_text_hashes": [
+        "7d39887372be68dc00cf1b63909ce6f35e7948806789624370a45d4d061eeebb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:24:4",
+      "sequence": 10207,
+      "chapter_label": "2KI 24",
+      "verse_label": "4",
+      "locator": {
+        "book": "2KI",
+        "chapter": 24,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 24,
+          "verse": 4
+        }
+      ],
+      "en": "and also for the innocent blood that he shed; for he filled Jerusalem with innocent blood, and the LORD would not pardon.",
+      "ko": "또 저가 무죄한 자의 피를 흘려 그 피로 예루살렘에 가득하게 하였음이라 여호와께서 사하시기를 즐겨하지 아니하시니라",
+      "source_text_hash": "e1b2705c04e40103362475ede60eaa06772444330619657088574fb8abfed74e",
+      "translation_text_hash": "321ad14d565355d0efee34107ad8b9a85d2a2dc07e081c6144529fbacadf6a43",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 저가 무죄한 자의 피를 흘려 그 피로 예루살렘에 가득하게 하였음이라 여호와께서 사하시기를 즐겨하지 아니하시니라"
+      ],
+      "raw_text_hashes": [
+        "321ad14d565355d0efee34107ad8b9a85d2a2dc07e081c6144529fbacadf6a43"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:24:5",
+      "sequence": 10208,
+      "chapter_label": "2KI 24",
+      "verse_label": "5",
+      "locator": {
+        "book": "2KI",
+        "chapter": 24,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 24,
+          "verse": 5
+        }
+      ],
+      "en": "Now the rest of the acts of Jehoiakim, and all that he did, aren’t they written in the book of the chronicles of the kings of Judah?",
+      "ko": "여호야김의 남은 사적과 모든 행한 일은 유다 왕 역대지략에 기록되지 아니하였느냐",
+      "source_text_hash": "11b9bb62d2e39b76b9997154c4b087a46ea0f111af9f3eba3b1a0f22fa1cad7c",
+      "translation_text_hash": "26793a1aeb34037c701b8b54abfe4db582bbd0d3d460ecc0f4248565ecd5dfbc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호야김의 남은 사적과 모든 행한 일은 유다 왕 역대지략에 기록되지 아니하였느냐"
+      ],
+      "raw_text_hashes": [
+        "26793a1aeb34037c701b8b54abfe4db582bbd0d3d460ecc0f4248565ecd5dfbc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:24:6",
+      "sequence": 10209,
+      "chapter_label": "2KI 24",
+      "verse_label": "6",
+      "locator": {
+        "book": "2KI",
+        "chapter": 24,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 24,
+          "verse": 6
+        }
+      ],
+      "en": "So Jehoiakim slept with his fathers, and Jehoiachin his son reigned in his place.",
+      "ko": "여호야김이 그 열조와 함께 자매 그 아들 여호야긴이 대신하여 왕이 되니라",
+      "source_text_hash": "de12807f4a8c6389d67bd53d030e1b0d65fe750398d7b0145b3017378bc05845",
+      "translation_text_hash": "c69527ac3d03368a278d41f80701f68b5623d1c42d8542c671628cf32ad425aa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호야김이 그 열조와 함께 자매 그 아들 여호야긴이 대신하여 왕이 되니라"
+      ],
+      "raw_text_hashes": [
+        "c69527ac3d03368a278d41f80701f68b5623d1c42d8542c671628cf32ad425aa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:24:7",
+      "sequence": 10210,
+      "chapter_label": "2KI 24",
+      "verse_label": "7",
+      "locator": {
+        "book": "2KI",
+        "chapter": 24,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 24,
+          "verse": 7
+        }
+      ],
+      "en": "The king of Egypt didn’t come out of his land any more; for the king of Babylon had taken, from the brook of Egypt to the river Euphrates, all that belonged to the king of Egypt.",
+      "ko": "애굽 왕이 다시는 그 나라에서 나오지 못하였으니 이는 바벨론 왕이 애굽 하수에서부터 유브라데 하수까지 애굽 왕에게 속한 땅을 다 취하였음이더라",
+      "source_text_hash": "7885e293c030a9e7b55d6e421b072752ef4a13db0b8bdb69804466051b65d135",
+      "translation_text_hash": "fa8c671bfeb69b72d696c1094c47b8eb63bf64565af40e043eb21e2a82afdf9b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "애굽 왕이 다시는 그 나라에서 나오지 못하였으니 이는 바벨론 왕이 애굽 하수에서부터 유브라데 하수까지 애굽 왕에게 속한 땅을 다 취하였음이더라"
+      ],
+      "raw_text_hashes": [
+        "fa8c671bfeb69b72d696c1094c47b8eb63bf64565af40e043eb21e2a82afdf9b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:24:8",
+      "sequence": 10211,
+      "chapter_label": "2KI 24",
+      "verse_label": "8",
+      "locator": {
+        "book": "2KI",
+        "chapter": 24,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 24,
+          "verse": 8
+        }
+      ],
+      "en": "Jehoiachin was eighteen years old when he began to reign, and he reigned in Jerusalem three months. His mother’s name was Nehushta the daughter of Elnathan of Jerusalem.",
+      "ko": "여호야긴이 위에 나아갈 때에 나이 십 팔 세라 예루살렘에서 석 달을 치리하니라 그 모친의 이름은 느후스다라 예루살렘 엘라단의 딸이더라",
+      "source_text_hash": "23d2ffa23c34137ff51a3c12ba388662a634f6cee1eeb6768a827a08d7d52783",
+      "translation_text_hash": "6812505e25411641a9a724fde7475e89c8d8e8160fd0a8318106877146d83a2e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호야긴이 위에 나아갈 때에 나이 십 팔 세라 예루살렘에서 석 달을 치리하니라 그 모친의 이름은 느후스다라 예루살렘 엘라단의 딸이더라"
+      ],
+      "raw_text_hashes": [
+        "6812505e25411641a9a724fde7475e89c8d8e8160fd0a8318106877146d83a2e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:24:9",
+      "sequence": 10212,
+      "chapter_label": "2KI 24",
+      "verse_label": "9",
+      "locator": {
+        "book": "2KI",
+        "chapter": 24,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 24,
+          "verse": 9
+        }
+      ],
+      "en": "He did that which was evil in the LORD’s sight, according to all that his father had done.",
+      "ko": "여호야긴이 그 부친의 모든 행위를 본받아 여호와 보시기에 악을 행하였더라",
+      "source_text_hash": "cb23c1ab4e457714aa58021591f6e650724c184c41901ae2ee4fc2500ee9068a",
+      "translation_text_hash": "51fdc08161bd703498ecac67b1a0e2c0f0a1372cb015ad055c7f436c4fd7ae28",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호야긴이 그 부친의 모든 행위를 본받아 여호와 보시기에 악을 행하였더라"
+      ],
+      "raw_text_hashes": [
+        "51fdc08161bd703498ecac67b1a0e2c0f0a1372cb015ad055c7f436c4fd7ae28"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:24:10",
+      "sequence": 10213,
+      "chapter_label": "2KI 24",
+      "verse_label": "10",
+      "locator": {
+        "book": "2KI",
+        "chapter": 24,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 24,
+          "verse": 10
+        }
+      ],
+      "en": "At that time the servants of Nebuchadnezzar king of Babylon came up to Jerusalem, and the city was besieged.",
+      "ko": "그 때에 바벨론 왕 느부갓네살의 신복들이 예루살렘에 올라와서 그 성을 에워싸니라",
+      "source_text_hash": "71affb2660d63945f656e350152900c2e00430d1c70f5557152c06e3861ad7d8",
+      "translation_text_hash": "a9a81775525574e71f371af473bfd3e70138935e0fb7b1045103fab7b95eb6bc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 바벨론 왕 느부갓네살의 신복들이 예루살렘에 올라와서 그 성을 에워싸니라"
+      ],
+      "raw_text_hashes": [
+        "a9a81775525574e71f371af473bfd3e70138935e0fb7b1045103fab7b95eb6bc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:24:11",
+      "sequence": 10214,
+      "chapter_label": "2KI 24",
+      "verse_label": "11",
+      "locator": {
+        "book": "2KI",
+        "chapter": 24,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 24,
+          "verse": 11
+        }
+      ],
+      "en": "Nebuchadnezzar king of Babylon came to the city while his servants were besieging it,",
+      "ko": "그 신복들이 에워쌀 때에 바벨론 왕 느부갓네살도 그 성에 이르니",
+      "source_text_hash": "ec16eed818ae3db4b4c6e726d2697636bbf84866f1a1da8dd411a347dc1d6922",
+      "translation_text_hash": "ca33050ce808c469d3e0e5413bdd86d9cc833339ada16495ed8d2fea8225676d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 신복들이 에워쌀 때에 바벨론 왕 느부갓네살도 그 성에 이르니"
+      ],
+      "raw_text_hashes": [
+        "ca33050ce808c469d3e0e5413bdd86d9cc833339ada16495ed8d2fea8225676d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:24:12",
+      "sequence": 10215,
+      "chapter_label": "2KI 24",
+      "verse_label": "12",
+      "locator": {
+        "book": "2KI",
+        "chapter": 24,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 24,
+          "verse": 12
+        }
+      ],
+      "en": "and Jehoiachin the king of Judah went out to the king of Babylon—he, his mother, his servants, his princes, and his officers; and the king of Babylon captured him in the eighth year of his reign.",
+      "ko": "유다 왕 여호야긴이 그 모친과 신복과 방백들과 내시들과 함께 바벨론 왕에게 나아가매 왕이 잡으니 때는 바벨론 왕 팔년이라",
+      "source_text_hash": "80de5a5bdb7c3e136af26349c11fb4a8ccbb9996b7dd5237b3401f292b382f74",
+      "translation_text_hash": "9c4a7e7ba175d8bd37b616b849b80f3e024ba264c7b4008942b6af646ea8ae9a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다 왕 여호야긴이 그 모친과 신복과 방백들과 내시들과 함께 바벨론 왕에게 나아가매 왕이 잡으니 때는 바벨론 왕 팔년이라"
+      ],
+      "raw_text_hashes": [
+        "9c4a7e7ba175d8bd37b616b849b80f3e024ba264c7b4008942b6af646ea8ae9a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:24:13",
+      "sequence": 10216,
+      "chapter_label": "2KI 24",
+      "verse_label": "13",
+      "locator": {
+        "book": "2KI",
+        "chapter": 24,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 24,
+          "verse": 13
+        }
+      ],
+      "en": "He carried out from there all the treasures of the LORD’s house and the treasures of the king’s house, and cut in pieces all the vessels of gold which Solomon king of Israel had made in the LORD’s temple, as the LORD had said.",
+      "ko": "저가 여호와의 전의 모든 보물과 왕궁 보물을 집어내고 또 이스라엘 왕 솔로몬이 만든 것 곧 여호와의 전의 금 기명을 다 훼파하였으니 여호와의 말씀과 같이 되었더라",
+      "source_text_hash": "042d072ce8de06c85a5b879c53c767dce45c9efe7b68efd60372949c9bc62e37",
+      "translation_text_hash": "28c6064b6763478122a510799213d941946abd6b259be5b3152958190470e845",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 여호와의 전의 모든 보물과 왕궁 보물을 집어내고 또 이스라엘 왕 솔로몬이 만든 것 곧 여호와의 전의 금 기명을 다 훼파하였으니 여호와의 말씀과 같이 되었더라"
+      ],
+      "raw_text_hashes": [
+        "28c6064b6763478122a510799213d941946abd6b259be5b3152958190470e845"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:24:14",
+      "sequence": 10217,
+      "chapter_label": "2KI 24",
+      "verse_label": "14",
+      "locator": {
+        "book": "2KI",
+        "chapter": 24,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 24,
+          "verse": 14
+        }
+      ],
+      "en": "He carried away all Jerusalem, and all the princes, and all the mighty men of valor, even ten thousand captives, and all the craftsmen and the smiths. No one remained except the poorest people of the land.",
+      "ko": "저가 또 예루살렘의 모든 백성과 모든 방백과 모든 용사 합 일만명과 모든 공장과 대장장이를 사로잡아 가매 빈천한 자 외에는 그 땅에 남은 자가 없었더라",
+      "source_text_hash": "ffb85416612bea610a78257df84dd58d78bedbbc5ac2bc010ea31a65a44530eb",
+      "translation_text_hash": "2c42935b93dbcbe1f914971fabf78dce5ea501f8d64a01208a8be5c02b2dd5d8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 또 예루살렘의 모든 백성과 모든 방백과 모든 용사 합 일만명과 모든 공장과 대장장이를 사로잡아 가매 빈천한 자 외에는 그 땅에 남은 자가 없었더라"
+      ],
+      "raw_text_hashes": [
+        "2c42935b93dbcbe1f914971fabf78dce5ea501f8d64a01208a8be5c02b2dd5d8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:24:15",
+      "sequence": 10218,
+      "chapter_label": "2KI 24",
+      "verse_label": "15",
+      "locator": {
+        "book": "2KI",
+        "chapter": 24,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 24,
+          "verse": 15
+        }
+      ],
+      "en": "He carried away Jehoiachin to Babylon, with the king’s mother, the king’s wives, his officers, and the chief men of the land. He carried them into captivity from Jerusalem to Babylon.",
+      "ko": "저가 여호야긴을 바벨론으로 사로잡아 가고 왕의 모친과 왕의 아내들과 내시와 나라에 권세 있는 자도 예루살렘에서 바벨론으로 사로잡아 가고",
+      "source_text_hash": "1cfec4a6fb99807957174f8668859649db5f8e0020a2b67aa4741f36eb67a783",
+      "translation_text_hash": "5310ebe018a4c54eae307834f75edcf69504d04b5828c299021caa38c5e8d795",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 여호야긴을 바벨론으로 사로잡아 가고 왕의 모친과 왕의 아내들과 내시와 나라에 권세 있는 자도 예루살렘에서 바벨론으로 사로잡아 가고"
+      ],
+      "raw_text_hashes": [
+        "5310ebe018a4c54eae307834f75edcf69504d04b5828c299021caa38c5e8d795"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:24:16",
+      "sequence": 10219,
+      "chapter_label": "2KI 24",
+      "verse_label": "16",
+      "locator": {
+        "book": "2KI",
+        "chapter": 24,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 24,
+          "verse": 16
+        }
+      ],
+      "en": "All the men of might, even seven thousand, and the craftsmen and the smiths one thousand, all of them strong and fit for war, even them the king of Babylon brought captive to Babylon.",
+      "ko": "또 용사 칠천과 공장과 대장장이 일천 곧 다 강장하여 싸움에 능한 자들을 바벨론으로 사로잡아 가고",
+      "source_text_hash": "1dcfdc0f69e2b26c45fa3c61cdbc90c9d2ea375887881044a751bdd017c4e2a4",
+      "translation_text_hash": "8da4c4055fd80f96016b09bea6825c124e567c6e3506371184b31a32724c591d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 용사 칠천과 공장과 대장장이 일천 곧 다 강장하여 싸움에 능한 자들을 바벨론으로 사로잡아 가고"
+      ],
+      "raw_text_hashes": [
+        "8da4c4055fd80f96016b09bea6825c124e567c6e3506371184b31a32724c591d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:24:17",
+      "sequence": 10220,
+      "chapter_label": "2KI 24",
+      "verse_label": "17",
+      "locator": {
+        "book": "2KI",
+        "chapter": 24,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 24,
+          "verse": 17
+        }
+      ],
+      "en": "The king of Babylon made Mattaniah, Jehoiachin’s father’s brother, king in his place, and changed his name to Zedekiah.",
+      "ko": "바벨론 왕이 또 여호야긴의 아자비 맛다니야로 대신하여 왕을 삼고 그 이름을 고쳐 시드기야라 하였더라",
+      "source_text_hash": "48b888e922ce373610a755c5a6a26e40cf4f3b446e23b340725db46d5865ddb0",
+      "translation_text_hash": "9642a7d4221715912e95c01bbb057d5017fbaf4271d83bee6dcacac83de9967a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바벨론 왕이 또 여호야긴의 아자비 맛다니야로 대신하여 왕을 삼고 그 이름을 고쳐 시드기야라 하였더라"
+      ],
+      "raw_text_hashes": [
+        "9642a7d4221715912e95c01bbb057d5017fbaf4271d83bee6dcacac83de9967a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:24:18",
+      "sequence": 10221,
+      "chapter_label": "2KI 24",
+      "verse_label": "18",
+      "locator": {
+        "book": "2KI",
+        "chapter": 24,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 24,
+          "verse": 18
+        }
+      ],
+      "en": "Zedekiah was twenty-one years old when he began to reign, and he reigned eleven years in Jerusalem. His mother’s name was Hamutal the daughter of Jeremiah of Libnah.",
+      "ko": "시드기야가 위에 나아갈 때에 나이 이십 일세라 예루살렘에서 십 일년을 치리하니라 그 모친의 이름은 하무달이라 립나 예레먀의 딸이더라",
+      "source_text_hash": "af902714240bc73aa0f419caf27c8c604021f503e12f496a5dfb0672e4be4b32",
+      "translation_text_hash": "fa6353cf66a9fcf3b3891297654182f18bb1db033b49a99e810d951db544f22e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시드기야가 위에 나아갈 때에 나이 이십 일세라 예루살렘에서 십 일년을 치리하니라 그 모친의 이름은 하무달이라 립나 예레먀의 딸이더라"
+      ],
+      "raw_text_hashes": [
+        "fa6353cf66a9fcf3b3891297654182f18bb1db033b49a99e810d951db544f22e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:24:19",
+      "sequence": 10222,
+      "chapter_label": "2KI 24",
+      "verse_label": "19",
+      "locator": {
+        "book": "2KI",
+        "chapter": 24,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 24,
+          "verse": 19
+        }
+      ],
+      "en": "He did that which was evil in the LORD’s sight, according to all that Jehoiakim had done.",
+      "ko": "시드기야가 여호야김의 모든 행위를 본받아 여호와 보시기에 악을 행한지라",
+      "source_text_hash": "31d2e3e754bf1729ede2a1d817b2d4ca23c4726142200670341690f8f5b2a2fa",
+      "translation_text_hash": "8e3c9b2068dd437eb41326f47b7d78ee9267418e04229edbf34a447ec68e7006",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시드기야가 여호야김의 모든 행위를 본받아 여호와 보시기에 악을 행한지라"
+      ],
+      "raw_text_hashes": [
+        "8e3c9b2068dd437eb41326f47b7d78ee9267418e04229edbf34a447ec68e7006"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:24:20",
+      "sequence": 10223,
+      "chapter_label": "2KI 24",
+      "verse_label": "20",
+      "locator": {
+        "book": "2KI",
+        "chapter": 24,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 24,
+          "verse": 20
+        }
+      ],
+      "en": "For through the anger of the LORD, this happened in Jerusalem and Judah, until he had cast them out from his presence. Then Zedekiah rebelled against the king of Babylon.",
+      "ko": "여호와께서 예루살렘과 유다를 진노하심이 저희를 그 앞에서 쫓아내실 때까지 이르렀더라. 시드기야가 바벨론 왕을 배반하니라",
+      "source_text_hash": "f0023ab7120db1ac0c84de9a4568f278b3bb5e854d27fa84230e9855be587509",
+      "translation_text_hash": "148626cdcb8a5860d4356bba23f67e48ec95e2ebab4ba8040ccd8c32fa9e16b9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 예루살렘과 유다를 진노하심이 저희를 그 앞에서 쫓아내실 때까지 이르렀더라. 시드기야가 바벨론 왕을 배반하니라"
+      ],
+      "raw_text_hashes": [
+        "148626cdcb8a5860d4356bba23f67e48ec95e2ebab4ba8040ccd8c32fa9e16b9"
+      ]
+    }
+  ]
+}

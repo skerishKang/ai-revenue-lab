@@ -1,0 +1,237 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:120",
+  "unit_ordinal": 598,
+  "unit_label": "PSA 120",
+  "book_code": "PSA",
+  "chapter_number": 120,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:120:1",
+      "sequence": 16076,
+      "chapter_label": "PSA 120",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 120,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 120,
+          "verse": 1
+        }
+      ],
+      "en": "In my distress, I cried to the LORD. He answered me.",
+      "ko": "내가 환난 중에 여호와께 부르짖었더니 내게 응답하셨도다",
+      "source_text_hash": "0a227f9a25b6b89b870f15b888261ee5e2a93a474e04f220c26afc28eda6098c",
+      "translation_text_hash": "ba293bb78c632cb0fd3434de058bc98c5e31affdd75437659d3bb2efa5147d86",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 환난 중에 여호와께 부르짖었더니 내게 응답하셨도다"
+      ],
+      "raw_text_hashes": [
+        "ba293bb78c632cb0fd3434de058bc98c5e31affdd75437659d3bb2efa5147d86"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:120:2",
+      "sequence": 16077,
+      "chapter_label": "PSA 120",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 120,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 120,
+          "verse": 2
+        }
+      ],
+      "en": "Deliver my soul, LORD, from lying lips, from a deceitful tongue.",
+      "ko": "여호와여 거짓된 입술과 궤사한 혀에서 내 생명을 건지소서",
+      "source_text_hash": "cdd88dfa4956c872a08436c501ef901fbfda38b71c0d60ee3d92552ef25bdd46",
+      "translation_text_hash": "3d63b259909467a23e55d92cad95b54d5e2ab52d3491a7cbf8d398ebc634a7db",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 거짓된 입술과 궤사한 혀에서 내 생명을 건지소서"
+      ],
+      "raw_text_hashes": [
+        "3d63b259909467a23e55d92cad95b54d5e2ab52d3491a7cbf8d398ebc634a7db"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:120:3",
+      "sequence": 16078,
+      "chapter_label": "PSA 120",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 120,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 120,
+          "verse": 3
+        }
+      ],
+      "en": "What will be given to you, and what will be done more to you, you deceitful tongue?",
+      "ko": "너 궤사한 혀여 무엇으로 네게 주며 무엇으로 네게 더할꼬",
+      "source_text_hash": "2bda0c47761069252704e9aec26dd3c53db15cac74f90c6b76be49365c71daf2",
+      "translation_text_hash": "fee6a6a3bdbbc60b8c81419dd2b6ce6ebbd67382b0150f6324af10b3eabe11f6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너 궤사한 혀여 무엇으로 네게 주며 무엇으로 네게 더할꼬"
+      ],
+      "raw_text_hashes": [
+        "fee6a6a3bdbbc60b8c81419dd2b6ce6ebbd67382b0150f6324af10b3eabe11f6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:120:4",
+      "sequence": 16079,
+      "chapter_label": "PSA 120",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 120,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 120,
+          "verse": 4
+        }
+      ],
+      "en": "Sharp arrows of the mighty, with coals of juniper.",
+      "ko": "장사의 날카로운 살과 로뎀나무 숯불이리로다",
+      "source_text_hash": "72a945095b923cc45edaaef0b12475b1cfa7ab5f42246c854d9ed5be53a25118",
+      "translation_text_hash": "0266f7d653031ab2c657b35487ed2f794e7c7b035c7761bc35d72af19ea92af1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "장사의 날카로운 살과 로뎀나무 숯불이리로다"
+      ],
+      "raw_text_hashes": [
+        "0266f7d653031ab2c657b35487ed2f794e7c7b035c7761bc35d72af19ea92af1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:120:5",
+      "sequence": 16080,
+      "chapter_label": "PSA 120",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 120,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 120,
+          "verse": 5
+        }
+      ],
+      "en": "Woe is me, that I live in Meshech, that I dwell among the tents of Kedar!",
+      "ko": "메섹에 유하며 게달의 장막 중에 거하는 것이 내게 화로다",
+      "source_text_hash": "f9d25f1b8eedf9b13b17038fbdeb0529f9b8cc0cec3600c86b4a0b0b7e642986",
+      "translation_text_hash": "90d909e95cf176b694daa0a8f9a93b54ad19abc7ae000eb14c7dd0f1a7f08f65",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "메섹에 유하며 게달의 장막 중에 거하는 것이 내게 화로다"
+      ],
+      "raw_text_hashes": [
+        "90d909e95cf176b694daa0a8f9a93b54ad19abc7ae000eb14c7dd0f1a7f08f65"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:120:6",
+      "sequence": 16081,
+      "chapter_label": "PSA 120",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 120,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 120,
+          "verse": 6
+        }
+      ],
+      "en": "My soul has had her dwelling too long with him who hates peace.",
+      "ko": "내가 화평을 미워하는 자와 함께 오래 거하였도다",
+      "source_text_hash": "bceccf216318027ac1f8007de454115ebe83a66e8fede79be1ad558c3f5a9949",
+      "translation_text_hash": "1bd490c6825d2bc773ee4b985b5eb78d2451bd64cc5b4ac0f14b16e6af3ecc37",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 화평을 미워하는 자와 함께 오래 거하였도다"
+      ],
+      "raw_text_hashes": [
+        "1bd490c6825d2bc773ee4b985b5eb78d2451bd64cc5b4ac0f14b16e6af3ecc37"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:120:7",
+      "sequence": 16082,
+      "chapter_label": "PSA 120",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 120,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 120,
+          "verse": 7
+        }
+      ],
+      "en": "I am for peace, but when I speak, they are for war.",
+      "ko": "나는 화평을 원할찌라도 내가 말할 때에 저희는 싸우려 하는도다",
+      "source_text_hash": "5dd227fbd8b79337320d40d3ed6757bf0bce8f94b1c0b1cac72a15493a8f06cc",
+      "translation_text_hash": "8c0fd94292b6494fcd73ed34045d48cdc157b2b57881044cfd1e37f24d4d4c47",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 화평을 원할찌라도 내가 말할 때에 저희는 싸우려 하는도다"
+      ],
+      "raw_text_hashes": [
+        "8c0fd94292b6494fcd73ed34045d48cdc157b2b57881044cfd1e37f24d4d4c47"
+      ]
+    }
+  ]
+}

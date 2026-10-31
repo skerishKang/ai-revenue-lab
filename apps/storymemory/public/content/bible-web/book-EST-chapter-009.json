@@ -1,0 +1,1037 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EST:chapter:009",
+  "unit_ordinal": 435,
+  "unit_label": "EST 9",
+  "book_code": "EST",
+  "chapter_number": 9,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EST:9:1",
+      "sequence": 12836,
+      "chapter_label": "EST 9",
+      "verse_label": "1",
+      "locator": {
+        "book": "EST",
+        "chapter": 9,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 9,
+          "verse": 1
+        }
+      ],
+      "en": "Now in the twelfth month, which is the month Adar, on the thirteenth day of the month, when the king’s commandment and his decree came near to be put in execution, on the day that the enemies of the Jews hoped to conquer them, (but it turned out that the opposite happened, that the Jews conquered those who hated them),",
+      "ko": "아달월 곧 십이월 십 삼일은 왕의 조명을 행하게 된 날이라 유다인의 대적이 저희를 제어하기를 바랐더니 유다인이 도리어 자기를 미워하는 자를 제어하게 된 그 날에",
+      "source_text_hash": "542536660afa41bd0c27edb2090ae5af755685909a8bfea3d2658cee6e711a32",
+      "translation_text_hash": "d9cf30d5ea2b493bdd5a1e4f139bf5d64938a1c40bae570019ae222d95c96182",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아달월 곧 십이월 십 삼일은 왕의 조명을 행하게 된 날이라 유다인의 대적이 저희를 제어하기를 바랐더니 유다인이 도리어 자기를 미워하는 자를 제어하게 된 그 날에"
+      ],
+      "raw_text_hashes": [
+        "d9cf30d5ea2b493bdd5a1e4f139bf5d64938a1c40bae570019ae222d95c96182"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:9:2",
+      "sequence": 12837,
+      "chapter_label": "EST 9",
+      "verse_label": "2",
+      "locator": {
+        "book": "EST",
+        "chapter": 9,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 9,
+          "verse": 2
+        }
+      ],
+      "en": "the Jews gathered themselves together in their cities throughout all the provinces of the King Ahasuerus, to lay hands on those who wanted to harm them. No one could withstand them, because the fear of them had fallen on all the people.",
+      "ko": "유다인들이 아하수에로왕의 각 도, 각 읍에 모여 자기를 해하고자 하는 자를 죽이려 하니 모든 민족이 저희를 두려워하여 능히 막을 자가 없고",
+      "source_text_hash": "ca4d3639d2619ffbe1eccdd72c9581028f94a33eec4f7acbc8aaad63a870afed",
+      "translation_text_hash": "1acd36309ade8bdcab5cfce85a5cdc7734a3eaa678b7170268d15a55f22e6683",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다인들이 아하수에로왕의 각 도, 각 읍에 모여 자기를 해하고자 하는 자를 죽이려 하니 모든 민족이 저희를 두려워하여 능히 막을 자가 없고"
+      ],
+      "raw_text_hashes": [
+        "1acd36309ade8bdcab5cfce85a5cdc7734a3eaa678b7170268d15a55f22e6683"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:9:3",
+      "sequence": 12838,
+      "chapter_label": "EST 9",
+      "verse_label": "3",
+      "locator": {
+        "book": "EST",
+        "chapter": 9,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 9,
+          "verse": 3
+        }
+      ],
+      "en": "All the princes of the provinces, the local governors, the governors, and those who did the king’s business helped the Jews, because the fear of Mordecai had fallen on them.",
+      "ko": "각 도 모든 관원과 대신과 방백과 왕의 사무를 보는 자들이 모르드개를 두려워하므로 다 유다인을 도우니",
+      "source_text_hash": "da0f3f0da15cabbd8681a25e25c9cf6bebc361dcea0c711b499a200da0184192",
+      "translation_text_hash": "c00d5fde3132c3d04b989b23b641433e2119622e979901c7098de67776065534",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "각 도 모든 관원과 대신과 방백과 왕의 사무를 보는 자들이 모르드개를 두려워하므로 다 유다인을 도우니"
+      ],
+      "raw_text_hashes": [
+        "c00d5fde3132c3d04b989b23b641433e2119622e979901c7098de67776065534"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:9:4",
+      "sequence": 12839,
+      "chapter_label": "EST 9",
+      "verse_label": "4",
+      "locator": {
+        "book": "EST",
+        "chapter": 9,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 9,
+          "verse": 4
+        }
+      ],
+      "en": "For Mordecai was great in the king’s house, and his fame went out throughout all the provinces, for the man Mordecai grew greater and greater.",
+      "ko": "모르드개가 왕궁에서 존귀하여 점점 창대하매 이 사람 모르드개의 명성이 각 도에 퍼지더라",
+      "source_text_hash": "2aea3a4ea0dead3a560b12a9b1292829bacbe7441314170c7ccd348f039f91b4",
+      "translation_text_hash": "08de1599d3015d98c0997d597b06faa29b2cbce8e98886a157edfbce45e615ec",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모르드개가 왕궁에서 존귀하여 점점 창대하매 이 사람 모르드개의 명성이 각 도에 퍼지더라"
+      ],
+      "raw_text_hashes": [
+        "08de1599d3015d98c0997d597b06faa29b2cbce8e98886a157edfbce45e615ec"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:9:5",
+      "sequence": 12840,
+      "chapter_label": "EST 9",
+      "verse_label": "5",
+      "locator": {
+        "book": "EST",
+        "chapter": 9,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 9,
+          "verse": 5
+        }
+      ],
+      "en": "The Jews struck all their enemies with the stroke of the sword, and with slaughter and destruction, and did what they wanted to those who hated them.",
+      "ko": "유다인이 칼로 그 모든 대적을 쳐서 도륙하고 진멸하고 자기를 미워하는 자에게 마음대로 행하고",
+      "source_text_hash": "91a0f20bfdaf71eb41094db871217fa0092e3184529f13606961903b4aa35065",
+      "translation_text_hash": "0ba8089cd7a957c1def25ef399ced184d353455e33a69b4f2cb2f89e0c6fb433",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다인이 칼로 그 모든 대적을 쳐서 도륙하고 진멸하고 자기를 미워하는 자에게 마음대로 행하고"
+      ],
+      "raw_text_hashes": [
+        "0ba8089cd7a957c1def25ef399ced184d353455e33a69b4f2cb2f89e0c6fb433"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:9:6",
+      "sequence": 12841,
+      "chapter_label": "EST 9",
+      "verse_label": "6",
+      "locator": {
+        "book": "EST",
+        "chapter": 9,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 9,
+          "verse": 6
+        }
+      ],
+      "en": "In the citadel of Susa, the Jews killed and destroyed five hundred men.",
+      "ko": "유다인이 또 도성 수산에서 오백인을 죽이고 멸하고",
+      "source_text_hash": "d5b5f9adb684aa08bfa1b0575c26e563388490c4b39b9f29c0dc786fb5038cfc",
+      "translation_text_hash": "3d8e9dea50d4b29ef6070aa3b8750cf8c22b8e15cb58ad3cc54a1ddac246d1d3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다인이 또 도성 수산에서 오백인을 죽이고 멸하고"
+      ],
+      "raw_text_hashes": [
+        "3d8e9dea50d4b29ef6070aa3b8750cf8c22b8e15cb58ad3cc54a1ddac246d1d3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:9:7",
+      "sequence": 12842,
+      "chapter_label": "EST 9",
+      "verse_label": "7",
+      "locator": {
+        "book": "EST",
+        "chapter": 9,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 9,
+          "verse": 7
+        }
+      ],
+      "en": "They killed Parshandatha, Dalphon, Aspatha,",
+      "ko": "또 바산다다와 달본과 아스바다와",
+      "source_text_hash": "c2d40098acf29e6ec4c5585da89c084e795796a6462008d186b2ca64700cd41e",
+      "translation_text_hash": "6ca6f08a478b09a0dd231788ac5758acf26cf433f26a342174af29979d52167a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 바산다다와 달본과 아스바다와"
+      ],
+      "raw_text_hashes": [
+        "6ca6f08a478b09a0dd231788ac5758acf26cf433f26a342174af29979d52167a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:9:8",
+      "sequence": 12843,
+      "chapter_label": "EST 9",
+      "verse_label": "8",
+      "locator": {
+        "book": "EST",
+        "chapter": 9,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 9,
+          "verse": 8
+        }
+      ],
+      "en": "Poratha, Adalia, Aridatha,",
+      "ko": "보라다와 아달리야와 아리다다와",
+      "source_text_hash": "b3432e83a928b5399cf788ea73ad7be744ebff4a2cf50751ccaaedb1480fa311",
+      "translation_text_hash": "6f7a03490e0c598c698508a01604c8cf2d77539d641d1e02db74534de175da44",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보라다와 아달리야와 아리다다와"
+      ],
+      "raw_text_hashes": [
+        "6f7a03490e0c598c698508a01604c8cf2d77539d641d1e02db74534de175da44"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:9:9",
+      "sequence": 12844,
+      "chapter_label": "EST 9",
+      "verse_label": "9",
+      "locator": {
+        "book": "EST",
+        "chapter": 9,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 9,
+          "verse": 9
+        }
+      ],
+      "en": "Parmashta, Arisai, Aridai, and Vaizatha,",
+      "ko": "바마스다와 아리새와 아리대와 왜사다",
+      "source_text_hash": "e315a18c653aba3e191f2dd0da4d9942bcba041fcc17ac256eaf43d98f5e4290",
+      "translation_text_hash": "ea345eef8ff6769090e43ce0dba5a9acdc1280e4b0e9a8ada938d391f25b6c99",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바마스다와 아리새와 아리대와 왜사다"
+      ],
+      "raw_text_hashes": [
+        "ea345eef8ff6769090e43ce0dba5a9acdc1280e4b0e9a8ada938d391f25b6c99"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:9:10",
+      "sequence": 12845,
+      "chapter_label": "EST 9",
+      "verse_label": "10",
+      "locator": {
+        "book": "EST",
+        "chapter": 9,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 9,
+          "verse": 10
+        }
+      ],
+      "en": "the ten sons of Haman the son of Hammedatha, the Jews’ enemy, but they didn’t lay their hand on the plunder.",
+      "ko": "곧 함므다다의 손자요 유다인의 대적 하만의 열 아들을 죽였으나 그 재산에는 손을 대지 아니하였더라",
+      "source_text_hash": "91e687340496617b9a24d699cbe0b412d161fabd0fc120e250646e058fd39832",
+      "translation_text_hash": "52b98f664aebed42bb050b3ad789638f2cc62f2dce9923e53ab489e4d82a5a0a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 함므다다의 손자요 유다인의 대적 하만의 열 아들을 죽였으나 그 재산에는 손을 대지 아니하였더라"
+      ],
+      "raw_text_hashes": [
+        "52b98f664aebed42bb050b3ad789638f2cc62f2dce9923e53ab489e4d82a5a0a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:9:11",
+      "sequence": 12846,
+      "chapter_label": "EST 9",
+      "verse_label": "11",
+      "locator": {
+        "book": "EST",
+        "chapter": 9,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 9,
+          "verse": 11
+        }
+      ],
+      "en": "On that day, the number of those who were slain in the citadel of Susa was brought before the king.",
+      "ko": "그 날에 도성 수산에서 도륙한 자의 수효를 왕께 고하니",
+      "source_text_hash": "6067143a7324b8ed4662ccf9bd15c219c4c4607a21614e1a863f3a1386a1e3f6",
+      "translation_text_hash": "7e6a683e7405cf9b13fa08f199b6c44bb9c7a7ed57aeaf00cd83c93dfaeb268b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날에 도성 수산에서 도륙한 자의 수효를 왕께 고하니"
+      ],
+      "raw_text_hashes": [
+        "7e6a683e7405cf9b13fa08f199b6c44bb9c7a7ed57aeaf00cd83c93dfaeb268b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:9:12",
+      "sequence": 12847,
+      "chapter_label": "EST 9",
+      "verse_label": "12",
+      "locator": {
+        "book": "EST",
+        "chapter": 9,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 9,
+          "verse": 12
+        }
+      ],
+      "en": "The king said to Esther the queen, “The Jews have slain and destroyed five hundred men in the citadel of Susa, including the ten sons of Haman; what then have they done in the rest of the king’s provinces! Now what is your petition? It shall be granted you. What is your further request? It shall be done.”",
+      "ko": "왕이 왕후 에스더에게 이르되 유다인이 도성 수산에서 이미 오백인을 죽이고 멸하고 또 하만의 열 아들을 죽였으니 왕의 다른 도에서는 어떠하였겠느뇨 이제 그대의 소청이 무엇이뇨 곧 허락하겠노라 그대의 요구가 무엇이뇨 또한 시행하겠노라",
+      "source_text_hash": "f70d82b0699f2e905b0060c371f40561d8ea9d34b1fc3427838468019d74b2fa",
+      "translation_text_hash": "47866eb66aaadf7bb15b9da8493032dac345bcdfbfd25f0b08a1643fa6557059",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 왕후 에스더에게 이르되 유다인이 도성 수산에서 이미 오백인을 죽이고 멸하고 또 하만의 열 아들을 죽였으니 왕의 다른 도에서는 어떠하였겠느뇨 이제 그대의 소청이 무엇이뇨 곧 허락하겠노라 그대의 요구가 무엇이뇨 또한 시행하겠노라"
+      ],
+      "raw_text_hashes": [
+        "47866eb66aaadf7bb15b9da8493032dac345bcdfbfd25f0b08a1643fa6557059"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:9:13",
+      "sequence": 12848,
+      "chapter_label": "EST 9",
+      "verse_label": "13",
+      "locator": {
+        "book": "EST",
+        "chapter": 9,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 9,
+          "verse": 13
+        }
+      ],
+      "en": "Then Esther said, “If it pleases the king, let it be granted to the Jews who are in Susa to do tomorrow also according to today’s decree, and let Haman’s ten sons be hanged on the gallows.”",
+      "ko": "에스더가 가로되 왕이 만일 선히 여기시거든 수산에 거하는 유다인으로 내일도 오늘날 조서대로 행하게 하시고 하만의 열 아들의 시체를 나무에 달게하소서",
+      "source_text_hash": "8c74335038f819b089b1528b9d705318721b9aa033129d92c6cea8dbaabf2379",
+      "translation_text_hash": "4f0c6df520c270bcda99abced354a057f38395897389efc4e3834e684cc3356b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에스더가 가로되 왕이 만일 선히 여기시거든 수산에 거하는 유다인으로 내일도 오늘날 조서대로 행하게 하시고 하만의 열 아들의 시체를 나무에 달게하소서"
+      ],
+      "raw_text_hashes": [
+        "4f0c6df520c270bcda99abced354a057f38395897389efc4e3834e684cc3356b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:9:14",
+      "sequence": 12849,
+      "chapter_label": "EST 9",
+      "verse_label": "14",
+      "locator": {
+        "book": "EST",
+        "chapter": 9,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 9,
+          "verse": 14
+        }
+      ],
+      "en": "The king commanded this to be done. A decree was given out in Susa; and they hanged Haman’s ten sons.",
+      "ko": "왕이 그대로 행하기를 허락하고 조서를 수산에 내리니 하만의 열 아들의 시체가 달리니라",
+      "source_text_hash": "077516327b84d532d29ab590c6c05417178a861511b232a736959a2c65ccf2ed",
+      "translation_text_hash": "ef537afb332daaa96528211022f25fd2d165bc5a43ae59adc9ba212de1eb5eaa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 그대로 행하기를 허락하고 조서를 수산에 내리니 하만의 열 아들의 시체가 달리니라"
+      ],
+      "raw_text_hashes": [
+        "ef537afb332daaa96528211022f25fd2d165bc5a43ae59adc9ba212de1eb5eaa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:9:15",
+      "sequence": 12850,
+      "chapter_label": "EST 9",
+      "verse_label": "15",
+      "locator": {
+        "book": "EST",
+        "chapter": 9,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 9,
+          "verse": 15
+        }
+      ],
+      "en": "The Jews who were in Susa gathered themselves together on the fourteenth day also of the month Adar, and killed three hundred men in Susa; but they didn’t lay their hand on the plunder.",
+      "ko": "아달월 십 사일에도 수산에 있는 유다인이 모여 또 삼백인을 수산에서 도륙하되 그 재산에는 손을 대지 아니하였고",
+      "source_text_hash": "7b22986aa9c6f5afa7070b4eadeef0ea112b1e735174fd31c187ebf1ea3339b4",
+      "translation_text_hash": "a7df6c19f885f287176b3f97de2a7edda8fe834511f0777b3c3bc922fbf1b9e6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아달월 십 사일에도 수산에 있는 유다인이 모여 또 삼백인을 수산에서 도륙하되 그 재산에는 손을 대지 아니하였고"
+      ],
+      "raw_text_hashes": [
+        "a7df6c19f885f287176b3f97de2a7edda8fe834511f0777b3c3bc922fbf1b9e6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:9:16",
+      "sequence": 12851,
+      "chapter_label": "EST 9",
+      "verse_label": "16",
+      "locator": {
+        "book": "EST",
+        "chapter": 9,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 9,
+          "verse": 16
+        }
+      ],
+      "en": "The other Jews who were in the king’s provinces gathered themselves together, defended their lives, had rest from their enemies, and killed seventy-five thousand of those who hated them; but they didn’t lay their hand on the plunder.",
+      "ko": "왕의 각 도에 있는 다른 유다인들이 모여 스스로 생명을 보호하여 대적들에게서 벗어나며 자기를 미워하는 자 칠만 오천인을 도륙하되 그 재산에는 손을 대지 아니하였더라",
+      "source_text_hash": "29306042aed20f05b5a0791cf9a38fe27da3229952ea3b5c9e9cc5ecf1fbb1db",
+      "translation_text_hash": "99df1996fc2c687188d8384bbe13cfd951a9534406cc5477ae42a502cfa42317",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕의 각 도에 있는 다른 유다인들이 모여 스스로 생명을 보호하여 대적들에게서 벗어나며 자기를 미워하는 자 칠만 오천인을 도륙하되 그 재산에는 손을 대지 아니하였더라"
+      ],
+      "raw_text_hashes": [
+        "99df1996fc2c687188d8384bbe13cfd951a9534406cc5477ae42a502cfa42317"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:9:17",
+      "sequence": 12852,
+      "chapter_label": "EST 9",
+      "verse_label": "17",
+      "locator": {
+        "book": "EST",
+        "chapter": 9,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 9,
+          "verse": 17
+        }
+      ],
+      "en": "This was done on the thirteenth day of the month Adar; and on the fourteenth day of that month they rested and made it a day of feasting and gladness.",
+      "ko": "아달월 십 삼일에 그 일을 행하였고 십 사일에 쉬며 그 날에 잔치를 베풀어 즐겼고",
+      "source_text_hash": "fb24665bcfb94e3b886df0cab23dd07c4f7e65cb44fb7075f557e2cc3f7d5877",
+      "translation_text_hash": "8da2d63829b7fb837523ef8cc7a8139bed2ea39ceb8d930a380729908468150b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아달월 십 삼일에 그 일을 행하였고 십 사일에 쉬며 그 날에 잔치를 베풀어 즐겼고"
+      ],
+      "raw_text_hashes": [
+        "8da2d63829b7fb837523ef8cc7a8139bed2ea39ceb8d930a380729908468150b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:9:18",
+      "sequence": 12853,
+      "chapter_label": "EST 9",
+      "verse_label": "18",
+      "locator": {
+        "book": "EST",
+        "chapter": 9,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 9,
+          "verse": 18
+        }
+      ],
+      "en": "But the Jews who were in Susa assembled together on the thirteenth and on the fourteenth days of the month; and on the fifteenth day of that month, they rested, and made it a day of feasting and gladness.",
+      "ko": "수산에 거한 유다인은 십 삼일과 십 사일에 모였고 십 오일에 쉬며 이 날에 잔치를 베풀어 즐긴지라",
+      "source_text_hash": "6b28e01a7dd993b6ae93ca448214ab38ecf6f0082d7f734836a315b710dcd3cb",
+      "translation_text_hash": "0db2cebdb5c793f88cfb4b3af00eabb014af03d52a78224afa62a06712e7e412",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "수산에 거한 유다인은 십 삼일과 십 사일에 모였고 십 오일에 쉬며 이 날에 잔치를 베풀어 즐긴지라"
+      ],
+      "raw_text_hashes": [
+        "0db2cebdb5c793f88cfb4b3af00eabb014af03d52a78224afa62a06712e7e412"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:9:19",
+      "sequence": 12854,
+      "chapter_label": "EST 9",
+      "verse_label": "19",
+      "locator": {
+        "book": "EST",
+        "chapter": 9,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 9,
+          "verse": 19
+        }
+      ],
+      "en": "Therefore the Jews of the villages, who live in the unwalled towns, make the fourteenth day of the month Adar a day of gladness and feasting, a holiday, and a day of sending presents of food to one another.",
+      "ko": "그러므로 촌촌의 유다인 곧 성이 없는 고을 고을에 거하는 자들이 아달월 십 사일로 경절을 삼아 잔치를 베풀고 즐기며 서로 예물을 주더라",
+      "source_text_hash": "1f1e5b95c1102e451cb10c4ca84d99a39d16ed373694cebcf1691621581f748a",
+      "translation_text_hash": "67b4cce7fd4da0d722a68b63ce89eacba2678371afb68d86fa7488a2ff037463",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 촌촌의 유다인 곧 성이 없는 고을 고을에 거하는 자들이 아달월 십 사일로 경절을 삼아 잔치를 베풀고 즐기며 서로 예물을 주더라"
+      ],
+      "raw_text_hashes": [
+        "67b4cce7fd4da0d722a68b63ce89eacba2678371afb68d86fa7488a2ff037463"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:9:20",
+      "sequence": 12855,
+      "chapter_label": "EST 9",
+      "verse_label": "20",
+      "locator": {
+        "book": "EST",
+        "chapter": 9,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 9,
+          "verse": 20
+        }
+      ],
+      "en": "Mordecai wrote these things, and sent letters to all the Jews who were in all the provinces of the King Ahasuerus, both near and far,",
+      "ko": "모르드개가 이 일을 기록하고 아하수에로왕의 각 도에 있는 모든 유다인에게 무론 원근하고 글을 보내어 이르기를",
+      "source_text_hash": "2bbb38b414677c5d6f5b3f246947fa937789e1a68f614edb6fdadb74075d143d",
+      "translation_text_hash": "1945187416395c70178571ee6add34094a9b9c6e2718bdc7b31130b96a8edcb3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모르드개가 이 일을 기록하고 아하수에로왕의 각 도에 있는 모든 유다인에게 무론 원근하고 글을 보내어 이르기를"
+      ],
+      "raw_text_hashes": [
+        "1945187416395c70178571ee6add34094a9b9c6e2718bdc7b31130b96a8edcb3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:9:21",
+      "sequence": 12856,
+      "chapter_label": "EST 9",
+      "verse_label": "21",
+      "locator": {
+        "book": "EST",
+        "chapter": 9,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 9,
+          "verse": 21
+        }
+      ],
+      "en": "to enjoin them that they should keep the fourteenth and fifteenth days of the month Adar yearly,",
+      "ko": "한 규례를 세워 해마다 아달월 십 사일과 십 오일을 지키라",
+      "source_text_hash": "4ed870b02133dbe17bd0c4c927022dacdf64155c3a83abab6dc5fbcf9904110c",
+      "translation_text_hash": "6b07bad24c60ebc4499849522befe0fad2b156af12b7105a17b251789df6b8c1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "한 규례를 세워 해마다 아달월 십 사일과 십 오일을 지키라"
+      ],
+      "raw_text_hashes": [
+        "6b07bad24c60ebc4499849522befe0fad2b156af12b7105a17b251789df6b8c1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:9:22",
+      "sequence": 12857,
+      "chapter_label": "EST 9",
+      "verse_label": "22",
+      "locator": {
+        "book": "EST",
+        "chapter": 9,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 9,
+          "verse": 22
+        }
+      ],
+      "en": "as the days in which the Jews had rest from their enemies, and the month which was turned to them from sorrow to gladness, and from mourning into a holiday; that they should make them days of feasting and gladness, and of sending presents of food to one another, and gifts to the needy.",
+      "ko": "이 달 이 날에 유다인이 대적에게서 벗어나서 평안함을 얻어 슬픔이 변하여 기쁨이 되고 애통이 변하여 길한 날이 되었으니 이 두 날을 지켜 잔치를 베풀고 즐기며 서로 예물을 주며 가난한 자를 구제하라 하매",
+      "source_text_hash": "5b18b6cf74a53ee64d2713da9122db900a0dbd12eafd708e6c12bb090d65ae75",
+      "translation_text_hash": "cf6ac89d7ef28d67140c4037e6deb0393878dd5f378608985153e37a514c59fc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 달 이 날에 유다인이 대적에게서 벗어나서 평안함을 얻어 슬픔이 변하여 기쁨이 되고 애통이 변하여 길한 날이 되었으니 이 두 날을 지켜 잔치를 베풀고 즐기며 서로 예물을 주며 가난한 자를 구제하라 하매"
+      ],
+      "raw_text_hashes": [
+        "cf6ac89d7ef28d67140c4037e6deb0393878dd5f378608985153e37a514c59fc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:9:23",
+      "sequence": 12858,
+      "chapter_label": "EST 9",
+      "verse_label": "23",
+      "locator": {
+        "book": "EST",
+        "chapter": 9,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 9,
+          "verse": 23
+        }
+      ],
+      "en": "The Jews accepted the custom that they had begun, as Mordecai had written to them,",
+      "ko": "유다인이 자기들의 이미 시작한대로 또는 모르드개의 보낸 글대로 계속하여 행하였으니",
+      "source_text_hash": "7f79474a827660af6a97193cc37d4ab2cbe46ee1d7c967d86049731bc624a3db",
+      "translation_text_hash": "599b1e1375a19e9797dc32f754410c6536477c7706d7a94300b489c9fca58252",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다인이 자기들의 이미 시작한대로 또는 모르드개의 보낸 글대로 계속하여 행하였으니"
+      ],
+      "raw_text_hashes": [
+        "599b1e1375a19e9797dc32f754410c6536477c7706d7a94300b489c9fca58252"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:9:24",
+      "sequence": 12859,
+      "chapter_label": "EST 9",
+      "verse_label": "24",
+      "locator": {
+        "book": "EST",
+        "chapter": 9,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 9,
+          "verse": 24
+        }
+      ],
+      "en": "because Haman the son of Hammedatha, the Agagite, the enemy of all the Jews, had plotted against the Jews to destroy them, and had cast “Pur”, that is the lot, to consume them and to destroy them;",
+      "ko": "곧 아각 사람 함므다다의 아들 모든 유다인의 대적 하만이 유다인을 진멸하기를 꾀하고 부르 곧 제비를 뽑아 저희를 죽이고 멸하려 하였으나",
+      "source_text_hash": "c3c5ae42e327c9724bdcbdbaef241b29ecff295d8f839851c8c25e0081972a19",
+      "translation_text_hash": "047ef77edbbf45bbb2a94c5b77ccc59bb0f16a7715ad78dc61329c99ebf94312",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 아각 사람 함므다다의 아들 모든 유다인의 대적 하만이 유다인을 진멸하기를 꾀하고 부르 곧 제비를 뽑아 저희를 죽이고 멸하려 하였으나"
+      ],
+      "raw_text_hashes": [
+        "047ef77edbbf45bbb2a94c5b77ccc59bb0f16a7715ad78dc61329c99ebf94312"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:9:25",
+      "sequence": 12860,
+      "chapter_label": "EST 9",
+      "verse_label": "25",
+      "locator": {
+        "book": "EST",
+        "chapter": 9,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 9,
+          "verse": 25
+        }
+      ],
+      "en": "but when this became known to the king, he commanded by letters that his wicked plan, which he had planned against the Jews, should return on his own head, and that he and his sons should be hanged on the gallows.",
+      "ko": "에스더가 왕의 앞에 나아감을 인하여 왕이 조서를 내려 하만이 유다인을 해하려던 악한 꾀를 그 머리에 돌려보내어 하만과 그 여러 아들을 나무에 달게 하였으므로",
+      "source_text_hash": "8ceebac1ac8ae512d7ffec2ccadb4e027ae94dba60b6e4bc864c48b971c694fd",
+      "translation_text_hash": "d7d9ba803db5d07449c2b413f29845d0c82186c951d44327fe4b9f9c4591a0f9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에스더가 왕의 앞에 나아감을 인하여 왕이 조서를 내려 하만이 유다인을 해하려던 악한 꾀를 그 머리에 돌려보내어 하만과 그 여러 아들을 나무에 달게 하였으므로"
+      ],
+      "raw_text_hashes": [
+        "d7d9ba803db5d07449c2b413f29845d0c82186c951d44327fe4b9f9c4591a0f9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:9:26",
+      "sequence": 12861,
+      "chapter_label": "EST 9",
+      "verse_label": "26",
+      "locator": {
+        "book": "EST",
+        "chapter": 9,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 9,
+          "verse": 26
+        }
+      ],
+      "en": "Therefore they called these days “Purim”, from the word “Pur.” Therefore because of all the words of this letter, and of that which they had seen concerning this matter, and that which had come to them,",
+      "ko": "무리가 부르의 이름을 좇아 이 두 날을 부림이라 하고 유다인이 이 글의 모든 말과 이 일에 보고 당한 것을 인하여",
+      "source_text_hash": "f9ceba319a736cb8be73e92a9496ea0d2b244459d19a423e383abfcb80773ce9",
+      "translation_text_hash": "9c7267ba3afea558a07ab0931f5bd407fd1c51d16d3c82d0cde9c3c146f53e1e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무리가 부르의 이름을 좇아 이 두 날을 부림이라 하고 유다인이 이 글의 모든 말과 이 일에 보고 당한 것을 인하여"
+      ],
+      "raw_text_hashes": [
+        "9c7267ba3afea558a07ab0931f5bd407fd1c51d16d3c82d0cde9c3c146f53e1e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:9:27",
+      "sequence": 12862,
+      "chapter_label": "EST 9",
+      "verse_label": "27",
+      "locator": {
+        "book": "EST",
+        "chapter": 9,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 9,
+          "verse": 27
+        }
+      ],
+      "en": "the Jews established and imposed on themselves, on their descendants, and on all those who joined themselves to them, so that it should not fail that they would keep these two days according to what was written and according to its appointed time every year;",
+      "ko": "뜻을 정하고 자기와 자손과 자기와 화합한 자들이 해마다 그 기록한 정기에 이 두 날을 연하여 지켜 폐하지 아니하기로 작정하고",
+      "source_text_hash": "86be6bab1772208a6db9825a632b50c5d622eab36d072f36f4e830a503fcb853",
+      "translation_text_hash": "069f5a2e258e1b400d907807d0dff2b777819a02daebf514453892c4d51cb08c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "뜻을 정하고 자기와 자손과 자기와 화합한 자들이 해마다 그 기록한 정기에 이 두 날을 연하여 지켜 폐하지 아니하기로 작정하고"
+      ],
+      "raw_text_hashes": [
+        "069f5a2e258e1b400d907807d0dff2b777819a02daebf514453892c4d51cb08c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:9:28",
+      "sequence": 12863,
+      "chapter_label": "EST 9",
+      "verse_label": "28",
+      "locator": {
+        "book": "EST",
+        "chapter": 9,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 9,
+          "verse": 28
+        }
+      ],
+      "en": "and that these days should be remembered and kept throughout every generation, every family, every province, and every city; and that these days of Purim should not fail from among the Jews, nor their memory perish from their offspring.",
+      "ko": "각 도, 각 읍, 각 집에서 대대로 이 두 날을 기념하여 지키되 이 부림일을 유다인 중에서 폐하지 않게 하고 그 자손 중에서도 기념함이 폐하지 않게 하였더라",
+      "source_text_hash": "13da43390393ee64bcf977be83290e5a7be249e01182029ab8ab10874b71e3f5",
+      "translation_text_hash": "e7f9011b8f96d5e9659d1a7e27a40491b39433369d23adcfdb81df7442a33370",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "각 도, 각 읍, 각 집에서 대대로 이 두 날을 기념하여 지키되 이 부림일을 유다인 중에서 폐하지 않게 하고 그 자손 중에서도 기념함이 폐하지 않게 하였더라"
+      ],
+      "raw_text_hashes": [
+        "e7f9011b8f96d5e9659d1a7e27a40491b39433369d23adcfdb81df7442a33370"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:9:29",
+      "sequence": 12864,
+      "chapter_label": "EST 9",
+      "verse_label": "29",
+      "locator": {
+        "book": "EST",
+        "chapter": 9,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 9,
+          "verse": 29
+        }
+      ],
+      "en": "Then Esther the queen, the daughter of Abihail, and Mordecai the Jew wrote with all authority to confirm this second letter of Purim.",
+      "ko": "아비하일의 딸 왕후 에스더와 유다인 모르드개가 전권으로 글을 쓰고 부림에 대한 이 둘째 편지를 굳이 지키게 하되",
+      "source_text_hash": "4eecf01773ee34678ed4433d783832e5589bbdb5fed2d133f195b3e729a6d18e",
+      "translation_text_hash": "b8836fa05699b9fdcb7d60ce489d567800299e3531f91eb77800eaf39b2b07d0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아비하일의 딸 왕후 에스더와 유다인 모르드개가 전권으로 글을 쓰고 부림에 대한 이 둘째 편지를 굳이 지키게 하되"
+      ],
+      "raw_text_hashes": [
+        "b8836fa05699b9fdcb7d60ce489d567800299e3531f91eb77800eaf39b2b07d0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:9:30",
+      "sequence": 12865,
+      "chapter_label": "EST 9",
+      "verse_label": "30",
+      "locator": {
+        "book": "EST",
+        "chapter": 9,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 9,
+          "verse": 30
+        }
+      ],
+      "en": "He sent letters to all the Jews in the hundred twenty-seven provinces of the kingdom of Ahasuerus with words of peace and truth,",
+      "ko": "화평하고 진실한 말로 편지를 써서 아하수에로의 나라 일백 이십 칠도에 있는 유다 모든 사람에게 보내어",
+      "source_text_hash": "3bdf54774c2e35dbf806545cdf4f7c3900ec1a101c8771ae87760651e6fc71a9",
+      "translation_text_hash": "669f1565588450c221c36f6bf37afb940c11110a2f91e5033a574963589119fb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "화평하고 진실한 말로 편지를 써서 아하수에로의 나라 일백 이십 칠도에 있는 유다 모든 사람에게 보내어"
+      ],
+      "raw_text_hashes": [
+        "669f1565588450c221c36f6bf37afb940c11110a2f91e5033a574963589119fb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:9:31",
+      "sequence": 12866,
+      "chapter_label": "EST 9",
+      "verse_label": "31",
+      "locator": {
+        "book": "EST",
+        "chapter": 9,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 9,
+          "verse": 31
+        }
+      ],
+      "en": "to confirm these days of Purim in their appointed times, as Mordecai the Jew and Esther the queen had decreed, and as they had imposed upon themselves and their descendants in the matter of the fastings and their mourning.",
+      "ko": "정한 기한에 이 부림일을 지키게 하였으니 이는 유다인 모르드개와 왕후 에스더의 명한바와 유다인이 금식하며 부르짖은 것을 인하여 자기와 자기 자손을 위하여 정한 바가 있음이더라",
+      "source_text_hash": "6203fa626eb6236ae30ffcab484cd4408b62609a8a972e34063f683f42915f1f",
+      "translation_text_hash": "4010d3579cfc633bdb9951606e86430042470855e181215f8665413ed4a28af3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "정한 기한에 이 부림일을 지키게 하였으니 이는 유다인 모르드개와 왕후 에스더의 명한바와 유다인이 금식하며 부르짖은 것을 인하여 자기와 자기 자손을 위하여 정한 바가 있음이더라"
+      ],
+      "raw_text_hashes": [
+        "4010d3579cfc633bdb9951606e86430042470855e181215f8665413ed4a28af3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:9:32",
+      "sequence": 12867,
+      "chapter_label": "EST 9",
+      "verse_label": "32",
+      "locator": {
+        "book": "EST",
+        "chapter": 9,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 9,
+          "verse": 32
+        }
+      ],
+      "en": "The commandment of Esther confirmed these matters of Purim; and it was written in the book.",
+      "ko": "에스더의 명령이 이 부림에 대한 일을 견고히 하였고 그 일이 책에 기록되었더라",
+      "source_text_hash": "ba6f7d88e92c0bae210f9ca98efc782bf43d30a23ecdc357287b609238abecff",
+      "translation_text_hash": "2efdd400efb5268a31bfceeddcf3e4292d91a69eb8a3c1d4e771060f58215f37",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에스더의 명령이 이 부림에 대한 일을 견고히 하였고 그 일이 책에 기록되었더라"
+      ],
+      "raw_text_hashes": [
+        "2efdd400efb5268a31bfceeddcf3e4292d91a69eb8a3c1d4e771060f58215f37"
+      ]
+    }
+  ]
+}

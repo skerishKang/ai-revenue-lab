@@ -1,0 +1,685 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JOB:chapter:018",
+  "unit_ordinal": 454,
+  "unit_label": "JOB 18",
+  "book_code": "JOB",
+  "chapter_number": 18,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JOB:18:1",
+      "sequence": 13278,
+      "chapter_label": "JOB 18",
+      "verse_label": "1",
+      "locator": {
+        "book": "JOB",
+        "chapter": 18,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 18,
+          "verse": 1
+        }
+      ],
+      "en": "Then Bildad the Shuhite answered,",
+      "ko": "수아 사람 빌닷이 대답하여 가로되",
+      "source_text_hash": "67c49b3e7f7c75f5594dfe212f400cf5e70568b04fc043f5373212bd6b6f5bf3",
+      "translation_text_hash": "c88d7d6144add62c85ace8f00f311a628b7d3a7ea3ec17ad983548c66c94b71d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "수아 사람 빌닷이 대답하여 가로되"
+      ],
+      "raw_text_hashes": [
+        "c88d7d6144add62c85ace8f00f311a628b7d3a7ea3ec17ad983548c66c94b71d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:18:2",
+      "sequence": 13279,
+      "chapter_label": "JOB 18",
+      "verse_label": "2",
+      "locator": {
+        "book": "JOB",
+        "chapter": 18,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 18,
+          "verse": 2
+        }
+      ],
+      "en": "“How long will you hunt for words? Consider, and afterwards we will speak.",
+      "ko": "너희가 어느 때까지 말을 찾겠느냐 깨달으라 그 후에야 우리가 말하리라",
+      "source_text_hash": "0b49c6992bfb1a7af78bc7445ca63063297f2dbf439cf195ca775737ce113ed1",
+      "translation_text_hash": "4e608212d185ef7265c9bad4a2c383a1b00a1e599418c9ef54c499235b3be7df",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 어느 때까지 말을 찾겠느냐 깨달으라 그 후에야 우리가 말하리라"
+      ],
+      "raw_text_hashes": [
+        "4e608212d185ef7265c9bad4a2c383a1b00a1e599418c9ef54c499235b3be7df"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:18:3",
+      "sequence": 13280,
+      "chapter_label": "JOB 18",
+      "verse_label": "3",
+      "locator": {
+        "book": "JOB",
+        "chapter": 18,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 18,
+          "verse": 3
+        }
+      ],
+      "en": "Why are we counted as animals, which have become unclean in your sight?",
+      "ko": "어찌하여 우리를 짐승으로 여기며 부정하게 보느냐",
+      "source_text_hash": "190ccb699c033d32925f7d70d86d06e1f1b0769a7123b747bf6a34f1d88f669b",
+      "translation_text_hash": "742decff50da5c181d2159b55a7e000c2bfc999dfe6b2b02e660fc399ad49a10",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어찌하여 우리를 짐승으로 여기며 부정하게 보느냐"
+      ],
+      "raw_text_hashes": [
+        "742decff50da5c181d2159b55a7e000c2bfc999dfe6b2b02e660fc399ad49a10"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:18:4",
+      "sequence": 13281,
+      "chapter_label": "JOB 18",
+      "verse_label": "4",
+      "locator": {
+        "book": "JOB",
+        "chapter": 18,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 18,
+          "verse": 4
+        }
+      ],
+      "en": "You who tear yourself in your anger, will the earth be forsaken for you? Or will the rock be removed out of its place?",
+      "ko": "너 분하여 스스로 찢는 자야 너를 위하여 땅이 버림을 당하겠느냐 바위가 그 자리에서 옮기겠느냐",
+      "source_text_hash": "5bdac0dd5586a5a842ee20b750fe9268ce31ed01c682ea237cb62af40edb9a73",
+      "translation_text_hash": "90cdd7fe63190caef3865f153172210f5ee3bc4fc22baf4d34b5dfb31e36f83b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너 분하여 스스로 찢는 자야 너를 위하여 땅이 버림을 당하겠느냐 바위가 그 자리에서 옮기겠느냐"
+      ],
+      "raw_text_hashes": [
+        "90cdd7fe63190caef3865f153172210f5ee3bc4fc22baf4d34b5dfb31e36f83b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:18:5",
+      "sequence": 13282,
+      "chapter_label": "JOB 18",
+      "verse_label": "5",
+      "locator": {
+        "book": "JOB",
+        "chapter": 18,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 18,
+          "verse": 5
+        }
+      ],
+      "en": "“Yes, the light of the wicked will be put out. The spark of his fire won’t shine.",
+      "ko": "악인의 빛은 꺼지고 그 불꽃은 빛나지 않을 것이요",
+      "source_text_hash": "db3f7bbca5dba6fb8e02a272a3dedfac209b5790a60674c302805107dbe4d868",
+      "translation_text_hash": "c666d1dcc6d0b0aa62b55641049d12921559f5067491724f76206c207b9118f1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "악인의 빛은 꺼지고 그 불꽃은 빛나지 않을 것이요"
+      ],
+      "raw_text_hashes": [
+        "c666d1dcc6d0b0aa62b55641049d12921559f5067491724f76206c207b9118f1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:18:6",
+      "sequence": 13283,
+      "chapter_label": "JOB 18",
+      "verse_label": "6",
+      "locator": {
+        "book": "JOB",
+        "chapter": 18,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 18,
+          "verse": 6
+        }
+      ],
+      "en": "The light will be dark in his tent. His lamp above him will be put out.",
+      "ko": "그 장막 안의 빛은 어두워지고 그 위의 등불은 꺼질 것이요",
+      "source_text_hash": "b9bb570ce884846577658e2f97cb2dab597ecc949c795abc2292e240f4b2fa4f",
+      "translation_text_hash": "9151aebf04c04fb531475179c54749ae931e29f1776a2f174029aad70a74c8ae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 장막 안의 빛은 어두워지고 그 위의 등불은 꺼질 것이요"
+      ],
+      "raw_text_hashes": [
+        "9151aebf04c04fb531475179c54749ae931e29f1776a2f174029aad70a74c8ae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:18:7",
+      "sequence": 13284,
+      "chapter_label": "JOB 18",
+      "verse_label": "7",
+      "locator": {
+        "book": "JOB",
+        "chapter": 18,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 18,
+          "verse": 7
+        }
+      ],
+      "en": "The steps of his strength will be shortened. His own counsel will cast him down.",
+      "ko": "그 강한 걸음이 곤하여지고 그 베푼 꾀에 스스로 빠질 것이니",
+      "source_text_hash": "6d6f18f747678f2015014a77a34e7f1764bc80e040bface0a6bb809d853d1d52",
+      "translation_text_hash": "0609647b510dedfa9258c3d1c14420ae3470e8586defe608616333c678c28c35",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 강한 걸음이 곤하여지고 그 베푼 꾀에 스스로 빠질 것이니"
+      ],
+      "raw_text_hashes": [
+        "0609647b510dedfa9258c3d1c14420ae3470e8586defe608616333c678c28c35"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:18:8",
+      "sequence": 13285,
+      "chapter_label": "JOB 18",
+      "verse_label": "8",
+      "locator": {
+        "book": "JOB",
+        "chapter": 18,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 18,
+          "verse": 8
+        }
+      ],
+      "en": "For he is cast into a net by his own feet, and he wanders into its mesh.",
+      "ko": "이는 그 발이 스스로 그물에 들어가고 얽는 줄을 밟음이며",
+      "source_text_hash": "7704b512e924aa071d91157247f713a2b2c51b7ac196d46c580cc60b9db8940b",
+      "translation_text_hash": "15b4aaa85d6ca83976d0f26981aeb66a8ed21ba49de1f10f984531c3b2ce414d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 그 발이 스스로 그물에 들어가고 얽는 줄을 밟음이며"
+      ],
+      "raw_text_hashes": [
+        "15b4aaa85d6ca83976d0f26981aeb66a8ed21ba49de1f10f984531c3b2ce414d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:18:9",
+      "sequence": 13286,
+      "chapter_label": "JOB 18",
+      "verse_label": "9",
+      "locator": {
+        "book": "JOB",
+        "chapter": 18,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 18,
+          "verse": 9
+        }
+      ],
+      "en": "A snare will take him by the heel. A trap will catch him.",
+      "ko": "그 발뒤꿈치는 창애에 치이고 그 몸은 올무에 얽힐 것이며",
+      "source_text_hash": "ab8f5b48c770a16cc8b5c1aae15a9fbc2898169abe738de9ef78d26960b14987",
+      "translation_text_hash": "2231dfcf21043e79589830e3bec8d9adea0f4d4dd7ad32d1065d90681dce87f8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 발뒤꿈치는 창애에 치이고 그 몸은 올무에 얽힐 것이며"
+      ],
+      "raw_text_hashes": [
+        "2231dfcf21043e79589830e3bec8d9adea0f4d4dd7ad32d1065d90681dce87f8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:18:10",
+      "sequence": 13287,
+      "chapter_label": "JOB 18",
+      "verse_label": "10",
+      "locator": {
+        "book": "JOB",
+        "chapter": 18,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 18,
+          "verse": 10
+        }
+      ],
+      "en": "A noose is hidden for him in the ground, a trap for him on the path.",
+      "ko": "그를 동일 줄이 땅에 숨겼고 그를 빠뜨릴 함정이 길에 베풀렸으며",
+      "source_text_hash": "d9abb010c06a16e48e408b0d5b1d8c507a093330bdc21371d1b2be9cba950539",
+      "translation_text_hash": "c9a6cd2101d1a3d2b797bca19fa2437664dc2e7f0175c417d4fc5c54742953c5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그를 동일 줄이 땅에 숨겼고 그를 빠뜨릴 함정이 길에 베풀렸으며"
+      ],
+      "raw_text_hashes": [
+        "c9a6cd2101d1a3d2b797bca19fa2437664dc2e7f0175c417d4fc5c54742953c5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:18:11",
+      "sequence": 13288,
+      "chapter_label": "JOB 18",
+      "verse_label": "11",
+      "locator": {
+        "book": "JOB",
+        "chapter": 18,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 18,
+          "verse": 11
+        }
+      ],
+      "en": "Terrors will make him afraid on every side, and will chase him at his heels.",
+      "ko": "무서운 것이 사방에서 그를 놀래고 그 뒤를 쫓아 올 것이며",
+      "source_text_hash": "2377a90925f5b618d92930467e601261672a5d0ddf1012962d89eb8142c52e4a",
+      "translation_text_hash": "b92abab5652008487b2daf5fbfcb1a57538878ecd8eb41af6c372a171027e16c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무서운 것이 사방에서 그를 놀래고 그 뒤를 쫓아 올 것이며"
+      ],
+      "raw_text_hashes": [
+        "b92abab5652008487b2daf5fbfcb1a57538878ecd8eb41af6c372a171027e16c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:18:12",
+      "sequence": 13289,
+      "chapter_label": "JOB 18",
+      "verse_label": "12",
+      "locator": {
+        "book": "JOB",
+        "chapter": 18,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 18,
+          "verse": 12
+        }
+      ],
+      "en": "His strength will be famished. Calamity will be ready at his side.",
+      "ko": "그 힘은 기근을 인하여 쇠하고 그 곁에는 재앙이 기다릴 것이며",
+      "source_text_hash": "778d03802e0bdb7e1e82f2ead9f79fec863e71c39e009f8b9575140689064c6d",
+      "translation_text_hash": "2a2b37c36c699daa7c3ad6d21819e017393b6ffca974e3e813dcb895d01d06c9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 힘은 기근을 인하여 쇠하고 그 곁에는 재앙이 기다릴 것이며"
+      ],
+      "raw_text_hashes": [
+        "2a2b37c36c699daa7c3ad6d21819e017393b6ffca974e3e813dcb895d01d06c9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:18:13",
+      "sequence": 13290,
+      "chapter_label": "JOB 18",
+      "verse_label": "13",
+      "locator": {
+        "book": "JOB",
+        "chapter": 18,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 18,
+          "verse": 13
+        }
+      ],
+      "en": "The members of his body will be devoured. The firstborn of death will devour his members.",
+      "ko": "그의 백체가 먹히리니 곧 사망의 장자가 그 지체를 먹을 것이며",
+      "source_text_hash": "760397ec29781b6c55f0a1cbb536346e8d04e33aa67cc6f876c5fbd7d7e45588",
+      "translation_text_hash": "5782b8f66db7b47d1f39875b739e554c7339a91fecb71878eb13ab4cab1ee4bc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그의 백체가 먹히리니 곧 사망의 장자가 그 지체를 먹을 것이며"
+      ],
+      "raw_text_hashes": [
+        "5782b8f66db7b47d1f39875b739e554c7339a91fecb71878eb13ab4cab1ee4bc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:18:14",
+      "sequence": 13291,
+      "chapter_label": "JOB 18",
+      "verse_label": "14",
+      "locator": {
+        "book": "JOB",
+        "chapter": 18,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 18,
+          "verse": 14
+        }
+      ],
+      "en": "He will be rooted out of the security of his tent. He will be brought to the king of terrors.",
+      "ko": "그가 그 의뢰하던 장막에서 뽑혀서 무서움의 왕에게로 잡혀가고",
+      "source_text_hash": "795a8a7b87d1f2a964a3566b4e50a560ce7ef90a3ef6837f6b89fb465a0f99af",
+      "translation_text_hash": "5e3ddc1cec575a4980d20266f41b7b05d3d69e3b81edc333737210743af3d079",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 그 의뢰하던 장막에서 뽑혀서 무서움의 왕에게로 잡혀가고"
+      ],
+      "raw_text_hashes": [
+        "5e3ddc1cec575a4980d20266f41b7b05d3d69e3b81edc333737210743af3d079"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:18:15",
+      "sequence": 13292,
+      "chapter_label": "JOB 18",
+      "verse_label": "15",
+      "locator": {
+        "book": "JOB",
+        "chapter": 18,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 18,
+          "verse": 15
+        }
+      ],
+      "en": "There will dwell in his tent that which is none of his. Sulfur will be scattered on his habitation.",
+      "ko": "그에게 속하지 않은 자가 그 장막에 거하리니 유황이 그 처소에 뿌려질 것이며",
+      "source_text_hash": "020f5ba7933152b7f9619316c64599c7d28eb58a9db7e717116e77f6b5779586",
+      "translation_text_hash": "ea4518b834a718114e4fd18145016bd77e63fce3eef58dd374ede48e19f9f135",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그에게 속하지 않은 자가 그 장막에 거하리니 유황이 그 처소에 뿌려질 것이며"
+      ],
+      "raw_text_hashes": [
+        "ea4518b834a718114e4fd18145016bd77e63fce3eef58dd374ede48e19f9f135"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:18:16",
+      "sequence": 13293,
+      "chapter_label": "JOB 18",
+      "verse_label": "16",
+      "locator": {
+        "book": "JOB",
+        "chapter": 18,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 18,
+          "verse": 16
+        }
+      ],
+      "en": "His roots will be dried up beneath. His branch will be cut off above.",
+      "ko": "아래서는 그 뿌리가 마르고 위에서는 그 가지가 찍힐 것이며",
+      "source_text_hash": "cd46b8d4e4ae680c5877cfeb73c8287450d953a4ee828c72cf02ed11cea0c568",
+      "translation_text_hash": "45ac5840801f3b3b165e7240a8a1d796f3ed2f553cfcb37fbda3bc24fcd54278",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아래서는 그 뿌리가 마르고 위에서는 그 가지가 찍힐 것이며"
+      ],
+      "raw_text_hashes": [
+        "45ac5840801f3b3b165e7240a8a1d796f3ed2f553cfcb37fbda3bc24fcd54278"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:18:17",
+      "sequence": 13294,
+      "chapter_label": "JOB 18",
+      "verse_label": "17",
+      "locator": {
+        "book": "JOB",
+        "chapter": 18,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 18,
+          "verse": 17
+        }
+      ],
+      "en": "His memory will perish from the earth. He will have no name in the street.",
+      "ko": "그의 기념이 땅에서 없어지고 그의 이름이 거리에서 전함이 없을 것이며",
+      "source_text_hash": "f6c6e054732ffbb91b92aa34855e5fb975f9a8f60e2c28f243a059281c5968e6",
+      "translation_text_hash": "3b3ce5dc8f7b22610e6ece2aa78c81c45afd770a067da5e73ce463e225ea0b30",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그의 기념이 땅에서 없어지고 그의 이름이 거리에서 전함이 없을 것이며"
+      ],
+      "raw_text_hashes": [
+        "3b3ce5dc8f7b22610e6ece2aa78c81c45afd770a067da5e73ce463e225ea0b30"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:18:18",
+      "sequence": 13295,
+      "chapter_label": "JOB 18",
+      "verse_label": "18",
+      "locator": {
+        "book": "JOB",
+        "chapter": 18,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 18,
+          "verse": 18
+        }
+      ],
+      "en": "He will be driven from light into darkness, and chased out of the world.",
+      "ko": "그는 광명 중에서 흑암으로 몰려 들어가며 세상에서 쫓겨날 것이며",
+      "source_text_hash": "495ddb1773077ea033b3c1d1be952a92369841a3d4cc95139aa515a34d8c9569",
+      "translation_text_hash": "f310fcf174e875f94345f2e2ec7a192e00d95e6e79323dac8b6ec06692c0bea9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그는 광명 중에서 흑암으로 몰려 들어가며 세상에서 쫓겨날 것이며"
+      ],
+      "raw_text_hashes": [
+        "f310fcf174e875f94345f2e2ec7a192e00d95e6e79323dac8b6ec06692c0bea9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:18:19",
+      "sequence": 13296,
+      "chapter_label": "JOB 18",
+      "verse_label": "19",
+      "locator": {
+        "book": "JOB",
+        "chapter": 18,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 18,
+          "verse": 19
+        }
+      ],
+      "en": "He will have neither son nor grandson among his people, nor any remaining where he lived.",
+      "ko": "그는 그 백성 가운데서 아들도 없고 손자도 없을 것이며 그의 거하던 곳에는 한 사람도 남은 자가 없을 것이라",
+      "source_text_hash": "4877a8d33bdc33ab070846f93bf3ee141beceb06522a8ec62bb0172a5e9973bc",
+      "translation_text_hash": "a0b93b22a2bd10666d972d0da00b5d5baa5d1f3dfda5d1807d1eda7f567b8782",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그는 그 백성 가운데서 아들도 없고 손자도 없을 것이며 그의 거하던 곳에는 한 사람도 남은 자가 없을 것이라"
+      ],
+      "raw_text_hashes": [
+        "a0b93b22a2bd10666d972d0da00b5d5baa5d1f3dfda5d1807d1eda7f567b8782"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:18:20",
+      "sequence": 13297,
+      "chapter_label": "JOB 18",
+      "verse_label": "20",
+      "locator": {
+        "book": "JOB",
+        "chapter": 18,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 18,
+          "verse": 20
+        }
+      ],
+      "en": "Those who come after will be astonished at his day, as those who went before were frightened.",
+      "ko": "그의 날을 인하여 뒤에 오는 자가 앞선 자의 두려워하던 것 같이 놀라리라",
+      "source_text_hash": "4a868aa9590738ff8a100fa45c3e01cf619fbcf47459502af84408481a39ab42",
+      "translation_text_hash": "423962e629c3bd49bff0c4a6eed66a44df266db4533ac5a7f4095e1c49916f13",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그의 날을 인하여 뒤에 오는 자가 앞선 자의 두려워하던 것 같이 놀라리라"
+      ],
+      "raw_text_hashes": [
+        "423962e629c3bd49bff0c4a6eed66a44df266db4533ac5a7f4095e1c49916f13"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:18:21",
+      "sequence": 13298,
+      "chapter_label": "JOB 18",
+      "verse_label": "21",
+      "locator": {
+        "book": "JOB",
+        "chapter": 18,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 18,
+          "verse": 21
+        }
+      ],
+      "en": "Surely such are the dwellings of the unrighteous. This is the place of him who doesn’t know God.”",
+      "ko": "불의한 자의 집이 이러하고 하나님을 알지 못하는 자의 처소도 그러하니라",
+      "source_text_hash": "ff5c7193cc2743291964bafb8c1caf9837dff8db7dc4de1c377a29ccddf4af7f",
+      "translation_text_hash": "00d6ea1eaadcd0385e638c49fc944c172009c7ee46f3f5acbac55c582c504726",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "불의한 자의 집이 이러하고 하나님을 알지 못하는 자의 처소도 그러하니라"
+      ],
+      "raw_text_hashes": [
+        "00d6ea1eaadcd0385e638c49fc944c172009c7ee46f3f5acbac55c582c504726"
+      ]
+    }
+  ]
+}

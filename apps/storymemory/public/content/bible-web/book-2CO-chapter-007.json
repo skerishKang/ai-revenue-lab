@@ -1,0 +1,525 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:2CO:chapter:007",
+  "unit_ordinal": 1085,
+  "unit_label": "2CO 7",
+  "book_code": "2CO",
+  "chapter_number": 7,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:2CO:7:1",
+      "sequence": 28914,
+      "chapter_label": "2CO 7",
+      "verse_label": "1",
+      "locator": {
+        "book": "2CO",
+        "chapter": 7,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 7,
+          "verse": 1
+        }
+      ],
+      "en": "Having therefore these promises, beloved, let’s cleanse ourselves from all defilement of flesh and spirit, perfecting holiness in the fear of God.",
+      "ko": "그런즉 사랑하는 자들아 이 약속을 가진 우리가 하나님을 두려워하는 가운데서 거룩함을 온전히 이루어 육과 영의 온갖 더러운 것에서 자신을 깨끗케 하자",
+      "source_text_hash": "a229295fe3cd3bf55e54b29facf8c3e4aa3b6d3b4e3345ce50b340d7103f53b7",
+      "translation_text_hash": "dca231c4ca06583fbf857b6e76268dba210905079eca30520c82a867b2af0412",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 사랑하는 자들아 이 약속을 가진 우리가 하나님을 두려워하는 가운데서 거룩함을 온전히 이루어 육과 영의 온갖 더러운 것에서 자신을 깨끗케 하자"
+      ],
+      "raw_text_hashes": [
+        "dca231c4ca06583fbf857b6e76268dba210905079eca30520c82a867b2af0412"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:7:2",
+      "sequence": 28915,
+      "chapter_label": "2CO 7",
+      "verse_label": "2",
+      "locator": {
+        "book": "2CO",
+        "chapter": 7,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 7,
+          "verse": 2
+        }
+      ],
+      "en": "Open your hearts to us. We wronged no one. We corrupted no one. We took advantage of no one.",
+      "ko": "마음으로 우리를 영접하라 우리가 아무에게도 불의를 하지 않고 아무에게도 해롭게 하지 않고 아무에게도 속여 빼앗은 일이 없노라",
+      "source_text_hash": "497a3ad325d71ce007bc385db2591abaebefec3ce5aa03dc3727a2fb2f8cd23f",
+      "translation_text_hash": "f23a8aca3e975d8588432f78fe744d8701c101848f9d071e1774355656880fb1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마음으로 우리를 영접하라 우리가 아무에게도 불의를 하지 않고 아무에게도 해롭게 하지 않고 아무에게도 속여 빼앗은 일이 없노라"
+      ],
+      "raw_text_hashes": [
+        "f23a8aca3e975d8588432f78fe744d8701c101848f9d071e1774355656880fb1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:7:3",
+      "sequence": 28916,
+      "chapter_label": "2CO 7",
+      "verse_label": "3",
+      "locator": {
+        "book": "2CO",
+        "chapter": 7,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 7,
+          "verse": 3
+        }
+      ],
+      "en": "I say this not to condemn you, for I have said before that you are in our hearts to die together and live together.",
+      "ko": "내가 정죄하려고 이 말을 하는 것이 아니라 이전에 말하였거니와 너희로 우리 마음에 있어 함께 죽고 함께 살게 하고자 함이라",
+      "source_text_hash": "649dc73769b2417820a48f6e72a8f1f9ed32674702904ca8fc311cf56c8ad064",
+      "translation_text_hash": "49f487b6dd4279c2df11a4c8e2a0d24145a806ddeb9f8d5af744b8e83cf010e5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 정죄하려고 이 말을 하는 것이 아니라 이전에 말하였거니와 너희로 우리 마음에 있어 함께 죽고 함께 살게 하고자 함이라"
+      ],
+      "raw_text_hashes": [
+        "49f487b6dd4279c2df11a4c8e2a0d24145a806ddeb9f8d5af744b8e83cf010e5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:7:4",
+      "sequence": 28917,
+      "chapter_label": "2CO 7",
+      "verse_label": "4",
+      "locator": {
+        "book": "2CO",
+        "chapter": 7,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 7,
+          "verse": 4
+        }
+      ],
+      "en": "Great is my boldness of speech toward you. Great is my boasting on your behalf. I am filled with comfort. I overflow with joy in all our affliction.",
+      "ko": "내가 너희를 향하여 하는 말이 담대한 것도 많고 너희를 위하여 자랑하는 것도 많으니 내가 우리의 모든 환난 가운데서도 위로가 가득하고 기쁨이 넘치는도다",
+      "source_text_hash": "6e4f905f3aaa218daf5b77c5c22480e08b8705f7d9a8f63e1bd8d979d792e14a",
+      "translation_text_hash": "42ccc22eb9ea51de6d33fd593afe798ff1641526e8dd3a11369944e0e8e0c9ad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너희를 향하여 하는 말이 담대한 것도 많고 너희를 위하여 자랑하는 것도 많으니 내가 우리의 모든 환난 가운데서도 위로가 가득하고 기쁨이 넘치는도다"
+      ],
+      "raw_text_hashes": [
+        "42ccc22eb9ea51de6d33fd593afe798ff1641526e8dd3a11369944e0e8e0c9ad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:7:5",
+      "sequence": 28918,
+      "chapter_label": "2CO 7",
+      "verse_label": "5",
+      "locator": {
+        "book": "2CO",
+        "chapter": 7,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 7,
+          "verse": 5
+        }
+      ],
+      "en": "For even when we had come into Macedonia, our flesh had no relief, but we were afflicted on every side. Fightings were outside. Fear was inside.",
+      "ko": "우리가 마게도냐에 이르렀을 때에도 우리 육체가 편치 못하고 사방으로 환난을 당하여 밖으로는 다툼이요 안으로는 두려움이라",
+      "source_text_hash": "552dfd6769ca59dee7b3e87cbb23c38c4f8bb5be4658f1e08d3340c13dce59a9",
+      "translation_text_hash": "12f714b1309f039572199bf4a8bd658f75eb988fc0e6c5dfba9c881d74fb0932",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 마게도냐에 이르렀을 때에도 우리 육체가 편치 못하고 사방으로 환난을 당하여 밖으로는 다툼이요 안으로는 두려움이라"
+      ],
+      "raw_text_hashes": [
+        "12f714b1309f039572199bf4a8bd658f75eb988fc0e6c5dfba9c881d74fb0932"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:7:6",
+      "sequence": 28919,
+      "chapter_label": "2CO 7",
+      "verse_label": "6",
+      "locator": {
+        "book": "2CO",
+        "chapter": 7,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 7,
+          "verse": 6
+        }
+      ],
+      "en": "Nevertheless, he who comforts the lowly, God, comforted us by the coming of Titus,",
+      "ko": "그러나 비천한 자들을 위로하시는 하나님이 디도의 옴으로 우리를 위로하셨으니",
+      "source_text_hash": "a5e2c8fcc2acf36609b8e4c1b5a98bc8ced8afd4c437db115eba2720b9ecbd2e",
+      "translation_text_hash": "a25a301468a236d1de918a03d733cebf87c0d222d683424861a3b03fd58ba725",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 비천한 자들을 위로하시는 하나님이 디도의 옴으로 우리를 위로하셨으니"
+      ],
+      "raw_text_hashes": [
+        "a25a301468a236d1de918a03d733cebf87c0d222d683424861a3b03fd58ba725"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:7:7",
+      "sequence": 28920,
+      "chapter_label": "2CO 7",
+      "verse_label": "7",
+      "locator": {
+        "book": "2CO",
+        "chapter": 7,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 7,
+          "verse": 7
+        }
+      ],
+      "en": "and not by his coming only, but also by the comfort with which he was comforted in you while he told us of your longing, your mourning, and your zeal for me, so that I rejoiced still more.",
+      "ko": "저의 온 것뿐 아니요 오직 저가 너희에게 받은 그 위로로 위로하고 너희의 사모함과 애통함과 나를 위하여 열심 있는 것을 우리에게 고함으로 나로 더욱 기쁘게 하였느니라",
+      "source_text_hash": "d9f018c2f1ac671b196d092007edd80b3380ffc7e5c1abb067b44b4441a0e4f6",
+      "translation_text_hash": "e49bcf02679eb6841df6bd7404f4d1a60d655a7bb1c1c1bba3d65fed03a96a62",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저의 온 것뿐 아니요 오직 저가 너희에게 받은 그 위로로 위로하고 너희의 사모함과 애통함과 나를 위하여 열심 있는 것을 우리에게 고함으로 나로 더욱 기쁘게 하였느니라"
+      ],
+      "raw_text_hashes": [
+        "e49bcf02679eb6841df6bd7404f4d1a60d655a7bb1c1c1bba3d65fed03a96a62"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:7:8",
+      "sequence": 28921,
+      "chapter_label": "2CO 7",
+      "verse_label": "8",
+      "locator": {
+        "book": "2CO",
+        "chapter": 7,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 7,
+          "verse": 8
+        }
+      ],
+      "en": "For though I grieved you with my letter, I do not regret it, though I did regret it. For I see that my letter made you grieve, though just for a while.",
+      "ko": "그러므로 내가 편지로 너희를 근심하게 한 것을 후회하였으나 지금은 후회하지 아니함은 그 편지가 너희로 잠시만 근심하게 한 줄을 앎이라",
+      "source_text_hash": "66b994e3fd53f293781c23df2996a2028591be1e91dfd5e93caa95b6c2702425",
+      "translation_text_hash": "47e9f0d31c7f7b39df0adb7f53a3b471e27055797f600f0ded26dc7be8d82cf0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 내가 편지로 너희를 근심하게 한 것을 후회하였으나 지금은 후회하지 아니함은 그 편지가 너희로 잠시만 근심하게 한 줄을 앎이라"
+      ],
+      "raw_text_hashes": [
+        "47e9f0d31c7f7b39df0adb7f53a3b471e27055797f600f0ded26dc7be8d82cf0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:7:9",
+      "sequence": 28922,
+      "chapter_label": "2CO 7",
+      "verse_label": "9",
+      "locator": {
+        "book": "2CO",
+        "chapter": 7,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 7,
+          "verse": 9
+        }
+      ],
+      "en": "I now rejoice, not that you were grieved, but that you were grieved to repentance. For you were grieved in a godly way, that you might suffer loss by us in nothing.",
+      "ko": "내가 지금 기뻐함은 너희로 근심하게 한 까닭이 아니요 도리어 너희가 근심함으로 회개함에 이른 까닭이라 너희가 하나님의 뜻대로 근심하게 된 것은 우리에게서 아무 해도 받지 않게 하려 함이라",
+      "source_text_hash": "1a2799194751d8a537dd899ab4bb8f454a45cc58e51e9bcfe35240513f015091",
+      "translation_text_hash": "2dd5485829bb05066f711680ac767a996ecb4b85bd5f13e9b5abd9e87cdca9ab",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 지금 기뻐함은 너희로 근심하게 한 까닭이 아니요 도리어 너희가 근심함으로 회개함에 이른 까닭이라 너희가 하나님의 뜻대로 근심하게 된 것은 우리에게서 아무 해도 받지 않게 하려 함이라"
+      ],
+      "raw_text_hashes": [
+        "2dd5485829bb05066f711680ac767a996ecb4b85bd5f13e9b5abd9e87cdca9ab"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:7:10",
+      "sequence": 28923,
+      "chapter_label": "2CO 7",
+      "verse_label": "10",
+      "locator": {
+        "book": "2CO",
+        "chapter": 7,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 7,
+          "verse": 10
+        }
+      ],
+      "en": "For godly sorrow produces repentance leading to salvation, which brings no regret. But the sorrow of the world produces death.",
+      "ko": "하나님의 뜻대로 하는 근심은 후회할 것이 없는 구원에 이르게 하는 회개를 이루는 것이요 세상 근심은 사망을 이루는 것이니라",
+      "source_text_hash": "31b85c2627c9f4744ce5a66b4399c0d2cc9f94b87d677613246ac8a2e89a4a37",
+      "translation_text_hash": "8efe34090612c958fac70814eb5abac383fe6c16162ed9733bb21ba537f90f2c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님의 뜻대로 하는 근심은 후회할 것이 없는 구원에 이르게 하는 회개를 이루는 것이요 세상 근심은 사망을 이루는 것이니라"
+      ],
+      "raw_text_hashes": [
+        "8efe34090612c958fac70814eb5abac383fe6c16162ed9733bb21ba537f90f2c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:7:11",
+      "sequence": 28924,
+      "chapter_label": "2CO 7",
+      "verse_label": "11",
+      "locator": {
+        "book": "2CO",
+        "chapter": 7,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 7,
+          "verse": 11
+        }
+      ],
+      "en": "For behold, this same thing, that you were grieved in a godly way, what earnest care it worked in you. Yes, what defense, indignation, fear, longing, zeal, and vindication! In everything you demonstrated yourselves to be pure in the matter.",
+      "ko": "보라 하나님의 뜻대로 하게 한 이 근심이 너희로 얼마나 간절하게 하며 얼마나 변명하게 하며 얼마나 분하게 하며 얼마나 두렵게 하며 얼마나 사모하게 하며 얼마나 열심있게 하며 얼마나 벌하게 하였는가, 너희가 저 일에 대하여 일절 너희 자신의 깨끗함을 나타내었느니라",
+      "source_text_hash": "5e5e50e583e162127c9a91da82f189688c92fc81f0aa7316289d35ccb19c0bd0",
+      "translation_text_hash": "49150ab70a69313de3b1d58fc1b951947c22a35d8aab2aae81a469955214a77a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보라 하나님의 뜻대로 하게 한 이 근심이 너희로 얼마나 간절하게 하며 얼마나 변명하게 하며 얼마나 분하게 하며 얼마나 두렵게 하며 얼마나 사모하게 하며 얼마나 열심있게 하며 얼마나 벌하게 하였는가, 너희가 저 일에 대하여 일절 너희 자신의 깨끗함을 나타내었느니라"
+      ],
+      "raw_text_hashes": [
+        "49150ab70a69313de3b1d58fc1b951947c22a35d8aab2aae81a469955214a77a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:7:12",
+      "sequence": 28925,
+      "chapter_label": "2CO 7",
+      "verse_label": "12",
+      "locator": {
+        "book": "2CO",
+        "chapter": 7,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 7,
+          "verse": 12
+        }
+      ],
+      "en": "So although I wrote to you, I wrote not for his cause that did the wrong, nor for his cause that suffered the wrong, but that your earnest care for us might be revealed in you in the sight of God.",
+      "ko": "그런즉 내가 너희에게 쓴 것은 그 불의 행한 자를 위한 것도 아니요 그 불의 당한 자를 위한 것도 아니요 오직 우리를 위한 너희의 간절함이 하나님 앞에서 너희에게 나타나게 하려 함이로라",
+      "source_text_hash": "c642c36457f277e508f9fc2f18c5911d7b119835e9dbeb5113d9e127702e403a",
+      "translation_text_hash": "bfec649e9b5ee4276ae8ca7447574513cc55cff71fd7d8d988b3973e46475c07",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 내가 너희에게 쓴 것은 그 불의 행한 자를 위한 것도 아니요 그 불의 당한 자를 위한 것도 아니요 오직 우리를 위한 너희의 간절함이 하나님 앞에서 너희에게 나타나게 하려 함이로라"
+      ],
+      "raw_text_hashes": [
+        "bfec649e9b5ee4276ae8ca7447574513cc55cff71fd7d8d988b3973e46475c07"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:7:13",
+      "sequence": 28926,
+      "chapter_label": "2CO 7",
+      "verse_label": "13",
+      "locator": {
+        "book": "2CO",
+        "chapter": 7,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 7,
+          "verse": 13
+        }
+      ],
+      "en": "Therefore we have been comforted. In our comfort we rejoiced the more exceedingly for the joy of Titus, because his spirit has been refreshed by you all.",
+      "ko": "이로 인하여 우리가 위로를 받았고 우리의 받은 위로 위에 디도의 기쁨으로 우리가 더욱 많이 기뻐함은 그의 마음이 너희 무리를 인하여 안심함을 얻었음이니라",
+      "source_text_hash": "271b09cd772b8c168e3dea6f98352036e921e1837443fb0490862592952b36e8",
+      "translation_text_hash": "b101bcd1004ed47f523df3e26f7f2e30f76966af941c0eac0823550ac9cd3c03",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이로 인하여 우리가 위로를 받았고 우리의 받은 위로 위에 디도의 기쁨으로 우리가 더욱 많이 기뻐함은 그의 마음이 너희 무리를 인하여 안심함을 얻었음이니라"
+      ],
+      "raw_text_hashes": [
+        "b101bcd1004ed47f523df3e26f7f2e30f76966af941c0eac0823550ac9cd3c03"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:7:14",
+      "sequence": 28927,
+      "chapter_label": "2CO 7",
+      "verse_label": "14",
+      "locator": {
+        "book": "2CO",
+        "chapter": 7,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 7,
+          "verse": 14
+        }
+      ],
+      "en": "For if in anything I have boasted to him on your behalf, I was not disappointed. But as we spoke all things to you in truth, so our glorying also which I made before Titus was found to be truth.",
+      "ko": "내가 그에게 너희를 위하여 자랑한 것이 있더라도 부끄럽지 아니하니 우리가 너희에게 이른 말이 다 참된것 같이 디도 앞에서 우리의 자랑한 것도 참되게 되었도다",
+      "source_text_hash": "819f16f36221937bc40d101f92583d0bb4cc3a85d43650aa607cd0ec673e3c9b",
+      "translation_text_hash": "58c1d51efbec6dc0dec39a6e91cc926278380c351ff130d1181e6d1c15a6d2aa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 그에게 너희를 위하여 자랑한 것이 있더라도 부끄럽지 아니하니 우리가 너희에게 이른 말이 다 참된것 같이 디도 앞에서 우리의 자랑한 것도 참되게 되었도다"
+      ],
+      "raw_text_hashes": [
+        "58c1d51efbec6dc0dec39a6e91cc926278380c351ff130d1181e6d1c15a6d2aa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:7:15",
+      "sequence": 28928,
+      "chapter_label": "2CO 7",
+      "verse_label": "15",
+      "locator": {
+        "book": "2CO",
+        "chapter": 7,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 7,
+          "verse": 15
+        }
+      ],
+      "en": "His affection is more abundantly toward you, while he remembers all of your obedience, how with fear and trembling you received him.",
+      "ko": "저가 너희 모든 사람들이 두려워하고 떪으로 자기를 영접하여 순종한 것을 생각하고 너희를 향하여 그의 심정이 더욱 깊었으니",
+      "source_text_hash": "19d2176ff1a6afc6567413c4ee50e3cd878f912f263dd38cf8b28245aa13c05f",
+      "translation_text_hash": "4b78a503920e961246bf569604f439c5d6eca1f230fad710f955f313f5692c24",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 너희 모든 사람들이 두려워하고 떪으로 자기를 영접하여 순종한 것을 생각하고 너희를 향하여 그의 심정이 더욱 깊었으니"
+      ],
+      "raw_text_hashes": [
+        "4b78a503920e961246bf569604f439c5d6eca1f230fad710f955f313f5692c24"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:7:16",
+      "sequence": 28929,
+      "chapter_label": "2CO 7",
+      "verse_label": "16",
+      "locator": {
+        "book": "2CO",
+        "chapter": 7,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 7,
+          "verse": 16
+        }
+      ],
+      "en": "I rejoice that in everything I am confident concerning you.",
+      "ko": "내가 너희를 인하여 범사에 담대한 고로 기뻐하노라",
+      "source_text_hash": "4bf83ea8e3a97dc4e382a8baadb4e177c52c4c95dc71d948e2db7cc1aad6306b",
+      "translation_text_hash": "ab10206bedeb913fb227bff0db7820747b109700fcff229cb1a1321f2cc3a19e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너희를 인하여 범사에 담대한 고로 기뻐하노라"
+      ],
+      "raw_text_hashes": [
+        "ab10206bedeb913fb227bff0db7820747b109700fcff229cb1a1321f2cc3a19e"
+      ]
+    }
+  ]
+}

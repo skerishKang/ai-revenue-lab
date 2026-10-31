@@ -1,0 +1,1261 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:2SA:chapter:023",
+  "unit_ordinal": 290,
+  "unit_label": "2SA 23",
+  "book_code": "2SA",
+  "chapter_number": 23,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:2SA:23:1",
+      "sequence": 8655,
+      "chapter_label": "2SA 23",
+      "verse_label": "1",
+      "locator": {
+        "book": "2SA",
+        "chapter": 23,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 23,
+          "verse": 1
+        }
+      ],
+      "en": "Now these are the last words of David. David the son of Jesse says, the man who was raised on high says, the anointed of the God of Jacob, the sweet psalmist of Israel:",
+      "ko": "이는 다윗의 마지막 말이라 이새의 아들 다윗이 말함이여 높이 올리운 자, 야곱의 하나님에게 기름 부음 받은 자, 이스라엘의 노래 잘하는 자가 말하도다",
+      "source_text_hash": "eabba497d3cf795e783be573cae71175030a7e5f58c08d5fe3329a24127493fc",
+      "translation_text_hash": "2355b452154c07a9eb3fcb505e34a6935dfa5d88cc7e47978c08c656d1115056",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 다윗의 마지막 말이라 이새의 아들 다윗이 말함이여 높이 올리운 자, 야곱의 하나님에게 기름 부음 받은 자, 이스라엘의 노래 잘하는 자가 말하도다"
+      ],
+      "raw_text_hashes": [
+        "2355b452154c07a9eb3fcb505e34a6935dfa5d88cc7e47978c08c656d1115056"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:23:2",
+      "sequence": 8656,
+      "chapter_label": "2SA 23",
+      "verse_label": "2",
+      "locator": {
+        "book": "2SA",
+        "chapter": 23,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 23,
+          "verse": 2
+        }
+      ],
+      "en": "“The LORD’s Spirit spoke by me. His word was on my tongue.",
+      "ko": "여호와의 신이 나를 빙자하여 말씀하심이여 그 말씀이 내 혀에 있도다",
+      "source_text_hash": "f81bd5f688d5c1b43ca4964b76be8c0027121b9258537f3747e6327629dbf262",
+      "translation_text_hash": "ec6fef325d5f89893bd733dfef01d1ffbc39f157324d622fd417dcd9e91b89ba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 신이 나를 빙자하여 말씀하심이여 그 말씀이 내 혀에 있도다"
+      ],
+      "raw_text_hashes": [
+        "ec6fef325d5f89893bd733dfef01d1ffbc39f157324d622fd417dcd9e91b89ba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:23:3",
+      "sequence": 8657,
+      "chapter_label": "2SA 23",
+      "verse_label": "3",
+      "locator": {
+        "book": "2SA",
+        "chapter": 23,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 23,
+          "verse": 3
+        }
+      ],
+      "en": "The God of Israel said, the Rock of Israel spoke to me, ‘One who rules over men righteously, who rules in the fear of God,",
+      "ko": "이스라엘의 하나님이 말씀하시며 이스라엘의 바위가 내게 이르시기를 사람을 공의로 다스리는 자, 하나님을 경외함으로 다스리는 자여",
+      "source_text_hash": "7332955cdbbbd59f8a0f5ae0d0a604739c354418d6165c1fde3e4633cb669d19",
+      "translation_text_hash": "7b322f5e4e5f5f456efb3fb4a8196f3a160b7077ff261b3ea959ac10e77f13ce",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘의 하나님이 말씀하시며 이스라엘의 바위가 내게 이르시기를 사람을 공의로 다스리는 자, 하나님을 경외함으로 다스리는 자여"
+      ],
+      "raw_text_hashes": [
+        "7b322f5e4e5f5f456efb3fb4a8196f3a160b7077ff261b3ea959ac10e77f13ce"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:23:4",
+      "sequence": 8658,
+      "chapter_label": "2SA 23",
+      "verse_label": "4",
+      "locator": {
+        "book": "2SA",
+        "chapter": 23,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 23,
+          "verse": 4
+        }
+      ],
+      "en": "shall be as the light of the morning when the sun rises, a morning without clouds, when the tender grass springs out of the earth, through clear shining after rain.’",
+      "ko": "저는 돋는 해 아침 빛 같고 구름 없는 아침 같고 비 후의 광선으로 땅에서 움이 돋는 새 풀 같으니라 하시도다",
+      "source_text_hash": "3c32ebc3789f8fe553653767889762556ef08cad734135a05ca00f5244d83d70",
+      "translation_text_hash": "d786939d8ced7bb2f3bd2964f9d9b6a6ce874eceb7e034f642d392f410efe59a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저는 돋는 해 아침 빛 같고 구름 없는 아침 같고 비 후의 광선으로 땅에서 움이 돋는 새 풀 같으니라 하시도다"
+      ],
+      "raw_text_hashes": [
+        "d786939d8ced7bb2f3bd2964f9d9b6a6ce874eceb7e034f642d392f410efe59a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:23:5",
+      "sequence": 8659,
+      "chapter_label": "2SA 23",
+      "verse_label": "5",
+      "locator": {
+        "book": "2SA",
+        "chapter": 23,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 23,
+          "verse": 5
+        }
+      ],
+      "en": "Isn’t my house so with God? Yet he has made with me an everlasting covenant, ordered in all things, and sure, for it is all my salvation and all my desire. Won’t he make it grow?",
+      "ko": "내 집이 하나님 앞에 이 같지 아니하냐 하나님이 나로 더불어 영원한 언약을 세우사 만사에 구비하고 견고케 하셨으니 나의 모든 구원과 나의 모든 소원을 어찌 이루지 아니하시랴",
+      "source_text_hash": "4138dbe16abb201101a8d2b95a9b68b5a29bead9c9555cc38c73568875c25f7b",
+      "translation_text_hash": "692b901737f9aee729e497458dc9205fa3aa5f5dd8c0fe2c7698245f6984b59d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 집이 하나님 앞에 이 같지 아니하냐 하나님이 나로 더불어 영원한 언약을 세우사 만사에 구비하고 견고케 하셨으니 나의 모든 구원과 나의 모든 소원을 어찌 이루지 아니하시랴"
+      ],
+      "raw_text_hashes": [
+        "692b901737f9aee729e497458dc9205fa3aa5f5dd8c0fe2c7698245f6984b59d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:23:6",
+      "sequence": 8660,
+      "chapter_label": "2SA 23",
+      "verse_label": "6",
+      "locator": {
+        "book": "2SA",
+        "chapter": 23,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 23,
+          "verse": 6
+        }
+      ],
+      "en": "But all the ungodly will be as thorns to be thrust away, because they can’t be taken with the hand.",
+      "ko": "그러나 사악한 자는 다 내어 버리울 가시나무 같으니 이는 손으로 잡을 수 없음이로다",
+      "source_text_hash": "49b791f2dc5b8cbfee902b7ec966bf3f4e76bf9b17cc77bfa06c623de9b8b214",
+      "translation_text_hash": "6f358410ca87da6be42906330383d72e67b9316cdaa8c57485ceb76ffeede3bc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 사악한 자는 다 내어 버리울 가시나무 같으니 이는 손으로 잡을 수 없음이로다"
+      ],
+      "raw_text_hashes": [
+        "6f358410ca87da6be42906330383d72e67b9316cdaa8c57485ceb76ffeede3bc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:23:7",
+      "sequence": 8661,
+      "chapter_label": "2SA 23",
+      "verse_label": "7",
+      "locator": {
+        "book": "2SA",
+        "chapter": 23,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 23,
+          "verse": 7
+        }
+      ],
+      "en": "The man who touches them must be armed with iron and the staff of a spear. They will be utterly burned with fire in their place.”",
+      "ko": "그것들을 만지는 자는 철과 창자루를 가져야 하리니 그것들이 당장에 불사르이리로다 하니라",
+      "source_text_hash": "c8c8edbaf454d667cfe15dfc38ed0809f6ba713378ba671e94cf5e6112d4232e",
+      "translation_text_hash": "95e578b83619b4ed8072246486f75ed8bd788c3c20223c9d7177e64352dc8f62",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그것들을 만지는 자는 철과 창자루를 가져야 하리니 그것들이 당장에 불사르이리로다 하니라"
+      ],
+      "raw_text_hashes": [
+        "95e578b83619b4ed8072246486f75ed8bd788c3c20223c9d7177e64352dc8f62"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:23:8",
+      "sequence": 8662,
+      "chapter_label": "2SA 23",
+      "verse_label": "8",
+      "locator": {
+        "book": "2SA",
+        "chapter": 23,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 23,
+          "verse": 8
+        }
+      ],
+      "en": "These are the names of the mighty men whom David had: Josheb Basshebeth, a Tahchemonite, chief of the captains; he was called Adino the Eznite, who killed eight hundred at one time.",
+      "ko": "다윗의 용사들의 이름이 이러하니라 다그몬 사람 요셉밧세벳이라고도 하고 에센 사람 아디노라고도 하는 자는 군장의 두목이라 저가 한때에 팔백인을 쳐죽였더라",
+      "source_text_hash": "be818ca962fa4f51219d7487f89ecdf92d45a040eaa0666aecea34b353ec0530",
+      "translation_text_hash": "7a352895d05b3890eee0a834d910d3a76d8468191349a55bb16b5d129352acb3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗의 용사들의 이름이 이러하니라 다그몬 사람 요셉밧세벳이라고도 하고 에센 사람 아디노라고도 하는 자는 군장의 두목이라 저가 한때에 팔백인을 쳐죽였더라"
+      ],
+      "raw_text_hashes": [
+        "7a352895d05b3890eee0a834d910d3a76d8468191349a55bb16b5d129352acb3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:23:9",
+      "sequence": 8663,
+      "chapter_label": "2SA 23",
+      "verse_label": "9",
+      "locator": {
+        "book": "2SA",
+        "chapter": 23,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 23,
+          "verse": 9
+        }
+      ],
+      "en": "After him was Eleazar the son of Dodai the son of an Ahohite, one of the three mighty men with David when they defied the Philistines who were there gathered together to battle, and the men of Israel had gone away.",
+      "ko": "그 다음은 아호아 사람 도대의 아들 엘르아살이니 다윗과 함께한 세 용사 중에 하나이라 블레셋 사람이 싸우려고 모이매 이스라엘 사람들이 물러간지라 세 용사가 싸움을 돋우고",
+      "source_text_hash": "8288c9a8d1bd4e4fe32dda420d88fe3bd91fc1e959252fe222d1702f883993da",
+      "translation_text_hash": "fed3542e12be1dc8168b34364fe265fa32e75ac55b389cec19aab196182bdef9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 다음은 아호아 사람 도대의 아들 엘르아살이니 다윗과 함께한 세 용사 중에 하나이라 블레셋 사람이 싸우려고 모이매 이스라엘 사람들이 물러간지라 세 용사가 싸움을 돋우고"
+      ],
+      "raw_text_hashes": [
+        "fed3542e12be1dc8168b34364fe265fa32e75ac55b389cec19aab196182bdef9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:23:10",
+      "sequence": 8664,
+      "chapter_label": "2SA 23",
+      "verse_label": "10",
+      "locator": {
+        "book": "2SA",
+        "chapter": 23,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 23,
+          "verse": 10
+        }
+      ],
+      "en": "He arose and struck the Philistines until his hand was weary, and his hand froze to the sword; and the LORD worked a great victory that day; and the people returned after him only to take plunder.",
+      "ko": "저가 나가서 손이 피곤하여 칼에 붙기까지 블레셋 사람을 치니라 그 날에 여호와께서 크게 이기게 하셨으므로 백성들은 돌아와서 저의 뒤를 따라가며 노략할 뿐이었더라",
+      "source_text_hash": "aec2399c9a071f29e2e32b3b0039a0a22c49b62d4ef8905192374f718b3dc6f2",
+      "translation_text_hash": "a06a51cdd25970cec37b6a46a4223e35714d015ee23e8c6d229c12f7101e53de",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 나가서 손이 피곤하여 칼에 붙기까지 블레셋 사람을 치니라 그 날에 여호와께서 크게 이기게 하셨으므로 백성들은 돌아와서 저의 뒤를 따라가며 노략할 뿐이었더라"
+      ],
+      "raw_text_hashes": [
+        "a06a51cdd25970cec37b6a46a4223e35714d015ee23e8c6d229c12f7101e53de"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:23:11",
+      "sequence": 8665,
+      "chapter_label": "2SA 23",
+      "verse_label": "11",
+      "locator": {
+        "book": "2SA",
+        "chapter": 23,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 23,
+          "verse": 11
+        }
+      ],
+      "en": "After him was Shammah the son of Agee, a Hararite. The Philistines had gathered together into a troop where there was a plot of ground full of lentils; and the people fled from the Philistines.",
+      "ko": "그 다음은 하랄 사람 아게의 아들 삼마라 블레셋 사람이 떼를 지어 녹두나무가 가득한 밭에 모이매 백성들은 블레셋 사람 앞에서 도망하되",
+      "source_text_hash": "adff69e530bebc7744c6d41c7611e46ea01f577d5e25df8756da9c5a6c52d375",
+      "translation_text_hash": "2ac75dea491e7a6a926060dae1cbc21965a1b2f040ea25b70223b2a25b6151c2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 다음은 하랄 사람 아게의 아들 삼마라 블레셋 사람이 떼를 지어 녹두나무가 가득한 밭에 모이매 백성들은 블레셋 사람 앞에서 도망하되"
+      ],
+      "raw_text_hashes": [
+        "2ac75dea491e7a6a926060dae1cbc21965a1b2f040ea25b70223b2a25b6151c2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:23:12",
+      "sequence": 8666,
+      "chapter_label": "2SA 23",
+      "verse_label": "12",
+      "locator": {
+        "book": "2SA",
+        "chapter": 23,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 23,
+          "verse": 12
+        }
+      ],
+      "en": "But he stood in the middle of the plot and defended it, and killed the Philistines; and the LORD worked a great victory.",
+      "ko": "저는 그 밭 가운데 서서 막아 블레셋 사람을 친지라 여호와께서 큰 구원을 이루시니라",
+      "source_text_hash": "2ddc19e73fdba5029a74f4ad4112bf402ab142fa3e80235fd3ca1cb4c26d0071",
+      "translation_text_hash": "ed84c2d757bc523f2aa0d588ec4a47e61b93e823b74a079b0e110ad8f233d184",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저는 그 밭 가운데 서서 막아 블레셋 사람을 친지라 여호와께서 큰 구원을 이루시니라"
+      ],
+      "raw_text_hashes": [
+        "ed84c2d757bc523f2aa0d588ec4a47e61b93e823b74a079b0e110ad8f233d184"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:23:13",
+      "sequence": 8667,
+      "chapter_label": "2SA 23",
+      "verse_label": "13",
+      "locator": {
+        "book": "2SA",
+        "chapter": 23,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 23,
+          "verse": 13
+        }
+      ],
+      "en": "Three of the thirty chief men went down, and came to David in the harvest time to the cave of Adullam; and the troop of the Philistines was encamped in the valley of Rephaim.",
+      "ko": "또 삼십 두목 중 세 사람이 곡식 벨 때에 아둘람 굴에 이르러 다윗에게 나아갔는데 때에 블레셋 사람의 떼가 르바임 골짜기에 진 쳤더라",
+      "source_text_hash": "c541f754c1b236e6a4f11b04b343d510b26e35bb720358c0f76ee78bc95f546d",
+      "translation_text_hash": "bf449fc0c102d7bd622c3c4e6e5e844671fe7954987b54d4bdf8f500f70ad48a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 삼십 두목 중 세 사람이 곡식 벨 때에 아둘람 굴에 이르러 다윗에게 나아갔는데 때에 블레셋 사람의 떼가 르바임 골짜기에 진 쳤더라"
+      ],
+      "raw_text_hashes": [
+        "bf449fc0c102d7bd622c3c4e6e5e844671fe7954987b54d4bdf8f500f70ad48a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:23:14",
+      "sequence": 8668,
+      "chapter_label": "2SA 23",
+      "verse_label": "14",
+      "locator": {
+        "book": "2SA",
+        "chapter": 23,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 23,
+          "verse": 14
+        }
+      ],
+      "en": "David was then in the stronghold; and the garrison of the Philistines was then in Bethlehem.",
+      "ko": "그 때에 다윗은 산성에 있고 블레셋 사람의 영채는 베들레헴에 있는지라",
+      "source_text_hash": "817896f1950b87a4b7e29197cdaac0cb64e33a53809133ea3e52213e27506b93",
+      "translation_text_hash": "fd1d779b5bda5de262eb0bd8f069badac1e8ddf4c1f1654988b96eb1975629bf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 다윗은 산성에 있고 블레셋 사람의 영채는 베들레헴에 있는지라"
+      ],
+      "raw_text_hashes": [
+        "fd1d779b5bda5de262eb0bd8f069badac1e8ddf4c1f1654988b96eb1975629bf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:23:15",
+      "sequence": 8669,
+      "chapter_label": "2SA 23",
+      "verse_label": "15",
+      "locator": {
+        "book": "2SA",
+        "chapter": 23,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 23,
+          "verse": 15
+        }
+      ],
+      "en": "David said longingly, “Oh that someone would give me water to drink from the well of Bethlehem, which is by the gate!”",
+      "ko": "다윗이 사모하여 가로되 베들레헴 성문 곁 우물 물을 누가 나로 마시게 할꼬 하매",
+      "source_text_hash": "c45921b03543d8a63d81d2039c235959853359c42e38845dcf4b09c2658a83d5",
+      "translation_text_hash": "293a839e3e7ba28203d9281b543720192be498218e394e29778adc4412878ddb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 사모하여 가로되 베들레헴 성문 곁 우물 물을 누가 나로 마시게 할꼬 하매"
+      ],
+      "raw_text_hashes": [
+        "293a839e3e7ba28203d9281b543720192be498218e394e29778adc4412878ddb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:23:16",
+      "sequence": 8670,
+      "chapter_label": "2SA 23",
+      "verse_label": "16",
+      "locator": {
+        "book": "2SA",
+        "chapter": 23,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 23,
+          "verse": 16
+        }
+      ],
+      "en": "The three mighty men broke through the army of the Philistines, and drew water out of the well of Bethlehem that was by the gate and took it and brought it to David; but he would not drink of it, but poured it out to the LORD.",
+      "ko": "세 용사가 블레셋 사람의 군대를 충돌하고 지나가서 베들레헴 성문 곁 우물 물을 길어 가지고 다윗에게로 왔으나 다윗이 마시기를 기뻐 아니하고 그 물을 여호와께 부어드리며",
+      "source_text_hash": "733f249c37c64cd6f435688d5798ea7a9c653cd65bfb33f84df094234ebb3ebb",
+      "translation_text_hash": "2ff746e8ffd864bd97e4232dca555129971d1d2c373f0e8b13d13708ccb1d6a3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "세 용사가 블레셋 사람의 군대를 충돌하고 지나가서 베들레헴 성문 곁 우물 물을 길어 가지고 다윗에게로 왔으나 다윗이 마시기를 기뻐 아니하고 그 물을 여호와께 부어드리며"
+      ],
+      "raw_text_hashes": [
+        "2ff746e8ffd864bd97e4232dca555129971d1d2c373f0e8b13d13708ccb1d6a3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:23:17",
+      "sequence": 8671,
+      "chapter_label": "2SA 23",
+      "verse_label": "17",
+      "locator": {
+        "book": "2SA",
+        "chapter": 23,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 23,
+          "verse": 17
+        }
+      ],
+      "en": "He said, “Be it far from me, LORD, that I should do this! Isn’t this the blood of the men who risked their lives to go?” Therefore he would not drink it. The three mighty men did these things.",
+      "ko": "가로되 여호와여 내가 결단코 이런 일을 하지 아니하리이다 이는 생명을 돌아보지 아니하고 갔던 사람들의 피니이다 하고 마시기를 즐겨 아니하니라 세 용사가 이런 일을 행하였더라",
+      "source_text_hash": "4ecc7bc2976706186d9dcf06ffd8cd26ffff533ca81246c2ffc5c7fade5070ba",
+      "translation_text_hash": "89dc427def892a69ebf9ae1270845d9879ad1f42e65d80890a994616e02cd536",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 여호와여 내가 결단코 이런 일을 하지 아니하리이다 이는 생명을 돌아보지 아니하고 갔던 사람들의 피니이다 하고 마시기를 즐겨 아니하니라 세 용사가 이런 일을 행하였더라"
+      ],
+      "raw_text_hashes": [
+        "89dc427def892a69ebf9ae1270845d9879ad1f42e65d80890a994616e02cd536"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:23:18",
+      "sequence": 8672,
+      "chapter_label": "2SA 23",
+      "verse_label": "18",
+      "locator": {
+        "book": "2SA",
+        "chapter": 23,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 23,
+          "verse": 18
+        }
+      ],
+      "en": "Abishai, the brother of Joab, the son of Zeruiah, was chief of the three. He lifted up his spear against three hundred and killed them, and had a name among the three.",
+      "ko": "또 스루야의 아들 요압의 아우 아비새니 저는 그 삼인의 두목이라 저가 창을 들어 삼백인을 죽이고 그 삼인 중에 이름을 얻었으니",
+      "source_text_hash": "00a66a651cd40ba57fafbd8ada7df27019de1068d97006215c0bec6f3313c130",
+      "translation_text_hash": "636153d1f18d153ff734c101c997d7e3350b29c00a4e6235830695349f7a9961",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 스루야의 아들 요압의 아우 아비새니 저는 그 삼인의 두목이라 저가 창을 들어 삼백인을 죽이고 그 삼인 중에 이름을 얻었으니"
+      ],
+      "raw_text_hashes": [
+        "636153d1f18d153ff734c101c997d7e3350b29c00a4e6235830695349f7a9961"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:23:19",
+      "sequence": 8673,
+      "chapter_label": "2SA 23",
+      "verse_label": "19",
+      "locator": {
+        "book": "2SA",
+        "chapter": 23,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 23,
+          "verse": 19
+        }
+      ],
+      "en": "Wasn’t he most honorable of the three? Therefore he was made their captain. However he wasn’t included as one of the three.",
+      "ko": "저는 삼인 중에 가장 존귀한 자가 아니냐 저가 저희의 두목이 되었으나 그러나 첫 삼인에게는 미치지 못하였더라",
+      "source_text_hash": "5460ed693d2b5617f4e83587052e95abf5aff6c7d5a56d9f849fe426c544b07d",
+      "translation_text_hash": "a8fbe25328cb18d897dc6b5467b50486f844809c06cc04a82a8848661bcfe97e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저는 삼인 중에 가장 존귀한 자가 아니냐 저가 저희의 두목이 되었으나 그러나 첫 삼인에게는 미치지 못하였더라"
+      ],
+      "raw_text_hashes": [
+        "a8fbe25328cb18d897dc6b5467b50486f844809c06cc04a82a8848661bcfe97e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:23:20",
+      "sequence": 8674,
+      "chapter_label": "2SA 23",
+      "verse_label": "20",
+      "locator": {
+        "book": "2SA",
+        "chapter": 23,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 23,
+          "verse": 20
+        }
+      ],
+      "en": "Benaiah the son of Jehoiada, the son of a valiant man of Kabzeel, who had done mighty deeds, killed the two sons of Ariel of Moab. He also went down and killed a lion in the middle of a pit in a time of snow.",
+      "ko": "또 갑스엘 용사의 손자 여호야다의 아들 브나야니 저는 효용한 일을 행한 자라 일찌기 모압 아리엘의 아들 둘을 죽였고 또 눈 올 때에 함정에 내려가서 한 사자를 죽였으며",
+      "source_text_hash": "35157d58ab3902f1280d816b41cfd2e0c8ce90d44fb9ba7677da1151e3badd2e",
+      "translation_text_hash": "94e8cf960b53e4f3926fbbf41f6234769154cc6c9c97cf34fc1390799cd40fc1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 갑스엘 용사의 손자 여호야다의 아들 브나야니 저는 효용한 일을 행한 자라 일찌기 모압 아리엘의 아들 둘을 죽였고 또 눈 올 때에 함정에 내려가서 한 사자를 죽였으며"
+      ],
+      "raw_text_hashes": [
+        "94e8cf960b53e4f3926fbbf41f6234769154cc6c9c97cf34fc1390799cd40fc1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:23:21",
+      "sequence": 8675,
+      "chapter_label": "2SA 23",
+      "verse_label": "21",
+      "locator": {
+        "book": "2SA",
+        "chapter": 23,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 23,
+          "verse": 21
+        }
+      ],
+      "en": "He killed a huge Egyptian, and the Egyptian had a spear in his hand; but he went down to him with a staff and plucked the spear out of the Egyptian’s hand, and killed him with his own spear.",
+      "ko": "또 장대한 애굽 사람을 죽였는데 그의 손에 창이 있어도 저가 막대를 가지고 내려가서 그 애굽 사람의 손에서 창을 빼앗아 그 창으로 죽였더라",
+      "source_text_hash": "73eea6884116ce23efc7d6b19604952f8514a64fdb4953243216fad5e6a3aca0",
+      "translation_text_hash": "1b1be7b59190b64d9fabc7f64769866d2d2f490262f2d17a03bb01ce218d5138",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 장대한 애굽 사람을 죽였는데 그의 손에 창이 있어도 저가 막대를 가지고 내려가서 그 애굽 사람의 손에서 창을 빼앗아 그 창으로 죽였더라"
+      ],
+      "raw_text_hashes": [
+        "1b1be7b59190b64d9fabc7f64769866d2d2f490262f2d17a03bb01ce218d5138"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:23:22",
+      "sequence": 8676,
+      "chapter_label": "2SA 23",
+      "verse_label": "22",
+      "locator": {
+        "book": "2SA",
+        "chapter": 23,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 23,
+          "verse": 22
+        }
+      ],
+      "en": "Benaiah the son of Jehoiada did these things, and had a name among the three mighty men.",
+      "ko": "여호야다의 아들 브나야가 이런 일을 행하였으므로 세 용사 중에 이름을 얻고",
+      "source_text_hash": "9c93aaad6d088e7627e99d7669e41f2c7bb50e10427fe605f31ce263b73b78ea",
+      "translation_text_hash": "cfd93c7d3274d89c30c9841be7dc61b07b7115992f40ba493b7d3fc268134a0f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호야다의 아들 브나야가 이런 일을 행하였으므로 세 용사 중에 이름을 얻고"
+      ],
+      "raw_text_hashes": [
+        "cfd93c7d3274d89c30c9841be7dc61b07b7115992f40ba493b7d3fc268134a0f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:23:23",
+      "sequence": 8677,
+      "chapter_label": "2SA 23",
+      "verse_label": "23",
+      "locator": {
+        "book": "2SA",
+        "chapter": 23,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 23,
+          "verse": 23
+        }
+      ],
+      "en": "He was more honorable than the thirty, but he didn’t attain to the three. David set him over his guard.",
+      "ko": "삼십인보다 존귀하나 그러나 첫 삼인에게는 미치지 못하였더라 다윗이 저를 세워 시위대 장관을 삼았더라",
+      "source_text_hash": "608d65dc24226a28be1db21bd71a011b0b98c77751b1a023a6c80323f4cced85",
+      "translation_text_hash": "5edcd60f86fd6ee4fb18b219da9da9305407f9de37e4b4a4778b10e2ec016db7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "삼십인보다 존귀하나 그러나 첫 삼인에게는 미치지 못하였더라 다윗이 저를 세워 시위대 장관을 삼았더라"
+      ],
+      "raw_text_hashes": [
+        "5edcd60f86fd6ee4fb18b219da9da9305407f9de37e4b4a4778b10e2ec016db7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:23:24",
+      "sequence": 8678,
+      "chapter_label": "2SA 23",
+      "verse_label": "24",
+      "locator": {
+        "book": "2SA",
+        "chapter": 23,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 23,
+          "verse": 24
+        }
+      ],
+      "en": "Asahel the brother of Joab was one of the thirty: Elhanan the son of Dodo of Bethlehem,",
+      "ko": "요압의 아우 아사헬은 삼십인 중에 하나요 또 베들레헴 도도의 아들 엘하난과",
+      "source_text_hash": "f8ee66326595695b57bda365014f502fb1eea312b71ec75abdf7c20d3004ebeb",
+      "translation_text_hash": "ff109a8d919370dc3f390c645a6dfaaab29371b143f77c12d7a9f8dc752385a8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요압의 아우 아사헬은 삼십인 중에 하나요 또 베들레헴 도도의 아들 엘하난과"
+      ],
+      "raw_text_hashes": [
+        "ff109a8d919370dc3f390c645a6dfaaab29371b143f77c12d7a9f8dc752385a8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:23:25",
+      "sequence": 8679,
+      "chapter_label": "2SA 23",
+      "verse_label": "25",
+      "locator": {
+        "book": "2SA",
+        "chapter": 23,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 23,
+          "verse": 25
+        }
+      ],
+      "en": "Shammah the Harodite, Elika the Harodite,",
+      "ko": "하롯 사람 삼훗과 하롯 사람 엘리가와",
+      "source_text_hash": "0cbf34bd633d9f2afa4d559d67e4d3d8127ef89d183a8cfca0ef1f523b817cf2",
+      "translation_text_hash": "ae663d2282a21b0af3cef53a257ca27fdc4e744caa3a8ec740053037764fe32f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하롯 사람 삼훗과 하롯 사람 엘리가와"
+      ],
+      "raw_text_hashes": [
+        "ae663d2282a21b0af3cef53a257ca27fdc4e744caa3a8ec740053037764fe32f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:23:26",
+      "sequence": 8680,
+      "chapter_label": "2SA 23",
+      "verse_label": "26",
+      "locator": {
+        "book": "2SA",
+        "chapter": 23,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 23,
+          "verse": 26
+        }
+      ],
+      "en": "Helez the Paltite, Ira the son of Ikkesh the Tekoite,",
+      "ko": "발디 사람 헬레스와 드고아 사람 익게스의 아들 이라와",
+      "source_text_hash": "a968e7c0bca8d31920aa9adbfb101c684402823d69446bae634a17ea87c93cbd",
+      "translation_text_hash": "13aa6513896a706de1d080300f22c942cce251c3173552765ee77cfe46fa76a4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "발디 사람 헬레스와 드고아 사람 익게스의 아들 이라와"
+      ],
+      "raw_text_hashes": [
+        "13aa6513896a706de1d080300f22c942cce251c3173552765ee77cfe46fa76a4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:23:27",
+      "sequence": 8681,
+      "chapter_label": "2SA 23",
+      "verse_label": "27",
+      "locator": {
+        "book": "2SA",
+        "chapter": 23,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 23,
+          "verse": 27
+        }
+      ],
+      "en": "Abiezer the Anathothite, Mebunnai the Hushathite,",
+      "ko": "아나돗 사람 아비에셀과 후사 사람 므분내와",
+      "source_text_hash": "0074a065fb24fd1d388dc97720f37491f303d04d179eb5d8f484af7a1513bc0c",
+      "translation_text_hash": "6f1639c3296a10e4fab9b16be8616890ed00e0448f61dc07bcea78350949cf6c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아나돗 사람 아비에셀과 후사 사람 므분내와"
+      ],
+      "raw_text_hashes": [
+        "6f1639c3296a10e4fab9b16be8616890ed00e0448f61dc07bcea78350949cf6c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:23:28",
+      "sequence": 8682,
+      "chapter_label": "2SA 23",
+      "verse_label": "28",
+      "locator": {
+        "book": "2SA",
+        "chapter": 23,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 23,
+          "verse": 28
+        }
+      ],
+      "en": "Zalmon the Ahohite, Maharai the Netophathite,",
+      "ko": "아호아 사람 살몬과 느도바 사람 마하래와",
+      "source_text_hash": "d773d291606c5e7ad80e39a0e9953cd615546668b2e4f6cf13ef83b993913e78",
+      "translation_text_hash": "8a9f5df6f7ac56c5093c74d12f47078657d40877d11c61cfd7f5d6e8d319b1f3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아호아 사람 살몬과 느도바 사람 마하래와"
+      ],
+      "raw_text_hashes": [
+        "8a9f5df6f7ac56c5093c74d12f47078657d40877d11c61cfd7f5d6e8d319b1f3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:23:29",
+      "sequence": 8683,
+      "chapter_label": "2SA 23",
+      "verse_label": "29",
+      "locator": {
+        "book": "2SA",
+        "chapter": 23,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 23,
+          "verse": 29
+        }
+      ],
+      "en": "Heleb the son of Baanah the Netophathite, Ittai the son of Ribai of Gibeah of the children of Benjamin,",
+      "ko": "느도바 사람 바아나의 아들 헬렙과 베냐민 자손에 속한 기브아 사람 리배의 아들 잇대와",
+      "source_text_hash": "eb85728e368d2b86750f19827a0ade2a04fcee0cd5965f77b6a8bb8ada9204e0",
+      "translation_text_hash": "3f5feaab90151f66eb301329659fca1ec6d279f6485a3d26d1491d27320e1dc6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "느도바 사람 바아나의 아들 헬렙과 베냐민 자손에 속한 기브아 사람 리배의 아들 잇대와"
+      ],
+      "raw_text_hashes": [
+        "3f5feaab90151f66eb301329659fca1ec6d279f6485a3d26d1491d27320e1dc6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:23:30",
+      "sequence": 8684,
+      "chapter_label": "2SA 23",
+      "verse_label": "30",
+      "locator": {
+        "book": "2SA",
+        "chapter": 23,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 23,
+          "verse": 30
+        }
+      ],
+      "en": "Benaiah a Pirathonite, Hiddai of the brooks of Gaash.",
+      "ko": "비라돈 사람 브나야와 가아스 시냇가에 사는 힛대와",
+      "source_text_hash": "308792c3b1aa3e01b4e145cd4d27c9e2f40e26a58c9a8cff8607fda316d08c9a",
+      "translation_text_hash": "8ee9379af29da3a7a4949530fa4e9ad21a29dbd1ec7b9a5ff5f44f2f303550b5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "비라돈 사람 브나야와 가아스 시냇가에 사는 힛대와"
+      ],
+      "raw_text_hashes": [
+        "8ee9379af29da3a7a4949530fa4e9ad21a29dbd1ec7b9a5ff5f44f2f303550b5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:23:31",
+      "sequence": 8685,
+      "chapter_label": "2SA 23",
+      "verse_label": "31",
+      "locator": {
+        "book": "2SA",
+        "chapter": 23,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 23,
+          "verse": 31
+        }
+      ],
+      "en": "Abialbon the Arbathite, Azmaveth the Barhumite,",
+      "ko": "아르바 사람 아비알본과 바르훔 사람 아스마웻과",
+      "source_text_hash": "7cdf0b4813a9d572744f0472b7c5bec4ff9a69d08e6a4f0502f9387dac6208e4",
+      "translation_text_hash": "07b8ad092f59176d905a6d289d132a5a87fb39e46146008426086baa8e10e595",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아르바 사람 아비알본과 바르훔 사람 아스마웻과"
+      ],
+      "raw_text_hashes": [
+        "07b8ad092f59176d905a6d289d132a5a87fb39e46146008426086baa8e10e595"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:23:32",
+      "sequence": 8686,
+      "chapter_label": "2SA 23",
+      "verse_label": "32",
+      "locator": {
+        "book": "2SA",
+        "chapter": 23,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 23,
+          "verse": 32
+        }
+      ],
+      "en": "Eliahba the Shaalbonite, the sons of Jashen, Jonathan,",
+      "ko": "사알본 사람 엘리아바와 야센의 아들 요나단과",
+      "source_text_hash": "bbc551fd1a8e4480b7120edb994394b7bd8d12f7bce876e33f53f69253b8e0d1",
+      "translation_text_hash": "2c0ece396f0bb5ccfb7a384f67c9348bebd9bcaeac41310fa68ef521e960906e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사알본 사람 엘리아바와 야센의 아들 요나단과"
+      ],
+      "raw_text_hashes": [
+        "2c0ece396f0bb5ccfb7a384f67c9348bebd9bcaeac41310fa68ef521e960906e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:23:33",
+      "sequence": 8687,
+      "chapter_label": "2SA 23",
+      "verse_label": "33",
+      "locator": {
+        "book": "2SA",
+        "chapter": 23,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 23,
+          "verse": 33
+        }
+      ],
+      "en": "Shammah the Hararite, Ahiam the son of Sharar the Ararite,",
+      "ko": "하랄 사람 삼마와 아랄 사람 사랄의 아들 아히암과",
+      "source_text_hash": "77a449480161df21c377c026da1aa72b0af77d0d6735284c443da70d95376783",
+      "translation_text_hash": "d22f48402082dfe2bd7c0662d6adfea941373cee00ebe73de3b2e2c829e6579b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하랄 사람 삼마와 아랄 사람 사랄의 아들 아히암과"
+      ],
+      "raw_text_hashes": [
+        "d22f48402082dfe2bd7c0662d6adfea941373cee00ebe73de3b2e2c829e6579b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:23:34",
+      "sequence": 8688,
+      "chapter_label": "2SA 23",
+      "verse_label": "34",
+      "locator": {
+        "book": "2SA",
+        "chapter": 23,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 23,
+          "verse": 34
+        }
+      ],
+      "en": "Eliphelet the son of Ahasbai, the son of the Maacathite, Eliam the son of Ahithophel the Gilonite,",
+      "ko": "마아가 사람의 손자 아하스배의 아들 엘리벨렛과 길로 사람 아히도벨의 아들 엘리암과",
+      "source_text_hash": "110f39afbf0022bf2cdcdfbb4d85d61e1004922e1cad83a0316aed61f78bc2d5",
+      "translation_text_hash": "8befc8e223be8c65be012c808fbad040276e70b14d4c7c453ce90d29625a103f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마아가 사람의 손자 아하스배의 아들 엘리벨렛과 길로 사람 아히도벨의 아들 엘리암과"
+      ],
+      "raw_text_hashes": [
+        "8befc8e223be8c65be012c808fbad040276e70b14d4c7c453ce90d29625a103f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:23:35",
+      "sequence": 8689,
+      "chapter_label": "2SA 23",
+      "verse_label": "35",
+      "locator": {
+        "book": "2SA",
+        "chapter": 23,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 23,
+          "verse": 35
+        }
+      ],
+      "en": "Hezro the Carmelite, Paarai the Arbite,",
+      "ko": "갈멜 사람 헤스래와 아랍 사람 바아래와",
+      "source_text_hash": "04175a2e42e546485b66c896410c4b83ddc00c877aebca229683019c7aa43a7f",
+      "translation_text_hash": "201a7e58406ccdd40dfaa9aea92191bc4e8af3b5506c659d525d4bf63f87e582",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "갈멜 사람 헤스래와 아랍 사람 바아래와"
+      ],
+      "raw_text_hashes": [
+        "201a7e58406ccdd40dfaa9aea92191bc4e8af3b5506c659d525d4bf63f87e582"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:23:36",
+      "sequence": 8690,
+      "chapter_label": "2SA 23",
+      "verse_label": "36",
+      "locator": {
+        "book": "2SA",
+        "chapter": 23,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 23,
+          "verse": 36
+        }
+      ],
+      "en": "Igal the son of Nathan of Zobah, Bani the Gadite,",
+      "ko": "소바 나단의 아들 이갈과 갓 사람 바니와",
+      "source_text_hash": "4f94aec07fd68ed86a2d5cbc8642259956bc528795736813757d9a9ca339e26d",
+      "translation_text_hash": "ca549e5c7bcd2a0329a4ee8a8e47c1a225bd2c1355afa38572658465f2ed318e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "소바 나단의 아들 이갈과 갓 사람 바니와"
+      ],
+      "raw_text_hashes": [
+        "ca549e5c7bcd2a0329a4ee8a8e47c1a225bd2c1355afa38572658465f2ed318e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:23:37",
+      "sequence": 8691,
+      "chapter_label": "2SA 23",
+      "verse_label": "37",
+      "locator": {
+        "book": "2SA",
+        "chapter": 23,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 23,
+          "verse": 37
+        }
+      ],
+      "en": "Zelek the Ammonite, Naharai the Beerothite, armor bearers to Joab the son of Zeruiah,",
+      "ko": "암몬 사람 셀렉과 스루야의 아들 요압의 병기 잡은 자 브에롯 사람 나하래와",
+      "source_text_hash": "f8159fcbb5386b85b55edf43a69e87586995c468f1cba0ebd46d9a2e0d49930d",
+      "translation_text_hash": "19a09e63d9227164c34791f047421a2c26717e72fb788a325769fc860df4de6e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "암몬 사람 셀렉과 스루야의 아들 요압의 병기 잡은 자 브에롯 사람 나하래와"
+      ],
+      "raw_text_hashes": [
+        "19a09e63d9227164c34791f047421a2c26717e72fb788a325769fc860df4de6e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:23:38",
+      "sequence": 8692,
+      "chapter_label": "2SA 23",
+      "verse_label": "38",
+      "locator": {
+        "book": "2SA",
+        "chapter": 23,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 23,
+          "verse": 38
+        }
+      ],
+      "en": "Ira the Ithrite, Gareb the Ithrite,",
+      "ko": "이델 사람 이라와 이델 사람 가렙과",
+      "source_text_hash": "449b72344fc5e384e196c3870b2b44f10b1cd70a0be5efe97e49813adc607db8",
+      "translation_text_hash": "59e5c87fc8f6dce62c1c37d4d95acf8d567dafb5a739a14cb4033f73b6187ffb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이델 사람 이라와 이델 사람 가렙과"
+      ],
+      "raw_text_hashes": [
+        "59e5c87fc8f6dce62c1c37d4d95acf8d567dafb5a739a14cb4033f73b6187ffb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:23:39",
+      "sequence": 8693,
+      "chapter_label": "2SA 23",
+      "verse_label": "39",
+      "locator": {
+        "book": "2SA",
+        "chapter": 23,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 23,
+          "verse": 39
+        }
+      ],
+      "en": "and Uriah the Hittite: thirty-seven in all.",
+      "ko": "헷 사람 우리아라 이상 도합이 삼십 칠인이었더라",
+      "source_text_hash": "9eae0ee730c45a5c84b18704ef1c1ce488f1e553f0aa453cab16c6f34c0430bf",
+      "translation_text_hash": "6a8f205cf797cd1a396b96f983d62f73e6b440a7a9501d9c8d4dd44ed7ef331e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "헷 사람 우리아라 이상 도합이 삼십 칠인이었더라"
+      ],
+      "raw_text_hashes": [
+        "6a8f205cf797cd1a396b96f983d62f73e6b440a7a9501d9c8d4dd44ed7ef331e"
+      ]
+    }
+  ]
+}

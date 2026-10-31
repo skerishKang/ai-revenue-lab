@@ -1,0 +1,461 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:MAL:chapter:001",
+  "unit_ordinal": 926,
+  "unit_label": "MAL 1",
+  "book_code": "MAL",
+  "chapter_number": 1,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:MAL:1:1",
+      "sequence": 23091,
+      "chapter_label": "MAL 1",
+      "verse_label": "1",
+      "locator": {
+        "book": "MAL",
+        "chapter": 1,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "MAL",
+          "chapter": 1,
+          "verse": 1
+        }
+      ],
+      "en": "A revelation, the LORD’s word to Israel by Malachi.",
+      "ko": "여호와께서 말라기로 이스라엘에게 말씀하신 경고라",
+      "source_text_hash": "1f6df12a706e670e61738ad7472b48ee83b28e34660ec26411bd98fe736fa32b",
+      "translation_text_hash": "faa185337c4e08de5eb023370e713b2fb8f483269e96577f908b55d0aa988dc0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 말라기로 이스라엘에게 말씀하신 경고라"
+      ],
+      "raw_text_hashes": [
+        "faa185337c4e08de5eb023370e713b2fb8f483269e96577f908b55d0aa988dc0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAL:1:2",
+      "sequence": 23092,
+      "chapter_label": "MAL 1",
+      "verse_label": "2",
+      "locator": {
+        "book": "MAL",
+        "chapter": 1,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "MAL",
+          "chapter": 1,
+          "verse": 2
+        }
+      ],
+      "en": "“I have loved you,” says the LORD. Yet you say, “How have you loved us?” “Wasn’t Esau Jacob’s brother?” says the LORD, “Yet I loved Jacob;",
+      "ko": "여호와께서 가라사대 내가 너희를 사랑하였노라 하나 너희는 이르기를 주께서 어떻게 우리를 사랑하셨나이까 하는도다 나 여호와가 말하노라 에서는 야곱의 형이 아니냐 그러나 내가 야곱을 사랑하였고",
+      "source_text_hash": "20628fccd61cb007628e6da409cf15fdb42cf917aac19637a9e43043d96d98b7",
+      "translation_text_hash": "99e79e2d737b1d6a218233ac084f930a6c5f461f352dced93103f2451dec4058",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 가라사대 내가 너희를 사랑하였노라 하나 너희는 이르기를 주께서 어떻게 우리를 사랑하셨나이까 하는도다 나 여호와가 말하노라 에서는 야곱의 형이 아니냐 그러나 내가 야곱을 사랑하였고"
+      ],
+      "raw_text_hashes": [
+        "99e79e2d737b1d6a218233ac084f930a6c5f461f352dced93103f2451dec4058"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAL:1:3",
+      "sequence": 23093,
+      "chapter_label": "MAL 1",
+      "verse_label": "3",
+      "locator": {
+        "book": "MAL",
+        "chapter": 1,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "MAL",
+          "chapter": 1,
+          "verse": 3
+        }
+      ],
+      "en": "but Esau I hated, and made his mountains a desolation, and gave his heritage to the jackals of the wilderness.”",
+      "ko": "에서는 미워하였으며 그의 산들을 황무케 하였고 그의 산업을 광야의 시랑에게 붙였느니라",
+      "source_text_hash": "c301de131a1743aa99c8e53ba67c360433d2eab32a54246636f9181b9bc3dacf",
+      "translation_text_hash": "bd737d784fd270cccaa668f9a5a5cbafc08cdc31c1a8a6469789e2eea50d67da",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에서는 미워하였으며 그의 산들을 황무케 하였고 그의 산업을 광야의 시랑에게 붙였느니라"
+      ],
+      "raw_text_hashes": [
+        "bd737d784fd270cccaa668f9a5a5cbafc08cdc31c1a8a6469789e2eea50d67da"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAL:1:4",
+      "sequence": 23094,
+      "chapter_label": "MAL 1",
+      "verse_label": "4",
+      "locator": {
+        "book": "MAL",
+        "chapter": 1,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "MAL",
+          "chapter": 1,
+          "verse": 4
+        }
+      ],
+      "en": "Whereas Edom says, “We are beaten down, but we will return and build the waste places,” the LORD of Armies says, “They shall build, but I will throw down; and men will call them ‘The Wicked Land,’ even the people against whom the LORD shows wrath forever.”",
+      "ko": "에돔은 말하기를 우리가 무너뜨림을 당하였으나 황폐된 곳을 다시 쌓으리라 하거니와 나 만군의 여호와는 이르노라 그들은 쌓을찌라도 나는 헐리라 사람들이 그들을 일컬어 악한 지경이라 할 것이요 여호와의 영영한 진노를 받은 백성이라 할 것이며",
+      "source_text_hash": "8ff57bed38aaeb5a8340b3fb5b1e37782f438f4204ea0338b3531567e986ddeb",
+      "translation_text_hash": "0d5a159cf1d96f2c5d7618f8589a086dcef4e9d26b086c05911bce8a91dd4fa2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에돔은 말하기를 우리가 무너뜨림을 당하였으나 황폐된 곳을 다시 쌓으리라 하거니와 나 만군의 여호와는 이르노라 그들은 쌓을찌라도 나는 헐리라 사람들이 그들을 일컬어 악한 지경이라 할 것이요 여호와의 영영한 진노를 받은 백성이라 할 것이며"
+      ],
+      "raw_text_hashes": [
+        "0d5a159cf1d96f2c5d7618f8589a086dcef4e9d26b086c05911bce8a91dd4fa2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAL:1:5",
+      "sequence": 23095,
+      "chapter_label": "MAL 1",
+      "verse_label": "5",
+      "locator": {
+        "book": "MAL",
+        "chapter": 1,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "MAL",
+          "chapter": 1,
+          "verse": 5
+        }
+      ],
+      "en": "Your eyes will see, and you will say, “The LORD is great—even beyond the border of Israel!”",
+      "ko": "너희는 목도하고 이르기를 여호와께서는 이스라엘 지경 밖에서 크시다 하리라",
+      "source_text_hash": "ce670b3aea394e15e64cda515fe34080608d58d724f389210f41f41b3b68b545",
+      "translation_text_hash": "e632cf06fd8fb18c81eb442ffa25ba630dde7fc1d106f0058b20061e781acb3d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 목도하고 이르기를 여호와께서는 이스라엘 지경 밖에서 크시다 하리라"
+      ],
+      "raw_text_hashes": [
+        "e632cf06fd8fb18c81eb442ffa25ba630dde7fc1d106f0058b20061e781acb3d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAL:1:6",
+      "sequence": 23096,
+      "chapter_label": "MAL 1",
+      "verse_label": "6",
+      "locator": {
+        "book": "MAL",
+        "chapter": 1,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "MAL",
+          "chapter": 1,
+          "verse": 6
+        }
+      ],
+      "en": "“A son honors his father, and a servant his master. If I am a father, then where is my honor? And if I am a master, where is the respect due me?” says the LORD of Armies to you priests who despise my name. “You say, ‘How have we despised your name?’",
+      "ko": "내 이름을 멸시하는 제사장들아 나 만군의 여호와가 너희에게 이르기를 아들은 그 아비를, 종은 그 주인을 공경하나니 내가 아비일찐대 나를 공경함이 어디 있느냐 내가 주인일찐대 나를 두려워함이 어디 있느냐 하나 너희는 이르기를 우리가 어떻게 주의 이름을 멸시하였나이까 하는도다",
+      "source_text_hash": "f465960b35de960033bbe6d6a24f35264e8aa16b2004e047fae39174cbe5a4ff",
+      "translation_text_hash": "1119eabe4d172e115ce9e3273213f54f642cedb88f0c59d6ccdfb8791b3815a1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 이름을 멸시하는 제사장들아 나 만군의 여호와가 너희에게 이르기를 아들은 그 아비를, 종은 그 주인을 공경하나니 내가 아비일찐대 나를 공경함이 어디 있느냐 내가 주인일찐대 나를 두려워함이 어디 있느냐 하나 너희는 이르기를 우리가 어떻게 주의 이름을 멸시하였나이까 하는도다"
+      ],
+      "raw_text_hashes": [
+        "1119eabe4d172e115ce9e3273213f54f642cedb88f0c59d6ccdfb8791b3815a1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAL:1:7",
+      "sequence": 23097,
+      "chapter_label": "MAL 1",
+      "verse_label": "7",
+      "locator": {
+        "book": "MAL",
+        "chapter": 1,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "MAL",
+          "chapter": 1,
+          "verse": 7
+        }
+      ],
+      "en": "You offer polluted bread on my altar. You say, ‘How have we polluted you?’ In that you say, ‘The LORD’s table is contemptible.’",
+      "ko": "너희가 더러운 떡을 나의 단에 드리고도 말하기를 우리가 어떻게 주를 더럽게 하였나이까 하는도다 이는 너희가 주의 상은 경멸히 여길 것이라 말함을 인함이니라",
+      "source_text_hash": "5f717c08508b8f3845be238b371c84845cb634692f265a69c3f6bb5113e44ddf",
+      "translation_text_hash": "ec380321e044506ef8fc260907e31475c1d9103d1f3e3f456980666e54722aa1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 더러운 떡을 나의 단에 드리고도 말하기를 우리가 어떻게 주를 더럽게 하였나이까 하는도다 이는 너희가 주의 상은 경멸히 여길 것이라 말함을 인함이니라"
+      ],
+      "raw_text_hashes": [
+        "ec380321e044506ef8fc260907e31475c1d9103d1f3e3f456980666e54722aa1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAL:1:8",
+      "sequence": 23098,
+      "chapter_label": "MAL 1",
+      "verse_label": "8",
+      "locator": {
+        "book": "MAL",
+        "chapter": 1,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "MAL",
+          "chapter": 1,
+          "verse": 8
+        }
+      ],
+      "en": "When you offer the blind for sacrifice, isn’t that evil? And when you offer the lame and sick, isn’t that evil? Present it now to your governor! Will he be pleased with you? Or will he accept your person?” says the LORD of Armies.",
+      "ko": "만군의 여호와가 이르노라 너희가 눈 먼 희생으로 드리는 것이 어찌 악하지 아니하며 저는 것, 병든 것으로 드리는 것이 어찌 악하지 아니하냐 이제 그것을 너희 총독에게 드려보라 그가 너를 기뻐하겠느냐 너를 가납하겠느냐",
+      "source_text_hash": "01a608b8af21c272d2115fc9a16c0e23848d84e248fc794406cc7bd7909eddf6",
+      "translation_text_hash": "778f50e1cd26054cb9fed918f2e3bdcafa63756217e00fa677fdee0087b92b7d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만군의 여호와가 이르노라 너희가 눈 먼 희생으로 드리는 것이 어찌 악하지 아니하며 저는 것, 병든 것으로 드리는 것이 어찌 악하지 아니하냐 이제 그것을 너희 총독에게 드려보라 그가 너를 기뻐하겠느냐 너를 가납하겠느냐"
+      ],
+      "raw_text_hashes": [
+        "778f50e1cd26054cb9fed918f2e3bdcafa63756217e00fa677fdee0087b92b7d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAL:1:9",
+      "sequence": 23099,
+      "chapter_label": "MAL 1",
+      "verse_label": "9",
+      "locator": {
+        "book": "MAL",
+        "chapter": 1,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "MAL",
+          "chapter": 1,
+          "verse": 9
+        }
+      ],
+      "en": "“Now, please entreat the favor of God, that he may be gracious to us. With this, will he accept any of you?” says the LORD of Armies.",
+      "ko": "만군의 여호와가 이르노라 너희는 나 하나님께 은혜를 구하기를 우리를 긍휼히 여기소서 하여 보라 너희가 이같이 행하였으니 내가 너희 중 하나인들 받겠느냐",
+      "source_text_hash": "4b774720632e35cc758c9f841bd8fc4ff6151f6989fff36edd953f207bb3d505",
+      "translation_text_hash": "d6647f6b96409879cbc7fb1d8739584f15ef0243cbf8f6e366d22491355352e6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만군의 여호와가 이르노라 너희는 나 하나님께 은혜를 구하기를 우리를 긍휼히 여기소서 하여 보라 너희가 이같이 행하였으니 내가 너희 중 하나인들 받겠느냐"
+      ],
+      "raw_text_hashes": [
+        "d6647f6b96409879cbc7fb1d8739584f15ef0243cbf8f6e366d22491355352e6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAL:1:10",
+      "sequence": 23100,
+      "chapter_label": "MAL 1",
+      "verse_label": "10",
+      "locator": {
+        "book": "MAL",
+        "chapter": 1,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "MAL",
+          "chapter": 1,
+          "verse": 10
+        }
+      ],
+      "en": "“Oh that there were one among you who would shut the doors, that you might not kindle fire on my altar in vain! I have no pleasure in you,” says the LORD of Armies, “neither will I accept an offering at your hand.",
+      "ko": "만군의 여호와가 이르노라 너희가 내 단 위에 헛되이 불 사르지 못하게 하기 위하여 너희 중에 성전 문을 닫을 자가 있었으면 좋겠도다 내가 너희를 기뻐하지 아니하며 너희 손으로 드리는 것을 받지도 아니하리라",
+      "source_text_hash": "dfdae7193f7e6614f130fa960f7a1a73289101bd65025bba4f4098c0fba30aa9",
+      "translation_text_hash": "687870f4a2a0a577be110e0fc477ef6d5c9a3796f2f827f13d3d885d67647711",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만군의 여호와가 이르노라 너희가 내 단 위에 헛되이 불 사르지 못하게 하기 위하여 너희 중에 성전 문을 닫을 자가 있었으면 좋겠도다 내가 너희를 기뻐하지 아니하며 너희 손으로 드리는 것을 받지도 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "687870f4a2a0a577be110e0fc477ef6d5c9a3796f2f827f13d3d885d67647711"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAL:1:11",
+      "sequence": 23101,
+      "chapter_label": "MAL 1",
+      "verse_label": "11",
+      "locator": {
+        "book": "MAL",
+        "chapter": 1,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "MAL",
+          "chapter": 1,
+          "verse": 11
+        }
+      ],
+      "en": "For from the rising of the sun even to its going down, my name is great among the nations, and in every place incense will be offered to my name, and a pure offering; for my name is great among the nations,” says the LORD of Armies.",
+      "ko": "만군의 여호와가 이르노라 해 뜨는 곳에서부터 해 지는 곳까지의 이방 민족 중에서 내 이름이 크게 될 것이라 각처에서 내 이름을 위하여 분향하며 깨끗한 제물을 드리리니 이는 내 이름이 이방 민족 중에서 크게 될 것임이니라",
+      "source_text_hash": "01b7bda748fae9c94b9e17ee7349d3c58f812e5bc06f2d573cef26d303665301",
+      "translation_text_hash": "141e94d6d32d654fe4ea8df932278c171d061540a9300aa6faebda6e204f29b8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만군의 여호와가 이르노라 해 뜨는 곳에서부터 해 지는 곳까지의 이방 민족 중에서 내 이름이 크게 될 것이라 각처에서 내 이름을 위하여 분향하며 깨끗한 제물을 드리리니 이는 내 이름이 이방 민족 중에서 크게 될 것임이니라"
+      ],
+      "raw_text_hashes": [
+        "141e94d6d32d654fe4ea8df932278c171d061540a9300aa6faebda6e204f29b8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAL:1:12",
+      "sequence": 23102,
+      "chapter_label": "MAL 1",
+      "verse_label": "12",
+      "locator": {
+        "book": "MAL",
+        "chapter": 1,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "MAL",
+          "chapter": 1,
+          "verse": 12
+        }
+      ],
+      "en": "“But you profane it when you say, ‘The LORD’s table is polluted, and its fruit, even its food, is contemptible.’",
+      "ko": "그러나 너희는 말하기를 여호와의 상은 더러웠고 그 위에 있는 실과 곧 식물은 경멸히 여길 것이라 하여 내 이름을 더럽히는도다",
+      "source_text_hash": "b1e648dd44eca02dca406423e2eb34006940c09550043553846fa1f4d4dbcf2b",
+      "translation_text_hash": "d532318b76f74f9bdf94457055ad89b9918d4ffd13f01d097cfcf41370b3318c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 너희는 말하기를 여호와의 상은 더러웠고 그 위에 있는 실과 곧 식물은 경멸히 여길 것이라 하여 내 이름을 더럽히는도다"
+      ],
+      "raw_text_hashes": [
+        "d532318b76f74f9bdf94457055ad89b9918d4ffd13f01d097cfcf41370b3318c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAL:1:13",
+      "sequence": 23103,
+      "chapter_label": "MAL 1",
+      "verse_label": "13",
+      "locator": {
+        "book": "MAL",
+        "chapter": 1,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "MAL",
+          "chapter": 1,
+          "verse": 13
+        }
+      ],
+      "en": "You say also, ‘Behold, what a weariness it is!’ And you have sniffed at it”, says the LORD of Armies; “and you have brought that which was taken by violence, the lame, and the sick; thus you bring the offering. Should I accept this at your hand?” says the LORD.",
+      "ko": "만군의 여호와가 이르노라 너희가 또 말하기를 이 일이 얼마나 번폐스러운고 하며 코웃음하고 토색한 물건과 저는 것, 병든 것을 가져왔느니라 너희가 이같이 헌물을 가져오니 내가 그것을 너희 손에서 받겠느냐 여호와의 말이니라",
+      "source_text_hash": "edd84f5c303db723e6981cfb266ccadda3c5612bb1b4cb361ad85ce04839e1fa",
+      "translation_text_hash": "3dc83ebcf0234c3b07907d75105d80cd5c736027c95288fccb8c285deff6cb98",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만군의 여호와가 이르노라 너희가 또 말하기를 이 일이 얼마나 번폐스러운고 하며 코웃음하고 토색한 물건과 저는 것, 병든 것을 가져왔느니라 너희가 이같이 헌물을 가져오니 내가 그것을 너희 손에서 받겠느냐 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "3dc83ebcf0234c3b07907d75105d80cd5c736027c95288fccb8c285deff6cb98"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAL:1:14",
+      "sequence": 23104,
+      "chapter_label": "MAL 1",
+      "verse_label": "14",
+      "locator": {
+        "book": "MAL",
+        "chapter": 1,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "MAL",
+          "chapter": 1,
+          "verse": 14
+        }
+      ],
+      "en": "“But the deceiver is cursed who has in his flock a male, and vows and sacrifices to the Lord a defective thing; for I am a great King,” says the LORD of Armies, “and my name is awesome among the nations.”",
+      "ko": "떼 가운데 수컷이 있거늘 그 서원하는 일에 흠 있는 것으로 사기하여 내게 드리는 자는 저주를 받으리니 나는 큰 임금이요 내 이름은 열방 중에서 두려워하는 것이 됨이니라 만군의 여호와의 말이니라",
+      "source_text_hash": "5351311bf623a73d31dd31e0d124726e719e2ba66d8a04e93131e64b3184a889",
+      "translation_text_hash": "339878e1e3380f053186dcbe29eb2bb41afb58535879193dbde250469dbccef9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "떼 가운데 수컷이 있거늘 그 서원하는 일에 흠 있는 것으로 사기하여 내게 드리는 자는 저주를 받으리니 나는 큰 임금이요 내 이름은 열방 중에서 두려워하는 것이 됨이니라 만군의 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "339878e1e3380f053186dcbe29eb2bb41afb58535879193dbde250469dbccef9"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1101 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ACT:chapter:017",
+  "unit_ordinal": 1035,
+  "unit_label": "ACT 17",
+  "book_code": "ACT",
+  "chapter_number": 17,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ACT:17:1",
+      "sequence": 27522,
+      "chapter_label": "ACT 17",
+      "verse_label": "1",
+      "locator": {
+        "book": "ACT",
+        "chapter": 17,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 17,
+          "verse": 1
+        }
+      ],
+      "en": "Now when they had passed through Amphipolis and Apollonia, they came to Thessalonica, where there was a Jewish synagogue.",
+      "ko": "저희가 암비볼리와 아볼로니아로 다녀가 데살로니가에 이르니 거기 유대인의 회당이 있는지라",
+      "source_text_hash": "acc06e1bdb5b9a442d4b371982eaa037b189c4500030208f6cb2e9d3cc38ff56",
+      "translation_text_hash": "44b18568b0f2bdaabf6f7ea37826e9904a365974ebdadd24ce2689da396da547",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 암비볼리와 아볼로니아로 다녀가 데살로니가에 이르니 거기 유대인의 회당이 있는지라"
+      ],
+      "raw_text_hashes": [
+        "44b18568b0f2bdaabf6f7ea37826e9904a365974ebdadd24ce2689da396da547"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:17:2",
+      "sequence": 27523,
+      "chapter_label": "ACT 17",
+      "verse_label": "2",
+      "locator": {
+        "book": "ACT",
+        "chapter": 17,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 17,
+          "verse": 2
+        }
+      ],
+      "en": "Paul, as was his custom, went in to them; and for three Sabbath days reasoned with them from the Scriptures,",
+      "ko": "바울이 자기의 규례대로 저희에게로 들어가서 세 안식일에 성경을 가지고 강론하며",
+      "source_text_hash": "6c5f566b0f5fbc0bfacb506746df3744bde2ab05c89ccac2be8d70b7f8e9ba61",
+      "translation_text_hash": "41dacb24072e0c8cdec05586061d70ad4aea86906512a6119b17bd0971daa1e5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바울이 자기의 규례대로 저희에게로 들어가서 세 안식일에 성경을 가지고 강론하며"
+      ],
+      "raw_text_hashes": [
+        "41dacb24072e0c8cdec05586061d70ad4aea86906512a6119b17bd0971daa1e5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:17:3",
+      "sequence": 27524,
+      "chapter_label": "ACT 17",
+      "verse_label": "3",
+      "locator": {
+        "book": "ACT",
+        "chapter": 17,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 17,
+          "verse": 3
+        }
+      ],
+      "en": "explaining and demonstrating that the Christ had to suffer and rise again from the dead, and saying, “This Jesus, whom I proclaim to you, is the Christ.”",
+      "ko": "뜻을 풀어 그리스도가 해를 받고 죽은 자 가운데서 다시 살아야 할것을 증명하고 이르되 내가 너희에게 전하는 이 예수가 곧 그리스도라 하니",
+      "source_text_hash": "b00ba2f6a8aa981842dba0f8d09a9f6d12db340135a95e8ca86461fc18677ecc",
+      "translation_text_hash": "8cdbd1c7866649862f7e67fc1473cb2d5212f468fde7a1e8480503a8ccc48d0f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "뜻을 풀어 그리스도가 해를 받고 죽은 자 가운데서 다시 살아야 할것을 증명하고 이르되 내가 너희에게 전하는 이 예수가 곧 그리스도라 하니"
+      ],
+      "raw_text_hashes": [
+        "8cdbd1c7866649862f7e67fc1473cb2d5212f468fde7a1e8480503a8ccc48d0f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:17:4",
+      "sequence": 27525,
+      "chapter_label": "ACT 17",
+      "verse_label": "4",
+      "locator": {
+        "book": "ACT",
+        "chapter": 17,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 17,
+          "verse": 4
+        }
+      ],
+      "en": "Some of them were persuaded and joined Paul and Silas: of the devout Greeks a great multitude, and not a few of the chief women.",
+      "ko": "그 중에 어떤 사람 곧 경건한 헬라인의 큰 무리와 적지 않은 귀부인도 권함을 받고 바울과 실라를 좇으나",
+      "source_text_hash": "12033e64a0447718937263bcb652414810533cfff0c392d40f276b4874a73845",
+      "translation_text_hash": "d64bd2d3c16f1fa650704aac62572ae3e4d5b176ba258ca01100b403e49147f1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 중에 어떤 사람 곧 경건한 헬라인의 큰 무리와 적지 않은 귀부인도 권함을 받고 바울과 실라를 좇으나"
+      ],
+      "raw_text_hashes": [
+        "d64bd2d3c16f1fa650704aac62572ae3e4d5b176ba258ca01100b403e49147f1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:17:5",
+      "sequence": 27526,
+      "chapter_label": "ACT 17",
+      "verse_label": "5",
+      "locator": {
+        "book": "ACT",
+        "chapter": 17,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 17,
+          "verse": 5
+        }
+      ],
+      "en": "But the unpersuaded Jews took along some wicked men from the marketplace and gathering a crowd, set the city in an uproar. Assaulting the house of Jason, they sought to bring them out to the people.",
+      "ko": "그러나 유대인들은 시기하여 저자의 어떤 괴악한 사람들을 데리고 떼를 지어 성을 소동케 하여 야손의 집에 달려들어 저희를 백성에게 끌어 내려고 찾았으나",
+      "source_text_hash": "b19c03c9d2cf00a199757e15ed327076d9600ca73a784c1f231bacb6b52f60d6",
+      "translation_text_hash": "89f46854e75719c9d4f97b51d580392047979bbcd308f7327fb016db2d913f90",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 유대인들은 시기하여 저자의 어떤 괴악한 사람들을 데리고 떼를 지어 성을 소동케 하여 야손의 집에 달려들어 저희를 백성에게 끌어 내려고 찾았으나"
+      ],
+      "raw_text_hashes": [
+        "89f46854e75719c9d4f97b51d580392047979bbcd308f7327fb016db2d913f90"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:17:6",
+      "sequence": 27527,
+      "chapter_label": "ACT 17",
+      "verse_label": "6",
+      "locator": {
+        "book": "ACT",
+        "chapter": 17,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 17,
+          "verse": 6
+        }
+      ],
+      "en": "When they didn’t find them, they dragged Jason and certain brothers before the rulers of the city, crying, “These who have turned the world upside down have come here also,",
+      "ko": "발견치 못하매 야손과 및 형제를 끌고 읍장들 앞에 가서 소리질러 가로되 천하를 어지럽게 하던 이 사람들이 여기도 이르매",
+      "source_text_hash": "510dfb812db424274b7fa840b203d15ccb17d6204e177e1267afa272447b49ac",
+      "translation_text_hash": "99a2f5db06bf1f64a4f4030201663d834ea89221e9b1dc1f76933547db81fb1c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "발견치 못하매 야손과 및 형제를 끌고 읍장들 앞에 가서 소리질러 가로되 천하를 어지럽게 하던 이 사람들이 여기도 이르매"
+      ],
+      "raw_text_hashes": [
+        "99a2f5db06bf1f64a4f4030201663d834ea89221e9b1dc1f76933547db81fb1c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:17:7",
+      "sequence": 27528,
+      "chapter_label": "ACT 17",
+      "verse_label": "7",
+      "locator": {
+        "book": "ACT",
+        "chapter": 17,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 17,
+          "verse": 7
+        }
+      ],
+      "en": "whom Jason has received. These all act contrary to the decrees of Caesar, saying that there is another king, Jesus!”",
+      "ko": "야손이 들였도다 이 사람들이 다 가이사의 명을 거역하여 말하되 다른 임금 곧 예수라 하는 이가 있다 하더이다 하니",
+      "source_text_hash": "8d05f7b2d8cc486a9c9a530d1c8b1cb8980f3191c312b3e11fd6d5b55b800a4f",
+      "translation_text_hash": "2d1d9782bb29314f13614c5db942c0abc630923428dc8eb30950cb1820ae79e1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야손이 들였도다 이 사람들이 다 가이사의 명을 거역하여 말하되 다른 임금 곧 예수라 하는 이가 있다 하더이다 하니"
+      ],
+      "raw_text_hashes": [
+        "2d1d9782bb29314f13614c5db942c0abc630923428dc8eb30950cb1820ae79e1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:17:8",
+      "sequence": 27529,
+      "chapter_label": "ACT 17",
+      "verse_label": "8",
+      "locator": {
+        "book": "ACT",
+        "chapter": 17,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 17,
+          "verse": 8
+        }
+      ],
+      "en": "The multitude and the rulers of the city were troubled when they heard these things.",
+      "ko": "무리와 읍장들이 이 말을 듣고 소동하여",
+      "source_text_hash": "54aea2ffbf55a791102f1f77fed32611a279b3406855b40f4a5d0cad6323892c",
+      "translation_text_hash": "b852278e386b282890846bb2bc10688321bd88de77f09e1096d68fd18271cc82",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무리와 읍장들이 이 말을 듣고 소동하여"
+      ],
+      "raw_text_hashes": [
+        "b852278e386b282890846bb2bc10688321bd88de77f09e1096d68fd18271cc82"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:17:9",
+      "sequence": 27530,
+      "chapter_label": "ACT 17",
+      "verse_label": "9",
+      "locator": {
+        "book": "ACT",
+        "chapter": 17,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 17,
+          "verse": 9
+        }
+      ],
+      "en": "When they had taken security from Jason and the rest, they let them go.",
+      "ko": "야손과 그 나머지 사람들에게 보를 받고 놓으니라",
+      "source_text_hash": "6895425e718918cc99d46dada9fd88235cfdf2cfa8a12eed5b6f9e88b5143d66",
+      "translation_text_hash": "07d0d1ce1c14b7f902339cb86bce1f7cb215e1b1950d57b869ebc11290d67b8f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야손과 그 나머지 사람들에게 보를 받고 놓으니라"
+      ],
+      "raw_text_hashes": [
+        "07d0d1ce1c14b7f902339cb86bce1f7cb215e1b1950d57b869ebc11290d67b8f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:17:10",
+      "sequence": 27531,
+      "chapter_label": "ACT 17",
+      "verse_label": "10",
+      "locator": {
+        "book": "ACT",
+        "chapter": 17,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 17,
+          "verse": 10
+        }
+      ],
+      "en": "The brothers immediately sent Paul and Silas away by night to Beroea. When they arrived, they went into the Jewish synagogue.",
+      "ko": "밤에 형제들이 곧 바울과 실라를 베뢰아로 보내니 저희가 이르러 유대인의 회당에 들어가니라",
+      "source_text_hash": "b8e987a2746162c05c172a5863dbce03785dd5adab939e1b21b3f8fd3ea40a69",
+      "translation_text_hash": "ce6616d359045c699281ceade371da37b03e139f2867bd5879f5223360317258",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "밤에 형제들이 곧 바울과 실라를 베뢰아로 보내니 저희가 이르러 유대인의 회당에 들어가니라"
+      ],
+      "raw_text_hashes": [
+        "ce6616d359045c699281ceade371da37b03e139f2867bd5879f5223360317258"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:17:11",
+      "sequence": 27532,
+      "chapter_label": "ACT 17",
+      "verse_label": "11",
+      "locator": {
+        "book": "ACT",
+        "chapter": 17,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 17,
+          "verse": 11
+        }
+      ],
+      "en": "Now these were more noble than those in Thessalonica, in that they received the word with all readiness of mind, examining the Scriptures daily to see whether these things were so.",
+      "ko": "베뢰아 사람은 데살로니가에 있는 사람보다 더 신사적이어서 간절한 마음으로 말씀을 받고 이것이 그러한가 하여 날마다 성경을 상고하므로",
+      "source_text_hash": "9c49cc3e0ce3edf6389f48a72c0ba173c56f647a8b231eeedcdf36b1d8a0d555",
+      "translation_text_hash": "ad02b162d32204f851df9d2bc60c78659a004a80ed2625cfdd6da640d16e9c49",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베뢰아 사람은 데살로니가에 있는 사람보다 더 신사적이어서 간절한 마음으로 말씀을 받고 이것이 그러한가 하여 날마다 성경을 상고하므로"
+      ],
+      "raw_text_hashes": [
+        "ad02b162d32204f851df9d2bc60c78659a004a80ed2625cfdd6da640d16e9c49"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:17:12",
+      "sequence": 27533,
+      "chapter_label": "ACT 17",
+      "verse_label": "12",
+      "locator": {
+        "book": "ACT",
+        "chapter": 17,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 17,
+          "verse": 12
+        }
+      ],
+      "en": "Many of them therefore believed; also of the prominent Greek women, and not a few men.",
+      "ko": "그중에 믿는 사람이 많고 또 헬라의 귀부인과 남자가 적지 아니하나",
+      "source_text_hash": "b4a11b97102daedae1e647ae23845008f68ed02d9e394a1e4198d680ea469df9",
+      "translation_text_hash": "c2cafecf4f338191548d1ec5f7929f2cfb32eae719ce9953b869ff0a2857dca3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그중에 믿는 사람이 많고 또 헬라의 귀부인과 남자가 적지 아니하나"
+      ],
+      "raw_text_hashes": [
+        "c2cafecf4f338191548d1ec5f7929f2cfb32eae719ce9953b869ff0a2857dca3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:17:13",
+      "sequence": 27534,
+      "chapter_label": "ACT 17",
+      "verse_label": "13",
+      "locator": {
+        "book": "ACT",
+        "chapter": 17,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 17,
+          "verse": 13
+        }
+      ],
+      "en": "But when the Jews of Thessalonica had knowledge that the word of God was proclaimed by Paul at Beroea also, they came there likewise, agitating the multitudes.",
+      "ko": "데살로니가에 있는 유대인들이 바울이 하나님 말씀을 베뢰아에서도 전하는 줄을 알고 거기도 가서 무리를 움직여 소동케 하거늘",
+      "source_text_hash": "fb4b6ee284cedae1895c3f4208628634a4a6e44e80436c29c4c5f087d490f4d4",
+      "translation_text_hash": "975df9c6c948da5fd43b09f4b003eab5640d02b45a3d2d5cde03cd1cdcbf94f2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "데살로니가에 있는 유대인들이 바울이 하나님 말씀을 베뢰아에서도 전하는 줄을 알고 거기도 가서 무리를 움직여 소동케 하거늘"
+      ],
+      "raw_text_hashes": [
+        "975df9c6c948da5fd43b09f4b003eab5640d02b45a3d2d5cde03cd1cdcbf94f2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:17:14",
+      "sequence": 27535,
+      "chapter_label": "ACT 17",
+      "verse_label": "14",
+      "locator": {
+        "book": "ACT",
+        "chapter": 17,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 17,
+          "verse": 14
+        }
+      ],
+      "en": "Then the brothers immediately sent out Paul to go as far as to the sea, and Silas and Timothy still stayed there.",
+      "ko": "형제들이 곧 바울을 내어 보내어 바다까지 가게 하되 실라와 디모데는 아직 거기 유하더라",
+      "source_text_hash": "c30fa87910d19693cc325e6a1f41bb1ef8e88479d0990bfef7c9237aeadb8458",
+      "translation_text_hash": "227a391e73aea28a59642a87953503e5c410c219ba2b350ee6316163685e10ce",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "형제들이 곧 바울을 내어 보내어 바다까지 가게 하되 실라와 디모데는 아직 거기 유하더라"
+      ],
+      "raw_text_hashes": [
+        "227a391e73aea28a59642a87953503e5c410c219ba2b350ee6316163685e10ce"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:17:15",
+      "sequence": 27536,
+      "chapter_label": "ACT 17",
+      "verse_label": "15",
+      "locator": {
+        "book": "ACT",
+        "chapter": 17,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 17,
+          "verse": 15
+        }
+      ],
+      "en": "But those who escorted Paul brought him as far as Athens. Receiving a commandment to Silas and Timothy that they should come to him very quickly, they departed.",
+      "ko": "바울을 인도하는 사람들이 데리고 아덴까지 이르러 바울에게서 실라와 디모데를 자기에게로 속히 오게 하라는 명을 받고 떠나니라",
+      "source_text_hash": "94a8f2480acd69dc5e52562c95ad29b9cf70661ff4ba0e6364bf198105da029d",
+      "translation_text_hash": "c578c41215ce295d1797e4c1162c43c341617d79cf356fe8fb68a54a1389d5cb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바울을 인도하는 사람들이 데리고 아덴까지 이르러 바울에게서 실라와 디모데를 자기에게로 속히 오게 하라는 명을 받고 떠나니라"
+      ],
+      "raw_text_hashes": [
+        "c578c41215ce295d1797e4c1162c43c341617d79cf356fe8fb68a54a1389d5cb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:17:16",
+      "sequence": 27537,
+      "chapter_label": "ACT 17",
+      "verse_label": "16",
+      "locator": {
+        "book": "ACT",
+        "chapter": 17,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 17,
+          "verse": 16
+        }
+      ],
+      "en": "Now while Paul waited for them at Athens, his spirit was provoked within him as he saw the city full of idols.",
+      "ko": "바울이 아덴에서 저희를 기다리다가 온 성에 우상이 가득한 것을 보고 마음에 분하여",
+      "source_text_hash": "ff9184c3dc8add865524850b42ba6d5305271196974f67bf4e9ef0be9571cd4e",
+      "translation_text_hash": "abd62bcae775b3ca55d2c038e868a5a4d6d185b7d074592c3b77ecabe57710de",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바울이 아덴에서 저희를 기다리다가 온 성에 우상이 가득한 것을 보고 마음에 분하여"
+      ],
+      "raw_text_hashes": [
+        "abd62bcae775b3ca55d2c038e868a5a4d6d185b7d074592c3b77ecabe57710de"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:17:17",
+      "sequence": 27538,
+      "chapter_label": "ACT 17",
+      "verse_label": "17",
+      "locator": {
+        "book": "ACT",
+        "chapter": 17,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 17,
+          "verse": 17
+        }
+      ],
+      "en": "So he reasoned in the synagogue with the Jews and the devout persons, and in the marketplace every day with those who met him.",
+      "ko": "회당에서는 유대인과 경건한 사람들과 또 저자에서는 날마다 만나는 사람들과 변론하니",
+      "source_text_hash": "fdfb2a88c686f8072f309bd495ddae02ff6f35eca1b29fe5d6c167d39dfb79ca",
+      "translation_text_hash": "704d591f8c320363917cc6f6fb6dd3f86d8c7cb9284f73badf710fae6dbfdb94",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "회당에서는 유대인과 경건한 사람들과 또 저자에서는 날마다 만나는 사람들과 변론하니"
+      ],
+      "raw_text_hashes": [
+        "704d591f8c320363917cc6f6fb6dd3f86d8c7cb9284f73badf710fae6dbfdb94"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:17:18",
+      "sequence": 27539,
+      "chapter_label": "ACT 17",
+      "verse_label": "18",
+      "locator": {
+        "book": "ACT",
+        "chapter": 17,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 17,
+          "verse": 18
+        }
+      ],
+      "en": "Some of the Epicurean and Stoic philosophers also were conversing with him. Some said, “What does this babbler want to say?” Others said, “He seems to be advocating foreign deities,” because he preached Jesus and the resurrection.",
+      "ko": "어떤 에비구레오와 스도이고 철학자들도 바울과 쟁론할쌔 혹은 이르되 이 말장이가 무슨 말을 하고자 하느뇨 하고 혹은 이르되 이방 신들을 전하는 사람인가보다 하니 이는 바울이 예수와 또 몸의 부활 전함을 인함이러라",
+      "source_text_hash": "d7f671476935e31d28f80c53a812edba411ba206b3307628e03e1ff25cccac4b",
+      "translation_text_hash": "884f12c05eed7952ac0da1678fc607658bda54dc9fc7813da304b4f4aacc2d41",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어떤 에비구레오와 스도이고 철학자들도 바울과 쟁론할쌔 혹은 이르되 이 말장이가 무슨 말을 하고자 하느뇨 하고 혹은 이르되 이방 신들을 전하는 사람인가보다 하니 이는 바울이 예수와 또 몸의 부활 전함을 인함이러라"
+      ],
+      "raw_text_hashes": [
+        "884f12c05eed7952ac0da1678fc607658bda54dc9fc7813da304b4f4aacc2d41"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:17:19",
+      "sequence": 27540,
+      "chapter_label": "ACT 17",
+      "verse_label": "19",
+      "locator": {
+        "book": "ACT",
+        "chapter": 17,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 17,
+          "verse": 19
+        }
+      ],
+      "en": "They took hold of him and brought him to the Areopagus, saying, “May we know what this new teaching is, which you are speaking about?",
+      "ko": "붙들어 가지고 아레오바고로 가며 말하기를 우리가 너의 말하는 이 새 교가 무엇인지 알수 있겠느냐",
+      "source_text_hash": "3d7034e562dc9151cb1ca607330a9fc8f2bdf0a6c88032c259294b248ec3af87",
+      "translation_text_hash": "2501203976e722ca2ef217005aad7d10cc6ced8f4591787d9e407acb60b5f41b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "붙들어 가지고 아레오바고로 가며 말하기를 우리가 너의 말하는 이 새 교가 무엇인지 알수 있겠느냐"
+      ],
+      "raw_text_hashes": [
+        "2501203976e722ca2ef217005aad7d10cc6ced8f4591787d9e407acb60b5f41b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:17:20",
+      "sequence": 27541,
+      "chapter_label": "ACT 17",
+      "verse_label": "20",
+      "locator": {
+        "book": "ACT",
+        "chapter": 17,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 17,
+          "verse": 20
+        }
+      ],
+      "en": "For you bring certain strange things to our ears. We want to know therefore what these things mean.”",
+      "ko": "네가 무슨 이상한 것을 우리 귀에 들려 주니 그 무슨 뜻인지 알고자 하노라 하니",
+      "source_text_hash": "855291ef0429583700d678d8e26f520ab315baaf645261930273403050822a5c",
+      "translation_text_hash": "6a3f96c2600da0833dbbff198cbca475a7b471d8e3cda26871c1b67ad6ce613f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 무슨 이상한 것을 우리 귀에 들려 주니 그 무슨 뜻인지 알고자 하노라 하니"
+      ],
+      "raw_text_hashes": [
+        "6a3f96c2600da0833dbbff198cbca475a7b471d8e3cda26871c1b67ad6ce613f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:17:21",
+      "sequence": 27542,
+      "chapter_label": "ACT 17",
+      "verse_label": "21",
+      "locator": {
+        "book": "ACT",
+        "chapter": 17,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 17,
+          "verse": 21
+        }
+      ],
+      "en": "Now all the Athenians and the strangers living there spent their time in nothing else, but either to tell or to hear some new thing.",
+      "ko": "모든 아덴 사람과 거기서 나그네 된 외국인들이 가장 새로되는 것을 말하고 듣는 이외에 달리는 시간을 쓰지 않음이더라",
+      "source_text_hash": "9786d2618a4c45472e40bcb15b7b7b12417b96ed818d4a7f120783251ed167a8",
+      "translation_text_hash": "eb73831b44f57a8007b18211f83476b4bd62ee5a6142aad0ce9dbcda69ece5b9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 아덴 사람과 거기서 나그네 된 외국인들이 가장 새로되는 것을 말하고 듣는 이외에 달리는 시간을 쓰지 않음이더라"
+      ],
+      "raw_text_hashes": [
+        "eb73831b44f57a8007b18211f83476b4bd62ee5a6142aad0ce9dbcda69ece5b9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:17:22",
+      "sequence": 27543,
+      "chapter_label": "ACT 17",
+      "verse_label": "22",
+      "locator": {
+        "book": "ACT",
+        "chapter": 17,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 17,
+          "verse": 22
+        }
+      ],
+      "en": "Paul stood in the middle of the Areopagus and said, “You men of Athens, I perceive that you are very religious in all things.",
+      "ko": "바울이 아레오바고 가운데 서서 말하되 아덴 사람들아 너희를 보니 범사에 종교성이 많도다",
+      "source_text_hash": "370d20962f5052df50b7850922d462f8ca9cb7ae799399275a07b573b3fe629b",
+      "translation_text_hash": "ab5e1b886f2772d85bc1feab4fb90842ec439830890f44eb26e4620c493e616f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바울이 아레오바고 가운데 서서 말하되 아덴 사람들아 너희를 보니 범사에 종교성이 많도다"
+      ],
+      "raw_text_hashes": [
+        "ab5e1b886f2772d85bc1feab4fb90842ec439830890f44eb26e4620c493e616f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:17:23",
+      "sequence": 27544,
+      "chapter_label": "ACT 17",
+      "verse_label": "23",
+      "locator": {
+        "book": "ACT",
+        "chapter": 17,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 17,
+          "verse": 23
+        }
+      ],
+      "en": "For as I passed along and observed the objects of your worship, I also found an altar with this inscription: ‘TO AN UNKNOWN GOD.’ What therefore you worship in ignorance, I announce to you.",
+      "ko": "내가 두루 다니며 너희의 위하는 것들을 보다가 알지 못하는 신에게라고 새긴 단도 보았으니 그런즉 너희가 알지 못하고 위하는 그것을 내가 너희에게 알게 하리라",
+      "source_text_hash": "d56413eb85461b00734f467120647f964fd79d85a6303a056f8fdc57a27832f6",
+      "translation_text_hash": "780cda37a4d208c0277c22cd5ab410eb5df7d7478041d59e2d93eb0f23d83f4a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 두루 다니며 너희의 위하는 것들을 보다가 알지 못하는 신에게라고 새긴 단도 보았으니 그런즉 너희가 알지 못하고 위하는 그것을 내가 너희에게 알게 하리라"
+      ],
+      "raw_text_hashes": [
+        "780cda37a4d208c0277c22cd5ab410eb5df7d7478041d59e2d93eb0f23d83f4a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:17:24",
+      "sequence": 27545,
+      "chapter_label": "ACT 17",
+      "verse_label": "24",
+      "locator": {
+        "book": "ACT",
+        "chapter": 17,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 17,
+          "verse": 24
+        }
+      ],
+      "en": "The God who made the world and all things in it, he, being Lord of heaven and earth, doesn’t dwell in temples made with hands.",
+      "ko": "우주와 그 가운데 있는 만유를 지으신 신께서는 천지의 주재시니 손으로 지은 전에 계시지 아니하시고",
+      "source_text_hash": "10eb7b58a0e3ee4f88bf782f391efcedd75d19ed465e1a7b164e4e47677d02e4",
+      "translation_text_hash": "99d2e190daf32c8c3ad9b564bb1c7fa2ba324364466b3973e49d7d79393c912d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우주와 그 가운데 있는 만유를 지으신 신께서는 천지의 주재시니 손으로 지은 전에 계시지 아니하시고"
+      ],
+      "raw_text_hashes": [
+        "99d2e190daf32c8c3ad9b564bb1c7fa2ba324364466b3973e49d7d79393c912d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:17:25",
+      "sequence": 27546,
+      "chapter_label": "ACT 17",
+      "verse_label": "25",
+      "locator": {
+        "book": "ACT",
+        "chapter": 17,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 17,
+          "verse": 25
+        }
+      ],
+      "en": "He isn’t served by men’s hands, as though he needed anything, seeing he himself gives to all life and breath and all things.",
+      "ko": "또 무엇이 부족한 것처럼 사람의 손으로 섬김을 받으시는 것이 아니니 이는 만민에게 생명과 호흡과 만물을 친히 주시는 자이심이라",
+      "source_text_hash": "51758ac0100d396ff77bdf95409f8d0b5e060320e37aff8a536e360812332355",
+      "translation_text_hash": "2b553d2209debaf4c7cb1e1677de41de25d2fe6f4460154edeb500999a156739",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 무엇이 부족한 것처럼 사람의 손으로 섬김을 받으시는 것이 아니니 이는 만민에게 생명과 호흡과 만물을 친히 주시는 자이심이라"
+      ],
+      "raw_text_hashes": [
+        "2b553d2209debaf4c7cb1e1677de41de25d2fe6f4460154edeb500999a156739"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:17:26",
+      "sequence": 27547,
+      "chapter_label": "ACT 17",
+      "verse_label": "26",
+      "locator": {
+        "book": "ACT",
+        "chapter": 17,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 17,
+          "verse": 26
+        }
+      ],
+      "en": "He made from one blood every nation of men to dwell on all the surface of the earth, having determined appointed seasons and the boundaries of their dwellings,",
+      "ko": "인류의 모든 족속을 한 혈통으로 만드사 온 땅에 거하게 하시고 저희의 년대를 정하시며 거주의 경계를 한하셨으니",
+      "source_text_hash": "445a34679bf1af4be5ca9d48671b0feacc63fc7b524077ac9f0e437da607e6f1",
+      "translation_text_hash": "7d6cdcd03b80da8f239c2bad16a36d227ec21c7855eebcaa9bb9c59823abb14f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "인류의 모든 족속을 한 혈통으로 만드사 온 땅에 거하게 하시고 저희의 년대를 정하시며 거주의 경계를 한하셨으니"
+      ],
+      "raw_text_hashes": [
+        "7d6cdcd03b80da8f239c2bad16a36d227ec21c7855eebcaa9bb9c59823abb14f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:17:27",
+      "sequence": 27548,
+      "chapter_label": "ACT 17",
+      "verse_label": "27",
+      "locator": {
+        "book": "ACT",
+        "chapter": 17,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 17,
+          "verse": 27
+        }
+      ],
+      "en": "that they should seek the Lord, if perhaps they might reach out for him and find him, though he is not far from each one of us.",
+      "ko": "이는 사람으로 하나님을 혹 더듬어 찾아 발견케 하려 하심이로되 그는 우리 각 사람에게서 멀리 떠나 계시지 아니하도다",
+      "source_text_hash": "6696c3f348a83c9b1fa78144043c70e31948459d5dccd50a88f2f31a2242e32c",
+      "translation_text_hash": "d4f6977375129c43db9e2e7cbe23f9431dd635e4bbc7718c4f6687ebc6378a26",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 사람으로 하나님을 혹 더듬어 찾아 발견케 하려 하심이로되 그는 우리 각 사람에게서 멀리 떠나 계시지 아니하도다"
+      ],
+      "raw_text_hashes": [
+        "d4f6977375129c43db9e2e7cbe23f9431dd635e4bbc7718c4f6687ebc6378a26"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:17:28",
+      "sequence": 27549,
+      "chapter_label": "ACT 17",
+      "verse_label": "28",
+      "locator": {
+        "book": "ACT",
+        "chapter": 17,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 17,
+          "verse": 28
+        }
+      ],
+      "en": "‘For in him we live, move, and have our being.’ As some of your own poets have said, ‘For we are also his offspring.’",
+      "ko": "우리가 그를 힘입어 살며 기동하며 있느니라 너희 시인 중에도 어떤 사람들의 말과 같이 우리가 그의 소생이라 하니",
+      "source_text_hash": "b2e69be9f389e7408170d64015341851e7c6272dfee5db880ba869cae5e10e12",
+      "translation_text_hash": "aa6215f04bc26c23e96991556620bed0c154c14b2cc9460aab35483b339276fb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 그를 힘입어 살며 기동하며 있느니라 너희 시인 중에도 어떤 사람들의 말과 같이 우리가 그의 소생이라 하니"
+      ],
+      "raw_text_hashes": [
+        "aa6215f04bc26c23e96991556620bed0c154c14b2cc9460aab35483b339276fb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:17:29",
+      "sequence": 27550,
+      "chapter_label": "ACT 17",
+      "verse_label": "29",
+      "locator": {
+        "book": "ACT",
+        "chapter": 17,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 17,
+          "verse": 29
+        }
+      ],
+      "en": "Being then the offspring of God, we ought not to think that the Divine Nature is like gold, or silver, or stone, engraved by art and design of man.",
+      "ko": "이와 같이 신의 소생이 되었은즉 신을 금이나 은이나 돌에다 사람의 기술과 고안으로 새긴 것들과 같이 여길 것이 아니니라",
+      "source_text_hash": "944f302733333236b5374861d7d0309e02c903945f23285e569d4958f6555208",
+      "translation_text_hash": "aa15f5738cf9936bff2d47986ca41279ac6f82a58458cd5b420dc72d520160b6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이와 같이 신의 소생이 되었은즉 신을 금이나 은이나 돌에다 사람의 기술과 고안으로 새긴 것들과 같이 여길 것이 아니니라"
+      ],
+      "raw_text_hashes": [
+        "aa15f5738cf9936bff2d47986ca41279ac6f82a58458cd5b420dc72d520160b6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:17:30",
+      "sequence": 27551,
+      "chapter_label": "ACT 17",
+      "verse_label": "30",
+      "locator": {
+        "book": "ACT",
+        "chapter": 17,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 17,
+          "verse": 30
+        }
+      ],
+      "en": "The times of ignorance therefore God overlooked. But now he commands that all people everywhere should repent,",
+      "ko": "알지 못하던 시대에는 하나님이 허물치 아니하셨거니와 이제는 어디든지 사람을 다 명하사 회개하라 하셨으니",
+      "source_text_hash": "8e2f58f85f03a7641d27cb4ecfeaf557a6dd20cacbcb4b6ed1cac7c205c074ba",
+      "translation_text_hash": "411b01181bfc028336b99b11f87c43f1af3b0f7bc0e45e19f42b32109f8e7766",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "알지 못하던 시대에는 하나님이 허물치 아니하셨거니와 이제는 어디든지 사람을 다 명하사 회개하라 하셨으니"
+      ],
+      "raw_text_hashes": [
+        "411b01181bfc028336b99b11f87c43f1af3b0f7bc0e45e19f42b32109f8e7766"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:17:31",
+      "sequence": 27552,
+      "chapter_label": "ACT 17",
+      "verse_label": "31",
+      "locator": {
+        "book": "ACT",
+        "chapter": 17,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 17,
+          "verse": 31
+        }
+      ],
+      "en": "because he has appointed a day in which he will judge the world in righteousness by the man whom he has ordained; of which he has given assurance to all men, in that he has raised him from the dead.”",
+      "ko": "이는 정하신 사람으로 하여금 천하를 공의로 심판할 날을 작정하시고 이에 저를 죽은 자 가운데서 다시 살리신 것으로 모든 사람에게 믿을만한 증거를 주셨음이니라 하니라",
+      "source_text_hash": "65b19fd1303b9bfe10daacc168f4a66c75048cd816d6d7948ee30f1c9286cadf",
+      "translation_text_hash": "4b6f9d922941524c197007f4ed642a207ed7ae967a501ab5388f3ec16fa952b3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 정하신 사람으로 하여금 천하를 공의로 심판할 날을 작정하시고 이에 저를 죽은 자 가운데서 다시 살리신 것으로 모든 사람에게 믿을만한 증거를 주셨음이니라 하니라"
+      ],
+      "raw_text_hashes": [
+        "4b6f9d922941524c197007f4ed642a207ed7ae967a501ab5388f3ec16fa952b3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:17:32",
+      "sequence": 27553,
+      "chapter_label": "ACT 17",
+      "verse_label": "32",
+      "locator": {
+        "book": "ACT",
+        "chapter": 17,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 17,
+          "verse": 32
+        }
+      ],
+      "en": "Now when they heard of the resurrection of the dead, some mocked; but others said, “We want to hear you again concerning this.”",
+      "ko": "저희가 죽은 자의 부활을 듣고 혹은 기롱도 하고 혹은 이 일에 대하여 네 말을 다시 듣겠다 하니",
+      "source_text_hash": "13f48bf3522fccf6ee5c5f31e3645d268485f12d9d894dfa5894c1628ab3c515",
+      "translation_text_hash": "793867f29ec6aceef6eb3aaac9f4bcaca1ebb4eef32028ea30646dccca968203",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 죽은 자의 부활을 듣고 혹은 기롱도 하고 혹은 이 일에 대하여 네 말을 다시 듣겠다 하니"
+      ],
+      "raw_text_hashes": [
+        "793867f29ec6aceef6eb3aaac9f4bcaca1ebb4eef32028ea30646dccca968203"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:17:33",
+      "sequence": 27554,
+      "chapter_label": "ACT 17",
+      "verse_label": "33",
+      "locator": {
+        "book": "ACT",
+        "chapter": 17,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 17,
+          "verse": 33
+        }
+      ],
+      "en": "Thus Paul went out from among them.",
+      "ko": "이에 바울이 저희 가운데서 떠나매",
+      "source_text_hash": "2cb0ed957f0337f7878098b90f28761a260cc79a64529f801df5420584af1ccc",
+      "translation_text_hash": "43ca7b2f3dfb4f25c53d54d369a7306621afd889316fed38f25e004161544743",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 바울이 저희 가운데서 떠나매"
+      ],
+      "raw_text_hashes": [
+        "43ca7b2f3dfb4f25c53d54d369a7306621afd889316fed38f25e004161544743"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:17:34",
+      "sequence": 27555,
+      "chapter_label": "ACT 17",
+      "verse_label": "34",
+      "locator": {
+        "book": "ACT",
+        "chapter": 17,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 17,
+          "verse": 34
+        }
+      ],
+      "en": "But certain men joined with him and believed, including Dionysius the Areopagite, and a woman named Damaris, and others with them.",
+      "ko": "몇 사람이 그를 친하여 믿으니 그 중 아레오바고 관원 디오누시오와 다마리라 하는 여자와 또 다른 사람들도 있었더라",
+      "source_text_hash": "19b4fda3868595a6937aa9807a47f173be622cf1795256eeb4c14defac0fbd99",
+      "translation_text_hash": "b15b15ff22aab497a936c45d60504d19d387a0a91fc55444d4f65e84acc27501",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "몇 사람이 그를 친하여 믿으니 그 중 아레오바고 관원 디오누시오와 다마리라 하는 여자와 또 다른 사람들도 있었더라"
+      ],
+      "raw_text_hashes": [
+        "b15b15ff22aab497a936c45d60504d19d387a0a91fc55444d4f65e84acc27501"
+      ]
+    }
+  ]
+}

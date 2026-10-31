@@ -1,0 +1,589 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:083",
+  "unit_ordinal": 561,
+  "unit_label": "PSA 83",
+  "book_code": "PSA",
+  "chapter_number": 83,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:83:1",
+      "sequence": 15243,
+      "chapter_label": "PSA 83",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 83,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 83,
+          "verse": 1
+        }
+      ],
+      "en": "God, don’t keep silent. Don’t keep silent, and don’t be still, God.",
+      "ko": "하나님이여 침묵치 마소서 하나님이여 잠잠치 말고 고요치 마소서",
+      "source_text_hash": "b404af491186b1a572cf5f39d366451676b520fcb51ed63e9f8991641c207bfb",
+      "translation_text_hash": "869f75f7b3b2f23e69d9df07dc3ab2f11eff0ae99241072afa0bc2e135b81e2e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이여 침묵치 마소서 하나님이여 잠잠치 말고 고요치 마소서"
+      ],
+      "raw_text_hashes": [
+        "869f75f7b3b2f23e69d9df07dc3ab2f11eff0ae99241072afa0bc2e135b81e2e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:83:2",
+      "sequence": 15244,
+      "chapter_label": "PSA 83",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 83,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 83,
+          "verse": 2
+        }
+      ],
+      "en": "For, behold, your enemies are stirred up. Those who hate you have lifted up their heads.",
+      "ko": "대저 주의 원수가 훤화하며 주를 한하는 자가 머리를 들었나이다",
+      "source_text_hash": "a15584b7ca6c28d7420293e550c96346b49e1088dc43cb3dc9a161de2a04022e",
+      "translation_text_hash": "2ae5b7287eff580bc019562a0fcc82f22714688d72ecf4a855ec444da621154a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대저 주의 원수가 훤화하며 주를 한하는 자가 머리를 들었나이다"
+      ],
+      "raw_text_hashes": [
+        "2ae5b7287eff580bc019562a0fcc82f22714688d72ecf4a855ec444da621154a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:83:3",
+      "sequence": 15245,
+      "chapter_label": "PSA 83",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 83,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 83,
+          "verse": 3
+        }
+      ],
+      "en": "They conspire with cunning against your people. They plot against your cherished ones.",
+      "ko": "저희가 주의 백성을 치려하여 간계를 꾀하며 주의 숨긴 자를 치려고 서로 의논하여",
+      "source_text_hash": "542bc1dec0a0a34d2e90a797f8c4791a77764c3a386fc904af8c16e5c9a1ff0b",
+      "translation_text_hash": "757700900f771e03a6bb3cd4d43c0882b68e3fe84cfe981258a3e803e4c36881",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 주의 백성을 치려하여 간계를 꾀하며 주의 숨긴 자를 치려고 서로 의논하여"
+      ],
+      "raw_text_hashes": [
+        "757700900f771e03a6bb3cd4d43c0882b68e3fe84cfe981258a3e803e4c36881"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:83:4",
+      "sequence": 15246,
+      "chapter_label": "PSA 83",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 83,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 83,
+          "verse": 4
+        }
+      ],
+      "en": "“Come,” they say, “let’s destroy them as a nation, that the name of Israel may be remembered no more.”",
+      "ko": "말하기를 가서 저희를 끊어 다시 나라가 되지 못하게 하여 이스라엘의 이름으로 다시는 기억되지 못하게 하자 하나이다",
+      "source_text_hash": "1dbc4c9660dd9d08fb1ec5eb86faf9bdcd2ef0e8155fd6d7aa7edc671260db94",
+      "translation_text_hash": "64b235f02f3cf7e4ebf7ba798a1661503f1351ec8f368a208681e17633145d92",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "말하기를 가서 저희를 끊어 다시 나라가 되지 못하게 하여 이스라엘의 이름으로 다시는 기억되지 못하게 하자 하나이다"
+      ],
+      "raw_text_hashes": [
+        "64b235f02f3cf7e4ebf7ba798a1661503f1351ec8f368a208681e17633145d92"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:83:5",
+      "sequence": 15247,
+      "chapter_label": "PSA 83",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 83,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 83,
+          "verse": 5
+        }
+      ],
+      "en": "For they have conspired together with one mind. They form an alliance against you.",
+      "ko": "저희가 일심으로 의논하고 주를 대적하여 서로 언약하니",
+      "source_text_hash": "ed5111b0904ad7cc0355586e02cd29034ab6b78c9c95074a6a26289c8a67611f",
+      "translation_text_hash": "702ddb1a71d36824ad025a01d3108cf7ddcae70c156405f8f88ea38acba25dac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 일심으로 의논하고 주를 대적하여 서로 언약하니"
+      ],
+      "raw_text_hashes": [
+        "702ddb1a71d36824ad025a01d3108cf7ddcae70c156405f8f88ea38acba25dac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:83:6",
+      "sequence": 15248,
+      "chapter_label": "PSA 83",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 83,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 83,
+          "verse": 6
+        }
+      ],
+      "en": "The tents of Edom and the Ishmaelites; Moab, and the Hagrites;",
+      "ko": "곧 에돔의 장막과 이스마엘인과 모압과 하갈인이며",
+      "source_text_hash": "d817a8f327abc08cc29cbd303d3d67bec4050fc77541af1cd24f169e83a58d2f",
+      "translation_text_hash": "9eab7648fb6cc98875534df00589fb9dea08528a9678f693795562ff4d3e6dbe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 에돔의 장막과 이스마엘인과 모압과 하갈인이며"
+      ],
+      "raw_text_hashes": [
+        "9eab7648fb6cc98875534df00589fb9dea08528a9678f693795562ff4d3e6dbe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:83:7",
+      "sequence": 15249,
+      "chapter_label": "PSA 83",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 83,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 83,
+          "verse": 7
+        }
+      ],
+      "en": "Gebal, Ammon, and Amalek; Philistia with the inhabitants of Tyre;",
+      "ko": "그발과 암몬과 아말렉이며 블레셋과 두로 거민이요",
+      "source_text_hash": "48f1531f8ead7fa83254b7d7504efb21ea60e9789460aabee0c556ef3333e348",
+      "translation_text_hash": "17077cf9365652a29bd4b6dd116b6224c7d158a7dc0b2735e71195c32e8383b2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그발과 암몬과 아말렉이며 블레셋과 두로 거민이요"
+      ],
+      "raw_text_hashes": [
+        "17077cf9365652a29bd4b6dd116b6224c7d158a7dc0b2735e71195c32e8383b2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:83:8",
+      "sequence": 15250,
+      "chapter_label": "PSA 83",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 83,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 83,
+          "verse": 8
+        }
+      ],
+      "en": "Assyria also is joined with them. They have helped the children of Lot. Selah.",
+      "ko": "앗수르도 저희와 연합하여 롯 자손의 도움이 되었나이다(셀라)",
+      "source_text_hash": "c53d0bb3ca59cdcd159436d5b9b7f70af49cdd2eadabe0e2554000dca5344747",
+      "translation_text_hash": "d7c3b000cd4a27213b1fb3e068b505e928283f740710b04c2946261318c4bdd9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "앗수르도 저희와 연합하여 롯 자손의 도움이 되었나이다(셀라)"
+      ],
+      "raw_text_hashes": [
+        "d7c3b000cd4a27213b1fb3e068b505e928283f740710b04c2946261318c4bdd9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:83:9",
+      "sequence": 15251,
+      "chapter_label": "PSA 83",
+      "verse_label": "9",
+      "locator": {
+        "book": "PSA",
+        "chapter": 83,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 83,
+          "verse": 9
+        }
+      ],
+      "en": "Do to them as you did to Midian, as to Sisera, as to Jabin, at the river Kishon;",
+      "ko": "주는 미디안인에게 행하신 것 같이, 기손 시내에서 시스라와 야빈에게 행하신 것 같이 저희에게도 행하소서",
+      "source_text_hash": "57e559eba3e1e6f8326017161f2eda3fd2aecaf8fb4c5ad1cac7158a9e0de356",
+      "translation_text_hash": "4ac90fce55727bc69e3b22ab6b1f5215044b7ae3e3b15608b4339b6177bf449b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주는 미디안인에게 행하신 것 같이, 기손 시내에서 시스라와 야빈에게 행하신 것 같이 저희에게도 행하소서"
+      ],
+      "raw_text_hashes": [
+        "4ac90fce55727bc69e3b22ab6b1f5215044b7ae3e3b15608b4339b6177bf449b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:83:10",
+      "sequence": 15252,
+      "chapter_label": "PSA 83",
+      "verse_label": "10",
+      "locator": {
+        "book": "PSA",
+        "chapter": 83,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 83,
+          "verse": 10
+        }
+      ],
+      "en": "who perished at Endor, who became as dung for the earth.",
+      "ko": "그들은 엔돌에서 패망하여 땅에 거름이 되었나이다",
+      "source_text_hash": "55790a905f4a6028ee9f640941e4dc3349431ee4474d51c0b8f3de870acd0876",
+      "translation_text_hash": "31e7ef35d067effad0436f7e04cebbd40f21c997bf4993dad2bb395285f60c74",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들은 엔돌에서 패망하여 땅에 거름이 되었나이다"
+      ],
+      "raw_text_hashes": [
+        "31e7ef35d067effad0436f7e04cebbd40f21c997bf4993dad2bb395285f60c74"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:83:11",
+      "sequence": 15253,
+      "chapter_label": "PSA 83",
+      "verse_label": "11",
+      "locator": {
+        "book": "PSA",
+        "chapter": 83,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 83,
+          "verse": 11
+        }
+      ],
+      "en": "Make their nobles like Oreb and Zeeb, yes, all their princes like Zebah and Zalmunna,",
+      "ko": "저희 귀인으로 오렙과 스엡 같게 하시며 저희 모든 방백으로 세바와 살문나와 같게 하소서",
+      "source_text_hash": "2ca5bb2a65700e3f2e5f62e22d329b3f621a6ae8bffea491558f72a968f7c039",
+      "translation_text_hash": "3d4e673aa0598810b69ba08579ad79401c02cf8e081d6c5808a3b9d4313a0f4b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희 귀인으로 오렙과 스엡 같게 하시며 저희 모든 방백으로 세바와 살문나와 같게 하소서"
+      ],
+      "raw_text_hashes": [
+        "3d4e673aa0598810b69ba08579ad79401c02cf8e081d6c5808a3b9d4313a0f4b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:83:12",
+      "sequence": 15254,
+      "chapter_label": "PSA 83",
+      "verse_label": "12",
+      "locator": {
+        "book": "PSA",
+        "chapter": 83,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 83,
+          "verse": 12
+        }
+      ],
+      "en": "who said, “Let’s take possession of God’s pasture lands.”",
+      "ko": "저희가 말하기를 우리가 하나님의 목장을 우리의 소유로 취하자 하였나이다",
+      "source_text_hash": "8b9938eec42e8409885a267eeb23227597defc888420dcaa542c2d86f6553a93",
+      "translation_text_hash": "e6dea4b00797b4b3f03d83b7cc7e278682348a351a4d14a2911dada02b9dca58",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 말하기를 우리가 하나님의 목장을 우리의 소유로 취하자 하였나이다"
+      ],
+      "raw_text_hashes": [
+        "e6dea4b00797b4b3f03d83b7cc7e278682348a351a4d14a2911dada02b9dca58"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:83:13",
+      "sequence": 15255,
+      "chapter_label": "PSA 83",
+      "verse_label": "13",
+      "locator": {
+        "book": "PSA",
+        "chapter": 83,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 83,
+          "verse": 13
+        }
+      ],
+      "en": "My God, make them like tumbleweed, like chaff before the wind.",
+      "ko": "나의 하나님이여 저희로 굴러가는 검불 같게 하시며 바람에 날리는 초개 같게 하소서",
+      "source_text_hash": "4850a14fea641ba8b2e1a0de6e4f8c272aea55883626966782d707c577ddb1ae",
+      "translation_text_hash": "d6393786cab89cd5b0fd8276de0d5fd2fdd7152b3c69e2c332ba41bd70846c79",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 하나님이여 저희로 굴러가는 검불 같게 하시며 바람에 날리는 초개 같게 하소서"
+      ],
+      "raw_text_hashes": [
+        "d6393786cab89cd5b0fd8276de0d5fd2fdd7152b3c69e2c332ba41bd70846c79"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:83:14",
+      "sequence": 15256,
+      "chapter_label": "PSA 83",
+      "verse_label": "14",
+      "locator": {
+        "book": "PSA",
+        "chapter": 83,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 83,
+          "verse": 14
+        }
+      ],
+      "en": "As the fire that burns the forest, as the flame that sets the mountains on fire,",
+      "ko": "삼림을 사르는 불과 산에 붙는 화염 같이",
+      "source_text_hash": "439c177c1e6cb572b9ef6368163f3ae82eb68f69093a312327cc45a7d6e8cf9c",
+      "translation_text_hash": "e47e756f2ed465ee10fe9053ddf01199f0eef737f3527e383d9b5028f02e19c6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "삼림을 사르는 불과 산에 붙는 화염 같이"
+      ],
+      "raw_text_hashes": [
+        "e47e756f2ed465ee10fe9053ddf01199f0eef737f3527e383d9b5028f02e19c6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:83:15",
+      "sequence": 15257,
+      "chapter_label": "PSA 83",
+      "verse_label": "15",
+      "locator": {
+        "book": "PSA",
+        "chapter": 83,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 83,
+          "verse": 15
+        }
+      ],
+      "en": "so pursue them with your tempest, and terrify them with your storm.",
+      "ko": "주의 광풍으로 저희를 쫓으시며 주의 폭풍으로 저희를 두렵게 하소서",
+      "source_text_hash": "f19e5355a1c21efdaff2e0d8770327495d1693535925108de5ab80a85c37fba4",
+      "translation_text_hash": "9b2789bc00563aac5cba9830b01dacb66f6187aceb772f7c10c8e230b4e4a1d9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 광풍으로 저희를 쫓으시며 주의 폭풍으로 저희를 두렵게 하소서"
+      ],
+      "raw_text_hashes": [
+        "9b2789bc00563aac5cba9830b01dacb66f6187aceb772f7c10c8e230b4e4a1d9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:83:16",
+      "sequence": 15258,
+      "chapter_label": "PSA 83",
+      "verse_label": "16",
+      "locator": {
+        "book": "PSA",
+        "chapter": 83,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 83,
+          "verse": 16
+        }
+      ],
+      "en": "Fill their faces with confusion, that they may seek your name, LORD.",
+      "ko": "여호와여 수치로 저희 얼굴에 가득케 하사 저희로 주의 이름을 찾게 하소서",
+      "source_text_hash": "6ff54fe7cae73adf7aa35fd3e0cbb7a52c97d44d0ed583b9265f122420f54679",
+      "translation_text_hash": "dce38f497c7f597a87e2f3cc79d1406a93be23084638a462f66a643bf7dd6ab8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 수치로 저희 얼굴에 가득케 하사 저희로 주의 이름을 찾게 하소서"
+      ],
+      "raw_text_hashes": [
+        "dce38f497c7f597a87e2f3cc79d1406a93be23084638a462f66a643bf7dd6ab8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:83:17",
+      "sequence": 15259,
+      "chapter_label": "PSA 83",
+      "verse_label": "17",
+      "locator": {
+        "book": "PSA",
+        "chapter": 83,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 83,
+          "verse": 17
+        }
+      ],
+      "en": "Let them be disappointed and dismayed forever. Yes, let them be confounded and perish;",
+      "ko": "저희로 수치를 당하여 영원히 놀라게 하시며 낭패와 멸망을 당케 하사",
+      "source_text_hash": "85a760087cfcf41eb6f0fe4c4e4e9a6902ab200aa6a64012ea21f74509c36c40",
+      "translation_text_hash": "b083142243eea3d4748d5bb91353794b72d35fbbc5ee05ee9903fd6080885cad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희로 수치를 당하여 영원히 놀라게 하시며 낭패와 멸망을 당케 하사"
+      ],
+      "raw_text_hashes": [
+        "b083142243eea3d4748d5bb91353794b72d35fbbc5ee05ee9903fd6080885cad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:83:18",
+      "sequence": 15260,
+      "chapter_label": "PSA 83",
+      "verse_label": "18",
+      "locator": {
+        "book": "PSA",
+        "chapter": 83,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 83,
+          "verse": 18
+        }
+      ],
+      "en": "that they may know that you alone, whose name is the LORD, are the Most High over all the earth.",
+      "ko": "여호와라 이름하신 주만 온 세계의 지존자로 알게 하소서",
+      "source_text_hash": "15b0d34b42a9c0cbb3971b196ca6ef0b7e44d9618b6e8a5dd243d3b6bae46790",
+      "translation_text_hash": "f04abb48ee5b5d939285c8d05efaa60b7b6a8146d32df872bab44c81a09d3551",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와라 이름하신 주만 온 세계의 지존자로 알게 하소서"
+      ],
+      "raw_text_hashes": [
+        "f04abb48ee5b5d939285c8d05efaa60b7b6a8146d32df872bab44c81a09d3551"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,909 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ISA:chapter:043",
+  "unit_ordinal": 722,
+  "unit_label": "ISA 43",
+  "book_code": "ISA",
+  "chapter_number": 43,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ISA:43:1",
+      "sequence": 18507,
+      "chapter_label": "ISA 43",
+      "verse_label": "1",
+      "locator": {
+        "book": "ISA",
+        "chapter": 43,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 43,
+          "verse": 1
+        }
+      ],
+      "en": "But now the LORD who created you, Jacob, and he who formed you, Israel, says: “Don’t be afraid, for I have redeemed you. I have called you by your name. You are mine.",
+      "ko": "야곱아 너를 창조하신 여호와께서 이제 말씀하시느니라 이스라엘아 너를 조성하신 자가 이제 말씀하시느니라 너는 두려워 말라 내가 너를 구속하였고 내가 너를 지명하여 불렀나니 너는 내 것이라",
+      "source_text_hash": "3fa45a84ff1d4a36d32b966c763e7b2a47f28f96898df1639e23d47a8dedcdc2",
+      "translation_text_hash": "2ac987b5dac94b72ef8181aebf20ef95449f515a31d006b59ed099dc1b94a1c3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야곱아 너를 창조하신 여호와께서 이제 말씀하시느니라 이스라엘아 너를 조성하신 자가 이제 말씀하시느니라 너는 두려워 말라 내가 너를 구속하였고 내가 너를 지명하여 불렀나니 너는 내 것이라"
+      ],
+      "raw_text_hashes": [
+        "2ac987b5dac94b72ef8181aebf20ef95449f515a31d006b59ed099dc1b94a1c3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:43:2",
+      "sequence": 18508,
+      "chapter_label": "ISA 43",
+      "verse_label": "2",
+      "locator": {
+        "book": "ISA",
+        "chapter": 43,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 43,
+          "verse": 2
+        }
+      ],
+      "en": "When you pass through the waters, I will be with you, and through the rivers, they will not overflow you. When you walk through the fire, you will not be burned, and flame will not scorch you.",
+      "ko": "네가 물 가운데로 지날 때에 내가 함께할 것이라 강을 건널 때에 물이 너를 침몰치 못할 것이며 네가 불 가운데로 행할 때에 타지도 아니할 것이요 불꽃이 너를 사르지도 못하리니",
+      "source_text_hash": "99ab37f43162bf7264d37e94ba027cdc6f148b7b33b7359e753146113d93e1eb",
+      "translation_text_hash": "61987cd415d38b37dbe4e9bcf6a71186a310107f946e42705cc6d609805ec114",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 물 가운데로 지날 때에 내가 함께할 것이라 강을 건널 때에 물이 너를 침몰치 못할 것이며 네가 불 가운데로 행할 때에 타지도 아니할 것이요 불꽃이 너를 사르지도 못하리니"
+      ],
+      "raw_text_hashes": [
+        "61987cd415d38b37dbe4e9bcf6a71186a310107f946e42705cc6d609805ec114"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:43:3",
+      "sequence": 18509,
+      "chapter_label": "ISA 43",
+      "verse_label": "3",
+      "locator": {
+        "book": "ISA",
+        "chapter": 43,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 43,
+          "verse": 3
+        }
+      ],
+      "en": "For I am the LORD your God, the Holy One of Israel, your Savior. I have given Egypt as your ransom, Ethiopia and Seba in your place.",
+      "ko": "대저 나는 여호와 네 하나님이요 이스라엘의 거룩한 자요 네 구원자임이라 내가 애굽을 너의 속량물로, 구스와 스바를 너의 대신으로 주었노라",
+      "source_text_hash": "51208d89815b3c1c0494b5610d7a46a7c0e71e98a4327e9e3767dad122994939",
+      "translation_text_hash": "d925d324a3c9b7319d750f49653cf847c5d604ce8eb8f2474fcb4b3f44b1796f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대저 나는 여호와 네 하나님이요 이스라엘의 거룩한 자요 네 구원자임이라 내가 애굽을 너의 속량물로, 구스와 스바를 너의 대신으로 주었노라"
+      ],
+      "raw_text_hashes": [
+        "d925d324a3c9b7319d750f49653cf847c5d604ce8eb8f2474fcb4b3f44b1796f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:43:4",
+      "sequence": 18510,
+      "chapter_label": "ISA 43",
+      "verse_label": "4",
+      "locator": {
+        "book": "ISA",
+        "chapter": 43,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 43,
+          "verse": 4
+        }
+      ],
+      "en": "Since you have been precious and honored in my sight, and I have loved you, therefore I will give people in your place, and nations instead of your life.",
+      "ko": "내가 너를 보배롭고 존귀하게 여기고 너를 사랑하였은즉 내가 사람들을 주어 너를 바꾸며 백성들로 네 생명을 대신하리니",
+      "source_text_hash": "84fdaeb3d5bff688643193daa128e8d1a26c1ab79231a6a48c33c577963af38d",
+      "translation_text_hash": "9aed27b9787b3de239a868ed32863dddedf6164d680fb88468a7989859290aac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너를 보배롭고 존귀하게 여기고 너를 사랑하였은즉 내가 사람들을 주어 너를 바꾸며 백성들로 네 생명을 대신하리니"
+      ],
+      "raw_text_hashes": [
+        "9aed27b9787b3de239a868ed32863dddedf6164d680fb88468a7989859290aac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:43:5",
+      "sequence": 18511,
+      "chapter_label": "ISA 43",
+      "verse_label": "5",
+      "locator": {
+        "book": "ISA",
+        "chapter": 43,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 43,
+          "verse": 5
+        }
+      ],
+      "en": "Don’t be afraid, for I am with you. I will bring your offspring from the east, and gather you from the west.",
+      "ko": "두려워 말라 내가 너와 함께 하여 네 자손을 동방에서부터 오게하며 서방에서부터 너를 모을 것이며",
+      "source_text_hash": "3dba87dbcc5177da49ec278ef073a83b4561d97e5bb7b4c7c24cd7cb55b52ca6",
+      "translation_text_hash": "1f8c1e267d6a666dd521ec7f2b338a3de5b6c5d298ddd407c0d4e9bbca338799",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "두려워 말라 내가 너와 함께 하여 네 자손을 동방에서부터 오게하며 서방에서부터 너를 모을 것이며"
+      ],
+      "raw_text_hashes": [
+        "1f8c1e267d6a666dd521ec7f2b338a3de5b6c5d298ddd407c0d4e9bbca338799"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:43:6",
+      "sequence": 18512,
+      "chapter_label": "ISA 43",
+      "verse_label": "6",
+      "locator": {
+        "book": "ISA",
+        "chapter": 43,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 43,
+          "verse": 6
+        }
+      ],
+      "en": "I will tell the north, ‘Give them up!’ and tell the south, ‘Don’t hold them back! Bring my sons from far away, and my daughters from the ends of the earth—",
+      "ko": "내가 북방에게 이르기를 놓으라 남방에게 이르기를 구류하지 말라 내 아들들을 원방에서 이끌며 내 딸들을 땅 끝에서 오게 하라",
+      "source_text_hash": "ab5b96654f7846f4d4383ded64115b498f094af65558f7bb37e8dff35f778b55",
+      "translation_text_hash": "4115f3d6763ce8fe42bdc0afa3bc30ac733cef0701cc47e29c3ab950f4edef51",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 북방에게 이르기를 놓으라 남방에게 이르기를 구류하지 말라 내 아들들을 원방에서 이끌며 내 딸들을 땅 끝에서 오게 하라"
+      ],
+      "raw_text_hashes": [
+        "4115f3d6763ce8fe42bdc0afa3bc30ac733cef0701cc47e29c3ab950f4edef51"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:43:7",
+      "sequence": 18513,
+      "chapter_label": "ISA 43",
+      "verse_label": "7",
+      "locator": {
+        "book": "ISA",
+        "chapter": 43,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 43,
+          "verse": 7
+        }
+      ],
+      "en": "everyone who is called by my name, and whom I have created for my glory, whom I have formed, yes, whom I have made.’”",
+      "ko": "무릇 내 이름으로 일컫는 자 곧 내가 내 영광을 위하여 창조한 자를 오게 하라 그들을 내가 지었고 만들었느니라",
+      "source_text_hash": "7e137736a058953c5e94b1ca6d731cd662a038af80613ba437df18bf64e4aa41",
+      "translation_text_hash": "fa609571a7d53045643a4763c8087abbe82704faaa37fcdd65df6aa2c8e73e5b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 내 이름으로 일컫는 자 곧 내가 내 영광을 위하여 창조한 자를 오게 하라 그들을 내가 지었고 만들었느니라"
+      ],
+      "raw_text_hashes": [
+        "fa609571a7d53045643a4763c8087abbe82704faaa37fcdd65df6aa2c8e73e5b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:43:8",
+      "sequence": 18514,
+      "chapter_label": "ISA 43",
+      "verse_label": "8",
+      "locator": {
+        "book": "ISA",
+        "chapter": 43,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 43,
+          "verse": 8
+        }
+      ],
+      "en": "Bring out the blind people who have eyes, and the deaf who have ears.",
+      "ko": "눈이 있어도 소경이요 귀가 있어도 귀머거리인 백성을 이끌어 내라",
+      "source_text_hash": "93e504e217e028b59cb206d490f80c89efaff1a2f7788a255dcbe0ea951df38c",
+      "translation_text_hash": "daa93ed7100d06ce3cf4607a0f04b91dc7a291f0706196765a051b29905ea768",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "눈이 있어도 소경이요 귀가 있어도 귀머거리인 백성을 이끌어 내라"
+      ],
+      "raw_text_hashes": [
+        "daa93ed7100d06ce3cf4607a0f04b91dc7a291f0706196765a051b29905ea768"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:43:9",
+      "sequence": 18515,
+      "chapter_label": "ISA 43",
+      "verse_label": "9",
+      "locator": {
+        "book": "ISA",
+        "chapter": 43,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 43,
+          "verse": 9
+        }
+      ],
+      "en": "Let all the nations be gathered together, and let the peoples be assembled. Who among them can declare this, and show us former things? Let them bring their witnesses, that they may be justified, or let them hear, and say, “That is true.”",
+      "ko": "열방은 모였으며 민족들이 회집하였은들 그들 중에 누가 능히 이 일을 고하며 이전 일을 우리에게 보이겠느냐 그들로 증인을 세워서 자기의 옳음을 나타내어 듣는 자들로 옳다 말하게 하라",
+      "source_text_hash": "f3813970fdc4273f5e5a3487fce1e1f3e0f333c7d615878956029079feb3ce77",
+      "translation_text_hash": "1ee053aeade3e7d44dfcf1b731bd6dd83274b98461dacbda13b17383634f6959",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "열방은 모였으며 민족들이 회집하였은들 그들 중에 누가 능히 이 일을 고하며 이전 일을 우리에게 보이겠느냐 그들로 증인을 세워서 자기의 옳음을 나타내어 듣는 자들로 옳다 말하게 하라"
+      ],
+      "raw_text_hashes": [
+        "1ee053aeade3e7d44dfcf1b731bd6dd83274b98461dacbda13b17383634f6959"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:43:10",
+      "sequence": 18516,
+      "chapter_label": "ISA 43",
+      "verse_label": "10",
+      "locator": {
+        "book": "ISA",
+        "chapter": 43,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 43,
+          "verse": 10
+        }
+      ],
+      "en": "“You are my witnesses,” says the LORD, “With my servant whom I have chosen; that you may know and believe me, and understand that I am he. Before me there was no God formed, neither will there be after me.",
+      "ko": "나 여호와가 말하노라 너희는 나의 증인, 나의 종으로 택함을 입었나니 이는 너희로 나를 알고 믿으며 내가 그인줄 깨닫게 하려 함이라 나의 전에 지음을 받은 신이 없었느니라 나의 후에도 없으리라",
+      "source_text_hash": "09f243f78ee8f7931166b315ffe68445415716e6e44bfd07eca839984e3571c0",
+      "translation_text_hash": "abdd29860f7c802850d3cd8a6c6b2670754b3c8542c3367bea94e8664a7ba7fb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와가 말하노라 너희는 나의 증인, 나의 종으로 택함을 입었나니 이는 너희로 나를 알고 믿으며 내가 그인줄 깨닫게 하려 함이라 나의 전에 지음을 받은 신이 없었느니라 나의 후에도 없으리라"
+      ],
+      "raw_text_hashes": [
+        "abdd29860f7c802850d3cd8a6c6b2670754b3c8542c3367bea94e8664a7ba7fb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:43:11",
+      "sequence": 18517,
+      "chapter_label": "ISA 43",
+      "verse_label": "11",
+      "locator": {
+        "book": "ISA",
+        "chapter": 43,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 43,
+          "verse": 11
+        }
+      ],
+      "en": "I myself am the LORD. Besides me, there is no savior.",
+      "ko": "나 곧 나는 여호와라 나 외에 구원자가 없느니라",
+      "source_text_hash": "ba3838da8ed0aadf1260e0d57387ab40f56f19863cd863dc27234e9783d66a89",
+      "translation_text_hash": "1c797e1f87ea01a5275d83c5544958e7a0dc9cfc73fda90714322002d60b375c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 곧 나는 여호와라 나 외에 구원자가 없느니라"
+      ],
+      "raw_text_hashes": [
+        "1c797e1f87ea01a5275d83c5544958e7a0dc9cfc73fda90714322002d60b375c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:43:12",
+      "sequence": 18518,
+      "chapter_label": "ISA 43",
+      "verse_label": "12",
+      "locator": {
+        "book": "ISA",
+        "chapter": 43,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 43,
+          "verse": 12
+        }
+      ],
+      "en": "I have declared, I have saved, and I have shown, and there was no strange god among you. Therefore you are my witnesses”, says the LORD, “and I am God.",
+      "ko": "내가 고하였으며 구원하였으며 보였고 너희 중에 다른 신이 없었나니 그러므로 너희는 나의 증인이요 나는 하나님이니라 여호와의 말이니라",
+      "source_text_hash": "4afb878b1732517488d7a535303d7ffffe82ba95adcfd977ae84f3b25abe31f8",
+      "translation_text_hash": "fed0a46e55a1d6a4a6efce9faeb43978bb80ca203494935548245ba24597994c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 고하였으며 구원하였으며 보였고 너희 중에 다른 신이 없었나니 그러므로 너희는 나의 증인이요 나는 하나님이니라 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "fed0a46e55a1d6a4a6efce9faeb43978bb80ca203494935548245ba24597994c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:43:13",
+      "sequence": 18519,
+      "chapter_label": "ISA 43",
+      "verse_label": "13",
+      "locator": {
+        "book": "ISA",
+        "chapter": 43,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 43,
+          "verse": 13
+        }
+      ],
+      "en": "Yes, since the day was, I am he. There is no one who can deliver out of my hand. I will work, and who can hinder it?”",
+      "ko": "과연 태초로부터 나는 그니 내 손에서 능히 건질 자가 없도다 내가 행하리니 누가 막으리요",
+      "source_text_hash": "6ef76764a90626c94b7e206f112af0f024cf02ec756d0b85df1a8d26a5301289",
+      "translation_text_hash": "8bdb7b1243f5e4af7d0ada2e5ce9cf3f604176add9f2b550df953e0b17370d59",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "과연 태초로부터 나는 그니 내 손에서 능히 건질 자가 없도다 내가 행하리니 누가 막으리요"
+      ],
+      "raw_text_hashes": [
+        "8bdb7b1243f5e4af7d0ada2e5ce9cf3f604176add9f2b550df953e0b17370d59"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:43:14",
+      "sequence": 18520,
+      "chapter_label": "ISA 43",
+      "verse_label": "14",
+      "locator": {
+        "book": "ISA",
+        "chapter": 43,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 43,
+          "verse": 14
+        }
+      ],
+      "en": "The LORD, your Redeemer, the Holy One of Israel says: “For your sake, I have sent to Babylon, and I will bring all of them down as fugitives, even the Chaldeans, in the ships of their rejoicing.",
+      "ko": "너희의 구속자요 이스라엘의 거룩한 자 여호와가 말하노라 너희를 위하여 내가 바벨론에 보내어 모든 갈대아 사람으로 자기들의 연락하던 배를 타고 도망하여 내려가게 하리라",
+      "source_text_hash": "d407bbf7c1c1dbd3a36178726c32f80790c182a3ca68ee3770aaa259945d3803",
+      "translation_text_hash": "65b5a1af610b83205bada3f7bb8a00b9e05be73181c07ac653e2d0993e55b55d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희의 구속자요 이스라엘의 거룩한 자 여호와가 말하노라 너희를 위하여 내가 바벨론에 보내어 모든 갈대아 사람으로 자기들의 연락하던 배를 타고 도망하여 내려가게 하리라"
+      ],
+      "raw_text_hashes": [
+        "65b5a1af610b83205bada3f7bb8a00b9e05be73181c07ac653e2d0993e55b55d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:43:15",
+      "sequence": 18521,
+      "chapter_label": "ISA 43",
+      "verse_label": "15",
+      "locator": {
+        "book": "ISA",
+        "chapter": 43,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 43,
+          "verse": 15
+        }
+      ],
+      "en": "I am the LORD, your Holy One, the Creator of Israel, your King.”",
+      "ko": "나는 여호와 너희의 거룩한 자요 이스라엘의 창조자요 너희 왕이니라",
+      "source_text_hash": "dbb78a2149a1e51f52219fdc304ea784e4ced053c9a5436d12efce88a312946e",
+      "translation_text_hash": "5a0fae196c6c2b39ae47687b6719ac7f0fb02da0b2a4138b4399fdb92c3f9366",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 여호와 너희의 거룩한 자요 이스라엘의 창조자요 너희 왕이니라"
+      ],
+      "raw_text_hashes": [
+        "5a0fae196c6c2b39ae47687b6719ac7f0fb02da0b2a4138b4399fdb92c3f9366"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:43:16",
+      "sequence": 18522,
+      "chapter_label": "ISA 43",
+      "verse_label": "16",
+      "locator": {
+        "book": "ISA",
+        "chapter": 43,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 43,
+          "verse": 16
+        }
+      ],
+      "en": "The LORD, who makes a way in the sea, and a path in the mighty waters,",
+      "ko": "바다 가운데 길을, 큰 물 가운데 첩경을 내고",
+      "source_text_hash": "24e06014b78cfaeeec269f5d8c5f747f0515c629b5c4f3800253b650f82a61af",
+      "translation_text_hash": "2a73f1a7af9eaefbd92d6231c798cb9fcc279f9d3b4a093e7a4db7bc1b2f58d6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바다 가운데 길을, 큰 물 가운데 첩경을 내고"
+      ],
+      "raw_text_hashes": [
+        "2a73f1a7af9eaefbd92d6231c798cb9fcc279f9d3b4a093e7a4db7bc1b2f58d6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:43:17",
+      "sequence": 18523,
+      "chapter_label": "ISA 43",
+      "verse_label": "17",
+      "locator": {
+        "book": "ISA",
+        "chapter": 43,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 43,
+          "verse": 17
+        }
+      ],
+      "en": "who brings out the chariot and horse, the army and the mighty man (they lie down together, they shall not rise; they are extinct, they are quenched like a wick) says:",
+      "ko": "병거와 말과 군대의 용사를 이끌어 내어서 그들로 일시에 엎드러져 일지 못하고 소멸하기를 꺼져가는 등불 같게 한 나 여호와가 말하노라",
+      "source_text_hash": "97bcb9a654f90d25ca00c1ec5ccf22e1cc0cb10461df3e0a6d68d037ff7800f3",
+      "translation_text_hash": "235ba17d52860fff91d8e144b57cb00ef48ee31bd4122ba5abc4befe455d3dec",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "병거와 말과 군대의 용사를 이끌어 내어서 그들로 일시에 엎드러져 일지 못하고 소멸하기를 꺼져가는 등불 같게 한 나 여호와가 말하노라"
+      ],
+      "raw_text_hashes": [
+        "235ba17d52860fff91d8e144b57cb00ef48ee31bd4122ba5abc4befe455d3dec"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:43:18",
+      "sequence": 18524,
+      "chapter_label": "ISA 43",
+      "verse_label": "18",
+      "locator": {
+        "book": "ISA",
+        "chapter": 43,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 43,
+          "verse": 18
+        }
+      ],
+      "en": "“Don’t remember the former things, and don’t consider the things of old.",
+      "ko": "너희는 이전 일을 기억하지 말며 옛적 일을 생각하지 말라",
+      "source_text_hash": "5d1585ca5e441964598bd84ec53a3daed637d78fad216583adbf839333efbb57",
+      "translation_text_hash": "07b17fadd844bec91a8ccef0db323c0c7c50d2f66317dc511a5bb8ab5f5a867a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 이전 일을 기억하지 말며 옛적 일을 생각하지 말라"
+      ],
+      "raw_text_hashes": [
+        "07b17fadd844bec91a8ccef0db323c0c7c50d2f66317dc511a5bb8ab5f5a867a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:43:19",
+      "sequence": 18525,
+      "chapter_label": "ISA 43",
+      "verse_label": "19",
+      "locator": {
+        "book": "ISA",
+        "chapter": 43,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 43,
+          "verse": 19
+        }
+      ],
+      "en": "Behold, I will do a new thing. It springs out now. Don’t you know it? I will even make a way in the wilderness, and rivers in the desert.",
+      "ko": "보라 내가 새 일을 행하리니 이제 나타낼 것이라 너희가 그것을 알지 못하겠느냐 정녕히 내가 광야에 길과 사막에 강을 내리니",
+      "source_text_hash": "702933870c7fd4f8f17903421177bb53a965088bad07729da7b4623be9fc37ec",
+      "translation_text_hash": "d5df32164193c1905f146126220ac473d42cde75d9e1472430d9d4c80ed6ff8b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보라 내가 새 일을 행하리니 이제 나타낼 것이라 너희가 그것을 알지 못하겠느냐 정녕히 내가 광야에 길과 사막에 강을 내리니"
+      ],
+      "raw_text_hashes": [
+        "d5df32164193c1905f146126220ac473d42cde75d9e1472430d9d4c80ed6ff8b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:43:20",
+      "sequence": 18526,
+      "chapter_label": "ISA 43",
+      "verse_label": "20",
+      "locator": {
+        "book": "ISA",
+        "chapter": 43,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 43,
+          "verse": 20
+        }
+      ],
+      "en": "The animals of the field, the jackals and the ostriches, shall honor me, because I give water in the wilderness and rivers in the desert, to give drink to my people, my chosen,",
+      "ko": "장차 들짐승 곧 시랑과 및 타조도 나를 존경할 것은 내가 광야에 물들을, 사막에 강들을 내어 내 백성, 나의 택한 자로 마시게 할 것임이라",
+      "source_text_hash": "dc0f3b97c4585b188e57bb67d8aff900f0fd64e5b6b8d2b9e469c2b758419fe6",
+      "translation_text_hash": "555bbdaf0fe7f053867b5a9fb55fda787b66f148851e05ae51a322151527ffc3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "장차 들짐승 곧 시랑과 및 타조도 나를 존경할 것은 내가 광야에 물들을, 사막에 강들을 내어 내 백성, 나의 택한 자로 마시게 할 것임이라"
+      ],
+      "raw_text_hashes": [
+        "555bbdaf0fe7f053867b5a9fb55fda787b66f148851e05ae51a322151527ffc3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:43:21",
+      "sequence": 18527,
+      "chapter_label": "ISA 43",
+      "verse_label": "21",
+      "locator": {
+        "book": "ISA",
+        "chapter": 43,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 43,
+          "verse": 21
+        }
+      ],
+      "en": "the people which I formed for myself, that they might declare my praise.",
+      "ko": "이 백성은 내가 나를 위하여 지었나니 나의 찬송을 부르게 하려 함이니라",
+      "source_text_hash": "147e33bff029785afd9b91371637ad6b2492b5cc0234945cd4783f5999461b9c",
+      "translation_text_hash": "7efe0c9b1ba22a5b1968f03f555a8f376e8f4f3519da2867d99e3c1fb261488a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 백성은 내가 나를 위하여 지었나니 나의 찬송을 부르게 하려 함이니라"
+      ],
+      "raw_text_hashes": [
+        "7efe0c9b1ba22a5b1968f03f555a8f376e8f4f3519da2867d99e3c1fb261488a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:43:22",
+      "sequence": 18528,
+      "chapter_label": "ISA 43",
+      "verse_label": "22",
+      "locator": {
+        "book": "ISA",
+        "chapter": 43,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 43,
+          "verse": 22
+        }
+      ],
+      "en": "Yet you have not called on me, Jacob; but you have been weary of me, Israel.",
+      "ko": "그러나 야곱아 너는 나를 부르지 아니하였고 이스라엘아 너는 나를 괴로와하였으며",
+      "source_text_hash": "c0736b39491d6dc09e443e827386bfbf186a88cafd2604720c0ee2d8500fd76d",
+      "translation_text_hash": "ec2fbf39f9be5c07f9d956d04b6d31881e048934a57a01d1eba86d66572ab142",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 야곱아 너는 나를 부르지 아니하였고 이스라엘아 너는 나를 괴로와하였으며"
+      ],
+      "raw_text_hashes": [
+        "ec2fbf39f9be5c07f9d956d04b6d31881e048934a57a01d1eba86d66572ab142"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:43:23",
+      "sequence": 18529,
+      "chapter_label": "ISA 43",
+      "verse_label": "23",
+      "locator": {
+        "book": "ISA",
+        "chapter": 43,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 43,
+          "verse": 23
+        }
+      ],
+      "en": "You have not brought me any of your sheep for burnt offerings, neither have you honored me with your sacrifices. I have not burdened you with offerings, nor wearied you with frankincense.",
+      "ko": "네 번제의 양을 내게로 가져 오지 아니하였고 네 제물로 나를 공경하지 아니하였느니라 나는 예물로 인하여 너를 수고롭게 아니하였고 유향으로 인하여 너를 괴롭게 아니하였거늘",
+      "source_text_hash": "06ea83228dc45178e3dd73e2709b4bb749d6fe5b78bd5ceba8b592b6b101216b",
+      "translation_text_hash": "30d6aca6031d1a6c86310753a9bf69ec57232a3663e8156f5af8e3e95343975b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 번제의 양을 내게로 가져 오지 아니하였고 네 제물로 나를 공경하지 아니하였느니라 나는 예물로 인하여 너를 수고롭게 아니하였고 유향으로 인하여 너를 괴롭게 아니하였거늘"
+      ],
+      "raw_text_hashes": [
+        "30d6aca6031d1a6c86310753a9bf69ec57232a3663e8156f5af8e3e95343975b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:43:24",
+      "sequence": 18530,
+      "chapter_label": "ISA 43",
+      "verse_label": "24",
+      "locator": {
+        "book": "ISA",
+        "chapter": 43,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 43,
+          "verse": 24
+        }
+      ],
+      "en": "You have bought me no sweet cane with money, nor have you filled me with the fat of your sacrifices, but you have burdened me with your sins. You have wearied me with your iniquities.",
+      "ko": "너는 나를 위하여 돈으로 향품을 사지 아니하며 희생의 기름으로 나를 흡족케 아니하고 네 죄 짐으로 나를 수고롭게 하며 네 죄악으로 나를 괴롭게 하였느니라",
+      "source_text_hash": "44fdfc521dd3d085274bd8e82afa694fc9a44a1e097ed1345f27fab6fe0bd514",
+      "translation_text_hash": "ca64a85b67c7efdcbd49fa8bed69be13987d06970f8bbac077367399102538ff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 나를 위하여 돈으로 향품을 사지 아니하며 희생의 기름으로 나를 흡족케 아니하고 네 죄 짐으로 나를 수고롭게 하며 네 죄악으로 나를 괴롭게 하였느니라"
+      ],
+      "raw_text_hashes": [
+        "ca64a85b67c7efdcbd49fa8bed69be13987d06970f8bbac077367399102538ff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:43:25",
+      "sequence": 18531,
+      "chapter_label": "ISA 43",
+      "verse_label": "25",
+      "locator": {
+        "book": "ISA",
+        "chapter": 43,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 43,
+          "verse": 25
+        }
+      ],
+      "en": "I, even I, am he who blots out your transgressions for my own sake; and I will not remember your sins.",
+      "ko": "나 곧 나는 나를 위하여 네 허물을 도말하는 자니 네 죄를 기억지 아니하리라",
+      "source_text_hash": "9e11a451af919d88d8d7901424ecbd8bd205023b82abe9cfa67c90d58878020d",
+      "translation_text_hash": "b22676e7d4a0082d07e669a5ed915622704546e6a503b96fcdedbe33a14d8411",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 곧 나는 나를 위하여 네 허물을 도말하는 자니 네 죄를 기억지 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "b22676e7d4a0082d07e669a5ed915622704546e6a503b96fcdedbe33a14d8411"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:43:26",
+      "sequence": 18532,
+      "chapter_label": "ISA 43",
+      "verse_label": "26",
+      "locator": {
+        "book": "ISA",
+        "chapter": 43,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 43,
+          "verse": 26
+        }
+      ],
+      "en": "Put me in remembrance. Let us plead together. Declare your case, that you may be justified.",
+      "ko": "너는 나로 기억이 나게 하고 서로 변론하자 너는 네 일을 말하여 의를 나타내라",
+      "source_text_hash": "e46915ae967255d46a85179b2dc302c8a07458b77b1e5312c3f0086f2bb99891",
+      "translation_text_hash": "5a6042963b223348f977117632b00e08d527c7a3b5afdea467370f3eef4fc202",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 나로 기억이 나게 하고 서로 변론하자 너는 네 일을 말하여 의를 나타내라"
+      ],
+      "raw_text_hashes": [
+        "5a6042963b223348f977117632b00e08d527c7a3b5afdea467370f3eef4fc202"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:43:27",
+      "sequence": 18533,
+      "chapter_label": "ISA 43",
+      "verse_label": "27",
+      "locator": {
+        "book": "ISA",
+        "chapter": 43,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 43,
+          "verse": 27
+        }
+      ],
+      "en": "Your first father sinned, and your teachers have transgressed against me.",
+      "ko": "네 시조가 범죄하였고 너의 교사들이 나를 배역하였나니",
+      "source_text_hash": "c64d0c1d6cd65ce1d1c587df4ec48bd9e3159ba15676defeceb8cb1cdcc11347",
+      "translation_text_hash": "f639cae1f376c7c3730baddbe4843c1a2ce079f49ba21993aec4b1c8e0573e9b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 시조가 범죄하였고 너의 교사들이 나를 배역하였나니"
+      ],
+      "raw_text_hashes": [
+        "f639cae1f376c7c3730baddbe4843c1a2ce079f49ba21993aec4b1c8e0573e9b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:43:28",
+      "sequence": 18534,
+      "chapter_label": "ISA 43",
+      "verse_label": "28",
+      "locator": {
+        "book": "ISA",
+        "chapter": 43,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 43,
+          "verse": 28
+        }
+      ],
+      "en": "Therefore I will profane the princes of the sanctuary; and I will make Jacob a curse, and Israel an insult.”",
+      "ko": "그러므로 내가 성소의 어른들로 욕을 보게 하며 야곱으로 저주를 입게 하며 이스라엘로 비방거리가 되게 하리라",
+      "source_text_hash": "369af8525b2987da8fa7546ab387d4b3492d36aadc09a8e14e7c251645b9c852",
+      "translation_text_hash": "452ca092d919c2b7875d8cda13ab170da5576521f8f9146fbde36091c595df94",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 내가 성소의 어른들로 욕을 보게 하며 야곱으로 저주를 입게 하며 이스라엘로 비방거리가 되게 하리라"
+      ],
+      "raw_text_hashes": [
+        "452ca092d919c2b7875d8cda13ab170da5576521f8f9146fbde36091c595df94"
+      ]
+    }
+  ]
+}

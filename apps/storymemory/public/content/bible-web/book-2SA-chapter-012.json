@@ -1,0 +1,1005 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:2SA:chapter:012",
+  "unit_ordinal": 279,
+  "unit_label": "2SA 12",
+  "book_code": "2SA",
+  "chapter_number": 12,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:2SA:12:1",
+      "sequence": 8288,
+      "chapter_label": "2SA 12",
+      "verse_label": "1",
+      "locator": {
+        "book": "2SA",
+        "chapter": 12,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 12,
+          "verse": 1
+        }
+      ],
+      "en": "The LORD sent Nathan to David. He came to him, and said to him, “There were two men in one city: the one rich, and the other poor.",
+      "ko": "여호와께서 나단을 다윗에게 보내시니 와서 저에게 이르되 한 성에 두 사람이 있는데 하나는 부하고 하나는 가난하니",
+      "source_text_hash": "8e01d564d5c5f1ea180ba8f5fddd4f5248e97b96cc88b73e29951c5a7250d045",
+      "translation_text_hash": "5bb6ef12dd83c388fba51a185a782a618fb5cb379c822028dedac425c3bdb3c3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 나단을 다윗에게 보내시니 와서 저에게 이르되 한 성에 두 사람이 있는데 하나는 부하고 하나는 가난하니"
+      ],
+      "raw_text_hashes": [
+        "5bb6ef12dd83c388fba51a185a782a618fb5cb379c822028dedac425c3bdb3c3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:12:2",
+      "sequence": 8289,
+      "chapter_label": "2SA 12",
+      "verse_label": "2",
+      "locator": {
+        "book": "2SA",
+        "chapter": 12,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 12,
+          "verse": 2
+        }
+      ],
+      "en": "The rich man had very many flocks and herds,",
+      "ko": "그 부한 자는 양과 소가 심히 많으나",
+      "source_text_hash": "b40631ba9f301a33fe5189a16014166915ec8dd7fb1bedd2b0ce1a8b3e165bd0",
+      "translation_text_hash": "ce8191c1af182a8cc03bf207503e5a02a116357068585d1f0f3c0e6d66409196",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 부한 자는 양과 소가 심히 많으나"
+      ],
+      "raw_text_hashes": [
+        "ce8191c1af182a8cc03bf207503e5a02a116357068585d1f0f3c0e6d66409196"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:12:3",
+      "sequence": 8290,
+      "chapter_label": "2SA 12",
+      "verse_label": "3",
+      "locator": {
+        "book": "2SA",
+        "chapter": 12,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 12,
+          "verse": 3
+        }
+      ],
+      "en": "but the poor man had nothing, except one little ewe lamb, which he had bought and raised. It grew up together with him and with his children. It ate of his own food, drank of his own cup, and lay in his bosom, and was like a daughter to him.",
+      "ko": "가난한 자는 아무것도 없고 자기가 사서 기르는 작은 암양 새끼 하나뿐이라 그 암양 새끼는 저와 저의 자식과 함께 있어 자라며 저의 먹는 것을 먹으며 저의 잔에서 마시며 저의 품에 누우므로 저에게는 딸처럼 되었거늘",
+      "source_text_hash": "e4e645e41a5340e3483fb1d3b0fa230cd4ed7eee7decf881107788126a504b41",
+      "translation_text_hash": "4991d1392bcc8b665e735910817e15705da5eb42255cd5c082f4dc1f5b1a058d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가난한 자는 아무것도 없고 자기가 사서 기르는 작은 암양 새끼 하나뿐이라 그 암양 새끼는 저와 저의 자식과 함께 있어 자라며 저의 먹는 것을 먹으며 저의 잔에서 마시며 저의 품에 누우므로 저에게는 딸처럼 되었거늘"
+      ],
+      "raw_text_hashes": [
+        "4991d1392bcc8b665e735910817e15705da5eb42255cd5c082f4dc1f5b1a058d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:12:4",
+      "sequence": 8291,
+      "chapter_label": "2SA 12",
+      "verse_label": "4",
+      "locator": {
+        "book": "2SA",
+        "chapter": 12,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 12,
+          "verse": 4
+        }
+      ],
+      "en": "A traveler came to the rich man, and he didn’t want to take of his own flock and of his own herd to prepare for the wayfaring man who had come to him, but took the poor man’s lamb and prepared it for the man who had come to him.”",
+      "ko": "어떤 행인이 그 부자에게 오매 부자가 자기의 양과 소를 아껴 자기에게 온 행인을 위하여 잡지 아니하고 가난한 사람의 양 새끼를 빼앗아다가 자기에게 온 사람을 위하여 잡았나이다",
+      "source_text_hash": "f01d23666c88ae8ed25b8aa62323a9332547388c227cee805b314b7d1f6f891d",
+      "translation_text_hash": "847dbd0f9db7e75b798f1a7c17ed4e1527539e9fbc2daabafbde439655e885b8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어떤 행인이 그 부자에게 오매 부자가 자기의 양과 소를 아껴 자기에게 온 행인을 위하여 잡지 아니하고 가난한 사람의 양 새끼를 빼앗아다가 자기에게 온 사람을 위하여 잡았나이다"
+      ],
+      "raw_text_hashes": [
+        "847dbd0f9db7e75b798f1a7c17ed4e1527539e9fbc2daabafbde439655e885b8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:12:5",
+      "sequence": 8292,
+      "chapter_label": "2SA 12",
+      "verse_label": "5",
+      "locator": {
+        "book": "2SA",
+        "chapter": 12,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 12,
+          "verse": 5
+        }
+      ],
+      "en": "David’s anger burned hot against the man, and he said to Nathan, “As the LORD lives, the man who has done this deserves to die!",
+      "ko": "다윗이 그 사람을 크게 노하여 나단에게 이르되 여호와의 사심을 가리켜 맹세하노니 이 일을 행한 사람은 마땅히 죽을 자라",
+      "source_text_hash": "d1f3b52fba161f804e62ede3fd2b1ddccc528006ea08bab82d20e9dada5b9f00",
+      "translation_text_hash": "7000c5c70466ca4fadf346273251e90a979019b1cca368872247770234ff36bd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 그 사람을 크게 노하여 나단에게 이르되 여호와의 사심을 가리켜 맹세하노니 이 일을 행한 사람은 마땅히 죽을 자라"
+      ],
+      "raw_text_hashes": [
+        "7000c5c70466ca4fadf346273251e90a979019b1cca368872247770234ff36bd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:12:6",
+      "sequence": 8293,
+      "chapter_label": "2SA 12",
+      "verse_label": "6",
+      "locator": {
+        "book": "2SA",
+        "chapter": 12,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 12,
+          "verse": 6
+        }
+      ],
+      "en": "He must restore the lamb fourfold, because he did this thing and because he had no pity!”",
+      "ko": "저가 불쌍히 여기지 않고 이 일을 행하였으니 그 양 새끼를 사배나 갚아 주어야 하리라",
+      "source_text_hash": "6f29944fefd570f54d6c8a1afd43baac5c9f6b438066984b9d738a7a058aa5ef",
+      "translation_text_hash": "3377b6e1a97f68ce23565a1e4612822d41d433ac4fc3a13369ba96924001a99d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 불쌍히 여기지 않고 이 일을 행하였으니 그 양 새끼를 사배나 갚아 주어야 하리라"
+      ],
+      "raw_text_hashes": [
+        "3377b6e1a97f68ce23565a1e4612822d41d433ac4fc3a13369ba96924001a99d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:12:7",
+      "sequence": 8294,
+      "chapter_label": "2SA 12",
+      "verse_label": "7",
+      "locator": {
+        "book": "2SA",
+        "chapter": 12,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 12,
+          "verse": 7
+        }
+      ],
+      "en": "Nathan said to David, “You are the man! This is what the LORD, the God of Israel, says: ‘I anointed you king over Israel, and I delivered you out of the hand of Saul.",
+      "ko": "나단이 다윗에게 이르되 당신이 그 사람이라 이스라엘의 하나님 여호와께서 이처럼 이르시기를 내가 너로 이스라엘 왕을 삼기 위하여 네게 기름을 붓고 너를 사울의 손에서 구원하고",
+      "source_text_hash": "eeefcb905217325bb25224fbc1edad001266fe32b5a6e507e87bd92f8b853d56",
+      "translation_text_hash": "b0a68cb9337dabd52d4b05682edadf75545ca6e1dcb16583a93c57673bdfbeeb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나단이 다윗에게 이르되 당신이 그 사람이라 이스라엘의 하나님 여호와께서 이처럼 이르시기를 내가 너로 이스라엘 왕을 삼기 위하여 네게 기름을 붓고 너를 사울의 손에서 구원하고"
+      ],
+      "raw_text_hashes": [
+        "b0a68cb9337dabd52d4b05682edadf75545ca6e1dcb16583a93c57673bdfbeeb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:12:8",
+      "sequence": 8295,
+      "chapter_label": "2SA 12",
+      "verse_label": "8",
+      "locator": {
+        "book": "2SA",
+        "chapter": 12,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 12,
+          "verse": 8
+        }
+      ],
+      "en": "I gave you your master’s house and your master’s wives into your bosom, and gave you the house of Israel and of Judah; and if that would have been too little, I would have added to you many more such things.",
+      "ko": "네 주인의 집을 네게 주고 네 주인의 처들을 네 품에 두고 이스라엘과 유다 족속을 네게 맡겼느니라 만일 그것이 부족하였을것 같으면 내가 네게 이것 저것을 더 주었으리라",
+      "source_text_hash": "ec6ffbd5cfe6411ad0638d1ec06419e2fadbeb8319aac811509c94431f30c353",
+      "translation_text_hash": "4f014cd92f4167faaf8084690bb331518fbdc5c40d254e4bc837b7e2987ed3e8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 주인의 집을 네게 주고 네 주인의 처들을 네 품에 두고 이스라엘과 유다 족속을 네게 맡겼느니라 만일 그것이 부족하였을것 같으면 내가 네게 이것 저것을 더 주었으리라"
+      ],
+      "raw_text_hashes": [
+        "4f014cd92f4167faaf8084690bb331518fbdc5c40d254e4bc837b7e2987ed3e8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:12:9",
+      "sequence": 8296,
+      "chapter_label": "2SA 12",
+      "verse_label": "9",
+      "locator": {
+        "book": "2SA",
+        "chapter": 12,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 12,
+          "verse": 9
+        }
+      ],
+      "en": "Why have you despised the LORD’s word, to do that which is evil in his sight? You have struck Uriah the Hittite with the sword, have taken his wife to be your wife, and have slain him with the sword of the children of Ammon.",
+      "ko": "그러한데 어찌하여 네가 여호와의 말씀을 업신여기고 나 보기에 악을 행하였느뇨 네가 칼로 헷 사람 우리아를 죽이되 암몬 자손의 칼로 죽이고 그 처를 빼앗아 네 처를 삼았도다",
+      "source_text_hash": "62b6c7d868fa47b49ae7c462c543738632fdbe8b09156e0c4c6815a30ac2edfa",
+      "translation_text_hash": "d180faa92247db4dbcab0bdfef1aa77611cef04a56c89406d5c79dffca21184e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러한데 어찌하여 네가 여호와의 말씀을 업신여기고 나 보기에 악을 행하였느뇨 네가 칼로 헷 사람 우리아를 죽이되 암몬 자손의 칼로 죽이고 그 처를 빼앗아 네 처를 삼았도다"
+      ],
+      "raw_text_hashes": [
+        "d180faa92247db4dbcab0bdfef1aa77611cef04a56c89406d5c79dffca21184e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:12:10",
+      "sequence": 8297,
+      "chapter_label": "2SA 12",
+      "verse_label": "10",
+      "locator": {
+        "book": "2SA",
+        "chapter": 12,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 12,
+          "verse": 10
+        }
+      ],
+      "en": "Now therefore the sword will never depart from your house, because you have despised me and have taken Uriah the Hittite’s wife to be your wife.’",
+      "ko": "이제 네가 나를 업신여기고 헷 사람 우리아의 처를 빼앗아 네 처를 삼았은즉 칼이 네 집에 영영히 떠나지 아니하리라 하셨고",
+      "source_text_hash": "de1d628221bc0eb80f1c5e017f0e6e921fe602a4712a63d887697977e29266d7",
+      "translation_text_hash": "862570da87c3690ca127c85517cd049939b6a3b4676eb6d46f6218afc2f23785",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제 네가 나를 업신여기고 헷 사람 우리아의 처를 빼앗아 네 처를 삼았은즉 칼이 네 집에 영영히 떠나지 아니하리라 하셨고"
+      ],
+      "raw_text_hashes": [
+        "862570da87c3690ca127c85517cd049939b6a3b4676eb6d46f6218afc2f23785"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:12:11",
+      "sequence": 8298,
+      "chapter_label": "2SA 12",
+      "verse_label": "11",
+      "locator": {
+        "book": "2SA",
+        "chapter": 12,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 12,
+          "verse": 11
+        }
+      ],
+      "en": "“This is what the LORD says: ‘Behold, I will raise up evil against you out of your own house; and I will take your wives before your eyes and give them to your neighbor, and he will lie with your wives in the sight of this sun.",
+      "ko": "여호와께서 또 이처럼 이르시기를 내가 네 집에 재화를 일으키고 내가 네 처들을 가져 네 눈앞에서 다른 사람에게 주리니 그 사람이 네 처들로 더불어 백주에 동침하리라",
+      "source_text_hash": "d0be6a9558d555b74000d41c904ed30def31be71ae2c46c1a2280b391a7d49fe",
+      "translation_text_hash": "45bcf92fae1e02f568dae0106cdc1868fe59a99804ca62406137e568032f1f82",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 또 이처럼 이르시기를 내가 네 집에 재화를 일으키고 내가 네 처들을 가져 네 눈앞에서 다른 사람에게 주리니 그 사람이 네 처들로 더불어 백주에 동침하리라"
+      ],
+      "raw_text_hashes": [
+        "45bcf92fae1e02f568dae0106cdc1868fe59a99804ca62406137e568032f1f82"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:12:12",
+      "sequence": 8299,
+      "chapter_label": "2SA 12",
+      "verse_label": "12",
+      "locator": {
+        "book": "2SA",
+        "chapter": 12,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 12,
+          "verse": 12
+        }
+      ],
+      "en": "For you did this secretly, but I will do this thing before all Israel, and before the sun.’”",
+      "ko": "너는 은밀히 행하였으나 나는 이스라엘 무리 앞 백주에 이 일을 행하리라 하셨나이다",
+      "source_text_hash": "b3e2fe85a8fa24cddcc9b90727160902341bd036e368b4a85d2c4f906168d791",
+      "translation_text_hash": "584d3cf0d84e3fdddf706eaea787b65c5c765e6ca9519c5aeb9f26a212d7454a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 은밀히 행하였으나 나는 이스라엘 무리 앞 백주에 이 일을 행하리라 하셨나이다"
+      ],
+      "raw_text_hashes": [
+        "584d3cf0d84e3fdddf706eaea787b65c5c765e6ca9519c5aeb9f26a212d7454a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:12:13",
+      "sequence": 8300,
+      "chapter_label": "2SA 12",
+      "verse_label": "13",
+      "locator": {
+        "book": "2SA",
+        "chapter": 12,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 12,
+          "verse": 13
+        }
+      ],
+      "en": "David said to Nathan, “I have sinned against the LORD.” Nathan said to David, “The LORD also has put away your sin. You will not die.",
+      "ko": "다윗이 나단에게 이르되 내가 여호와께 죄를 범하였노라 하매 나단이 다윗에게 대답하되 여호와께서도 당신의 죄를 사하셨나니 당신이 죽지 아니하려니와",
+      "source_text_hash": "e96da44dfc7809c1b1e7634bc5568a2083f479ba94e93fe62257f98f35d5ff34",
+      "translation_text_hash": "0e40ef5dbc511b93a2939e0d744bd7ac496c3b21b0fbf2f76343f3ef723e28dd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 나단에게 이르되 내가 여호와께 죄를 범하였노라 하매 나단이 다윗에게 대답하되 여호와께서도 당신의 죄를 사하셨나니 당신이 죽지 아니하려니와"
+      ],
+      "raw_text_hashes": [
+        "0e40ef5dbc511b93a2939e0d744bd7ac496c3b21b0fbf2f76343f3ef723e28dd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:12:14",
+      "sequence": 8301,
+      "chapter_label": "2SA 12",
+      "verse_label": "14",
+      "locator": {
+        "book": "2SA",
+        "chapter": 12,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 12,
+          "verse": 14
+        }
+      ],
+      "en": "However, because by this deed you have given great occasion to the LORD’s enemies to blaspheme, the child also who is born to you will surely die.”",
+      "ko": "이 일로 인하여 여호와의 원수로 크게 훼방할 거리를 얻게 하였으니 당신의 낳은 아이가 정녕 죽으리이다 하고",
+      "source_text_hash": "d01e2300179f0c65a323e24e056bba7b36de9e88aa633aa1b0defdb56576c4b7",
+      "translation_text_hash": "63c4a5aa1234d557a4c3163a6eb165c9423a947b7c024d2cbd8b8e1789abc021",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 일로 인하여 여호와의 원수로 크게 훼방할 거리를 얻게 하였으니 당신의 낳은 아이가 정녕 죽으리이다 하고"
+      ],
+      "raw_text_hashes": [
+        "63c4a5aa1234d557a4c3163a6eb165c9423a947b7c024d2cbd8b8e1789abc021"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:12:15",
+      "sequence": 8302,
+      "chapter_label": "2SA 12",
+      "verse_label": "15",
+      "locator": {
+        "book": "2SA",
+        "chapter": 12,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 12,
+          "verse": 15
+        }
+      ],
+      "en": "Then Nathan departed to his house. The LORD struck the child that Uriah’s wife bore to David, and he was very sick.",
+      "ko": "나단이 자기 집으로 돌아가니라 우리아의 처가 다윗에게 낳은 아이를 여호와께서 치시매 심히 앓는지라",
+      "source_text_hash": "e4c90d0f0eb443d853c08160d3141a5d441207554f94e785fb187ac04cbb9061",
+      "translation_text_hash": "9148cb2dd42092c10bdb72884b6dad003dc8dc9c5de69ec44214ad086af1f4ff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나단이 자기 집으로 돌아가니라 우리아의 처가 다윗에게 낳은 아이를 여호와께서 치시매 심히 앓는지라"
+      ],
+      "raw_text_hashes": [
+        "9148cb2dd42092c10bdb72884b6dad003dc8dc9c5de69ec44214ad086af1f4ff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:12:16",
+      "sequence": 8303,
+      "chapter_label": "2SA 12",
+      "verse_label": "16",
+      "locator": {
+        "book": "2SA",
+        "chapter": 12,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 12,
+          "verse": 16
+        }
+      ],
+      "en": "David therefore begged God for the child; and David fasted, and went in and lay all night on the ground.",
+      "ko": "다윗이 그 아이를 위하여 하나님께 간구하되 금식하고 안에 들어가서 밤새도록 땅에 엎드렸으니",
+      "source_text_hash": "00811a251667fc1fad6f6e3a558c213e5017967e27116ec46507e43cdc9ac063",
+      "translation_text_hash": "d22e11644a6731956f1f5e73eb1c594664f0e306babc6089df2cee1f1d18909e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 그 아이를 위하여 하나님께 간구하되 금식하고 안에 들어가서 밤새도록 땅에 엎드렸으니"
+      ],
+      "raw_text_hashes": [
+        "d22e11644a6731956f1f5e73eb1c594664f0e306babc6089df2cee1f1d18909e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:12:17",
+      "sequence": 8304,
+      "chapter_label": "2SA 12",
+      "verse_label": "17",
+      "locator": {
+        "book": "2SA",
+        "chapter": 12,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 12,
+          "verse": 17
+        }
+      ],
+      "en": "The elders of his house arose beside him, to raise him up from the earth; but he would not, and he didn’t eat bread with them.",
+      "ko": "그 집의 늙은 자들이 곁에 이르러 다윗을 일으키려 하되 왕이 듣지 아니하고 저희로 더불어 먹지도 아니하더라",
+      "source_text_hash": "b3f39b0b96b49fd03de2952f59d62ca1438883a983f69ff9a2f445aebec8d16f",
+      "translation_text_hash": "95c5fe7ac428bd4fba55de9f78ff00c223ad4a1d2ec29a0a4355562897fa7750",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 집의 늙은 자들이 곁에 이르러 다윗을 일으키려 하되 왕이 듣지 아니하고 저희로 더불어 먹지도 아니하더라"
+      ],
+      "raw_text_hashes": [
+        "95c5fe7ac428bd4fba55de9f78ff00c223ad4a1d2ec29a0a4355562897fa7750"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:12:18",
+      "sequence": 8305,
+      "chapter_label": "2SA 12",
+      "verse_label": "18",
+      "locator": {
+        "book": "2SA",
+        "chapter": 12,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 12,
+          "verse": 18
+        }
+      ],
+      "en": "On the seventh day, the child died. David’s servants were afraid to tell him that the child was dead, for they said, “Behold, while the child was yet alive, we spoke to him and he didn’t listen to our voice. How will he then harm himself if we tell him that the child is dead?”",
+      "ko": "이레만에 그 아이가 죽으니라 그러나 다윗의 신복들이 아이의 죽은 것을 왕에게 고하기를 두려워하니 이는 저희가 말하기를 아이가 살았을 때에 우리가 말하여도 왕이 그 말을 듣지 아니하셨나니 어떻게 그 아이의 죽은 것을 고할 수 있으랴 왕이 훼상하시리로다 함이라",
+      "source_text_hash": "9d30b011c4b1af4111b222b970e5a2737e065a3d347e61589b4480b8dd5958b8",
+      "translation_text_hash": "3b39941900554f7c1199b68dcfb201d4144ef4bd620833734e4e54aeaa007f15",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이레만에 그 아이가 죽으니라 그러나 다윗의 신복들이 아이의 죽은 것을 왕에게 고하기를 두려워하니 이는 저희가 말하기를 아이가 살았을 때에 우리가 말하여도 왕이 그 말을 듣지 아니하셨나니 어떻게 그 아이의 죽은 것을 고할 수 있으랴 왕이 훼상하시리로다 함이라"
+      ],
+      "raw_text_hashes": [
+        "3b39941900554f7c1199b68dcfb201d4144ef4bd620833734e4e54aeaa007f15"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:12:19",
+      "sequence": 8306,
+      "chapter_label": "2SA 12",
+      "verse_label": "19",
+      "locator": {
+        "book": "2SA",
+        "chapter": 12,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 12,
+          "verse": 19
+        }
+      ],
+      "en": "But when David saw that his servants were whispering together, David perceived that the child was dead; and David said to his servants, “Is the child dead?” They said, “He is dead.”",
+      "ko": "다윗이 그 신복들의 서로 수군거리는 것을 보고 그 아이가 죽은 줄을 깨닫고 그 신복들에게 묻되 아이가 죽었느냐 대답하되 죽었나이다",
+      "source_text_hash": "bec99094311fd65c4d39a5dacf752930b3475a3b828db9bebe49376b8181aad2",
+      "translation_text_hash": "aa316cf53c638191f2fe760d3a286b08f56ecf8c033be4f658c0bdd9feeabf8a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 그 신복들의 서로 수군거리는 것을 보고 그 아이가 죽은 줄을 깨닫고 그 신복들에게 묻되 아이가 죽었느냐 대답하되 죽었나이다"
+      ],
+      "raw_text_hashes": [
+        "aa316cf53c638191f2fe760d3a286b08f56ecf8c033be4f658c0bdd9feeabf8a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:12:20",
+      "sequence": 8307,
+      "chapter_label": "2SA 12",
+      "verse_label": "20",
+      "locator": {
+        "book": "2SA",
+        "chapter": 12,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 12,
+          "verse": 20
+        }
+      ],
+      "en": "Then David arose from the earth, and washed and anointed himself, and changed his clothing; and he came into the LORD’s house, and worshiped. Then he came to his own house; and when he requested, they set bread before him and he ate.",
+      "ko": "다윗이 땅에서 일어나 몸을 씻고 기름을 바르고 의복을 갈아입고 여호와의 전에 들어가서 경배하고 궁으로 돌아와서 명하여 음식을 그 앞에 베풀게 하고 먹은지라",
+      "source_text_hash": "10cf454fae99cb170b425f76c05c82aa17c198a6fe964850d8d2ce3500b145f5",
+      "translation_text_hash": "6e5214d5072451e6fc25b3c5e99bc0f589b5eb59a142418e4adc31971d87ab0a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 땅에서 일어나 몸을 씻고 기름을 바르고 의복을 갈아입고 여호와의 전에 들어가서 경배하고 궁으로 돌아와서 명하여 음식을 그 앞에 베풀게 하고 먹은지라"
+      ],
+      "raw_text_hashes": [
+        "6e5214d5072451e6fc25b3c5e99bc0f589b5eb59a142418e4adc31971d87ab0a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:12:21",
+      "sequence": 8308,
+      "chapter_label": "2SA 12",
+      "verse_label": "21",
+      "locator": {
+        "book": "2SA",
+        "chapter": 12,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 12,
+          "verse": 21
+        }
+      ],
+      "en": "Then his servants said to him, “What is this that you have done? You fasted and wept for the child while he was alive, but when the child was dead, you rose up and ate bread.”",
+      "ko": "신복들이 왕께 묻되 아이가 살았을 때에는 위하여 금식하고 우시더니 죽은 후에는 일어나서 잡수시니 어찜이니이까",
+      "source_text_hash": "177e88f0f19efb75dc761519f7392bbba492447e7017598fa9c54163717da210",
+      "translation_text_hash": "f8e50f47758fb5bfb719109def980e371a001555495f2dc8f6aba02fd295d4e9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "신복들이 왕께 묻되 아이가 살았을 때에는 위하여 금식하고 우시더니 죽은 후에는 일어나서 잡수시니 어찜이니이까"
+      ],
+      "raw_text_hashes": [
+        "f8e50f47758fb5bfb719109def980e371a001555495f2dc8f6aba02fd295d4e9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:12:22",
+      "sequence": 8309,
+      "chapter_label": "2SA 12",
+      "verse_label": "22",
+      "locator": {
+        "book": "2SA",
+        "chapter": 12,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 12,
+          "verse": 22
+        }
+      ],
+      "en": "He said, “While the child was yet alive, I fasted and wept; for I said, ‘Who knows whether the LORD will not be gracious to me, that the child may live?’",
+      "ko": "가로되 아이가 살았을 때에 내가 금식하고 운 것은 혹시 여호와께서 나를 불쌍히 여기사 아이를 살려 주실는지 누가 알까 생각함이어니와",
+      "source_text_hash": "4769822c0cd9f8520ed3dfd00b39b47570b5a6055b35969e9785b9ebb8bfc295",
+      "translation_text_hash": "e95e81b2883b5101e483be10ae119f3af5b2bb3074bd1fa880c722a562be801d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 아이가 살았을 때에 내가 금식하고 운 것은 혹시 여호와께서 나를 불쌍히 여기사 아이를 살려 주실는지 누가 알까 생각함이어니와"
+      ],
+      "raw_text_hashes": [
+        "e95e81b2883b5101e483be10ae119f3af5b2bb3074bd1fa880c722a562be801d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:12:23",
+      "sequence": 8310,
+      "chapter_label": "2SA 12",
+      "verse_label": "23",
+      "locator": {
+        "book": "2SA",
+        "chapter": 12,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 12,
+          "verse": 23
+        }
+      ],
+      "en": "But now he is dead. Why should I fast? Can I bring him back again? I will go to him, but he will not return to me.”",
+      "ko": "시방은 죽었으니 어찌 금식하랴 내가 다시 돌아오게 할 수 있느냐 나는 저에게로 가려니와 저는 내게로 돌아오지 아니하리라",
+      "source_text_hash": "387d3772d8bf46d30f699f8470366f7f6d0b868596a4dede384ce2f49965b71f",
+      "translation_text_hash": "4b70d01e2956ead3b83abfef9f36882e8f261a37bde01cc948b2fdd24c401b5e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시방은 죽었으니 어찌 금식하랴 내가 다시 돌아오게 할 수 있느냐 나는 저에게로 가려니와 저는 내게로 돌아오지 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "4b70d01e2956ead3b83abfef9f36882e8f261a37bde01cc948b2fdd24c401b5e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:12:24",
+      "sequence": 8311,
+      "chapter_label": "2SA 12",
+      "verse_label": "24",
+      "locator": {
+        "book": "2SA",
+        "chapter": 12,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 12,
+          "verse": 24
+        }
+      ],
+      "en": "David comforted Bathsheba his wife, and went in to her, and lay with her. She bore a son, and he called his name Solomon. The LORD loved him;",
+      "ko": "다윗이 그 처 밧세바를 위로하고 저에게 들어가 동침하였더니 저가 아들을 낳으매 그 이름을 솔로몬이라 하니라 여호와께서 그를 사랑하사",
+      "source_text_hash": "302f97b1cc51035d7aa996597356eae1e8f33f25d7ccdf36e50a2cf30afc8fc0",
+      "translation_text_hash": "9a8f4ab93b6f2a83bf826b7939b2843789be9a7f5a96f20420d592fb7aea421c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 그 처 밧세바를 위로하고 저에게 들어가 동침하였더니 저가 아들을 낳으매 그 이름을 솔로몬이라 하니라 여호와께서 그를 사랑하사"
+      ],
+      "raw_text_hashes": [
+        "9a8f4ab93b6f2a83bf826b7939b2843789be9a7f5a96f20420d592fb7aea421c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:12:25",
+      "sequence": 8312,
+      "chapter_label": "2SA 12",
+      "verse_label": "25",
+      "locator": {
+        "book": "2SA",
+        "chapter": 12,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 12,
+          "verse": 25
+        }
+      ],
+      "en": "and he sent by the hand of Nathan the prophet, and he named him Jedidiah, for the LORD’s sake.",
+      "ko": "선지자 나단을 보내사 그 이름을 여디디야라 하시니 이는 여호와께서 사랑하심을 인함이더라",
+      "source_text_hash": "9091a4a3ec1fb4befc4a43c4f54737daeef9bf0c2b3ea4549a6a1529b95ead17",
+      "translation_text_hash": "ff1d5ff2c3ae06f2530644a9c563cc1418c1cf0ebecd70187ca0c321772e9191",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "선지자 나단을 보내사 그 이름을 여디디야라 하시니 이는 여호와께서 사랑하심을 인함이더라"
+      ],
+      "raw_text_hashes": [
+        "ff1d5ff2c3ae06f2530644a9c563cc1418c1cf0ebecd70187ca0c321772e9191"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:12:26",
+      "sequence": 8313,
+      "chapter_label": "2SA 12",
+      "verse_label": "26",
+      "locator": {
+        "book": "2SA",
+        "chapter": 12,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 12,
+          "verse": 26
+        }
+      ],
+      "en": "Now Joab fought against Rabbah of the children of Ammon, and took the royal city.",
+      "ko": "요압이 암몬 자손의 왕성 랍바를 쳐서 취하게 되매",
+      "source_text_hash": "e99ea2415ce63c7ddf61f7f89b73c0ac04cc6b33528b3dc1bc3444d059e7fa37",
+      "translation_text_hash": "2a98c99c32e9ad1adbaefb530de814f2cfc44a0cd5af18e50671a08d41c8f60b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요압이 암몬 자손의 왕성 랍바를 쳐서 취하게 되매"
+      ],
+      "raw_text_hashes": [
+        "2a98c99c32e9ad1adbaefb530de814f2cfc44a0cd5af18e50671a08d41c8f60b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:12:27",
+      "sequence": 8314,
+      "chapter_label": "2SA 12",
+      "verse_label": "27",
+      "locator": {
+        "book": "2SA",
+        "chapter": 12,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 12,
+          "verse": 27
+        }
+      ],
+      "en": "Joab sent messengers to David, and said, “I have fought against Rabbah. Yes, I have taken the city of waters.",
+      "ko": "사자를 다윗에게 보내어 가로되 내가 랍바 곧 물들의 성을 쳐서 취하게 되었으니",
+      "source_text_hash": "75ff11d6097703dec12d5604bc4709b27637c74996c6a7957952c024aa04edc8",
+      "translation_text_hash": "0defbf19de172ccefd7b746dcf7424ccce0a77768ab9723850d155a769a5c181",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사자를 다윗에게 보내어 가로되 내가 랍바 곧 물들의 성을 쳐서 취하게 되었으니"
+      ],
+      "raw_text_hashes": [
+        "0defbf19de172ccefd7b746dcf7424ccce0a77768ab9723850d155a769a5c181"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:12:28",
+      "sequence": 8315,
+      "chapter_label": "2SA 12",
+      "verse_label": "28",
+      "locator": {
+        "book": "2SA",
+        "chapter": 12,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 12,
+          "verse": 28
+        }
+      ],
+      "en": "Now therefore gather the rest of the people together, and encamp against the city and take it; lest I take the city, and it be called by my name.”",
+      "ko": "이제 왕은 남은 군사를 모아 진 치고 이 성을 쳐서 취하소서 내가 이 성을 취하면 이 성이 내 이름으로 일컬음을 받을까 두려워하나이다",
+      "source_text_hash": "b4abd38f8aab0e4889017f832b78d02bbb9b06f44e7ab2c4464d81f7f18fd15c",
+      "translation_text_hash": "2b829c214b70db1432dc3cde7f78842133daab97e2833e45f1629fba3c18f740",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제 왕은 남은 군사를 모아 진 치고 이 성을 쳐서 취하소서 내가 이 성을 취하면 이 성이 내 이름으로 일컬음을 받을까 두려워하나이다"
+      ],
+      "raw_text_hashes": [
+        "2b829c214b70db1432dc3cde7f78842133daab97e2833e45f1629fba3c18f740"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:12:29",
+      "sequence": 8316,
+      "chapter_label": "2SA 12",
+      "verse_label": "29",
+      "locator": {
+        "book": "2SA",
+        "chapter": 12,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 12,
+          "verse": 29
+        }
+      ],
+      "en": "David gathered all the people together and went to Rabbah, and fought against it and took it.",
+      "ko": "다윗이 모든 군사를 모아 랍바로 가서 쳐서 취하고",
+      "source_text_hash": "86dabe28da27e2dba6237a092fe02a11ee16cbd723cc98a2b2032959eb41a961",
+      "translation_text_hash": "eed9f3a334e5b9500602712c64af44a231365ccd533223e0d26e90f8e4729761",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 모든 군사를 모아 랍바로 가서 쳐서 취하고"
+      ],
+      "raw_text_hashes": [
+        "eed9f3a334e5b9500602712c64af44a231365ccd533223e0d26e90f8e4729761"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:12:30",
+      "sequence": 8317,
+      "chapter_label": "2SA 12",
+      "verse_label": "30",
+      "locator": {
+        "book": "2SA",
+        "chapter": 12,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 12,
+          "verse": 30
+        }
+      ],
+      "en": "He took the crown of their king from off his head; and its weight was a talent of gold, and in it were precious stones; and it was set on David’s head. He brought a great quantity of plunder out of the city.",
+      "ko": "그 왕의 머리에서 보석 있는 면류관을 취하니 그 중량이 금 한 달란트라 다윗이 머리에 쓰니라 다윗이 또 그 성에서 노략한 물건을 무수히 내어오고",
+      "source_text_hash": "8aac77472af96fe45d78d0b5c9b906e10175cd784698009efa435c743c91c654",
+      "translation_text_hash": "671550b20a0769f143aa83c2a93b263e160631e9dc5cbef012fd45df5f6c50ee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 왕의 머리에서 보석 있는 면류관을 취하니 그 중량이 금 한 달란트라 다윗이 머리에 쓰니라 다윗이 또 그 성에서 노략한 물건을 무수히 내어오고"
+      ],
+      "raw_text_hashes": [
+        "671550b20a0769f143aa83c2a93b263e160631e9dc5cbef012fd45df5f6c50ee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:12:31",
+      "sequence": 8318,
+      "chapter_label": "2SA 12",
+      "verse_label": "31",
+      "locator": {
+        "book": "2SA",
+        "chapter": 12,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 12,
+          "verse": 31
+        }
+      ],
+      "en": "He brought out the people who were in it, and put them to work under saws, under iron picks, under axes of iron, and made them go to the brick kiln; and he did so to all the cities of the children of Ammon. Then David and all the people returned to Jerusalem.",
+      "ko": "그 가운데 백성들을 끌어내어 톱질과 써레질과 도끼질과 벽돌구이를 하게 하니라 암몬 자손의 모든 성을 이같이 하고 다윗과 모든 백성이 예루살렘으로 돌아오니라",
+      "source_text_hash": "02e3220f5bfbd515cb0eb77630706f4c53f3db277bf6574b1c4997616bb18890",
+      "translation_text_hash": "da33ad099c5f151d0901a91e393d963007088bceed6006e3be6300eefc982c36",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 가운데 백성들을 끌어내어 톱질과 써레질과 도끼질과 벽돌구이를 하게 하니라 암몬 자손의 모든 성을 이같이 하고 다윗과 모든 백성이 예루살렘으로 돌아오니라"
+      ],
+      "raw_text_hashes": [
+        "da33ad099c5f151d0901a91e393d963007088bceed6006e3be6300eefc982c36"
+      ]
+    }
+  ]
+}

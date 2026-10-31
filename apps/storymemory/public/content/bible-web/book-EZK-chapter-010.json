@@ -1,0 +1,717 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EZK:chapter:010",
+  "unit_ordinal": 812,
+  "unit_label": "EZK 10",
+  "book_code": "EZK",
+  "chapter_number": 10,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EZK:10:1",
+      "sequence": 20635,
+      "chapter_label": "EZK 10",
+      "verse_label": "1",
+      "locator": {
+        "book": "EZK",
+        "chapter": 10,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 10,
+          "verse": 1
+        }
+      ],
+      "en": "Then I looked, and see, in the expanse that was over the head of the cherubim there appeared above them as it were a sapphire stone, as the appearance of the likeness of a throne.",
+      "ko": "이에 내가 보니 그룹들 머리 위 궁창에 남보석 같은 것이 나타나는데 보좌 형상 같더라",
+      "source_text_hash": "f1ed0fcf98fa6dd9646ccc92a0d70fa3633d5f6fbb5e7584c7663d2545f6d455",
+      "translation_text_hash": "3f299d1987e52369ae8a67f89330b42eea9a27b5486611ef32545289ca26126b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 내가 보니 그룹들 머리 위 궁창에 남보석 같은 것이 나타나는데 보좌 형상 같더라"
+      ],
+      "raw_text_hashes": [
+        "3f299d1987e52369ae8a67f89330b42eea9a27b5486611ef32545289ca26126b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:10:2",
+      "sequence": 20636,
+      "chapter_label": "EZK 10",
+      "verse_label": "2",
+      "locator": {
+        "book": "EZK",
+        "chapter": 10,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 10,
+          "verse": 2
+        }
+      ],
+      "en": "He spoke to the man clothed in linen, and said, “Go in between the whirling wheels, even under the cherub, and fill both your hands with coals of fire from between the cherubim, and scatter them over the city.” He went in as I watched.",
+      "ko": "하나님이 가는 베옷 입은 사람에게 일러 가라사대 너는 그룹 밑 바퀴 사이로 들어가서 그 속에서 숯불을 두 손에 가득히 움켜 가지고 성읍 위에 흩으라 하시매 그가 내 목전에 들어가더라",
+      "source_text_hash": "e63ebadf7fa2feb3a08983694449de4e78e7a32e0e631fd30c123f7988122432",
+      "translation_text_hash": "38d3688f23e0152d27894962ea939e3b91d7fb389c95b0291ff112ccb964f42a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 가는 베옷 입은 사람에게 일러 가라사대 너는 그룹 밑 바퀴 사이로 들어가서 그 속에서 숯불을 두 손에 가득히 움켜 가지고 성읍 위에 흩으라 하시매 그가 내 목전에 들어가더라"
+      ],
+      "raw_text_hashes": [
+        "38d3688f23e0152d27894962ea939e3b91d7fb389c95b0291ff112ccb964f42a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:10:3",
+      "sequence": 20637,
+      "chapter_label": "EZK 10",
+      "verse_label": "3",
+      "locator": {
+        "book": "EZK",
+        "chapter": 10,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 10,
+          "verse": 3
+        }
+      ],
+      "en": "Now the cherubim stood on the right side of the house when the man went in; and the cloud filled the inner court.",
+      "ko": "그 사람이 들어갈 때에 그룹들은 성전 우편에 섰고 구름은 안 뜰에 가득하며",
+      "source_text_hash": "32d55f21d3a4c0b2c5636f8eb773ad9ad9d3bd1d3afac8e45e75b2523ee15127",
+      "translation_text_hash": "8c3068a8bd0303c719fae630b50d5c43e45ee756abee29cfc483a3aeeab024ac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 사람이 들어갈 때에 그룹들은 성전 우편에 섰고 구름은 안 뜰에 가득하며"
+      ],
+      "raw_text_hashes": [
+        "8c3068a8bd0303c719fae630b50d5c43e45ee756abee29cfc483a3aeeab024ac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:10:4",
+      "sequence": 20638,
+      "chapter_label": "EZK 10",
+      "verse_label": "4",
+      "locator": {
+        "book": "EZK",
+        "chapter": 10,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 10,
+          "verse": 4
+        }
+      ],
+      "en": "The LORD’s glory mounted up from the cherub, and stood over the threshold of the house; and the house was filled with the cloud, and the court was full of the brightness of the LORD’s glory.",
+      "ko": "여호와의 영광이 그룹에서 올라 성전 문지방에 임하니 구름이 성전에 가득하며 여호와의 영화로운 광채가 뜰에 가득하였고",
+      "source_text_hash": "24b738a40a73ffe5a68e7f014a9405c2fb327a186d789d9715e6cc5fcf4bfd50",
+      "translation_text_hash": "84e5dfd8059f364b40950cc4a053032bcdd4e244f654e4d24b234406c7118365",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 영광이 그룹에서 올라 성전 문지방에 임하니 구름이 성전에 가득하며 여호와의 영화로운 광채가 뜰에 가득하였고"
+      ],
+      "raw_text_hashes": [
+        "84e5dfd8059f364b40950cc4a053032bcdd4e244f654e4d24b234406c7118365"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:10:5",
+      "sequence": 20639,
+      "chapter_label": "EZK 10",
+      "verse_label": "5",
+      "locator": {
+        "book": "EZK",
+        "chapter": 10,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 10,
+          "verse": 5
+        }
+      ],
+      "en": "The sound of the wings of the cherubim was heard even to the outer court, as the voice of God Almighty when he speaks.",
+      "ko": "그룹들의 날개 소리는 바깥 뜰까지 들리는데 전능하신 하나님의 말씀하시는 음성 같더라",
+      "source_text_hash": "1093f4785563fc80871ff680669e833fd22645447b36c6f5f7f77a8ae2c8ccd7",
+      "translation_text_hash": "2d929ebd9bb7dadf7d72d0af5d0b4bb22510dd46081513aa072e79ba5c33a179",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그룹들의 날개 소리는 바깥 뜰까지 들리는데 전능하신 하나님의 말씀하시는 음성 같더라"
+      ],
+      "raw_text_hashes": [
+        "2d929ebd9bb7dadf7d72d0af5d0b4bb22510dd46081513aa072e79ba5c33a179"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:10:6",
+      "sequence": 20640,
+      "chapter_label": "EZK 10",
+      "verse_label": "6",
+      "locator": {
+        "book": "EZK",
+        "chapter": 10,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 10,
+          "verse": 6
+        }
+      ],
+      "en": "It came to pass, when he commanded the man clothed in linen, saying, “Take fire from between the whirling wheels, from between the cherubim,” that he went in and stood beside a wheel.",
+      "ko": "하나님이 가는 베옷 입은 자에게 명하시기를 바퀴 사이 곧 그룹들 사이에서 불을 취하라 하셨으므로 그가 들어가 바퀴 옆에 서매",
+      "source_text_hash": "fd3e14ff413e244bd4659e29c2c5c250bc80be15c529626646ad65a6429fd841",
+      "translation_text_hash": "fce1f6cce857ae9f6d56e7609b82d98b71f53015f3c695bf90352449165fefa1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 가는 베옷 입은 자에게 명하시기를 바퀴 사이 곧 그룹들 사이에서 불을 취하라 하셨으므로 그가 들어가 바퀴 옆에 서매"
+      ],
+      "raw_text_hashes": [
+        "fce1f6cce857ae9f6d56e7609b82d98b71f53015f3c695bf90352449165fefa1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:10:7",
+      "sequence": 20641,
+      "chapter_label": "EZK 10",
+      "verse_label": "7",
+      "locator": {
+        "book": "EZK",
+        "chapter": 10,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 10,
+          "verse": 7
+        }
+      ],
+      "en": "The cherub stretched out his hand from between the cherubim to the fire that was between the cherubim, and took some of it, and put it into the hands of him who was clothed in linen, who took it and went out.",
+      "ko": "한 그룹이 그룹들 사이에서 손을 내밀어 그 그룹들 사이에 있는 불을 취하여 가는 베옷 입은 자의 손에 주매 그가 받아 가지고 나가는데",
+      "source_text_hash": "7ca2b93331236374f3dacc5a9175616d3cd3f1932302c1200ec45224d30145bc",
+      "translation_text_hash": "d6f79386cedb8e9c96a157fd2fb4dea85a11b94bfb8f8d1cc5f2ea65f1352ec5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "한 그룹이 그룹들 사이에서 손을 내밀어 그 그룹들 사이에 있는 불을 취하여 가는 베옷 입은 자의 손에 주매 그가 받아 가지고 나가는데"
+      ],
+      "raw_text_hashes": [
+        "d6f79386cedb8e9c96a157fd2fb4dea85a11b94bfb8f8d1cc5f2ea65f1352ec5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:10:8",
+      "sequence": 20642,
+      "chapter_label": "EZK 10",
+      "verse_label": "8",
+      "locator": {
+        "book": "EZK",
+        "chapter": 10,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 10,
+          "verse": 8
+        }
+      ],
+      "en": "The form of a man’s hand appeared here in the cherubim under their wings.",
+      "ko": "그룹들의 날개 밑에 사람의 손 같은 것이 나타났더라",
+      "source_text_hash": "b02f939a64324ac073b7064ba5dfc904be2079866ada3683704348f3c806ab01",
+      "translation_text_hash": "098469ac38b808b9e5a146f0ba2c0e93ab23f7558b4eb0569dc92d145468a526",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그룹들의 날개 밑에 사람의 손 같은 것이 나타났더라"
+      ],
+      "raw_text_hashes": [
+        "098469ac38b808b9e5a146f0ba2c0e93ab23f7558b4eb0569dc92d145468a526"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:10:9",
+      "sequence": 20643,
+      "chapter_label": "EZK 10",
+      "verse_label": "9",
+      "locator": {
+        "book": "EZK",
+        "chapter": 10,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 10,
+          "verse": 9
+        }
+      ],
+      "en": "I looked, and behold, there were four wheels beside the cherubim, one wheel beside one cherub, and another wheel beside another cherub. The appearance of the wheels was like a beryl stone.",
+      "ko": "내가 보니 그룹들 곁에 네 바퀴가 있는데 이 그룹 곁에도 한 바퀴가 있고 저 그룹 곁에도 한 바퀴가 있으며 그 바퀴 모양은 황옥 같으며",
+      "source_text_hash": "ba8c3fd845d5521ba7926711103e76cb5dfca8e85264ad5349e1d1a0e6bbeea8",
+      "translation_text_hash": "05691bd7a75ee8ddcff17b2dc31023c38e63517946ab4f7c0ec7e1f00d21eeb8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 보니 그룹들 곁에 네 바퀴가 있는데 이 그룹 곁에도 한 바퀴가 있고 저 그룹 곁에도 한 바퀴가 있으며 그 바퀴 모양은 황옥 같으며"
+      ],
+      "raw_text_hashes": [
+        "05691bd7a75ee8ddcff17b2dc31023c38e63517946ab4f7c0ec7e1f00d21eeb8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:10:10",
+      "sequence": 20644,
+      "chapter_label": "EZK 10",
+      "verse_label": "10",
+      "locator": {
+        "book": "EZK",
+        "chapter": 10,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 10,
+          "verse": 10
+        }
+      ],
+      "en": "As for their appearance, the four of them had one likeness, like a wheel within a wheel.",
+      "ko": "그 모양은 넷이 한결 같은데 마치 바퀴 안에 바퀴가 있는것 같으며",
+      "source_text_hash": "bbd150662157ebb46f499b88fa1100190f4a7574214982814015cc3c4b282001",
+      "translation_text_hash": "a64ec98dc2b8d9f3ac25f3e4de7401a8bf8d19213a01888df7f99cf1f1232586",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 모양은 넷이 한결 같은데 마치 바퀴 안에 바퀴가 있는것 같으며"
+      ],
+      "raw_text_hashes": [
+        "a64ec98dc2b8d9f3ac25f3e4de7401a8bf8d19213a01888df7f99cf1f1232586"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:10:11",
+      "sequence": 20645,
+      "chapter_label": "EZK 10",
+      "verse_label": "11",
+      "locator": {
+        "book": "EZK",
+        "chapter": 10,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 10,
+          "verse": 11
+        }
+      ],
+      "en": "When they went, they went in their four directions. They didn’t turn as they went, but to the place where the head looked they followed it. They didn’t turn as they went.",
+      "ko": "그룹들이 행할 때에는 사방으로 향한대로 돌이키지 않고 행하되 돌이키지 않고 그 머리 향한 곳으로 행하며",
+      "source_text_hash": "c5958ca347161e59c7a8c3890264c1a146c156d66f7e99558795b3e0e6edb01e",
+      "translation_text_hash": "b865d6a47d2e3422f01b76bbc0ce0ebbc3c83d76b9424c9e98ba34ef9b89c89f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그룹들이 행할 때에는 사방으로 향한대로 돌이키지 않고 행하되 돌이키지 않고 그 머리 향한 곳으로 행하며"
+      ],
+      "raw_text_hashes": [
+        "b865d6a47d2e3422f01b76bbc0ce0ebbc3c83d76b9424c9e98ba34ef9b89c89f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:10:12",
+      "sequence": 20646,
+      "chapter_label": "EZK 10",
+      "verse_label": "12",
+      "locator": {
+        "book": "EZK",
+        "chapter": 10,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 10,
+          "verse": 12
+        }
+      ],
+      "en": "Their whole body, including their backs, their hands, their wings, and the wheels, were full of eyes all around, even the wheels that the four of them had.",
+      "ko": "그 온 몸과 등과 손과 날개와 바퀴 곧 네 그룹의 바퀴의 둘레에 다 눈이 가득하더라",
+      "source_text_hash": "efacdf4d7c0653dd9b90e02bceb36850448f224ec39ceb34108ef9f44ccf0dd8",
+      "translation_text_hash": "33eee04b1a470f735cae0b94cd7facddcadcf3d3136ee842b1bbf8c35bae9804",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 온 몸과 등과 손과 날개와 바퀴 곧 네 그룹의 바퀴의 둘레에 다 눈이 가득하더라"
+      ],
+      "raw_text_hashes": [
+        "33eee04b1a470f735cae0b94cd7facddcadcf3d3136ee842b1bbf8c35bae9804"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:10:13",
+      "sequence": 20647,
+      "chapter_label": "EZK 10",
+      "verse_label": "13",
+      "locator": {
+        "book": "EZK",
+        "chapter": 10,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 10,
+          "verse": 13
+        }
+      ],
+      "en": "As for the wheels, they were called in my hearing, “the whirling wheels”.",
+      "ko": "내가 들으니 그 바퀴들을 도는 것이라 칭하며",
+      "source_text_hash": "9ab7b2805033d653f43c9d9aa0cec08789a0f4cb7df7e9357ce91e4c340d2190",
+      "translation_text_hash": "33d46e5d2e22e3857700d9eae099c669b55ae9788aad15c0ede1b42bfd9bcf87",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 들으니 그 바퀴들을 도는 것이라 칭하며"
+      ],
+      "raw_text_hashes": [
+        "33d46e5d2e22e3857700d9eae099c669b55ae9788aad15c0ede1b42bfd9bcf87"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:10:14",
+      "sequence": 20648,
+      "chapter_label": "EZK 10",
+      "verse_label": "14",
+      "locator": {
+        "book": "EZK",
+        "chapter": 10,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 10,
+          "verse": 14
+        }
+      ],
+      "en": "Every one of them had four faces. The first face was the face of the cherub. The second face was the face of a man. The third face was the face of a lion. The fourth was the face of an eagle.",
+      "ko": "그룹들은 각기 네 면이 있는데 첫 면은 그룹의 얼굴이요 둘째 면은 사람의 얼굴이요 세째는 사자의 얼굴이요 네째는 독수리의 얼굴이더라",
+      "source_text_hash": "9d4d52614e6d0dcf39be72dbaea2d153be4bb3d8daa061a0a170c6bb089e11c9",
+      "translation_text_hash": "06149e9fa64ed7530b9fcf4f04a7516aadc74514b202a06795551e3f922ea5fb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그룹들은 각기 네 면이 있는데 첫 면은 그룹의 얼굴이요 둘째 면은 사람의 얼굴이요 세째는 사자의 얼굴이요 네째는 독수리의 얼굴이더라"
+      ],
+      "raw_text_hashes": [
+        "06149e9fa64ed7530b9fcf4f04a7516aadc74514b202a06795551e3f922ea5fb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:10:15",
+      "sequence": 20649,
+      "chapter_label": "EZK 10",
+      "verse_label": "15",
+      "locator": {
+        "book": "EZK",
+        "chapter": 10,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 10,
+          "verse": 15
+        }
+      ],
+      "en": "The cherubim mounted up. This is the living creature that I saw by the river Chebar.",
+      "ko": "그룹들이 올라가니 그들은 내가 그발강 가에서 보던 생물이라",
+      "source_text_hash": "d9271e44da1c8160beebd8ae541b81185e7b32c471322ad3bbce70bdc7ec3ed8",
+      "translation_text_hash": "355b238d548e127338554a5121f33e05b1b2f6331163897a39acf76046d0d0a6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그룹들이 올라가니 그들은 내가 그발강 가에서 보던 생물이라"
+      ],
+      "raw_text_hashes": [
+        "355b238d548e127338554a5121f33e05b1b2f6331163897a39acf76046d0d0a6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:10:16",
+      "sequence": 20650,
+      "chapter_label": "EZK 10",
+      "verse_label": "16",
+      "locator": {
+        "book": "EZK",
+        "chapter": 10,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 10,
+          "verse": 16
+        }
+      ],
+      "en": "When the cherubim went, the wheels went beside them; and when the cherubim lifted up their wings to mount up from the earth, the wheels also didn’t turn from beside them.",
+      "ko": "그룹들이 행할 때에는 바퀴도 그 곁에서 행하고 그룹들이 날개를 들고 땅에서 올라가려 할 때에도 바퀴가 그 곁을 떠나지 아니하며",
+      "source_text_hash": "cf7b74672dbbfc0f119a571598f1a9ddfc1bfee9b0623c85c12e9b9b60f626ec",
+      "translation_text_hash": "064f076b58aa0c509f67e92188c6e813756f3305f001b16f4b4b2526db1e5465",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그룹들이 행할 때에는 바퀴도 그 곁에서 행하고 그룹들이 날개를 들고 땅에서 올라가려 할 때에도 바퀴가 그 곁을 떠나지 아니하며"
+      ],
+      "raw_text_hashes": [
+        "064f076b58aa0c509f67e92188c6e813756f3305f001b16f4b4b2526db1e5465"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:10:17",
+      "sequence": 20651,
+      "chapter_label": "EZK 10",
+      "verse_label": "17",
+      "locator": {
+        "book": "EZK",
+        "chapter": 10,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 10,
+          "verse": 17
+        }
+      ],
+      "en": "When they stood, these stood. When they mounted up, these mounted up with them; for the spirit of the living creature was in them.",
+      "ko": "그들이 서면 이들도 서고 그들이 올라가면 이들도 함께 올라가니 이는 생물의 신이 바퀴 가운데 있음이더라",
+      "source_text_hash": "32423c6168f6599dcb8f4826a6a1e050bff977058d0c0e587e6eff46bded90b8",
+      "translation_text_hash": "ec19cbe74eb9312399638abf932ec50d1a28a41776fa0288efb2dca35ab55c5a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 서면 이들도 서고 그들이 올라가면 이들도 함께 올라가니 이는 생물의 신이 바퀴 가운데 있음이더라"
+      ],
+      "raw_text_hashes": [
+        "ec19cbe74eb9312399638abf932ec50d1a28a41776fa0288efb2dca35ab55c5a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:10:18",
+      "sequence": 20652,
+      "chapter_label": "EZK 10",
+      "verse_label": "18",
+      "locator": {
+        "book": "EZK",
+        "chapter": 10,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 10,
+          "verse": 18
+        }
+      ],
+      "en": "The LORD’s glory went out from over the threshold of the house and stood over the cherubim.",
+      "ko": "여호와의 영광이 성전 문지방을 떠나서 그룹들 위에 머무르니",
+      "source_text_hash": "b6a82619bc82b619fbe372259c4a17b06bf64f8236a119859654b3aa7ca53de8",
+      "translation_text_hash": "c9391b1361abfbd84ffc8529865959040acd2819731babac6a51f321a1de76b6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 영광이 성전 문지방을 떠나서 그룹들 위에 머무르니"
+      ],
+      "raw_text_hashes": [
+        "c9391b1361abfbd84ffc8529865959040acd2819731babac6a51f321a1de76b6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:10:19",
+      "sequence": 20653,
+      "chapter_label": "EZK 10",
+      "verse_label": "19",
+      "locator": {
+        "book": "EZK",
+        "chapter": 10,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 10,
+          "verse": 19
+        }
+      ],
+      "en": "The cherubim lifted up their wings and mounted up from the earth in my sight when they went out, with the wheels beside them. Then they stood at the door of the east gate of the LORD’s house; and the glory of the God of Israel was over them above.",
+      "ko": "그룹들이 날개를 들고 내 목전에 땅에서 올라가는데 그들이 나갈 때에 바퀴도 그 곁에서 함께 하더라 그들이 여호와의 전으로 들어가는 동문에 머물고 이스라엘 하나님의 영광이 그 위에 덮였더라",
+      "source_text_hash": "8ae37c0b05bd2bb4560ec4920456582c3eaffa0cba921a8e9f5c2ddbcee806ba",
+      "translation_text_hash": "4be5f74e1d7615519ea439fded993b55ce26fe0a89ec75dde837dbfa2ac50c24",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그룹들이 날개를 들고 내 목전에 땅에서 올라가는데 그들이 나갈 때에 바퀴도 그 곁에서 함께 하더라 그들이 여호와의 전으로 들어가는 동문에 머물고 이스라엘 하나님의 영광이 그 위에 덮였더라"
+      ],
+      "raw_text_hashes": [
+        "4be5f74e1d7615519ea439fded993b55ce26fe0a89ec75dde837dbfa2ac50c24"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:10:20",
+      "sequence": 20654,
+      "chapter_label": "EZK 10",
+      "verse_label": "20",
+      "locator": {
+        "book": "EZK",
+        "chapter": 10,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 10,
+          "verse": 20
+        }
+      ],
+      "en": "This is the living creature that I saw under the God of Israel by the river Chebar; and I knew that they were cherubim.",
+      "ko": "그것은 내가 그발강 가에서 본바 이스라엘 하나님의 아래 있던 생물이라 그들이 그룹들인 줄을 내가 아니라",
+      "source_text_hash": "977ab7c06d474dfef7ffb7d3782e0c2938c93c5522b4650b803d6d5a6dc35826",
+      "translation_text_hash": "e4e845c4faccf5f2e4c1597f74676ec0df855197cdb5bb19af0209c4ed5d55a7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그것은 내가 그발강 가에서 본바 이스라엘 하나님의 아래 있던 생물이라 그들이 그룹들인 줄을 내가 아니라"
+      ],
+      "raw_text_hashes": [
+        "e4e845c4faccf5f2e4c1597f74676ec0df855197cdb5bb19af0209c4ed5d55a7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:10:21",
+      "sequence": 20655,
+      "chapter_label": "EZK 10",
+      "verse_label": "21",
+      "locator": {
+        "book": "EZK",
+        "chapter": 10,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 10,
+          "verse": 21
+        }
+      ],
+      "en": "Every one had four faces, and every one four wings. The likeness of the hands of a man was under their wings.",
+      "ko": "각기 네 얼굴과 네 날개가 있으며 날개 밑에는 사람의 손 형상이 있으니",
+      "source_text_hash": "91e87cc20f0acc0255df4c066578b297b81aa87f90325c80e10dceb4732eff26",
+      "translation_text_hash": "9fdee1a71d55f7f69f40995f29bad2cd9196aa5d65c7bbca0a442dd718e57156",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "각기 네 얼굴과 네 날개가 있으며 날개 밑에는 사람의 손 형상이 있으니"
+      ],
+      "raw_text_hashes": [
+        "9fdee1a71d55f7f69f40995f29bad2cd9196aa5d65c7bbca0a442dd718e57156"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:10:22",
+      "sequence": 20656,
+      "chapter_label": "EZK 10",
+      "verse_label": "22",
+      "locator": {
+        "book": "EZK",
+        "chapter": 10,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 10,
+          "verse": 22
+        }
+      ],
+      "en": "As for the likeness of their faces, they were the faces which I saw by the river Chebar, their appearances and themselves. They each went straight forward.",
+      "ko": "그 얼굴의 형상은 내가 그발강 가에서 보던 얼굴이며 그 모양과 몸둥이도 그러하며 각기 곧게 앞으로 행하더라",
+      "source_text_hash": "5c3267bf4f28eab43da0e365ab24d74bcbf45eabef5e34f561f1d5a5cab20ebe",
+      "translation_text_hash": "abd22d81f2539bd89cd80227b01b9592b281a7e4e55e94cc948c746628442971",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 얼굴의 형상은 내가 그발강 가에서 보던 얼굴이며 그 모양과 몸둥이도 그러하며 각기 곧게 앞으로 행하더라"
+      ],
+      "raw_text_hashes": [
+        "abd22d81f2539bd89cd80227b01b9592b281a7e4e55e94cc948c746628442971"
+      ]
+    }
+  ]
+}

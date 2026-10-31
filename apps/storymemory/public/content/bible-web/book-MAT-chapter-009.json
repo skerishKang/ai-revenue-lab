@@ -1,0 +1,1229 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:MAT:chapter:009",
+  "unit_ordinal": 938,
+  "unit_label": "MAT 9",
+  "book_code": "MAT",
+  "chapter_number": 9,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:MAT:9:1",
+      "sequence": 23381,
+      "chapter_label": "MAT 9",
+      "verse_label": "1",
+      "locator": {
+        "book": "MAT",
+        "chapter": 9,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 9,
+          "verse": 1
+        }
+      ],
+      "en": "He entered into a boat and crossed over, and came into his own city.",
+      "ko": "예수께서 배에 오르사 건너가 본 동네에 이르시니",
+      "source_text_hash": "8cda025e86270da7e3c89f13dbd218cf78830075a40f5ea0ce8dc455579dab52",
+      "translation_text_hash": "62cb346c0496fc8f9b97c15d928195b8cb2297df56ad2e8ce05de75225e547db",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 배에 오르사 건너가 본 동네에 이르시니"
+      ],
+      "raw_text_hashes": [
+        "62cb346c0496fc8f9b97c15d928195b8cb2297df56ad2e8ce05de75225e547db"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:9:2",
+      "sequence": 23382,
+      "chapter_label": "MAT 9",
+      "verse_label": "2",
+      "locator": {
+        "book": "MAT",
+        "chapter": 9,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 9,
+          "verse": 2
+        }
+      ],
+      "en": "Behold, they brought to him a man who was paralyzed, lying on a bed. Jesus, seeing their faith, said to the paralytic, “Son, cheer up! Your sins are forgiven you.”",
+      "ko": "침상에 누운 중풍병자를 사람들이 데리고 오거늘 예수께서 저희의 믿음을 보시고 중풍병자에게 이르시되 소자야 안심하라 네 죄 사함을 받았느니라",
+      "source_text_hash": "0d6be429eb34d4e294f89f31b45cc88d05aa8fbb27312b77c124956d5d80acda",
+      "translation_text_hash": "732bed44ffe9c197c4f5133fd10d65f677427dc2e1b7788f6e6431e1d05400a1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "침상에 누운 중풍병자를 사람들이 데리고 오거늘 예수께서 저희의 믿음을 보시고 중풍병자에게 이르시되 소자야 안심하라 네 죄 사함을 받았느니라"
+      ],
+      "raw_text_hashes": [
+        "732bed44ffe9c197c4f5133fd10d65f677427dc2e1b7788f6e6431e1d05400a1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:9:3",
+      "sequence": 23383,
+      "chapter_label": "MAT 9",
+      "verse_label": "3",
+      "locator": {
+        "book": "MAT",
+        "chapter": 9,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 9,
+          "verse": 3
+        }
+      ],
+      "en": "Behold, some of the scribes said to themselves, “This man blasphemes.”",
+      "ko": "어떤 서기관들이 속으로 이르되 이 사람이 참람하도다",
+      "source_text_hash": "81adcd5153bef7e5473f710abfbd250be0ec2b1c57e49bd19ae6d71606174477",
+      "translation_text_hash": "407b6d71e2b70128222346d0962d38a1bb3499446aeee4a53e14e25702ed8072",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어떤 서기관들이 속으로 이르되 이 사람이 참람하도다"
+      ],
+      "raw_text_hashes": [
+        "407b6d71e2b70128222346d0962d38a1bb3499446aeee4a53e14e25702ed8072"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:9:4",
+      "sequence": 23384,
+      "chapter_label": "MAT 9",
+      "verse_label": "4",
+      "locator": {
+        "book": "MAT",
+        "chapter": 9,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 9,
+          "verse": 4
+        }
+      ],
+      "en": "Jesus, knowing their thoughts, said, “Why do you think evil in your hearts?",
+      "ko": "예수께서 그 생각을 아시고 가라사대 너희가 어찌하여 마음에 악한 생각을 하느냐",
+      "source_text_hash": "fdf319e24cecd5bd11f82d2af5257c381d9369b18d70c94385edb5835dd60b9c",
+      "translation_text_hash": "9bc4f386409742d425e584cc387c8404c7dbfa5ff0c88f6a1c15e0bef7f67f19",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 그 생각을 아시고 가라사대 너희가 어찌하여 마음에 악한 생각을 하느냐"
+      ],
+      "raw_text_hashes": [
+        "9bc4f386409742d425e584cc387c8404c7dbfa5ff0c88f6a1c15e0bef7f67f19"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:9:5",
+      "sequence": 23385,
+      "chapter_label": "MAT 9",
+      "verse_label": "5",
+      "locator": {
+        "book": "MAT",
+        "chapter": 9,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 9,
+          "verse": 5
+        }
+      ],
+      "en": "For which is easier, to say, ‘Your sins are forgiven;’ or to say, ‘Get up, and walk’?",
+      "ko": "네 죄 사함을 받았느니라 하는 말과 일어나 걸어가라 하는 말이 어느 것이 쉽겠느냐",
+      "source_text_hash": "7a348a504892e55a31646b53322b5b23f5fd231d00210b59be719054c216582a",
+      "translation_text_hash": "285e810210bb72dd6b18d8a43f46f450a1be3ae252863ee7363a8d3779755c8c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 죄 사함을 받았느니라 하는 말과 일어나 걸어가라 하는 말이 어느 것이 쉽겠느냐"
+      ],
+      "raw_text_hashes": [
+        "285e810210bb72dd6b18d8a43f46f450a1be3ae252863ee7363a8d3779755c8c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:9:6",
+      "sequence": 23386,
+      "chapter_label": "MAT 9",
+      "verse_label": "6",
+      "locator": {
+        "book": "MAT",
+        "chapter": 9,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 9,
+          "verse": 6
+        }
+      ],
+      "en": "But that you may know that the Son of Man has authority on earth to forgive sins—”(then he said to the paralytic), “Get up, and take up your mat, and go to your house.”",
+      "ko": "그러나 인자가 세상에서 죄를 사하는 권세가 있는 줄을 너희로 알게 하려 하노라 하시고 중풍병자에게 말씀하시되 일어나 네 침상을 가지고 집으로 가라 하시니",
+      "source_text_hash": "8f390d527c5a0859909ce34929e0ff3243da721975ecd4b6bc856c7b5582313a",
+      "translation_text_hash": "60a29e4c54628749726f21fefa0b0e920afd7d5d6620aeb3e08481ca3fa9549e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 인자가 세상에서 죄를 사하는 권세가 있는 줄을 너희로 알게 하려 하노라 하시고 중풍병자에게 말씀하시되 일어나 네 침상을 가지고 집으로 가라 하시니"
+      ],
+      "raw_text_hashes": [
+        "60a29e4c54628749726f21fefa0b0e920afd7d5d6620aeb3e08481ca3fa9549e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:9:7",
+      "sequence": 23387,
+      "chapter_label": "MAT 9",
+      "verse_label": "7",
+      "locator": {
+        "book": "MAT",
+        "chapter": 9,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 9,
+          "verse": 7
+        }
+      ],
+      "en": "He arose and departed to his house.",
+      "ko": "그가 일어나 집으로 돌아가거늘",
+      "source_text_hash": "f9ac1ca0193d15f04bd183c16d9d4a4247779efce31e78ba7486b985b2f0aa63",
+      "translation_text_hash": "d0c717e42e9a7435a49b839046ac86fd4262cd8174ac5c4be3b9e475366d1c09",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 일어나 집으로 돌아가거늘"
+      ],
+      "raw_text_hashes": [
+        "d0c717e42e9a7435a49b839046ac86fd4262cd8174ac5c4be3b9e475366d1c09"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:9:8",
+      "sequence": 23388,
+      "chapter_label": "MAT 9",
+      "verse_label": "8",
+      "locator": {
+        "book": "MAT",
+        "chapter": 9,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 9,
+          "verse": 8
+        }
+      ],
+      "en": "But when the multitudes saw it, they marveled and glorified God, who had given such authority to men.",
+      "ko": "무리가 보고 두려워하며 이런 권세를 사람에게 주신 하나님께 영광을 돌리니라",
+      "source_text_hash": "f8c12a1859c5c6725de3b32e2b652f95b797adb5dabe7103b3314ab323af400b",
+      "translation_text_hash": "9e9308e8701dcad864a70c0d065c72e5d547f80e1206ac134c9e31107a9006a9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무리가 보고 두려워하며 이런 권세를 사람에게 주신 하나님께 영광을 돌리니라"
+      ],
+      "raw_text_hashes": [
+        "9e9308e8701dcad864a70c0d065c72e5d547f80e1206ac134c9e31107a9006a9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:9:9",
+      "sequence": 23389,
+      "chapter_label": "MAT 9",
+      "verse_label": "9",
+      "locator": {
+        "book": "MAT",
+        "chapter": 9,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 9,
+          "verse": 9
+        }
+      ],
+      "en": "As Jesus passed by from there, he saw a man called Matthew sitting at the tax collection office. He said to him, “Follow me.”He got up and followed him.",
+      "ko": "예수께서 거기서 떠나 지나가시다가 마태라 하는 사람이 세관에 앉은 것을 보시고 이르시되 나를 좇으라 하시니 일어나 좇으니라",
+      "source_text_hash": "18652154f705d19e53f179360a8910dc15da3e7001de04af399f7799eb0662eb",
+      "translation_text_hash": "c86940e29fc2544201adce32dfe361176b64dff69483ebbbeee052d04e40a4fc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 거기서 떠나 지나가시다가 마태라 하는 사람이 세관에 앉은 것을 보시고 이르시되 나를 좇으라 하시니 일어나 좇으니라"
+      ],
+      "raw_text_hashes": [
+        "c86940e29fc2544201adce32dfe361176b64dff69483ebbbeee052d04e40a4fc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:9:10",
+      "sequence": 23390,
+      "chapter_label": "MAT 9",
+      "verse_label": "10",
+      "locator": {
+        "book": "MAT",
+        "chapter": 9,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 9,
+          "verse": 10
+        }
+      ],
+      "en": "As he sat in the house, behold, many tax collectors and sinners came and sat down with Jesus and his disciples.",
+      "ko": "예수께서 마태의 집에서 앉아 음식을 잡수실 때에 많은 세리와 죄인들이 와서 예수와 그 제자들과 함께 앉았더니",
+      "source_text_hash": "4f6ec41c5fb37be9b539c58522d695f926e83455bd77bf8e555271b8de8315ad",
+      "translation_text_hash": "802203563bd7e7e3e3810de956f5649985447da7de4ca1192ae56d866dde58cd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 마태의 집에서 앉아 음식을 잡수실 때에 많은 세리와 죄인들이 와서 예수와 그 제자들과 함께 앉았더니"
+      ],
+      "raw_text_hashes": [
+        "802203563bd7e7e3e3810de956f5649985447da7de4ca1192ae56d866dde58cd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:9:11",
+      "sequence": 23391,
+      "chapter_label": "MAT 9",
+      "verse_label": "11",
+      "locator": {
+        "book": "MAT",
+        "chapter": 9,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 9,
+          "verse": 11
+        }
+      ],
+      "en": "When the Pharisees saw it, they said to his disciples, “Why does your teacher eat with tax collectors and sinners?”",
+      "ko": "바리새인들이 보고 그 제자들에게 이르되 어찌하여 너희 선생은 세리와 죄인들과 함께 잡수시느냐",
+      "source_text_hash": "d578252adda598167ef8d049fceefd99215812c18a548c5d0402ca4838554bbb",
+      "translation_text_hash": "fe803b00bb019d90ef4de1652db8efdfd437b3d7cdcc04478a10613ff5cdd401",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바리새인들이 보고 그 제자들에게 이르되 어찌하여 너희 선생은 세리와 죄인들과 함께 잡수시느냐"
+      ],
+      "raw_text_hashes": [
+        "fe803b00bb019d90ef4de1652db8efdfd437b3d7cdcc04478a10613ff5cdd401"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:9:12",
+      "sequence": 23392,
+      "chapter_label": "MAT 9",
+      "verse_label": "12",
+      "locator": {
+        "book": "MAT",
+        "chapter": 9,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 9,
+          "verse": 12
+        }
+      ],
+      "en": "When Jesus heard it, he said to them, “Those who are healthy have no need for a physician, but those who are sick do.",
+      "ko": "예수께서 들으시고 이르시되 건강한 자에게는 의원이 쓸데 없고 병든 자에게라야 쓸데 있느니라",
+      "source_text_hash": "0f5863b4979e461d8c9162474912a7ac1b547ead3d8a1fff4d1211eb72d6283f",
+      "translation_text_hash": "7b2d93a971491446d0b469e52236828bdf81b2170e349db656ce03fecb8520b3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 들으시고 이르시되 건강한 자에게는 의원이 쓸데 없고 병든 자에게라야 쓸데 있느니라"
+      ],
+      "raw_text_hashes": [
+        "7b2d93a971491446d0b469e52236828bdf81b2170e349db656ce03fecb8520b3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:9:13",
+      "sequence": 23393,
+      "chapter_label": "MAT 9",
+      "verse_label": "13",
+      "locator": {
+        "book": "MAT",
+        "chapter": 9,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 9,
+          "verse": 13
+        }
+      ],
+      "en": "But you go and learn what this means: ‘I desire mercy, and not sacrifice,’for I came not to call the righteous, but sinners to repentance.”",
+      "ko": "너희는 가서 내가 긍휼을 원하고 제사를 원치 아니하노라 하신 뜻이 무엇인지 배우라 내가 의인을 부르러 온 것이 아니요 죄인을 부르러 왔노라 하시니라",
+      "source_text_hash": "2bafe901c9629785b8c3211108d991d447b46718f2916092b8b695da907bc26d",
+      "translation_text_hash": "72793bfe045803875af89946f599a8c54742058280167aa1a463bda0cb52ce0c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 가서 내가 긍휼을 원하고 제사를 원치 아니하노라 하신 뜻이 무엇인지 배우라 내가 의인을 부르러 온 것이 아니요 죄인을 부르러 왔노라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "72793bfe045803875af89946f599a8c54742058280167aa1a463bda0cb52ce0c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:9:14",
+      "sequence": 23394,
+      "chapter_label": "MAT 9",
+      "verse_label": "14",
+      "locator": {
+        "book": "MAT",
+        "chapter": 9,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 9,
+          "verse": 14
+        }
+      ],
+      "en": "Then John’s disciples came to him, saying, “Why do we and the Pharisees fast often, but your disciples don’t fast?”",
+      "ko": "그 때에 요한의 제자들이 예수께 나아와 가로되 우리와 바리새인들은 금식하는데 어찌하여 당신의 제자들은 금식하지 아니하나이까",
+      "source_text_hash": "65eff26b0ccf4a94f67946df0ac3756f3a328972fcc5e92ae53d5a2950c5c679",
+      "translation_text_hash": "d048e41cf2f569cf55db0a0e483bec43b8997ad7707ade988bc4dd031e4cf12b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 요한의 제자들이 예수께 나아와 가로되 우리와 바리새인들은 금식하는데 어찌하여 당신의 제자들은 금식하지 아니하나이까"
+      ],
+      "raw_text_hashes": [
+        "d048e41cf2f569cf55db0a0e483bec43b8997ad7707ade988bc4dd031e4cf12b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:9:15",
+      "sequence": 23395,
+      "chapter_label": "MAT 9",
+      "verse_label": "15",
+      "locator": {
+        "book": "MAT",
+        "chapter": 9,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 9,
+          "verse": 15
+        }
+      ],
+      "en": "Jesus said to them, “Can the friends of the bridegroom mourn as long as the bridegroom is with them? But the days will come when the bridegroom will be taken away from them, and then they will fast.",
+      "ko": "예수께서 저희에게 이르시되 혼인집 손님들이 신랑과 함께 있을 동안에 슬퍼할 수 있느뇨 그러나 신랑을 빼앗길 날이 이르리니 그 때에는 금식할 것이니라",
+      "source_text_hash": "c7ea06b3d6d4c35e22b6cfca4d5d11f6246d5a439391e62eb67506fb2c1d10cf",
+      "translation_text_hash": "c1f989d555a1a90498aa027d2774e49e1c1d8b4e994845c000fd47cc410cfb10",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 저희에게 이르시되 혼인집 손님들이 신랑과 함께 있을 동안에 슬퍼할 수 있느뇨 그러나 신랑을 빼앗길 날이 이르리니 그 때에는 금식할 것이니라"
+      ],
+      "raw_text_hashes": [
+        "c1f989d555a1a90498aa027d2774e49e1c1d8b4e994845c000fd47cc410cfb10"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:9:16",
+      "sequence": 23396,
+      "chapter_label": "MAT 9",
+      "verse_label": "16",
+      "locator": {
+        "book": "MAT",
+        "chapter": 9,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 9,
+          "verse": 16
+        }
+      ],
+      "en": "No one puts a piece of unshrunk cloth on an old garment; for the patch would tear away from the garment, and a worse hole is made.",
+      "ko": "생베 조각을 낡은 옷에 붙이는 자가 없나니 이는 기운 것이 그 옷을 당기어 해어짐이 더하게 됨이요",
+      "source_text_hash": "b896756f509f82399e2f6480547f467e8ec3d7fabe84250f6475e8cd5b8a9b1e",
+      "translation_text_hash": "d957b12655f10a4e8e42697e3de4ed5b060a669209d8ae9e7576ca4e8b52f413",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "생베 조각을 낡은 옷에 붙이는 자가 없나니 이는 기운 것이 그 옷을 당기어 해어짐이 더하게 됨이요"
+      ],
+      "raw_text_hashes": [
+        "d957b12655f10a4e8e42697e3de4ed5b060a669209d8ae9e7576ca4e8b52f413"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:9:17",
+      "sequence": 23397,
+      "chapter_label": "MAT 9",
+      "verse_label": "17",
+      "locator": {
+        "book": "MAT",
+        "chapter": 9,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 9,
+          "verse": 17
+        }
+      ],
+      "en": "Neither do people put new wine into old wineskins, or else the skins would burst, and the wine be spilled, and the skins ruined. No, they put new wine into fresh wineskins, and both are preserved.”",
+      "ko": "새 포도주를 낡은 가죽 부대에 넣지 아니하나니 그렇게 하면 부대가 터져 포도주도 쏟아지고 부대도 버리게 됨이라 새 포도주는 새 부대에 넣어야 둘이 다 보전되느니라",
+      "source_text_hash": "a915c6b98c92170f1d037382e859dd584d484500f48c7eef33aedc08ddff2f77",
+      "translation_text_hash": "752afd62e99353f7de9741706b8a08257f9f95d6ab922e34cfe727fe6106f580",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "새 포도주를 낡은 가죽 부대에 넣지 아니하나니 그렇게 하면 부대가 터져 포도주도 쏟아지고 부대도 버리게 됨이라 새 포도주는 새 부대에 넣어야 둘이 다 보전되느니라"
+      ],
+      "raw_text_hashes": [
+        "752afd62e99353f7de9741706b8a08257f9f95d6ab922e34cfe727fe6106f580"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:9:18",
+      "sequence": 23398,
+      "chapter_label": "MAT 9",
+      "verse_label": "18",
+      "locator": {
+        "book": "MAT",
+        "chapter": 9,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 9,
+          "verse": 18
+        }
+      ],
+      "en": "While he told these things to them, behold, a ruler came and worshiped him, saying, “My daughter has just died, but come and lay your hand on her, and she will live.”",
+      "ko": "예수께서 이 말씀을 하실 때에 한 직원이 와서 절하고 가로되 내 딸이 방장 죽었사오나 오셔서 그 몸에 손을 얹으소서 그러면 살겠나이다 하니",
+      "source_text_hash": "c86e3ab71d2cfeafd8db74f9c0c1b4cec968ba66db8b6d5bdd5108049a90db32",
+      "translation_text_hash": "b3a7d81e657e2cbad0c820e7b65f1fdeb996c50a5621e3205470540730f8118f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 이 말씀을 하실 때에 한 직원이 와서 절하고 가로되 내 딸이 방장 죽었사오나 오셔서 그 몸에 손을 얹으소서 그러면 살겠나이다 하니"
+      ],
+      "raw_text_hashes": [
+        "b3a7d81e657e2cbad0c820e7b65f1fdeb996c50a5621e3205470540730f8118f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:9:19",
+      "sequence": 23399,
+      "chapter_label": "MAT 9",
+      "verse_label": "19",
+      "locator": {
+        "book": "MAT",
+        "chapter": 9,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 9,
+          "verse": 19
+        }
+      ],
+      "en": "Jesus got up and followed him, as did his disciples.",
+      "ko": "예수께서 일어나 따라 가시매 제자들도 가더니",
+      "source_text_hash": "cd020f0ee16d9a92be49119f259983776cf87b2bc2499cc4045916b47d0c9ed2",
+      "translation_text_hash": "c214e771b14572f8815e97a5c5f29400a4cd61a98f41274ca54614ff0caac1be",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 일어나 따라 가시매 제자들도 가더니"
+      ],
+      "raw_text_hashes": [
+        "c214e771b14572f8815e97a5c5f29400a4cd61a98f41274ca54614ff0caac1be"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:9:20",
+      "sequence": 23400,
+      "chapter_label": "MAT 9",
+      "verse_label": "20",
+      "locator": {
+        "book": "MAT",
+        "chapter": 9,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 9,
+          "verse": 20
+        }
+      ],
+      "en": "Behold, a woman who had a discharge of blood for twelve years came behind him, and touched the fringe of his garment;",
+      "ko": "열 두 해를 혈루증으로 앓는 여자가 예수의 뒤로 와서 그 겉옷 가를 만지니",
+      "source_text_hash": "1dd122897811ac5d13114603f26dc301345f0e4fea76ab01dfbd20be08a56b4e",
+      "translation_text_hash": "5e1abc23e517c238f193394c5389126801e8361c3614b2606bc7172d996987e7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "열 두 해를 혈루증으로 앓는 여자가 예수의 뒤로 와서 그 겉옷 가를 만지니"
+      ],
+      "raw_text_hashes": [
+        "5e1abc23e517c238f193394c5389126801e8361c3614b2606bc7172d996987e7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:9:21",
+      "sequence": 23401,
+      "chapter_label": "MAT 9",
+      "verse_label": "21",
+      "locator": {
+        "book": "MAT",
+        "chapter": 9,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 9,
+          "verse": 21
+        }
+      ],
+      "en": "for she said within herself, “If I just touch his garment, I will be made well.”",
+      "ko": "이는 제 마음에 그 겉옷만 만져도 구원을 받겠다 함이라",
+      "source_text_hash": "8d420dca78a821f831f791fef448c750a90741ee1be433db92c7ca8826c10cf7",
+      "translation_text_hash": "e94b47dcb6985d461ece75d643792a85f2575cd4f51813612ab861ec9335ccfe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 제 마음에 그 겉옷만 만져도 구원을 받겠다 함이라"
+      ],
+      "raw_text_hashes": [
+        "e94b47dcb6985d461ece75d643792a85f2575cd4f51813612ab861ec9335ccfe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:9:22",
+      "sequence": 23402,
+      "chapter_label": "MAT 9",
+      "verse_label": "22",
+      "locator": {
+        "book": "MAT",
+        "chapter": 9,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 9,
+          "verse": 22
+        }
+      ],
+      "en": "But Jesus, turning around and seeing her, said, “Daughter, cheer up! Your faith has made you well.”And the woman was made well from that hour.",
+      "ko": "예수께서 돌이켜 그를 보시며 가라사대 딸아 안심하라 네 믿음이 너를 구원하였다 하시니 여자가 그 시로 구원을 받으니라",
+      "source_text_hash": "424eb9634057d0f9a72b15552f8a59d2685ffe9d08c92b7c2371ea3e155d107a",
+      "translation_text_hash": "5f505c4a755bd2327427b213a0b2c7148f8ea3b7740dadb12674f1e9c7c78a2b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 돌이켜 그를 보시며 가라사대 딸아 안심하라 네 믿음이 너를 구원하였다 하시니 여자가 그 시로 구원을 받으니라"
+      ],
+      "raw_text_hashes": [
+        "5f505c4a755bd2327427b213a0b2c7148f8ea3b7740dadb12674f1e9c7c78a2b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:9:23",
+      "sequence": 23403,
+      "chapter_label": "MAT 9",
+      "verse_label": "23",
+      "locator": {
+        "book": "MAT",
+        "chapter": 9,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 9,
+          "verse": 23
+        }
+      ],
+      "en": "When Jesus came into the ruler’s house and saw the flute players and the crowd in noisy disorder,",
+      "ko": "예수께서 그 직원의 집에 가사 피리 부는 자들과 훤화하는 무리를 보시고",
+      "source_text_hash": "04cc840b2acd22c7c2a029e9927f59097bcd714e27acb3d2a8ffe7c314677fe2",
+      "translation_text_hash": "29fb734b3ca9d87b581f88b22281d396619b5fa6fcb01f1eae815cf50de6c414",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 그 직원의 집에 가사 피리 부는 자들과 훤화하는 무리를 보시고"
+      ],
+      "raw_text_hashes": [
+        "29fb734b3ca9d87b581f88b22281d396619b5fa6fcb01f1eae815cf50de6c414"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:9:24",
+      "sequence": 23404,
+      "chapter_label": "MAT 9",
+      "verse_label": "24",
+      "locator": {
+        "book": "MAT",
+        "chapter": 9,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 9,
+          "verse": 24
+        }
+      ],
+      "en": "he said to them, “Make room, because the girl isn’t dead, but sleeping.”They were ridiculing him.",
+      "ko": "가라사대 물러가라 이 소녀가 죽은 것이 아니라 잔다 하시니 저들이 비웃더라",
+      "source_text_hash": "3566425cd6a7cd0b2aa8cc9d898f11dc0b66302ef98254e985798893b3771292",
+      "translation_text_hash": "29ee8a5160c35fe614cd0a788a82629be394b75e6a7901e28f1debf3ae9188e5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가라사대 물러가라 이 소녀가 죽은 것이 아니라 잔다 하시니 저들이 비웃더라"
+      ],
+      "raw_text_hashes": [
+        "29ee8a5160c35fe614cd0a788a82629be394b75e6a7901e28f1debf3ae9188e5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:9:25",
+      "sequence": 23405,
+      "chapter_label": "MAT 9",
+      "verse_label": "25",
+      "locator": {
+        "book": "MAT",
+        "chapter": 9,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 9,
+          "verse": 25
+        }
+      ],
+      "en": "But when the crowd was sent out, he entered in, took her by the hand, and the girl arose.",
+      "ko": "무리를 내어 보낸 후에 예수께서 들어가사 소녀의 손을 잡으시매 일어나는지라",
+      "source_text_hash": "af764e33f8c9a4949afe716a0b017e2ac49839b34688c9695ff54fec11f03d83",
+      "translation_text_hash": "a1764ee49a53facf2d242b6221f40a54faad806d58337f5ec64e9fb2dada51bb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무리를 내어 보낸 후에 예수께서 들어가사 소녀의 손을 잡으시매 일어나는지라"
+      ],
+      "raw_text_hashes": [
+        "a1764ee49a53facf2d242b6221f40a54faad806d58337f5ec64e9fb2dada51bb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:9:26",
+      "sequence": 23406,
+      "chapter_label": "MAT 9",
+      "verse_label": "26",
+      "locator": {
+        "book": "MAT",
+        "chapter": 9,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 9,
+          "verse": 26
+        }
+      ],
+      "en": "The report of this went out into all that land.",
+      "ko": "그 소문이 그 온 땅에 퍼지더라",
+      "source_text_hash": "74e4e92ebd13d22cbdf37a823a38cedff2bbbe496a2f1e7dcb9c24533b69cd94",
+      "translation_text_hash": "6d0c69ce0dc06edd9a23159fedd9cfa940928703e0736547d11629af4d423be2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 소문이 그 온 땅에 퍼지더라"
+      ],
+      "raw_text_hashes": [
+        "6d0c69ce0dc06edd9a23159fedd9cfa940928703e0736547d11629af4d423be2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:9:27",
+      "sequence": 23407,
+      "chapter_label": "MAT 9",
+      "verse_label": "27",
+      "locator": {
+        "book": "MAT",
+        "chapter": 9,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 9,
+          "verse": 27
+        }
+      ],
+      "en": "As Jesus passed by from there, two blind men followed him, calling out and saying, “Have mercy on us, son of David!”",
+      "ko": "예수께서 거기서 떠나 가실쌔 두 소경이 따라 오며 소리질러 가로되 다윗의 자손이여 우리를 불쌍히 여기소서 하더니",
+      "source_text_hash": "d0392a4d1cc856ea469aab74a3140bd81a779f16f7a0b5ecf273bcba054d8374",
+      "translation_text_hash": "de51e2ac8c9910c768e6e4265a21a166e4b3b5fe7becf9d01d6581bd281ba027",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 거기서 떠나 가실쌔 두 소경이 따라 오며 소리질러 가로되 다윗의 자손이여 우리를 불쌍히 여기소서 하더니"
+      ],
+      "raw_text_hashes": [
+        "de51e2ac8c9910c768e6e4265a21a166e4b3b5fe7becf9d01d6581bd281ba027"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:9:28",
+      "sequence": 23408,
+      "chapter_label": "MAT 9",
+      "verse_label": "28",
+      "locator": {
+        "book": "MAT",
+        "chapter": 9,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 9,
+          "verse": 28
+        }
+      ],
+      "en": "When he had come into the house, the blind men came to him. Jesus said to them, “Do you believe that I am able to do this?”They told him, “Yes, Lord.”",
+      "ko": "예수께서 집에 들어가시매 소경들이 나아오거늘 예수께서 이르시되 내가 능히 이 일 할 줄을 믿느냐 대답하되 주여 그러하오이다 하니",
+      "source_text_hash": "b32a8ae21ff411fcc3228c9dbd165a7ae460795f4142116c9fecb971c0cf6c81",
+      "translation_text_hash": "888df29a4698ac0dd0ecc6722024623173f5a6ef51728d2ff1f5e1408c2ea2ec",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 집에 들어가시매 소경들이 나아오거늘 예수께서 이르시되 내가 능히 이 일 할 줄을 믿느냐 대답하되 주여 그러하오이다 하니"
+      ],
+      "raw_text_hashes": [
+        "888df29a4698ac0dd0ecc6722024623173f5a6ef51728d2ff1f5e1408c2ea2ec"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:9:29",
+      "sequence": 23409,
+      "chapter_label": "MAT 9",
+      "verse_label": "29",
+      "locator": {
+        "book": "MAT",
+        "chapter": 9,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 9,
+          "verse": 29
+        }
+      ],
+      "en": "Then he touched their eyes, saying, “According to your faith be it done to you.”",
+      "ko": "이에 예수께서 저희 눈을 만지시며 가라사대 너희 믿음대로 되라 하신대",
+      "source_text_hash": "42058c7268f497729bfb0f445d9c9b8195d025492888fbf388ed8380a6dc86f5",
+      "translation_text_hash": "96f0d31ab8731510b64e2a4272deca314f139e4375fbc5ca584872e43660db67",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 예수께서 저희 눈을 만지시며 가라사대 너희 믿음대로 되라 하신대"
+      ],
+      "raw_text_hashes": [
+        "96f0d31ab8731510b64e2a4272deca314f139e4375fbc5ca584872e43660db67"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:9:30",
+      "sequence": 23410,
+      "chapter_label": "MAT 9",
+      "verse_label": "30",
+      "locator": {
+        "book": "MAT",
+        "chapter": 9,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 9,
+          "verse": 30
+        }
+      ],
+      "en": "Then their eyes were opened. Jesus strictly commanded them, saying, “See that no one knows about this.”",
+      "ko": "그 눈들이 밝아진지라 예수께서 엄히 경계하시되 삼가 아무에게도 알게 하지 말라 하셨으나",
+      "source_text_hash": "10dc818dbc9bd8b41b85878fbf08f8f93042f32603c4edaf12857d6435e87fd9",
+      "translation_text_hash": "499fc255b1286a316a47d04d18b0bf1815e5123a3afcfd11936ff558dd37a742",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 눈들이 밝아진지라 예수께서 엄히 경계하시되 삼가 아무에게도 알게 하지 말라 하셨으나"
+      ],
+      "raw_text_hashes": [
+        "499fc255b1286a316a47d04d18b0bf1815e5123a3afcfd11936ff558dd37a742"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:9:31",
+      "sequence": 23411,
+      "chapter_label": "MAT 9",
+      "verse_label": "31",
+      "locator": {
+        "book": "MAT",
+        "chapter": 9,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 9,
+          "verse": 31
+        }
+      ],
+      "en": "But they went out and spread abroad his fame in all that land.",
+      "ko": "저희가 나가서 예수의 소문을 그 온 땅에 전파하니라",
+      "source_text_hash": "960ca83f94ce5e304f306e131856702b79668474fbcd166258350a35ab3a5b89",
+      "translation_text_hash": "247c5c06c443f8cbe5f3efbd58ccd64dc0cc6d55d361fe3a0a6642c2e80f269c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 나가서 예수의 소문을 그 온 땅에 전파하니라"
+      ],
+      "raw_text_hashes": [
+        "247c5c06c443f8cbe5f3efbd58ccd64dc0cc6d55d361fe3a0a6642c2e80f269c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:9:32",
+      "sequence": 23412,
+      "chapter_label": "MAT 9",
+      "verse_label": "32",
+      "locator": {
+        "book": "MAT",
+        "chapter": 9,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 9,
+          "verse": 32
+        }
+      ],
+      "en": "As they went out, behold, a mute man who was demon possessed was brought to him.",
+      "ko": "저희가 나갈 때에 귀신 들려 벙어리 된 자를 예수께 데려오니",
+      "source_text_hash": "4ee85f6e9bb294fef018d80c7ca090cb653ee542815ac1cde805b1e2e5e60b67",
+      "translation_text_hash": "12314a0bebb408b1e10ca646e0c046e8315a8d0967f1183faf01efd111bff29d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 나갈 때에 귀신 들려 벙어리 된 자를 예수께 데려오니"
+      ],
+      "raw_text_hashes": [
+        "12314a0bebb408b1e10ca646e0c046e8315a8d0967f1183faf01efd111bff29d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:9:33",
+      "sequence": 23413,
+      "chapter_label": "MAT 9",
+      "verse_label": "33",
+      "locator": {
+        "book": "MAT",
+        "chapter": 9,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 9,
+          "verse": 33
+        }
+      ],
+      "en": "When the demon was cast out, the mute man spoke. The multitudes marveled, saying, “Nothing like this has ever been seen in Israel!”",
+      "ko": "귀신이 쫓겨나고 벙어리가 말하거늘 무리가 기이히 여겨 가로되 이스라엘 가운데서 이런 일을 본 때가 없다 하되",
+      "source_text_hash": "4260b558b3de5eec506f26ad58e4bc6feeddf4c7e8957570aeebf0bf4b5fb102",
+      "translation_text_hash": "8b0bbdf89a38c43b108882d152b6b397571fd67e2c5e375e22a825f6c40e1c08",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "귀신이 쫓겨나고 벙어리가 말하거늘 무리가 기이히 여겨 가로되 이스라엘 가운데서 이런 일을 본 때가 없다 하되"
+      ],
+      "raw_text_hashes": [
+        "8b0bbdf89a38c43b108882d152b6b397571fd67e2c5e375e22a825f6c40e1c08"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:9:34",
+      "sequence": 23414,
+      "chapter_label": "MAT 9",
+      "verse_label": "34",
+      "locator": {
+        "book": "MAT",
+        "chapter": 9,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 9,
+          "verse": 34
+        }
+      ],
+      "en": "But the Pharisees said, “By the prince of the demons, he casts out demons.”",
+      "ko": "바리새인들은 가로되 저가 귀신의 왕을 빙자하여 귀신을 쫓아낸다 하더라",
+      "source_text_hash": "4e9e7463f8ad9e7ea482bc58065075f7cac354998d1b69429b57e0c847c864cc",
+      "translation_text_hash": "b8e63693db44b0a65a879ff33e412c9ae929b22ab49969290f8dc14c37dcd514",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바리새인들은 가로되 저가 귀신의 왕을 빙자하여 귀신을 쫓아낸다 하더라"
+      ],
+      "raw_text_hashes": [
+        "b8e63693db44b0a65a879ff33e412c9ae929b22ab49969290f8dc14c37dcd514"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:9:35",
+      "sequence": 23415,
+      "chapter_label": "MAT 9",
+      "verse_label": "35",
+      "locator": {
+        "book": "MAT",
+        "chapter": 9,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 9,
+          "verse": 35
+        }
+      ],
+      "en": "Jesus went about all the cities and the villages, teaching in their synagogues and preaching the Good News of the Kingdom, and healing every disease and every sickness among the people.",
+      "ko": "예수께서 모든 성과 촌에 두루 다니사 저희 회당에서 가르치시며 천국 복음을 전파하시며 모든 병과 모든 약한 것을 고치시니라",
+      "source_text_hash": "ad6712e4f6c4da42eb6a4ae6caf13456283f1e3a5711e7312b5a673bba8866f4",
+      "translation_text_hash": "38da83d59bf0aa7599fbf4d2dcc1846e67c9b152aa34f9b4957aaa985c26c4cd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 모든 성과 촌에 두루 다니사 저희 회당에서 가르치시며 천국 복음을 전파하시며 모든 병과 모든 약한 것을 고치시니라"
+      ],
+      "raw_text_hashes": [
+        "38da83d59bf0aa7599fbf4d2dcc1846e67c9b152aa34f9b4957aaa985c26c4cd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:9:36",
+      "sequence": 23416,
+      "chapter_label": "MAT 9",
+      "verse_label": "36",
+      "locator": {
+        "book": "MAT",
+        "chapter": 9,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 9,
+          "verse": 36
+        }
+      ],
+      "en": "But when he saw the multitudes, he was moved with compassion for them because they were harassed and scattered, like sheep without a shepherd.",
+      "ko": "무리를 보시고 민망히 여기시니 이는 저희가 목자 없는 양과 같이 고생하며 유리함이라",
+      "source_text_hash": "9ab16460fb2d26b74456888f39244d39ae357d697c739ab198fab2f02f78593b",
+      "translation_text_hash": "cf5f9a7ded8201ffdad4dba380aafbe29722f63b12faddff3e42f6be8cb2add1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무리를 보시고 민망히 여기시니 이는 저희가 목자 없는 양과 같이 고생하며 유리함이라"
+      ],
+      "raw_text_hashes": [
+        "cf5f9a7ded8201ffdad4dba380aafbe29722f63b12faddff3e42f6be8cb2add1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:9:37",
+      "sequence": 23417,
+      "chapter_label": "MAT 9",
+      "verse_label": "37",
+      "locator": {
+        "book": "MAT",
+        "chapter": 9,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 9,
+          "verse": 37
+        }
+      ],
+      "en": "Then he said to his disciples, “The harvest indeed is plentiful, but the laborers are few.",
+      "ko": "이에 제자들에게 이르시되 추수할 것은 많되 일군은 적으니",
+      "source_text_hash": "eb42f0394ce83d2e25250ef81725e58e929a0cb8223b089c657287255b3c6eb6",
+      "translation_text_hash": "a519ca0e9f5ca025ed35eabb90548b67bbae3606f733722e513b5b57885dff64",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 제자들에게 이르시되 추수할 것은 많되 일군은 적으니"
+      ],
+      "raw_text_hashes": [
+        "a519ca0e9f5ca025ed35eabb90548b67bbae3606f733722e513b5b57885dff64"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:9:38",
+      "sequence": 23418,
+      "chapter_label": "MAT 9",
+      "verse_label": "38",
+      "locator": {
+        "book": "MAT",
+        "chapter": 9,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 9,
+          "verse": 38
+        }
+      ],
+      "en": "Pray therefore that the Lord of the harvest will send out laborers into his harvest.”",
+      "ko": "그러므로 추수하는 주인에게 청하여 추수할 일군들을 보내어 주소서 하라 하시니라",
+      "source_text_hash": "122bb41a64c88121f709c400d8be4328dc6f07052723dc54129cbef90f98d2cb",
+      "translation_text_hash": "d6ac9d89de4669425d2e5e910155c5038ef50ce4d3babf78ca1294b5ebc929d9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 추수하는 주인에게 청하여 추수할 일군들을 보내어 주소서 하라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "d6ac9d89de4669425d2e5e910155c5038ef50ce4d3babf78ca1294b5ebc929d9"
+      ]
+    }
+  ]
+}

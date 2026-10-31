@@ -1,0 +1,269 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:082",
+  "unit_ordinal": 560,
+  "unit_label": "PSA 82",
+  "book_code": "PSA",
+  "chapter_number": 82,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:82:1",
+      "sequence": 15235,
+      "chapter_label": "PSA 82",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 82,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 82,
+          "verse": 1
+        }
+      ],
+      "en": "God presides in the great assembly. He judges among the gods.",
+      "ko": "하나님이 하나님의 회 가운데 서시며 재판장들 중에서 판단하시되",
+      "source_text_hash": "9fdcc472fde07a8c87010fb3431ea43a61e08812f768b3112a7db7e4f8c73fdf",
+      "translation_text_hash": "7c55e6d2af31c958f65ea04b0ae1b9b9cbcf43bc2e1a359710cf1ac0eb8517d7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 하나님의 회 가운데 서시며 재판장들 중에서 판단하시되"
+      ],
+      "raw_text_hashes": [
+        "7c55e6d2af31c958f65ea04b0ae1b9b9cbcf43bc2e1a359710cf1ac0eb8517d7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:82:2",
+      "sequence": 15236,
+      "chapter_label": "PSA 82",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 82,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 82,
+          "verse": 2
+        }
+      ],
+      "en": "“How long will you judge unjustly, and show partiality to the wicked?” Selah.",
+      "ko": "너희가 불공평한 판단을 하며 악인의 낯 보기를 언제까지 하려느냐(셀라)",
+      "source_text_hash": "6833b96b69a1ec2572b1a42e9bf9b2103305bd67c9d82decefb84fa3bef81645",
+      "translation_text_hash": "f657f2234ba2a068fd66f03fe8d490431820ae08624393a0576cc1c215bfee22",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 불공평한 판단을 하며 악인의 낯 보기를 언제까지 하려느냐(셀라)"
+      ],
+      "raw_text_hashes": [
+        "f657f2234ba2a068fd66f03fe8d490431820ae08624393a0576cc1c215bfee22"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:82:3",
+      "sequence": 15237,
+      "chapter_label": "PSA 82",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 82,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 82,
+          "verse": 3
+        }
+      ],
+      "en": "“Defend the weak, the poor, and the fatherless. Maintain the rights of the poor and oppressed.",
+      "ko": "가난한 자와 고아를 위하여 판단하며 곤란한 자와 빈궁한 자에게 공의를 베풀찌며",
+      "source_text_hash": "4c886a69209fd6cfddd71192e89ec54d2dfc7e98237865d5123bd1375b8bca8d",
+      "translation_text_hash": "be3a7bd5831104803baee31c66c0f561e96b995c3d53bbcfdf899c7144f9f927",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가난한 자와 고아를 위하여 판단하며 곤란한 자와 빈궁한 자에게 공의를 베풀찌며"
+      ],
+      "raw_text_hashes": [
+        "be3a7bd5831104803baee31c66c0f561e96b995c3d53bbcfdf899c7144f9f927"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:82:4",
+      "sequence": 15238,
+      "chapter_label": "PSA 82",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 82,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 82,
+          "verse": 4
+        }
+      ],
+      "en": "Rescue the weak and needy. Deliver them out of the hand of the wicked.”",
+      "ko": "가난한 자와 궁핍한 자를 구원하여 악인들의 손에서 건질찌니라 하시는도다",
+      "source_text_hash": "cfeaa38a358bf34e08370f3d812739d729b3745a2f0f2d9f2db640acc6765cec",
+      "translation_text_hash": "8d9832c4b5114707df4924025afbf3ef43498c30c6d1c802a5eebc1792322860",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가난한 자와 궁핍한 자를 구원하여 악인들의 손에서 건질찌니라 하시는도다"
+      ],
+      "raw_text_hashes": [
+        "8d9832c4b5114707df4924025afbf3ef43498c30c6d1c802a5eebc1792322860"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:82:5",
+      "sequence": 15239,
+      "chapter_label": "PSA 82",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 82,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 82,
+          "verse": 5
+        }
+      ],
+      "en": "They don’t know, neither do they understand. They walk back and forth in darkness. All the foundations of the earth are shaken.",
+      "ko": "저희는 무지무각하여 흑암 중에 왕래하니 땅의 모든 터가 흔들리도다",
+      "source_text_hash": "c28c7dc0d2c89c42a794be1595e8a9f1d54f65b7f2231a72c3afdfa080d33da3",
+      "translation_text_hash": "9863f3a2ee1de6820aaa8e2e7ad0fac5552b4a6c480807d667a20d04d8411f35",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희는 무지무각하여 흑암 중에 왕래하니 땅의 모든 터가 흔들리도다"
+      ],
+      "raw_text_hashes": [
+        "9863f3a2ee1de6820aaa8e2e7ad0fac5552b4a6c480807d667a20d04d8411f35"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:82:6",
+      "sequence": 15240,
+      "chapter_label": "PSA 82",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 82,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 82,
+          "verse": 6
+        }
+      ],
+      "en": "I said, “You are gods, all of you are sons of the Most High.",
+      "ko": "내가 말하기를 너희는 신들이며 다 지존자의 아들들이라 하였으나",
+      "source_text_hash": "eea64693011d434b3e2c09ecf219024734c8c09519093dcdf05c7970cf26795c",
+      "translation_text_hash": "69a000f7ba8c431edf8754fd38674cdbfea6db4dcb3b91493a445acc7c2526fd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 말하기를 너희는 신들이며 다 지존자의 아들들이라 하였으나"
+      ],
+      "raw_text_hashes": [
+        "69a000f7ba8c431edf8754fd38674cdbfea6db4dcb3b91493a445acc7c2526fd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:82:7",
+      "sequence": 15241,
+      "chapter_label": "PSA 82",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 82,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 82,
+          "verse": 7
+        }
+      ],
+      "en": "Nevertheless you shall die like men, and fall like one of the rulers.”",
+      "ko": "너희는 범인 같이 죽으며 방백의 하나 같이 엎더지리로다",
+      "source_text_hash": "7171707a6ac74fceaab6a1e872e4c424c5b83eb0554cd4a6862fa1bcb31f7d38",
+      "translation_text_hash": "c99a376a6f62db3c141fe41ba51a4b68191042ffb2038ac081dea7f8191e9344",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 범인 같이 죽으며 방백의 하나 같이 엎더지리로다"
+      ],
+      "raw_text_hashes": [
+        "c99a376a6f62db3c141fe41ba51a4b68191042ffb2038ac081dea7f8191e9344"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:82:8",
+      "sequence": 15242,
+      "chapter_label": "PSA 82",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 82,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 82,
+          "verse": 8
+        }
+      ],
+      "en": "Arise, God, judge the earth, for you inherit all of the nations.",
+      "ko": "하나님이여 일어나사 세상을 판단하소서 모든 열방이 주의 기업이 되겠음이니이다",
+      "source_text_hash": "6b7b9233fabf60ed5d718c8b540ee94ff10bf7bf110f6fee9a84fb047685f0da",
+      "translation_text_hash": "7267a6f874521448db9a469202106a16452c960673d3bdd460d6141c1ee2eeda",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이여 일어나사 세상을 판단하소서 모든 열방이 주의 기업이 되겠음이니이다"
+      ],
+      "raw_text_hashes": [
+        "7267a6f874521448db9a469202106a16452c960673d3bdd460d6141c1ee2eeda"
+      ]
+    }
+  ]
+}

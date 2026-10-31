@@ -1,0 +1,557 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ECC:chapter:008",
+  "unit_ordinal": 667,
+  "unit_label": "ECC 8",
+  "book_code": "ECC",
+  "chapter_number": 8,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ECC:8:1",
+      "sequence": 17460,
+      "chapter_label": "ECC 8",
+      "verse_label": "1",
+      "locator": {
+        "book": "ECC",
+        "chapter": 8,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 8,
+          "verse": 1
+        }
+      ],
+      "en": "Who is like the wise man? And who knows the interpretation of a thing? A man’s wisdom makes his face shine, and the hardness of his face is changed.",
+      "ko": "지혜자와 같은 자 누구며 사리의 해석을 아는 자 누구냐 사람의 지혜는 그 사람의 얼굴에 광채가 나게 하나니 그 얼굴의 사나운 것이 변하느니라",
+      "source_text_hash": "b2441e561aaff9750001f00e4744244285707191ccb955b049043bbad195554e",
+      "translation_text_hash": "a35b4e45621a9196785b18fa5c12676a85221fa7765968a9857112c27594cac2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "지혜자와 같은 자 누구며 사리의 해석을 아는 자 누구냐 사람의 지혜는 그 사람의 얼굴에 광채가 나게 하나니 그 얼굴의 사나운 것이 변하느니라"
+      ],
+      "raw_text_hashes": [
+        "a35b4e45621a9196785b18fa5c12676a85221fa7765968a9857112c27594cac2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:8:2",
+      "sequence": 17461,
+      "chapter_label": "ECC 8",
+      "verse_label": "2",
+      "locator": {
+        "book": "ECC",
+        "chapter": 8,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 8,
+          "verse": 2
+        }
+      ],
+      "en": "I say, “Keep the king’s command!” because of the oath to God.",
+      "ko": "내가 권하노니 왕의 명령을 지키라 이미 하나님을 가리켜 맹세하였음이니라",
+      "source_text_hash": "4895f1ff2f3463dd31a02dd28b21b52c02e7e4480afc98d8d35ff0bf82ec805d",
+      "translation_text_hash": "405e8d18de26202e518f86f828d07973fc8956a3afc01a3a333985e8183f1115",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 권하노니 왕의 명령을 지키라 이미 하나님을 가리켜 맹세하였음이니라"
+      ],
+      "raw_text_hashes": [
+        "405e8d18de26202e518f86f828d07973fc8956a3afc01a3a333985e8183f1115"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:8:3",
+      "sequence": 17462,
+      "chapter_label": "ECC 8",
+      "verse_label": "3",
+      "locator": {
+        "book": "ECC",
+        "chapter": 8,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 8,
+          "verse": 3
+        }
+      ],
+      "en": "Don’t be hasty to go out of his presence. Don’t persist in an evil thing, for he does whatever pleases him,",
+      "ko": "왕 앞에서 물러가기를 급거히 말며 악한 것을 일삼지 말라 왕은 그 하고자 하는 것을 다 행함이니라",
+      "source_text_hash": "feac48ccad666bc00d55156a8418b9a5e0a110b63de02a2eb27a8abe9da14818",
+      "translation_text_hash": "0a790dc7c1325da50e2ded74058804d9c036d28b2ca694607272ecc67b0e3abc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕 앞에서 물러가기를 급거히 말며 악한 것을 일삼지 말라 왕은 그 하고자 하는 것을 다 행함이니라"
+      ],
+      "raw_text_hashes": [
+        "0a790dc7c1325da50e2ded74058804d9c036d28b2ca694607272ecc67b0e3abc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:8:4",
+      "sequence": 17463,
+      "chapter_label": "ECC 8",
+      "verse_label": "4",
+      "locator": {
+        "book": "ECC",
+        "chapter": 8,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 8,
+          "verse": 4
+        }
+      ],
+      "en": "for the king’s word is supreme. Who can say to him, “What are you doing?”",
+      "ko": "왕의 말은 권능이 있나니 누가 이르기를 왕께서 무엇을 하시나이까 할 수 있으랴",
+      "source_text_hash": "3cc67a1b61702577c7483a7a89136c4f7b8c859d238b6f8a93ffaf20d91edfe9",
+      "translation_text_hash": "6c956617ac03d6dcc91565a5aad066da51f87074464dd6eddbf85710a8491c68",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕의 말은 권능이 있나니 누가 이르기를 왕께서 무엇을 하시나이까 할 수 있으랴"
+      ],
+      "raw_text_hashes": [
+        "6c956617ac03d6dcc91565a5aad066da51f87074464dd6eddbf85710a8491c68"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:8:5",
+      "sequence": 17464,
+      "chapter_label": "ECC 8",
+      "verse_label": "5",
+      "locator": {
+        "book": "ECC",
+        "chapter": 8,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 8,
+          "verse": 5
+        }
+      ],
+      "en": "Whoever keeps the commandment shall not come to harm, and his wise heart will know the time and procedure.",
+      "ko": "무릇 명령을 지키는 자는 화를 모르리라 지혜자의 마음은 시기와 판단을 분변하나니",
+      "source_text_hash": "c482422ab61d91a11847c69dfeee5cdde5497a20f962df3abcc2e76cc54be491",
+      "translation_text_hash": "b8cd85edb6fcf44fb9543336c6b0c4382711e85858d8c62529515bc5a393189a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 명령을 지키는 자는 화를 모르리라 지혜자의 마음은 시기와 판단을 분변하나니"
+      ],
+      "raw_text_hashes": [
+        "b8cd85edb6fcf44fb9543336c6b0c4382711e85858d8c62529515bc5a393189a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:8:6",
+      "sequence": 17465,
+      "chapter_label": "ECC 8",
+      "verse_label": "6",
+      "locator": {
+        "book": "ECC",
+        "chapter": 8,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 8,
+          "verse": 6
+        }
+      ],
+      "en": "For there is a time and procedure for every purpose, although the misery of man is heavy on him.",
+      "ko": "무론 무슨 일에든지 시기와 판단이 있으므로 사람에게 임하는 화가 심함이니라",
+      "source_text_hash": "7fb33a2900e60317de91ded8cc5ca0a55a5b43310bfd93b48dbae64f6ea083c3",
+      "translation_text_hash": "1b31a07c45de0b16021c42933cefadd627d0496317964dc5eae3195dcf869227",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무론 무슨 일에든지 시기와 판단이 있으므로 사람에게 임하는 화가 심함이니라"
+      ],
+      "raw_text_hashes": [
+        "1b31a07c45de0b16021c42933cefadd627d0496317964dc5eae3195dcf869227"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:8:7",
+      "sequence": 17466,
+      "chapter_label": "ECC 8",
+      "verse_label": "7",
+      "locator": {
+        "book": "ECC",
+        "chapter": 8,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 8,
+          "verse": 7
+        }
+      ],
+      "en": "For he doesn’t know that which will be; for who can tell him how it will be?",
+      "ko": "사람이 장래 일을 알지 못하나니 장래 일을 가르칠 자가 누구이랴",
+      "source_text_hash": "fc6f0c557945d48122b0a1ec5eebc11749495c0ce965d9ed972429777ae974f9",
+      "translation_text_hash": "83361f75032211801f758b2798e65ad2b2b24e74796af01fc4a21ee4b857919c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 장래 일을 알지 못하나니 장래 일을 가르칠 자가 누구이랴"
+      ],
+      "raw_text_hashes": [
+        "83361f75032211801f758b2798e65ad2b2b24e74796af01fc4a21ee4b857919c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:8:8",
+      "sequence": 17467,
+      "chapter_label": "ECC 8",
+      "verse_label": "8",
+      "locator": {
+        "book": "ECC",
+        "chapter": 8,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 8,
+          "verse": 8
+        }
+      ],
+      "en": "There is no man who has power over the spirit to contain the spirit; neither does he have power over the day of death. There is no discharge in war; neither shall wickedness deliver those who practice it.",
+      "ko": "생기를 주장하여 생기로 머므르게 할 사람도 없고 죽는 날을 주장할 자도 없고 전쟁할 때에 모면할 자도 없으며 악이 행악자를 건져낼 수도 없느니라",
+      "source_text_hash": "d5f1f2e00f9886a2bc9c7e7e20f2beea9357f0b3ea645cba74d57ef6252a9573",
+      "translation_text_hash": "f59fbae6ce3d25119bfad71a3f3d50c89062f648479e668e26960836bbbc77df",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "생기를 주장하여 생기로 머므르게 할 사람도 없고 죽는 날을 주장할 자도 없고 전쟁할 때에 모면할 자도 없으며 악이 행악자를 건져낼 수도 없느니라"
+      ],
+      "raw_text_hashes": [
+        "f59fbae6ce3d25119bfad71a3f3d50c89062f648479e668e26960836bbbc77df"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:8:9",
+      "sequence": 17468,
+      "chapter_label": "ECC 8",
+      "verse_label": "9",
+      "locator": {
+        "book": "ECC",
+        "chapter": 8,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 8,
+          "verse": 9
+        }
+      ],
+      "en": "All this I have seen, and applied my mind to every work that is done under the sun. There is a time in which one man has power over another to his hurt.",
+      "ko": "내가 이런 것들을 다 보고 마음을 다하여 해 아래서 행하는 모든 일을 살핀즉 사람이 사람을 주장하여 해롭게 하는 때가 있으며",
+      "source_text_hash": "d3c419842f4cb89ffd12b7f6d7cb3e2a748883f0656e9ab7d85df6623eba4753",
+      "translation_text_hash": "4bb65656ac968e738d85b244c49d824cb77fa680e6c5c2554415a18d4c1c2333",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 이런 것들을 다 보고 마음을 다하여 해 아래서 행하는 모든 일을 살핀즉 사람이 사람을 주장하여 해롭게 하는 때가 있으며"
+      ],
+      "raw_text_hashes": [
+        "4bb65656ac968e738d85b244c49d824cb77fa680e6c5c2554415a18d4c1c2333"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:8:10",
+      "sequence": 17469,
+      "chapter_label": "ECC 8",
+      "verse_label": "10",
+      "locator": {
+        "book": "ECC",
+        "chapter": 8,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 8,
+          "verse": 10
+        }
+      ],
+      "en": "So I saw the wicked buried. Indeed they came also from holiness. They went and were forgotten in the city where they did this. This also is vanity.",
+      "ko": "내가 본즉 악인은 장사지낸바 되어 무덤에 들어갔고 선을 행한 자는 거룩한 곳에서 떠나 성읍 사람의 잊어버린바 되었으니 이것도 헛되도다",
+      "source_text_hash": "92800481ae71b5a393c4ad31e4d4c55a6e637ca5e6320d4e4743c62fd7b898a1",
+      "translation_text_hash": "919e8d5b95fb17f45c812bdb0945151aad1cf5b1b34ee5e76a43a490c98aac2f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 본즉 악인은 장사지낸바 되어 무덤에 들어갔고 선을 행한 자는 거룩한 곳에서 떠나 성읍 사람의 잊어버린바 되었으니 이것도 헛되도다"
+      ],
+      "raw_text_hashes": [
+        "919e8d5b95fb17f45c812bdb0945151aad1cf5b1b34ee5e76a43a490c98aac2f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:8:11",
+      "sequence": 17470,
+      "chapter_label": "ECC 8",
+      "verse_label": "11",
+      "locator": {
+        "book": "ECC",
+        "chapter": 8,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 8,
+          "verse": 11
+        }
+      ],
+      "en": "Because sentence against an evil work is not executed speedily, therefore the heart of the sons of men is fully set in them to do evil.",
+      "ko": "악한 일에 징벌이 속히 실행되지 않으므로 인생들이 악을 행하기에 마음이 담대하도다",
+      "source_text_hash": "a67337ad671893bbe534639ffaadd58d5cd7915c25707cf4742a6978a58bfd85",
+      "translation_text_hash": "9e464a1b214da6b57307d4f4b69f386894787b955cf0d84848d16d5433f80676",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "악한 일에 징벌이 속히 실행되지 않으므로 인생들이 악을 행하기에 마음이 담대하도다"
+      ],
+      "raw_text_hashes": [
+        "9e464a1b214da6b57307d4f4b69f386894787b955cf0d84848d16d5433f80676"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:8:12",
+      "sequence": 17471,
+      "chapter_label": "ECC 8",
+      "verse_label": "12",
+      "locator": {
+        "book": "ECC",
+        "chapter": 8,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 8,
+          "verse": 12
+        }
+      ],
+      "en": "Though a sinner commits crimes a hundred times, and lives long, yet surely I know that it will be better with those who fear God, who are reverent before him.",
+      "ko": "죄인이 백번 악을 행하고도 장수하거니와 내가 정녕히 아노니 하나님을 경외하여 그 앞에서 경외하는 자가 잘 될것이요",
+      "source_text_hash": "605bf5765300e4091a9d62b79c93c18519bdd5b6f20e4e7aea4d43e347d87a00",
+      "translation_text_hash": "0eea2e0add70ed44973f8e2e387cb6c8f25d835f8da47ee8f0b9c946947414c5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "죄인이 백번 악을 행하고도 장수하거니와 내가 정녕히 아노니 하나님을 경외하여 그 앞에서 경외하는 자가 잘 될것이요"
+      ],
+      "raw_text_hashes": [
+        "0eea2e0add70ed44973f8e2e387cb6c8f25d835f8da47ee8f0b9c946947414c5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:8:13",
+      "sequence": 17472,
+      "chapter_label": "ECC 8",
+      "verse_label": "13",
+      "locator": {
+        "book": "ECC",
+        "chapter": 8,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 8,
+          "verse": 13
+        }
+      ],
+      "en": "But it shall not be well with the wicked, neither shall he lengthen days like a shadow, because he doesn’t fear God.",
+      "ko": "악인은 잘 되지 못하며 장수하지 못하고 그 날이 그림자와 같으리니 이는 하나님 앞에 경외하지 아니함이니라",
+      "source_text_hash": "bb251363ac0459b696b785eae7575ada8990df11f101ce7a42382e7887cade04",
+      "translation_text_hash": "c4454a60cbe5f88858d39216ed33599c39f6d8f875290f01b807a11c707b1469",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "악인은 잘 되지 못하며 장수하지 못하고 그 날이 그림자와 같으리니 이는 하나님 앞에 경외하지 아니함이니라"
+      ],
+      "raw_text_hashes": [
+        "c4454a60cbe5f88858d39216ed33599c39f6d8f875290f01b807a11c707b1469"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:8:14",
+      "sequence": 17473,
+      "chapter_label": "ECC 8",
+      "verse_label": "14",
+      "locator": {
+        "book": "ECC",
+        "chapter": 8,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 8,
+          "verse": 14
+        }
+      ],
+      "en": "There is a vanity which is done on the earth, that there are righteous men to whom it happens according to the work of the wicked. Again, there are wicked men to whom it happens according to the work of the righteous. I said that this also is vanity.",
+      "ko": "세상에 행하는 헛된 일이 있나니 곧 악인의 행위대로 받는 의인도 있고 의인의 행위대로 받는 악인도 있는 것이라 내가 이르노니 이것도 헛되도다",
+      "source_text_hash": "ce04634ef154642430be7344160105054792d3fc8d07cdc8e83cefe866ed7893",
+      "translation_text_hash": "67c85aaca178962d9315fb4859ff53fd037d6b22cc14aff759826a8a46ae1ea9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "세상에 행하는 헛된 일이 있나니 곧 악인의 행위대로 받는 의인도 있고 의인의 행위대로 받는 악인도 있는 것이라 내가 이르노니 이것도 헛되도다"
+      ],
+      "raw_text_hashes": [
+        "67c85aaca178962d9315fb4859ff53fd037d6b22cc14aff759826a8a46ae1ea9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:8:15",
+      "sequence": 17474,
+      "chapter_label": "ECC 8",
+      "verse_label": "15",
+      "locator": {
+        "book": "ECC",
+        "chapter": 8,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 8,
+          "verse": 15
+        }
+      ],
+      "en": "Then I commended mirth, because a man has no better thing under the sun than to eat, to drink, and to be joyful: for that will accompany him in his labor all the days of his life which God has given him under the sun.",
+      "ko": "이에 내가 희락을 칭찬하노니 이는 사람이 먹고 마시고 즐거워하는 것보다 해 아래서 나은 것이 없음이라 하나님이 사람으로 해 아래서 살게 하신날 동안 수고하는 중에 이것이 항상 함께 있을 것이니라",
+      "source_text_hash": "79c6ede5c963e644bfba15cfd4f58b4d68ef8e68eee77f776ba9653394ddb0c3",
+      "translation_text_hash": "b19c6294e1d73f811cf9b34af16437590673e3db969f7d4caad2913e1f0cd475",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 내가 희락을 칭찬하노니 이는 사람이 먹고 마시고 즐거워하는 것보다 해 아래서 나은 것이 없음이라 하나님이 사람으로 해 아래서 살게 하신날 동안 수고하는 중에 이것이 항상 함께 있을 것이니라"
+      ],
+      "raw_text_hashes": [
+        "b19c6294e1d73f811cf9b34af16437590673e3db969f7d4caad2913e1f0cd475"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:8:16",
+      "sequence": 17475,
+      "chapter_label": "ECC 8",
+      "verse_label": "16",
+      "locator": {
+        "book": "ECC",
+        "chapter": 8,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 8,
+          "verse": 16
+        }
+      ],
+      "en": "When I applied my heart to know wisdom, and to see the business that is done on the earth (even though eyes see no sleep day or night),",
+      "ko": "내가 마음을 다하여 지혜를 알고자 하며 세상에서 하는 노고를 보고자 하는 동시에 (밤낮으로 자지 못하는 자도 있도다)",
+      "source_text_hash": "94e94c9b5419c73e5ff714f409d552644cbf0a24388f7237d9e3e476d512ff38",
+      "translation_text_hash": "7aae28b3f495c0324e4919e17fc7251edaa4da92679151f6563a98fc82cbbbee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 마음을 다하여 지혜를 알고자 하며 세상에서 하는 노고를 보고자 하는 동시에 (밤낮으로 자지 못하는 자도 있도다)"
+      ],
+      "raw_text_hashes": [
+        "7aae28b3f495c0324e4919e17fc7251edaa4da92679151f6563a98fc82cbbbee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:8:17",
+      "sequence": 17476,
+      "chapter_label": "ECC 8",
+      "verse_label": "17",
+      "locator": {
+        "book": "ECC",
+        "chapter": 8,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 8,
+          "verse": 17
+        }
+      ],
+      "en": "then I saw all the work of God, that man can’t find out the work that is done under the sun, because however much a man labors to seek it out, yet he won’t find it. Yes even though a wise man thinks he can comprehend it, he won’t be able to find it.",
+      "ko": "하나님의 모든 행사를 살펴보니 해 아래서 하시는 일을 사람이 능히 깨달을 수 없도다 사람이 아무리 애써 궁구할찌라도 능히 깨닫지 못하나니 비록 지혜자가 아노라 할찌라도 능히 깨닫지 못하리로다",
+      "source_text_hash": "c147cc3a2cf8e0587c4468c6d56ff15848accc22615ceb4cd1235b4fe65b87ba",
+      "translation_text_hash": "fb752caf11f3db94ac509ae6356b5382e58d71da11a390f4f23c1715fc4c7b9b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님의 모든 행사를 살펴보니 해 아래서 하시는 일을 사람이 능히 깨달을 수 없도다 사람이 아무리 애써 궁구할찌라도 능히 깨닫지 못하나니 비록 지혜자가 아노라 할찌라도 능히 깨닫지 못하리로다"
+      ],
+      "raw_text_hashes": [
+        "fb752caf11f3db94ac509ae6356b5382e58d71da11a390f4f23c1715fc4c7b9b"
+      ]
+    }
+  ]
+}

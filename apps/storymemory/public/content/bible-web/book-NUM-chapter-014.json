@@ -1,0 +1,1453 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:NUM:chapter:014",
+  "unit_ordinal": 131,
+  "unit_label": "NUM 14",
+  "book_code": "NUM",
+  "chapter_number": 14,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:NUM:14:1",
+      "sequence": 4110,
+      "chapter_label": "NUM 14",
+      "verse_label": "1",
+      "locator": {
+        "book": "NUM",
+        "chapter": 14,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 14,
+          "verse": 1
+        }
+      ],
+      "en": "All the congregation lifted up their voice, and cried; and the people wept that night.",
+      "ko": "온 회중이 소리를 높여 부르짖으며 밤새도록 백성이 곡하였더라",
+      "source_text_hash": "5919e7384ba961bc2d4077ce2a0cd33a5e79e8ffe5fba2ad41f0fe821fed12f0",
+      "translation_text_hash": "f590e3cec339b58206406cb40aa56c422bac3c42c15275e40d5f53694b96ef47",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "온 회중이 소리를 높여 부르짖으며 밤새도록 백성이 곡하였더라"
+      ],
+      "raw_text_hashes": [
+        "f590e3cec339b58206406cb40aa56c422bac3c42c15275e40d5f53694b96ef47"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:14:2",
+      "sequence": 4111,
+      "chapter_label": "NUM 14",
+      "verse_label": "2",
+      "locator": {
+        "book": "NUM",
+        "chapter": 14,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 14,
+          "verse": 2
+        }
+      ],
+      "en": "All the children of Israel murmured against Moses and against Aaron. The whole congregation said to them, “We wish that we had died in the land of Egypt, or that we had died in this wilderness!",
+      "ko": "이스라엘 자손이 다 모세와 아론을 원망하며 온 회중이 그들에게 이르되 우리가 애굽 땅에서 죽었거나 이 광야에서 죽었더면 좋았을 것을",
+      "source_text_hash": "a7c9fbba9087aa18e51914f689d14aa7262ce5035749fdfeecab248627ab2f4c",
+      "translation_text_hash": "573bb2523096edd7701451663c914ad2de71c0057ba57bd0f907e8eaa8de22dd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손이 다 모세와 아론을 원망하며 온 회중이 그들에게 이르되 우리가 애굽 땅에서 죽었거나 이 광야에서 죽었더면 좋았을 것을"
+      ],
+      "raw_text_hashes": [
+        "573bb2523096edd7701451663c914ad2de71c0057ba57bd0f907e8eaa8de22dd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:14:3",
+      "sequence": 4112,
+      "chapter_label": "NUM 14",
+      "verse_label": "3",
+      "locator": {
+        "book": "NUM",
+        "chapter": 14,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 14,
+          "verse": 3
+        }
+      ],
+      "en": "Why does the LORD bring us to this land, to fall by the sword? Our wives and our little ones will be captured or killed! Wouldn’t it be better for us to return into Egypt?”",
+      "ko": "어찌하여 여호와가 우리를 그 땅으로 인도하여 칼에 망하게 하려 하는고 우리 처자가 사로잡히리니 애굽으로 돌아가는 것이 낫지 아니하랴",
+      "source_text_hash": "13c69a071459c45446012f9914ce3d7824e93b831e304253ffa8941b90e86282",
+      "translation_text_hash": "73481edd303ac6c395d98faa445286624ed7c94352d55c159a2e8ee7a394bafd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어찌하여 여호와가 우리를 그 땅으로 인도하여 칼에 망하게 하려 하는고 우리 처자가 사로잡히리니 애굽으로 돌아가는 것이 낫지 아니하랴"
+      ],
+      "raw_text_hashes": [
+        "73481edd303ac6c395d98faa445286624ed7c94352d55c159a2e8ee7a394bafd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:14:4",
+      "sequence": 4113,
+      "chapter_label": "NUM 14",
+      "verse_label": "4",
+      "locator": {
+        "book": "NUM",
+        "chapter": 14,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 14,
+          "verse": 4
+        }
+      ],
+      "en": "They said to one another, “Let’s choose a leader, and let’s return into Egypt.”",
+      "ko": "이에 서로 말하되 우리가 한 장관을 세우고 애굽으로 돌아가자 하매",
+      "source_text_hash": "20212c6028eb25dc418912ed42abc9d56566b95dfe2269209f4452a0bbab68a3",
+      "translation_text_hash": "708f0af9def8054c8366cbafec39f3b910cb480a82a75d6f40e7aeb8bd5cc199",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 서로 말하되 우리가 한 장관을 세우고 애굽으로 돌아가자 하매"
+      ],
+      "raw_text_hashes": [
+        "708f0af9def8054c8366cbafec39f3b910cb480a82a75d6f40e7aeb8bd5cc199"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:14:5",
+      "sequence": 4114,
+      "chapter_label": "NUM 14",
+      "verse_label": "5",
+      "locator": {
+        "book": "NUM",
+        "chapter": 14,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 14,
+          "verse": 5
+        }
+      ],
+      "en": "Then Moses and Aaron fell on their faces before all the assembly of the congregation of the children of Israel.",
+      "ko": "모세와 아론이 이스라엘 자손의 온 회중 앞에서 엎드린지라",
+      "source_text_hash": "d3f5c6ae167f743a472b4bebf5674fee9b7e69ccb388e340c1385f98f2dd4e31",
+      "translation_text_hash": "2e3d7da7890d958114bb6ee2778361bcb0fb66e87dec830214efa69733e01fd9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세와 아론이 이스라엘 자손의 온 회중 앞에서 엎드린지라"
+      ],
+      "raw_text_hashes": [
+        "2e3d7da7890d958114bb6ee2778361bcb0fb66e87dec830214efa69733e01fd9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:14:6",
+      "sequence": 4115,
+      "chapter_label": "NUM 14",
+      "verse_label": "6",
+      "locator": {
+        "book": "NUM",
+        "chapter": 14,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 14,
+          "verse": 6
+        }
+      ],
+      "en": "Joshua the son of Nun and Caleb the son of Jephunneh, who were of those who spied out the land, tore their clothes.",
+      "ko": "그 땅을 탐지한 자 중 눈의 아들 여호수아와 여분네의 아들 갈렙이 그 옷을 찢고",
+      "source_text_hash": "7b62ee5c3a7b33b79a579b5f273ff95316852e950499d47ed40363b8a110d4ae",
+      "translation_text_hash": "f85246a4077c2f6eea1ce1205e00089e9360dd7221991d0321c9d928c8118fcc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 땅을 탐지한 자 중 눈의 아들 여호수아와 여분네의 아들 갈렙이 그 옷을 찢고"
+      ],
+      "raw_text_hashes": [
+        "f85246a4077c2f6eea1ce1205e00089e9360dd7221991d0321c9d928c8118fcc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:14:7",
+      "sequence": 4116,
+      "chapter_label": "NUM 14",
+      "verse_label": "7",
+      "locator": {
+        "book": "NUM",
+        "chapter": 14,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 14,
+          "verse": 7
+        }
+      ],
+      "en": "They spoke to all the congregation of the children of Israel, saying, “The land, which we passed through to spy it out, is an exceedingly good land.",
+      "ko": "이스라엘 자손의 온 회중에게 일러 가로되 우리가 두루 다니며 탐지한 땅은 심히 아름다운 땅이라",
+      "source_text_hash": "9e6c7a021d3ffee4ee829b8d77c1542d16278eeabb62d5b071f90dbb782a511b",
+      "translation_text_hash": "12bc71b3b26c19637ab995d69333534835441f514d7b7214431d7d638deb6a64",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손의 온 회중에게 일러 가로되 우리가 두루 다니며 탐지한 땅은 심히 아름다운 땅이라"
+      ],
+      "raw_text_hashes": [
+        "12bc71b3b26c19637ab995d69333534835441f514d7b7214431d7d638deb6a64"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:14:8",
+      "sequence": 4117,
+      "chapter_label": "NUM 14",
+      "verse_label": "8",
+      "locator": {
+        "book": "NUM",
+        "chapter": 14,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 14,
+          "verse": 8
+        }
+      ],
+      "en": "If the LORD delights in us, then he will bring us into this land, and give it to us: a land which flows with milk and honey.",
+      "ko": "여호와께서 우리를 기뻐하시면 우리를 그 땅으로 인도하여 들이시고 그 땅을 우리에게 주시리라 이는 과연 젖과 꿀이 흐르는 땅이니라",
+      "source_text_hash": "72ae3ce3c562c611b9c240caa3d07a6d9339fad1d02c12beab896833e0117bd7",
+      "translation_text_hash": "4aeedf60303d1a65d5b0f163a3c4b6d77c6d172a6360d9e9b2cac42da1db90c5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 우리를 기뻐하시면 우리를 그 땅으로 인도하여 들이시고 그 땅을 우리에게 주시리라 이는 과연 젖과 꿀이 흐르는 땅이니라"
+      ],
+      "raw_text_hashes": [
+        "4aeedf60303d1a65d5b0f163a3c4b6d77c6d172a6360d9e9b2cac42da1db90c5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:14:9",
+      "sequence": 4118,
+      "chapter_label": "NUM 14",
+      "verse_label": "9",
+      "locator": {
+        "book": "NUM",
+        "chapter": 14,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 14,
+          "verse": 9
+        }
+      ],
+      "en": "Only don’t rebel against the LORD, neither fear the people of the land; for they are bread for us. Their defense is removed from over them, and the LORD is with us. Don’t fear them.”",
+      "ko": "오직 여호와를 거역하지 말라 또 그 땅 백성을 두려워하지 말라 그들은 우리 밥이라 그들의 보호자는 그들에게서 떠났고 여호와는 우리와 함께 하시느니라 그들을 두려워 말라 하나",
+      "source_text_hash": "113ff97d6c6ed047db972a4f76024d189c73bc6ef94c89fd73dd3902c8bbee96",
+      "translation_text_hash": "91feccc5d58fed38e7728bdee39ed6d4014abaa7b69168901809cd753f0a401c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 여호와를 거역하지 말라 또 그 땅 백성을 두려워하지 말라 그들은 우리 밥이라 그들의 보호자는 그들에게서 떠났고 여호와는 우리와 함께 하시느니라 그들을 두려워 말라 하나"
+      ],
+      "raw_text_hashes": [
+        "91feccc5d58fed38e7728bdee39ed6d4014abaa7b69168901809cd753f0a401c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:14:10",
+      "sequence": 4119,
+      "chapter_label": "NUM 14",
+      "verse_label": "10",
+      "locator": {
+        "book": "NUM",
+        "chapter": 14,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 14,
+          "verse": 10
+        }
+      ],
+      "en": "But all the congregation threatened to stone them with stones. The LORD’s glory appeared in the Tent of Meeting to all the children of Israel.",
+      "ko": "온 회중이 그들을 돌로 치려하는 동시에 여호와의 영광이 회막에서 이스라엘 모든 자손에게 나타나시니라",
+      "source_text_hash": "bd6aa9e130c2e2f39afad954427346344d6391db5900683bb9b23c7d0cf9dce5",
+      "translation_text_hash": "0b0c9bd76fe47b0ad37dcdc3121cfa845c54c36d480bfe63b440261f1dcee9b7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "온 회중이 그들을 돌로 치려하는 동시에 여호와의 영광이 회막에서 이스라엘 모든 자손에게 나타나시니라"
+      ],
+      "raw_text_hashes": [
+        "0b0c9bd76fe47b0ad37dcdc3121cfa845c54c36d480bfe63b440261f1dcee9b7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:14:11",
+      "sequence": 4120,
+      "chapter_label": "NUM 14",
+      "verse_label": "11",
+      "locator": {
+        "book": "NUM",
+        "chapter": 14,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 14,
+          "verse": 11
+        }
+      ],
+      "en": "The LORD said to Moses, “How long will this people despise me? How long will they not believe in me, for all the signs which I have worked among them?",
+      "ko": "여호와께서 모세에게 이르시되 이 백성이 어느 때까지 나를 멸시하겠느냐 내가 그들 중에 모든 이적을 행한 것도 생각하지 아니하고 어느 때까지 나를 믿지 않겠느냐",
+      "source_text_hash": "caa20fb4c312c48d4a1731ec99ffdb9211159d1dd3d88053451c52bc6890a7f0",
+      "translation_text_hash": "758bdb50dedb4ca7480da873c0fb0f2a764cce5d9451db79ca60d919a81162da",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 이르시되 이 백성이 어느 때까지 나를 멸시하겠느냐 내가 그들 중에 모든 이적을 행한 것도 생각하지 아니하고 어느 때까지 나를 믿지 않겠느냐"
+      ],
+      "raw_text_hashes": [
+        "758bdb50dedb4ca7480da873c0fb0f2a764cce5d9451db79ca60d919a81162da"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:14:12",
+      "sequence": 4121,
+      "chapter_label": "NUM 14",
+      "verse_label": "12",
+      "locator": {
+        "book": "NUM",
+        "chapter": 14,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 14,
+          "verse": 12
+        }
+      ],
+      "en": "I will strike them with the pestilence, and disinherit them, and will make of you a nation greater and mightier than they.”",
+      "ko": "내가 전염병으로 그들을 쳐서 멸하고 너로 그들보다 크고 강한 나라를 이루게 하리라",
+      "source_text_hash": "26250d56ab6d34148316389f5f8f4e79c3117a8c7825973934bd062a9c0be461",
+      "translation_text_hash": "f7e061c63df2f0c2e40263c521fa0d57ae1039ac8a834fe3c0f6171240f60493",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 전염병으로 그들을 쳐서 멸하고 너로 그들보다 크고 강한 나라를 이루게 하리라"
+      ],
+      "raw_text_hashes": [
+        "f7e061c63df2f0c2e40263c521fa0d57ae1039ac8a834fe3c0f6171240f60493"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:14:13",
+      "sequence": 4122,
+      "chapter_label": "NUM 14",
+      "verse_label": "13",
+      "locator": {
+        "book": "NUM",
+        "chapter": 14,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 14,
+          "verse": 13
+        }
+      ],
+      "en": "Moses said to the LORD, “Then the Egyptians will hear it; for you brought up this people in your might from among them.",
+      "ko": "모세가 여호와께 여짜오되 애굽인 중에서 주의 능력으로 이 백성을 인도하여 내셨거늘 그리하시면 그들이 듣고",
+      "source_text_hash": "7235b309b24432a6785cf4c4458b84d1ee164f56d8e78ce8c0bf6979a8a1e499",
+      "translation_text_hash": "c98fdf272668a6bf0ee7af28ab4514be137bc6208b72ceb525744bfc50f217f5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 여호와께 여짜오되 애굽인 중에서 주의 능력으로 이 백성을 인도하여 내셨거늘 그리하시면 그들이 듣고"
+      ],
+      "raw_text_hashes": [
+        "c98fdf272668a6bf0ee7af28ab4514be137bc6208b72ceb525744bfc50f217f5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:14:14",
+      "sequence": 4123,
+      "chapter_label": "NUM 14",
+      "verse_label": "14",
+      "locator": {
+        "book": "NUM",
+        "chapter": 14,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 14,
+          "verse": 14
+        }
+      ],
+      "en": "They will tell it to the inhabitants of this land. They have heard that you LORD are among this people; for you LORD are seen face to face, and your cloud stands over them, and you go before them, in a pillar of cloud by day, and in a pillar of fire by night.",
+      "ko": "이 땅 거민에게 고하리이다 주 여호와께서 이 백성 중에 계심을 그들도 들었으니 곧 주 여호와께서 대면하여 보이시며 주의 구름이 그들 위에 섰으며 주께서 낮에는 구름기둥 가운데서, 밤에는 불기둥 가운데서 그들 앞에서 행하시는 것이니이다",
+      "source_text_hash": "fc641240ffc8424159e74929cd97859337f2ae909cdb321a9b58fef484d371bc",
+      "translation_text_hash": "74653497e872dab2219fb491ad7388288ccd9a4acfbdf5acc9fa36476b19dcf7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 땅 거민에게 고하리이다 주 여호와께서 이 백성 중에 계심을 그들도 들었으니 곧 주 여호와께서 대면하여 보이시며 주의 구름이 그들 위에 섰으며 주께서 낮에는 구름기둥 가운데서, 밤에는 불기둥 가운데서 그들 앞에서 행하시는 것이니이다"
+      ],
+      "raw_text_hashes": [
+        "74653497e872dab2219fb491ad7388288ccd9a4acfbdf5acc9fa36476b19dcf7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:14:15",
+      "sequence": 4124,
+      "chapter_label": "NUM 14",
+      "verse_label": "15",
+      "locator": {
+        "book": "NUM",
+        "chapter": 14,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 14,
+          "verse": 15
+        }
+      ],
+      "en": "Now if you killed this people as one man, then the nations which have heard the fame of you will speak, saying,",
+      "ko": "이제 주께서 이 백성을 한 사람 같이 죽이시면 주의 명성을 들은 열국이 말하여 이르기를",
+      "source_text_hash": "531c0aa04168d0b3375d5fc430922f9a30bb4495b990743c4976071797a5560b",
+      "translation_text_hash": "2815837bdac13c6a917e3216a14c64a9f56730389305687777a856f2aaaf21b3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제 주께서 이 백성을 한 사람 같이 죽이시면 주의 명성을 들은 열국이 말하여 이르기를"
+      ],
+      "raw_text_hashes": [
+        "2815837bdac13c6a917e3216a14c64a9f56730389305687777a856f2aaaf21b3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:14:16",
+      "sequence": 4125,
+      "chapter_label": "NUM 14",
+      "verse_label": "16",
+      "locator": {
+        "book": "NUM",
+        "chapter": 14,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 14,
+          "verse": 16
+        }
+      ],
+      "en": "‘Because the LORD was not able to bring this people into the land which he swore to them, therefore he has slain them in the wilderness.’",
+      "ko": "여호와가 이 백성에게 주기로 맹세한 땅에 인도할 능이 없는 고로 광야에서 죽였다 하리이다",
+      "source_text_hash": "fdeec01712afc78e49a5112b460093803c3c3fe3a14cc6a9f1d95ddda18b6745",
+      "translation_text_hash": "1e931adb3d3a8232bb2e6d3292b05dd9d9e8a257db6d2fcd5e7730628ad3e51b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와가 이 백성에게 주기로 맹세한 땅에 인도할 능이 없는 고로 광야에서 죽였다 하리이다"
+      ],
+      "raw_text_hashes": [
+        "1e931adb3d3a8232bb2e6d3292b05dd9d9e8a257db6d2fcd5e7730628ad3e51b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:14:17",
+      "sequence": 4126,
+      "chapter_label": "NUM 14",
+      "verse_label": "17",
+      "locator": {
+        "book": "NUM",
+        "chapter": 14,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 14,
+          "verse": 17
+        }
+      ],
+      "en": "Now please let the power of the Lord be great, according as you have spoken, saying,",
+      "ko": "이제 구하옵나니 이미 말씀하신대로 주의 큰 권능을 나타내옵소서 이르시기를",
+      "source_text_hash": "834f6ca64c032322809d8ffd700770f445f15201ebd7e779afedf8222db43375",
+      "translation_text_hash": "3eb0882a9a070a03f44a31a598ec26a8f0650a789c4cfefcb24c43263e47bc14",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제 구하옵나니 이미 말씀하신대로 주의 큰 권능을 나타내옵소서 이르시기를"
+      ],
+      "raw_text_hashes": [
+        "3eb0882a9a070a03f44a31a598ec26a8f0650a789c4cfefcb24c43263e47bc14"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:14:18",
+      "sequence": 4127,
+      "chapter_label": "NUM 14",
+      "verse_label": "18",
+      "locator": {
+        "book": "NUM",
+        "chapter": 14,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 14,
+          "verse": 18
+        }
+      ],
+      "en": "‘The LORD is slow to anger, and abundant in loving kindness, forgiving iniquity and disobedience; and he will by no means clear the guilty, visiting the iniquity of the fathers on the children, on the third and on the fourth generation.’",
+      "ko": "여호와는 노하기를 더디하고 인자가 많아 죄악과 과실을 사하나 형벌 받을 자는 결단코 사하지 아니하고 아비의 죄악을 자식에게 갚아 삼사대까지 이르게 하리라 하셨나이다",
+      "source_text_hash": "b04c6804882e219011efc661c7383375449a05f9576d32f5191e01d619afa8eb",
+      "translation_text_hash": "ff5d182c8d09e9ee6e835b7fb69f2778e6bf534f59d8a47b13bcef799d6eeb61",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와는 노하기를 더디하고 인자가 많아 죄악과 과실을 사하나 형벌 받을 자는 결단코 사하지 아니하고 아비의 죄악을 자식에게 갚아 삼사대까지 이르게 하리라 하셨나이다"
+      ],
+      "raw_text_hashes": [
+        "ff5d182c8d09e9ee6e835b7fb69f2778e6bf534f59d8a47b13bcef799d6eeb61"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:14:19",
+      "sequence": 4128,
+      "chapter_label": "NUM 14",
+      "verse_label": "19",
+      "locator": {
+        "book": "NUM",
+        "chapter": 14,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 14,
+          "verse": 19
+        }
+      ],
+      "en": "Please pardon the iniquity of this people according to the greatness of your loving kindness, and just as you have forgiven this people, from Egypt even until now.”",
+      "ko": "구하옵나니 주의 인자의 광대하심을 따라 이 백성의 죄악을 사하시되 애굽에서부터 지금까지 이 백성을 사하신 것 같이 사하옵소서",
+      "source_text_hash": "ac7453a5aee8bff70515401ae0b51a1bc346cbfd772ca66786d64cb6350ab070",
+      "translation_text_hash": "e99eea19b510363cba0ceb54f34c689584e9820cd607263c2555f6e0a00163b3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "구하옵나니 주의 인자의 광대하심을 따라 이 백성의 죄악을 사하시되 애굽에서부터 지금까지 이 백성을 사하신 것 같이 사하옵소서"
+      ],
+      "raw_text_hashes": [
+        "e99eea19b510363cba0ceb54f34c689584e9820cd607263c2555f6e0a00163b3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:14:20",
+      "sequence": 4129,
+      "chapter_label": "NUM 14",
+      "verse_label": "20",
+      "locator": {
+        "book": "NUM",
+        "chapter": 14,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 14,
+          "verse": 20
+        }
+      ],
+      "en": "The LORD said, “I have pardoned according to your word;",
+      "ko": "여호와께서 가라사대 내가 네 말대로 사하노라",
+      "source_text_hash": "c21622a53c108655d5fba24a54ab1f7f082732c27d9214f1363f20fc860206d0",
+      "translation_text_hash": "9b9dbdb6108418c9afe752fc09cd5b113f5592d75b03fa3061c4585605c6af92",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 가라사대 내가 네 말대로 사하노라"
+      ],
+      "raw_text_hashes": [
+        "9b9dbdb6108418c9afe752fc09cd5b113f5592d75b03fa3061c4585605c6af92"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:14:21",
+      "sequence": 4130,
+      "chapter_label": "NUM 14",
+      "verse_label": "21",
+      "locator": {
+        "book": "NUM",
+        "chapter": 14,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 14,
+          "verse": 21
+        }
+      ],
+      "en": "but in very deed—as I live, and as all the earth shall be filled with the LORD’s glory—",
+      "ko": "그러나 진실로 나의 사는 것과 여호와의 영광이 온 세계에 충만할 것으로 맹세하노니",
+      "source_text_hash": "a2260725aa8cc642dad49bc30c669fb85da68a78f22c40c0ade3c389556128a5",
+      "translation_text_hash": "2882cadc97e1ce043d32fa25c11e02fb75067ae9c156006fb55a081b9b07398f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 진실로 나의 사는 것과 여호와의 영광이 온 세계에 충만할 것으로 맹세하노니"
+      ],
+      "raw_text_hashes": [
+        "2882cadc97e1ce043d32fa25c11e02fb75067ae9c156006fb55a081b9b07398f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:14:22",
+      "sequence": 4131,
+      "chapter_label": "NUM 14",
+      "verse_label": "22",
+      "locator": {
+        "book": "NUM",
+        "chapter": 14,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 14,
+          "verse": 22
+        }
+      ],
+      "en": "because all those men who have seen my glory and my signs, which I worked in Egypt and in the wilderness, yet have tempted me these ten times, and have not listened to my voice;",
+      "ko": "나의 영광과 애굽과 광야에서 행한 나의 이적을 보고도 이같이 열번이나 나를 시험하고 내 목소리를 청종치 아니한 그 사람들은",
+      "source_text_hash": "ac81672908814517000dac8669d72b7e4c6a44f73760af96ba082ac52057e190",
+      "translation_text_hash": "12978b3d664c4d83bd19209967188749147657a96e8d3b68cf329f1c9f6a4466",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 영광과 애굽과 광야에서 행한 나의 이적을 보고도 이같이 열번이나 나를 시험하고 내 목소리를 청종치 아니한 그 사람들은"
+      ],
+      "raw_text_hashes": [
+        "12978b3d664c4d83bd19209967188749147657a96e8d3b68cf329f1c9f6a4466"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:14:23",
+      "sequence": 4132,
+      "chapter_label": "NUM 14",
+      "verse_label": "23",
+      "locator": {
+        "book": "NUM",
+        "chapter": 14,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 14,
+          "verse": 23
+        }
+      ],
+      "en": "surely they shall not see the land which I swore to their fathers, neither shall any of those who despised me see it.",
+      "ko": "내가 그 조상들에게 맹세한 땅을 결단코 보지 못할 것이요 또 나를 멸시하는 사람은 하나라도 그것을 보지 못하리라",
+      "source_text_hash": "bc95612e200970e0cc303f489cb5595b40262d5cf20d9988815d87b874da9fa4",
+      "translation_text_hash": "de72308f4565972d98c2d8627d66cc53f8c31a6f04d817c6f04cc2858eea6a99",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 그 조상들에게 맹세한 땅을 결단코 보지 못할 것이요 또 나를 멸시하는 사람은 하나라도 그것을 보지 못하리라"
+      ],
+      "raw_text_hashes": [
+        "de72308f4565972d98c2d8627d66cc53f8c31a6f04d817c6f04cc2858eea6a99"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:14:24",
+      "sequence": 4133,
+      "chapter_label": "NUM 14",
+      "verse_label": "24",
+      "locator": {
+        "book": "NUM",
+        "chapter": 14,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 14,
+          "verse": 24
+        }
+      ],
+      "en": "But my servant Caleb, because he had another spirit with him, and has followed me fully, him I will bring into the land into which he went. His offspring shall possess it.",
+      "ko": "오직 내 종 갈렙은 그 마음이 그들과 달라서 나를 온전히 좇았은즉 그의 갔던 땅으로 내가 그를 인도하여 들이리니 그 자손이 그 땅을 차지하리라",
+      "source_text_hash": "fb59781da3f88692fab5f02f0e852ff4c279277828a7cc69a452b97a372647f7",
+      "translation_text_hash": "777441ae9ac3a6e15c898537cac37535d31f0282d7c06e3c34d0f981b940ef9a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 내 종 갈렙은 그 마음이 그들과 달라서 나를 온전히 좇았은즉 그의 갔던 땅으로 내가 그를 인도하여 들이리니 그 자손이 그 땅을 차지하리라"
+      ],
+      "raw_text_hashes": [
+        "777441ae9ac3a6e15c898537cac37535d31f0282d7c06e3c34d0f981b940ef9a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:14:25",
+      "sequence": 4134,
+      "chapter_label": "NUM 14",
+      "verse_label": "25",
+      "locator": {
+        "book": "NUM",
+        "chapter": 14,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 14,
+          "verse": 25
+        }
+      ],
+      "en": "Since the Amalekite and the Canaanite dwell in the valley, tomorrow turn and go into the wilderness by the way to the Red Sea.”",
+      "ko": "아말렉인과 가나안인이 골짜기에 거하나니 너희는 내일 돌이켜 홍해 길로 하여 광야로 들어갈찌니라",
+      "source_text_hash": "b6c2f88bd94928a3c12beb83f5ed3c90425ae729496b0fc248c79eebfd6ad4b0",
+      "translation_text_hash": "74e71da933a5683a0ed93ec52a3db51df90faca5e97d2ba473f34f54ccd7789d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아말렉인과 가나안인이 골짜기에 거하나니 너희는 내일 돌이켜 홍해 길로 하여 광야로 들어갈찌니라"
+      ],
+      "raw_text_hashes": [
+        "74e71da933a5683a0ed93ec52a3db51df90faca5e97d2ba473f34f54ccd7789d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:14:26",
+      "sequence": 4135,
+      "chapter_label": "NUM 14",
+      "verse_label": "26",
+      "locator": {
+        "book": "NUM",
+        "chapter": 14,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 14,
+          "verse": 26
+        }
+      ],
+      "en": "The LORD spoke to Moses and to Aaron, saying,",
+      "ko": "여호와께서 모세와 아론에게 일러 가라사대",
+      "source_text_hash": "e6c7cd4c60d1b58d8caa7e02e4352f1d925cf188a6f005f934b711230470272a",
+      "translation_text_hash": "07f1b732cd444edc8e86264b81332a2c28d29d9cfd1390eddcbf51baf33b3e50",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세와 아론에게 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "07f1b732cd444edc8e86264b81332a2c28d29d9cfd1390eddcbf51baf33b3e50"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:14:27",
+      "sequence": 4136,
+      "chapter_label": "NUM 14",
+      "verse_label": "27",
+      "locator": {
+        "book": "NUM",
+        "chapter": 14,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 14,
+          "verse": 27
+        }
+      ],
+      "en": "“How long shall I bear with this evil congregation that complain against me? I have heard the complaints of the children of Israel, which they complain against me.",
+      "ko": "나를 원망하는 이 악한 회중을 내가 어느 때까지 참으랴 이스라엘 자손이 나를 향하여 원망하는바 그 원망하는 말을 내가 들었노라",
+      "source_text_hash": "34b124db617d2ccd1343cc64b7837efad60fb8fa9b2897bbf18d8c43f1daf8aa",
+      "translation_text_hash": "fce24fba0bad34212d47c92758191efef654e561b95d2d5b9604cc5246cd2e57",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나를 원망하는 이 악한 회중을 내가 어느 때까지 참으랴 이스라엘 자손이 나를 향하여 원망하는바 그 원망하는 말을 내가 들었노라"
+      ],
+      "raw_text_hashes": [
+        "fce24fba0bad34212d47c92758191efef654e561b95d2d5b9604cc5246cd2e57"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:14:28",
+      "sequence": 4137,
+      "chapter_label": "NUM 14",
+      "verse_label": "28",
+      "locator": {
+        "book": "NUM",
+        "chapter": 14,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 14,
+          "verse": 28
+        }
+      ],
+      "en": "Tell them, ‘As I live, says the LORD, surely as you have spoken in my ears, so I will do to you.",
+      "ko": "그들에게 이르기를 여호와의 말씀에 나의 삶을 가리켜 맹세하노라 너희 말이 내 귀에 들린대로 내가 너희에게 행하리니",
+      "source_text_hash": "72c0c2564c6938b549623cd300bf8f4e45594e6de1fc86d567155243541a208a",
+      "translation_text_hash": "983c3b869395c1deab76feb50d9e3618680a616803ed433e80a6ac876e5d1bf8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들에게 이르기를 여호와의 말씀에 나의 삶을 가리켜 맹세하노라 너희 말이 내 귀에 들린대로 내가 너희에게 행하리니"
+      ],
+      "raw_text_hashes": [
+        "983c3b869395c1deab76feb50d9e3618680a616803ed433e80a6ac876e5d1bf8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:14:29",
+      "sequence": 4138,
+      "chapter_label": "NUM 14",
+      "verse_label": "29",
+      "locator": {
+        "book": "NUM",
+        "chapter": 14,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 14,
+          "verse": 29
+        }
+      ],
+      "en": "Your dead bodies shall fall in this wilderness; and all who were counted of you, according to your whole number, from twenty years old and upward, who have complained against me,",
+      "ko": "너희 시체가 이 광야에 엎드러질 것이라 너희 이십세 이상으로 계수함을 받은 자 곧 나를 원망한 자의 전부가",
+      "source_text_hash": "388cb305631ccce367334dad687d091b9d5b8b8b0d25cd53defa6f76199dfe0a",
+      "translation_text_hash": "0714e8efc318d70e7bbb9d19a96d376e460fb05b6ef33e69eaffa9824e67ba8e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 시체가 이 광야에 엎드러질 것이라 너희 이십세 이상으로 계수함을 받은 자 곧 나를 원망한 자의 전부가"
+      ],
+      "raw_text_hashes": [
+        "0714e8efc318d70e7bbb9d19a96d376e460fb05b6ef33e69eaffa9824e67ba8e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:14:30",
+      "sequence": 4139,
+      "chapter_label": "NUM 14",
+      "verse_label": "30",
+      "locator": {
+        "book": "NUM",
+        "chapter": 14,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 14,
+          "verse": 30
+        }
+      ],
+      "en": "surely you shall not come into the land concerning which I swore that I would make you dwell therein, except Caleb the son of Jephunneh, and Joshua the son of Nun.",
+      "ko": "여분네의 아들 갈렙과 눈의 아들 여호수아 외에는 내가 맹세하여 너희로 거하게 하리라 한 땅에 결단코 들어가지 못하리라",
+      "source_text_hash": "6f21877c6ec368c4bd5f8696bf7e575cc4f240c7d17a474936e22c88e4b2ed96",
+      "translation_text_hash": "60c659c925054d8e74700d9c12fd8c7be2a4daf36f746b9cee07e393f66354e7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여분네의 아들 갈렙과 눈의 아들 여호수아 외에는 내가 맹세하여 너희로 거하게 하리라 한 땅에 결단코 들어가지 못하리라"
+      ],
+      "raw_text_hashes": [
+        "60c659c925054d8e74700d9c12fd8c7be2a4daf36f746b9cee07e393f66354e7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:14:31",
+      "sequence": 4140,
+      "chapter_label": "NUM 14",
+      "verse_label": "31",
+      "locator": {
+        "book": "NUM",
+        "chapter": 14,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 14,
+          "verse": 31
+        }
+      ],
+      "en": "But I will bring in your little ones that you said should be captured or killed, and they shall know the land which you have rejected.",
+      "ko": "너희가 사로잡히겠다고 말하던 너희의 유아들은 내가 인도하여 들이리니 그들은 너희가 싫어하던 땅을 보려니와",
+      "source_text_hash": "a767c738867e173ba682f8d0671b6308b52d95a882701efea7cd8ca058c79768",
+      "translation_text_hash": "9035c580a76132108c66e387c2a18b50e54d1b5ee4072d33c64a6026b9765d26",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 사로잡히겠다고 말하던 너희의 유아들은 내가 인도하여 들이리니 그들은 너희가 싫어하던 땅을 보려니와"
+      ],
+      "raw_text_hashes": [
+        "9035c580a76132108c66e387c2a18b50e54d1b5ee4072d33c64a6026b9765d26"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:14:32",
+      "sequence": 4141,
+      "chapter_label": "NUM 14",
+      "verse_label": "32",
+      "locator": {
+        "book": "NUM",
+        "chapter": 14,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 14,
+          "verse": 32
+        }
+      ],
+      "en": "But as for you, your dead bodies shall fall in this wilderness.",
+      "ko": "너희 시체는 이 광야에 엎드러질 것이요",
+      "source_text_hash": "6ca62bd25834e4bf59c8855e33ba970452452b2cacd5eea27f9c6a4c7bf8ec1d",
+      "translation_text_hash": "9502e054f56b516e8aee3efca1523474f8cc076ea6c639467cb933d95235b347",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 시체는 이 광야에 엎드러질 것이요"
+      ],
+      "raw_text_hashes": [
+        "9502e054f56b516e8aee3efca1523474f8cc076ea6c639467cb933d95235b347"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:14:33",
+      "sequence": 4142,
+      "chapter_label": "NUM 14",
+      "verse_label": "33",
+      "locator": {
+        "book": "NUM",
+        "chapter": 14,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 14,
+          "verse": 33
+        }
+      ],
+      "en": "Your children shall be wanderers in the wilderness forty years, and shall bear your prostitution, until your dead bodies are consumed in the wilderness.",
+      "ko": "너희 자녀들은 너희의 패역한 죄를 지고 너희의 시체가 광야에서 소멸되기까지 사십년을 광야에서 유리하는 자가 되리라",
+      "source_text_hash": "0c9852571db96f528426602ca20e6869e2accffb1913c0181713bdc362f9c4e1",
+      "translation_text_hash": "dee386f5ef20fd1a4f7ea412f9c1d3398261a33960e1d1b2e481bd7ceb069b21",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 자녀들은 너희의 패역한 죄를 지고 너희의 시체가 광야에서 소멸되기까지 사십년을 광야에서 유리하는 자가 되리라"
+      ],
+      "raw_text_hashes": [
+        "dee386f5ef20fd1a4f7ea412f9c1d3398261a33960e1d1b2e481bd7ceb069b21"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:14:34",
+      "sequence": 4143,
+      "chapter_label": "NUM 14",
+      "verse_label": "34",
+      "locator": {
+        "book": "NUM",
+        "chapter": 14,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 14,
+          "verse": 34
+        }
+      ],
+      "en": "After the number of the days in which you spied out the land, even forty days, for every day a year, you will bear your iniquities, even forty years, and you will know my alienation.’",
+      "ko": "너희가 그 땅을 탐지한 날수 사십일의 하루를 일년으로 환산하여 그 사십년간 너희가 너희의 죄악을 질찌니 너희가 나의 싫어 버림을 알리라 하셨다 하라",
+      "source_text_hash": "e7b8a7c3c976cec508b5b9959360ceaea1114650cd0c9a33f9ccf895fbcd93f0",
+      "translation_text_hash": "daee3374399dad07a05aabfabca7eee7b320a3b01dd7e9dc15c6b62f9750834e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 그 땅을 탐지한 날수 사십일의 하루를 일년으로 환산하여 그 사십년간 너희가 너희의 죄악을 질찌니 너희가 나의 싫어 버림을 알리라 하셨다 하라"
+      ],
+      "raw_text_hashes": [
+        "daee3374399dad07a05aabfabca7eee7b320a3b01dd7e9dc15c6b62f9750834e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:14:35",
+      "sequence": 4144,
+      "chapter_label": "NUM 14",
+      "verse_label": "35",
+      "locator": {
+        "book": "NUM",
+        "chapter": 14,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 14,
+          "verse": 35
+        }
+      ],
+      "en": "I, the LORD, have spoken. I will surely do this to all this evil congregation who are gathered together against me. In this wilderness they shall be consumed, and there they shall die.”",
+      "ko": "나 여호와가 말하였거니와 모여 나를 거역하는 이 악한 온 회중에게 내가 단정코 이같이 행하리니 그들이 이 광야에서 소멸되어 거기서 죽으리라",
+      "source_text_hash": "7daaba24c7682d509b59bf19ac237151342d4319394a00da8b4952678d58d26a",
+      "translation_text_hash": "f9ea12e783f2222c7447f17b2539fc3a37c35a4ec7965df1a251e891ea97c646",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와가 말하였거니와 모여 나를 거역하는 이 악한 온 회중에게 내가 단정코 이같이 행하리니 그들이 이 광야에서 소멸되어 거기서 죽으리라"
+      ],
+      "raw_text_hashes": [
+        "f9ea12e783f2222c7447f17b2539fc3a37c35a4ec7965df1a251e891ea97c646"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:14:36",
+      "sequence": 4145,
+      "chapter_label": "NUM 14",
+      "verse_label": "36",
+      "locator": {
+        "book": "NUM",
+        "chapter": 14,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 14,
+          "verse": 36
+        }
+      ],
+      "en": "The men whom Moses sent to spy out the land, who returned and made all the congregation to murmur against him by bringing up an evil report against the land,",
+      "ko": "모세의 보냄을 받고 땅을 탐지하고 돌아와서 그 땅을 악평하여 온 회중으로 모세를 원망케 한 사람",
+      "source_text_hash": "48acc834be4a040a023b428260d81a977c6d4c974468f61f5a7260e3823c9281",
+      "translation_text_hash": "c37ad9e76451a6ec6406a1efb9bc95020298222f7f95f573005852bf7372cef8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세의 보냄을 받고 땅을 탐지하고 돌아와서 그 땅을 악평하여 온 회중으로 모세를 원망케 한 사람"
+      ],
+      "raw_text_hashes": [
+        "c37ad9e76451a6ec6406a1efb9bc95020298222f7f95f573005852bf7372cef8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:14:37",
+      "sequence": 4146,
+      "chapter_label": "NUM 14",
+      "verse_label": "37",
+      "locator": {
+        "book": "NUM",
+        "chapter": 14,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 14,
+          "verse": 37
+        }
+      ],
+      "en": "even those men who brought up an evil report of the land, died by the plague before the LORD.",
+      "ko": "곧 그 땅에 대하여 악평한 자들은 여호와 앞에서 재앙으로 죽었고",
+      "source_text_hash": "22557876a107c4141d6cffce9fdc38e87e476474d6c261b6475de2540d5321d6",
+      "translation_text_hash": "b680c25b1d5c4f1c069856c2fe772c0de843d16cd9228df69d4740f8d42a461a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 그 땅에 대하여 악평한 자들은 여호와 앞에서 재앙으로 죽었고"
+      ],
+      "raw_text_hashes": [
+        "b680c25b1d5c4f1c069856c2fe772c0de843d16cd9228df69d4740f8d42a461a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:14:38",
+      "sequence": 4147,
+      "chapter_label": "NUM 14",
+      "verse_label": "38",
+      "locator": {
+        "book": "NUM",
+        "chapter": 14,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 14,
+          "verse": 38
+        }
+      ],
+      "en": "But Joshua the son of Nun and Caleb the son of Jephunneh remained alive of those men who went to spy out the land.",
+      "ko": "그 땅을 탐지하러 갔던 사람들 중에 오직 눈의 아들 여호수아와 여분네의 아들 갈렙은 생존하니라",
+      "source_text_hash": "1e8d47fad95bc7b269a9c180aacf4ff23857b180d4a57bdf5b2ab9f28e39f172",
+      "translation_text_hash": "8b9df813fe8a0d90c5479e6de6f2d6455e485222a5332be2190486f451f6bcc6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 땅을 탐지하러 갔던 사람들 중에 오직 눈의 아들 여호수아와 여분네의 아들 갈렙은 생존하니라"
+      ],
+      "raw_text_hashes": [
+        "8b9df813fe8a0d90c5479e6de6f2d6455e485222a5332be2190486f451f6bcc6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:14:39",
+      "sequence": 4148,
+      "chapter_label": "NUM 14",
+      "verse_label": "39",
+      "locator": {
+        "book": "NUM",
+        "chapter": 14,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 14,
+          "verse": 39
+        }
+      ],
+      "en": "Moses told these words to all the children of Israel, and the people mourned greatly.",
+      "ko": "모세가 이 말로 이스라엘 모든 자손에게 고하매 백성이 크게 슬퍼하여",
+      "source_text_hash": "3f9a4e09872eeb6f69d77770a0dcffee0108cb725bf423908a6bbbefd5011118",
+      "translation_text_hash": "a068bc19b4570b48aae7509cb69d16e74c300ede265083518639e0b79e94f763",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 이 말로 이스라엘 모든 자손에게 고하매 백성이 크게 슬퍼하여"
+      ],
+      "raw_text_hashes": [
+        "a068bc19b4570b48aae7509cb69d16e74c300ede265083518639e0b79e94f763"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:14:40",
+      "sequence": 4149,
+      "chapter_label": "NUM 14",
+      "verse_label": "40",
+      "locator": {
+        "book": "NUM",
+        "chapter": 14,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 14,
+          "verse": 40
+        }
+      ],
+      "en": "They rose up early in the morning and went up to the top of the mountain, saying, “Behold, we are here, and will go up to the place which the LORD has promised; for we have sinned.”",
+      "ko": "아침에 일찌기 일어나 산꼭대기로 올라가며 가로되 보소서 우리가 여기 있나이다 우리가 여호와의 허락하신 곳으로 올라 가리니 우리가 범죄하였음이니이다",
+      "source_text_hash": "ec0bb4244396da3034466e0471e1267cc6790c9c3fa9c1fae75d499b14379a4c",
+      "translation_text_hash": "79e3b9f6a9c2b608087a8db1d2b16e596357652a17df1a209ce12d403b96614c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아침에 일찌기 일어나 산꼭대기로 올라가며 가로되 보소서 우리가 여기 있나이다 우리가 여호와의 허락하신 곳으로 올라 가리니 우리가 범죄하였음이니이다"
+      ],
+      "raw_text_hashes": [
+        "79e3b9f6a9c2b608087a8db1d2b16e596357652a17df1a209ce12d403b96614c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:14:41",
+      "sequence": 4150,
+      "chapter_label": "NUM 14",
+      "verse_label": "41",
+      "locator": {
+        "book": "NUM",
+        "chapter": 14,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 14,
+          "verse": 41
+        }
+      ],
+      "en": "Moses said, “Why now do you disobey the commandment of the LORD, since it shall not prosper?",
+      "ko": "모세가 가로되 너희가 어찌하여 이제 여호와의 명령을 범하느냐 이 일이 형통치 못하리라",
+      "source_text_hash": "c4faa3c5f9291752eac6d163abbe934251b88b0003479439b869be87e25c8664",
+      "translation_text_hash": "3b95c9173abac953f5b8591e7431946a8c230cab889f653ab2618e17c06f7d8c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 가로되 너희가 어찌하여 이제 여호와의 명령을 범하느냐 이 일이 형통치 못하리라"
+      ],
+      "raw_text_hashes": [
+        "3b95c9173abac953f5b8591e7431946a8c230cab889f653ab2618e17c06f7d8c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:14:42",
+      "sequence": 4151,
+      "chapter_label": "NUM 14",
+      "verse_label": "42",
+      "locator": {
+        "book": "NUM",
+        "chapter": 14,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 14,
+          "verse": 42
+        }
+      ],
+      "en": "Don’t go up, for the LORD isn’t among you; that way you won’t be struck down before your enemies.",
+      "ko": "여호와께서 너희 중에 계시지 아니하니 올라가지 말라 너희 대적 앞에서 패할까 하노라",
+      "source_text_hash": "473220ee416e72134b3f3ca454b29a3ed977ab906fa71e26e95d890ed7fcfccc",
+      "translation_text_hash": "52f906edc1327d3f8d2f365b7a4f8054700ff1d8179c534b04e37cb64c2d477e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 너희 중에 계시지 아니하니 올라가지 말라 너희 대적 앞에서 패할까 하노라"
+      ],
+      "raw_text_hashes": [
+        "52f906edc1327d3f8d2f365b7a4f8054700ff1d8179c534b04e37cb64c2d477e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:14:43",
+      "sequence": 4152,
+      "chapter_label": "NUM 14",
+      "verse_label": "43",
+      "locator": {
+        "book": "NUM",
+        "chapter": 14,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 14,
+          "verse": 43
+        }
+      ],
+      "en": "For there the Amalekite and the Canaanite are before you, and you will fall by the sword because you turned back from following the LORD; therefore the LORD will not be with you.”",
+      "ko": "아말렉인과 가나안인이 너희 앞에 있으니 너희가 그 칼에 망하리라 너희가 여호와를 배반하였으니 여호와께서 너희와 함께하지 아니하시리라 하나",
+      "source_text_hash": "3a3b7db3991802c22f71f58d4d1511e5c3384f0256c9100af7eff102cc9455ea",
+      "translation_text_hash": "4e7410b990c94dfca8d080f52c449f67e4b6d016dd7200a295c815cfaac06d88",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아말렉인과 가나안인이 너희 앞에 있으니 너희가 그 칼에 망하리라 너희가 여호와를 배반하였으니 여호와께서 너희와 함께하지 아니하시리라 하나"
+      ],
+      "raw_text_hashes": [
+        "4e7410b990c94dfca8d080f52c449f67e4b6d016dd7200a295c815cfaac06d88"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:14:44",
+      "sequence": 4153,
+      "chapter_label": "NUM 14",
+      "verse_label": "44",
+      "locator": {
+        "book": "NUM",
+        "chapter": 14,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 14,
+          "verse": 44
+        }
+      ],
+      "en": "But they presumed to go up to the top of the mountain. Nevertheless, the ark of the LORD’s covenant and Moses didn’t depart out of the camp.",
+      "ko": "그들이 그래도 산꼭대기로 올라갔고 여호와의 언약궤와 모세는 진을 떠나지 아니하였더라",
+      "source_text_hash": "aaa6d9f5e177c4e151f261ac523f9113044c6908328ac15ca0d0c8c5802ab2c3",
+      "translation_text_hash": "7ddfee54be1f59ed04786c4174946aaf3c5647dd3cb10443a67de7f52cc82ae1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 그래도 산꼭대기로 올라갔고 여호와의 언약궤와 모세는 진을 떠나지 아니하였더라"
+      ],
+      "raw_text_hashes": [
+        "7ddfee54be1f59ed04786c4174946aaf3c5647dd3cb10443a67de7f52cc82ae1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:14:45",
+      "sequence": 4154,
+      "chapter_label": "NUM 14",
+      "verse_label": "45",
+      "locator": {
+        "book": "NUM",
+        "chapter": 14,
+        "verse": 45
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 14,
+          "verse": 45
+        }
+      ],
+      "en": "Then the Amalekites came down, and the Canaanites who lived in that mountain, and struck them and beat them down even to Hormah.",
+      "ko": "아말렉인과 산지에 거하는 가나안인이 내려와 쳐서 파하고 호르마까지 이르렀더라",
+      "source_text_hash": "275f6ccd41e9f0c50528a5dd01a73aa26644af1659a6d067deaa8b3274874a30",
+      "translation_text_hash": "43cc16c6feea364c6b2b3d7e6ea9c8e31ce646de3477452fc0e2e826946f8573",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아말렉인과 산지에 거하는 가나안인이 내려와 쳐서 파하고 호르마까지 이르렀더라"
+      ],
+      "raw_text_hashes": [
+        "43cc16c6feea364c6b2b3d7e6ea9c8e31ce646de3477452fc0e2e826946f8573"
+      ]
+    }
+  ]
+}

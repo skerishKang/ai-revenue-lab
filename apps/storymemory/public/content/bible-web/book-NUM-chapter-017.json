@@ -1,0 +1,429 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:NUM:chapter:017",
+  "unit_ordinal": 134,
+  "unit_label": "NUM 17",
+  "book_code": "NUM",
+  "chapter_number": 17,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:NUM:17:1",
+      "sequence": 4246,
+      "chapter_label": "NUM 17",
+      "verse_label": "1",
+      "locator": {
+        "book": "NUM",
+        "chapter": 17,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 17,
+          "verse": 1
+        }
+      ],
+      "en": "The LORD spoke to Moses, saying,",
+      "ko": "여호와께서 모세에게 일러 가라사대",
+      "source_text_hash": "28219e5da0d26514843495c6edb280f326aa0ccffb0d2bb642d0e1b0f4478ca1",
+      "translation_text_hash": "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:17:2",
+      "sequence": 4247,
+      "chapter_label": "NUM 17",
+      "verse_label": "2",
+      "locator": {
+        "book": "NUM",
+        "chapter": 17,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 17,
+          "verse": 2
+        }
+      ],
+      "en": "“Speak to the children of Israel, and take rods from them, one for each fathers’ house, of all their princes according to their fathers’ houses, twelve rods. Write each man’s name on his rod.",
+      "ko": "너는 이스라엘 자손에게 고하여 그들 중에서 각 종족을 따라 지팡이 하나씩 취하되 곧 그들의 종족대로 그 모든 족장에게서 지팡이 열 둘을 취하고 그 사람들의 이름을 각각 그 지팡이에 쓰되",
+      "source_text_hash": "ef740065e780151ff812749e1b47f694cd4771766a463d61317e3ad611730d7f",
+      "translation_text_hash": "a995300935c6899934cc8738a253872eeca6a3feb26b05501b2ed161a0dfd783",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 이스라엘 자손에게 고하여 그들 중에서 각 종족을 따라 지팡이 하나씩 취하되 곧 그들의 종족대로 그 모든 족장에게서 지팡이 열 둘을 취하고 그 사람들의 이름을 각각 그 지팡이에 쓰되"
+      ],
+      "raw_text_hashes": [
+        "a995300935c6899934cc8738a253872eeca6a3feb26b05501b2ed161a0dfd783"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:17:3",
+      "sequence": 4248,
+      "chapter_label": "NUM 17",
+      "verse_label": "3",
+      "locator": {
+        "book": "NUM",
+        "chapter": 17,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 17,
+          "verse": 3
+        }
+      ],
+      "en": "You shall write Aaron’s name on Levi’s rod. There shall be one rod for each head of their fathers’ houses.",
+      "ko": "레위의 지팡이에는 아론의 이름을 쓰라 이는 그들의 종족의 각 두령이 지팡이 하나씩 있어야 할 것임이니라",
+      "source_text_hash": "e3d077e539bdeb26e84c4c39774ff0c56f613fc7e3ef9753973b432bacd9b475",
+      "translation_text_hash": "15560244cd534e8e52206a3fc4bfb643e540438a633f7759dd0b924a5ee80c61",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "레위의 지팡이에는 아론의 이름을 쓰라 이는 그들의 종족의 각 두령이 지팡이 하나씩 있어야 할 것임이니라"
+      ],
+      "raw_text_hashes": [
+        "15560244cd534e8e52206a3fc4bfb643e540438a633f7759dd0b924a5ee80c61"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:17:4",
+      "sequence": 4249,
+      "chapter_label": "NUM 17",
+      "verse_label": "4",
+      "locator": {
+        "book": "NUM",
+        "chapter": 17,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 17,
+          "verse": 4
+        }
+      ],
+      "en": "You shall lay them up in the Tent of Meeting before the covenant, where I meet with you.",
+      "ko": "그 지팡이를 회막 안에서 내가 너희와 만나는 곳인 증거궤 앞에 두라",
+      "source_text_hash": "d998684aeda534c236488dc1b521b8cdbb9fe30641043782489740af8e77f507",
+      "translation_text_hash": "6ae8a2844b55016eb1bdf9abe3c4e1e6c42ce0308219e505b22525dda7a449cd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 지팡이를 회막 안에서 내가 너희와 만나는 곳인 증거궤 앞에 두라"
+      ],
+      "raw_text_hashes": [
+        "6ae8a2844b55016eb1bdf9abe3c4e1e6c42ce0308219e505b22525dda7a449cd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:17:5",
+      "sequence": 4250,
+      "chapter_label": "NUM 17",
+      "verse_label": "5",
+      "locator": {
+        "book": "NUM",
+        "chapter": 17,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 17,
+          "verse": 5
+        }
+      ],
+      "en": "It shall happen that the rod of the man whom I shall choose shall bud. I will make the murmurings of the children of Israel, which they murmur against you, cease from me.”",
+      "ko": "내가 택한 자의 지팡이에는 싹이 나리니 이것으로 이스라엘 자손이 너희를 대하여 원망하는 말을 내 앞에서 그치게 하리라",
+      "source_text_hash": "3087abda1f7ba0d20a0451d44129af7285350dde545add8077f60ffd70f9a300",
+      "translation_text_hash": "80a17b7c9b087f59d38d43894e5755779812f530c501856987ff2ff62c6e2129",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 택한 자의 지팡이에는 싹이 나리니 이것으로 이스라엘 자손이 너희를 대하여 원망하는 말을 내 앞에서 그치게 하리라"
+      ],
+      "raw_text_hashes": [
+        "80a17b7c9b087f59d38d43894e5755779812f530c501856987ff2ff62c6e2129"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:17:6",
+      "sequence": 4251,
+      "chapter_label": "NUM 17",
+      "verse_label": "6",
+      "locator": {
+        "book": "NUM",
+        "chapter": 17,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 17,
+          "verse": 6
+        }
+      ],
+      "en": "Moses spoke to the children of Israel; and all their princes gave him rods, for each prince one, according to their fathers’ houses, a total of twelve rods. Aaron’s rod was among their rods.",
+      "ko": "모세가 이스라엘 자손에게 고하매 그 족장들이 각기 종족대로 지팡이 하나씩 그에게 주었으니 그 지팡이 합이 열 둘이라 그 중에 아론의 지팡이가 있었더라",
+      "source_text_hash": "e15fbdade743ef998e01c6f0d853e0c21244e03c4dec4643d8920d1bd12eff07",
+      "translation_text_hash": "c7c0d3f0ee36cbbd467d58017c4bedbb4cf8c76440e439370983481a60afd76d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 이스라엘 자손에게 고하매 그 족장들이 각기 종족대로 지팡이 하나씩 그에게 주었으니 그 지팡이 합이 열 둘이라 그 중에 아론의 지팡이가 있었더라"
+      ],
+      "raw_text_hashes": [
+        "c7c0d3f0ee36cbbd467d58017c4bedbb4cf8c76440e439370983481a60afd76d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:17:7",
+      "sequence": 4252,
+      "chapter_label": "NUM 17",
+      "verse_label": "7",
+      "locator": {
+        "book": "NUM",
+        "chapter": 17,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 17,
+          "verse": 7
+        }
+      ],
+      "en": "Moses laid up the rods before the LORD in the Tent of the Testimony.",
+      "ko": "모세가 그 지팡이들을 증거의 장막 안 여호와 앞에 두었더라",
+      "source_text_hash": "1bebbdc3f7010911fe4401884ca7c91b57065f3819a7b07e2733bedd82a63373",
+      "translation_text_hash": "f9322ba190934dd51cef8c2e412c72fb3278af82380714ce91c566478e1bd3dc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 그 지팡이들을 증거의 장막 안 여호와 앞에 두었더라"
+      ],
+      "raw_text_hashes": [
+        "f9322ba190934dd51cef8c2e412c72fb3278af82380714ce91c566478e1bd3dc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:17:8",
+      "sequence": 4253,
+      "chapter_label": "NUM 17",
+      "verse_label": "8",
+      "locator": {
+        "book": "NUM",
+        "chapter": 17,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 17,
+          "verse": 8
+        }
+      ],
+      "en": "On the next day, Moses went into the Tent of the Testimony; and behold, Aaron’s rod for the house of Levi had sprouted, budded, produced blossoms, and bore ripe almonds.",
+      "ko": "이튿날 모세가 증거의 장막에 들어가 본즉 레위 집을 위하여 낸 아론의 지팡이에 움이 돋고 순이 나고 꽃이 피어서 살구 열매가 열렸더라",
+      "source_text_hash": "8fe8ff6de11cd55538a60eb8a127fa488ba67004756d79e46d673fd920207550",
+      "translation_text_hash": "86e402ae20e672b1efb61ee2540dc4c7cd913e00ed36645891e5f1024a6b5951",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이튿날 모세가 증거의 장막에 들어가 본즉 레위 집을 위하여 낸 아론의 지팡이에 움이 돋고 순이 나고 꽃이 피어서 살구 열매가 열렸더라"
+      ],
+      "raw_text_hashes": [
+        "86e402ae20e672b1efb61ee2540dc4c7cd913e00ed36645891e5f1024a6b5951"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:17:9",
+      "sequence": 4254,
+      "chapter_label": "NUM 17",
+      "verse_label": "9",
+      "locator": {
+        "book": "NUM",
+        "chapter": 17,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 17,
+          "verse": 9
+        }
+      ],
+      "en": "Moses brought out all the rods from before the LORD to all the children of Israel. They looked, and each man took his rod.",
+      "ko": "모세가 그 지팡이 전부를 여호와 앞에서 이스라엘 모든 자손에게로 취하여 내매 그들이 보고 각각 자기 지팡이를 취하였더라",
+      "source_text_hash": "07b3acb861e202fea395f93e422bb2e77e77bbd697eebdda135360bab52942cf",
+      "translation_text_hash": "26c4701a68f92eebd70697e66fe0a9de76a8649aeaf422f2dee7d60c86ed0abd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 그 지팡이 전부를 여호와 앞에서 이스라엘 모든 자손에게로 취하여 내매 그들이 보고 각각 자기 지팡이를 취하였더라"
+      ],
+      "raw_text_hashes": [
+        "26c4701a68f92eebd70697e66fe0a9de76a8649aeaf422f2dee7d60c86ed0abd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:17:10",
+      "sequence": 4255,
+      "chapter_label": "NUM 17",
+      "verse_label": "10",
+      "locator": {
+        "book": "NUM",
+        "chapter": 17,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 17,
+          "verse": 10
+        }
+      ],
+      "en": "The LORD said to Moses, “Put back the rod of Aaron before the covenant, to be kept for a token against the children of rebellion; that you may make an end of their complaining against me, that they not die.”",
+      "ko": "여호와께서 또 모세에게 이르시되 아론의 지팡이는 증거궤 앞으로 도로 가져다가 거기 간직하여 패역한 자에 대한 표징이 되게 하여 그들로 내게 대한 원망을 그치고 죽지 않게 할찌니라",
+      "source_text_hash": "b07eb04a064a49725f9c8fc03b168e7ca6ee2ffd87b65086ca3dc1293c73b194",
+      "translation_text_hash": "26e0d164e1f7f6dd110ddd2fcd97caea0aa77777286cd32b282c3a299bbb9224",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 또 모세에게 이르시되 아론의 지팡이는 증거궤 앞으로 도로 가져다가 거기 간직하여 패역한 자에 대한 표징이 되게 하여 그들로 내게 대한 원망을 그치고 죽지 않게 할찌니라"
+      ],
+      "raw_text_hashes": [
+        "26e0d164e1f7f6dd110ddd2fcd97caea0aa77777286cd32b282c3a299bbb9224"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:17:11",
+      "sequence": 4256,
+      "chapter_label": "NUM 17",
+      "verse_label": "11",
+      "locator": {
+        "book": "NUM",
+        "chapter": 17,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 17,
+          "verse": 11
+        }
+      ],
+      "en": "Moses did so. As the LORD commanded him, so he did.",
+      "ko": "모세가 곧 그 같이 하되 여호와께서 자기에게 명하신대로 하였더라",
+      "source_text_hash": "e5ab0e58aaa2d37f848693f1e4caaadb43ce1ac1f471e17db5b6289a035f4bae",
+      "translation_text_hash": "bd6512c7929c1c2c5253c93278d859a0c8bbeddac7a8f65bcaa474d357b6309f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 곧 그 같이 하되 여호와께서 자기에게 명하신대로 하였더라"
+      ],
+      "raw_text_hashes": [
+        "bd6512c7929c1c2c5253c93278d859a0c8bbeddac7a8f65bcaa474d357b6309f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:17:12",
+      "sequence": 4257,
+      "chapter_label": "NUM 17",
+      "verse_label": "12",
+      "locator": {
+        "book": "NUM",
+        "chapter": 17,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 17,
+          "verse": 12
+        }
+      ],
+      "en": "The children of Israel spoke to Moses, saying, “Behold, we perish! We are undone! We are all undone!",
+      "ko": "이스라엘 자손이 모세에게 말하여 가로되 보소서 우리는 죽게 되었나이다 망하게 되었나이다 다 망하게 되었나이다",
+      "source_text_hash": "c3329fef44af9f5d213975a97d598b5d419ef601c661cb2e48f1ad4145a8fc70",
+      "translation_text_hash": "acb21d952da37e97a79044aeb80db8d539a087fc3f5dc1b0fa9d5de952122592",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손이 모세에게 말하여 가로되 보소서 우리는 죽게 되었나이다 망하게 되었나이다 다 망하게 되었나이다"
+      ],
+      "raw_text_hashes": [
+        "acb21d952da37e97a79044aeb80db8d539a087fc3f5dc1b0fa9d5de952122592"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:17:13",
+      "sequence": 4258,
+      "chapter_label": "NUM 17",
+      "verse_label": "13",
+      "locator": {
+        "book": "NUM",
+        "chapter": 17,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 17,
+          "verse": 13
+        }
+      ],
+      "en": "Everyone who keeps approaching the LORD’s tabernacle, dies! Will we all perish?”",
+      "ko": "가까이 나아가는 자 곧 여호와의 성막에 가까이 나아가는 자마다 다 죽사오니 우리가 다 망하여야 하리이까",
+      "source_text_hash": "49154a13f5b543badffd3740620829c0fd51d9e9611baccd898c927ae631c26c",
+      "translation_text_hash": "160210b749e129ce9daccb28cfa950aa2103c08234b19c38abd12f790cb2e102",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가까이 나아가는 자 곧 여호와의 성막에 가까이 나아가는 자마다 다 죽사오니 우리가 다 망하여야 하리이까"
+      ],
+      "raw_text_hashes": [
+        "160210b749e129ce9daccb28cfa950aa2103c08234b19c38abd12f790cb2e102"
+      ]
+    }
+  ]
+}

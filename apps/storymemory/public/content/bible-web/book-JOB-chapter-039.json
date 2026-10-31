@@ -1,0 +1,973 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JOB:chapter:039",
+  "unit_ordinal": 475,
+  "unit_label": "JOB 39",
+  "book_code": "JOB",
+  "chapter_number": 39,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JOB:39:1",
+      "sequence": 13836,
+      "chapter_label": "JOB 39",
+      "verse_label": "1",
+      "locator": {
+        "book": "JOB",
+        "chapter": 39,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 39,
+          "verse": 1
+        }
+      ],
+      "en": "“Do you know the time when the mountain goats give birth? Do you watch when the doe bears fawns?",
+      "ko": "산 염소가 새끼 치는 때를 네가 아느냐 암사슴의 새끼 낳을 기한을 네가 알 수 있느냐",
+      "source_text_hash": "b56dc4dff6bacac80c8d7541934c07824e32249cd1e5006f5000495d55b835e7",
+      "translation_text_hash": "702358eb0197b121bb31b5ab2e89c879a8f4c7aa67838b60cd430b0dd1638bfb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "산 염소가 새끼 치는 때를 네가 아느냐 암사슴의 새끼 낳을 기한을 네가 알 수 있느냐"
+      ],
+      "raw_text_hashes": [
+        "702358eb0197b121bb31b5ab2e89c879a8f4c7aa67838b60cd430b0dd1638bfb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:39:2",
+      "sequence": 13837,
+      "chapter_label": "JOB 39",
+      "verse_label": "2",
+      "locator": {
+        "book": "JOB",
+        "chapter": 39,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 39,
+          "verse": 2
+        }
+      ],
+      "en": "Can you count the months that they fulfill? Or do you know the time when they give birth?",
+      "ko": "그것이 몇 달만에 만삭되는지 아느냐 그 낳을 때를 아느냐",
+      "source_text_hash": "cc7a4cc35fe91a145b30ab5f6452cbbb108cb95dcc0ae80fdf95bf355c4ee6dd",
+      "translation_text_hash": "976f065ae4aefd6d8823227f224ff9807b567b35a9e7217f5e1fa210a5025d33",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그것이 몇 달만에 만삭되는지 아느냐 그 낳을 때를 아느냐"
+      ],
+      "raw_text_hashes": [
+        "976f065ae4aefd6d8823227f224ff9807b567b35a9e7217f5e1fa210a5025d33"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:39:3",
+      "sequence": 13838,
+      "chapter_label": "JOB 39",
+      "verse_label": "3",
+      "locator": {
+        "book": "JOB",
+        "chapter": 39,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 39,
+          "verse": 3
+        }
+      ],
+      "en": "They bow themselves. They bear their young. They end their labor pains.",
+      "ko": "그것들은 몸을 구푸리고 새끼를 낳아 그 괴로움을 지내어 버리며",
+      "source_text_hash": "2b4581ca12c840c1df2e5731cd00b014650362bbd0252a55d78c2fe4b6e4adca",
+      "translation_text_hash": "18c9fb7305a9a2f1366c5da1500225a3bffe52a3413f5a60e5f3fe2102fd2a34",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그것들은 몸을 구푸리고 새끼를 낳아 그 괴로움을 지내어 버리며"
+      ],
+      "raw_text_hashes": [
+        "18c9fb7305a9a2f1366c5da1500225a3bffe52a3413f5a60e5f3fe2102fd2a34"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:39:4",
+      "sequence": 13839,
+      "chapter_label": "JOB 39",
+      "verse_label": "4",
+      "locator": {
+        "book": "JOB",
+        "chapter": 39,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 39,
+          "verse": 4
+        }
+      ],
+      "en": "Their young ones become strong. They grow up in the open field. They go out, and don’t return again.",
+      "ko": "그 새끼는 강하여져서 빈들에서 길리우다가 나가고는 다시 돌아 오지 아니하느니라",
+      "source_text_hash": "381ff9038ef888b00143e69b7ba41a96b041a92eb37cba9a770d9bd8fd7e8ef6",
+      "translation_text_hash": "88d58139ede2e1d936e61f7d7f7226f3683f2426f1f9d2b8c1242aa8d420173c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 새끼는 강하여져서 빈들에서 길리우다가 나가고는 다시 돌아 오지 아니하느니라"
+      ],
+      "raw_text_hashes": [
+        "88d58139ede2e1d936e61f7d7f7226f3683f2426f1f9d2b8c1242aa8d420173c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:39:5",
+      "sequence": 13840,
+      "chapter_label": "JOB 39",
+      "verse_label": "5",
+      "locator": {
+        "book": "JOB",
+        "chapter": 39,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 39,
+          "verse": 5
+        }
+      ],
+      "en": "“Who has set the wild donkey free? Or who has loosened the bonds of the swift donkey,",
+      "ko": "누가 들 나귀를 놓아 자유하게 하였느냐 누가 빠른 나귀의 매인 것을 풀었느냐",
+      "source_text_hash": "43b62e51c8c3586a73453e3d963161fe84f0ff034ea059d63ba8635da09c4fb0",
+      "translation_text_hash": "2780c6540ce69c6e1f6d6dbdc3bc049b6829e75a4fd167a6018d9b0074fd1f52",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누가 들 나귀를 놓아 자유하게 하였느냐 누가 빠른 나귀의 매인 것을 풀었느냐"
+      ],
+      "raw_text_hashes": [
+        "2780c6540ce69c6e1f6d6dbdc3bc049b6829e75a4fd167a6018d9b0074fd1f52"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:39:6",
+      "sequence": 13841,
+      "chapter_label": "JOB 39",
+      "verse_label": "6",
+      "locator": {
+        "book": "JOB",
+        "chapter": 39,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 39,
+          "verse": 6
+        }
+      ],
+      "en": "whose home I have made the wilderness, and the salt land his dwelling place?",
+      "ko": "내가 들로 그 집을, 짠 땅으로 그 사는 처소를 삼았느니라",
+      "source_text_hash": "0da84995b9f2207ff480bb79b7b673c7c66c61e6a4866b8546377fa11506e384",
+      "translation_text_hash": "1352e38fd85584b3016c6b3c930d4f96f669eb1731d3ca2e5246a84a602522ac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 들로 그 집을, 짠 땅으로 그 사는 처소를 삼았느니라"
+      ],
+      "raw_text_hashes": [
+        "1352e38fd85584b3016c6b3c930d4f96f669eb1731d3ca2e5246a84a602522ac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:39:7",
+      "sequence": 13842,
+      "chapter_label": "JOB 39",
+      "verse_label": "7",
+      "locator": {
+        "book": "JOB",
+        "chapter": 39,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 39,
+          "verse": 7
+        }
+      ],
+      "en": "He scorns the tumult of the city, neither does he hear the shouting of the driver.",
+      "ko": "들 나귀는 성읍의 지꺼리는 것을 업신여기니 어거하는 자의 지르는 소리가 그것에게 들리지 아니하며",
+      "source_text_hash": "d563a96099ec01e0d0b491fb9a68dcb93929631371644a3ee3f3987c0c54640a",
+      "translation_text_hash": "c7a6995989d5d4ead6ea4d0783e21b82d5ef5398a5d448197ce9d01b197dfb3b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "들 나귀는 성읍의 지꺼리는 것을 업신여기니 어거하는 자의 지르는 소리가 그것에게 들리지 아니하며"
+      ],
+      "raw_text_hashes": [
+        "c7a6995989d5d4ead6ea4d0783e21b82d5ef5398a5d448197ce9d01b197dfb3b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:39:8",
+      "sequence": 13843,
+      "chapter_label": "JOB 39",
+      "verse_label": "8",
+      "locator": {
+        "book": "JOB",
+        "chapter": 39,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 39,
+          "verse": 8
+        }
+      ],
+      "en": "The range of the mountains is his pasture. He searches after every green thing.",
+      "ko": "초장이 된 산으로 두루 다니며 여러 가지 푸른 것을 찾느니라",
+      "source_text_hash": "aeb2558189b9278822e0c463ec7144baf458521d5404a745fe222cc156dc97b1",
+      "translation_text_hash": "eef2c852796c45f61eccf9743d9dce9d2a2af6689ac1a95c011ac2cc7801f7f0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "초장이 된 산으로 두루 다니며 여러 가지 푸른 것을 찾느니라"
+      ],
+      "raw_text_hashes": [
+        "eef2c852796c45f61eccf9743d9dce9d2a2af6689ac1a95c011ac2cc7801f7f0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:39:9",
+      "sequence": 13844,
+      "chapter_label": "JOB 39",
+      "verse_label": "9",
+      "locator": {
+        "book": "JOB",
+        "chapter": 39,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 39,
+          "verse": 9
+        }
+      ],
+      "en": "“Will the wild ox be content to serve you? Or will he stay by your feeding trough?",
+      "ko": "들 소가 어찌 즐겨 네게 복종하며 네 외양간에 머물겠느냐",
+      "source_text_hash": "2e2ed5515005abe3d41957ad33ce1e60e99d7149383a47358c4bda4f099a5905",
+      "translation_text_hash": "7207bd9e22a745619db9441e3c118e6933e5be77f91215d65c695b27e245cdaa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "들 소가 어찌 즐겨 네게 복종하며 네 외양간에 머물겠느냐"
+      ],
+      "raw_text_hashes": [
+        "7207bd9e22a745619db9441e3c118e6933e5be77f91215d65c695b27e245cdaa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:39:10",
+      "sequence": 13845,
+      "chapter_label": "JOB 39",
+      "verse_label": "10",
+      "locator": {
+        "book": "JOB",
+        "chapter": 39,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 39,
+          "verse": 10
+        }
+      ],
+      "en": "Can you hold the wild ox in the furrow with his harness? Or will he till the valleys after you?",
+      "ko": "네가 능히 줄로 들 소를 매어 이랑을 갈게 하겠느냐 그것이 어찌 골짜기에서 너를 따라 쓰레를 끌겠느냐",
+      "source_text_hash": "fe1d9fd36cf85b748766666de5adeff62a711872137794cc44cbda3de98a28eb",
+      "translation_text_hash": "1686f3ac9a39ed0c9bcd7b8b93f176a531529356efaae51a97052cc4d190b242",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 능히 줄로 들 소를 매어 이랑을 갈게 하겠느냐 그것이 어찌 골짜기에서 너를 따라 쓰레를 끌겠느냐"
+      ],
+      "raw_text_hashes": [
+        "1686f3ac9a39ed0c9bcd7b8b93f176a531529356efaae51a97052cc4d190b242"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:39:11",
+      "sequence": 13846,
+      "chapter_label": "JOB 39",
+      "verse_label": "11",
+      "locator": {
+        "book": "JOB",
+        "chapter": 39,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 39,
+          "verse": 11
+        }
+      ],
+      "en": "Will you trust him, because his strength is great? Or will you leave to him your labor?",
+      "ko": "그것의 힘이 많다고 네가 그것을 의지하겠느냐 네 수고하는 일을 그것에게 맡기겠느냐",
+      "source_text_hash": "e503bd77d395a7b68d8732adc3c6d58cff0f0d4fee34a8ddd49a58b915530fc0",
+      "translation_text_hash": "5a147e4d5365d11d8d91fab2380e01f39637b5ddad0faf65da72b5e25d2a173a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그것의 힘이 많다고 네가 그것을 의지하겠느냐 네 수고하는 일을 그것에게 맡기겠느냐"
+      ],
+      "raw_text_hashes": [
+        "5a147e4d5365d11d8d91fab2380e01f39637b5ddad0faf65da72b5e25d2a173a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:39:12",
+      "sequence": 13847,
+      "chapter_label": "JOB 39",
+      "verse_label": "12",
+      "locator": {
+        "book": "JOB",
+        "chapter": 39,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 39,
+          "verse": 12
+        }
+      ],
+      "en": "Will you confide in him, that he will bring home your seed, and gather the grain of your threshing floor?",
+      "ko": "그것이 네 곡식을 집으로 실어 오며 네 타작 마당에 곡식 모으기를 그것에게 의탁하겠느냐",
+      "source_text_hash": "3d3848e72e60dc6d78b40fa90fad9a20f530e52b514bc8ced24a9ec38d80bbcf",
+      "translation_text_hash": "526d655932aeb8235e00924fe6d037c57adc77177e2c128df4e95e383e4a0274",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그것이 네 곡식을 집으로 실어 오며 네 타작 마당에 곡식 모으기를 그것에게 의탁하겠느냐"
+      ],
+      "raw_text_hashes": [
+        "526d655932aeb8235e00924fe6d037c57adc77177e2c128df4e95e383e4a0274"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:39:13",
+      "sequence": 13848,
+      "chapter_label": "JOB 39",
+      "verse_label": "13",
+      "locator": {
+        "book": "JOB",
+        "chapter": 39,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 39,
+          "verse": 13
+        }
+      ],
+      "en": "“The wings of the ostrich wave proudly, but are they the feathers and plumage of love?",
+      "ko": "타조는 즐거이 그 날개를 친다마는 그 깃과 털이 인자를 베푸느냐",
+      "source_text_hash": "33a826726e345941e890cad5095b977e11dd7231acf0e1bb97d8b1408b386845",
+      "translation_text_hash": "bdd17eb094ce271a7fd21c17f6ceb16cdc434a72a75d01f4f38d2efdabda0d91",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "타조는 즐거이 그 날개를 친다마는 그 깃과 털이 인자를 베푸느냐"
+      ],
+      "raw_text_hashes": [
+        "bdd17eb094ce271a7fd21c17f6ceb16cdc434a72a75d01f4f38d2efdabda0d91"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:39:14",
+      "sequence": 13849,
+      "chapter_label": "JOB 39",
+      "verse_label": "14",
+      "locator": {
+        "book": "JOB",
+        "chapter": 39,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 39,
+          "verse": 14
+        }
+      ],
+      "en": "For she leaves her eggs on the earth, warms them in the dust,",
+      "ko": "그것이 알을 땅에 버려두어 모래에서 더워지게 하고",
+      "source_text_hash": "5b952c02c94fc93d2d337fe75473d211cf72b1bc9c7f98dd5311681fed92813b",
+      "translation_text_hash": "c4f0f9c3824954a14513aba539f529d9e2aac1497ff5a4cb32220b49f9f8845c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그것이 알을 땅에 버려두어 모래에서 더워지게 하고"
+      ],
+      "raw_text_hashes": [
+        "c4f0f9c3824954a14513aba539f529d9e2aac1497ff5a4cb32220b49f9f8845c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:39:15",
+      "sequence": 13850,
+      "chapter_label": "JOB 39",
+      "verse_label": "15",
+      "locator": {
+        "book": "JOB",
+        "chapter": 39,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 39,
+          "verse": 15
+        }
+      ],
+      "en": "and forgets that the foot may crush them, or that the wild animal may trample them.",
+      "ko": "발에 깨어질 것이나 들 짐승에게 밟힐 것을 생각지 아니하고",
+      "source_text_hash": "5329280f06551c2e1b31c8b42255d5f4b164551f345c05ab9cf929f382f52894",
+      "translation_text_hash": "06004ca83f60893c2195805cb3649fee9410c75404505d92948e0c2fd92e5f96",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "발에 깨어질 것이나 들 짐승에게 밟힐 것을 생각지 아니하고"
+      ],
+      "raw_text_hashes": [
+        "06004ca83f60893c2195805cb3649fee9410c75404505d92948e0c2fd92e5f96"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:39:16",
+      "sequence": 13851,
+      "chapter_label": "JOB 39",
+      "verse_label": "16",
+      "locator": {
+        "book": "JOB",
+        "chapter": 39,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 39,
+          "verse": 16
+        }
+      ],
+      "en": "She deals harshly with her young ones, as if they were not hers. Though her labor is in vain, she is without fear,",
+      "ko": "그 새끼에게 무정함이 제 새끼가 아닌 것처럼 하며 그 구로한 것이 헛되게 될찌라도 괘념치 아니하나니",
+      "source_text_hash": "a9980511b0183cab5a8c49421024fd406959f9e267af0f610d14c1343334e2f3",
+      "translation_text_hash": "3dd55ef90a7a6a15f0ef60946c28b19cacda527b6143b4ade1b673222447975c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 새끼에게 무정함이 제 새끼가 아닌 것처럼 하며 그 구로한 것이 헛되게 될찌라도 괘념치 아니하나니"
+      ],
+      "raw_text_hashes": [
+        "3dd55ef90a7a6a15f0ef60946c28b19cacda527b6143b4ade1b673222447975c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:39:17",
+      "sequence": 13852,
+      "chapter_label": "JOB 39",
+      "verse_label": "17",
+      "locator": {
+        "book": "JOB",
+        "chapter": 39,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 39,
+          "verse": 17
+        }
+      ],
+      "en": "because God has deprived her of wisdom, neither has he imparted to her understanding.",
+      "ko": "이는 하나님 내가 지혜를 품부하지 아니하고 총명을 주지 아니함이니라",
+      "source_text_hash": "93abeb7c051dacebe7f513834e15f9d041b7fd6549c6a9145381b539840878f2",
+      "translation_text_hash": "863053a969cbf0f3f5c35bd907a61c34f5c3ad3b8ba6e3ccf8646aa6d0e714df",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 하나님 내가 지혜를 품부하지 아니하고 총명을 주지 아니함이니라"
+      ],
+      "raw_text_hashes": [
+        "863053a969cbf0f3f5c35bd907a61c34f5c3ad3b8ba6e3ccf8646aa6d0e714df"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:39:18",
+      "sequence": 13853,
+      "chapter_label": "JOB 39",
+      "verse_label": "18",
+      "locator": {
+        "book": "JOB",
+        "chapter": 39,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 39,
+          "verse": 18
+        }
+      ],
+      "en": "When she lifts up herself on high, she scorns the horse and his rider.",
+      "ko": "그러나 그 몸을 떨쳐 뛰어갈 때에는 말과 그 탄 자를 경히 여기느니라",
+      "source_text_hash": "1b6210d66ba1a949f09bc56df0c28920b8d0ce3b1bd62e290233c6cfcacf8d0a",
+      "translation_text_hash": "e5552c8724979e493a85eea4216595ade3fff02bab1139533283db601a39caea",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 그 몸을 떨쳐 뛰어갈 때에는 말과 그 탄 자를 경히 여기느니라"
+      ],
+      "raw_text_hashes": [
+        "e5552c8724979e493a85eea4216595ade3fff02bab1139533283db601a39caea"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:39:19",
+      "sequence": 13854,
+      "chapter_label": "JOB 39",
+      "verse_label": "19",
+      "locator": {
+        "book": "JOB",
+        "chapter": 39,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 39,
+          "verse": 19
+        }
+      ],
+      "en": "“Have you given the horse might? Have you clothed his neck with a quivering mane?",
+      "ko": "말의 힘을 네가 주었느냐 그 목에 흩날리는 갈기를 네가 입혔느냐",
+      "source_text_hash": "4ffe99a9157ad27966ed668ec2fa1e9310cc19d6483df0331aeedffc78bcff15",
+      "translation_text_hash": "2a016ac1a28c81e439e232141db6ce2a0e6d3bb69aff0c25e32472424223c281",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "말의 힘을 네가 주었느냐 그 목에 흩날리는 갈기를 네가 입혔느냐"
+      ],
+      "raw_text_hashes": [
+        "2a016ac1a28c81e439e232141db6ce2a0e6d3bb69aff0c25e32472424223c281"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:39:20",
+      "sequence": 13855,
+      "chapter_label": "JOB 39",
+      "verse_label": "20",
+      "locator": {
+        "book": "JOB",
+        "chapter": 39,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 39,
+          "verse": 20
+        }
+      ],
+      "en": "Have you made him to leap as a locust? The glory of his snorting is awesome.",
+      "ko": "네가 그것으로 메뚜기처럼 뛰게 하였느냐 그 위엄스러운 콧소리가 두려우니라",
+      "source_text_hash": "445c4f8aa180b2350701a5a901dc2f2e903cdeb9d838b4aeaa9f0ac450e5198b",
+      "translation_text_hash": "95ee494cd28e128da4aa5018a603ff365eaf27947387bf003eae6655e5142e00",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 그것으로 메뚜기처럼 뛰게 하였느냐 그 위엄스러운 콧소리가 두려우니라"
+      ],
+      "raw_text_hashes": [
+        "95ee494cd28e128da4aa5018a603ff365eaf27947387bf003eae6655e5142e00"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:39:21",
+      "sequence": 13856,
+      "chapter_label": "JOB 39",
+      "verse_label": "21",
+      "locator": {
+        "book": "JOB",
+        "chapter": 39,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 39,
+          "verse": 21
+        }
+      ],
+      "en": "He paws in the valley, and rejoices in his strength. He goes out to meet the armed men.",
+      "ko": "그것이 골짜기에서 허위고 힘 있음을 기뻐하며 앞으로 나아가서 군사들을 맞되",
+      "source_text_hash": "5f28daf9f18221bc1d865684784dd4b30cb0690b506aa41c49d2b369306d51d9",
+      "translation_text_hash": "50833cad0a02d1109b3ca96962b1458a89d357f7e7bb56162136eeaf57dc5e50",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그것이 골짜기에서 허위고 힘 있음을 기뻐하며 앞으로 나아가서 군사들을 맞되"
+      ],
+      "raw_text_hashes": [
+        "50833cad0a02d1109b3ca96962b1458a89d357f7e7bb56162136eeaf57dc5e50"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:39:22",
+      "sequence": 13857,
+      "chapter_label": "JOB 39",
+      "verse_label": "22",
+      "locator": {
+        "book": "JOB",
+        "chapter": 39,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 39,
+          "verse": 22
+        }
+      ],
+      "en": "He mocks at fear, and is not dismayed, neither does he turn back from the sword.",
+      "ko": "두려움을 비웃고 놀라지 아니하며 칼을 당할찌라도 물러나지 아니하니",
+      "source_text_hash": "296e66a68052393b5906c70de025226fa608cb1be85a3071bc9af776513d54a7",
+      "translation_text_hash": "51693940e825b5488751b7ac4732129b29e082d35d03d628d15787e01c5a026f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "두려움을 비웃고 놀라지 아니하며 칼을 당할찌라도 물러나지 아니하니"
+      ],
+      "raw_text_hashes": [
+        "51693940e825b5488751b7ac4732129b29e082d35d03d628d15787e01c5a026f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:39:23",
+      "sequence": 13858,
+      "chapter_label": "JOB 39",
+      "verse_label": "23",
+      "locator": {
+        "book": "JOB",
+        "chapter": 39,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 39,
+          "verse": 23
+        }
+      ],
+      "en": "The quiver rattles against him, the flashing spear and the javelin.",
+      "ko": "그 위에서는 전동과 빛난 작은 창과 큰 창이 쟁쟁하며",
+      "source_text_hash": "5988d64d573b8ee9d1f3c72c3c6e2e133e621cf790a8144d99bb1b5de95be367",
+      "translation_text_hash": "534d633135cf5b3837cb0aaea3f9a9f17047e26e4248a4c95bece522d7376f6a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 위에서는 전동과 빛난 작은 창과 큰 창이 쟁쟁하며"
+      ],
+      "raw_text_hashes": [
+        "534d633135cf5b3837cb0aaea3f9a9f17047e26e4248a4c95bece522d7376f6a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:39:24",
+      "sequence": 13859,
+      "chapter_label": "JOB 39",
+      "verse_label": "24",
+      "locator": {
+        "book": "JOB",
+        "chapter": 39,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 39,
+          "verse": 24
+        }
+      ],
+      "en": "He eats up the ground with fierceness and rage, neither does he stand still at the sound of the trumpet.",
+      "ko": "땅을 삼킬듯이 맹렬히 성내며 나팔 소리를 들으면 머물러 서지 아니하고",
+      "source_text_hash": "1ea8e6319698f55983476918fbc545d75ade7fafb15a535a1aca2b212c9fd60b",
+      "translation_text_hash": "7cf79f1211b71e53996fb6a5afae6da53edb26be033705777364ced005f7c368",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "땅을 삼킬듯이 맹렬히 성내며 나팔 소리를 들으면 머물러 서지 아니하고"
+      ],
+      "raw_text_hashes": [
+        "7cf79f1211b71e53996fb6a5afae6da53edb26be033705777364ced005f7c368"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:39:25",
+      "sequence": 13860,
+      "chapter_label": "JOB 39",
+      "verse_label": "25",
+      "locator": {
+        "book": "JOB",
+        "chapter": 39,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 39,
+          "verse": 25
+        }
+      ],
+      "en": "As often as the trumpet sounds he snorts, ‘Aha!’ He smells the battle afar off, the thunder of the captains, and the shouting.",
+      "ko": "나팔 소리 나는대로 소소히 울며 멀리서 싸움 냄새를 맡고 장관의 호령과 떠드는 소리를 듣느니라",
+      "source_text_hash": "558c697e4b1fd527743c71d9e04930f3a2c92423b3e6bad0e5eb71adf974cad0",
+      "translation_text_hash": "49d9f22349981eb12c087922add2724e605016074a2bfdc3f396da6875373668",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나팔 소리 나는대로 소소히 울며 멀리서 싸움 냄새를 맡고 장관의 호령과 떠드는 소리를 듣느니라"
+      ],
+      "raw_text_hashes": [
+        "49d9f22349981eb12c087922add2724e605016074a2bfdc3f396da6875373668"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:39:26",
+      "sequence": 13861,
+      "chapter_label": "JOB 39",
+      "verse_label": "26",
+      "locator": {
+        "book": "JOB",
+        "chapter": 39,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 39,
+          "verse": 26
+        }
+      ],
+      "en": "“Is it by your wisdom that the hawk soars, and stretches her wings toward the south?",
+      "ko": "매가 떠올라서 날개를 펼쳐 남방으로 향하는 것이 어찌 네 지혜로 말미암음이냐",
+      "source_text_hash": "06f9a5733c06cb15f1cdb6b6a926c6b8aab38de21aae05766bf7b46e112566d7",
+      "translation_text_hash": "16e0d320bfe6bab0c1288c3100fc1a79deecedca6ff595a3fa4bbee314d4ebd9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "매가 떠올라서 날개를 펼쳐 남방으로 향하는 것이 어찌 네 지혜로 말미암음이냐"
+      ],
+      "raw_text_hashes": [
+        "16e0d320bfe6bab0c1288c3100fc1a79deecedca6ff595a3fa4bbee314d4ebd9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:39:27",
+      "sequence": 13862,
+      "chapter_label": "JOB 39",
+      "verse_label": "27",
+      "locator": {
+        "book": "JOB",
+        "chapter": 39,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 39,
+          "verse": 27
+        }
+      ],
+      "en": "Is it at your command that the eagle mounts up, and makes his nest on high?",
+      "ko": "독수리가 공중에 떠서 높은 곳에 보금자리를 만드는 것이 어찌 네 명령을 의지함이냐",
+      "source_text_hash": "0b27973dbc2f5083bae3dc8e05a61dcf96ec8f123f6438b6ca116a4ffae32dc7",
+      "translation_text_hash": "d45bfb1a965709d8fb8168cad10ad1a7be8d2b1a0f51739557ec7e453300a06f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "독수리가 공중에 떠서 높은 곳에 보금자리를 만드는 것이 어찌 네 명령을 의지함이냐"
+      ],
+      "raw_text_hashes": [
+        "d45bfb1a965709d8fb8168cad10ad1a7be8d2b1a0f51739557ec7e453300a06f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:39:28",
+      "sequence": 13863,
+      "chapter_label": "JOB 39",
+      "verse_label": "28",
+      "locator": {
+        "book": "JOB",
+        "chapter": 39,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 39,
+          "verse": 28
+        }
+      ],
+      "en": "On the cliff he dwells and makes his home, on the point of the cliff and the stronghold.",
+      "ko": "그것이 낭떠러지에 집을 지으며 뾰족한 바위 끝이나 험준한데 거하며",
+      "source_text_hash": "f82fd21214978a59f7d333e601854bf8e721f0b460523fdfc71cb7cfaacb8a87",
+      "translation_text_hash": "4b151b3fd54ba53c701eda3143e9ea797abd0da71c58c3c8ed279f04bc4ee0b0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그것이 낭떠러지에 집을 지으며 뾰족한 바위 끝이나 험준한데 거하며"
+      ],
+      "raw_text_hashes": [
+        "4b151b3fd54ba53c701eda3143e9ea797abd0da71c58c3c8ed279f04bc4ee0b0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:39:29",
+      "sequence": 13864,
+      "chapter_label": "JOB 39",
+      "verse_label": "29",
+      "locator": {
+        "book": "JOB",
+        "chapter": 39,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 39,
+          "verse": 29
+        }
+      ],
+      "en": "From there he spies out the prey. His eyes see it afar off.",
+      "ko": "거기서 움킬만한 것을 살피나니 그 눈이 멀리 봄이며",
+      "source_text_hash": "70b19419a123c58e1a7adb3685106334c5013869da266fa00dad6a5713fccc78",
+      "translation_text_hash": "c32a817fd572ab5b740a8952fe80c9041ba334c0748ad2b7b6683b7828acb86a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거기서 움킬만한 것을 살피나니 그 눈이 멀리 봄이며"
+      ],
+      "raw_text_hashes": [
+        "c32a817fd572ab5b740a8952fe80c9041ba334c0748ad2b7b6683b7828acb86a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:39:30",
+      "sequence": 13865,
+      "chapter_label": "JOB 39",
+      "verse_label": "30",
+      "locator": {
+        "book": "JOB",
+        "chapter": 39,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 39,
+          "verse": 30
+        }
+      ],
+      "en": "His young ones also suck up blood. Where the slain are, there he is.”",
+      "ko": "그 새끼들도 피를 빠나니 살륙 당한 자 있는 곳에는 그것도 거기 있느니라",
+      "source_text_hash": "b6e97079bdb7f8dbc57569eac90b875c82feac10ace18306e3ea12b05551c7af",
+      "translation_text_hash": "21e60059485be500e56ef3683befdc3dda1766a39c684c6f3531ab21b13df811",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 새끼들도 피를 빠나니 살륙 당한 자 있는 곳에는 그것도 거기 있느니라"
+      ],
+      "raw_text_hashes": [
+        "21e60059485be500e56ef3683befdc3dda1766a39c684c6f3531ab21b13df811"
+      ]
+    }
+  ]
+}

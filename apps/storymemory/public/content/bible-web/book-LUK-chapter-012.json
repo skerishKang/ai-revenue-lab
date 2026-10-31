@@ -1,0 +1,1901 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:LUK:chapter:012",
+  "unit_ordinal": 985,
+  "unit_label": "LUK 12",
+  "book_code": "LUK",
+  "chapter_number": 12,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:LUK:12:1",
+      "sequence": 25461,
+      "chapter_label": "LUK 12",
+      "verse_label": "1",
+      "locator": {
+        "book": "LUK",
+        "chapter": 12,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 12,
+          "verse": 1
+        }
+      ],
+      "en": "Meanwhile, when a multitude of many thousands had gathered together, so much so that they trampled on each other, he began to tell his disciples first of all, “Beware of the yeast of the Pharisees, which is hypocrisy.",
+      "ko": "그 동안에 무리 수만 명이 모여 서로 밟힐만큼 되었더니 예수께서 먼저 제자들에게 말씀하여 가라사대 바리새인들의 누룩 곧 외식을 주의하라",
+      "source_text_hash": "4907ce3c407b69458e8c28b94b4863529e49fc43f4270e587a6f44cda092519f",
+      "translation_text_hash": "ddfc2a20f6e057e287310d80430c713722c6f437057ac257616c7f89774351dd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 동안에 무리 수만 명이 모여 서로 밟힐만큼 되었더니 예수께서 먼저 제자들에게 말씀하여 가라사대 바리새인들의 누룩 곧 외식을 주의하라"
+      ],
+      "raw_text_hashes": [
+        "ddfc2a20f6e057e287310d80430c713722c6f437057ac257616c7f89774351dd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:12:2",
+      "sequence": 25462,
+      "chapter_label": "LUK 12",
+      "verse_label": "2",
+      "locator": {
+        "book": "LUK",
+        "chapter": 12,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 12,
+          "verse": 2
+        }
+      ],
+      "en": "But there is nothing covered up that will not be revealed, nor hidden that will not be known.",
+      "ko": "감추인 것이 드러나지 않을 것이 없고 숨은 것이 알려지지 않을 것이 없나니",
+      "source_text_hash": "c7c50efbb9581253b23cbfb64b02e1d49cc15084d13625d06e0b9fd8ab929570",
+      "translation_text_hash": "a1ffed5c7596eb9c398f895f351cfcaabdf095c99961677bbac34a9247c1af67",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "감추인 것이 드러나지 않을 것이 없고 숨은 것이 알려지지 않을 것이 없나니"
+      ],
+      "raw_text_hashes": [
+        "a1ffed5c7596eb9c398f895f351cfcaabdf095c99961677bbac34a9247c1af67"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:12:3",
+      "sequence": 25463,
+      "chapter_label": "LUK 12",
+      "verse_label": "3",
+      "locator": {
+        "book": "LUK",
+        "chapter": 12,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 12,
+          "verse": 3
+        }
+      ],
+      "en": "Therefore whatever you have said in the darkness will be heard in the light. What you have spoken in the ear in the inner rooms will be proclaimed on the housetops.",
+      "ko": "이러므로 너희가 어두운데서 말한 모든 것이 광명한데서 들리고 너희가 골방에서 귀에 대고 말한 것이 집 위에서 전파되리라",
+      "source_text_hash": "c2caa1faa2167f4b1ebc5fce9188b889872774e1a1c787659042e0ccf943daf4",
+      "translation_text_hash": "ffe8137f9b6028dfe574004ef4ebac082a8159ac957f15528e34fe0f48e23f85",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러므로 너희가 어두운데서 말한 모든 것이 광명한데서 들리고 너희가 골방에서 귀에 대고 말한 것이 집 위에서 전파되리라"
+      ],
+      "raw_text_hashes": [
+        "ffe8137f9b6028dfe574004ef4ebac082a8159ac957f15528e34fe0f48e23f85"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:12:4",
+      "sequence": 25464,
+      "chapter_label": "LUK 12",
+      "verse_label": "4",
+      "locator": {
+        "book": "LUK",
+        "chapter": 12,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 12,
+          "verse": 4
+        }
+      ],
+      "en": "“I tell you, my friends, don’t be afraid of those who kill the body, and after that have no more that they can do.",
+      "ko": "내가 내 친구 너희에게 말하노니 몸을 죽이고 그 후에는 능히 더 못하는 자들을 두려워하지 말라",
+      "source_text_hash": "9056ddc8c9654926a506d72045f156d582ee9be71ee6982ff125313893a7438c",
+      "translation_text_hash": "d480e179768af606079741ac0555dacba682577cde54b12023687a7c5277381b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 내 친구 너희에게 말하노니 몸을 죽이고 그 후에는 능히 더 못하는 자들을 두려워하지 말라"
+      ],
+      "raw_text_hashes": [
+        "d480e179768af606079741ac0555dacba682577cde54b12023687a7c5277381b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:12:5",
+      "sequence": 25465,
+      "chapter_label": "LUK 12",
+      "verse_label": "5",
+      "locator": {
+        "book": "LUK",
+        "chapter": 12,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 12,
+          "verse": 5
+        }
+      ],
+      "en": "But I will warn you whom you should fear. Fear him who after he has killed, has power to cast into Gehenna.Yes, I tell you, fear him.",
+      "ko": "마땅히 두려워할 자를 내가 너희에게 보이리니 곧 죽인 후에 또한 지옥에 던져 넣는 권세 있는 그를 두려워하라 내가 참으로 너희에게 이르노니 그를 두려워하라",
+      "source_text_hash": "a88b100a8fb0814a6f0069a3a6736b889720288832c267cb7ede9c8c19477b8c",
+      "translation_text_hash": "81ca6bb21c76a4d7e52b736d39750b73e7b25e0655c18c8c15f66adf2656cbe1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마땅히 두려워할 자를 내가 너희에게 보이리니 곧 죽인 후에 또한 지옥에 던져 넣는 권세 있는 그를 두려워하라 내가 참으로 너희에게 이르노니 그를 두려워하라"
+      ],
+      "raw_text_hashes": [
+        "81ca6bb21c76a4d7e52b736d39750b73e7b25e0655c18c8c15f66adf2656cbe1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:12:6",
+      "sequence": 25466,
+      "chapter_label": "LUK 12",
+      "verse_label": "6",
+      "locator": {
+        "book": "LUK",
+        "chapter": 12,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 12,
+          "verse": 6
+        }
+      ],
+      "en": "“Aren’t five sparrows sold for two assaria coins? Not one of them is forgotten by God.",
+      "ko": "참새 다섯이 앗사리온 둘에 팔리는 것이 아니냐 그러나 하나님 앞에는 그 하나라도 잊어버리시는바 되지 아니하는도다",
+      "source_text_hash": "06a002df5ac95e3c6fb1443f67070c01bd2f6e83057878d1e6f97831afa46295",
+      "translation_text_hash": "e40304d34a5a7bb47134fde6b6de9552ddbdd6bf33f68053569e81ea18afe118",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "참새 다섯이 앗사리온 둘에 팔리는 것이 아니냐 그러나 하나님 앞에는 그 하나라도 잊어버리시는바 되지 아니하는도다"
+      ],
+      "raw_text_hashes": [
+        "e40304d34a5a7bb47134fde6b6de9552ddbdd6bf33f68053569e81ea18afe118"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:12:7",
+      "sequence": 25467,
+      "chapter_label": "LUK 12",
+      "verse_label": "7",
+      "locator": {
+        "book": "LUK",
+        "chapter": 12,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 12,
+          "verse": 7
+        }
+      ],
+      "en": "But the very hairs of your head are all counted. Therefore don’t be afraid. You are of more value than many sparrows.",
+      "ko": "너희에게는 오히려 머리털까지도 다 세신바 되었나니 두려워하지 말라 너희는 많은 참새보다 귀하니라",
+      "source_text_hash": "877ab59613a0fa4ffde46c57659449c4928de5d4b86e9003b72aae0b53762472",
+      "translation_text_hash": "0f296329cea7ca311897a5af7a66fd28f7b13eef8db15df1c43cdfee5d6caf2b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희에게는 오히려 머리털까지도 다 세신바 되었나니 두려워하지 말라 너희는 많은 참새보다 귀하니라"
+      ],
+      "raw_text_hashes": [
+        "0f296329cea7ca311897a5af7a66fd28f7b13eef8db15df1c43cdfee5d6caf2b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:12:8",
+      "sequence": 25468,
+      "chapter_label": "LUK 12",
+      "verse_label": "8",
+      "locator": {
+        "book": "LUK",
+        "chapter": 12,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 12,
+          "verse": 8
+        }
+      ],
+      "en": "“I tell you, everyone who confesses me before men, the Son of Man will also confess before the angels of God;",
+      "ko": "내가 또한 너희에게 말하노니 누구든지 사람 앞에서 나를 시인하면 인자도 하나님의 사자들 앞에서 저를 시인할 것이요",
+      "source_text_hash": "2c94f278f28d3e72ab84d3e67fce61cf66a10244c02e73037cc533ddd98163a7",
+      "translation_text_hash": "7fc2f280f361d206fc22a2fa5cc2a177493eb41ca9fffadf49fbf46afb4a4216",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 또한 너희에게 말하노니 누구든지 사람 앞에서 나를 시인하면 인자도 하나님의 사자들 앞에서 저를 시인할 것이요"
+      ],
+      "raw_text_hashes": [
+        "7fc2f280f361d206fc22a2fa5cc2a177493eb41ca9fffadf49fbf46afb4a4216"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:12:9",
+      "sequence": 25469,
+      "chapter_label": "LUK 12",
+      "verse_label": "9",
+      "locator": {
+        "book": "LUK",
+        "chapter": 12,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 12,
+          "verse": 9
+        }
+      ],
+      "en": "but he who denies me in the presence of men will be denied in the presence of God’s angels.",
+      "ko": "사람 앞에서 나를 부인하는 자는 하나님의 사자들 앞에서 부인함을 받으리라",
+      "source_text_hash": "d0f36610bc08e215cc3950e23be91543ef0eaf32c17f91e09d59c258866b32d4",
+      "translation_text_hash": "c29be5f15aaf95bca32b70eab270f8cde10b25fc9a457cfb76b61f6659877128",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람 앞에서 나를 부인하는 자는 하나님의 사자들 앞에서 부인함을 받으리라"
+      ],
+      "raw_text_hashes": [
+        "c29be5f15aaf95bca32b70eab270f8cde10b25fc9a457cfb76b61f6659877128"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:12:10",
+      "sequence": 25470,
+      "chapter_label": "LUK 12",
+      "verse_label": "10",
+      "locator": {
+        "book": "LUK",
+        "chapter": 12,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 12,
+          "verse": 10
+        }
+      ],
+      "en": "Everyone who speaks a word against the Son of Man will be forgiven, but those who blaspheme against the Holy Spirit will not be forgiven.",
+      "ko": "누구든지 말로 인자를 거역하면 사하심을 받으려니와 성령을 모독하는 자는 사하심을 받지 못하리라",
+      "source_text_hash": "a3eebc15b9a4ef202178ef99946d7321de4752a6cdc67c9982e94fff5b30f9f0",
+      "translation_text_hash": "0f86fcf0cbf606d93ddef7b0ee11b059577b51981cf02b8905006a2241b9f87e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누구든지 말로 인자를 거역하면 사하심을 받으려니와 성령을 모독하는 자는 사하심을 받지 못하리라"
+      ],
+      "raw_text_hashes": [
+        "0f86fcf0cbf606d93ddef7b0ee11b059577b51981cf02b8905006a2241b9f87e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:12:11",
+      "sequence": 25471,
+      "chapter_label": "LUK 12",
+      "verse_label": "11",
+      "locator": {
+        "book": "LUK",
+        "chapter": 12,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 12,
+          "verse": 11
+        }
+      ],
+      "en": "When they bring you before the synagogues, the rulers, and the authorities, don’t be anxious how or what you will answer or what you will say;",
+      "ko": "사람이 너희를 회당과 정사 잡은 이와 권세 있는 이 앞에 끌고 가거든 어떻게 무엇으로 대답하며 무엇으로 말할 것을 염려치 말라",
+      "source_text_hash": "b0a07ddf4d8ac76a3894e39f1c4856f056d95139763988e9c27cbaebb2019d4f",
+      "translation_text_hash": "6ddaacde505ec337ba5783551568cf18c923c8a45ec297b61e3079860df35095",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 너희를 회당과 정사 잡은 이와 권세 있는 이 앞에 끌고 가거든 어떻게 무엇으로 대답하며 무엇으로 말할 것을 염려치 말라"
+      ],
+      "raw_text_hashes": [
+        "6ddaacde505ec337ba5783551568cf18c923c8a45ec297b61e3079860df35095"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:12:12",
+      "sequence": 25472,
+      "chapter_label": "LUK 12",
+      "verse_label": "12",
+      "locator": {
+        "book": "LUK",
+        "chapter": 12,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 12,
+          "verse": 12
+        }
+      ],
+      "en": "for the Holy Spirit will teach you in that same hour what you must say.”",
+      "ko": "마땅히 할 말을 성령이 곧 그 때에 너희에게 가르치시리라 하시니라",
+      "source_text_hash": "e3f5e3fd1a01cd70f7c00563e7947e60d536c28b838889e2d43982430fbebc51",
+      "translation_text_hash": "8bdfbb5bd86a26ab2d3a92b5e031f064decd65bdff6485a983cc2578724632bd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마땅히 할 말을 성령이 곧 그 때에 너희에게 가르치시리라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "8bdfbb5bd86a26ab2d3a92b5e031f064decd65bdff6485a983cc2578724632bd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:12:13",
+      "sequence": 25473,
+      "chapter_label": "LUK 12",
+      "verse_label": "13",
+      "locator": {
+        "book": "LUK",
+        "chapter": 12,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 12,
+          "verse": 13
+        }
+      ],
+      "en": "One of the multitude said to him, “Teacher, tell my brother to divide the inheritance with me.”",
+      "ko": "무리 중에 한 사람이 이르되 선생님 내 형을 명하여 유업을 나와 나누게 하소서 하니",
+      "source_text_hash": "74e04eac39ba2dda40c879fae3f5eb7654adec4ea71d2fc915d964e571a907ad",
+      "translation_text_hash": "ad3c2d2c0c0ed137df551f6054ba9382a17ba7c8ef83b6cbbf34ea8763f5cc44",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무리 중에 한 사람이 이르되 선생님 내 형을 명하여 유업을 나와 나누게 하소서 하니"
+      ],
+      "raw_text_hashes": [
+        "ad3c2d2c0c0ed137df551f6054ba9382a17ba7c8ef83b6cbbf34ea8763f5cc44"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:12:14",
+      "sequence": 25474,
+      "chapter_label": "LUK 12",
+      "verse_label": "14",
+      "locator": {
+        "book": "LUK",
+        "chapter": 12,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 12,
+          "verse": 14
+        }
+      ],
+      "en": "But he said to him, “Man, who made me a judge or an arbitrator over you?”",
+      "ko": "이르시되 이 사람아 누가 나를 너희의 재판장이나 물건 나누는 자로 세웠느냐 하시고",
+      "source_text_hash": "882189ff776903938b031444bfc493b7b8a0b1b4c5b4a5c0bd94cfaf5b61dfad",
+      "translation_text_hash": "bf9a6ec7c23aa807e2d9185d894cd3989f153da6c324950861bebd411b6f44c5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이르시되 이 사람아 누가 나를 너희의 재판장이나 물건 나누는 자로 세웠느냐 하시고"
+      ],
+      "raw_text_hashes": [
+        "bf9a6ec7c23aa807e2d9185d894cd3989f153da6c324950861bebd411b6f44c5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:12:15",
+      "sequence": 25475,
+      "chapter_label": "LUK 12",
+      "verse_label": "15",
+      "locator": {
+        "book": "LUK",
+        "chapter": 12,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 12,
+          "verse": 15
+        }
+      ],
+      "en": "He said to them, “Beware! Keep yourselves from covetousness, for a man’s life doesn’t consist of the abundance of the things which he possesses.”",
+      "ko": "저희에게 이르시되 삼가 모든 탐심을 물리치라 사람의 생명이 그 소유의 넉넉한데 있지 아니하니라 하시고",
+      "source_text_hash": "89900662e765d3c2accd091c16f2b4a0209a3cd37bccfe51c544fd7b220cba09",
+      "translation_text_hash": "8da9f79f34972dc47c94a70aecbfccf50bc5f4319392e7c5ca94fb4263a125e7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희에게 이르시되 삼가 모든 탐심을 물리치라 사람의 생명이 그 소유의 넉넉한데 있지 아니하니라 하시고"
+      ],
+      "raw_text_hashes": [
+        "8da9f79f34972dc47c94a70aecbfccf50bc5f4319392e7c5ca94fb4263a125e7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:12:16",
+      "sequence": 25476,
+      "chapter_label": "LUK 12",
+      "verse_label": "16",
+      "locator": {
+        "book": "LUK",
+        "chapter": 12,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 12,
+          "verse": 16
+        }
+      ],
+      "en": "He spoke a parable to them, saying, “The ground of a certain rich man produced abundantly.",
+      "ko": "또 비유로 저희에게 일러 가라사대 한 부자가 그 밭에 소출이 풍성하매",
+      "source_text_hash": "6948302ddb8d751d90b052a5e7696bb6750e7c8b62811f6c51a78d17db33d29a",
+      "translation_text_hash": "f583f83741a18155bd2330a9926389a419ac1de280cb93bc05cc812ccd46c36b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 비유로 저희에게 일러 가라사대 한 부자가 그 밭에 소출이 풍성하매"
+      ],
+      "raw_text_hashes": [
+        "f583f83741a18155bd2330a9926389a419ac1de280cb93bc05cc812ccd46c36b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:12:17",
+      "sequence": 25477,
+      "chapter_label": "LUK 12",
+      "verse_label": "17",
+      "locator": {
+        "book": "LUK",
+        "chapter": 12,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 12,
+          "verse": 17
+        }
+      ],
+      "en": "He reasoned within himself, saying, ‘What will I do, because I don’t have room to store my crops?’",
+      "ko": "심중에 생각하여 가로되 내가 곡식 쌓아 둘 곳이 없으니 어찌할꼬 하고",
+      "source_text_hash": "1bf537f615c1e83b096af21eb79feec699f87e4f32009da890fe107c16e10eee",
+      "translation_text_hash": "92422d09d23827631081c8c957375f04b09207334f30bc6f2bf804cbe081084c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "심중에 생각하여 가로되 내가 곡식 쌓아 둘 곳이 없으니 어찌할꼬 하고"
+      ],
+      "raw_text_hashes": [
+        "92422d09d23827631081c8c957375f04b09207334f30bc6f2bf804cbe081084c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:12:18",
+      "sequence": 25478,
+      "chapter_label": "LUK 12",
+      "verse_label": "18",
+      "locator": {
+        "book": "LUK",
+        "chapter": 12,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 12,
+          "verse": 18
+        }
+      ],
+      "en": "He said, ‘This is what I will do. I will pull down my barns, build bigger ones, and there I will store all my grain and my goods.",
+      "ko": "또 가로되 내가 이렇게 하리라 내 곡간을 헐고 더 크게 짓고 내 모든 곡식과 물건을 거기 쌓아 두리라",
+      "source_text_hash": "11914a7d14882717a0010539ed4d4653c524d3e98d8eb5afa3513e02fb38eecb",
+      "translation_text_hash": "f7bb8607f50259fba992db27d0fa7d4c94ddf21830b548272500df2d519be842",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 가로되 내가 이렇게 하리라 내 곡간을 헐고 더 크게 짓고 내 모든 곡식과 물건을 거기 쌓아 두리라"
+      ],
+      "raw_text_hashes": [
+        "f7bb8607f50259fba992db27d0fa7d4c94ddf21830b548272500df2d519be842"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:12:19",
+      "sequence": 25479,
+      "chapter_label": "LUK 12",
+      "verse_label": "19",
+      "locator": {
+        "book": "LUK",
+        "chapter": 12,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 12,
+          "verse": 19
+        }
+      ],
+      "en": "I will tell my soul, “Soul, you have many goods laid up for many years. Take your ease, eat, drink, and be merry.”’",
+      "ko": "또 내가 내 영혼에게 이르되 영혼아 여러 해 쓸 물건을 많이 쌓아 두었으니 평안히 쉬고 먹고 마시고 즐거워하자 하리라 하되",
+      "source_text_hash": "85f53b91c20cca792d4dc22d557f499409133b316935a6fd988865a57de22df0",
+      "translation_text_hash": "5d1b5d6f3126fb3903966c41dca8d074ed864f2da0cc8529cbaa48a54c9e5c2b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 내가 내 영혼에게 이르되 영혼아 여러 해 쓸 물건을 많이 쌓아 두었으니 평안히 쉬고 먹고 마시고 즐거워하자 하리라 하되"
+      ],
+      "raw_text_hashes": [
+        "5d1b5d6f3126fb3903966c41dca8d074ed864f2da0cc8529cbaa48a54c9e5c2b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:12:20",
+      "sequence": 25480,
+      "chapter_label": "LUK 12",
+      "verse_label": "20",
+      "locator": {
+        "book": "LUK",
+        "chapter": 12,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 12,
+          "verse": 20
+        }
+      ],
+      "en": "“But God said to him, ‘You foolish one, tonight your soul is required of you. The things which you have prepared—whose will they be?’",
+      "ko": "하나님은 이르시되 어리석은 자여 오늘 밤에 네 영혼을 도로 찾으리니 그러면 네 예비한 것이 뉘 것이 되겠느냐 하셨으니",
+      "source_text_hash": "8d0e310298cdc896ee5d86cc68d3cae16f5e49dcd5375073ea562e8f072e02c5",
+      "translation_text_hash": "19002ddcbe8bb57a73192fb25bb3117954875f75d85b0a4f81f14db3de98a84a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님은 이르시되 어리석은 자여 오늘 밤에 네 영혼을 도로 찾으리니 그러면 네 예비한 것이 뉘 것이 되겠느냐 하셨으니"
+      ],
+      "raw_text_hashes": [
+        "19002ddcbe8bb57a73192fb25bb3117954875f75d85b0a4f81f14db3de98a84a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:12:21",
+      "sequence": 25481,
+      "chapter_label": "LUK 12",
+      "verse_label": "21",
+      "locator": {
+        "book": "LUK",
+        "chapter": 12,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 12,
+          "verse": 21
+        }
+      ],
+      "en": "So is he who lays up treasure for himself, and is not rich toward God.”",
+      "ko": "자기를 위하여 재물을 쌓아 두고 하나님께 대하여 부요치 못한 자가 이와 같으니라",
+      "source_text_hash": "f0bc3afdae971062ac0a480166003a7f885184ef45bf18fb271b62910c4d5636",
+      "translation_text_hash": "693457c4ed54754207be0f71d30a671e04ac513b31a84ef82be724b1194114d9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자기를 위하여 재물을 쌓아 두고 하나님께 대하여 부요치 못한 자가 이와 같으니라"
+      ],
+      "raw_text_hashes": [
+        "693457c4ed54754207be0f71d30a671e04ac513b31a84ef82be724b1194114d9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:12:22",
+      "sequence": 25482,
+      "chapter_label": "LUK 12",
+      "verse_label": "22",
+      "locator": {
+        "book": "LUK",
+        "chapter": 12,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 12,
+          "verse": 22
+        }
+      ],
+      "en": "He said to his disciples, “Therefore I tell you, don’t be anxious for your life, what you will eat, nor yet for your body, what you will wear.",
+      "ko": "또 제자들에게 이르시되 그러므로 내가 너희에게 이르노니 너희 목숨을 위하여 무엇을 먹을까 몸을 위하여 무엇을 입을까 염려하지 말라",
+      "source_text_hash": "7bb5221249833dca864644ae8b2ddfc2e0e2e31b80c7115ffc5cc0425ac93ead",
+      "translation_text_hash": "aa617c2b0a0ee19d4076acf0e08147e0d021c7c70f41af6c8e57a8b9c15a01c8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 제자들에게 이르시되 그러므로 내가 너희에게 이르노니 너희 목숨을 위하여 무엇을 먹을까 몸을 위하여 무엇을 입을까 염려하지 말라"
+      ],
+      "raw_text_hashes": [
+        "aa617c2b0a0ee19d4076acf0e08147e0d021c7c70f41af6c8e57a8b9c15a01c8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:12:23",
+      "sequence": 25483,
+      "chapter_label": "LUK 12",
+      "verse_label": "23",
+      "locator": {
+        "book": "LUK",
+        "chapter": 12,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 12,
+          "verse": 23
+        }
+      ],
+      "en": "Life is more than food, and the body is more than clothing.",
+      "ko": "목숨이 음식보다 중하고 몸이 의복보다 중하니라",
+      "source_text_hash": "a161c7267184e78289710642b7a1e2eda6177f780d866031119b8b1f1bb9ddfa",
+      "translation_text_hash": "69db7254c148d6850822b52021cb0e9dab4a7b7d19cac84bef2c7f59b973a33c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "목숨이 음식보다 중하고 몸이 의복보다 중하니라"
+      ],
+      "raw_text_hashes": [
+        "69db7254c148d6850822b52021cb0e9dab4a7b7d19cac84bef2c7f59b973a33c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:12:24",
+      "sequence": 25484,
+      "chapter_label": "LUK 12",
+      "verse_label": "24",
+      "locator": {
+        "book": "LUK",
+        "chapter": 12,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 12,
+          "verse": 24
+        }
+      ],
+      "en": "Consider the ravens: they don’t sow, they don’t reap, they have no warehouse or barn, and God feeds them. How much more valuable are you than birds!",
+      "ko": "까마귀를 생각하라 심지도 아니하고 거두지도 아니하며 골방도 없고 창고도 없으되 하나님이 기르시나니 너희는 새보다 얼마나 더 귀하냐",
+      "source_text_hash": "405c036431f6671d47ec948555fcda962daebc6332487c17d1bd36a21462ebeb",
+      "translation_text_hash": "a1a58cf147edb8993ffb48cbbf60d4b825973140638cab1b0c5416bdf69d5e45",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "까마귀를 생각하라 심지도 아니하고 거두지도 아니하며 골방도 없고 창고도 없으되 하나님이 기르시나니 너희는 새보다 얼마나 더 귀하냐"
+      ],
+      "raw_text_hashes": [
+        "a1a58cf147edb8993ffb48cbbf60d4b825973140638cab1b0c5416bdf69d5e45"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:12:25",
+      "sequence": 25485,
+      "chapter_label": "LUK 12",
+      "verse_label": "25",
+      "locator": {
+        "book": "LUK",
+        "chapter": 12,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 12,
+          "verse": 25
+        }
+      ],
+      "en": "Which of you by being anxious can add a cubitto his height?",
+      "ko": "또 너희 중에 누가 염려함으로 그 키를 한 자나 더할 수 있느냐",
+      "source_text_hash": "524e6d3cebe99c4f0682ed914d47a2f4e8ef3c5f69ee13e60198e58efc38e606",
+      "translation_text_hash": "775cf82afe00b601ca982158c1560b212f0f7e63db26ebe362f06f3fcdb2b48f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 너희 중에 누가 염려함으로 그 키를 한 자나 더할 수 있느냐"
+      ],
+      "raw_text_hashes": [
+        "775cf82afe00b601ca982158c1560b212f0f7e63db26ebe362f06f3fcdb2b48f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:12:26",
+      "sequence": 25486,
+      "chapter_label": "LUK 12",
+      "verse_label": "26",
+      "locator": {
+        "book": "LUK",
+        "chapter": 12,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 12,
+          "verse": 26
+        }
+      ],
+      "en": "If then you aren’t able to do even the least things, why are you anxious about the rest?",
+      "ko": "그런즉 지극히 작은 것이라도 능치 못하거든 어찌 그 다른 것을 염려하느냐",
+      "source_text_hash": "604ac61b0bc6aa962dc50ad130f7caa0ac1287a4e8df7037fe65ca33a369c2e1",
+      "translation_text_hash": "cf4f8bb8a2227936aac898803832e2472d46f613c2da6f73ce03344004f74db1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 지극히 작은 것이라도 능치 못하거든 어찌 그 다른 것을 염려하느냐"
+      ],
+      "raw_text_hashes": [
+        "cf4f8bb8a2227936aac898803832e2472d46f613c2da6f73ce03344004f74db1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:12:27",
+      "sequence": 25487,
+      "chapter_label": "LUK 12",
+      "verse_label": "27",
+      "locator": {
+        "book": "LUK",
+        "chapter": 12,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 12,
+          "verse": 27
+        }
+      ],
+      "en": "Consider the lilies, how they grow. They don’t toil, neither do they spin; yet I tell you, even Solomon in all his glory was not arrayed like one of these.",
+      "ko": "백합화를 생각하여 보아라 실도 만들지 않고 짜지도 아니하느니라 그러나 내가 너희에게 말하노니 솔로몬의 모든 영광으로도 입은 것이 이 꽃 하나만 같지 못하였느니라",
+      "source_text_hash": "fee5db254913c0e9aca26e1f866d0f98d40ad8bb17420afa0410713994d63f28",
+      "translation_text_hash": "9d3f9605c4925d8cc9ec2a7335e7738de5190ed5ea49fb4ba12dcfdfbd78adca",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "백합화를 생각하여 보아라 실도 만들지 않고 짜지도 아니하느니라 그러나 내가 너희에게 말하노니 솔로몬의 모든 영광으로도 입은 것이 이 꽃 하나만 같지 못하였느니라"
+      ],
+      "raw_text_hashes": [
+        "9d3f9605c4925d8cc9ec2a7335e7738de5190ed5ea49fb4ba12dcfdfbd78adca"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:12:28",
+      "sequence": 25488,
+      "chapter_label": "LUK 12",
+      "verse_label": "28",
+      "locator": {
+        "book": "LUK",
+        "chapter": 12,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 12,
+          "verse": 28
+        }
+      ],
+      "en": "But if this is how God clothes the grass in the field, which today exists and tomorrow is cast into the oven, how much more will he clothe you, O you of little faith?",
+      "ko": "오늘 있다가 내일 아궁이에 던지우는 들풀도 하나님이 이렇게 입히시거든 하물며 너희일까보냐 믿음이 적은 자들아",
+      "source_text_hash": "6b808b9fd91e9c6bd8bd68e8f51aed1010e0a304ae57959df89230e10d98c7a7",
+      "translation_text_hash": "acae21838f6904304666f0460e5847ce9ea12fe4073498e7fb9785c57072ace3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오늘 있다가 내일 아궁이에 던지우는 들풀도 하나님이 이렇게 입히시거든 하물며 너희일까보냐 믿음이 적은 자들아"
+      ],
+      "raw_text_hashes": [
+        "acae21838f6904304666f0460e5847ce9ea12fe4073498e7fb9785c57072ace3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:12:29",
+      "sequence": 25489,
+      "chapter_label": "LUK 12",
+      "verse_label": "29",
+      "locator": {
+        "book": "LUK",
+        "chapter": 12,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 12,
+          "verse": 29
+        }
+      ],
+      "en": "“Don’t seek what you will eat or what you will drink; neither be anxious.",
+      "ko": "너희는 무엇을 먹을까 무엇을 마실까 하여 구하지 말며 근심하지도 말라",
+      "source_text_hash": "ed49ed2bd307356b225c2c7e6c7397f809725a653fc7d06b2a8aeb80f5789982",
+      "translation_text_hash": "88f1594ce1cf70535346f139981b08364d22e8f467488dca67e4d7a06f52516d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 무엇을 먹을까 무엇을 마실까 하여 구하지 말며 근심하지도 말라"
+      ],
+      "raw_text_hashes": [
+        "88f1594ce1cf70535346f139981b08364d22e8f467488dca67e4d7a06f52516d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:12:30",
+      "sequence": 25490,
+      "chapter_label": "LUK 12",
+      "verse_label": "30",
+      "locator": {
+        "book": "LUK",
+        "chapter": 12,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 12,
+          "verse": 30
+        }
+      ],
+      "en": "For the nations of the world seek after all of these things, but your Father knows that you need these things.",
+      "ko": "이 모든 것은 세상 백성들이 구하는 것이라 너희 아버지께서 이런 것이 너희에게 있어야 될 줄을 아시느니라",
+      "source_text_hash": "2020d02e77a0b405c3d787440176298d073981f2e1db230f1896adcf974c4262",
+      "translation_text_hash": "cc0ae9c79a21643dc0d12ce316af6358347042b9cd5f764d82fe649b37e18fcc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 모든 것은 세상 백성들이 구하는 것이라 너희 아버지께서 이런 것이 너희에게 있어야 될 줄을 아시느니라"
+      ],
+      "raw_text_hashes": [
+        "cc0ae9c79a21643dc0d12ce316af6358347042b9cd5f764d82fe649b37e18fcc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:12:31",
+      "sequence": 25491,
+      "chapter_label": "LUK 12",
+      "verse_label": "31",
+      "locator": {
+        "book": "LUK",
+        "chapter": 12,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 12,
+          "verse": 31
+        }
+      ],
+      "en": "But seek God’s Kingdom, and all these things will be added to you.",
+      "ko": "오직 너희는 그의 나라를 구하라 그리하면 이런 것을 너희에게 더하시리라",
+      "source_text_hash": "ada78238dcf5c55f4adea4df31df5e191d6ac98ece0d6c2a33c02963af937e0d",
+      "translation_text_hash": "f3325e0637247cecba1f4b1f05adf6066ea60ae154045857e20ce3ae86d21e9e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 너희는 그의 나라를 구하라 그리하면 이런 것을 너희에게 더하시리라"
+      ],
+      "raw_text_hashes": [
+        "f3325e0637247cecba1f4b1f05adf6066ea60ae154045857e20ce3ae86d21e9e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:12:32",
+      "sequence": 25492,
+      "chapter_label": "LUK 12",
+      "verse_label": "32",
+      "locator": {
+        "book": "LUK",
+        "chapter": 12,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 12,
+          "verse": 32
+        }
+      ],
+      "en": "“Don’t be afraid, little flock, for it is your Father’s good pleasure to give you the Kingdom.",
+      "ko": "적은 무리여 무서워 말라 너희 아버지께서 그 나라를 너희에게 주시기를 기뻐하시느니라",
+      "source_text_hash": "739524bd94f1335434d0a97babd8c05bbe3d2fe1fb5781573322571751e39e8c",
+      "translation_text_hash": "8fae0d507fedbe16dd1b00f7abd2f704af521f4235e9337a5dbd52c60ed1b42e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "적은 무리여 무서워 말라 너희 아버지께서 그 나라를 너희에게 주시기를 기뻐하시느니라"
+      ],
+      "raw_text_hashes": [
+        "8fae0d507fedbe16dd1b00f7abd2f704af521f4235e9337a5dbd52c60ed1b42e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:12:33",
+      "sequence": 25493,
+      "chapter_label": "LUK 12",
+      "verse_label": "33",
+      "locator": {
+        "book": "LUK",
+        "chapter": 12,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 12,
+          "verse": 33
+        }
+      ],
+      "en": "Sell what you have and give gifts to the needy. Make for yourselves purses which don’t grow old, a treasure in the heavens that doesn’t fail, where no thief approaches and no moth destroys.",
+      "ko": "너희 소유를 팔아 구제하여 낡아지지 아니하는 주머니를 만들라 곧 하늘에 둔바 다함이 없는 보물이니 거기는 도적도 가까이 하는 일이 없고 좀도 먹는 일이 없느니라",
+      "source_text_hash": "5e1aa92d5370db7c799a0d10ef975f5e6c2b0c4fcf7c338502f5ae741fe8f3f0",
+      "translation_text_hash": "586c7c62b8362622e5b16ac8af8ce182937cbeec366e96c2360f49fdd0dfb43f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 소유를 팔아 구제하여 낡아지지 아니하는 주머니를 만들라 곧 하늘에 둔바 다함이 없는 보물이니 거기는 도적도 가까이 하는 일이 없고 좀도 먹는 일이 없느니라"
+      ],
+      "raw_text_hashes": [
+        "586c7c62b8362622e5b16ac8af8ce182937cbeec366e96c2360f49fdd0dfb43f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:12:34",
+      "sequence": 25494,
+      "chapter_label": "LUK 12",
+      "verse_label": "34",
+      "locator": {
+        "book": "LUK",
+        "chapter": 12,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 12,
+          "verse": 34
+        }
+      ],
+      "en": "For where your treasure is, there will your heart be also.",
+      "ko": "너희 보물 있는 곳에는 너희 마음도 있으리라",
+      "source_text_hash": "45e61d50f33ba50ab21e600fc046d475b9c19b605a90114d2390234d91f9d27f",
+      "translation_text_hash": "164176b080a21c26cf120c7d7c2286561f15f98bd0e66e046cec1eb52f350e3d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 보물 있는 곳에는 너희 마음도 있으리라"
+      ],
+      "raw_text_hashes": [
+        "164176b080a21c26cf120c7d7c2286561f15f98bd0e66e046cec1eb52f350e3d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:12:35",
+      "sequence": 25495,
+      "chapter_label": "LUK 12",
+      "verse_label": "35",
+      "locator": {
+        "book": "LUK",
+        "chapter": 12,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 12,
+          "verse": 35
+        }
+      ],
+      "en": "“Let your waist be dressed and your lamps burning.",
+      "ko": "허리에 띠를 띠고 등불을 켜고 서 있으라",
+      "source_text_hash": "a965feef3c02f5f1840262120b95049b9cbeddd1e9dceee7959da162f0a70e5f",
+      "translation_text_hash": "552a7f7366a94f4898ff562c1740f484a30193deddf979fe28eea207321aea25",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "허리에 띠를 띠고 등불을 켜고 서 있으라"
+      ],
+      "raw_text_hashes": [
+        "552a7f7366a94f4898ff562c1740f484a30193deddf979fe28eea207321aea25"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:12:36",
+      "sequence": 25496,
+      "chapter_label": "LUK 12",
+      "verse_label": "36",
+      "locator": {
+        "book": "LUK",
+        "chapter": 12,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 12,
+          "verse": 36
+        }
+      ],
+      "en": "Be like men watching for their lord when he returns from the wedding feast, that when he comes and knocks, they may immediately open to him.",
+      "ko": "너희는 마치 그 주인이 혼인 집에서 돌아와 문을 두드리면 곧 열어 주려고 기다리는 사람과 같이 되라",
+      "source_text_hash": "f22ef1ef30632d4c981f971e2ccd8cb511a8575f57f7d7edf339a966ef91eac6",
+      "translation_text_hash": "f505998d486c913ec8bcfd045985fd058de00fa983e27e0b1ae6277d1659cc9b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 마치 그 주인이 혼인 집에서 돌아와 문을 두드리면 곧 열어 주려고 기다리는 사람과 같이 되라"
+      ],
+      "raw_text_hashes": [
+        "f505998d486c913ec8bcfd045985fd058de00fa983e27e0b1ae6277d1659cc9b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:12:37",
+      "sequence": 25497,
+      "chapter_label": "LUK 12",
+      "verse_label": "37",
+      "locator": {
+        "book": "LUK",
+        "chapter": 12,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 12,
+          "verse": 37
+        }
+      ],
+      "en": "Blessed are those servants whom the lord will find watching when he comes. Most certainly I tell you that he will dress himself, make them recline, and will come and serve them.",
+      "ko": "주인이 와서 깨어 있는 것을 보면 그 종들은 복이 있으리로다 내가 진실로 너희에게 이르노니 주인이 띠를 띠고 그 종들을 자리에 앉히고 나아와 수종하리라",
+      "source_text_hash": "58a55401b8de851ed08581ada17afc9741bcae07ef576124dfc6a528f35118b5",
+      "translation_text_hash": "03fa539c52e8485066ba956d00992fe001405e6cfcb4e44db8f67de7fbc21349",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주인이 와서 깨어 있는 것을 보면 그 종들은 복이 있으리로다 내가 진실로 너희에게 이르노니 주인이 띠를 띠고 그 종들을 자리에 앉히고 나아와 수종하리라"
+      ],
+      "raw_text_hashes": [
+        "03fa539c52e8485066ba956d00992fe001405e6cfcb4e44db8f67de7fbc21349"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:12:38",
+      "sequence": 25498,
+      "chapter_label": "LUK 12",
+      "verse_label": "38",
+      "locator": {
+        "book": "LUK",
+        "chapter": 12,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 12,
+          "verse": 38
+        }
+      ],
+      "en": "They will be blessed if he comes in the second or third watch and finds them so.",
+      "ko": "주인이 혹 이경에나 혹 삼경에 이르러서도 종들의 이같이 하는 것을 보면 그 종들은 복이 있으리로다",
+      "source_text_hash": "d9185263f85724b8bf0e3c3bc364c644c2f67c42f4487d39206f734560ad6948",
+      "translation_text_hash": "20608f54ea89d8edbd8996f1fb221e364d3f26a08f6ba72e4ecb7f896aeb5d37",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주인이 혹 이경에나 혹 삼경에 이르러서도 종들의 이같이 하는 것을 보면 그 종들은 복이 있으리로다"
+      ],
+      "raw_text_hashes": [
+        "20608f54ea89d8edbd8996f1fb221e364d3f26a08f6ba72e4ecb7f896aeb5d37"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:12:39",
+      "sequence": 25499,
+      "chapter_label": "LUK 12",
+      "verse_label": "39",
+      "locator": {
+        "book": "LUK",
+        "chapter": 12,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 12,
+          "verse": 39
+        }
+      ],
+      "en": "But know this, that if the master of the house had known in what hour the thief was coming, he would have watched and not allowed his house to be broken into.",
+      "ko": "너희도 아는바니 집 주인이 만일 도적이 어느 때에 이를줄 알았더면 그 집을 뚫지 못하게 하였으리라",
+      "source_text_hash": "412f43c1534cd8fbf371406f9bf422c6c021991831de5d9a356ed0f48365ebea",
+      "translation_text_hash": "a539afa0d583f6490efad92a7b8731c24c6b74c403560396e977d650266c75e3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희도 아는바니 집 주인이 만일 도적이 어느 때에 이를줄 알았더면 그 집을 뚫지 못하게 하였으리라"
+      ],
+      "raw_text_hashes": [
+        "a539afa0d583f6490efad92a7b8731c24c6b74c403560396e977d650266c75e3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:12:40",
+      "sequence": 25500,
+      "chapter_label": "LUK 12",
+      "verse_label": "40",
+      "locator": {
+        "book": "LUK",
+        "chapter": 12,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 12,
+          "verse": 40
+        }
+      ],
+      "en": "Therefore be ready also, for the Son of Man is coming in an hour that you don’t expect him.”",
+      "ko": "이러므로 너희도 예비하고 있으라 생각지 않은 때에 인자가 오리라 하시니라",
+      "source_text_hash": "9c1eb22129fab68fd676f31a9acc6518a328bb452ad0c72febbaa89792507f1f",
+      "translation_text_hash": "ec327336e52eb76bb4c91f1fdd010c22ee28c809dc9a625e69d0f5681f3a9888",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러므로 너희도 예비하고 있으라 생각지 않은 때에 인자가 오리라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "ec327336e52eb76bb4c91f1fdd010c22ee28c809dc9a625e69d0f5681f3a9888"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:12:41",
+      "sequence": 25501,
+      "chapter_label": "LUK 12",
+      "verse_label": "41",
+      "locator": {
+        "book": "LUK",
+        "chapter": 12,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 12,
+          "verse": 41
+        }
+      ],
+      "en": "Peter said to him, “Lord, are you telling this parable to us, or to everybody?”",
+      "ko": "베드로가 여짜오되 주께서 이 비유를 우리에게 하심이니이까 모든 사람에게 하심이니이까",
+      "source_text_hash": "455d85cdc1b73f9e0f7ab07a3bc129da45d6ff4e13bf9dfef03af3163f52fb72",
+      "translation_text_hash": "1e3e0c7e3f59a04d26d51e7644ba0cc216f798d5bc4d4c99aae3c8a924c259f1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베드로가 여짜오되 주께서 이 비유를 우리에게 하심이니이까 모든 사람에게 하심이니이까"
+      ],
+      "raw_text_hashes": [
+        "1e3e0c7e3f59a04d26d51e7644ba0cc216f798d5bc4d4c99aae3c8a924c259f1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:12:42",
+      "sequence": 25502,
+      "chapter_label": "LUK 12",
+      "verse_label": "42",
+      "locator": {
+        "book": "LUK",
+        "chapter": 12,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 12,
+          "verse": 42
+        }
+      ],
+      "en": "The Lord said, “Who then is the faithful and wise steward, whom his lord will set over his household, to give them their portion of food at the right times?",
+      "ko": "주께서 가라사대 지혜 있고 진실한 청지기가 되어 주인에게 그 집 종들을 맡아 때를 따라 양식을 나누어 줄 자가 누구냐",
+      "source_text_hash": "7a97f76dfa1239fbf2c9720a6b316b825dffa2ae942dbe026e173d5ec056fda7",
+      "translation_text_hash": "4d239bd9060eab433cb0d54751a5eefd505ff7e44cb35bfcb3041a40af92d9d6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 가라사대 지혜 있고 진실한 청지기가 되어 주인에게 그 집 종들을 맡아 때를 따라 양식을 나누어 줄 자가 누구냐"
+      ],
+      "raw_text_hashes": [
+        "4d239bd9060eab433cb0d54751a5eefd505ff7e44cb35bfcb3041a40af92d9d6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:12:43",
+      "sequence": 25503,
+      "chapter_label": "LUK 12",
+      "verse_label": "43",
+      "locator": {
+        "book": "LUK",
+        "chapter": 12,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 12,
+          "verse": 43
+        }
+      ],
+      "en": "Blessed is that servant whom his lord will find doing so when he comes.",
+      "ko": "주인이 이를 때에 그 종의 이렇게 하는 것을 보면 그 종이 복이 있으리로다",
+      "source_text_hash": "eed2dabf382a767240b8e558b2ea708129f2d1ffc91aadf6589b3db72373c7e6",
+      "translation_text_hash": "928f65d222d20d12804794665ca4c1bc9b1487d922cb39383e3edeab098e576f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주인이 이를 때에 그 종의 이렇게 하는 것을 보면 그 종이 복이 있으리로다"
+      ],
+      "raw_text_hashes": [
+        "928f65d222d20d12804794665ca4c1bc9b1487d922cb39383e3edeab098e576f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:12:44",
+      "sequence": 25504,
+      "chapter_label": "LUK 12",
+      "verse_label": "44",
+      "locator": {
+        "book": "LUK",
+        "chapter": 12,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 12,
+          "verse": 44
+        }
+      ],
+      "en": "Truly I tell you that he will set him over all that he has.",
+      "ko": "내가 참으로 너희에게 이르노니 주인이 그 모든 소유를 저에게 맡기리라",
+      "source_text_hash": "4b37eed38ca9a609b164945a6c94ef8e5c88b75884b5e0b5f024041666dfa8f7",
+      "translation_text_hash": "559beff02dc04278066bfbeff34709aa58cbfae73a4b22768d0b8b5776af9944",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 참으로 너희에게 이르노니 주인이 그 모든 소유를 저에게 맡기리라"
+      ],
+      "raw_text_hashes": [
+        "559beff02dc04278066bfbeff34709aa58cbfae73a4b22768d0b8b5776af9944"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:12:45",
+      "sequence": 25505,
+      "chapter_label": "LUK 12",
+      "verse_label": "45",
+      "locator": {
+        "book": "LUK",
+        "chapter": 12,
+        "verse": 45
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 12,
+          "verse": 45
+        }
+      ],
+      "en": "But if that servant says in his heart, ‘My lord delays his coming,’ and begins to beat the menservants and the maidservants, and to eat and drink and to be drunken,",
+      "ko": "만일 그 종이 마음에 생각하기를 주인이 더디 오리라 하여 노비를 때리며 먹고 마시고 취하게 되면",
+      "source_text_hash": "e31bc96437897375369f33596b66304ea487dc633ba0fad31aa2affa5f21beae",
+      "translation_text_hash": "2ac51b3605dead5c61a036994dc9fa9c7eaff09317af4b552a4b5217e66e721e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 그 종이 마음에 생각하기를 주인이 더디 오리라 하여 노비를 때리며 먹고 마시고 취하게 되면"
+      ],
+      "raw_text_hashes": [
+        "2ac51b3605dead5c61a036994dc9fa9c7eaff09317af4b552a4b5217e66e721e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:12:46",
+      "sequence": 25506,
+      "chapter_label": "LUK 12",
+      "verse_label": "46",
+      "locator": {
+        "book": "LUK",
+        "chapter": 12,
+        "verse": 46
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 12,
+          "verse": 46
+        }
+      ],
+      "en": "then the lord of that servant will come in a day when he isn’t expecting him and in an hour that he doesn’t know, and will cut him in two, and place his portion with the unfaithful.",
+      "ko": "생각지 않은 날 알지 못하는 시간에 이 종의 주인이 이르러 엄히 때리고 신실치 아니한 자의 받는 율에 처하리니",
+      "source_text_hash": "8b362aac2894c6a74adf12000cea15ade734f486b9d1e608dd9b22fc9e4812fd",
+      "translation_text_hash": "43ea8907551578c0b84d13d93ed1185220da1efd12d7a110242dda5a9570d8db",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "생각지 않은 날 알지 못하는 시간에 이 종의 주인이 이르러 엄히 때리고 신실치 아니한 자의 받는 율에 처하리니"
+      ],
+      "raw_text_hashes": [
+        "43ea8907551578c0b84d13d93ed1185220da1efd12d7a110242dda5a9570d8db"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:12:47",
+      "sequence": 25507,
+      "chapter_label": "LUK 12",
+      "verse_label": "47",
+      "locator": {
+        "book": "LUK",
+        "chapter": 12,
+        "verse": 47
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 12,
+          "verse": 47
+        }
+      ],
+      "en": "That servant who knew his lord’s will, and didn’t prepare nor do what he wanted, will be beaten with many stripes,",
+      "ko": "주인의 뜻을 알고도 예비치 아니하고 그 뜻대로 행치 아니한 종은 많이 맞을 것이요",
+      "source_text_hash": "e57da22ca2ef8586671dd2e0ad50ad36c75c6e284e953602d6b8029cc4ce3c6a",
+      "translation_text_hash": "2c1e5368418e210ec7d5ed922b3ec339408afe3cac6d3ce787a23014659000fa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주인의 뜻을 알고도 예비치 아니하고 그 뜻대로 행치 아니한 종은 많이 맞을 것이요"
+      ],
+      "raw_text_hashes": [
+        "2c1e5368418e210ec7d5ed922b3ec339408afe3cac6d3ce787a23014659000fa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:12:48",
+      "sequence": 25508,
+      "chapter_label": "LUK 12",
+      "verse_label": "48",
+      "locator": {
+        "book": "LUK",
+        "chapter": 12,
+        "verse": 48
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 12,
+          "verse": 48
+        }
+      ],
+      "en": "but he who didn’t know, and did things worthy of stripes, will be beaten with few stripes. To whomever much is given, of him will much be required; and to whom much was entrusted, of him more will be asked.",
+      "ko": "알지 못하고 맞을 일을 행한 종은 적게 맞으리라 무릇 많이 받은 자에게는 많이 찾을 것이요 많이 맡은 자에게는 많이 달라 할 것이니라",
+      "source_text_hash": "29b3abb1086092e41e6e35744102c3701eb9a8532660a6193c0121045a5c74c4",
+      "translation_text_hash": "d1c1ff8b0d7cf6a0c64fd3ec06104850f7ee17127e70baf0028f847d8ad0be53",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "알지 못하고 맞을 일을 행한 종은 적게 맞으리라 무릇 많이 받은 자에게는 많이 찾을 것이요 많이 맡은 자에게는 많이 달라 할 것이니라"
+      ],
+      "raw_text_hashes": [
+        "d1c1ff8b0d7cf6a0c64fd3ec06104850f7ee17127e70baf0028f847d8ad0be53"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:12:49",
+      "sequence": 25509,
+      "chapter_label": "LUK 12",
+      "verse_label": "49",
+      "locator": {
+        "book": "LUK",
+        "chapter": 12,
+        "verse": 49
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 12,
+          "verse": 49
+        }
+      ],
+      "en": "“I came to throw fire on the earth. I wish it were already kindled.",
+      "ko": "내가 불을 땅에 던지러 왔노니 이 불이 이미 붙었으면 내가 무엇을 원하리요",
+      "source_text_hash": "18981e91c5471ec13a1692dfab7762d346ed5cd54c9947fdb9cd51f650ed1c26",
+      "translation_text_hash": "e18ece7acc7505230309ca85ce4bbc6daabda949658f1b7c72d9cd4c74f8c0de",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 불을 땅에 던지러 왔노니 이 불이 이미 붙었으면 내가 무엇을 원하리요"
+      ],
+      "raw_text_hashes": [
+        "e18ece7acc7505230309ca85ce4bbc6daabda949658f1b7c72d9cd4c74f8c0de"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:12:50",
+      "sequence": 25510,
+      "chapter_label": "LUK 12",
+      "verse_label": "50",
+      "locator": {
+        "book": "LUK",
+        "chapter": 12,
+        "verse": 50
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 12,
+          "verse": 50
+        }
+      ],
+      "en": "But I have a baptism to be baptized with, and how distressed I am until it is accomplished!",
+      "ko": "나는 받을 세례가 있으니 그 이루기까지 나의 답답함이 어떠하겠느냐",
+      "source_text_hash": "a66677b6b2cc225ff616b811ef23d20015020f86c0ec26a817d8ccbd86a331fb",
+      "translation_text_hash": "b1055804d3d01d66a020dcfb5c94fcd44338636c57ffb3a58c38b187882e40b7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 받을 세례가 있으니 그 이루기까지 나의 답답함이 어떠하겠느냐"
+      ],
+      "raw_text_hashes": [
+        "b1055804d3d01d66a020dcfb5c94fcd44338636c57ffb3a58c38b187882e40b7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:12:51",
+      "sequence": 25511,
+      "chapter_label": "LUK 12",
+      "verse_label": "51",
+      "locator": {
+        "book": "LUK",
+        "chapter": 12,
+        "verse": 51
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 12,
+          "verse": 51
+        }
+      ],
+      "en": "Do you think that I have come to give peace on the earth? I tell you, no, but rather division.",
+      "ko": "내가 세상에 화평을 주려고 온줄로 아느냐 내가 너희에게 이르노니 아니라 도리어 분쟁케 하려 함이로라",
+      "source_text_hash": "a093418a5f882dd046852c35e5341b9eb5f164c25a089bfa94ac2381cf0610b2",
+      "translation_text_hash": "4244d44fb865cf69c6c28567be085fb585aebe2b100585c62fba47ee40a0e4be",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 세상에 화평을 주려고 온줄로 아느냐 내가 너희에게 이르노니 아니라 도리어 분쟁케 하려 함이로라"
+      ],
+      "raw_text_hashes": [
+        "4244d44fb865cf69c6c28567be085fb585aebe2b100585c62fba47ee40a0e4be"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:12:52",
+      "sequence": 25512,
+      "chapter_label": "LUK 12",
+      "verse_label": "52",
+      "locator": {
+        "book": "LUK",
+        "chapter": 12,
+        "verse": 52
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 12,
+          "verse": 52
+        }
+      ],
+      "en": "For from now on, there will be five in one house divided, three against two, and two against three.",
+      "ko": "이 후부터 한 집에 다섯 사람이 있어 분쟁하되 셋이 둘과, 둘이 셋과 하리니",
+      "source_text_hash": "27e024ad2070ba883a7cca2aadeb4878a5d7012da4aeb62df97f51bf4c1b11ae",
+      "translation_text_hash": "04b2ec523819c4c885324a1c04070792812caa7d90ac5bc2b5fd44ce6463887e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 후부터 한 집에 다섯 사람이 있어 분쟁하되 셋이 둘과, 둘이 셋과 하리니"
+      ],
+      "raw_text_hashes": [
+        "04b2ec523819c4c885324a1c04070792812caa7d90ac5bc2b5fd44ce6463887e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:12:53",
+      "sequence": 25513,
+      "chapter_label": "LUK 12",
+      "verse_label": "53",
+      "locator": {
+        "book": "LUK",
+        "chapter": 12,
+        "verse": 53
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 12,
+          "verse": 53
+        }
+      ],
+      "en": "They will be divided, father against son, and son against father; mother against daughter, and daughter against her mother; mother-in-law against her daughter-in-law, and daughter-in-law against her mother-in-law.”",
+      "ko": "아비가 아들과, 아들이 아비와, 어미가 딸과, 딸이 어미와, 시어미가 며느리와, 며느리가 시어미와 분쟁하리라 하시니라",
+      "source_text_hash": "26efbb2392e08ef6be4a37517080de63ad484a9ce7ef4476fd0796ef022c8df7",
+      "translation_text_hash": "f753265ccff392f8570b2f86f82a4cfb08e4516301daf938bab94de6862c9f64",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아비가 아들과, 아들이 아비와, 어미가 딸과, 딸이 어미와, 시어미가 며느리와, 며느리가 시어미와 분쟁하리라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "f753265ccff392f8570b2f86f82a4cfb08e4516301daf938bab94de6862c9f64"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:12:54",
+      "sequence": 25514,
+      "chapter_label": "LUK 12",
+      "verse_label": "54",
+      "locator": {
+        "book": "LUK",
+        "chapter": 12,
+        "verse": 54
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 12,
+          "verse": 54
+        }
+      ],
+      "en": "He said to the multitudes also, “When you see a cloud rising from the west, immediately you say, ‘A shower is coming,’ and so it happens.",
+      "ko": "또 무리에게 이르시되 너희가 구름이 서에서 일어남을 보면 곧 말하기를 소나기가 오리라 하나니 과연 그러하고",
+      "source_text_hash": "fc311e68fb5b84aa1d2fae4ab4c070cd53d43c82b76d91c62c0c18a5f8f4c718",
+      "translation_text_hash": "ce49a1400fe68e71976a4ae1bf8908a78eb1598e4c45e3d5e905010b440a42f4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 무리에게 이르시되 너희가 구름이 서에서 일어남을 보면 곧 말하기를 소나기가 오리라 하나니 과연 그러하고"
+      ],
+      "raw_text_hashes": [
+        "ce49a1400fe68e71976a4ae1bf8908a78eb1598e4c45e3d5e905010b440a42f4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:12:55",
+      "sequence": 25515,
+      "chapter_label": "LUK 12",
+      "verse_label": "55",
+      "locator": {
+        "book": "LUK",
+        "chapter": 12,
+        "verse": 55
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 12,
+          "verse": 55
+        }
+      ],
+      "en": "When a south wind blows, you say, ‘There will be a scorching heat,’ and it happens.",
+      "ko": "남풍이 붊을 보면 말하기를 심히 더우리라 하나니 과연 그러하니라",
+      "source_text_hash": "89186b241c545e9d0f5f79113975d9e1cd6f0814db6d340ef93a405799d16df3",
+      "translation_text_hash": "2b3ae9762aeecd73d2e0680403694276617c7d85a9713c1bc5661877d02c6d84",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "남풍이 붊을 보면 말하기를 심히 더우리라 하나니 과연 그러하니라"
+      ],
+      "raw_text_hashes": [
+        "2b3ae9762aeecd73d2e0680403694276617c7d85a9713c1bc5661877d02c6d84"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:12:56",
+      "sequence": 25516,
+      "chapter_label": "LUK 12",
+      "verse_label": "56",
+      "locator": {
+        "book": "LUK",
+        "chapter": 12,
+        "verse": 56
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 12,
+          "verse": 56
+        }
+      ],
+      "en": "You hypocrites! You know how to interpret the appearance of the earth and the sky, but how is it that you don’t interpret this time?",
+      "ko": "외식하는 자여 너희가 천지의 기상은 분변할 줄을 알면서 어찌 이 시대는 분변치 못하느냐",
+      "source_text_hash": "e15debeca3a1c83f8352fbf3a2e75843ca3d49c0531add21b4d45c1910366b5e",
+      "translation_text_hash": "e2cfbd523ecb251be8fe0e71f9af2a91db9f831bf448578ee63dea5db1be2a32",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "외식하는 자여 너희가 천지의 기상은 분변할 줄을 알면서 어찌 이 시대는 분변치 못하느냐"
+      ],
+      "raw_text_hashes": [
+        "e2cfbd523ecb251be8fe0e71f9af2a91db9f831bf448578ee63dea5db1be2a32"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:12:57",
+      "sequence": 25517,
+      "chapter_label": "LUK 12",
+      "verse_label": "57",
+      "locator": {
+        "book": "LUK",
+        "chapter": 12,
+        "verse": 57
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 12,
+          "verse": 57
+        }
+      ],
+      "en": "“Why don’t you judge for yourselves what is right?",
+      "ko": "또 어찌하여 옳은 것을 스스로 판단치 아니하느냐",
+      "source_text_hash": "ac83ad05875dbf873d03cbf305e8d9598ea23ad844e3c5c408a7f7ad4db33f92",
+      "translation_text_hash": "54f77e47f928849d2de93f9abbd0dcb7489571aef93d983d4d76f9316dced514",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 어찌하여 옳은 것을 스스로 판단치 아니하느냐"
+      ],
+      "raw_text_hashes": [
+        "54f77e47f928849d2de93f9abbd0dcb7489571aef93d983d4d76f9316dced514"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:12:58",
+      "sequence": 25518,
+      "chapter_label": "LUK 12",
+      "verse_label": "58",
+      "locator": {
+        "book": "LUK",
+        "chapter": 12,
+        "verse": 58
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 12,
+          "verse": 58
+        }
+      ],
+      "en": "For when you are going with your adversary before the magistrate, try diligently on the way to be released from him, lest perhaps he drag you to the judge, and the judge deliver you to the officer, and the officer throw you into prison.",
+      "ko": "네가 너를 고소할 자와 함께 법관에게 갈 때에 길에서 화해하기를 힘쓰라 저가 너를 재판장에게 끌어가고 재판장이 너를 관속에게 넘겨주어 관속이 옥에 가둘까 염려하라",
+      "source_text_hash": "b359e17a0f90a933d7258cfe9e81c68db27553e9866a9da7dc8c315ffd1c11a5",
+      "translation_text_hash": "aa8e6ebb3dcd0b622efa0c4add5d64deed270f2060bbf5ecd389ae25666609d0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 너를 고소할 자와 함께 법관에게 갈 때에 길에서 화해하기를 힘쓰라 저가 너를 재판장에게 끌어가고 재판장이 너를 관속에게 넘겨주어 관속이 옥에 가둘까 염려하라"
+      ],
+      "raw_text_hashes": [
+        "aa8e6ebb3dcd0b622efa0c4add5d64deed270f2060bbf5ecd389ae25666609d0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:12:59",
+      "sequence": 25519,
+      "chapter_label": "LUK 12",
+      "verse_label": "59",
+      "locator": {
+        "book": "LUK",
+        "chapter": 12,
+        "verse": 59
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 12,
+          "verse": 59
+        }
+      ],
+      "en": "I tell you, you will by no means get out of there until you have paid the very last penny.”",
+      "ko": "네게 이르노니 호리라도 남김이 없이 갚지 아니하여서는 결단코 저기서 나오지 못하리라 하시니라",
+      "source_text_hash": "042002e63e134e92420cb8ba0996eb0109f3e1c641264c8b5a1ab02ce5ddc967",
+      "translation_text_hash": "790ebf22146b207e658ad245e40e328abc363f274dc7c4ec0d3c2d382d370772",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네게 이르노니 호리라도 남김이 없이 갚지 아니하여서는 결단코 저기서 나오지 못하리라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "790ebf22146b207e658ad245e40e328abc363f274dc7c4ec0d3c2d382d370772"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,429 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:140",
+  "unit_ordinal": 618,
+  "unit_label": "PSA 140",
+  "book_code": "PSA",
+  "chapter_number": 140,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:140:1",
+      "sequence": 16265,
+      "chapter_label": "PSA 140",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 140,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 140,
+          "verse": 1
+        }
+      ],
+      "en": "Deliver me, LORD, from evil men. Preserve me from violent men:",
+      "ko": "여호와여 악인에게서 나를 건지시며 강포한 자에게서 나를 보전하소서",
+      "source_text_hash": "13833de286eb9e66f94a71b731b18a643c0b8a6f18df77999917cc2e989d502b",
+      "translation_text_hash": "b7aee44e42fb5d2f9aa7dd9e42aae131b761a81f1a25efcb3bb3934ed6631f93",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 악인에게서 나를 건지시며 강포한 자에게서 나를 보전하소서"
+      ],
+      "raw_text_hashes": [
+        "b7aee44e42fb5d2f9aa7dd9e42aae131b761a81f1a25efcb3bb3934ed6631f93"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:140:2",
+      "sequence": 16266,
+      "chapter_label": "PSA 140",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 140,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 140,
+          "verse": 2
+        }
+      ],
+      "en": "those who devise mischief in their hearts. They continually gather themselves together for war.",
+      "ko": "저희가 중심에 해하기를 꾀하고 싸우기 위하여 매일 모이오며",
+      "source_text_hash": "25e9fc9f8fc057bf97bdab4493df031b144a661c9f02ad39dae162afc369ed6e",
+      "translation_text_hash": "48ee771500ab5a8a7012e5340fc88f85e9e32c7a29c9d3d614385681912d4314",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 중심에 해하기를 꾀하고 싸우기 위하여 매일 모이오며"
+      ],
+      "raw_text_hashes": [
+        "48ee771500ab5a8a7012e5340fc88f85e9e32c7a29c9d3d614385681912d4314"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:140:3",
+      "sequence": 16267,
+      "chapter_label": "PSA 140",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 140,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 140,
+          "verse": 3
+        }
+      ],
+      "en": "They have sharpened their tongues like a serpent. Viper’s poison is under their lips. Selah.",
+      "ko": "뱀 같이 그 혀를 날카롭게 하니 그 입술 아래는 독사의 독이 있나이다(셀라)",
+      "source_text_hash": "582f992992eade480b2232067b480ddcc3543174fecb244a0a2968eeafb7fa09",
+      "translation_text_hash": "ea4eb91f3095d2963bbe70bcc2577a26b13d9cdeabcbe2c21c62af4ff72d9bc8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "뱀 같이 그 혀를 날카롭게 하니 그 입술 아래는 독사의 독이 있나이다(셀라)"
+      ],
+      "raw_text_hashes": [
+        "ea4eb91f3095d2963bbe70bcc2577a26b13d9cdeabcbe2c21c62af4ff72d9bc8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:140:4",
+      "sequence": 16268,
+      "chapter_label": "PSA 140",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 140,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 140,
+          "verse": 4
+        }
+      ],
+      "en": "LORD, keep me from the hands of the wicked. Preserve me from the violent men who have determined to trip my feet.",
+      "ko": "여호와여 나를 지키사 악인의 손에 빠지지 않게 하시며 나를 보전하사 강포한 자에게서 벗어나게 하소서 저희는 나의 걸음을 밀치려 하나이다",
+      "source_text_hash": "47058849e0668a3fc929241acfcda233f26e8110fff99d35077405010f0ad7dd",
+      "translation_text_hash": "abf06d95cb2f5742b96ae9728ac01ba0557db4795b253f8877a8b7c3f678679f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 나를 지키사 악인의 손에 빠지지 않게 하시며 나를 보전하사 강포한 자에게서 벗어나게 하소서 저희는 나의 걸음을 밀치려 하나이다"
+      ],
+      "raw_text_hashes": [
+        "abf06d95cb2f5742b96ae9728ac01ba0557db4795b253f8877a8b7c3f678679f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:140:5",
+      "sequence": 16269,
+      "chapter_label": "PSA 140",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 140,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 140,
+          "verse": 5
+        }
+      ],
+      "en": "The proud have hidden a snare for me, they have spread the cords of a net by the path. They have set traps for me. Selah.",
+      "ko": "교만한 자가 나를 해하려고 올무와 줄을 놓으며 길곁에 그물을 치며 함정을 두었나이다(셀라)",
+      "source_text_hash": "c629cc8ef81ee63409f43f4c83cc4817fc5f08a064552f0e2a3bce317883c62e",
+      "translation_text_hash": "8daaf1e30746dfdb67bdbd95e6fdaa1ddda0836a2865cd6f53033b1fdc78ebb6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "교만한 자가 나를 해하려고 올무와 줄을 놓으며 길곁에 그물을 치며 함정을 두었나이다(셀라)"
+      ],
+      "raw_text_hashes": [
+        "8daaf1e30746dfdb67bdbd95e6fdaa1ddda0836a2865cd6f53033b1fdc78ebb6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:140:6",
+      "sequence": 16270,
+      "chapter_label": "PSA 140",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 140,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 140,
+          "verse": 6
+        }
+      ],
+      "en": "I said to the LORD, “You are my God.” Listen to the cry of my petitions, LORD.",
+      "ko": "내가 여호와께 말하기를 주는 나의 하나님이시니 여호와여 나의 간구하는 소리에 귀를 기울이소서 하였나이다",
+      "source_text_hash": "01644eef52cc6866aa40151665ff21a57cead6705892b661e840e143d8dc8dd4",
+      "translation_text_hash": "833932152e1ba4154ec63aab21a7478da68e18bc1cb7deba041319348222490c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 여호와께 말하기를 주는 나의 하나님이시니 여호와여 나의 간구하는 소리에 귀를 기울이소서 하였나이다"
+      ],
+      "raw_text_hashes": [
+        "833932152e1ba4154ec63aab21a7478da68e18bc1cb7deba041319348222490c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:140:7",
+      "sequence": 16271,
+      "chapter_label": "PSA 140",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 140,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 140,
+          "verse": 7
+        }
+      ],
+      "en": "LORD, the Lord, the strength of my salvation, you have covered my head in the day of battle.",
+      "ko": "내 구원의 능력이신 주 여호와여 전쟁의 날에 주께서 내 머리를 가리우셨나이다",
+      "source_text_hash": "4572afb23b84cd0537719b28575f8a8728fbd91b03a603313022288310fe96cb",
+      "translation_text_hash": "0d24aa1adfcff162c101731e5938cefb3fceb0b9079f3b3b511e298fd27a3ba1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 구원의 능력이신 주 여호와여 전쟁의 날에 주께서 내 머리를 가리우셨나이다"
+      ],
+      "raw_text_hashes": [
+        "0d24aa1adfcff162c101731e5938cefb3fceb0b9079f3b3b511e298fd27a3ba1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:140:8",
+      "sequence": 16272,
+      "chapter_label": "PSA 140",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 140,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 140,
+          "verse": 8
+        }
+      ],
+      "en": "LORD, don’t grant the desires of the wicked. Don’t let their evil plans succeed, or they will become proud. Selah.",
+      "ko": "여호와여 악인의 소원을 허락지 마시며 그 악한 꾀를 이루지 못하게 하소서 저희가 자고할까 하나이다(셀라)",
+      "source_text_hash": "3ceb3c7c208fbf17c3ae9926987b11807fbdb0da38dc568320e07c05ee606440",
+      "translation_text_hash": "4d2633b7dff1e1ac2f6373b2a9f005158de2ae02af9ef086d056b213e375372c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 악인의 소원을 허락지 마시며 그 악한 꾀를 이루지 못하게 하소서 저희가 자고할까 하나이다(셀라)"
+      ],
+      "raw_text_hashes": [
+        "4d2633b7dff1e1ac2f6373b2a9f005158de2ae02af9ef086d056b213e375372c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:140:9",
+      "sequence": 16273,
+      "chapter_label": "PSA 140",
+      "verse_label": "9",
+      "locator": {
+        "book": "PSA",
+        "chapter": 140,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 140,
+          "verse": 9
+        }
+      ],
+      "en": "As for the head of those who surround me, let the mischief of their own lips cover them.",
+      "ko": "나를 에우는 자가 그 머리를 들 때에 저희 입술의 해가 저희를 덮게 하소서",
+      "source_text_hash": "a6c0b54cd55ec8ae756be2919705a610969ec53568a80bc8284f17230f3b334e",
+      "translation_text_hash": "11fece80f653b36fec5634828e79e88f3b048bfddab837c3df305694dcd0c15e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나를 에우는 자가 그 머리를 들 때에 저희 입술의 해가 저희를 덮게 하소서"
+      ],
+      "raw_text_hashes": [
+        "11fece80f653b36fec5634828e79e88f3b048bfddab837c3df305694dcd0c15e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:140:10",
+      "sequence": 16274,
+      "chapter_label": "PSA 140",
+      "verse_label": "10",
+      "locator": {
+        "book": "PSA",
+        "chapter": 140,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 140,
+          "verse": 10
+        }
+      ],
+      "en": "Let burning coals fall on them. Let them be thrown into the fire, into miry pits, from where they never rise.",
+      "ko": "뜨거운 숯불이 저희에게 떨어지게 하시며 불 가운데와 깊은 웅덩이에 저희로 빠져 다시 일어나지 못하게 하소서",
+      "source_text_hash": "44b2275b6881289219a376f6518ff04de12b1089b2efe6c808e0e5becf79cdb8",
+      "translation_text_hash": "1eb677e7586915ea3739a151de8b6a9e8f7d30075889fb5d9a69472472d160aa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "뜨거운 숯불이 저희에게 떨어지게 하시며 불 가운데와 깊은 웅덩이에 저희로 빠져 다시 일어나지 못하게 하소서"
+      ],
+      "raw_text_hashes": [
+        "1eb677e7586915ea3739a151de8b6a9e8f7d30075889fb5d9a69472472d160aa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:140:11",
+      "sequence": 16275,
+      "chapter_label": "PSA 140",
+      "verse_label": "11",
+      "locator": {
+        "book": "PSA",
+        "chapter": 140,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 140,
+          "verse": 11
+        }
+      ],
+      "en": "An evil speaker won’t be established on the earth. Evil will hunt the violent man to overthrow him.",
+      "ko": "악담하는 자는 세상에서 굳게 서지 못하며 강포한 자에게는 재앙이 따라서 패망케 하리이다",
+      "source_text_hash": "7a33cd300ec198d97a92ad82c6f55c814c5b84228ab9915195e98b26aabe5190",
+      "translation_text_hash": "a1c62fdab47a9f13e4c796fff8b2b5d25f713fe54c72001a42b81da13f391b1a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "악담하는 자는 세상에서 굳게 서지 못하며 강포한 자에게는 재앙이 따라서 패망케 하리이다"
+      ],
+      "raw_text_hashes": [
+        "a1c62fdab47a9f13e4c796fff8b2b5d25f713fe54c72001a42b81da13f391b1a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:140:12",
+      "sequence": 16276,
+      "chapter_label": "PSA 140",
+      "verse_label": "12",
+      "locator": {
+        "book": "PSA",
+        "chapter": 140,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 140,
+          "verse": 12
+        }
+      ],
+      "en": "I know that the LORD will maintain the cause of the afflicted, and justice for the needy.",
+      "ko": "내가 알거니와 여호와는 고난 당하는 자를 신원하시며 궁핍한 자에게 공의를 베푸시리이다",
+      "source_text_hash": "67af54d39995b70f63877707353346463374962b26a614b56b9563ec6bdf2b41",
+      "translation_text_hash": "714001025b78fd108558d80885f3e84a2de7bc790e30dbb22f2d7facd3f80927",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 알거니와 여호와는 고난 당하는 자를 신원하시며 궁핍한 자에게 공의를 베푸시리이다"
+      ],
+      "raw_text_hashes": [
+        "714001025b78fd108558d80885f3e84a2de7bc790e30dbb22f2d7facd3f80927"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:140:13",
+      "sequence": 16277,
+      "chapter_label": "PSA 140",
+      "verse_label": "13",
+      "locator": {
+        "book": "PSA",
+        "chapter": 140,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 140,
+          "verse": 13
+        }
+      ],
+      "en": "Surely the righteous will give thanks to your name. The upright will dwell in your presence.",
+      "ko": "진실로 의인이 주의 이름에 감사하며 정직한 자가 주의 앞에 거하리이다",
+      "source_text_hash": "170031dc3ee88dbf8d9a7e4b9a72fac19e9af0a184d94f1e4e9a2694aaabc398",
+      "translation_text_hash": "59774248f5582505609bc26c0870dfd1719306b90ec65059ceca3104e87aad7e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "진실로 의인이 주의 이름에 감사하며 정직한 자가 주의 앞에 거하리이다"
+      ],
+      "raw_text_hashes": [
+        "59774248f5582505609bc26c0870dfd1719306b90ec65059ceca3104e87aad7e"
+      ]
+    }
+  ]
+}

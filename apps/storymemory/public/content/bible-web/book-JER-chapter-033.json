@@ -1,0 +1,845 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JER:chapter:033",
+  "unit_ordinal": 778,
+  "unit_label": "JER 33",
+  "book_code": "JER",
+  "chapter_number": 33,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JER:33:1",
+      "sequence": 19777,
+      "chapter_label": "JER 33",
+      "verse_label": "1",
+      "locator": {
+        "book": "JER",
+        "chapter": 33,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 33,
+          "verse": 1
+        }
+      ],
+      "en": "Moreover the LORD’s word came to Jeremiah the second time, while he was still locked up in the court of the guard, saying,",
+      "ko": "예레미야가 아직 시위대 뜰에 갇혔을 때에 여호와의 말씀이 그에게 다시 임하니라 가라사대",
+      "source_text_hash": "41cbf2e8903692185dedde5473d5de03bf577cd864ede4d5ec6614207b1692dd",
+      "translation_text_hash": "d4db95d5744d75fff262446000421603b4be3679e249a78c0925510eb4947b87",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예레미야가 아직 시위대 뜰에 갇혔을 때에 여호와의 말씀이 그에게 다시 임하니라 가라사대"
+      ],
+      "raw_text_hashes": [
+        "d4db95d5744d75fff262446000421603b4be3679e249a78c0925510eb4947b87"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:33:2",
+      "sequence": 19778,
+      "chapter_label": "JER 33",
+      "verse_label": "2",
+      "locator": {
+        "book": "JER",
+        "chapter": 33,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 33,
+          "verse": 2
+        }
+      ],
+      "en": "“The LORD who does it, the LORD who forms it to establish it—the LORD is his name, says:",
+      "ko": "일을 행하는 여호와, 그것을 지어 성취하는 여호와, 그 이름을 여호와라 하는 자가 이같이 이르노라",
+      "source_text_hash": "8a6730dc62759ef6208c661184832abc865453ec4e4e1910d79a085afd987f98",
+      "translation_text_hash": "6c374864a070face33d8739bc62f842ee34d6796c90c502e1f21077217bf090b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "일을 행하는 여호와, 그것을 지어 성취하는 여호와, 그 이름을 여호와라 하는 자가 이같이 이르노라"
+      ],
+      "raw_text_hashes": [
+        "6c374864a070face33d8739bc62f842ee34d6796c90c502e1f21077217bf090b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:33:3",
+      "sequence": 19779,
+      "chapter_label": "JER 33",
+      "verse_label": "3",
+      "locator": {
+        "book": "JER",
+        "chapter": 33,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 33,
+          "verse": 3
+        }
+      ],
+      "en": "‘Call to me, and I will answer you, and will show you great and difficult things, which you don’t know.’",
+      "ko": "너는 내게 부르짖으라 내가 네게 응답하겠고 네가 알지 못하는 크고 비밀한 일을 네게 보이리라",
+      "source_text_hash": "6bc33329f2750fa649804acaed87d4fb76134bd3eb1cf44056daa49992e1ba5f",
+      "translation_text_hash": "7db7cab551dacc475690b74217f3d93fa7109ca873955e1fc247e2824d225cf1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 내게 부르짖으라 내가 네게 응답하겠고 네가 알지 못하는 크고 비밀한 일을 네게 보이리라"
+      ],
+      "raw_text_hashes": [
+        "7db7cab551dacc475690b74217f3d93fa7109ca873955e1fc247e2824d225cf1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:33:4",
+      "sequence": 19780,
+      "chapter_label": "JER 33",
+      "verse_label": "4",
+      "locator": {
+        "book": "JER",
+        "chapter": 33,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 33,
+          "verse": 4
+        }
+      ],
+      "en": "For the LORD, the God of Israel, says concerning the houses of this city and concerning the houses of the kings of Judah, which are broken down to make a defense against the mounds and against the sword:",
+      "ko": "이스라엘의 하나님 여호와가 말하노라 무리가 이 성읍의 가옥과 유다 왕궁을 헐어서 갈대아인의 흉벽과 칼을 막아",
+      "source_text_hash": "ec8baba36385690985f981bf3f4660fd57e2377c93f03728d21f11d670855bc9",
+      "translation_text_hash": "f46af91933e96524de3ca54a0c72c8e0d314d13f1e9370de8720d40112631447",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘의 하나님 여호와가 말하노라 무리가 이 성읍의 가옥과 유다 왕궁을 헐어서 갈대아인의 흉벽과 칼을 막아"
+      ],
+      "raw_text_hashes": [
+        "f46af91933e96524de3ca54a0c72c8e0d314d13f1e9370de8720d40112631447"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:33:5",
+      "sequence": 19781,
+      "chapter_label": "JER 33",
+      "verse_label": "5",
+      "locator": {
+        "book": "JER",
+        "chapter": 33,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 33,
+          "verse": 5
+        }
+      ],
+      "en": "‘While men come to fight with the Chaldeans, and to fill them with the dead bodies of men, whom I have killed in my anger and in my wrath, and for all whose wickedness I have hidden my face from this city,",
+      "ko": "싸우려 하였으나 내가 나의 노와 분함으로 그들을 죽이고 그 시체로 이 성에 채우게 하였나니 이는 그들의 모든 악을 인하여 나의 얼굴을 가리워 이 성을 돌아보지 아니하였음이니라",
+      "source_text_hash": "4ebb30a9073e7102b85877b96277e87296fb1b236ce233e36ff260c248597aca",
+      "translation_text_hash": "b1f0da46aeac5867d46386816cbab21dd964fdd857e2d5203bde5b380f77cded",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "싸우려 하였으나 내가 나의 노와 분함으로 그들을 죽이고 그 시체로 이 성에 채우게 하였나니 이는 그들의 모든 악을 인하여 나의 얼굴을 가리워 이 성을 돌아보지 아니하였음이니라"
+      ],
+      "raw_text_hashes": [
+        "b1f0da46aeac5867d46386816cbab21dd964fdd857e2d5203bde5b380f77cded"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:33:6",
+      "sequence": 19782,
+      "chapter_label": "JER 33",
+      "verse_label": "6",
+      "locator": {
+        "book": "JER",
+        "chapter": 33,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 33,
+          "verse": 6
+        }
+      ],
+      "en": "behold, I will bring it health and healing, and I will cure them; and I will reveal to them abundance of peace and truth.",
+      "ko": "그러나 보라 내가 이 성을 치료하며 고쳐 낫게 하고 평강과 성실함에 풍성함을 그들에게 나타낼 것이며",
+      "source_text_hash": "60fd0f570cbaf8daf627085dc78de32c9fb5d7717be1846afaf856fdf254fa06",
+      "translation_text_hash": "e50fc7a489d6cc25d420f32d021e69f0dae2bfab010a7859a213187fbab1328c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 보라 내가 이 성을 치료하며 고쳐 낫게 하고 평강과 성실함에 풍성함을 그들에게 나타낼 것이며"
+      ],
+      "raw_text_hashes": [
+        "e50fc7a489d6cc25d420f32d021e69f0dae2bfab010a7859a213187fbab1328c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:33:7",
+      "sequence": 19783,
+      "chapter_label": "JER 33",
+      "verse_label": "7",
+      "locator": {
+        "book": "JER",
+        "chapter": 33,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 33,
+          "verse": 7
+        }
+      ],
+      "en": "I will restore the fortunes of Judah and Israel, and will build them as at the first.",
+      "ko": "내가 유다의 포로와 이스라엘의 포로를 돌아오게 하여 그들을 처음과 같이 세울 것이며",
+      "source_text_hash": "21110be683acc635f1729fac89165c1ad181bf42a699d5eccb56aa00eb7d2c1b",
+      "translation_text_hash": "ba9e59b2970a0d591456c3f3a66f540dad1800c1398712591a56215e67c2b42f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 유다의 포로와 이스라엘의 포로를 돌아오게 하여 그들을 처음과 같이 세울 것이며"
+      ],
+      "raw_text_hashes": [
+        "ba9e59b2970a0d591456c3f3a66f540dad1800c1398712591a56215e67c2b42f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:33:8",
+      "sequence": 19784,
+      "chapter_label": "JER 33",
+      "verse_label": "8",
+      "locator": {
+        "book": "JER",
+        "chapter": 33,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 33,
+          "verse": 8
+        }
+      ],
+      "en": "I will cleanse them from all their iniquity by which they have sinned against me. I will pardon all their iniquities by which they have sinned against me and by which they have transgressed against me.",
+      "ko": "내가 그들을 내게 범한 그 모든 죄악에서 정하게 하며 그들의 내게 범하며 행한 모든 죄악을 사할 것이라",
+      "source_text_hash": "bc7529fb437f1d5efcf179c9e571f803b7bb773c9980b4fc02dbaf758ad9d05f",
+      "translation_text_hash": "1397cd5c0730b6ec590b5be23b1256882576d46c0b06757401d3a5b81763e1ec",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 그들을 내게 범한 그 모든 죄악에서 정하게 하며 그들의 내게 범하며 행한 모든 죄악을 사할 것이라"
+      ],
+      "raw_text_hashes": [
+        "1397cd5c0730b6ec590b5be23b1256882576d46c0b06757401d3a5b81763e1ec"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:33:9",
+      "sequence": 19785,
+      "chapter_label": "JER 33",
+      "verse_label": "9",
+      "locator": {
+        "book": "JER",
+        "chapter": 33,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 33,
+          "verse": 9
+        }
+      ],
+      "en": "This city will be to me for a name of joy, for praise, and for glory, before all the nations of the earth, which will hear all the good that I do to them, and will fear and tremble for all the good and for all the peace that I provide to it.’”",
+      "ko": "이 성읍이 세계 열방 앞에서 내게 기쁜 이름이 될 것이며 찬송과 영광이 될 것이요 그들은 나의 이 백성에게 베푼 모든 복을 들을 것이요 나의 이 성읍에 베푼 모든 복과 모든 평강을 인하여 두려워하며 떨리라",
+      "source_text_hash": "cb706e835ec9300debefb8e3916204e6732b0af9e9876037ad86a8b8ef639e4d",
+      "translation_text_hash": "02721b6f0127a1ffae2fd280883c2157f7a67778f8f8531d7489255d497da627",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 성읍이 세계 열방 앞에서 내게 기쁜 이름이 될 것이며 찬송과 영광이 될 것이요 그들은 나의 이 백성에게 베푼 모든 복을 들을 것이요 나의 이 성읍에 베푼 모든 복과 모든 평강을 인하여 두려워하며 떨리라"
+      ],
+      "raw_text_hashes": [
+        "02721b6f0127a1ffae2fd280883c2157f7a67778f8f8531d7489255d497da627"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:33:10",
+      "sequence": 19786,
+      "chapter_label": "JER 33",
+      "verse_label": "10",
+      "locator": {
+        "book": "JER",
+        "chapter": 33,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 33,
+          "verse": 10
+        }
+      ],
+      "en": "The LORD says: “Yet again there will be heard in this place, about which you say, ‘It is waste, without man and without animal, even in the cities of Judah, and in the streets of Jerusalem, that are desolate, without man and without inhabitant and without animal,’",
+      "ko": "나 여호와가 이같이 말하노라 너희가 가리켜 말하기를 황폐하여 사람도 없고 짐승도 없다 하던 여기 곧 황폐하여 사람도 없고 주민도 없고 짐승도 없던 유다 성읍들과 예루살렘 거리에서 즐거워하는 소리, 기뻐하는 소리, 신랑의 소리, 신부의 소리와 및 만군의 여호와께 감사하라, 여호와는 선하시니 그 인자하심이 영원하다 하는 소리와 여호와의 집에 감사제를 드리는 자들의 소리가 다시 들리리니 이는 내가 이 땅의 포로로 돌아와서 처음과 같이 되게 할 것임이니라 여호와의 말이니라",
+      "source_text_hash": "8df80fc1398a7e1645fd2582644f3d2fac0a45f0dc37152d4ea61fb6a8cdf7cf",
+      "translation_text_hash": "5f707d009a2ec3bbd24a8b52ca15db751474b7571f07939257cfa4cd7e924676",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와가 이같이 말하노라 너희가 가리켜 말하기를 황폐하여 사람도 없고 짐승도 없다 하던 여기 곧 황폐하여 사람도 없고 주민도 없고 짐승도 없던 유다 성읍들과 예루살렘 거리에서 즐거워하는 소리, 기뻐하는 소리, 신랑의 소리, 신부의 소리와 및 만군의 여호와께 감사하라, 여호와는 선하시니 그 인자하심이 영원하다 하는 소리와 여호와의 집에 감사제를 드리는 자들의 소리가 다시 들리리니 이는 내가 이 땅의 포로로 돌아와서 처음과 같이 되게 할 것임이니라 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "5f707d009a2ec3bbd24a8b52ca15db751474b7571f07939257cfa4cd7e924676"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:33:11",
+      "sequence": 19787,
+      "chapter_label": "JER 33",
+      "verse_label": "11",
+      "locator": {
+        "book": "JER",
+        "chapter": 33,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 33,
+          "verse": 11
+        }
+      ],
+      "en": "the voice of joy and the voice of gladness, the voice of the bridegroom and the voice of the bride, the voice of those who say, ‘Give thanks to the LORD of Armies, for the LORD is good, for his loving kindness endures forever;’ who bring thanksgiving into the LORD’s house. For I will cause the captivity of the land to be reversed as at the first,” says the LORD.",
+      "ko": "(10절에 포함되어 있음)",
+      "source_text_hash": "d5db8b16d082ab052185a8117ae58e1732a67bc0ccfec1d7fb134a46fb2f9bd5",
+      "translation_text_hash": "d60a8ca49970d0aa3f9973e0db98efaf50dfeefe0ccc7afcd67a980d4490ff07",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "(10절에 포함되어 있음)"
+      ],
+      "raw_text_hashes": [
+        "d60a8ca49970d0aa3f9973e0db98efaf50dfeefe0ccc7afcd67a980d4490ff07"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:33:12",
+      "sequence": 19788,
+      "chapter_label": "JER 33",
+      "verse_label": "12",
+      "locator": {
+        "book": "JER",
+        "chapter": 33,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 33,
+          "verse": 12
+        }
+      ],
+      "en": "The LORD of Armies says: “Yet again there will be in this place, which is waste, without man and without animal, and in all its cities, a habitation of shepherds causing their flocks to lie down.",
+      "ko": "나 만군의 여호와가 이같이 말하노라 황폐하여 사람도 없고 짐승도 없던 이 곳과 그 모든 성읍에 다시 목자의 거할 곳이 있으리니 그 양무리를 눕게 할 것이라",
+      "source_text_hash": "1e01dc55930f6e3ead5fd15f72171848b5ed3d4d682961efaaa4864542ed5fda",
+      "translation_text_hash": "f0f1876a9aff133a68826678616784d456d412e70eeb17dd5dd420cf557a6863",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 만군의 여호와가 이같이 말하노라 황폐하여 사람도 없고 짐승도 없던 이 곳과 그 모든 성읍에 다시 목자의 거할 곳이 있으리니 그 양무리를 눕게 할 것이라"
+      ],
+      "raw_text_hashes": [
+        "f0f1876a9aff133a68826678616784d456d412e70eeb17dd5dd420cf557a6863"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:33:13",
+      "sequence": 19789,
+      "chapter_label": "JER 33",
+      "verse_label": "13",
+      "locator": {
+        "book": "JER",
+        "chapter": 33,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 33,
+          "verse": 13
+        }
+      ],
+      "en": "In the cities of the hill country, in the cities of the lowland, in the cities of the South, in the land of Benjamin, in the places around Jerusalem, and in the cities of Judah, the flocks will again pass under the hands of him who counts them,” says the LORD.",
+      "ko": "산지 성읍들과 평지 성읍들과 남방의 성읍들과 베냐민 땅과 예루살렘 사면과 유다 성읍들에서 양 무리가 다시 계수하는 자의 손 아래로 지나리라 여호와의 말이니라",
+      "source_text_hash": "94b88dec0d4d2530ce24c41d0471aa2fd8f5f7b02ea1d7d9cbdb4bb7403e6d40",
+      "translation_text_hash": "efc2aff0dfc2704f39bdcf7658fc6d325dbc0674249a9b3f834e3082d8b1ea6d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "산지 성읍들과 평지 성읍들과 남방의 성읍들과 베냐민 땅과 예루살렘 사면과 유다 성읍들에서 양 무리가 다시 계수하는 자의 손 아래로 지나리라 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "efc2aff0dfc2704f39bdcf7658fc6d325dbc0674249a9b3f834e3082d8b1ea6d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:33:14",
+      "sequence": 19790,
+      "chapter_label": "JER 33",
+      "verse_label": "14",
+      "locator": {
+        "book": "JER",
+        "chapter": 33,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 33,
+          "verse": 14
+        }
+      ],
+      "en": "“Behold, the days come,” says the LORD, “that I will perform that good word which I have spoken concerning the house of Israel and concerning the house of Judah.",
+      "ko": "나 여호와가 말하노라 보라 내가 이스라엘 집과 유다 집에 대하여 이른 선한 말을 성취할 날이 이르리라",
+      "source_text_hash": "4d931e3145ead42dfd279012e6706619fc2291db975aa69a39e530bb299efbcf",
+      "translation_text_hash": "70e7ef39418f5dd2a719ef23dc48720ce0a411d5b1eee2b9e4d599e05318e8a5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와가 말하노라 보라 내가 이스라엘 집과 유다 집에 대하여 이른 선한 말을 성취할 날이 이르리라"
+      ],
+      "raw_text_hashes": [
+        "70e7ef39418f5dd2a719ef23dc48720ce0a411d5b1eee2b9e4d599e05318e8a5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:33:15",
+      "sequence": 19791,
+      "chapter_label": "JER 33",
+      "verse_label": "15",
+      "locator": {
+        "book": "JER",
+        "chapter": 33,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 33,
+          "verse": 15
+        }
+      ],
+      "en": "“In those days and at that time, I will cause a Branch of righteousness to grow up to David. He will execute justice and righteousness in the land.",
+      "ko": "그 날 그 때에 내가 다윗에게 한 의로운 가지가 나게 하리니 그가 이 땅에 공평과 정의를 실행할 것이라",
+      "source_text_hash": "ce2d765781de5f288e9c5c31cd3bbc7dab6bf05cb70b44bbd530a80170b065cc",
+      "translation_text_hash": "11bbb2e27dbbee3ee0fc159ee310ecdaa4a07d3f259c8fe47c7462425bd151ac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날 그 때에 내가 다윗에게 한 의로운 가지가 나게 하리니 그가 이 땅에 공평과 정의를 실행할 것이라"
+      ],
+      "raw_text_hashes": [
+        "11bbb2e27dbbee3ee0fc159ee310ecdaa4a07d3f259c8fe47c7462425bd151ac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:33:16",
+      "sequence": 19792,
+      "chapter_label": "JER 33",
+      "verse_label": "16",
+      "locator": {
+        "book": "JER",
+        "chapter": 33,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 33,
+          "verse": 16
+        }
+      ],
+      "en": "In those days Judah will be saved, and Jerusalem will dwell safely. This is the name by which she will be called: The LORD our righteousness.”",
+      "ko": "그 날에 유다가 구원을 얻겠고 예루살렘이 안전히 거할 것이며 그 성은 여호와 우리의 의라 일컬음을 입으리라",
+      "source_text_hash": "a18785b26628251296bf43da3196db1cc83bf4a268796014c315138c55833f9c",
+      "translation_text_hash": "bdddcece6e95e9e8e757094d5ee624a94bc7a6e9083eab15ce751146c6f67804",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날에 유다가 구원을 얻겠고 예루살렘이 안전히 거할 것이며 그 성은 여호와 우리의 의라 일컬음을 입으리라"
+      ],
+      "raw_text_hashes": [
+        "bdddcece6e95e9e8e757094d5ee624a94bc7a6e9083eab15ce751146c6f67804"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:33:17",
+      "sequence": 19793,
+      "chapter_label": "JER 33",
+      "verse_label": "17",
+      "locator": {
+        "book": "JER",
+        "chapter": 33,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 33,
+          "verse": 17
+        }
+      ],
+      "en": "For the LORD says: “David will never lack a man to sit on the throne of the house of Israel.",
+      "ko": "나 여호와가 이같이 말하노라 이스라엘 집 위에 앉을 사람이 다윗에게 영영히 끊어지지 아니할것이며",
+      "source_text_hash": "7983130c3a280cd980096572ea164e9c855055fd160f8e9b1a2dce2c8be9aa44",
+      "translation_text_hash": "07b38e7c98df7864837172f92e514cfceb5d30837c359143dd354b8032fe0110",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와가 이같이 말하노라 이스라엘 집 위에 앉을 사람이 다윗에게 영영히 끊어지지 아니할것이며"
+      ],
+      "raw_text_hashes": [
+        "07b38e7c98df7864837172f92e514cfceb5d30837c359143dd354b8032fe0110"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:33:18",
+      "sequence": 19794,
+      "chapter_label": "JER 33",
+      "verse_label": "18",
+      "locator": {
+        "book": "JER",
+        "chapter": 33,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 33,
+          "verse": 18
+        }
+      ],
+      "en": "The Levitical priests won’t lack a man before me to offer burnt offerings, to burn meal offerings, and to do sacrifice continually.”",
+      "ko": "내 앞에서 번제를 드리며 소제를 사르며 다른 제를 항상 드릴 레위 사람 제사장들도 끊어지지 아니하리라 하시니라",
+      "source_text_hash": "3baa39072aba07733bd88b1ff191c42dd78b4ba4c1863796eaf120f9927ac2ac",
+      "translation_text_hash": "23ce1615609663ddbd9f2385326692900678d922c6a8bb3ac328a9a68c7825cb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 앞에서 번제를 드리며 소제를 사르며 다른 제를 항상 드릴 레위 사람 제사장들도 끊어지지 아니하리라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "23ce1615609663ddbd9f2385326692900678d922c6a8bb3ac328a9a68c7825cb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:33:19",
+      "sequence": 19795,
+      "chapter_label": "JER 33",
+      "verse_label": "19",
+      "locator": {
+        "book": "JER",
+        "chapter": 33,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 33,
+          "verse": 19
+        }
+      ],
+      "en": "The LORD’s word came to Jeremiah, saying,",
+      "ko": "여호와의 말씀이 예레미야에게 임하니라 가라사대",
+      "source_text_hash": "731fe23da327d64a2b966e34555fac18be5a09d52d2e03dad7ddf55769a4c879",
+      "translation_text_hash": "38b966489c2387c272222c79e74379d841da48b637820b97fb43ca4afc7454f7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 말씀이 예레미야에게 임하니라 가라사대"
+      ],
+      "raw_text_hashes": [
+        "38b966489c2387c272222c79e74379d841da48b637820b97fb43ca4afc7454f7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:33:20",
+      "sequence": 19796,
+      "chapter_label": "JER 33",
+      "verse_label": "20",
+      "locator": {
+        "book": "JER",
+        "chapter": 33,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 33,
+          "verse": 20
+        }
+      ],
+      "en": "“The LORD says: ‘If you can break my covenant of the day and my covenant of the night, so that there will not be day and night in their time,",
+      "ko": "나 여호와가 이같이 말하노라 너희가 능히 낮에 대한 나의 약정과 밤에 대한 나의 약정을 파하여 주야로 그 때를 잃게 할 수 있을찐대",
+      "source_text_hash": "b2eaf2a0dd8148efa0927d2977e195620af3f0556946b82271d2da25ec8b3e19",
+      "translation_text_hash": "6bd2ee2ebc481469ef0175828f108e986a1bafdda000b92ca524be97f67bc9e7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와가 이같이 말하노라 너희가 능히 낮에 대한 나의 약정과 밤에 대한 나의 약정을 파하여 주야로 그 때를 잃게 할 수 있을찐대"
+      ],
+      "raw_text_hashes": [
+        "6bd2ee2ebc481469ef0175828f108e986a1bafdda000b92ca524be97f67bc9e7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:33:21",
+      "sequence": 19797,
+      "chapter_label": "JER 33",
+      "verse_label": "21",
+      "locator": {
+        "book": "JER",
+        "chapter": 33,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 33,
+          "verse": 21
+        }
+      ],
+      "en": "then my covenant could also be broken with David my servant, that he won’t have a son to reign on his throne; and with the Levitical priests, my ministers.",
+      "ko": "내 종 다윗에게 세운 나의 언약도 파하여 그로 그 위에 앉아 다스릴 아들이 없게 할 수 있겠으며 내가 나를 섬기는 레위인 제사장에게 세운 언약도 파할 수 있으리라",
+      "source_text_hash": "03b40f39324fdb484659dad053490a03a7c5a0474d86219eb4358e699ce26601",
+      "translation_text_hash": "700f7a9693828d36add0c35df70d0ff01dbfac74ae5b5f39e801b853460bddb6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 종 다윗에게 세운 나의 언약도 파하여 그로 그 위에 앉아 다스릴 아들이 없게 할 수 있겠으며 내가 나를 섬기는 레위인 제사장에게 세운 언약도 파할 수 있으리라"
+      ],
+      "raw_text_hashes": [
+        "700f7a9693828d36add0c35df70d0ff01dbfac74ae5b5f39e801b853460bddb6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:33:22",
+      "sequence": 19798,
+      "chapter_label": "JER 33",
+      "verse_label": "22",
+      "locator": {
+        "book": "JER",
+        "chapter": 33,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 33,
+          "verse": 22
+        }
+      ],
+      "en": "As the army of the sky can’t be counted, and the sand of the sea can’t be measured, so I will multiply the offspring of David my servant and the Levites who minister to me.’”",
+      "ko": "하늘의 만상은 셀 수 없으며 바다의 모래는 측량할 수 없나니 내가 그와 같이 내 종 다윗의 자손과 나를 섬기는 레위인을 번성케 하리라 하시니라",
+      "source_text_hash": "f0d0769901a34842384da03a74baca044d6925c35f8233330eacd14d331b45e8",
+      "translation_text_hash": "95362dfb1ed8803ed8c8fc8c72c20c419c1754f84e8a5550f2fcf36fe0542e6f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하늘의 만상은 셀 수 없으며 바다의 모래는 측량할 수 없나니 내가 그와 같이 내 종 다윗의 자손과 나를 섬기는 레위인을 번성케 하리라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "95362dfb1ed8803ed8c8fc8c72c20c419c1754f84e8a5550f2fcf36fe0542e6f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:33:23",
+      "sequence": 19799,
+      "chapter_label": "JER 33",
+      "verse_label": "23",
+      "locator": {
+        "book": "JER",
+        "chapter": 33,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 33,
+          "verse": 23
+        }
+      ],
+      "en": "The LORD’s word came to Jeremiah, saying,",
+      "ko": "여호와의 말씀이 예레미야에게 임하니라 가라사대",
+      "source_text_hash": "731fe23da327d64a2b966e34555fac18be5a09d52d2e03dad7ddf55769a4c879",
+      "translation_text_hash": "38b966489c2387c272222c79e74379d841da48b637820b97fb43ca4afc7454f7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 말씀이 예레미야에게 임하니라 가라사대"
+      ],
+      "raw_text_hashes": [
+        "38b966489c2387c272222c79e74379d841da48b637820b97fb43ca4afc7454f7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:33:24",
+      "sequence": 19800,
+      "chapter_label": "JER 33",
+      "verse_label": "24",
+      "locator": {
+        "book": "JER",
+        "chapter": 33,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 33,
+          "verse": 24
+        }
+      ],
+      "en": "“Don’t consider what this people has spoken, saying, ‘Has the LORD cast off the two families which he chose?’ Thus they despise my people, that they should be no more a nation before them.”",
+      "ko": "이 백성이 말하기를 여호와께서 그 택하신 두 족속을 버리셨다 한 것을 네가 생각지 아니하느냐 그들이 내 백성을 멸시하여 자기들 앞에서 나라로 인정치 아니하도다",
+      "source_text_hash": "95cf34fe51d66effaf4e1a55a50ff2a0853f6907f4938f29c0f0b4cd1d479009",
+      "translation_text_hash": "67efb69d331b14ff2620877b0070a9e176703afae9b442ee9973f8e26877cd08",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 백성이 말하기를 여호와께서 그 택하신 두 족속을 버리셨다 한 것을 네가 생각지 아니하느냐 그들이 내 백성을 멸시하여 자기들 앞에서 나라로 인정치 아니하도다"
+      ],
+      "raw_text_hashes": [
+        "67efb69d331b14ff2620877b0070a9e176703afae9b442ee9973f8e26877cd08"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:33:25",
+      "sequence": 19801,
+      "chapter_label": "JER 33",
+      "verse_label": "25",
+      "locator": {
+        "book": "JER",
+        "chapter": 33,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 33,
+          "verse": 25
+        }
+      ],
+      "en": "The LORD says: “If my covenant of day and night fails, if I have not appointed the ordinances of heaven and earth,",
+      "ko": "나 여호와가 이같이 말하노라 나의 주야의 약정이 서지 아니할 수 있다든지 천지의 규례가 정한대로 되지 아니할 수 있다 할찐대",
+      "source_text_hash": "dce355eaa7b08e7c128ff6ca8e47a8d5b475de2f55a0180fdb972518e875014f",
+      "translation_text_hash": "ee92522387a75f8f0e39c41ab42324504aaef7f9fc1c2cfd5a6f6006efa57039",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와가 이같이 말하노라 나의 주야의 약정이 서지 아니할 수 있다든지 천지의 규례가 정한대로 되지 아니할 수 있다 할찐대"
+      ],
+      "raw_text_hashes": [
+        "ee92522387a75f8f0e39c41ab42324504aaef7f9fc1c2cfd5a6f6006efa57039"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:33:26",
+      "sequence": 19802,
+      "chapter_label": "JER 33",
+      "verse_label": "26",
+      "locator": {
+        "book": "JER",
+        "chapter": 33,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 33,
+          "verse": 26
+        }
+      ],
+      "en": "then I will also cast away the offspring of Jacob, and of David my servant, so that I will not take of his offspring to be rulers over the offspring of Abraham, Isaac, and Jacob; for I will cause their captivity to be reversed and will have mercy on them.”",
+      "ko": "내가 야곱과 내 종 다윗의 자손을 버려서 다시는 다윗의 자손 중에서 아브라함과 이삭과 야곱의 자손을 다스릴 자를 택하지 아니하리라 내가 그 포로된 자로 돌아오게 하고 그를 긍휼히 여기리라",
+      "source_text_hash": "cf12d3d509e0befbfda6108ce1018a10ae51928baa108b3e7a586bf497b8f309",
+      "translation_text_hash": "41925cd32d9a0dab68f0bdfb203fb3e250c9ad2217f959dd2b8f53fc26067a5a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 야곱과 내 종 다윗의 자손을 버려서 다시는 다윗의 자손 중에서 아브라함과 이삭과 야곱의 자손을 다스릴 자를 택하지 아니하리라 내가 그 포로된 자로 돌아오게 하고 그를 긍휼히 여기리라"
+      ],
+      "raw_text_hashes": [
+        "41925cd32d9a0dab68f0bdfb203fb3e250c9ad2217f959dd2b8f53fc26067a5a"
+      ]
+    }
+  ]
+}

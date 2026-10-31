@@ -1,0 +1,205 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ISA:chapter:004",
+  "unit_ordinal": 683,
+  "unit_label": "ISA 4",
+  "book_code": "ISA",
+  "chapter_number": 4,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ISA:4:1",
+      "sequence": 17735,
+      "chapter_label": "ISA 4",
+      "verse_label": "1",
+      "locator": {
+        "book": "ISA",
+        "chapter": 4,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 4,
+          "verse": 1
+        }
+      ],
+      "en": "Seven women shall take hold of one man in that day, saying, “We will eat our own bread, and wear our own clothing. Just let us be called by your name. Take away our reproach.”",
+      "ko": "그 날에 일곱 여자가 한 남자를 붙잡고 말하기를 우리가 우리 떡을 먹으며 우리 옷을 입으리니 오직 당신의 이름으로 우리를 칭하게 하여 우리로 수치를 면케 하라 하리라",
+      "source_text_hash": "3faa2aef01a2351684b759e7f398be76c274149c158ca980ded583898f61bc7e",
+      "translation_text_hash": "dda5bcd11339e877ac81266fc75a92da465842d3fb0bc3763552510875269d26",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날에 일곱 여자가 한 남자를 붙잡고 말하기를 우리가 우리 떡을 먹으며 우리 옷을 입으리니 오직 당신의 이름으로 우리를 칭하게 하여 우리로 수치를 면케 하라 하리라"
+      ],
+      "raw_text_hashes": [
+        "dda5bcd11339e877ac81266fc75a92da465842d3fb0bc3763552510875269d26"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:4:2",
+      "sequence": 17736,
+      "chapter_label": "ISA 4",
+      "verse_label": "2",
+      "locator": {
+        "book": "ISA",
+        "chapter": 4,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 4,
+          "verse": 2
+        }
+      ],
+      "en": "In that day, the LORD’s branch will be beautiful and glorious, and the fruit of the land will be the beauty and glory of the survivors of Israel.",
+      "ko": "그 날에 여호와의 싹이 아름답고 영화로울 것이요 그 땅의 소산은 이스라엘의 피난한 자를 위하여 영화롭고 아름다울 것이며",
+      "source_text_hash": "d090c877ef6379bc43deabd87ff0b8f3d6ed58410928bf1cb6d6e6c292a405b0",
+      "translation_text_hash": "03a1cf436962741049c42eff7085c95aad9561f00aaef98c078cbac40d1ab06f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날에 여호와의 싹이 아름답고 영화로울 것이요 그 땅의 소산은 이스라엘의 피난한 자를 위하여 영화롭고 아름다울 것이며"
+      ],
+      "raw_text_hashes": [
+        "03a1cf436962741049c42eff7085c95aad9561f00aaef98c078cbac40d1ab06f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:4:3",
+      "sequence": 17737,
+      "chapter_label": "ISA 4",
+      "verse_label": "3",
+      "locator": {
+        "book": "ISA",
+        "chapter": 4,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 4,
+          "verse": 3
+        }
+      ],
+      "en": "It will happen that he who is left in Zion and he who remains in Jerusalem shall be called holy, even everyone who is written among the living in Jerusalem,",
+      "ko": "시온에 남아 있는 자, 예루살렘에 머물러 있는 자 곧 예루살렘에 있어 생존한 자 중 녹명된 모든 사람은 거룩하다 칭함을 얻으리니",
+      "source_text_hash": "d204d06a4c7d22e05bafa3c73482f9a92a83e540e6d27f874615b0961e37a5bb",
+      "translation_text_hash": "c0b056d6320376cbe6c71eb911dba7dd91f37f526c8779c9f8fb5243a345cdfa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시온에 남아 있는 자, 예루살렘에 머물러 있는 자 곧 예루살렘에 있어 생존한 자 중 녹명된 모든 사람은 거룩하다 칭함을 얻으리니"
+      ],
+      "raw_text_hashes": [
+        "c0b056d6320376cbe6c71eb911dba7dd91f37f526c8779c9f8fb5243a345cdfa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:4:4",
+      "sequence": 17738,
+      "chapter_label": "ISA 4",
+      "verse_label": "4",
+      "locator": {
+        "book": "ISA",
+        "chapter": 4,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 4,
+          "verse": 4
+        }
+      ],
+      "en": "when the Lord shall have washed away the filth of the daughters of Zion, and shall have purged the blood of Jerusalem from within it, by the spirit of justice and by the spirit of burning.",
+      "ko": "이는 주께서 그 심판하는 영과 소멸하는 영으로 시온의 딸들의 더러움을 씻으시며 예루살렘의 피를 그 중에서 청결케 하실 때가 됨이라",
+      "source_text_hash": "56f27804562813834e9902099fe869e0be6c8834725084f98b93ffb117632b8c",
+      "translation_text_hash": "f0155dfaa63c1a754e44c8a630ff8803e278995c916e80cbfd0c342b6ff28aef",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 주께서 그 심판하는 영과 소멸하는 영으로 시온의 딸들의 더러움을 씻으시며 예루살렘의 피를 그 중에서 청결케 하실 때가 됨이라"
+      ],
+      "raw_text_hashes": [
+        "f0155dfaa63c1a754e44c8a630ff8803e278995c916e80cbfd0c342b6ff28aef"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:4:5",
+      "sequence": 17739,
+      "chapter_label": "ISA 4",
+      "verse_label": "5",
+      "locator": {
+        "book": "ISA",
+        "chapter": 4,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 4,
+          "verse": 5
+        }
+      ],
+      "en": "The LORD will create over the whole habitation of Mount Zion and over her assemblies, a cloud and smoke by day, and the shining of a flaming fire by night, for over all the glory will be a canopy.",
+      "ko": "여호와께서 그 거하시는 온 시온산과 모든 집회 위에 낮이면 구름과 연기, 밤이면 화염의 빛을 만드시고 그 모든 영광 위에 천막을 덮으실 것이며",
+      "source_text_hash": "430703184551e7f1a58c061ce5e94f426d50464d6865ac31c5b990d59990745f",
+      "translation_text_hash": "dee9adda519e92f18a4bafdaffa68ed5673a090fe1fd90596cfe6e92102912cf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 그 거하시는 온 시온산과 모든 집회 위에 낮이면 구름과 연기, 밤이면 화염의 빛을 만드시고 그 모든 영광 위에 천막을 덮으실 것이며"
+      ],
+      "raw_text_hashes": [
+        "dee9adda519e92f18a4bafdaffa68ed5673a090fe1fd90596cfe6e92102912cf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:4:6",
+      "sequence": 17740,
+      "chapter_label": "ISA 4",
+      "verse_label": "6",
+      "locator": {
+        "book": "ISA",
+        "chapter": 4,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 4,
+          "verse": 6
+        }
+      ],
+      "en": "There will be a pavilion for a shade in the daytime from the heat, and for a refuge and for a shelter from storm and from rain.",
+      "ko": "또 천막이 있어서 낮에는 더위를 피하는 그늘을 지으며 또 풍우를 피하여 숨는 곳이 되리라",
+      "source_text_hash": "0eef93b5c6ad600717abf4356ee1fe79a02929f69bd7e87189923bd63852356f",
+      "translation_text_hash": "b516b42a53586c2740cb03e23da6735fdd62231e61b4cf9e800e5fb8c5b05782",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 천막이 있어서 낮에는 더위를 피하는 그늘을 지으며 또 풍우를 피하여 숨는 곳이 되리라"
+      ],
+      "raw_text_hashes": [
+        "b516b42a53586c2740cb03e23da6735fdd62231e61b4cf9e800e5fb8c5b05782"
+      ]
+    }
+  ]
+}

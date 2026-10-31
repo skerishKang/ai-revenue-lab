@@ -1,0 +1,493 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ISA:chapter:047",
+  "unit_ordinal": 726,
+  "unit_label": "ISA 47",
+  "book_code": "ISA",
+  "chapter_number": 47,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ISA:47:1",
+      "sequence": 18601,
+      "chapter_label": "ISA 47",
+      "verse_label": "1",
+      "locator": {
+        "book": "ISA",
+        "chapter": 47,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 47,
+          "verse": 1
+        }
+      ],
+      "en": "“Come down and sit in the dust, virgin daughter of Babylon. Sit on the ground without a throne, daughter of the Chaldeans. For you will no longer be called tender and delicate.",
+      "ko": "처녀 딸 바벨론이여 내려 티끌에 앉으라 딸 갈대아여 보좌가 없어졌으니 땅에 앉으라 네가 다시는 곱고 아리땁다 칭함을 받지 못할 것임이니라",
+      "source_text_hash": "436f5c88fd582ca2e6e021202dc612c750b0defcdf5339b1d6d19f2849d14831",
+      "translation_text_hash": "9e8bb8ed6ef21d7dfa0a0f2a8e6198878cb5677f8b81b10463b472a77885add7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "처녀 딸 바벨론이여 내려 티끌에 앉으라 딸 갈대아여 보좌가 없어졌으니 땅에 앉으라 네가 다시는 곱고 아리땁다 칭함을 받지 못할 것임이니라"
+      ],
+      "raw_text_hashes": [
+        "9e8bb8ed6ef21d7dfa0a0f2a8e6198878cb5677f8b81b10463b472a77885add7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:47:2",
+      "sequence": 18602,
+      "chapter_label": "ISA 47",
+      "verse_label": "2",
+      "locator": {
+        "book": "ISA",
+        "chapter": 47,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 47,
+          "verse": 2
+        }
+      ],
+      "en": "Take the millstones and grind flour. Remove your veil, lift up your skirt, uncover your legs, and wade through the rivers.",
+      "ko": "맷돌을 취하여 가루를 갈라 면박을 벗으며 치마를 걷어 다리를 드러내고 강을 건너라",
+      "source_text_hash": "ae61704c35029732b6f435e7136ebe5fe4d0eee9b0a863b64cd1638ec6de3503",
+      "translation_text_hash": "71f70e9c6c5c3ce91c9ff373ae090c6913fedd6493314f56f875e91e985d1609",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "맷돌을 취하여 가루를 갈라 면박을 벗으며 치마를 걷어 다리를 드러내고 강을 건너라"
+      ],
+      "raw_text_hashes": [
+        "71f70e9c6c5c3ce91c9ff373ae090c6913fedd6493314f56f875e91e985d1609"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:47:3",
+      "sequence": 18603,
+      "chapter_label": "ISA 47",
+      "verse_label": "3",
+      "locator": {
+        "book": "ISA",
+        "chapter": 47,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 47,
+          "verse": 3
+        }
+      ],
+      "en": "Your nakedness will be uncovered. Yes, your shame will be seen. I will take vengeance, and will spare no one.”",
+      "ko": "네 살이 드러나고 네 부끄러운 것이 보일 것이라 내가 보수하되 사람을 아끼지 아니하리라",
+      "source_text_hash": "4fc67d24c681e9768e53b1134c9ad6351ee3e1698ae756db8640d65e2c4a58c8",
+      "translation_text_hash": "f1b8fe54ec20de108b47436dd7e953f4ac0fd51e4aae9ac80b19b7dcc1b1d9b1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 살이 드러나고 네 부끄러운 것이 보일 것이라 내가 보수하되 사람을 아끼지 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "f1b8fe54ec20de108b47436dd7e953f4ac0fd51e4aae9ac80b19b7dcc1b1d9b1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:47:4",
+      "sequence": 18604,
+      "chapter_label": "ISA 47",
+      "verse_label": "4",
+      "locator": {
+        "book": "ISA",
+        "chapter": 47,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 47,
+          "verse": 4
+        }
+      ],
+      "en": "Our Redeemer, the LORD of Armies is his name, is the Holy One of Israel.",
+      "ko": "(우리의 구속자는 그 이름이 만군의 여호와 이스라엘의 거룩한 자시니라)",
+      "source_text_hash": "7e07b700e53d2bb711765c4c39f5b58b32cf88e2b4c6557b75b89a75940d4165",
+      "translation_text_hash": "310ea9149b128b871bc138a04d9aa7b6c9aa9641dd6284fd7891a11b9f63a73c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "(우리의 구속자는 그 이름이 만군의 여호와 이스라엘의 거룩한 자시니라)"
+      ],
+      "raw_text_hashes": [
+        "310ea9149b128b871bc138a04d9aa7b6c9aa9641dd6284fd7891a11b9f63a73c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:47:5",
+      "sequence": 18605,
+      "chapter_label": "ISA 47",
+      "verse_label": "5",
+      "locator": {
+        "book": "ISA",
+        "chapter": 47,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 47,
+          "verse": 5
+        }
+      ],
+      "en": "“Sit in silence, and go into darkness, daughter of the Chaldeans. For you shall no longer be called the mistress of kingdoms.",
+      "ko": "딸 갈대아여 잠잠히 앉으라 흑암으로 들어가라 네가 다시는 열국의 주모라 칭함을 받지 못하리라",
+      "source_text_hash": "5dd4436f9bcd28db26da99a01b64c90565be13508d85d2086e768cf0dc6391b2",
+      "translation_text_hash": "91c1b2c791c9a4c3e10654e4546464e1cd58d1548f60fb037f83e2ae6318a103",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "딸 갈대아여 잠잠히 앉으라 흑암으로 들어가라 네가 다시는 열국의 주모라 칭함을 받지 못하리라"
+      ],
+      "raw_text_hashes": [
+        "91c1b2c791c9a4c3e10654e4546464e1cd58d1548f60fb037f83e2ae6318a103"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:47:6",
+      "sequence": 18606,
+      "chapter_label": "ISA 47",
+      "verse_label": "6",
+      "locator": {
+        "book": "ISA",
+        "chapter": 47,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 47,
+          "verse": 6
+        }
+      ],
+      "en": "I was angry with my people. I profaned my inheritance and gave them into your hand. You showed them no mercy. You laid a very heavy yoke on the aged.",
+      "ko": "전에 내가 내 백성을 노함으로 내 기업을 욕되게 하여 그들을 네 손에 붙였거늘 네가 그들을 긍휼히 여기지 아니하고 늙은이에게 네 멍에를 심히 무겁게 메우며",
+      "source_text_hash": "38bd5bf97f0d3fb5d201d4e95ebf73930eb85bee893dec8c4a952037b7b2df42",
+      "translation_text_hash": "b78b1abaf77e01b6f4f9bac3afd4d65e988b125daeb0e3b6b0aaf29156234e97",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "전에 내가 내 백성을 노함으로 내 기업을 욕되게 하여 그들을 네 손에 붙였거늘 네가 그들을 긍휼히 여기지 아니하고 늙은이에게 네 멍에를 심히 무겁게 메우며"
+      ],
+      "raw_text_hashes": [
+        "b78b1abaf77e01b6f4f9bac3afd4d65e988b125daeb0e3b6b0aaf29156234e97"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:47:7",
+      "sequence": 18607,
+      "chapter_label": "ISA 47",
+      "verse_label": "7",
+      "locator": {
+        "book": "ISA",
+        "chapter": 47,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 47,
+          "verse": 7
+        }
+      ],
+      "en": "You said, ‘I will be a princess forever,’ so that you didn’t lay these things to your heart, nor did you remember the results.",
+      "ko": "말하기를 내가 영영히 주모가 되리라 하고 이 일을 네 마음에 두지도 아니하며 그 종말도 생각지 아니하였도다",
+      "source_text_hash": "c55b6de8ca9083bb0855381475a0b44eb9b3e7e3aa008e013289fc4d5b3242bd",
+      "translation_text_hash": "97f4e3eb123d79d6b81adbea8f4569297fbca2606c060fa98ea38f73c80de2eb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "말하기를 내가 영영히 주모가 되리라 하고 이 일을 네 마음에 두지도 아니하며 그 종말도 생각지 아니하였도다"
+      ],
+      "raw_text_hashes": [
+        "97f4e3eb123d79d6b81adbea8f4569297fbca2606c060fa98ea38f73c80de2eb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:47:8",
+      "sequence": 18608,
+      "chapter_label": "ISA 47",
+      "verse_label": "8",
+      "locator": {
+        "book": "ISA",
+        "chapter": 47,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 47,
+          "verse": 8
+        }
+      ],
+      "en": "“Now therefore hear this, you who are given to pleasures, who sit securely, who say in your heart, ‘I am, and there is no one else besides me. I won’t sit as a widow, neither will I know the loss of children.’",
+      "ko": "그러므로 사치하고 평안히 지내며 마음에 이르기를 나 뿐이라 나 외에 다른이가 없도다 나는 과부로 지내지도 아니하며 자녀를 잃어버리는 일도 모르리라 하는 자여 너는 이제 들을찌어다",
+      "source_text_hash": "964b7540c2f2caf80299d14d6b2d77961872190e3d33a1451ff136be9e47dce7",
+      "translation_text_hash": "4a28c11911aa6043ebf874cf46a70df4c5abbe33beaed3bf5bc8f5f16a5cd752",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 사치하고 평안히 지내며 마음에 이르기를 나 뿐이라 나 외에 다른이가 없도다 나는 과부로 지내지도 아니하며 자녀를 잃어버리는 일도 모르리라 하는 자여 너는 이제 들을찌어다"
+      ],
+      "raw_text_hashes": [
+        "4a28c11911aa6043ebf874cf46a70df4c5abbe33beaed3bf5bc8f5f16a5cd752"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:47:9",
+      "sequence": 18609,
+      "chapter_label": "ISA 47",
+      "verse_label": "9",
+      "locator": {
+        "book": "ISA",
+        "chapter": 47,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 47,
+          "verse": 9
+        }
+      ],
+      "en": "But these two things will come to you in a moment in one day: the loss of children and widowhood. They will come on you in their full measure, in the multitude of your sorceries, and the great abundance of your enchantments.",
+      "ko": "한 날에 홀연히 자녀를 잃으며 과부가 되는 이 두 일이 네게 임할 것이라 네가 무수한 사술과 많은 진언을 베풀찌라도 이 일이 온전히 네게 임하리라",
+      "source_text_hash": "988cb92df2e63cdffb9dc1f99749a0c964e9e277dbfa026b68fb3b903a16f7f0",
+      "translation_text_hash": "b2519241f030175ec4dcb39239c44c782dce3c21f58e0619fbc064c43c504169",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "한 날에 홀연히 자녀를 잃으며 과부가 되는 이 두 일이 네게 임할 것이라 네가 무수한 사술과 많은 진언을 베풀찌라도 이 일이 온전히 네게 임하리라"
+      ],
+      "raw_text_hashes": [
+        "b2519241f030175ec4dcb39239c44c782dce3c21f58e0619fbc064c43c504169"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:47:10",
+      "sequence": 18610,
+      "chapter_label": "ISA 47",
+      "verse_label": "10",
+      "locator": {
+        "book": "ISA",
+        "chapter": 47,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 47,
+          "verse": 10
+        }
+      ],
+      "en": "For you have trusted in your wickedness. You have said, ‘No one sees me.’ Your wisdom and your knowledge has perverted you. You have said in your heart, ‘I am, and there is no one else besides me.’",
+      "ko": "네가 네 악을 의지하고 스스로 이르기를 나를 보는 자가 없다 하나니 네 지혜와 네 지식이 너를 유혹하였음이니라 네 마음에 이르기를 나 뿐이라 나 외에 다른이가 없다 하였으므로",
+      "source_text_hash": "34aaa40595382825d58331fd509cbebc375cdf6fb919aebcacb37af35c5cfcfd",
+      "translation_text_hash": "f39914c0ae46667974b53806392ceee595d1f30a265da32514a926adc07c9d19",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 네 악을 의지하고 스스로 이르기를 나를 보는 자가 없다 하나니 네 지혜와 네 지식이 너를 유혹하였음이니라 네 마음에 이르기를 나 뿐이라 나 외에 다른이가 없다 하였으므로"
+      ],
+      "raw_text_hashes": [
+        "f39914c0ae46667974b53806392ceee595d1f30a265da32514a926adc07c9d19"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:47:11",
+      "sequence": 18611,
+      "chapter_label": "ISA 47",
+      "verse_label": "11",
+      "locator": {
+        "book": "ISA",
+        "chapter": 47,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 47,
+          "verse": 11
+        }
+      ],
+      "en": "Therefore disaster will come on you. You won’t know when it dawns. Mischief will fall on you. You won’t be able to put it away. Desolation will come on you suddenly, which you don’t understand.",
+      "ko": "재앙이 네게 임하리라 그러나 네가 그 근본을 알지 못할 것이며 손해가 네게 이르리라 그러나 이를 물리칠 능이 없을 것이며 파멸이 홀연히 네게 임하리라 그러나 네가 헤아리지 못할 것이니라",
+      "source_text_hash": "251777bda740a71d404197907d42f9e5f2f0ee37209189fbee5114c427cfc3ce",
+      "translation_text_hash": "e75d43eef9a2cdc9024ef5eb304c0851cdcbda4732c2ec08374abd3249d9cbf1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "재앙이 네게 임하리라 그러나 네가 그 근본을 알지 못할 것이며 손해가 네게 이르리라 그러나 이를 물리칠 능이 없을 것이며 파멸이 홀연히 네게 임하리라 그러나 네가 헤아리지 못할 것이니라"
+      ],
+      "raw_text_hashes": [
+        "e75d43eef9a2cdc9024ef5eb304c0851cdcbda4732c2ec08374abd3249d9cbf1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:47:12",
+      "sequence": 18612,
+      "chapter_label": "ISA 47",
+      "verse_label": "12",
+      "locator": {
+        "book": "ISA",
+        "chapter": 47,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 47,
+          "verse": 12
+        }
+      ],
+      "en": "“Stand now with your enchantments and with the multitude of your sorceries, in which you have labored from your youth, as if you might profit, as if you might prevail.",
+      "ko": "이제 너는 젊어서부터 힘쓰던 진언과 많은 사술을 가지고 서서 시험하여 보라 혹시 유익을 얻을 수 있을는지, 혹시 원수를 이길 수 있을는지,",
+      "source_text_hash": "4c291dbad9abd7810a9fa11c24a92ebd5894b54b4359fdee710a3a4ae7df3c12",
+      "translation_text_hash": "070b8d901745ba3af194365f88399b5c47e46f46f24a06ef6d73723935530fb2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제 너는 젊어서부터 힘쓰던 진언과 많은 사술을 가지고 서서 시험하여 보라 혹시 유익을 얻을 수 있을는지, 혹시 원수를 이길 수 있을는지,"
+      ],
+      "raw_text_hashes": [
+        "070b8d901745ba3af194365f88399b5c47e46f46f24a06ef6d73723935530fb2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:47:13",
+      "sequence": 18613,
+      "chapter_label": "ISA 47",
+      "verse_label": "13",
+      "locator": {
+        "book": "ISA",
+        "chapter": 47,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 47,
+          "verse": 13
+        }
+      ],
+      "en": "You are wearied in the multitude of your counsels. Now let the astrologers, the stargazers, and the monthly prognosticators stand up and save you from the things that will happen to you.",
+      "ko": "네가 많은 모략을 인하여 피곤케 되었도다 하늘을 살피는 자와 별을 보는 자와 월삭에 예고하는 자들로 일어나 네게 임할 그 일에서 너를 구원케 하여 보라",
+      "source_text_hash": "f7c122b5d29a99629d240e46e323acc588c41b64ececd408dcdba901695655fd",
+      "translation_text_hash": "b07d8ddc92e65fa2229af16db078b2cd2de6c2abfea09804f9c9984876a9fc8e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 많은 모략을 인하여 피곤케 되었도다 하늘을 살피는 자와 별을 보는 자와 월삭에 예고하는 자들로 일어나 네게 임할 그 일에서 너를 구원케 하여 보라"
+      ],
+      "raw_text_hashes": [
+        "b07d8ddc92e65fa2229af16db078b2cd2de6c2abfea09804f9c9984876a9fc8e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:47:14",
+      "sequence": 18614,
+      "chapter_label": "ISA 47",
+      "verse_label": "14",
+      "locator": {
+        "book": "ISA",
+        "chapter": 47,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 47,
+          "verse": 14
+        }
+      ],
+      "en": "Behold, they are like stubble. The fire will burn them. They won’t deliver themselves from the power of the flame. It won’t be a coal to warm at or a fire to sit by.",
+      "ko": "보라 그들은 초개 같아서 불에 타리니 그 불꽃의 세력에서 스스로 구원치 못할 것이라 이 불은 더웁게 할 숯불이 아니요 그 앞에 앉을 만한 불도 아니니라",
+      "source_text_hash": "3ec6c5dc5aed3e7f3478a001f395c2badaa857f045a42eea40176afe39c88898",
+      "translation_text_hash": "61fd50a57e48939f9744c0800e99a1a7dee69ad16befbc486ea452ffd3d2299e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보라 그들은 초개 같아서 불에 타리니 그 불꽃의 세력에서 스스로 구원치 못할 것이라 이 불은 더웁게 할 숯불이 아니요 그 앞에 앉을 만한 불도 아니니라"
+      ],
+      "raw_text_hashes": [
+        "61fd50a57e48939f9744c0800e99a1a7dee69ad16befbc486ea452ffd3d2299e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:47:15",
+      "sequence": 18615,
+      "chapter_label": "ISA 47",
+      "verse_label": "15",
+      "locator": {
+        "book": "ISA",
+        "chapter": 47,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 47,
+          "verse": 15
+        }
+      ],
+      "en": "The things that you labored in will be like this: those who have trafficked with you from your youth will each wander in his own way. There will be no one to save you.",
+      "ko": "너의 근로하던 것들이 네게 이같이 되리니 너 어려서부터 너와 함께 무역하던 자들이 각기 소향대로 유리하고 너를 구원할 자 없으리라",
+      "source_text_hash": "0a665a8d5bec0f7577de33f29d8f2894cfdc0f3771d277407922a22b664d6ce7",
+      "translation_text_hash": "d9675e8c81e8ae6aae4de8dda2f5212a620dd35df1bb59db1b156c04720da6d1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너의 근로하던 것들이 네게 이같이 되리니 너 어려서부터 너와 함께 무역하던 자들이 각기 소향대로 유리하고 너를 구원할 자 없으리라"
+      ],
+      "raw_text_hashes": [
+        "d9675e8c81e8ae6aae4de8dda2f5212a620dd35df1bb59db1b156c04720da6d1"
+      ]
+    }
+  ]
+}

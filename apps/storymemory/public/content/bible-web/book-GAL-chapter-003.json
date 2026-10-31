@@ -1,0 +1,941 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:GAL:chapter:003",
+  "unit_ordinal": 1094,
+  "unit_label": "GAL 3",
+  "book_code": "GAL",
+  "chapter_number": 3,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:GAL:3:1",
+      "sequence": 29100,
+      "chapter_label": "GAL 3",
+      "verse_label": "1",
+      "locator": {
+        "book": "GAL",
+        "chapter": 3,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 3,
+          "verse": 1
+        }
+      ],
+      "en": "Foolish Galatians, who has bewitched you not to obey the truth, before whose eyes Jesus Christ was openly portrayed among you as crucified?",
+      "ko": "어리석도다 갈라디아 사람들아 예수 그리스도께서 십자가에 못 박히신 것이 너희 눈앞에 밝히 보이거늘 누가 너희를 꾀더냐",
+      "source_text_hash": "6ae740e276d0b08f89cd8c8faeefc40b8d564aa84df58981f959ede6c506363c",
+      "translation_text_hash": "24e114badfe4b58119768cf725092dcae611036449f5b70b433ded0f7040d5e0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어리석도다 갈라디아 사람들아 예수 그리스도께서 십자가에 못 박히신 것이 너희 눈앞에 밝히 보이거늘 누가 너희를 꾀더냐"
+      ],
+      "raw_text_hashes": [
+        "24e114badfe4b58119768cf725092dcae611036449f5b70b433ded0f7040d5e0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:3:2",
+      "sequence": 29101,
+      "chapter_label": "GAL 3",
+      "verse_label": "2",
+      "locator": {
+        "book": "GAL",
+        "chapter": 3,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 3,
+          "verse": 2
+        }
+      ],
+      "en": "I just want to learn this from you: Did you receive the Spirit by the works of the law, or by hearing of faith?",
+      "ko": "내가 너희에게 다만 이것을 알려 하노니 너희가 성령을 받은 것은 율법의 행위로냐 듣고 믿음으로냐",
+      "source_text_hash": "f8a888f1313f82243c28e6fd0c83659b6fb3fbd0e9b6fda62bb75eb33652c497",
+      "translation_text_hash": "d0c600687afd974d3a834e42b93b9ded67fd4d44c7dab9f23b1b1239a347ff37",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너희에게 다만 이것을 알려 하노니 너희가 성령을 받은 것은 율법의 행위로냐 듣고 믿음으로냐"
+      ],
+      "raw_text_hashes": [
+        "d0c600687afd974d3a834e42b93b9ded67fd4d44c7dab9f23b1b1239a347ff37"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:3:3",
+      "sequence": 29102,
+      "chapter_label": "GAL 3",
+      "verse_label": "3",
+      "locator": {
+        "book": "GAL",
+        "chapter": 3,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 3,
+          "verse": 3
+        }
+      ],
+      "en": "Are you so foolish? Having begun in the Spirit, are you now completed in the flesh?",
+      "ko": "너희가 이같이 어리석으냐 성령으로 시작하였다가 이제는 육체로 마치겠느냐",
+      "source_text_hash": "3bdce003bb493ca712d8d811a15080aa960fa85fa056eb55b68c6f73adaf7b10",
+      "translation_text_hash": "59e66b24894362309d180f173fd9f8b712edca28dcc9c65066a6636441145f8a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 이같이 어리석으냐 성령으로 시작하였다가 이제는 육체로 마치겠느냐"
+      ],
+      "raw_text_hashes": [
+        "59e66b24894362309d180f173fd9f8b712edca28dcc9c65066a6636441145f8a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:3:4",
+      "sequence": 29103,
+      "chapter_label": "GAL 3",
+      "verse_label": "4",
+      "locator": {
+        "book": "GAL",
+        "chapter": 3,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 3,
+          "verse": 4
+        }
+      ],
+      "en": "Did you suffer so many things in vain, if it is indeed in vain?",
+      "ko": "너희가 이같이 많은 괴로움을 헛되이 받았느냐 과연 헛되냐",
+      "source_text_hash": "7d68332a54e2ff8709e3d809849d7b0f5f968eb2182133d9240644e8ace3e591",
+      "translation_text_hash": "92b64410e788d96d365e180e7f2298b160bc17138868bcf1f8c06e21a52176ae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 이같이 많은 괴로움을 헛되이 받았느냐 과연 헛되냐"
+      ],
+      "raw_text_hashes": [
+        "92b64410e788d96d365e180e7f2298b160bc17138868bcf1f8c06e21a52176ae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:3:5",
+      "sequence": 29104,
+      "chapter_label": "GAL 3",
+      "verse_label": "5",
+      "locator": {
+        "book": "GAL",
+        "chapter": 3,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 3,
+          "verse": 5
+        }
+      ],
+      "en": "He therefore who supplies the Spirit to you and does miracles among you, does he do it by the works of the law, or by hearing of faith?",
+      "ko": "너희에게 성령을 주시고 너희 가운데서 능력을 행하시는 이의 일이 율법의 행위에서냐 듣고 믿음에서냐",
+      "source_text_hash": "2db6f28b806320d8f997ff630f044c6069f856a5e8e7a906a9bd5845140bf3fd",
+      "translation_text_hash": "2b7bd40c953dc283afb301cca493841be9d72d88fd035deaf6725464ac136d3e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희에게 성령을 주시고 너희 가운데서 능력을 행하시는 이의 일이 율법의 행위에서냐 듣고 믿음에서냐"
+      ],
+      "raw_text_hashes": [
+        "2b7bd40c953dc283afb301cca493841be9d72d88fd035deaf6725464ac136d3e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:3:6",
+      "sequence": 29105,
+      "chapter_label": "GAL 3",
+      "verse_label": "6",
+      "locator": {
+        "book": "GAL",
+        "chapter": 3,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 3,
+          "verse": 6
+        }
+      ],
+      "en": "Even so, Abraham “believed God, and it was counted to him for righteousness.”",
+      "ko": "아브라함이 하나님을 믿으매 이것을 그에게 의로 정하셨다 함과 같으니라",
+      "source_text_hash": "427824e18cf29b478c5729e2dae28e08fe2e1ce87dbcff45e04f9e2d5bc776f3",
+      "translation_text_hash": "1caf7e774491469e3d1205119257146c6e9f7457b20520eed06f336094317bf9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아브라함이 하나님을 믿으매 이것을 그에게 의로 정하셨다 함과 같으니라"
+      ],
+      "raw_text_hashes": [
+        "1caf7e774491469e3d1205119257146c6e9f7457b20520eed06f336094317bf9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:3:7",
+      "sequence": 29106,
+      "chapter_label": "GAL 3",
+      "verse_label": "7",
+      "locator": {
+        "book": "GAL",
+        "chapter": 3,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 3,
+          "verse": 7
+        }
+      ],
+      "en": "Know therefore that those who are of faith are children of Abraham.",
+      "ko": "그런즉 믿음으로 말미암은 자들은 아브라함의 아들인줄 알찌어다",
+      "source_text_hash": "68cb4693ac8aab1bb8d74566b8b5d40888d9882bfd0f227e31e5be89a4985aae",
+      "translation_text_hash": "699ded582d2df92fcbcd20b511f52ef65b615ece91d3e98d0b42e56a9938163c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 믿음으로 말미암은 자들은 아브라함의 아들인줄 알찌어다"
+      ],
+      "raw_text_hashes": [
+        "699ded582d2df92fcbcd20b511f52ef65b615ece91d3e98d0b42e56a9938163c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:3:8",
+      "sequence": 29107,
+      "chapter_label": "GAL 3",
+      "verse_label": "8",
+      "locator": {
+        "book": "GAL",
+        "chapter": 3,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 3,
+          "verse": 8
+        }
+      ],
+      "en": "The Scripture, foreseeing that God would justify the Gentiles by faith, preached the Good News beforehand to Abraham, saying, “In you all the nations will be blessed.”",
+      "ko": "또 하나님이 이방을 믿음으로 말미암아 의로 정하실 것을 성경이 미리 알고 먼저 아브라함에게 복음을 전하되 모든 이방이 너를 인하여 복을 받으리라 하였으니",
+      "source_text_hash": "f9e9ec09e9a1b8027ad2f952cc33d9a8d63eb02532e1001120c5331f6a937793",
+      "translation_text_hash": "b5cead6a9cf78dcc3533123e77ec3b465a5e9d3caa5a5b374944243cb4889e0d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 하나님이 이방을 믿음으로 말미암아 의로 정하실 것을 성경이 미리 알고 먼저 아브라함에게 복음을 전하되 모든 이방이 너를 인하여 복을 받으리라 하였으니"
+      ],
+      "raw_text_hashes": [
+        "b5cead6a9cf78dcc3533123e77ec3b465a5e9d3caa5a5b374944243cb4889e0d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:3:9",
+      "sequence": 29108,
+      "chapter_label": "GAL 3",
+      "verse_label": "9",
+      "locator": {
+        "book": "GAL",
+        "chapter": 3,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 3,
+          "verse": 9
+        }
+      ],
+      "en": "So then, those who are of faith are blessed with the faithful Abraham.",
+      "ko": "그러므로 믿음으로 말미암은 자는 믿음이 있는 아브라함과 함께 복을 받느니라",
+      "source_text_hash": "d9badb93cc3a9ff4f5ff772c386fadeb1a686ea7f48f823f8292e2ea5f2c2d9e",
+      "translation_text_hash": "3d5b29a7be1b9c70b63b1523add128b66fc1feb6b1644120bb944cedac149848",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 믿음으로 말미암은 자는 믿음이 있는 아브라함과 함께 복을 받느니라"
+      ],
+      "raw_text_hashes": [
+        "3d5b29a7be1b9c70b63b1523add128b66fc1feb6b1644120bb944cedac149848"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:3:10",
+      "sequence": 29109,
+      "chapter_label": "GAL 3",
+      "verse_label": "10",
+      "locator": {
+        "book": "GAL",
+        "chapter": 3,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 3,
+          "verse": 10
+        }
+      ],
+      "en": "For as many as are of the works of the law are under a curse. For it is written, “Cursed is everyone who doesn’t continue in all things that are written in the book of the law, to do them.”",
+      "ko": "무릇 율법 행위에 속한 자들은 저주 아래 있나니 기록된바 누구든지 율법 책에 기록된대로 온갖 일을 항상 행하지 아니하는 자는 저주 아래 있는 자라 하였음이라",
+      "source_text_hash": "7326aeaf55e8789a9dd0e08f3cf7ec49c190808a17c55885a0f21f03cadd02fc",
+      "translation_text_hash": "43ed5fc861f2bcf2a0207a3cb031914e107e7526ec16c0eaf5a7963c0a83749f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 율법 행위에 속한 자들은 저주 아래 있나니 기록된바 누구든지 율법 책에 기록된대로 온갖 일을 항상 행하지 아니하는 자는 저주 아래 있는 자라 하였음이라"
+      ],
+      "raw_text_hashes": [
+        "43ed5fc861f2bcf2a0207a3cb031914e107e7526ec16c0eaf5a7963c0a83749f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:3:11",
+      "sequence": 29110,
+      "chapter_label": "GAL 3",
+      "verse_label": "11",
+      "locator": {
+        "book": "GAL",
+        "chapter": 3,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 3,
+          "verse": 11
+        }
+      ],
+      "en": "Now that no man is justified by the law before God is evident, for, “The righteous will live by faith.”",
+      "ko": "또 하나님 앞에서 아무나 율법으로 말미암아 의롭게 되지 못할 것이 분명하니 이는 의인이 믿음으로 살리라 하였음이니라",
+      "source_text_hash": "507587462d9e631731b4527b23ba4288dd07d00ae0014532830f00b037d2ff09",
+      "translation_text_hash": "d441e30e5aa4f5c761551b6bb0215ea1674dcdac637049f3e6402758e5ceeab3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 하나님 앞에서 아무나 율법으로 말미암아 의롭게 되지 못할 것이 분명하니 이는 의인이 믿음으로 살리라 하였음이니라"
+      ],
+      "raw_text_hashes": [
+        "d441e30e5aa4f5c761551b6bb0215ea1674dcdac637049f3e6402758e5ceeab3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:3:12",
+      "sequence": 29111,
+      "chapter_label": "GAL 3",
+      "verse_label": "12",
+      "locator": {
+        "book": "GAL",
+        "chapter": 3,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 3,
+          "verse": 12
+        }
+      ],
+      "en": "The law is not of faith, but, “The man who does them will live by them.”",
+      "ko": "율법은 믿음에서 난것이 아니라 이를 행하는 자는 그 가운데서 살리라 하였느니라",
+      "source_text_hash": "6ef8c327b648a603937e85622aade4907dbba88072869b24f04d639092663f1d",
+      "translation_text_hash": "afd9e5e8ff0ad2d1df3638f53be6b12b711d20a2c243904f7890d7dbf9d2e986",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "율법은 믿음에서 난것이 아니라 이를 행하는 자는 그 가운데서 살리라 하였느니라"
+      ],
+      "raw_text_hashes": [
+        "afd9e5e8ff0ad2d1df3638f53be6b12b711d20a2c243904f7890d7dbf9d2e986"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:3:13",
+      "sequence": 29112,
+      "chapter_label": "GAL 3",
+      "verse_label": "13",
+      "locator": {
+        "book": "GAL",
+        "chapter": 3,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 3,
+          "verse": 13
+        }
+      ],
+      "en": "Christ redeemed us from the curse of the law, having become a curse for us. For it is written, “Cursed is everyone who hangs on a tree,”",
+      "ko": "그리스도께서 우리를 위하여 저주를 받은바 되사 율법의 저주에서 우리를 속량하셨으니 기록된바 나무에 달린 자마다 저주 아래 있는 자라 하였음이라",
+      "source_text_hash": "55ab41cf529c62f3f9eb13f4014de144ba20ee896cac13ced92f2134198893fc",
+      "translation_text_hash": "2c1cafd33123dba8c8551f91b4c758a5e10886f9ce19bcb5fc7e267733637d6a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그리스도께서 우리를 위하여 저주를 받은바 되사 율법의 저주에서 우리를 속량하셨으니 기록된바 나무에 달린 자마다 저주 아래 있는 자라 하였음이라"
+      ],
+      "raw_text_hashes": [
+        "2c1cafd33123dba8c8551f91b4c758a5e10886f9ce19bcb5fc7e267733637d6a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:3:14",
+      "sequence": 29113,
+      "chapter_label": "GAL 3",
+      "verse_label": "14",
+      "locator": {
+        "book": "GAL",
+        "chapter": 3,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 3,
+          "verse": 14
+        }
+      ],
+      "en": "that the blessing of Abraham might come on the Gentiles through Christ Jesus, that we might receive the promise of the Spirit through faith.",
+      "ko": "이는 그리스도 예수 안에서 아브라함의 복이 이방인에게 미치게 하고 또 우리로 하여금 믿음으로 말미암아 성령의 약속을 받게 하려 함이니라",
+      "source_text_hash": "163d904e8517b222ab21c456a76b8b0c537aab49efd4114bc28c6d0fde1b6d5a",
+      "translation_text_hash": "07244a1ffaa7673b0e6f3cb48adf0af44af5d1702708e850d8820eb53a8e8788",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 그리스도 예수 안에서 아브라함의 복이 이방인에게 미치게 하고 또 우리로 하여금 믿음으로 말미암아 성령의 약속을 받게 하려 함이니라"
+      ],
+      "raw_text_hashes": [
+        "07244a1ffaa7673b0e6f3cb48adf0af44af5d1702708e850d8820eb53a8e8788"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:3:15",
+      "sequence": 29114,
+      "chapter_label": "GAL 3",
+      "verse_label": "15",
+      "locator": {
+        "book": "GAL",
+        "chapter": 3,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 3,
+          "verse": 15
+        }
+      ],
+      "en": "Brothers, speaking of human terms, though it is only a man’s covenant, yet when it has been confirmed, no one makes it void or adds to it.",
+      "ko": "형제들아 사람의 예대로 말하노니 사람의 언약이라도 정한 후에는 아무나 폐하거나 더하거나 하지 못하느니라",
+      "source_text_hash": "6d69bc68c068762a4dc12ef6a0bc8fdd35e0f09643f6dcbc10592d8f4c8d283f",
+      "translation_text_hash": "e23fc5a26c7dba675764d05548f034bc18b864b245546766832bb0522ddf1323",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "형제들아 사람의 예대로 말하노니 사람의 언약이라도 정한 후에는 아무나 폐하거나 더하거나 하지 못하느니라"
+      ],
+      "raw_text_hashes": [
+        "e23fc5a26c7dba675764d05548f034bc18b864b245546766832bb0522ddf1323"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:3:16",
+      "sequence": 29115,
+      "chapter_label": "GAL 3",
+      "verse_label": "16",
+      "locator": {
+        "book": "GAL",
+        "chapter": 3,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 3,
+          "verse": 16
+        }
+      ],
+      "en": "Now the promises were spoken to Abraham and to his offspring. He doesn’t say, “To descendants”, as of many, but as of one, “To your offspring”, which is Christ.",
+      "ko": "이 약속들은 아브라함과 그 자손에게 말씀하신 것인데 여럿을 가리켜 그 자손들이라 하지 아니하시고 오직 하나를 가리켜 네 자손이라 하셨으니 곧 그리스도라",
+      "source_text_hash": "63c1dcba20aa6822668a3563be3fed8b3bdb461df5f267c24fdc8c2ee02211a7",
+      "translation_text_hash": "135be92f36ef3845ea61380a9034fe4a3ee772944db344f08067bf0f64f9efbd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 약속들은 아브라함과 그 자손에게 말씀하신 것인데 여럿을 가리켜 그 자손들이라 하지 아니하시고 오직 하나를 가리켜 네 자손이라 하셨으니 곧 그리스도라"
+      ],
+      "raw_text_hashes": [
+        "135be92f36ef3845ea61380a9034fe4a3ee772944db344f08067bf0f64f9efbd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:3:17",
+      "sequence": 29116,
+      "chapter_label": "GAL 3",
+      "verse_label": "17",
+      "locator": {
+        "book": "GAL",
+        "chapter": 3,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 3,
+          "verse": 17
+        }
+      ],
+      "en": "Now I say this: A covenant confirmed beforehand by God in Christ, the law, which came four hundred thirty years after, does not annul, so as to make the promise of no effect.",
+      "ko": "내가 이것을 말하노니 하나님의 미리 정하신 언약을 사백 삼십년 후에 생긴 율법이 없이 하지 못하여 그 약속을 헛되게 하지 못하리라",
+      "source_text_hash": "e833aef2bfae24323316e11f7ad1a8fc3d072af74c0fcdd33b4849496dbcde6f",
+      "translation_text_hash": "f01e69b09690babe36061f28454d0bb17294b9d8af87b2312c6bb96e878d0c76",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 이것을 말하노니 하나님의 미리 정하신 언약을 사백 삼십년 후에 생긴 율법이 없이 하지 못하여 그 약속을 헛되게 하지 못하리라"
+      ],
+      "raw_text_hashes": [
+        "f01e69b09690babe36061f28454d0bb17294b9d8af87b2312c6bb96e878d0c76"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:3:18",
+      "sequence": 29117,
+      "chapter_label": "GAL 3",
+      "verse_label": "18",
+      "locator": {
+        "book": "GAL",
+        "chapter": 3,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 3,
+          "verse": 18
+        }
+      ],
+      "en": "For if the inheritance is of the law, it is no more of promise; but God has granted it to Abraham by promise.",
+      "ko": "만일 그 유업이 율법에서 난 것이면 약속에서 난 것이 아니리라 그러나 하나님이 약속으로 말미암아 아브라함에게 은혜로 주신 것이라",
+      "source_text_hash": "c6a78827a3194a8f20b1cbdcc660f10210f922211cf7b069166889f55a9c250b",
+      "translation_text_hash": "a438b4fd3684f1cb53130eb12844660953f653482b317e3811874504281a28ec",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 그 유업이 율법에서 난 것이면 약속에서 난 것이 아니리라 그러나 하나님이 약속으로 말미암아 아브라함에게 은혜로 주신 것이라"
+      ],
+      "raw_text_hashes": [
+        "a438b4fd3684f1cb53130eb12844660953f653482b317e3811874504281a28ec"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:3:19",
+      "sequence": 29118,
+      "chapter_label": "GAL 3",
+      "verse_label": "19",
+      "locator": {
+        "book": "GAL",
+        "chapter": 3,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 3,
+          "verse": 19
+        }
+      ],
+      "en": "Then why is there the law? It was added because of transgressions, until the offspring should come to whom the promise has been made. It was ordained through angels by the hand of a mediator.",
+      "ko": "그런즉 율법은 무엇이냐 범법함을 인하여 더한 것이라 천사들로 말미암아 중보의 손을 빌어 베푸신 것인데 약속하신 자손이 오시기까지 있을 것이라",
+      "source_text_hash": "54c64374a2f62d808605ff21eb4f24b649ae4422e7ff0ac07101cdaef644104f",
+      "translation_text_hash": "290fb915e0ce64161e5ad1eb84e0a0343478e5b1958ce60fed0c62aec50024c4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 율법은 무엇이냐 범법함을 인하여 더한 것이라 천사들로 말미암아 중보의 손을 빌어 베푸신 것인데 약속하신 자손이 오시기까지 있을 것이라"
+      ],
+      "raw_text_hashes": [
+        "290fb915e0ce64161e5ad1eb84e0a0343478e5b1958ce60fed0c62aec50024c4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:3:20",
+      "sequence": 29119,
+      "chapter_label": "GAL 3",
+      "verse_label": "20",
+      "locator": {
+        "book": "GAL",
+        "chapter": 3,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 3,
+          "verse": 20
+        }
+      ],
+      "en": "Now a mediator is not between one, but God is one.",
+      "ko": "중보는 한편만 위한 자가 아니니 오직 하나님은 하나이시니라",
+      "source_text_hash": "beccab103d50881000845b32b129ea6d44a02129b6e7f53e23e6515fdc17dc59",
+      "translation_text_hash": "2260fd542db1b2e25c217b46fca0aec663fe48add99af2b0b333dbceefb70060",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "중보는 한편만 위한 자가 아니니 오직 하나님은 하나이시니라"
+      ],
+      "raw_text_hashes": [
+        "2260fd542db1b2e25c217b46fca0aec663fe48add99af2b0b333dbceefb70060"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:3:21",
+      "sequence": 29120,
+      "chapter_label": "GAL 3",
+      "verse_label": "21",
+      "locator": {
+        "book": "GAL",
+        "chapter": 3,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 3,
+          "verse": 21
+        }
+      ],
+      "en": "Is the law then against the promises of God? Certainly not! For if there had been a law given which could make alive, most certainly righteousness would have been of the law.",
+      "ko": "그러면 율법이 하나님의 약속들을 거스리느냐 결코 그럴 수 없느니라 만일 능히 살게하는 율법을 주셨더면 의가 반드시 율법으로 말미암았으리라",
+      "source_text_hash": "ba45ef70340a5d8047d2b1518d63b39fde4bc46c13ba43143df0a64618f8b870",
+      "translation_text_hash": "46e2a6b2dd43a10eed47e3ef043bd323afb2bcbf6a51f25482d047f29eef5176",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러면 율법이 하나님의 약속들을 거스리느냐 결코 그럴 수 없느니라 만일 능히 살게하는 율법을 주셨더면 의가 반드시 율법으로 말미암았으리라"
+      ],
+      "raw_text_hashes": [
+        "46e2a6b2dd43a10eed47e3ef043bd323afb2bcbf6a51f25482d047f29eef5176"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:3:22",
+      "sequence": 29121,
+      "chapter_label": "GAL 3",
+      "verse_label": "22",
+      "locator": {
+        "book": "GAL",
+        "chapter": 3,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 3,
+          "verse": 22
+        }
+      ],
+      "en": "But the Scripture imprisoned all things under sin, that the promise by faith in Jesus Christ might be given to those who believe.",
+      "ko": "그러나 성경이 모든 것을 죄아래 가두었으니 이는 예수 그리스도를 믿음으로 말미암은 약속을 믿는 자들에게 주려 함이니라",
+      "source_text_hash": "568e9948c86450d83b47ae17dec328f04d9b8d615c89b2a8e43a0203da7efbba",
+      "translation_text_hash": "aea5ffda696dbedbc85e79bc309d0af6e61d5c1ede2d8b1f50372ea0da64ca80",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 성경이 모든 것을 죄아래 가두었으니 이는 예수 그리스도를 믿음으로 말미암은 약속을 믿는 자들에게 주려 함이니라"
+      ],
+      "raw_text_hashes": [
+        "aea5ffda696dbedbc85e79bc309d0af6e61d5c1ede2d8b1f50372ea0da64ca80"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:3:23",
+      "sequence": 29122,
+      "chapter_label": "GAL 3",
+      "verse_label": "23",
+      "locator": {
+        "book": "GAL",
+        "chapter": 3,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 3,
+          "verse": 23
+        }
+      ],
+      "en": "But before faith came, we were kept in custody under the law, confined for the faith which should afterwards be revealed.",
+      "ko": "믿음이 오기 전에 우리가 율법 아래 매인바 되고 계시될 믿음의 때까지 갇혔느니라",
+      "source_text_hash": "d4e8662eb52a6939e729cf4e816073d9e56c3392d2a0e583b715d6a077490947",
+      "translation_text_hash": "b47b15ffd0cd29bcb83f332e9725d0e1b62e6147fa450da7fc472a64d36de631",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "믿음이 오기 전에 우리가 율법 아래 매인바 되고 계시될 믿음의 때까지 갇혔느니라"
+      ],
+      "raw_text_hashes": [
+        "b47b15ffd0cd29bcb83f332e9725d0e1b62e6147fa450da7fc472a64d36de631"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:3:24",
+      "sequence": 29123,
+      "chapter_label": "GAL 3",
+      "verse_label": "24",
+      "locator": {
+        "book": "GAL",
+        "chapter": 3,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 3,
+          "verse": 24
+        }
+      ],
+      "en": "So that the law has become our tutor to bring us to Christ, that we might be justified by faith.",
+      "ko": "이같이 율법이 우리를 그리스도에게로 인도하는 몽학선생이 되어 우리로 하여금 믿음으로 말미암아 의롭다 함을 얻게 하려 함이니라",
+      "source_text_hash": "1a2df9c5383c46422ff59773f6f60ea92a02407e11fa36b26846f710e0652ce6",
+      "translation_text_hash": "65c3d0a2fadd2765b5a3c87018b8aa782dc58c35fa8c4a1b38842c154b82924e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이같이 율법이 우리를 그리스도에게로 인도하는 몽학선생이 되어 우리로 하여금 믿음으로 말미암아 의롭다 함을 얻게 하려 함이니라"
+      ],
+      "raw_text_hashes": [
+        "65c3d0a2fadd2765b5a3c87018b8aa782dc58c35fa8c4a1b38842c154b82924e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:3:25",
+      "sequence": 29124,
+      "chapter_label": "GAL 3",
+      "verse_label": "25",
+      "locator": {
+        "book": "GAL",
+        "chapter": 3,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 3,
+          "verse": 25
+        }
+      ],
+      "en": "But now that faith has come, we are no longer under a tutor.",
+      "ko": "믿음이 온 후로는 우리가 몽학선생 아래 있지 아니하도다",
+      "source_text_hash": "328e653acb7982ba364ebf797ba08581208acb609730981608ee68dc662f5835",
+      "translation_text_hash": "73de315b185a7a1f25bab648e9fa32bc15f10f33e1b77c500cd569358f11704e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "믿음이 온 후로는 우리가 몽학선생 아래 있지 아니하도다"
+      ],
+      "raw_text_hashes": [
+        "73de315b185a7a1f25bab648e9fa32bc15f10f33e1b77c500cd569358f11704e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:3:26",
+      "sequence": 29125,
+      "chapter_label": "GAL 3",
+      "verse_label": "26",
+      "locator": {
+        "book": "GAL",
+        "chapter": 3,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 3,
+          "verse": 26
+        }
+      ],
+      "en": "For you are all children of God, through faith in Christ Jesus.",
+      "ko": "너희가 다 믿음으로 말미암아 그리스도 예수 안에서 하나님의 아들이 되었으니",
+      "source_text_hash": "21560157eb61d5b56580ca29983d2b9caa8e53248a81cd76c3fb287173b7cd5a",
+      "translation_text_hash": "9224d1f0e0b4fdeceda31007e333ed23ce2e08cc4b640fb182f8916a6d40de0c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 다 믿음으로 말미암아 그리스도 예수 안에서 하나님의 아들이 되었으니"
+      ],
+      "raw_text_hashes": [
+        "9224d1f0e0b4fdeceda31007e333ed23ce2e08cc4b640fb182f8916a6d40de0c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:3:27",
+      "sequence": 29126,
+      "chapter_label": "GAL 3",
+      "verse_label": "27",
+      "locator": {
+        "book": "GAL",
+        "chapter": 3,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 3,
+          "verse": 27
+        }
+      ],
+      "en": "For as many of you as were baptized into Christ have put on Christ.",
+      "ko": "누구든지 그리스도와 합하여 세례를 받은 자는 그리스도로 옷입었느니라",
+      "source_text_hash": "317538ddfdb4e3a4823633570254d95e35a3a32527f1cf5186004747161b52c8",
+      "translation_text_hash": "017ec541df800b17f198c62b22b370cc87627e50623823aff1ad121e835bc0dd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누구든지 그리스도와 합하여 세례를 받은 자는 그리스도로 옷입었느니라"
+      ],
+      "raw_text_hashes": [
+        "017ec541df800b17f198c62b22b370cc87627e50623823aff1ad121e835bc0dd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:3:28",
+      "sequence": 29127,
+      "chapter_label": "GAL 3",
+      "verse_label": "28",
+      "locator": {
+        "book": "GAL",
+        "chapter": 3,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 3,
+          "verse": 28
+        }
+      ],
+      "en": "There is neither Jew nor Greek, there is neither slave nor free man, there is neither male nor female; for you are all one in Christ Jesus.",
+      "ko": "너희는 유대인이나 헬라인이나 종이나 자주자나 남자나 여자 없이 다 그리스도 예수 안에서 하나이니라",
+      "source_text_hash": "4ca6d366ad80cb8f0b26d8ff21967bc143a9536b4ddb71b1bbf842590caa08b7",
+      "translation_text_hash": "3b87a8168a90517cacdee0ff70bf63fc50bbdcc2ffca890b72327d8c6bfd89a5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 유대인이나 헬라인이나 종이나 자주자나 남자나 여자 없이 다 그리스도 예수 안에서 하나이니라"
+      ],
+      "raw_text_hashes": [
+        "3b87a8168a90517cacdee0ff70bf63fc50bbdcc2ffca890b72327d8c6bfd89a5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:3:29",
+      "sequence": 29128,
+      "chapter_label": "GAL 3",
+      "verse_label": "29",
+      "locator": {
+        "book": "GAL",
+        "chapter": 3,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 3,
+          "verse": 29
+        }
+      ],
+      "en": "If you are Christ’s, then you are Abraham’s offspring and heirs according to promise.",
+      "ko": "너희가 그리스도께 속한 자면 곧 아브라함의 자손이요 약속대로 유업을 이을 자니라",
+      "source_text_hash": "b73d84caf278abc3d55b599b47c18683b7936147f22993e080afd4207d66b4af",
+      "translation_text_hash": "c6c611aba17c89b1b8ae31e00a15d9d2be5b00ae1c4aabad217a23f2675726d4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 그리스도께 속한 자면 곧 아브라함의 자손이요 약속대로 유업을 이을 자니라"
+      ],
+      "raw_text_hashes": [
+        "c6c611aba17c89b1b8ae31e00a15d9d2be5b00ae1c4aabad217a23f2675726d4"
+      ]
+    }
+  ]
+}

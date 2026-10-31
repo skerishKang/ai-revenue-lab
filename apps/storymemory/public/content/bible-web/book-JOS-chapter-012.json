@@ -1,0 +1,781 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JOS:chapter:012",
+  "unit_ordinal": 199,
+  "unit_label": "JOS 12",
+  "book_code": "JOS",
+  "chapter_number": 12,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JOS:12:1",
+      "sequence": 6132,
+      "chapter_label": "JOS 12",
+      "verse_label": "1",
+      "locator": {
+        "book": "JOS",
+        "chapter": 12,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 12,
+          "verse": 1
+        }
+      ],
+      "en": "Now these are the kings of the land, whom the children of Israel struck, and possessed their land beyond the Jordan toward the sunrise, from the valley of the Arnon to Mount Hermon, and all the Arabah eastward:",
+      "ko": "이스라엘 자손이 요단 저편 해 돋는 편 곧 아르논 골짜기에서 헤르몬산까지의 동방 온 아라바를 점령하고 그 땅에서 쳐 죽인 왕들은 이러하니라",
+      "source_text_hash": "3e46579238925ad2cc8ee5e8d0cc1d610ccdd70444f73beea28eacc58c5d477a",
+      "translation_text_hash": "a307190df6154accb5e1d9dd9da36e13096209ca1c31660bd82ac31ab10020be",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손이 요단 저편 해 돋는 편 곧 아르논 골짜기에서 헤르몬산까지의 동방 온 아라바를 점령하고 그 땅에서 쳐 죽인 왕들은 이러하니라"
+      ],
+      "raw_text_hashes": [
+        "a307190df6154accb5e1d9dd9da36e13096209ca1c31660bd82ac31ab10020be"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:12:2",
+      "sequence": 6133,
+      "chapter_label": "JOS 12",
+      "verse_label": "2",
+      "locator": {
+        "book": "JOS",
+        "chapter": 12,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 12,
+          "verse": 2
+        }
+      ],
+      "en": "Sihon king of the Amorites, who lived in Heshbon, and ruled from Aroer, which is on the edge of the valley of the Arnon, and the middle of the valley, and half Gilead, even to the river Jabbok, the border of the children of Ammon;",
+      "ko": "헤스본에 거하던 아모리 사람의 왕 시혼이라 그 다스리던 땅은 아르논 골짜기 가에 있는 아로엘에서부터 골짜기 가운데 성읍과 길르앗 절반 곧 암몬 자손의 지경 얍복강까지며",
+      "source_text_hash": "e159474215d7b9e2a81add44783376191014f72bfa88eaaeffd481ec84a96612",
+      "translation_text_hash": "e534b5d7dbc07b89ad7e59fa8a66b1723462f746da0259ce66127e0d210a845a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "헤스본에 거하던 아모리 사람의 왕 시혼이라 그 다스리던 땅은 아르논 골짜기 가에 있는 아로엘에서부터 골짜기 가운데 성읍과 길르앗 절반 곧 암몬 자손의 지경 얍복강까지며"
+      ],
+      "raw_text_hashes": [
+        "e534b5d7dbc07b89ad7e59fa8a66b1723462f746da0259ce66127e0d210a845a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:12:3",
+      "sequence": 6134,
+      "chapter_label": "JOS 12",
+      "verse_label": "3",
+      "locator": {
+        "book": "JOS",
+        "chapter": 12,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 12,
+          "verse": 3
+        }
+      ],
+      "en": "and the Arabah to the sea of Chinneroth, eastward, and to the sea of the Arabah, even the Salt Sea, eastward, the way to Beth Jeshimoth; and on the south, under the slopes of Pisgah:",
+      "ko": "또 동방 아라바 긴네롯 바다까지며 또 동방 아라바의 바다 곧 염해의 벧여시못으로 통한 길까지와 남편으로 비스가 산록까지며",
+      "source_text_hash": "c68c157a396c790812057f68ce611601c685499829cb8411f9eaf5accdb675ee",
+      "translation_text_hash": "6d7eca3cc4d5633e3da2193564bb1ed9b80066a3d0aae2a2e952fd210d7dd16a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 동방 아라바 긴네롯 바다까지며 또 동방 아라바의 바다 곧 염해의 벧여시못으로 통한 길까지와 남편으로 비스가 산록까지며"
+      ],
+      "raw_text_hashes": [
+        "6d7eca3cc4d5633e3da2193564bb1ed9b80066a3d0aae2a2e952fd210d7dd16a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:12:4",
+      "sequence": 6135,
+      "chapter_label": "JOS 12",
+      "verse_label": "4",
+      "locator": {
+        "book": "JOS",
+        "chapter": 12,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 12,
+          "verse": 4
+        }
+      ],
+      "en": "and the border of Og king of Bashan, of the remnant of the Rephaim, who lived at Ashtaroth and at Edrei,",
+      "ko": "또 르바의 남은 족속으로서 아스다롯과 에드레이에 거하던 바산 왕 옥이라",
+      "source_text_hash": "4c3155b1266ff188f203840363c643903e5df42bd256bd0c161b3a1de2c33fa5",
+      "translation_text_hash": "e1d5206e29c72b7634fdfccf9ebc89e4e8fef877c5db12d73e49cacde08f4d9c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 르바의 남은 족속으로서 아스다롯과 에드레이에 거하던 바산 왕 옥이라"
+      ],
+      "raw_text_hashes": [
+        "e1d5206e29c72b7634fdfccf9ebc89e4e8fef877c5db12d73e49cacde08f4d9c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:12:5",
+      "sequence": 6136,
+      "chapter_label": "JOS 12",
+      "verse_label": "5",
+      "locator": {
+        "book": "JOS",
+        "chapter": 12,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 12,
+          "verse": 5
+        }
+      ],
+      "en": "and ruled in Mount Hermon, and in Salecah, and in all Bashan, to the border of the Geshurites and the Maacathites, and half Gilead, the border of Sihon king of Heshbon.",
+      "ko": "그 치리하던 땅은 헤르몬산과 살르가와 온 바산과 및 그술 사람과 마아가 사람의 지경까지의 길르앗 절반이니 헤스본 왕 시혼의 지경에 접한 것이라",
+      "source_text_hash": "6a5827f9dca3a84d19ea064141d31af1dac8ae72b3cf46cc576b047cf1fbcd1d",
+      "translation_text_hash": "fe36bcc5a4a8f4663cf63acb717c6e27ee6c6a550d6145fa19952928327f5b4e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 치리하던 땅은 헤르몬산과 살르가와 온 바산과 및 그술 사람과 마아가 사람의 지경까지의 길르앗 절반이니 헤스본 왕 시혼의 지경에 접한 것이라"
+      ],
+      "raw_text_hashes": [
+        "fe36bcc5a4a8f4663cf63acb717c6e27ee6c6a550d6145fa19952928327f5b4e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:12:6",
+      "sequence": 6137,
+      "chapter_label": "JOS 12",
+      "verse_label": "6",
+      "locator": {
+        "book": "JOS",
+        "chapter": 12,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 12,
+          "verse": 6
+        }
+      ],
+      "en": "Moses the servant of the LORD and the children of Israel struck them. Moses the servant of the LORD gave it for a possession to the Reubenites, and the Gadites, and the half-tribe of Manasseh.",
+      "ko": "여호와의 종 모세와 이스라엘 자손이 그들을 치고 여호와의 종 모세가 그 땅을 르우벤 사람과 갓 사람과 므낫세 반 지파에게 기업으로 주었더라",
+      "source_text_hash": "bae4d42cec3b4bbd04748045166009e9d63fcb1196f4541f2878c33816671061",
+      "translation_text_hash": "b9bfed59f8eb496800d1439686bc8798ba1bfd351496bd261b229b1bedb15acc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 종 모세와 이스라엘 자손이 그들을 치고 여호와의 종 모세가 그 땅을 르우벤 사람과 갓 사람과 므낫세 반 지파에게 기업으로 주었더라"
+      ],
+      "raw_text_hashes": [
+        "b9bfed59f8eb496800d1439686bc8798ba1bfd351496bd261b229b1bedb15acc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:12:7",
+      "sequence": 6138,
+      "chapter_label": "JOS 12",
+      "verse_label": "7",
+      "locator": {
+        "book": "JOS",
+        "chapter": 12,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 12,
+          "verse": 7
+        }
+      ],
+      "en": "These are the kings of the land whom Joshua and the children of Israel struck beyond the Jordan westward, from Baal Gad in the valley of Lebanon even to Mount Halak, that goes up to Seir. Joshua gave it to the tribes of Israel for a possession according to their divisions;",
+      "ko": "여호수아와 이스라엘 자손이 요단 이편 곧 서편 레바논 골짜기의 바알갓에서부터 세일로 올라가는 곳 할락산까지에서 쳐서 멸한 왕들은 이러하니 (그 땅을 여호수아가 이스라엘의 구별을 따라 그 지파에게 기업으로 주었으니",
+      "source_text_hash": "911de1d042aaf35bfd745a9eeba5cb86fbf9e4a1e4cae164844b14bb5398009f",
+      "translation_text_hash": "06931688bdd777d64fdd28ac905737ccec2ea9f7a984b1fb86a3ff5f7592eaef",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호수아와 이스라엘 자손이 요단 이편 곧 서편 레바논 골짜기의 바알갓에서부터 세일로 올라가는 곳 할락산까지에서 쳐서 멸한 왕들은 이러하니 (그 땅을 여호수아가 이스라엘의 구별을 따라 그 지파에게 기업으로 주었으니"
+      ],
+      "raw_text_hashes": [
+        "06931688bdd777d64fdd28ac905737ccec2ea9f7a984b1fb86a3ff5f7592eaef"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:12:8",
+      "sequence": 6139,
+      "chapter_label": "JOS 12",
+      "verse_label": "8",
+      "locator": {
+        "book": "JOS",
+        "chapter": 12,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 12,
+          "verse": 8
+        }
+      ],
+      "en": "in the hill country, and in the lowland, and in the Arabah, and in the slopes, and in the wilderness, and in the South; the Hittite, the Amorite, and the Canaanite, the Perizzite, the Hivite, and the Jebusite:",
+      "ko": "곧 산지와 평지와 아라바와 경사지와 광야와 남방 곧 헷 사람과 아모리 사람과 가나안 사람과 브리스 사람과 히위 사람과 여부스 사람의 땅이라)",
+      "source_text_hash": "8c75a4776b682620d8c2fe13bd09caa74d9b989cad8e0f4142a20282f9c4d2e5",
+      "translation_text_hash": "4cc892aba97822c4ca6218e76a4c677a134a29884766a51bc93df326b17b8190",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 산지와 평지와 아라바와 경사지와 광야와 남방 곧 헷 사람과 아모리 사람과 가나안 사람과 브리스 사람과 히위 사람과 여부스 사람의 땅이라)"
+      ],
+      "raw_text_hashes": [
+        "4cc892aba97822c4ca6218e76a4c677a134a29884766a51bc93df326b17b8190"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:12:9",
+      "sequence": 6140,
+      "chapter_label": "JOS 12",
+      "verse_label": "9",
+      "locator": {
+        "book": "JOS",
+        "chapter": 12,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 12,
+          "verse": 9
+        }
+      ],
+      "en": "the king of Jericho, one; the king of Ai, which is beside Bethel, one;",
+      "ko": "하나는 여리고 왕이요 하나는 벧엘 곁의 아이 왕이요",
+      "source_text_hash": "0bb32ca886ee1de958248570666e867d083cdb743de7242284719b2a04ce1197",
+      "translation_text_hash": "e942dd2e31f58ba0906a2a1e251414dd0674bec4ddada35cea87adc0e343b206",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나는 여리고 왕이요 하나는 벧엘 곁의 아이 왕이요"
+      ],
+      "raw_text_hashes": [
+        "e942dd2e31f58ba0906a2a1e251414dd0674bec4ddada35cea87adc0e343b206"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:12:10",
+      "sequence": 6141,
+      "chapter_label": "JOS 12",
+      "verse_label": "10",
+      "locator": {
+        "book": "JOS",
+        "chapter": 12,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 12,
+          "verse": 10
+        }
+      ],
+      "en": "the king of Jerusalem, one; the king of Hebron, one;",
+      "ko": "하나는 예루살렘 왕이요 하나는 헤브론 왕이요 하나는 야르뭇 왕이요",
+      "source_text_hash": "a9b04fe7d5bf0ea7d43c470b467ecef90bc983d6efb1419262a12f359195356f",
+      "translation_text_hash": "d6e90da5d87aab7c1ca7f0826d6b04d08b23f486ec7cabf8e2626af975fecb80",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나는 예루살렘 왕이요 하나는 헤브론 왕이요 하나는 야르뭇 왕이요"
+      ],
+      "raw_text_hashes": [
+        "d6e90da5d87aab7c1ca7f0826d6b04d08b23f486ec7cabf8e2626af975fecb80"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:12:11",
+      "sequence": 6142,
+      "chapter_label": "JOS 12",
+      "verse_label": "11",
+      "locator": {
+        "book": "JOS",
+        "chapter": 12,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 12,
+          "verse": 11
+        }
+      ],
+      "en": "the king of Jarmuth, one; the king of Lachish, one;",
+      "ko": "하나는 라기스 왕이요",
+      "source_text_hash": "7ff86a27387e4731024d3f807caab41f10b1494cff3a3ad8487450a5448fe6a4",
+      "translation_text_hash": "ea8b884b02b49f7986ba260bceaf755172a39d84343bc6c42fe1fd8a62f4e64d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나는 라기스 왕이요"
+      ],
+      "raw_text_hashes": [
+        "ea8b884b02b49f7986ba260bceaf755172a39d84343bc6c42fe1fd8a62f4e64d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:12:12",
+      "sequence": 6143,
+      "chapter_label": "JOS 12",
+      "verse_label": "12",
+      "locator": {
+        "book": "JOS",
+        "chapter": 12,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 12,
+          "verse": 12
+        }
+      ],
+      "en": "the king of Eglon, one; the king of Gezer, one;",
+      "ko": "하나는 에글론 왕이요 하나는 게셀 왕이요",
+      "source_text_hash": "a50fbdf60fcb786101dce7d347b6ca3046a8a185d6b07dac2051f0ced46837b9",
+      "translation_text_hash": "5984a5c420924bd77a3c88ed88e6eabd130485223d4050879a9455efac7fcadc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나는 에글론 왕이요 하나는 게셀 왕이요"
+      ],
+      "raw_text_hashes": [
+        "5984a5c420924bd77a3c88ed88e6eabd130485223d4050879a9455efac7fcadc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:12:13",
+      "sequence": 6144,
+      "chapter_label": "JOS 12",
+      "verse_label": "13",
+      "locator": {
+        "book": "JOS",
+        "chapter": 12,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 12,
+          "verse": 13
+        }
+      ],
+      "en": "the king of Debir, one; the king of Geder, one;",
+      "ko": "하나는 드빌 왕이요 하나는 게델 왕이요",
+      "source_text_hash": "8823aa0ce3b57bbbb136f591dc83ed36a74c7ee6a19e9218edf7ef472b90ac47",
+      "translation_text_hash": "9c8600a6f8f719ebe0d4ff193001e0f26194ead0e370a5e32e6ff71d1bafb94a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나는 드빌 왕이요 하나는 게델 왕이요"
+      ],
+      "raw_text_hashes": [
+        "9c8600a6f8f719ebe0d4ff193001e0f26194ead0e370a5e32e6ff71d1bafb94a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:12:14",
+      "sequence": 6145,
+      "chapter_label": "JOS 12",
+      "verse_label": "14",
+      "locator": {
+        "book": "JOS",
+        "chapter": 12,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 12,
+          "verse": 14
+        }
+      ],
+      "en": "the king of Hormah, one; the king of Arad, one;",
+      "ko": "하나는 호르마 왕이요 하나는 아랏 왕이요",
+      "source_text_hash": "92d79798ce9e1329fe729b56a79608bde6a46a56b23b260e42b8217b8f6b0a12",
+      "translation_text_hash": "f1fbc772d63baf155dfc67c284c2ce048e6fac4f4d05078896a402c89a869358",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나는 호르마 왕이요 하나는 아랏 왕이요"
+      ],
+      "raw_text_hashes": [
+        "f1fbc772d63baf155dfc67c284c2ce048e6fac4f4d05078896a402c89a869358"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:12:15",
+      "sequence": 6146,
+      "chapter_label": "JOS 12",
+      "verse_label": "15",
+      "locator": {
+        "book": "JOS",
+        "chapter": 12,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 12,
+          "verse": 15
+        }
+      ],
+      "en": "the king of Libnah, one; the king of Adullam, one;",
+      "ko": "하나는 립나 왕이요 하나는 아둘람 왕이요",
+      "source_text_hash": "2259c2cec513ec787824ca45170993df9f9cfc8008ca4e802c3f68de81e640a3",
+      "translation_text_hash": "b40431f5c23dbb958b42b5b12c79acbfd9f71116e1a009b397275e226f974d2b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나는 립나 왕이요 하나는 아둘람 왕이요"
+      ],
+      "raw_text_hashes": [
+        "b40431f5c23dbb958b42b5b12c79acbfd9f71116e1a009b397275e226f974d2b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:12:16",
+      "sequence": 6147,
+      "chapter_label": "JOS 12",
+      "verse_label": "16",
+      "locator": {
+        "book": "JOS",
+        "chapter": 12,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 12,
+          "verse": 16
+        }
+      ],
+      "en": "the king of Makkedah, one; the king of Bethel, one;",
+      "ko": "하나는 막게다 왕이요 하나는 벧엘 왕이요",
+      "source_text_hash": "73d101a1e1b74d0b72fe06cdadbf7a5e11fba5ca9a404eac858d2fba3c2c0b52",
+      "translation_text_hash": "c7943143ad21adac816b3ea9ebc59607a785dcfdaeef7f5b99790336a33e0903",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나는 막게다 왕이요 하나는 벧엘 왕이요"
+      ],
+      "raw_text_hashes": [
+        "c7943143ad21adac816b3ea9ebc59607a785dcfdaeef7f5b99790336a33e0903"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:12:17",
+      "sequence": 6148,
+      "chapter_label": "JOS 12",
+      "verse_label": "17",
+      "locator": {
+        "book": "JOS",
+        "chapter": 12,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 12,
+          "verse": 17
+        }
+      ],
+      "en": "the king of Tappuah, one; the king of Hepher, one;",
+      "ko": "하나는 답부아 왕이요 하나는 헤벨 왕이요",
+      "source_text_hash": "d8e249be72b67148e200e8bd099f450441b6a7cf56898abe2d32246c147718e9",
+      "translation_text_hash": "f8b9b3688227ab4066cfee82fb289d20be881df19b5fc5581be5c214e271da55",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나는 답부아 왕이요 하나는 헤벨 왕이요"
+      ],
+      "raw_text_hashes": [
+        "f8b9b3688227ab4066cfee82fb289d20be881df19b5fc5581be5c214e271da55"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:12:18",
+      "sequence": 6149,
+      "chapter_label": "JOS 12",
+      "verse_label": "18",
+      "locator": {
+        "book": "JOS",
+        "chapter": 12,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 12,
+          "verse": 18
+        }
+      ],
+      "en": "the king of Aphek, one; the king of Lassharon, one;",
+      "ko": "하나는 아벡 왕이요 하나는 랏사론 왕이요",
+      "source_text_hash": "a53a3c2896dbc9709c476774cf927e87269c17698041198c60fe0623c1847b7d",
+      "translation_text_hash": "3cabd6284c8fb9fe122845af3198d44161d4d79b4009558ddb345f06c691d9b7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나는 아벡 왕이요 하나는 랏사론 왕이요"
+      ],
+      "raw_text_hashes": [
+        "3cabd6284c8fb9fe122845af3198d44161d4d79b4009558ddb345f06c691d9b7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:12:19",
+      "sequence": 6150,
+      "chapter_label": "JOS 12",
+      "verse_label": "19",
+      "locator": {
+        "book": "JOS",
+        "chapter": 12,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 12,
+          "verse": 19
+        }
+      ],
+      "en": "the king of Madon, one; the king of Hazor, one;",
+      "ko": "하나는 마돈 왕이요 하나는 하솔 왕이요",
+      "source_text_hash": "bfda99da342e44ae5e81ab96e0933ff29d3c0b333309b0c7fa4ba51ffb8c4a5a",
+      "translation_text_hash": "95b09316356dba4af71d3fc38e0e8e7298019826012134b1a96f8211adf671bc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나는 마돈 왕이요 하나는 하솔 왕이요"
+      ],
+      "raw_text_hashes": [
+        "95b09316356dba4af71d3fc38e0e8e7298019826012134b1a96f8211adf671bc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:12:20",
+      "sequence": 6151,
+      "chapter_label": "JOS 12",
+      "verse_label": "20",
+      "locator": {
+        "book": "JOS",
+        "chapter": 12,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 12,
+          "verse": 20
+        }
+      ],
+      "en": "the king of Shimron Meron, one; the king of Achshaph, one;",
+      "ko": "하나는 시므론 므론 왕이요 하나는 악삽 왕이요",
+      "source_text_hash": "c1279a192271668a1685671668ca8bba496592d5d11f944f9c0ba1408527d617",
+      "translation_text_hash": "5dbea55c611cf25c3a911c4907a634b429fac4d704bc77d70d2269c76f293d38",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나는 시므론 므론 왕이요 하나는 악삽 왕이요"
+      ],
+      "raw_text_hashes": [
+        "5dbea55c611cf25c3a911c4907a634b429fac4d704bc77d70d2269c76f293d38"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:12:21",
+      "sequence": 6152,
+      "chapter_label": "JOS 12",
+      "verse_label": "21",
+      "locator": {
+        "book": "JOS",
+        "chapter": 12,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 12,
+          "verse": 21
+        }
+      ],
+      "en": "the king of Taanach, one; the king of Megiddo, one;",
+      "ko": "하나는 다아낙 왕이요 하나는 므깃도 왕이요",
+      "source_text_hash": "92319e7d30c65efb23f8d50a2ad163c7d17ed119c880be0371aadecf2e283ff9",
+      "translation_text_hash": "ac77195cfad1f78024b1d742fffac0467cda7432b25e3a52c81a110d1c9176d9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나는 다아낙 왕이요 하나는 므깃도 왕이요"
+      ],
+      "raw_text_hashes": [
+        "ac77195cfad1f78024b1d742fffac0467cda7432b25e3a52c81a110d1c9176d9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:12:22",
+      "sequence": 6153,
+      "chapter_label": "JOS 12",
+      "verse_label": "22",
+      "locator": {
+        "book": "JOS",
+        "chapter": 12,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 12,
+          "verse": 22
+        }
+      ],
+      "en": "the king of Kedesh, one; the king of Jokneam in Carmel, one;",
+      "ko": "하나는 게데스 왕이요 하나는 갈멜의 욕느암 왕이요",
+      "source_text_hash": "e2385cc03fa788a35c098a0e6a48faa3ddbf6b10ad929b919999663c6e8ec436",
+      "translation_text_hash": "85af402bb2d6a609214e80b6e6591d81fdaf3cd19e2839a313050b6a65818d8c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나는 게데스 왕이요 하나는 갈멜의 욕느암 왕이요"
+      ],
+      "raw_text_hashes": [
+        "85af402bb2d6a609214e80b6e6591d81fdaf3cd19e2839a313050b6a65818d8c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:12:23",
+      "sequence": 6154,
+      "chapter_label": "JOS 12",
+      "verse_label": "23",
+      "locator": {
+        "book": "JOS",
+        "chapter": 12,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 12,
+          "verse": 23
+        }
+      ],
+      "en": "the king of Dor in the height of Dor, one; the king of Goiim in Gilgal, one;",
+      "ko": "하나는 돌의 높은 곳의 돌 왕이요 하나는 길갈의 고임 왕이요",
+      "source_text_hash": "3965f23c68c2b9db33fb59f09a4dc0b9874444934809bde3574defab0a3b9aff",
+      "translation_text_hash": "8c5ff4528f801205e94b79984ad1231fdbe330db15782a8f59f2a66c5f62dac5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나는 돌의 높은 곳의 돌 왕이요 하나는 길갈의 고임 왕이요"
+      ],
+      "raw_text_hashes": [
+        "8c5ff4528f801205e94b79984ad1231fdbe330db15782a8f59f2a66c5f62dac5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:12:24",
+      "sequence": 6155,
+      "chapter_label": "JOS 12",
+      "verse_label": "24",
+      "locator": {
+        "book": "JOS",
+        "chapter": 12,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 12,
+          "verse": 24
+        }
+      ],
+      "en": "the king of Tirzah, one: all the kings thirty-one.",
+      "ko": "하나는 디르사 왕이라 도합 삼십 일 왕이었더라",
+      "source_text_hash": "a26bafd2a2947b16bc392fd47160972909dd5f8e0d2c1de5b5edb7715ef292b2",
+      "translation_text_hash": "cd0c02a13fddd1f7234bdcfd4f960bba4e0f2d3b58ab8aa3ea7cf2e7e8e2ddf7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나는 디르사 왕이라 도합 삼십 일 왕이었더라"
+      ],
+      "raw_text_hashes": [
+        "cd0c02a13fddd1f7234bdcfd4f960bba4e0f2d3b58ab8aa3ea7cf2e7e8e2ddf7"
+      ]
+    }
+  ]
+}

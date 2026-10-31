@@ -1,0 +1,18 @@
+
+/* ===== StoryMemory v3.3.1 — Reading Activity Timeline ===== */
+.today-thread-list.sm-activity-timeline{gap:7px}
+.sm-activity-card{position:relative;overflow:hidden;display:grid;grid-template-columns:36px 1fr auto;gap:11px;align-items:center;width:100%;padding:12px 14px;border:1px solid rgba(48,42,34,.10);background:rgba(255,255,255,.46);text-align:left;color:inherit}
+.sm-activity-card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--sm-activity-accent,#b8734f);opacity:.68}
+.sm-activity-icon{display:grid;place-items:center;width:31px;height:31px;border-radius:50%;border:1px solid rgba(57,48,39,.11);background:rgba(255,255,255,.68);font:700 8px/1 var(--sans);letter-spacing:.04em;color:var(--sm-activity-accent,#9c674d)}
+.sm-activity-main{min-width:0;display:grid;gap:4px}
+.sm-activity-kicker{display:flex;gap:7px;align-items:center;flex-wrap:wrap;font:700 7px/1 var(--sans);letter-spacing:.11em;color:#9a8d81}
+.sm-activity-kicker b{color:var(--sm-activity-accent,#a35f3e);font-weight:700}
+.sm-activity-main strong{font:500 15px/1.2 var(--serif);color:#2d2822;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sm-activity-preview{font:400 9px/1.45 var(--sans);color:#746d64;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:720px}
+.sm-activity-meta{display:flex;gap:8px;flex-wrap:wrap;font:600 7px/1.2 var(--sans);letter-spacing:.06em;color:#9c938b}
+.sm-activity-arrow{font-size:15px;color:#9a6a51}
+.sm-activity-card[data-kind="annotation"]{--sm-activity-accent:#a96d48}
+.sm-activity-card[data-kind="memory"]{--sm-activity-accent:#7d6f9b}
+.sm-activity-card[data-kind="ai_context"]{--sm-activity-accent:#617f9a}
+.sm-activity-card[data-kind="reading"]{--sm-activity-accent:#a96a45}
+@media(max-width:700px){.sm-activity-card{grid-template-columns:30px 1fr auto;padding:11px 10px;gap:8px}.sm-activity-icon{width:27px;height:27px}.sm-activity-preview{max-width:62vw}.sm-activity-main strong{font-size:14px}}

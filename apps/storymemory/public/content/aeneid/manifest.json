@@ -1,0 +1,293 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "aeneid",
+  "title": "The Aeneid",
+  "author": "Virgil",
+  "passage_count": 528,
+  "unit_count": 12,
+  "primary_locator": "canonical_locator",
+  "translation_language": "ko",
+  "units": [
+    {
+      "unit_key": "book:01",
+      "unit_kind": "book",
+      "unit_ordinal": 1,
+      "label": "BOOK 01",
+      "path": "book-01.json",
+      "passage_count": 37,
+      "sha256": "8c14ae36b68f80e366ad9eece919b6a61de61c040474956822c448f3d5ce97a2",
+      "first_locator": "aeneid:book:01:s1:row:001",
+      "last_locator": "aeneid:book:01:s8:row:003"
+    },
+    {
+      "unit_key": "book:02",
+      "unit_kind": "book",
+      "unit_ordinal": 2,
+      "label": "BOOK 02",
+      "path": "book-02.json",
+      "passage_count": 27,
+      "sha256": "8e214c1c657c20b65b86215fdd32b4a3d599357cc93f1e42b4640e377b6724ef",
+      "first_locator": "aeneid:book:02:s1:row:001",
+      "last_locator": "aeneid:book:02:s9:row:001"
+    },
+    {
+      "unit_key": "book:03",
+      "unit_kind": "book",
+      "unit_ordinal": 3,
+      "label": "BOOK 03",
+      "path": "book-03.json",
+      "passage_count": 32,
+      "sha256": "9125dc84fda6ba4dd271ee2b20a03cef3d1ece5f6464e586ea66e00d0c61a708",
+      "first_locator": "aeneid:book:03:s1:row:001",
+      "last_locator": "aeneid:book:03:s8:row:006"
+    },
+    {
+      "unit_key": "book:04",
+      "unit_kind": "book",
+      "unit_ordinal": 4,
+      "label": "BOOK 04",
+      "path": "book-04.json",
+      "passage_count": 41,
+      "sha256": "31fa47504622d4d4c94f1e662292094687d8c979e319122ef7819743af988257",
+      "first_locator": "aeneid:book:04:s1:row:001",
+      "last_locator": "aeneid:book:04:s8:row:006"
+    },
+    {
+      "unit_key": "book:05",
+      "unit_kind": "book",
+      "unit_ordinal": 5,
+      "label": "BOOK 05",
+      "path": "book-05.json",
+      "passage_count": 38,
+      "sha256": "c62be2a9ff6b0df0ff8d6ff0489e8830ecde9087541705fb3f43e30fa1f7ab6b",
+      "first_locator": "aeneid:book:05:s1:row:001",
+      "last_locator": "aeneid:book:05:s7:row:003"
+    },
+    {
+      "unit_key": "book:06",
+      "unit_kind": "book",
+      "unit_ordinal": 6,
+      "label": "BOOK 06",
+      "path": "book-06.json",
+      "passage_count": 31,
+      "sha256": "45496fac0d0b389b33b840a99f0054ae9d29797f0be6b223a6481d2e28be4eb2",
+      "first_locator": "aeneid:book:06:s1:row:001",
+      "last_locator": "aeneid:book:06:s10:row:004"
+    },
+    {
+      "unit_key": "book:07",
+      "unit_kind": "book",
+      "unit_ordinal": 7,
+      "label": "BOOK 07",
+      "path": "book-07.json",
+      "passage_count": 45,
+      "sha256": "c2fe4cdeb739ba286e0eb5d42de7bc0b964400d4ac0d84e62522eee33c9a43b6",
+      "first_locator": "aeneid:book:07:s1:row:001",
+      "last_locator": "aeneid:book:07:s9:row:003"
+    },
+    {
+      "unit_key": "book:08",
+      "unit_kind": "book",
+      "unit_ordinal": 8,
+      "label": "BOOK 08",
+      "path": "book-08.json",
+      "passage_count": 25,
+      "sha256": "443ed27354fa3c9c2694aca135aa99b55befff602faa675d91a33eaf8f3ed298",
+      "first_locator": "aeneid:book:08:s1:row:001",
+      "last_locator": "aeneid:book:08:s8:row:003"
+    },
+    {
+      "unit_key": "book:09",
+      "unit_kind": "book",
+      "unit_ordinal": 9,
+      "label": "BOOK 09",
+      "path": "book-09.json",
+      "passage_count": 54,
+      "sha256": "5515d53c4fe0895abe43721891bc2183c52c659ed0c0cae5fd7bf81be2e98598",
+      "first_locator": "aeneid:book:09:s1:row:001",
+      "last_locator": "aeneid:book:09:s9:row:006"
+    },
+    {
+      "unit_key": "book:10",
+      "unit_kind": "book",
+      "unit_ordinal": 10,
+      "label": "BOOK 10",
+      "path": "book-10.json",
+      "passage_count": 67,
+      "sha256": "14461052102d2ccfc5ca0795ba8cf19f927671a951820c998bbb79eddc1950e3",
+      "first_locator": "aeneid:book:10:s1:row:001",
+      "last_locator": "aeneid:book:10:s12:row:005"
+    },
+    {
+      "unit_key": "book:11",
+      "unit_kind": "book",
+      "unit_ordinal": 11,
+      "label": "BOOK 11",
+      "path": "book-11.json",
+      "passage_count": 51,
+      "sha256": "647b9b2a34d79cff3aaf4f3ecc471b0004686e4be60baff6270d7744f885e60e",
+      "first_locator": "aeneid:book:11:s1:row:001",
+      "last_locator": "aeneid:book:11:s10:row:003"
+    },
+    {
+      "unit_key": "book:12",
+      "unit_kind": "book",
+      "unit_ordinal": 12,
+      "label": "BOOK 12",
+      "path": "book-12.json",
+      "passage_count": 80,
+      "sha256": "ed63e72fbefed3ebbbaf411714777ad328ef532b4174d83c0dd700c2cc55aad8",
+      "first_locator": "aeneid:book:12:s1:row:001",
+      "last_locator": "aeneid:book:12:s12:row:001"
+    }
+  ],
+  "provenance": {
+    "ingestion_manifest_file": "aeneid_ingestion_manifest.json",
+    "ingestion_manifest_sha256": "7dccd20bf8581a2b3260018f8f549af051625c94388f46028d14a9ca6a37c598",
+    "source_jsonl_file": "aeneid_source_passages.jsonl",
+    "source_jsonl_sha256": "3c43c74008f239178cb243c0e78763392ba5cf80bf19242f03dfbdb8222ad869",
+    "translation_jsonl_file": "aeneid_translations_ko.jsonl",
+    "translation_jsonl_sha256": "ddfaf5b6487121b2477052296b40e06dae16ed9b0d9b56a975967ad49fa08a58",
+    "translation_source_hash_mismatches": 0,
+    "upstream_manifest": {
+      "schema_version": "1.0.0",
+      "work_key": "aeneid",
+      "source_ref": "drive:1SFYKYgdaY86TKpIskHi5FryBJeIDKQD4",
+      "source_edition": "John Dryden / 501-classics canonical",
+      "books_expected": 12,
+      "books_found": 12,
+      "passages": 528,
+      "ko_translations": 528,
+      "empty_ko": 0,
+      "canonical_locator_unique": true,
+      "sequence_unique": true,
+      "book_stats": [
+        {
+          "book": 1,
+          "sections": 8,
+          "passages": 37,
+          "ko_translations": 37,
+          "empty_ko": 0,
+          "file": "AENEID_BOOK_01.html",
+          "file_sha256": "84c719b180a9ecdc81c20f7ba3c822c3d8a3d865a0f51826ade4ad898c642fc4"
+        },
+        {
+          "book": 2,
+          "sections": 9,
+          "passages": 27,
+          "ko_translations": 27,
+          "empty_ko": 0,
+          "file": "AENEID_BOOK_02.html",
+          "file_sha256": "a7144a4096569ee8ab751d75d04ed883fe54e1a0cf9f2deb874748a337cbb760"
+        },
+        {
+          "book": 3,
+          "sections": 8,
+          "passages": 32,
+          "ko_translations": 32,
+          "empty_ko": 0,
+          "file": "AENEID_BOOK_03.html",
+          "file_sha256": "08dc99ee3cf3a1a67b7238ad1285bd0533d8a0196731c9c0d3f47b0fc44a3f1e"
+        },
+        {
+          "book": 4,
+          "sections": 8,
+          "passages": 41,
+          "ko_translations": 41,
+          "empty_ko": 0,
+          "file": "AENEID_BOOK_04.html",
+          "file_sha256": "f38b0f53ffbcc868584f89ad2b452e2bd70474829f4e618027910f3165045aee"
+        },
+        {
+          "book": 5,
+          "sections": 7,
+          "passages": 38,
+          "ko_translations": 38,
+          "empty_ko": 0,
+          "file": "AENEID_BOOK_05.html",
+          "file_sha256": "1cea4f4ebd796173743f1631eb5291a7272496dbffd62d53a6c776be3fee700c"
+        },
+        {
+          "book": 6,
+          "sections": 10,
+          "passages": 31,
+          "ko_translations": 31,
+          "empty_ko": 0,
+          "file": "AENEID_BOOK_06.html",
+          "file_sha256": "d3a315908f176295925ee41b2a5620d83ab7ee5c636a448b8b94c8dd27350420"
+        },
+        {
+          "book": 7,
+          "sections": 9,
+          "passages": 45,
+          "ko_translations": 45,
+          "empty_ko": 0,
+          "file": "AENEID_BOOK_07.html",
+          "file_sha256": "0fc3ecbaf82e38d972f3e9b4e254d7e3a58061399113fd0e5398cd2cf9cf8d98"
+        },
+        {
+          "book": 8,
+          "sections": 8,
+          "passages": 25,
+          "ko_translations": 25,
+          "empty_ko": 0,
+          "file": "AENEID_BOOK_08.html",
+          "file_sha256": "5873ad54c651ad98c0f4b2daf651cb2ffb958e458a825078e13546d3ec94cf39"
+        },
+        {
+          "book": 9,
+          "sections": 9,
+          "passages": 54,
+          "ko_translations": 54,
+          "empty_ko": 0,
+          "file": "AENEID_BOOK_09.html",
+          "file_sha256": "6c1e81eaa088511afbddc02385e07666b5745ee443ee071b36139b8a78db9e98"
+        },
+        {
+          "book": 10,
+          "sections": 12,
+          "passages": 67,
+          "ko_translations": 67,
+          "empty_ko": 0,
+          "file": "AENEID_BOOK_10.html",
+          "file_sha256": "d22c2c2816a1c051934d3c347c720b221ebab113c42a0797661ffe8c1af12c49"
+        },
+        {
+          "book": 11,
+          "sections": 10,
+          "passages": 51,
+          "ko_translations": 51,
+          "empty_ko": 0,
+          "file": "AENEID_BOOK_11.html",
+          "file_sha256": "2b57926fe7a37a1a39887307488a83451cfe1becfb6b995757592742b9b06e74"
+        },
+        {
+          "book": 12,
+          "sections": 12,
+          "passages": 80,
+          "ko_translations": 80,
+          "empty_ko": 0,
+          "file": "AENEID_BOOK_12.html",
+          "file_sha256": "31fe965a8b923722cfe1c7eb97bfa85a7887abe9869d4727f7cdf0b3149dd984"
+        }
+      ],
+      "source_jsonl_sha256": "3c43c74008f239178cb243c0e78763392ba5cf80bf19242f03dfbdb8222ad869",
+      "translation_jsonl_sha256": "ddfaf5b6487121b2477052296b40e06dae16ed9b0d9b56a975967ad49fa08a58"
+    }
+  },
+  "qa": {
+    "passage_count": 528,
+    "expected_passage_count": 528,
+    "unit_count": 12,
+    "expected_unit_count": 12,
+    "empty_en": 0,
+    "empty_ko": 0,
+    "canonical_locator_duplicates": 0,
+    "sequence_duplicates": 0,
+    "source_hash_recompute_mismatches": 0,
+    "translation_hash_recompute_mismatches": 0,
+    "unit_sequence_formula_failures": 0,
+    "translation_source_hash_mismatches": 0,
+    "pass": true
+  }
+}

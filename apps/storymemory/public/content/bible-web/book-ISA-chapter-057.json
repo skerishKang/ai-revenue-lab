@@ -1,0 +1,685 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ISA:chapter:057",
+  "unit_ordinal": 736,
+  "unit_label": "ISA 57",
+  "book_code": "ISA",
+  "chapter_number": 57,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ISA:57:1",
+      "sequence": 18767,
+      "chapter_label": "ISA 57",
+      "verse_label": "1",
+      "locator": {
+        "book": "ISA",
+        "chapter": 57,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 57,
+          "verse": 1
+        }
+      ],
+      "en": "The righteous perish, and no one lays it to heart. Merciful men are taken away, and no one considers that the righteous is taken away from the evil.",
+      "ko": "의인이 죽을찌라도 마음에 두는 자가 없고 자비한 자들이 취하여 감을 입을찌라도 그 의인은 화액 전에 취하여 감을 입은 것인줄로 깨닫는 자가 없도다",
+      "source_text_hash": "9759943d8260ca3fad5c2d2b29f631fa9d9a93dccf4e1f257ab566c70a1d44d1",
+      "translation_text_hash": "2801b5fbac0fbfff459f4fd65a72198c3d833d3585c5ca777c3a8dd7f3375a0d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "의인이 죽을찌라도 마음에 두는 자가 없고 자비한 자들이 취하여 감을 입을찌라도 그 의인은 화액 전에 취하여 감을 입은 것인줄로 깨닫는 자가 없도다"
+      ],
+      "raw_text_hashes": [
+        "2801b5fbac0fbfff459f4fd65a72198c3d833d3585c5ca777c3a8dd7f3375a0d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:57:2",
+      "sequence": 18768,
+      "chapter_label": "ISA 57",
+      "verse_label": "2",
+      "locator": {
+        "book": "ISA",
+        "chapter": 57,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 57,
+          "verse": 2
+        }
+      ],
+      "en": "He enters into peace. They rest in their beds, each one who walks in his uprightness.",
+      "ko": "그는 평안에 들어갔나니 무릇 정로로 행하는 자는 자기들의 침상에서 편히 쉬느니라",
+      "source_text_hash": "d390ae4ea25bf594ad656af071d47b1767a8d9197d0b92efcc201137d7945368",
+      "translation_text_hash": "11a630850d851652897258413ff10502a9bbd282f55fe6b6ad23a483a0884877",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그는 평안에 들어갔나니 무릇 정로로 행하는 자는 자기들의 침상에서 편히 쉬느니라"
+      ],
+      "raw_text_hashes": [
+        "11a630850d851652897258413ff10502a9bbd282f55fe6b6ad23a483a0884877"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:57:3",
+      "sequence": 18769,
+      "chapter_label": "ISA 57",
+      "verse_label": "3",
+      "locator": {
+        "book": "ISA",
+        "chapter": 57,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 57,
+          "verse": 3
+        }
+      ],
+      "en": "“But draw near here, you sons of a sorceress, you offspring of adulterers and prostitutes.",
+      "ko": "무녀의 자식, 간음자와 음녀의 씨 너희는 가까이 오라",
+      "source_text_hash": "01de7782a3496977525dc279cf1ffd031cf39f21e32fc1037024b45efb4a7a29",
+      "translation_text_hash": "2be645b16809085e757365bc51a3524060160c2849539ec7c28301d12a86c164",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무녀의 자식, 간음자와 음녀의 씨 너희는 가까이 오라"
+      ],
+      "raw_text_hashes": [
+        "2be645b16809085e757365bc51a3524060160c2849539ec7c28301d12a86c164"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:57:4",
+      "sequence": 18770,
+      "chapter_label": "ISA 57",
+      "verse_label": "4",
+      "locator": {
+        "book": "ISA",
+        "chapter": 57,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 57,
+          "verse": 4
+        }
+      ],
+      "en": "Whom do you mock? Against whom do you make a wide mouth and stick out your tongue? Aren’t you children of disobedience and offspring of falsehood,",
+      "ko": "너희가 누구를 희롱하느냐 누구를 향하여 입을 크게 벌리며 혀를 내미느냐 너희는 패역의 자식, 궤휼의 종류가 아니냐",
+      "source_text_hash": "493445c80cf6e112ae3020c6ace7796c26d78dfb22e3c8c5e35f2d4e347391b5",
+      "translation_text_hash": "aec1fe70e0917ce8b242a7a5e1898928b879a99743d20c7eecd75b1c655fd12c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 누구를 희롱하느냐 누구를 향하여 입을 크게 벌리며 혀를 내미느냐 너희는 패역의 자식, 궤휼의 종류가 아니냐"
+      ],
+      "raw_text_hashes": [
+        "aec1fe70e0917ce8b242a7a5e1898928b879a99743d20c7eecd75b1c655fd12c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:57:5",
+      "sequence": 18771,
+      "chapter_label": "ISA 57",
+      "verse_label": "5",
+      "locator": {
+        "book": "ISA",
+        "chapter": 57,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 57,
+          "verse": 5
+        }
+      ],
+      "en": "you who inflame yourselves among the oaks, under every green tree; who kill the children in the valleys, under the clefts of the rocks?",
+      "ko": "너희가 상수리나무 사이, 모든 푸른 나무 아래서 음욕을 피우며 골짜기 가운데 바위 틈에서 자녀를 죽이는도다",
+      "source_text_hash": "bd01587b496ef5eddb50530828871771b49d900726e66d6c261c53073e0bf5e9",
+      "translation_text_hash": "48f9564afa28c24dc1b546d43ad0f0fdefda6c5bbf4bf5611344c0cff906eb51",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 상수리나무 사이, 모든 푸른 나무 아래서 음욕을 피우며 골짜기 가운데 바위 틈에서 자녀를 죽이는도다"
+      ],
+      "raw_text_hashes": [
+        "48f9564afa28c24dc1b546d43ad0f0fdefda6c5bbf4bf5611344c0cff906eb51"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:57:6",
+      "sequence": 18772,
+      "chapter_label": "ISA 57",
+      "verse_label": "6",
+      "locator": {
+        "book": "ISA",
+        "chapter": 57,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 57,
+          "verse": 6
+        }
+      ],
+      "en": "Among the smooth stones of the valley is your portion. They, they are your lot. You have even poured a drink offering to them. You have offered an offering. Shall I be appeased for these things?",
+      "ko": "골짜기 가운데 매끄러운 돌 중에 너희 소득이 있으니 그것이 곧 너희가 제비 뽑아 얻은 것이라 너희가 전제와 예물을 그것들에게 드리니 내가 어찌 이를 용인하겠느냐",
+      "source_text_hash": "5fdd9af6aeac0cf2afa1569625395b60388140c211fbb45948d8c202251584c3",
+      "translation_text_hash": "d1186deeb7c6d788c8f8cadb7332a70c456bfffd1474a9ce86b89adb1097862a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "골짜기 가운데 매끄러운 돌 중에 너희 소득이 있으니 그것이 곧 너희가 제비 뽑아 얻은 것이라 너희가 전제와 예물을 그것들에게 드리니 내가 어찌 이를 용인하겠느냐"
+      ],
+      "raw_text_hashes": [
+        "d1186deeb7c6d788c8f8cadb7332a70c456bfffd1474a9ce86b89adb1097862a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:57:7",
+      "sequence": 18773,
+      "chapter_label": "ISA 57",
+      "verse_label": "7",
+      "locator": {
+        "book": "ISA",
+        "chapter": 57,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 57,
+          "verse": 7
+        }
+      ],
+      "en": "On a high and lofty mountain you have set your bed. You also went up there to offer sacrifice.",
+      "ko": "네가 높고 높은 산 위에 네 침상을 베풀었고 네가 또 그리로 올라가서 제사를 드렸으며",
+      "source_text_hash": "8238c30bb9c27eb1bdeaae5cb3a0240b8b27032766bf164a3bfbb9ec47a861c5",
+      "translation_text_hash": "e4a71e356c8fb2bd1869be32805fc267a4843f5b6e943082bc125aac4c81d622",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 높고 높은 산 위에 네 침상을 베풀었고 네가 또 그리로 올라가서 제사를 드렸으며"
+      ],
+      "raw_text_hashes": [
+        "e4a71e356c8fb2bd1869be32805fc267a4843f5b6e943082bc125aac4c81d622"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:57:8",
+      "sequence": 18774,
+      "chapter_label": "ISA 57",
+      "verse_label": "8",
+      "locator": {
+        "book": "ISA",
+        "chapter": 57,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 57,
+          "verse": 8
+        }
+      ],
+      "en": "You have set up your memorial behind the doors and the posts, for you have exposed yourself to someone besides me, and have gone up. You have enlarged your bed and made a covenant for yourself with them. You loved what you saw on their bed.",
+      "ko": "네가 또 네 기념표를 문과 문설주 뒤에 두었으며 네가 나를 배반하고 다른 자를 위하여 몸을 드러내고 올라가며 네 침상을 넓히고 그들과 언약하며 또 그들의 침상을 사랑하여 그 처소를 예비하였으며",
+      "source_text_hash": "4c2c380179af6d35313c244ab7aeb1512e00e014459f5d6b111f8461d4d8ad50",
+      "translation_text_hash": "ca04be7ba7d4123d212e0f10921bea7b2bab6ba534344561965d0acb06898e4f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 또 네 기념표를 문과 문설주 뒤에 두었으며 네가 나를 배반하고 다른 자를 위하여 몸을 드러내고 올라가며 네 침상을 넓히고 그들과 언약하며 또 그들의 침상을 사랑하여 그 처소를 예비하였으며"
+      ],
+      "raw_text_hashes": [
+        "ca04be7ba7d4123d212e0f10921bea7b2bab6ba534344561965d0acb06898e4f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:57:9",
+      "sequence": 18775,
+      "chapter_label": "ISA 57",
+      "verse_label": "9",
+      "locator": {
+        "book": "ISA",
+        "chapter": 57,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 57,
+          "verse": 9
+        }
+      ],
+      "en": "You went to the king with oil, increased your perfumes, sent your ambassadors far off, and degraded yourself even to Sheol.",
+      "ko": "네가 기름을 가지고 몰렉에게 나아가되 향품을 더욱 더하였으며 네가 또 사신을 원방에 보내고 음부까지 스스로 낮추었으며",
+      "source_text_hash": "3e29853ed9cbe3bca5b022201659b1ff80810d066f59b64547bad5f87f7f863a",
+      "translation_text_hash": "2f8975480df11c987a7c0ae8089c8ab4d74b504d0617d06a9be5b8b563f39dd3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 기름을 가지고 몰렉에게 나아가되 향품을 더욱 더하였으며 네가 또 사신을 원방에 보내고 음부까지 스스로 낮추었으며"
+      ],
+      "raw_text_hashes": [
+        "2f8975480df11c987a7c0ae8089c8ab4d74b504d0617d06a9be5b8b563f39dd3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:57:10",
+      "sequence": 18776,
+      "chapter_label": "ISA 57",
+      "verse_label": "10",
+      "locator": {
+        "book": "ISA",
+        "chapter": 57,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 57,
+          "verse": 10
+        }
+      ],
+      "en": "You were wearied with the length of your ways; yet you didn’t say, ‘It is in vain.’ You found a reviving of your strength; therefore you weren’t faint.",
+      "ko": "네가 길이 멀어서 피곤할찌라도 헛되다 아니함은 네 힘이 소성되었으므로 쇠약하여 가지 아니함이니라",
+      "source_text_hash": "203ea25dc2c437c38aeeddc1fc351676b9985f35ef51ce8d0bb30f7d113b992b",
+      "translation_text_hash": "dd1d9c00c961034a6c2e5b3c54ab742ee22773860a2c0478bd1a8eece9100bf6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 길이 멀어서 피곤할찌라도 헛되다 아니함은 네 힘이 소성되었으므로 쇠약하여 가지 아니함이니라"
+      ],
+      "raw_text_hashes": [
+        "dd1d9c00c961034a6c2e5b3c54ab742ee22773860a2c0478bd1a8eece9100bf6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:57:11",
+      "sequence": 18777,
+      "chapter_label": "ISA 57",
+      "verse_label": "11",
+      "locator": {
+        "book": "ISA",
+        "chapter": 57,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 57,
+          "verse": 11
+        }
+      ],
+      "en": "“Whom have you dreaded and feared, so that you lie, and have not remembered me, nor laid it to your heart? Haven’t I held my peace for a long time, and you don’t fear me?",
+      "ko": "네가 누구를 두려워하며 누구로하여 놀랐기에 거짓을 말하며 나를 생각지 아니하며 이를 마음에 두지 아니하였느냐 네가 나를 경외치 아니함은 내가 오래 동안 잠잠함을 인함이 아니냐",
+      "source_text_hash": "c78095ac9f55f45d92c5642b744356a0e2bf1ead9e7caaf23a6f581c6e272b10",
+      "translation_text_hash": "de46af694968d4538017259655f1e043f43523d2d2c6941d7a4376c300f26368",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 누구를 두려워하며 누구로하여 놀랐기에 거짓을 말하며 나를 생각지 아니하며 이를 마음에 두지 아니하였느냐 네가 나를 경외치 아니함은 내가 오래 동안 잠잠함을 인함이 아니냐"
+      ],
+      "raw_text_hashes": [
+        "de46af694968d4538017259655f1e043f43523d2d2c6941d7a4376c300f26368"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:57:12",
+      "sequence": 18778,
+      "chapter_label": "ISA 57",
+      "verse_label": "12",
+      "locator": {
+        "book": "ISA",
+        "chapter": 57,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 57,
+          "verse": 12
+        }
+      ],
+      "en": "I will declare your righteousness; and as for your works, they will not benefit you.",
+      "ko": "너의 의를 내가 보이리라 너의 소위가 네게 무익하니라",
+      "source_text_hash": "72b037852ca92bee553ea565695c3045ddd068a79669fc5e88f11a62ec383843",
+      "translation_text_hash": "1fd986ab4be7944b8ad307272d48b17b7567d2cba3b46e15afcb0af684e618bf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너의 의를 내가 보이리라 너의 소위가 네게 무익하니라"
+      ],
+      "raw_text_hashes": [
+        "1fd986ab4be7944b8ad307272d48b17b7567d2cba3b46e15afcb0af684e618bf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:57:13",
+      "sequence": 18779,
+      "chapter_label": "ISA 57",
+      "verse_label": "13",
+      "locator": {
+        "book": "ISA",
+        "chapter": 57,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 57,
+          "verse": 13
+        }
+      ],
+      "en": "When you cry, let those whom you have gathered deliver you, but the wind will take them. A breath will carry them all away, but he who takes refuge in me will possess the land, and will inherit my holy mountain.”",
+      "ko": "네가 부르짖을 때에 네가 모은 우상으로 너를 구원하게 하라 그것은 다 바람에 떠 가겠고 기운에 불려갈 것이로되 나를 의뢰하는 자는 땅을 차지하겠고 나의 거룩한 산을 기업으로 얻으리라",
+      "source_text_hash": "5abc572268db58dac59f2486ada3564e1a4642530f871d91bc5772d41bbf51fc",
+      "translation_text_hash": "5405771a2ee489bde612f233aaa271e8adab273d65c4990fdb49fc4266c95f3f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 부르짖을 때에 네가 모은 우상으로 너를 구원하게 하라 그것은 다 바람에 떠 가겠고 기운에 불려갈 것이로되 나를 의뢰하는 자는 땅을 차지하겠고 나의 거룩한 산을 기업으로 얻으리라"
+      ],
+      "raw_text_hashes": [
+        "5405771a2ee489bde612f233aaa271e8adab273d65c4990fdb49fc4266c95f3f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:57:14",
+      "sequence": 18780,
+      "chapter_label": "ISA 57",
+      "verse_label": "14",
+      "locator": {
+        "book": "ISA",
+        "chapter": 57,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 57,
+          "verse": 14
+        }
+      ],
+      "en": "He will say, “Build up, build up, prepare the way! Remove the stumbling-block out of the way of my people.”",
+      "ko": "장차 말하기를 돋우고 돋우어 길을 수축하여 내 백성의 길에서 거치는 것을 제하여 버리라 하리라",
+      "source_text_hash": "948458b60dd75cec624fc95747d2c2b763310199c0389b8b8aa7fed591d5705e",
+      "translation_text_hash": "192aa9fbf47e93a0f5084bc0ccf4f4fb866a5c1e37e5acb95782d307515e0dc1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "장차 말하기를 돋우고 돋우어 길을 수축하여 내 백성의 길에서 거치는 것을 제하여 버리라 하리라"
+      ],
+      "raw_text_hashes": [
+        "192aa9fbf47e93a0f5084bc0ccf4f4fb866a5c1e37e5acb95782d307515e0dc1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:57:15",
+      "sequence": 18781,
+      "chapter_label": "ISA 57",
+      "verse_label": "15",
+      "locator": {
+        "book": "ISA",
+        "chapter": 57,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 57,
+          "verse": 15
+        }
+      ],
+      "en": "For the high and lofty One who inhabits eternity, whose name is Holy, says: “I dwell in the high and holy place, with him also who is of a contrite and humble spirit, to revive the spirit of the humble, and to revive the heart of the contrite.",
+      "ko": "지존무상하며 영원히 거하며 거룩하다 이름하는 자가 이같이 말씀하시되 내가 높고 거룩한 곳에 거하며 또한 통회하고 마음이 겸손한 자와 함께 거하나니 이는 겸손한 자의 영을 소성케 하며 통회하는 자의 마음을 소성케 하려 함이라",
+      "source_text_hash": "cda1525382853bdebdd8d6da42700f8fb072fbd4ed27b5a2065f76df6b54c3a1",
+      "translation_text_hash": "c893e2a25e0f846a9da81c2e8c49db0e547897abc0f303a23d7ba748ffb3445f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "지존무상하며 영원히 거하며 거룩하다 이름하는 자가 이같이 말씀하시되 내가 높고 거룩한 곳에 거하며 또한 통회하고 마음이 겸손한 자와 함께 거하나니 이는 겸손한 자의 영을 소성케 하며 통회하는 자의 마음을 소성케 하려 함이라"
+      ],
+      "raw_text_hashes": [
+        "c893e2a25e0f846a9da81c2e8c49db0e547897abc0f303a23d7ba748ffb3445f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:57:16",
+      "sequence": 18782,
+      "chapter_label": "ISA 57",
+      "verse_label": "16",
+      "locator": {
+        "book": "ISA",
+        "chapter": 57,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 57,
+          "verse": 16
+        }
+      ],
+      "en": "For I will not contend forever, neither will I always be angry; for the spirit would faint before me, and the souls whom I have made.",
+      "ko": "내가 영원히는 다투지 아니하며 내가 장구히는 노하지 아니할 것은 나의 지은 그 영과 혼이 내 앞에서 곤비할까 함이니라",
+      "source_text_hash": "5924aeb7e44cdbfb023c71dbc55d789c67b6d0bdc4a465e3765d702688259cae",
+      "translation_text_hash": "a9b92191f1d657faecb782bdf6ea9b83cec450ba1da1d8330d832df9dbfa6f5f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 영원히는 다투지 아니하며 내가 장구히는 노하지 아니할 것은 나의 지은 그 영과 혼이 내 앞에서 곤비할까 함이니라"
+      ],
+      "raw_text_hashes": [
+        "a9b92191f1d657faecb782bdf6ea9b83cec450ba1da1d8330d832df9dbfa6f5f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:57:17",
+      "sequence": 18783,
+      "chapter_label": "ISA 57",
+      "verse_label": "17",
+      "locator": {
+        "book": "ISA",
+        "chapter": 57,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 57,
+          "verse": 17
+        }
+      ],
+      "en": "I was angry because of the iniquity of his covetousness and struck him. I hid myself and was angry; and he went on backsliding in the way of his heart.",
+      "ko": "그의 탐심의 죄악을 인하여 내가 노하여 그를 쳤으며 또 내 얼굴을 가리우고 노하였으나 그가 오히려 패역하여 자기 마음의 길로 행하도다",
+      "source_text_hash": "cbf91a24092db3dbafaa50e24d93fa0fd16137b72a8e06ac5a058d8c5cc4604d",
+      "translation_text_hash": "eb2965d09886db428e005b555123427c35eaa1da5fd1a00b798659e9c04e8086",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그의 탐심의 죄악을 인하여 내가 노하여 그를 쳤으며 또 내 얼굴을 가리우고 노하였으나 그가 오히려 패역하여 자기 마음의 길로 행하도다"
+      ],
+      "raw_text_hashes": [
+        "eb2965d09886db428e005b555123427c35eaa1da5fd1a00b798659e9c04e8086"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:57:18",
+      "sequence": 18784,
+      "chapter_label": "ISA 57",
+      "verse_label": "18",
+      "locator": {
+        "book": "ISA",
+        "chapter": 57,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 57,
+          "verse": 18
+        }
+      ],
+      "en": "I have seen his ways, and will heal him. I will lead him also, and restore comforts to him and to his mourners.",
+      "ko": "내가 그 길을 보았은즉 그를 고쳐 줄 것이라 그를 인도하며 그와 그의 슬퍼하는 자에게 위로를 다시 얻게 하리라",
+      "source_text_hash": "2b76815488a166643f5f2345483277b0e8f9d35a36c8df0fe0402a5eade2dad8",
+      "translation_text_hash": "bc28e9e21bd01e6a09b3f77cd0ea006d4e402b48f05f2c0cfb52a5d0eff05df7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 그 길을 보았은즉 그를 고쳐 줄 것이라 그를 인도하며 그와 그의 슬퍼하는 자에게 위로를 다시 얻게 하리라"
+      ],
+      "raw_text_hashes": [
+        "bc28e9e21bd01e6a09b3f77cd0ea006d4e402b48f05f2c0cfb52a5d0eff05df7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:57:19",
+      "sequence": 18785,
+      "chapter_label": "ISA 57",
+      "verse_label": "19",
+      "locator": {
+        "book": "ISA",
+        "chapter": 57,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 57,
+          "verse": 19
+        }
+      ],
+      "en": "I create the fruit of the lips: Peace, peace, to him who is far off and to him who is near,” says the LORD; “and I will heal them.”",
+      "ko": "입술의 열매를 짓는 나 여호와가 말하노라 먼데 있는 자에게든지 가까운데 있는 자에게든지 평강이 있을찌어다 평강이 있을찌어다 내가 그를 고치리라 하셨느니라",
+      "source_text_hash": "94da9434da7efdfd8d9d735c1cbdc6599411c226ca8f21aeae78986a1a2ada76",
+      "translation_text_hash": "a2bb9449a17c81ac59940f27407d78bf3c96d802d3a73183e2b56757f4788715",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "입술의 열매를 짓는 나 여호와가 말하노라 먼데 있는 자에게든지 가까운데 있는 자에게든지 평강이 있을찌어다 평강이 있을찌어다 내가 그를 고치리라 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "a2bb9449a17c81ac59940f27407d78bf3c96d802d3a73183e2b56757f4788715"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:57:20",
+      "sequence": 18786,
+      "chapter_label": "ISA 57",
+      "verse_label": "20",
+      "locator": {
+        "book": "ISA",
+        "chapter": 57,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 57,
+          "verse": 20
+        }
+      ],
+      "en": "But the wicked are like the troubled sea; for it can’t rest and its waters cast up mire and mud.",
+      "ko": "오직 악인은 능히 안정치 못하고 그 물이 진흙과 더러운 것을 늘 솟쳐내는 요동하는 바다와 같으니라",
+      "source_text_hash": "d37162f4e04cfddea0f974fd15362aa098e86fd2efb646440a0ff5dcedd074f4",
+      "translation_text_hash": "a508e3087aa4b6d9076459df3e092d9d332a3fd844469bd44ef625b9e5e85d04",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 악인은 능히 안정치 못하고 그 물이 진흙과 더러운 것을 늘 솟쳐내는 요동하는 바다와 같으니라"
+      ],
+      "raw_text_hashes": [
+        "a508e3087aa4b6d9076459df3e092d9d332a3fd844469bd44ef625b9e5e85d04"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:57:21",
+      "sequence": 18787,
+      "chapter_label": "ISA 57",
+      "verse_label": "21",
+      "locator": {
+        "book": "ISA",
+        "chapter": 57,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 57,
+          "verse": 21
+        }
+      ],
+      "en": "“There is no peace”, says my God, “for the wicked.”",
+      "ko": "내 하나님의 말씀에 악인에게는 평강이 없다 하셨느니라",
+      "source_text_hash": "17164419bc1ebc6cb81a2f789f9dc16cf6d9e6406ee4a84d4518a35525e4b300",
+      "translation_text_hash": "bc54e717fd454289bbca7de86b81727171f12666c4539696084825e90689a971",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 하나님의 말씀에 악인에게는 평강이 없다 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "bc54e717fd454289bbca7de86b81727171f12666c4539696084825e90689a971"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,877 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JOS:chapter:006",
+  "unit_ordinal": 193,
+  "unit_label": "JOS 6",
+  "book_code": "JOS",
+  "chapter_number": 6,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JOS:6:1",
+      "sequence": 5951,
+      "chapter_label": "JOS 6",
+      "verse_label": "1",
+      "locator": {
+        "book": "JOS",
+        "chapter": 6,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 6,
+          "verse": 1
+        }
+      ],
+      "en": "Now Jericho was tightly shut up because of the children of Israel. No one went out, and no one came in.",
+      "ko": "이스라엘 자손들로 인하여 여리고는 굳게 닫혔고 출입하는 자 없더라",
+      "source_text_hash": "ef01fe25da0c204ba30463128752f210d71d2b80ddf6a832e60d5f952201b73a",
+      "translation_text_hash": "c4363e41ae50c707205cae83d8c346d1264a17dfe38a575426ac7765635b8eb1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손들로 인하여 여리고는 굳게 닫혔고 출입하는 자 없더라"
+      ],
+      "raw_text_hashes": [
+        "c4363e41ae50c707205cae83d8c346d1264a17dfe38a575426ac7765635b8eb1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:6:2",
+      "sequence": 5952,
+      "chapter_label": "JOS 6",
+      "verse_label": "2",
+      "locator": {
+        "book": "JOS",
+        "chapter": 6,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 6,
+          "verse": 2
+        }
+      ],
+      "en": "The LORD said to Joshua, “Behold, I have given Jericho into your hand, with its king and the mighty men of valor.",
+      "ko": "여호와께서 여호수아에게 이르시되 보라 내가 여리고와 그 왕과 용사들을 네 손에 붙였으니",
+      "source_text_hash": "81287842f69afc5868cbf9eee90c3a2a3fa9de9ba87a70ec360be5a70c4d8a07",
+      "translation_text_hash": "1b98893aa6ec5687d2370609f0e654a2b0c8d3b133a8c33c26749d77eb2932c9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 여호수아에게 이르시되 보라 내가 여리고와 그 왕과 용사들을 네 손에 붙였으니"
+      ],
+      "raw_text_hashes": [
+        "1b98893aa6ec5687d2370609f0e654a2b0c8d3b133a8c33c26749d77eb2932c9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:6:3",
+      "sequence": 5953,
+      "chapter_label": "JOS 6",
+      "verse_label": "3",
+      "locator": {
+        "book": "JOS",
+        "chapter": 6,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 6,
+          "verse": 3
+        }
+      ],
+      "en": "All of your men of war shall march around the city, going around the city once. You shall do this six days.",
+      "ko": "너희 모든 군사는 성을 둘러 성 주위를 매일 한번씩 돌되 엿새 동안을 그리하라",
+      "source_text_hash": "ebac76be354cd604039e38c732253aa473c699a2e0961fd01aba84acb64dcdc5",
+      "translation_text_hash": "2e1df0d7d059a3ea00b370c99b07fe716050e0e89aaf5e90946b80f49bfa9513",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 모든 군사는 성을 둘러 성 주위를 매일 한번씩 돌되 엿새 동안을 그리하라"
+      ],
+      "raw_text_hashes": [
+        "2e1df0d7d059a3ea00b370c99b07fe716050e0e89aaf5e90946b80f49bfa9513"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:6:4",
+      "sequence": 5954,
+      "chapter_label": "JOS 6",
+      "verse_label": "4",
+      "locator": {
+        "book": "JOS",
+        "chapter": 6,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 6,
+          "verse": 4
+        }
+      ],
+      "en": "Seven priests shall bear seven trumpets of rams’ horns before the ark. On the seventh day, you shall march around the city seven times, and the priests shall blow the trumpets.",
+      "ko": "제사장 일곱은 일곱 양각나팔을 잡고 언약궤 앞에서 행할 것이요 제 칠일에는 성을 일곱번 돌며 제사장들은 나팔을 불 것이며",
+      "source_text_hash": "55d24cb86d8e340293ab76f8bc0e87f8b9bcd63dd420f042519c1f713646a1d9",
+      "translation_text_hash": "843ebad2a2a098aa37e0cbf9e9554f93f418cb2a83e6c2e67100111229d70920",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장 일곱은 일곱 양각나팔을 잡고 언약궤 앞에서 행할 것이요 제 칠일에는 성을 일곱번 돌며 제사장들은 나팔을 불 것이며"
+      ],
+      "raw_text_hashes": [
+        "843ebad2a2a098aa37e0cbf9e9554f93f418cb2a83e6c2e67100111229d70920"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:6:5",
+      "sequence": 5955,
+      "chapter_label": "JOS 6",
+      "verse_label": "5",
+      "locator": {
+        "book": "JOS",
+        "chapter": 6,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 6,
+          "verse": 5
+        }
+      ],
+      "en": "It shall be that when they make a long blast with the ram’s horn, and when you hear the sound of the trumpet, all the people shall shout with a great shout; then the city wall will fall down flat, and the people shall go up, every man straight in front of him.”",
+      "ko": "제사장들이 양각나팔을 길게 울려 불어서 그 나팔 소리가 너희에게 들릴 때에는 백성은 다 큰 소리로 외쳐 부를것이라 그리하면 그 성벽이 무너져 내리리니 백성은 각기 앞으로 올라갈찌니라 하시매",
+      "source_text_hash": "559c0f3f339fc89d9a0f29238e3f2e1b508df091d51fc7d79fffd58c6d889044",
+      "translation_text_hash": "56ed8551762d307c273544c5e308d0f72396a4f92693b4df82a96ba264998d6f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장들이 양각나팔을 길게 울려 불어서 그 나팔 소리가 너희에게 들릴 때에는 백성은 다 큰 소리로 외쳐 부를것이라 그리하면 그 성벽이 무너져 내리리니 백성은 각기 앞으로 올라갈찌니라 하시매"
+      ],
+      "raw_text_hashes": [
+        "56ed8551762d307c273544c5e308d0f72396a4f92693b4df82a96ba264998d6f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:6:6",
+      "sequence": 5956,
+      "chapter_label": "JOS 6",
+      "verse_label": "6",
+      "locator": {
+        "book": "JOS",
+        "chapter": 6,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 6,
+          "verse": 6
+        }
+      ],
+      "en": "Joshua the son of Nun called the priests, and said to them, “Take up the ark of the covenant, and let seven priests bear seven trumpets of rams’ horns before the LORD’s ark.”",
+      "ko": "눈의 아들 여호수아가 제사장들을 불러서 그들에게 이르되 너희는 언약궤를 메고 일곱 제사장은 일곱 양각나팔을 잡고 여호와의 궤 앞에서 행하라 하고",
+      "source_text_hash": "11c417f19af5b0f501d8ecc5b5b5d2cc49f9987e2a9469631b556cc064fafc9c",
+      "translation_text_hash": "7476957117fe5f4d3679b6fe94d0e8552294320818038e7ff805a1353596d30c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "눈의 아들 여호수아가 제사장들을 불러서 그들에게 이르되 너희는 언약궤를 메고 일곱 제사장은 일곱 양각나팔을 잡고 여호와의 궤 앞에서 행하라 하고"
+      ],
+      "raw_text_hashes": [
+        "7476957117fe5f4d3679b6fe94d0e8552294320818038e7ff805a1353596d30c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:6:7",
+      "sequence": 5957,
+      "chapter_label": "JOS 6",
+      "verse_label": "7",
+      "locator": {
+        "book": "JOS",
+        "chapter": 6,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 6,
+          "verse": 7
+        }
+      ],
+      "en": "They said to the people, “Advance! March around the city, and let the armed men pass on before the LORD’s ark.”",
+      "ko": "또 백성에게 이르되 나아가서 성을 돌되 무장한 자들이 여호와의 궤 앞에 행할찌니라",
+      "source_text_hash": "168db68ed4495e70388b0dab33361bd60520aa8d97744a3f7a84e91319b8cff4",
+      "translation_text_hash": "813768eb6dc4aed96bb4a9bf64dea6d03ed9a434d26515ef5c6f705cf7a7379c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 백성에게 이르되 나아가서 성을 돌되 무장한 자들이 여호와의 궤 앞에 행할찌니라"
+      ],
+      "raw_text_hashes": [
+        "813768eb6dc4aed96bb4a9bf64dea6d03ed9a434d26515ef5c6f705cf7a7379c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:6:8",
+      "sequence": 5958,
+      "chapter_label": "JOS 6",
+      "verse_label": "8",
+      "locator": {
+        "book": "JOS",
+        "chapter": 6,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 6,
+          "verse": 8
+        }
+      ],
+      "en": "It was so, that when Joshua had spoken to the people, the seven priests bearing the seven trumpets of rams’ horns before the LORD advanced and blew the trumpets, and the ark of the LORD’s covenant followed them.",
+      "ko": "여호수아가 백성에게 이르기를 마치매 제사장 일곱이 일곱 양각나팔을 잡고 여호와 앞에서 진행하며 나팔을 불고 여호와의 언약궤는 그 뒤를 따르며",
+      "source_text_hash": "879db53a3ce16ae3bf7ebc52d905a737bc65e973d127cf65b9f16bcfc09e7df1",
+      "translation_text_hash": "6d3f089d39005ffa632f3d9fa6403adbac529a5f03b362864680b05ba4fc0571",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호수아가 백성에게 이르기를 마치매 제사장 일곱이 일곱 양각나팔을 잡고 여호와 앞에서 진행하며 나팔을 불고 여호와의 언약궤는 그 뒤를 따르며"
+      ],
+      "raw_text_hashes": [
+        "6d3f089d39005ffa632f3d9fa6403adbac529a5f03b362864680b05ba4fc0571"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:6:9",
+      "sequence": 5959,
+      "chapter_label": "JOS 6",
+      "verse_label": "9",
+      "locator": {
+        "book": "JOS",
+        "chapter": 6,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 6,
+          "verse": 9
+        }
+      ],
+      "en": "The armed men went before the priests who blew the trumpets, and the ark went after them. The trumpets sounded as they went.",
+      "ko": "무장한 자들은 나팔 부는 제사장들 앞에서 진행하며 후군은 궤 뒤에 행하고 제사장들은 나팔을 불며 행하더라",
+      "source_text_hash": "a266cdf64fe3ce8d84693891a5f1eb197ce89427d51093cc3264cf171263041e",
+      "translation_text_hash": "1b98c98d9f42b78179b09225f87b816981c4392e39b317937e62104f8ce2a0a2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무장한 자들은 나팔 부는 제사장들 앞에서 진행하며 후군은 궤 뒤에 행하고 제사장들은 나팔을 불며 행하더라"
+      ],
+      "raw_text_hashes": [
+        "1b98c98d9f42b78179b09225f87b816981c4392e39b317937e62104f8ce2a0a2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:6:10",
+      "sequence": 5960,
+      "chapter_label": "JOS 6",
+      "verse_label": "10",
+      "locator": {
+        "book": "JOS",
+        "chapter": 6,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 6,
+          "verse": 10
+        }
+      ],
+      "en": "Joshua commanded the people, saying, “You shall not shout nor let your voice be heard, neither shall any word proceed out of your mouth until the day I tell you to shout. Then you shall shout.”",
+      "ko": "여호수아가 백성에게 명하여 가로되 너희는 외치지 말며 너희 음성을 들레지 말며 너희 입에서 아무 말도 내지 말라 그리하다가 내가 너희에게 명하여 외치라 하는 날에 외칠찌니라 하고",
+      "source_text_hash": "a7ceb8e6d1b0531570589abe7119cf2f6a1a0326907123776ba68d5306240270",
+      "translation_text_hash": "4ffc68cc45dc2e6bfd5275973a670951e58eee74a8f1d11ec3b03ed094e36db2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호수아가 백성에게 명하여 가로되 너희는 외치지 말며 너희 음성을 들레지 말며 너희 입에서 아무 말도 내지 말라 그리하다가 내가 너희에게 명하여 외치라 하는 날에 외칠찌니라 하고"
+      ],
+      "raw_text_hashes": [
+        "4ffc68cc45dc2e6bfd5275973a670951e58eee74a8f1d11ec3b03ed094e36db2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:6:11",
+      "sequence": 5961,
+      "chapter_label": "JOS 6",
+      "verse_label": "11",
+      "locator": {
+        "book": "JOS",
+        "chapter": 6,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 6,
+          "verse": 11
+        }
+      ],
+      "en": "So he caused the LORD’s ark to go around the city, circling it once. Then they came into the camp, and stayed in the camp.",
+      "ko": "여호와의 궤로 성을 한번 돌게 하니라 무리가 진에 돌아와서 진에서 자니라",
+      "source_text_hash": "d68fb9fb03379738ff21f70068fe312a77d6aad7e14fcb46b7a29382f6802dd7",
+      "translation_text_hash": "376d0ed68f0861fe3134d703e021f64fd3768285bd686aab48525333f8d02aad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 궤로 성을 한번 돌게 하니라 무리가 진에 돌아와서 진에서 자니라"
+      ],
+      "raw_text_hashes": [
+        "376d0ed68f0861fe3134d703e021f64fd3768285bd686aab48525333f8d02aad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:6:12",
+      "sequence": 5962,
+      "chapter_label": "JOS 6",
+      "verse_label": "12",
+      "locator": {
+        "book": "JOS",
+        "chapter": 6,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 6,
+          "verse": 12
+        }
+      ],
+      "en": "Joshua rose early in the morning, and the priests took up the LORD’s ark.",
+      "ko": "여호수아가 아침에 일찌기 일어나니라 제사장들이 여호와의 궤를 메고",
+      "source_text_hash": "0d3821445041d8a95532e62e185fbab8049045e71e9418bf3663e5928fa68e63",
+      "translation_text_hash": "dc9a714264be6ba9bfc4996f89aca046e94a5a0d782d6cefccc9669eb1cfa64f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호수아가 아침에 일찌기 일어나니라 제사장들이 여호와의 궤를 메고"
+      ],
+      "raw_text_hashes": [
+        "dc9a714264be6ba9bfc4996f89aca046e94a5a0d782d6cefccc9669eb1cfa64f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:6:13",
+      "sequence": 5963,
+      "chapter_label": "JOS 6",
+      "verse_label": "13",
+      "locator": {
+        "book": "JOS",
+        "chapter": 6,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 6,
+          "verse": 13
+        }
+      ],
+      "en": "The seven priests bearing the seven trumpets of rams’ horns in front of the LORD’s ark went on continually, and blew the trumpets. The armed men went in front of them. The rear guard came after the LORD’s ark. The trumpets sounded as they went.",
+      "ko": "일곱 제사장은 일곱 양각나팔을 잡고 여호와의 궤 앞에서 계속 진행하며 나팔을 불고 무장한 자들은 그 앞에 행하며 후군은 여호와의 궤 뒤에 행하고 제사장들은 나팔을 불며 행하니라",
+      "source_text_hash": "6cbea23f3c09dad8e8ebe5b10e05ffb681d2bfbe45a45dcb8aae6229ea8c2765",
+      "translation_text_hash": "84f2018e6f51a7a0ac5bfa1974dd21d17611f6d2a2f1d92c6894a7ca9e85f2a2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "일곱 제사장은 일곱 양각나팔을 잡고 여호와의 궤 앞에서 계속 진행하며 나팔을 불고 무장한 자들은 그 앞에 행하며 후군은 여호와의 궤 뒤에 행하고 제사장들은 나팔을 불며 행하니라"
+      ],
+      "raw_text_hashes": [
+        "84f2018e6f51a7a0ac5bfa1974dd21d17611f6d2a2f1d92c6894a7ca9e85f2a2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:6:14",
+      "sequence": 5964,
+      "chapter_label": "JOS 6",
+      "verse_label": "14",
+      "locator": {
+        "book": "JOS",
+        "chapter": 6,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 6,
+          "verse": 14
+        }
+      ],
+      "en": "The second day they marched around the city once, and returned into the camp. They did this six days.",
+      "ko": "그 제 이일에도 성을 한번 돌고 진에 돌아 오니라 엿새 동안을 이같이 행하니라",
+      "source_text_hash": "a1624a9d0b5b76afa090d0c2cb0fab0f984a50ab52080f68e9eef7497a565290",
+      "translation_text_hash": "e8921a91fc2b7c1370d163b91226f3b254aabadcde1ec08669d4bd056af4f02c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 제 이일에도 성을 한번 돌고 진에 돌아 오니라 엿새 동안을 이같이 행하니라"
+      ],
+      "raw_text_hashes": [
+        "e8921a91fc2b7c1370d163b91226f3b254aabadcde1ec08669d4bd056af4f02c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:6:15",
+      "sequence": 5965,
+      "chapter_label": "JOS 6",
+      "verse_label": "15",
+      "locator": {
+        "book": "JOS",
+        "chapter": 6,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 6,
+          "verse": 15
+        }
+      ],
+      "en": "On the seventh day, they rose early at the dawning of the day, and marched around the city in the same way seven times. On this day only they marched around the city seven times.",
+      "ko": "제 칠일 새벽에 그들이 일찌기 일어나서 여전한 방식으로 성을 일곱번 도니 성을 일곱번 돌기는 그날 뿐이었더라",
+      "source_text_hash": "b8411a4b0fe91a6c5ae29aae916788f3a5b5ad607401b6fa517f28ae563a006b",
+      "translation_text_hash": "5f76264056324dbc73e8597762d1308e0395550a0efc9b2388117e35a4044852",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제 칠일 새벽에 그들이 일찌기 일어나서 여전한 방식으로 성을 일곱번 도니 성을 일곱번 돌기는 그날 뿐이었더라"
+      ],
+      "raw_text_hashes": [
+        "5f76264056324dbc73e8597762d1308e0395550a0efc9b2388117e35a4044852"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:6:16",
+      "sequence": 5966,
+      "chapter_label": "JOS 6",
+      "verse_label": "16",
+      "locator": {
+        "book": "JOS",
+        "chapter": 6,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 6,
+          "verse": 16
+        }
+      ],
+      "en": "At the seventh time, when the priests blew the trumpets, Joshua said to the people, “Shout, for the LORD has given you the city!",
+      "ko": "일곱번째에 제사장들이 나팔을 불 때에 여호수아가 백성에게 이르되 외치라 여호와께서 너희에게 이 성을 주셨느니라",
+      "source_text_hash": "438bb9f79f3ac52830b3e305b5afa27be99ca2295aeb722786c940f855e56a0d",
+      "translation_text_hash": "6c1fc841d6efe3df84c6a21f51225573546f7d3a9dbf58ea11607b65079e7a58",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "일곱번째에 제사장들이 나팔을 불 때에 여호수아가 백성에게 이르되 외치라 여호와께서 너희에게 이 성을 주셨느니라"
+      ],
+      "raw_text_hashes": [
+        "6c1fc841d6efe3df84c6a21f51225573546f7d3a9dbf58ea11607b65079e7a58"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:6:17",
+      "sequence": 5967,
+      "chapter_label": "JOS 6",
+      "verse_label": "17",
+      "locator": {
+        "book": "JOS",
+        "chapter": 6,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 6,
+          "verse": 17
+        }
+      ],
+      "en": "The city shall be devoted, even it and all that is in it, to the LORD. Only Rahab the prostitute shall live, she and all who are with her in the house, because she hid the messengers that we sent.",
+      "ko": "이 성과 그 가운데 모든 물건은 여호와께 바치되 기생 라합과 무릇 그 집에 동거하는 자는 살리라 이는 그가 우리의 보낸 사자를 숨겼음이니라",
+      "source_text_hash": "4720fa8f7a6c90d9167c9588029d65a2cc08d0c4a7bc5b2861c3f96ee4ad2899",
+      "translation_text_hash": "3b6d0eceab343aa8ca768c28c02f5e4017845be3e91ebba7ff93ab9f15f41caf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 성과 그 가운데 모든 물건은 여호와께 바치되 기생 라합과 무릇 그 집에 동거하는 자는 살리라 이는 그가 우리의 보낸 사자를 숨겼음이니라"
+      ],
+      "raw_text_hashes": [
+        "3b6d0eceab343aa8ca768c28c02f5e4017845be3e91ebba7ff93ab9f15f41caf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:6:18",
+      "sequence": 5968,
+      "chapter_label": "JOS 6",
+      "verse_label": "18",
+      "locator": {
+        "book": "JOS",
+        "chapter": 6,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 6,
+          "verse": 18
+        }
+      ],
+      "en": "But as for you, only keep yourselves from what is devoted to destruction, lest when you have devoted it, you take of the devoted thing; so you would make the camp of Israel accursed and trouble it.",
+      "ko": "너희는 바칠 물건을 스스로 삼가라 너희가 그것을 바친 후에 그 바친 어느 것이든지 취하면 이스라엘 진으로 바침이 되어 화를 당케 할까 두려워하노라",
+      "source_text_hash": "50dd692224297930f7eec2e74ae98d50390e679779a51ca9c546ce90ff3b2880",
+      "translation_text_hash": "eea81c93b0c21a3e98f0de110b933e64622324a854cd2c7cc719f011ebe5100d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 바칠 물건을 스스로 삼가라 너희가 그것을 바친 후에 그 바친 어느 것이든지 취하면 이스라엘 진으로 바침이 되어 화를 당케 할까 두려워하노라"
+      ],
+      "raw_text_hashes": [
+        "eea81c93b0c21a3e98f0de110b933e64622324a854cd2c7cc719f011ebe5100d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:6:19",
+      "sequence": 5969,
+      "chapter_label": "JOS 6",
+      "verse_label": "19",
+      "locator": {
+        "book": "JOS",
+        "chapter": 6,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 6,
+          "verse": 19
+        }
+      ],
+      "en": "But all the silver, gold, and vessels of bronze and iron are holy to the LORD. They shall come into the LORD’s treasury.”",
+      "ko": "은금과 동철 기구들은 다 여호와께 구별될 것이니 그것을 여호와의 곳간에 들일찌니라",
+      "source_text_hash": "66c197be134d93ef2e53f89fcfddede27d85f081b1b4fba883dc95314a614c05",
+      "translation_text_hash": "7144e0ef7c37f3d3d9d127a852558f4a8462f9940c8dc7bd84c1ba81d18cebb1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "은금과 동철 기구들은 다 여호와께 구별될 것이니 그것을 여호와의 곳간에 들일찌니라"
+      ],
+      "raw_text_hashes": [
+        "7144e0ef7c37f3d3d9d127a852558f4a8462f9940c8dc7bd84c1ba81d18cebb1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:6:20",
+      "sequence": 5970,
+      "chapter_label": "JOS 6",
+      "verse_label": "20",
+      "locator": {
+        "book": "JOS",
+        "chapter": 6,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 6,
+          "verse": 20
+        }
+      ],
+      "en": "So the people shouted and the priests blew the trumpets. When the people heard the sound of the trumpet, the people shouted with a great shout, and the wall fell down flat, so that the people went up into the city, every man straight in front of him, and they took the city.",
+      "ko": "이에 백성은 외치고 제사장들은 나팔을 불매 백성이 나팔 소리를 듣는 동시에 크게 소리질러 외치니 성벽이 무너져 내린지라 백성이 각기 앞으로 나아가 성에 들어가서 그 성을 취하고",
+      "source_text_hash": "a8535bbb0cdb48d5bc2eb70534dbc4837fcc5cd7bec93c1eb83fa7bc729d2bf9",
+      "translation_text_hash": "c0596bb9679d297b3cad8fad624ec6e2843e17bbbb179200d881a3b5e7996af9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 백성은 외치고 제사장들은 나팔을 불매 백성이 나팔 소리를 듣는 동시에 크게 소리질러 외치니 성벽이 무너져 내린지라 백성이 각기 앞으로 나아가 성에 들어가서 그 성을 취하고"
+      ],
+      "raw_text_hashes": [
+        "c0596bb9679d297b3cad8fad624ec6e2843e17bbbb179200d881a3b5e7996af9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:6:21",
+      "sequence": 5971,
+      "chapter_label": "JOS 6",
+      "verse_label": "21",
+      "locator": {
+        "book": "JOS",
+        "chapter": 6,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 6,
+          "verse": 21
+        }
+      ],
+      "en": "They utterly destroyed all that was in the city, both man and woman, both young and old, and ox, sheep, and donkey, with the edge of the sword.",
+      "ko": "성 중에 있는 것을 다 멸하되 남녀 노유와 우양과 나귀를 칼날로 멸하니라",
+      "source_text_hash": "46f707e4fac2c55aa650be49da97e704a6f61bf90a76fbc32ce0c00d3ea9b75a",
+      "translation_text_hash": "932eb828cc8cf95bcabb9e934951c57cfe587ba5624d1d21306f415b99b674ce",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "성 중에 있는 것을 다 멸하되 남녀 노유와 우양과 나귀를 칼날로 멸하니라"
+      ],
+      "raw_text_hashes": [
+        "932eb828cc8cf95bcabb9e934951c57cfe587ba5624d1d21306f415b99b674ce"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:6:22",
+      "sequence": 5972,
+      "chapter_label": "JOS 6",
+      "verse_label": "22",
+      "locator": {
+        "book": "JOS",
+        "chapter": 6,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 6,
+          "verse": 22
+        }
+      ],
+      "en": "Joshua said to the two men who had spied out the land, “Go into the prostitute’s house, and bring the woman and all that she has out from there, as you swore to her.”",
+      "ko": "여호수아가 그 땅을 정탐한 두 사람에게 이르되 그 기생의 집에 들어 가서 너희가 그 여인에게 맹세한 대로 그와 그에게 속한 모든 것을 이끌어내라 하매",
+      "source_text_hash": "43450fda05054c3b2fdc73d2c05e3576770fc1805001f9429c8d75f71d3e2d45",
+      "translation_text_hash": "e541bf20b5c7450cabe219d9da4854e3ddf1e1ea7441d178a4d4231f1ebd44b1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호수아가 그 땅을 정탐한 두 사람에게 이르되 그 기생의 집에 들어 가서 너희가 그 여인에게 맹세한 대로 그와 그에게 속한 모든 것을 이끌어내라 하매"
+      ],
+      "raw_text_hashes": [
+        "e541bf20b5c7450cabe219d9da4854e3ddf1e1ea7441d178a4d4231f1ebd44b1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:6:23",
+      "sequence": 5973,
+      "chapter_label": "JOS 6",
+      "verse_label": "23",
+      "locator": {
+        "book": "JOS",
+        "chapter": 6,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 6,
+          "verse": 23
+        }
+      ],
+      "en": "The young men who were spies went in, and brought out Rahab with her father, her mother, her brothers, and all that she had. They also brought out all of her relatives, and they set them outside of the camp of Israel.",
+      "ko": "정탐한 소년들이 들어가서 라합과 그 부모와 그 형제와 그에게 속한 모든 것을 이끌어 내고 또 그 친족도 다 이끌어 내어 그들을 이스라엘 진 밖에 두고",
+      "source_text_hash": "a5ded69492deb1451b955b57bb9914b640cd16d0a3b954d2096477ee4acb957c",
+      "translation_text_hash": "0c4769f71e654d90d3b4fbde82ec5409d9f54203403273bedd0c397381c557a9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "정탐한 소년들이 들어가서 라합과 그 부모와 그 형제와 그에게 속한 모든 것을 이끌어 내고 또 그 친족도 다 이끌어 내어 그들을 이스라엘 진 밖에 두고"
+      ],
+      "raw_text_hashes": [
+        "0c4769f71e654d90d3b4fbde82ec5409d9f54203403273bedd0c397381c557a9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:6:24",
+      "sequence": 5974,
+      "chapter_label": "JOS 6",
+      "verse_label": "24",
+      "locator": {
+        "book": "JOS",
+        "chapter": 6,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 6,
+          "verse": 24
+        }
+      ],
+      "en": "They burned the city with fire, and all that was in it. Only they put the silver, the gold, and the vessels of bronze and of iron into the treasury of the LORD’s house.",
+      "ko": "무리가 불로 성읍과 그 가운데 있는 모든것을 사르고 은금과 동철 기구는 여호와의 집 곳간에 두었더라",
+      "source_text_hash": "96ec5913578658921eb78f5f5b95f75bf625f524f4c2ac13a0bd1327fa0e8668",
+      "translation_text_hash": "28e436ad82a22a267d0a2e153245ea2f5675873b99496f297fc29b50ebc5c02c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무리가 불로 성읍과 그 가운데 있는 모든것을 사르고 은금과 동철 기구는 여호와의 집 곳간에 두었더라"
+      ],
+      "raw_text_hashes": [
+        "28e436ad82a22a267d0a2e153245ea2f5675873b99496f297fc29b50ebc5c02c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:6:25",
+      "sequence": 5975,
+      "chapter_label": "JOS 6",
+      "verse_label": "25",
+      "locator": {
+        "book": "JOS",
+        "chapter": 6,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 6,
+          "verse": 25
+        }
+      ],
+      "en": "But Rahab the prostitute, her father’s household, and all that she had, Joshua saved alive. She lives in the middle of Israel to this day, because she hid the messengers whom Joshua sent to spy out Jericho.",
+      "ko": "여호수아가 기생 라합과 그 아비의 가족과 그에게 속한 모든 것을 살렸으므로 그가 오늘날까지 이스라엘 중에 거하였으니 이는 여호수아가 여리고를 탐지하려고 보낸 사자를 숨겼음이었더라",
+      "source_text_hash": "b0b47bfd89d601ddeab6e11c0a1e0de00d61bb41b1edfaaf4aa466b3af805db2",
+      "translation_text_hash": "02424a9197b92d127808f12380dfa28d6d4abad99928a8e1ec71e17452c649e4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호수아가 기생 라합과 그 아비의 가족과 그에게 속한 모든 것을 살렸으므로 그가 오늘날까지 이스라엘 중에 거하였으니 이는 여호수아가 여리고를 탐지하려고 보낸 사자를 숨겼음이었더라"
+      ],
+      "raw_text_hashes": [
+        "02424a9197b92d127808f12380dfa28d6d4abad99928a8e1ec71e17452c649e4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:6:26",
+      "sequence": 5976,
+      "chapter_label": "JOS 6",
+      "verse_label": "26",
+      "locator": {
+        "book": "JOS",
+        "chapter": 6,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 6,
+          "verse": 26
+        }
+      ],
+      "en": "Joshua commanded them with an oath at that time, saying, “Cursed is the man before the LORD who rises up and builds this city Jericho. With the loss of his firstborn he will lay its foundation, and with the loss of his youngest son he will set up its gates.”",
+      "ko": "여호수아가 그 때에 맹세로 무리를 경계하여 가로되 이 여리고성을 누구든지 일어나서 건축하는 자는 여호와 앞에서 저주를 받을 것이라 그 기초를 쌓을 때에 장자를 잃을 것이요 문을 세울 때에 계자를 잃으리라 하였더라",
+      "source_text_hash": "4c32e3dcafddc5dcae31733d524511aef0727766ba9ce794125e436ddeb0e41b",
+      "translation_text_hash": "89b63cd4b07fbeaca3db5a5fd44dddf527bc52f313f4e1fc082c975dbfb8f1ec",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호수아가 그 때에 맹세로 무리를 경계하여 가로되 이 여리고성을 누구든지 일어나서 건축하는 자는 여호와 앞에서 저주를 받을 것이라 그 기초를 쌓을 때에 장자를 잃을 것이요 문을 세울 때에 계자를 잃으리라 하였더라"
+      ],
+      "raw_text_hashes": [
+        "89b63cd4b07fbeaca3db5a5fd44dddf527bc52f313f4e1fc082c975dbfb8f1ec"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:6:27",
+      "sequence": 5977,
+      "chapter_label": "JOS 6",
+      "verse_label": "27",
+      "locator": {
+        "book": "JOS",
+        "chapter": 6,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 6,
+          "verse": 27
+        }
+      ],
+      "en": "So the LORD was with Joshua; and his fame was in all the land.",
+      "ko": "여호와께서 여호수아와 함께 하시니 여호수아의 명성이 그 온 땅에 퍼지니라",
+      "source_text_hash": "d1e6d7a3a164be38a0ecb2d729f675baa5e144c67b6e659b93eaefbacbbf2de1",
+      "translation_text_hash": "952eeb416711c01423a66a166dc28bc5ce35793e8418ce3daeb3f9d5bddd9219",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 여호수아와 함께 하시니 여호수아의 명성이 그 온 땅에 퍼지니라"
+      ],
+      "raw_text_hashes": [
+        "952eeb416711c01423a66a166dc28bc5ce35793e8418ce3daeb3f9d5bddd9219"
+      ]
+    }
+  ]
+}

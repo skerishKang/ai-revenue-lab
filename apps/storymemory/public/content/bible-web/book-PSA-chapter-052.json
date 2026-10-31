@@ -1,0 +1,301 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:052",
+  "unit_ordinal": 530,
+  "unit_label": "PSA 52",
+  "book_code": "PSA",
+  "chapter_number": 52,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:52:1",
+      "sequence": 14712,
+      "chapter_label": "PSA 52",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 52,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 52,
+          "verse": 1
+        }
+      ],
+      "en": "Why do you boast of mischief, mighty man? God’s loving kindness endures continually.",
+      "ko": "강포한 자여 네가 어찌하여 악한 계획을 스스로 자랑하는고 하나님의 인자하심은 항상 있도다",
+      "source_text_hash": "912a13898a9f970fd937f31a0b377a73d163bec89f7a5d0f5b7dd930212c0582",
+      "translation_text_hash": "e6aeea0835f040a902ef8213fa76393ba37c046b1e65be894d4d7bc9ef76896c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "강포한 자여 네가 어찌하여 악한 계획을 스스로 자랑하는고 하나님의 인자하심은 항상 있도다"
+      ],
+      "raw_text_hashes": [
+        "e6aeea0835f040a902ef8213fa76393ba37c046b1e65be894d4d7bc9ef76896c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:52:2",
+      "sequence": 14713,
+      "chapter_label": "PSA 52",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 52,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 52,
+          "verse": 2
+        }
+      ],
+      "en": "Your tongue plots destruction, like a sharp razor, working deceitfully.",
+      "ko": "네 혀가 심한 악을 꾀하여 날카로운 삭도 같이 간사를 행하는도다",
+      "source_text_hash": "0a40965bc4c170df59d53925ee9764780051d681c7cfaaca724e6bd725c1de34",
+      "translation_text_hash": "77ddd6e4a0c5c790e99eb207d963f8791d187a4d1f2eaf06c4410fc06c929363",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 혀가 심한 악을 꾀하여 날카로운 삭도 같이 간사를 행하는도다"
+      ],
+      "raw_text_hashes": [
+        "77ddd6e4a0c5c790e99eb207d963f8791d187a4d1f2eaf06c4410fc06c929363"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:52:3",
+      "sequence": 14714,
+      "chapter_label": "PSA 52",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 52,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 52,
+          "verse": 3
+        }
+      ],
+      "en": "You love evil more than good, lying rather than speaking the truth. Selah.",
+      "ko": "네가 선보다 악을 사랑하며 의를 말함보다 거짓을 사랑하는도다(셀라)",
+      "source_text_hash": "7411e09601ba57364bbd5ff27d2d63cdb39d2f3bc42561f7ddd1c5ddcbe84b51",
+      "translation_text_hash": "5f7169a07da13afab5d49348fb0fc14b4f6ec875c98993d005cde1b8da8940e0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 선보다 악을 사랑하며 의를 말함보다 거짓을 사랑하는도다(셀라)"
+      ],
+      "raw_text_hashes": [
+        "5f7169a07da13afab5d49348fb0fc14b4f6ec875c98993d005cde1b8da8940e0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:52:4",
+      "sequence": 14715,
+      "chapter_label": "PSA 52",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 52,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 52,
+          "verse": 4
+        }
+      ],
+      "en": "You love all devouring words, you deceitful tongue.",
+      "ko": "간사한 혀여 네가 잡아 먹는 모든 말을 좋아하는도다",
+      "source_text_hash": "cd1ee9ed262793f58d980065cb4fef99c6077378bd5f4e0ff7bf078fe3a65088",
+      "translation_text_hash": "47d4f17ae471dd85c96078b0608cc014fc3c2f1952f45ce5018eabf0c57628c4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "간사한 혀여 네가 잡아 먹는 모든 말을 좋아하는도다"
+      ],
+      "raw_text_hashes": [
+        "47d4f17ae471dd85c96078b0608cc014fc3c2f1952f45ce5018eabf0c57628c4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:52:5",
+      "sequence": 14716,
+      "chapter_label": "PSA 52",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 52,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 52,
+          "verse": 5
+        }
+      ],
+      "en": "God will likewise destroy you forever. He will take you up, and pluck you out of your tent, and root you out of the land of the living. Selah.",
+      "ko": "그런즉 하나님이 영영히 너를 멸하심이여 너를 취하여 네 장막에서 뽑아내며 생존하는 땅에서 네 뿌리를 빼시리로다(셀라)",
+      "source_text_hash": "62cdc2de71e0283335d898a946f9c666395836d179b7db6b8cbb78460736f376",
+      "translation_text_hash": "a61abdd3e7696f24695a0d5cb5f61517d7f10127bcb73e4f72b5a97889d71295",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 하나님이 영영히 너를 멸하심이여 너를 취하여 네 장막에서 뽑아내며 생존하는 땅에서 네 뿌리를 빼시리로다(셀라)"
+      ],
+      "raw_text_hashes": [
+        "a61abdd3e7696f24695a0d5cb5f61517d7f10127bcb73e4f72b5a97889d71295"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:52:6",
+      "sequence": 14717,
+      "chapter_label": "PSA 52",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 52,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 52,
+          "verse": 6
+        }
+      ],
+      "en": "The righteous also will see it, and fear, and laugh at him, saying,",
+      "ko": "의인이 보고 두려워하며 또 저를 비웃어 말하기를",
+      "source_text_hash": "a92a82bbc178b4e48388bc1357f116c05a51a6f8fbf3c615c7edad8252db8ea6",
+      "translation_text_hash": "d6b0633d2ac2d9cb668285ccd5f1ca4d98aa8bd3b09e3f6431a4fb841f7ec67e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "의인이 보고 두려워하며 또 저를 비웃어 말하기를"
+      ],
+      "raw_text_hashes": [
+        "d6b0633d2ac2d9cb668285ccd5f1ca4d98aa8bd3b09e3f6431a4fb841f7ec67e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:52:7",
+      "sequence": 14718,
+      "chapter_label": "PSA 52",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 52,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 52,
+          "verse": 7
+        }
+      ],
+      "en": "“Behold, this is the man who didn’t make God his strength, but trusted in the abundance of his riches, and strengthened himself in his wickedness.”",
+      "ko": "이 사람은 하나님으로 자기 힘을 삼지 아니하고 오직 그 재물의 풍부함을 의지하며 제 악으로 스스로 든든케 하던 자라 하리로다",
+      "source_text_hash": "97e0b6f9d221b3d20ce81e72efb9467a9452db7d15818d07a601fea30a823c37",
+      "translation_text_hash": "5a04441945a56c59c48db5280ac9ce70bdf3e3862dd7cf55b86d9d81679535b2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 사람은 하나님으로 자기 힘을 삼지 아니하고 오직 그 재물의 풍부함을 의지하며 제 악으로 스스로 든든케 하던 자라 하리로다"
+      ],
+      "raw_text_hashes": [
+        "5a04441945a56c59c48db5280ac9ce70bdf3e3862dd7cf55b86d9d81679535b2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:52:8",
+      "sequence": 14719,
+      "chapter_label": "PSA 52",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 52,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 52,
+          "verse": 8
+        }
+      ],
+      "en": "But as for me, I am like a green olive tree in God’s house. I trust in God’s loving kindness forever and ever.",
+      "ko": "오직 나는 하나님의 집에 있는 푸른 감람나무 같음이여 하나님의 인자하심을 영영히 의지하리로다",
+      "source_text_hash": "495eed3aae54bd40e00beb1c36a21b4721e6f3c323aa88883b52a821003e93a6",
+      "translation_text_hash": "00ccd01bfe95fa497b042c4b2d1e9046d1910c6bb3c56028e6f480eaa35c3241",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 나는 하나님의 집에 있는 푸른 감람나무 같음이여 하나님의 인자하심을 영영히 의지하리로다"
+      ],
+      "raw_text_hashes": [
+        "00ccd01bfe95fa497b042c4b2d1e9046d1910c6bb3c56028e6f480eaa35c3241"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:52:9",
+      "sequence": 14720,
+      "chapter_label": "PSA 52",
+      "verse_label": "9",
+      "locator": {
+        "book": "PSA",
+        "chapter": 52,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 52,
+          "verse": 9
+        }
+      ],
+      "en": "I will give you thanks forever, because you have done it. I will hope in your name, for it is good, in the presence of your saints.",
+      "ko": "주께서 이를 행하셨으므로 내가 영영히 주께 감사하고 주의 이름이 선함으로 주의 성도 앞에서 내가 주의 이름을 의지하리이다",
+      "source_text_hash": "bacc96ec0f47f1ed36385c0686009abc85340d63add58d8115d6208d0af70e92",
+      "translation_text_hash": "99d162faa43e87ef2e20b5f91c5ca234ab9551a8707f9d56ee95eef352972677",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 이를 행하셨으므로 내가 영영히 주께 감사하고 주의 이름이 선함으로 주의 성도 앞에서 내가 주의 이름을 의지하리이다"
+      ],
+      "raw_text_hashes": [
+        "99d162faa43e87ef2e20b5f91c5ca234ab9551a8707f9d56ee95eef352972677"
+      ]
+    }
+  ]
+}

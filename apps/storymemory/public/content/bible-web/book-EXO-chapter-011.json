@@ -1,0 +1,333 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EXO:chapter:011",
+  "unit_ordinal": 61,
+  "unit_label": "EXO 11",
+  "book_code": "EXO",
+  "chapter_number": 11,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EXO:11:1",
+      "sequence": 1808,
+      "chapter_label": "EXO 11",
+      "verse_label": "1",
+      "locator": {
+        "book": "EXO",
+        "chapter": 11,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 11,
+          "verse": 1
+        }
+      ],
+      "en": "The LORD said to Moses, “I will bring yet one more plague on Pharaoh, and on Egypt; afterwards he will let you go. When he lets you go, he will surely thrust you out altogether.",
+      "ko": "여호와께서 모세에게 이르시기를 내가 이제 한가지 재앙을 바로와 애굽에 내린 후에야 그가 너희를 여기서 보낼찌라 그가 너희를 보낼 때에는 여기서 정녕 다 쫓아 내리니",
+      "source_text_hash": "62347539523cf99ce8b57b76e073509a97d34f0b27af443b4a2a068bcbbc9c6d",
+      "translation_text_hash": "1d3f83122dcaef5674e80ecfbdfc1a5f311897079e2dca0c3a0b1dd857cb893b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 이르시기를 내가 이제 한가지 재앙을 바로와 애굽에 내린 후에야 그가 너희를 여기서 보낼찌라 그가 너희를 보낼 때에는 여기서 정녕 다 쫓아 내리니"
+      ],
+      "raw_text_hashes": [
+        "1d3f83122dcaef5674e80ecfbdfc1a5f311897079e2dca0c3a0b1dd857cb893b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:11:2",
+      "sequence": 1809,
+      "chapter_label": "EXO 11",
+      "verse_label": "2",
+      "locator": {
+        "book": "EXO",
+        "chapter": 11,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 11,
+          "verse": 2
+        }
+      ],
+      "en": "Speak now in the ears of the people, and let every man ask of his neighbor, and every woman of her neighbor, jewels of silver, and jewels of gold.”",
+      "ko": "백성에게 말하여 남녀로 각기 이웃들에게 은, 금패물을 구하게 하라 하시더니",
+      "source_text_hash": "6ef040b7e2d2043bc6d2c1e472573b17d053a008501cb7e8ed58bbdfd3f679ea",
+      "translation_text_hash": "e5c80e0cafebd24f1cde6dab74dc3297196eeb738a5f5eaf77a17350206cfbf2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "백성에게 말하여 남녀로 각기 이웃들에게 은, 금패물을 구하게 하라 하시더니"
+      ],
+      "raw_text_hashes": [
+        "e5c80e0cafebd24f1cde6dab74dc3297196eeb738a5f5eaf77a17350206cfbf2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:11:3",
+      "sequence": 1810,
+      "chapter_label": "EXO 11",
+      "verse_label": "3",
+      "locator": {
+        "book": "EXO",
+        "chapter": 11,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 11,
+          "verse": 3
+        }
+      ],
+      "en": "The LORD gave the people favor in the sight of the Egyptians. Moreover, the man Moses was very great in the land of Egypt, in the sight of Pharaoh’s servants, and in the sight of the people.",
+      "ko": "여호와께서 그 백성으로 애굽 사람의 은혜를 받게 하셨고 또 그 사람 모세는 애굽국에서 바로의 신하와 백성에게 심히 크게 뵈었더라",
+      "source_text_hash": "507a5ae07e40de2880d887d056570659b646256316c5c5fec4cf94ee19c26994",
+      "translation_text_hash": "3e7c046a83b740215395b99809fb2ec743ced15de6355c769e907757603cd8c5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 그 백성으로 애굽 사람의 은혜를 받게 하셨고 또 그 사람 모세는 애굽국에서 바로의 신하와 백성에게 심히 크게 뵈었더라"
+      ],
+      "raw_text_hashes": [
+        "3e7c046a83b740215395b99809fb2ec743ced15de6355c769e907757603cd8c5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:11:4",
+      "sequence": 1811,
+      "chapter_label": "EXO 11",
+      "verse_label": "4",
+      "locator": {
+        "book": "EXO",
+        "chapter": 11,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 11,
+          "verse": 4
+        }
+      ],
+      "en": "Moses said, “This is what the LORD says: ‘About midnight I will go out into the middle of Egypt,",
+      "ko": "모세가 바로에게 이르되 여호와께서 이같이 말씀하시기를 밤중에 내가 애굽 가운데로 들어가리니",
+      "source_text_hash": "2e4c5b3aa3d59990153dfa8cfe6255cdb99266ac12ff5d1177cf0918983ace3d",
+      "translation_text_hash": "c18872ae33aeb1fc255861f329ed279a05501fd68d20f906f35c6ad37ea23382",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 바로에게 이르되 여호와께서 이같이 말씀하시기를 밤중에 내가 애굽 가운데로 들어가리니"
+      ],
+      "raw_text_hashes": [
+        "c18872ae33aeb1fc255861f329ed279a05501fd68d20f906f35c6ad37ea23382"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:11:5",
+      "sequence": 1812,
+      "chapter_label": "EXO 11",
+      "verse_label": "5",
+      "locator": {
+        "book": "EXO",
+        "chapter": 11,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 11,
+          "verse": 5
+        }
+      ],
+      "en": "and all the firstborn in the land of Egypt shall die, from the firstborn of Pharaoh who sits on his throne, even to the firstborn of the female servant who is behind the mill, and all the firstborn of livestock.",
+      "ko": "애굽 가운데 처음 난 것은 위에 앉은 바로의 장자로부터 맷돌 뒤에 있는 여종의 장자까지와 모든 생축의 처음 난 것이 죽을찌라",
+      "source_text_hash": "c1463a825efaa7f2335070aef107b097533df739249cdcc411fab7acfb329eb8",
+      "translation_text_hash": "66eb34755f770a4e9522eecc3f279ab0a1e9222a8d35ee4a8ec6dd3828effbb5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "애굽 가운데 처음 난 것은 위에 앉은 바로의 장자로부터 맷돌 뒤에 있는 여종의 장자까지와 모든 생축의 처음 난 것이 죽을찌라"
+      ],
+      "raw_text_hashes": [
+        "66eb34755f770a4e9522eecc3f279ab0a1e9222a8d35ee4a8ec6dd3828effbb5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:11:6",
+      "sequence": 1813,
+      "chapter_label": "EXO 11",
+      "verse_label": "6",
+      "locator": {
+        "book": "EXO",
+        "chapter": 11,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 11,
+          "verse": 6
+        }
+      ],
+      "en": "There will be a great cry throughout all the land of Egypt, such as there has not been, nor will be any more.",
+      "ko": "애굽 전국에 전무후무한 큰 곡성이 있으리라",
+      "source_text_hash": "398aba8bed98e39c5140ca15cee44f243a2aa6b08127de569f13e2dbafd12511",
+      "translation_text_hash": "0a7b8e70419a6eda113afb422d832758a44b3f0468f1aa7bf1d9731e6be40ec1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "애굽 전국에 전무후무한 큰 곡성이 있으리라"
+      ],
+      "raw_text_hashes": [
+        "0a7b8e70419a6eda113afb422d832758a44b3f0468f1aa7bf1d9731e6be40ec1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:11:7",
+      "sequence": 1814,
+      "chapter_label": "EXO 11",
+      "verse_label": "7",
+      "locator": {
+        "book": "EXO",
+        "chapter": 11,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 11,
+          "verse": 7
+        }
+      ],
+      "en": "But against any of the children of Israel a dog won’t even bark or move its tongue, against man or animal, that you may know that the LORD makes a distinction between the Egyptians and Israel.",
+      "ko": "그러나 이스라엘 자손에게는 사람에게나 짐승에게나 개도 그 혀를 움직이지 않으리니 여호와가 애굽 사람과 이스라엘 사이에 구별하는 줄을 너희가 알리라 하셨나니",
+      "source_text_hash": "26e7bf0c9308d2040fd1ff6b595a7783b77db6c879f4e2409d1c50ef04df4c94",
+      "translation_text_hash": "f5bad1792449b5cac24764a8736a21eda0cb4615e70c7fb75e91307b2d7369ed",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 이스라엘 자손에게는 사람에게나 짐승에게나 개도 그 혀를 움직이지 않으리니 여호와가 애굽 사람과 이스라엘 사이에 구별하는 줄을 너희가 알리라 하셨나니"
+      ],
+      "raw_text_hashes": [
+        "f5bad1792449b5cac24764a8736a21eda0cb4615e70c7fb75e91307b2d7369ed"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:11:8",
+      "sequence": 1815,
+      "chapter_label": "EXO 11",
+      "verse_label": "8",
+      "locator": {
+        "book": "EXO",
+        "chapter": 11,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 11,
+          "verse": 8
+        }
+      ],
+      "en": "All these servants of yours will come down to me, and bow down themselves to me, saying, “Get out, with all the people who follow you;” and after that I will go out.’” He went out from Pharaoh in hot anger.",
+      "ko": "왕의 이 모든 신하가 내게 내려와서 내게 절하며 이르기를 너와 너를 좇는 온 백성은 나가라 한 후에야 내가 나가리라 하고 심히 노하여 바로에게서 나오니라",
+      "source_text_hash": "e07254c367c71cddc602a637500f5bc3196710e4147508a8644112e5147a2a7b",
+      "translation_text_hash": "91dc311a1d291fbf53608884b764c130a9068ddfe2badcdff3a86f4b68557d17",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕의 이 모든 신하가 내게 내려와서 내게 절하며 이르기를 너와 너를 좇는 온 백성은 나가라 한 후에야 내가 나가리라 하고 심히 노하여 바로에게서 나오니라"
+      ],
+      "raw_text_hashes": [
+        "91dc311a1d291fbf53608884b764c130a9068ddfe2badcdff3a86f4b68557d17"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:11:9",
+      "sequence": 1816,
+      "chapter_label": "EXO 11",
+      "verse_label": "9",
+      "locator": {
+        "book": "EXO",
+        "chapter": 11,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 11,
+          "verse": 9
+        }
+      ],
+      "en": "The LORD said to Moses, “Pharaoh won’t listen to you, that my wonders may be multiplied in the land of Egypt.”",
+      "ko": "여호와께서 모세에게 이르시기를 바로가 너희를 듣지 아니할찌라 그러므로 내가 애굽 땅에서 나의 기사를 더하리라 하셨고",
+      "source_text_hash": "c9b913615a18aa0f33424d97ddafe095fe95552316dfedea676f1e9c5e60dac0",
+      "translation_text_hash": "5b34fbe502165ba2cf0478559ab495c91f6f1dfc266e45504c39713f5e67dd35",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 이르시기를 바로가 너희를 듣지 아니할찌라 그러므로 내가 애굽 땅에서 나의 기사를 더하리라 하셨고"
+      ],
+      "raw_text_hashes": [
+        "5b34fbe502165ba2cf0478559ab495c91f6f1dfc266e45504c39713f5e67dd35"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:11:10",
+      "sequence": 1817,
+      "chapter_label": "EXO 11",
+      "verse_label": "10",
+      "locator": {
+        "book": "EXO",
+        "chapter": 11,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 11,
+          "verse": 10
+        }
+      ],
+      "en": "Moses and Aaron did all these wonders before Pharaoh, but the LORD hardened Pharaoh’s heart, and he didn’t let the children of Israel go out of his land.",
+      "ko": "모세와 아론이 이 모든 기사를 바로 앞에서 행하였으나 여호와께서 바로의 마음을 강퍅케 하셨으므로 그가 이스라엘 자손을 그 나라에서 보내지 아니하였더라",
+      "source_text_hash": "9a695b26bc97e2f83dccb39ae6aa87e9b15ad811214872be5d12552c523ccab1",
+      "translation_text_hash": "1f981db0a5b70187c5335d8455c59c9bd6d21271f9d2acad49c0dc999ede2c48",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세와 아론이 이 모든 기사를 바로 앞에서 행하였으나 여호와께서 바로의 마음을 강퍅케 하셨으므로 그가 이스라엘 자손을 그 나라에서 보내지 아니하였더라"
+      ],
+      "raw_text_hashes": [
+        "1f981db0a5b70187c5335d8455c59c9bd6d21271f9d2acad49c0dc999ede2c48"
+      ]
+    }
+  ]
+}

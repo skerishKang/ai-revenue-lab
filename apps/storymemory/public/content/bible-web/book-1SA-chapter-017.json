@@ -1,0 +1,1869 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1SA:chapter:017",
+  "unit_ordinal": 253,
+  "unit_label": "1SA 17",
+  "book_code": "1SA",
+  "chapter_number": 17,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1SA:17:1",
+      "sequence": 7620,
+      "chapter_label": "1SA 17",
+      "verse_label": "1",
+      "locator": {
+        "book": "1SA",
+        "chapter": 17,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 17,
+          "verse": 1
+        }
+      ],
+      "en": "Now the Philistines gathered together their armies to battle; and they were gathered together at Socoh, which belongs to Judah, and encamped between Socoh and Azekah in Ephesdammim.",
+      "ko": "블레셋 사람들이 그 군대를 모으고 싸우고자 하여 유다에 속한 소고에 모여 소고와 아세가 사이의 에베스담밈에 진 치매",
+      "source_text_hash": "b9c8d3ef084cc27ad89accaf79cf5df1897f16890f2d64865bb19b3f0cff68e6",
+      "translation_text_hash": "2598c43c7d3b18ebeed2fa82f6e47b34613b629e9aaf474dba73f0fed86c1f3d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "블레셋 사람들이 그 군대를 모으고 싸우고자 하여 유다에 속한 소고에 모여 소고와 아세가 사이의 에베스담밈에 진 치매"
+      ],
+      "raw_text_hashes": [
+        "2598c43c7d3b18ebeed2fa82f6e47b34613b629e9aaf474dba73f0fed86c1f3d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:17:2",
+      "sequence": 7621,
+      "chapter_label": "1SA 17",
+      "verse_label": "2",
+      "locator": {
+        "book": "1SA",
+        "chapter": 17,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 17,
+          "verse": 2
+        }
+      ],
+      "en": "Saul and the men of Israel were gathered together, and encamped in the valley of Elah, and set the battle in array against the Philistines.",
+      "ko": "사울과 이스라엘 사람들이 모여서 엘라 골짜기에 진 치고 블레셋 사람을 대하여 항오를 벌였으니",
+      "source_text_hash": "b21f0f9bbcdf3fc06b0f069f1ea508b4a282b807e5789a9f4317c1e3d45c6fdd",
+      "translation_text_hash": "54fc3be13ab6120cee00a2cdbe3bce4beb91aeef10a90a5c211d7153dd72360e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울과 이스라엘 사람들이 모여서 엘라 골짜기에 진 치고 블레셋 사람을 대하여 항오를 벌였으니"
+      ],
+      "raw_text_hashes": [
+        "54fc3be13ab6120cee00a2cdbe3bce4beb91aeef10a90a5c211d7153dd72360e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:17:3",
+      "sequence": 7622,
+      "chapter_label": "1SA 17",
+      "verse_label": "3",
+      "locator": {
+        "book": "1SA",
+        "chapter": 17,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 17,
+          "verse": 3
+        }
+      ],
+      "en": "The Philistines stood on the mountain on the one side, and Israel stood on the mountain on the other side: and there was a valley between them.",
+      "ko": "블레셋 사람은 이편 산에 섰고 이스라엘은 저편 산에 섰고 사이에는 골짜기가 있었더라",
+      "source_text_hash": "34c79e80fcdc60c2b899aeb8d047baaf55efcea8eeeaf0951294cf248a2ae28f",
+      "translation_text_hash": "d13143d1c2d66c6c68f30529441fde220e7ff01493a5d09c2c363d8bfe266203",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "블레셋 사람은 이편 산에 섰고 이스라엘은 저편 산에 섰고 사이에는 골짜기가 있었더라"
+      ],
+      "raw_text_hashes": [
+        "d13143d1c2d66c6c68f30529441fde220e7ff01493a5d09c2c363d8bfe266203"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:17:4",
+      "sequence": 7623,
+      "chapter_label": "1SA 17",
+      "verse_label": "4",
+      "locator": {
+        "book": "1SA",
+        "chapter": 17,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 17,
+          "verse": 4
+        }
+      ],
+      "en": "A champion out of the camp of the Philistines named Goliath of Gath, whose height was six cubits and a span went out.",
+      "ko": "블레셋 사람의 진에서 싸움을 돋우는 자가 왔는데 그 이름은 골리앗이요 가드 사람이라 그 신장은 여섯 규빗 한 뼘이요",
+      "source_text_hash": "d64b7d20cc25841c9a4d01f9d2783f1858b6eb6c0eb09ae70114400d20f29f3f",
+      "translation_text_hash": "884dc62482568cc647eb1486f4db98ba5485a4439316c5f2cc3b4a67fbd5c61c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "블레셋 사람의 진에서 싸움을 돋우는 자가 왔는데 그 이름은 골리앗이요 가드 사람이라 그 신장은 여섯 규빗 한 뼘이요"
+      ],
+      "raw_text_hashes": [
+        "884dc62482568cc647eb1486f4db98ba5485a4439316c5f2cc3b4a67fbd5c61c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:17:5",
+      "sequence": 7624,
+      "chapter_label": "1SA 17",
+      "verse_label": "5",
+      "locator": {
+        "book": "1SA",
+        "chapter": 17,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 17,
+          "verse": 5
+        }
+      ],
+      "en": "He had a helmet of bronze on his head, and he wore a coat of mail; and the weight of the coat was five thousand shekels of bronze.",
+      "ko": "머리에는 놋투구를 썼고 몸에는 어린갑을 입었으니 그 갑옷의 중수가 놋 오천 세겔이며",
+      "source_text_hash": "768dd662d3de0ca234ddf37f03b93c5b08230c7a38ca932639c601bec14f8b3e",
+      "translation_text_hash": "7aef504962fd25056b5a9c04d57de6f86ab41843323ab87e2e1620e0213e4011",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "머리에는 놋투구를 썼고 몸에는 어린갑을 입었으니 그 갑옷의 중수가 놋 오천 세겔이며"
+      ],
+      "raw_text_hashes": [
+        "7aef504962fd25056b5a9c04d57de6f86ab41843323ab87e2e1620e0213e4011"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:17:6",
+      "sequence": 7625,
+      "chapter_label": "1SA 17",
+      "verse_label": "6",
+      "locator": {
+        "book": "1SA",
+        "chapter": 17,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 17,
+          "verse": 6
+        }
+      ],
+      "en": "He had bronze shin armor on his legs and a bronze javelin between his shoulders.",
+      "ko": "그 다리에는 놋경갑을 쳤고 어깨 사이에는 놋단창을 메었으니",
+      "source_text_hash": "ac6cf96b6d3a36a0d12a0ee5030b5232ea2ba7f623322dcec8eb755a395b7c0a",
+      "translation_text_hash": "d0f5c80ec7cbe48a90c7809de56289f410cb129b80bc3b88f124cb61acc33cbf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 다리에는 놋경갑을 쳤고 어깨 사이에는 놋단창을 메었으니"
+      ],
+      "raw_text_hashes": [
+        "d0f5c80ec7cbe48a90c7809de56289f410cb129b80bc3b88f124cb61acc33cbf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:17:7",
+      "sequence": 7626,
+      "chapter_label": "1SA 17",
+      "verse_label": "7",
+      "locator": {
+        "book": "1SA",
+        "chapter": 17,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 17,
+          "verse": 7
+        }
+      ],
+      "en": "The staff of his spear was like a weaver’s beam; and his spear’s head weighed six hundred shekels of iron. His shield bearer went before him.",
+      "ko": "그 창자루는 베틀채 같고 창날은 철 육백 세겔이며 방패 든 자는 앞서 행하더라",
+      "source_text_hash": "ffe548a77e4fa46f68432ccb23013319ccdcbda01e66a0d816086d12b339d009",
+      "translation_text_hash": "37079b06392faa65400e5b4629a55b9a0645c5bf32f62c2053bad8dd2686c5e5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 창자루는 베틀채 같고 창날은 철 육백 세겔이며 방패 든 자는 앞서 행하더라"
+      ],
+      "raw_text_hashes": [
+        "37079b06392faa65400e5b4629a55b9a0645c5bf32f62c2053bad8dd2686c5e5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:17:8",
+      "sequence": 7627,
+      "chapter_label": "1SA 17",
+      "verse_label": "8",
+      "locator": {
+        "book": "1SA",
+        "chapter": 17,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 17,
+          "verse": 8
+        }
+      ],
+      "en": "He stood and cried to the armies of Israel, and said to them, “Why have you come out to set your battle in array? Am I not a Philistine, and you servants to Saul? Choose a man for yourselves, and let him come down to me.",
+      "ko": "그가 서서 이스라엘 군대를 향하여 외쳐 가로되 너희가 어찌하여 나와서 항오를 벌였느냐 나는 블레셋 사람이 아니며 너희는 사울의 신복이 아니냐 너희는 한 사람을 택하여 내게로 내려보내라",
+      "source_text_hash": "8bebdcd93ca0efde3842ac55f1695327d25036e94d54059c55bfd9469d4b0949",
+      "translation_text_hash": "32b4a12373702430172a5b4e4ea18b78cef79ed34243d14d6bb3e9da0f1911b5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 서서 이스라엘 군대를 향하여 외쳐 가로되 너희가 어찌하여 나와서 항오를 벌였느냐 나는 블레셋 사람이 아니며 너희는 사울의 신복이 아니냐 너희는 한 사람을 택하여 내게로 내려보내라"
+      ],
+      "raw_text_hashes": [
+        "32b4a12373702430172a5b4e4ea18b78cef79ed34243d14d6bb3e9da0f1911b5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:17:9",
+      "sequence": 7628,
+      "chapter_label": "1SA 17",
+      "verse_label": "9",
+      "locator": {
+        "book": "1SA",
+        "chapter": 17,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 17,
+          "verse": 9
+        }
+      ],
+      "en": "If he is able to fight with me and kill me, then will we be your servants; but if I prevail against him and kill him, then you will be our servants and serve us.”",
+      "ko": "그가 능히 싸워서 나를 죽이면 우리가 너희의 종이 되겠고 만일 내가 이기어 그를 죽이면 너희가 우리의 종이 되어 우리를 섬길 것이니라",
+      "source_text_hash": "3832cff542cafaf7a3ef1448df3b187cd5ee038c175992ff375d84a835b4f309",
+      "translation_text_hash": "d311b66917db7dfc1a74c3e45df6bfed636855efdd8c337d7d05856863574fd7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 능히 싸워서 나를 죽이면 우리가 너희의 종이 되겠고 만일 내가 이기어 그를 죽이면 너희가 우리의 종이 되어 우리를 섬길 것이니라"
+      ],
+      "raw_text_hashes": [
+        "d311b66917db7dfc1a74c3e45df6bfed636855efdd8c337d7d05856863574fd7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:17:10",
+      "sequence": 7629,
+      "chapter_label": "1SA 17",
+      "verse_label": "10",
+      "locator": {
+        "book": "1SA",
+        "chapter": 17,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 17,
+          "verse": 10
+        }
+      ],
+      "en": "The Philistine said, “I defy the armies of Israel today! Give me a man, that we may fight together!”",
+      "ko": "그 블레셋 사람이 또 가로되 내가 오늘날 이스라엘의 군대를 모욕하였으니 사람을 보내어 나로 더불어 싸우게 하라 한지라",
+      "source_text_hash": "ad7167a1d2438f48c8c5738e4b5b97f097eb4bdbfb884b18c5bf36ac29cf25aa",
+      "translation_text_hash": "c0094921c18d6bd415dcaf40562d8759a6891005d1e707bad5ee31c0223f9be8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 블레셋 사람이 또 가로되 내가 오늘날 이스라엘의 군대를 모욕하였으니 사람을 보내어 나로 더불어 싸우게 하라 한지라"
+      ],
+      "raw_text_hashes": [
+        "c0094921c18d6bd415dcaf40562d8759a6891005d1e707bad5ee31c0223f9be8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:17:11",
+      "sequence": 7630,
+      "chapter_label": "1SA 17",
+      "verse_label": "11",
+      "locator": {
+        "book": "1SA",
+        "chapter": 17,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 17,
+          "verse": 11
+        }
+      ],
+      "en": "When Saul and all Israel heard those words of the Philistine, they were dismayed and greatly afraid.",
+      "ko": "사울과 온 이스라엘이 블레셋 사람의 이 말을 듣고 놀라 크게 두려워하니라",
+      "source_text_hash": "dec7073e625e1fe78e3b91ca435f2871a4948794358c05364d6b24144357973d",
+      "translation_text_hash": "91d3633912cc161d1285a566376a6ef6834e8721cfeb984f66a5857659dc5994",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울과 온 이스라엘이 블레셋 사람의 이 말을 듣고 놀라 크게 두려워하니라"
+      ],
+      "raw_text_hashes": [
+        "91d3633912cc161d1285a566376a6ef6834e8721cfeb984f66a5857659dc5994"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:17:12",
+      "sequence": 7631,
+      "chapter_label": "1SA 17",
+      "verse_label": "12",
+      "locator": {
+        "book": "1SA",
+        "chapter": 17,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 17,
+          "verse": 12
+        }
+      ],
+      "en": "Now David was the son of that Ephrathite of Bethlehem Judah, whose name was Jesse; and he had eight sons. The man was an elderly old man in the days of Saul.",
+      "ko": "다윗은 유다 베들레헴 에브랏 사람 이새라 하는 자의 아들이었는데 이새는 사울 당시 사람 중에 나이 많아 늙은 자로서 여덟 아들이 있는 중",
+      "source_text_hash": "4fd22d58c8de94c490651c0cedd71c027d78265081254f7c944a6a0171ca5459",
+      "translation_text_hash": "4ba980f2f82375a72841d02804283c73d0722ba7167ae8ca18e8e2e5212c3ef4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗은 유다 베들레헴 에브랏 사람 이새라 하는 자의 아들이었는데 이새는 사울 당시 사람 중에 나이 많아 늙은 자로서 여덟 아들이 있는 중"
+      ],
+      "raw_text_hashes": [
+        "4ba980f2f82375a72841d02804283c73d0722ba7167ae8ca18e8e2e5212c3ef4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:17:13",
+      "sequence": 7632,
+      "chapter_label": "1SA 17",
+      "verse_label": "13",
+      "locator": {
+        "book": "1SA",
+        "chapter": 17,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 17,
+          "verse": 13
+        }
+      ],
+      "en": "The three oldest sons of Jesse had gone after Saul to the battle; and the names of his three sons who went to the battle were Eliab the firstborn, and next to him Abinadab, and the third Shammah.",
+      "ko": "그 장성한 세 아들은 사울을 따라 싸움에 나갔으니 싸움에 나간 세 아들의 이름은 장자 엘리압이요 그 다음은 아비나답이요 제 삼은 삼마며",
+      "source_text_hash": "be6fc31899c61801c37bb7dacca51e206bac1cd53251e5f4404e2088f0da73bf",
+      "translation_text_hash": "e5d2f1600a01b45759156b970aa8ec80db3add85e719ba9970eb1d07bc8aed57",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 장성한 세 아들은 사울을 따라 싸움에 나갔으니 싸움에 나간 세 아들의 이름은 장자 엘리압이요 그 다음은 아비나답이요 제 삼은 삼마며"
+      ],
+      "raw_text_hashes": [
+        "e5d2f1600a01b45759156b970aa8ec80db3add85e719ba9970eb1d07bc8aed57"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:17:14",
+      "sequence": 7633,
+      "chapter_label": "1SA 17",
+      "verse_label": "14",
+      "locator": {
+        "book": "1SA",
+        "chapter": 17,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 17,
+          "verse": 14
+        }
+      ],
+      "en": "David was the youngest; and the three oldest followed Saul.",
+      "ko": "다윗은 말째라 장성한 삼인은 사울을 좇았고",
+      "source_text_hash": "80c9443bb0ded96e8bd1a26454d6526afcf0ac3b1f239bd31630a85d88be3699",
+      "translation_text_hash": "042fc49976765f24eccb761cdb7bdd75e94eab088c4b0f0019b0a05724d5d3de",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗은 말째라 장성한 삼인은 사울을 좇았고"
+      ],
+      "raw_text_hashes": [
+        "042fc49976765f24eccb761cdb7bdd75e94eab088c4b0f0019b0a05724d5d3de"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:17:15",
+      "sequence": 7634,
+      "chapter_label": "1SA 17",
+      "verse_label": "15",
+      "locator": {
+        "book": "1SA",
+        "chapter": 17,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 17,
+          "verse": 15
+        }
+      ],
+      "en": "Now David went back and forth from Saul to feed his father’s sheep at Bethlehem.",
+      "ko": "다윗은 사울에게로 왕래하며 베들레헴에서 그 아비의 양을 칠 때에",
+      "source_text_hash": "65f16dd63d74fbdefd1cd289491577a4340733b46554d31efca5f46cc8456df8",
+      "translation_text_hash": "17f92e2cab8b49ce384567c8ca0bbb602c39f46e70a152806e8ae449d4fccbd9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗은 사울에게로 왕래하며 베들레헴에서 그 아비의 양을 칠 때에"
+      ],
+      "raw_text_hashes": [
+        "17f92e2cab8b49ce384567c8ca0bbb602c39f46e70a152806e8ae449d4fccbd9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:17:16",
+      "sequence": 7635,
+      "chapter_label": "1SA 17",
+      "verse_label": "16",
+      "locator": {
+        "book": "1SA",
+        "chapter": 17,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 17,
+          "verse": 16
+        }
+      ],
+      "en": "The Philistine came near morning and evening, and presented himself forty days.",
+      "ko": "그 블레셋 사람이 사십일을 조석으로 나와서 몸을 나타내었더라",
+      "source_text_hash": "477442d45969c89fc45979141752abbbcfb038344dfc5d9dac86c109ad2c47d5",
+      "translation_text_hash": "9b146bb4a3227cb68d4c16c9b6e429a469b83512d10fffb306ccde07c75c88de",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 블레셋 사람이 사십일을 조석으로 나와서 몸을 나타내었더라"
+      ],
+      "raw_text_hashes": [
+        "9b146bb4a3227cb68d4c16c9b6e429a469b83512d10fffb306ccde07c75c88de"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:17:17",
+      "sequence": 7636,
+      "chapter_label": "1SA 17",
+      "verse_label": "17",
+      "locator": {
+        "book": "1SA",
+        "chapter": 17,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 17,
+          "verse": 17
+        }
+      ],
+      "en": "Jesse said to David his son, “Now take for your brothers an ephah of this parched grain and these ten loaves, and carry them quickly to the camp to your brothers;",
+      "ko": "이새가 그 아들 다윗에게 이르되 네 형들을 위하여 이 볶은 곡식 한 에바와 이 떡 열 덩이를 가지고 진으로 속히 가서 네 형들에게 주고",
+      "source_text_hash": "b469ef6d50d890250e20b32763632da3d8e7826aa9001c4bdbd8cf1dad5a0718",
+      "translation_text_hash": "fdb14e006afb2f021028c4d5a3b5e783d179aeeb8fa8c23025eed871efcf9ace",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이새가 그 아들 다윗에게 이르되 네 형들을 위하여 이 볶은 곡식 한 에바와 이 떡 열 덩이를 가지고 진으로 속히 가서 네 형들에게 주고"
+      ],
+      "raw_text_hashes": [
+        "fdb14e006afb2f021028c4d5a3b5e783d179aeeb8fa8c23025eed871efcf9ace"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:17:18",
+      "sequence": 7637,
+      "chapter_label": "1SA 17",
+      "verse_label": "18",
+      "locator": {
+        "book": "1SA",
+        "chapter": 17,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 17,
+          "verse": 18
+        }
+      ],
+      "en": "and bring these ten cheeses to the captain of their thousand; and see how your brothers are doing, and bring back news.”",
+      "ko": "이 치스 열 덩이를 가져다가 그들의 천부장에게 주고 네 형들의 안부를 살피고 증표를 가져오라",
+      "source_text_hash": "f5579ac91b1b5205a22d988c7db5a2407a22bff34dd09c5c89e9696bfcda040c",
+      "translation_text_hash": "9dd47bfaa5f9aec9378753f88da69a3ff20daa1ea46fbd882eca95db572f9d88",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 치스 열 덩이를 가져다가 그들의 천부장에게 주고 네 형들의 안부를 살피고 증표를 가져오라"
+      ],
+      "raw_text_hashes": [
+        "9dd47bfaa5f9aec9378753f88da69a3ff20daa1ea46fbd882eca95db572f9d88"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:17:19",
+      "sequence": 7638,
+      "chapter_label": "1SA 17",
+      "verse_label": "19",
+      "locator": {
+        "book": "1SA",
+        "chapter": 17,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 17,
+          "verse": 19
+        }
+      ],
+      "en": "Now Saul, and they, and all the men of Israel were in the valley of Elah, fighting with the Philistines.",
+      "ko": "때에 사울과 그들과 이스라엘 모든 사람이 엘라 골짜기에서 블레셋 사람과 싸우는 중이더라",
+      "source_text_hash": "caec36af1048e264a917a8440fb61677d241ffad115f5190bddd2a71dfdf768b",
+      "translation_text_hash": "68602cd691ab4c8cddd7b35a48bb0f741867cd177c6f2db00c96ebf92ce0d9d2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "때에 사울과 그들과 이스라엘 모든 사람이 엘라 골짜기에서 블레셋 사람과 싸우는 중이더라"
+      ],
+      "raw_text_hashes": [
+        "68602cd691ab4c8cddd7b35a48bb0f741867cd177c6f2db00c96ebf92ce0d9d2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:17:20",
+      "sequence": 7639,
+      "chapter_label": "1SA 17",
+      "verse_label": "20",
+      "locator": {
+        "book": "1SA",
+        "chapter": 17,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 17,
+          "verse": 20
+        }
+      ],
+      "en": "David rose up early in the morning and left the sheep with a keeper, and took the provisions and went, as Jesse had commanded him. He came to the place of the wagons as the army which was going out to the fight shouted for the battle.",
+      "ko": "다윗이 아침에 일찌기 일어나서 양을 양 지키는 자에게 맡기고 이새의 명한대로 가지고 가서 진영에 이른즉 마침 군대가 전장에 나와서 싸우려고 고함하며",
+      "source_text_hash": "e29e2ceea200534d72eca05fb2893ff4f28b10256a8f10b7c2f813af59eade41",
+      "translation_text_hash": "1490471d12b532ff38aa9a620044e1321ab7895cf18616c6c0a2ab6ad1948a4f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 아침에 일찌기 일어나서 양을 양 지키는 자에게 맡기고 이새의 명한대로 가지고 가서 진영에 이른즉 마침 군대가 전장에 나와서 싸우려고 고함하며"
+      ],
+      "raw_text_hashes": [
+        "1490471d12b532ff38aa9a620044e1321ab7895cf18616c6c0a2ab6ad1948a4f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:17:21",
+      "sequence": 7640,
+      "chapter_label": "1SA 17",
+      "verse_label": "21",
+      "locator": {
+        "book": "1SA",
+        "chapter": 17,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 17,
+          "verse": 21
+        }
+      ],
+      "en": "Israel and the Philistines put the battle in array, army against army.",
+      "ko": "이스라엘과 블레셋 사람이 항오를 벌이고 양군이 서로 대하였더라",
+      "source_text_hash": "1bfeda5254c9c400ed0223b2a2dc0e377d8397d451199cb069f42788fb5c0ed2",
+      "translation_text_hash": "216ee1f57ceafd5c8cdedfa3967481a2a3329da72821adeba5fea741d7908619",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘과 블레셋 사람이 항오를 벌이고 양군이 서로 대하였더라"
+      ],
+      "raw_text_hashes": [
+        "216ee1f57ceafd5c8cdedfa3967481a2a3329da72821adeba5fea741d7908619"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:17:22",
+      "sequence": 7641,
+      "chapter_label": "1SA 17",
+      "verse_label": "22",
+      "locator": {
+        "book": "1SA",
+        "chapter": 17,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 17,
+          "verse": 22
+        }
+      ],
+      "en": "David left his baggage in the hand of the keeper of the baggage and ran to the army, and came and greeted his brothers.",
+      "ko": "다윗이 그 짐을 짐 지키는 자의 손에 맡기고 군대로 달려가서 형들에게 문안하고",
+      "source_text_hash": "1ec2d38c240432a827aca60198461dd3c66f6b6d1fe7d842d60a1a5b22dd6107",
+      "translation_text_hash": "56d07646efeaad2978963157a178fbc47175a96eca23b2fc5512b511b701ad88",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 그 짐을 짐 지키는 자의 손에 맡기고 군대로 달려가서 형들에게 문안하고"
+      ],
+      "raw_text_hashes": [
+        "56d07646efeaad2978963157a178fbc47175a96eca23b2fc5512b511b701ad88"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:17:23",
+      "sequence": 7642,
+      "chapter_label": "1SA 17",
+      "verse_label": "23",
+      "locator": {
+        "book": "1SA",
+        "chapter": 17,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 17,
+          "verse": 23
+        }
+      ],
+      "en": "As he talked with them, behold, the champion, the Philistine of Gath, Goliath by name, came up out of the ranks of the Philistines, and said the same words; and David heard them.",
+      "ko": "그들과 함께 말할 때에 마침 블레셋 사람의 싸움 돋우는 가드 사람 골리앗이라 하는 자가 그 항오에서 나와서 전과 같은 말을 하매 다윗이 들으니라",
+      "source_text_hash": "849c45c16f099a06c7e3f2de725c8ef03eb6c80975f44370d2e94dc07a97a1cd",
+      "translation_text_hash": "d5fd3fe227af668cb9e7bff6c0528ee2b858d2f581cd1886951eab151f240146",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들과 함께 말할 때에 마침 블레셋 사람의 싸움 돋우는 가드 사람 골리앗이라 하는 자가 그 항오에서 나와서 전과 같은 말을 하매 다윗이 들으니라"
+      ],
+      "raw_text_hashes": [
+        "d5fd3fe227af668cb9e7bff6c0528ee2b858d2f581cd1886951eab151f240146"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:17:24",
+      "sequence": 7643,
+      "chapter_label": "1SA 17",
+      "verse_label": "24",
+      "locator": {
+        "book": "1SA",
+        "chapter": 17,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 17,
+          "verse": 24
+        }
+      ],
+      "en": "All the men of Israel, when they saw the man, fled from him and were terrified.",
+      "ko": "이스라엘 모든 사람이 그 사람을 보고 심히 두려워하여 그 앞에서 도망하며",
+      "source_text_hash": "c30e6885c7e6a8069d83e5d3034773c71d7a7ed9aba06672f84bad57e491ca80",
+      "translation_text_hash": "92c9640a2d1859cce631caf1e8a10dfc6bb594d12a6598686a059e8868d227b1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 모든 사람이 그 사람을 보고 심히 두려워하여 그 앞에서 도망하며"
+      ],
+      "raw_text_hashes": [
+        "92c9640a2d1859cce631caf1e8a10dfc6bb594d12a6598686a059e8868d227b1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:17:25",
+      "sequence": 7644,
+      "chapter_label": "1SA 17",
+      "verse_label": "25",
+      "locator": {
+        "book": "1SA",
+        "chapter": 17,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 17,
+          "verse": 25
+        }
+      ],
+      "en": "The men of Israel said, “Have you seen this man who has come up? He has surely come up to defy Israel. The king will give great riches to the man who kills him, and will give him his daughter, and will make his father’s house tax-free in Israel.”",
+      "ko": "더러는 가로되 너희가 이 올라 온 사람을 보았느냐 참으로 이스라엘을 모욕하러 왔도다 그를 죽이는 사람은 왕이 많은 재물로 부하게 하고 그 딸을 그에게 주고 그 아비의 집을 이스라엘 중에서 자유하게 하시리라",
+      "source_text_hash": "296dfcdc8956da37242f476624c6bcd05c8a94a8aa35cb074a3657375753b3cf",
+      "translation_text_hash": "64a5f09b605f76a53aa95873d7bd7cc56932e2696f6f89464e6d9aad165a4d7f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "더러는 가로되 너희가 이 올라 온 사람을 보았느냐 참으로 이스라엘을 모욕하러 왔도다 그를 죽이는 사람은 왕이 많은 재물로 부하게 하고 그 딸을 그에게 주고 그 아비의 집을 이스라엘 중에서 자유하게 하시리라"
+      ],
+      "raw_text_hashes": [
+        "64a5f09b605f76a53aa95873d7bd7cc56932e2696f6f89464e6d9aad165a4d7f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:17:26",
+      "sequence": 7645,
+      "chapter_label": "1SA 17",
+      "verse_label": "26",
+      "locator": {
+        "book": "1SA",
+        "chapter": 17,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 17,
+          "verse": 26
+        }
+      ],
+      "en": "David spoke to the men who stood by him, saying, “What shall be done to the man who kills this Philistine and takes away the reproach from Israel? For who is this uncircumcised Philistine, that he should defy the armies of the living God?”",
+      "ko": "다윗이 곁에 섰는 사람들에게 말하여 가로되 이 블레셋 사람을 죽여 이스라엘의 치욕을 제하는 사람에게는 어떠한 대우를 하겠느냐 이 할례 없는 블레셋 사람이 누구관대 사시는 하나님의 군대를 모욕하겠느냐",
+      "source_text_hash": "2bed9f07583371cc8ce6db9f319946c360c887f9eb686df6d30898422dcb17f7",
+      "translation_text_hash": "d02f3cb5937ae3f14c2f044a4d2817f6499ca92d273c2939f3145ea39bce9327",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 곁에 섰는 사람들에게 말하여 가로되 이 블레셋 사람을 죽여 이스라엘의 치욕을 제하는 사람에게는 어떠한 대우를 하겠느냐 이 할례 없는 블레셋 사람이 누구관대 사시는 하나님의 군대를 모욕하겠느냐"
+      ],
+      "raw_text_hashes": [
+        "d02f3cb5937ae3f14c2f044a4d2817f6499ca92d273c2939f3145ea39bce9327"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:17:27",
+      "sequence": 7646,
+      "chapter_label": "1SA 17",
+      "verse_label": "27",
+      "locator": {
+        "book": "1SA",
+        "chapter": 17,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 17,
+          "verse": 27
+        }
+      ],
+      "en": "The people answered him in this way, saying, “So shall it be done to the man who kills him.”",
+      "ko": "백성이 전과 같이 말하여 가로되 그를 죽이는 사람에게는 여차 여차히 하시리라 하니라",
+      "source_text_hash": "88dc83954c42dee2b43c53b74896526863938186d2ea74f1152898583b2d3187",
+      "translation_text_hash": "ff13427dddd5443af2abb11a2dbe5630127bd19ab0b629d66e629cd5cd3f9421",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "백성이 전과 같이 말하여 가로되 그를 죽이는 사람에게는 여차 여차히 하시리라 하니라"
+      ],
+      "raw_text_hashes": [
+        "ff13427dddd5443af2abb11a2dbe5630127bd19ab0b629d66e629cd5cd3f9421"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:17:28",
+      "sequence": 7647,
+      "chapter_label": "1SA 17",
+      "verse_label": "28",
+      "locator": {
+        "book": "1SA",
+        "chapter": 17,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 17,
+          "verse": 28
+        }
+      ],
+      "en": "Eliab his oldest brother heard when he spoke to the men; and Eliab’s anger burned against David, and he said, “Why have you come down? With whom have you left those few sheep in the wilderness? I know your pride and the evil of your heart; for you have come down that you might see the battle.”",
+      "ko": "장형 엘리압이 다윗의 사람들에게 하는 말을 들은지라 그가 다윗에게 노를 발하여 가로되 네가 어찌하여 이리로 내려왔느냐 들에 있는 몇 양을 뉘게 맡겼느냐 나는 네 교만과 네 마음의 완악함을 아노니 네가 전쟁을 구경하러 왔도다",
+      "source_text_hash": "048bb8f336b6042f51e1aefc92e349925dce4e5900b53afcda6b8a3bb349e7b1",
+      "translation_text_hash": "19d554a35853e4c63a4eff848a0b59dbd43116ab12733d68b6bc96a08bfd59cc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "장형 엘리압이 다윗의 사람들에게 하는 말을 들은지라 그가 다윗에게 노를 발하여 가로되 네가 어찌하여 이리로 내려왔느냐 들에 있는 몇 양을 뉘게 맡겼느냐 나는 네 교만과 네 마음의 완악함을 아노니 네가 전쟁을 구경하러 왔도다"
+      ],
+      "raw_text_hashes": [
+        "19d554a35853e4c63a4eff848a0b59dbd43116ab12733d68b6bc96a08bfd59cc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:17:29",
+      "sequence": 7648,
+      "chapter_label": "1SA 17",
+      "verse_label": "29",
+      "locator": {
+        "book": "1SA",
+        "chapter": 17,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 17,
+          "verse": 29
+        }
+      ],
+      "en": "David said, “What have I now done? Is there not a cause?”",
+      "ko": "다윗이 가로되 내가 무엇을 하였나이까 어찌 이유가 없으리이까 하고",
+      "source_text_hash": "248f555ac93a7ee5149178966609f32ef50acad8e7c529cee1654500909b1a61",
+      "translation_text_hash": "52006f40b6421539fc270a08985b84e79111c1684a26ff8afd2af9c3748cf374",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 가로되 내가 무엇을 하였나이까 어찌 이유가 없으리이까 하고"
+      ],
+      "raw_text_hashes": [
+        "52006f40b6421539fc270a08985b84e79111c1684a26ff8afd2af9c3748cf374"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:17:30",
+      "sequence": 7649,
+      "chapter_label": "1SA 17",
+      "verse_label": "30",
+      "locator": {
+        "book": "1SA",
+        "chapter": 17,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 17,
+          "verse": 30
+        }
+      ],
+      "en": "He turned away from him toward another, and spoke like that again; and the people answered him again the same way.",
+      "ko": "돌이켜 다른 사람을 향하여 전과 같이 말하매 백성이 전과 같이 대답하니라",
+      "source_text_hash": "dc2f412f6144c32c5f9c6c3006557b9871ca1798de9d6025e7bda46c1a53f5f0",
+      "translation_text_hash": "0b883c53e998359e5cb250905179c54caa2003a9d3b3d2541ec31d4a7b04054f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "돌이켜 다른 사람을 향하여 전과 같이 말하매 백성이 전과 같이 대답하니라"
+      ],
+      "raw_text_hashes": [
+        "0b883c53e998359e5cb250905179c54caa2003a9d3b3d2541ec31d4a7b04054f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:17:31",
+      "sequence": 7650,
+      "chapter_label": "1SA 17",
+      "verse_label": "31",
+      "locator": {
+        "book": "1SA",
+        "chapter": 17,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 17,
+          "verse": 31
+        }
+      ],
+      "en": "When the words were heard which David spoke, they rehearsed them before Saul; and he sent for him.",
+      "ko": "혹이 다윗의 한 말을 듣고 그것을 사울에게 고하였으므로 사울이 다윗을 부른지라",
+      "source_text_hash": "2e44f4ad592286080d53e9639e2fc73344dd849d5b0e08426b149be5319c5870",
+      "translation_text_hash": "ce8f9e1ee0a3c10c508862ca0d70db394b0cebf3b96859a13cb6023eb1fe6eb3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "혹이 다윗의 한 말을 듣고 그것을 사울에게 고하였으므로 사울이 다윗을 부른지라"
+      ],
+      "raw_text_hashes": [
+        "ce8f9e1ee0a3c10c508862ca0d70db394b0cebf3b96859a13cb6023eb1fe6eb3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:17:32",
+      "sequence": 7651,
+      "chapter_label": "1SA 17",
+      "verse_label": "32",
+      "locator": {
+        "book": "1SA",
+        "chapter": 17,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 17,
+          "verse": 32
+        }
+      ],
+      "en": "David said to Saul, “Let no man’s heart fail because of him. Your servant will go and fight with this Philistine.”",
+      "ko": "다윗이 사울에게 고하되 그를 인하여 사람이 낙담하지 말것이라 주의 종이 가서 저 블레셋 사람과 싸우리이다",
+      "source_text_hash": "b19b27afcfb3466675a342529b3265a23a5bf3253b5c9532b2532a28a39546f8",
+      "translation_text_hash": "674aaee1c9bef7bccb4c349fbf4836bdd1f14ea64ba8e6f714585cae38c53d73",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 사울에게 고하되 그를 인하여 사람이 낙담하지 말것이라 주의 종이 가서 저 블레셋 사람과 싸우리이다"
+      ],
+      "raw_text_hashes": [
+        "674aaee1c9bef7bccb4c349fbf4836bdd1f14ea64ba8e6f714585cae38c53d73"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:17:33",
+      "sequence": 7652,
+      "chapter_label": "1SA 17",
+      "verse_label": "33",
+      "locator": {
+        "book": "1SA",
+        "chapter": 17,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 17,
+          "verse": 33
+        }
+      ],
+      "en": "Saul said to David, “You are not able to go against this Philistine to fight with him; for you are but a youth, and he a man of war from his youth.”",
+      "ko": "사울이 다윗에게 이르되 네가 가서 저 블레셋 사람과 싸우기에 능치 못하리니 너는 소년이요 그는 어려서부터 용사임이니라",
+      "source_text_hash": "192e118f4badfbebefaee7070a40418b72b0bd0f48f73b9319617ccfe0c1948a",
+      "translation_text_hash": "cff3ae5d9cfef47a961add477918874fd0d0852d75ea666b693512debd859b2a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울이 다윗에게 이르되 네가 가서 저 블레셋 사람과 싸우기에 능치 못하리니 너는 소년이요 그는 어려서부터 용사임이니라"
+      ],
+      "raw_text_hashes": [
+        "cff3ae5d9cfef47a961add477918874fd0d0852d75ea666b693512debd859b2a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:17:34",
+      "sequence": 7653,
+      "chapter_label": "1SA 17",
+      "verse_label": "34",
+      "locator": {
+        "book": "1SA",
+        "chapter": 17,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 17,
+          "verse": 34
+        }
+      ],
+      "en": "David said to Saul, “Your servant was keeping his father’s sheep; and when a lion or a bear came and took a lamb out of the flock,",
+      "ko": "다윗이 사울에게 고하되 주의 종이 아비의 양을 지킬 때에 사자나 곰이 와서 양떼에서 새끼를 움키면",
+      "source_text_hash": "65a366d87d2ee8e9cc0ca4168bcb7ed722eb19bc4eefcc37bb5350082dc4ebc1",
+      "translation_text_hash": "405b656e56a62d008bba6344a48397ff8dc1845811f84045a9052a67e46a6753",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 사울에게 고하되 주의 종이 아비의 양을 지킬 때에 사자나 곰이 와서 양떼에서 새끼를 움키면"
+      ],
+      "raw_text_hashes": [
+        "405b656e56a62d008bba6344a48397ff8dc1845811f84045a9052a67e46a6753"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:17:35",
+      "sequence": 7654,
+      "chapter_label": "1SA 17",
+      "verse_label": "35",
+      "locator": {
+        "book": "1SA",
+        "chapter": 17,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 17,
+          "verse": 35
+        }
+      ],
+      "en": "I went out after him, struck him, and rescued it out of his mouth. When he arose against me, I caught him by his beard, struck him, and killed him.",
+      "ko": "내가 따라가서 그것을 치고 그 입에서 새끼를 건져내었고 그것이 일어나 나를 해하고자 하면 내가 그 수염을 잡고 그것을 쳐 죽였었나이다",
+      "source_text_hash": "b6f32cac1183aecd5f198be6947cb957d4e98b021f2865ac9beacfce49ccdbd2",
+      "translation_text_hash": "19e12b79b63c1e12e8a198bdd8c878ccb86737df3cf0c0da993265b01f423dcc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 따라가서 그것을 치고 그 입에서 새끼를 건져내었고 그것이 일어나 나를 해하고자 하면 내가 그 수염을 잡고 그것을 쳐 죽였었나이다"
+      ],
+      "raw_text_hashes": [
+        "19e12b79b63c1e12e8a198bdd8c878ccb86737df3cf0c0da993265b01f423dcc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:17:36",
+      "sequence": 7655,
+      "chapter_label": "1SA 17",
+      "verse_label": "36",
+      "locator": {
+        "book": "1SA",
+        "chapter": 17,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 17,
+          "verse": 36
+        }
+      ],
+      "en": "Your servant struck both the lion and the bear. This uncircumcised Philistine shall be as one of them, since he has defied the armies of the living God.”",
+      "ko": "주의 종이 사자와 곰도 쳤은즉 사시는 하나님의 군대를 모욕한 이 할례 없는 블레셋 사람이리이까 그가 그 짐승의 하나와 같이 되리이다",
+      "source_text_hash": "d57863bbfcc64bfbfafa10214292fb07f3f8c9052a40fcde719fb0ceb7bdcb7a",
+      "translation_text_hash": "160ae35e1d5b71430032bf2e48d4691041132ac544066c1c6775580de28b5658",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 종이 사자와 곰도 쳤은즉 사시는 하나님의 군대를 모욕한 이 할례 없는 블레셋 사람이리이까 그가 그 짐승의 하나와 같이 되리이다"
+      ],
+      "raw_text_hashes": [
+        "160ae35e1d5b71430032bf2e48d4691041132ac544066c1c6775580de28b5658"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:17:37",
+      "sequence": 7656,
+      "chapter_label": "1SA 17",
+      "verse_label": "37",
+      "locator": {
+        "book": "1SA",
+        "chapter": 17,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 17,
+          "verse": 37
+        }
+      ],
+      "en": "David said, “The LORD, who delivered me out of the paw of the lion and out of the paw of the bear, will deliver me out of the hand of this Philistine.” Saul said to David, “Go! The LORD will be with you.”",
+      "ko": "또 가로되 여호와께서 나를 사자의 발톱과 곰의 발톱에서 건져내셨은즉 나를 이 블레셋 사람의 손에서도 건져 내시리이다 사울이 다윗에게 이르되 가라 여호와께서 너와 함께 계시기를 원하노라",
+      "source_text_hash": "2913ec4010c8bbca7543128804cfaaf95ba881bb39e2d55371589e4ba1106f99",
+      "translation_text_hash": "869bae02fb44b12a21dad39403db89980c01a25daa661f227058cdc68c09ab32",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 가로되 여호와께서 나를 사자의 발톱과 곰의 발톱에서 건져내셨은즉 나를 이 블레셋 사람의 손에서도 건져 내시리이다 사울이 다윗에게 이르되 가라 여호와께서 너와 함께 계시기를 원하노라"
+      ],
+      "raw_text_hashes": [
+        "869bae02fb44b12a21dad39403db89980c01a25daa661f227058cdc68c09ab32"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:17:38",
+      "sequence": 7657,
+      "chapter_label": "1SA 17",
+      "verse_label": "38",
+      "locator": {
+        "book": "1SA",
+        "chapter": 17,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 17,
+          "verse": 38
+        }
+      ],
+      "en": "Saul dressed David with his clothing. He put a helmet of bronze on his head, and he clad him with a coat of mail.",
+      "ko": "이에 사울이 자기 군복을 다윗에게 입히고 놋투구를 그 머리에 씌우고 또 그에게 갑옷을 입히매",
+      "source_text_hash": "d8e5f09a8c091677342c8035e8c23eb20e7eaf8d22f030b5f46171edc145806f",
+      "translation_text_hash": "b65bafdd688d6e21bcb7e2828c02c0ab049dce14cbf87566b7497fb109a40d05",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 사울이 자기 군복을 다윗에게 입히고 놋투구를 그 머리에 씌우고 또 그에게 갑옷을 입히매"
+      ],
+      "raw_text_hashes": [
+        "b65bafdd688d6e21bcb7e2828c02c0ab049dce14cbf87566b7497fb109a40d05"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:17:39",
+      "sequence": 7658,
+      "chapter_label": "1SA 17",
+      "verse_label": "39",
+      "locator": {
+        "book": "1SA",
+        "chapter": 17,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 17,
+          "verse": 39
+        }
+      ],
+      "en": "David strapped his sword on his clothing and he tried to move, for he had not tested it. David said to Saul, “I can’t go with these, for I have not tested them.” Then David took them off.",
+      "ko": "다윗이 칼을 군복 위에 차고는 익숙치 못하므로 시험적으로 걸어 보다가 사울에게 고하되 익숙치 못하니 이것을 입고 가지 못하겠나이다 하고 곧 벗고",
+      "source_text_hash": "4d5f74915d197c0aed93e7e6821ba7ca5bfed8693031a58117bce6a9c18f8a2d",
+      "translation_text_hash": "e6b73efcb118bd2bb9a36246f9610f6db282425cc4b0c4b74ab0f7eb2ab8bb9e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 칼을 군복 위에 차고는 익숙치 못하므로 시험적으로 걸어 보다가 사울에게 고하되 익숙치 못하니 이것을 입고 가지 못하겠나이다 하고 곧 벗고"
+      ],
+      "raw_text_hashes": [
+        "e6b73efcb118bd2bb9a36246f9610f6db282425cc4b0c4b74ab0f7eb2ab8bb9e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:17:40",
+      "sequence": 7659,
+      "chapter_label": "1SA 17",
+      "verse_label": "40",
+      "locator": {
+        "book": "1SA",
+        "chapter": 17,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 17,
+          "verse": 40
+        }
+      ],
+      "en": "He took his staff in his hand, and chose for himself five smooth stones out of the brook, and put them in the pouch of his shepherd’s bag which he had. His sling was in his hand; and he came near to the Philistine.",
+      "ko": "손에 막대기를 가지고 시내에서 매끄러운 돌 다섯을 골라서 자기 목자의 제구 곧 주머니에 넣고 손에 물매를 가지고 블레셋 사람에게로 나아가니라",
+      "source_text_hash": "6eb1447c425bbfe81412c9cdd1cad07090153af5f4428ac8ff1a26786e16d1fb",
+      "translation_text_hash": "139f857db41252ba5ca5c72ca7d6d4902ddf86d77a625ca67b1f39b284a32f30",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "손에 막대기를 가지고 시내에서 매끄러운 돌 다섯을 골라서 자기 목자의 제구 곧 주머니에 넣고 손에 물매를 가지고 블레셋 사람에게로 나아가니라"
+      ],
+      "raw_text_hashes": [
+        "139f857db41252ba5ca5c72ca7d6d4902ddf86d77a625ca67b1f39b284a32f30"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:17:41",
+      "sequence": 7660,
+      "chapter_label": "1SA 17",
+      "verse_label": "41",
+      "locator": {
+        "book": "1SA",
+        "chapter": 17,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 17,
+          "verse": 41
+        }
+      ],
+      "en": "The Philistine walked and came near to David; and the man who bore the shield went before him.",
+      "ko": "블레셋 사람이 점점 행하여 다윗에게로 나아오는데 방패 든 자가 앞섰더라",
+      "source_text_hash": "d1deb9d54d8059f65b520565a8f2ca62158f0f8401e60882a8fae765c3cee9e8",
+      "translation_text_hash": "bf26d6ab8823194ad260f27729efed42b25336d2419dd9bd3573526feb550147",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "블레셋 사람이 점점 행하여 다윗에게로 나아오는데 방패 든 자가 앞섰더라"
+      ],
+      "raw_text_hashes": [
+        "bf26d6ab8823194ad260f27729efed42b25336d2419dd9bd3573526feb550147"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:17:42",
+      "sequence": 7661,
+      "chapter_label": "1SA 17",
+      "verse_label": "42",
+      "locator": {
+        "book": "1SA",
+        "chapter": 17,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 17,
+          "verse": 42
+        }
+      ],
+      "en": "When the Philistine looked around and saw David, he disdained him; for he was but a youth, and ruddy, and had a good looking face.",
+      "ko": "그 블레셋 사람이 둘러보다가 다윗을 보고 업신여기니 이는 그가 젊고 붉고 용모가 아름다움이라",
+      "source_text_hash": "88cc0dfcdc53b1265d66f28a462771b39d75b6182d61dc74f4386077660cf2e6",
+      "translation_text_hash": "813e84cf8e5f188d57f0a8b44ffdb88d458d8ba8b5fdd9dab1e4ac4fe452a706",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 블레셋 사람이 둘러보다가 다윗을 보고 업신여기니 이는 그가 젊고 붉고 용모가 아름다움이라"
+      ],
+      "raw_text_hashes": [
+        "813e84cf8e5f188d57f0a8b44ffdb88d458d8ba8b5fdd9dab1e4ac4fe452a706"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:17:43",
+      "sequence": 7662,
+      "chapter_label": "1SA 17",
+      "verse_label": "43",
+      "locator": {
+        "book": "1SA",
+        "chapter": 17,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 17,
+          "verse": 43
+        }
+      ],
+      "en": "The Philistine said to David, “Am I a dog, that you come to me with sticks?” The Philistine cursed David by his gods.",
+      "ko": "블레셋 사람이 다윗에게 이르되 네가 나를 개로 여기고 막대기를 가지고 내게 나아왔느냐 하고 그 신들의 이름으로 다윗을 저주하고",
+      "source_text_hash": "3b81a7abe51698b2bd53d23d22600daf3e92cb79c44fa21bd0d1caca105aa254",
+      "translation_text_hash": "371d7615caf363985e95db23eb27dcfa2aa8573ca8f5b02076d8dafa5ce17a06",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "블레셋 사람이 다윗에게 이르되 네가 나를 개로 여기고 막대기를 가지고 내게 나아왔느냐 하고 그 신들의 이름으로 다윗을 저주하고"
+      ],
+      "raw_text_hashes": [
+        "371d7615caf363985e95db23eb27dcfa2aa8573ca8f5b02076d8dafa5ce17a06"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:17:44",
+      "sequence": 7663,
+      "chapter_label": "1SA 17",
+      "verse_label": "44",
+      "locator": {
+        "book": "1SA",
+        "chapter": 17,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 17,
+          "verse": 44
+        }
+      ],
+      "en": "The Philistine said to David, “Come to me, and I will give your flesh to the birds of the sky and to the animals of the field.”",
+      "ko": "또 이르되 내게로 오라 내가 네 고기를 공중의 새들과 들짐승들에게 주리라",
+      "source_text_hash": "92eeef42e39a182dfbdffad375feb2ed732f8c35376d310354b446612d3b0c56",
+      "translation_text_hash": "2487b73db0d226669a8db9d31ab15d94475548766b88070615c856fd39cfe23d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 이르되 내게로 오라 내가 네 고기를 공중의 새들과 들짐승들에게 주리라"
+      ],
+      "raw_text_hashes": [
+        "2487b73db0d226669a8db9d31ab15d94475548766b88070615c856fd39cfe23d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:17:45",
+      "sequence": 7664,
+      "chapter_label": "1SA 17",
+      "verse_label": "45",
+      "locator": {
+        "book": "1SA",
+        "chapter": 17,
+        "verse": 45
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 17,
+          "verse": 45
+        }
+      ],
+      "en": "Then David said to the Philistine, “You come to me with a sword, with a spear, and with a javelin; but I come to you in the name of the LORD of Armies, the God of the armies of Israel, whom you have defied.",
+      "ko": "다윗이 블레셋 사람에게 이르되 너는 칼과 창과 단창으로 내게 오거니와 나는 만군의 여호와의 이름 곧 네가 모욕하는 이스라엘 군대의 하나님의 이름으로 네게 가노라",
+      "source_text_hash": "4698dffcd5b35de77e3c8c0a1e3cba31887d2d29554fd0810c3a9a23a7b0e5f2",
+      "translation_text_hash": "281f2183421b770ac638efc1657983d83c33107695fb37901aab3a38d4a6e8a1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 블레셋 사람에게 이르되 너는 칼과 창과 단창으로 내게 오거니와 나는 만군의 여호와의 이름 곧 네가 모욕하는 이스라엘 군대의 하나님의 이름으로 네게 가노라"
+      ],
+      "raw_text_hashes": [
+        "281f2183421b770ac638efc1657983d83c33107695fb37901aab3a38d4a6e8a1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:17:46",
+      "sequence": 7665,
+      "chapter_label": "1SA 17",
+      "verse_label": "46",
+      "locator": {
+        "book": "1SA",
+        "chapter": 17,
+        "verse": 46
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 17,
+          "verse": 46
+        }
+      ],
+      "en": "Today, the LORD will deliver you into my hand. I will strike you and take your head from off you. I will give the dead bodies of the army of the Philistines today to the birds of the sky and to the wild animals of the earth, that all the earth may know that there is a God in Israel,",
+      "ko": "오늘 여호와께서 너를 내 손에 붙이시리니 내가 너를 쳐서 네 머리를 베고 블레셋 군대의 시체로 오늘날 공중의 새와 땅의 들짐승에게 주어 온 땅으로 이스라엘에 하나님이 계신줄 알게 하겠고",
+      "source_text_hash": "21aa730fe37c24578f38b8d3b394ced08f42f1a58b211f8725e377a1fde000d7",
+      "translation_text_hash": "a16a7b4798acbd2ef25398ec742fb8e62aff1f5ae87f78dc79d565c3127337a2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오늘 여호와께서 너를 내 손에 붙이시리니 내가 너를 쳐서 네 머리를 베고 블레셋 군대의 시체로 오늘날 공중의 새와 땅의 들짐승에게 주어 온 땅으로 이스라엘에 하나님이 계신줄 알게 하겠고"
+      ],
+      "raw_text_hashes": [
+        "a16a7b4798acbd2ef25398ec742fb8e62aff1f5ae87f78dc79d565c3127337a2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:17:47",
+      "sequence": 7666,
+      "chapter_label": "1SA 17",
+      "verse_label": "47",
+      "locator": {
+        "book": "1SA",
+        "chapter": 17,
+        "verse": 47
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 17,
+          "verse": 47
+        }
+      ],
+      "en": "and that all this assembly may know that the LORD doesn’t save with sword and spear; for the battle is the LORD’s, and he will give you into our hand.”",
+      "ko": "또 여호와의 구원하심이 칼과 창에 있지 아니함을 이 무리로 알게 하리라 전쟁은 여호와께 속한 것인즉 그가 너희를 우리 손에 붙이시리라",
+      "source_text_hash": "f04bdcd77d70749a28fc61003fe625f2a8db36d4d81cfbc90ac5fb6b595f9b90",
+      "translation_text_hash": "6796d7befe96b3b257c72a256bb8d11c3621001a766e990245ad0d6f55c1d6ef",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 여호와의 구원하심이 칼과 창에 있지 아니함을 이 무리로 알게 하리라 전쟁은 여호와께 속한 것인즉 그가 너희를 우리 손에 붙이시리라"
+      ],
+      "raw_text_hashes": [
+        "6796d7befe96b3b257c72a256bb8d11c3621001a766e990245ad0d6f55c1d6ef"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:17:48",
+      "sequence": 7667,
+      "chapter_label": "1SA 17",
+      "verse_label": "48",
+      "locator": {
+        "book": "1SA",
+        "chapter": 17,
+        "verse": 48
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 17,
+          "verse": 48
+        }
+      ],
+      "en": "When the Philistine arose, and walked and came near to meet David, David hurried and ran toward the army to meet the Philistine.",
+      "ko": "블레셋 사람이 일어나 다윗에게로 마주 가까이 올 때에 다윗이 블레셋 사람에게로 마주 그 항오를 향하여 빨리 달리며",
+      "source_text_hash": "599ca6fac7b879bd253103ba90101361ffbea9bc146b3c3a240e4414cb57d897",
+      "translation_text_hash": "5e1a4f493f0ef3bcd1877de8cdca3c484e5f66098d5f92bd4c31a2fcca649239",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "블레셋 사람이 일어나 다윗에게로 마주 가까이 올 때에 다윗이 블레셋 사람에게로 마주 그 항오를 향하여 빨리 달리며"
+      ],
+      "raw_text_hashes": [
+        "5e1a4f493f0ef3bcd1877de8cdca3c484e5f66098d5f92bd4c31a2fcca649239"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:17:49",
+      "sequence": 7668,
+      "chapter_label": "1SA 17",
+      "verse_label": "49",
+      "locator": {
+        "book": "1SA",
+        "chapter": 17,
+        "verse": 49
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 17,
+          "verse": 49
+        }
+      ],
+      "en": "David put his hand in his bag, took a stone and slung it, and struck the Philistine in his forehead. The stone sank into his forehead, and he fell on his face to the earth.",
+      "ko": "손을 주머니에 넣어 돌을 취하여 물매로 던져 블레셋 사람의 이마를 치매 돌이 그 이마에 박히니 땅에 엎드러지니라",
+      "source_text_hash": "a8ecffa9bd8ceac4b7522a66ade70cca468bae7a25b02c18d908cc13dcbaabe3",
+      "translation_text_hash": "084b3e45d2bb6f307971727faa3441a090207b16a0f48f88db2ac9be025d5b85",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "손을 주머니에 넣어 돌을 취하여 물매로 던져 블레셋 사람의 이마를 치매 돌이 그 이마에 박히니 땅에 엎드러지니라"
+      ],
+      "raw_text_hashes": [
+        "084b3e45d2bb6f307971727faa3441a090207b16a0f48f88db2ac9be025d5b85"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:17:50",
+      "sequence": 7669,
+      "chapter_label": "1SA 17",
+      "verse_label": "50",
+      "locator": {
+        "book": "1SA",
+        "chapter": 17,
+        "verse": 50
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 17,
+          "verse": 50
+        }
+      ],
+      "en": "So David prevailed over the Philistine with a sling and with a stone, and struck the Philistine and killed him; but there was no sword in David’s hand.",
+      "ko": "다윗이 이같이 물매와 돌로 블레셋 사람을 이기고 그를 쳐 죽였으나 자기 손에는 칼이 없었더라",
+      "source_text_hash": "2a54bbeeae8894653d4d4c7b181ba7ca5192c6aa568f57ea774098f82bd0e863",
+      "translation_text_hash": "9822f8d940c0f6e5a8ad134acf14da1cf4dc4e2a98991f656d1035f239bed6c0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 이같이 물매와 돌로 블레셋 사람을 이기고 그를 쳐 죽였으나 자기 손에는 칼이 없었더라"
+      ],
+      "raw_text_hashes": [
+        "9822f8d940c0f6e5a8ad134acf14da1cf4dc4e2a98991f656d1035f239bed6c0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:17:51",
+      "sequence": 7670,
+      "chapter_label": "1SA 17",
+      "verse_label": "51",
+      "locator": {
+        "book": "1SA",
+        "chapter": 17,
+        "verse": 51
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 17,
+          "verse": 51
+        }
+      ],
+      "en": "Then David ran, stood over the Philistine, took his sword, drew it out of its sheath, killed him, and cut off his head with it. When the Philistines saw that their champion was dead, they fled.",
+      "ko": "다윗이 달려가서 블레셋 사람을 밟고 그의 칼을 그 집에서 빼어내어 그 칼로 그를 죽이고 그 머리를 베니 블레셋 사람들이 자기 용사의 죽음을 보고 도망하는지라",
+      "source_text_hash": "e951f99dc78a8253443fe28cb38530baa1722ecc31d98183b24eeaef2608a7c1",
+      "translation_text_hash": "485489025139e87039b8151d473373dde26edc8084d99d4a4436c7e709e4918f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 달려가서 블레셋 사람을 밟고 그의 칼을 그 집에서 빼어내어 그 칼로 그를 죽이고 그 머리를 베니 블레셋 사람들이 자기 용사의 죽음을 보고 도망하는지라"
+      ],
+      "raw_text_hashes": [
+        "485489025139e87039b8151d473373dde26edc8084d99d4a4436c7e709e4918f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:17:52",
+      "sequence": 7671,
+      "chapter_label": "1SA 17",
+      "verse_label": "52",
+      "locator": {
+        "book": "1SA",
+        "chapter": 17,
+        "verse": 52
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 17,
+          "verse": 52
+        }
+      ],
+      "en": "The men of Israel and of Judah arose and shouted, and pursued the Philistines as far as Gai and to the gates of Ekron. The wounded of the Philistines fell down by the way to Shaaraim, even to Gath and to Ekron.",
+      "ko": "이스라엘과 유다 사람들이 일어나서 소리지르며 블레셋 사람을 쫓아 가이와 에그론 성문까지 이르렀고 블레셋 사람의 상한 자들은 사아라임 가는 길에서부터 가드와 에그론까지 엎드러졌더라",
+      "source_text_hash": "6fa5c9a4b1c6d2c4d2a34f5142396e837601a667ef22a02cfb5fe6bab9b22e03",
+      "translation_text_hash": "817668f25e18f775ab28a2f81015638ce342d35701caa1f1eba468ae0185375e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘과 유다 사람들이 일어나서 소리지르며 블레셋 사람을 쫓아 가이와 에그론 성문까지 이르렀고 블레셋 사람의 상한 자들은 사아라임 가는 길에서부터 가드와 에그론까지 엎드러졌더라"
+      ],
+      "raw_text_hashes": [
+        "817668f25e18f775ab28a2f81015638ce342d35701caa1f1eba468ae0185375e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:17:53",
+      "sequence": 7672,
+      "chapter_label": "1SA 17",
+      "verse_label": "53",
+      "locator": {
+        "book": "1SA",
+        "chapter": 17,
+        "verse": 53
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 17,
+          "verse": 53
+        }
+      ],
+      "en": "The children of Israel returned from chasing after the Philistines, and they plundered their camp.",
+      "ko": "이스라엘 자손이 블레셋 사람을 쫓다가 돌아와서 그들의 진을 노략하였고",
+      "source_text_hash": "fa93f0c909c423cecfd02f95ba08eab071c2ab4e25329bec63ad01bb3a3f0fdd",
+      "translation_text_hash": "c73a414f6cdb1a42575dbc58ef598263c2f2ec2cb6fe18cf7a0e94d9b334368e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손이 블레셋 사람을 쫓다가 돌아와서 그들의 진을 노략하였고"
+      ],
+      "raw_text_hashes": [
+        "c73a414f6cdb1a42575dbc58ef598263c2f2ec2cb6fe18cf7a0e94d9b334368e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:17:54",
+      "sequence": 7673,
+      "chapter_label": "1SA 17",
+      "verse_label": "54",
+      "locator": {
+        "book": "1SA",
+        "chapter": 17,
+        "verse": 54
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 17,
+          "verse": 54
+        }
+      ],
+      "en": "David took the head of the Philistine and brought it to Jerusalem, but he put his armor in his tent.",
+      "ko": "다윗은 블레셋 사람의 머리를 예루살렘으로 가져가고 갑주는 자기 장막에 두니라",
+      "source_text_hash": "d4d2a87d76df7ebf2ccfaca8c56f62c86ddd515394a75b775643f2299fe0a24a",
+      "translation_text_hash": "981c9d241fa56cc11332f71e21e34a3e8899c1029cd89ef4ce1f304f37dfca68",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗은 블레셋 사람의 머리를 예루살렘으로 가져가고 갑주는 자기 장막에 두니라"
+      ],
+      "raw_text_hashes": [
+        "981c9d241fa56cc11332f71e21e34a3e8899c1029cd89ef4ce1f304f37dfca68"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:17:55",
+      "sequence": 7674,
+      "chapter_label": "1SA 17",
+      "verse_label": "55",
+      "locator": {
+        "book": "1SA",
+        "chapter": 17,
+        "verse": 55
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 17,
+          "verse": 55
+        }
+      ],
+      "en": "When Saul saw David go out against the Philistine, he said to Abner, the captain of the army, “Abner, whose son is this youth?” Abner said, “As your soul lives, O king, I can’t tell.”",
+      "ko": "다윗이 블레셋 사람을 향하여 나감을 사울이 보고 군장 아브넬에게 묻되 아브넬아 이 소년이 뉘 아들이냐 아브넬이 가로되 왕이여 왕의 사심으로 맹세하옵나니 내가 알지 못하나이다 하매",
+      "source_text_hash": "7922b5172959dc122635f185b077a05ae8dd07cb93cb8ec42ed5463d379ae0bb",
+      "translation_text_hash": "3cadf27eeb923df7880eb53c9d923fec53f002bcd1c680434c6b18808b01c28d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 블레셋 사람을 향하여 나감을 사울이 보고 군장 아브넬에게 묻되 아브넬아 이 소년이 뉘 아들이냐 아브넬이 가로되 왕이여 왕의 사심으로 맹세하옵나니 내가 알지 못하나이다 하매"
+      ],
+      "raw_text_hashes": [
+        "3cadf27eeb923df7880eb53c9d923fec53f002bcd1c680434c6b18808b01c28d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:17:56",
+      "sequence": 7675,
+      "chapter_label": "1SA 17",
+      "verse_label": "56",
+      "locator": {
+        "book": "1SA",
+        "chapter": 17,
+        "verse": 56
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 17,
+          "verse": 56
+        }
+      ],
+      "en": "The king said, “Inquire whose son the young man is!”",
+      "ko": "왕이 가로되 너는 이 청년이 누구의 아들인가 물어보라 하였더니",
+      "source_text_hash": "c62c6ecfc47cf6307f7fcff4fdf22da1b4a752595a4379a41400487683906216",
+      "translation_text_hash": "4c2d0955db136335bbf50189e06b55313d1f231af3663105b9187768ebaf0fb8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 가로되 너는 이 청년이 누구의 아들인가 물어보라 하였더니"
+      ],
+      "raw_text_hashes": [
+        "4c2d0955db136335bbf50189e06b55313d1f231af3663105b9187768ebaf0fb8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:17:57",
+      "sequence": 7676,
+      "chapter_label": "1SA 17",
+      "verse_label": "57",
+      "locator": {
+        "book": "1SA",
+        "chapter": 17,
+        "verse": 57
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 17,
+          "verse": 57
+        }
+      ],
+      "en": "As David returned from the slaughter of the Philistine, Abner took him and brought him before Saul with the head of the Philistine in his hand.",
+      "ko": "다윗이 블레셋 사람을 죽이고 돌아올 때에 블레셋 사람의 머리가 그 손에 있는채 아브넬이 그를 사울의 앞으로 인도하니",
+      "source_text_hash": "63ef28570c826a7fee85c419719df5b6dbd7476dd72ffe23fb86ec8878191d31",
+      "translation_text_hash": "370897db99ce83a8512f484dbe59058117e515c58e70fff08b877193b29aa30d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 블레셋 사람을 죽이고 돌아올 때에 블레셋 사람의 머리가 그 손에 있는채 아브넬이 그를 사울의 앞으로 인도하니"
+      ],
+      "raw_text_hashes": [
+        "370897db99ce83a8512f484dbe59058117e515c58e70fff08b877193b29aa30d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:17:58",
+      "sequence": 7677,
+      "chapter_label": "1SA 17",
+      "verse_label": "58",
+      "locator": {
+        "book": "1SA",
+        "chapter": 17,
+        "verse": 58
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 17,
+          "verse": 58
+        }
+      ],
+      "en": "Saul said to him, “Whose son are you, you young man?” David answered, “I am the son of your servant Jesse the Bethlehemite.”",
+      "ko": "사울이 그에게 묻되 소년이여 누구의 아들이뇨 다윗이 대답하되 나는 주의 종 베들레헴 사람 이새의 아들이니이다",
+      "source_text_hash": "e2ffe35abf0fc923306a0899d2cfa94f5f83c7326d7c4f6f7d633eed1c83563c",
+      "translation_text_hash": "18f320cc82f02c88238f2cdcf2351d35e843947f7530c543625ddbaef7c81cad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울이 그에게 묻되 소년이여 누구의 아들이뇨 다윗이 대답하되 나는 주의 종 베들레헴 사람 이새의 아들이니이다"
+      ],
+      "raw_text_hashes": [
+        "18f320cc82f02c88238f2cdcf2351d35e843947f7530c543625ddbaef7c81cad"
+      ]
+    }
+  ]
+}

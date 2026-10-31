@@ -1,0 +1,1741 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:NUM:chapter:001",
+  "unit_ordinal": 118,
+  "unit_label": "NUM 1",
+  "book_code": "NUM",
+  "chapter_number": 1,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:NUM:1:1",
+      "sequence": 3606,
+      "chapter_label": "NUM 1",
+      "verse_label": "1",
+      "locator": {
+        "book": "NUM",
+        "chapter": 1,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 1,
+          "verse": 1
+        }
+      ],
+      "en": "The LORD spoke to Moses in the wilderness of Sinai, in the Tent of Meeting, on the first day of the second month, in the second year after they had come out of the land of Egypt, saying,",
+      "ko": "이스라엘 자손이 애굽 땅에서 나온 후 제 이년 이월 일일에 여호와께서 시내 광야 회막에서 모세에게 일러 가라사대",
+      "source_text_hash": "35f3989c4f088c5901f17786bc00671c344c8325f21a7f4d165c6a521200af7a",
+      "translation_text_hash": "315cb7ee6b6960f7b918c4c1f17b42adc3737ad1e58f6167b8f9f747e1c46b9f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손이 애굽 땅에서 나온 후 제 이년 이월 일일에 여호와께서 시내 광야 회막에서 모세에게 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "315cb7ee6b6960f7b918c4c1f17b42adc3737ad1e58f6167b8f9f747e1c46b9f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:1:2",
+      "sequence": 3607,
+      "chapter_label": "NUM 1",
+      "verse_label": "2",
+      "locator": {
+        "book": "NUM",
+        "chapter": 1,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 1,
+          "verse": 2
+        }
+      ],
+      "en": "“Take a census of all the congregation of the children of Israel, by their families, by their fathers’ houses, according to the number of the names, every male, one by one,",
+      "ko": "너희는 이스라엘 자손의 모든 회중 각 남자의 수를 그들의 가족과 종족을 따라 그 명수대로 계수할찌니",
+      "source_text_hash": "6da9b36aba6fa71f89bab0071558f1f2fce92d142fab912b93ee4469e461d8b7",
+      "translation_text_hash": "0545deb90f3ad9dca86bc617b73ddd3e3fa2c4d56052d97a10d4f29688fd31cd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 이스라엘 자손의 모든 회중 각 남자의 수를 그들의 가족과 종족을 따라 그 명수대로 계수할찌니"
+      ],
+      "raw_text_hashes": [
+        "0545deb90f3ad9dca86bc617b73ddd3e3fa2c4d56052d97a10d4f29688fd31cd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:1:3",
+      "sequence": 3608,
+      "chapter_label": "NUM 1",
+      "verse_label": "3",
+      "locator": {
+        "book": "NUM",
+        "chapter": 1,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 1,
+          "verse": 3
+        }
+      ],
+      "en": "from twenty years old and upward, all who are able to go out to war in Israel. You and Aaron shall count them by their divisions.",
+      "ko": "이스라엘 중 이십세 이상으로 싸움에 나갈만한 모든 자를 너와 아론은 그 군대대로 계수하되",
+      "source_text_hash": "01b815f10840a2d69a420d8571f234af7d6cfa7c148dadb3b01a6e9e9923d71c",
+      "translation_text_hash": "a5a7347259298807a1b8ddb29a7a88b1a9ccaaebde5c1e3524816aa14c2904d2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 중 이십세 이상으로 싸움에 나갈만한 모든 자를 너와 아론은 그 군대대로 계수하되"
+      ],
+      "raw_text_hashes": [
+        "a5a7347259298807a1b8ddb29a7a88b1a9ccaaebde5c1e3524816aa14c2904d2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:1:4",
+      "sequence": 3609,
+      "chapter_label": "NUM 1",
+      "verse_label": "4",
+      "locator": {
+        "book": "NUM",
+        "chapter": 1,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 1,
+          "verse": 4
+        }
+      ],
+      "en": "With you there shall be a man of every tribe, each one head of his fathers’ house.",
+      "ko": "매 지파의 각기 종족의 두령 한 사람씩 너희와 함께 하라",
+      "source_text_hash": "fbc30cb96edbb0a632e375948d518243b89c302c02fb0fb490bed0616103c605",
+      "translation_text_hash": "034f0a6662fd147f0dc3f0974e0248f7f0987fa2a6af2440c44ca2c70d97b615",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "매 지파의 각기 종족의 두령 한 사람씩 너희와 함께 하라"
+      ],
+      "raw_text_hashes": [
+        "034f0a6662fd147f0dc3f0974e0248f7f0987fa2a6af2440c44ca2c70d97b615"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:1:5",
+      "sequence": 3610,
+      "chapter_label": "NUM 1",
+      "verse_label": "5",
+      "locator": {
+        "book": "NUM",
+        "chapter": 1,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 1,
+          "verse": 5
+        }
+      ],
+      "en": "These are the names of the men who shall stand with you: Of Reuben: Elizur the son of Shedeur.",
+      "ko": "너희와 함께 설 사람들의 이름은 이러하니 르우벤에게서는 스데울의 아들 엘리술이요",
+      "source_text_hash": "0de5027b94fa5d25788cd1e70bba0932fbf615b8fb255bb1dce1fc26a16252de",
+      "translation_text_hash": "221d14e0ed69a468778f094f2d77b4e047511af5b34c82bdd05106bb39cc70cd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희와 함께 설 사람들의 이름은 이러하니 르우벤에게서는 스데울의 아들 엘리술이요"
+      ],
+      "raw_text_hashes": [
+        "221d14e0ed69a468778f094f2d77b4e047511af5b34c82bdd05106bb39cc70cd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:1:6",
+      "sequence": 3611,
+      "chapter_label": "NUM 1",
+      "verse_label": "6",
+      "locator": {
+        "book": "NUM",
+        "chapter": 1,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 1,
+          "verse": 6
+        }
+      ],
+      "en": "Of Simeon: Shelumiel the son of Zurishaddai.",
+      "ko": "시므온에게서는 수리삿대의 아들 슬루미엘이요",
+      "source_text_hash": "46de4fb875201528a78bcff4690224402aedd1aa69b485fc98ce165980f393d5",
+      "translation_text_hash": "e8baeb73a6a98900dbf68774e89cab31d7a98515df3558b83fc5985ad33bc84d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시므온에게서는 수리삿대의 아들 슬루미엘이요"
+      ],
+      "raw_text_hashes": [
+        "e8baeb73a6a98900dbf68774e89cab31d7a98515df3558b83fc5985ad33bc84d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:1:7",
+      "sequence": 3612,
+      "chapter_label": "NUM 1",
+      "verse_label": "7",
+      "locator": {
+        "book": "NUM",
+        "chapter": 1,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 1,
+          "verse": 7
+        }
+      ],
+      "en": "Of Judah: Nahshon the son of Amminadab.",
+      "ko": "유다에게서는 암미나답의 아들 나손이요",
+      "source_text_hash": "946572cc4e7e22b52ec8f60459fa6bd2b9e2d0f90905583ed6fe7e332cbd8cd9",
+      "translation_text_hash": "5faab3271e1cd111a22060008e246ed7280ebc49c5a012831a360a9bc564151d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다에게서는 암미나답의 아들 나손이요"
+      ],
+      "raw_text_hashes": [
+        "5faab3271e1cd111a22060008e246ed7280ebc49c5a012831a360a9bc564151d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:1:8",
+      "sequence": 3613,
+      "chapter_label": "NUM 1",
+      "verse_label": "8",
+      "locator": {
+        "book": "NUM",
+        "chapter": 1,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 1,
+          "verse": 8
+        }
+      ],
+      "en": "Of Issachar: Nethanel the son of Zuar.",
+      "ko": "잇사갈에게서는 수알의 아들 느다넬이요",
+      "source_text_hash": "7a6704eccecb8afc130740c67f9f8f65e5b2a51001af99a5f64b2814335e7ea5",
+      "translation_text_hash": "8e457a9a4a817a3b2a1e2c8fb38532416d5290157c5c3843c299759016bad24e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "잇사갈에게서는 수알의 아들 느다넬이요"
+      ],
+      "raw_text_hashes": [
+        "8e457a9a4a817a3b2a1e2c8fb38532416d5290157c5c3843c299759016bad24e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:1:9",
+      "sequence": 3614,
+      "chapter_label": "NUM 1",
+      "verse_label": "9",
+      "locator": {
+        "book": "NUM",
+        "chapter": 1,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 1,
+          "verse": 9
+        }
+      ],
+      "en": "Of Zebulun: Eliab the son of Helon.",
+      "ko": "스불론에게서는 헬론의 아들 엘리압이요",
+      "source_text_hash": "16225e3de5530e57a8bb3b685ceb2854ac277b3c17dfb4f39bcd3f917642243f",
+      "translation_text_hash": "a84bf0da416201cada18b18a92bf81a1967500e78961924eee8dcdc54e7d32cb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "스불론에게서는 헬론의 아들 엘리압이요"
+      ],
+      "raw_text_hashes": [
+        "a84bf0da416201cada18b18a92bf81a1967500e78961924eee8dcdc54e7d32cb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:1:10",
+      "sequence": 3615,
+      "chapter_label": "NUM 1",
+      "verse_label": "10",
+      "locator": {
+        "book": "NUM",
+        "chapter": 1,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 1,
+          "verse": 10
+        }
+      ],
+      "en": "Of the children of Joseph: of Ephraim: Elishama the son of Ammihud; of Manasseh: Gamaliel the son of Pedahzur.",
+      "ko": "요셉 자손에게서는 에브라임에 암미훗의 아들 엘리사마와 므낫세에 브다술의 아들 가말리엘이요",
+      "source_text_hash": "719e2796d40f6aeb90f58c4552cfc35e0f7eb0b22444cd9a07dd16b26e0f8f97",
+      "translation_text_hash": "e83cd003bdce5b3da9d10c17d22168c31e54ed0f72c6649fe3021d9474c08665",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요셉 자손에게서는 에브라임에 암미훗의 아들 엘리사마와 므낫세에 브다술의 아들 가말리엘이요"
+      ],
+      "raw_text_hashes": [
+        "e83cd003bdce5b3da9d10c17d22168c31e54ed0f72c6649fe3021d9474c08665"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:1:11",
+      "sequence": 3616,
+      "chapter_label": "NUM 1",
+      "verse_label": "11",
+      "locator": {
+        "book": "NUM",
+        "chapter": 1,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 1,
+          "verse": 11
+        }
+      ],
+      "en": "Of Benjamin: Abidan the son of Gideoni.",
+      "ko": "베냐민에게서는 기드오니의 아들 아비단이요",
+      "source_text_hash": "5d1655a380e632e5227f7aa4cff013ef4ecd6948d4aa27599e3d240252fcc38b",
+      "translation_text_hash": "ea6d71d2f2dc538b29061df7c43f977b2ad770d99a0f7621b7ce7b0a43e6a269",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베냐민에게서는 기드오니의 아들 아비단이요"
+      ],
+      "raw_text_hashes": [
+        "ea6d71d2f2dc538b29061df7c43f977b2ad770d99a0f7621b7ce7b0a43e6a269"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:1:12",
+      "sequence": 3617,
+      "chapter_label": "NUM 1",
+      "verse_label": "12",
+      "locator": {
+        "book": "NUM",
+        "chapter": 1,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 1,
+          "verse": 12
+        }
+      ],
+      "en": "Of Dan: Ahiezer the son of Ammishaddai.",
+      "ko": "단에게서는 암미삿대의 아들 아히에셀이요",
+      "source_text_hash": "15daf5664bf5b04c0c7a8999d60e5de18bbdacb5873d59d04d805c677ddd6da1",
+      "translation_text_hash": "28b6bac9cf744d51255424b298552322e2fa73a8ac30cf25db7e82e8a3216575",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "단에게서는 암미삿대의 아들 아히에셀이요"
+      ],
+      "raw_text_hashes": [
+        "28b6bac9cf744d51255424b298552322e2fa73a8ac30cf25db7e82e8a3216575"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:1:13",
+      "sequence": 3618,
+      "chapter_label": "NUM 1",
+      "verse_label": "13",
+      "locator": {
+        "book": "NUM",
+        "chapter": 1,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 1,
+          "verse": 13
+        }
+      ],
+      "en": "Of Asher: Pagiel the son of Ochran.",
+      "ko": "아셀에게서는 오그란의 아들 바기엘이요",
+      "source_text_hash": "7ad20ddc1e763bce2ff59b17969b964f8d54483beac8c58a56c5a2348306f9a9",
+      "translation_text_hash": "5179065d945aab4ebe3cb19631b59462a6cef763f80b2c7acbd8307b415b6eba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아셀에게서는 오그란의 아들 바기엘이요"
+      ],
+      "raw_text_hashes": [
+        "5179065d945aab4ebe3cb19631b59462a6cef763f80b2c7acbd8307b415b6eba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:1:14",
+      "sequence": 3619,
+      "chapter_label": "NUM 1",
+      "verse_label": "14",
+      "locator": {
+        "book": "NUM",
+        "chapter": 1,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 1,
+          "verse": 14
+        }
+      ],
+      "en": "Of Gad: Eliasaph the son of Deuel.",
+      "ko": "갓에게서는 드우엘의 아들 엘리아삽이요",
+      "source_text_hash": "88301de83c2b55d28bb1b53521014089d6afe07fb1c316e49ff63ef515ba82f1",
+      "translation_text_hash": "44f7e3847c8de668c2600f3ab0b287cf552818e124b495ffafc8680efe34e3ed",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "갓에게서는 드우엘의 아들 엘리아삽이요"
+      ],
+      "raw_text_hashes": [
+        "44f7e3847c8de668c2600f3ab0b287cf552818e124b495ffafc8680efe34e3ed"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:1:15",
+      "sequence": 3620,
+      "chapter_label": "NUM 1",
+      "verse_label": "15",
+      "locator": {
+        "book": "NUM",
+        "chapter": 1,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 1,
+          "verse": 15
+        }
+      ],
+      "en": "Of Naphtali: Ahira the son of Enan.”",
+      "ko": "납달리에게서는 에난의 아들 아히라니라 하시니",
+      "source_text_hash": "8b8c5d662ae0f309108d43415a4533060342d149d3aaf99cc58f845f12a32678",
+      "translation_text_hash": "8c97778567656056fef296273a97f6dbcd1ba63779717f7fe546937a17c54d19",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "납달리에게서는 에난의 아들 아히라니라 하시니"
+      ],
+      "raw_text_hashes": [
+        "8c97778567656056fef296273a97f6dbcd1ba63779717f7fe546937a17c54d19"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:1:16",
+      "sequence": 3621,
+      "chapter_label": "NUM 1",
+      "verse_label": "16",
+      "locator": {
+        "book": "NUM",
+        "chapter": 1,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 1,
+          "verse": 16
+        }
+      ],
+      "en": "These are those who were called of the congregation, the princes of the tribes of their fathers; they were the heads of the thousands of Israel.",
+      "ko": "그들은 회중에서 부름을 받은 자요 그 조상 지파의 족장으로서 이스라엘 천만인의 두령이라",
+      "source_text_hash": "e9dd688e57637d523db531b2320ff5fc255f178e189f0048e34751e9a7fe72a2",
+      "translation_text_hash": "493379c4820a739a8e178c511f108c13402504f346fb573ecbf2f3b241d90915",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들은 회중에서 부름을 받은 자요 그 조상 지파의 족장으로서 이스라엘 천만인의 두령이라"
+      ],
+      "raw_text_hashes": [
+        "493379c4820a739a8e178c511f108c13402504f346fb573ecbf2f3b241d90915"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:1:17",
+      "sequence": 3622,
+      "chapter_label": "NUM 1",
+      "verse_label": "17",
+      "locator": {
+        "book": "NUM",
+        "chapter": 1,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 1,
+          "verse": 17
+        }
+      ],
+      "en": "Moses and Aaron took these men who are mentioned by name.",
+      "ko": "모세와 아론이 지명된 이 사람들을 데리고",
+      "source_text_hash": "0aac8ef7534de0da250c999bde7c1b393332eac8113cb47dff252951528db662",
+      "translation_text_hash": "29de0a5c7e9f78e2876b87b659aae45108deb77b12e16b6994d687e769e48b11",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세와 아론이 지명된 이 사람들을 데리고"
+      ],
+      "raw_text_hashes": [
+        "29de0a5c7e9f78e2876b87b659aae45108deb77b12e16b6994d687e769e48b11"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:1:18",
+      "sequence": 3623,
+      "chapter_label": "NUM 1",
+      "verse_label": "18",
+      "locator": {
+        "book": "NUM",
+        "chapter": 1,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 1,
+          "verse": 18
+        }
+      ],
+      "en": "They assembled all the congregation together on the first day of the second month; and they declared their ancestry by their families, by their fathers’ houses, according to the number of the names, from twenty years old and upward, one by one.",
+      "ko": "이월 일일에 온 회중을 모으니 그들이 각기 가족과 종족을 따라 이십세 이상으로 그 명수를 의지하여 자기 계통을 말하매",
+      "source_text_hash": "107daf5a73c5fbacfc298a63c56443fb58a2a870d4b26c7cf5eb2bc710d3dc9a",
+      "translation_text_hash": "7c17ae8c88b094db87c882e33355e3d36ef01d7feb998528db1756ab875f446d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이월 일일에 온 회중을 모으니 그들이 각기 가족과 종족을 따라 이십세 이상으로 그 명수를 의지하여 자기 계통을 말하매"
+      ],
+      "raw_text_hashes": [
+        "7c17ae8c88b094db87c882e33355e3d36ef01d7feb998528db1756ab875f446d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:1:19",
+      "sequence": 3624,
+      "chapter_label": "NUM 1",
+      "verse_label": "19",
+      "locator": {
+        "book": "NUM",
+        "chapter": 1,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 1,
+          "verse": 19
+        }
+      ],
+      "en": "As the LORD commanded Moses, so he counted them in the wilderness of Sinai.",
+      "ko": "여호와께서 모세에게 명하신대로 그가 시내 광야에서 그들을 계수하였더라",
+      "source_text_hash": "40c5bf6e4c25b3212f229fe0474a1d36ae7a06434bcd2deb08af92866db9bf36",
+      "translation_text_hash": "4f076d503b7062bd2445c4a45681d384f709194dfb35faec6c3de680ca3d115e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 명하신대로 그가 시내 광야에서 그들을 계수하였더라"
+      ],
+      "raw_text_hashes": [
+        "4f076d503b7062bd2445c4a45681d384f709194dfb35faec6c3de680ca3d115e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:1:20",
+      "sequence": 3625,
+      "chapter_label": "NUM 1",
+      "verse_label": "20",
+      "locator": {
+        "book": "NUM",
+        "chapter": 1,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 1,
+          "verse": 20
+        }
+      ],
+      "en": "The children of Reuben, Israel’s firstborn, their generations, by their families, by their fathers’ houses, according to the number of the names, one by one, every male from twenty years old and upward, all who were able to go out to war:",
+      "ko": "이스라엘의 장자 르우벤의 아들들에게서 난 자를 그들의 가족과 종족을 따라 이십세 이상으로 싸움에 나갈만한 각 남자를 그 명수대로 다 계수하니",
+      "source_text_hash": "a8b610f20ee6634787c24101fd062362d1f41e4d883274f11022d406c7c2428e",
+      "translation_text_hash": "75295eb9f5903f138b9d045846323015da9145939ea8054afd5a9ec40c64f179",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘의 장자 르우벤의 아들들에게서 난 자를 그들의 가족과 종족을 따라 이십세 이상으로 싸움에 나갈만한 각 남자를 그 명수대로 다 계수하니"
+      ],
+      "raw_text_hashes": [
+        "75295eb9f5903f138b9d045846323015da9145939ea8054afd5a9ec40c64f179"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:1:21",
+      "sequence": 3626,
+      "chapter_label": "NUM 1",
+      "verse_label": "21",
+      "locator": {
+        "book": "NUM",
+        "chapter": 1,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 1,
+          "verse": 21
+        }
+      ],
+      "en": "those who were counted of them, of the tribe of Reuben, were forty-six thousand five hundred.",
+      "ko": "르우벤 지파의 계수함을 입은 자가 사만 육천 오백명이었더라",
+      "source_text_hash": "96940e2141b8f1b4af9e500733a8a10521d4be797cec560eb93d6f385e5e4ea0",
+      "translation_text_hash": "db9b1bf9d21bdfe013eb6a38e87f8a2262e23ec6c6618906e2af5cf405dcbd9d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "르우벤 지파의 계수함을 입은 자가 사만 육천 오백명이었더라"
+      ],
+      "raw_text_hashes": [
+        "db9b1bf9d21bdfe013eb6a38e87f8a2262e23ec6c6618906e2af5cf405dcbd9d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:1:22",
+      "sequence": 3627,
+      "chapter_label": "NUM 1",
+      "verse_label": "22",
+      "locator": {
+        "book": "NUM",
+        "chapter": 1,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 1,
+          "verse": 22
+        }
+      ],
+      "en": "Of the children of Simeon, their generations, by their families, by their fathers’ houses, those who were counted of it, according to the number of the names, one by one, every male from twenty years old and upward, all who were able to go out to war:",
+      "ko": "시므온의 아들들에게서 난 자를 그들의 가족과 종족을 따라 이십세 이상으로 싸움에 나갈만한 각 남자를 그 명수대로 다 계수하니",
+      "source_text_hash": "1843f10201fc6f38366e7153b125b69a853208584cf5b5760a372dbfc25f9627",
+      "translation_text_hash": "75c3028d914fc49cbf75e92ae6178ec3ad15b426362c66ca3fd8499126a63208",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시므온의 아들들에게서 난 자를 그들의 가족과 종족을 따라 이십세 이상으로 싸움에 나갈만한 각 남자를 그 명수대로 다 계수하니"
+      ],
+      "raw_text_hashes": [
+        "75c3028d914fc49cbf75e92ae6178ec3ad15b426362c66ca3fd8499126a63208"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:1:23",
+      "sequence": 3628,
+      "chapter_label": "NUM 1",
+      "verse_label": "23",
+      "locator": {
+        "book": "NUM",
+        "chapter": 1,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 1,
+          "verse": 23
+        }
+      ],
+      "en": "those who were counted of them, of the tribe of Simeon, were fifty-nine thousand three hundred.",
+      "ko": "시므온 지파의 계수함을 입은 자가 오만 구천 삼백명이었더라",
+      "source_text_hash": "dca49e0684edd28adcc5c8681fbb4943ea6ff76ef088283660f931b41707f54f",
+      "translation_text_hash": "76dfe470054e7f47b26b16cb1b8787387a89aeea6aac549ea5c597fcb5868088",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시므온 지파의 계수함을 입은 자가 오만 구천 삼백명이었더라"
+      ],
+      "raw_text_hashes": [
+        "76dfe470054e7f47b26b16cb1b8787387a89aeea6aac549ea5c597fcb5868088"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:1:24",
+      "sequence": 3629,
+      "chapter_label": "NUM 1",
+      "verse_label": "24",
+      "locator": {
+        "book": "NUM",
+        "chapter": 1,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 1,
+          "verse": 24
+        }
+      ],
+      "en": "Of the children of Gad, their generations, by their families, by their fathers’ houses, according to the number of the names, from twenty years old and upward, all who were able to go out to war:",
+      "ko": "갓의 아들들에게서 난 자를 그들의 가족과 종족을 따라 이십세 이상으로 싸움에 나갈만한 자를 그 명수대로 다 계수하니",
+      "source_text_hash": "3990c75c02a91937ee6456673a358ca1c04d1565eb53991f499d4fdee212f7ea",
+      "translation_text_hash": "6993a40dc348ff0e7069d8788e41457f9c021519e9ebea40311ed4973b897ddc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "갓의 아들들에게서 난 자를 그들의 가족과 종족을 따라 이십세 이상으로 싸움에 나갈만한 자를 그 명수대로 다 계수하니"
+      ],
+      "raw_text_hashes": [
+        "6993a40dc348ff0e7069d8788e41457f9c021519e9ebea40311ed4973b897ddc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:1:25",
+      "sequence": 3630,
+      "chapter_label": "NUM 1",
+      "verse_label": "25",
+      "locator": {
+        "book": "NUM",
+        "chapter": 1,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 1,
+          "verse": 25
+        }
+      ],
+      "en": "those who were counted of them, of the tribe of Gad, were forty-five thousand six hundred fifty.",
+      "ko": "갓 지파의 계수함을 입은 자가 사만 오천 육백 오십명이었더라",
+      "source_text_hash": "763e1929c284c9df33b4e45be9251c9083640b6063ec93b5953655c23e52fc15",
+      "translation_text_hash": "cb5c5dd5ddf9953ad353bb953c52d666e0939988c0fc1cb07478f851f4641b71",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "갓 지파의 계수함을 입은 자가 사만 오천 육백 오십명이었더라"
+      ],
+      "raw_text_hashes": [
+        "cb5c5dd5ddf9953ad353bb953c52d666e0939988c0fc1cb07478f851f4641b71"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:1:26",
+      "sequence": 3631,
+      "chapter_label": "NUM 1",
+      "verse_label": "26",
+      "locator": {
+        "book": "NUM",
+        "chapter": 1,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 1,
+          "verse": 26
+        }
+      ],
+      "en": "Of the children of Judah, their generations, by their families, by their fathers’ houses, according to the number of the names, from twenty years old and upward, all who were able to go out to war:",
+      "ko": "유다의 아들들에게서 난 자를 그들의 가족과 종족을 따라 이십세 이상으로 싸움에 나갈만한 자를 그 명수대로 다 계수하니",
+      "source_text_hash": "e263536e769002ea7be8fec0d2fa2a31c1ed23f3b3abd41f6b8044aaa9ba07e6",
+      "translation_text_hash": "a3380c62a1fff971d88d632fd32588bf326eb217a611b58a827c66853190ff40",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다의 아들들에게서 난 자를 그들의 가족과 종족을 따라 이십세 이상으로 싸움에 나갈만한 자를 그 명수대로 다 계수하니"
+      ],
+      "raw_text_hashes": [
+        "a3380c62a1fff971d88d632fd32588bf326eb217a611b58a827c66853190ff40"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:1:27",
+      "sequence": 3632,
+      "chapter_label": "NUM 1",
+      "verse_label": "27",
+      "locator": {
+        "book": "NUM",
+        "chapter": 1,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 1,
+          "verse": 27
+        }
+      ],
+      "en": "those who were counted of them, of the tribe of Judah, were seventy-four thousand six hundred.",
+      "ko": "유다 지파의 계수함을 입은 자가 칠만 사천 육백명이었더라",
+      "source_text_hash": "e84919610def4f00068d840f366ea680f705120d885d5a96dfee7fe7a45bdb06",
+      "translation_text_hash": "df272c4bb644c43718353cb081b2a8061ab0be112cc29191e821f01edbfed747",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다 지파의 계수함을 입은 자가 칠만 사천 육백명이었더라"
+      ],
+      "raw_text_hashes": [
+        "df272c4bb644c43718353cb081b2a8061ab0be112cc29191e821f01edbfed747"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:1:28",
+      "sequence": 3633,
+      "chapter_label": "NUM 1",
+      "verse_label": "28",
+      "locator": {
+        "book": "NUM",
+        "chapter": 1,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 1,
+          "verse": 28
+        }
+      ],
+      "en": "Of the children of Issachar, their generations, by their families, by their fathers’ houses, according to the number of the names, from twenty years old and upward, all who were able to go out to war:",
+      "ko": "잇사갈의 아들들에게서 난 자를 그들의 가족과 종족을 따라 이십세 이상으로 싸움에 나갈만한 자를 그 명수대로 다 계수하니",
+      "source_text_hash": "363131cf8a88c97a70bded31f7a6afb17718110b8a4b3e9e1b9539d9edf476ed",
+      "translation_text_hash": "d85dd4d39a7e67fc1cb4ea96735fa77e55f1a1edf5e87a6c14451e808a9b91c8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "잇사갈의 아들들에게서 난 자를 그들의 가족과 종족을 따라 이십세 이상으로 싸움에 나갈만한 자를 그 명수대로 다 계수하니"
+      ],
+      "raw_text_hashes": [
+        "d85dd4d39a7e67fc1cb4ea96735fa77e55f1a1edf5e87a6c14451e808a9b91c8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:1:29",
+      "sequence": 3634,
+      "chapter_label": "NUM 1",
+      "verse_label": "29",
+      "locator": {
+        "book": "NUM",
+        "chapter": 1,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 1,
+          "verse": 29
+        }
+      ],
+      "en": "those who were counted of them, of the tribe of Issachar, were fifty-four thousand four hundred.",
+      "ko": "잇사갈 지파의 계수함을 입은 자가 오만 사천 사백명이었더라",
+      "source_text_hash": "7531bdf262b16beb83348a176ed2fc71fa64ad2ac90e99b33df50e868b8b6b0b",
+      "translation_text_hash": "738fcb3702000d3c973ea205f3c42d5655da1d9af7473a7f1a96814a99c8a48b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "잇사갈 지파의 계수함을 입은 자가 오만 사천 사백명이었더라"
+      ],
+      "raw_text_hashes": [
+        "738fcb3702000d3c973ea205f3c42d5655da1d9af7473a7f1a96814a99c8a48b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:1:30",
+      "sequence": 3635,
+      "chapter_label": "NUM 1",
+      "verse_label": "30",
+      "locator": {
+        "book": "NUM",
+        "chapter": 1,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 1,
+          "verse": 30
+        }
+      ],
+      "en": "Of the children of Zebulun, their generations, by their families, by their fathers’ houses, according to the number of the names, from twenty years old and upward, all who were able to go out to war:",
+      "ko": "스불론의 아들들에게서 난 자를 그들의 가족과 종족을 따라 이십세 이상으로 싸움에 나갈만한 자를 그 명수대로 다 계수하니",
+      "source_text_hash": "b6da82e070b850961126198ff82e9181f9db1402bfe50ed8de4c62c896fe33ae",
+      "translation_text_hash": "2ad0e2c10a6c92d82617d488c8cddc06605831e9ebd8cfc90b114f034e012d80",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "스불론의 아들들에게서 난 자를 그들의 가족과 종족을 따라 이십세 이상으로 싸움에 나갈만한 자를 그 명수대로 다 계수하니"
+      ],
+      "raw_text_hashes": [
+        "2ad0e2c10a6c92d82617d488c8cddc06605831e9ebd8cfc90b114f034e012d80"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:1:31",
+      "sequence": 3636,
+      "chapter_label": "NUM 1",
+      "verse_label": "31",
+      "locator": {
+        "book": "NUM",
+        "chapter": 1,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 1,
+          "verse": 31
+        }
+      ],
+      "en": "those who were counted of them, of the tribe of Zebulun, were fifty-seven thousand four hundred.",
+      "ko": "스불론 지파의 계수함을 입은 자가 오만 칠천 사백명이었더라",
+      "source_text_hash": "03de180292122835fa1731403b14ce0259dfc8c36d2adf6bfb28693fd39af96c",
+      "translation_text_hash": "65b5a9b5018de6ac0acf61117cca24bb01fe66cf1e5442652baf1ccc05e2927d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "스불론 지파의 계수함을 입은 자가 오만 칠천 사백명이었더라"
+      ],
+      "raw_text_hashes": [
+        "65b5a9b5018de6ac0acf61117cca24bb01fe66cf1e5442652baf1ccc05e2927d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:1:32",
+      "sequence": 3637,
+      "chapter_label": "NUM 1",
+      "verse_label": "32",
+      "locator": {
+        "book": "NUM",
+        "chapter": 1,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 1,
+          "verse": 32
+        }
+      ],
+      "en": "Of the children of Joseph: of the children of Ephraim, their generations, by their families, by their fathers’ houses, according to the number of the names, from twenty years old and upward, all who were able to go out to war:",
+      "ko": "요셉의 아들 에브라임의 아들들에게서 난 자를 그들의 가족과 종족을 따라 이십세 이상으로 싸움에 나갈만한 자를 그 명수대로 다 계수하니",
+      "source_text_hash": "3304864e83af1cb129f3200f4f38c36895a1ad64791bd057a1c723e305f8deda",
+      "translation_text_hash": "ef7b91d9c1c23bc9fd8c64bf2d03518b37d3d670af18943365ab7147813b72fb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요셉의 아들 에브라임의 아들들에게서 난 자를 그들의 가족과 종족을 따라 이십세 이상으로 싸움에 나갈만한 자를 그 명수대로 다 계수하니"
+      ],
+      "raw_text_hashes": [
+        "ef7b91d9c1c23bc9fd8c64bf2d03518b37d3d670af18943365ab7147813b72fb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:1:33",
+      "sequence": 3638,
+      "chapter_label": "NUM 1",
+      "verse_label": "33",
+      "locator": {
+        "book": "NUM",
+        "chapter": 1,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 1,
+          "verse": 33
+        }
+      ],
+      "en": "those who were counted of them, of the tribe of Ephraim, were forty thousand five hundred.",
+      "ko": "에브라임 지파의 계수함을 입은 자가 사만 오백명이었더라",
+      "source_text_hash": "1ce0bc3a6f05045edb89491870dd3084545b859d9eccb0e245180470dea1f72b",
+      "translation_text_hash": "7123463a9d09d82e61122499de2f58d67583f90e35fd99cc0a0f3c9b0875c581",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에브라임 지파의 계수함을 입은 자가 사만 오백명이었더라"
+      ],
+      "raw_text_hashes": [
+        "7123463a9d09d82e61122499de2f58d67583f90e35fd99cc0a0f3c9b0875c581"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:1:34",
+      "sequence": 3639,
+      "chapter_label": "NUM 1",
+      "verse_label": "34",
+      "locator": {
+        "book": "NUM",
+        "chapter": 1,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 1,
+          "verse": 34
+        }
+      ],
+      "en": "Of the children of Manasseh, their generations, by their families, by their fathers’ houses, according to the number of the names, from twenty years old and upward, all who were able to go out to war:",
+      "ko": "므낫세의 아들들에게서 난 자를 그들의 가족과 종족을 따라 이십세 이상으로 싸움에 나갈만한 자를 그 명수대로 다 계수하니",
+      "source_text_hash": "0be73295d98041fcf0b5021d203ba273abd6599b1a86239b93f103b4b5ad5c77",
+      "translation_text_hash": "8129e8ee5ac70f141584ee20d8ad6c0986238415d60993c8629ee089f4572008",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "므낫세의 아들들에게서 난 자를 그들의 가족과 종족을 따라 이십세 이상으로 싸움에 나갈만한 자를 그 명수대로 다 계수하니"
+      ],
+      "raw_text_hashes": [
+        "8129e8ee5ac70f141584ee20d8ad6c0986238415d60993c8629ee089f4572008"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:1:35",
+      "sequence": 3640,
+      "chapter_label": "NUM 1",
+      "verse_label": "35",
+      "locator": {
+        "book": "NUM",
+        "chapter": 1,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 1,
+          "verse": 35
+        }
+      ],
+      "en": "those who were counted of them, of the tribe of Manasseh, were thirty-two thousand two hundred.",
+      "ko": "므낫세 지파의 계수함을 입은 자가 삼만 이천 이백명이었더라",
+      "source_text_hash": "fde899af08c9c64cb7f6d5403f7a51645dccd32eb739bc6d4c5e399f71a3659a",
+      "translation_text_hash": "84008a33aec66e0e895fc17bacd74b891e225eb06c7163331064d9d903589da7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "므낫세 지파의 계수함을 입은 자가 삼만 이천 이백명이었더라"
+      ],
+      "raw_text_hashes": [
+        "84008a33aec66e0e895fc17bacd74b891e225eb06c7163331064d9d903589da7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:1:36",
+      "sequence": 3641,
+      "chapter_label": "NUM 1",
+      "verse_label": "36",
+      "locator": {
+        "book": "NUM",
+        "chapter": 1,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 1,
+          "verse": 36
+        }
+      ],
+      "en": "Of the children of Benjamin, their generations, by their families, by their fathers’ houses, according to the number of the names, from twenty years old and upward, all who were able to go out to war:",
+      "ko": "베냐민의 아들들에게서 난 자를 그들의 가족과 종족을 따라 이십세 이상으로 싸움에 나갈만한 자를 그 명수대로 다 계수하니",
+      "source_text_hash": "7df6f5f885866c4851cb901804c2491edf0824788e20fd800e307987c4218734",
+      "translation_text_hash": "a26689b08e0491b965b5c1ccb6180bcc1bce0f2186af25321ca2134100323918",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베냐민의 아들들에게서 난 자를 그들의 가족과 종족을 따라 이십세 이상으로 싸움에 나갈만한 자를 그 명수대로 다 계수하니"
+      ],
+      "raw_text_hashes": [
+        "a26689b08e0491b965b5c1ccb6180bcc1bce0f2186af25321ca2134100323918"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:1:37",
+      "sequence": 3642,
+      "chapter_label": "NUM 1",
+      "verse_label": "37",
+      "locator": {
+        "book": "NUM",
+        "chapter": 1,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 1,
+          "verse": 37
+        }
+      ],
+      "en": "those who were counted of them, of the tribe of Benjamin, were thirty-five thousand four hundred.",
+      "ko": "베냐민 지파의 계수함을 입은 자가 삼만 오천 사백명이었더라",
+      "source_text_hash": "02a21430177b118b3f852de340cdccd0232a54895ad846c3787530387c9dab2e",
+      "translation_text_hash": "b9653a3d6da0d53c78b071d56459a149b397238e9517b818340d0377c0252037",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베냐민 지파의 계수함을 입은 자가 삼만 오천 사백명이었더라"
+      ],
+      "raw_text_hashes": [
+        "b9653a3d6da0d53c78b071d56459a149b397238e9517b818340d0377c0252037"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:1:38",
+      "sequence": 3643,
+      "chapter_label": "NUM 1",
+      "verse_label": "38",
+      "locator": {
+        "book": "NUM",
+        "chapter": 1,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 1,
+          "verse": 38
+        }
+      ],
+      "en": "Of the children of Dan, their generations, by their families, by their fathers’ houses, according to the number of the names, from twenty years old and upward, all who were able to go out to war:",
+      "ko": "단의 아들들에게서 난 자를 그들의 가족과 종족을 따라 이십세 이상으로 싸움에 나갈만한 자를 그 명수대로 다 계수하니",
+      "source_text_hash": "d84879bd75ee097fe1607dbe97039ff4f763dc3eb16d91c93aabbfffd2e3b2f7",
+      "translation_text_hash": "05f45ecbe4f093289fd50412bce208b8488ca1a809701797eae16c0efd3d298b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "단의 아들들에게서 난 자를 그들의 가족과 종족을 따라 이십세 이상으로 싸움에 나갈만한 자를 그 명수대로 다 계수하니"
+      ],
+      "raw_text_hashes": [
+        "05f45ecbe4f093289fd50412bce208b8488ca1a809701797eae16c0efd3d298b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:1:39",
+      "sequence": 3644,
+      "chapter_label": "NUM 1",
+      "verse_label": "39",
+      "locator": {
+        "book": "NUM",
+        "chapter": 1,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 1,
+          "verse": 39
+        }
+      ],
+      "en": "those who were counted of them, of the tribe of Dan, were sixty-two thousand seven hundred.",
+      "ko": "단 지파의 계수함을 입은 자가 육만 이천 칠백명이었더라",
+      "source_text_hash": "966ea558f20d56b783affa53ffec8e9d29bee8b28d2866d593c1c5222126dca5",
+      "translation_text_hash": "8812893a5d3ee680b5e6d392475a446795fc62162f2c99cc92db5e748a971b6f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "단 지파의 계수함을 입은 자가 육만 이천 칠백명이었더라"
+      ],
+      "raw_text_hashes": [
+        "8812893a5d3ee680b5e6d392475a446795fc62162f2c99cc92db5e748a971b6f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:1:40",
+      "sequence": 3645,
+      "chapter_label": "NUM 1",
+      "verse_label": "40",
+      "locator": {
+        "book": "NUM",
+        "chapter": 1,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 1,
+          "verse": 40
+        }
+      ],
+      "en": "Of the children of Asher, their generations, by their families, by their fathers’ houses, according to the number of the names, from twenty years old and upward, all who were able to go out to war:",
+      "ko": "아셀의 아들들에게서 난 자를 그들의 가족과 종족을 따라 이십세 이상으로 싸움에 나갈만한 자를 그 명수대로 다 계수하니",
+      "source_text_hash": "8a4fafb3c9c4bfefb460ba4b1b9f31fe98b26ca7cd9d7f07207867fe4a3b129a",
+      "translation_text_hash": "3f5a64043a53bb13beebcf7c8bdc998c3c0a7dd0353acf497a1c4759261de09a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아셀의 아들들에게서 난 자를 그들의 가족과 종족을 따라 이십세 이상으로 싸움에 나갈만한 자를 그 명수대로 다 계수하니"
+      ],
+      "raw_text_hashes": [
+        "3f5a64043a53bb13beebcf7c8bdc998c3c0a7dd0353acf497a1c4759261de09a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:1:41",
+      "sequence": 3646,
+      "chapter_label": "NUM 1",
+      "verse_label": "41",
+      "locator": {
+        "book": "NUM",
+        "chapter": 1,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 1,
+          "verse": 41
+        }
+      ],
+      "en": "those who were counted of them, of the tribe of Asher, were forty-one thousand five hundred.",
+      "ko": "아셀 지파의 계수함을 입은 자가 사만 일천 오백명이었더라",
+      "source_text_hash": "3d24c797a3e218c0f5b84a612cdf6d51b2f0c0c23514bf0b8ae40fad25ba616e",
+      "translation_text_hash": "6dd0d517c54ff3dab07f1160437371b7ae36537248939f16a39c3ef13d9542c2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아셀 지파의 계수함을 입은 자가 사만 일천 오백명이었더라"
+      ],
+      "raw_text_hashes": [
+        "6dd0d517c54ff3dab07f1160437371b7ae36537248939f16a39c3ef13d9542c2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:1:42",
+      "sequence": 3647,
+      "chapter_label": "NUM 1",
+      "verse_label": "42",
+      "locator": {
+        "book": "NUM",
+        "chapter": 1,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 1,
+          "verse": 42
+        }
+      ],
+      "en": "Of the children of Naphtali, their generations, by their families, by their fathers’ houses, according to the number of the names, from twenty years old and upward, all who were able to go out to war:",
+      "ko": "납달리의 아들들에게서 난 자를 그들의 가족과 종족을 따라 이십세 이상으로 싸움에 나갈만한 자를 그 명수대로 다 계수하니",
+      "source_text_hash": "2d028f458fc50210407d6496e82c50ab0606878990f1c2cfc5e7dff7921cdf86",
+      "translation_text_hash": "9bddd68af2eedd8fde8240815d40927a59f59353d2d0a08642b5bec3791e1f25",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "납달리의 아들들에게서 난 자를 그들의 가족과 종족을 따라 이십세 이상으로 싸움에 나갈만한 자를 그 명수대로 다 계수하니"
+      ],
+      "raw_text_hashes": [
+        "9bddd68af2eedd8fde8240815d40927a59f59353d2d0a08642b5bec3791e1f25"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:1:43",
+      "sequence": 3648,
+      "chapter_label": "NUM 1",
+      "verse_label": "43",
+      "locator": {
+        "book": "NUM",
+        "chapter": 1,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 1,
+          "verse": 43
+        }
+      ],
+      "en": "those who were counted of them, of the tribe of Naphtali, were fifty-three thousand four hundred.",
+      "ko": "납달리 지파의 계수함을 입은 자가 오만 삼천 사백명이었더라",
+      "source_text_hash": "6baa076fc205424a9a8e20de5af4fa75c54f9f8d10851c711907ada7a49c3fc8",
+      "translation_text_hash": "26b55b419f9cebb2275426a4fac475fc8c9c2f267469e8780738583a8cbdb850",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "납달리 지파의 계수함을 입은 자가 오만 삼천 사백명이었더라"
+      ],
+      "raw_text_hashes": [
+        "26b55b419f9cebb2275426a4fac475fc8c9c2f267469e8780738583a8cbdb850"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:1:44",
+      "sequence": 3649,
+      "chapter_label": "NUM 1",
+      "verse_label": "44",
+      "locator": {
+        "book": "NUM",
+        "chapter": 1,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 1,
+          "verse": 44
+        }
+      ],
+      "en": "These are those who were counted, whom Moses and Aaron counted, and the twelve men who were princes of Israel, each one for his fathers’ house.",
+      "ko": "이 계수함을 입은 자는 모세와 아론과 각기 이스라엘 종족을 대표한 족장 십 이인이 계수한 자라",
+      "source_text_hash": "fdf7573ceb1a01b1434aeb048afdf8a9c464c7d03459562de36730753a8b740c",
+      "translation_text_hash": "8531accb7331865febc763ebc8a89fb1be620a2c2e0027706f7eb786afd8fa70",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 계수함을 입은 자는 모세와 아론과 각기 이스라엘 종족을 대표한 족장 십 이인이 계수한 자라"
+      ],
+      "raw_text_hashes": [
+        "8531accb7331865febc763ebc8a89fb1be620a2c2e0027706f7eb786afd8fa70"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:1:45",
+      "sequence": 3650,
+      "chapter_label": "NUM 1",
+      "verse_label": "45",
+      "locator": {
+        "book": "NUM",
+        "chapter": 1,
+        "verse": 45
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 1,
+          "verse": 45
+        }
+      ],
+      "en": "So all those who were counted of the children of Israel by their fathers’ houses, from twenty years old and upward, all who were able to go out to war in Israel—",
+      "ko": "이같이 이스라엘 자손의 그 종족을 따라 이십세 이상으로 싸움에 나갈만한 자가 이스라엘 중에서 다 계수함을 입었으니",
+      "source_text_hash": "7e198373e5e7f20b1965d94a0e3441e87ce6a6b568014897b9f25745e53c6892",
+      "translation_text_hash": "7a793070581cba7a975fc28f0386c3b6e807b16b64ab59a5f04167f43ce5ea79",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이같이 이스라엘 자손의 그 종족을 따라 이십세 이상으로 싸움에 나갈만한 자가 이스라엘 중에서 다 계수함을 입었으니"
+      ],
+      "raw_text_hashes": [
+        "7a793070581cba7a975fc28f0386c3b6e807b16b64ab59a5f04167f43ce5ea79"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:1:46",
+      "sequence": 3651,
+      "chapter_label": "NUM 1",
+      "verse_label": "46",
+      "locator": {
+        "book": "NUM",
+        "chapter": 1,
+        "verse": 46
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 1,
+          "verse": 46
+        }
+      ],
+      "en": "all those who were counted were six hundred three thousand five hundred fifty.",
+      "ko": "계수함을 입은 자의 총계가 육십만 삼천 오백 오십명이었더라",
+      "source_text_hash": "bb4aae6855db753f4dbf986f43feab8f4fa6c9b7856ab82bb8718630f112fa14",
+      "translation_text_hash": "7095550fa5c6110ea14f6c7c8b1bea43d64656ef0d50efed35bccbd023dc3354",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "계수함을 입은 자의 총계가 육십만 삼천 오백 오십명이었더라"
+      ],
+      "raw_text_hashes": [
+        "7095550fa5c6110ea14f6c7c8b1bea43d64656ef0d50efed35bccbd023dc3354"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:1:47",
+      "sequence": 3652,
+      "chapter_label": "NUM 1",
+      "verse_label": "47",
+      "locator": {
+        "book": "NUM",
+        "chapter": 1,
+        "verse": 47
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 1,
+          "verse": 47
+        }
+      ],
+      "en": "But the Levites after the tribe of their fathers were not counted among them.",
+      "ko": "오직 레위인은 그 조상의 지파대로 그 계수에 들지 아니하였으니",
+      "source_text_hash": "6b1676f06c2f4af532137629aa780fc983b65a346a63f8db78aacc04add1c5bd",
+      "translation_text_hash": "eafe2bfa8b1c47d9fda3b1ae7504013c05545f54ab48820ea6f66a8f97263ffd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 레위인은 그 조상의 지파대로 그 계수에 들지 아니하였으니"
+      ],
+      "raw_text_hashes": [
+        "eafe2bfa8b1c47d9fda3b1ae7504013c05545f54ab48820ea6f66a8f97263ffd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:1:48",
+      "sequence": 3653,
+      "chapter_label": "NUM 1",
+      "verse_label": "48",
+      "locator": {
+        "book": "NUM",
+        "chapter": 1,
+        "verse": 48
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 1,
+          "verse": 48
+        }
+      ],
+      "en": "For the LORD spoke to Moses, saying,",
+      "ko": "이는 여호와께서 모세에게 일러 가라사대",
+      "source_text_hash": "1340129a04cef9bbee140cf63aa19750b095b42e4d70c5b92bee4b3419a11587",
+      "translation_text_hash": "4b7553f94cedd9b4caefd82a7294188af0b0edc07709bdae0eab1f888b699872",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 여호와께서 모세에게 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "4b7553f94cedd9b4caefd82a7294188af0b0edc07709bdae0eab1f888b699872"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:1:49",
+      "sequence": 3654,
+      "chapter_label": "NUM 1",
+      "verse_label": "49",
+      "locator": {
+        "book": "NUM",
+        "chapter": 1,
+        "verse": 49
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 1,
+          "verse": 49
+        }
+      ],
+      "en": "“Only the tribe of Levi you shall not count, neither shall you take a census of them among the children of Israel;",
+      "ko": "레위 지파만은 너는 계수치 말며 그들을 이스라엘 자손 계수 중에 넣지 말고",
+      "source_text_hash": "0e0525d3047aa97ddbee3f605c8b3a1132012026a498eb10fb60d08f1d90a748",
+      "translation_text_hash": "16819e1b5a2f4f17f8aae694cab8bed530320efa68b34511c3660f225dc9bd2c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "레위 지파만은 너는 계수치 말며 그들을 이스라엘 자손 계수 중에 넣지 말고"
+      ],
+      "raw_text_hashes": [
+        "16819e1b5a2f4f17f8aae694cab8bed530320efa68b34511c3660f225dc9bd2c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:1:50",
+      "sequence": 3655,
+      "chapter_label": "NUM 1",
+      "verse_label": "50",
+      "locator": {
+        "book": "NUM",
+        "chapter": 1,
+        "verse": 50
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 1,
+          "verse": 50
+        }
+      ],
+      "en": "but appoint the Levites over the Tabernacle of the Testimony, and over all its furnishings, and over all that belongs to it. They shall carry the tabernacle and all its furnishings; and they shall take care of it, and shall encamp around it.",
+      "ko": "그들로 증거막과 그 모든 기구와 그 모든 부속품을 관리하게 하라 그들은 그 장막과 그 모든 기구를 운반하며 거기서 봉사하며 장막 사면에 진을 칠찌며",
+      "source_text_hash": "fa274395933156cf35db42c5d305bb15e4e6178f7e462bee51eadd8381a678ff",
+      "translation_text_hash": "c1e43681e4a92235e3714a4b2e089450b2f23c59af4c973c4050341ed72d9fab",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들로 증거막과 그 모든 기구와 그 모든 부속품을 관리하게 하라 그들은 그 장막과 그 모든 기구를 운반하며 거기서 봉사하며 장막 사면에 진을 칠찌며"
+      ],
+      "raw_text_hashes": [
+        "c1e43681e4a92235e3714a4b2e089450b2f23c59af4c973c4050341ed72d9fab"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:1:51",
+      "sequence": 3656,
+      "chapter_label": "NUM 1",
+      "verse_label": "51",
+      "locator": {
+        "book": "NUM",
+        "chapter": 1,
+        "verse": 51
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 1,
+          "verse": 51
+        }
+      ],
+      "en": "When the tabernacle is to move, the Levites shall take it down; and when the tabernacle is to be set up, the Levites shall set it up. The stranger who comes near shall be put to death.",
+      "ko": "장막을 운반할 때에는 레위인이 그것을 걷고 장막을 세울 때에는 레위인이 그것을 세울 것이요 외인이 가까이 오면 죽일찌며",
+      "source_text_hash": "eac83036082fece3979d051fa601fc06cde6205853c5398e4d541d46670a571e",
+      "translation_text_hash": "73e7717287a2e31c0214cc532fa4530de7a2fd8f5bb6e8de610214a630225968",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "장막을 운반할 때에는 레위인이 그것을 걷고 장막을 세울 때에는 레위인이 그것을 세울 것이요 외인이 가까이 오면 죽일찌며"
+      ],
+      "raw_text_hashes": [
+        "73e7717287a2e31c0214cc532fa4530de7a2fd8f5bb6e8de610214a630225968"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:1:52",
+      "sequence": 3657,
+      "chapter_label": "NUM 1",
+      "verse_label": "52",
+      "locator": {
+        "book": "NUM",
+        "chapter": 1,
+        "verse": 52
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 1,
+          "verse": 52
+        }
+      ],
+      "en": "The children of Israel shall pitch their tents, every man by his own camp, and every man by his own standard, according to their divisions.",
+      "ko": "이스라엘 자손은 막을 치되 그 군대대로 각각 그 진과 기 곁에 칠 것이나",
+      "source_text_hash": "81139333ec77ebddf9846fd0cc260f26a44d5ec89f01138fc7899c35c8728380",
+      "translation_text_hash": "72be8bda80656f06eb77eec3859a56d8cea436e298089dbf525918b5f6410ba9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손은 막을 치되 그 군대대로 각각 그 진과 기 곁에 칠 것이나"
+      ],
+      "raw_text_hashes": [
+        "72be8bda80656f06eb77eec3859a56d8cea436e298089dbf525918b5f6410ba9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:1:53",
+      "sequence": 3658,
+      "chapter_label": "NUM 1",
+      "verse_label": "53",
+      "locator": {
+        "book": "NUM",
+        "chapter": 1,
+        "verse": 53
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 1,
+          "verse": 53
+        }
+      ],
+      "en": "But the Levites shall encamp around the Tabernacle of the Testimony, that there may be no wrath on the congregation of the children of Israel. The Levites shall be responsible for the Tabernacle of the Testimony.”",
+      "ko": "레위인은 증거막 사면에 진을 쳐서 이스라엘 자손의 회중에게 진노가 임하지 않게 할 것이라 레위인은 증거막에 대한 책임을 지킬찌니라 하셨음이라",
+      "source_text_hash": "4148f88a9dde82225bbb98b590012529bad4682dfdd52005ee475f5730ff6c0b",
+      "translation_text_hash": "c18a89293ad3cd903adfc645f71fa094852d3f546e5f3a0c83a25b35d79dff04",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "레위인은 증거막 사면에 진을 쳐서 이스라엘 자손의 회중에게 진노가 임하지 않게 할 것이라 레위인은 증거막에 대한 책임을 지킬찌니라 하셨음이라"
+      ],
+      "raw_text_hashes": [
+        "c18a89293ad3cd903adfc645f71fa094852d3f546e5f3a0c83a25b35d79dff04"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:1:54",
+      "sequence": 3659,
+      "chapter_label": "NUM 1",
+      "verse_label": "54",
+      "locator": {
+        "book": "NUM",
+        "chapter": 1,
+        "verse": 54
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 1,
+          "verse": 54
+        }
+      ],
+      "en": "Thus the children of Israel did. According to all that the LORD commanded Moses, so they did.",
+      "ko": "이스라엘 자손이 그대로 행하되 여호와께서 모세에게 명하신대로 행하였더라",
+      "source_text_hash": "ebf2b74d84200ef97f961dd907b753744ea80d74fdb99d55a35fe28555928782",
+      "translation_text_hash": "43c1c20709606dea9321e80cfb8be8e2982c542a666c457179045d5c481fea03",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손이 그대로 행하되 여호와께서 모세에게 명하신대로 행하였더라"
+      ],
+      "raw_text_hashes": [
+        "43c1c20709606dea9321e80cfb8be8e2982c542a666c457179045d5c481fea03"
+      ]
+    }
+  ]
+}

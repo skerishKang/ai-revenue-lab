@@ -1,0 +1,468 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:3JN:chapter:001",
+  "unit_ordinal": 1166,
+  "unit_label": "3JN 1",
+  "book_code": "3JN",
+  "chapter_number": 1,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:3JN:1:1",
+      "sequence": 30656,
+      "chapter_label": "3JN 1",
+      "verse_label": "1",
+      "locator": {
+        "book": "3JN",
+        "chapter": 1,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "3JN",
+          "chapter": 1,
+          "verse": 1
+        }
+      ],
+      "en": "The elder to Gaius the beloved, whom I love in truth.",
+      "ko": "장로는 사랑하는 가이오 곧 나의 참으로 사랑하는 자에게 편지하노라",
+      "source_text_hash": "fb3d371885228ac45396ed68e67306e0ee833db1be04d78fde3ab845685f41af",
+      "translation_text_hash": "5ceb2dec131a51971af7ec02aef9248133171f3f5b55c500640bbd7b24d0e252",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "장로는 사랑하는 가이오 곧 나의 참으로 사랑하는 자에게 편지하노라"
+      ],
+      "raw_text_hashes": [
+        "5ceb2dec131a51971af7ec02aef9248133171f3f5b55c500640bbd7b24d0e252"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:3JN:1:2",
+      "sequence": 30657,
+      "chapter_label": "3JN 1",
+      "verse_label": "2",
+      "locator": {
+        "book": "3JN",
+        "chapter": 1,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "3JN",
+          "chapter": 1,
+          "verse": 2
+        }
+      ],
+      "en": "Beloved, I pray that you may prosper in all things and be healthy, even as your soul prospers.",
+      "ko": "사랑하는 자여 네 영혼이 잘 됨같이 네가 범사에 잘되고 강건하기를 내가 간구하노라",
+      "source_text_hash": "778b19fa72db6cf235a2099d0cbf77c38069220ba77d865c5c46e503158d6fde",
+      "translation_text_hash": "7e67583604d7bf631506a1e4df6bb39aa12be2c79a498207fc5633bb4e59c798",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사랑하는 자여 네 영혼이 잘 됨같이 네가 범사에 잘되고 강건하기를 내가 간구하노라"
+      ],
+      "raw_text_hashes": [
+        "7e67583604d7bf631506a1e4df6bb39aa12be2c79a498207fc5633bb4e59c798"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:3JN:1:3",
+      "sequence": 30658,
+      "chapter_label": "3JN 1",
+      "verse_label": "3",
+      "locator": {
+        "book": "3JN",
+        "chapter": 1,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "3JN",
+          "chapter": 1,
+          "verse": 3
+        }
+      ],
+      "en": "For I rejoiced greatly when brothers came and testified about your truth, even as you walk in truth.",
+      "ko": "형제들이 와서 네게 있는 진리를 증거하되 네가 진리 안에서 행한다 하니 내가 심히 기뻐하노라",
+      "source_text_hash": "7c92bccf9f03d86750b3816ccbe0397c8700ded87e41de412af66759cd26bc99",
+      "translation_text_hash": "99deb6da19fa16909b68ae57666b9a1c48ec70f25932e39e3d11c28b659ce087",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "형제들이 와서 네게 있는 진리를 증거하되 네가 진리 안에서 행한다 하니 내가 심히 기뻐하노라"
+      ],
+      "raw_text_hashes": [
+        "99deb6da19fa16909b68ae57666b9a1c48ec70f25932e39e3d11c28b659ce087"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:3JN:1:4",
+      "sequence": 30659,
+      "chapter_label": "3JN 1",
+      "verse_label": "4",
+      "locator": {
+        "book": "3JN",
+        "chapter": 1,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "3JN",
+          "chapter": 1,
+          "verse": 4
+        }
+      ],
+      "en": "I have no greater joy than this: to hear about my children walking in truth.",
+      "ko": "내가 내 자녀들이 진리 안에서 행한다 함을 듣는 것보다 더 즐거움이 없도다",
+      "source_text_hash": "782909bf615b69030484f402beebaa180de544e1d07e9620a11db9f492796551",
+      "translation_text_hash": "f2b10bbe0816c3b765883bb7854f63963f29c62877a6138751e12a1a2d69fcba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 내 자녀들이 진리 안에서 행한다 함을 듣는 것보다 더 즐거움이 없도다"
+      ],
+      "raw_text_hashes": [
+        "f2b10bbe0816c3b765883bb7854f63963f29c62877a6138751e12a1a2d69fcba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:3JN:1:5",
+      "sequence": 30660,
+      "chapter_label": "3JN 1",
+      "verse_label": "5",
+      "locator": {
+        "book": "3JN",
+        "chapter": 1,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "3JN",
+          "chapter": 1,
+          "verse": 5
+        }
+      ],
+      "en": "Beloved, you do a faithful work in whatever you accomplish for those who are brothers and strangers.",
+      "ko": "사랑하는 자여 네가 무엇이든지 형제 곧 나그네 된 자들에게 행하는 것이 신실한 일이니",
+      "source_text_hash": "df6aff74ce42dc08d258bf84699fee9d014bf9aedbc15596d045d006da8b04a0",
+      "translation_text_hash": "7f3cfe8072d3613e8e1d3c490c46b2c16a34b6ae383248d5fe8e2928ea58c544",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사랑하는 자여 네가 무엇이든지 형제 곧 나그네 된 자들에게 행하는 것이 신실한 일이니"
+      ],
+      "raw_text_hashes": [
+        "7f3cfe8072d3613e8e1d3c490c46b2c16a34b6ae383248d5fe8e2928ea58c544"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:3JN:1:6",
+      "sequence": 30661,
+      "chapter_label": "3JN 1",
+      "verse_label": "6",
+      "locator": {
+        "book": "3JN",
+        "chapter": 1,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "3JN",
+          "chapter": 1,
+          "verse": 6
+        }
+      ],
+      "en": "They have testified about your love before the assembly. You will do well to send them forward on their journey in a way worthy of God,",
+      "ko": "저희가 교회 앞에서 너의 사랑을 증거하였느니라 네가 하나님께 합당하게 저희를 전송하면 가하리로다",
+      "source_text_hash": "2c25a631065e64182f44f36df173873bdef6daa3037c7f3fbe4b78dd8ecb30ac",
+      "translation_text_hash": "37ff696794ee3478fabf13592f30be2575d267cdcd637f205e1101144fb41521",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 교회 앞에서 너의 사랑을 증거하였느니라 네가 하나님께 합당하게 저희를 전송하면 가하리로다"
+      ],
+      "raw_text_hashes": [
+        "37ff696794ee3478fabf13592f30be2575d267cdcd637f205e1101144fb41521"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:3JN:1:7",
+      "sequence": 30662,
+      "chapter_label": "3JN 1",
+      "verse_label": "7",
+      "locator": {
+        "book": "3JN",
+        "chapter": 1,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "3JN",
+          "chapter": 1,
+          "verse": 7
+        }
+      ],
+      "en": "because for the sake of the Name they went out, taking nothing from the Gentiles.",
+      "ko": "이는 저희가 주의 이름을 위하여 나가서 이방인에게 아무것도 받지 아니함이라",
+      "source_text_hash": "e4502962134679d8667a41ffd1224e478a3b2310c7fd57782f2237ed5eb10029",
+      "translation_text_hash": "8ac1387ef45444928c86433c163e4df95921c1c9a6168239d1dd9ef390231d87",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 저희가 주의 이름을 위하여 나가서 이방인에게 아무것도 받지 아니함이라"
+      ],
+      "raw_text_hashes": [
+        "8ac1387ef45444928c86433c163e4df95921c1c9a6168239d1dd9ef390231d87"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:3JN:1:8",
+      "sequence": 30663,
+      "chapter_label": "3JN 1",
+      "verse_label": "8",
+      "locator": {
+        "book": "3JN",
+        "chapter": 1,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "3JN",
+          "chapter": 1,
+          "verse": 8
+        }
+      ],
+      "en": "We therefore ought to receive such, that we may be fellow workers for the truth.",
+      "ko": "이러므로 우리가 이같은 자들을 영접하는 것이 마땅하니 이는 우리로 진리를 위하여 함께 수고하는 자가 되게 하려 함이니라",
+      "source_text_hash": "8a16e3af634443f519e5b97e592b6f6da90ce5af5915d467b18b5203d8dc6ce1",
+      "translation_text_hash": "89e1d1e69d5f9d492c136f32b26caf53432d6d931aa5bfc566e23c9228c60ee7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러므로 우리가 이같은 자들을 영접하는 것이 마땅하니 이는 우리로 진리를 위하여 함께 수고하는 자가 되게 하려 함이니라"
+      ],
+      "raw_text_hashes": [
+        "89e1d1e69d5f9d492c136f32b26caf53432d6d931aa5bfc566e23c9228c60ee7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:3JN:1:9",
+      "sequence": 30664,
+      "chapter_label": "3JN 1",
+      "verse_label": "9",
+      "locator": {
+        "book": "3JN",
+        "chapter": 1,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "3JN",
+          "chapter": 1,
+          "verse": 9
+        }
+      ],
+      "en": "I wrote to the assembly, but Diotrephes, who loves to be first among them, doesn’t accept what we say.",
+      "ko": "내가 두어자를 교회에게 썼으나 저희 중에 으뜸되기를 좋아하는 디오드레베가 우리를 접대하지 아니하니",
+      "source_text_hash": "7acf7a934ff0b17b5644ace555229e10d46c6e5c38e84e2c44e4a40fff8faea6",
+      "translation_text_hash": "d3599a27382e2a1b47d67ed7316dec365a830f6daf61275a13cec7a3f55379ae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 두어자를 교회에게 썼으나 저희 중에 으뜸되기를 좋아하는 디오드레베가 우리를 접대하지 아니하니"
+      ],
+      "raw_text_hashes": [
+        "d3599a27382e2a1b47d67ed7316dec365a830f6daf61275a13cec7a3f55379ae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:3JN:1:10",
+      "sequence": 30665,
+      "chapter_label": "3JN 1",
+      "verse_label": "10",
+      "locator": {
+        "book": "3JN",
+        "chapter": 1,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "3JN",
+          "chapter": 1,
+          "verse": 10
+        }
+      ],
+      "en": "Therefore, if I come, I will call attention to his deeds which he does, unjustly accusing us with wicked words. Not content with this, he doesn’t receive the brothers himself, and those who would, he forbids and throws out of the assembly.",
+      "ko": "이러므로 내가 가면 그 행한 일을 잊지 아니하리라 저가 악한 말로 우리를 망령되이 폄론하고도 유위부족하여 형제들을 접대치도 아니하고 접대하고자 하는 자를 금하여 교회에서 내어 쫓는도다",
+      "source_text_hash": "d577749a48135340caa5e0691064a5abd456742400a4b67f4db2e1a9bfa6eb22",
+      "translation_text_hash": "38ac8ac3631152a4e2094e76a2eeec214d5393d53ffca3aef245393ae85b6dad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러므로 내가 가면 그 행한 일을 잊지 아니하리라 저가 악한 말로 우리를 망령되이 폄론하고도 유위부족하여 형제들을 접대치도 아니하고 접대하고자 하는 자를 금하여 교회에서 내어 쫓는도다"
+      ],
+      "raw_text_hashes": [
+        "38ac8ac3631152a4e2094e76a2eeec214d5393d53ffca3aef245393ae85b6dad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:3JN:1:11",
+      "sequence": 30666,
+      "chapter_label": "3JN 1",
+      "verse_label": "11",
+      "locator": {
+        "book": "3JN",
+        "chapter": 1,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "3JN",
+          "chapter": 1,
+          "verse": 11
+        }
+      ],
+      "en": "Beloved, don’t imitate that which is evil, but that which is good. He who does good is of God. He who does evil hasn’t seen God.",
+      "ko": "사랑하는 자여 악한 것을 본받지 말고 선한 것을 본받으라 선을 행하는 자는 하나님께 속하고 악을 행하는 자는 하나님을 뵈옵지 못하였느니라",
+      "source_text_hash": "232917d2c92aeb06e155c570b154e9c8d4af1c4f1b795256ded3ba1dec0620fe",
+      "translation_text_hash": "e4eff8a30e4d0b011e0b391439b1e7a6ac2a14e8a7802e8f98feaebff048bc1e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사랑하는 자여 악한 것을 본받지 말고 선한 것을 본받으라 선을 행하는 자는 하나님께 속하고 악을 행하는 자는 하나님을 뵈옵지 못하였느니라"
+      ],
+      "raw_text_hashes": [
+        "e4eff8a30e4d0b011e0b391439b1e7a6ac2a14e8a7802e8f98feaebff048bc1e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:3JN:1:12",
+      "sequence": 30667,
+      "chapter_label": "3JN 1",
+      "verse_label": "12",
+      "locator": {
+        "book": "3JN",
+        "chapter": 1,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "3JN",
+          "chapter": 1,
+          "verse": 12
+        }
+      ],
+      "en": "Demetrius has the testimony of all, and of the truth itself; yes, we also testify, and you know that our testimony is true.",
+      "ko": "데메드리오는 뭇사람에게도, 진리에게도 증거를 받았으매 우리도 증거하노니 너는 우리의 증거가 참된 줄을 아느니라",
+      "source_text_hash": "a6c64290f26c0fd2a013656532dc3aefa8af936e2910621f1153836b371f583d",
+      "translation_text_hash": "bb78f8d6352101a95998397f7d77f95f8b74314a002fc2f772493c31f4112d0f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "데메드리오는 뭇사람에게도, 진리에게도 증거를 받았으매 우리도 증거하노니 너는 우리의 증거가 참된 줄을 아느니라"
+      ],
+      "raw_text_hashes": [
+        "bb78f8d6352101a95998397f7d77f95f8b74314a002fc2f772493c31f4112d0f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:3JN:1:13",
+      "sequence": 30668,
+      "chapter_label": "3JN 1",
+      "verse_label": "13",
+      "locator": {
+        "book": "3JN",
+        "chapter": 1,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "3JN",
+          "chapter": 1,
+          "verse": 13
+        }
+      ],
+      "en": "I had many things to write to you, but I am unwilling to write to you with ink and pen;",
+      "ko": "내가 네게 쓸 것이 많으나 먹과 붓으로 쓰기를 원치 아니하고",
+      "source_text_hash": "0646f6da0c0accecd189720fd9bd540a0d188946a1c5019392f33eda18a51346",
+      "translation_text_hash": "06c67d6d9f3a69b30bbd2d913d49528c62117884e50e07eedbd5bc0fbeb4ec10",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 네게 쓸 것이 많으나 먹과 붓으로 쓰기를 원치 아니하고"
+      ],
+      "raw_text_hashes": [
+        "06c67d6d9f3a69b30bbd2d913d49528c62117884e50e07eedbd5bc0fbeb4ec10"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:3JN:1:14",
+      "sequence": 30669,
+      "chapter_label": "3JN 1",
+      "verse_label": "14",
+      "locator": {
+        "book": "3JN",
+        "chapter": 1,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "3JN",
+          "chapter": 1,
+          "verse": 14
+        },
+        {
+          "book": "3JN",
+          "chapter": 1,
+          "verse": 15
+        }
+      ],
+      "en": "but I hope to see you soon. Then we will speak face to face. Peace be to you. The friends greet you. Greet the friends by name.",
+      "ko": "속히 보기를 바라노니 또한 우리가 면대하여 말하리라 평강이 네게 있을지어다 여러 친구가 네게 문안하느니라 너는 각 친구 명하에 문안하라",
+      "source_text_hash": "168ade2aecedabab2265b35a3e4f112756e5a887354df7a7a0ae4e9ccb16096f",
+      "translation_text_hash": "b2841d903d51099fdbd7c07e3f36a7650424c9782470a0f3c29da354cc1b7f60",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "split",
+      "mapping_note": "WEB 3JN 1:14 is split across KRV 1:14/1:15.",
+      "raw_texts": [
+        "속히 보기를 바라노니 또한 우리가 면대하여 말하리라",
+        "평강이 네게 있을지어다 여러 친구가 네게 문안하느니라 너는 각 친구 명하에 문안하라"
+      ],
+      "raw_text_hashes": [
+        "e35d071353a066c3cc6c783de984b46157067d5dfc0fbc9c99c31df7dfbe9cc1",
+        "af1a2ba93eb4930958d57b4230200dec071e19a7d727a4d1a6e02856b5b0eb0e"
+      ]
+    }
+  ]
+}

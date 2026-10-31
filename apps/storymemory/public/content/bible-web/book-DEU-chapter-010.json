@@ -1,0 +1,717 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:DEU:chapter:010",
+  "unit_ordinal": 163,
+  "unit_label": "DEU 10",
+  "book_code": "DEU",
+  "chapter_number": 10,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:DEU:10:1",
+      "sequence": 5188,
+      "chapter_label": "DEU 10",
+      "verse_label": "1",
+      "locator": {
+        "book": "DEU",
+        "chapter": 10,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 10,
+          "verse": 1
+        }
+      ],
+      "en": "At that time the LORD said to me, “Cut two stone tablets like the first, and come up to me onto the mountain, and make an ark of wood.",
+      "ko": "그 때에 여호와께서 내게 이르시기를 너는 처음과 같은 두 돌판을 다듬어 가지고 산에 올라 내게로 나아오고 또 나무궤 하나를 만들라",
+      "source_text_hash": "d1481abb5c3e01b707ce8400d736113ed5b7ad835c67baae20527b5ffda3387c",
+      "translation_text_hash": "ecca5ecec7f4eb52f0c314e6846cd3d743a016a9dc00c6df80abb36c0bb2d7ff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 여호와께서 내게 이르시기를 너는 처음과 같은 두 돌판을 다듬어 가지고 산에 올라 내게로 나아오고 또 나무궤 하나를 만들라"
+      ],
+      "raw_text_hashes": [
+        "ecca5ecec7f4eb52f0c314e6846cd3d743a016a9dc00c6df80abb36c0bb2d7ff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:10:2",
+      "sequence": 5189,
+      "chapter_label": "DEU 10",
+      "verse_label": "2",
+      "locator": {
+        "book": "DEU",
+        "chapter": 10,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 10,
+          "verse": 2
+        }
+      ],
+      "en": "I will write on the tablets the words that were on the first tablets which you broke, and you shall put them in the ark.”",
+      "ko": "네가 깨뜨린 처음 판에 쓴 말을 내가 그 판에 쓰리니 너는 그것을 그 궤에 넣으라 하시기로",
+      "source_text_hash": "99e91d76095ecbd2947165d1d8656ae0f7c0237e331e7870f3984346740c6052",
+      "translation_text_hash": "fdc427b576dc1921922f828f0f3d75d63c75bfc494922be80c3565c9a9cbf5ff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 깨뜨린 처음 판에 쓴 말을 내가 그 판에 쓰리니 너는 그것을 그 궤에 넣으라 하시기로"
+      ],
+      "raw_text_hashes": [
+        "fdc427b576dc1921922f828f0f3d75d63c75bfc494922be80c3565c9a9cbf5ff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:10:3",
+      "sequence": 5190,
+      "chapter_label": "DEU 10",
+      "verse_label": "3",
+      "locator": {
+        "book": "DEU",
+        "chapter": 10,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 10,
+          "verse": 3
+        }
+      ],
+      "en": "So I made an ark of acacia wood, and cut two stone tablets like the first, and went up onto the mountain, having the two tablets in my hand.",
+      "ko": "내가 싯딤나무로 궤를 만들고 처음 것과 같은 돌판 둘을 다듬어 손에 들고 산에 오르매",
+      "source_text_hash": "ffba12e2862834ae2669db91deb17dbe85db2958e15d6c5dd8b64135a22b633b",
+      "translation_text_hash": "38d46c733cf633689980e69540bdacec16dbc342e1f47ae695b5dfa25487d801",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 싯딤나무로 궤를 만들고 처음 것과 같은 돌판 둘을 다듬어 손에 들고 산에 오르매"
+      ],
+      "raw_text_hashes": [
+        "38d46c733cf633689980e69540bdacec16dbc342e1f47ae695b5dfa25487d801"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:10:4",
+      "sequence": 5191,
+      "chapter_label": "DEU 10",
+      "verse_label": "4",
+      "locator": {
+        "book": "DEU",
+        "chapter": 10,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 10,
+          "verse": 4
+        }
+      ],
+      "en": "He wrote on the tablets, according to the first writing, the ten commandments, which the LORD spoke to you on the mountain out of the middle of the fire in the day of the assembly; and the LORD gave them to me.",
+      "ko": "여호와께서 그 총회날에 산 위 불 가운데서 너희에게 이르신 십계명을 처음과 같이 그 판에 쓰시고 그것을 내게 주시기로",
+      "source_text_hash": "296d65357efeab69965e5c881b0b9be23ab55b0e7cfb6386089f98886e9301bb",
+      "translation_text_hash": "b2580520871b16b73008a91120b6da92f3b03f7e8b4481f58737dd666451ed56",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 그 총회날에 산 위 불 가운데서 너희에게 이르신 십계명을 처음과 같이 그 판에 쓰시고 그것을 내게 주시기로"
+      ],
+      "raw_text_hashes": [
+        "b2580520871b16b73008a91120b6da92f3b03f7e8b4481f58737dd666451ed56"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:10:5",
+      "sequence": 5192,
+      "chapter_label": "DEU 10",
+      "verse_label": "5",
+      "locator": {
+        "book": "DEU",
+        "chapter": 10,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 10,
+          "verse": 5
+        }
+      ],
+      "en": "I turned and came down from the mountain, and put the tablets in the ark which I had made; and there they are as the LORD commanded me.",
+      "ko": "내가 돌이켜 산에서 내려와서 여호와께서 내게 명하신 대로 그 판을 내가 만든 궤에 넣었더니 지금까지 있느니라",
+      "source_text_hash": "6e684caa2147427415c33fbf355c29d11030389de6eed951b33dbe730b9b47da",
+      "translation_text_hash": "049d4689a671316a1a204c4726817129cd0a634bb6151aff6f134c6a003e8c34",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 돌이켜 산에서 내려와서 여호와께서 내게 명하신 대로 그 판을 내가 만든 궤에 넣었더니 지금까지 있느니라"
+      ],
+      "raw_text_hashes": [
+        "049d4689a671316a1a204c4726817129cd0a634bb6151aff6f134c6a003e8c34"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:10:6",
+      "sequence": 5193,
+      "chapter_label": "DEU 10",
+      "verse_label": "6",
+      "locator": {
+        "book": "DEU",
+        "chapter": 10,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 10,
+          "verse": 6
+        }
+      ],
+      "en": "(The children of Israel traveled from Beeroth Bene Jaakan to Moserah. There Aaron died, and there he was buried; and Eleazar his son ministered in the priest’s office in his place.",
+      "ko": "(이스라엘 자손이 브에롯 브네야아간에서 발행하여 모세라에 이르러서는 아론이 거기서 죽고 거기 장사되었고 그 아들 엘르아살이 그를 이어 제사장의 직임을 행하였으며",
+      "source_text_hash": "99218555712413274ace8adf73d77d0b782868c5d32f9fcb4d9b0da823d117e3",
+      "translation_text_hash": "ac6b00ab90d0afb0beee7f6f7708352cf0c7f117b54b692de6d13d21bad19af8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "(이스라엘 자손이 브에롯 브네야아간에서 발행하여 모세라에 이르러서는 아론이 거기서 죽고 거기 장사되었고 그 아들 엘르아살이 그를 이어 제사장의 직임을 행하였으며"
+      ],
+      "raw_text_hashes": [
+        "ac6b00ab90d0afb0beee7f6f7708352cf0c7f117b54b692de6d13d21bad19af8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:10:7",
+      "sequence": 5194,
+      "chapter_label": "DEU 10",
+      "verse_label": "7",
+      "locator": {
+        "book": "DEU",
+        "chapter": 10,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 10,
+          "verse": 7
+        }
+      ],
+      "en": "From there they traveled to Gudgodah; and from Gudgodah to Jotbathah, a land of brooks of water.",
+      "ko": "또 거기서 발행하여 굿고다에 이르고 굿고다에서 발행하여 욧바다에 이른즉 그 땅에는 시내가 많았었으며",
+      "source_text_hash": "ee462cba4d3562d03d3231e7f2045805f7499c3c3993f062b7874acf3ba49fa2",
+      "translation_text_hash": "65ec07d49145ad34d211a0e292866beb1cbcb291abe7f24585c97700c17c4683",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 거기서 발행하여 굿고다에 이르고 굿고다에서 발행하여 욧바다에 이른즉 그 땅에는 시내가 많았었으며"
+      ],
+      "raw_text_hashes": [
+        "65ec07d49145ad34d211a0e292866beb1cbcb291abe7f24585c97700c17c4683"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:10:8",
+      "sequence": 5195,
+      "chapter_label": "DEU 10",
+      "verse_label": "8",
+      "locator": {
+        "book": "DEU",
+        "chapter": 10,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 10,
+          "verse": 8
+        }
+      ],
+      "en": "At that time the LORD set apart the tribe of Levi to bear the ark of the LORD’s covenant, to stand before the LORD to minister to him, and to bless in his name, to this day.",
+      "ko": "그 때에 여호와께서 레위 지파를 구별하여 여호와의 언약 궤를 메이며 여호와 앞에 서서 그를 섬기며 또 여호와의 이름으로 축복하게 하셨고 그 일은 오늘날까지 이르느니라",
+      "source_text_hash": "4e6b6070a3badfe17f0f8ed551cf5994ab9c23b13b35541622fba0a6a5b077c6",
+      "translation_text_hash": "83940ee4b42db4b522ca3ae957e8e5e9cf155c21d4c839c654211b830b875575",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 여호와께서 레위 지파를 구별하여 여호와의 언약 궤를 메이며 여호와 앞에 서서 그를 섬기며 또 여호와의 이름으로 축복하게 하셨고 그 일은 오늘날까지 이르느니라"
+      ],
+      "raw_text_hashes": [
+        "83940ee4b42db4b522ca3ae957e8e5e9cf155c21d4c839c654211b830b875575"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:10:9",
+      "sequence": 5196,
+      "chapter_label": "DEU 10",
+      "verse_label": "9",
+      "locator": {
+        "book": "DEU",
+        "chapter": 10,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 10,
+          "verse": 9
+        }
+      ],
+      "en": "Therefore Levi has no portion nor inheritance with his brothers; the LORD is his inheritance, according as the LORD your God spoke to him.)",
+      "ko": "그러므로 레위는 그 형제 중에 분깃이 없으며 기업이 없고 네 하나님 여호와께서 그에게 말씀하심 같이 여호와가 그의 기업이시니라)",
+      "source_text_hash": "d14062eca8c343be3122884394c52dea3d6183879b22e71a6b955d03b7b78249",
+      "translation_text_hash": "ca38811c389007d1240a23ca29e2e0bce9bcce6dd6473a6ff29b798a3da1b3e4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 레위는 그 형제 중에 분깃이 없으며 기업이 없고 네 하나님 여호와께서 그에게 말씀하심 같이 여호와가 그의 기업이시니라)"
+      ],
+      "raw_text_hashes": [
+        "ca38811c389007d1240a23ca29e2e0bce9bcce6dd6473a6ff29b798a3da1b3e4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:10:10",
+      "sequence": 5197,
+      "chapter_label": "DEU 10",
+      "verse_label": "10",
+      "locator": {
+        "book": "DEU",
+        "chapter": 10,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 10,
+          "verse": 10
+        }
+      ],
+      "en": "I stayed on the mountain, as at the first time, forty days and forty nights; and the LORD listened to me that time also. The LORD would not destroy you.",
+      "ko": "내가 처음과 같이 사십 주야를 산에 유하였고 그 때에도 여호와께서 내 말을 들으사 너를 참아 멸하지 아니하시고",
+      "source_text_hash": "c3b2fa11eda877468ae16c2be41a70f834e4d1d69275e98a85443e94da96e22c",
+      "translation_text_hash": "afb22da4721b9da56e321b3b278cbe7af26d20c9e197f9852b049b5dafb9f01f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 처음과 같이 사십 주야를 산에 유하였고 그 때에도 여호와께서 내 말을 들으사 너를 참아 멸하지 아니하시고"
+      ],
+      "raw_text_hashes": [
+        "afb22da4721b9da56e321b3b278cbe7af26d20c9e197f9852b049b5dafb9f01f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:10:11",
+      "sequence": 5198,
+      "chapter_label": "DEU 10",
+      "verse_label": "11",
+      "locator": {
+        "book": "DEU",
+        "chapter": 10,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 10,
+          "verse": 11
+        }
+      ],
+      "en": "The LORD said to me, “Arise, take your journey before the people; and they shall go in and possess the land which I swore to their fathers to give to them.”",
+      "ko": "여호와께서 내게 이르시되 일어나서 백성 앞서 진행하라 내가 그들에게 주리라고 그 열조에게 맹세한 땅에 그들이 들어가서 그것을 얻으리라 하셨느니라",
+      "source_text_hash": "0ef3effc56bffcf5ec3df8a4fe2874be9114fef8ec32b66a350c11dce8c3f538",
+      "translation_text_hash": "e6f459901c9c79820a91e09b0c75ee693591878f4de25d44b3241c0cdacec0b6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 내게 이르시되 일어나서 백성 앞서 진행하라 내가 그들에게 주리라고 그 열조에게 맹세한 땅에 그들이 들어가서 그것을 얻으리라 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "e6f459901c9c79820a91e09b0c75ee693591878f4de25d44b3241c0cdacec0b6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:10:12",
+      "sequence": 5199,
+      "chapter_label": "DEU 10",
+      "verse_label": "12",
+      "locator": {
+        "book": "DEU",
+        "chapter": 10,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 10,
+          "verse": 12
+        }
+      ],
+      "en": "Now, Israel, what does the LORD your God require of you, but to fear the LORD your God, to walk in all his ways, to love him, and to serve the LORD your God with all your heart and with all your soul,",
+      "ko": "이스라엘아 네 하나님 여호와께서 네게 요구하시는 것이 무엇이냐 곧 네 하나님 여호와를 경외하여 그 모든 도를 행하고 그를 사랑하며 마음을 다하고 성품을 다하여 네 하나님 여호와를 섬기고",
+      "source_text_hash": "9c604d42637952bf98a39c7ce06d8ea84c0b41d56126ad33da6efffd40f68a8d",
+      "translation_text_hash": "6c5937527cfa786311d6ae636b30adf9e5a87b458de766f13d8a9c06bf2cb0e1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘아 네 하나님 여호와께서 네게 요구하시는 것이 무엇이냐 곧 네 하나님 여호와를 경외하여 그 모든 도를 행하고 그를 사랑하며 마음을 다하고 성품을 다하여 네 하나님 여호와를 섬기고"
+      ],
+      "raw_text_hashes": [
+        "6c5937527cfa786311d6ae636b30adf9e5a87b458de766f13d8a9c06bf2cb0e1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:10:13",
+      "sequence": 5200,
+      "chapter_label": "DEU 10",
+      "verse_label": "13",
+      "locator": {
+        "book": "DEU",
+        "chapter": 10,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 10,
+          "verse": 13
+        }
+      ],
+      "en": "to keep the LORD’s commandments and statutes, which I command you today for your good?",
+      "ko": "내가 오늘날 네 행복을 위하여 네게 명하는 여호와의 명령과 규례를 지킬 것이 아니냐",
+      "source_text_hash": "bd36cf274b3d01a8217943970f4196801308dddaea19d94f4ba5a9c7cdf826ee",
+      "translation_text_hash": "94a4d7a1e1a61b67944f6f450fb6010a4e4df87aa60f1ef1e132bd5417e6fc26",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 오늘날 네 행복을 위하여 네게 명하는 여호와의 명령과 규례를 지킬 것이 아니냐"
+      ],
+      "raw_text_hashes": [
+        "94a4d7a1e1a61b67944f6f450fb6010a4e4df87aa60f1ef1e132bd5417e6fc26"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:10:14",
+      "sequence": 5201,
+      "chapter_label": "DEU 10",
+      "verse_label": "14",
+      "locator": {
+        "book": "DEU",
+        "chapter": 10,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 10,
+          "verse": 14
+        }
+      ],
+      "en": "Behold, to the LORD your God belongs heaven, the heaven of heavens, and the earth, with all that is therein.",
+      "ko": "하늘과 모든 하늘의 하늘과 땅과 그 위의 만물은 본래 네 하나님 여호와께 속한 것이로되",
+      "source_text_hash": "5938a0e26bbdd334a3dbb71cf083d42bc5fffcdd57fb442998176d17bfa09691",
+      "translation_text_hash": "ef21087efff370281c7c8202c44b47d3d1813d71c44aa59110f75b6f436ff767",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하늘과 모든 하늘의 하늘과 땅과 그 위의 만물은 본래 네 하나님 여호와께 속한 것이로되"
+      ],
+      "raw_text_hashes": [
+        "ef21087efff370281c7c8202c44b47d3d1813d71c44aa59110f75b6f436ff767"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:10:15",
+      "sequence": 5202,
+      "chapter_label": "DEU 10",
+      "verse_label": "15",
+      "locator": {
+        "book": "DEU",
+        "chapter": 10,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 10,
+          "verse": 15
+        }
+      ],
+      "en": "Only the LORD had a delight in your fathers to love them, and he chose their offspring after them, even you above all peoples, as it is today.",
+      "ko": "여호와께서 오직 네 열조를 기뻐하시고 그들을 사랑하사 그 후손 너희를 만민 중에서 택하셨음이 오늘날과 같으니라",
+      "source_text_hash": "07122951d53c16ea3ae6b78e700edfc3c2e16992018c2f866d89855f606cbd2a",
+      "translation_text_hash": "b4113260aa75defab473a28b447341fe963979c3aa070b3b76684df0741fa0d2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 오직 네 열조를 기뻐하시고 그들을 사랑하사 그 후손 너희를 만민 중에서 택하셨음이 오늘날과 같으니라"
+      ],
+      "raw_text_hashes": [
+        "b4113260aa75defab473a28b447341fe963979c3aa070b3b76684df0741fa0d2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:10:16",
+      "sequence": 5203,
+      "chapter_label": "DEU 10",
+      "verse_label": "16",
+      "locator": {
+        "book": "DEU",
+        "chapter": 10,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 10,
+          "verse": 16
+        }
+      ],
+      "en": "Circumcise therefore the foreskin of your heart, and be no more stiff-necked.",
+      "ko": "그러므로 너희는 마음에 할례를 행하고 다시는 목을 곧게 하지 말라",
+      "source_text_hash": "a03865da4dd8faa03ef5b32061b25f76016b6e7bc83417e58c50e582107248c2",
+      "translation_text_hash": "f748468e3704f8d7f9b44df8fd0e4197da712ad875c7ef9bb555b9aaf0a62394",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 너희는 마음에 할례를 행하고 다시는 목을 곧게 하지 말라"
+      ],
+      "raw_text_hashes": [
+        "f748468e3704f8d7f9b44df8fd0e4197da712ad875c7ef9bb555b9aaf0a62394"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:10:17",
+      "sequence": 5204,
+      "chapter_label": "DEU 10",
+      "verse_label": "17",
+      "locator": {
+        "book": "DEU",
+        "chapter": 10,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 10,
+          "verse": 17
+        }
+      ],
+      "en": "For the LORD your God, he is God of gods and Lord of lords, the great God, the mighty, and the awesome, who doesn’t respect persons or take bribes.",
+      "ko": "너희의 하나님 여호와는 신의 신이시며 주의 주시요 크고 능하시며 두려우신 하나님이시라 사람을 외모로 보지 아니하시며 뇌물을 받지 아니하시고",
+      "source_text_hash": "b50974783a406abddd518c24ddb2075f770350854410b3e57179cbcd7e873355",
+      "translation_text_hash": "39ac92ea623960466fa4f527452504a266c5132bea32de0a8e738f9d8350d879",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희의 하나님 여호와는 신의 신이시며 주의 주시요 크고 능하시며 두려우신 하나님이시라 사람을 외모로 보지 아니하시며 뇌물을 받지 아니하시고"
+      ],
+      "raw_text_hashes": [
+        "39ac92ea623960466fa4f527452504a266c5132bea32de0a8e738f9d8350d879"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:10:18",
+      "sequence": 5205,
+      "chapter_label": "DEU 10",
+      "verse_label": "18",
+      "locator": {
+        "book": "DEU",
+        "chapter": 10,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 10,
+          "verse": 18
+        }
+      ],
+      "en": "He executes justice for the fatherless and widow and loves the foreigner in giving him food and clothing.",
+      "ko": "고아와 과부를 위하여 신원하시며 나그네를 사랑하사 그에게 식물과 의복을 주시나니",
+      "source_text_hash": "d4e2c4ce89c7356c1be89b290be818f7060f8dd9cf3f0e2067e3f05d839e8924",
+      "translation_text_hash": "cd8f23ec25e6735636f460ae6995a0d7c9aa032607397d2fdc841f910187d84b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "고아와 과부를 위하여 신원하시며 나그네를 사랑하사 그에게 식물과 의복을 주시나니"
+      ],
+      "raw_text_hashes": [
+        "cd8f23ec25e6735636f460ae6995a0d7c9aa032607397d2fdc841f910187d84b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:10:19",
+      "sequence": 5206,
+      "chapter_label": "DEU 10",
+      "verse_label": "19",
+      "locator": {
+        "book": "DEU",
+        "chapter": 10,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 10,
+          "verse": 19
+        }
+      ],
+      "en": "Therefore love the foreigner, for you were foreigners in the land of Egypt.",
+      "ko": "너희는 나그네를 사랑하라 전에 너희도 애굽 땅에서 나그네 되었었음이니라",
+      "source_text_hash": "79bfd1463545e5f84f7679b38cd758506877ddf5a72cc76930913c1755e11e90",
+      "translation_text_hash": "f139c6b922e167d0c617a90aba84a647bb82537a92dcb2a93b66403e7c8a9858",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 나그네를 사랑하라 전에 너희도 애굽 땅에서 나그네 되었었음이니라"
+      ],
+      "raw_text_hashes": [
+        "f139c6b922e167d0c617a90aba84a647bb82537a92dcb2a93b66403e7c8a9858"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:10:20",
+      "sequence": 5207,
+      "chapter_label": "DEU 10",
+      "verse_label": "20",
+      "locator": {
+        "book": "DEU",
+        "chapter": 10,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 10,
+          "verse": 20
+        }
+      ],
+      "en": "You shall fear the LORD your God. You shall serve him. You shall cling to him, and you shall swear by his name.",
+      "ko": "네 하나님 여호와를 경외하여 그를 섬기며 그에게 친근히 하고 그 이름으로 맹세하라",
+      "source_text_hash": "fe5e04232b3ff699d91df811dd97ef521b24db7f4bdc6ff8bf5960b7da282d63",
+      "translation_text_hash": "9e075b6986f8e96caf740cc692e908492899d7f21f2299deb9e937a7b2390ae0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 하나님 여호와를 경외하여 그를 섬기며 그에게 친근히 하고 그 이름으로 맹세하라"
+      ],
+      "raw_text_hashes": [
+        "9e075b6986f8e96caf740cc692e908492899d7f21f2299deb9e937a7b2390ae0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:10:21",
+      "sequence": 5208,
+      "chapter_label": "DEU 10",
+      "verse_label": "21",
+      "locator": {
+        "book": "DEU",
+        "chapter": 10,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 10,
+          "verse": 21
+        }
+      ],
+      "en": "He is your praise, and he is your God, who has done for you these great and awesome things which your eyes have seen.",
+      "ko": "그는 네 찬송이시요 네 하나님이시라 네가 목도한바 이같이 크고 두려운 일을 너를 위하여 행하셨느니라",
+      "source_text_hash": "206f664410343a62281c6c1fb5c2b78ead398fb06f8ce6996996b09275decba4",
+      "translation_text_hash": "86292a2eb6b4151794aaa3bc206b5c4663ba1a5c50c0b81f3f59ce772434efb1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그는 네 찬송이시요 네 하나님이시라 네가 목도한바 이같이 크고 두려운 일을 너를 위하여 행하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "86292a2eb6b4151794aaa3bc206b5c4663ba1a5c50c0b81f3f59ce772434efb1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:10:22",
+      "sequence": 5209,
+      "chapter_label": "DEU 10",
+      "verse_label": "22",
+      "locator": {
+        "book": "DEU",
+        "chapter": 10,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 10,
+          "verse": 22
+        }
+      ],
+      "en": "Your fathers went down into Egypt with seventy persons; and now the LORD your God has made you as the stars of the sky for multitude.",
+      "ko": "애굽에 내려간 네 열조가 겨우 칠십인이었으나 이제는 네 하나님 여호와께서 너를 하늘의 별 같이 많게 하셨느니라",
+      "source_text_hash": "4b9f04168a9f96c724bb135deec4b60c42f2b4a560f0bbcb2174e9d1f50cabda",
+      "translation_text_hash": "6e7eddfad2b91ac720decf95d0e2878e705a95b30c8f5a6ed64bcd2f7159ffb5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "애굽에 내려간 네 열조가 겨우 칠십인이었으나 이제는 네 하나님 여호와께서 너를 하늘의 별 같이 많게 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "6e7eddfad2b91ac720decf95d0e2878e705a95b30c8f5a6ed64bcd2f7159ffb5"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,685 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:OBA:chapter:001",
+  "unit_ordinal": 889,
+  "unit_label": "OBA 1",
+  "book_code": "OBA",
+  "chapter_number": 1,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:OBA:1:1",
+      "sequence": 22512,
+      "chapter_label": "OBA 1",
+      "verse_label": "1",
+      "locator": {
+        "book": "OBA",
+        "chapter": 1,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "OBA",
+          "chapter": 1,
+          "verse": 1
+        }
+      ],
+      "en": "The vision of Obadiah. This is what the Lord GOD says about Edom. We have heard news from the LORD, and an ambassador is sent among the nations, saying, “Arise, and let’s rise up against her in battle.",
+      "ko": "오바댜의 묵시라 주 여호와께서 에돔에 대하여 이같이 말씀하시니라 우리가 여호와께로 말미암아 소식을 들었나니 곧 사자가 열국 중에 보내심을 받고 이르기를 너희는 일어날찌어다 우리가 일어나서 그로 더불어 싸우자 하는 것이니라",
+      "source_text_hash": "7647ea375637fac5d386da9f08008fec39f8af8d478a01caea1dd0a1852cbd57",
+      "translation_text_hash": "c6c5b8596f42d10180142609cacb7affe946701ebbc81d8ab94d76408c19f43d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오바댜의 묵시라 주 여호와께서 에돔에 대하여 이같이 말씀하시니라 우리가 여호와께로 말미암아 소식을 들었나니 곧 사자가 열국 중에 보내심을 받고 이르기를 너희는 일어날찌어다 우리가 일어나서 그로 더불어 싸우자 하는 것이니라"
+      ],
+      "raw_text_hashes": [
+        "c6c5b8596f42d10180142609cacb7affe946701ebbc81d8ab94d76408c19f43d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:OBA:1:2",
+      "sequence": 22513,
+      "chapter_label": "OBA 1",
+      "verse_label": "2",
+      "locator": {
+        "book": "OBA",
+        "chapter": 1,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "OBA",
+          "chapter": 1,
+          "verse": 2
+        }
+      ],
+      "en": "Behold, I have made you small among the nations. You are greatly despised.",
+      "ko": "여호와께서 가라사대 내가 너를 열국 중에 미약하게 하였으므로 네가 크게 멸시를 받느니라",
+      "source_text_hash": "4f40ab154573e3836631896975d64bc44804f66373dc75674f63944c60c9e1fc",
+      "translation_text_hash": "e6a9b618b03368c0a9befecdbd13ebc5bdc866cbf06c5d0d7391965278c859eb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 가라사대 내가 너를 열국 중에 미약하게 하였으므로 네가 크게 멸시를 받느니라"
+      ],
+      "raw_text_hashes": [
+        "e6a9b618b03368c0a9befecdbd13ebc5bdc866cbf06c5d0d7391965278c859eb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:OBA:1:3",
+      "sequence": 22514,
+      "chapter_label": "OBA 1",
+      "verse_label": "3",
+      "locator": {
+        "book": "OBA",
+        "chapter": 1,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "OBA",
+          "chapter": 1,
+          "verse": 3
+        }
+      ],
+      "en": "The pride of your heart has deceived you, you who dwell in the clefts of the rock, whose habitation is high, who says in his heart, ‘Who will bring me down to the ground?’",
+      "ko": "바위 틈에 거하며 높은 곳에 사는 자여 네가 중심에 이르기를 누가 능히 나를 땅에 끌어내리겠느냐 하니 너의 중심의 교만이 너를 속였도다",
+      "source_text_hash": "010568d3070bcd62988481ce5310661539d316e4692053c4d3acded823d114d1",
+      "translation_text_hash": "af280f32288108023fbbce769e0bddfb0eb09ae15525a0f2fbd9f9fd67b7ab44",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바위 틈에 거하며 높은 곳에 사는 자여 네가 중심에 이르기를 누가 능히 나를 땅에 끌어내리겠느냐 하니 너의 중심의 교만이 너를 속였도다"
+      ],
+      "raw_text_hashes": [
+        "af280f32288108023fbbce769e0bddfb0eb09ae15525a0f2fbd9f9fd67b7ab44"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:OBA:1:4",
+      "sequence": 22515,
+      "chapter_label": "OBA 1",
+      "verse_label": "4",
+      "locator": {
+        "book": "OBA",
+        "chapter": 1,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "OBA",
+          "chapter": 1,
+          "verse": 4
+        }
+      ],
+      "en": "Though you mount on high as the eagle, and though your nest is set among the stars, I will bring you down from there,” says the LORD.",
+      "ko": "네가 독수리처럼 높이 오르며 별 사이에 깃들일찌라도 내가 거기서 너를 끌어내리리라 나 여호와가 말하였느니라",
+      "source_text_hash": "6fd61b1ffae1ef6d16ebe62773b03bf9178c4fc62f2bbdd7be60dc62a028ff11",
+      "translation_text_hash": "1bb3cdb1d659282933e3681ed6f877b9f30d5805444bf77926f04eca89757af3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 독수리처럼 높이 오르며 별 사이에 깃들일찌라도 내가 거기서 너를 끌어내리리라 나 여호와가 말하였느니라"
+      ],
+      "raw_text_hashes": [
+        "1bb3cdb1d659282933e3681ed6f877b9f30d5805444bf77926f04eca89757af3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:OBA:1:5",
+      "sequence": 22516,
+      "chapter_label": "OBA 1",
+      "verse_label": "5",
+      "locator": {
+        "book": "OBA",
+        "chapter": 1,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "OBA",
+          "chapter": 1,
+          "verse": 5
+        }
+      ],
+      "en": "“If thieves came to you, if robbers by night—oh, what disaster awaits you—wouldn’t they only steal until they had enough? If grape pickers came to you, wouldn’t they leave some gleaning grapes?",
+      "ko": "혹시 도적이 네게 이르렀으며 강도가 밤중에 네게 이르렀을찌라도 그 마음에 만족하게 취하면 그치지 아니하였겠느냐 혹시 포도를 따는 자가 네게 이르렀을찌라도 그것을 얼마쯤 남기지 아니하였겠느냐 네가 어찌 그리 망하였는고",
+      "source_text_hash": "8d7dbba468a5d3950ef510bce4e74d16082e544702c999290acf54a2f25a8884",
+      "translation_text_hash": "92adb8ce1493bccbc1ff2f6930b94046a8595d4bf5eac245ca816df1332fccbe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "혹시 도적이 네게 이르렀으며 강도가 밤중에 네게 이르렀을찌라도 그 마음에 만족하게 취하면 그치지 아니하였겠느냐 혹시 포도를 따는 자가 네게 이르렀을찌라도 그것을 얼마쯤 남기지 아니하였겠느냐 네가 어찌 그리 망하였는고"
+      ],
+      "raw_text_hashes": [
+        "92adb8ce1493bccbc1ff2f6930b94046a8595d4bf5eac245ca816df1332fccbe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:OBA:1:6",
+      "sequence": 22517,
+      "chapter_label": "OBA 1",
+      "verse_label": "6",
+      "locator": {
+        "book": "OBA",
+        "chapter": 1,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "OBA",
+          "chapter": 1,
+          "verse": 6
+        }
+      ],
+      "en": "How Esau will be ransacked! How his hidden treasures are sought out!",
+      "ko": "에서가 어찌 그리 수탐되었으며 그 감춘 보물이 어찌 그리 수탐되었는고",
+      "source_text_hash": "1a2b300ea9b05526b0c677b779f46fc9a9acb7675aaed57016bf93609fa64dff",
+      "translation_text_hash": "3b931e07f0bb8637ac7f0fd24956ff7ea6414559a0024d619d81446a4e5d9656",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에서가 어찌 그리 수탐되었으며 그 감춘 보물이 어찌 그리 수탐되었는고"
+      ],
+      "raw_text_hashes": [
+        "3b931e07f0bb8637ac7f0fd24956ff7ea6414559a0024d619d81446a4e5d9656"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:OBA:1:7",
+      "sequence": 22518,
+      "chapter_label": "OBA 1",
+      "verse_label": "7",
+      "locator": {
+        "book": "OBA",
+        "chapter": 1,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "OBA",
+          "chapter": 1,
+          "verse": 7
+        }
+      ],
+      "en": "All the men of your alliance have brought you on your way, even to the border. The men who were at peace with you have deceived you, and prevailed against you. Friends who eat your bread lay a snare under you. There is no understanding in him.”",
+      "ko": "너와 약조한 자들이 다 너를 쫓아 변경에 이르게 하며 너와 화목하던 자들이 너를 속이고 이기며 네 식물을 먹는자들이 네 아래 함정을 베푸니 네 마음에 지각이 없음이로다",
+      "source_text_hash": "e53c71e760936f352bb94832cff2d7b100db3aead7e568c35c023ffc8b5342d5",
+      "translation_text_hash": "c748c8f2f57a0138e7a5a01d8da65853150996086b1e412f18c28f7c56f7b394",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너와 약조한 자들이 다 너를 쫓아 변경에 이르게 하며 너와 화목하던 자들이 너를 속이고 이기며 네 식물을 먹는자들이 네 아래 함정을 베푸니 네 마음에 지각이 없음이로다"
+      ],
+      "raw_text_hashes": [
+        "c748c8f2f57a0138e7a5a01d8da65853150996086b1e412f18c28f7c56f7b394"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:OBA:1:8",
+      "sequence": 22519,
+      "chapter_label": "OBA 1",
+      "verse_label": "8",
+      "locator": {
+        "book": "OBA",
+        "chapter": 1,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "OBA",
+          "chapter": 1,
+          "verse": 8
+        }
+      ],
+      "en": "“Won’t I in that day”, says the LORD, “destroy the wise men out of Edom, and understanding out of the mountain of Esau?",
+      "ko": "나 여호와가 말하노라 그 날에 내가 에돔에서 지혜 있는 자를 멸하며 에서의 산에서 지각 있는 자를 멸하지 아니하겠느냐",
+      "source_text_hash": "386ab67bf73496d4e8a91295656a61bb806c7a745b513212a06b2e15e3147e57",
+      "translation_text_hash": "3203745c0c44d0b896f16ca2b5eb322c481e1b9bd995046e23eb1949cd3ff0df",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와가 말하노라 그 날에 내가 에돔에서 지혜 있는 자를 멸하며 에서의 산에서 지각 있는 자를 멸하지 아니하겠느냐"
+      ],
+      "raw_text_hashes": [
+        "3203745c0c44d0b896f16ca2b5eb322c481e1b9bd995046e23eb1949cd3ff0df"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:OBA:1:9",
+      "sequence": 22520,
+      "chapter_label": "OBA 1",
+      "verse_label": "9",
+      "locator": {
+        "book": "OBA",
+        "chapter": 1,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "OBA",
+          "chapter": 1,
+          "verse": 9
+        }
+      ],
+      "en": "Your mighty men, Teman, will be dismayed, to the end that everyone may be cut off from the mountain of Esau by slaughter.",
+      "ko": "드만아 네 용사들이 놀랄 것이라 이로 인하여 에서의 산의 거민이 살륙을 당하여 다 멸절되리라",
+      "source_text_hash": "e62749b6b69d37de5ca671e7e1508dceb44b4de72b403a9631e65ddab765b230",
+      "translation_text_hash": "910f6c7d6f9487096e7310ab67ee5a6de8888e158e224b09f54ac8d9fc592dc3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "드만아 네 용사들이 놀랄 것이라 이로 인하여 에서의 산의 거민이 살륙을 당하여 다 멸절되리라"
+      ],
+      "raw_text_hashes": [
+        "910f6c7d6f9487096e7310ab67ee5a6de8888e158e224b09f54ac8d9fc592dc3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:OBA:1:10",
+      "sequence": 22521,
+      "chapter_label": "OBA 1",
+      "verse_label": "10",
+      "locator": {
+        "book": "OBA",
+        "chapter": 1,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "OBA",
+          "chapter": 1,
+          "verse": 10
+        }
+      ],
+      "en": "For the violence done to your brother Jacob, shame will cover you, and you will be cut off forever.",
+      "ko": "네가 네 형제 야곱에게 행한 포학을 인하여 수욕을 입고 영원히 멸절되리라",
+      "source_text_hash": "14c1e89749e1af5b462974fa9ae36ff263a8c6df174c62e874fe8a00ac2eb409",
+      "translation_text_hash": "91ae68d49c1ee2fd3929dea116c0dc2b1368daf2e9676b7742c6d6b89d3b00c8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 네 형제 야곱에게 행한 포학을 인하여 수욕을 입고 영원히 멸절되리라"
+      ],
+      "raw_text_hashes": [
+        "91ae68d49c1ee2fd3929dea116c0dc2b1368daf2e9676b7742c6d6b89d3b00c8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:OBA:1:11",
+      "sequence": 22522,
+      "chapter_label": "OBA 1",
+      "verse_label": "11",
+      "locator": {
+        "book": "OBA",
+        "chapter": 1,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "OBA",
+          "chapter": 1,
+          "verse": 11
+        }
+      ],
+      "en": "In the day that you stood on the other side, in the day that strangers carried away his substance and foreigners entered into his gates and cast lots for Jerusalem, even you were like one of them.",
+      "ko": "네가 멀리 섰던 날 곧 이방인이 그의 재물을 늑탈하며 외국인이 그의 성문에 들어가서 예루살렘을 얻기 위하여 제비 뽑던 날에 너도 그들 중 한 사람 같았었느니라",
+      "source_text_hash": "88daae30437c5b1ff3c0c910ad98d2859e9c7f54ed88f9c74be2f3ed4d0b5180",
+      "translation_text_hash": "f8b42aba1cd5cd1d85b67539831b3a6d268fcbc30a27cadb2c6ffc3f38b471ee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 멀리 섰던 날 곧 이방인이 그의 재물을 늑탈하며 외국인이 그의 성문에 들어가서 예루살렘을 얻기 위하여 제비 뽑던 날에 너도 그들 중 한 사람 같았었느니라"
+      ],
+      "raw_text_hashes": [
+        "f8b42aba1cd5cd1d85b67539831b3a6d268fcbc30a27cadb2c6ffc3f38b471ee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:OBA:1:12",
+      "sequence": 22523,
+      "chapter_label": "OBA 1",
+      "verse_label": "12",
+      "locator": {
+        "book": "OBA",
+        "chapter": 1,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "OBA",
+          "chapter": 1,
+          "verse": 12
+        }
+      ],
+      "en": "But don’t look down on your brother in the day of his disaster, and don’t rejoice over the children of Judah in the day of their destruction. Don’t speak proudly in the day of distress.",
+      "ko": "네가 형제의 날 곧 그 재앙의 날에 방관할 것이 아니며 유다 자손의 패망하는 날에 기뻐할 것이 아니며 그 고난의 날에 네가 입을 크게 벌릴 것이 아니라",
+      "source_text_hash": "7e21ed7c46b751f68a47a7416401d02ff7e5ff81c79a697d024c01d6a55eb582",
+      "translation_text_hash": "7d0a22f5ff9ce90bfc460708828ee84ddcd4d4b09c800991a5b234bfd1a2e444",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 형제의 날 곧 그 재앙의 날에 방관할 것이 아니며 유다 자손의 패망하는 날에 기뻐할 것이 아니며 그 고난의 날에 네가 입을 크게 벌릴 것이 아니라"
+      ],
+      "raw_text_hashes": [
+        "7d0a22f5ff9ce90bfc460708828ee84ddcd4d4b09c800991a5b234bfd1a2e444"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:OBA:1:13",
+      "sequence": 22524,
+      "chapter_label": "OBA 1",
+      "verse_label": "13",
+      "locator": {
+        "book": "OBA",
+        "chapter": 1,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "OBA",
+          "chapter": 1,
+          "verse": 13
+        }
+      ],
+      "en": "Don’t enter into the gate of my people in the day of their calamity. Don’t look down on their affliction in the day of their calamity, neither seize their wealth on the day of their calamity.",
+      "ko": "내 백성이 환난을 당하는 날에 네가 그 성문에 들어가지 않을 것이며 환난을 당하는 날에 네가 그 고난을 방관하지 않을 것이며 환난을 당하는 날에 네가 그 재물에 손을 대지 않을 것이며",
+      "source_text_hash": "bf736c208a7bd3fe35c58c577ea438c8a9260f28680f60ed678c2780fb5e883f",
+      "translation_text_hash": "d2ef1f93c6324d005eb7585741a1843d15c48706987ae3000b968f17da5392d4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 백성이 환난을 당하는 날에 네가 그 성문에 들어가지 않을 것이며 환난을 당하는 날에 네가 그 고난을 방관하지 않을 것이며 환난을 당하는 날에 네가 그 재물에 손을 대지 않을 것이며"
+      ],
+      "raw_text_hashes": [
+        "d2ef1f93c6324d005eb7585741a1843d15c48706987ae3000b968f17da5392d4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:OBA:1:14",
+      "sequence": 22525,
+      "chapter_label": "OBA 1",
+      "verse_label": "14",
+      "locator": {
+        "book": "OBA",
+        "chapter": 1,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "OBA",
+          "chapter": 1,
+          "verse": 14
+        }
+      ],
+      "en": "Don’t stand in the crossroads to cut off those of his who escape. Don’t deliver up those of his who remain in the day of distress.",
+      "ko": "사거리에 서서 그 도망하는 자를 막지 않을 것이며 고난의 날에 그 남은 자를 대적에게 붙이지 않을 것이니라",
+      "source_text_hash": "4205064d4a442acb1ff6b8f6109f0a60663574bae4eec84f9f5023b44d1a2f5a",
+      "translation_text_hash": "fcf3182820a135293415151eac9532876465badc97ccf0996f3a8a0a88dc2b9c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사거리에 서서 그 도망하는 자를 막지 않을 것이며 고난의 날에 그 남은 자를 대적에게 붙이지 않을 것이니라"
+      ],
+      "raw_text_hashes": [
+        "fcf3182820a135293415151eac9532876465badc97ccf0996f3a8a0a88dc2b9c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:OBA:1:15",
+      "sequence": 22526,
+      "chapter_label": "OBA 1",
+      "verse_label": "15",
+      "locator": {
+        "book": "OBA",
+        "chapter": 1,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "OBA",
+          "chapter": 1,
+          "verse": 15
+        }
+      ],
+      "en": "For the day of the LORD is near all the nations! As you have done, it will be done to you. Your deeds will return upon your own head.",
+      "ko": "여호와의 만국을 벌할 날이 가까왔나니 너의 행한대로 너도 받을 것인즉 너의 행한 것이 네 머리로 돌아갈 것이라",
+      "source_text_hash": "8b001e1d295e1ec9d700200832e0eb395103d595faeb8a130e0b09b49a680f82",
+      "translation_text_hash": "33c099d10057713a61cc746b0a246c2198ec8cc83e8b99206b2c989d8ab3aac4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 만국을 벌할 날이 가까왔나니 너의 행한대로 너도 받을 것인즉 너의 행한 것이 네 머리로 돌아갈 것이라"
+      ],
+      "raw_text_hashes": [
+        "33c099d10057713a61cc746b0a246c2198ec8cc83e8b99206b2c989d8ab3aac4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:OBA:1:16",
+      "sequence": 22527,
+      "chapter_label": "OBA 1",
+      "verse_label": "16",
+      "locator": {
+        "book": "OBA",
+        "chapter": 1,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "OBA",
+          "chapter": 1,
+          "verse": 16
+        }
+      ],
+      "en": "For as you have drunk on my holy mountain, so all the nations will drink continually. Yes, they will drink, swallow down, and will be as though they had not been.",
+      "ko": "너희가 내 성산에서 마신 것 같이 만국인이 항상 마시리니 곧 마시고 삼켜서 본래 없던 것 같이 되리라",
+      "source_text_hash": "a1da9d7bbd20be2df7d6e11c325b287b4d39194c3af2b94d0506f287c1822f69",
+      "translation_text_hash": "c4721823d29e9375e0c63001424f7dd2c5768cb629d606b44405ffeccb7196c7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 내 성산에서 마신 것 같이 만국인이 항상 마시리니 곧 마시고 삼켜서 본래 없던 것 같이 되리라"
+      ],
+      "raw_text_hashes": [
+        "c4721823d29e9375e0c63001424f7dd2c5768cb629d606b44405ffeccb7196c7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:OBA:1:17",
+      "sequence": 22528,
+      "chapter_label": "OBA 1",
+      "verse_label": "17",
+      "locator": {
+        "book": "OBA",
+        "chapter": 1,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "OBA",
+          "chapter": 1,
+          "verse": 17
+        }
+      ],
+      "en": "But in Mount Zion, there will be those who escape, and it will be holy. The house of Jacob will possess their possessions.",
+      "ko": "오직 시온산에서 피할 자가 있으리니 그 산이 거룩할 것이요 야곱 족속은 자기 기업을 누릴 것이며",
+      "source_text_hash": "17d39546bd56d1fa2c7414b967a9cf5fa1d3592a23cffd0b284954ed62fd7f4d",
+      "translation_text_hash": "ba465764781eb5ba77ecd7f3bb6930c783a963637c35d2a079ca0ac035760260",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 시온산에서 피할 자가 있으리니 그 산이 거룩할 것이요 야곱 족속은 자기 기업을 누릴 것이며"
+      ],
+      "raw_text_hashes": [
+        "ba465764781eb5ba77ecd7f3bb6930c783a963637c35d2a079ca0ac035760260"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:OBA:1:18",
+      "sequence": 22529,
+      "chapter_label": "OBA 1",
+      "verse_label": "18",
+      "locator": {
+        "book": "OBA",
+        "chapter": 1,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "OBA",
+          "chapter": 1,
+          "verse": 18
+        }
+      ],
+      "en": "The house of Jacob will be a fire, the house of Joseph a flame, and the house of Esau for stubble. They will burn among them and devour them. There will not be any remaining to the house of Esau.” Indeed, the LORD has spoken.",
+      "ko": "야곱 족속은 불이 될 것이요 요셉 족속은 불꽃이 될 것이며 에서 족속은 초개가 될 것이라 그들이 그의 위에 붙어서 그를 사를 것인즉 에서 족속에 남은 자가 없으리니 이는 여호와께서 말씀하셨음이니라",
+      "source_text_hash": "dbea4cdccb84ceae2a480fd3b875d2082fa99991fefb1b2da1833079af68548f",
+      "translation_text_hash": "a346e83e718126ff4658d406f5aefc45659459f168c325419b05b788d4bd64fb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야곱 족속은 불이 될 것이요 요셉 족속은 불꽃이 될 것이며 에서 족속은 초개가 될 것이라 그들이 그의 위에 붙어서 그를 사를 것인즉 에서 족속에 남은 자가 없으리니 이는 여호와께서 말씀하셨음이니라"
+      ],
+      "raw_text_hashes": [
+        "a346e83e718126ff4658d406f5aefc45659459f168c325419b05b788d4bd64fb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:OBA:1:19",
+      "sequence": 22530,
+      "chapter_label": "OBA 1",
+      "verse_label": "19",
+      "locator": {
+        "book": "OBA",
+        "chapter": 1,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "OBA",
+          "chapter": 1,
+          "verse": 19
+        }
+      ],
+      "en": "Those of the South will possess the mountain of Esau, and those of the lowland, the Philistines. They will possess the field of Ephraim, and the field of Samaria. Benjamin will possess Gilead.",
+      "ko": "남방 사람은 에서의 산을 얻을 것이며 평지 사람은 블레셋을 얻을 것이요 또 그들이 에브라임의 들과 사마리아의 들을 얻을 것이며 베냐민은 길르앗을 얻을 것이며",
+      "source_text_hash": "6f6456c7f521d55ad434500e63e422ce9fef0ebd1926a5812d4a779c731f4118",
+      "translation_text_hash": "06fcc286472647dcef689796281cfe702f848d5abaf21998690192c4f73b7ee8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "남방 사람은 에서의 산을 얻을 것이며 평지 사람은 블레셋을 얻을 것이요 또 그들이 에브라임의 들과 사마리아의 들을 얻을 것이며 베냐민은 길르앗을 얻을 것이며"
+      ],
+      "raw_text_hashes": [
+        "06fcc286472647dcef689796281cfe702f848d5abaf21998690192c4f73b7ee8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:OBA:1:20",
+      "sequence": 22531,
+      "chapter_label": "OBA 1",
+      "verse_label": "20",
+      "locator": {
+        "book": "OBA",
+        "chapter": 1,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "OBA",
+          "chapter": 1,
+          "verse": 20
+        }
+      ],
+      "en": "The captives of this army of the children of Israel, who are among the Canaanites, will possess even to Zarephath; and the captives of Jerusalem, who are in Sepharad, will possess the cities of the Negev.",
+      "ko": "사로잡혔던 이스라엘의 뭇 자손은 가나안 사람에게 속한 땅을 사르밧까지 얻을 것이며 예루살렘의 사로잡혔던 자 곧 스바랏에 있는 자는 남방의 성읍들을 얻을 것이니라",
+      "source_text_hash": "5e841562f912e0c6a20fd2ee58eaaa8ca28634df10b680d72ae6058ca9959d6c",
+      "translation_text_hash": "09f4ee397aaf4159ea8bf2f6c7249c973ce25b25f1ed65506eb7f79c9d722ab5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사로잡혔던 이스라엘의 뭇 자손은 가나안 사람에게 속한 땅을 사르밧까지 얻을 것이며 예루살렘의 사로잡혔던 자 곧 스바랏에 있는 자는 남방의 성읍들을 얻을 것이니라"
+      ],
+      "raw_text_hashes": [
+        "09f4ee397aaf4159ea8bf2f6c7249c973ce25b25f1ed65506eb7f79c9d722ab5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:OBA:1:21",
+      "sequence": 22532,
+      "chapter_label": "OBA 1",
+      "verse_label": "21",
+      "locator": {
+        "book": "OBA",
+        "chapter": 1,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "OBA",
+          "chapter": 1,
+          "verse": 21
+        }
+      ],
+      "en": "Saviors will go up on Mount Zion to judge the mountains of Esau, and the kingdom will be the LORD’s.",
+      "ko": "구원자들이 시온산에 올라와서 에서의 산을 심판하리니 나라가 여호와께 속하리라",
+      "source_text_hash": "07fea5aa40c27cc13f3dfd0ca01cbc597fa8064d4e496c5b73325a48c5a2f633",
+      "translation_text_hash": "0fff461a8699972db660011479b6ff9cd3829ff46a8503df83fe6126ff354148",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "구원자들이 시온산에 올라와서 에서의 산을 심판하리니 나라가 여호와께 속하리라"
+      ],
+      "raw_text_hashes": [
+        "0fff461a8699972db660011479b6ff9cd3829ff46a8503df83fe6126ff354148"
+      ]
+    }
+  ]
+}

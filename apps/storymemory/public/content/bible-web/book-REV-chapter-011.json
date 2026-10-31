@@ -1,0 +1,621 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:REV:chapter:011",
+  "unit_ordinal": 1178,
+  "unit_label": "REV 11",
+  "book_code": "REV",
+  "chapter_number": 11,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:REV:11:1",
+      "sequence": 30870,
+      "chapter_label": "REV 11",
+      "verse_label": "1",
+      "locator": {
+        "book": "REV",
+        "chapter": 11,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 11,
+          "verse": 1
+        }
+      ],
+      "en": "A reed like a rod was given to me. Someone said, “Rise and measure God’s temple, and the altar, and those who worship in it.",
+      "ko": "또 내게 지팡이 같은 갈대를 주며 말하기를 일어나서 하나님의 성전과 제단과 그 안에서 경배하는 자들을 척량하되",
+      "source_text_hash": "74e2baeeb21aeb15cdf32395a7975f8f10fc9c6f46f27ea82eb67fec31ea6ee3",
+      "translation_text_hash": "be99c161a0a8703300999f7e7ca6b8b5f661bc91e9ca99518141fb3be9404576",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 내게 지팡이 같은 갈대를 주며 말하기를 일어나서 하나님의 성전과 제단과 그 안에서 경배하는 자들을 척량하되"
+      ],
+      "raw_text_hashes": [
+        "be99c161a0a8703300999f7e7ca6b8b5f661bc91e9ca99518141fb3be9404576"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:11:2",
+      "sequence": 30871,
+      "chapter_label": "REV 11",
+      "verse_label": "2",
+      "locator": {
+        "book": "REV",
+        "chapter": 11,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 11,
+          "verse": 2
+        }
+      ],
+      "en": "Leave out the court which is outside of the temple, and don’t measure it, for it has been given to the nations. They will tread the holy city under foot for forty-two months.",
+      "ko": "성전 밖 마당은 척량하지 말고 그냥 두라 이것을 이방인에게 주었은즉 저희가 거룩한 성을 마흔 두달 동안 짓밟으리라",
+      "source_text_hash": "adb404acf06bc398b52596e1a1cfa0ffdc134db8243296e4008aeeaa4724bb0b",
+      "translation_text_hash": "792d699de8e80a9b1b623d4520505393218d6e9a2693b8295db18b74720959cf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "성전 밖 마당은 척량하지 말고 그냥 두라 이것을 이방인에게 주었은즉 저희가 거룩한 성을 마흔 두달 동안 짓밟으리라"
+      ],
+      "raw_text_hashes": [
+        "792d699de8e80a9b1b623d4520505393218d6e9a2693b8295db18b74720959cf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:11:3",
+      "sequence": 30872,
+      "chapter_label": "REV 11",
+      "verse_label": "3",
+      "locator": {
+        "book": "REV",
+        "chapter": 11,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 11,
+          "verse": 3
+        }
+      ],
+      "en": "I will give power to my two witnesses, and they will prophesy one thousand two hundred sixty days, clothed in sackcloth.”",
+      "ko": "내가 나의 두 증인에게 권세를 주리니 저희가 굵은 베옷을 입고 일천 이백 육십 일을 예언하리라",
+      "source_text_hash": "9defd01a4bb2ab5e97d14bf10c9226c7f461e7c94c46ba57f1acfd703b364e1c",
+      "translation_text_hash": "53d3a3cfc8e4bf69f26f8c6b5f06a789abe336ccac2e51ec19e29b40419a1a62",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 나의 두 증인에게 권세를 주리니 저희가 굵은 베옷을 입고 일천 이백 육십 일을 예언하리라"
+      ],
+      "raw_text_hashes": [
+        "53d3a3cfc8e4bf69f26f8c6b5f06a789abe336ccac2e51ec19e29b40419a1a62"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:11:4",
+      "sequence": 30873,
+      "chapter_label": "REV 11",
+      "verse_label": "4",
+      "locator": {
+        "book": "REV",
+        "chapter": 11,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 11,
+          "verse": 4
+        }
+      ],
+      "en": "These are the two olive trees and the two lamp stands, standing before the Lord of the earth.",
+      "ko": "이는 이 땅의 주 앞에 섰는 두 감람나무와 두 촛대니",
+      "source_text_hash": "28996890ca8700aae2f8786305161383da14eae9e45c0829256b39657945bb4a",
+      "translation_text_hash": "37ffe9de6bde68b2e21e65d750f0eeb033aa18725ba60aa0f72d1e00e60da760",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 이 땅의 주 앞에 섰는 두 감람나무와 두 촛대니"
+      ],
+      "raw_text_hashes": [
+        "37ffe9de6bde68b2e21e65d750f0eeb033aa18725ba60aa0f72d1e00e60da760"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:11:5",
+      "sequence": 30874,
+      "chapter_label": "REV 11",
+      "verse_label": "5",
+      "locator": {
+        "book": "REV",
+        "chapter": 11,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 11,
+          "verse": 5
+        }
+      ],
+      "en": "If anyone desires to harm them, fire proceeds out of their mouth and devours their enemies. If anyone desires to harm them, he must be killed in this way.",
+      "ko": "만일 누구든지 저희를 해하고자 한즉 저희 입에서 불이 나서 그 원수를 소멸할찌니 누구든지 해하려 하면 반드시 이와 같이 죽임을 당하리라",
+      "source_text_hash": "ac7aa999cddb137198898a56851d4235815896405afb8c27d96609a56b19e436",
+      "translation_text_hash": "04590f3c9fd9645eb06d0c94a5c114f8fb5301fcd848981fcbf90dbdae5dc075",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 누구든지 저희를 해하고자 한즉 저희 입에서 불이 나서 그 원수를 소멸할찌니 누구든지 해하려 하면 반드시 이와 같이 죽임을 당하리라"
+      ],
+      "raw_text_hashes": [
+        "04590f3c9fd9645eb06d0c94a5c114f8fb5301fcd848981fcbf90dbdae5dc075"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:11:6",
+      "sequence": 30875,
+      "chapter_label": "REV 11",
+      "verse_label": "6",
+      "locator": {
+        "book": "REV",
+        "chapter": 11,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 11,
+          "verse": 6
+        }
+      ],
+      "en": "These have the power to shut up the sky, that it may not rain during the days of their prophecy. They have power over the waters, to turn them into blood, and to strike the earth with every plague, as often as they desire.",
+      "ko": "저희가 권세를 가지고 하늘을 닫아 그 예언을 하는 날 동안 비 오지 못하게 하고 또 권세를 가지고 물을 변하여 피 되게 하고 아무 때든지 원하는 대로 여러가지 재앙으로 땅을 치리로다",
+      "source_text_hash": "8657fbaaf56f3d80a902a5477715c73f8f41016ed76ffc435c3622a98fe4b144",
+      "translation_text_hash": "5fba0c0d3a98a69a53c8b26cbbc6bfd992097cf89a7e5173b99139b09dd3e9e2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 권세를 가지고 하늘을 닫아 그 예언을 하는 날 동안 비 오지 못하게 하고 또 권세를 가지고 물을 변하여 피 되게 하고 아무 때든지 원하는 대로 여러가지 재앙으로 땅을 치리로다"
+      ],
+      "raw_text_hashes": [
+        "5fba0c0d3a98a69a53c8b26cbbc6bfd992097cf89a7e5173b99139b09dd3e9e2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:11:7",
+      "sequence": 30876,
+      "chapter_label": "REV 11",
+      "verse_label": "7",
+      "locator": {
+        "book": "REV",
+        "chapter": 11,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 11,
+          "verse": 7
+        }
+      ],
+      "en": "When they have finished their testimony, the beast that comes up out of the abyss will make war with them, and overcome them, and kill them.",
+      "ko": "저희가 그 증거를 마칠 때에 무저갱으로부터 올라오는 짐승이 저희로 더불어 전쟁을 일으켜 저희를 이기고 저희를 죽일터인즉",
+      "source_text_hash": "51b36ec23ade1dc05c2384426be7aceeddb56c64c071b43b7f684cf893d779b0",
+      "translation_text_hash": "1e0b6e2b48c12d45ec15e93e45be5136802c9da4e9d3a3472a19f09832b408b4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 그 증거를 마칠 때에 무저갱으로부터 올라오는 짐승이 저희로 더불어 전쟁을 일으켜 저희를 이기고 저희를 죽일터인즉"
+      ],
+      "raw_text_hashes": [
+        "1e0b6e2b48c12d45ec15e93e45be5136802c9da4e9d3a3472a19f09832b408b4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:11:8",
+      "sequence": 30877,
+      "chapter_label": "REV 11",
+      "verse_label": "8",
+      "locator": {
+        "book": "REV",
+        "chapter": 11,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 11,
+          "verse": 8
+        }
+      ],
+      "en": "Their dead bodies will be in the street of the great city, which spiritually is called Sodom and Egypt, where also their Lord was crucified.",
+      "ko": "저희 시체가 큰 성길에 있으리니 그 성은 영적으로 하면 소돔이라고도 하고 애굽이라고도 하니 곧 저희 주께서 십자가에 못 박히신 곳이니라",
+      "source_text_hash": "68c310efa57effbc63a2a3bb3eec85d1ce1e7161e501664a709c2b4d68e0f371",
+      "translation_text_hash": "def3241c71bc6d7aebedd1b68e902584ab7da658501d9756533ac640575e4dbe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희 시체가 큰 성길에 있으리니 그 성은 영적으로 하면 소돔이라고도 하고 애굽이라고도 하니 곧 저희 주께서 십자가에 못 박히신 곳이니라"
+      ],
+      "raw_text_hashes": [
+        "def3241c71bc6d7aebedd1b68e902584ab7da658501d9756533ac640575e4dbe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:11:9",
+      "sequence": 30878,
+      "chapter_label": "REV 11",
+      "verse_label": "9",
+      "locator": {
+        "book": "REV",
+        "chapter": 11,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 11,
+          "verse": 9
+        }
+      ],
+      "en": "From among the peoples, tribes, languages, and nations, people will look at their dead bodies for three and a half days, and will not allow their dead bodies to be laid in a tomb.",
+      "ko": "백성들과 족속과 방언과 나라 중에서 사람들이 그 시체를 사흘 반 동안을 목도하며 무덤에 장사하지 못하게 하리로다",
+      "source_text_hash": "fb3fc20fd54bc6fd9bec6612aa3231539b268e6a9cd95f35b0bb1b313710b861",
+      "translation_text_hash": "ee9b657fa5c1c83c78e437f5d0f4b0216af730b62227fd241b706ee3a9d7184f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "백성들과 족속과 방언과 나라 중에서 사람들이 그 시체를 사흘 반 동안을 목도하며 무덤에 장사하지 못하게 하리로다"
+      ],
+      "raw_text_hashes": [
+        "ee9b657fa5c1c83c78e437f5d0f4b0216af730b62227fd241b706ee3a9d7184f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:11:10",
+      "sequence": 30879,
+      "chapter_label": "REV 11",
+      "verse_label": "10",
+      "locator": {
+        "book": "REV",
+        "chapter": 11,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 11,
+          "verse": 10
+        }
+      ],
+      "en": "Those who dwell on the earth will rejoice over them, and they will be glad. They will give gifts to one another, because these two prophets tormented those who dwell on the earth.",
+      "ko": "이 두 선지자가 땅에 거하는 자들을 괴롭게 한고로 땅에 거하는 자들이 저희의 죽음을 즐거워하고 기뻐하여 서로 예물을 보내리라 하더라",
+      "source_text_hash": "340724f11bec74659440d5a43a40eeac20bf279f03ee2aa26a04f449a61b44e2",
+      "translation_text_hash": "50ae4eb8ed419c8f8b5e50602178e2892a237489a96542db243d504425de018d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 두 선지자가 땅에 거하는 자들을 괴롭게 한고로 땅에 거하는 자들이 저희의 죽음을 즐거워하고 기뻐하여 서로 예물을 보내리라 하더라"
+      ],
+      "raw_text_hashes": [
+        "50ae4eb8ed419c8f8b5e50602178e2892a237489a96542db243d504425de018d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:11:11",
+      "sequence": 30880,
+      "chapter_label": "REV 11",
+      "verse_label": "11",
+      "locator": {
+        "book": "REV",
+        "chapter": 11,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 11,
+          "verse": 11
+        }
+      ],
+      "en": "After the three and a half days, the breath of life from God entered into them, and they stood on their feet. Great fear fell on those who saw them.",
+      "ko": "삼일 반 후에 하나님께로부터 생기가 저희 속에 들어가매 저희가 발로 일어서니 구경하는 자들이 크게 두려워하더라",
+      "source_text_hash": "680f39e4ed5ca45d67fa56dd83b12f0cca75be52289570d0f59257628a7534c9",
+      "translation_text_hash": "64f9fc2b1fd356fcd5fe27fa2b84c4dcc899cfa5b71f500e839b4d023f262abe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "삼일 반 후에 하나님께로부터 생기가 저희 속에 들어가매 저희가 발로 일어서니 구경하는 자들이 크게 두려워하더라"
+      ],
+      "raw_text_hashes": [
+        "64f9fc2b1fd356fcd5fe27fa2b84c4dcc899cfa5b71f500e839b4d023f262abe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:11:12",
+      "sequence": 30881,
+      "chapter_label": "REV 11",
+      "verse_label": "12",
+      "locator": {
+        "book": "REV",
+        "chapter": 11,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 11,
+          "verse": 12
+        }
+      ],
+      "en": "I heard a loud voice from heaven saying to them, “Come up here!” They went up into heaven in a cloud, and their enemies saw them.",
+      "ko": "하늘로부터 큰 음성이 있어 이리로 올라오라 함을 저희가 듣고 구름을 타고 하늘로 올라가니 저희 원수들도 구경하더라",
+      "source_text_hash": "6260a4fdce68b7455721e39bc14f688dc37ed4aa146ec92ee8e6254437c68e96",
+      "translation_text_hash": "e6c5595a93a13f83a4f6b99effb52336f983dba9640967a24818bd7dbb831ae2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하늘로부터 큰 음성이 있어 이리로 올라오라 함을 저희가 듣고 구름을 타고 하늘로 올라가니 저희 원수들도 구경하더라"
+      ],
+      "raw_text_hashes": [
+        "e6c5595a93a13f83a4f6b99effb52336f983dba9640967a24818bd7dbb831ae2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:11:13",
+      "sequence": 30882,
+      "chapter_label": "REV 11",
+      "verse_label": "13",
+      "locator": {
+        "book": "REV",
+        "chapter": 11,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 11,
+          "verse": 13
+        }
+      ],
+      "en": "In that day there was a great earthquake, and a tenth of the city fell. Seven thousand people were killed in the earthquake, and the rest were terrified and gave glory to the God of heaven.",
+      "ko": "그 시에 큰 지진이 나서 성 십분의 일이 무너지고 지진에 죽은 사람이 칠천이라 그 남은 자들이 두려워하여 영광을 하늘의 하나님께 돌리더라",
+      "source_text_hash": "5ecc5634b169544d15ecfd97740c6375ced9657870a6bec03f9680a72f9e61bb",
+      "translation_text_hash": "04161b90dcc6784f0874acb4f5b5c2a7f246f03baaeaf3477255569f02ec2866",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 시에 큰 지진이 나서 성 십분의 일이 무너지고 지진에 죽은 사람이 칠천이라 그 남은 자들이 두려워하여 영광을 하늘의 하나님께 돌리더라"
+      ],
+      "raw_text_hashes": [
+        "04161b90dcc6784f0874acb4f5b5c2a7f246f03baaeaf3477255569f02ec2866"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:11:14",
+      "sequence": 30883,
+      "chapter_label": "REV 11",
+      "verse_label": "14",
+      "locator": {
+        "book": "REV",
+        "chapter": 11,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 11,
+          "verse": 14
+        }
+      ],
+      "en": "The second woe is past. Behold, the third woe comes quickly.",
+      "ko": "둘째 화는 지나갔으나 보라 세째 화가 속히 이르는도다",
+      "source_text_hash": "124b4b8807efc93d81bb57bfbef6ee274c651a62ed9d800b931b6451a381e543",
+      "translation_text_hash": "7ec01adcfaa1a8482829c4c71025c8cbdaa28790998383633fdef1680d068c38",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "둘째 화는 지나갔으나 보라 세째 화가 속히 이르는도다"
+      ],
+      "raw_text_hashes": [
+        "7ec01adcfaa1a8482829c4c71025c8cbdaa28790998383633fdef1680d068c38"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:11:15",
+      "sequence": 30884,
+      "chapter_label": "REV 11",
+      "verse_label": "15",
+      "locator": {
+        "book": "REV",
+        "chapter": 11,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 11,
+          "verse": 15
+        }
+      ],
+      "en": "The seventh angel sounded, and great voices in heaven followed, saying, “The kingdom of the world has become the Kingdom of our Lord and of his Christ. He will reign forever and ever!”",
+      "ko": "일곱째 천사가 나팔을 불매 하늘에 큰 음성들이 나서 가로되 세상 나라가 우리 주와 그 그리스도의 나라가 되어 그가 세세토록 왕노릇 하시리로다 하니",
+      "source_text_hash": "196c255eb3f97c02adcaedda09138f8a3a47561d20fe3ee0598bcf34c0c6003a",
+      "translation_text_hash": "7862f11317cb52eac9535f8536a4f9410337e2ca5ec06f46af16c694793f9cf0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "일곱째 천사가 나팔을 불매 하늘에 큰 음성들이 나서 가로되 세상 나라가 우리 주와 그 그리스도의 나라가 되어 그가 세세토록 왕노릇 하시리로다 하니"
+      ],
+      "raw_text_hashes": [
+        "7862f11317cb52eac9535f8536a4f9410337e2ca5ec06f46af16c694793f9cf0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:11:16",
+      "sequence": 30885,
+      "chapter_label": "REV 11",
+      "verse_label": "16",
+      "locator": {
+        "book": "REV",
+        "chapter": 11,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 11,
+          "verse": 16
+        }
+      ],
+      "en": "The twenty-four elders, who sit on their thrones before God’s throne, fell on their faces and worshiped God,",
+      "ko": "하나님 앞에 자기 보좌에 앉은 이십 사 장로들이 엎드려 얼굴을 대고 하나님께 경배하여",
+      "source_text_hash": "08538f2ecb9eefd919370b77dce8c63e83cded3869240616258d91945768f3e9",
+      "translation_text_hash": "89ba85138f32cb5dc90620b32f45c7e2bd7f81d2c401fa4c093af471cd7509da",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님 앞에 자기 보좌에 앉은 이십 사 장로들이 엎드려 얼굴을 대고 하나님께 경배하여"
+      ],
+      "raw_text_hashes": [
+        "89ba85138f32cb5dc90620b32f45c7e2bd7f81d2c401fa4c093af471cd7509da"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:11:17",
+      "sequence": 30886,
+      "chapter_label": "REV 11",
+      "verse_label": "17",
+      "locator": {
+        "book": "REV",
+        "chapter": 11,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 11,
+          "verse": 17
+        }
+      ],
+      "en": "saying: “We give you thanks, Lord God, the Almighty, the one who is and who was, because you have taken your great power and reigned.",
+      "ko": "가로되 감사하옵나니 옛적에도 계셨고 시방도 계신 주 하나님 곧 전능하신이여 친히 큰 권능을 잡으시고 왕노릇 하시도다",
+      "source_text_hash": "c31cdd6ec98c74e4e4f976ba6115c684cf137902cf040b12e4c70fc7368f4bb1",
+      "translation_text_hash": "5f8a4e3a4ec52ed7c3df77558b1a862fc94b16f14ff5b5ef51bb51fe8344dee3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 감사하옵나니 옛적에도 계셨고 시방도 계신 주 하나님 곧 전능하신이여 친히 큰 권능을 잡으시고 왕노릇 하시도다"
+      ],
+      "raw_text_hashes": [
+        "5f8a4e3a4ec52ed7c3df77558b1a862fc94b16f14ff5b5ef51bb51fe8344dee3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:11:18",
+      "sequence": 30887,
+      "chapter_label": "REV 11",
+      "verse_label": "18",
+      "locator": {
+        "book": "REV",
+        "chapter": 11,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 11,
+          "verse": 18
+        }
+      ],
+      "en": "The nations were angry, and your wrath came, as did the time for the dead to be judged, and to give your bondservants the prophets, their reward, as well as to the saints and those who fear your name, to the small and the great, and to destroy those who destroy the earth.”",
+      "ko": "이방들이 분노하매 주의 진노가 임하여 죽은 자를 심판하시며 종 선지자들과 성도들과 또 무론대소하고 주의 이름을 경외하는 자들에게 상 주시며 또 땅을 망하게 하는 자들을 멸망시키실 때로소이다 하더라",
+      "source_text_hash": "47c642f624432a0914c351af495769539b3734a57d31a6de903a5ded5c6c7623",
+      "translation_text_hash": "8ec05ff41bf33423a65eda2eb3ef306dd78a6c1a543d17e028f5878d86100ec5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이방들이 분노하매 주의 진노가 임하여 죽은 자를 심판하시며 종 선지자들과 성도들과 또 무론대소하고 주의 이름을 경외하는 자들에게 상 주시며 또 땅을 망하게 하는 자들을 멸망시키실 때로소이다 하더라"
+      ],
+      "raw_text_hashes": [
+        "8ec05ff41bf33423a65eda2eb3ef306dd78a6c1a543d17e028f5878d86100ec5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:11:19",
+      "sequence": 30888,
+      "chapter_label": "REV 11",
+      "verse_label": "19",
+      "locator": {
+        "book": "REV",
+        "chapter": 11,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 11,
+          "verse": 19
+        }
+      ],
+      "en": "God’s temple that is in heaven was opened, and the ark of the Lord’s covenant was seen in his temple. Lightnings, sounds, thunders, an earthquake, and great hail followed.",
+      "ko": "이에 하늘에 있는 하나님의 성전이 열리니 성전 안에 하나님의 언약궤가 보이며 또 번개와 음성들과 뇌성과 지진과 큰 우박이 있더라",
+      "source_text_hash": "b4f66d42f72a1b35d26cadaa7604e9e04f56f59e9cf2e8d2d49fd49dfc121611",
+      "translation_text_hash": "e20347b830af2987e86c00779c5211ea9e723ae63a976a4c3b004555b75ed743",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 하늘에 있는 하나님의 성전이 열리니 성전 안에 하나님의 언약궤가 보이며 또 번개와 음성들과 뇌성과 지진과 큰 우박이 있더라"
+      ],
+      "raw_text_hashes": [
+        "e20347b830af2987e86c00779c5211ea9e723ae63a976a4c3b004555b75ed743"
+      ]
+    }
+  ]
+}

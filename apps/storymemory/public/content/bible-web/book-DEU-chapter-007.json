@@ -1,0 +1,845 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:DEU:chapter:007",
+  "unit_ordinal": 160,
+  "unit_label": "DEU 7",
+  "book_code": "DEU",
+  "chapter_number": 7,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:DEU:7:1",
+      "sequence": 5113,
+      "chapter_label": "DEU 7",
+      "verse_label": "1",
+      "locator": {
+        "book": "DEU",
+        "chapter": 7,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 7,
+          "verse": 1
+        }
+      ],
+      "en": "When the LORD your God brings you into the land where you go to possess it, and casts out many nations before you—the Hittite, the Girgashite, the Amorite, the Canaanite, the Perizzite, the Hivite, and the Jebusite—seven nations greater and mightier than you;",
+      "ko": "네 하나님 여호와께서 너를 인도하사 네가 가서 얻을 땅으로 들이시고 네 앞에서 여러 민족 헷 족속과 기르가스 족속과 아모리 족속과 가나안 족속과 브리스 족속과 히위 족속과 여부스 족속 곧 너보다 많고 힘이 있는 일곱 족속을 쫓아내실 때에",
+      "source_text_hash": "c543bb9f3df334da5f07c20719f1938d0f6acca338efaccb6d79b540073a14a1",
+      "translation_text_hash": "1daf697d749616c630063ae2effb51ea487d1aa06a07c00ecb9e48f3ab8cb085",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 하나님 여호와께서 너를 인도하사 네가 가서 얻을 땅으로 들이시고 네 앞에서 여러 민족 헷 족속과 기르가스 족속과 아모리 족속과 가나안 족속과 브리스 족속과 히위 족속과 여부스 족속 곧 너보다 많고 힘이 있는 일곱 족속을 쫓아내실 때에"
+      ],
+      "raw_text_hashes": [
+        "1daf697d749616c630063ae2effb51ea487d1aa06a07c00ecb9e48f3ab8cb085"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:7:2",
+      "sequence": 5114,
+      "chapter_label": "DEU 7",
+      "verse_label": "2",
+      "locator": {
+        "book": "DEU",
+        "chapter": 7,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 7,
+          "verse": 2
+        }
+      ],
+      "en": "and when the LORD your God delivers them up before you, and you strike them, then you shall utterly destroy them. You shall make no covenant with them, nor show mercy to them.",
+      "ko": "네 하나님 여호와께서 그들을 네게 붙여 너로 치게 하시리니 그 때에 너는 그들을 진멸할 것이라 그들과 무슨 언약도 말 것이요 그들을 불쌍히 여기지도 말 것이며",
+      "source_text_hash": "3ca78ca4cf8b3955851483bc1338be25cc660c3dcf35af117ce691501fcc35ec",
+      "translation_text_hash": "bc7379bbe9669fb523d7a4a53c38f5474c9823189d7c7aec16a7e18e20a8bd38",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 하나님 여호와께서 그들을 네게 붙여 너로 치게 하시리니 그 때에 너는 그들을 진멸할 것이라 그들과 무슨 언약도 말 것이요 그들을 불쌍히 여기지도 말 것이며"
+      ],
+      "raw_text_hashes": [
+        "bc7379bbe9669fb523d7a4a53c38f5474c9823189d7c7aec16a7e18e20a8bd38"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:7:3",
+      "sequence": 5115,
+      "chapter_label": "DEU 7",
+      "verse_label": "3",
+      "locator": {
+        "book": "DEU",
+        "chapter": 7,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 7,
+          "verse": 3
+        }
+      ],
+      "en": "You shall not make marriages with them. You shall not give your daughter to his son, nor shall you take his daughter for your son.",
+      "ko": "또 그들과 혼인하지 말찌니 네 딸을 그 아들에게 주지 말 것이요 그 딸로 네 며느리를 삼지 말것은",
+      "source_text_hash": "1cb54b9b1adcb12598443e126588db93b8483953081c8c743652f794684665b4",
+      "translation_text_hash": "cfb0c99e257d8c24a86d13933a80073bbf4e16c663c47d1d40c465fa1138e0f4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 그들과 혼인하지 말찌니 네 딸을 그 아들에게 주지 말 것이요 그 딸로 네 며느리를 삼지 말것은"
+      ],
+      "raw_text_hashes": [
+        "cfb0c99e257d8c24a86d13933a80073bbf4e16c663c47d1d40c465fa1138e0f4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:7:4",
+      "sequence": 5116,
+      "chapter_label": "DEU 7",
+      "verse_label": "4",
+      "locator": {
+        "book": "DEU",
+        "chapter": 7,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 7,
+          "verse": 4
+        }
+      ],
+      "en": "For that would turn away your sons from following me, that they may serve other gods. So the LORD’s anger would be kindled against you, and he would destroy you quickly.",
+      "ko": "그가 네 아들을 유혹하여 그로 여호와를 떠나고 다른 신들을 섬기게 하므로 여호와께서 너희에게 진노하사 갑자기 너희를 멸하실 것임이니라",
+      "source_text_hash": "9164e7d38421e661a5f31f848a996055d6d1fe0b58a4cb5f0ef7606170011618",
+      "translation_text_hash": "640121f176b254042970af383dfad254bcd9f4ac7f809df896e75f0fc1163609",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 네 아들을 유혹하여 그로 여호와를 떠나고 다른 신들을 섬기게 하므로 여호와께서 너희에게 진노하사 갑자기 너희를 멸하실 것임이니라"
+      ],
+      "raw_text_hashes": [
+        "640121f176b254042970af383dfad254bcd9f4ac7f809df896e75f0fc1163609"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:7:5",
+      "sequence": 5117,
+      "chapter_label": "DEU 7",
+      "verse_label": "5",
+      "locator": {
+        "book": "DEU",
+        "chapter": 7,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 7,
+          "verse": 5
+        }
+      ],
+      "en": "But you shall deal with them like this: you shall break down their altars, dash their pillars in pieces, cut down their Asherah poles, and burn their engraved images with fire.",
+      "ko": "오직 너희가 그들에게 행할 것은 이러하니 그들의 단을 헐며 주상을 깨뜨리며 아세라 목상을 찍으며 조각한 우상들을 불사를 것이니라",
+      "source_text_hash": "db53b0fdcf2922b6b3fbc052b8954e7589198f0f9530c7989961a27387a72257",
+      "translation_text_hash": "93162401cc1504e8f50792431429fe738e4217dcc5959b5d25a8615395b08e89",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 너희가 그들에게 행할 것은 이러하니 그들의 단을 헐며 주상을 깨뜨리며 아세라 목상을 찍으며 조각한 우상들을 불사를 것이니라"
+      ],
+      "raw_text_hashes": [
+        "93162401cc1504e8f50792431429fe738e4217dcc5959b5d25a8615395b08e89"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:7:6",
+      "sequence": 5118,
+      "chapter_label": "DEU 7",
+      "verse_label": "6",
+      "locator": {
+        "book": "DEU",
+        "chapter": 7,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 7,
+          "verse": 6
+        }
+      ],
+      "en": "For you are a holy people to the LORD your God. The LORD your God has chosen you to be a people for his own possession, above all peoples who are on the face of the earth.",
+      "ko": "너는 여호와 네 하나님의 성민이라 네 하나님 여호와께서 지상 만민 중에서 너를 자기 기업의 백성으로 택하셨나니",
+      "source_text_hash": "24ec66ef9ff5d3436772a4dc618d6be70213d10e97ecd67afd6a6a15fb5f5843",
+      "translation_text_hash": "6b8b934a7f04633cfb03b928edd7caecd66f8ebe064999525bf2b91c47a73944",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 여호와 네 하나님의 성민이라 네 하나님 여호와께서 지상 만민 중에서 너를 자기 기업의 백성으로 택하셨나니"
+      ],
+      "raw_text_hashes": [
+        "6b8b934a7f04633cfb03b928edd7caecd66f8ebe064999525bf2b91c47a73944"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:7:7",
+      "sequence": 5119,
+      "chapter_label": "DEU 7",
+      "verse_label": "7",
+      "locator": {
+        "book": "DEU",
+        "chapter": 7,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 7,
+          "verse": 7
+        }
+      ],
+      "en": "The LORD didn’t set his love on you nor choose you, because you were more in number than any people; for you were the fewest of all peoples;",
+      "ko": "여호와께서 너희를 기뻐하시고 너희를 택하심은 너희가 다른 민족보다 수효가 많은 연고가 아니라 너희는 모든 민족 중에 가장 적으니라",
+      "source_text_hash": "dbb9ea61674fa717f36ad7709b6a9fe33482db98c20750c27aac859449e1126d",
+      "translation_text_hash": "7524711deacf0f8b5e2443b80c408736f9631be8e2d9287f3547a5e255983323",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 너희를 기뻐하시고 너희를 택하심은 너희가 다른 민족보다 수효가 많은 연고가 아니라 너희는 모든 민족 중에 가장 적으니라"
+      ],
+      "raw_text_hashes": [
+        "7524711deacf0f8b5e2443b80c408736f9631be8e2d9287f3547a5e255983323"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:7:8",
+      "sequence": 5120,
+      "chapter_label": "DEU 7",
+      "verse_label": "8",
+      "locator": {
+        "book": "DEU",
+        "chapter": 7,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 7,
+          "verse": 8
+        }
+      ],
+      "en": "but because the LORD loves you, and because he desires to keep the oath which he swore to your fathers, the LORD has brought you out with a mighty hand and redeemed you out of the house of bondage, from the hand of Pharaoh king of Egypt.",
+      "ko": "여호와께서 다만 너희를 사랑하심을 인하여, 또는 너희 열조에게 하신 맹세를 지키려 하심을 인하여 자기의 권능의 손으로 너희를 인도하여 내시되 너희를 그 종 되었던 집에서 애굽 왕 바로의 손에서 속량하셨나니",
+      "source_text_hash": "4102a018adafb61345ad7d2c1e466cfb177175e07195547ecd383707eb1cd4d2",
+      "translation_text_hash": "c77c613b4187099e662fd398b424e2cbd72cac5998b783997eb22ba2ce500e66",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 다만 너희를 사랑하심을 인하여, 또는 너희 열조에게 하신 맹세를 지키려 하심을 인하여 자기의 권능의 손으로 너희를 인도하여 내시되 너희를 그 종 되었던 집에서 애굽 왕 바로의 손에서 속량하셨나니"
+      ],
+      "raw_text_hashes": [
+        "c77c613b4187099e662fd398b424e2cbd72cac5998b783997eb22ba2ce500e66"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:7:9",
+      "sequence": 5121,
+      "chapter_label": "DEU 7",
+      "verse_label": "9",
+      "locator": {
+        "book": "DEU",
+        "chapter": 7,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 7,
+          "verse": 9
+        }
+      ],
+      "en": "Know therefore that the LORD your God himself is God, the faithful God, who keeps covenant and loving kindness to a thousand generations with those who love him and keep his commandments,",
+      "ko": "그런즉 너는 알라 오직 네 하나님 여호와는 하나님이시요 신실하신 하나님이시라 그를 사랑하고 그 계명을 지키는 자에게는 천대까지 그 언약을 이행하시며 인애를 베푸시되",
+      "source_text_hash": "03550c0f7aeccf3fdb99c83f43821dec76ee52ac0dbdca7ccc4e764a8c3be003",
+      "translation_text_hash": "f2ef106bdd2253a7afa439bc624049e2cdc7ac0f412720ad7d695551bd814a60",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 너는 알라 오직 네 하나님 여호와는 하나님이시요 신실하신 하나님이시라 그를 사랑하고 그 계명을 지키는 자에게는 천대까지 그 언약을 이행하시며 인애를 베푸시되"
+      ],
+      "raw_text_hashes": [
+        "f2ef106bdd2253a7afa439bc624049e2cdc7ac0f412720ad7d695551bd814a60"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:7:10",
+      "sequence": 5122,
+      "chapter_label": "DEU 7",
+      "verse_label": "10",
+      "locator": {
+        "book": "DEU",
+        "chapter": 7,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 7,
+          "verse": 10
+        }
+      ],
+      "en": "and repays those who hate him to their face, to destroy them. He will not be slack to him who hates him. He will repay him to his face.",
+      "ko": "그를 미워하는 자에게는 당장에 보응하여 멸하시나니 여호와는 자기를 미워하는 자에게 지체하지 아니하시고 당장에 그에게 보응하시느니라",
+      "source_text_hash": "048195d605c138abe62f766d814c28403190ad74be7644055600167ef92d0065",
+      "translation_text_hash": "3c95f0d5dc1984a6c228c0e5735ab7eff69a0d5e34df2d2c6e709b1d7ae93514",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그를 미워하는 자에게는 당장에 보응하여 멸하시나니 여호와는 자기를 미워하는 자에게 지체하지 아니하시고 당장에 그에게 보응하시느니라"
+      ],
+      "raw_text_hashes": [
+        "3c95f0d5dc1984a6c228c0e5735ab7eff69a0d5e34df2d2c6e709b1d7ae93514"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:7:11",
+      "sequence": 5123,
+      "chapter_label": "DEU 7",
+      "verse_label": "11",
+      "locator": {
+        "book": "DEU",
+        "chapter": 7,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 7,
+          "verse": 11
+        }
+      ],
+      "en": "You shall therefore keep the commandments, the statutes, and the ordinances which I command you today, to do them.",
+      "ko": "그런즉 너는 오늘날 내가 네게 명하는 명령과 규례와 법도를 지켜 행할찌니라",
+      "source_text_hash": "b1c0915031949771e733a11f2274f7066914382f886bc69d8b9cc7119a6c92b3",
+      "translation_text_hash": "6c41cd66ce436cec95c72c9ab327ebfe541c89442adc1af997523ba4505b0a27",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 너는 오늘날 내가 네게 명하는 명령과 규례와 법도를 지켜 행할찌니라"
+      ],
+      "raw_text_hashes": [
+        "6c41cd66ce436cec95c72c9ab327ebfe541c89442adc1af997523ba4505b0a27"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:7:12",
+      "sequence": 5124,
+      "chapter_label": "DEU 7",
+      "verse_label": "12",
+      "locator": {
+        "book": "DEU",
+        "chapter": 7,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 7,
+          "verse": 12
+        }
+      ],
+      "en": "It shall happen, because you listen to these ordinances and keep and do them, that the LORD your God will keep with you the covenant and the loving kindness which he swore to your fathers.",
+      "ko": "너희가 이 모든 법도를 듣고 지켜 행하면 네 하나님 여호와께서 네 열조에게 맹세하신 언약을 지켜 네게 인애를 베푸실 것이라",
+      "source_text_hash": "42df4ebf6d4d98a56f6c1e00342393a4834fe053166a685dcb6d11f8bae0f4f2",
+      "translation_text_hash": "bea65a728888e6784d37a29cf01728d466323452e7b6a3d25aa3476965f5fb56",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 이 모든 법도를 듣고 지켜 행하면 네 하나님 여호와께서 네 열조에게 맹세하신 언약을 지켜 네게 인애를 베푸실 것이라"
+      ],
+      "raw_text_hashes": [
+        "bea65a728888e6784d37a29cf01728d466323452e7b6a3d25aa3476965f5fb56"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:7:13",
+      "sequence": 5125,
+      "chapter_label": "DEU 7",
+      "verse_label": "13",
+      "locator": {
+        "book": "DEU",
+        "chapter": 7,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 7,
+          "verse": 13
+        }
+      ],
+      "en": "He will love you, bless you, and multiply you. He will also bless the fruit of your body and the fruit of your ground, your grain and your new wine and your oil, the increase of your livestock and the young of your flock, in the land which he swore to your fathers to give you.",
+      "ko": "곧 너를 사랑하시고 복을 주사 너로 번성케 하시되 네게 주리라고 네 열조에게 맹세하신 땅에서 네 소생에게 은혜를 베푸시며 네 토지 소산과 곡식과 포도주와 기름을 풍성케 하시고 네 소와 양을 번식케 하시리니",
+      "source_text_hash": "eddc3754d1b12eede8cc2eb37f1d639f6785dca470c9e5133eaaf9cbb15381f5",
+      "translation_text_hash": "41100bdc71bce27fe0544ecf9e74f057c2407d57a6422248fa60937408cf5431",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 너를 사랑하시고 복을 주사 너로 번성케 하시되 네게 주리라고 네 열조에게 맹세하신 땅에서 네 소생에게 은혜를 베푸시며 네 토지 소산과 곡식과 포도주와 기름을 풍성케 하시고 네 소와 양을 번식케 하시리니"
+      ],
+      "raw_text_hashes": [
+        "41100bdc71bce27fe0544ecf9e74f057c2407d57a6422248fa60937408cf5431"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:7:14",
+      "sequence": 5126,
+      "chapter_label": "DEU 7",
+      "verse_label": "14",
+      "locator": {
+        "book": "DEU",
+        "chapter": 7,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 7,
+          "verse": 14
+        }
+      ],
+      "en": "You will be blessed above all peoples. There won’t be male or female barren among you, or among your livestock.",
+      "ko": "네가 복을 받음이 만민보다 우승하여 너희 중의 남녀와 너희 짐승의 암수에 생육하지 못함이 없을 것이며",
+      "source_text_hash": "aa3823a974bdcaf87a940bd2be45d1551b4f79d0f89aaa17dcb9a31062820b5e",
+      "translation_text_hash": "97c0e27297adeda0e055e0273fc2d1f422ce508a0a109fbe4cbef1fb10910c84",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 복을 받음이 만민보다 우승하여 너희 중의 남녀와 너희 짐승의 암수에 생육하지 못함이 없을 것이며"
+      ],
+      "raw_text_hashes": [
+        "97c0e27297adeda0e055e0273fc2d1f422ce508a0a109fbe4cbef1fb10910c84"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:7:15",
+      "sequence": 5127,
+      "chapter_label": "DEU 7",
+      "verse_label": "15",
+      "locator": {
+        "book": "DEU",
+        "chapter": 7,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 7,
+          "verse": 15
+        }
+      ],
+      "en": "The LORD will take away from you all sickness; and he will put none of the evil diseases of Egypt, which you know, on you, but will lay them on all those who hate you.",
+      "ko": "여호와께서 또 모든 질병을 네게서 멀리하사 너희가 아는바 그 애굽의 악질이 네게 임하지 않게 하시고 너를 미워하는 모든 자에게 임하게 하실 것이라",
+      "source_text_hash": "ab6be2c303d95303347382e0c93c8471cb872837a0746af4d53fdd2d9600a1fd",
+      "translation_text_hash": "202f84fd1cfcfd56981210005088d186bf06fc5e81679bf3c3ee9063d09949d5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 또 모든 질병을 네게서 멀리하사 너희가 아는바 그 애굽의 악질이 네게 임하지 않게 하시고 너를 미워하는 모든 자에게 임하게 하실 것이라"
+      ],
+      "raw_text_hashes": [
+        "202f84fd1cfcfd56981210005088d186bf06fc5e81679bf3c3ee9063d09949d5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:7:16",
+      "sequence": 5128,
+      "chapter_label": "DEU 7",
+      "verse_label": "16",
+      "locator": {
+        "book": "DEU",
+        "chapter": 7,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 7,
+          "verse": 16
+        }
+      ],
+      "en": "You shall consume all the peoples whom the LORD your God shall deliver to you. Your eye shall not pity them. You shall not serve their gods; for that would be a snare to you.",
+      "ko": "네 하나님 여호와께서 네게 붙이신 모든 민족을 네 눈이 긍휼히 보지 말고 진멸하고 그 신을 섬기지 말라 그것이 네게 올무가 되리라",
+      "source_text_hash": "242a913cd8eb76aa091fc167e741adcc5a9cfea2803839af00f251506f9d126c",
+      "translation_text_hash": "0c695dec9334ae27c53869723c100c93c30c7a4edcb46fcde563d824274fe8fc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 하나님 여호와께서 네게 붙이신 모든 민족을 네 눈이 긍휼히 보지 말고 진멸하고 그 신을 섬기지 말라 그것이 네게 올무가 되리라"
+      ],
+      "raw_text_hashes": [
+        "0c695dec9334ae27c53869723c100c93c30c7a4edcb46fcde563d824274fe8fc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:7:17",
+      "sequence": 5129,
+      "chapter_label": "DEU 7",
+      "verse_label": "17",
+      "locator": {
+        "book": "DEU",
+        "chapter": 7,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 7,
+          "verse": 17
+        }
+      ],
+      "en": "If you shall say in your heart, “These nations are more than I; how can I dispossess them?”",
+      "ko": "네가 혹시 심중에 이르기를 이 민족들이 나보다 많으니 내가 어찌 그를 쫓아 낼 수 있으리요 하리라마는",
+      "source_text_hash": "b1536abb4ef429d1bf1fdd164466ecc03fab6e434aee9d66737d2486932a66d4",
+      "translation_text_hash": "2e0bdbca10f2255b317956495df6a2824c4eae743544c7225845092be6865d46",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 혹시 심중에 이르기를 이 민족들이 나보다 많으니 내가 어찌 그를 쫓아 낼 수 있으리요 하리라마는"
+      ],
+      "raw_text_hashes": [
+        "2e0bdbca10f2255b317956495df6a2824c4eae743544c7225845092be6865d46"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:7:18",
+      "sequence": 5130,
+      "chapter_label": "DEU 7",
+      "verse_label": "18",
+      "locator": {
+        "book": "DEU",
+        "chapter": 7,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 7,
+          "verse": 18
+        }
+      ],
+      "en": "you shall not be afraid of them. You shall remember well what the LORD your God did to Pharaoh and to all Egypt:",
+      "ko": "그들을 두려워 말고 네 하나님 여호와께서 바로와 온 애굽에 행하신 것을 잘 기억하되",
+      "source_text_hash": "846b4d1365fdc2bdb349f6ccd5ca5924e09319a7f6a07a60bcff85816f69ac8b",
+      "translation_text_hash": "a082a62161f26bc752ab0a92379a240c31eccf76ad7573fde88ad2c2a87c4457",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들을 두려워 말고 네 하나님 여호와께서 바로와 온 애굽에 행하신 것을 잘 기억하되"
+      ],
+      "raw_text_hashes": [
+        "a082a62161f26bc752ab0a92379a240c31eccf76ad7573fde88ad2c2a87c4457"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:7:19",
+      "sequence": 5131,
+      "chapter_label": "DEU 7",
+      "verse_label": "19",
+      "locator": {
+        "book": "DEU",
+        "chapter": 7,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 7,
+          "verse": 19
+        }
+      ],
+      "en": "the great trials which your eyes saw, the signs, the wonders, the mighty hand, and the outstretched arm, by which the LORD your God brought you out. So shall the LORD your God do to all the peoples of whom you are afraid.",
+      "ko": "네 하나님 여호와께서 너를 인도하여 내실 때에 네가 목도한 큰 시험과 이적과 기사와 강한 손과 편 팔을 기억하라 그와 같이 네 하나님 여호와께서 네가 두려워하는 모든 민족에게 행하실 것이요",
+      "source_text_hash": "0a35f7159aefd772d709139abdba5c769fa673cf3c9a0c545ef462486b6db7cc",
+      "translation_text_hash": "6fb3d17f0dbb564adabe01a4820daebb28e06d55ca82e8706bba4b82178923fa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 하나님 여호와께서 너를 인도하여 내실 때에 네가 목도한 큰 시험과 이적과 기사와 강한 손과 편 팔을 기억하라 그와 같이 네 하나님 여호와께서 네가 두려워하는 모든 민족에게 행하실 것이요"
+      ],
+      "raw_text_hashes": [
+        "6fb3d17f0dbb564adabe01a4820daebb28e06d55ca82e8706bba4b82178923fa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:7:20",
+      "sequence": 5132,
+      "chapter_label": "DEU 7",
+      "verse_label": "20",
+      "locator": {
+        "book": "DEU",
+        "chapter": 7,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 7,
+          "verse": 20
+        }
+      ],
+      "en": "Moreover the LORD your God will send the hornet among them, until those who are left, and hide themselves, perish from before you.",
+      "ko": "네 하나님 여호와께서 또 왕벌을 그들중에 보내어 그들의 남은 자와 너를 피하여 숨은 자를 멸하시리니",
+      "source_text_hash": "2846f4a4e4b867396ad928163643ee08f37621e2490e1b4e60b5997dfd9d2f4e",
+      "translation_text_hash": "3750b744903652f98df90de66bc9911e0c192b598f155c85de78ab307fe43346",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 하나님 여호와께서 또 왕벌을 그들중에 보내어 그들의 남은 자와 너를 피하여 숨은 자를 멸하시리니"
+      ],
+      "raw_text_hashes": [
+        "3750b744903652f98df90de66bc9911e0c192b598f155c85de78ab307fe43346"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:7:21",
+      "sequence": 5133,
+      "chapter_label": "DEU 7",
+      "verse_label": "21",
+      "locator": {
+        "book": "DEU",
+        "chapter": 7,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 7,
+          "verse": 21
+        }
+      ],
+      "en": "You shall not be scared of them; for the LORD your God is among you, a great and awesome God.",
+      "ko": "너는 그들을 두려워 말라 너희 하나님 여호와 곧 크고 두려운 하나님이 너희 중에 계심이니라",
+      "source_text_hash": "53c62bed69e8707a7b8b3362c7f79aeaafe4a764821a114c4f4edfeafe8f2a0e",
+      "translation_text_hash": "dec700c1959810f6a2c637299605221692b319da959b45360a5ad6207fba2776",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 그들을 두려워 말라 너희 하나님 여호와 곧 크고 두려운 하나님이 너희 중에 계심이니라"
+      ],
+      "raw_text_hashes": [
+        "dec700c1959810f6a2c637299605221692b319da959b45360a5ad6207fba2776"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:7:22",
+      "sequence": 5134,
+      "chapter_label": "DEU 7",
+      "verse_label": "22",
+      "locator": {
+        "book": "DEU",
+        "chapter": 7,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 7,
+          "verse": 22
+        }
+      ],
+      "en": "The LORD your God will cast out those nations before you little by little. You may not consume them at once, lest the animals of the field increase on you.",
+      "ko": "네 하나님 여호와께서 이 민족들을 네 앞에서 점점 쫓아내시리니 너는 그들을 급히 멸하지 말라 두렵건대 들짐승이 번성하여 너를 해할까 하노라",
+      "source_text_hash": "368b248b7e0aa5241f77a4eb4da15d7946d5c7d6245f4b378c9c6c08ded8c36f",
+      "translation_text_hash": "2333c9628ff153244048b61f75a5c50d8f9367330494257f623c48d0642cf3c0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 하나님 여호와께서 이 민족들을 네 앞에서 점점 쫓아내시리니 너는 그들을 급히 멸하지 말라 두렵건대 들짐승이 번성하여 너를 해할까 하노라"
+      ],
+      "raw_text_hashes": [
+        "2333c9628ff153244048b61f75a5c50d8f9367330494257f623c48d0642cf3c0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:7:23",
+      "sequence": 5135,
+      "chapter_label": "DEU 7",
+      "verse_label": "23",
+      "locator": {
+        "book": "DEU",
+        "chapter": 7,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 7,
+          "verse": 23
+        }
+      ],
+      "en": "But the LORD your God will deliver them up before you, and will confuse them with a great confusion, until they are destroyed.",
+      "ko": "네 하나님 여호와께서 그들을 네게 붙이시고 그들을 크게 요란케 하여 필경은 진멸하시고",
+      "source_text_hash": "18ccd932f1c41a21aff1dadba8f5be662c769dc110637a3cd92e2b7feb6e3f08",
+      "translation_text_hash": "4cdf856a1b6792cd3940944c8e3b7f7eb2afea4b4e6f3e7d39ed9e5159b2e15d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 하나님 여호와께서 그들을 네게 붙이시고 그들을 크게 요란케 하여 필경은 진멸하시고"
+      ],
+      "raw_text_hashes": [
+        "4cdf856a1b6792cd3940944c8e3b7f7eb2afea4b4e6f3e7d39ed9e5159b2e15d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:7:24",
+      "sequence": 5136,
+      "chapter_label": "DEU 7",
+      "verse_label": "24",
+      "locator": {
+        "book": "DEU",
+        "chapter": 7,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 7,
+          "verse": 24
+        }
+      ],
+      "en": "He will deliver their kings into your hand, and you shall make their name perish from under the sky. No one will be able to stand before you until you have destroyed them.",
+      "ko": "그들의 왕들을 네 손에 붙이시리니 너는 그 이름을 천하에서 제하여 버리라 너를 당할 자가 없이 네가 필경은 그들을 진멸하리라",
+      "source_text_hash": "f41d6a91e353af0cd0b457189ce4556b34e59d73dabb5e9403976928192ae9e6",
+      "translation_text_hash": "c07317c319c4c3d2a13af843659126ac375a880ef9250bd658475618b0a68607",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들의 왕들을 네 손에 붙이시리니 너는 그 이름을 천하에서 제하여 버리라 너를 당할 자가 없이 네가 필경은 그들을 진멸하리라"
+      ],
+      "raw_text_hashes": [
+        "c07317c319c4c3d2a13af843659126ac375a880ef9250bd658475618b0a68607"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:7:25",
+      "sequence": 5137,
+      "chapter_label": "DEU 7",
+      "verse_label": "25",
+      "locator": {
+        "book": "DEU",
+        "chapter": 7,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 7,
+          "verse": 25
+        }
+      ],
+      "en": "You shall burn the engraved images of their gods with fire. You shall not covet the silver or the gold that is on them, nor take it for yourself, lest you be snared in it; for it is an abomination to the LORD your God.",
+      "ko": "너는 그들의 조각한 신상들을 불사르고 그것에 입힌 은이나 금을 탐내지 말며 취하지 말라 두렵건대 네가 그것으로 인하여 올무에 들까 하노니 이는 네 하나님 여호와의 가증히 여기시는 것임이니라",
+      "source_text_hash": "37f0db1cbc825b0dca7dbf3260dae4caabdbdae2aba660bccf778eb9edc34348",
+      "translation_text_hash": "b40a7f32a7392a3cb9bd3b36e831c2ddcbc5751e165f41860d4ee98bb1b992f6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 그들의 조각한 신상들을 불사르고 그것에 입힌 은이나 금을 탐내지 말며 취하지 말라 두렵건대 네가 그것으로 인하여 올무에 들까 하노니 이는 네 하나님 여호와의 가증히 여기시는 것임이니라"
+      ],
+      "raw_text_hashes": [
+        "b40a7f32a7392a3cb9bd3b36e831c2ddcbc5751e165f41860d4ee98bb1b992f6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:7:26",
+      "sequence": 5138,
+      "chapter_label": "DEU 7",
+      "verse_label": "26",
+      "locator": {
+        "book": "DEU",
+        "chapter": 7,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 7,
+          "verse": 26
+        }
+      ],
+      "en": "You shall not bring an abomination into your house and become a devoted thing like it. You shall utterly detest it. You shall utterly abhor it; for it is a devoted thing.",
+      "ko": "너는 가증한 것을 네 집에 들이지 말라 너도 그와 같이 진멸 당할 것이 될까 하노라 너는 그것을 극히 꺼리며 심히 미워하라 그것은 진멸 당할 것임이니라",
+      "source_text_hash": "a9e9d2e14543b3395bbeaa61b72b9c163516706c6488dcf08c6baeb10da085a6",
+      "translation_text_hash": "15e311fa631eb040396aeaf672eb2cace85d861081586a5fd76c6042358f9eed",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 가증한 것을 네 집에 들이지 말라 너도 그와 같이 진멸 당할 것이 될까 하노라 너는 그것을 극히 꺼리며 심히 미워하라 그것은 진멸 당할 것임이니라"
+      ],
+      "raw_text_hashes": [
+        "15e311fa631eb040396aeaf672eb2cace85d861081586a5fd76c6042358f9eed"
+      ]
+    }
+  ]
+}

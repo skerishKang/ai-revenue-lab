@@ -1,0 +1,1101 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1KI:chapter:015",
+  "unit_ordinal": 306,
+  "unit_label": "1KI 15",
+  "book_code": "1KI",
+  "chapter_number": 15,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1KI:15:1",
+      "sequence": 9251,
+      "chapter_label": "1KI 15",
+      "verse_label": "1",
+      "locator": {
+        "book": "1KI",
+        "chapter": 15,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 15,
+          "verse": 1
+        }
+      ],
+      "en": "Now in the eighteenth year of King Jeroboam the son of Nebat, Abijam began to reign over Judah.",
+      "ko": "느밧의 아들 여로보암왕 제 십팔년에 아비얌이 유다 왕이 되고",
+      "source_text_hash": "d0c9031883896b5245589da90a254d5eb137d7edd14aacb83c6a991f796ad2e7",
+      "translation_text_hash": "18ef0a9e1bb4d6d7d9784d9293b7ea260c1cde8de0f42fb0f15d69457f7176e1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "느밧의 아들 여로보암왕 제 십팔년에 아비얌이 유다 왕이 되고"
+      ],
+      "raw_text_hashes": [
+        "18ef0a9e1bb4d6d7d9784d9293b7ea260c1cde8de0f42fb0f15d69457f7176e1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:15:2",
+      "sequence": 9252,
+      "chapter_label": "1KI 15",
+      "verse_label": "2",
+      "locator": {
+        "book": "1KI",
+        "chapter": 15,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 15,
+          "verse": 2
+        }
+      ],
+      "en": "He reigned three years in Jerusalem. His mother’s name was Maacah the daughter of Abishalom.",
+      "ko": "예루살렘에서 삼년을 치리하니라 그 모친의 이름은 마아가라 아비살롬의 딸이더라",
+      "source_text_hash": "73d84188725fd1a2a9940c9f848ed4541a8388964b9903a81e40f229ea5fd7d9",
+      "translation_text_hash": "b9aad230d8b0a2fdaf5aa5d0a86d7aff293a71cba57dc432e75177b3f28b19cb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예루살렘에서 삼년을 치리하니라 그 모친의 이름은 마아가라 아비살롬의 딸이더라"
+      ],
+      "raw_text_hashes": [
+        "b9aad230d8b0a2fdaf5aa5d0a86d7aff293a71cba57dc432e75177b3f28b19cb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:15:3",
+      "sequence": 9253,
+      "chapter_label": "1KI 15",
+      "verse_label": "3",
+      "locator": {
+        "book": "1KI",
+        "chapter": 15,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 15,
+          "verse": 3
+        }
+      ],
+      "en": "He walked in all the sins of his father, which he had done before him; and his heart was not perfect with the LORD his God, as the heart of David his father.",
+      "ko": "아비얌이 그 부친의 이미 행한 모든 죄를 행하고 그 마음이 그 조상 다윗의 마음 같지 아니하여 그 하나님 여호와 앞에 온전치 못하였으나",
+      "source_text_hash": "28e8aacd6b296c17c82fc62331cacc2fe6e1b7e4c205ff73555273381920563b",
+      "translation_text_hash": "051cdab3c30c9c007810a38c38995ea030174f6aab6c405a0054510906edb963",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아비얌이 그 부친의 이미 행한 모든 죄를 행하고 그 마음이 그 조상 다윗의 마음 같지 아니하여 그 하나님 여호와 앞에 온전치 못하였으나"
+      ],
+      "raw_text_hashes": [
+        "051cdab3c30c9c007810a38c38995ea030174f6aab6c405a0054510906edb963"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:15:4",
+      "sequence": 9254,
+      "chapter_label": "1KI 15",
+      "verse_label": "4",
+      "locator": {
+        "book": "1KI",
+        "chapter": 15,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 15,
+          "verse": 4
+        }
+      ],
+      "en": "Nevertheless for David’s sake, the LORD his God gave him a lamp in Jerusalem, to set up his son after him and to establish Jerusalem;",
+      "ko": "그 하나님 여호와께서 다윗을 위하여 예루살렘에서 저에게 등불을 주시되 그 아들을 세워 후사가 되게 하사 예루살렘을 견고케 하셨으니",
+      "source_text_hash": "ddbdfbb384ca38408d925c6c0057be0fc9958352c54c107185694c386f7ea802",
+      "translation_text_hash": "094cad5611fa7a73f7a4075b1db804d3d572d21eba1726819c5e1bcb5f970c32",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 하나님 여호와께서 다윗을 위하여 예루살렘에서 저에게 등불을 주시되 그 아들을 세워 후사가 되게 하사 예루살렘을 견고케 하셨으니"
+      ],
+      "raw_text_hashes": [
+        "094cad5611fa7a73f7a4075b1db804d3d572d21eba1726819c5e1bcb5f970c32"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:15:5",
+      "sequence": 9255,
+      "chapter_label": "1KI 15",
+      "verse_label": "5",
+      "locator": {
+        "book": "1KI",
+        "chapter": 15,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 15,
+          "verse": 5
+        }
+      ],
+      "en": "because David did that which was right in the LORD’s eyes, and didn’t turn away from anything that he commanded him all the days of his life, except only in the matter of Uriah the Hittite.",
+      "ko": "이는 다윗이 헷 사람 우리아의 일 외에는 평생에 여호와 보시기에 정직히 행하고 자기에게 명하신 모든 일을 어기지 아니하였음이라",
+      "source_text_hash": "228c186989246046a77a6547dc37f9bc05889831e10460bfe51ef254798d2260",
+      "translation_text_hash": "291976cb175de6763ead624440551f53c0085ac353fed541396d18b68b6ad712",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 다윗이 헷 사람 우리아의 일 외에는 평생에 여호와 보시기에 정직히 행하고 자기에게 명하신 모든 일을 어기지 아니하였음이라"
+      ],
+      "raw_text_hashes": [
+        "291976cb175de6763ead624440551f53c0085ac353fed541396d18b68b6ad712"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:15:6",
+      "sequence": 9256,
+      "chapter_label": "1KI 15",
+      "verse_label": "6",
+      "locator": {
+        "book": "1KI",
+        "chapter": 15,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 15,
+          "verse": 6
+        }
+      ],
+      "en": "Now there was war between Rehoboam and Jeroboam all the days of his life.",
+      "ko": "르호보암과 여로보암 사이에 사는 날 동안 전쟁이 있었더니",
+      "source_text_hash": "803d93697230011b93cf6527fb98bda395ecd4475869c7fae7808bd25b5b70e8",
+      "translation_text_hash": "da28b08eb996449e2b8c1ccc6dc1bdf314f7d6783c896f8a43f80f1d0f6c5f49",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "르호보암과 여로보암 사이에 사는 날 동안 전쟁이 있었더니"
+      ],
+      "raw_text_hashes": [
+        "da28b08eb996449e2b8c1ccc6dc1bdf314f7d6783c896f8a43f80f1d0f6c5f49"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:15:7",
+      "sequence": 9257,
+      "chapter_label": "1KI 15",
+      "verse_label": "7",
+      "locator": {
+        "book": "1KI",
+        "chapter": 15,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 15,
+          "verse": 7
+        }
+      ],
+      "en": "The rest of the acts of Abijam, and all that he did, aren’t they written in the book of the chronicles of the kings of Judah? There was war between Abijam and Jeroboam.",
+      "ko": "아비얌과 여로보암 사이에도 전쟁이 있으니라 아비얌의 남은 사적과 무릇 행한 일이 유다 왕 역대지략에 기록되지 아니하였느냐",
+      "source_text_hash": "f41edd2902a3ef64e379582c6b6eb3d0312147de8f5bac4111ed32d5be920c79",
+      "translation_text_hash": "32462d81feeccf7611160519f0b11b1ae322b4107963db608f223e5da1def642",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아비얌과 여로보암 사이에도 전쟁이 있으니라 아비얌의 남은 사적과 무릇 행한 일이 유다 왕 역대지략에 기록되지 아니하였느냐"
+      ],
+      "raw_text_hashes": [
+        "32462d81feeccf7611160519f0b11b1ae322b4107963db608f223e5da1def642"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:15:8",
+      "sequence": 9258,
+      "chapter_label": "1KI 15",
+      "verse_label": "8",
+      "locator": {
+        "book": "1KI",
+        "chapter": 15,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 15,
+          "verse": 8
+        }
+      ],
+      "en": "Abijam slept with his fathers, and they buried him in David’s city; and Asa his son reigned in his place.",
+      "ko": "아비얌이 그 열조와 함께 자니 다윗성에 장사되고 그 아들 아사가 대신하여 왕이 되니라",
+      "source_text_hash": "d25e49485d143165bc9b063109755faf0b4f3d636664f986d9d0cf06664c84a9",
+      "translation_text_hash": "f78580ae2fa2a67b67d239430cc6a99a9aa31e86ce34d129b389e8d2074f3007",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아비얌이 그 열조와 함께 자니 다윗성에 장사되고 그 아들 아사가 대신하여 왕이 되니라"
+      ],
+      "raw_text_hashes": [
+        "f78580ae2fa2a67b67d239430cc6a99a9aa31e86ce34d129b389e8d2074f3007"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:15:9",
+      "sequence": 9259,
+      "chapter_label": "1KI 15",
+      "verse_label": "9",
+      "locator": {
+        "book": "1KI",
+        "chapter": 15,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 15,
+          "verse": 9
+        }
+      ],
+      "en": "In the twentieth year of Jeroboam king of Israel, Asa began to reign over Judah.",
+      "ko": "이스라엘왕 여로보암 제 이십년에 아사가 유다 왕이 되어",
+      "source_text_hash": "1d419a1eba4caafec24b2e838e3de588fff91ddb4c68af97b2afd9c83b1fd2c8",
+      "translation_text_hash": "04535c3f1b8382bb8de833e393ee2829eff67acd6b600adb9bbc6d93b0469dd2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘왕 여로보암 제 이십년에 아사가 유다 왕이 되어"
+      ],
+      "raw_text_hashes": [
+        "04535c3f1b8382bb8de833e393ee2829eff67acd6b600adb9bbc6d93b0469dd2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:15:10",
+      "sequence": 9260,
+      "chapter_label": "1KI 15",
+      "verse_label": "10",
+      "locator": {
+        "book": "1KI",
+        "chapter": 15,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 15,
+          "verse": 10
+        }
+      ],
+      "en": "He reigned forty-one years in Jerusalem. His mother’s name was Maacah the daughter of Abishalom.",
+      "ko": "예루살렘에서 사십 일년을 치리하니라 그 모친의 이름은 마아가라 아비살롬의 딸이더라",
+      "source_text_hash": "0dfd3b0417e04a1e6a69a72a6d5038a64a71f52215a6078e9ed3f86fd6a878c0",
+      "translation_text_hash": "5987fb25b1b7024ef8b5d340c9108b419d31d628122e5323d68817b2528ec4d5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예루살렘에서 사십 일년을 치리하니라 그 모친의 이름은 마아가라 아비살롬의 딸이더라"
+      ],
+      "raw_text_hashes": [
+        "5987fb25b1b7024ef8b5d340c9108b419d31d628122e5323d68817b2528ec4d5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:15:11",
+      "sequence": 9261,
+      "chapter_label": "1KI 15",
+      "verse_label": "11",
+      "locator": {
+        "book": "1KI",
+        "chapter": 15,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 15,
+          "verse": 11
+        }
+      ],
+      "en": "Asa did that which was right in the LORD’s eyes, as David his father did.",
+      "ko": "아사가 그 조상 다윗 같이 여호와 보시기에 정직하게 행하여",
+      "source_text_hash": "74fff18c080c11aa5e285f228cf6ce80a1c19b1a4362c9a372e8fc36ba7a7f4b",
+      "translation_text_hash": "3f7f2387d0ce65c1c736fbc688897ac13414ce48df24245cea163789b6d46760",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아사가 그 조상 다윗 같이 여호와 보시기에 정직하게 행하여"
+      ],
+      "raw_text_hashes": [
+        "3f7f2387d0ce65c1c736fbc688897ac13414ce48df24245cea163789b6d46760"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:15:12",
+      "sequence": 9262,
+      "chapter_label": "1KI 15",
+      "verse_label": "12",
+      "locator": {
+        "book": "1KI",
+        "chapter": 15,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 15,
+          "verse": 12
+        }
+      ],
+      "en": "He put away the sodomites out of the land, and removed all the idols that his fathers had made.",
+      "ko": "남색하는 자를 그 땅에서 쫓아내고 그 열조의 지은 모든 우상을 없이 하고",
+      "source_text_hash": "409a3dc247cfe5f6ea68110056dca6893c0c5e9823c2d07310794dfb0fc9c20e",
+      "translation_text_hash": "cdaf4d60a5e4c0fd82cb1ba2cd6943b28715cda8de359f9431a865a32f5290fa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "남색하는 자를 그 땅에서 쫓아내고 그 열조의 지은 모든 우상을 없이 하고"
+      ],
+      "raw_text_hashes": [
+        "cdaf4d60a5e4c0fd82cb1ba2cd6943b28715cda8de359f9431a865a32f5290fa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:15:13",
+      "sequence": 9263,
+      "chapter_label": "1KI 15",
+      "verse_label": "13",
+      "locator": {
+        "book": "1KI",
+        "chapter": 15,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 15,
+          "verse": 13
+        }
+      ],
+      "en": "He also removed Maacah his mother from being queen, because she had made an abominable image for an Asherah. Asa cut down her image and burned it at the brook Kidron.",
+      "ko": "또 그 모친 마아가가 아세라의 가증한 우상을 만들었으므로 태후의 위를 폐하고 그 우상을 찍어서 기드론 시냇가에서 불살랐으나",
+      "source_text_hash": "1e14f33afeb8ac2d46058edbeb25a1715b6fc719d9c4d1ad0019bcea706311a3",
+      "translation_text_hash": "6be9645882444368a365f24d7f5e0f963381fe8972d2202cd37c4ce3fd4ac2b4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 그 모친 마아가가 아세라의 가증한 우상을 만들었으므로 태후의 위를 폐하고 그 우상을 찍어서 기드론 시냇가에서 불살랐으나"
+      ],
+      "raw_text_hashes": [
+        "6be9645882444368a365f24d7f5e0f963381fe8972d2202cd37c4ce3fd4ac2b4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:15:14",
+      "sequence": 9264,
+      "chapter_label": "1KI 15",
+      "verse_label": "14",
+      "locator": {
+        "book": "1KI",
+        "chapter": 15,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 15,
+          "verse": 14
+        }
+      ],
+      "en": "But the high places were not taken away. Nevertheless the heart of Asa was perfect with the LORD all his days.",
+      "ko": "오직 산당은 없이 하지 아니하니라 그러나 아사의 마음이 일평생 여호와 앞에 온전하였으며",
+      "source_text_hash": "aaa42aa5a762670ec9ef92e8bb9b355f03755b892bd6b5d8173c66b54b78d813",
+      "translation_text_hash": "f8650af2d90640642df067913980174660ea8b9cea3375bd26b80d91698a44fb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 산당은 없이 하지 아니하니라 그러나 아사의 마음이 일평생 여호와 앞에 온전하였으며"
+      ],
+      "raw_text_hashes": [
+        "f8650af2d90640642df067913980174660ea8b9cea3375bd26b80d91698a44fb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:15:15",
+      "sequence": 9265,
+      "chapter_label": "1KI 15",
+      "verse_label": "15",
+      "locator": {
+        "book": "1KI",
+        "chapter": 15,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 15,
+          "verse": 15
+        }
+      ],
+      "en": "He brought into the LORD’s house the things that his father had dedicated, and the things that he himself had dedicated: silver, gold, and utensils.",
+      "ko": "저가 그 부친의 구별한 것과 자기의 구별한 것을 여호와의 전에 받들어 드렸으니 곧 은과 금과 기명들이더라",
+      "source_text_hash": "53bb0e848b26fb9100ac79ea74bf9fa94955c077ba97f1c6005a0ccd1ba0f5d3",
+      "translation_text_hash": "2250630352e4f0bd23a6e0686176c8f6bdaeba851fd540f8bdcaa50533e74b4c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 그 부친의 구별한 것과 자기의 구별한 것을 여호와의 전에 받들어 드렸으니 곧 은과 금과 기명들이더라"
+      ],
+      "raw_text_hashes": [
+        "2250630352e4f0bd23a6e0686176c8f6bdaeba851fd540f8bdcaa50533e74b4c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:15:16",
+      "sequence": 9266,
+      "chapter_label": "1KI 15",
+      "verse_label": "16",
+      "locator": {
+        "book": "1KI",
+        "chapter": 15,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 15,
+          "verse": 16
+        }
+      ],
+      "en": "There was war between Asa and Baasha king of Israel all their days.",
+      "ko": "아사와 이스라엘 왕 바아사 사이에 일생 전쟁이 있으니라",
+      "source_text_hash": "7db8330fde09e5907ec32a778a3944fcfb10415190fa3f632d8903796e84105c",
+      "translation_text_hash": "08decd4062eea02b6e5ad8a6c75c222c5e915b0f666ba9b3325b09628bed39fd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아사와 이스라엘 왕 바아사 사이에 일생 전쟁이 있으니라"
+      ],
+      "raw_text_hashes": [
+        "08decd4062eea02b6e5ad8a6c75c222c5e915b0f666ba9b3325b09628bed39fd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:15:17",
+      "sequence": 9267,
+      "chapter_label": "1KI 15",
+      "verse_label": "17",
+      "locator": {
+        "book": "1KI",
+        "chapter": 15,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 15,
+          "verse": 17
+        }
+      ],
+      "en": "Baasha king of Israel went up against Judah, and built Ramah, that he might not allow anyone to go out or come in to Asa king of Judah.",
+      "ko": "이스라엘 왕 바아사가 유다를 치러 올라와서 라마를 건축하여 사람을 유다 왕 아사에게 왕래하지 못하게 하려한지라",
+      "source_text_hash": "56543707b888b5db457a310a5f98d0f2d26494e21a2339f0f97eab71146eaec4",
+      "translation_text_hash": "0f2647684750f575f00faf795d440000f696078c8cdd2838cf8fd3541bd3044f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 왕 바아사가 유다를 치러 올라와서 라마를 건축하여 사람을 유다 왕 아사에게 왕래하지 못하게 하려한지라"
+      ],
+      "raw_text_hashes": [
+        "0f2647684750f575f00faf795d440000f696078c8cdd2838cf8fd3541bd3044f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:15:18",
+      "sequence": 9268,
+      "chapter_label": "1KI 15",
+      "verse_label": "18",
+      "locator": {
+        "book": "1KI",
+        "chapter": 15,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 15,
+          "verse": 18
+        }
+      ],
+      "en": "Then Asa took all the silver and the gold that was left in the treasures of the LORD’s house, and the treasures of the king’s house, and delivered it into the hand of his servants. Then King Asa sent them to Ben Hadad, the son of Tabrimmon, the son of Hezion, king of Syria, who lived at Damascus, saying,",
+      "ko": "아사가 여호와의 전 곳간과 왕궁 곳간에 남은 은금을 몰수히 취하여 그 신복의 손에 붙여 다메섹에 거한 아람 왕 헤시온의 손자 다브림몬의 아들 벤하닷에게 보내며 가로되",
+      "source_text_hash": "e8065fa6dcb4f156026807bcb70f344205da7e03696a00bfc6a6040a4adb14ce",
+      "translation_text_hash": "2139bea5ba84089ef9180cae89e5e54afd184ed2e5c6d7f0b32f9c32a0ac8505",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아사가 여호와의 전 곳간과 왕궁 곳간에 남은 은금을 몰수히 취하여 그 신복의 손에 붙여 다메섹에 거한 아람 왕 헤시온의 손자 다브림몬의 아들 벤하닷에게 보내며 가로되"
+      ],
+      "raw_text_hashes": [
+        "2139bea5ba84089ef9180cae89e5e54afd184ed2e5c6d7f0b32f9c32a0ac8505"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:15:19",
+      "sequence": 9269,
+      "chapter_label": "1KI 15",
+      "verse_label": "19",
+      "locator": {
+        "book": "1KI",
+        "chapter": 15,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 15,
+          "verse": 19
+        }
+      ],
+      "en": "“Let there be a treaty between me and you, like that between my father and your father. Behold, I have sent to you a present of silver and gold. Go, break your treaty with Baasha king of Israel, that he may depart from me.”",
+      "ko": "나와 당신 사이에 약조가 있고 내 부친과 당신의 부친 사이에도 있었느니라 내가 당신에게 은금 예물을 보내었으니 와서 이스라엘 왕 바아사와 세운 약조를 깨뜨려서 저로 나를 떠나게 하라 하매",
+      "source_text_hash": "f72dc3883d36cea8a8cd81b71f86caafd329a70b1e104ff6b0e133356c140260",
+      "translation_text_hash": "d904813dfa49d3b019edc32077ef009f0d00b5fcbc7693f822e0c19c947e7be0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나와 당신 사이에 약조가 있고 내 부친과 당신의 부친 사이에도 있었느니라 내가 당신에게 은금 예물을 보내었으니 와서 이스라엘 왕 바아사와 세운 약조를 깨뜨려서 저로 나를 떠나게 하라 하매"
+      ],
+      "raw_text_hashes": [
+        "d904813dfa49d3b019edc32077ef009f0d00b5fcbc7693f822e0c19c947e7be0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:15:20",
+      "sequence": 9270,
+      "chapter_label": "1KI 15",
+      "verse_label": "20",
+      "locator": {
+        "book": "1KI",
+        "chapter": 15,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 15,
+          "verse": 20
+        }
+      ],
+      "en": "Ben Hadad listened to King Asa, and sent the captains of his armies against the cities of Israel, and struck Ijon, and Dan, and Abel Beth Maacah, and all Chinneroth, with all the land of Naphtali.",
+      "ko": "벤하닷이 아사왕의 말을 듣고 그 군대장관들을 보내어 이스라엘 성들을 치되 이욘과 단과 아벨벧마아가와 긴네렛 온 땅과 납달리 온 땅을 쳤더니",
+      "source_text_hash": "20459b3bd8db87675304eaf0e0a8574e2aab5f538daebd4c43c121804fd992c2",
+      "translation_text_hash": "e5ef5b383a4c70b587911627cfae182d860949090c90f9c57831064b9611c29a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "벤하닷이 아사왕의 말을 듣고 그 군대장관들을 보내어 이스라엘 성들을 치되 이욘과 단과 아벨벧마아가와 긴네렛 온 땅과 납달리 온 땅을 쳤더니"
+      ],
+      "raw_text_hashes": [
+        "e5ef5b383a4c70b587911627cfae182d860949090c90f9c57831064b9611c29a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:15:21",
+      "sequence": 9271,
+      "chapter_label": "1KI 15",
+      "verse_label": "21",
+      "locator": {
+        "book": "1KI",
+        "chapter": 15,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 15,
+          "verse": 21
+        }
+      ],
+      "en": "When Baasha heard of it, he stopped building Ramah, and lived in Tirzah.",
+      "ko": "바아사가 듣고 라마 건축하는 일을 그치고 디르사에 거하니라",
+      "source_text_hash": "6956b4db549ed71d2be9e6907369c8dcddd5c081ddb27b4fc745b3201e1a6021",
+      "translation_text_hash": "ecbb19bfc90ad2fa484e28ddc859c65ce67182faca538de8135dfbcacb9d483b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바아사가 듣고 라마 건축하는 일을 그치고 디르사에 거하니라"
+      ],
+      "raw_text_hashes": [
+        "ecbb19bfc90ad2fa484e28ddc859c65ce67182faca538de8135dfbcacb9d483b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:15:22",
+      "sequence": 9272,
+      "chapter_label": "1KI 15",
+      "verse_label": "22",
+      "locator": {
+        "book": "1KI",
+        "chapter": 15,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 15,
+          "verse": 22
+        }
+      ],
+      "en": "Then King Asa made a proclamation to all Judah. No one was exempted. They carried away the stones of Ramah, and its timber, with which Baasha had built; and King Asa used it to build Geba of Benjamin, and Mizpah.",
+      "ko": "이에 아사왕이 온 유다에 영을 내려 한 사람도 모면하지 못하게 하여 바아사가 라마를 건축하던 돌과 재목을 가져오게 하고 그것으로 베냐민의 게바와 미스바를 건축하였더라",
+      "source_text_hash": "fd6509f281bd3a859f643ef8651c8d398abc395ec9c68a8eb41350830d1dd343",
+      "translation_text_hash": "737d6fa86ba0876ce681606e5965fcd84c47f32bda29f95032c8405fa785b548",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 아사왕이 온 유다에 영을 내려 한 사람도 모면하지 못하게 하여 바아사가 라마를 건축하던 돌과 재목을 가져오게 하고 그것으로 베냐민의 게바와 미스바를 건축하였더라"
+      ],
+      "raw_text_hashes": [
+        "737d6fa86ba0876ce681606e5965fcd84c47f32bda29f95032c8405fa785b548"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:15:23",
+      "sequence": 9273,
+      "chapter_label": "1KI 15",
+      "verse_label": "23",
+      "locator": {
+        "book": "1KI",
+        "chapter": 15,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 15,
+          "verse": 23
+        }
+      ],
+      "en": "Now the rest of all the acts of Asa, and all his might, and all that he did, and the cities which he built, aren’t they written in the book of the chronicles of the kings of Judah? But in the time of his old age he was diseased in his feet.",
+      "ko": "아사의 남은 사적과 모든 권세와 무릇 그 행한 일과 성읍을 건축한 것이 유다 왕 역대지략에 기록되지 아니하였느냐 그러나 저가 늙을 때에 발에 병이 있었더라",
+      "source_text_hash": "6fbfbe073ddba2f2e040badbe1b1553e6b03b58fc514b82c9b9b594ad34c000c",
+      "translation_text_hash": "740dfd053c2afacb5aa736ed21e843fdfeb179bcc4a0bb41e45efd2906c9a64c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아사의 남은 사적과 모든 권세와 무릇 그 행한 일과 성읍을 건축한 것이 유다 왕 역대지략에 기록되지 아니하였느냐 그러나 저가 늙을 때에 발에 병이 있었더라"
+      ],
+      "raw_text_hashes": [
+        "740dfd053c2afacb5aa736ed21e843fdfeb179bcc4a0bb41e45efd2906c9a64c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:15:24",
+      "sequence": 9274,
+      "chapter_label": "1KI 15",
+      "verse_label": "24",
+      "locator": {
+        "book": "1KI",
+        "chapter": 15,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 15,
+          "verse": 24
+        }
+      ],
+      "en": "Asa slept with his fathers, and was buried with his fathers in his father David’s city; and Jehoshaphat his son reigned in his place.",
+      "ko": "아사가 그 열조와 함께 자매 그 열조와 함께 그 조상 다윗의 성에 장사되고 그 아들 여호사밧이 대신하여 왕이 되니라",
+      "source_text_hash": "2624f19da8c5e788693acebd72dafc4eeed67f2957a2a5a12c821882237243e2",
+      "translation_text_hash": "09bf130b2508f64ff502d9d3226654fb15067e3221591e0948ee78a26051928a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아사가 그 열조와 함께 자매 그 열조와 함께 그 조상 다윗의 성에 장사되고 그 아들 여호사밧이 대신하여 왕이 되니라"
+      ],
+      "raw_text_hashes": [
+        "09bf130b2508f64ff502d9d3226654fb15067e3221591e0948ee78a26051928a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:15:25",
+      "sequence": 9275,
+      "chapter_label": "1KI 15",
+      "verse_label": "25",
+      "locator": {
+        "book": "1KI",
+        "chapter": 15,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 15,
+          "verse": 25
+        }
+      ],
+      "en": "Nadab the son of Jeroboam began to reign over Israel in the second year of Asa king of Judah; and he reigned over Israel two years.",
+      "ko": "유다 왕 아사 제 이년에 여로보암의 아들 나답이 이스라엘 왕이 되어 이년을 이스라엘을 다스리니라",
+      "source_text_hash": "4d7908416b2356fa692f1b72d821b395b93e5d24b0cf16ac7a46c5baafd80408",
+      "translation_text_hash": "7e1e87090b9911aeb92a68f50c944cc57319e81eb9397c63e267bc6a2d5273a8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다 왕 아사 제 이년에 여로보암의 아들 나답이 이스라엘 왕이 되어 이년을 이스라엘을 다스리니라"
+      ],
+      "raw_text_hashes": [
+        "7e1e87090b9911aeb92a68f50c944cc57319e81eb9397c63e267bc6a2d5273a8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:15:26",
+      "sequence": 9276,
+      "chapter_label": "1KI 15",
+      "verse_label": "26",
+      "locator": {
+        "book": "1KI",
+        "chapter": 15,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 15,
+          "verse": 26
+        }
+      ],
+      "en": "He did that which was evil in the LORD’s sight, and walked in the way of his father, and in his sin with which he made Israel to sin.",
+      "ko": "저가 여호와 보시기에 악을 행하되 그 아비의 길로 행하며 그가 이스라엘로 범하게 한 그 죄중에 행한지라",
+      "source_text_hash": "41809da60b8e05821e0d49c78386b88a0291fda6021b36d296f09e6cf0b07cf6",
+      "translation_text_hash": "f6845a6392b9a55ad135dc9ae2dd3b0a7ef0a9d896b5c8f9304e46c97795b874",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 여호와 보시기에 악을 행하되 그 아비의 길로 행하며 그가 이스라엘로 범하게 한 그 죄중에 행한지라"
+      ],
+      "raw_text_hashes": [
+        "f6845a6392b9a55ad135dc9ae2dd3b0a7ef0a9d896b5c8f9304e46c97795b874"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:15:27",
+      "sequence": 9277,
+      "chapter_label": "1KI 15",
+      "verse_label": "27",
+      "locator": {
+        "book": "1KI",
+        "chapter": 15,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 15,
+          "verse": 27
+        }
+      ],
+      "en": "Baasha the son of Ahijah, of the house of Issachar, conspired against him; and Baasha struck him at Gibbethon, which belonged to the Philistines; for Nadab and all Israel were besieging Gibbethon.",
+      "ko": "이에 잇사갈 족속 아히야의 아들 바아사가 저를 모반하여 블레셋 사람에게 속한 깁브돈에서 저를 죽였으니 이는 나답과 온 이스라엘이 깁브돈을 에워싸고 있었음이더라",
+      "source_text_hash": "edbad66c12a9006010d63f3bf2896088b44ca277baced672631179033a2f5d1e",
+      "translation_text_hash": "88d4377e04da490db7124d81f68a8b65ae29b69b9fd2366ababa378cafd16ae4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 잇사갈 족속 아히야의 아들 바아사가 저를 모반하여 블레셋 사람에게 속한 깁브돈에서 저를 죽였으니 이는 나답과 온 이스라엘이 깁브돈을 에워싸고 있었음이더라"
+      ],
+      "raw_text_hashes": [
+        "88d4377e04da490db7124d81f68a8b65ae29b69b9fd2366ababa378cafd16ae4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:15:28",
+      "sequence": 9278,
+      "chapter_label": "1KI 15",
+      "verse_label": "28",
+      "locator": {
+        "book": "1KI",
+        "chapter": 15,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 15,
+          "verse": 28
+        }
+      ],
+      "en": "Even in the third year of Asa king of Judah, Baasha killed him and reigned in his place.",
+      "ko": "유다 왕 아사 제 삼년에 바아사가 나답을 죽이고 대신하여 왕이 되고",
+      "source_text_hash": "c717c42871dc7a67d198d082d9e5d776834086670794dca513d0159b76014e3d",
+      "translation_text_hash": "4e96deeb5b2da7c00a442f64c2c78e58d855fd14d25cbc416d933245204debde",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다 왕 아사 제 삼년에 바아사가 나답을 죽이고 대신하여 왕이 되고"
+      ],
+      "raw_text_hashes": [
+        "4e96deeb5b2da7c00a442f64c2c78e58d855fd14d25cbc416d933245204debde"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:15:29",
+      "sequence": 9279,
+      "chapter_label": "1KI 15",
+      "verse_label": "29",
+      "locator": {
+        "book": "1KI",
+        "chapter": 15,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 15,
+          "verse": 29
+        }
+      ],
+      "en": "As soon as he was king, he struck all the house of Jeroboam. He didn’t leave to Jeroboam any who breathed, until he had destroyed him, according to the saying of the LORD, which he spoke by his servant Ahijah the Shilonite;",
+      "ko": "왕이 될 때에 여로보암의 온 집을 쳐서 생명 있는 자를 하나도 남기지 아니하고 다 멸하였는데 여호와께서 그 종 실로 사람 아히야로 하신 말씀과 같이 되었으니",
+      "source_text_hash": "55a167f2155d1d8b41273247ac82a2199a03090b32e39e06cd483433aafeb5d7",
+      "translation_text_hash": "c845cbdb2464dbf82bfc524dc7a6da6ecc4325829c1694e154fd8289e2155e01",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 될 때에 여로보암의 온 집을 쳐서 생명 있는 자를 하나도 남기지 아니하고 다 멸하였는데 여호와께서 그 종 실로 사람 아히야로 하신 말씀과 같이 되었으니"
+      ],
+      "raw_text_hashes": [
+        "c845cbdb2464dbf82bfc524dc7a6da6ecc4325829c1694e154fd8289e2155e01"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:15:30",
+      "sequence": 9280,
+      "chapter_label": "1KI 15",
+      "verse_label": "30",
+      "locator": {
+        "book": "1KI",
+        "chapter": 15,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 15,
+          "verse": 30
+        }
+      ],
+      "en": "for the sins of Jeroboam which he sinned, and with which he made Israel to sin, because of his provocation with which he provoked the LORD, the God of Israel, to anger.",
+      "ko": "이는 여로보암이 범죄하고 또 이스라엘로 범하게 한 죄로 인함이며 또 저가 이스라엘 하나님 여호와의 노를 격동시킨 일을 인함이었더라",
+      "source_text_hash": "f51fab1054ada82a0aa4d5ee4cd732193fec52bd1dda813a90d69058a8c7318b",
+      "translation_text_hash": "53565e9e561062fe2805227037e58be6a8ba1c0a6cb38bd6abd4491d33a89a1e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 여로보암이 범죄하고 또 이스라엘로 범하게 한 죄로 인함이며 또 저가 이스라엘 하나님 여호와의 노를 격동시킨 일을 인함이었더라"
+      ],
+      "raw_text_hashes": [
+        "53565e9e561062fe2805227037e58be6a8ba1c0a6cb38bd6abd4491d33a89a1e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:15:31",
+      "sequence": 9281,
+      "chapter_label": "1KI 15",
+      "verse_label": "31",
+      "locator": {
+        "book": "1KI",
+        "chapter": 15,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 15,
+          "verse": 31
+        }
+      ],
+      "en": "Now the rest of the acts of Nadab, and all that he did, aren’t they written in the book of the chronicles of the kings of Israel?",
+      "ko": "나답의 남은 사적과 무릇 행한 일이 이스라엘 왕 역대지략에 기록되지 아니하였느냐",
+      "source_text_hash": "fe094767345c45d5255918a98bfd8e5ffa319b51f01b6939776ddf111f990780",
+      "translation_text_hash": "290e03f231af62d586a6e687f26402537c5e302c967defc8eccb29575c72d6c0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나답의 남은 사적과 무릇 행한 일이 이스라엘 왕 역대지략에 기록되지 아니하였느냐"
+      ],
+      "raw_text_hashes": [
+        "290e03f231af62d586a6e687f26402537c5e302c967defc8eccb29575c72d6c0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:15:32",
+      "sequence": 9282,
+      "chapter_label": "1KI 15",
+      "verse_label": "32",
+      "locator": {
+        "book": "1KI",
+        "chapter": 15,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 15,
+          "verse": 32
+        }
+      ],
+      "en": "There was war between Asa and Baasha king of Israel all their days.",
+      "ko": "아사와 이스라엘 왕 바아사 사이에 일생 전쟁이 있으니라",
+      "source_text_hash": "7db8330fde09e5907ec32a778a3944fcfb10415190fa3f632d8903796e84105c",
+      "translation_text_hash": "08decd4062eea02b6e5ad8a6c75c222c5e915b0f666ba9b3325b09628bed39fd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아사와 이스라엘 왕 바아사 사이에 일생 전쟁이 있으니라"
+      ],
+      "raw_text_hashes": [
+        "08decd4062eea02b6e5ad8a6c75c222c5e915b0f666ba9b3325b09628bed39fd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:15:33",
+      "sequence": 9283,
+      "chapter_label": "1KI 15",
+      "verse_label": "33",
+      "locator": {
+        "book": "1KI",
+        "chapter": 15,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 15,
+          "verse": 33
+        }
+      ],
+      "en": "In the third year of Asa king of Judah, Baasha the son of Ahijah began to reign over all Israel in Tirzah for twenty-four years.",
+      "ko": "유다 왕 아사 제 삼년에 아히야의 아들 바아사가 디르사에서 온 이스라엘의 왕이 되어 이십 사년을 치리하니라",
+      "source_text_hash": "a8fa062a634ae652582695323ed2726b171a2a70ea1c095d49f042a70c30c1fd",
+      "translation_text_hash": "16c87015ac67641ef63eec209298c08c6e209043595e56f28b62c6567d48b669",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다 왕 아사 제 삼년에 아히야의 아들 바아사가 디르사에서 온 이스라엘의 왕이 되어 이십 사년을 치리하니라"
+      ],
+      "raw_text_hashes": [
+        "16c87015ac67641ef63eec209298c08c6e209043595e56f28b62c6567d48b669"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:15:34",
+      "sequence": 9284,
+      "chapter_label": "1KI 15",
+      "verse_label": "34",
+      "locator": {
+        "book": "1KI",
+        "chapter": 15,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 15,
+          "verse": 34
+        }
+      ],
+      "en": "He did that which was evil in the LORD’s sight, and walked in the way of Jeroboam, and in his sin with which he made Israel to sin.",
+      "ko": "바아사가 여호와 보시기에 악을 행하되 여로보암의 길로 행하며 그가 이스라엘로 범하게 한 그 죄 중에 행하였더라",
+      "source_text_hash": "bc71a08f72f2084cc79c0bf0be47c0eba7796f08a41376deec4be96187810a58",
+      "translation_text_hash": "a43f62a4b1661b0cf9cbd9a9fc6dd1f241eefc1d6b9307cb20405af8cb15c07e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바아사가 여호와 보시기에 악을 행하되 여로보암의 길로 행하며 그가 이스라엘로 범하게 한 그 죄 중에 행하였더라"
+      ],
+      "raw_text_hashes": [
+        "a43f62a4b1661b0cf9cbd9a9fc6dd1f241eefc1d6b9307cb20405af8cb15c07e"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,845 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JAS:chapter:002",
+  "unit_ordinal": 1148,
+  "unit_label": "JAS 2",
+  "book_code": "JAS",
+  "chapter_number": 2,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JAS:2:1",
+      "sequence": 30291,
+      "chapter_label": "JAS 2",
+      "verse_label": "1",
+      "locator": {
+        "book": "JAS",
+        "chapter": 2,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 2,
+          "verse": 1
+        }
+      ],
+      "en": "My brothers, don’t hold the faith of our glorious Lord Jesus Christ with partiality.",
+      "ko": "내 형제들아 영광의 주 곧 우리 주 예수 그리스도를 믿는 믿음을 너희가 받았으니 사람을 외모로 취하지 말라",
+      "source_text_hash": "e9f5d91c2ca32ef1fdcd5b63d8ea0e34cc6e75e664dd54d146c7bf1b78966ba5",
+      "translation_text_hash": "d7219b1adab6d85f478edafc44c2332f84e11803807f9df050154f3f52086f71",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 형제들아 영광의 주 곧 우리 주 예수 그리스도를 믿는 믿음을 너희가 받았으니 사람을 외모로 취하지 말라"
+      ],
+      "raw_text_hashes": [
+        "d7219b1adab6d85f478edafc44c2332f84e11803807f9df050154f3f52086f71"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:2:2",
+      "sequence": 30292,
+      "chapter_label": "JAS 2",
+      "verse_label": "2",
+      "locator": {
+        "book": "JAS",
+        "chapter": 2,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 2,
+          "verse": 2
+        }
+      ],
+      "en": "For if a man with a gold ring, in fine clothing, comes into your synagogue, and a poor man in filthy clothing also comes in,",
+      "ko": "만일 너희 회당에 금가락지를 끼고 아름다운 옷을 입은 사람이 들어 오고 또 더러운 옷을 입은 가난한 사람이 들어올 때에",
+      "source_text_hash": "6eac09be13da878b9620414f9211eda427eac44c33f9d9e3783e1d60133f7230",
+      "translation_text_hash": "2232abe3e6fe59b6cf58a56bb4a1745e695c923c338de339e06bf257c341b1b1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 너희 회당에 금가락지를 끼고 아름다운 옷을 입은 사람이 들어 오고 또 더러운 옷을 입은 가난한 사람이 들어올 때에"
+      ],
+      "raw_text_hashes": [
+        "2232abe3e6fe59b6cf58a56bb4a1745e695c923c338de339e06bf257c341b1b1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:2:3",
+      "sequence": 30293,
+      "chapter_label": "JAS 2",
+      "verse_label": "3",
+      "locator": {
+        "book": "JAS",
+        "chapter": 2,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 2,
+          "verse": 3
+        }
+      ],
+      "en": "and you pay special attention to him who wears the fine clothing and say, “Sit here in a good place;” and you tell the poor man, “Stand there,” or “Sit by my footstool”",
+      "ko": "너희가 아름다운 옷을 입은 자를 돌아보아 가로되 여기 좋은 자리에 앉으소서 하고 또 가난한 자에게 이르되 너는 거기 섰든지 내 발등상 아래 앉으라 하면",
+      "source_text_hash": "e48a0f53746dcd8f7ad283f76ff417188c8aeb4946c3d06d602d40c437c0b2e6",
+      "translation_text_hash": "0d3347d2d6679170a747e74dcfede71d24f6916110508620439ee5b60d67ed73",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 아름다운 옷을 입은 자를 돌아보아 가로되 여기 좋은 자리에 앉으소서 하고 또 가난한 자에게 이르되 너는 거기 섰든지 내 발등상 아래 앉으라 하면"
+      ],
+      "raw_text_hashes": [
+        "0d3347d2d6679170a747e74dcfede71d24f6916110508620439ee5b60d67ed73"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:2:4",
+      "sequence": 30294,
+      "chapter_label": "JAS 2",
+      "verse_label": "4",
+      "locator": {
+        "book": "JAS",
+        "chapter": 2,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 2,
+          "verse": 4
+        }
+      ],
+      "en": "haven’t you shown partiality among yourselves, and become judges with evil thoughts?",
+      "ko": "너희끼리 서로 구별하며 악한 생각으로 판단하는 자가 되는 것이 아니냐",
+      "source_text_hash": "f5e14712df6507c3eeb1bb84dec6e89e553868eecf2990ef6aba4f9270e7c6e1",
+      "translation_text_hash": "347a560b9ceb2dbcca90faf71651744d5f698c1302489d0b9823e96d55bc322d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희끼리 서로 구별하며 악한 생각으로 판단하는 자가 되는 것이 아니냐"
+      ],
+      "raw_text_hashes": [
+        "347a560b9ceb2dbcca90faf71651744d5f698c1302489d0b9823e96d55bc322d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:2:5",
+      "sequence": 30295,
+      "chapter_label": "JAS 2",
+      "verse_label": "5",
+      "locator": {
+        "book": "JAS",
+        "chapter": 2,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 2,
+          "verse": 5
+        }
+      ],
+      "en": "Listen, my beloved brothers. Didn’t God choose those who are poor in this world to be rich in faith and heirs of the Kingdom which he promised to those who love him?",
+      "ko": "내 사랑하는 형제들아 들을찌어다 하나님이 세상에 대하여는 가난한 자를 택하사 믿음에 부요하게 하시고 또 자기를 사랑하는 자들에게 약속하신 나라를 유업으로 받게 아니하셨느냐",
+      "source_text_hash": "2046d5d059141da52dd1a558cfb31b2fa4bc41144b3e973d23e98ce4932cec30",
+      "translation_text_hash": "2da60b6706e40ad9533508771e02d14705d57f744e0536517c8aa079deb630dd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 사랑하는 형제들아 들을찌어다 하나님이 세상에 대하여는 가난한 자를 택하사 믿음에 부요하게 하시고 또 자기를 사랑하는 자들에게 약속하신 나라를 유업으로 받게 아니하셨느냐"
+      ],
+      "raw_text_hashes": [
+        "2da60b6706e40ad9533508771e02d14705d57f744e0536517c8aa079deb630dd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:2:6",
+      "sequence": 30296,
+      "chapter_label": "JAS 2",
+      "verse_label": "6",
+      "locator": {
+        "book": "JAS",
+        "chapter": 2,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 2,
+          "verse": 6
+        }
+      ],
+      "en": "But you have dishonored the poor man. Don’t the rich oppress you and personally drag you before the courts?",
+      "ko": "너희는 도리어 가난한 자를 괄시하였도다 부자는 너희를 압제하며 법정으로 끌고 가지 아니하느냐",
+      "source_text_hash": "02fcf06c70459321960bf407a435a8aada5990a274adddfab51f991350c2a42f",
+      "translation_text_hash": "a5b2c2a5ae5db9932baff5c11a04a16fc9bdaa12c9233fe9eb8fa943a391f2c6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 도리어 가난한 자를 괄시하였도다 부자는 너희를 압제하며 법정으로 끌고 가지 아니하느냐"
+      ],
+      "raw_text_hashes": [
+        "a5b2c2a5ae5db9932baff5c11a04a16fc9bdaa12c9233fe9eb8fa943a391f2c6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:2:7",
+      "sequence": 30297,
+      "chapter_label": "JAS 2",
+      "verse_label": "7",
+      "locator": {
+        "book": "JAS",
+        "chapter": 2,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 2,
+          "verse": 7
+        }
+      ],
+      "en": "Don’t they blaspheme the honorable name by which you are called?",
+      "ko": "저희는 너희에게 대하여 일컫는바 그 아름다운 이름을 훼방하지 아니하느냐",
+      "source_text_hash": "8f3a783e841ccfd31243c4ea2f29287787b8e499ba9dfb141c676bf3daca74e5",
+      "translation_text_hash": "849762f97518d34b514e7932d3a68bc06d253f6ba021c9ff450e6ddf04067f1e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희는 너희에게 대하여 일컫는바 그 아름다운 이름을 훼방하지 아니하느냐"
+      ],
+      "raw_text_hashes": [
+        "849762f97518d34b514e7932d3a68bc06d253f6ba021c9ff450e6ddf04067f1e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:2:8",
+      "sequence": 30298,
+      "chapter_label": "JAS 2",
+      "verse_label": "8",
+      "locator": {
+        "book": "JAS",
+        "chapter": 2,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 2,
+          "verse": 8
+        }
+      ],
+      "en": "However, if you fulfill the royal law according to the Scripture, “You shall love your neighbor as yourself,” you do well.",
+      "ko": "너희가 만일 경에 기록한 대로 네 이웃 사랑하기를 네 몸과 같이 하라 하신 최고한 법을 지키면 잘하는 것이거니와",
+      "source_text_hash": "3ac08ca88977a664f92ed875b33a60948f26dfde3c844750f89602977cc65d12",
+      "translation_text_hash": "d221a934f12228b6855bd9ca6850909d625d59aad774ffd488534d9cfefc5c1a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 만일 경에 기록한 대로 네 이웃 사랑하기를 네 몸과 같이 하라 하신 최고한 법을 지키면 잘하는 것이거니와"
+      ],
+      "raw_text_hashes": [
+        "d221a934f12228b6855bd9ca6850909d625d59aad774ffd488534d9cfefc5c1a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:2:9",
+      "sequence": 30299,
+      "chapter_label": "JAS 2",
+      "verse_label": "9",
+      "locator": {
+        "book": "JAS",
+        "chapter": 2,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 2,
+          "verse": 9
+        }
+      ],
+      "en": "But if you show partiality, you commit sin, being convicted by the law as transgressors.",
+      "ko": "만일 너희가 외모로 사람을 취하면 죄를 짓는 것이니 율법이 너희를 범죄자로 정하리라",
+      "source_text_hash": "e2a1a8f75396d4f257ac3a0fcab2ef86eef51dbe7092ec4cd2747c769c7baa01",
+      "translation_text_hash": "73f0447b79fd52791710ed6eee92d7dd5c802e6430144269673a5487dd57b2ab",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 너희가 외모로 사람을 취하면 죄를 짓는 것이니 율법이 너희를 범죄자로 정하리라"
+      ],
+      "raw_text_hashes": [
+        "73f0447b79fd52791710ed6eee92d7dd5c802e6430144269673a5487dd57b2ab"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:2:10",
+      "sequence": 30300,
+      "chapter_label": "JAS 2",
+      "verse_label": "10",
+      "locator": {
+        "book": "JAS",
+        "chapter": 2,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 2,
+          "verse": 10
+        }
+      ],
+      "en": "For whoever keeps the whole law, and yet stumbles in one point, he has become guilty of all.",
+      "ko": "누구든지 온 율법을 지키다가 그 하나에 거치면 모두 범한 자가 되나니",
+      "source_text_hash": "8d6f4f3765d055edf6f00614d4387bd59a3f56ee3719c323c1997db1528c9a15",
+      "translation_text_hash": "9c7c71b531badf07c9f86ff2fe3ee7b22e9a19c50570cb859cc96dcfe3b37bb0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누구든지 온 율법을 지키다가 그 하나에 거치면 모두 범한 자가 되나니"
+      ],
+      "raw_text_hashes": [
+        "9c7c71b531badf07c9f86ff2fe3ee7b22e9a19c50570cb859cc96dcfe3b37bb0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:2:11",
+      "sequence": 30301,
+      "chapter_label": "JAS 2",
+      "verse_label": "11",
+      "locator": {
+        "book": "JAS",
+        "chapter": 2,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 2,
+          "verse": 11
+        }
+      ],
+      "en": "For he who said, “Do not commit adultery,” also said, “Do not commit murder.” Now if you do not commit adultery but do murder, you have become a transgressor of the law.",
+      "ko": "간음하지 말라 하신 이가 또한 살인하지 말라 하셨은즉 네가 비록 간음하지 아니하여도 살인하면 율법을 범한 자가 되느니라",
+      "source_text_hash": "85ded7b6f1f162c641d36f1f128c175426327dd49e14b8904096727824c83584",
+      "translation_text_hash": "57035fa81412bb5ece91d321a4f727421c43f742d7d32c0a3748c067ee70cf81",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "간음하지 말라 하신 이가 또한 살인하지 말라 하셨은즉 네가 비록 간음하지 아니하여도 살인하면 율법을 범한 자가 되느니라"
+      ],
+      "raw_text_hashes": [
+        "57035fa81412bb5ece91d321a4f727421c43f742d7d32c0a3748c067ee70cf81"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:2:12",
+      "sequence": 30302,
+      "chapter_label": "JAS 2",
+      "verse_label": "12",
+      "locator": {
+        "book": "JAS",
+        "chapter": 2,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 2,
+          "verse": 12
+        }
+      ],
+      "en": "So speak and so do as men who are to be judged by the law of freedom.",
+      "ko": "너희는 자유의 율법대로 심판 받을 자처럼 말도 하고 행하기도 하라",
+      "source_text_hash": "5a77549b01d1ebb2dc3892288c4cc88b7c81c9d503ab42dc1c60448bca5523dc",
+      "translation_text_hash": "2980972a23065e3da3ddc7f0e7d713e088c58660258431611e6fcc063d16d4cb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 자유의 율법대로 심판 받을 자처럼 말도 하고 행하기도 하라"
+      ],
+      "raw_text_hashes": [
+        "2980972a23065e3da3ddc7f0e7d713e088c58660258431611e6fcc063d16d4cb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:2:13",
+      "sequence": 30303,
+      "chapter_label": "JAS 2",
+      "verse_label": "13",
+      "locator": {
+        "book": "JAS",
+        "chapter": 2,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 2,
+          "verse": 13
+        }
+      ],
+      "en": "For judgment is without mercy to him who has shown no mercy. Mercy triumphs over judgment.",
+      "ko": "긍휼을 행하지 아니하는 자에게는 긍휼 없는 심판이 있으리라 긍휼은 심판을 이기고 자랑하느니라",
+      "source_text_hash": "dbc479d9cb5ed7d005d8d987777da0ae18b373c904dd69113a4d0ff438829966",
+      "translation_text_hash": "ad88f4d8bdb8ec5cd069256de881b0d1f12b9641d0b7eb1c896c0fe289ea5601",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "긍휼을 행하지 아니하는 자에게는 긍휼 없는 심판이 있으리라 긍휼은 심판을 이기고 자랑하느니라"
+      ],
+      "raw_text_hashes": [
+        "ad88f4d8bdb8ec5cd069256de881b0d1f12b9641d0b7eb1c896c0fe289ea5601"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:2:14",
+      "sequence": 30304,
+      "chapter_label": "JAS 2",
+      "verse_label": "14",
+      "locator": {
+        "book": "JAS",
+        "chapter": 2,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 2,
+          "verse": 14
+        }
+      ],
+      "en": "What good is it, my brothers, if a man says he has faith, but has no works? Can faith save him?",
+      "ko": "내 형제들아 만일 사람이 믿음이 있노라 하고 행함이 없으면 무슨 이익이 있으리요 그 믿음이 능히 자기를 구원하겠느냐",
+      "source_text_hash": "39a9ab0cd5606cec3cef5c29a21d4fb2a5045a6c213ee7c3998a7f1205e40a70",
+      "translation_text_hash": "f3575c5d3dfa8129571e3e8ce0979ed3a4d77680478ed278ca4159039cc784a7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 형제들아 만일 사람이 믿음이 있노라 하고 행함이 없으면 무슨 이익이 있으리요 그 믿음이 능히 자기를 구원하겠느냐"
+      ],
+      "raw_text_hashes": [
+        "f3575c5d3dfa8129571e3e8ce0979ed3a4d77680478ed278ca4159039cc784a7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:2:15",
+      "sequence": 30305,
+      "chapter_label": "JAS 2",
+      "verse_label": "15",
+      "locator": {
+        "book": "JAS",
+        "chapter": 2,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 2,
+          "verse": 15
+        }
+      ],
+      "en": "And if a brother or sister is naked and in lack of daily food,",
+      "ko": "만일 형제나 자매가 헐벗고 일용할 양식이 없는데",
+      "source_text_hash": "f8bb82c0c3a7041d6a1880e46bd4ccd046be2a6fee7218ca2be718d0079afeea",
+      "translation_text_hash": "13912bf641b38291d22f22d119e487b6ebadb0588f01a8c7995bf70da73d965d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 형제나 자매가 헐벗고 일용할 양식이 없는데"
+      ],
+      "raw_text_hashes": [
+        "13912bf641b38291d22f22d119e487b6ebadb0588f01a8c7995bf70da73d965d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:2:16",
+      "sequence": 30306,
+      "chapter_label": "JAS 2",
+      "verse_label": "16",
+      "locator": {
+        "book": "JAS",
+        "chapter": 2,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 2,
+          "verse": 16
+        }
+      ],
+      "en": "and one of you tells them, “Go in peace. Be warmed and filled;” yet you didn’t give them the things the body needs, what good is it?",
+      "ko": "너희 중에 누구든지 그에게 이르되 평안히 가라, 더웁게 하라, 배부르게 하라 하며 그 몸에 쓸 것을 주지 아니하면 무슨 이익이 있으리요",
+      "source_text_hash": "c078aa385f23bf721fa98b675d9a28f942714750de7841a8f0a23b8e1aad741a",
+      "translation_text_hash": "9b9b180b8ea828520284a25cf2f53d0ad3e1c7045a192e5a11404155d34c8a35",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 중에 누구든지 그에게 이르되 평안히 가라, 더웁게 하라, 배부르게 하라 하며 그 몸에 쓸 것을 주지 아니하면 무슨 이익이 있으리요"
+      ],
+      "raw_text_hashes": [
+        "9b9b180b8ea828520284a25cf2f53d0ad3e1c7045a192e5a11404155d34c8a35"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:2:17",
+      "sequence": 30307,
+      "chapter_label": "JAS 2",
+      "verse_label": "17",
+      "locator": {
+        "book": "JAS",
+        "chapter": 2,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 2,
+          "verse": 17
+        }
+      ],
+      "en": "Even so faith, if it has no works, is dead in itself.",
+      "ko": "이와 같이 행함이 없는 믿음은 그 자체가 죽은 것이라",
+      "source_text_hash": "55ad464acfc54d99d3f4cd6b87ccb0c28fae1eec2dafd09e19431aa041bd8161",
+      "translation_text_hash": "57d680dc26c899f518fa8a9e39cc6dafb5fbf151de898c408aea1a41efbd61a2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이와 같이 행함이 없는 믿음은 그 자체가 죽은 것이라"
+      ],
+      "raw_text_hashes": [
+        "57d680dc26c899f518fa8a9e39cc6dafb5fbf151de898c408aea1a41efbd61a2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:2:18",
+      "sequence": 30308,
+      "chapter_label": "JAS 2",
+      "verse_label": "18",
+      "locator": {
+        "book": "JAS",
+        "chapter": 2,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 2,
+          "verse": 18
+        }
+      ],
+      "en": "Yes, a man will say, “You have faith, and I have works.” Show me your faith without works, and I will show you my faith by my works.",
+      "ko": "혹이 가로되 너는 믿음이 있고 나는 행함이 있으니 행함이 없는 네 믿음을 내게 보이라 나는 행함으로 내 믿음을 네게 보이리라",
+      "source_text_hash": "ed7bee19a19ece60a70d0e68f249c51071506b04af7348f7db81c601ee8496b1",
+      "translation_text_hash": "b19ef41fe9e7d13fc408f9121647451a04403d691b3eda9fea5323c353a8ecea",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "혹이 가로되 너는 믿음이 있고 나는 행함이 있으니 행함이 없는 네 믿음을 내게 보이라 나는 행함으로 내 믿음을 네게 보이리라"
+      ],
+      "raw_text_hashes": [
+        "b19ef41fe9e7d13fc408f9121647451a04403d691b3eda9fea5323c353a8ecea"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:2:19",
+      "sequence": 30309,
+      "chapter_label": "JAS 2",
+      "verse_label": "19",
+      "locator": {
+        "book": "JAS",
+        "chapter": 2,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 2,
+          "verse": 19
+        }
+      ],
+      "en": "You believe that God is one. You do well. The demons also believe—and shudder.",
+      "ko": "네가 하나님은 한 분이신 줄을 믿느냐 잘하는도다 귀신들도 믿고 떠느니라",
+      "source_text_hash": "241510c3522bc479c76e79a605d0dd50520edec22a844fc974ef7399d1445551",
+      "translation_text_hash": "b08bc08d23c0883c857b2e89d0cb40299307a8885ed9c24e8729222920331f03",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 하나님은 한 분이신 줄을 믿느냐 잘하는도다 귀신들도 믿고 떠느니라"
+      ],
+      "raw_text_hashes": [
+        "b08bc08d23c0883c857b2e89d0cb40299307a8885ed9c24e8729222920331f03"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:2:20",
+      "sequence": 30310,
+      "chapter_label": "JAS 2",
+      "verse_label": "20",
+      "locator": {
+        "book": "JAS",
+        "chapter": 2,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 2,
+          "verse": 20
+        }
+      ],
+      "en": "But do you want to know, vain man, that faith apart from works is dead?",
+      "ko": "아아 허탄한 사람아 행함이 없는 믿음이 헛 것인줄 알고자 하느냐",
+      "source_text_hash": "7e6663305782a9c3fedfa12e336a4887bd3477eba7eb479cb5bb3a7be32deff3",
+      "translation_text_hash": "a64451f472a0406fd64934efab079ef5274de4c01829c52c84d549f787fa1a67",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아아 허탄한 사람아 행함이 없는 믿음이 헛 것인줄 알고자 하느냐"
+      ],
+      "raw_text_hashes": [
+        "a64451f472a0406fd64934efab079ef5274de4c01829c52c84d549f787fa1a67"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:2:21",
+      "sequence": 30311,
+      "chapter_label": "JAS 2",
+      "verse_label": "21",
+      "locator": {
+        "book": "JAS",
+        "chapter": 2,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 2,
+          "verse": 21
+        }
+      ],
+      "en": "Wasn’t Abraham our father justified by works, in that he offered up Isaac his son on the altar?",
+      "ko": "우리 조상 아브라함이 그 아들 이삭을 제단에 드릴 때에 행함으로 의롭다 하심을 받은 것이 아니냐",
+      "source_text_hash": "930317732c87b8834f7e78d1d8fecc07f6494512c9b6785af8c84a8deac53bdb",
+      "translation_text_hash": "02cb7121af13b1d2359b99765c103b3b19f60cb3facc698e07daca5e22aaff2f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리 조상 아브라함이 그 아들 이삭을 제단에 드릴 때에 행함으로 의롭다 하심을 받은 것이 아니냐"
+      ],
+      "raw_text_hashes": [
+        "02cb7121af13b1d2359b99765c103b3b19f60cb3facc698e07daca5e22aaff2f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:2:22",
+      "sequence": 30312,
+      "chapter_label": "JAS 2",
+      "verse_label": "22",
+      "locator": {
+        "book": "JAS",
+        "chapter": 2,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 2,
+          "verse": 22
+        }
+      ],
+      "en": "You see that faith worked with his works, and by works faith was perfected.",
+      "ko": "네가 보거니와 믿음이 그의 행함과 함께 일하고 행함으로 믿음이 온전케 되었느니라",
+      "source_text_hash": "fc82f0bd0677212fcd8a51099b7fb5116c6cf4c7927c3beb8a25d14daad3a3ee",
+      "translation_text_hash": "433141d32df11a116557f8d2f82feb5b754d498890ab47180b1b0e1ce1517826",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 보거니와 믿음이 그의 행함과 함께 일하고 행함으로 믿음이 온전케 되었느니라"
+      ],
+      "raw_text_hashes": [
+        "433141d32df11a116557f8d2f82feb5b754d498890ab47180b1b0e1ce1517826"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:2:23",
+      "sequence": 30313,
+      "chapter_label": "JAS 2",
+      "verse_label": "23",
+      "locator": {
+        "book": "JAS",
+        "chapter": 2,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 2,
+          "verse": 23
+        }
+      ],
+      "en": "So the Scripture was fulfilled which says, “Abraham believed God, and it was accounted to him as righteousness,” and he was called the friend of God.",
+      "ko": "이에 경에 이른바 아브라함이 하나님을 믿으니 이것을 의로 여기셨다는 말씀이 응하였고 그는 하나님의 벗이라 칭함을 받았나니",
+      "source_text_hash": "d7e2eca87e52e7f9123ec44e0c91cb67e6b105d3f556027000f69065cfcc8bad",
+      "translation_text_hash": "af914b43ace6b493564ce79fd935591a48f5363e78fb0fad8ff26e8b46df83c5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 경에 이른바 아브라함이 하나님을 믿으니 이것을 의로 여기셨다는 말씀이 응하였고 그는 하나님의 벗이라 칭함을 받았나니"
+      ],
+      "raw_text_hashes": [
+        "af914b43ace6b493564ce79fd935591a48f5363e78fb0fad8ff26e8b46df83c5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:2:24",
+      "sequence": 30314,
+      "chapter_label": "JAS 2",
+      "verse_label": "24",
+      "locator": {
+        "book": "JAS",
+        "chapter": 2,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 2,
+          "verse": 24
+        }
+      ],
+      "en": "You see then that by works a man is justified, and not only by faith.",
+      "ko": "이로 보건대 사람이 행함으로 의롭다 하심을 받고 믿음으로만 아니니라",
+      "source_text_hash": "83bf0517cc88d8388051aa8a6ff4174d81e16af238c7d502430c3c5598e066a3",
+      "translation_text_hash": "ff5300b9fe39d9e5d41a5bb19a9a0b5f9dbb5b5da61129cbaddf54df49c65137",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이로 보건대 사람이 행함으로 의롭다 하심을 받고 믿음으로만 아니니라"
+      ],
+      "raw_text_hashes": [
+        "ff5300b9fe39d9e5d41a5bb19a9a0b5f9dbb5b5da61129cbaddf54df49c65137"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:2:25",
+      "sequence": 30315,
+      "chapter_label": "JAS 2",
+      "verse_label": "25",
+      "locator": {
+        "book": "JAS",
+        "chapter": 2,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 2,
+          "verse": 25
+        }
+      ],
+      "en": "In the same way, wasn’t Rahab the prostitute also justified by works when she received the messengers and sent them out another way?",
+      "ko": "또 이와 같이 기생 라합이 사자를 접대하여 다른 길로 나가게 할 때에 행함으로 의롭다 하심을 받은 것이 아니냐",
+      "source_text_hash": "0a91be56f349d3804757b24cc55257baa0e381f9bfdf65c8b5de4a3e61ffcf97",
+      "translation_text_hash": "febe35d2289f7702c4f91d89f2531c425f9afa9d08d7de252375f2d3bbc45add",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 이와 같이 기생 라합이 사자를 접대하여 다른 길로 나가게 할 때에 행함으로 의롭다 하심을 받은 것이 아니냐"
+      ],
+      "raw_text_hashes": [
+        "febe35d2289f7702c4f91d89f2531c425f9afa9d08d7de252375f2d3bbc45add"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:2:26",
+      "sequence": 30316,
+      "chapter_label": "JAS 2",
+      "verse_label": "26",
+      "locator": {
+        "book": "JAS",
+        "chapter": 2,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 2,
+          "verse": 26
+        }
+      ],
+      "en": "For as the body apart from the spirit is dead, even so faith apart from works is dead.",
+      "ko": "영혼 없는 몸이 죽은것 같이 행함이 없는 믿음은 죽은 것이니라",
+      "source_text_hash": "2bc5c35d6579ee96e801f1ae25fc76d9f42243c90b8ad11227d5697fb90dfd6f",
+      "translation_text_hash": "5797dfd0f9dda6be4a20f8e093bf4a65320f11d687cbd64d01ed2c483066f9f1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "영혼 없는 몸이 죽은것 같이 행함이 없는 믿음은 죽은 것이니라"
+      ],
+      "raw_text_hashes": [
+        "5797dfd0f9dda6be4a20f8e093bf4a65320f11d687cbd64d01ed2c483066f9f1"
+      ]
+    }
+  ]
+}

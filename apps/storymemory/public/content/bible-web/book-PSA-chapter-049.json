@@ -1,0 +1,653 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:049",
+  "unit_ordinal": 527,
+  "unit_label": "PSA 49",
+  "book_code": "PSA",
+  "chapter_number": 49,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:49:1",
+      "sequence": 14650,
+      "chapter_label": "PSA 49",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 49,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 49,
+          "verse": 1
+        }
+      ],
+      "en": "Hear this, all you peoples. Listen, all you inhabitants of the world,",
+      "ko": "만민들아 이를 들으라 세상의 거민들아 귀를 기울이라",
+      "source_text_hash": "3900ad39d84114f937b38605afd28026e4899da177fd2d43b021506e60f8fc8c",
+      "translation_text_hash": "e7d4e1d4e66d1a9ed6a41e9a66a44ee96c158c631ee7c408f3222bbfa086067f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만민들아 이를 들으라 세상의 거민들아 귀를 기울이라"
+      ],
+      "raw_text_hashes": [
+        "e7d4e1d4e66d1a9ed6a41e9a66a44ee96c158c631ee7c408f3222bbfa086067f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:49:2",
+      "sequence": 14651,
+      "chapter_label": "PSA 49",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 49,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 49,
+          "verse": 2
+        }
+      ],
+      "en": "both low and high, rich and poor together.",
+      "ko": "귀천 빈부를 물론하고 다 들을찌어다",
+      "source_text_hash": "dae2030b323213712ee55e442ad8356c8b29ef52d922aceda5fd6a7d58307b7f",
+      "translation_text_hash": "b970169bc1dcc98df4b4796daaadface40667a6efb8c29c292ff41c76f62eb61",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "귀천 빈부를 물론하고 다 들을찌어다"
+      ],
+      "raw_text_hashes": [
+        "b970169bc1dcc98df4b4796daaadface40667a6efb8c29c292ff41c76f62eb61"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:49:3",
+      "sequence": 14652,
+      "chapter_label": "PSA 49",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 49,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 49,
+          "verse": 3
+        }
+      ],
+      "en": "My mouth will speak words of wisdom. My heart will utter understanding.",
+      "ko": "내 입은 지혜를 말하겠고 내 마음은 명철을 묵상하리로다",
+      "source_text_hash": "2ecb7fba6d192cdf881d579ab9b8b42fc886a64122f2c060604e84251d55c137",
+      "translation_text_hash": "da46411273646cfd2ab96ea6b95c94ce7d4b2975107ad87d28cd72c1770b3a8c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 입은 지혜를 말하겠고 내 마음은 명철을 묵상하리로다"
+      ],
+      "raw_text_hashes": [
+        "da46411273646cfd2ab96ea6b95c94ce7d4b2975107ad87d28cd72c1770b3a8c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:49:4",
+      "sequence": 14653,
+      "chapter_label": "PSA 49",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 49,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 49,
+          "verse": 4
+        }
+      ],
+      "en": "I will incline my ear to a proverb. I will solve my riddle on the harp.",
+      "ko": "내가 비유에 내 귀를 기울이고 수금으로 나의 오묘한 말을 풀리로다",
+      "source_text_hash": "ecd41260bb09071f63bb9f7e7273ed139735c31abc221606899a5e8f9cf7b9af",
+      "translation_text_hash": "e23c7559d1c260280a8464710097c58000285494e17758ec06c2d0dcf5074be4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 비유에 내 귀를 기울이고 수금으로 나의 오묘한 말을 풀리로다"
+      ],
+      "raw_text_hashes": [
+        "e23c7559d1c260280a8464710097c58000285494e17758ec06c2d0dcf5074be4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:49:5",
+      "sequence": 14654,
+      "chapter_label": "PSA 49",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 49,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 49,
+          "verse": 5
+        }
+      ],
+      "en": "Why should I fear in the days of evil, when iniquity at my heels surrounds me?",
+      "ko": "죄악이 나를 따라 에우는 환난의 날에 내가 어찌 두려워하랴",
+      "source_text_hash": "d92b97d536e95eb3021a564e0d0675c2ddd646c01228388f96b3caa3900f0f6d",
+      "translation_text_hash": "90a282a08a02dc2d559c123b597d6b25370ad76c113dd3e8c7dffbce75bec472",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "죄악이 나를 따라 에우는 환난의 날에 내가 어찌 두려워하랴"
+      ],
+      "raw_text_hashes": [
+        "90a282a08a02dc2d559c123b597d6b25370ad76c113dd3e8c7dffbce75bec472"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:49:6",
+      "sequence": 14655,
+      "chapter_label": "PSA 49",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 49,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 49,
+          "verse": 6
+        }
+      ],
+      "en": "Those who trust in their wealth, and boast in the multitude of their riches—",
+      "ko": "자기의 재물을 의지하고 풍부함으로 자긍하는 자는",
+      "source_text_hash": "ab8054e3131f8a6c052ec064d052c3343a5a74d6f8e95fb1640ccf9221e92142",
+      "translation_text_hash": "2894867c468af11e6dfca67df3d5d1db6fe5a563e58a79a4b424982d10219225",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자기의 재물을 의지하고 풍부함으로 자긍하는 자는"
+      ],
+      "raw_text_hashes": [
+        "2894867c468af11e6dfca67df3d5d1db6fe5a563e58a79a4b424982d10219225"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:49:7",
+      "sequence": 14656,
+      "chapter_label": "PSA 49",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 49,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 49,
+          "verse": 7
+        }
+      ],
+      "en": "none of them can by any means redeem his brother, nor give God a ransom for him.",
+      "ko": "아무도 결코 그 형제를 구속하지 못하며 저를 위하여 하나님께 속전을 바치지도 못할 것은",
+      "source_text_hash": "db682a07b2b3988bdc5208943f323e5c5f3f6b9b84cf9c70f03e0c2486e17d39",
+      "translation_text_hash": "95629ccbbe1f71b628440a138bb394ae446ab589eeca75590764d1b8509002a1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아무도 결코 그 형제를 구속하지 못하며 저를 위하여 하나님께 속전을 바치지도 못할 것은"
+      ],
+      "raw_text_hashes": [
+        "95629ccbbe1f71b628440a138bb394ae446ab589eeca75590764d1b8509002a1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:49:8",
+      "sequence": 14657,
+      "chapter_label": "PSA 49",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 49,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 49,
+          "verse": 8
+        }
+      ],
+      "en": "For the redemption of their life is costly, no payment is ever enough,",
+      "ko": "저희 생명의 구속이 너무 귀하며 영영히 못할 것임이라",
+      "source_text_hash": "329735e2f33d7a87d69ecbea520f16df91548e3e96779f4041f42f9e7c63324c",
+      "translation_text_hash": "ce0832f790f153aef382663b261955627826a3ba3df362433366e33c77cc465d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희 생명의 구속이 너무 귀하며 영영히 못할 것임이라"
+      ],
+      "raw_text_hashes": [
+        "ce0832f790f153aef382663b261955627826a3ba3df362433366e33c77cc465d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:49:9",
+      "sequence": 14658,
+      "chapter_label": "PSA 49",
+      "verse_label": "9",
+      "locator": {
+        "book": "PSA",
+        "chapter": 49,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 49,
+          "verse": 9
+        }
+      ],
+      "en": "that he should live on forever, that he should not see corruption.",
+      "ko": "저로 영존하여 썩음을 보지 않게 못하리니",
+      "source_text_hash": "55c8c5e662e6c2e2a89d0f5b92d80daac5a46eaf39dc67f034f0074389122f15",
+      "translation_text_hash": "f0b299a7c856b9d6ba16145a59a0a2f9157062003c88f3b18b8fd93649232625",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저로 영존하여 썩음을 보지 않게 못하리니"
+      ],
+      "raw_text_hashes": [
+        "f0b299a7c856b9d6ba16145a59a0a2f9157062003c88f3b18b8fd93649232625"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:49:10",
+      "sequence": 14659,
+      "chapter_label": "PSA 49",
+      "verse_label": "10",
+      "locator": {
+        "book": "PSA",
+        "chapter": 49,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 49,
+          "verse": 10
+        }
+      ],
+      "en": "For he sees that wise men die; likewise the fool and the senseless perish, and leave their wealth to others.",
+      "ko": "저가 보리로다 지혜 있는 자도 죽고 우준하고 무지한 자도 같이 망하고 저희의 재물을 타인에게 끼치는도다",
+      "source_text_hash": "71f093b9d89ff9e8931f08937bd185de65f2d6cdf09e7c86fc525e612b11c2a5",
+      "translation_text_hash": "b6b3d3c3112e629fc83c675676e3c6a6e6b94c6a023b66cfa9a8d345a2bef9c3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 보리로다 지혜 있는 자도 죽고 우준하고 무지한 자도 같이 망하고 저희의 재물을 타인에게 끼치는도다"
+      ],
+      "raw_text_hashes": [
+        "b6b3d3c3112e629fc83c675676e3c6a6e6b94c6a023b66cfa9a8d345a2bef9c3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:49:11",
+      "sequence": 14660,
+      "chapter_label": "PSA 49",
+      "verse_label": "11",
+      "locator": {
+        "book": "PSA",
+        "chapter": 49,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 49,
+          "verse": 11
+        }
+      ],
+      "en": "Their inward thought is that their houses will endure forever, and their dwelling places to all generations. They name their lands after themselves.",
+      "ko": "저희의 속 생각에 그 집이 영영히 있고 그 거처가 대대에 미치리라 하여 그 전지를 자기 이름으로 칭하도다",
+      "source_text_hash": "de42c0aa4fb954ef46123c2cfc2e5c0000b5bc25c9f6f2e78dfb4fb1cd6322f9",
+      "translation_text_hash": "89a350cbe9ecd51a71ee4b6774e5dfeb060b4d8fb09d2e82fd876a29031a0ef0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희의 속 생각에 그 집이 영영히 있고 그 거처가 대대에 미치리라 하여 그 전지를 자기 이름으로 칭하도다"
+      ],
+      "raw_text_hashes": [
+        "89a350cbe9ecd51a71ee4b6774e5dfeb060b4d8fb09d2e82fd876a29031a0ef0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:49:12",
+      "sequence": 14661,
+      "chapter_label": "PSA 49",
+      "verse_label": "12",
+      "locator": {
+        "book": "PSA",
+        "chapter": 49,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 49,
+          "verse": 12
+        }
+      ],
+      "en": "But man, despite his riches, doesn’t endure. He is like the animals that perish.",
+      "ko": "사람은 존귀하나 장구치 못함이여 멸망하는 짐승 같도다",
+      "source_text_hash": "70099ce389e482aed5dc58c720c80d124b2dc1001efed9168052df0013be3c1a",
+      "translation_text_hash": "93ca1409a3f84ee1d7f3c9e77fb3f48d82a6dc70befab2d2d53d2f723c14f22e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람은 존귀하나 장구치 못함이여 멸망하는 짐승 같도다"
+      ],
+      "raw_text_hashes": [
+        "93ca1409a3f84ee1d7f3c9e77fb3f48d82a6dc70befab2d2d53d2f723c14f22e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:49:13",
+      "sequence": 14662,
+      "chapter_label": "PSA 49",
+      "verse_label": "13",
+      "locator": {
+        "book": "PSA",
+        "chapter": 49,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 49,
+          "verse": 13
+        }
+      ],
+      "en": "This is the destiny of those who are foolish, and of those who approve their sayings. Selah.",
+      "ko": "저희의 이 행위는 저희의 우매함이나 후세 사람은 오히려 저희 말을 칭찬하리로다(셀라)",
+      "source_text_hash": "bf6a3642fc5545b0dfdd203358e969a339dc3287cbfd4e105e6c545d268a9d1b",
+      "translation_text_hash": "5ad408cb631a4cdf33a3b709b81c4382564fc234b53de8bafaa9afad176e9e40",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희의 이 행위는 저희의 우매함이나 후세 사람은 오히려 저희 말을 칭찬하리로다(셀라)"
+      ],
+      "raw_text_hashes": [
+        "5ad408cb631a4cdf33a3b709b81c4382564fc234b53de8bafaa9afad176e9e40"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:49:14",
+      "sequence": 14663,
+      "chapter_label": "PSA 49",
+      "verse_label": "14",
+      "locator": {
+        "book": "PSA",
+        "chapter": 49,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 49,
+          "verse": 14
+        }
+      ],
+      "en": "They are appointed as a flock for Sheol. Death shall be their shepherd. The upright shall have dominion over them in the morning. Their beauty shall decay in Sheol, far from their mansion.",
+      "ko": "양 같이 저희를 음부에 두기로 작정되었으니 사망이 저희 목자일 것이라 정직한 자가 아침에 저희를 다스리리니 저희 아름다움이 음부에서 소멸하여 그 거처조차 없어지려니와",
+      "source_text_hash": "2d44a5b896e697e5270633506c6074baeb97de3f155b526adf478dc7095b042d",
+      "translation_text_hash": "26a387c9d99236aec691a180add34093296bd722ea7acf5a8f9a8702cfd4886a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "양 같이 저희를 음부에 두기로 작정되었으니 사망이 저희 목자일 것이라 정직한 자가 아침에 저희를 다스리리니 저희 아름다움이 음부에서 소멸하여 그 거처조차 없어지려니와"
+      ],
+      "raw_text_hashes": [
+        "26a387c9d99236aec691a180add34093296bd722ea7acf5a8f9a8702cfd4886a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:49:15",
+      "sequence": 14664,
+      "chapter_label": "PSA 49",
+      "verse_label": "15",
+      "locator": {
+        "book": "PSA",
+        "chapter": 49,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 49,
+          "verse": 15
+        }
+      ],
+      "en": "But God will redeem my soul from the power of Sheol, for he will receive me. Selah.",
+      "ko": "하나님은 나를 영접하시리니 이러므로 내 영혼을 음부의 권세에서 구속하시리로다(셀라)",
+      "source_text_hash": "08dd7b476a4553792de1687ab0f23e1d0c58c45b3c708de0ff5cde8110370bd7",
+      "translation_text_hash": "7957f1ae7c15e82f9a9d4a1df631acbe5c960b370db6886ed8a1c48cd31c3fad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님은 나를 영접하시리니 이러므로 내 영혼을 음부의 권세에서 구속하시리로다(셀라)"
+      ],
+      "raw_text_hashes": [
+        "7957f1ae7c15e82f9a9d4a1df631acbe5c960b370db6886ed8a1c48cd31c3fad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:49:16",
+      "sequence": 14665,
+      "chapter_label": "PSA 49",
+      "verse_label": "16",
+      "locator": {
+        "book": "PSA",
+        "chapter": 49,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 49,
+          "verse": 16
+        }
+      ],
+      "en": "Don’t be afraid when a man is made rich, when the glory of his house is increased;",
+      "ko": "사람이 치부하여 그 집 영광이 더할 때에 너는 두려워 말찌어다",
+      "source_text_hash": "5f97e94650792fec58a7b5e769bf9fe150daa766e95ab0c17cc8eeaf2b1340a9",
+      "translation_text_hash": "5d8ba2badd67952fcbc550b4f333fc223d54730438621360f1a91aeb98a773ce",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 치부하여 그 집 영광이 더할 때에 너는 두려워 말찌어다"
+      ],
+      "raw_text_hashes": [
+        "5d8ba2badd67952fcbc550b4f333fc223d54730438621360f1a91aeb98a773ce"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:49:17",
+      "sequence": 14666,
+      "chapter_label": "PSA 49",
+      "verse_label": "17",
+      "locator": {
+        "book": "PSA",
+        "chapter": 49,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 49,
+          "verse": 17
+        }
+      ],
+      "en": "for when he dies he will carry nothing away. His glory won’t descend after him.",
+      "ko": "저가 죽으매 가져가는 것이 없고 그 영광이 저를 따라 내려가지 못함이로다",
+      "source_text_hash": "fdafe3fb5f15715f6ff12339fa9efe0f96797d829fbecbdd0a5d47ead4d627ae",
+      "translation_text_hash": "00366935760a0f5736a10c6c94ba2401352bd57f7dbc6b3d87ed1243ba8b4d4e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 죽으매 가져가는 것이 없고 그 영광이 저를 따라 내려가지 못함이로다"
+      ],
+      "raw_text_hashes": [
+        "00366935760a0f5736a10c6c94ba2401352bd57f7dbc6b3d87ed1243ba8b4d4e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:49:18",
+      "sequence": 14667,
+      "chapter_label": "PSA 49",
+      "verse_label": "18",
+      "locator": {
+        "book": "PSA",
+        "chapter": 49,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 49,
+          "verse": 18
+        }
+      ],
+      "en": "Though while he lived he blessed his soul— and men praise you when you do well for yourself—",
+      "ko": "저가 비록 생시에 자기를 축하하며 스스로 좋게 함으로 사람들에게 칭찬을 받을찌라도",
+      "source_text_hash": "83a5c2500d203a489a00d8b208c9c24894e8367695d16829d5b35a0e228def02",
+      "translation_text_hash": "63d2e4d18076f617260129b524039d8ea7f96073a3325487c6a7998a52017666",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 비록 생시에 자기를 축하하며 스스로 좋게 함으로 사람들에게 칭찬을 받을찌라도"
+      ],
+      "raw_text_hashes": [
+        "63d2e4d18076f617260129b524039d8ea7f96073a3325487c6a7998a52017666"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:49:19",
+      "sequence": 14668,
+      "chapter_label": "PSA 49",
+      "verse_label": "19",
+      "locator": {
+        "book": "PSA",
+        "chapter": 49,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 49,
+          "verse": 19
+        }
+      ],
+      "en": "he shall go to the generation of his fathers. They shall never see the light.",
+      "ko": "그 역대의 열조에게로 돌아가리니 영영히 빛을 보지 못하리로다",
+      "source_text_hash": "6c591c410c65d208b5061cefd18fe7c9b3cbc0a9ae45a42b9be4ac0a2a96b70d",
+      "translation_text_hash": "78bf4f5e89425a579ec69eb62161267661ee4f4c694f357b98e240bad5ac8190",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 역대의 열조에게로 돌아가리니 영영히 빛을 보지 못하리로다"
+      ],
+      "raw_text_hashes": [
+        "78bf4f5e89425a579ec69eb62161267661ee4f4c694f357b98e240bad5ac8190"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:49:20",
+      "sequence": 14669,
+      "chapter_label": "PSA 49",
+      "verse_label": "20",
+      "locator": {
+        "book": "PSA",
+        "chapter": 49,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 49,
+          "verse": 20
+        }
+      ],
+      "en": "A man who has riches without understanding, is like the animals that perish.",
+      "ko": "존귀에 처하나 깨닫지 못하는 사람은 멸망하는 짐승 같도다",
+      "source_text_hash": "f5b1f87909f63bd38ce54cbf81cda1f5d05eb65eff20a8094b9d47a4c8a16222",
+      "translation_text_hash": "478ef83fb088d078f58e1e7e3c23fef6fc6314eb9ea92db806f7ef2b2dfd9af7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "존귀에 처하나 깨닫지 못하는 사람은 멸망하는 짐승 같도다"
+      ],
+      "raw_text_hashes": [
+        "478ef83fb088d078f58e1e7e3c23fef6fc6314eb9ea92db806f7ef2b2dfd9af7"
+      ]
+    }
+  ]
+}

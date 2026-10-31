@@ -1,0 +1,941 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:2KI:chapter:014",
+  "unit_ordinal": 327,
+  "unit_label": "2KI 14",
+  "book_code": "2KI",
+  "chapter_number": 14,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:2KI:14:1",
+      "sequence": 9898,
+      "chapter_label": "2KI 14",
+      "verse_label": "1",
+      "locator": {
+        "book": "2KI",
+        "chapter": 14,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 14,
+          "verse": 1
+        }
+      ],
+      "en": "In the second year of Joash, son of Joahaz, king of Israel, Amaziah the son of Joash king of Judah began to reign.",
+      "ko": "이스라엘 왕 여호아하스의 아들 요아스 이년에 유다 왕 요아스의 아들 아마샤가 왕이 되니",
+      "source_text_hash": "e55339a58b31e97d9440d9de82ee9f10fb096af8db91bf58b247bf27cba59910",
+      "translation_text_hash": "3da50a768ed13b341d197282950736062bc85d3982dd7ae57418c3895ca4d07a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 왕 여호아하스의 아들 요아스 이년에 유다 왕 요아스의 아들 아마샤가 왕이 되니"
+      ],
+      "raw_text_hashes": [
+        "3da50a768ed13b341d197282950736062bc85d3982dd7ae57418c3895ca4d07a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:14:2",
+      "sequence": 9899,
+      "chapter_label": "2KI 14",
+      "verse_label": "2",
+      "locator": {
+        "book": "2KI",
+        "chapter": 14,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 14,
+          "verse": 2
+        }
+      ],
+      "en": "He was twenty-five years old when he began to reign; and he reigned twenty-nine years in Jerusalem. His mother’s name was Jehoaddin of Jerusalem.",
+      "ko": "위에 나아갈 때에 나이 이십 오세라 예루살렘에서 이십 구년을 치리하니라 그 모친의 이름은 여호앗단이라 예루살렘 사람이더라",
+      "source_text_hash": "ad324119a89f0177baf9bd8296e805c68779ae0523e0ece0c35b0a88c4545e14",
+      "translation_text_hash": "e6e05f1ff34928095a02bf2fcb6db2ca019cbcc60e86fa3fd6603b3cc325eeb5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "위에 나아갈 때에 나이 이십 오세라 예루살렘에서 이십 구년을 치리하니라 그 모친의 이름은 여호앗단이라 예루살렘 사람이더라"
+      ],
+      "raw_text_hashes": [
+        "e6e05f1ff34928095a02bf2fcb6db2ca019cbcc60e86fa3fd6603b3cc325eeb5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:14:3",
+      "sequence": 9900,
+      "chapter_label": "2KI 14",
+      "verse_label": "3",
+      "locator": {
+        "book": "2KI",
+        "chapter": 14,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 14,
+          "verse": 3
+        }
+      ],
+      "en": "He did that which was right in the LORD’s eyes, yet not like David his father. He did according to all that Joash his father had done.",
+      "ko": "아마샤가 여호와 보시기에 정직히 행하였으나 그 조상 다윗과는 같지 아니하였으며 그 부친 요아스의 행한대로 다 행하였어도",
+      "source_text_hash": "83d3900097ddc0a10249116a586dada2a1f39f3aaf653b65335f91ff63860cd8",
+      "translation_text_hash": "1596895b763fd7465556b54e1c06c0049488433f115419f84cc47f6891086561",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아마샤가 여호와 보시기에 정직히 행하였으나 그 조상 다윗과는 같지 아니하였으며 그 부친 요아스의 행한대로 다 행하였어도"
+      ],
+      "raw_text_hashes": [
+        "1596895b763fd7465556b54e1c06c0049488433f115419f84cc47f6891086561"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:14:4",
+      "sequence": 9901,
+      "chapter_label": "2KI 14",
+      "verse_label": "4",
+      "locator": {
+        "book": "2KI",
+        "chapter": 14,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 14,
+          "verse": 4
+        }
+      ],
+      "en": "However the high places were not taken away. The people still sacrificed and burned incense in the high places.",
+      "ko": "산당을 제하지 아니하였으므로 백성이 오히려 산당에서 제사를 드리며 분향하였더라",
+      "source_text_hash": "5e6ce4def6c977e0dfdf5dda7d5e2cb760a76d1b260a3c4503f943cdd83adb3b",
+      "translation_text_hash": "02a9477e79abbc5cc49c1a54491492875577617a9297ed106534e49d56491cea",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "산당을 제하지 아니하였으므로 백성이 오히려 산당에서 제사를 드리며 분향하였더라"
+      ],
+      "raw_text_hashes": [
+        "02a9477e79abbc5cc49c1a54491492875577617a9297ed106534e49d56491cea"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:14:5",
+      "sequence": 9902,
+      "chapter_label": "2KI 14",
+      "verse_label": "5",
+      "locator": {
+        "book": "2KI",
+        "chapter": 14,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 14,
+          "verse": 5
+        }
+      ],
+      "en": "As soon as the kingdom was established in his hand, he killed his servants who had slain the king his father,",
+      "ko": "나라가 그 손에 굳게 서매 그 부왕을 죽인 신복들을 죽였으나",
+      "source_text_hash": "911ece156646ea9ad1ec9aa8d3bdaf5246a5ac3bafe0c456476bc9b715cffd77",
+      "translation_text_hash": "905ede5705ab6356cd332ebc42f901f7b90c6b3f2b94beaf03d41118dc811ea0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나라가 그 손에 굳게 서매 그 부왕을 죽인 신복들을 죽였으나"
+      ],
+      "raw_text_hashes": [
+        "905ede5705ab6356cd332ebc42f901f7b90c6b3f2b94beaf03d41118dc811ea0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:14:6",
+      "sequence": 9903,
+      "chapter_label": "2KI 14",
+      "verse_label": "6",
+      "locator": {
+        "book": "2KI",
+        "chapter": 14,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 14,
+          "verse": 6
+        }
+      ],
+      "en": "but the children of the murderers he didn’t put to death, according to that which is written in the book of the law of Moses, as the LORD commanded, saying, “The fathers shall not be put to death for the children, nor the children be put to death for the fathers; but every man shall die for his own sin.”",
+      "ko": "왕을 죽인 자의 자녀들은 죽이지 아니하였으니 이는 모세의 율법책에 기록된대로 함이라 곧 여호와께서 명하여 이르시기를 자녀로 인하여 아비를 죽이지 말 것이요 아비로 인하여 자녀를 죽이지 말 것이라 오직 사람마다 자기의 죄로 인하여 죽을 것이니라 하셨더라",
+      "source_text_hash": "88aa6505055c86bad4cabcfd139493842260c695f6687694dcb3f27f1359e859",
+      "translation_text_hash": "f42e9338a3b0cc0627bc0fece46f7db20bda78cde1c1cf5bae20f9f74517931b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕을 죽인 자의 자녀들은 죽이지 아니하였으니 이는 모세의 율법책에 기록된대로 함이라 곧 여호와께서 명하여 이르시기를 자녀로 인하여 아비를 죽이지 말 것이요 아비로 인하여 자녀를 죽이지 말 것이라 오직 사람마다 자기의 죄로 인하여 죽을 것이니라 하셨더라"
+      ],
+      "raw_text_hashes": [
+        "f42e9338a3b0cc0627bc0fece46f7db20bda78cde1c1cf5bae20f9f74517931b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:14:7",
+      "sequence": 9904,
+      "chapter_label": "2KI 14",
+      "verse_label": "7",
+      "locator": {
+        "book": "2KI",
+        "chapter": 14,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 14,
+          "verse": 7
+        }
+      ],
+      "en": "He killed ten thousand Edomites in the Valley of Salt, and took Sela by war, and called its name Joktheel, to this day.",
+      "ko": "아마샤가 염곡에서 에돔 사람 일만을 죽이고 또 셀라를 쳐서 취하고 이름을 욕드엘이라 하였더니 오늘까지 그러하니라",
+      "source_text_hash": "bd231bdebae972230d8878b60b4286d6c74b2f56a4f42621b293d87cb11bd197",
+      "translation_text_hash": "805d5140ca916f835307220fab5124fbd5ad2a26b0a1560e3a9c9c2a6a2a22a1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아마샤가 염곡에서 에돔 사람 일만을 죽이고 또 셀라를 쳐서 취하고 이름을 욕드엘이라 하였더니 오늘까지 그러하니라"
+      ],
+      "raw_text_hashes": [
+        "805d5140ca916f835307220fab5124fbd5ad2a26b0a1560e3a9c9c2a6a2a22a1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:14:8",
+      "sequence": 9905,
+      "chapter_label": "2KI 14",
+      "verse_label": "8",
+      "locator": {
+        "book": "2KI",
+        "chapter": 14,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 14,
+          "verse": 8
+        }
+      ],
+      "en": "Then Amaziah sent messengers to Jehoash, the son of Jehoahaz son of Jehu, king of Israel, saying, “Come, let’s look one another in the face.”",
+      "ko": "아마샤가 예후의 손자 여호아하스의 아들 이스라엘 왕 요아스에게 사자를 보내어 이르되 오라 우리가 서로 대면하자 한지라",
+      "source_text_hash": "6e0d5b184c8ad855e2828536850499d75912ff8e8fdb8def4b96daaf21a8ad55",
+      "translation_text_hash": "f93185befdfb27c634c19cdb814a871419ba103b48b67568f01c9e6c4d243c8b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아마샤가 예후의 손자 여호아하스의 아들 이스라엘 왕 요아스에게 사자를 보내어 이르되 오라 우리가 서로 대면하자 한지라"
+      ],
+      "raw_text_hashes": [
+        "f93185befdfb27c634c19cdb814a871419ba103b48b67568f01c9e6c4d243c8b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:14:9",
+      "sequence": 9906,
+      "chapter_label": "2KI 14",
+      "verse_label": "9",
+      "locator": {
+        "book": "2KI",
+        "chapter": 14,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 14,
+          "verse": 9
+        }
+      ],
+      "en": "Jehoash the king of Israel sent to Amaziah king of Judah, saying, “The thistle that was in Lebanon sent to the cedar that was in Lebanon, saying, ‘Give your daughter to my son as wife.’ Then a wild animal that was in Lebanon passed by, and trampled down the thistle.",
+      "ko": "이스라엘 왕 요아스가 유다 왕 아마샤에게 보내어 이르되 레바논 가시나무가 레바논 백향목에게 보내어 이르기를 네 딸을 내 아들에게 주어 아내를 삼게 하라 하였더니 레바논 들짐승이 지나가다가 그 가시나무를 짓밟았느니라",
+      "source_text_hash": "b396222bb8eb118db60d9241b547850afb913c04a7c60ab63653ed8e64ab5c1e",
+      "translation_text_hash": "caaf1fcd53e9b35d45f3e2719d88904ad11d9a42aa99b32d8700613a5b794995",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 왕 요아스가 유다 왕 아마샤에게 보내어 이르되 레바논 가시나무가 레바논 백향목에게 보내어 이르기를 네 딸을 내 아들에게 주어 아내를 삼게 하라 하였더니 레바논 들짐승이 지나가다가 그 가시나무를 짓밟았느니라"
+      ],
+      "raw_text_hashes": [
+        "caaf1fcd53e9b35d45f3e2719d88904ad11d9a42aa99b32d8700613a5b794995"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:14:10",
+      "sequence": 9907,
+      "chapter_label": "2KI 14",
+      "verse_label": "10",
+      "locator": {
+        "book": "2KI",
+        "chapter": 14,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 14,
+          "verse": 10
+        }
+      ],
+      "en": "You have indeed struck Edom, and your heart has lifted you up. Enjoy the glory of it, and stay at home; for why should you meddle to your harm, that you fall, even you, and Judah with you?”",
+      "ko": "네가 에돔을 쳐서 파하였으므로 마음이 교만하였으니 스스로 영광을 삼아 궁에나 거하라 어찌하여 화를 자취하여 너와 유다가 함께 망하고자 하느냐 하나",
+      "source_text_hash": "ca1e004be2c8c37b9aeabdfba9cb5be90e1a7d029c7c50225c9df31197bb2a73",
+      "translation_text_hash": "16c9930c5ea00d3cba34c14587f7871985ed40a82208b1073a21dc9cebb1bf83",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 에돔을 쳐서 파하였으므로 마음이 교만하였으니 스스로 영광을 삼아 궁에나 거하라 어찌하여 화를 자취하여 너와 유다가 함께 망하고자 하느냐 하나"
+      ],
+      "raw_text_hashes": [
+        "16c9930c5ea00d3cba34c14587f7871985ed40a82208b1073a21dc9cebb1bf83"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:14:11",
+      "sequence": 9908,
+      "chapter_label": "2KI 14",
+      "verse_label": "11",
+      "locator": {
+        "book": "2KI",
+        "chapter": 14,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 14,
+          "verse": 11
+        }
+      ],
+      "en": "But Amaziah would not listen. So Jehoash king of Israel went up; and he and Amaziah king of Judah looked one another in the face at Beth Shemesh, which belongs to Judah.",
+      "ko": "아마샤가 듣지 아니하므로 이스라엘 왕 요아스가 올라와서 유다 왕 아마샤로 더불어 유다의 벧세메스에서 대면하였더니",
+      "source_text_hash": "d3ac3e61a01d1d210d285553f6a7fad81919694f232658f962a7fc2497728d10",
+      "translation_text_hash": "66aa413697c90f1f74effbd6f093e43b1df77ea44c2fe9a49fd3720ef896e70a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아마샤가 듣지 아니하므로 이스라엘 왕 요아스가 올라와서 유다 왕 아마샤로 더불어 유다의 벧세메스에서 대면하였더니"
+      ],
+      "raw_text_hashes": [
+        "66aa413697c90f1f74effbd6f093e43b1df77ea44c2fe9a49fd3720ef896e70a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:14:12",
+      "sequence": 9909,
+      "chapter_label": "2KI 14",
+      "verse_label": "12",
+      "locator": {
+        "book": "2KI",
+        "chapter": 14,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 14,
+          "verse": 12
+        }
+      ],
+      "en": "Judah was defeated by Israel; and each man fled to his tent.",
+      "ko": "유다가 이스라엘 앞에서 패하여 각기 장막으로 도망한지라",
+      "source_text_hash": "88121838e22e826975e8687c224c21b5002c9bdad65f9f3218b6d6498b57e9b9",
+      "translation_text_hash": "5f1b510a64b5106f4fcf7d0443096c20c4b1bb99e1614dfc4800e639de22f09f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다가 이스라엘 앞에서 패하여 각기 장막으로 도망한지라"
+      ],
+      "raw_text_hashes": [
+        "5f1b510a64b5106f4fcf7d0443096c20c4b1bb99e1614dfc4800e639de22f09f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:14:13",
+      "sequence": 9910,
+      "chapter_label": "2KI 14",
+      "verse_label": "13",
+      "locator": {
+        "book": "2KI",
+        "chapter": 14,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 14,
+          "verse": 13
+        }
+      ],
+      "en": "Jehoash king of Israel took Amaziah king of Judah, the son of Jehoash the son of Ahaziah, at Beth Shemesh and came to Jerusalem, then broke down the wall of Jerusalem from the gate of Ephraim to the corner gate, four hundred cubits.",
+      "ko": "이스라엘 왕 요아스가 벧세메스에서 아하시야의 손자 요아스의 아들 유다 왕 아마샤를 사로잡고 예루살렘에 이르러 예루살렘 성벽을 에브라임 문에서부터 성 모퉁이 문까지 사백 규빗을 헐고",
+      "source_text_hash": "2c950c0f45cbf499fe8ec257240110ad4cd894b2e0d8b26a60edb4c1a5c4de33",
+      "translation_text_hash": "a15a6aa52585a6c727afa06560f2e9119e7b2fcc41c20ae1d9de82774603c57f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 왕 요아스가 벧세메스에서 아하시야의 손자 요아스의 아들 유다 왕 아마샤를 사로잡고 예루살렘에 이르러 예루살렘 성벽을 에브라임 문에서부터 성 모퉁이 문까지 사백 규빗을 헐고"
+      ],
+      "raw_text_hashes": [
+        "a15a6aa52585a6c727afa06560f2e9119e7b2fcc41c20ae1d9de82774603c57f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:14:14",
+      "sequence": 9911,
+      "chapter_label": "2KI 14",
+      "verse_label": "14",
+      "locator": {
+        "book": "2KI",
+        "chapter": 14,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 14,
+          "verse": 14
+        }
+      ],
+      "en": "He took all the gold and silver and all the vessels that were found in the LORD’s house and in the treasures of the king’s house, the hostages also, and returned to Samaria.",
+      "ko": "또 여호와의 전과 왕궁 곳간에 있는 금은과 모든 기명을 취하고 또 사람을 볼모로 잡아가지고 사마리아로 돌아갔더라",
+      "source_text_hash": "df5b68168e29dfc781ca6a0725554e2953589ba1d687c156f84eb037178d1e31",
+      "translation_text_hash": "c7225331a96694c5896b9ebf481ba4edfed880c6fb508303ba403fb7a874891c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 여호와의 전과 왕궁 곳간에 있는 금은과 모든 기명을 취하고 또 사람을 볼모로 잡아가지고 사마리아로 돌아갔더라"
+      ],
+      "raw_text_hashes": [
+        "c7225331a96694c5896b9ebf481ba4edfed880c6fb508303ba403fb7a874891c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:14:15",
+      "sequence": 9912,
+      "chapter_label": "2KI 14",
+      "verse_label": "15",
+      "locator": {
+        "book": "2KI",
+        "chapter": 14,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 14,
+          "verse": 15
+        }
+      ],
+      "en": "Now the rest of the acts of Jehoash which he did, and his might, and how he fought with Amaziah king of Judah, aren’t they written in the book of the chronicles of the kings of Israel?",
+      "ko": "요아스의 남은 사적과 그 권력과 또 유다 왕 아마샤와 서로 싸운 일은 이스라엘 왕 역대지략에 기록되지 아니하였느냐",
+      "source_text_hash": "7a5e9e25a6e88667f9c11464ffbd1e27e46f0b297e95269b4356f5bf6e739da3",
+      "translation_text_hash": "a643f079410069d0105c7e3a4cf538c89d63703179e40fca21648b6b3a489bfa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요아스의 남은 사적과 그 권력과 또 유다 왕 아마샤와 서로 싸운 일은 이스라엘 왕 역대지략에 기록되지 아니하였느냐"
+      ],
+      "raw_text_hashes": [
+        "a643f079410069d0105c7e3a4cf538c89d63703179e40fca21648b6b3a489bfa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:14:16",
+      "sequence": 9913,
+      "chapter_label": "2KI 14",
+      "verse_label": "16",
+      "locator": {
+        "book": "2KI",
+        "chapter": 14,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 14,
+          "verse": 16
+        }
+      ],
+      "en": "Jehoash slept with his fathers, and was buried in Samaria with the kings of Israel; and Jeroboam his son reigned in his place.",
+      "ko": "요아스가 그 열조와 함께 자매 이스라엘 왕들과 사마리아에 함께 장사되고 그 아들 여로보암이 대신하여 왕이 되니라",
+      "source_text_hash": "4e0f307fdd637cd81140c3b3dd79500fb289fab149c15fd164987ed523c72af4",
+      "translation_text_hash": "a51c7bc592499ea55490b32b06011e6e2e67605206f8b1dd5696bf86eb75f1aa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요아스가 그 열조와 함께 자매 이스라엘 왕들과 사마리아에 함께 장사되고 그 아들 여로보암이 대신하여 왕이 되니라"
+      ],
+      "raw_text_hashes": [
+        "a51c7bc592499ea55490b32b06011e6e2e67605206f8b1dd5696bf86eb75f1aa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:14:17",
+      "sequence": 9914,
+      "chapter_label": "2KI 14",
+      "verse_label": "17",
+      "locator": {
+        "book": "2KI",
+        "chapter": 14,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 14,
+          "verse": 17
+        }
+      ],
+      "en": "Amaziah the son of Joash king of Judah lived after the death of Jehoash son of Jehoahaz, king of Israel, fifteen years.",
+      "ko": "이스라엘 왕 여호아하스의 아들 요아스가 죽은 후에도 유다 왕 요아스의 아들 아마샤가 십 오년을 생존하였더라",
+      "source_text_hash": "916159b9afa5920195678e1524c751e42d3348d952f0bd6fd2c45fe747e20c6c",
+      "translation_text_hash": "e4378421c952af27d64535e97454116bac335e0c591de6487665549876d41daa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 왕 여호아하스의 아들 요아스가 죽은 후에도 유다 왕 요아스의 아들 아마샤가 십 오년을 생존하였더라"
+      ],
+      "raw_text_hashes": [
+        "e4378421c952af27d64535e97454116bac335e0c591de6487665549876d41daa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:14:18",
+      "sequence": 9915,
+      "chapter_label": "2KI 14",
+      "verse_label": "18",
+      "locator": {
+        "book": "2KI",
+        "chapter": 14,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 14,
+          "verse": 18
+        }
+      ],
+      "en": "Now the rest of the acts of Amaziah, aren’t they written in the book of the chronicles of the kings of Judah?",
+      "ko": "아마샤의 남은 행적은 유다 왕 역대지략에 기록되지 아니하였느냐",
+      "source_text_hash": "3efc6fcfe78f5d654c5d8f2bbdd93a9d8cf5dd8249eeeb32bb18f08958e1b87d",
+      "translation_text_hash": "1ae775d372f257df69c8d3b0ac7dcb19c813b262a76a4d482f98b6f3e4737f67",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아마샤의 남은 행적은 유다 왕 역대지략에 기록되지 아니하였느냐"
+      ],
+      "raw_text_hashes": [
+        "1ae775d372f257df69c8d3b0ac7dcb19c813b262a76a4d482f98b6f3e4737f67"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:14:19",
+      "sequence": 9916,
+      "chapter_label": "2KI 14",
+      "verse_label": "19",
+      "locator": {
+        "book": "2KI",
+        "chapter": 14,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 14,
+          "verse": 19
+        }
+      ],
+      "en": "They made a conspiracy against him in Jerusalem, and he fled to Lachish; but they sent after him to Lachish and killed him there.",
+      "ko": "예루살렘에서 무리가 저를 모반한고로 저가 라기스로 도망하였더니 모반한 무리가 사람을 라기스로 따라 보내어 저를 거기서 죽이게 하고",
+      "source_text_hash": "308a612184452c52e7d675f89d1cd8f6c224d9dac34622f5d71d4a72bce2dc70",
+      "translation_text_hash": "de3b76f7854ea4dc90a3b83798001b09808d40f560e4766eccbac8ba5f4f82f2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예루살렘에서 무리가 저를 모반한고로 저가 라기스로 도망하였더니 모반한 무리가 사람을 라기스로 따라 보내어 저를 거기서 죽이게 하고"
+      ],
+      "raw_text_hashes": [
+        "de3b76f7854ea4dc90a3b83798001b09808d40f560e4766eccbac8ba5f4f82f2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:14:20",
+      "sequence": 9917,
+      "chapter_label": "2KI 14",
+      "verse_label": "20",
+      "locator": {
+        "book": "2KI",
+        "chapter": 14,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 14,
+          "verse": 20
+        }
+      ],
+      "en": "They brought him on horses, and he was buried at Jerusalem with his fathers in David’s city.",
+      "ko": "그 시체를 말에 실어다가 예루살렘에서 그 열조와 함께 다윗성에 장사하니라",
+      "source_text_hash": "e2ffb4a3aff713c0f1f135fc8791624ad07f1a2e52836e30d7c8f70d4163aeb9",
+      "translation_text_hash": "867772c4ec355efa5a13e5f0e6ef8ecd5d69d85aef5131b3831f012508cd9b8a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 시체를 말에 실어다가 예루살렘에서 그 열조와 함께 다윗성에 장사하니라"
+      ],
+      "raw_text_hashes": [
+        "867772c4ec355efa5a13e5f0e6ef8ecd5d69d85aef5131b3831f012508cd9b8a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:14:21",
+      "sequence": 9918,
+      "chapter_label": "2KI 14",
+      "verse_label": "21",
+      "locator": {
+        "book": "2KI",
+        "chapter": 14,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 14,
+          "verse": 21
+        }
+      ],
+      "en": "All the people of Judah took Azariah, who was sixteen years old, and made him king in the place of his father Amaziah.",
+      "ko": "유다 온 백성이 아사랴로 그 부친 아마샤를 대신하여 왕을 삼으니 때에 나이 십 륙세라",
+      "source_text_hash": "ed9f35d549bc3aaa2c42b328ccc196bf16609b1a744ecefc8f705c7396cf12f2",
+      "translation_text_hash": "d1ff028fc8b5f0fc47e26740bd5809701b94ee02fa107b83c22449868c5bb598",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다 온 백성이 아사랴로 그 부친 아마샤를 대신하여 왕을 삼으니 때에 나이 십 륙세라"
+      ],
+      "raw_text_hashes": [
+        "d1ff028fc8b5f0fc47e26740bd5809701b94ee02fa107b83c22449868c5bb598"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:14:22",
+      "sequence": 9919,
+      "chapter_label": "2KI 14",
+      "verse_label": "22",
+      "locator": {
+        "book": "2KI",
+        "chapter": 14,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 14,
+          "verse": 22
+        }
+      ],
+      "en": "He built Elath and restored it to Judah. After that the king slept with his fathers.",
+      "ko": "아마샤가 그 열조와 함께 잔 후에 아사랴가 엘랏을 건축하여 유다에 돌렸더라",
+      "source_text_hash": "30ac609ee2fd9adae0c22af246540813b1c67855f038924e05985b6e11c14b97",
+      "translation_text_hash": "51f69240a47ca1dbbf19d768eb19d4aa1f8e55dc192cd81575dffe8d152c7a79",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아마샤가 그 열조와 함께 잔 후에 아사랴가 엘랏을 건축하여 유다에 돌렸더라"
+      ],
+      "raw_text_hashes": [
+        "51f69240a47ca1dbbf19d768eb19d4aa1f8e55dc192cd81575dffe8d152c7a79"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:14:23",
+      "sequence": 9920,
+      "chapter_label": "2KI 14",
+      "verse_label": "23",
+      "locator": {
+        "book": "2KI",
+        "chapter": 14,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 14,
+          "verse": 23
+        }
+      ],
+      "en": "In the fifteenth year of Amaziah the son of Joash king of Judah, Jeroboam the son of Joash king of Israel began to reign in Samaria for forty-one years.",
+      "ko": "유다 왕 요아스의 아들 아마샤 십 오년에 이스라엘 왕 요아스의 아들 여로보암이 사마리아에서 왕이 되어 사십 일년을 위에 있으며",
+      "source_text_hash": "bfb7b6bb97c51b90a2ddf5c1ba07ea00772c6b65e2fd31bd0abb6e922b877eb2",
+      "translation_text_hash": "e66cf3da2efa74005269b77697b2e8c52c22a49d2869347a108bdf1517fadeb5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다 왕 요아스의 아들 아마샤 십 오년에 이스라엘 왕 요아스의 아들 여로보암이 사마리아에서 왕이 되어 사십 일년을 위에 있으며"
+      ],
+      "raw_text_hashes": [
+        "e66cf3da2efa74005269b77697b2e8c52c22a49d2869347a108bdf1517fadeb5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:14:24",
+      "sequence": 9921,
+      "chapter_label": "2KI 14",
+      "verse_label": "24",
+      "locator": {
+        "book": "2KI",
+        "chapter": 14,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 14,
+          "verse": 24
+        }
+      ],
+      "en": "He did that which was evil in the LORD’s sight. He didn’t depart from all the sins of Jeroboam the son of Nebat, with which he made Israel to sin.",
+      "ko": "여호와 보시기에 악을 행하여 이스라엘로 범죄케한 느밧의 아들 여로보암의 모든 죄에서 떠나지 아니하였더라",
+      "source_text_hash": "d1ae68e6c4b5110190be860f8b183f31b7bad81e10f8400c42f51c9dad05d221",
+      "translation_text_hash": "7ca87aa32cba95c505fb1cc415d6654c68fe4fd2f2329f78a2052bdb893661b6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와 보시기에 악을 행하여 이스라엘로 범죄케한 느밧의 아들 여로보암의 모든 죄에서 떠나지 아니하였더라"
+      ],
+      "raw_text_hashes": [
+        "7ca87aa32cba95c505fb1cc415d6654c68fe4fd2f2329f78a2052bdb893661b6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:14:25",
+      "sequence": 9922,
+      "chapter_label": "2KI 14",
+      "verse_label": "25",
+      "locator": {
+        "book": "2KI",
+        "chapter": 14,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 14,
+          "verse": 25
+        }
+      ],
+      "en": "He restored the border of Israel from the entrance of Hamath to the sea of the Arabah, according to the LORD, the God of Israel’s word, which he spoke by his servant Jonah the son of Amittai, the prophet, who was from Gath Hepher.",
+      "ko": "이스라엘 하나님 여호와께서 그 종 가드헤벨 아밋대의 아들 선지자 요나로 하신 말씀과 같이 여로보암이 이스라엘 지경을 회복하되 하맛 어귀에서부터 아라바 바다까지 하였으니",
+      "source_text_hash": "27093a3a2b8b1e8feb7c668e232dd967e377a2e8baa71701b5586e8126e36c47",
+      "translation_text_hash": "7a66269e8f6a7cfe5175675b6451c33e2f3409ccdbf8891048ee1afe9d6a07c0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 하나님 여호와께서 그 종 가드헤벨 아밋대의 아들 선지자 요나로 하신 말씀과 같이 여로보암이 이스라엘 지경을 회복하되 하맛 어귀에서부터 아라바 바다까지 하였으니"
+      ],
+      "raw_text_hashes": [
+        "7a66269e8f6a7cfe5175675b6451c33e2f3409ccdbf8891048ee1afe9d6a07c0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:14:26",
+      "sequence": 9923,
+      "chapter_label": "2KI 14",
+      "verse_label": "26",
+      "locator": {
+        "book": "2KI",
+        "chapter": 14,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 14,
+          "verse": 26
+        }
+      ],
+      "en": "For the LORD saw the affliction of Israel, that it was very bitter for all, slave and free; and there was no helper for Israel.",
+      "ko": "이는 여호와께서 이스라엘의 고난이 심하여 매인 자도 없고 놓인 자도 없고 이스라엘을 도울 자도 없음을 보셨고",
+      "source_text_hash": "28c0dd0a466e3b2ed99c5abc234e1820955b73983f9fcd1e1d401db6375a68df",
+      "translation_text_hash": "0060f1987acfe49e7e1a695a84a71c80ff3a26d2ff9f33d40151e5949e4aad50",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 여호와께서 이스라엘의 고난이 심하여 매인 자도 없고 놓인 자도 없고 이스라엘을 도울 자도 없음을 보셨고"
+      ],
+      "raw_text_hashes": [
+        "0060f1987acfe49e7e1a695a84a71c80ff3a26d2ff9f33d40151e5949e4aad50"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:14:27",
+      "sequence": 9924,
+      "chapter_label": "2KI 14",
+      "verse_label": "27",
+      "locator": {
+        "book": "2KI",
+        "chapter": 14,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 14,
+          "verse": 27
+        }
+      ],
+      "en": "The LORD didn’t say that he would blot out the name of Israel from under the sky; but he saved them by the hand of Jeroboam the son of Joash.",
+      "ko": "여호와께서 또 이스라엘의 이름을 도말하여 천하에 없이 하겠다고도 아니하셨으므로 요아스의 아들 여로보암의 손으로 구원하심이었더라",
+      "source_text_hash": "d63b0d644ed1eaadd92b4a112cac96e2b36fcb3cfd2ba224c6ddab09a577905f",
+      "translation_text_hash": "fc481cad3e238d9fc92d5ff7700eb226d52b5a214ebc4d822cae644d42fe34ab",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 또 이스라엘의 이름을 도말하여 천하에 없이 하겠다고도 아니하셨으므로 요아스의 아들 여로보암의 손으로 구원하심이었더라"
+      ],
+      "raw_text_hashes": [
+        "fc481cad3e238d9fc92d5ff7700eb226d52b5a214ebc4d822cae644d42fe34ab"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:14:28",
+      "sequence": 9925,
+      "chapter_label": "2KI 14",
+      "verse_label": "28",
+      "locator": {
+        "book": "2KI",
+        "chapter": 14,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 14,
+          "verse": 28
+        }
+      ],
+      "en": "Now the rest of the acts of Jeroboam, and all that he did, and his might, how he fought, and how he recovered Damascus, and Hamath, which had belonged to Judah, for Israel, aren’t they written in the book of the chronicles of the kings of Israel?",
+      "ko": "여로보암의 남은 사적과 모든 행한 일과 그 권력으로 싸운 일과 다메섹을 회복한 일과 이전에 유다에 속하였던 하맛을 이스라엘에 돌린 일은 이스라엘 왕 역대지략에 기록되지 아니하였느냐",
+      "source_text_hash": "db094d2d9dfad841bf68cac4578b2e927bcde7d4d7f729581424ead9829f6bf1",
+      "translation_text_hash": "d9f8d81581841c5c8e39d2bf399bb863ffb21ae2cdca43a392a7d2912e6a9957",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여로보암의 남은 사적과 모든 행한 일과 그 권력으로 싸운 일과 다메섹을 회복한 일과 이전에 유다에 속하였던 하맛을 이스라엘에 돌린 일은 이스라엘 왕 역대지략에 기록되지 아니하였느냐"
+      ],
+      "raw_text_hashes": [
+        "d9f8d81581841c5c8e39d2bf399bb863ffb21ae2cdca43a392a7d2912e6a9957"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:14:29",
+      "sequence": 9926,
+      "chapter_label": "2KI 14",
+      "verse_label": "29",
+      "locator": {
+        "book": "2KI",
+        "chapter": 14,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 14,
+          "verse": 29
+        }
+      ],
+      "en": "Jeroboam slept with his fathers, even with the kings of Israel; and Zechariah his son reigned in his place.",
+      "ko": "여로보암이 그 열조 이스라엘 왕들과 함께 자고 그 아들 스가랴가 대신하여 왕이 되니라",
+      "source_text_hash": "9eb8ba487a24c1d61248f1a06c90bbcbed8510c83777825b721d670b02189065",
+      "translation_text_hash": "84566b3f8597a66a17fcd8320398210888e61dcac7a8deb47468fac09a87ded3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여로보암이 그 열조 이스라엘 왕들과 함께 자고 그 아들 스가랴가 대신하여 왕이 되니라"
+      ],
+      "raw_text_hashes": [
+        "84566b3f8597a66a17fcd8320398210888e61dcac7a8deb47468fac09a87ded3"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,557 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ZEC:chapter:009",
+  "unit_ordinal": 920,
+  "unit_label": "ZEC 9",
+  "book_code": "ZEC",
+  "chapter_number": 9,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ZEC:9:1",
+      "sequence": 23001,
+      "chapter_label": "ZEC 9",
+      "verse_label": "1",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 9,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 9,
+          "verse": 1
+        }
+      ],
+      "en": "A revelation. The LORD’s word is against the land of Hadrach, and will rest upon Damascus— for the eye of man and of all the tribes of Israel is toward the LORD—",
+      "ko": "여호와의 말씀의 경고가 하드락 땅에 임하며 다메섹에 머물리니 세상 사람과 이스라엘 모든 지파의 눈이 여호와를 우러러 봄이니라",
+      "source_text_hash": "1b028b700dbec24e76f1dbac6bea1f7cace997144b02033065d333a9fa3b4d0b",
+      "translation_text_hash": "0ee94ddbd11c9d53c6d2df520a1d86e2439945675df73fd68838ecff3c4b7735",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 말씀의 경고가 하드락 땅에 임하며 다메섹에 머물리니 세상 사람과 이스라엘 모든 지파의 눈이 여호와를 우러러 봄이니라"
+      ],
+      "raw_text_hashes": [
+        "0ee94ddbd11c9d53c6d2df520a1d86e2439945675df73fd68838ecff3c4b7735"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:9:2",
+      "sequence": 23002,
+      "chapter_label": "ZEC 9",
+      "verse_label": "2",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 9,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 9,
+          "verse": 2
+        }
+      ],
+      "en": "and Hamath, also, which borders on it, Tyre and Sidon, because they are very wise.",
+      "ko": "그 접경된 하맛에도 임하겠고 두로와 시돈은 넓은 지혜가 있으니 그들에게도 임하리라",
+      "source_text_hash": "5900e5264d61069b131fedb93398ed7c090d55130fda4896406aecd212ccd7f5",
+      "translation_text_hash": "dd9616c20c8c4edd4707a68596d20119e3926d05cdbb7e344bb065a06e084d3d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 접경된 하맛에도 임하겠고 두로와 시돈은 넓은 지혜가 있으니 그들에게도 임하리라"
+      ],
+      "raw_text_hashes": [
+        "dd9616c20c8c4edd4707a68596d20119e3926d05cdbb7e344bb065a06e084d3d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:9:3",
+      "sequence": 23003,
+      "chapter_label": "ZEC 9",
+      "verse_label": "3",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 9,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 9,
+          "verse": 3
+        }
+      ],
+      "en": "Tyre built herself a stronghold, and heaped up silver like the dust, and fine gold like the mire of the streets.",
+      "ko": "두로는 자기를 위하여 보장을 건축하며 은을 티끌 같이, 정금을 거리의 진흙 같이 쌓았은즉",
+      "source_text_hash": "5ad7dedf8b7086124b10506685e758ab99cc5e184c33982c7cadac2eb6354972",
+      "translation_text_hash": "226118f6910865be7660ec9c48cec0b07cbf20af4d7d8faf81ad7db1fb9942b9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "두로는 자기를 위하여 보장을 건축하며 은을 티끌 같이, 정금을 거리의 진흙 같이 쌓았은즉"
+      ],
+      "raw_text_hashes": [
+        "226118f6910865be7660ec9c48cec0b07cbf20af4d7d8faf81ad7db1fb9942b9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:9:4",
+      "sequence": 23004,
+      "chapter_label": "ZEC 9",
+      "verse_label": "4",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 9,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 9,
+          "verse": 4
+        }
+      ],
+      "en": "Behold, the Lord will dispossess her, and he will strike her power in the sea; and she will be devoured with fire.",
+      "ko": "주께서 그를 쫓아 내시며 그의 바다 권세를 치시리니 그가 불에 삼키울찌라",
+      "source_text_hash": "dc7dcd191e70f309701c8f3de0fa4e0540611589d1586ba03b9bfa2ccd4bc60b",
+      "translation_text_hash": "26b656ab1c97a579ce1a8d3e2634a17e3deadd86e32a91c48fa58b77e00ab99f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 그를 쫓아 내시며 그의 바다 권세를 치시리니 그가 불에 삼키울찌라"
+      ],
+      "raw_text_hashes": [
+        "26b656ab1c97a579ce1a8d3e2634a17e3deadd86e32a91c48fa58b77e00ab99f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:9:5",
+      "sequence": 23005,
+      "chapter_label": "ZEC 9",
+      "verse_label": "5",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 9,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 9,
+          "verse": 5
+        }
+      ],
+      "en": "Ashkelon will see it, and fear; Gaza also, and will writhe in agony; as will Ekron, for her expectation will be disappointed; and the king will perish from Gaza, and Ashkelon will not be inhabited.",
+      "ko": "아스글론이 보고 무서워하며 가사도 심히 아파할 것이며 에그론은 그 소망이 수치가 되므로 역시 그러하리라 가사에는 임금이 끊칠 것이며 아스글론에는 거민이 없을 것이며",
+      "source_text_hash": "93cf6d8fc4a7f4a1a59141168c9eb340575ac1650bace307c8eaaf9f36d700d0",
+      "translation_text_hash": "abb9ad9b697b161e8acf816b371c6147d7015c747949da8106f391e3bd665e54",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아스글론이 보고 무서워하며 가사도 심히 아파할 것이며 에그론은 그 소망이 수치가 되므로 역시 그러하리라 가사에는 임금이 끊칠 것이며 아스글론에는 거민이 없을 것이며"
+      ],
+      "raw_text_hashes": [
+        "abb9ad9b697b161e8acf816b371c6147d7015c747949da8106f391e3bd665e54"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:9:6",
+      "sequence": 23006,
+      "chapter_label": "ZEC 9",
+      "verse_label": "6",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 9,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 9,
+          "verse": 6
+        }
+      ],
+      "en": "Foreigners will dwell in Ashdod, and I will cut off the pride of the Philistines.",
+      "ko": "아스돗에는 잡족이 거하리라 내가 블레셋 사람의 교만을 끊고",
+      "source_text_hash": "b7f816c660b9ce34d6f527bf739f4e8abad121155568ac3e2d40ae61e89dc128",
+      "translation_text_hash": "d044c38196f57ac26d140f6daa1b072076158ff7fea02e203711dc56fd909f05",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아스돗에는 잡족이 거하리라 내가 블레셋 사람의 교만을 끊고"
+      ],
+      "raw_text_hashes": [
+        "d044c38196f57ac26d140f6daa1b072076158ff7fea02e203711dc56fd909f05"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:9:7",
+      "sequence": 23007,
+      "chapter_label": "ZEC 9",
+      "verse_label": "7",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 9,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 9,
+          "verse": 7
+        }
+      ],
+      "en": "I will take away his blood out of his mouth, and his abominations from between his teeth; and he also will be a remnant for our God; and he will be as a chieftain in Judah, and Ekron as a Jebusite.",
+      "ko": "그 입에서 그 피를, 그 잇사이에서 그 가증한 것을 제하리니 그도 남아서 우리 하나님께로 돌아와서 유다의 한 두목 같이 되겠고 에그론은 여부스 사람 같이 되리라",
+      "source_text_hash": "42cc808435674a7f03aa6f060ed562fbedcae4c9ab23172788bfcbec01e52e54",
+      "translation_text_hash": "3824a0d7661d86d94030ef40866ef1cfd698b7efb224b6dbecb006228afc3da6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 입에서 그 피를, 그 잇사이에서 그 가증한 것을 제하리니 그도 남아서 우리 하나님께로 돌아와서 유다의 한 두목 같이 되겠고 에그론은 여부스 사람 같이 되리라"
+      ],
+      "raw_text_hashes": [
+        "3824a0d7661d86d94030ef40866ef1cfd698b7efb224b6dbecb006228afc3da6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:9:8",
+      "sequence": 23008,
+      "chapter_label": "ZEC 9",
+      "verse_label": "8",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 9,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 9,
+          "verse": 8
+        }
+      ],
+      "en": "I will encamp around my house against the army, that no one pass through or return; and no oppressor will pass through them any more: for now I have seen with my eyes.",
+      "ko": "내가 내 집을 둘러 진을 쳐서 적군을 막아 거기 왕래하지 못하게 할 것이라 포학한 자가 다시는 그 지경으로 지나지 못하리니 이는 내가 눈으로 친히 봄이니라",
+      "source_text_hash": "2b87971e265127e00de135fffa0f98e1aa6aa53c435e8a6fe6a3c874c1a82808",
+      "translation_text_hash": "218eb3021677767114da8685ede3549779d6e55d5983cf1a58cece7d058a7916",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 내 집을 둘러 진을 쳐서 적군을 막아 거기 왕래하지 못하게 할 것이라 포학한 자가 다시는 그 지경으로 지나지 못하리니 이는 내가 눈으로 친히 봄이니라"
+      ],
+      "raw_text_hashes": [
+        "218eb3021677767114da8685ede3549779d6e55d5983cf1a58cece7d058a7916"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:9:9",
+      "sequence": 23009,
+      "chapter_label": "ZEC 9",
+      "verse_label": "9",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 9,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 9,
+          "verse": 9
+        }
+      ],
+      "en": "Rejoice greatly, daughter of Zion! Shout, daughter of Jerusalem! Behold, your King comes to you! He is righteous, and having salvation; lowly, and riding on a donkey, even on a colt, the foal of a donkey.",
+      "ko": "시온의 딸아 크게 기뻐할찌어다 예루살렘의 딸아 즐거이 부를찌어다 보라 네 왕이 네게 임하나니 그는 공의로우며 구원을 베풀며 겸손하여서 나귀를 타나니 나귀의 작은 것 곧 나귀새끼니라",
+      "source_text_hash": "9582d1d5ed95fa55e1ce58d42e13ed4c52b3a3c5bb4d6a88898d77851466f7a8",
+      "translation_text_hash": "65d572e9512e22dac6bd2945b325d0a42ea607a626b49eaa56ebd12d2f5d8132",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시온의 딸아 크게 기뻐할찌어다 예루살렘의 딸아 즐거이 부를찌어다 보라 네 왕이 네게 임하나니 그는 공의로우며 구원을 베풀며 겸손하여서 나귀를 타나니 나귀의 작은 것 곧 나귀새끼니라"
+      ],
+      "raw_text_hashes": [
+        "65d572e9512e22dac6bd2945b325d0a42ea607a626b49eaa56ebd12d2f5d8132"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:9:10",
+      "sequence": 23010,
+      "chapter_label": "ZEC 9",
+      "verse_label": "10",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 9,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 9,
+          "verse": 10
+        }
+      ],
+      "en": "I will cut off the chariot from Ephraim and the horse from Jerusalem. The battle bow will be cut off; and he will speak peace to the nations. His dominion will be from sea to sea, and from the River to the ends of the earth.",
+      "ko": "내가 에브라임의 병거와 예루살렘의 말을 끊겠고 전쟁하는 활도 끊으리니 그가 이방 사람에게 화평을 전할 것이요 그의 정권은 바다에서 바다까지 이르고 유브라데 강에서 땅 끝까지 이르리라",
+      "source_text_hash": "7d7b72b07610f41abee837be47a67abf089d60bc3f90cf31e5faadc8618e052c",
+      "translation_text_hash": "f96789236bd1b94abbf3bcdc26f94ec7ebdb9dc3574cc014aaf7fc088d4b01e5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 에브라임의 병거와 예루살렘의 말을 끊겠고 전쟁하는 활도 끊으리니 그가 이방 사람에게 화평을 전할 것이요 그의 정권은 바다에서 바다까지 이르고 유브라데 강에서 땅 끝까지 이르리라"
+      ],
+      "raw_text_hashes": [
+        "f96789236bd1b94abbf3bcdc26f94ec7ebdb9dc3574cc014aaf7fc088d4b01e5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:9:11",
+      "sequence": 23011,
+      "chapter_label": "ZEC 9",
+      "verse_label": "11",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 9,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 9,
+          "verse": 11
+        }
+      ],
+      "en": "As for you also, because of the blood of your covenant, I have set free your prisoners from the pit in which is no water.",
+      "ko": "또 너로 말할진대 네 언약의 피를 인하여 내가 너의 갇힌 자들을 물 없는 구덩이에서 놓았나니",
+      "source_text_hash": "3c78279096f048d90ff11a5aa6c1a5c6c416ed084f8d58507b9a15816a2ea299",
+      "translation_text_hash": "500fa10dd4975dd1e735d16799356861f36be8b1439c0b31a6d82a64948d45ea",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 너로 말할진대 네 언약의 피를 인하여 내가 너의 갇힌 자들을 물 없는 구덩이에서 놓았나니"
+      ],
+      "raw_text_hashes": [
+        "500fa10dd4975dd1e735d16799356861f36be8b1439c0b31a6d82a64948d45ea"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:9:12",
+      "sequence": 23012,
+      "chapter_label": "ZEC 9",
+      "verse_label": "12",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 9,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 9,
+          "verse": 12
+        }
+      ],
+      "en": "Turn to the stronghold, you prisoners of hope! Even today I declare that I will restore double to you.",
+      "ko": "소망을 품은 갇혔던 자들아 너희는 보장으로 돌아올지니라 내가 오늘날도 이르노라 내가 배나 네게 갚을 것이라",
+      "source_text_hash": "f0d5eaa5b707d1191587bd8c47284e7682bf8b09d7caeab1631e1516d9ded6e3",
+      "translation_text_hash": "bef0f7d31b4f4636861e8a85a664e2541c1829830bcb911919f91dcffc43ccea",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "소망을 품은 갇혔던 자들아 너희는 보장으로 돌아올지니라 내가 오늘날도 이르노라 내가 배나 네게 갚을 것이라"
+      ],
+      "raw_text_hashes": [
+        "bef0f7d31b4f4636861e8a85a664e2541c1829830bcb911919f91dcffc43ccea"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:9:13",
+      "sequence": 23013,
+      "chapter_label": "ZEC 9",
+      "verse_label": "13",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 9,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 9,
+          "verse": 13
+        }
+      ],
+      "en": "For indeed I bend Judah as a bow for me. I have loaded the bow with Ephraim. I will stir up your sons, Zion, against your sons, Greece, and will make you like the sword of a mighty man.",
+      "ko": "내가 유다로 당긴 활을 삼고 에브라임으로 먹인 살을 삼았으니 시온아 내가 네 자식을 격동시켜 헬라 자식을 치게 하며 너로 용사의 칼과 같게 하리라",
+      "source_text_hash": "0387ee315e735e844af493142ce812461bbbeece63b998e1149623c96a6a52be",
+      "translation_text_hash": "11e0766eb01073bfb7968948809d6303665e22db8841438524872d32e0f1267e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 유다로 당긴 활을 삼고 에브라임으로 먹인 살을 삼았으니 시온아 내가 네 자식을 격동시켜 헬라 자식을 치게 하며 너로 용사의 칼과 같게 하리라"
+      ],
+      "raw_text_hashes": [
+        "11e0766eb01073bfb7968948809d6303665e22db8841438524872d32e0f1267e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:9:14",
+      "sequence": 23014,
+      "chapter_label": "ZEC 9",
+      "verse_label": "14",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 9,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 9,
+          "verse": 14
+        }
+      ],
+      "en": "The LORD will be seen over them. His arrow will flash like lightning. The Lord GOD will blow the trumpet, and will go with whirlwinds of the south.",
+      "ko": "여호와께서 그 위에 나타나서 그 살을 번개 같이 쏘아내실 것이며 주 여호와께서 나팔을 불리시며 남방 회리바람을 타고 행하실 것이라",
+      "source_text_hash": "fd5102289edbd36aa2075d1788ae3b19cbb36eed2cd27b7bee7b76e32745b70a",
+      "translation_text_hash": "4d103ce8077f7422db1931898b35badaf171d4e0f05b3f535dc9e6ac8c88aa22",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 그 위에 나타나서 그 살을 번개 같이 쏘아내실 것이며 주 여호와께서 나팔을 불리시며 남방 회리바람을 타고 행하실 것이라"
+      ],
+      "raw_text_hashes": [
+        "4d103ce8077f7422db1931898b35badaf171d4e0f05b3f535dc9e6ac8c88aa22"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:9:15",
+      "sequence": 23015,
+      "chapter_label": "ZEC 9",
+      "verse_label": "15",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 9,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 9,
+          "verse": 15
+        }
+      ],
+      "en": "The LORD of Armies will defend them. They will destroy and overcome with sling stones. They will drink, and roar as through wine. They will be filled like bowls, like the corners of the altar.",
+      "ko": "만군의 여호와께서 그들을 호위하시리니 그들이 원수를 삼키며 물매 돌을 밟을 것이며 그들이 피를 마시고 즐거이 부르기를 술취한 것 같이 할 것인즉 피가 가득한 동이와도 같고 피 묻은 제단 모퉁이와도 같을 것이라",
+      "source_text_hash": "72852926412adec830c84bc4984dd0e90148402b4810ba10e9f2ebed582ed563",
+      "translation_text_hash": "8e6ac93b707556f74a44ffa217d224f1a5ff9afb40f3d00dd05b05baf0010fa3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만군의 여호와께서 그들을 호위하시리니 그들이 원수를 삼키며 물매 돌을 밟을 것이며 그들이 피를 마시고 즐거이 부르기를 술취한 것 같이 할 것인즉 피가 가득한 동이와도 같고 피 묻은 제단 모퉁이와도 같을 것이라"
+      ],
+      "raw_text_hashes": [
+        "8e6ac93b707556f74a44ffa217d224f1a5ff9afb40f3d00dd05b05baf0010fa3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:9:16",
+      "sequence": 23016,
+      "chapter_label": "ZEC 9",
+      "verse_label": "16",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 9,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 9,
+          "verse": 16
+        }
+      ],
+      "en": "The LORD their God will save them in that day as the flock of his people; for they are like the jewels of a crown, lifted on high over his land.",
+      "ko": "이 날에 그들의 하나님 여호와께서 그들을 자기 백성의 양떼 같이 구원하시리니 그들이 면류관의 보석 같이 여호와의 땅에 빛나리로다",
+      "source_text_hash": "c846a81e3c027b6ff46cc8168df2b80a27edde86666ab0a50714350f88850229",
+      "translation_text_hash": "1d646ffcd9e38105273ab5dca072c4abd5be911215248d41e190ddce8a5f1fed",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 날에 그들의 하나님 여호와께서 그들을 자기 백성의 양떼 같이 구원하시리니 그들이 면류관의 보석 같이 여호와의 땅에 빛나리로다"
+      ],
+      "raw_text_hashes": [
+        "1d646ffcd9e38105273ab5dca072c4abd5be911215248d41e190ddce8a5f1fed"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:9:17",
+      "sequence": 23017,
+      "chapter_label": "ZEC 9",
+      "verse_label": "17",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 9,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 9,
+          "verse": 17
+        }
+      ],
+      "en": "For how great is his goodness, and how great is his beauty! Grain will make the young men flourish, and new wine the virgins.",
+      "ko": "그의 형통함과 그의 아름다움이 어찌 그리 큰지 소년은 곡식으로 강건하며 처녀는 새 포도주로 그러하리로다",
+      "source_text_hash": "7a1e2780585c9c612c31a4c954c21aac0c03f6ef370ec9889a0b885c34506ea1",
+      "translation_text_hash": "6c78d33d83f33e881840a6559ba69f2fbb5baed0548e87e91f73bbd5df142010",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그의 형통함과 그의 아름다움이 어찌 그리 큰지 소년은 곡식으로 강건하며 처녀는 새 포도주로 그러하리로다"
+      ],
+      "raw_text_hashes": [
+        "6c78d33d83f33e881840a6559ba69f2fbb5baed0548e87e91f73bbd5df142010"
+      ]
+    }
+  ]
+}

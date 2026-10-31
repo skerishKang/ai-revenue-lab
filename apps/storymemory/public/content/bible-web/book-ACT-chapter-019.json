@@ -1,0 +1,1325 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ACT:chapter:019",
+  "unit_ordinal": 1037,
+  "unit_label": "ACT 19",
+  "book_code": "ACT",
+  "chapter_number": 19,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ACT:19:1",
+      "sequence": 27584,
+      "chapter_label": "ACT 19",
+      "verse_label": "1",
+      "locator": {
+        "book": "ACT",
+        "chapter": 19,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 19,
+          "verse": 1
+        }
+      ],
+      "en": "While Apollos was at Corinth, Paul, having passed through the upper country, came to Ephesus and found certain disciples.",
+      "ko": "아볼로가 고린도에 있을 때에 바울이 윗 지방으로 다녀 에베소에 와서 어떤 제자들을 만나",
+      "source_text_hash": "db2201f5f0db8a1bacd0d770c276af7158122326b638aef967edaad27b6bd28a",
+      "translation_text_hash": "b3f3dd9fdcc76cb952456bf683abaca9b27318709ad4c137576758e19d5340da",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아볼로가 고린도에 있을 때에 바울이 윗 지방으로 다녀 에베소에 와서 어떤 제자들을 만나"
+      ],
+      "raw_text_hashes": [
+        "b3f3dd9fdcc76cb952456bf683abaca9b27318709ad4c137576758e19d5340da"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:19:2",
+      "sequence": 27585,
+      "chapter_label": "ACT 19",
+      "verse_label": "2",
+      "locator": {
+        "book": "ACT",
+        "chapter": 19,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 19,
+          "verse": 2
+        }
+      ],
+      "en": "He said to them, “Did you receive the Holy Spirit when you believed?” They said to him, “No, we haven’t even heard that there is a Holy Spirit.”",
+      "ko": "가로되 너희가 믿을 때에 성령을 받았느냐 가로되 아니라 우리는 성령이 있음도 듣지 못하였노라",
+      "source_text_hash": "1f1d25928643bd0cd63eff9cc15adb2321c5cd6b7db05f56c8e6533cfd431b8a",
+      "translation_text_hash": "7cafe44ac4fa3a6de5f0fbc77148e499c33dbf050736f402fe1ac70758317671",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 너희가 믿을 때에 성령을 받았느냐 가로되 아니라 우리는 성령이 있음도 듣지 못하였노라"
+      ],
+      "raw_text_hashes": [
+        "7cafe44ac4fa3a6de5f0fbc77148e499c33dbf050736f402fe1ac70758317671"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:19:3",
+      "sequence": 27586,
+      "chapter_label": "ACT 19",
+      "verse_label": "3",
+      "locator": {
+        "book": "ACT",
+        "chapter": 19,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 19,
+          "verse": 3
+        }
+      ],
+      "en": "He said, “Into what then were you baptized?” They said, “Into John’s baptism.”",
+      "ko": "바울이 가로되 그러면 너희가 무슨 세례를 받았느냐 대답하되 요한의 세례로라",
+      "source_text_hash": "d61ce922f7c314d890aad8ff9e1d730a2f5dbf0e8ad7037338a9e5797adcfff7",
+      "translation_text_hash": "527f27b65ca9525529282351d67e166124007440bee2e1ac2ffda6e5adea55fd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바울이 가로되 그러면 너희가 무슨 세례를 받았느냐 대답하되 요한의 세례로라"
+      ],
+      "raw_text_hashes": [
+        "527f27b65ca9525529282351d67e166124007440bee2e1ac2ffda6e5adea55fd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:19:4",
+      "sequence": 27587,
+      "chapter_label": "ACT 19",
+      "verse_label": "4",
+      "locator": {
+        "book": "ACT",
+        "chapter": 19,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 19,
+          "verse": 4
+        }
+      ],
+      "en": "Paul said, “John indeed baptized with the baptism of repentance, saying to the people that they should believe in the one who would come after him, that is, in Christ Jesus.”",
+      "ko": "바울이 가로되 요한이 회개의 세례를 베풀며 백성에게 말하되 내 뒤에 오시는 이를 믿으라 하였으니 이는 곧 예수라 하거늘",
+      "source_text_hash": "9573800c1b22622db1730036d252151b11eeccfab526326fa0a0fdad04294b6c",
+      "translation_text_hash": "4d3be8e65b6feb1ef0dafbaac72ff2be764a310cc902f5dc51f7f67e21134e06",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바울이 가로되 요한이 회개의 세례를 베풀며 백성에게 말하되 내 뒤에 오시는 이를 믿으라 하였으니 이는 곧 예수라 하거늘"
+      ],
+      "raw_text_hashes": [
+        "4d3be8e65b6feb1ef0dafbaac72ff2be764a310cc902f5dc51f7f67e21134e06"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:19:5",
+      "sequence": 27588,
+      "chapter_label": "ACT 19",
+      "verse_label": "5",
+      "locator": {
+        "book": "ACT",
+        "chapter": 19,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 19,
+          "verse": 5
+        }
+      ],
+      "en": "When they heard this, they were baptized in the name of the Lord Jesus.",
+      "ko": "저희가 듣고 주 예수의 이름으로 세례를 받으니",
+      "source_text_hash": "2a68c1affe29989fca520fdaae7b73662f5d2d05ce4fdc1510d5e632396e5086",
+      "translation_text_hash": "150de299b8264c01393d2a35826be47518c51df0d05bd7e07cc18e341b0ee0ee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 듣고 주 예수의 이름으로 세례를 받으니"
+      ],
+      "raw_text_hashes": [
+        "150de299b8264c01393d2a35826be47518c51df0d05bd7e07cc18e341b0ee0ee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:19:6",
+      "sequence": 27589,
+      "chapter_label": "ACT 19",
+      "verse_label": "6",
+      "locator": {
+        "book": "ACT",
+        "chapter": 19,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 19,
+          "verse": 6
+        }
+      ],
+      "en": "When Paul had laid his hands on them, the Holy Spirit came on them and they spoke with other languages and prophesied.",
+      "ko": "바울이 그들에게 안수하매 성령이 그들에게 임하시므로 방언도 하고 예언도 하니",
+      "source_text_hash": "61e7134bb83f4e19df57b07aa77d3eec5ea803186409283a98af02578da3055c",
+      "translation_text_hash": "ddf5c72f8e35558ca890f22b5a9e2482d319a94e6d3ca39dcbc56570e9bf976e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바울이 그들에게 안수하매 성령이 그들에게 임하시므로 방언도 하고 예언도 하니"
+      ],
+      "raw_text_hashes": [
+        "ddf5c72f8e35558ca890f22b5a9e2482d319a94e6d3ca39dcbc56570e9bf976e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:19:7",
+      "sequence": 27590,
+      "chapter_label": "ACT 19",
+      "verse_label": "7",
+      "locator": {
+        "book": "ACT",
+        "chapter": 19,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 19,
+          "verse": 7
+        }
+      ],
+      "en": "They were about twelve men in all.",
+      "ko": "모두 열 두 사람쯤 되니라",
+      "source_text_hash": "2af172099d35e91066200a332bfed142abf9cded26d9f9def4ec8e58298852a6",
+      "translation_text_hash": "d7d0fb5914263fe8f190bc1f4b2892dbd18f3480ea2c92f5e61ce6d2044db1c0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모두 열 두 사람쯤 되니라"
+      ],
+      "raw_text_hashes": [
+        "d7d0fb5914263fe8f190bc1f4b2892dbd18f3480ea2c92f5e61ce6d2044db1c0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:19:8",
+      "sequence": 27591,
+      "chapter_label": "ACT 19",
+      "verse_label": "8",
+      "locator": {
+        "book": "ACT",
+        "chapter": 19,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 19,
+          "verse": 8
+        }
+      ],
+      "en": "He entered into the synagogue and spoke boldly for a period of three months, reasoning and persuading about the things concerning God’s Kingdom.",
+      "ko": "바울이 회당에 들어가 석 달 동안을 담대히 하나님 나라에 대하여 강론하며 권면하되",
+      "source_text_hash": "9fce174490c4488d396161d8d918240e5b94531521ad44c08e09c40bda14005a",
+      "translation_text_hash": "bf0f41bef1f593396be934349d0f20a9ff87adc6f616e68fbaa351546b539254",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바울이 회당에 들어가 석 달 동안을 담대히 하나님 나라에 대하여 강론하며 권면하되"
+      ],
+      "raw_text_hashes": [
+        "bf0f41bef1f593396be934349d0f20a9ff87adc6f616e68fbaa351546b539254"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:19:9",
+      "sequence": 27592,
+      "chapter_label": "ACT 19",
+      "verse_label": "9",
+      "locator": {
+        "book": "ACT",
+        "chapter": 19,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 19,
+          "verse": 9
+        }
+      ],
+      "en": "But when some were hardened and disobedient, speaking evil of the Way before the multitude, he departed from them and separated the disciples, reasoning daily in the school of Tyrannus.",
+      "ko": "어떤 사람들은 마음이 굳어 순종치 않고 무리 앞에서 이 도를 비방하거늘 바울이 그들을 떠나 제자들을 따로 세우고 두란노 서원에서 날마다 강론하여",
+      "source_text_hash": "de8fc915f3f24cb293dbdaafc94d3ed5dceb78e442f83bf5ea5ff5bbc5bf069a",
+      "translation_text_hash": "858bee7b7c31f2c92dac9a3d6fc0ed20a010ed55880f6a23ae6c787d5bea0440",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어떤 사람들은 마음이 굳어 순종치 않고 무리 앞에서 이 도를 비방하거늘 바울이 그들을 떠나 제자들을 따로 세우고 두란노 서원에서 날마다 강론하여"
+      ],
+      "raw_text_hashes": [
+        "858bee7b7c31f2c92dac9a3d6fc0ed20a010ed55880f6a23ae6c787d5bea0440"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:19:10",
+      "sequence": 27593,
+      "chapter_label": "ACT 19",
+      "verse_label": "10",
+      "locator": {
+        "book": "ACT",
+        "chapter": 19,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 19,
+          "verse": 10
+        }
+      ],
+      "en": "This continued for two years, so that all those who lived in Asia heard the word of the Lord Jesus, both Jews and Greeks.",
+      "ko": "이같이 두 해 동안을 하매 아시아에 사는 자는 유대인이나 헬라인이나 다 주의 말씀을 듣더라",
+      "source_text_hash": "969464d86c2f8168292f1852da425b3aacf49843fc00f9f1eccbb839d94376ef",
+      "translation_text_hash": "7ad9873ef4b96a4efd6a839f384795d4df69279aa6251b67f8d8dbe1aa7273cc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이같이 두 해 동안을 하매 아시아에 사는 자는 유대인이나 헬라인이나 다 주의 말씀을 듣더라"
+      ],
+      "raw_text_hashes": [
+        "7ad9873ef4b96a4efd6a839f384795d4df69279aa6251b67f8d8dbe1aa7273cc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:19:11",
+      "sequence": 27594,
+      "chapter_label": "ACT 19",
+      "verse_label": "11",
+      "locator": {
+        "book": "ACT",
+        "chapter": 19,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 19,
+          "verse": 11
+        }
+      ],
+      "en": "God worked special miracles by the hands of Paul,",
+      "ko": "하나님이 바울의 손으로 희한한 능을 행하게 하시니",
+      "source_text_hash": "bc64e2f86be7e6e6b737928e94e54ed3de3b73f5ed567f460950a013efb497e0",
+      "translation_text_hash": "ae4a7c51595a2049d75e879dcf0f7c1b0f220e609746ae23d80594bb85b81026",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 바울의 손으로 희한한 능을 행하게 하시니"
+      ],
+      "raw_text_hashes": [
+        "ae4a7c51595a2049d75e879dcf0f7c1b0f220e609746ae23d80594bb85b81026"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:19:12",
+      "sequence": 27595,
+      "chapter_label": "ACT 19",
+      "verse_label": "12",
+      "locator": {
+        "book": "ACT",
+        "chapter": 19,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 19,
+          "verse": 12
+        }
+      ],
+      "en": "so that even handkerchiefs or aprons were carried away from his body to the sick, and the diseases departed from them, and the evil spirits went out.",
+      "ko": "심지어 사람들이 바울의 몸에서 손수건이나 앞치마를 가져다가 병든 사람에게 얹으면 그 병이 떠나고 악귀도 나가더라",
+      "source_text_hash": "951fc40408dfe6646a560909331b8b9af3da6618b51cc947522c5230c36f5558",
+      "translation_text_hash": "8673da83e02a3ae09f5b6e33618bae127f3b88131a9ce31134943c04a4cc98a5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "심지어 사람들이 바울의 몸에서 손수건이나 앞치마를 가져다가 병든 사람에게 얹으면 그 병이 떠나고 악귀도 나가더라"
+      ],
+      "raw_text_hashes": [
+        "8673da83e02a3ae09f5b6e33618bae127f3b88131a9ce31134943c04a4cc98a5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:19:13",
+      "sequence": 27596,
+      "chapter_label": "ACT 19",
+      "verse_label": "13",
+      "locator": {
+        "book": "ACT",
+        "chapter": 19,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 19,
+          "verse": 13
+        }
+      ],
+      "en": "But some of the itinerant Jews, exorcists, took on themselves to invoke over those who had the evil spirits the name of the Lord Jesus, saying, “We adjure you by Jesus whom Paul preaches.”",
+      "ko": "이에 돌아다니며 마술하는 어떤 유대인들이 시험적으로 악귀 들린 자들에게 대하여 주 예수의 이름을 불러 말하되 내가 바울의 전파하는 예수를 빙자하여 너희를 명하노라 하더라",
+      "source_text_hash": "e264bed8ff465add4ddfd788229d1ed679205e046cd0be9faca0e95a7dff8e97",
+      "translation_text_hash": "a8a0c325439961568452283c830ca18c470779af2678ffbc3f4de0f9ae88875e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 돌아다니며 마술하는 어떤 유대인들이 시험적으로 악귀 들린 자들에게 대하여 주 예수의 이름을 불러 말하되 내가 바울의 전파하는 예수를 빙자하여 너희를 명하노라 하더라"
+      ],
+      "raw_text_hashes": [
+        "a8a0c325439961568452283c830ca18c470779af2678ffbc3f4de0f9ae88875e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:19:14",
+      "sequence": 27597,
+      "chapter_label": "ACT 19",
+      "verse_label": "14",
+      "locator": {
+        "book": "ACT",
+        "chapter": 19,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 19,
+          "verse": 14
+        }
+      ],
+      "en": "There were seven sons of one Sceva, a Jewish chief priest, who did this.",
+      "ko": "유대의 한 제사장 스게와의 일곱 아들도 이 일을 행하더니",
+      "source_text_hash": "155215c377161c35dde4b5283e82207a096923b5bad90e05a37950337faf0728",
+      "translation_text_hash": "5d7de5728275c401b4f5a492b456cb37ccae46660350f391242d5b12d7220093",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유대의 한 제사장 스게와의 일곱 아들도 이 일을 행하더니"
+      ],
+      "raw_text_hashes": [
+        "5d7de5728275c401b4f5a492b456cb37ccae46660350f391242d5b12d7220093"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:19:15",
+      "sequence": 27598,
+      "chapter_label": "ACT 19",
+      "verse_label": "15",
+      "locator": {
+        "book": "ACT",
+        "chapter": 19,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 19,
+          "verse": 15
+        }
+      ],
+      "en": "The evil spirit answered, “Jesus I know, and Paul I know, but who are you?”",
+      "ko": "악귀가 대답하여 가로되 예수도 내가 알고 바울도 내가 알거니와 너희는 누구냐 하며",
+      "source_text_hash": "23252d326418180be85b743cbcfee1c9646b76f4ac29b6a6f0e8c36a4bc88a5a",
+      "translation_text_hash": "87cc67a8e9821efdc5b5260f91c9e07a7ebea0b9faabe748c78fdc04c8344254",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "악귀가 대답하여 가로되 예수도 내가 알고 바울도 내가 알거니와 너희는 누구냐 하며"
+      ],
+      "raw_text_hashes": [
+        "87cc67a8e9821efdc5b5260f91c9e07a7ebea0b9faabe748c78fdc04c8344254"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:19:16",
+      "sequence": 27599,
+      "chapter_label": "ACT 19",
+      "verse_label": "16",
+      "locator": {
+        "book": "ACT",
+        "chapter": 19,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 19,
+          "verse": 16
+        }
+      ],
+      "en": "The man in whom the evil spirit was leaped on them, overpowered them, and prevailed against them, so that they fled out of that house naked and wounded.",
+      "ko": "악귀 들린 사람이 그 두 사람에게 뛰어올라 억제하여 이기니 저희가 상하여 벗은 몸으로 그 집에서 도망하는지라",
+      "source_text_hash": "ac78f0ee88a4c585705d2d8a634c1ce329bea5a1f2a27903c1ffa75da3b2f4e8",
+      "translation_text_hash": "9a996818daf6da39b9141288fc38d83c1af2d2a88ac6e38762a5d3db42faba00",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "악귀 들린 사람이 그 두 사람에게 뛰어올라 억제하여 이기니 저희가 상하여 벗은 몸으로 그 집에서 도망하는지라"
+      ],
+      "raw_text_hashes": [
+        "9a996818daf6da39b9141288fc38d83c1af2d2a88ac6e38762a5d3db42faba00"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:19:17",
+      "sequence": 27600,
+      "chapter_label": "ACT 19",
+      "verse_label": "17",
+      "locator": {
+        "book": "ACT",
+        "chapter": 19,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 19,
+          "verse": 17
+        }
+      ],
+      "en": "This became known to all, both Jews and Greeks, who lived at Ephesus. Fear fell on them all, and the name of the Lord Jesus was magnified.",
+      "ko": "에베소에 거하는 유대인과 헬라인들이 다 이 일을 알고 두려워하며 주 예수의 이름을 높이고",
+      "source_text_hash": "0b792b886c5087bddeb5a1c7de84fde776f9bac07ec84cb35ccdc7e25a65fa2c",
+      "translation_text_hash": "ae4455cdbfcfd57b84eeccbfd44d9ddc543b9a1530dcac9517c1353c12304e0c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에베소에 거하는 유대인과 헬라인들이 다 이 일을 알고 두려워하며 주 예수의 이름을 높이고"
+      ],
+      "raw_text_hashes": [
+        "ae4455cdbfcfd57b84eeccbfd44d9ddc543b9a1530dcac9517c1353c12304e0c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:19:18",
+      "sequence": 27601,
+      "chapter_label": "ACT 19",
+      "verse_label": "18",
+      "locator": {
+        "book": "ACT",
+        "chapter": 19,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 19,
+          "verse": 18
+        }
+      ],
+      "en": "Many also of those who had believed came, confessing and declaring their deeds.",
+      "ko": "믿은 사람들이 많이 와서 자복하여 행한 일을 고하며",
+      "source_text_hash": "0a9f4f466717afd1a5183302ee5b8e325d66a29156125576b835c72291d18d68",
+      "translation_text_hash": "04a2b457b4f9696c8598bac7eb03bdbc0c90e1be7af669c7e5c049092d172cc7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "믿은 사람들이 많이 와서 자복하여 행한 일을 고하며"
+      ],
+      "raw_text_hashes": [
+        "04a2b457b4f9696c8598bac7eb03bdbc0c90e1be7af669c7e5c049092d172cc7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:19:19",
+      "sequence": 27602,
+      "chapter_label": "ACT 19",
+      "verse_label": "19",
+      "locator": {
+        "book": "ACT",
+        "chapter": 19,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 19,
+          "verse": 19
+        }
+      ],
+      "en": "Many of those who practiced magical arts brought their books together and burned them in the sight of all. They counted their price, and found it to be fifty thousand pieces of silver.",
+      "ko": "또 마술을 행하던 많은 사람이 그 책을 모아 가지고 와서 모든 사람 앞에서 불사르니 그 책 값을 계산한즉 은 오만이나 되더라",
+      "source_text_hash": "f4c9eeb9d8f8f3b4906d0ed37b31187865054a84e314c7591a21fdb9d87b9979",
+      "translation_text_hash": "e98a1ef3d2dd09f99c7a2ed5d47c8fc24b0ec330bb70287241854dd5f81bf6c5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 마술을 행하던 많은 사람이 그 책을 모아 가지고 와서 모든 사람 앞에서 불사르니 그 책 값을 계산한즉 은 오만이나 되더라"
+      ],
+      "raw_text_hashes": [
+        "e98a1ef3d2dd09f99c7a2ed5d47c8fc24b0ec330bb70287241854dd5f81bf6c5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:19:20",
+      "sequence": 27603,
+      "chapter_label": "ACT 19",
+      "verse_label": "20",
+      "locator": {
+        "book": "ACT",
+        "chapter": 19,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 19,
+          "verse": 20
+        }
+      ],
+      "en": "So the word of the Lord was growing and becoming mighty.",
+      "ko": "이와 같이 주의 말씀이 힘이 있어 흥왕하여 세력을 얻으니라",
+      "source_text_hash": "e9cbae90d2c1bcafc5d2b6333d964c0733e368008a24847bcf06867a8ad4c164",
+      "translation_text_hash": "b88ec86fc7edb9b6fb773c4c57a64dd9fd91267cfc7ffc75ee2ac0c3220183fc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이와 같이 주의 말씀이 힘이 있어 흥왕하여 세력을 얻으니라"
+      ],
+      "raw_text_hashes": [
+        "b88ec86fc7edb9b6fb773c4c57a64dd9fd91267cfc7ffc75ee2ac0c3220183fc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:19:21",
+      "sequence": 27604,
+      "chapter_label": "ACT 19",
+      "verse_label": "21",
+      "locator": {
+        "book": "ACT",
+        "chapter": 19,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 19,
+          "verse": 21
+        }
+      ],
+      "en": "Now after these things had ended, Paul determined in the Spirit, when he had passed through Macedonia and Achaia, to go to Jerusalem, saying, “After I have been there, I must also see Rome.”",
+      "ko": "이 일이 다 된 후 바울이 마게도냐와 아가야로 다녀서 예루살렘에 가기를 경영하여 가로되 내가 거기 갔다가 후에 로마도 보아야 하리라 하고",
+      "source_text_hash": "44e45142281947586abefd4097129497d18745fc5006206e55f062b71a421cc9",
+      "translation_text_hash": "63d2a35e523ce961668af984b571909d5ab9bdc42b5fa679038c99ee686481ea",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 일이 다 된 후 바울이 마게도냐와 아가야로 다녀서 예루살렘에 가기를 경영하여 가로되 내가 거기 갔다가 후에 로마도 보아야 하리라 하고"
+      ],
+      "raw_text_hashes": [
+        "63d2a35e523ce961668af984b571909d5ab9bdc42b5fa679038c99ee686481ea"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:19:22",
+      "sequence": 27605,
+      "chapter_label": "ACT 19",
+      "verse_label": "22",
+      "locator": {
+        "book": "ACT",
+        "chapter": 19,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 19,
+          "verse": 22
+        }
+      ],
+      "en": "Having sent into Macedonia two of those who served him, Timothy and Erastus, he himself stayed in Asia for a while.",
+      "ko": "자기를 돕는 사람 중에서 디모데와 에라스도 두 사람을 마게도냐로 보내고 자기는 아시아에 얼마간 더 있으니라",
+      "source_text_hash": "cf6e3d63a1876bc4bcce4d948692b30ce774d87b26a24d108eadf0851eaad350",
+      "translation_text_hash": "90e6437714e67b99fb4fd409a74fe062f250a1425e6da5887d9244fea0fae399",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자기를 돕는 사람 중에서 디모데와 에라스도 두 사람을 마게도냐로 보내고 자기는 아시아에 얼마간 더 있으니라"
+      ],
+      "raw_text_hashes": [
+        "90e6437714e67b99fb4fd409a74fe062f250a1425e6da5887d9244fea0fae399"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:19:23",
+      "sequence": 27606,
+      "chapter_label": "ACT 19",
+      "verse_label": "23",
+      "locator": {
+        "book": "ACT",
+        "chapter": 19,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 19,
+          "verse": 23
+        }
+      ],
+      "en": "About that time there arose no small disturbance concerning the Way.",
+      "ko": "그 때쯤 되어 이 도로 인하여 적지 않은 소동이 있었으니",
+      "source_text_hash": "9ba32afe9f80e77349113b4ff87300693e6091252530a15116ac309ccd5163de",
+      "translation_text_hash": "b58357dc1855b5229362716935fb5b95a75906a8400a4f1e99a35282b4a93e59",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때쯤 되어 이 도로 인하여 적지 않은 소동이 있었으니"
+      ],
+      "raw_text_hashes": [
+        "b58357dc1855b5229362716935fb5b95a75906a8400a4f1e99a35282b4a93e59"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:19:24",
+      "sequence": 27607,
+      "chapter_label": "ACT 19",
+      "verse_label": "24",
+      "locator": {
+        "book": "ACT",
+        "chapter": 19,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 19,
+          "verse": 24
+        }
+      ],
+      "en": "For a certain man named Demetrius, a silversmith who made silver shrines of Artemis, brought no little business to the craftsmen,",
+      "ko": "즉 데메드리오라 하는 어떤 은장색이 아데미의 은감실을 만들어 직공들로 적지 않은 벌이를 하게 하더니",
+      "source_text_hash": "0677f0c8168218ecaaa47b5c45feaae985c9a430e49fd1ae2803e2abcac7146c",
+      "translation_text_hash": "9a646c50ebb19fb495cb534cb69753db59d31393760030fe5eed2ffd06baeeed",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "즉 데메드리오라 하는 어떤 은장색이 아데미의 은감실을 만들어 직공들로 적지 않은 벌이를 하게 하더니"
+      ],
+      "raw_text_hashes": [
+        "9a646c50ebb19fb495cb534cb69753db59d31393760030fe5eed2ffd06baeeed"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:19:25",
+      "sequence": 27608,
+      "chapter_label": "ACT 19",
+      "verse_label": "25",
+      "locator": {
+        "book": "ACT",
+        "chapter": 19,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 19,
+          "verse": 25
+        }
+      ],
+      "en": "whom he gathered together with the workmen of like occupation, and said, “Sirs, you know that by this business we have our wealth.",
+      "ko": "그가 그 직공들과 이러한 영업하는 자들을 모아 이르되 여러분도 알거니와 우리의 유족한 생활이 이 업에 있는데",
+      "source_text_hash": "21493b69d01e14d5ac14fb1677735cf0ba49674b2b9df3f88e547e91943dc0e5",
+      "translation_text_hash": "41530624cb903bb28c13b4aa26e7859f4ee2d91b52b1f45f7915f766e423d5c9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 그 직공들과 이러한 영업하는 자들을 모아 이르되 여러분도 알거니와 우리의 유족한 생활이 이 업에 있는데"
+      ],
+      "raw_text_hashes": [
+        "41530624cb903bb28c13b4aa26e7859f4ee2d91b52b1f45f7915f766e423d5c9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:19:26",
+      "sequence": 27609,
+      "chapter_label": "ACT 19",
+      "verse_label": "26",
+      "locator": {
+        "book": "ACT",
+        "chapter": 19,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 19,
+          "verse": 26
+        }
+      ],
+      "en": "You see and hear that not at Ephesus alone, but almost throughout all Asia, this Paul has persuaded and turned away many people, saying that they are no gods that are made with hands.",
+      "ko": "이 바울이 에베소 뿐아니라 거의 아시아 전부를 통하여 허다한 사람을 권유하여 말하되 사람의 손으로 만든 것들은 신이 아니라 하니 이는 그대들도 보고 들은 것이라",
+      "source_text_hash": "44a641026942dd488e97725488f18cc3dece4169277d1e290bd67689813ef9d4",
+      "translation_text_hash": "891ad313acf4d8fe8d84e01694011017a6767f3d72470ca07f4da03c9807c0e2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 바울이 에베소 뿐아니라 거의 아시아 전부를 통하여 허다한 사람을 권유하여 말하되 사람의 손으로 만든 것들은 신이 아니라 하니 이는 그대들도 보고 들은 것이라"
+      ],
+      "raw_text_hashes": [
+        "891ad313acf4d8fe8d84e01694011017a6767f3d72470ca07f4da03c9807c0e2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:19:27",
+      "sequence": 27610,
+      "chapter_label": "ACT 19",
+      "verse_label": "27",
+      "locator": {
+        "book": "ACT",
+        "chapter": 19,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 19,
+          "verse": 27
+        }
+      ],
+      "en": "Not only is there danger that this our trade come into disrepute, but also that the temple of the great goddess Artemis will be counted as nothing and her majesty destroyed, whom all Asia and the world worships.”",
+      "ko": "우리의 이 영업만 천하여질 위험이 있을 뿐아니라 큰 여신 아데미의 전각도 경홀이 여김이 되고 온 아시아와 천하가 위하는 그의 위엄도 떨어질까 하노라 하더라",
+      "source_text_hash": "cef8d3ffe811047c47caf3e9d77f09416d02c69ae5fdcf6da49087a409b30ed8",
+      "translation_text_hash": "e1a42d67af7c89057dcff9acc7bdb3e2d1a9d5b8f36804ea567973b5b5402bbb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리의 이 영업만 천하여질 위험이 있을 뿐아니라 큰 여신 아데미의 전각도 경홀이 여김이 되고 온 아시아와 천하가 위하는 그의 위엄도 떨어질까 하노라 하더라"
+      ],
+      "raw_text_hashes": [
+        "e1a42d67af7c89057dcff9acc7bdb3e2d1a9d5b8f36804ea567973b5b5402bbb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:19:28",
+      "sequence": 27611,
+      "chapter_label": "ACT 19",
+      "verse_label": "28",
+      "locator": {
+        "book": "ACT",
+        "chapter": 19,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 19,
+          "verse": 28
+        }
+      ],
+      "en": "When they heard this they were filled with anger, and cried out, saying, “Great is Artemis of the Ephesians!”",
+      "ko": "저희가 이 말을 듣고 분이 가득하여 외쳐 가로되 크다 에베소 사람의 아데미여 하니",
+      "source_text_hash": "0c1a344d47ecc17343ae7108c1b1796a1a0d0dc84744ad51dfb0b22cae644848",
+      "translation_text_hash": "14d1f8e85928b94a7b0a063960a7e389b4b6502f6b79a0485679cc8d7f784612",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 이 말을 듣고 분이 가득하여 외쳐 가로되 크다 에베소 사람의 아데미여 하니"
+      ],
+      "raw_text_hashes": [
+        "14d1f8e85928b94a7b0a063960a7e389b4b6502f6b79a0485679cc8d7f784612"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:19:29",
+      "sequence": 27612,
+      "chapter_label": "ACT 19",
+      "verse_label": "29",
+      "locator": {
+        "book": "ACT",
+        "chapter": 19,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 19,
+          "verse": 29
+        }
+      ],
+      "en": "The whole city was filled with confusion, and they rushed with one accord into the theater, having seized Gaius and Aristarchus, men of Macedonia, Paul’s companions in travel.",
+      "ko": "온 성이 요란하여 바울과 같이 다니는 마게도냐 사람 가이오와 아리스다고를 잡아가지고 일제히 연극장으로 달려들어 가는지라",
+      "source_text_hash": "72870136b485104b184a54ff5fe595a6de1d51c795e6ca138e769ac6651e1189",
+      "translation_text_hash": "1cc45a0c75d8b95488f750b002ee335e5329c27a90180f99444c5d6c2bf54314",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "온 성이 요란하여 바울과 같이 다니는 마게도냐 사람 가이오와 아리스다고를 잡아가지고 일제히 연극장으로 달려들어 가는지라"
+      ],
+      "raw_text_hashes": [
+        "1cc45a0c75d8b95488f750b002ee335e5329c27a90180f99444c5d6c2bf54314"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:19:30",
+      "sequence": 27613,
+      "chapter_label": "ACT 19",
+      "verse_label": "30",
+      "locator": {
+        "book": "ACT",
+        "chapter": 19,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 19,
+          "verse": 30
+        }
+      ],
+      "en": "When Paul wanted to enter in to the people, the disciples didn’t allow him.",
+      "ko": "바울이 백성 가운데로 들어가고자 하나 제자들이 말리고",
+      "source_text_hash": "ef1187bf064f658ae4a2f1810185d861134e27c87fb38facbf456184738f1132",
+      "translation_text_hash": "4f91d3f690b5162fb2244f24d27dda80d6fd17d35583f8405610a55c8ccf4135",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바울이 백성 가운데로 들어가고자 하나 제자들이 말리고"
+      ],
+      "raw_text_hashes": [
+        "4f91d3f690b5162fb2244f24d27dda80d6fd17d35583f8405610a55c8ccf4135"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:19:31",
+      "sequence": 27614,
+      "chapter_label": "ACT 19",
+      "verse_label": "31",
+      "locator": {
+        "book": "ACT",
+        "chapter": 19,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 19,
+          "verse": 31
+        }
+      ],
+      "en": "Certain also of the Asiarchs, being his friends, sent to him and begged him not to venture into the theater.",
+      "ko": "또 아시아 관원 중에 바울의 친구된 어떤이들이 그에게 통지하여 연극장에 들어가지 말라 권하더라",
+      "source_text_hash": "243ecd22e6161c645dc6bb47238b9c332c71837d82077e91b0ecaa712fce87bc",
+      "translation_text_hash": "459081d10f2a3dd5b215e3d80a57b08c14bbee7cc59a02db4c3b1189e6c8d490",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 아시아 관원 중에 바울의 친구된 어떤이들이 그에게 통지하여 연극장에 들어가지 말라 권하더라"
+      ],
+      "raw_text_hashes": [
+        "459081d10f2a3dd5b215e3d80a57b08c14bbee7cc59a02db4c3b1189e6c8d490"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:19:32",
+      "sequence": 27615,
+      "chapter_label": "ACT 19",
+      "verse_label": "32",
+      "locator": {
+        "book": "ACT",
+        "chapter": 19,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 19,
+          "verse": 32
+        }
+      ],
+      "en": "Some therefore cried one thing, and some another, for the assembly was in confusion. Most of them didn’t know why they had come together.",
+      "ko": "사람들이 외쳐 혹은 이 말을, 혹은 저 말을 하니 모인 무리가 분란하여 태반이나 어찌하여 모였는지 알지 못하더라",
+      "source_text_hash": "24acbb49a96b800e2d1ceb9ba5703602816f507fca7658db9b82aa4627347d26",
+      "translation_text_hash": "f3036e658d0100ba84f34d1865764abcc8ab1ec4d9df2483a6feb2dff3ab9b4f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람들이 외쳐 혹은 이 말을, 혹은 저 말을 하니 모인 무리가 분란하여 태반이나 어찌하여 모였는지 알지 못하더라"
+      ],
+      "raw_text_hashes": [
+        "f3036e658d0100ba84f34d1865764abcc8ab1ec4d9df2483a6feb2dff3ab9b4f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:19:33",
+      "sequence": 27616,
+      "chapter_label": "ACT 19",
+      "verse_label": "33",
+      "locator": {
+        "book": "ACT",
+        "chapter": 19,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 19,
+          "verse": 33
+        }
+      ],
+      "en": "They brought Alexander out of the multitude, the Jews putting him forward. Alexander beckoned with his hand, and would have made a defense to the people.",
+      "ko": "유대인들이 무리 가운데서 알렉산더를 권하여 앞으로 밀어내니 알렉산더가 손짓하며 백성에게 발명하려 하나",
+      "source_text_hash": "a5f99f62f8aa1d30d421e3f2595bfde3ec611b18298c85f2604789a1a963cd50",
+      "translation_text_hash": "abfa46695cfa7ef3dc5c592800c9b3573ab1e52eb6c5bd6c2175ea76d6a22180",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유대인들이 무리 가운데서 알렉산더를 권하여 앞으로 밀어내니 알렉산더가 손짓하며 백성에게 발명하려 하나"
+      ],
+      "raw_text_hashes": [
+        "abfa46695cfa7ef3dc5c592800c9b3573ab1e52eb6c5bd6c2175ea76d6a22180"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:19:34",
+      "sequence": 27617,
+      "chapter_label": "ACT 19",
+      "verse_label": "34",
+      "locator": {
+        "book": "ACT",
+        "chapter": 19,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 19,
+          "verse": 34
+        }
+      ],
+      "en": "But when they perceived that he was a Jew, all with one voice for a time of about two hours cried out, “Great is Artemis of the Ephesians!”",
+      "ko": "저희는 그가 유대인인줄 알고 다 한 소리로 외쳐 가로되 크다 에베소 사람의 아데미여 하기를 두시 동안이나 하더니",
+      "source_text_hash": "b590b74eb91e4215cbf9b98472926524f6a2bed6a54ca4c646680f94f654a9c3",
+      "translation_text_hash": "a70fc1ab40f7573aa9e57d7788694bf94e8509ffd74a6f4af7d0ba95ba2722c1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희는 그가 유대인인줄 알고 다 한 소리로 외쳐 가로되 크다 에베소 사람의 아데미여 하기를 두시 동안이나 하더니"
+      ],
+      "raw_text_hashes": [
+        "a70fc1ab40f7573aa9e57d7788694bf94e8509ffd74a6f4af7d0ba95ba2722c1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:19:35",
+      "sequence": 27618,
+      "chapter_label": "ACT 19",
+      "verse_label": "35",
+      "locator": {
+        "book": "ACT",
+        "chapter": 19,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 19,
+          "verse": 35
+        }
+      ],
+      "en": "When the town clerk had quieted the multitude, he said, “You men of Ephesus, what man is there who doesn’t know that the city of the Ephesians is temple keeper of the great goddess Artemis, and of the image which fell down from Zeus?",
+      "ko": "서기장이 무리를 안돈시키고 이르되 에베소 사람들아 에베소 성이 큰 아데미와 및 쓰스에게서 내려온 우상의 전각지기가 된줄을 누가 알지 못하겠느냐",
+      "source_text_hash": "d39f1baa082717cc8575a9452f8371593515d7a9144ddb381cbb26a213511340",
+      "translation_text_hash": "9d09d5c3f4d8751bd36029391660b0a0620c3b62583f34e41074fee039e45818",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "서기장이 무리를 안돈시키고 이르되 에베소 사람들아 에베소 성이 큰 아데미와 및 쓰스에게서 내려온 우상의 전각지기가 된줄을 누가 알지 못하겠느냐"
+      ],
+      "raw_text_hashes": [
+        "9d09d5c3f4d8751bd36029391660b0a0620c3b62583f34e41074fee039e45818"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:19:36",
+      "sequence": 27619,
+      "chapter_label": "ACT 19",
+      "verse_label": "36",
+      "locator": {
+        "book": "ACT",
+        "chapter": 19,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 19,
+          "verse": 36
+        }
+      ],
+      "en": "Seeing then that these things can’t be denied, you ought to be quiet and to do nothing rash.",
+      "ko": "이 일이 그렇지 않다 할수 없으니 너희가 가만히 있어서 무엇이든지 경솔히 아니하여야 하리라",
+      "source_text_hash": "e5f92f530f62b81344b9420226c0baa6f2a9b0cffcf44596154b041540b1f0db",
+      "translation_text_hash": "14c591495e5c127f1b3f70bbbcb8758a8aaa08d7e989154082c175a3dc4f55a0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 일이 그렇지 않다 할수 없으니 너희가 가만히 있어서 무엇이든지 경솔히 아니하여야 하리라"
+      ],
+      "raw_text_hashes": [
+        "14c591495e5c127f1b3f70bbbcb8758a8aaa08d7e989154082c175a3dc4f55a0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:19:37",
+      "sequence": 27620,
+      "chapter_label": "ACT 19",
+      "verse_label": "37",
+      "locator": {
+        "book": "ACT",
+        "chapter": 19,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 19,
+          "verse": 37
+        }
+      ],
+      "en": "For you have brought these men here, who are neither robbers of temples nor blasphemers of your goddess.",
+      "ko": "전각의 물건을 도적질하지도 아니하였고 우리 여신을 훼방하지도 아니한 이 사람들을 너희가 잡아 왔으니",
+      "source_text_hash": "5895ac3075fe5a2cf6583584158cb2a5ef78878d47c7bbb866302119b67c97ef",
+      "translation_text_hash": "d7e9bb31f3c96b1329f8b757d79f1d452109e5e21118f5bde4dbbaf47faa6b9a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "전각의 물건을 도적질하지도 아니하였고 우리 여신을 훼방하지도 아니한 이 사람들을 너희가 잡아 왔으니"
+      ],
+      "raw_text_hashes": [
+        "d7e9bb31f3c96b1329f8b757d79f1d452109e5e21118f5bde4dbbaf47faa6b9a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:19:38",
+      "sequence": 27621,
+      "chapter_label": "ACT 19",
+      "verse_label": "38",
+      "locator": {
+        "book": "ACT",
+        "chapter": 19,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 19,
+          "verse": 38
+        }
+      ],
+      "en": "If therefore Demetrius and the craftsmen who are with him have a matter against anyone, the courts are open and there are proconsuls. Let them press charges against one another.",
+      "ko": "만일 데메드리오와 및 그와 함께 있는 직공들이 누구에게 송사할 것이 있거든 재판 날도 있고 총독들도 있으니 피차 고소할 것이요",
+      "source_text_hash": "5cb106e59d04e137936ccdce172184b2762ff2c9be0cf9b7bef954f25f792cae",
+      "translation_text_hash": "a8bacab4f968a70568c27d243bc83bd538770511a567d867530c99be62b83ddd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 데메드리오와 및 그와 함께 있는 직공들이 누구에게 송사할 것이 있거든 재판 날도 있고 총독들도 있으니 피차 고소할 것이요"
+      ],
+      "raw_text_hashes": [
+        "a8bacab4f968a70568c27d243bc83bd538770511a567d867530c99be62b83ddd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:19:39",
+      "sequence": 27622,
+      "chapter_label": "ACT 19",
+      "verse_label": "39",
+      "locator": {
+        "book": "ACT",
+        "chapter": 19,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 19,
+          "verse": 39
+        }
+      ],
+      "en": "But if you seek anything about other matters, it will be settled in the regular assembly.",
+      "ko": "만일 그 외에 무엇을 원하거든 정식으로 민회에서 결단할찌라",
+      "source_text_hash": "65cf582e858b1b23f384c7a70f4887ee31fad033afadaf14d4a745e9800f2068",
+      "translation_text_hash": "4b24f890039900c0fc35f3d083804f2cab311923adf46f2fcf906f8c5b8a4ff3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 그 외에 무엇을 원하거든 정식으로 민회에서 결단할찌라"
+      ],
+      "raw_text_hashes": [
+        "4b24f890039900c0fc35f3d083804f2cab311923adf46f2fcf906f8c5b8a4ff3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:19:40",
+      "sequence": 27623,
+      "chapter_label": "ACT 19",
+      "verse_label": "40",
+      "locator": {
+        "book": "ACT",
+        "chapter": 19,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 19,
+          "verse": 40
+        }
+      ],
+      "en": "For indeed we are in danger of being accused concerning today’s riot, there being no cause. Concerning it, we wouldn’t be able to give an account of this commotion.”",
+      "ko": "오늘 아무 까닭도 없는 이 일에 우리가 소요의 사건으로 책망 받을 위험이 있고 우리가 이 불법 집회에 관하여 보고할 재료가 없다 하고",
+      "source_text_hash": "9164360d791be73fadef2da9cbb1ac243d76282621fbcb52c4fb323fd9a616b6",
+      "translation_text_hash": "f3623aa8997188c9fd94d53b4dba97747e843f7c2340df091f0b50242fa2171d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오늘 아무 까닭도 없는 이 일에 우리가 소요의 사건으로 책망 받을 위험이 있고 우리가 이 불법 집회에 관하여 보고할 재료가 없다 하고"
+      ],
+      "raw_text_hashes": [
+        "f3623aa8997188c9fd94d53b4dba97747e843f7c2340df091f0b50242fa2171d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:19:41",
+      "sequence": 27624,
+      "chapter_label": "ACT 19",
+      "verse_label": "41",
+      "locator": {
+        "book": "ACT",
+        "chapter": 19,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 19,
+          "verse": 41
+        }
+      ],
+      "en": "When he had thus spoken, he dismissed the assembly.",
+      "ko": "이에 그 모임을 흩어지게 하니라",
+      "source_text_hash": "9d2cecf871b918e1401b5f1516a823b4bb9df7c7fda4ce157b8f9710473de1e9",
+      "translation_text_hash": "139070ebea5118a13a74be57a4a6d4f327f4f044019d0e9d035a40ef442265e9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 그 모임을 흩어지게 하니라"
+      ],
+      "raw_text_hashes": [
+        "139070ebea5118a13a74be57a4a6d4f327f4f044019d0e9d035a40ef442265e9"
+      ]
+    }
+  ]
+}

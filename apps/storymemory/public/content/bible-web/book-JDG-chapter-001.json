@@ -1,0 +1,1165 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JDG:chapter:001",
+  "unit_ordinal": 212,
+  "unit_label": "JDG 1",
+  "book_code": "JDG",
+  "chapter_number": 1,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JDG:1:1",
+      "sequence": 6511,
+      "chapter_label": "JDG 1",
+      "verse_label": "1",
+      "locator": {
+        "book": "JDG",
+        "chapter": 1,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 1,
+          "verse": 1
+        }
+      ],
+      "en": "After the death of Joshua, the children of Israel asked of the LORD, saying, “Who should go up for us first against the Canaanites, to fight against them?”",
+      "ko": "여호수아가 죽은 후에 이스라엘 자손이 여호와께 묻자와 가로되 우리 중 누가 먼저 올라가서 가나안 사람과 싸우리이까",
+      "source_text_hash": "9826846cd1ea1b3e0d45e2af09ff8244cdaef9c22134d29ae24d7c66f6936212",
+      "translation_text_hash": "d5295f7df2dcd95b3854a4e64aa37d2a919784f38c1eb6fa00c000c338435111",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호수아가 죽은 후에 이스라엘 자손이 여호와께 묻자와 가로되 우리 중 누가 먼저 올라가서 가나안 사람과 싸우리이까"
+      ],
+      "raw_text_hashes": [
+        "d5295f7df2dcd95b3854a4e64aa37d2a919784f38c1eb6fa00c000c338435111"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:1:2",
+      "sequence": 6512,
+      "chapter_label": "JDG 1",
+      "verse_label": "2",
+      "locator": {
+        "book": "JDG",
+        "chapter": 1,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 1,
+          "verse": 2
+        }
+      ],
+      "en": "The LORD said, “Judah shall go up. Behold, I have delivered the land into his hand.”",
+      "ko": "여호와께서 가라사대 유다가 올라갈찌니라 보라 내가 이 땅을 그 손에 붙였노라 하시니라",
+      "source_text_hash": "4a8821fc330308ace22de7d6196c996556750cd237467dfdb5ce4df63175809c",
+      "translation_text_hash": "2bbb024534e4a50629a4d11b987f6f7d2763393fd59de6c36ba9f570e2e84910",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 가라사대 유다가 올라갈찌니라 보라 내가 이 땅을 그 손에 붙였노라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "2bbb024534e4a50629a4d11b987f6f7d2763393fd59de6c36ba9f570e2e84910"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:1:3",
+      "sequence": 6513,
+      "chapter_label": "JDG 1",
+      "verse_label": "3",
+      "locator": {
+        "book": "JDG",
+        "chapter": 1,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 1,
+          "verse": 3
+        }
+      ],
+      "en": "Judah said to Simeon his brother, “Come up with me into my lot, that we may fight against the Canaanites; and I likewise will go with you into your lot.” So Simeon went with him.",
+      "ko": "유다가 그 형제 시므온에게 이르되 나의 제비 뽑아 얻은 땅에 나와 함께 올라가서 가나안 사람과 싸우자 그리하면 나도 너의 제비 뽑아 얻은 땅에 함께 가리라 이에 시므온이 그와 함께 가니라",
+      "source_text_hash": "41c9337b8f3ad7280f8d0c8a2ef61e7f8e8ed46ce2853392f9771ad5e6524ea2",
+      "translation_text_hash": "0f730a4c938a34949e1f1e2a49b515a5f8e18c95c5afd29f12da3f09e5290c38",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다가 그 형제 시므온에게 이르되 나의 제비 뽑아 얻은 땅에 나와 함께 올라가서 가나안 사람과 싸우자 그리하면 나도 너의 제비 뽑아 얻은 땅에 함께 가리라 이에 시므온이 그와 함께 가니라"
+      ],
+      "raw_text_hashes": [
+        "0f730a4c938a34949e1f1e2a49b515a5f8e18c95c5afd29f12da3f09e5290c38"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:1:4",
+      "sequence": 6514,
+      "chapter_label": "JDG 1",
+      "verse_label": "4",
+      "locator": {
+        "book": "JDG",
+        "chapter": 1,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 1,
+          "verse": 4
+        }
+      ],
+      "en": "Judah went up, and the LORD delivered the Canaanites and the Perizzites into their hand. They struck ten thousand men in Bezek.",
+      "ko": "유다가 올라가매 여호와께서 가나안 사람과 브리스 사람을 그들의 손에 붙이신지라 그들이 베섹에서 일만명을 죽이고",
+      "source_text_hash": "341cdc37ae047d460f21840396c950c2f0390000811342e91b2074c73db958b5",
+      "translation_text_hash": "affef9a112fe787d241579e8ce20105164ea8699173b2d9af79ce84e8cf07bfa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다가 올라가매 여호와께서 가나안 사람과 브리스 사람을 그들의 손에 붙이신지라 그들이 베섹에서 일만명을 죽이고"
+      ],
+      "raw_text_hashes": [
+        "affef9a112fe787d241579e8ce20105164ea8699173b2d9af79ce84e8cf07bfa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:1:5",
+      "sequence": 6515,
+      "chapter_label": "JDG 1",
+      "verse_label": "5",
+      "locator": {
+        "book": "JDG",
+        "chapter": 1,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 1,
+          "verse": 5
+        }
+      ],
+      "en": "They found Adoni-Bezek in Bezek, and they fought against him. They struck the Canaanites and the Perizzites.",
+      "ko": "또 베섹에서 아도니 베섹을 만나서 그와 싸워 가나안 사람과 브리스 사람을 죽이니",
+      "source_text_hash": "f67c3d104f1f5b66f6fd0d4e5e90f7a7ada0f6886d3ddf81d3de172324578fbb",
+      "translation_text_hash": "c2dbe6888297b67eb6d5502e3f0aa8d0fad36243a7aaa68a21b3f115dbf8ec02",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 베섹에서 아도니 베섹을 만나서 그와 싸워 가나안 사람과 브리스 사람을 죽이니"
+      ],
+      "raw_text_hashes": [
+        "c2dbe6888297b67eb6d5502e3f0aa8d0fad36243a7aaa68a21b3f115dbf8ec02"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:1:6",
+      "sequence": 6516,
+      "chapter_label": "JDG 1",
+      "verse_label": "6",
+      "locator": {
+        "book": "JDG",
+        "chapter": 1,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 1,
+          "verse": 6
+        }
+      ],
+      "en": "But Adoni-Bezek fled. They pursued him, caught him, and cut off his thumbs and his big toes.",
+      "ko": "아도니 베섹이 도망하는지라 그를 쫓아가서 잡아 그 수족의 엄지가락을 끊으매",
+      "source_text_hash": "ef071a9bbe3cc10850009631ea6c42d6bc5900dcef6de7166d5769b19518c423",
+      "translation_text_hash": "d882e2e40fe3bf2fde5e286d0c452507f865ff743a1952836c741421831104e4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아도니 베섹이 도망하는지라 그를 쫓아가서 잡아 그 수족의 엄지가락을 끊으매"
+      ],
+      "raw_text_hashes": [
+        "d882e2e40fe3bf2fde5e286d0c452507f865ff743a1952836c741421831104e4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:1:7",
+      "sequence": 6517,
+      "chapter_label": "JDG 1",
+      "verse_label": "7",
+      "locator": {
+        "book": "JDG",
+        "chapter": 1,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 1,
+          "verse": 7
+        }
+      ],
+      "en": "Adoni-Bezek said, “Seventy kings, having their thumbs and their big toes cut off, scavenged under my table. As I have done, so God has done to me.” They brought him to Jerusalem, and he died there.",
+      "ko": "아도니 베섹이 가로되 옛적에 칠십 왕이 그 수족의 엄지가락을 찍히고 내 상 아래서 먹을 것을 줍더니 하나님이 나의 행한대로 내게 갚으심이로다 하니라 무리가 그를 끌고 예루살렘에 이르렀더니 그가 거기서 죽었더라",
+      "source_text_hash": "08b505e0a29ae9ad845076b2416c9971df677b81bf5db22a4c5bb4a8b87227c4",
+      "translation_text_hash": "628331ead28366c6ff1ac4c20a88a420ed5d32c23491b11741ee95aa897a6a44",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아도니 베섹이 가로되 옛적에 칠십 왕이 그 수족의 엄지가락을 찍히고 내 상 아래서 먹을 것을 줍더니 하나님이 나의 행한대로 내게 갚으심이로다 하니라 무리가 그를 끌고 예루살렘에 이르렀더니 그가 거기서 죽었더라"
+      ],
+      "raw_text_hashes": [
+        "628331ead28366c6ff1ac4c20a88a420ed5d32c23491b11741ee95aa897a6a44"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:1:8",
+      "sequence": 6518,
+      "chapter_label": "JDG 1",
+      "verse_label": "8",
+      "locator": {
+        "book": "JDG",
+        "chapter": 1,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 1,
+          "verse": 8
+        }
+      ],
+      "en": "The children of Judah fought against Jerusalem, took it, struck it with the edge of the sword, and set the city on fire.",
+      "ko": "유다 자손이 예루살렘을 쳐서 취하여 칼날로 치고 성을 불살랐으며",
+      "source_text_hash": "b2152f7db3b436819a086e83374e892e6720e127db51e8a793c1929eb59c1fc2",
+      "translation_text_hash": "8f072d8394e696b6548ea1c4dbd78e6320f1ff5aa040d1d3c155dea75b020ce6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다 자손이 예루살렘을 쳐서 취하여 칼날로 치고 성을 불살랐으며"
+      ],
+      "raw_text_hashes": [
+        "8f072d8394e696b6548ea1c4dbd78e6320f1ff5aa040d1d3c155dea75b020ce6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:1:9",
+      "sequence": 6519,
+      "chapter_label": "JDG 1",
+      "verse_label": "9",
+      "locator": {
+        "book": "JDG",
+        "chapter": 1,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 1,
+          "verse": 9
+        }
+      ],
+      "en": "After that, the children of Judah went down to fight against the Canaanites who lived in the hill country, and in the South, and in the lowland.",
+      "ko": "그 후에 유다 자손이 내려가서 산지와 남방과 평지에 거한 가나안 사람과 싸웠고",
+      "source_text_hash": "27721cf48fcc0f565ade88528ebf185b1f67e54240e02edcbe01ae55034b1c71",
+      "translation_text_hash": "629de53ce8fd5c2e18b5a5844c4154275c1c7adaa2e101cabb3ffaa40e1ed99d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 후에 유다 자손이 내려가서 산지와 남방과 평지에 거한 가나안 사람과 싸웠고"
+      ],
+      "raw_text_hashes": [
+        "629de53ce8fd5c2e18b5a5844c4154275c1c7adaa2e101cabb3ffaa40e1ed99d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:1:10",
+      "sequence": 6520,
+      "chapter_label": "JDG 1",
+      "verse_label": "10",
+      "locator": {
+        "book": "JDG",
+        "chapter": 1,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 1,
+          "verse": 10
+        }
+      ],
+      "en": "Judah went against the Canaanites who lived in Hebron. (The name of Hebron before that was Kiriath Arba.) They struck Sheshai, Ahiman, and Talmai.",
+      "ko": "유다가 또 가서 헤브론에 거한 가나안 사람을 쳐서 세새와 아히만과 달매를 죽였더라 헤브론의 본 이름은 기럇 아르바이었더라",
+      "source_text_hash": "9a4b04b4911b6d2f29a6c982cc08a6e654e264d2a283638012d76076c12cb9c0",
+      "translation_text_hash": "7bee6e174d3ef87ccc3708d0b9bb30a66a19f4bcc33cd4bc4d6b58f9125381f8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다가 또 가서 헤브론에 거한 가나안 사람을 쳐서 세새와 아히만과 달매를 죽였더라 헤브론의 본 이름은 기럇 아르바이었더라"
+      ],
+      "raw_text_hashes": [
+        "7bee6e174d3ef87ccc3708d0b9bb30a66a19f4bcc33cd4bc4d6b58f9125381f8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:1:11",
+      "sequence": 6521,
+      "chapter_label": "JDG 1",
+      "verse_label": "11",
+      "locator": {
+        "book": "JDG",
+        "chapter": 1,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 1,
+          "verse": 11
+        }
+      ],
+      "en": "From there he went against the inhabitants of Debir. (The name of Debir before that was Kiriath Sepher.)",
+      "ko": "거기서 나아가서 드빌의 거민들을 쳤으니 드빌의 본 이름은 기럇 세벨이라",
+      "source_text_hash": "d160c16f19399eb8b58cfd4d5558716ec852ef806b00ba4023ef58414dbb62ea",
+      "translation_text_hash": "bbe6ec2b422ed32de201bb0809bd96f35278fe4dc0371032321288935e9da26a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거기서 나아가서 드빌의 거민들을 쳤으니 드빌의 본 이름은 기럇 세벨이라"
+      ],
+      "raw_text_hashes": [
+        "bbe6ec2b422ed32de201bb0809bd96f35278fe4dc0371032321288935e9da26a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:1:12",
+      "sequence": 6522,
+      "chapter_label": "JDG 1",
+      "verse_label": "12",
+      "locator": {
+        "book": "JDG",
+        "chapter": 1,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 1,
+          "verse": 12
+        }
+      ],
+      "en": "Caleb said, “I will give Achsah my daughter as wife to the man who strikes Kiriath Sepher, and takes it.”",
+      "ko": "갈렙이 말하기를 기럇 세벨을 쳐서 그것을 취하는 자에게는 내 딸 악사를 아내로 주리라 하였더니",
+      "source_text_hash": "b5fdb82370cfb7b5f6502be7eae47cc27df2c0e50c5f7ed1e964d33c3a96f43f",
+      "translation_text_hash": "b3a7265a48247498ea01bbf64d8c92e4fca41a64f5429db93e80e935e9013de9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "갈렙이 말하기를 기럇 세벨을 쳐서 그것을 취하는 자에게는 내 딸 악사를 아내로 주리라 하였더니"
+      ],
+      "raw_text_hashes": [
+        "b3a7265a48247498ea01bbf64d8c92e4fca41a64f5429db93e80e935e9013de9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:1:13",
+      "sequence": 6523,
+      "chapter_label": "JDG 1",
+      "verse_label": "13",
+      "locator": {
+        "book": "JDG",
+        "chapter": 1,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 1,
+          "verse": 13
+        }
+      ],
+      "en": "Othniel the son of Kenaz, Caleb’s younger brother, took it, so he gave him Achsah his daughter as his wife.",
+      "ko": "갈렙의 아우요 그나스의 아들인 옷니엘이 그것을 취한고로 갈렙이 그 딸 악사를 그에게 아내로 주었더라",
+      "source_text_hash": "997547311b59b52fd57a355e47c3459a6bd9285574ec08489ccbf83df50ba2b4",
+      "translation_text_hash": "2d2b56acc26a6cfbb7a063a8a9100d7c2a411458f3ff52f22ee24ef2f4f10512",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "갈렙의 아우요 그나스의 아들인 옷니엘이 그것을 취한고로 갈렙이 그 딸 악사를 그에게 아내로 주었더라"
+      ],
+      "raw_text_hashes": [
+        "2d2b56acc26a6cfbb7a063a8a9100d7c2a411458f3ff52f22ee24ef2f4f10512"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:1:14",
+      "sequence": 6524,
+      "chapter_label": "JDG 1",
+      "verse_label": "14",
+      "locator": {
+        "book": "JDG",
+        "chapter": 1,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 1,
+          "verse": 14
+        }
+      ],
+      "en": "When she came, she got him to ask her father for a field. She got off her donkey; and Caleb said to her, “What would you like?”",
+      "ko": "악사가 출가할 때에 그에게 청하여 자기 아비에게 밭을 구하자 하고 나귀에서 내리매 갈렙이 묻되 네가 무엇을 원하느냐",
+      "source_text_hash": "6dce6d29cd4453c4f876db6a715722fb55d9064b2a7ccba9860cebf95255abb6",
+      "translation_text_hash": "c498203c65b791460499ea8ea399d56a998a28bfb6afe0cdf6a301bd0f5207f3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "악사가 출가할 때에 그에게 청하여 자기 아비에게 밭을 구하자 하고 나귀에서 내리매 갈렙이 묻되 네가 무엇을 원하느냐"
+      ],
+      "raw_text_hashes": [
+        "c498203c65b791460499ea8ea399d56a998a28bfb6afe0cdf6a301bd0f5207f3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:1:15",
+      "sequence": 6525,
+      "chapter_label": "JDG 1",
+      "verse_label": "15",
+      "locator": {
+        "book": "JDG",
+        "chapter": 1,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 1,
+          "verse": 15
+        }
+      ],
+      "en": "She said to him, “Give me a blessing; because you have set me in the land of the South, give me also springs of water.” Then Caleb gave her the upper springs and the lower springs.",
+      "ko": "가로되 내게 복을 주소서 아버지께서 나를 남방으로 보내시니 샘물도 내게 주소서 하매 갈렙이 윗샘과 아랫샘을 그에게 주었더라",
+      "source_text_hash": "7319c0ae4a55c67b69da6820241a0bfe5bfa1e787ac352beb6972833c7714d5a",
+      "translation_text_hash": "f261f77b354e8d6d875bfbade1f34fcf4446c1add41701d0ff647f7e1d508ed6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 내게 복을 주소서 아버지께서 나를 남방으로 보내시니 샘물도 내게 주소서 하매 갈렙이 윗샘과 아랫샘을 그에게 주었더라"
+      ],
+      "raw_text_hashes": [
+        "f261f77b354e8d6d875bfbade1f34fcf4446c1add41701d0ff647f7e1d508ed6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:1:16",
+      "sequence": 6526,
+      "chapter_label": "JDG 1",
+      "verse_label": "16",
+      "locator": {
+        "book": "JDG",
+        "chapter": 1,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 1,
+          "verse": 16
+        }
+      ],
+      "en": "The children of the Kenite, Moses’ brother-in-law, went up out of the city of palm trees with the children of Judah into the wilderness of Judah, which is in the south of Arad; and they went and lived with the people.",
+      "ko": "모세의 장인은 겐 사람이라 그 자손이 유다 자손과 함께 종려나무 성읍에서 올라가서 아랏 남방의 유다 황무지에 이르러 그 백성 중에 거하니라",
+      "source_text_hash": "1b55575d45fae36266c0fb3296e30456cee472f6f81005d240614adb5b1b0cb2",
+      "translation_text_hash": "5e84d83ec1d9c652f8782c27a9038eeae178db1dc94abb21dc474aa4fe1caedf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세의 장인은 겐 사람이라 그 자손이 유다 자손과 함께 종려나무 성읍에서 올라가서 아랏 남방의 유다 황무지에 이르러 그 백성 중에 거하니라"
+      ],
+      "raw_text_hashes": [
+        "5e84d83ec1d9c652f8782c27a9038eeae178db1dc94abb21dc474aa4fe1caedf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:1:17",
+      "sequence": 6527,
+      "chapter_label": "JDG 1",
+      "verse_label": "17",
+      "locator": {
+        "book": "JDG",
+        "chapter": 1,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 1,
+          "verse": 17
+        }
+      ],
+      "en": "Judah went with Simeon his brother, and they struck the Canaanites who inhabited Zephath, and utterly destroyed it. The name of the city was called Hormah.",
+      "ko": "유다가 그 형제 시므온과 함께 가서 스밧에 거한 가나안 사람을 쳐서 그곳을 진멸하였으므로 그 성읍 이름을 호르마라 하니라",
+      "source_text_hash": "dbb83891a1a262ff8a5f1f2ed1208c3f4d02daf38d429d09c20a0a7bc8071bf2",
+      "translation_text_hash": "ad82f2927ce53428b148052ba7d8fd55dd096b5fa117d4252a7b28e200a47269",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다가 그 형제 시므온과 함께 가서 스밧에 거한 가나안 사람을 쳐서 그곳을 진멸하였으므로 그 성읍 이름을 호르마라 하니라"
+      ],
+      "raw_text_hashes": [
+        "ad82f2927ce53428b148052ba7d8fd55dd096b5fa117d4252a7b28e200a47269"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:1:18",
+      "sequence": 6528,
+      "chapter_label": "JDG 1",
+      "verse_label": "18",
+      "locator": {
+        "book": "JDG",
+        "chapter": 1,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 1,
+          "verse": 18
+        }
+      ],
+      "en": "Also Judah took Gaza with its border, and Ashkelon with its border, and Ekron with its border.",
+      "ko": "유다가 또 가사와 그 경내와 아스글론과 그 경내와 에그론과 그 경내를 취하였고",
+      "source_text_hash": "a68e67a1d237e415bfe30373f75a156116f042a9d96f2d9c3640cd875a16a3a8",
+      "translation_text_hash": "c50c4dfb5bcce37988ce6c97f7479bd15c212f97cdc0a836004f413d127dd023",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다가 또 가사와 그 경내와 아스글론과 그 경내와 에그론과 그 경내를 취하였고"
+      ],
+      "raw_text_hashes": [
+        "c50c4dfb5bcce37988ce6c97f7479bd15c212f97cdc0a836004f413d127dd023"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:1:19",
+      "sequence": 6529,
+      "chapter_label": "JDG 1",
+      "verse_label": "19",
+      "locator": {
+        "book": "JDG",
+        "chapter": 1,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 1,
+          "verse": 19
+        }
+      ],
+      "en": "The LORD was with Judah, and drove out the inhabitants of the hill country; for he could not drive out the inhabitants of the valley, because they had chariots of iron.",
+      "ko": "여호와께서 유다와 함께 하신 고로 그가 산지 거민을 쫓아내었으나 골짜기의 거민들은 철병거가 있으므로 그들을 쫓아내지 못하였으며",
+      "source_text_hash": "0a6dd864676fb116359ccf1b442b0b7a53704baef6f149cee2c4e32dcdd5a02e",
+      "translation_text_hash": "92250f37ca0e706ba7c24ecc3cb604c24d7a96c25a0a8ffb0eb1707e9285892a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 유다와 함께 하신 고로 그가 산지 거민을 쫓아내었으나 골짜기의 거민들은 철병거가 있으므로 그들을 쫓아내지 못하였으며"
+      ],
+      "raw_text_hashes": [
+        "92250f37ca0e706ba7c24ecc3cb604c24d7a96c25a0a8ffb0eb1707e9285892a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:1:20",
+      "sequence": 6530,
+      "chapter_label": "JDG 1",
+      "verse_label": "20",
+      "locator": {
+        "book": "JDG",
+        "chapter": 1,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 1,
+          "verse": 20
+        }
+      ],
+      "en": "They gave Hebron to Caleb, as Moses had said, and he drove the three sons of Anak out of there.",
+      "ko": "무리가 모세의 명한대로 헤브론을 갈렙에게 주었더니 그가 거기서 아낙의 세 아들을 쫓아내었고",
+      "source_text_hash": "323703030c9acdf8189dda1307f110cb0d27b43817337e8b8a35b0b80350b7ca",
+      "translation_text_hash": "886f996a107e99c0e530713a7f990f13cd5e1d1ff2059307eb0526069f6a517d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무리가 모세의 명한대로 헤브론을 갈렙에게 주었더니 그가 거기서 아낙의 세 아들을 쫓아내었고"
+      ],
+      "raw_text_hashes": [
+        "886f996a107e99c0e530713a7f990f13cd5e1d1ff2059307eb0526069f6a517d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:1:21",
+      "sequence": 6531,
+      "chapter_label": "JDG 1",
+      "verse_label": "21",
+      "locator": {
+        "book": "JDG",
+        "chapter": 1,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 1,
+          "verse": 21
+        }
+      ],
+      "en": "The children of Benjamin didn’t drive out the Jebusites who inhabited Jerusalem, but the Jebusites dwell with the children of Benjamin in Jerusalem to this day.",
+      "ko": "베냐민 자손은 예루살렘에 거한 여부스 사람을 쫓아내지 못하였으므로 여부스 사람이 베냐민 자손과 함께 오늘날까지 예루살렘에 거하더라",
+      "source_text_hash": "92fd9b2e4329dd5152316ea44255057aea5a100cc4b655662a14c7d7efc4e413",
+      "translation_text_hash": "c9087a10dd4ed3b4bb46d032e57dc0536f49d3e96fa095251af244200003ea0c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베냐민 자손은 예루살렘에 거한 여부스 사람을 쫓아내지 못하였으므로 여부스 사람이 베냐민 자손과 함께 오늘날까지 예루살렘에 거하더라"
+      ],
+      "raw_text_hashes": [
+        "c9087a10dd4ed3b4bb46d032e57dc0536f49d3e96fa095251af244200003ea0c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:1:22",
+      "sequence": 6532,
+      "chapter_label": "JDG 1",
+      "verse_label": "22",
+      "locator": {
+        "book": "JDG",
+        "chapter": 1,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 1,
+          "verse": 22
+        }
+      ],
+      "en": "The house of Joseph also went up against Bethel, and the LORD was with them.",
+      "ko": "요셉 족속도 벧엘을 치러 올라가니 여호와께서 그와 함께 하시니라",
+      "source_text_hash": "c01e1cccb4aa24be1fcc81a8615c5d2da44343cb71d93576e4a1de0032c59a0d",
+      "translation_text_hash": "ca82c302012943efbcd26777a3e6498f0a700828737962ef5d3a43e38af52110",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요셉 족속도 벧엘을 치러 올라가니 여호와께서 그와 함께 하시니라"
+      ],
+      "raw_text_hashes": [
+        "ca82c302012943efbcd26777a3e6498f0a700828737962ef5d3a43e38af52110"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:1:23",
+      "sequence": 6533,
+      "chapter_label": "JDG 1",
+      "verse_label": "23",
+      "locator": {
+        "book": "JDG",
+        "chapter": 1,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 1,
+          "verse": 23
+        }
+      ],
+      "en": "The house of Joseph sent to spy out Bethel. (The name of the city before that was Luz.)",
+      "ko": "요셉 족속이 벧엘을 정탐케 하였는데 그 성읍의 본 이름은 루스라",
+      "source_text_hash": "0d1a05d2a3225d4633b9ed24739d94bb730d8a620b627043e797a9d8bab291c2",
+      "translation_text_hash": "7e42bb5f6e1ab5b03fae2fc0bda3563b52dee2450dd7a76ad3f541962d2e7449",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요셉 족속이 벧엘을 정탐케 하였는데 그 성읍의 본 이름은 루스라"
+      ],
+      "raw_text_hashes": [
+        "7e42bb5f6e1ab5b03fae2fc0bda3563b52dee2450dd7a76ad3f541962d2e7449"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:1:24",
+      "sequence": 6534,
+      "chapter_label": "JDG 1",
+      "verse_label": "24",
+      "locator": {
+        "book": "JDG",
+        "chapter": 1,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 1,
+          "verse": 24
+        }
+      ],
+      "en": "The watchers saw a man come out of the city, and they said to him, “Please show us the entrance into the city, and we will deal kindly with you.”",
+      "ko": "탐정이 그 성읍에서 한 사람의 나오는 것을 보고 그에게 이르되 청하노니 이 성읍의 입구를 우리에게 가르치라 그리하면 너를 선대하리라 하매",
+      "source_text_hash": "fcb33ea1464699f8dbceb99a71734fdf502b95922242a10ddb08b3ce440f273a",
+      "translation_text_hash": "9aebe34c88169e12088d37e705107fc3e24294ec6273203ef8d622b5999eabf3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "탐정이 그 성읍에서 한 사람의 나오는 것을 보고 그에게 이르되 청하노니 이 성읍의 입구를 우리에게 가르치라 그리하면 너를 선대하리라 하매"
+      ],
+      "raw_text_hashes": [
+        "9aebe34c88169e12088d37e705107fc3e24294ec6273203ef8d622b5999eabf3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:1:25",
+      "sequence": 6535,
+      "chapter_label": "JDG 1",
+      "verse_label": "25",
+      "locator": {
+        "book": "JDG",
+        "chapter": 1,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 1,
+          "verse": 25
+        }
+      ],
+      "en": "He showed them the entrance into the city, and they struck the city with the edge of the sword; but they let the man and all his family go.",
+      "ko": "그 사람이 성읍의 입구를 가르친지라 이에 칼날로 그 성읍을 쳤으되 오직 그 사람과 그 가족을 놓아 보내매",
+      "source_text_hash": "8f50480e1adf337b0f994917b844bcf3d0f2b276bbfe9fc5ed05ea64cd2f8fb8",
+      "translation_text_hash": "e0f21ba0932b79eec2e126a48eee699c1386b2c92c42459e67d1ab3bbc3f8c9e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 사람이 성읍의 입구를 가르친지라 이에 칼날로 그 성읍을 쳤으되 오직 그 사람과 그 가족을 놓아 보내매"
+      ],
+      "raw_text_hashes": [
+        "e0f21ba0932b79eec2e126a48eee699c1386b2c92c42459e67d1ab3bbc3f8c9e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:1:26",
+      "sequence": 6536,
+      "chapter_label": "JDG 1",
+      "verse_label": "26",
+      "locator": {
+        "book": "JDG",
+        "chapter": 1,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 1,
+          "verse": 26
+        }
+      ],
+      "en": "The man went into the land of the Hittites, built a city, and called its name Luz, which is its name to this day.",
+      "ko": "그 사람이 헷 사람의 땅에 가서 성읍을 건축하고 그 이름을 루스라 하였더니 오늘날까지 그곳의 이름이더라",
+      "source_text_hash": "8744e153fe78d7f90966050cbb0c873325c7e4adbf29378066bac4a4e51ed049",
+      "translation_text_hash": "9fee5e9bcba1e789ee8f87c0bd85b56e0b017a056b4747d747a6e82f1770d529",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 사람이 헷 사람의 땅에 가서 성읍을 건축하고 그 이름을 루스라 하였더니 오늘날까지 그곳의 이름이더라"
+      ],
+      "raw_text_hashes": [
+        "9fee5e9bcba1e789ee8f87c0bd85b56e0b017a056b4747d747a6e82f1770d529"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:1:27",
+      "sequence": 6537,
+      "chapter_label": "JDG 1",
+      "verse_label": "27",
+      "locator": {
+        "book": "JDG",
+        "chapter": 1,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 1,
+          "verse": 27
+        }
+      ],
+      "en": "Manasseh didn’t drive out the inhabitants of Beth Shean and its towns, nor Taanach and its towns, nor the inhabitants of Dor and its towns, nor the inhabitants of Ibleam and its towns, nor the inhabitants of Megiddo and its towns; but the Canaanites would dwell in that land.",
+      "ko": "므낫세가 벧스안과 그 향리의 거민과 다아낙과 그 향리의 거민과 돌과 그 향리의 거민과 이블르암과 그 향리의 거민과 므깃도와 그 향리의 거민들을 쫓아내지 못하매 가나안 사람이 결심하고 그 땅에 거하였더니",
+      "source_text_hash": "cee04ec99b5c49b4851ba018b5465ff70305515ebf7bf5bb45b524fedb020ba5",
+      "translation_text_hash": "9592e04fe86df74e1aa42eeff896f5a7754803583ba48931301f26bee604e6af",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "므낫세가 벧스안과 그 향리의 거민과 다아낙과 그 향리의 거민과 돌과 그 향리의 거민과 이블르암과 그 향리의 거민과 므깃도와 그 향리의 거민들을 쫓아내지 못하매 가나안 사람이 결심하고 그 땅에 거하였더니"
+      ],
+      "raw_text_hashes": [
+        "9592e04fe86df74e1aa42eeff896f5a7754803583ba48931301f26bee604e6af"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:1:28",
+      "sequence": 6538,
+      "chapter_label": "JDG 1",
+      "verse_label": "28",
+      "locator": {
+        "book": "JDG",
+        "chapter": 1,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 1,
+          "verse": 28
+        }
+      ],
+      "en": "When Israel had grown strong, they put the Canaanites to forced labor, and didn’t utterly drive them out.",
+      "ko": "이스라엘이 강성한 후에야 가나안 사람에게 사역을 시켰고 다 쫓아내지 아니하였더라",
+      "source_text_hash": "fd8876bd15ffbf4ce18b516402be58c1ad50818064bf653211308bc2a79ed7bc",
+      "translation_text_hash": "2b1a4ecd0db25580c906d6991e745e827108e2454d9fa82bcbb479b18bcb7a29",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘이 강성한 후에야 가나안 사람에게 사역을 시켰고 다 쫓아내지 아니하였더라"
+      ],
+      "raw_text_hashes": [
+        "2b1a4ecd0db25580c906d6991e745e827108e2454d9fa82bcbb479b18bcb7a29"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:1:29",
+      "sequence": 6539,
+      "chapter_label": "JDG 1",
+      "verse_label": "29",
+      "locator": {
+        "book": "JDG",
+        "chapter": 1,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 1,
+          "verse": 29
+        }
+      ],
+      "en": "Ephraim didn’t drive out the Canaanites who lived in Gezer, but the Canaanites lived in Gezer among them.",
+      "ko": "에브라임이 게셀에 거한 가나안 사람을 쫓아내지 못하매 가나안 사람이 게셀에서 그들 중에 거하였더라",
+      "source_text_hash": "0caa8acae14e2b990311a4f07280aaea1ecd11362239b8f60bae0f92d0d3c10a",
+      "translation_text_hash": "1c6e93c3e50d52fd4af42deb715241821145ec847b58016441da9b0e35ef6908",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에브라임이 게셀에 거한 가나안 사람을 쫓아내지 못하매 가나안 사람이 게셀에서 그들 중에 거하였더라"
+      ],
+      "raw_text_hashes": [
+        "1c6e93c3e50d52fd4af42deb715241821145ec847b58016441da9b0e35ef6908"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:1:30",
+      "sequence": 6540,
+      "chapter_label": "JDG 1",
+      "verse_label": "30",
+      "locator": {
+        "book": "JDG",
+        "chapter": 1,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 1,
+          "verse": 30
+        }
+      ],
+      "en": "Zebulun didn’t drive out the inhabitants of Kitron, nor the inhabitants of Nahalol; but the Canaanites lived among them, and became subject to forced labor.",
+      "ko": "스불론은 기드론 거민과 나할롤 거민을 쫓아내지 못하였으나 가나안 사람이 그들 중에 거하여 사역을 하였더라",
+      "source_text_hash": "738440da86070e024f9b9cf1654022ba8c73a532435928f0c22b06e8e5ae8398",
+      "translation_text_hash": "2ffbbaccb1d9b594f506afa308651845deea376a08e9e2bc4a03aeb6f5d04d9f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "스불론은 기드론 거민과 나할롤 거민을 쫓아내지 못하였으나 가나안 사람이 그들 중에 거하여 사역을 하였더라"
+      ],
+      "raw_text_hashes": [
+        "2ffbbaccb1d9b594f506afa308651845deea376a08e9e2bc4a03aeb6f5d04d9f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:1:31",
+      "sequence": 6541,
+      "chapter_label": "JDG 1",
+      "verse_label": "31",
+      "locator": {
+        "book": "JDG",
+        "chapter": 1,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 1,
+          "verse": 31
+        }
+      ],
+      "en": "Asher didn’t drive out the inhabitants of Acco, nor the inhabitants of Sidon, nor of Ahlab, nor of Achzib, nor of Helbah, nor of Aphik, nor of Rehob;",
+      "ko": "아셀이 악고 거민과 시돈 거민과 알랍과 악십과 헬바와 아빅과 르홉 거민을 쫓아내지 못하고",
+      "source_text_hash": "1c97ed45290ca4551dc40c16942e9f1e3001d1c27935e965693c67639b926af9",
+      "translation_text_hash": "52cedb79113c81cdfd25c693f1c9ec17b96b9c2a88f65503f7e5c51e07d268ec",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아셀이 악고 거민과 시돈 거민과 알랍과 악십과 헬바와 아빅과 르홉 거민을 쫓아내지 못하고"
+      ],
+      "raw_text_hashes": [
+        "52cedb79113c81cdfd25c693f1c9ec17b96b9c2a88f65503f7e5c51e07d268ec"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:1:32",
+      "sequence": 6542,
+      "chapter_label": "JDG 1",
+      "verse_label": "32",
+      "locator": {
+        "book": "JDG",
+        "chapter": 1,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 1,
+          "verse": 32
+        }
+      ],
+      "en": "but the Asherites lived among the Canaanites, the inhabitants of the land, for they didn’t drive them out.",
+      "ko": "그 땅 거민 가나안 사람 가운데 거하였으니 이는 쫓아내지 못함이었더라",
+      "source_text_hash": "5f085bf86a135523ae2d330ac6d47dcbbdfb40210ac51f579105a811c2df3ca3",
+      "translation_text_hash": "13a0a3842a1eca47d25a637fff39410986949ebc7dde6cb1cc9188b6cfd19647",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 땅 거민 가나안 사람 가운데 거하였으니 이는 쫓아내지 못함이었더라"
+      ],
+      "raw_text_hashes": [
+        "13a0a3842a1eca47d25a637fff39410986949ebc7dde6cb1cc9188b6cfd19647"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:1:33",
+      "sequence": 6543,
+      "chapter_label": "JDG 1",
+      "verse_label": "33",
+      "locator": {
+        "book": "JDG",
+        "chapter": 1,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 1,
+          "verse": 33
+        }
+      ],
+      "en": "Naphtali didn’t drive out the inhabitants of Beth Shemesh, nor the inhabitants of Beth Anath; but he lived among the Canaanites, the inhabitants of the land. Nevertheless the inhabitants of Beth Shemesh and of Beth Anath became subject to forced labor.",
+      "ko": "납달리가 벧세메스 거민과 벧아낫 거민을 쫓아내지 못하고 그 땅 거민 가나안 사람 가운데 거하였으나 벧세메스와 벧아낫 거민들이 그들에게 사역을 하였더라",
+      "source_text_hash": "96d6a106575837884c9680bb63e82b8bc3b67a1bffce1164b3e03a3232506d0e",
+      "translation_text_hash": "e414f351367e483ba0b0ea80a3edc3c3fb7bf59c8c205e5da617b8be6dd3f90f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "납달리가 벧세메스 거민과 벧아낫 거민을 쫓아내지 못하고 그 땅 거민 가나안 사람 가운데 거하였으나 벧세메스와 벧아낫 거민들이 그들에게 사역을 하였더라"
+      ],
+      "raw_text_hashes": [
+        "e414f351367e483ba0b0ea80a3edc3c3fb7bf59c8c205e5da617b8be6dd3f90f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:1:34",
+      "sequence": 6544,
+      "chapter_label": "JDG 1",
+      "verse_label": "34",
+      "locator": {
+        "book": "JDG",
+        "chapter": 1,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 1,
+          "verse": 34
+        }
+      ],
+      "en": "The Amorites forced the children of Dan into the hill country, for they would not allow them to come down to the valley;",
+      "ko": "아모리 사람이 단 자손을 산지로 쫓아들이고 골짜기에 내려오기를 용납지 아니하고",
+      "source_text_hash": "70801914bb3debb3c565db6cb52db9c0a686b5171b8170225d953d0a67033c2d",
+      "translation_text_hash": "c98d4052641ac313885b5cc604d6e8727dbca7c963dc9468747292c59ea84de9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아모리 사람이 단 자손을 산지로 쫓아들이고 골짜기에 내려오기를 용납지 아니하고"
+      ],
+      "raw_text_hashes": [
+        "c98d4052641ac313885b5cc604d6e8727dbca7c963dc9468747292c59ea84de9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:1:35",
+      "sequence": 6545,
+      "chapter_label": "JDG 1",
+      "verse_label": "35",
+      "locator": {
+        "book": "JDG",
+        "chapter": 1,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 1,
+          "verse": 35
+        }
+      ],
+      "en": "but the Amorites would dwell in Mount Heres, in Aijalon, and in Shaalbim. Yet the hand of the house of Joseph prevailed, so that they became subject to forced labor.",
+      "ko": "결심하고 헤레스산과 아얄론과 사알빔에 거하였더니 요셉 족속이 강성하매 아모리 사람이 필경은 사역을 하였으며",
+      "source_text_hash": "53232b73e314c475bbee096c7107747770ca409b27f1bd6e776a781aa0633045",
+      "translation_text_hash": "d42fc4174a2d3dcffe6fae048a72c3f5f350e15ace585b3a88997dd0073373e4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "결심하고 헤레스산과 아얄론과 사알빔에 거하였더니 요셉 족속이 강성하매 아모리 사람이 필경은 사역을 하였으며"
+      ],
+      "raw_text_hashes": [
+        "d42fc4174a2d3dcffe6fae048a72c3f5f350e15ace585b3a88997dd0073373e4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:1:36",
+      "sequence": 6546,
+      "chapter_label": "JDG 1",
+      "verse_label": "36",
+      "locator": {
+        "book": "JDG",
+        "chapter": 1,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 1,
+          "verse": 36
+        }
+      ],
+      "en": "The border of the Amorites was from the ascent of Akrabbim, from the rock, and upward.",
+      "ko": "아모리 사람의 지계는 아그랍빔 비탈의 바위부터 그 위였더라",
+      "source_text_hash": "58567ac7e9f78d256e277ef04fee89a526ab49d5ab8e63e7043c67c1d2edaad5",
+      "translation_text_hash": "79b49926374686b638c42e228e64b368c1400f422e0191c6315000eeb6237d1e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아모리 사람의 지계는 아그랍빔 비탈의 바위부터 그 위였더라"
+      ],
+      "raw_text_hashes": [
+        "79b49926374686b638c42e228e64b368c1400f422e0191c6315000eeb6237d1e"
+      ]
+    }
+  ]
+}

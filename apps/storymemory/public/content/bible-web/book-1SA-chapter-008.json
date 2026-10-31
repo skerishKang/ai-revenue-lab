@@ -1,0 +1,717 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1SA:chapter:008",
+  "unit_ordinal": 244,
+  "unit_label": "1SA 8",
+  "book_code": "1SA",
+  "chapter_number": 8,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1SA:8:1",
+      "sequence": 7371,
+      "chapter_label": "1SA 8",
+      "verse_label": "1",
+      "locator": {
+        "book": "1SA",
+        "chapter": 8,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 8,
+          "verse": 1
+        }
+      ],
+      "en": "When Samuel was old, he made his sons judges over Israel.",
+      "ko": "사무엘이 늙으매 그 아들들로 이스라엘 사사를 삼으니",
+      "source_text_hash": "55d804f802f1b3ea210a09cf79c8bb72e708f91be2950cd869c44a897fef3577",
+      "translation_text_hash": "6af6a62d3dfdf1142988d3896bb61cb316f982f327810283c8b7970521bb0471",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사무엘이 늙으매 그 아들들로 이스라엘 사사를 삼으니"
+      ],
+      "raw_text_hashes": [
+        "6af6a62d3dfdf1142988d3896bb61cb316f982f327810283c8b7970521bb0471"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:8:2",
+      "sequence": 7372,
+      "chapter_label": "1SA 8",
+      "verse_label": "2",
+      "locator": {
+        "book": "1SA",
+        "chapter": 8,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 8,
+          "verse": 2
+        }
+      ],
+      "en": "Now the name of his firstborn was Joel, and the name of his second, Abijah. They were judges in Beersheba.",
+      "ko": "장자의 이름은 요엘이요 차자의 이름은 아비야라 그들이 브엘세바에서 사사가 되니라",
+      "source_text_hash": "bca43a4077a6ca47a7bd375edcb1776465b8e3752845cc5d8b99b229456945ff",
+      "translation_text_hash": "77d5cced4bf0209ddab51f89c9d50ff848e28f681a6e7c5708e6a0c78a6c9d8c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "장자의 이름은 요엘이요 차자의 이름은 아비야라 그들이 브엘세바에서 사사가 되니라"
+      ],
+      "raw_text_hashes": [
+        "77d5cced4bf0209ddab51f89c9d50ff848e28f681a6e7c5708e6a0c78a6c9d8c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:8:3",
+      "sequence": 7373,
+      "chapter_label": "1SA 8",
+      "verse_label": "3",
+      "locator": {
+        "book": "1SA",
+        "chapter": 8,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 8,
+          "verse": 3
+        }
+      ],
+      "en": "His sons didn’t walk in his ways, but turned away after dishonest gain, took bribes, and perverted justice.",
+      "ko": "그 아들들이 그 아비의 행위를 따르지 아니하고 이를 따라서 뇌물을 취하고 판결을 굽게 하니라",
+      "source_text_hash": "0a3fd9ecf1b2ee3ce9e530921d2b365733262948fce5aee4a26b1ad402dbb826",
+      "translation_text_hash": "83e86ae08014e3cacf023084133f63e2f21a9a24df853e268afcca8e618c9b5b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 아들들이 그 아비의 행위를 따르지 아니하고 이를 따라서 뇌물을 취하고 판결을 굽게 하니라"
+      ],
+      "raw_text_hashes": [
+        "83e86ae08014e3cacf023084133f63e2f21a9a24df853e268afcca8e618c9b5b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:8:4",
+      "sequence": 7374,
+      "chapter_label": "1SA 8",
+      "verse_label": "4",
+      "locator": {
+        "book": "1SA",
+        "chapter": 8,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 8,
+          "verse": 4
+        }
+      ],
+      "en": "Then all the elders of Israel gathered themselves together and came to Samuel to Ramah.",
+      "ko": "이스라엘 모든 장로가 모여 라마에 있는 사무엘에게 나아가서",
+      "source_text_hash": "1a118ebc62bfe1f79cd6883b362d25d65a5adbdb8094862058288edc7a164573",
+      "translation_text_hash": "279d8fdbfbc024f3dc41560c68aea2901ba3c37c57ceda4f28f845f6adaf3d8c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 모든 장로가 모여 라마에 있는 사무엘에게 나아가서"
+      ],
+      "raw_text_hashes": [
+        "279d8fdbfbc024f3dc41560c68aea2901ba3c37c57ceda4f28f845f6adaf3d8c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:8:5",
+      "sequence": 7375,
+      "chapter_label": "1SA 8",
+      "verse_label": "5",
+      "locator": {
+        "book": "1SA",
+        "chapter": 8,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 8,
+          "verse": 5
+        }
+      ],
+      "en": "They said to him, “Behold, you are old, and your sons don’t walk in your ways. Now make us a king to judge us like all the nations.”",
+      "ko": "그에게 이르되 보소서 당신은 늙고 당신의 아들들은 당신의 행위를 따르지 아니하니 열방과 같이 우리에게 왕을 세워 우리를 다스리게 하소서 한지라",
+      "source_text_hash": "f6573fc535bce4e02de80ad898ce9a1c6dd6f02165de96d03e2b8b220f90acae",
+      "translation_text_hash": "bd044283bace1246fbabae465ccd4e578061cca46bc174e8dae8bb14ea27fb69",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그에게 이르되 보소서 당신은 늙고 당신의 아들들은 당신의 행위를 따르지 아니하니 열방과 같이 우리에게 왕을 세워 우리를 다스리게 하소서 한지라"
+      ],
+      "raw_text_hashes": [
+        "bd044283bace1246fbabae465ccd4e578061cca46bc174e8dae8bb14ea27fb69"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:8:6",
+      "sequence": 7376,
+      "chapter_label": "1SA 8",
+      "verse_label": "6",
+      "locator": {
+        "book": "1SA",
+        "chapter": 8,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 8,
+          "verse": 6
+        }
+      ],
+      "en": "But the thing displeased Samuel when they said, “Give us a king to judge us.” Samuel prayed to the LORD.",
+      "ko": "우리에게 왕을 주어 우리를 다스리게 하라 한 그것을 사무엘이 기뻐하지 아니하여 여호와께 기도하매",
+      "source_text_hash": "9f4c8ad00acaf1375eb0498feb29d2a4da7b631d63de08f8bc3d43a614ccac76",
+      "translation_text_hash": "9aa98ef3700a28272a1b8edb1bf23b9a82d71750cfd1af926b2580583f466c01",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리에게 왕을 주어 우리를 다스리게 하라 한 그것을 사무엘이 기뻐하지 아니하여 여호와께 기도하매"
+      ],
+      "raw_text_hashes": [
+        "9aa98ef3700a28272a1b8edb1bf23b9a82d71750cfd1af926b2580583f466c01"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:8:7",
+      "sequence": 7377,
+      "chapter_label": "1SA 8",
+      "verse_label": "7",
+      "locator": {
+        "book": "1SA",
+        "chapter": 8,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 8,
+          "verse": 7
+        }
+      ],
+      "en": "The LORD said to Samuel, “Listen to the voice of the people in all that they tell you; for they have not rejected you, but they have rejected me as the king over them.",
+      "ko": "여호와께서 사무엘에게 이르시되 백성이 네게 한 말을 다 들으라 그들이 너를 버림이 아니요 나를 버려 자기들의 왕이 되지 못하게 함이니라",
+      "source_text_hash": "335f178091bfb9eba3ac379cd585076a65edd92858313c26a17422a01d4074cb",
+      "translation_text_hash": "7855caae730a49d24eeb46323254b5d44992ca1ec0f68b16e7956d1ea27d90c6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 사무엘에게 이르시되 백성이 네게 한 말을 다 들으라 그들이 너를 버림이 아니요 나를 버려 자기들의 왕이 되지 못하게 함이니라"
+      ],
+      "raw_text_hashes": [
+        "7855caae730a49d24eeb46323254b5d44992ca1ec0f68b16e7956d1ea27d90c6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:8:8",
+      "sequence": 7378,
+      "chapter_label": "1SA 8",
+      "verse_label": "8",
+      "locator": {
+        "book": "1SA",
+        "chapter": 8,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 8,
+          "verse": 8
+        }
+      ],
+      "en": "According to all the works which they have done since the day that I brought them up out of Egypt even to this day, in that they have forsaken me and served other gods, so they also do to you.",
+      "ko": "내가 그들을 애굽에서 인도하여 낸 날부터 오늘날까지 그들이 모든 행사로 나를 버리고 다른 신들을 섬김 같이 네게도 그리하는도다",
+      "source_text_hash": "22f8b8abe6c6a1905bc3cca31b9fbcbdedb81c132160c1ed9040acd14f313152",
+      "translation_text_hash": "dbf74a450bfa97d46d29ad18726211c6084202a1bf24bc8f132e74d7925db3e4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 그들을 애굽에서 인도하여 낸 날부터 오늘날까지 그들이 모든 행사로 나를 버리고 다른 신들을 섬김 같이 네게도 그리하는도다"
+      ],
+      "raw_text_hashes": [
+        "dbf74a450bfa97d46d29ad18726211c6084202a1bf24bc8f132e74d7925db3e4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:8:9",
+      "sequence": 7379,
+      "chapter_label": "1SA 8",
+      "verse_label": "9",
+      "locator": {
+        "book": "1SA",
+        "chapter": 8,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 8,
+          "verse": 9
+        }
+      ],
+      "en": "Now therefore, listen to their voice. However, you shall protest solemnly to them, and shall show them the way of the king who will reign over them.”",
+      "ko": "그러므로 그들의 말을 듣되 너는 그들에게 엄히 경계하고 그들을 다스릴 왕의 제도를 알게 하라",
+      "source_text_hash": "200960866b9fc37a298db8fa3da21f26f1254d214ad9a6874009b26df18240c5",
+      "translation_text_hash": "947a3e7774ac66e7b60052e6d58e96c10bdaad305799c6dc49619ec6351d66c7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 그들의 말을 듣되 너는 그들에게 엄히 경계하고 그들을 다스릴 왕의 제도를 알게 하라"
+      ],
+      "raw_text_hashes": [
+        "947a3e7774ac66e7b60052e6d58e96c10bdaad305799c6dc49619ec6351d66c7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:8:10",
+      "sequence": 7380,
+      "chapter_label": "1SA 8",
+      "verse_label": "10",
+      "locator": {
+        "book": "1SA",
+        "chapter": 8,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 8,
+          "verse": 10
+        }
+      ],
+      "en": "Samuel told all the LORD’s words to the people who asked him for a king.",
+      "ko": "사무엘이 왕을 구하는 백성에게 여호와의 모든 말씀을 일러",
+      "source_text_hash": "c8da5adfc5951c8bfdea024cb0d927ea780abbf095caabfdbb772ea9bbbf3aae",
+      "translation_text_hash": "5612f30102987dd6bff7a6a95fd27f548ae8e5ae6e421fddbe7dc8a1a83a2038",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사무엘이 왕을 구하는 백성에게 여호와의 모든 말씀을 일러"
+      ],
+      "raw_text_hashes": [
+        "5612f30102987dd6bff7a6a95fd27f548ae8e5ae6e421fddbe7dc8a1a83a2038"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:8:11",
+      "sequence": 7381,
+      "chapter_label": "1SA 8",
+      "verse_label": "11",
+      "locator": {
+        "book": "1SA",
+        "chapter": 8,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 8,
+          "verse": 11
+        }
+      ],
+      "en": "He said, “This will be the way of the king who shall reign over you: he will take your sons and appoint them as his servants, for his chariots and to be his horsemen; and they will run before his chariots.",
+      "ko": "가로되 너희를 다스릴 왕의 제도가 이러하니라 그가 너희 아들들을 취하여 그 병거와 말을 어거케 하리니 그들이 그 병거 앞에서 달릴 것이며",
+      "source_text_hash": "c04c0b61a7a649a6ea298cba043437dc13312d90de1c5067469b6a65f2a7b4ee",
+      "translation_text_hash": "22c3e2f3178fbbb25e84dca9731dac7d0748b202b90ac6aa106f53f7eac6ef15",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 너희를 다스릴 왕의 제도가 이러하니라 그가 너희 아들들을 취하여 그 병거와 말을 어거케 하리니 그들이 그 병거 앞에서 달릴 것이며"
+      ],
+      "raw_text_hashes": [
+        "22c3e2f3178fbbb25e84dca9731dac7d0748b202b90ac6aa106f53f7eac6ef15"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:8:12",
+      "sequence": 7382,
+      "chapter_label": "1SA 8",
+      "verse_label": "12",
+      "locator": {
+        "book": "1SA",
+        "chapter": 8,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 8,
+          "verse": 12
+        }
+      ],
+      "en": "He will appoint them to him for captains of thousands and captains of fifties; and he will assign some to plow his ground and to reap his harvest; and to make his instruments of war and the instruments of his chariots.",
+      "ko": "그가 또 너희 아들들로 천부장과 오십부장을 삼을 것이며 자기 밭을 갈게 하고 자기 추수를 하게 할 것이며 자기 병기와 병거의 제구를 만들게 할 것이며",
+      "source_text_hash": "4f4f25523cd571ae633b567b8ac90f7935f2d573f5b45ca7227064ac4c00c9b9",
+      "translation_text_hash": "e0a92b311c85eb4688a028ee5bc7ced5a2780aa87bc700d257288ea8dcd9ffd3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 또 너희 아들들로 천부장과 오십부장을 삼을 것이며 자기 밭을 갈게 하고 자기 추수를 하게 할 것이며 자기 병기와 병거의 제구를 만들게 할 것이며"
+      ],
+      "raw_text_hashes": [
+        "e0a92b311c85eb4688a028ee5bc7ced5a2780aa87bc700d257288ea8dcd9ffd3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:8:13",
+      "sequence": 7383,
+      "chapter_label": "1SA 8",
+      "verse_label": "13",
+      "locator": {
+        "book": "1SA",
+        "chapter": 8,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 8,
+          "verse": 13
+        }
+      ],
+      "en": "He will take your daughters to be perfumers, to be cooks, and to be bakers.",
+      "ko": "그가 또 너희 딸들을 취하여 향료 만드는 자와 요리하는 자와 떡 굽는 자를 삼을 것이며",
+      "source_text_hash": "a9a5021aa44bf34f1e2e94b3f6c09a146553cee91c2b75eaeb28ff3a362b93cb",
+      "translation_text_hash": "7671e8eb36a5e10653fb0e978281c878c17933c66e989d814c0fc21917c4e9ab",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 또 너희 딸들을 취하여 향료 만드는 자와 요리하는 자와 떡 굽는 자를 삼을 것이며"
+      ],
+      "raw_text_hashes": [
+        "7671e8eb36a5e10653fb0e978281c878c17933c66e989d814c0fc21917c4e9ab"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:8:14",
+      "sequence": 7384,
+      "chapter_label": "1SA 8",
+      "verse_label": "14",
+      "locator": {
+        "book": "1SA",
+        "chapter": 8,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 8,
+          "verse": 14
+        }
+      ],
+      "en": "He will take your fields, your vineyards, and your olive groves, even your best, and give them to his servants.",
+      "ko": "그가 또 너희 밭과 포도원과 감람원의 제일 좋은 것을 취하여 자기 신하들에게 줄 것이며",
+      "source_text_hash": "e097e7178502aae1c70ca646de6e8dc327770bc779789dac01b92c2143057759",
+      "translation_text_hash": "925cb791aad7308de4bff8f8b91d8770aa5e7c09e8f8a3c49023f9042525144b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 또 너희 밭과 포도원과 감람원의 제일 좋은 것을 취하여 자기 신하들에게 줄 것이며"
+      ],
+      "raw_text_hashes": [
+        "925cb791aad7308de4bff8f8b91d8770aa5e7c09e8f8a3c49023f9042525144b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:8:15",
+      "sequence": 7385,
+      "chapter_label": "1SA 8",
+      "verse_label": "15",
+      "locator": {
+        "book": "1SA",
+        "chapter": 8,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 8,
+          "verse": 15
+        }
+      ],
+      "en": "He will take one tenth of your seed and of your vineyards, and give it to his officers and to his servants.",
+      "ko": "그가 또 너희 곡식과 포도원 소산의 십일조를 취하여 자기 관리와 신하에게 줄 것이며",
+      "source_text_hash": "6d0d3537c4d29f8bf8d0646a6dd892a2691d5e0621a903f1025127ac3307bbb6",
+      "translation_text_hash": "88728298e0e5089f0ebac69d5237240c9ff845eef012b7ff1c3d08b40f851efc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 또 너희 곡식과 포도원 소산의 십일조를 취하여 자기 관리와 신하에게 줄 것이며"
+      ],
+      "raw_text_hashes": [
+        "88728298e0e5089f0ebac69d5237240c9ff845eef012b7ff1c3d08b40f851efc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:8:16",
+      "sequence": 7386,
+      "chapter_label": "1SA 8",
+      "verse_label": "16",
+      "locator": {
+        "book": "1SA",
+        "chapter": 8,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 8,
+          "verse": 16
+        }
+      ],
+      "en": "He will take your male servants, your female servants, your best young men, and your donkeys, and assign them to his own work.",
+      "ko": "그가 또 너희 노비와 가장 아름다운 소년과 나귀들을 취하여 자기 일을 시킬 것이며",
+      "source_text_hash": "ec9611b321f0fbb56aef2737e27029c25e21bb7722d283d7e33dfbae8ef927cd",
+      "translation_text_hash": "6e1e4e27cae99b498a242743b203edd88e92d84ef44de62567c572b57b3e05e9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 또 너희 노비와 가장 아름다운 소년과 나귀들을 취하여 자기 일을 시킬 것이며"
+      ],
+      "raw_text_hashes": [
+        "6e1e4e27cae99b498a242743b203edd88e92d84ef44de62567c572b57b3e05e9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:8:17",
+      "sequence": 7387,
+      "chapter_label": "1SA 8",
+      "verse_label": "17",
+      "locator": {
+        "book": "1SA",
+        "chapter": 8,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 8,
+          "verse": 17
+        }
+      ],
+      "en": "He will take one tenth of your flocks; and you will be his servants.",
+      "ko": "너희 양떼의 십분 일을 취하리니 너희가 그 종이 될 것이라",
+      "source_text_hash": "565a41b4a3fdc4ecbee768832e594bf4ea9f5b622bb8329e55049c28fab6025f",
+      "translation_text_hash": "6b7473e1be559ffe76deac8516b003926b3d08a77e54812d4da1dde93181fd81",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 양떼의 십분 일을 취하리니 너희가 그 종이 될 것이라"
+      ],
+      "raw_text_hashes": [
+        "6b7473e1be559ffe76deac8516b003926b3d08a77e54812d4da1dde93181fd81"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:8:18",
+      "sequence": 7388,
+      "chapter_label": "1SA 8",
+      "verse_label": "18",
+      "locator": {
+        "book": "1SA",
+        "chapter": 8,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 8,
+          "verse": 18
+        }
+      ],
+      "en": "You will cry out in that day because of your king whom you will have chosen for yourselves; and the LORD will not answer you in that day.”",
+      "ko": "그 날에 너희가 너희 택한 왕을 인하여 부르짖되 그 날에 여호와께서 너희에게 응답지 아니하시리라",
+      "source_text_hash": "b67bdb10332db07e2eadb97bf28f592d1f08f718b09ec0cc14ad89df82ae7b8f",
+      "translation_text_hash": "c7144b0d7e4a192686e7ac0bc02e5aed160bb35a91ce67cf6a9af86a83bcbcc2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날에 너희가 너희 택한 왕을 인하여 부르짖되 그 날에 여호와께서 너희에게 응답지 아니하시리라"
+      ],
+      "raw_text_hashes": [
+        "c7144b0d7e4a192686e7ac0bc02e5aed160bb35a91ce67cf6a9af86a83bcbcc2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:8:19",
+      "sequence": 7389,
+      "chapter_label": "1SA 8",
+      "verse_label": "19",
+      "locator": {
+        "book": "1SA",
+        "chapter": 8,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 8,
+          "verse": 19
+        }
+      ],
+      "en": "But the people refused to listen to the voice of Samuel; and they said, “No, but we will have a king over us,",
+      "ko": "백성이 사무엘의 말 듣기를 거절하여 가로되 아니로소이다 우리도 우리 왕이 있어야 하리니",
+      "source_text_hash": "8bc604e98f6d156dc69447c327d9dbeb0096dae756923e34891836b421edc777",
+      "translation_text_hash": "0ead2e61a7f74beba6228139fbea4f84b1a4e3c86d8c2a1b48b1ea015732596e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "백성이 사무엘의 말 듣기를 거절하여 가로되 아니로소이다 우리도 우리 왕이 있어야 하리니"
+      ],
+      "raw_text_hashes": [
+        "0ead2e61a7f74beba6228139fbea4f84b1a4e3c86d8c2a1b48b1ea015732596e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:8:20",
+      "sequence": 7390,
+      "chapter_label": "1SA 8",
+      "verse_label": "20",
+      "locator": {
+        "book": "1SA",
+        "chapter": 8,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 8,
+          "verse": 20
+        }
+      ],
+      "en": "that we also may be like all the nations; and that our king may judge us, and go out before us, and fight our battles.”",
+      "ko": "우리도 열방과 같이 되어 우리 왕이 우리를 다스리며 우리 앞에 나가서 우리의 싸움을 싸워야 할 것이니이다",
+      "source_text_hash": "2b272bd04096278014bd49c75903ed278f703c71d34da781b578cf45edf72a9c",
+      "translation_text_hash": "bb0cb7750f528d8b8387175dfff3a919487f7fe80b7924c4d782f146b269055a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리도 열방과 같이 되어 우리 왕이 우리를 다스리며 우리 앞에 나가서 우리의 싸움을 싸워야 할 것이니이다"
+      ],
+      "raw_text_hashes": [
+        "bb0cb7750f528d8b8387175dfff3a919487f7fe80b7924c4d782f146b269055a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:8:21",
+      "sequence": 7391,
+      "chapter_label": "1SA 8",
+      "verse_label": "21",
+      "locator": {
+        "book": "1SA",
+        "chapter": 8,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 8,
+          "verse": 21
+        }
+      ],
+      "en": "Samuel heard all the words of the people, and he rehearsed them in the ears of the LORD.",
+      "ko": "사무엘이 백성의 모든 말을 듣고 여호와께 고하매",
+      "source_text_hash": "5d1b6d201ed2c67bf84cf3cd1cdf72f0a17dbf01e62e54a34a96ded7ba63b289",
+      "translation_text_hash": "4f0a55177ca6ba28d37794d14b1ec0c06fd60aa0f5e0cd005814eb8efc50f129",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사무엘이 백성의 모든 말을 듣고 여호와께 고하매"
+      ],
+      "raw_text_hashes": [
+        "4f0a55177ca6ba28d37794d14b1ec0c06fd60aa0f5e0cd005814eb8efc50f129"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:8:22",
+      "sequence": 7392,
+      "chapter_label": "1SA 8",
+      "verse_label": "22",
+      "locator": {
+        "book": "1SA",
+        "chapter": 8,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 8,
+          "verse": 22
+        }
+      ],
+      "en": "The LORD said to Samuel, “Listen to their voice, and make them a king.” Samuel said to the men of Israel, “Everyone go to your own city.”",
+      "ko": "여호와께서 사무엘에게 이르시되 그들의 말을 들어 왕을 세우라 하시니 사무엘이 이스라엘 사람들에게 이르되 너희는 각기 성읍으로 돌아가라 하니라",
+      "source_text_hash": "affb6c44b8b04fd48560b14ae595f181bb3c7c7c5043ae0d4e09a87031d8702a",
+      "translation_text_hash": "593f26a4b3dd47412bc8cb8d7407b8b4015e000020e27acdaeb1f9d907339626",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 사무엘에게 이르시되 그들의 말을 들어 왕을 세우라 하시니 사무엘이 이스라엘 사람들에게 이르되 너희는 각기 성읍으로 돌아가라 하니라"
+      ],
+      "raw_text_hashes": [
+        "593f26a4b3dd47412bc8cb8d7407b8b4015e000020e27acdaeb1f9d907339626"
+      ]
+    }
+  ]
+}

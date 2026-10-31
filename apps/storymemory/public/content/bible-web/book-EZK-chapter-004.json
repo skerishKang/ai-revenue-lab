@@ -1,0 +1,557 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EZK:chapter:004",
+  "unit_ordinal": 806,
+  "unit_label": "EZK 4",
+  "book_code": "EZK",
+  "chapter_number": 4,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EZK:4:1",
+      "sequence": 20531,
+      "chapter_label": "EZK 4",
+      "verse_label": "1",
+      "locator": {
+        "book": "EZK",
+        "chapter": 4,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 4,
+          "verse": 1
+        }
+      ],
+      "en": "“You also, son of man, take a tile, and lay it before yourself, and portray on it a city, even Jerusalem.",
+      "ko": "너 인자야 박석을 가져다가 네 앞에 놓고 한 성읍 곧 예루살렘을 그 위에 그리고",
+      "source_text_hash": "17c07fd4ba56c18ba0d8741006041fcdfed41553e779c203eefd59965405e171",
+      "translation_text_hash": "045f508d3dca10fefb93df0063caf1dddfd78ae2ddcb6e59d3ff6e2ae9f9e62b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너 인자야 박석을 가져다가 네 앞에 놓고 한 성읍 곧 예루살렘을 그 위에 그리고"
+      ],
+      "raw_text_hashes": [
+        "045f508d3dca10fefb93df0063caf1dddfd78ae2ddcb6e59d3ff6e2ae9f9e62b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:4:2",
+      "sequence": 20532,
+      "chapter_label": "EZK 4",
+      "verse_label": "2",
+      "locator": {
+        "book": "EZK",
+        "chapter": 4,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 4,
+          "verse": 2
+        }
+      ],
+      "en": "Lay siege against it, build forts against it, and cast up a mound against it. Also set camps against it and plant battering rams against it all around.",
+      "ko": "그 성읍을 에워싸되 운제를 세우고 토둔을 쌓고 진을 치고 공성퇴를 둘러 세우고",
+      "source_text_hash": "dfe128c20de5e6e826ac3c0da2cb0b75806ea5a6b52682a0d9c7e6e5079d3ca6",
+      "translation_text_hash": "b7982373d2d9804df76cef1e0c5dc53a197ddf1a8f0aeb458f4dacb23a9aee13",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 성읍을 에워싸되 운제를 세우고 토둔을 쌓고 진을 치고 공성퇴를 둘러 세우고"
+      ],
+      "raw_text_hashes": [
+        "b7982373d2d9804df76cef1e0c5dc53a197ddf1a8f0aeb458f4dacb23a9aee13"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:4:3",
+      "sequence": 20533,
+      "chapter_label": "EZK 4",
+      "verse_label": "3",
+      "locator": {
+        "book": "EZK",
+        "chapter": 4,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 4,
+          "verse": 3
+        }
+      ],
+      "en": "Take for yourself an iron pan and set it for a wall of iron between you and the city. Then set your face toward it. It will be besieged, and you shall lay siege against it. This shall be a sign to the house of Israel.",
+      "ko": "또 전철을 가져다가 너와 성읍 사이에 두어 철성을 삼고 성을 향하여 에워싸는 것처럼 에워싸라 이것이 이스라엘 족속에게 징조가 되리라",
+      "source_text_hash": "fcf2d24a4038157c720184d6123f1edf5e36b2ad6b24045022f8e72680471023",
+      "translation_text_hash": "8475c97f9ac983f0877db89d0a497b1e2f1c19b95c4cd2833e11d32decf82d6f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 전철을 가져다가 너와 성읍 사이에 두어 철성을 삼고 성을 향하여 에워싸는 것처럼 에워싸라 이것이 이스라엘 족속에게 징조가 되리라"
+      ],
+      "raw_text_hashes": [
+        "8475c97f9ac983f0877db89d0a497b1e2f1c19b95c4cd2833e11d32decf82d6f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:4:4",
+      "sequence": 20534,
+      "chapter_label": "EZK 4",
+      "verse_label": "4",
+      "locator": {
+        "book": "EZK",
+        "chapter": 4,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 4,
+          "verse": 4
+        }
+      ],
+      "en": "“Moreover lie on your left side, and lay the iniquity of the house of Israel on it. According to the number of the days that you shall lie on it, you shall bear their iniquity.",
+      "ko": "너는 또 좌편으로 누워 이스라엘 족속의 죄악을 당하되 네 눕는 날수대로 그 죄악을 담당할찌니라",
+      "source_text_hash": "86fbef56ae3db0f513feff58a6d004cf4fc26e5f5ca20eb75788305c6ad016ef",
+      "translation_text_hash": "848e90858f444205f4fcad5a623cd13b0e97ae95c924cad35e99d195b27b32f2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 또 좌편으로 누워 이스라엘 족속의 죄악을 당하되 네 눕는 날수대로 그 죄악을 담당할찌니라"
+      ],
+      "raw_text_hashes": [
+        "848e90858f444205f4fcad5a623cd13b0e97ae95c924cad35e99d195b27b32f2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:4:5",
+      "sequence": 20535,
+      "chapter_label": "EZK 4",
+      "verse_label": "5",
+      "locator": {
+        "book": "EZK",
+        "chapter": 4,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 4,
+          "verse": 5
+        }
+      ],
+      "en": "For I have appointed the years of their iniquity to be to you a number of days, even three hundred ninety days. So you shall bear the iniquity of the house of Israel.",
+      "ko": "내가 그들의 범죄한 햇수대로 네게 날수를 정하였나니 곧 삼백 구십일이니라 너는 이렇게 이스라엘 족속의 죄악을 담당하고",
+      "source_text_hash": "87bae6115180ca5100944d3e7cf06ddd2ea2d5cf5fbcd5c77324c39a281eb09f",
+      "translation_text_hash": "393d954d3b1de4414a28d878f503a8f7ed8b5a45281b720fb72c714cda878578",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 그들의 범죄한 햇수대로 네게 날수를 정하였나니 곧 삼백 구십일이니라 너는 이렇게 이스라엘 족속의 죄악을 담당하고"
+      ],
+      "raw_text_hashes": [
+        "393d954d3b1de4414a28d878f503a8f7ed8b5a45281b720fb72c714cda878578"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:4:6",
+      "sequence": 20536,
+      "chapter_label": "EZK 4",
+      "verse_label": "6",
+      "locator": {
+        "book": "EZK",
+        "chapter": 4,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 4,
+          "verse": 6
+        }
+      ],
+      "en": "“Again, when you have accomplished these, you shall lie on your right side, and shall bear the iniquity of the house of Judah. I have appointed forty days, each day for a year, to you.",
+      "ko": "그 수가 차거든 너는 우편으로 누워 유다 족속의 죄악을 담당하라 내가 네게 사십일로 정하였나니 일일이 일년이니라",
+      "source_text_hash": "a1dd894fe3cd493811a366dc693a678dd61b6675ba8c6d24b6da9c0eb9fe1c07",
+      "translation_text_hash": "3f3afea6da58ae96ee79db605c24ce1cc39ae6fb04a413c68a8e53d0e949f8d0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 수가 차거든 너는 우편으로 누워 유다 족속의 죄악을 담당하라 내가 네게 사십일로 정하였나니 일일이 일년이니라"
+      ],
+      "raw_text_hashes": [
+        "3f3afea6da58ae96ee79db605c24ce1cc39ae6fb04a413c68a8e53d0e949f8d0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:4:7",
+      "sequence": 20537,
+      "chapter_label": "EZK 4",
+      "verse_label": "7",
+      "locator": {
+        "book": "EZK",
+        "chapter": 4,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 4,
+          "verse": 7
+        }
+      ],
+      "en": "You shall set your face toward the siege of Jerusalem, with your arm uncovered; and you shall prophesy against it.",
+      "ko": "너는 또 에워싼 예루살렘을 향하여 팔을 벗어메고 예언하라",
+      "source_text_hash": "94abf7e8c2cca7abc7fb2146e433912d08f29e1ce2ba791c4a4cb30464cf7399",
+      "translation_text_hash": "3ddd023f82c82a4e9dc2f5b0292f3f6fa8e7fe9e110770285000fcc0d9e996b7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 또 에워싼 예루살렘을 향하여 팔을 벗어메고 예언하라"
+      ],
+      "raw_text_hashes": [
+        "3ddd023f82c82a4e9dc2f5b0292f3f6fa8e7fe9e110770285000fcc0d9e996b7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:4:8",
+      "sequence": 20538,
+      "chapter_label": "EZK 4",
+      "verse_label": "8",
+      "locator": {
+        "book": "EZK",
+        "chapter": 4,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 4,
+          "verse": 8
+        }
+      ],
+      "en": "Behold, I put ropes on you, and you shall not turn yourself from one side to the other, until you have accomplished the days of your siege.",
+      "ko": "내가 줄로 너를 동이리니 네가 에워싸는 날이 맟도록 몸을 이리 저리 돌리지 못하리라",
+      "source_text_hash": "2f0b76b41fb8161f7d5b350a95d822f125943a2ef06a45d3242805b4c06448e4",
+      "translation_text_hash": "7f81320530d9d05d0c15c8a643f0cffb0b122f945b8f63510f02b8c5eefb4e09",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 줄로 너를 동이리니 네가 에워싸는 날이 맟도록 몸을 이리 저리 돌리지 못하리라"
+      ],
+      "raw_text_hashes": [
+        "7f81320530d9d05d0c15c8a643f0cffb0b122f945b8f63510f02b8c5eefb4e09"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:4:9",
+      "sequence": 20539,
+      "chapter_label": "EZK 4",
+      "verse_label": "9",
+      "locator": {
+        "book": "EZK",
+        "chapter": 4,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 4,
+          "verse": 9
+        }
+      ],
+      "en": "“Take for yourself also wheat, barley, beans, lentils, millet, and spelt, and put them in one vessel. Make bread of it. According to the number of the days that you will lie on your side, even three hundred ninety days, you shall eat of it.",
+      "ko": "너는 밀과 보리와 콩과 팥과 조와 귀리를 가져다가 한 그릇에 담고 떡을 만들어 네 모로 눕는 날수 곧 삼백 구십일에 먹되",
+      "source_text_hash": "cb66b23c7fa194b98151a79c49fbdf154e0f9d667d3d4ab8d28b234454acf013",
+      "translation_text_hash": "b086bc11d713520314fd786f5e9051b5d7c0e382ba8ba192f9a3f77df66fd6da",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 밀과 보리와 콩과 팥과 조와 귀리를 가져다가 한 그릇에 담고 떡을 만들어 네 모로 눕는 날수 곧 삼백 구십일에 먹되"
+      ],
+      "raw_text_hashes": [
+        "b086bc11d713520314fd786f5e9051b5d7c0e382ba8ba192f9a3f77df66fd6da"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:4:10",
+      "sequence": 20540,
+      "chapter_label": "EZK 4",
+      "verse_label": "10",
+      "locator": {
+        "book": "EZK",
+        "chapter": 4,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 4,
+          "verse": 10
+        }
+      ],
+      "en": "Your food which you shall eat shall be by weight, twenty shekels a day. From time to time you shall eat it.",
+      "ko": "너는 식물을 달아서 하루 이십 세겔 중씩 때를 따라 먹고",
+      "source_text_hash": "22e7c491d12afaa08847c0cc70895b327316c48013f0b7899d17c43908d752a7",
+      "translation_text_hash": "01574e4f16a92832bf7dc4d2e392f53052a864ac9cb262676fa4e8d167d504f2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 식물을 달아서 하루 이십 세겔 중씩 때를 따라 먹고"
+      ],
+      "raw_text_hashes": [
+        "01574e4f16a92832bf7dc4d2e392f53052a864ac9cb262676fa4e8d167d504f2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:4:11",
+      "sequence": 20541,
+      "chapter_label": "EZK 4",
+      "verse_label": "11",
+      "locator": {
+        "book": "EZK",
+        "chapter": 4,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 4,
+          "verse": 11
+        }
+      ],
+      "en": "You shall drink water by measure, the sixth part of a hin. From time to time you shall drink.",
+      "ko": "물도 힌 육분 일씩 되어서 때를 따라 마시라",
+      "source_text_hash": "d51695c8a4456f61947c0afbd1ffa8d477294418de547ef47aaebaf4254c7ad1",
+      "translation_text_hash": "5567c92c8913ee2b5e2cbd6456f1a8c47f38e359a56033d478ff76790c0e2660",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "물도 힌 육분 일씩 되어서 때를 따라 마시라"
+      ],
+      "raw_text_hashes": [
+        "5567c92c8913ee2b5e2cbd6456f1a8c47f38e359a56033d478ff76790c0e2660"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:4:12",
+      "sequence": 20542,
+      "chapter_label": "EZK 4",
+      "verse_label": "12",
+      "locator": {
+        "book": "EZK",
+        "chapter": 4,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 4,
+          "verse": 12
+        }
+      ],
+      "en": "You shall eat it as barley cakes, and you shall bake it in their sight with dung that comes out of man.”",
+      "ko": "너는 그것을 보리 떡처럼 만들어 먹되 그들의 목전에서 인분 불을 피워 구울찌니라",
+      "source_text_hash": "dac88f35aa696e6c45c82efc0ef1152edcac8678a0563cfe38781387cc0c264e",
+      "translation_text_hash": "9e4b0a8d5dc8d20dbb756a807391f13827c486629e52003380eb841d9bd306b8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 그것을 보리 떡처럼 만들어 먹되 그들의 목전에서 인분 불을 피워 구울찌니라"
+      ],
+      "raw_text_hashes": [
+        "9e4b0a8d5dc8d20dbb756a807391f13827c486629e52003380eb841d9bd306b8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:4:13",
+      "sequence": 20543,
+      "chapter_label": "EZK 4",
+      "verse_label": "13",
+      "locator": {
+        "book": "EZK",
+        "chapter": 4,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 4,
+          "verse": 13
+        }
+      ],
+      "en": "The LORD said, “Even thus will the children of Israel eat their bread unclean, among the nations where I will drive them.”",
+      "ko": "여호와께서 또 가라사대 내가 열국으로 쫓아 흩을 이스라엘 자손이 거기서 이와 같이 부정한 떡을 먹으리라 하시기로",
+      "source_text_hash": "af0ded6d6eb5801f44ec7daacc2b2a42f9cadcda3a4e658ca41fd0e26ded0004",
+      "translation_text_hash": "7047107d39f942a7c98f381e51adc39af86eb8dfb8192bcc597401dc1e30b2e6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 또 가라사대 내가 열국으로 쫓아 흩을 이스라엘 자손이 거기서 이와 같이 부정한 떡을 먹으리라 하시기로"
+      ],
+      "raw_text_hashes": [
+        "7047107d39f942a7c98f381e51adc39af86eb8dfb8192bcc597401dc1e30b2e6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:4:14",
+      "sequence": 20544,
+      "chapter_label": "EZK 4",
+      "verse_label": "14",
+      "locator": {
+        "book": "EZK",
+        "chapter": 4,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 4,
+          "verse": 14
+        }
+      ],
+      "en": "Then I said, “Ah Lord GOD! Behold, my soul has not been polluted; for from my youth up even until now I have not eaten of that which dies of itself, or is torn of animals. No abominable meat has come into my mouth!”",
+      "ko": "내가 가로되 오호라 주 여호와여 나는 영혼을 더럽힌 일이 없었나이다 어려서부터 지금까지 스스로 죽은 것이나 짐승에게 찢긴 것을 먹지 아니하였고 가증한 고기를 입에 넣지 아니하였나이다",
+      "source_text_hash": "c316a9817d9b7866a8d598594a39a5efe3cc70e4269eb4fc74e6ebe1b27a9d10",
+      "translation_text_hash": "f11d99a7386283153fab9b56541658050482e4b4fb6e58fdb9a4bd503c13bbb2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 가로되 오호라 주 여호와여 나는 영혼을 더럽힌 일이 없었나이다 어려서부터 지금까지 스스로 죽은 것이나 짐승에게 찢긴 것을 먹지 아니하였고 가증한 고기를 입에 넣지 아니하였나이다"
+      ],
+      "raw_text_hashes": [
+        "f11d99a7386283153fab9b56541658050482e4b4fb6e58fdb9a4bd503c13bbb2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:4:15",
+      "sequence": 20545,
+      "chapter_label": "EZK 4",
+      "verse_label": "15",
+      "locator": {
+        "book": "EZK",
+        "chapter": 4,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 4,
+          "verse": 15
+        }
+      ],
+      "en": "Then he said to me, “Behold, I have given you cow’s dung for man’s dung, and you shall prepare your bread on it.”",
+      "ko": "여호와께서 내게 이르시되 쇠똥으로 인분을 대신하기를 허하노니 너는 그것으로 떡을 구울찌니라",
+      "source_text_hash": "6925811c2ca246f2c27aa801a2e57bc018826c665544c9340833ebf7b420571f",
+      "translation_text_hash": "c45da152ca585a4a79c2bde9420e344720f07044e56b2b720cf76a0a188c41e1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 내게 이르시되 쇠똥으로 인분을 대신하기를 허하노니 너는 그것으로 떡을 구울찌니라"
+      ],
+      "raw_text_hashes": [
+        "c45da152ca585a4a79c2bde9420e344720f07044e56b2b720cf76a0a188c41e1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:4:16",
+      "sequence": 20546,
+      "chapter_label": "EZK 4",
+      "verse_label": "16",
+      "locator": {
+        "book": "EZK",
+        "chapter": 4,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 4,
+          "verse": 16
+        }
+      ],
+      "en": "Moreover he said to me, “Son of man, behold, I will break the staff of bread in Jerusalem. They will eat bread by weight, and with fearfulness. They will drink water by measure, and in dismay;",
+      "ko": "또 내게 이르시되 인자야 내가 예루살렘에서 의뢰하는 양식을 끊으리니 백성이 경겁 중에 떡을 달아 먹고 민답 중에 물을 되어 마시다가",
+      "source_text_hash": "4f53fddea55e7b47cc5730337e772eb5039542273d9f232f7af86732b979f67c",
+      "translation_text_hash": "09544680cd00cd155051cf273f4aca10650af52a18376dad1414f179f5d9fdc2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 내게 이르시되 인자야 내가 예루살렘에서 의뢰하는 양식을 끊으리니 백성이 경겁 중에 떡을 달아 먹고 민답 중에 물을 되어 마시다가"
+      ],
+      "raw_text_hashes": [
+        "09544680cd00cd155051cf273f4aca10650af52a18376dad1414f179f5d9fdc2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:4:17",
+      "sequence": 20547,
+      "chapter_label": "EZK 4",
+      "verse_label": "17",
+      "locator": {
+        "book": "EZK",
+        "chapter": 4,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 4,
+          "verse": 17
+        }
+      ],
+      "en": "that they may lack bread and water, be dismayed one with another, and pine away in their iniquity.",
+      "ko": "떡과 물이 결핍하여 피차에 민답하여 하며 그 죄악 중에서 쇠패하리라",
+      "source_text_hash": "b9fdab4bdb5d551b037be56cb4ac7f4fe89efcb146d882b7168eeef2bc373989",
+      "translation_text_hash": "8d6693103fa2b61ca209fb64fb2b119157c9b757320b71f0c9a682da7eef117d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "떡과 물이 결핍하여 피차에 민답하여 하며 그 죄악 중에서 쇠패하리라"
+      ],
+      "raw_text_hashes": [
+        "8d6693103fa2b61ca209fb64fb2b119157c9b757320b71f0c9a682da7eef117d"
+      ]
+    }
+  ]
+}

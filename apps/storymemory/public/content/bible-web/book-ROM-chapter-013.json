@@ -1,0 +1,461 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ROM:chapter:013",
+  "unit_ordinal": 1059,
+  "unit_label": "ROM 13",
+  "book_code": "ROM",
+  "chapter_number": 13,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ROM:13:1",
+      "sequence": 28264,
+      "chapter_label": "ROM 13",
+      "verse_label": "1",
+      "locator": {
+        "book": "ROM",
+        "chapter": 13,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 13,
+          "verse": 1
+        }
+      ],
+      "en": "Let every soul be in subjection to the higher authorities, for there is no authority except from God, and those who exist are ordained by God.",
+      "ko": "각 사람은 위에 있는 권세들에게 굴복하라 권세는 하나님께로 나지 않음이 없나니 모든 권세는 다 하나님의 정하신바라",
+      "source_text_hash": "5a53735928a4f000735d5a9e57cb3d8afd4bc2ab4b07cfceeab64a46bb1e8099",
+      "translation_text_hash": "e0200d9dfc4ed95b471b85231fab1310d2cf89386073c94be799d3e835994a61",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "각 사람은 위에 있는 권세들에게 굴복하라 권세는 하나님께로 나지 않음이 없나니 모든 권세는 다 하나님의 정하신바라"
+      ],
+      "raw_text_hashes": [
+        "e0200d9dfc4ed95b471b85231fab1310d2cf89386073c94be799d3e835994a61"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:13:2",
+      "sequence": 28265,
+      "chapter_label": "ROM 13",
+      "verse_label": "2",
+      "locator": {
+        "book": "ROM",
+        "chapter": 13,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 13,
+          "verse": 2
+        }
+      ],
+      "en": "Therefore he who resists the authority withstands the ordinance of God; and those who withstand will receive to themselves judgment.",
+      "ko": "그러므로 권세를 거스리는 자는 하나님의 명을 거스림이니 거스리는 자들은 심판을 자취하리라",
+      "source_text_hash": "4e94eb5a91313e37e2489a99b0df16b9a135da891b90969f99a77fe2ed8e98b8",
+      "translation_text_hash": "07e711fed3c27ff3e1ea327ffdbdcd2c49c4b68ad7107e76c356bc96a97c1d49",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 권세를 거스리는 자는 하나님의 명을 거스림이니 거스리는 자들은 심판을 자취하리라"
+      ],
+      "raw_text_hashes": [
+        "07e711fed3c27ff3e1ea327ffdbdcd2c49c4b68ad7107e76c356bc96a97c1d49"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:13:3",
+      "sequence": 28266,
+      "chapter_label": "ROM 13",
+      "verse_label": "3",
+      "locator": {
+        "book": "ROM",
+        "chapter": 13,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 13,
+          "verse": 3
+        }
+      ],
+      "en": "For rulers are not a terror to the good work, but to the evil. Do you desire to have no fear of the authority? Do that which is good, and you will have praise from the authority,",
+      "ko": "관원들은 선한 일에 대하여 두려움이 되지 않고 악한 일에 대하여 되나니 네가 권세를 두려워하지 아니하려느냐 선을 행하라 그리하면 그에게 칭찬을 받으리라",
+      "source_text_hash": "37c9de758c1a2460677f4bdb86a60070a15aff5a677ab77e0c43d024ed2a7fda",
+      "translation_text_hash": "0d13fcb77ab1085fea7e0eab665c5ebcb60569d9bac6c697373c6be22d63ce2b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "관원들은 선한 일에 대하여 두려움이 되지 않고 악한 일에 대하여 되나니 네가 권세를 두려워하지 아니하려느냐 선을 행하라 그리하면 그에게 칭찬을 받으리라"
+      ],
+      "raw_text_hashes": [
+        "0d13fcb77ab1085fea7e0eab665c5ebcb60569d9bac6c697373c6be22d63ce2b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:13:4",
+      "sequence": 28267,
+      "chapter_label": "ROM 13",
+      "verse_label": "4",
+      "locator": {
+        "book": "ROM",
+        "chapter": 13,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 13,
+          "verse": 4
+        }
+      ],
+      "en": "for he is a servant of God to you for good. But if you do that which is evil, be afraid, for he doesn’t bear the sword in vain; for he is a servant of God, an avenger for wrath to him who does evil.",
+      "ko": "그는 하나님의 사자가 되어 네게 선을 이루는 자니라 그러나 네가 악을 행하거든 두려워하라 그가 공연히 칼을 가지지 아니하였으니 곧 하나님의 사자가 되어 악을 행하는 자에게 진노하심을 위하여 보응하는 자니라",
+      "source_text_hash": "d81ae9dd73b531a1deb0ed0795b4eeaa2dcdeadad7bb397a59689b2a46747357",
+      "translation_text_hash": "a5fb2b315672cac8a3102990f056df582a6a036c89a2866fd9944ff7043b9cb5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그는 하나님의 사자가 되어 네게 선을 이루는 자니라 그러나 네가 악을 행하거든 두려워하라 그가 공연히 칼을 가지지 아니하였으니 곧 하나님의 사자가 되어 악을 행하는 자에게 진노하심을 위하여 보응하는 자니라"
+      ],
+      "raw_text_hashes": [
+        "a5fb2b315672cac8a3102990f056df582a6a036c89a2866fd9944ff7043b9cb5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:13:5",
+      "sequence": 28268,
+      "chapter_label": "ROM 13",
+      "verse_label": "5",
+      "locator": {
+        "book": "ROM",
+        "chapter": 13,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 13,
+          "verse": 5
+        }
+      ],
+      "en": "Therefore you need to be in subjection, not only because of the wrath, but also for conscience’ sake.",
+      "ko": "그러므로 굴복하지 아니할 수 없으니 노를 인하여만 할 것이 아니요 또한 양심을 인하여 할 것이라",
+      "source_text_hash": "3c71f90e50239fb1628f29daff50a18abc1ea30666107dd9ac4118444dcede77",
+      "translation_text_hash": "e5e26bfff4e58c5c1ff4f448a691de5626883a0597b4b0ffd41b3eed9e3c39dd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 굴복하지 아니할 수 없으니 노를 인하여만 할 것이 아니요 또한 양심을 인하여 할 것이라"
+      ],
+      "raw_text_hashes": [
+        "e5e26bfff4e58c5c1ff4f448a691de5626883a0597b4b0ffd41b3eed9e3c39dd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:13:6",
+      "sequence": 28269,
+      "chapter_label": "ROM 13",
+      "verse_label": "6",
+      "locator": {
+        "book": "ROM",
+        "chapter": 13,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 13,
+          "verse": 6
+        }
+      ],
+      "en": "For this reason you also pay taxes, for they are servants of God’s service, continually doing this very thing.",
+      "ko": "너희가 공세를 바치는 것도 이를 인함이라 저희가 하나님의 일군이 되어 바로 이 일에 항상 힘쓰느니라",
+      "source_text_hash": "c0db674f62c1d929c6dcb80ba63dcc3460ff3c8757783c882da650575486dbb6",
+      "translation_text_hash": "48d3da8696e21f5a37f5710609ce2b47ca1aea5a85e267dabd794a1a385e3a02",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 공세를 바치는 것도 이를 인함이라 저희가 하나님의 일군이 되어 바로 이 일에 항상 힘쓰느니라"
+      ],
+      "raw_text_hashes": [
+        "48d3da8696e21f5a37f5710609ce2b47ca1aea5a85e267dabd794a1a385e3a02"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:13:7",
+      "sequence": 28270,
+      "chapter_label": "ROM 13",
+      "verse_label": "7",
+      "locator": {
+        "book": "ROM",
+        "chapter": 13,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 13,
+          "verse": 7
+        }
+      ],
+      "en": "Therefore give everyone what you owe: if you owe taxes, pay taxes; if customs, then customs; if respect, then respect; if honor, then honor.",
+      "ko": "모든 자에게 줄 것을 주되 공세를 받을 자에게 공세를 바치고 국세 받을 자에게 국세를 바치고 두려워할 자를 두려워하며 존경할 자를 존경하라",
+      "source_text_hash": "37a140109342cd59af2377f64151702605a50c0b991fee86836677c4a0bad774",
+      "translation_text_hash": "23fe7e4de4505931e629c3b67875627acf6ff08839599805df7056d85e5cdb61",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 자에게 줄 것을 주되 공세를 받을 자에게 공세를 바치고 국세 받을 자에게 국세를 바치고 두려워할 자를 두려워하며 존경할 자를 존경하라"
+      ],
+      "raw_text_hashes": [
+        "23fe7e4de4505931e629c3b67875627acf6ff08839599805df7056d85e5cdb61"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:13:8",
+      "sequence": 28271,
+      "chapter_label": "ROM 13",
+      "verse_label": "8",
+      "locator": {
+        "book": "ROM",
+        "chapter": 13,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 13,
+          "verse": 8
+        }
+      ],
+      "en": "Owe no one anything, except to love one another; for he who loves his neighbor has fulfilled the law.",
+      "ko": "피차 사랑의 빚 외에는 아무에게든지 아무 빚도 지지 말라 남을 사랑하는 자는 율법을 다 이루었느니라",
+      "source_text_hash": "d992e1127bfd6c55d1ea8944a06dbb7cc66f8fca71be5bb720d60b7b28f5f6ad",
+      "translation_text_hash": "35400dda61831322b9b2a0592121aedac2e3dd53cd9ca78af4c9c4ac64cf02d2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "피차 사랑의 빚 외에는 아무에게든지 아무 빚도 지지 말라 남을 사랑하는 자는 율법을 다 이루었느니라"
+      ],
+      "raw_text_hashes": [
+        "35400dda61831322b9b2a0592121aedac2e3dd53cd9ca78af4c9c4ac64cf02d2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:13:9",
+      "sequence": 28272,
+      "chapter_label": "ROM 13",
+      "verse_label": "9",
+      "locator": {
+        "book": "ROM",
+        "chapter": 13,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 13,
+          "verse": 9
+        }
+      ],
+      "en": "For the commandments, “You shall not commit adultery,” “You shall not murder,” “You shall not steal,” “You shall not covet,” and whatever other commandments there are, are all summed up in this saying, namely, “You shall love your neighbor as yourself.”",
+      "ko": "간음하지 말라, 살인하지 말라, 도적질 하지 말라, 탐내지 말라 한 것과 그 외에 다른 계명이 있을찌라도 네 이웃을 네 자신과 같이 사랑하라 하신 그 말씀 가운데 다 들었느니라",
+      "source_text_hash": "9dc0e293538420cdc2d5954bf04b7b40d15a5d70ea14cb6fe1e924ffed42c98f",
+      "translation_text_hash": "57e04f1188a5f12729eb849a9d5ad021bb1a002d6bb1bc9f9ba8f6b0791441f4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "간음하지 말라, 살인하지 말라, 도적질 하지 말라, 탐내지 말라 한 것과 그 외에 다른 계명이 있을찌라도 네 이웃을 네 자신과 같이 사랑하라 하신 그 말씀 가운데 다 들었느니라"
+      ],
+      "raw_text_hashes": [
+        "57e04f1188a5f12729eb849a9d5ad021bb1a002d6bb1bc9f9ba8f6b0791441f4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:13:10",
+      "sequence": 28273,
+      "chapter_label": "ROM 13",
+      "verse_label": "10",
+      "locator": {
+        "book": "ROM",
+        "chapter": 13,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 13,
+          "verse": 10
+        }
+      ],
+      "en": "Love doesn’t harm a neighbor. Love therefore is the fulfillment of the law.",
+      "ko": "사랑은 이웃에게 악을 행치 아니하나니 그러므로 사랑은 율법의 완성이니라",
+      "source_text_hash": "c184c29cdee75010493c1480d2c0207e1ccf4cad5220187b3e966c43bab33f7a",
+      "translation_text_hash": "488e04dc43b5c9cdb70bb1a95ce236dff54ddd4594faf500ae9d021ee97f303d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사랑은 이웃에게 악을 행치 아니하나니 그러므로 사랑은 율법의 완성이니라"
+      ],
+      "raw_text_hashes": [
+        "488e04dc43b5c9cdb70bb1a95ce236dff54ddd4594faf500ae9d021ee97f303d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:13:11",
+      "sequence": 28274,
+      "chapter_label": "ROM 13",
+      "verse_label": "11",
+      "locator": {
+        "book": "ROM",
+        "chapter": 13,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 13,
+          "verse": 11
+        }
+      ],
+      "en": "Do this, knowing the time, that it is already time for you to awaken out of sleep, for salvation is now nearer to us than when we first believed.",
+      "ko": "또한 너희가 이 시기를 알거니와 자다가 깰 때가 벌써 되었으니 이는 이제 우리의 구원이 처음 믿을 때보다 가까왔음이니라",
+      "source_text_hash": "a572ce23c916001cd37950fda86d26da3e05b62b961e3152bb6a18662489ea1d",
+      "translation_text_hash": "1dcbbb73c6516369d61e844c64abbf65a39547865980c9878f327b4b124736e1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또한 너희가 이 시기를 알거니와 자다가 깰 때가 벌써 되었으니 이는 이제 우리의 구원이 처음 믿을 때보다 가까왔음이니라"
+      ],
+      "raw_text_hashes": [
+        "1dcbbb73c6516369d61e844c64abbf65a39547865980c9878f327b4b124736e1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:13:12",
+      "sequence": 28275,
+      "chapter_label": "ROM 13",
+      "verse_label": "12",
+      "locator": {
+        "book": "ROM",
+        "chapter": 13,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 13,
+          "verse": 12
+        }
+      ],
+      "en": "The night is far gone, and the day is near. Let’s therefore throw off the deeds of darkness, and let’s put on the armor of light.",
+      "ko": "밤이 깊고 낮이 가까왔으니 그러므로 우리가 어두움의 일을 벗고 빛의 갑옷을 입자",
+      "source_text_hash": "968740dc8fb17457d6e23818bcab227167d8aba3920810cf911d3cdf796eee0a",
+      "translation_text_hash": "f77be86fdc41822e4bbf453fcb3f332e587defee9f05f25983c4b63a3139caf2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "밤이 깊고 낮이 가까왔으니 그러므로 우리가 어두움의 일을 벗고 빛의 갑옷을 입자"
+      ],
+      "raw_text_hashes": [
+        "f77be86fdc41822e4bbf453fcb3f332e587defee9f05f25983c4b63a3139caf2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:13:13",
+      "sequence": 28276,
+      "chapter_label": "ROM 13",
+      "verse_label": "13",
+      "locator": {
+        "book": "ROM",
+        "chapter": 13,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 13,
+          "verse": 13
+        }
+      ],
+      "en": "Let’s walk properly, as in the day; not in reveling and drunkenness, not in sexual promiscuity and lustful acts, and not in strife and jealousy.",
+      "ko": "낮에와 같이 단정히 행하고 방탕과 술취하지 말며 음란과 호색하지 말며 쟁투와 시기하지 말고",
+      "source_text_hash": "8cf0f263858abeca8531e741725de0be912471258540d4e2fbc3c8ea15a70df6",
+      "translation_text_hash": "7a304873d1d2a8a772e7a84fbd4d29af0031c08c429c512db882596f4ca68563",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "낮에와 같이 단정히 행하고 방탕과 술취하지 말며 음란과 호색하지 말며 쟁투와 시기하지 말고"
+      ],
+      "raw_text_hashes": [
+        "7a304873d1d2a8a772e7a84fbd4d29af0031c08c429c512db882596f4ca68563"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:13:14",
+      "sequence": 28277,
+      "chapter_label": "ROM 13",
+      "verse_label": "14",
+      "locator": {
+        "book": "ROM",
+        "chapter": 13,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 13,
+          "verse": 14
+        }
+      ],
+      "en": "But put on the Lord Jesus Christ, and make no provision for the flesh, for its lusts.",
+      "ko": "오직 주 예수 그리스도로 옷입고 정욕을 위하여 육신의 일을 도모하지 말라",
+      "source_text_hash": "5db9603ab769a859cf63509bcda2baf9b87b6048c4e430296d35bef9634acd98",
+      "translation_text_hash": "e980368f01a2d20a16bb3a5d7ef546e04b34f9b338ec00ef1997e3aad04b4962",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 주 예수 그리스도로 옷입고 정욕을 위하여 육신의 일을 도모하지 말라"
+      ],
+      "raw_text_hashes": [
+        "e980368f01a2d20a16bb3a5d7ef546e04b34f9b338ec00ef1997e3aad04b4962"
+      ]
+    }
+  ]
+}

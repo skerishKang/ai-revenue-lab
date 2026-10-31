@@ -1,0 +1,356 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "metamorphoses",
+  "title": "Metamorphoses",
+  "author": "Ovid",
+  "passage_count": 662,
+  "unit_count": 15,
+  "primary_locator": "canonical_locator",
+  "translation_language": "ko",
+  "units": [
+    {
+      "unit_key": "book:01",
+      "unit_kind": "book",
+      "unit_ordinal": 1,
+      "label": "BOOK 01",
+      "path": "book-01.json",
+      "passage_count": 60,
+      "sha256": "b0f685b4d3331d03f008dfbd9c13aaa10d4e77321e1e3a93eade31ddbc5cc052",
+      "first_locator": "metamorphoses:book:01:s1:row:001",
+      "last_locator": "metamorphoses:book:01:s8:row:004"
+    },
+    {
+      "unit_key": "book:02",
+      "unit_kind": "book",
+      "unit_ordinal": 2,
+      "label": "BOOK 02",
+      "path": "book-02.json",
+      "passage_count": 50,
+      "sha256": "464758671f10c247800d6e0fddddf3dffdc967c6024fbab2f79af9e78a07ebde",
+      "first_locator": "metamorphoses:book:02:s1:row:001",
+      "last_locator": "metamorphoses:book:02:s7:row:003"
+    },
+    {
+      "unit_key": "book:03",
+      "unit_kind": "book",
+      "unit_ordinal": 3,
+      "label": "BOOK 03",
+      "path": "book-03.json",
+      "passage_count": 40,
+      "sha256": "9aa9aef3aa0b2c0cb32277bc8c68e08f9ac5331805d106a275fbf587dc77a404",
+      "first_locator": "metamorphoses:book:03:s1:row:001",
+      "last_locator": "metamorphoses:book:03:s7:row:003"
+    },
+    {
+      "unit_key": "book:04",
+      "unit_kind": "book",
+      "unit_ordinal": 4,
+      "label": "BOOK 04",
+      "path": "book-04.json",
+      "passage_count": 41,
+      "sha256": "c9a9335fce2cb5c06bf857baf0b36b27a30535807beeecf23ef311fee57c72d9",
+      "first_locator": "metamorphoses:book:04:s1:row:001",
+      "last_locator": "metamorphoses:book:04:s9:row:002"
+    },
+    {
+      "unit_key": "book:05",
+      "unit_kind": "book",
+      "unit_ordinal": 5,
+      "label": "BOOK 05",
+      "path": "book-05.json",
+      "passage_count": 33,
+      "sha256": "a6fe10aeca6926e5d0cdf1e951fc69c66fa3fa226192af9e9b53f7068df097fa",
+      "first_locator": "metamorphoses:book:05:s1:row:001",
+      "last_locator": "metamorphoses:book:05:s7:row:002"
+    },
+    {
+      "unit_key": "book:06",
+      "unit_kind": "book",
+      "unit_ordinal": 6,
+      "label": "BOOK 06",
+      "path": "book-06.json",
+      "passage_count": 34,
+      "sha256": "07fcb1d90d76875f86e67ada5250863dea00372030c8eb8a884ddf36914b2402",
+      "first_locator": "metamorphoses:book:06:s1:row:001",
+      "last_locator": "metamorphoses:book:06:s7:row:002"
+    },
+    {
+      "unit_key": "book:07",
+      "unit_kind": "book",
+      "unit_ordinal": 7,
+      "label": "BOOK 07",
+      "path": "book-07.json",
+      "passage_count": 40,
+      "sha256": "98d232f70348ce518adbefd715edf9bdc45bad32dddce3a746747c4235956dd4",
+      "first_locator": "metamorphoses:book:07:s1:row:001",
+      "last_locator": "metamorphoses:book:07:s7:row:009"
+    },
+    {
+      "unit_key": "book:08",
+      "unit_kind": "book",
+      "unit_ordinal": 8,
+      "label": "BOOK 08",
+      "path": "book-08.json",
+      "passage_count": 40,
+      "sha256": "2ba87b0d0eb022edaf909babf6d5889ccfb8674e7975f76244eb729d428923e2",
+      "first_locator": "metamorphoses:book:08:s1:row:001",
+      "last_locator": "metamorphoses:book:08:s7:row:007"
+    },
+    {
+      "unit_key": "book:09",
+      "unit_kind": "book",
+      "unit_ordinal": 9,
+      "label": "BOOK 09",
+      "path": "book-09.json",
+      "passage_count": 46,
+      "sha256": "079f5268332ed78caecb557dbb5e52d7f293c022e7a34c417fd8a3b36d01182e",
+      "first_locator": "metamorphoses:book:09:s1:row:001",
+      "last_locator": "metamorphoses:book:09:s7:row:009"
+    },
+    {
+      "unit_key": "book:10",
+      "unit_kind": "book",
+      "unit_ordinal": 10,
+      "label": "BOOK 10",
+      "path": "book-10.json",
+      "passage_count": 48,
+      "sha256": "b5496ec934865219f7ce213ec4b485ea0b586f8428e824d6771e7920b5f7afee",
+      "first_locator": "metamorphoses:book:10:s1:row:001",
+      "last_locator": "metamorphoses:book:10:s7:row:002"
+    },
+    {
+      "unit_key": "book:11",
+      "unit_kind": "book",
+      "unit_ordinal": 11,
+      "label": "BOOK 11",
+      "path": "book-11.json",
+      "passage_count": 42,
+      "sha256": "883adeafe002c7d5eebae9ccc70a2ea091ac8884a4298c9b378fcb7ac19df205",
+      "first_locator": "metamorphoses:book:11:s1:row:001",
+      "last_locator": "metamorphoses:book:11:s7:row:004"
+    },
+    {
+      "unit_key": "book:12",
+      "unit_kind": "book",
+      "unit_ordinal": 12,
+      "label": "BOOK 12",
+      "path": "book-12.json",
+      "passage_count": 29,
+      "sha256": "80c540ad9dfeaac8bbe06fc373adf5d7a108a7c380bd83232de7c302943429fa",
+      "first_locator": "metamorphoses:book:12:s1:row:001",
+      "last_locator": "metamorphoses:book:12:s6:row:009"
+    },
+    {
+      "unit_key": "book:13",
+      "unit_kind": "book",
+      "unit_ordinal": 13,
+      "label": "BOOK 13",
+      "path": "book-13.json",
+      "passage_count": 51,
+      "sha256": "e45c9821cbc978cb5a1cf331bb36e2f7933694b17f6691d66a73f59f512553df",
+      "first_locator": "metamorphoses:book:13:s1:row:001",
+      "last_locator": "metamorphoses:book:13:s7:row:005"
+    },
+    {
+      "unit_key": "book:14",
+      "unit_kind": "book",
+      "unit_ordinal": 14,
+      "label": "BOOK 14",
+      "path": "book-14.json",
+      "passage_count": 58,
+      "sha256": "8f965c0522127d3ee559b67dc71bf67c9a2366cccf2e3185c048b423059049bf",
+      "first_locator": "metamorphoses:book:14:s1:row:001",
+      "last_locator": "metamorphoses:book:14:s7:row:006"
+    },
+    {
+      "unit_key": "book:15",
+      "unit_kind": "book",
+      "unit_ordinal": 15,
+      "label": "BOOK 15",
+      "path": "book-15.json",
+      "passage_count": 50,
+      "sha256": "75b49ae650b8751880e668d665439d7c80d266fb366411a3f931c2e7f82099a0",
+      "first_locator": "metamorphoses:book:15:s1:row:001",
+      "last_locator": "metamorphoses:book:15:s7:row:006"
+    }
+  ],
+  "provenance": {
+    "ingestion_manifest_file": "metamorphoses_ingestion_manifest.json",
+    "ingestion_manifest_sha256": "7ae14b257d61c7cdf321d8d0b0b194c60f8361643135a07970768c1284894c6a",
+    "source_jsonl_file": "metamorphoses_source_passages.jsonl",
+    "source_jsonl_sha256": "eb146ade492f912a24d2635af05c7903864d3d87cfb4c22443a212cefce8fc7a",
+    "translation_jsonl_file": "metamorphoses_translations_ko.jsonl",
+    "translation_jsonl_sha256": "e39aa4d11245d86fb984685bf7ee937d0130fb69d7f994fd96d59ed0b3354238",
+    "translation_source_hash_mismatches": 0,
+    "upstream_manifest": {
+      "schema_version": "1.0.0",
+      "work_key": "metamorphoses",
+      "source_refs": {
+        "books_1_7": "drive:1XuOO3rCh5De6l0kTaBNcHqajIM7WRzb9",
+        "books_8_15": "drive:1LKeAB_ol79XXEq5IpBQ9Kz5MjHNuYjCw"
+      },
+      "source_edition": "Henry T. Riley / 501-classics canonical",
+      "books_expected": 15,
+      "books_found": 15,
+      "passages": 662,
+      "ko_translations": 662,
+      "empty_ko": 0,
+      "canonical_locator_unique": true,
+      "sequence_unique": true,
+      "book_stats": [
+        {
+          "book": 1,
+          "sections": 8,
+          "passages": 60,
+          "ko_translations": 60,
+          "empty_ko": 0,
+          "file": "METAMORPHOSES_BOOK_01.html",
+          "file_sha256": "422e8dd321dceede2bbc21a3085701145c3b751db8728e16f52516fc3fb22231"
+        },
+        {
+          "book": 2,
+          "sections": 7,
+          "passages": 50,
+          "ko_translations": 50,
+          "empty_ko": 0,
+          "file": "METAMORPHOSES_BOOK_02.html",
+          "file_sha256": "4760001ab25721065a0bf8aa7277bd1c472e3e7a8fe9095e543e30bfd3e67aac"
+        },
+        {
+          "book": 3,
+          "sections": 7,
+          "passages": 40,
+          "ko_translations": 40,
+          "empty_ko": 0,
+          "file": "METAMORPHOSES_BOOK_03.html",
+          "file_sha256": "22cd696b5d82085f6c38667d3969e62823d463585599671df906a729ecc4e21b"
+        },
+        {
+          "book": 4,
+          "sections": 9,
+          "passages": 41,
+          "ko_translations": 41,
+          "empty_ko": 0,
+          "file": "METAMORPHOSES_BOOK_04.html",
+          "file_sha256": "b3bed2ede2e78e0c8985c0611432a97e42e98d9eddc5a51ce873b4e52a3b37a1"
+        },
+        {
+          "book": 5,
+          "sections": 7,
+          "passages": 33,
+          "ko_translations": 33,
+          "empty_ko": 0,
+          "file": "METAMORPHOSES_BOOK_05.html",
+          "file_sha256": "cc783e6bdbd182417a208912de216dfc9fb56a1057cf5e129b8271aae99a389f"
+        },
+        {
+          "book": 6,
+          "sections": 7,
+          "passages": 34,
+          "ko_translations": 34,
+          "empty_ko": 0,
+          "file": "METAMORPHOSES_BOOK_06.html",
+          "file_sha256": "7bd877d1295849165ea43013f392f693dc1945b334581006029408d333bc1a7b"
+        },
+        {
+          "book": 7,
+          "sections": 7,
+          "passages": 40,
+          "ko_translations": 40,
+          "empty_ko": 0,
+          "file": "METAMORPHOSES_BOOK_07.html",
+          "file_sha256": "dfc8f1c646bf828cbe4cc0966ace8723324788e5f86ae0992c821e7f6d3b8343"
+        },
+        {
+          "book": 8,
+          "sections": 7,
+          "passages": 40,
+          "ko_translations": 40,
+          "empty_ko": 0,
+          "file": "METAMORPHOSES_BOOK_08.html",
+          "file_sha256": "8741486adf2dd3e5c09102f4c0c1ce9b610a356e2f577570e0d7584494614059"
+        },
+        {
+          "book": 9,
+          "sections": 7,
+          "passages": 46,
+          "ko_translations": 46,
+          "empty_ko": 0,
+          "file": "METAMORPHOSES_BOOK_09.html",
+          "file_sha256": "966b14c899efb6ab12687e75179b79d0b6e967505cdfc8a62be1d80f939c6661"
+        },
+        {
+          "book": 10,
+          "sections": 7,
+          "passages": 48,
+          "ko_translations": 48,
+          "empty_ko": 0,
+          "file": "METAMORPHOSES_BOOK_10.html",
+          "file_sha256": "14dbea6df653fc54e4fcfc86eaeba997aea34d31c3ac289cf88c160bde6f1e84"
+        },
+        {
+          "book": 11,
+          "sections": 7,
+          "passages": 42,
+          "ko_translations": 42,
+          "empty_ko": 0,
+          "file": "METAMORPHOSES_BOOK_11.html",
+          "file_sha256": "319f71721dddee784e34fd3b98f01a3f79301231f4f610a5c68279b4568803ed"
+        },
+        {
+          "book": 12,
+          "sections": 6,
+          "passages": 29,
+          "ko_translations": 29,
+          "empty_ko": 0,
+          "file": "METAMORPHOSES_BOOK_12.html",
+          "file_sha256": "e6c74e4460a4d784504736b04a9e84092e4769be210e294597623d4ee55a1ba0"
+        },
+        {
+          "book": 13,
+          "sections": 7,
+          "passages": 51,
+          "ko_translations": 51,
+          "empty_ko": 0,
+          "file": "METAMORPHOSES_BOOK_13.html",
+          "file_sha256": "57cccae2860ddf330955611dba7c46d394cd71bef19b7723b2bee9a7c3838bd3"
+        },
+        {
+          "book": 14,
+          "sections": 7,
+          "passages": 58,
+          "ko_translations": 58,
+          "empty_ko": 0,
+          "file": "METAMORPHOSES_BOOK_14.html",
+          "file_sha256": "aef0b8b13284b36417907d8bf98da31853028b7dcccc8a331e272c64eba5bd6c"
+        },
+        {
+          "book": 15,
+          "sections": 7,
+          "passages": 50,
+          "ko_translations": 50,
+          "empty_ko": 0,
+          "file": "METAMORPHOSES_BOOK_15.html",
+          "file_sha256": "7863cf23f7d3f607943f34b8dc5777b7b61fc8ba07cfcc310b9a9dec5ace5b52"
+        }
+      ],
+      "source_jsonl_sha256": "eb146ade492f912a24d2635af05c7903864d3d87cfb4c22443a212cefce8fc7a",
+      "translation_jsonl_sha256": "e39aa4d11245d86fb984685bf7ee937d0130fb69d7f994fd96d59ed0b3354238"
+    }
+  },
+  "qa": {
+    "passage_count": 662,
+    "expected_passage_count": 662,
+    "unit_count": 15,
+    "expected_unit_count": 15,
+    "empty_en": 0,
+    "empty_ko": 0,
+    "canonical_locator_duplicates": 0,
+    "sequence_duplicates": 0,
+    "source_hash_recompute_mismatches": 0,
+    "translation_hash_recompute_mismatches": 0,
+    "unit_sequence_formula_failures": 0,
+    "translation_source_hash_mismatches": 0,
+    "pass": true
+  }
+}

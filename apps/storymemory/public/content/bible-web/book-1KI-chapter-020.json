@@ -1,0 +1,1389 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1KI:chapter:020",
+  "unit_ordinal": 311,
+  "unit_label": "1KI 20",
+  "book_code": "1KI",
+  "chapter_number": 20,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1KI:20:1",
+      "sequence": 9410,
+      "chapter_label": "1KI 20",
+      "verse_label": "1",
+      "locator": {
+        "book": "1KI",
+        "chapter": 20,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 20,
+          "verse": 1
+        }
+      ],
+      "en": "Ben Hadad the king of Syria gathered all his army together; and there were thirty-two kings with him, with horses and chariots. He went up and besieged Samaria, and fought against it.",
+      "ko": "아람 왕 벤하닷이 그 군대를 다 모으니 왕 삼십 이인이 저와 함께 있고 또 말과 병거들이 있더라 이에 올라가서 사마리아를 에워싸고 치며",
+      "source_text_hash": "cb1578e6336bf961b4ae11f1e9863257b2b01b1548b19988867f2cfccebbe041",
+      "translation_text_hash": "5173f0432ccad7e5c94dd138518ef4b5041b7274835d1b1a674f87c8253ef000",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아람 왕 벤하닷이 그 군대를 다 모으니 왕 삼십 이인이 저와 함께 있고 또 말과 병거들이 있더라 이에 올라가서 사마리아를 에워싸고 치며"
+      ],
+      "raw_text_hashes": [
+        "5173f0432ccad7e5c94dd138518ef4b5041b7274835d1b1a674f87c8253ef000"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:20:2",
+      "sequence": 9411,
+      "chapter_label": "1KI 20",
+      "verse_label": "2",
+      "locator": {
+        "book": "1KI",
+        "chapter": 20,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 20,
+          "verse": 2
+        }
+      ],
+      "en": "He sent messengers into the city to Ahab king of Israel and said to him, “Ben Hadad says,",
+      "ko": "사자들을 성중 이스라엘 왕 아합에게 보내어 이르기를 벤하닷은 이르노니",
+      "source_text_hash": "ae936ad2f11a0afc9d51784bdb5194dbb0898b9f5879d010e9c84dd94418deb4",
+      "translation_text_hash": "40a7647b73fcc2a40dc3982115c6dcb4529b19d543926e116bcd10e0340a51d5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사자들을 성중 이스라엘 왕 아합에게 보내어 이르기를 벤하닷은 이르노니"
+      ],
+      "raw_text_hashes": [
+        "40a7647b73fcc2a40dc3982115c6dcb4529b19d543926e116bcd10e0340a51d5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:20:3",
+      "sequence": 9412,
+      "chapter_label": "1KI 20",
+      "verse_label": "3",
+      "locator": {
+        "book": "1KI",
+        "chapter": 20,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 20,
+          "verse": 3
+        }
+      ],
+      "en": "‘Your silver and your gold are mine. Your wives also and your children, even the best, are mine.’”",
+      "ko": "네 은금은 내 것이요 네 처들과 네 자녀들의 아름다운 자도 내 것이니라 하매",
+      "source_text_hash": "be753120f12d81e0daa4c9c6064309ef352a681db656089948062d57d7e1e93a",
+      "translation_text_hash": "03d3a7ce5401a3a98473706e6ce070e978d50a0378e3887a48bb52fab5cab9db",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 은금은 내 것이요 네 처들과 네 자녀들의 아름다운 자도 내 것이니라 하매"
+      ],
+      "raw_text_hashes": [
+        "03d3a7ce5401a3a98473706e6ce070e978d50a0378e3887a48bb52fab5cab9db"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:20:4",
+      "sequence": 9413,
+      "chapter_label": "1KI 20",
+      "verse_label": "4",
+      "locator": {
+        "book": "1KI",
+        "chapter": 20,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 20,
+          "verse": 4
+        }
+      ],
+      "en": "The king of Israel answered, “It is according to your saying, my lord, O king. I am yours, and all that I have.”",
+      "ko": "이스라엘 왕이 대답하여 말하기를 내 주 왕이여 왕의 말씀 같이 나와 나의 것은 다 왕의 것이니이다 하였더니",
+      "source_text_hash": "119bda871699c859bb2e95ff69cc038adc791deb93e1888b525b4aa732bf57c5",
+      "translation_text_hash": "bdb7b5cd7a3120965fc8529520cba3bd97152f187278e9324a06c736b1e09248",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 왕이 대답하여 말하기를 내 주 왕이여 왕의 말씀 같이 나와 나의 것은 다 왕의 것이니이다 하였더니"
+      ],
+      "raw_text_hashes": [
+        "bdb7b5cd7a3120965fc8529520cba3bd97152f187278e9324a06c736b1e09248"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:20:5",
+      "sequence": 9414,
+      "chapter_label": "1KI 20",
+      "verse_label": "5",
+      "locator": {
+        "book": "1KI",
+        "chapter": 20,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 20,
+          "verse": 5
+        }
+      ],
+      "en": "The messengers came again and said, “Ben Hadad says, ‘I sent indeed to you, saying, “You shall deliver me your silver, your gold, your wives, and your children;",
+      "ko": "사자가 다시 와서 이르기를 벤하닷은 이르노라 내가 이미 네게 보내어 말하기를 너는 네 은금과 처들과 자녀들을 내게 붙이라 하였거니와",
+      "source_text_hash": "2c85e623f0d41547715fa3041c6d5bbf5fc149eb01f82a3aaa09f6c0d9cb8d29",
+      "translation_text_hash": "a15d4bea595b01128c4c05bd708448f1540e4131565d182b1249791fe4e5a277",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사자가 다시 와서 이르기를 벤하닷은 이르노라 내가 이미 네게 보내어 말하기를 너는 네 은금과 처들과 자녀들을 내게 붙이라 하였거니와"
+      ],
+      "raw_text_hashes": [
+        "a15d4bea595b01128c4c05bd708448f1540e4131565d182b1249791fe4e5a277"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:20:6",
+      "sequence": 9415,
+      "chapter_label": "1KI 20",
+      "verse_label": "6",
+      "locator": {
+        "book": "1KI",
+        "chapter": 20,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 20,
+          "verse": 6
+        }
+      ],
+      "en": "but I will send my servants to you tomorrow about this time, and they will search your house and the houses of your servants. Whatever is pleasant in your eyes, they will put it in their hand, and take it away.”’”",
+      "ko": "내일 이맘때에 내가 내 신복을 네게 보내리니 저희가 네 집과 네 신복의 집을 수탐하여 무릇 네 눈이 기뻐하는 것을 그 손으로 잡아 가져가리라 한지라",
+      "source_text_hash": "447e08a871c489ee23c715b59ac9e78f05708a3a81e939c6e3020a0a62dd12a6",
+      "translation_text_hash": "e8c21c9aa290a9f6ae379f447775569fd8f77dd8c8ec58e2edbce87633c7ef7f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내일 이맘때에 내가 내 신복을 네게 보내리니 저희가 네 집과 네 신복의 집을 수탐하여 무릇 네 눈이 기뻐하는 것을 그 손으로 잡아 가져가리라 한지라"
+      ],
+      "raw_text_hashes": [
+        "e8c21c9aa290a9f6ae379f447775569fd8f77dd8c8ec58e2edbce87633c7ef7f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:20:7",
+      "sequence": 9416,
+      "chapter_label": "1KI 20",
+      "verse_label": "7",
+      "locator": {
+        "book": "1KI",
+        "chapter": 20,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 20,
+          "verse": 7
+        }
+      ],
+      "en": "Then the king of Israel called all the elders of the land, and said, “Please notice how this man seeks mischief; for he sent to me for my wives, and for my children, and for my silver, and for my gold; and I didn’t deny him.”",
+      "ko": "이에 이스라엘 왕이 나라의 장로를 다 불러 이르되 너희는 이 사람이 잔해하려고 구하는 줄을 자세히 알라 저가 나의 처들과 자녀들과 은금을 취하려고 사람을 내게 보내었으나 내가 거절치 못하였노라",
+      "source_text_hash": "0c3dd8a9ccfca00ec43765721d6c468830bc2f5577ee56ec90186283092bef84",
+      "translation_text_hash": "f5f6434b1d9a96708dc43f079861c0c0a7926959681a4515c8cdfd1ccef60dbf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 이스라엘 왕이 나라의 장로를 다 불러 이르되 너희는 이 사람이 잔해하려고 구하는 줄을 자세히 알라 저가 나의 처들과 자녀들과 은금을 취하려고 사람을 내게 보내었으나 내가 거절치 못하였노라"
+      ],
+      "raw_text_hashes": [
+        "f5f6434b1d9a96708dc43f079861c0c0a7926959681a4515c8cdfd1ccef60dbf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:20:8",
+      "sequence": 9417,
+      "chapter_label": "1KI 20",
+      "verse_label": "8",
+      "locator": {
+        "book": "1KI",
+        "chapter": 20,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 20,
+          "verse": 8
+        }
+      ],
+      "en": "All the elders and all the people said to him, “Don’t listen, and don’t consent.”",
+      "ko": "모든 장로와 백성들이 다 왕께 고하되 왕은 듣지도 말고 허락지도 마옵소서 한지라",
+      "source_text_hash": "668c523b510524550509383b8c390e0a0bd3538219cda21ddc0ae0fae46c332c",
+      "translation_text_hash": "75db5aaa5b737fde12d97982237964c1943a137417f69d24d2084ec9280c5737",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 장로와 백성들이 다 왕께 고하되 왕은 듣지도 말고 허락지도 마옵소서 한지라"
+      ],
+      "raw_text_hashes": [
+        "75db5aaa5b737fde12d97982237964c1943a137417f69d24d2084ec9280c5737"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:20:9",
+      "sequence": 9418,
+      "chapter_label": "1KI 20",
+      "verse_label": "9",
+      "locator": {
+        "book": "1KI",
+        "chapter": 20,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 20,
+          "verse": 9
+        }
+      ],
+      "en": "Therefore he said to the messengers of Ben Hadad, “Tell my lord the king, ‘All that you sent for to your servant at the first I will do, but this thing I cannot do.’” The messengers departed and brought him back the message.",
+      "ko": "그러므로 왕이 벤하닷의 사자에게 이르되 너희는 내 주 왕께 고하기를 왕이 처음에 보내어 종에게 구하신 것은 내가 다 그대로 하려니와 이것은 내가 할수 없나이다 하라 사자들이 돌아가서 고하니라",
+      "source_text_hash": "f322dfd8866eb5748dce5d2a5bf83ea944927da474b2de8b2d2e342cd62ab6c0",
+      "translation_text_hash": "74dac37728408002544f922dc9de9b866097583df3abc0fe2c3dec2073eccfac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 왕이 벤하닷의 사자에게 이르되 너희는 내 주 왕께 고하기를 왕이 처음에 보내어 종에게 구하신 것은 내가 다 그대로 하려니와 이것은 내가 할수 없나이다 하라 사자들이 돌아가서 고하니라"
+      ],
+      "raw_text_hashes": [
+        "74dac37728408002544f922dc9de9b866097583df3abc0fe2c3dec2073eccfac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:20:10",
+      "sequence": 9419,
+      "chapter_label": "1KI 20",
+      "verse_label": "10",
+      "locator": {
+        "book": "1KI",
+        "chapter": 20,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 20,
+          "verse": 10
+        }
+      ],
+      "en": "Ben Hadad sent to him, and said, “The gods do so to me, and more also, if the dust of Samaria will be enough for handfuls for all the people who follow me.”",
+      "ko": "벤하닷이 다시 저에게 보내어 이르되 사마리아의 부스러진 것이 나를 좇는 백성의 무리의 손에 채우기에 족할 것 같으면 신들이 내게 벌 위에 벌을 내림이 마땅하니라 하매",
+      "source_text_hash": "7b373053b6a26f0f52413fcd3352676082d5eed47285941ec4564b8ed15fe431",
+      "translation_text_hash": "b6fde8ddbedb05361c075e373d00b7c7554e35a6d59ba958cc1adcf83315fe4b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "벤하닷이 다시 저에게 보내어 이르되 사마리아의 부스러진 것이 나를 좇는 백성의 무리의 손에 채우기에 족할 것 같으면 신들이 내게 벌 위에 벌을 내림이 마땅하니라 하매"
+      ],
+      "raw_text_hashes": [
+        "b6fde8ddbedb05361c075e373d00b7c7554e35a6d59ba958cc1adcf83315fe4b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:20:11",
+      "sequence": 9420,
+      "chapter_label": "1KI 20",
+      "verse_label": "11",
+      "locator": {
+        "book": "1KI",
+        "chapter": 20,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 20,
+          "verse": 11
+        }
+      ],
+      "en": "The king of Israel answered, “Tell him, ‘Don’t let him who puts on his armor brag like he who takes it off.’”",
+      "ko": "이스라엘 왕이 대답하여 가로되 갑옷 입는 자가 갑옷 벗는 자 같이 자랑치 못할 것이라 하라 하니라",
+      "source_text_hash": "b0691fd023b3405c46f0ced211709d10719e90a0434539fa4a0b957ef97a373b",
+      "translation_text_hash": "637abec21e601018ea3d41ca89ca1b33068f2fd549e7d233f23796db536d3b40",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 왕이 대답하여 가로되 갑옷 입는 자가 갑옷 벗는 자 같이 자랑치 못할 것이라 하라 하니라"
+      ],
+      "raw_text_hashes": [
+        "637abec21e601018ea3d41ca89ca1b33068f2fd549e7d233f23796db536d3b40"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:20:12",
+      "sequence": 9421,
+      "chapter_label": "1KI 20",
+      "verse_label": "12",
+      "locator": {
+        "book": "1KI",
+        "chapter": 20,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 20,
+          "verse": 12
+        }
+      ],
+      "en": "When Ben Hadad heard this message as he was drinking, he and the kings in the pavilions, he said to his servants, “Prepare to attack!” So they prepared to attack the city.",
+      "ko": "벤하닷이 왕들과 장막에서 마시다가 이 말을 듣고 그 신복에게 이르되 너희는 진을 베풀라 하매 곧 성을 향하여 진을 베푸니라",
+      "source_text_hash": "a56b568114227d5152744699ccedcab7fae6b36c69f17a615dbd364e96af689f",
+      "translation_text_hash": "65344e42700e7334d027bdca799055b6303313e3c74d6e6a1870a3a1d6e9950b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "벤하닷이 왕들과 장막에서 마시다가 이 말을 듣고 그 신복에게 이르되 너희는 진을 베풀라 하매 곧 성을 향하여 진을 베푸니라"
+      ],
+      "raw_text_hashes": [
+        "65344e42700e7334d027bdca799055b6303313e3c74d6e6a1870a3a1d6e9950b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:20:13",
+      "sequence": 9422,
+      "chapter_label": "1KI 20",
+      "verse_label": "13",
+      "locator": {
+        "book": "1KI",
+        "chapter": 20,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 20,
+          "verse": 13
+        }
+      ],
+      "en": "Behold, a prophet came near to Ahab king of Israel, and said, “The LORD says, ‘Have you seen all this great multitude? Behold, I will deliver it into your hand today. Then you will know that I am the LORD.’”",
+      "ko": "한 선지자가 이스라엘 왕 아합에게 나아가서 가로되 여호와의 말씀이 네가 이 큰 무리를 보느냐 내가 오늘 저희를 네 손에 붙이리니 너는 내가 여호와인줄 알리라 하셨나이다",
+      "source_text_hash": "dc28679e3aa7479b1e315ed7f6f9af21be138fec6ae640723d8f1a460e4182c4",
+      "translation_text_hash": "846a91f48da648e96653ea0e22bd2d0e215427b1f8d71c23bd59a0ae06226c6a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "한 선지자가 이스라엘 왕 아합에게 나아가서 가로되 여호와의 말씀이 네가 이 큰 무리를 보느냐 내가 오늘 저희를 네 손에 붙이리니 너는 내가 여호와인줄 알리라 하셨나이다"
+      ],
+      "raw_text_hashes": [
+        "846a91f48da648e96653ea0e22bd2d0e215427b1f8d71c23bd59a0ae06226c6a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:20:14",
+      "sequence": 9423,
+      "chapter_label": "1KI 20",
+      "verse_label": "14",
+      "locator": {
+        "book": "1KI",
+        "chapter": 20,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 20,
+          "verse": 14
+        }
+      ],
+      "en": "Ahab said, “By whom?” He said, “The LORD says, ‘By the young men of the princes of the provinces.’” Then he said, “Who shall begin the battle?” He answered, “You.”",
+      "ko": "아합이 가로되 누구로 하시리이까 대답하되 여호와의 말씀이 각 도의 방백의 소년들로 하리라 하셨나이다 아합이 가로되 누가 싸움을 시작하리이까 대답하되 왕이니이다",
+      "source_text_hash": "44a8aabbe0006b18f049a5bbeb61c8a5c9c4119dfcede31e0ac54052cef4b19a",
+      "translation_text_hash": "16dfd064dc09c870a24fdf68d444fcdbc24556a756af853d14c28a10bb27df5d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아합이 가로되 누구로 하시리이까 대답하되 여호와의 말씀이 각 도의 방백의 소년들로 하리라 하셨나이다 아합이 가로되 누가 싸움을 시작하리이까 대답하되 왕이니이다"
+      ],
+      "raw_text_hashes": [
+        "16dfd064dc09c870a24fdf68d444fcdbc24556a756af853d14c28a10bb27df5d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:20:15",
+      "sequence": 9424,
+      "chapter_label": "1KI 20",
+      "verse_label": "15",
+      "locator": {
+        "book": "1KI",
+        "chapter": 20,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 20,
+          "verse": 15
+        }
+      ],
+      "en": "Then he mustered the young men of the princes of the provinces, and they were two hundred and thirty-two. After them, he mustered all the people, even all the children of Israel, being seven thousand.",
+      "ko": "아합이 이에 각 도의 방백의 소년들을 계수하니 이백 삼십 이인이요 그 외에 모든 백성 곧 이스라엘의 모든 자손을 계수하니 칠천인이더라",
+      "source_text_hash": "1f55907b3f31edaeb020b78a5032d9daa539e9e3c5793426378dd4b74c85bfed",
+      "translation_text_hash": "9b1f67abdcace8d9e7e4d0ceed1bc1efefe4fffb0966564123570ad6b1750c33",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아합이 이에 각 도의 방백의 소년들을 계수하니 이백 삼십 이인이요 그 외에 모든 백성 곧 이스라엘의 모든 자손을 계수하니 칠천인이더라"
+      ],
+      "raw_text_hashes": [
+        "9b1f67abdcace8d9e7e4d0ceed1bc1efefe4fffb0966564123570ad6b1750c33"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:20:16",
+      "sequence": 9425,
+      "chapter_label": "1KI 20",
+      "verse_label": "16",
+      "locator": {
+        "book": "1KI",
+        "chapter": 20,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 20,
+          "verse": 16
+        }
+      ],
+      "en": "They went out at noon. But Ben Hadad was drinking himself drunk in the pavilions, he and the kings, the thirty-two kings who helped him.",
+      "ko": "저희가 오정에 나가니 벤하닷은 장막에서 돕는 왕 삼십 이인으로 더불어 마시고 취한 중이라",
+      "source_text_hash": "1a4efee7708124b3fe10fadcf4fca27b7a9b27930fd18da6278c07bf52915442",
+      "translation_text_hash": "d51ed833ef54d9bf415e3857e2bd10dab598c187b3efb2cc195f745305a8c40a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 오정에 나가니 벤하닷은 장막에서 돕는 왕 삼십 이인으로 더불어 마시고 취한 중이라"
+      ],
+      "raw_text_hashes": [
+        "d51ed833ef54d9bf415e3857e2bd10dab598c187b3efb2cc195f745305a8c40a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:20:17",
+      "sequence": 9426,
+      "chapter_label": "1KI 20",
+      "verse_label": "17",
+      "locator": {
+        "book": "1KI",
+        "chapter": 20,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 20,
+          "verse": 17
+        }
+      ],
+      "en": "The young men of the princes of the provinces went out first; and Ben Hadad sent out, and they told him, saying, “Men are coming out from Samaria.”",
+      "ko": "각 도의 방백의 소년들이 먼저 나갔더라 벤하닷이 탐지군을 보내었더니 저희가 회보하여 가로되 사마리아에서 사람들이 나오더이다 하매",
+      "source_text_hash": "12f9aa37697a8e317e79aed5e144f2d70cdb8a221a3696e197b835ad6e1472a8",
+      "translation_text_hash": "0d572c88e6dc9391271b9ec4a8a6c9c15d0cfedcd9d0172bf64d21dd5f1a9cdc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "각 도의 방백의 소년들이 먼저 나갔더라 벤하닷이 탐지군을 보내었더니 저희가 회보하여 가로되 사마리아에서 사람들이 나오더이다 하매"
+      ],
+      "raw_text_hashes": [
+        "0d572c88e6dc9391271b9ec4a8a6c9c15d0cfedcd9d0172bf64d21dd5f1a9cdc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:20:18",
+      "sequence": 9427,
+      "chapter_label": "1KI 20",
+      "verse_label": "18",
+      "locator": {
+        "book": "1KI",
+        "chapter": 20,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 20,
+          "verse": 18
+        }
+      ],
+      "en": "He said, “If they have come out for peace, take them alive; or if they have come out for war, take them alive.”",
+      "ko": "저가 이르되 화친하러 나올찌라도 사로잡고 싸우러 나올찌라도 사로잡으라 하니라",
+      "source_text_hash": "570e2ee31bc7d349cf8f7e9a927430e24adfff470e38a2b72ba46449210fa4b2",
+      "translation_text_hash": "0579cf7d862afc0b9185f54ca493f003faba4071dd7baad842c4deba725aced1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 이르되 화친하러 나올찌라도 사로잡고 싸우러 나올찌라도 사로잡으라 하니라"
+      ],
+      "raw_text_hashes": [
+        "0579cf7d862afc0b9185f54ca493f003faba4071dd7baad842c4deba725aced1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:20:19",
+      "sequence": 9428,
+      "chapter_label": "1KI 20",
+      "verse_label": "19",
+      "locator": {
+        "book": "1KI",
+        "chapter": 20,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 20,
+          "verse": 19
+        }
+      ],
+      "en": "So these went out of the city, the young men of the princes of the provinces, and the army which followed them.",
+      "ko": "각 도의 방백의 소년들과 저희를 좇는 군대들이 성에서 나가서",
+      "source_text_hash": "64d861ac6579a35646cc2643f13d724a47f1bb3a6ebae6d669973f48c8c99b61",
+      "translation_text_hash": "52b18e6c03b766b42bd49184a3d7ccf56230bbf9888fd9d67d2f2194443d4249",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "각 도의 방백의 소년들과 저희를 좇는 군대들이 성에서 나가서"
+      ],
+      "raw_text_hashes": [
+        "52b18e6c03b766b42bd49184a3d7ccf56230bbf9888fd9d67d2f2194443d4249"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:20:20",
+      "sequence": 9429,
+      "chapter_label": "1KI 20",
+      "verse_label": "20",
+      "locator": {
+        "book": "1KI",
+        "chapter": 20,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 20,
+          "verse": 20
+        }
+      ],
+      "en": "They each killed his man. The Syrians fled, and Israel pursued them. Ben Hadad the king of Syria escaped on a horse with horsemen.",
+      "ko": "각각 적군을 쳐 죽이매 아람 사람이 도망하는지라 이스라엘이 쫓으니 아람 왕 벤하닷이 말을 타고 마병으로 더불어 도망하여 면하니라",
+      "source_text_hash": "9be15f39c6a68ac96a0db62943e72dcd4b7ed40d60828776630607aae7bd85b0",
+      "translation_text_hash": "08fc560da0f4eb1761f3bc84842a1dea2bb4d169385fd1757940df0d19b3994e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "각각 적군을 쳐 죽이매 아람 사람이 도망하는지라 이스라엘이 쫓으니 아람 왕 벤하닷이 말을 타고 마병으로 더불어 도망하여 면하니라"
+      ],
+      "raw_text_hashes": [
+        "08fc560da0f4eb1761f3bc84842a1dea2bb4d169385fd1757940df0d19b3994e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:20:21",
+      "sequence": 9430,
+      "chapter_label": "1KI 20",
+      "verse_label": "21",
+      "locator": {
+        "book": "1KI",
+        "chapter": 20,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 20,
+          "verse": 21
+        }
+      ],
+      "en": "The king of Israel went out and struck the horses and chariots, and killed the Syrians with a great slaughter.",
+      "ko": "이스라엘 왕이 나가서 말과 병거를 치고 또 아람 사람을 쳐서 크게 도륙하였더라",
+      "source_text_hash": "eec020f6746179910cbb9173fe4f424caaf51e184584992de2fb4ad2b85f4635",
+      "translation_text_hash": "2fd207d89e9c5087c0d3f07272cb8f0812051f1c8a20fb9a5dc28d073cefdbfd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 왕이 나가서 말과 병거를 치고 또 아람 사람을 쳐서 크게 도륙하였더라"
+      ],
+      "raw_text_hashes": [
+        "2fd207d89e9c5087c0d3f07272cb8f0812051f1c8a20fb9a5dc28d073cefdbfd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:20:22",
+      "sequence": 9431,
+      "chapter_label": "1KI 20",
+      "verse_label": "22",
+      "locator": {
+        "book": "1KI",
+        "chapter": 20,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 20,
+          "verse": 22
+        }
+      ],
+      "en": "The prophet came near to the king of Israel and said to him, “Go, strengthen yourself, and plan what you must do, for at the return of the year, the king of Syria will come up against you.”",
+      "ko": "그 선지자가 이스라엘 왕에게 나아와 가로되 왕은 가서 힘을 기르고 왕의 행할 일을 알고 준비하소서 해가 돌아오면 아람 왕이 왕을 치러 오리이다 하니라",
+      "source_text_hash": "ae534177c5a0178b4f314e37e7c9f14ab9ab2778df4f6dfb4da7dce30620de4a",
+      "translation_text_hash": "275899c9ee0c150d9f4c3b2fe0f315bdd36f15d006fadac141bddf0f9403301f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 선지자가 이스라엘 왕에게 나아와 가로되 왕은 가서 힘을 기르고 왕의 행할 일을 알고 준비하소서 해가 돌아오면 아람 왕이 왕을 치러 오리이다 하니라"
+      ],
+      "raw_text_hashes": [
+        "275899c9ee0c150d9f4c3b2fe0f315bdd36f15d006fadac141bddf0f9403301f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:20:23",
+      "sequence": 9432,
+      "chapter_label": "1KI 20",
+      "verse_label": "23",
+      "locator": {
+        "book": "1KI",
+        "chapter": 20,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 20,
+          "verse": 23
+        }
+      ],
+      "en": "The servants of the king of Syria said to him, “Their god is a god of the hills; therefore they were stronger than we. But let’s fight against them in the plain, and surely we will be stronger than they.",
+      "ko": "아람 왕의 신복들이 왕께 고하되 저희의 신은 산의 신이므로 저희가 우리보다 강하였거니와 우리가 만일 평지에서 저희와 싸우면 정녕 저희보다 강할찌라",
+      "source_text_hash": "5fb218f2eb3b909d7ff4e3026814ace4bb761087fe1a9a5c1ec105f241392efb",
+      "translation_text_hash": "42c324d638165c08e354a8ef933a6eb5d22eb57461d317c459cc70492a9768bd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아람 왕의 신복들이 왕께 고하되 저희의 신은 산의 신이므로 저희가 우리보다 강하였거니와 우리가 만일 평지에서 저희와 싸우면 정녕 저희보다 강할찌라"
+      ],
+      "raw_text_hashes": [
+        "42c324d638165c08e354a8ef933a6eb5d22eb57461d317c459cc70492a9768bd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:20:24",
+      "sequence": 9433,
+      "chapter_label": "1KI 20",
+      "verse_label": "24",
+      "locator": {
+        "book": "1KI",
+        "chapter": 20,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 20,
+          "verse": 24
+        }
+      ],
+      "en": "Do this thing: take the kings away, every man out of his place, and put captains in their place.",
+      "ko": "왕은 이 일을 행하실찌니 곧 왕들을 제하여 각각 그곳에서 떠나게 하고 저희 대신에 장관들을 두시고",
+      "source_text_hash": "ceda64078d36d012d3354ca2810f17a80350d8421f0d0de97254da458f562e88",
+      "translation_text_hash": "89c0ef404e293ea2ca2e6f7d13e3e9862b1ba0f87f360db530ee61ae4091e5a4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕은 이 일을 행하실찌니 곧 왕들을 제하여 각각 그곳에서 떠나게 하고 저희 대신에 장관들을 두시고"
+      ],
+      "raw_text_hashes": [
+        "89c0ef404e293ea2ca2e6f7d13e3e9862b1ba0f87f360db530ee61ae4091e5a4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:20:25",
+      "sequence": 9434,
+      "chapter_label": "1KI 20",
+      "verse_label": "25",
+      "locator": {
+        "book": "1KI",
+        "chapter": 20,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 20,
+          "verse": 25
+        }
+      ],
+      "en": "Muster an army like the army that you have lost, horse for horse and chariot for chariot. We will fight against them in the plain, and surely we will be stronger than they are.” He listened to their voice and did so.",
+      "ko": "또 왕의 잃어버린 군대와 같은 군대를 왕을 위하여 충수하고 말도 말대로, 병거도 병거대로 충수하고 우리가 평지에서 저희와 싸우면 정녕 저희보다 강하리이다 왕이 그 말을 듣고 그리하니라",
+      "source_text_hash": "b0cb5f656f8234e0ff76c166415d0048012ae923e1293e1820e08b6ffa4eb0e0",
+      "translation_text_hash": "677894939fcb1b3081052875ef69cb5ac27b07a84b278b7cff328f5018fa5cdd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 왕의 잃어버린 군대와 같은 군대를 왕을 위하여 충수하고 말도 말대로, 병거도 병거대로 충수하고 우리가 평지에서 저희와 싸우면 정녕 저희보다 강하리이다 왕이 그 말을 듣고 그리하니라"
+      ],
+      "raw_text_hashes": [
+        "677894939fcb1b3081052875ef69cb5ac27b07a84b278b7cff328f5018fa5cdd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:20:26",
+      "sequence": 9435,
+      "chapter_label": "1KI 20",
+      "verse_label": "26",
+      "locator": {
+        "book": "1KI",
+        "chapter": 20,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 20,
+          "verse": 26
+        }
+      ],
+      "en": "At the return of the year, Ben Hadad mustered the Syrians and went up to Aphek to fight against Israel.",
+      "ko": "해가 돌아오매 벤하닷이 아람 사람을 점고하고 아벡으로 올라와서 이스라엘과 싸우려하매",
+      "source_text_hash": "f4129a3f077ca537f1fdb2b78c72ac3a284a01c3614863918c6570838efb24eb",
+      "translation_text_hash": "d71e4b7ab8321e383f46f9d1c92bb4d80460b0241281fdd5a0de1278158dd89e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "해가 돌아오매 벤하닷이 아람 사람을 점고하고 아벡으로 올라와서 이스라엘과 싸우려하매"
+      ],
+      "raw_text_hashes": [
+        "d71e4b7ab8321e383f46f9d1c92bb4d80460b0241281fdd5a0de1278158dd89e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:20:27",
+      "sequence": 9436,
+      "chapter_label": "1KI 20",
+      "verse_label": "27",
+      "locator": {
+        "book": "1KI",
+        "chapter": 20,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 20,
+          "verse": 27
+        }
+      ],
+      "en": "The children of Israel were mustered and given provisions, and went against them. The children of Israel encamped before them like two little flocks of young goats, but the Syrians filled the country.",
+      "ko": "이스라엘 자손도 점고함을 입고 군량을 받고 마주 나가서 저희 앞에 진을 치니 이스라엘은 염소새끼의 두 적은 떼와 같고 아람 사람은 그 땅에 가득하였더라",
+      "source_text_hash": "feac8c801741e550b2b3b543bab1d024c7a8addf7c4f9771906eccb09bd13e2d",
+      "translation_text_hash": "b44f3d6e166187c5677a287c36e43f5027b647ca7cffed7957ffa983d05108a2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손도 점고함을 입고 군량을 받고 마주 나가서 저희 앞에 진을 치니 이스라엘은 염소새끼의 두 적은 떼와 같고 아람 사람은 그 땅에 가득하였더라"
+      ],
+      "raw_text_hashes": [
+        "b44f3d6e166187c5677a287c36e43f5027b647ca7cffed7957ffa983d05108a2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:20:28",
+      "sequence": 9437,
+      "chapter_label": "1KI 20",
+      "verse_label": "28",
+      "locator": {
+        "book": "1KI",
+        "chapter": 20,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 20,
+          "verse": 28
+        }
+      ],
+      "en": "A man of God came near and spoke to the king of Israel, and said, “The LORD says, ‘Because the Syrians have said, “The LORD is a god of the hills, but he is not a god of the valleys,” therefore I will deliver all this great multitude into your hand, and you shall know that I am the LORD.’”",
+      "ko": "때에 하나님의 사람이 이스라엘 왕에게 나아와 고하여 가로되 여호와의 말씀이 아람 사람이 말하기를 여호와는 산의 신이요 골짜기의 신은 아니라 하도다 그러므로 내가 이 큰 군대를 다 네 손에 붙이리니 너희는 내가 여호와인 줄 알리라 하셨나이다 하니라",
+      "source_text_hash": "e21e9227ac069fa141fd52b15b4b8759fd4cb5c58b2b9721cfc4af03b60e8006",
+      "translation_text_hash": "d4968c6fcd21fe7f79d2220d918291ad6bbc44c2a7942d103637d93ab59ccc9b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "때에 하나님의 사람이 이스라엘 왕에게 나아와 고하여 가로되 여호와의 말씀이 아람 사람이 말하기를 여호와는 산의 신이요 골짜기의 신은 아니라 하도다 그러므로 내가 이 큰 군대를 다 네 손에 붙이리니 너희는 내가 여호와인 줄 알리라 하셨나이다 하니라"
+      ],
+      "raw_text_hashes": [
+        "d4968c6fcd21fe7f79d2220d918291ad6bbc44c2a7942d103637d93ab59ccc9b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:20:29",
+      "sequence": 9438,
+      "chapter_label": "1KI 20",
+      "verse_label": "29",
+      "locator": {
+        "book": "1KI",
+        "chapter": 20,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 20,
+          "verse": 29
+        }
+      ],
+      "en": "They encamped opposite each other for seven days. Then on the seventh day the battle was joined; and the children of Israel killed one hundred thousand footmen of the Syrians in one day.",
+      "ko": "진이 서로 대한지 칠일이라 제 칠일에 접전하여 이스라엘 자손이 하루에 아람 보병 십만을 죽이매",
+      "source_text_hash": "180d252b7694393cd5b88afeb2bacb0e9e432c38e3a2dbbb8bc370fb4ec2bae1",
+      "translation_text_hash": "5f18257d7f10870189093a55e7276cc972e16cbfc496fc78863bd02ec2099f96",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "진이 서로 대한지 칠일이라 제 칠일에 접전하여 이스라엘 자손이 하루에 아람 보병 십만을 죽이매"
+      ],
+      "raw_text_hashes": [
+        "5f18257d7f10870189093a55e7276cc972e16cbfc496fc78863bd02ec2099f96"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:20:30",
+      "sequence": 9439,
+      "chapter_label": "1KI 20",
+      "verse_label": "30",
+      "locator": {
+        "book": "1KI",
+        "chapter": 20,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 20,
+          "verse": 30
+        }
+      ],
+      "en": "But the rest fled to Aphek, into the city; and the wall fell on twenty-seven thousand men who were left. Ben Hadad fled and came into the city, into an inner room.",
+      "ko": "그 남은 자는 아벡으로 도망하여 성읍으로 들어갔더니 그 성이 그 남은 자 이만 칠천 위에 무너지고 벤하닷은 도망하여 성읍에 이르러 골방으로 들어가니라",
+      "source_text_hash": "22391d79bd03432a75994bdedffe3ab849e1961d20ce0a1dcf654e857777cfea",
+      "translation_text_hash": "b4560d32c82418712c49e093ba09c226d179972716933a6cb4446ddd64b5a40e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 남은 자는 아벡으로 도망하여 성읍으로 들어갔더니 그 성이 그 남은 자 이만 칠천 위에 무너지고 벤하닷은 도망하여 성읍에 이르러 골방으로 들어가니라"
+      ],
+      "raw_text_hashes": [
+        "b4560d32c82418712c49e093ba09c226d179972716933a6cb4446ddd64b5a40e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:20:31",
+      "sequence": 9440,
+      "chapter_label": "1KI 20",
+      "verse_label": "31",
+      "locator": {
+        "book": "1KI",
+        "chapter": 20,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 20,
+          "verse": 31
+        }
+      ],
+      "en": "His servants said to him, “See now, we have heard that the kings of the house of Israel are merciful kings. Please let us put sackcloth on our bodies and ropes on our heads, and go out to the king of Israel. Maybe he will save your life.”",
+      "ko": "그 신복들이 저에게 고하되 우리가 들은즉 이스라엘 집의 왕들은 인자한 왕이라 하니 만일 우리가 굵은 베로 허리를 묶고 테두리를 머리에 이고 이스라엘 왕에게로 나아가면 저가 혹시 왕의 생명을 살리리이다 하고",
+      "source_text_hash": "ec23acf36051491554d9a12a251ee913308045f131e3c5619c57b9643b3b8e2f",
+      "translation_text_hash": "b2509132827e903e5c51acedd79c25bfbdd24114ef38aec744c7cbceaff82c08",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 신복들이 저에게 고하되 우리가 들은즉 이스라엘 집의 왕들은 인자한 왕이라 하니 만일 우리가 굵은 베로 허리를 묶고 테두리를 머리에 이고 이스라엘 왕에게로 나아가면 저가 혹시 왕의 생명을 살리리이다 하고"
+      ],
+      "raw_text_hashes": [
+        "b2509132827e903e5c51acedd79c25bfbdd24114ef38aec744c7cbceaff82c08"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:20:32",
+      "sequence": 9441,
+      "chapter_label": "1KI 20",
+      "verse_label": "32",
+      "locator": {
+        "book": "1KI",
+        "chapter": 20,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 20,
+          "verse": 32
+        }
+      ],
+      "en": "So they put sackcloth on their bodies and ropes on their heads, and came to the king of Israel, and said, “Your servant Ben Hadad says, ‘Please let me live.’” He said, “Is he still alive? He is my brother.”",
+      "ko": "저희가 굵은 베로 허리를 묶고 테두리를 머리에 이고 이스라엘 왕에게 이르러 가로되 왕의 종 벤하닷이 청하기를 나의 생명을 살려주옵소서 하더이다 아합이 가로되 저가 오히려 살았느냐 저는 나의 형제니라",
+      "source_text_hash": "a6284cd04e6528a920f6e376fd37ed94e413c1e0b0b02fb7c4bf2c0e885131cc",
+      "translation_text_hash": "5ddd66eceac6e359d9a323c1585382e3179c50723be0bea2c19b051e9a9b0d10",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 굵은 베로 허리를 묶고 테두리를 머리에 이고 이스라엘 왕에게 이르러 가로되 왕의 종 벤하닷이 청하기를 나의 생명을 살려주옵소서 하더이다 아합이 가로되 저가 오히려 살았느냐 저는 나의 형제니라"
+      ],
+      "raw_text_hashes": [
+        "5ddd66eceac6e359d9a323c1585382e3179c50723be0bea2c19b051e9a9b0d10"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:20:33",
+      "sequence": 9442,
+      "chapter_label": "1KI 20",
+      "verse_label": "33",
+      "locator": {
+        "book": "1KI",
+        "chapter": 20,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 20,
+          "verse": 33
+        }
+      ],
+      "en": "Now the men observed diligently and hurried to take this phrase; and they said, “Your brother Ben Hadad.” Then he said, “Go, bring him.” Then Ben Hadad came out to him; and he caused him to come up into the chariot.",
+      "ko": "그 사람들이 징조로 여기고 그 말을 얼른 받아 대답하여 가로되 벤하닷은 왕의 형제니이다 왕이 가로되 너희는 가서 저를 인도하여 오라 벤하닷이 이에 왕에게 나아오니 왕이 저를 병거에 올린지라",
+      "source_text_hash": "7d81349e8dd2373f807645e50805cedc8884037486d1875ec3dc1e405765a031",
+      "translation_text_hash": "ff1b1dba03b81b60d5a3c140f1993ce06423c4c575d03fbdcc0cd78e03fa8bf5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 사람들이 징조로 여기고 그 말을 얼른 받아 대답하여 가로되 벤하닷은 왕의 형제니이다 왕이 가로되 너희는 가서 저를 인도하여 오라 벤하닷이 이에 왕에게 나아오니 왕이 저를 병거에 올린지라"
+      ],
+      "raw_text_hashes": [
+        "ff1b1dba03b81b60d5a3c140f1993ce06423c4c575d03fbdcc0cd78e03fa8bf5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:20:34",
+      "sequence": 9443,
+      "chapter_label": "1KI 20",
+      "verse_label": "34",
+      "locator": {
+        "book": "1KI",
+        "chapter": 20,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 20,
+          "verse": 34
+        }
+      ],
+      "en": "Ben Hadad said to him, “The cities which my father took from your father I will restore. You shall make streets for yourself in Damascus, as my father made in Samaria.” “I”, said Ahab, “will let you go with this covenant.” So he made a covenant with him and let him go.",
+      "ko": "벤하닷이 왕께 고하되 내 부친이 당신의 부친에게서 빼앗은 모든 성읍을 내가 돌려 보내리이다 또 나의 부친이 사마리아에서 만든 것 같이 당신도 다메섹에서 당신을 위하여 거리를 만드소서 아합이 가로되 내가 이 약조로 당신을 놓으리라 하고 이에 더불어 약조하고 저를 놓았더라",
+      "source_text_hash": "d73859893399cef8db527565119d8212a2ee4085775eaf1acbaf5bca62626d45",
+      "translation_text_hash": "d450a2afe77e6e9c7a790873ecb155ffe2fd44b9d9b64eac36e221c17e3c808f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "벤하닷이 왕께 고하되 내 부친이 당신의 부친에게서 빼앗은 모든 성읍을 내가 돌려 보내리이다 또 나의 부친이 사마리아에서 만든 것 같이 당신도 다메섹에서 당신을 위하여 거리를 만드소서 아합이 가로되 내가 이 약조로 당신을 놓으리라 하고 이에 더불어 약조하고 저를 놓았더라"
+      ],
+      "raw_text_hashes": [
+        "d450a2afe77e6e9c7a790873ecb155ffe2fd44b9d9b64eac36e221c17e3c808f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:20:35",
+      "sequence": 9444,
+      "chapter_label": "1KI 20",
+      "verse_label": "35",
+      "locator": {
+        "book": "1KI",
+        "chapter": 20,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 20,
+          "verse": 35
+        }
+      ],
+      "en": "A certain man of the sons of the prophets said to his fellow by the LORD’s word, “Please strike me!” The man refused to strike him.",
+      "ko": "선지자의 무리중 한 사람이 여호와의 말씀으로 그 동무에게 이르되 너는 나를 치라 하였더니 그 사람이 치기를 싫어하는지라",
+      "source_text_hash": "196f6a9503647af7226a965c5359e3e84c481133471501b9ff58b2aa8619c51e",
+      "translation_text_hash": "8f24740e47c632faeeaa418a5ea56dfee5a380a068092493aedae6cd7274b90e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "선지자의 무리중 한 사람이 여호와의 말씀으로 그 동무에게 이르되 너는 나를 치라 하였더니 그 사람이 치기를 싫어하는지라"
+      ],
+      "raw_text_hashes": [
+        "8f24740e47c632faeeaa418a5ea56dfee5a380a068092493aedae6cd7274b90e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:20:36",
+      "sequence": 9445,
+      "chapter_label": "1KI 20",
+      "verse_label": "36",
+      "locator": {
+        "book": "1KI",
+        "chapter": 20,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 20,
+          "verse": 36
+        }
+      ],
+      "en": "Then he said to him, “Because you have not obeyed the LORD’s voice, behold, as soon as you have departed from me, a lion will kill you.” As soon as he had departed from him, a lion found him and killed him.",
+      "ko": "저가 그 사람에게 이르되 네가 여호와의 말씀을 듣지 아니하였으니 네가 나를 떠나갈 때에 사자가 너를 죽이리라 그 사람이 저의 곁을 떠나가더니 사자가 그를 만나 죽였더라",
+      "source_text_hash": "3e62ffb929d838827bc029ab97dc445f2456829685d39133fce612ee0d3d6fc2",
+      "translation_text_hash": "1a95d7daf6e5f0b07466ed8e7cf9b22417e707d562f3b897c17c31f3892a09ff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 그 사람에게 이르되 네가 여호와의 말씀을 듣지 아니하였으니 네가 나를 떠나갈 때에 사자가 너를 죽이리라 그 사람이 저의 곁을 떠나가더니 사자가 그를 만나 죽였더라"
+      ],
+      "raw_text_hashes": [
+        "1a95d7daf6e5f0b07466ed8e7cf9b22417e707d562f3b897c17c31f3892a09ff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:20:37",
+      "sequence": 9446,
+      "chapter_label": "1KI 20",
+      "verse_label": "37",
+      "locator": {
+        "book": "1KI",
+        "chapter": 20,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 20,
+          "verse": 37
+        }
+      ],
+      "en": "Then he found another man, and said, “Please strike me.” The man struck him and wounded him.",
+      "ko": "저가 또 다른 사람을 만나 가로되 너는 나를 치라 하매 그 사람이 저를 치되 상하도록 친지라",
+      "source_text_hash": "3c01012c784690c03a88953198ed6eb61681b39e2a26e930530f96262d80ad45",
+      "translation_text_hash": "1a53e08c4228240a99b7554a89d044d8f3bcb717a92af1b9c14cf35e89aacd32",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 또 다른 사람을 만나 가로되 너는 나를 치라 하매 그 사람이 저를 치되 상하도록 친지라"
+      ],
+      "raw_text_hashes": [
+        "1a53e08c4228240a99b7554a89d044d8f3bcb717a92af1b9c14cf35e89aacd32"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:20:38",
+      "sequence": 9447,
+      "chapter_label": "1KI 20",
+      "verse_label": "38",
+      "locator": {
+        "book": "1KI",
+        "chapter": 20,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 20,
+          "verse": 38
+        }
+      ],
+      "en": "So the prophet departed and waited for the king by the way, and disguised himself with his headband over his eyes.",
+      "ko": "선지자가 가서 수건으로 그 눈을 가리워 변형하고 길 가에서 왕을 기다리다가",
+      "source_text_hash": "2ac1dd0fd971a116178cd1348b209a9fbf41161879ba093bd762512646685300",
+      "translation_text_hash": "e3821c734d727145fcc4b2885edc5afafdb9a2d381679f5ffc259e5e29f64948",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "선지자가 가서 수건으로 그 눈을 가리워 변형하고 길 가에서 왕을 기다리다가"
+      ],
+      "raw_text_hashes": [
+        "e3821c734d727145fcc4b2885edc5afafdb9a2d381679f5ffc259e5e29f64948"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:20:39",
+      "sequence": 9448,
+      "chapter_label": "1KI 20",
+      "verse_label": "39",
+      "locator": {
+        "book": "1KI",
+        "chapter": 20,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 20,
+          "verse": 39
+        }
+      ],
+      "en": "As the king passed by, he cried to the king, and he said, “Your servant went out into the middle of the battle; and behold, a man came over and brought a man to me, and said, ‘Guard this man! If by any means he is missing, then your life shall be for his life, or else you shall pay a talent of silver.’",
+      "ko": "왕이 지나갈 때에 소리질러 왕을 불러 가로되 종이 전장 가운데 나갔더니 한 사람이 돌이켜 어떤 사람을 끌고 내게로 와서 말하기를 이 사람을 지키라 만일 저를 잃어버리면 네 생명으로 저의 생명을 대신하거나 그렇지 아니하면 네가 은 한 달란트를 내어야 하리라 하였거늘",
+      "source_text_hash": "a52af91534c4c577f5c1d8f0da345a1e3ce98541a5194b6b1e9d4782bc6687e7",
+      "translation_text_hash": "0b75979662af2779afadeae1faf80cdb5a885b36ad114b0bc3b4d4b82608e9fb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 지나갈 때에 소리질러 왕을 불러 가로되 종이 전장 가운데 나갔더니 한 사람이 돌이켜 어떤 사람을 끌고 내게로 와서 말하기를 이 사람을 지키라 만일 저를 잃어버리면 네 생명으로 저의 생명을 대신하거나 그렇지 아니하면 네가 은 한 달란트를 내어야 하리라 하였거늘"
+      ],
+      "raw_text_hashes": [
+        "0b75979662af2779afadeae1faf80cdb5a885b36ad114b0bc3b4d4b82608e9fb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:20:40",
+      "sequence": 9449,
+      "chapter_label": "1KI 20",
+      "verse_label": "40",
+      "locator": {
+        "book": "1KI",
+        "chapter": 20,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 20,
+          "verse": 40
+        }
+      ],
+      "en": "As your servant was busy here and there, he was gone.” The king of Israel said to him, “So shall your judgment be. You yourself have decided it.”",
+      "ko": "종이 이리 저리 일 볼 동안에 저가 없어졌나이다 이스라엘 왕이 저에게 이르되 네가 스스로 결정하였으니 그대로 당하여야 하리라",
+      "source_text_hash": "e6d281d638b582caa7f4c5305a7f3b4d388c2e0f4156a417f6603565adf7eeb4",
+      "translation_text_hash": "f17f841893d966f7dec00e3845ba98b899147409e327e08995d7795f6aae1e37",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "종이 이리 저리 일 볼 동안에 저가 없어졌나이다 이스라엘 왕이 저에게 이르되 네가 스스로 결정하였으니 그대로 당하여야 하리라"
+      ],
+      "raw_text_hashes": [
+        "f17f841893d966f7dec00e3845ba98b899147409e327e08995d7795f6aae1e37"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:20:41",
+      "sequence": 9450,
+      "chapter_label": "1KI 20",
+      "verse_label": "41",
+      "locator": {
+        "book": "1KI",
+        "chapter": 20,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 20,
+          "verse": 41
+        }
+      ],
+      "en": "He hurried, and took the headband away from his eyes; and the king of Israel recognized that he was one of the prophets.",
+      "ko": "저가 급히 그 눈에 가리운 수건을 벗으니 이스라엘 왕이 저는 선지자 중 한 사람인 줄 알아 본지라",
+      "source_text_hash": "1f3417c310a5b9aaf18508b9bedc144c3026fc7916cdf1c5c173df4fdc68856a",
+      "translation_text_hash": "f812feaea9621e890a79f5dfca94457afa8e470d0a6fe226fd7aa48e07805ce8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 급히 그 눈에 가리운 수건을 벗으니 이스라엘 왕이 저는 선지자 중 한 사람인 줄 알아 본지라"
+      ],
+      "raw_text_hashes": [
+        "f812feaea9621e890a79f5dfca94457afa8e470d0a6fe226fd7aa48e07805ce8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:20:42",
+      "sequence": 9451,
+      "chapter_label": "1KI 20",
+      "verse_label": "42",
+      "locator": {
+        "book": "1KI",
+        "chapter": 20,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 20,
+          "verse": 42
+        }
+      ],
+      "en": "He said to him, “The LORD says, ‘Because you have let go out of your hand the man whom I had devoted to destruction, therefore your life will take the place of his life, and your people take the place of his people.’”",
+      "ko": "저가 왕께 고하되 여호와의 말씀이 내가 멸하기로 작정한 사람을 네 손으로 놓았은즉 네 목숨은 저의 목숨을 대신하고 네 백성은 저의 백성을 대신하리라 하셨나이다",
+      "source_text_hash": "efd509011badcde1d2edde9c9963a5c92a703d90311bfed92043f280fd7b20c5",
+      "translation_text_hash": "f0abb6e3f8576e94ae0486f85963b555f01a1ec703e33444397e55ffee9f96e3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 왕께 고하되 여호와의 말씀이 내가 멸하기로 작정한 사람을 네 손으로 놓았은즉 네 목숨은 저의 목숨을 대신하고 네 백성은 저의 백성을 대신하리라 하셨나이다"
+      ],
+      "raw_text_hashes": [
+        "f0abb6e3f8576e94ae0486f85963b555f01a1ec703e33444397e55ffee9f96e3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:20:43",
+      "sequence": 9452,
+      "chapter_label": "1KI 20",
+      "verse_label": "43",
+      "locator": {
+        "book": "1KI",
+        "chapter": 20,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 20,
+          "verse": 43
+        }
+      ],
+      "en": "The king of Israel went to his house sullen and angry, and came to Samaria.",
+      "ko": "이스라엘 왕이 근심하고 답답하여 그 궁으로 돌아가려고 사마리아에 이르니라",
+      "source_text_hash": "386c4717e28869d33edabcdb41f10be61b31b24c067d5ce416b9a3b7f5e0d00a",
+      "translation_text_hash": "cdcba30d63bd8b881c8593621c9619b02e90ef738ca7112ceab5cf1061194090",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 왕이 근심하고 답답하여 그 궁으로 돌아가려고 사마리아에 이르니라"
+      ],
+      "raw_text_hashes": [
+        "cdcba30d63bd8b881c8593621c9619b02e90ef738ca7112ceab5cf1061194090"
+      ]
+    }
+  ]
+}

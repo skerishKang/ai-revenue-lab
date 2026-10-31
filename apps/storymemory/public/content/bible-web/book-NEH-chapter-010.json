@@ -1,0 +1,1261 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:NEH:chapter:010",
+  "unit_ordinal": 423,
+  "unit_label": "NEH 10",
+  "book_code": "NEH",
+  "chapter_number": 10,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:NEH:10:1",
+      "sequence": 12551,
+      "chapter_label": "NEH 10",
+      "verse_label": "1",
+      "locator": {
+        "book": "NEH",
+        "chapter": 10,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 10,
+          "verse": 1
+        }
+      ],
+      "en": "Now those who sealed were: Nehemiah the governor, the son of Hacaliah, and Zedekiah,",
+      "ko": "그 인친 자는 하가랴의 아들 방백 느헤미야와 시드기야,",
+      "source_text_hash": "dc0de72f5dc2de820f5d4a7fdae0c3afbd0e8ee8bb25452f0660f856db9b237f",
+      "translation_text_hash": "1c29b59f854f70acc3e8a8e20bda0e05b458702713f0aea37cbd40c62e9b7a4c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 인친 자는 하가랴의 아들 방백 느헤미야와 시드기야,"
+      ],
+      "raw_text_hashes": [
+        "1c29b59f854f70acc3e8a8e20bda0e05b458702713f0aea37cbd40c62e9b7a4c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:10:2",
+      "sequence": 12552,
+      "chapter_label": "NEH 10",
+      "verse_label": "2",
+      "locator": {
+        "book": "NEH",
+        "chapter": 10,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 10,
+          "verse": 2
+        }
+      ],
+      "en": "Seraiah, Azariah, Jeremiah,",
+      "ko": "스라야, 아사랴, 예레미야,",
+      "source_text_hash": "089dcd30dc60be7bb2043e3fe6375a592b06f0bafb837c00d5b7f974553eb3fc",
+      "translation_text_hash": "30c46d8f41b3a57f5775d27dbddb94f782ede19fe3b5ed6b02423e6b31fef1a2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "스라야, 아사랴, 예레미야,"
+      ],
+      "raw_text_hashes": [
+        "30c46d8f41b3a57f5775d27dbddb94f782ede19fe3b5ed6b02423e6b31fef1a2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:10:3",
+      "sequence": 12553,
+      "chapter_label": "NEH 10",
+      "verse_label": "3",
+      "locator": {
+        "book": "NEH",
+        "chapter": 10,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 10,
+          "verse": 3
+        }
+      ],
+      "en": "Pashhur, Amariah, Malchijah,",
+      "ko": "바스훌, 아마랴, 말기야,",
+      "source_text_hash": "54185c4ea0930258375ac0b4fcb2da200e94ce92536dc05b845bf4f32eef240d",
+      "translation_text_hash": "60f50f55d09c00f076d46180f87527666586aabe1d2a9108276cbfe14b1cdfb1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바스훌, 아마랴, 말기야,"
+      ],
+      "raw_text_hashes": [
+        "60f50f55d09c00f076d46180f87527666586aabe1d2a9108276cbfe14b1cdfb1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:10:4",
+      "sequence": 12554,
+      "chapter_label": "NEH 10",
+      "verse_label": "4",
+      "locator": {
+        "book": "NEH",
+        "chapter": 10,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 10,
+          "verse": 4
+        }
+      ],
+      "en": "Hattush, Shebaniah, Malluch,",
+      "ko": "핫두스, 스바냐, 말룩,",
+      "source_text_hash": "5e9f533558b6f6c942b31dbc9bed4727daabc7a0e5c71e229c21f7c92c6ac375",
+      "translation_text_hash": "6f10e000083fe7adb32ea74455101214498fddf4d469480d6e0e032afaca1c48",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "핫두스, 스바냐, 말룩,"
+      ],
+      "raw_text_hashes": [
+        "6f10e000083fe7adb32ea74455101214498fddf4d469480d6e0e032afaca1c48"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:10:5",
+      "sequence": 12555,
+      "chapter_label": "NEH 10",
+      "verse_label": "5",
+      "locator": {
+        "book": "NEH",
+        "chapter": 10,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 10,
+          "verse": 5
+        }
+      ],
+      "en": "Harim, Meremoth, Obadiah,",
+      "ko": "하림, 므레못, 오바댜,",
+      "source_text_hash": "b230fbe1b36b49702f9b003be08a2fea67caf727f7c82de987f5ee615dd88d37",
+      "translation_text_hash": "f4d7e2a6c87ac3197fd6f00700fd909b5d90c50671a523dbe364ff1b47580b96",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하림, 므레못, 오바댜,"
+      ],
+      "raw_text_hashes": [
+        "f4d7e2a6c87ac3197fd6f00700fd909b5d90c50671a523dbe364ff1b47580b96"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:10:6",
+      "sequence": 12556,
+      "chapter_label": "NEH 10",
+      "verse_label": "6",
+      "locator": {
+        "book": "NEH",
+        "chapter": 10,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 10,
+          "verse": 6
+        }
+      ],
+      "en": "Daniel, Ginnethon, Baruch,",
+      "ko": "다니엘, 긴느돈, 바룩,",
+      "source_text_hash": "53582f17af90eec62a0f63e7e3076af33bbbe098429cce3cd022e40065538377",
+      "translation_text_hash": "b33b9109d6ddb529e93284a0b02f7b7bfc992589e1c35a4ed795bd4312401189",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다니엘, 긴느돈, 바룩,"
+      ],
+      "raw_text_hashes": [
+        "b33b9109d6ddb529e93284a0b02f7b7bfc992589e1c35a4ed795bd4312401189"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:10:7",
+      "sequence": 12557,
+      "chapter_label": "NEH 10",
+      "verse_label": "7",
+      "locator": {
+        "book": "NEH",
+        "chapter": 10,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 10,
+          "verse": 7
+        }
+      ],
+      "en": "Meshullam, Abijah, Mijamin,",
+      "ko": "므술람, 아비야, 미야민,",
+      "source_text_hash": "7a18233a5dcd347c0316756d47e992e7ad36b14895dbef1259fe4b50128fb8ad",
+      "translation_text_hash": "51b53bc3b52fab572d04916292758eecd0f3a1951baaccc3df9044ed66eadc48",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "므술람, 아비야, 미야민,"
+      ],
+      "raw_text_hashes": [
+        "51b53bc3b52fab572d04916292758eecd0f3a1951baaccc3df9044ed66eadc48"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:10:8",
+      "sequence": 12558,
+      "chapter_label": "NEH 10",
+      "verse_label": "8",
+      "locator": {
+        "book": "NEH",
+        "chapter": 10,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 10,
+          "verse": 8
+        }
+      ],
+      "en": "Maaziah, Bilgai, and Shemaiah. These were the priests.",
+      "ko": "마아시야, 빌개, 스마야니 이는 다 제사장이요",
+      "source_text_hash": "ccf4522d5cf8e7d5e8debedf2d3ce62527209dcfa7098ba657fcb0fe48283e6a",
+      "translation_text_hash": "a42ec2d57fe6b203f956d3c0996b8339660c558957e405b4e5a58af7b2b1355d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마아시야, 빌개, 스마야니 이는 다 제사장이요"
+      ],
+      "raw_text_hashes": [
+        "a42ec2d57fe6b203f956d3c0996b8339660c558957e405b4e5a58af7b2b1355d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:10:9",
+      "sequence": 12559,
+      "chapter_label": "NEH 10",
+      "verse_label": "9",
+      "locator": {
+        "book": "NEH",
+        "chapter": 10,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 10,
+          "verse": 9
+        }
+      ],
+      "en": "The Levites: Jeshua the son of Azaniah, Binnui of the sons of Henadad, Kadmiel;",
+      "ko": "또 레위 사람 곧 아사냐의 아들 예수아, 헤나닷의 자손 중 빈누이, 갓미엘과",
+      "source_text_hash": "43e22226eadf4501ada9849b5e1a8396bb1deef37a2cefbdc26ff40c4d5aa60b",
+      "translation_text_hash": "264935905d83ddb0cce532507612190c13b803a7ab55d69a5f42769b7dc121b8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 레위 사람 곧 아사냐의 아들 예수아, 헤나닷의 자손 중 빈누이, 갓미엘과"
+      ],
+      "raw_text_hashes": [
+        "264935905d83ddb0cce532507612190c13b803a7ab55d69a5f42769b7dc121b8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:10:10",
+      "sequence": 12560,
+      "chapter_label": "NEH 10",
+      "verse_label": "10",
+      "locator": {
+        "book": "NEH",
+        "chapter": 10,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 10,
+          "verse": 10
+        }
+      ],
+      "en": "and their brothers, Shebaniah, Hodiah, Kelita, Pelaiah, Hanan,",
+      "ko": "그 형제 스바냐, 호디야, 그리다, 블라야, 하난,",
+      "source_text_hash": "feaf682d918b45df28f5c360a7b4095bcdedfec31401a14a972ff342a07473d8",
+      "translation_text_hash": "c4a6901d816ca3dcb551de0b047232d662ca404fbf69320d468f14d985c001f8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 형제 스바냐, 호디야, 그리다, 블라야, 하난,"
+      ],
+      "raw_text_hashes": [
+        "c4a6901d816ca3dcb551de0b047232d662ca404fbf69320d468f14d985c001f8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:10:11",
+      "sequence": 12561,
+      "chapter_label": "NEH 10",
+      "verse_label": "11",
+      "locator": {
+        "book": "NEH",
+        "chapter": 10,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 10,
+          "verse": 11
+        }
+      ],
+      "en": "Mica, Rehob, Hashabiah,",
+      "ko": "미가, 르홉, 하사뱌,",
+      "source_text_hash": "565f4023a14c55a0031c11fcd2bd53bdf99bb63da4a9cb1ea44cd032d41c1ab7",
+      "translation_text_hash": "64b37eeaeba54ce4da7a6efc6cf0f46f433a41285f17d1be3cf36916b5484f4c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "미가, 르홉, 하사뱌,"
+      ],
+      "raw_text_hashes": [
+        "64b37eeaeba54ce4da7a6efc6cf0f46f433a41285f17d1be3cf36916b5484f4c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:10:12",
+      "sequence": 12562,
+      "chapter_label": "NEH 10",
+      "verse_label": "12",
+      "locator": {
+        "book": "NEH",
+        "chapter": 10,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 10,
+          "verse": 12
+        }
+      ],
+      "en": "Zaccur, Sherebiah, Shebaniah,",
+      "ko": "삭굴, 세레뱌, 스바냐,",
+      "source_text_hash": "86f40ba857ab0b1415561d6123c6e315b153713483fbb7a956423b7c7764ecbe",
+      "translation_text_hash": "1aaa8e4377706216e7a1ab97b25aeb427ec135befc255658f347c2f7d63fe0cf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "삭굴, 세레뱌, 스바냐,"
+      ],
+      "raw_text_hashes": [
+        "1aaa8e4377706216e7a1ab97b25aeb427ec135befc255658f347c2f7d63fe0cf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:10:13",
+      "sequence": 12563,
+      "chapter_label": "NEH 10",
+      "verse_label": "13",
+      "locator": {
+        "book": "NEH",
+        "chapter": 10,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 10,
+          "verse": 13
+        }
+      ],
+      "en": "Hodiah, Bani, and Beninu.",
+      "ko": "호디야, 바니, 브니누요",
+      "source_text_hash": "3c8e1b18f7d87d53d4cc3d3b2b64c02b96fc729e72a908ef8cedcbc67230c805",
+      "translation_text_hash": "24934027dca993de390bb86bbd884013550e982f0e48ac1157ee35b4bbb563c0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "호디야, 바니, 브니누요"
+      ],
+      "raw_text_hashes": [
+        "24934027dca993de390bb86bbd884013550e982f0e48ac1157ee35b4bbb563c0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:10:14",
+      "sequence": 12564,
+      "chapter_label": "NEH 10",
+      "verse_label": "14",
+      "locator": {
+        "book": "NEH",
+        "chapter": 10,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 10,
+          "verse": 14
+        }
+      ],
+      "en": "The chiefs of the people: Parosh, Pahathmoab, Elam, Zattu, Bani,",
+      "ko": "또 백성의 두목들 곧 바로스, 바핫모압, 엘람, 삿두, 바니,",
+      "source_text_hash": "7676e00686ff0e7b56d541937056543cdb796f86517d53ca6aa4a6a51fd4f366",
+      "translation_text_hash": "440116e6d97a7478fd2fc114dc42e88f7452ae1a4a43078c80cbaebd36c57ebf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 백성의 두목들 곧 바로스, 바핫모압, 엘람, 삿두, 바니,"
+      ],
+      "raw_text_hashes": [
+        "440116e6d97a7478fd2fc114dc42e88f7452ae1a4a43078c80cbaebd36c57ebf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:10:15",
+      "sequence": 12565,
+      "chapter_label": "NEH 10",
+      "verse_label": "15",
+      "locator": {
+        "book": "NEH",
+        "chapter": 10,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 10,
+          "verse": 15
+        }
+      ],
+      "en": "Bunni, Azgad, Bebai,",
+      "ko": "분니, 아스갓, 베배,",
+      "source_text_hash": "c20294f7d5046ac29e09eecc2539bcb44e82b8ae348f1dc8b1bef0e766844cf9",
+      "translation_text_hash": "a00a7b11ad7f56389a5b19223b119207b387f6b866a4fc399048d1d07183479e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "분니, 아스갓, 베배,"
+      ],
+      "raw_text_hashes": [
+        "a00a7b11ad7f56389a5b19223b119207b387f6b866a4fc399048d1d07183479e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:10:16",
+      "sequence": 12566,
+      "chapter_label": "NEH 10",
+      "verse_label": "16",
+      "locator": {
+        "book": "NEH",
+        "chapter": 10,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 10,
+          "verse": 16
+        }
+      ],
+      "en": "Adonijah, Bigvai, Adin,",
+      "ko": "아도니야, 비그왜, 아딘,",
+      "source_text_hash": "be381cab7f42881e8bb487c94624774aa3285d6a0f5b45c3085149e3db235fed",
+      "translation_text_hash": "b0a0aa93032f86796270086eacb8a6b5c9e1c0b24026517ab3e8fabbc3a6082e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아도니야, 비그왜, 아딘,"
+      ],
+      "raw_text_hashes": [
+        "b0a0aa93032f86796270086eacb8a6b5c9e1c0b24026517ab3e8fabbc3a6082e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:10:17",
+      "sequence": 12567,
+      "chapter_label": "NEH 10",
+      "verse_label": "17",
+      "locator": {
+        "book": "NEH",
+        "chapter": 10,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 10,
+          "verse": 17
+        }
+      ],
+      "en": "Ater, Hezekiah, Azzur,",
+      "ko": "아델, 히스기야, 앗술,",
+      "source_text_hash": "7bb13ef4aa7f3b78a467394acc28069653a253e9d91b87526dd22c41c892782c",
+      "translation_text_hash": "959c6319ad9732c557aea1ee8d069c28de0be8427ffbf988d575c914859c8450",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아델, 히스기야, 앗술,"
+      ],
+      "raw_text_hashes": [
+        "959c6319ad9732c557aea1ee8d069c28de0be8427ffbf988d575c914859c8450"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:10:18",
+      "sequence": 12568,
+      "chapter_label": "NEH 10",
+      "verse_label": "18",
+      "locator": {
+        "book": "NEH",
+        "chapter": 10,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 10,
+          "verse": 18
+        }
+      ],
+      "en": "Hodiah, Hashum, Bezai,",
+      "ko": "호디야, 하숨, 베새,",
+      "source_text_hash": "5c506517f8a458721792dd04707b31cd1f1f76d92c20123dfca97c1135259356",
+      "translation_text_hash": "b691e83f147228c02a8ef60fa7217b44250d486d828bb3dc0932dd934b22e5d5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "호디야, 하숨, 베새,"
+      ],
+      "raw_text_hashes": [
+        "b691e83f147228c02a8ef60fa7217b44250d486d828bb3dc0932dd934b22e5d5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:10:19",
+      "sequence": 12569,
+      "chapter_label": "NEH 10",
+      "verse_label": "19",
+      "locator": {
+        "book": "NEH",
+        "chapter": 10,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 10,
+          "verse": 19
+        }
+      ],
+      "en": "Hariph, Anathoth, Nobai,",
+      "ko": "하립, 아나돗, 노배,",
+      "source_text_hash": "82d28199c35c01930719ea13c6e97579a305697b95ca66b325aba0cec0f7d413",
+      "translation_text_hash": "0298340a63082318006adcecd49cb5a0da8351f4fd2abdf99a27897eeaaf40e3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하립, 아나돗, 노배,"
+      ],
+      "raw_text_hashes": [
+        "0298340a63082318006adcecd49cb5a0da8351f4fd2abdf99a27897eeaaf40e3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:10:20",
+      "sequence": 12570,
+      "chapter_label": "NEH 10",
+      "verse_label": "20",
+      "locator": {
+        "book": "NEH",
+        "chapter": 10,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 10,
+          "verse": 20
+        }
+      ],
+      "en": "Magpiash, Meshullam, Hezir,",
+      "ko": "막비아스, 므술람, 헤실,",
+      "source_text_hash": "f862bd77bd12f0c40c95c973987747f0b76dad87d2242e6ab9b9c713b10d191b",
+      "translation_text_hash": "b168a810b8d9fe601a384684c58919737f7efb58c4ac3a59647b3c73428c7c98",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "막비아스, 므술람, 헤실,"
+      ],
+      "raw_text_hashes": [
+        "b168a810b8d9fe601a384684c58919737f7efb58c4ac3a59647b3c73428c7c98"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:10:21",
+      "sequence": 12571,
+      "chapter_label": "NEH 10",
+      "verse_label": "21",
+      "locator": {
+        "book": "NEH",
+        "chapter": 10,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 10,
+          "verse": 21
+        }
+      ],
+      "en": "Meshezabel, Zadok, Jaddua,",
+      "ko": "므세사벨, 사독, 얏두아,",
+      "source_text_hash": "4b0ccb3113e73938dd174c2133918afa8d9723b489cff92f3574108d4b0dba78",
+      "translation_text_hash": "7151614cbe3e4f1ad4d06ce54d6d7af42651f18202d7f8a77dd49de0f92d6812",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "므세사벨, 사독, 얏두아,"
+      ],
+      "raw_text_hashes": [
+        "7151614cbe3e4f1ad4d06ce54d6d7af42651f18202d7f8a77dd49de0f92d6812"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:10:22",
+      "sequence": 12572,
+      "chapter_label": "NEH 10",
+      "verse_label": "22",
+      "locator": {
+        "book": "NEH",
+        "chapter": 10,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 10,
+          "verse": 22
+        }
+      ],
+      "en": "Pelatiah, Hanan, Anaiah,",
+      "ko": "블라댜, 하난, 아나야,",
+      "source_text_hash": "2695f1e9699a7e78508c8b1a910bbd11f4a07801076e42f48c730e5aa7e816fa",
+      "translation_text_hash": "b5782de915dedfeeea56ded552f5408819b71a7696bbfd95e1e29808fb3c0e0c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "블라댜, 하난, 아나야,"
+      ],
+      "raw_text_hashes": [
+        "b5782de915dedfeeea56ded552f5408819b71a7696bbfd95e1e29808fb3c0e0c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:10:23",
+      "sequence": 12573,
+      "chapter_label": "NEH 10",
+      "verse_label": "23",
+      "locator": {
+        "book": "NEH",
+        "chapter": 10,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 10,
+          "verse": 23
+        }
+      ],
+      "en": "Hoshea, Hananiah, Hasshub,",
+      "ko": "호세아, 하나냐, 핫숩,",
+      "source_text_hash": "86bc79b5e4fd580410f31facada48fc05f63fa7745bf590cfe901e63cc72ce1b",
+      "translation_text_hash": "57475c8c133e7d0c60dc7608ec822343a6e9e3f731b4ec3b557533523b439985",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "호세아, 하나냐, 핫숩,"
+      ],
+      "raw_text_hashes": [
+        "57475c8c133e7d0c60dc7608ec822343a6e9e3f731b4ec3b557533523b439985"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:10:24",
+      "sequence": 12574,
+      "chapter_label": "NEH 10",
+      "verse_label": "24",
+      "locator": {
+        "book": "NEH",
+        "chapter": 10,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 10,
+          "verse": 24
+        }
+      ],
+      "en": "Hallohesh, Pilha, Shobek,",
+      "ko": "할르헤스, 빌하, 소벡,",
+      "source_text_hash": "ca352be25672112edb3b11a3dd95114642a44ab159cd53c8bd688ba74b496858",
+      "translation_text_hash": "30d2f716059f50c5530f2583e40c0edf2f5ec342f02e5ebabdf7a82c2ae8c12a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "할르헤스, 빌하, 소벡,"
+      ],
+      "raw_text_hashes": [
+        "30d2f716059f50c5530f2583e40c0edf2f5ec342f02e5ebabdf7a82c2ae8c12a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:10:25",
+      "sequence": 12575,
+      "chapter_label": "NEH 10",
+      "verse_label": "25",
+      "locator": {
+        "book": "NEH",
+        "chapter": 10,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 10,
+          "verse": 25
+        }
+      ],
+      "en": "Rehum, Hashabnah, Maaseiah,",
+      "ko": "르훔, 하삽나, 마아세야,",
+      "source_text_hash": "d65cca46d8ebbdd28f11c97023eab11b5c9c8ffa7a76781f7241ed713986cb59",
+      "translation_text_hash": "aa3adef2249ca650ccafa35c24324d5ba78d5d712e010ee56eef4043f039794f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "르훔, 하삽나, 마아세야,"
+      ],
+      "raw_text_hashes": [
+        "aa3adef2249ca650ccafa35c24324d5ba78d5d712e010ee56eef4043f039794f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:10:26",
+      "sequence": 12576,
+      "chapter_label": "NEH 10",
+      "verse_label": "26",
+      "locator": {
+        "book": "NEH",
+        "chapter": 10,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 10,
+          "verse": 26
+        }
+      ],
+      "en": "Ahiah, Hanan, Anan,",
+      "ko": "아히야, 하난, 아난,",
+      "source_text_hash": "76691500eb7cfa69e97bd217e9d063609b62ba108867db82fea05f22f81bd0e3",
+      "translation_text_hash": "7c4c7ce8d19c5dd6eea3bd88d01159ff6fd6e7d5d163d32098abb5bb53320727",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아히야, 하난, 아난,"
+      ],
+      "raw_text_hashes": [
+        "7c4c7ce8d19c5dd6eea3bd88d01159ff6fd6e7d5d163d32098abb5bb53320727"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:10:27",
+      "sequence": 12577,
+      "chapter_label": "NEH 10",
+      "verse_label": "27",
+      "locator": {
+        "book": "NEH",
+        "chapter": 10,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 10,
+          "verse": 27
+        }
+      ],
+      "en": "Malluch, Harim, and Baanah.",
+      "ko": "말룩, 하림, 바아나이었느니라",
+      "source_text_hash": "eeda8294b7a4168417b465608097cd57d4105d9d0e97e52fb41e485617fca1fd",
+      "translation_text_hash": "76c6575aea9521bcd248864e941660faae56c29b66fbd3ea33b921ff3e9cff44",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "말룩, 하림, 바아나이었느니라"
+      ],
+      "raw_text_hashes": [
+        "76c6575aea9521bcd248864e941660faae56c29b66fbd3ea33b921ff3e9cff44"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:10:28",
+      "sequence": 12578,
+      "chapter_label": "NEH 10",
+      "verse_label": "28",
+      "locator": {
+        "book": "NEH",
+        "chapter": 10,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 10,
+          "verse": 28
+        }
+      ],
+      "en": "The rest of the people, the priests, the Levites, the gatekeepers, the singers, the temple servants, and all those who had separated themselves from the peoples of the lands to the law of God, their wives, their sons, and their daughters—everyone who had knowledge and understanding—",
+      "ko": "그 남은 백성과 제사장들과 레위 사람들과 문지기들과 노래하는 자들과 느디님 사람들과 및 이방 사람과 절교하고 하나님의 율법을 준행하는 모든 자와 그 아내와 그 자녀들 무릇 지식과 총명이 있는 자가",
+      "source_text_hash": "8a614b2534f48d416fa9f99b45a397bfe3f18022672451d83ca96dc256a6d4f0",
+      "translation_text_hash": "5fc60e47aab4ec971a8db2cc7db77e4ca4976270829166c94aaa5ff276ef81b0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 남은 백성과 제사장들과 레위 사람들과 문지기들과 노래하는 자들과 느디님 사람들과 및 이방 사람과 절교하고 하나님의 율법을 준행하는 모든 자와 그 아내와 그 자녀들 무릇 지식과 총명이 있는 자가"
+      ],
+      "raw_text_hashes": [
+        "5fc60e47aab4ec971a8db2cc7db77e4ca4976270829166c94aaa5ff276ef81b0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:10:29",
+      "sequence": 12579,
+      "chapter_label": "NEH 10",
+      "verse_label": "29",
+      "locator": {
+        "book": "NEH",
+        "chapter": 10,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 10,
+          "verse": 29
+        }
+      ],
+      "en": "joined with their brothers, their nobles, and entered into a curse and into an oath, to walk in God’s law, which was given by Moses the servant of God, and to observe and do all the commandments of the LORD our Lord, and his ordinances and his statutes;",
+      "ko": "다 그 형제 귀인들을 좇아 저주로 맹세하기를 우리가 하나님의 종 모세로 주신 하나님의 율법을 좇아 우리 주 여호와의 모든 계명과 규례와 율례를 지켜",
+      "source_text_hash": "3ff16cc9b872bbbc7aa62e29d0088519f7e1723337e9b891ba467288a32c6c01",
+      "translation_text_hash": "5868049d27c9f1c40a96f797a2299260be295dd918e017bce3b16ca6b56d9829",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다 그 형제 귀인들을 좇아 저주로 맹세하기를 우리가 하나님의 종 모세로 주신 하나님의 율법을 좇아 우리 주 여호와의 모든 계명과 규례와 율례를 지켜"
+      ],
+      "raw_text_hashes": [
+        "5868049d27c9f1c40a96f797a2299260be295dd918e017bce3b16ca6b56d9829"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:10:30",
+      "sequence": 12580,
+      "chapter_label": "NEH 10",
+      "verse_label": "30",
+      "locator": {
+        "book": "NEH",
+        "chapter": 10,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 10,
+          "verse": 30
+        }
+      ],
+      "en": "and that we would not give our daughters to the peoples of the land, nor take their daughters for our sons;",
+      "ko": "우리 딸은 이 땅 백성에게 주지 아니하고 우리 아들을 위하여 저희 딸을 데려오지 아니하며",
+      "source_text_hash": "c31a83dc4bbcce37a771908691312043d616162fdfc461b86fa73aec61258ea5",
+      "translation_text_hash": "5ac72cbf0b33865fdeb743979bdb6d13db7975957c2b8121796b184943b2dbb4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리 딸은 이 땅 백성에게 주지 아니하고 우리 아들을 위하여 저희 딸을 데려오지 아니하며"
+      ],
+      "raw_text_hashes": [
+        "5ac72cbf0b33865fdeb743979bdb6d13db7975957c2b8121796b184943b2dbb4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:10:31",
+      "sequence": 12581,
+      "chapter_label": "NEH 10",
+      "verse_label": "31",
+      "locator": {
+        "book": "NEH",
+        "chapter": 10,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 10,
+          "verse": 31
+        }
+      ],
+      "en": "and if the peoples of the land bring wares or any grain on the Sabbath day to sell, that we would not buy from them on the Sabbath, or on a holy day; and that we would forego the seventh year crops and the exaction of every debt.",
+      "ko": "혹시 이 땅 백성이 안식일에 물화나 식물을 가져다가 팔려 할지라도 우리가 안식일이나 성일에는 사지 않겠고 제 칠년마다 땅을 쉬게 하고 모든 빚을 탕감하리라 하였고",
+      "source_text_hash": "4d0d690f9c7d2c4560770e5f2d059b70d60ddc2bd3c05cd7a48f11f0fc397c0e",
+      "translation_text_hash": "f04e32e39e2abac54ce502e928918ecf837df1f6ea242258789858f8fda06469",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "혹시 이 땅 백성이 안식일에 물화나 식물을 가져다가 팔려 할지라도 우리가 안식일이나 성일에는 사지 않겠고 제 칠년마다 땅을 쉬게 하고 모든 빚을 탕감하리라 하였고"
+      ],
+      "raw_text_hashes": [
+        "f04e32e39e2abac54ce502e928918ecf837df1f6ea242258789858f8fda06469"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:10:32",
+      "sequence": 12582,
+      "chapter_label": "NEH 10",
+      "verse_label": "32",
+      "locator": {
+        "book": "NEH",
+        "chapter": 10,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 10,
+          "verse": 32
+        }
+      ],
+      "en": "Also we made ordinances for ourselves, to charge ourselves yearly with the third part of a shekel for the service of the house of our God:",
+      "ko": "우리가 또 스스로 규례를 정하기를 해마다 각기 세겔의 삼분 일을 수납하여 하나님의 전을 위하여 쓰게 하되",
+      "source_text_hash": "6562eabb9d0f8cc21f804d80a33131f85f5e161a73a0c28abc9d8d94366d6a83",
+      "translation_text_hash": "a74d4d2cd5e5e612be026b07dc063806a5d1f464b6a23ec9ddca3e7d49027d0b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 또 스스로 규례를 정하기를 해마다 각기 세겔의 삼분 일을 수납하여 하나님의 전을 위하여 쓰게 하되"
+      ],
+      "raw_text_hashes": [
+        "a74d4d2cd5e5e612be026b07dc063806a5d1f464b6a23ec9ddca3e7d49027d0b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:10:33",
+      "sequence": 12583,
+      "chapter_label": "NEH 10",
+      "verse_label": "33",
+      "locator": {
+        "book": "NEH",
+        "chapter": 10,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 10,
+          "verse": 33
+        }
+      ],
+      "en": "for the show bread, for the continual meal offering, for the continual burnt offering, for the Sabbaths, for the new moons, for the set feasts, for the holy things, for the sin offerings to make atonement for Israel, and for all the work of the house of our God.",
+      "ko": "곧 진설병과 항상 드리는 소제와 항상 드리는 번제와 안식일과 초하루와 정한 절기에 쓸 것과 성물과 이스라엘을 위하는 속죄제와 우리 하나님의 전의 모든 일을 위하여 쓰게 하였고",
+      "source_text_hash": "a069be823ccdb478a79e8803d3c79e0970fe2c138706a0d8bef6faa90b6be47a",
+      "translation_text_hash": "48b2f61d31c53f4de48614b7e3c05ee3fbecf42503cbd6d5b1316530f7208c8e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 진설병과 항상 드리는 소제와 항상 드리는 번제와 안식일과 초하루와 정한 절기에 쓸 것과 성물과 이스라엘을 위하는 속죄제와 우리 하나님의 전의 모든 일을 위하여 쓰게 하였고"
+      ],
+      "raw_text_hashes": [
+        "48b2f61d31c53f4de48614b7e3c05ee3fbecf42503cbd6d5b1316530f7208c8e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:10:34",
+      "sequence": 12584,
+      "chapter_label": "NEH 10",
+      "verse_label": "34",
+      "locator": {
+        "book": "NEH",
+        "chapter": 10,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 10,
+          "verse": 34
+        }
+      ],
+      "en": "We, the priests, the Levites, and the people, cast lots for the wood offering, to bring it into the house of our God, according to our fathers’ houses, at times appointed year by year, to burn on the LORD our God’s altar, as it is written in the law;",
+      "ko": "또 우리 제사장들과 레위 사람들과 백성들이 제비 뽑아 각기 종족대로 해마다 정한 기한에 나무를 우리 하나님의 전에 드려서 율법에 기록한대로 우리 하나님 여호와의 단에 사르게 하였고",
+      "source_text_hash": "db1f2a820a9c936e8aa223c659b7426190374c9e85e1a57cbeca2cdb0f3bc7e4",
+      "translation_text_hash": "6caeb1f2189a6c5d65e07faa7481325c29b0ceb1bcbeb112a34d32348d6a8059",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 우리 제사장들과 레위 사람들과 백성들이 제비 뽑아 각기 종족대로 해마다 정한 기한에 나무를 우리 하나님의 전에 드려서 율법에 기록한대로 우리 하나님 여호와의 단에 사르게 하였고"
+      ],
+      "raw_text_hashes": [
+        "6caeb1f2189a6c5d65e07faa7481325c29b0ceb1bcbeb112a34d32348d6a8059"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:10:35",
+      "sequence": 12585,
+      "chapter_label": "NEH 10",
+      "verse_label": "35",
+      "locator": {
+        "book": "NEH",
+        "chapter": 10,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 10,
+          "verse": 35
+        }
+      ],
+      "en": "and to bring the first fruits of our ground and the first fruits of all fruit of all kinds of trees, year by year, to the LORD’s house;",
+      "ko": "해마다 우리 토지 소산의 맏물과 각종 과목의 첫 열매를 여호와의 전에 드리기로 하였고",
+      "source_text_hash": "4843a624b50339c582003fa7fa473afab29aaf07609bdbdb360262a94b668ab4",
+      "translation_text_hash": "52f2cc270b243cf4b34345d8d30c44b60783fe22fc577228e9582eb675df92c0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "해마다 우리 토지 소산의 맏물과 각종 과목의 첫 열매를 여호와의 전에 드리기로 하였고"
+      ],
+      "raw_text_hashes": [
+        "52f2cc270b243cf4b34345d8d30c44b60783fe22fc577228e9582eb675df92c0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:10:36",
+      "sequence": 12586,
+      "chapter_label": "NEH 10",
+      "verse_label": "36",
+      "locator": {
+        "book": "NEH",
+        "chapter": 10,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 10,
+          "verse": 36
+        }
+      ],
+      "en": "also the firstborn of our sons and of our livestock, as it is written in the law, and the firstborn of our herds and of our flocks, to bring to the house of our God, to the priests who minister in the house of our God;",
+      "ko": "또 우리의 맏아들들과 생축의 처음 난 것과 우양의 처음 난 것을 율법에 기록된대로 우리 하나님의 전으로 가져다가 우리 하나님의 전에서 섬기는 제사장들에게 주고",
+      "source_text_hash": "a3ebfd4982b4d96a050588921aedbba186ea1b7213154d9a906f08219539e90b",
+      "translation_text_hash": "ee6c30f884e5b0804e00a7d77819d39b41ab95b79928399b648e96607c6cad53",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 우리의 맏아들들과 생축의 처음 난 것과 우양의 처음 난 것을 율법에 기록된대로 우리 하나님의 전으로 가져다가 우리 하나님의 전에서 섬기는 제사장들에게 주고"
+      ],
+      "raw_text_hashes": [
+        "ee6c30f884e5b0804e00a7d77819d39b41ab95b79928399b648e96607c6cad53"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:10:37",
+      "sequence": 12587,
+      "chapter_label": "NEH 10",
+      "verse_label": "37",
+      "locator": {
+        "book": "NEH",
+        "chapter": 10,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 10,
+          "verse": 37
+        }
+      ],
+      "en": "and that we should bring the first fruits of our dough, our wave offerings, the fruit of all kinds of trees, and the new wine and the oil, to the priests, to the rooms of the house of our God; and the tithes of our ground to the Levites; for they, the Levites, take the tithes in all our farming villages.",
+      "ko": "또 처음 익은 밀의 가루와 거제물과 각종 과목의 열매와 새 포도주와 기름을 제사장들에게로 가져다가 우리 하나님의 전 골방에 두고 또 우리 물산의 십일조를 레위 사람들에게 주리라 하였나니 이 레위 사람들은 우리의 모든 성읍에서 물산의 십일조를 받는 자임이며",
+      "source_text_hash": "9287ae1c6bc594b0b7eb443de62802ee8208f06574a5e745cb2a2535eda41bec",
+      "translation_text_hash": "431922ebe57d55a794d73810c0a6e5ba108e837bfeb58020850dc5769b639b00",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 처음 익은 밀의 가루와 거제물과 각종 과목의 열매와 새 포도주와 기름을 제사장들에게로 가져다가 우리 하나님의 전 골방에 두고 또 우리 물산의 십일조를 레위 사람들에게 주리라 하였나니 이 레위 사람들은 우리의 모든 성읍에서 물산의 십일조를 받는 자임이며"
+      ],
+      "raw_text_hashes": [
+        "431922ebe57d55a794d73810c0a6e5ba108e837bfeb58020850dc5769b639b00"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:10:38",
+      "sequence": 12588,
+      "chapter_label": "NEH 10",
+      "verse_label": "38",
+      "locator": {
+        "book": "NEH",
+        "chapter": 10,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 10,
+          "verse": 38
+        }
+      ],
+      "en": "The priest, the descendent of Aaron, shall be with the Levites when the Levites take tithes. The Levites shall bring up the tithe of the tithes to the house of our God, to the rooms, into the treasure house.",
+      "ko": "레위 사람들이 십일조를 받을 때에는 아론의 자손 제사장 하나가 함께 있을 것이요 레위 사람들은 그 십일조의 십분 일을 가져다가 우리 하나님의 전 골방 곧 곳간에 두되",
+      "source_text_hash": "7c6e57c342e81af0a51aa9dce078bafd62a52b4251c3425523541a75f4f2ac40",
+      "translation_text_hash": "e061cb409dca0f5d27b722fa99473fb380399a0c6e4e39d5c02dd3e80f365a51",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "레위 사람들이 십일조를 받을 때에는 아론의 자손 제사장 하나가 함께 있을 것이요 레위 사람들은 그 십일조의 십분 일을 가져다가 우리 하나님의 전 골방 곧 곳간에 두되"
+      ],
+      "raw_text_hashes": [
+        "e061cb409dca0f5d27b722fa99473fb380399a0c6e4e39d5c02dd3e80f365a51"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:10:39",
+      "sequence": 12589,
+      "chapter_label": "NEH 10",
+      "verse_label": "39",
+      "locator": {
+        "book": "NEH",
+        "chapter": 10,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 10,
+          "verse": 39
+        }
+      ],
+      "en": "For the children of Israel and the children of Levi shall bring the wave offering of the grain, of the new wine, and of the oil, to the rooms where the vessels of the sanctuary are, and the priests who minister, with the gatekeepers and the singers. We will not forsake the house of our God.",
+      "ko": "곧 이스라엘 자손과 레위 자손이 거제로 드린바 곡식과 새 포도주와 기름을 가져다가 성소의 기명을 두는 골방 곧 섬기는 제사장들과 및 문지기들과 노래하는 자들이 있는 골방에 둘 것이라 그리하여 우리가 우리 하나님의 전을 버리지 아니하리라",
+      "source_text_hash": "bcd4beb7970e607c3718b1653f09d81b2221b3712db51fc83d0335d05a07c584",
+      "translation_text_hash": "bb43af31d5826711f20a681016d31c3dfacfdc520c8a0a19855e22f9382e651b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 이스라엘 자손과 레위 자손이 거제로 드린바 곡식과 새 포도주와 기름을 가져다가 성소의 기명을 두는 골방 곧 섬기는 제사장들과 및 문지기들과 노래하는 자들이 있는 골방에 둘 것이라 그리하여 우리가 우리 하나님의 전을 버리지 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "bb43af31d5826711f20a681016d31c3dfacfdc520c8a0a19855e22f9382e651b"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,621 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:DEU:chapter:025",
+  "unit_ordinal": 178,
+  "unit_label": "DEU 25",
+  "book_code": "DEU",
+  "chapter_number": 25,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:DEU:25:1",
+      "sequence": 5549,
+      "chapter_label": "DEU 25",
+      "verse_label": "1",
+      "locator": {
+        "book": "DEU",
+        "chapter": 25,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 25,
+          "verse": 1
+        }
+      ],
+      "en": "If there is a controversy between men, and they come to judgment and the judges judge them, then they shall justify the righteous and condemn the wicked.",
+      "ko": "사람과 사람 사이에 시비가 생겨서 재판을 청하거든 재판장은 그들을 재판하여 의인은 의롭다 하고 악인은 정죄할 것이며",
+      "source_text_hash": "da7b166b3f3a592d7bf851e20c385b316c055dc26136163c7122d638c8d157ef",
+      "translation_text_hash": "a6c864d8c7f8c18251d77b8a483d549a5691979027452eec0a92fd36390a1f30",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람과 사람 사이에 시비가 생겨서 재판을 청하거든 재판장은 그들을 재판하여 의인은 의롭다 하고 악인은 정죄할 것이며"
+      ],
+      "raw_text_hashes": [
+        "a6c864d8c7f8c18251d77b8a483d549a5691979027452eec0a92fd36390a1f30"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:25:2",
+      "sequence": 5550,
+      "chapter_label": "DEU 25",
+      "verse_label": "2",
+      "locator": {
+        "book": "DEU",
+        "chapter": 25,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 25,
+          "verse": 2
+        }
+      ],
+      "en": "It shall be, if the wicked man is worthy to be beaten, that the judge shall cause him to lie down and to be beaten before his face, according to his wickedness, by number.",
+      "ko": "악인에게 태형이 합당하거든 재판장은 그를 엎드리게 하고 그 죄의 경중대로 여수히 자기 앞에서 때리게 하라",
+      "source_text_hash": "dc73f9556b7858ed36839b64991568e3f3690bd75f53938b5a167ae165cfb777",
+      "translation_text_hash": "8e44defca52d0dd2f7edfc13d7ccfca3b302888c164d778b10f186ae02bda517",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "악인에게 태형이 합당하거든 재판장은 그를 엎드리게 하고 그 죄의 경중대로 여수히 자기 앞에서 때리게 하라"
+      ],
+      "raw_text_hashes": [
+        "8e44defca52d0dd2f7edfc13d7ccfca3b302888c164d778b10f186ae02bda517"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:25:3",
+      "sequence": 5551,
+      "chapter_label": "DEU 25",
+      "verse_label": "3",
+      "locator": {
+        "book": "DEU",
+        "chapter": 25,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 25,
+          "verse": 3
+        }
+      ],
+      "en": "He may sentence him to no more than forty stripes. He shall not give more, lest if he should give more and beat him more than that many stripes, then your brother will be degraded in your sight.",
+      "ko": "사십까지는 때리려니와 그것을 넘기지는 못할찌니 만일 그것을 넘겨 과다히 때리면 네가 네 형제로 천히 여김을 받게 할까 하노라",
+      "source_text_hash": "45b26cd1768c86628212f9f0151465abe963ddcbecaaa0a9d028feb11aee1948",
+      "translation_text_hash": "cc2e8b3a9961f47011d3c55da73443af5efdeea41445ebd052deae2d84873dbf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사십까지는 때리려니와 그것을 넘기지는 못할찌니 만일 그것을 넘겨 과다히 때리면 네가 네 형제로 천히 여김을 받게 할까 하노라"
+      ],
+      "raw_text_hashes": [
+        "cc2e8b3a9961f47011d3c55da73443af5efdeea41445ebd052deae2d84873dbf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:25:4",
+      "sequence": 5552,
+      "chapter_label": "DEU 25",
+      "verse_label": "4",
+      "locator": {
+        "book": "DEU",
+        "chapter": 25,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 25,
+          "verse": 4
+        }
+      ],
+      "en": "You shall not muzzle the ox when he treads out the grain.",
+      "ko": "곡식 떠는 소의 입에 망을 씌우지 말찌니라",
+      "source_text_hash": "9033274228fdde2cc6cbf4d5cff118647a4dc46dbd3ade608e37f03e5d219e23",
+      "translation_text_hash": "49060ecd82bd40ba34574615dd6680584e2a481521cd4b5b1428671582628fc5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곡식 떠는 소의 입에 망을 씌우지 말찌니라"
+      ],
+      "raw_text_hashes": [
+        "49060ecd82bd40ba34574615dd6680584e2a481521cd4b5b1428671582628fc5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:25:5",
+      "sequence": 5553,
+      "chapter_label": "DEU 25",
+      "verse_label": "5",
+      "locator": {
+        "book": "DEU",
+        "chapter": 25,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 25,
+          "verse": 5
+        }
+      ],
+      "en": "If brothers dwell together, and one of them dies and has no son, the wife of the dead shall not be married outside to a stranger. Her husband’s brother shall go in to her, and take her as his wife, and perform the duty of a husband’s brother to her.",
+      "ko": "형제가 동거하는데 그 중 하나가 죽고 아들이 없거든 그 죽은 자의 아내는 나가서 타인에게 시집가지 말 것이요 그 남편의 형제가 그에게로 들어가서 그를 취하여 아내를 삼아 그의 남편의 형제 된 의무를 그에게 다 행할 것이요",
+      "source_text_hash": "b2e0013d35ffb7304a910e7eb8f37172c0867b8b8a4f6e7c36959e0a538dd3d9",
+      "translation_text_hash": "b646b4e7111657dc09200504fe4df8de6972f04adf2676f2a02ac3a097e5aabf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "형제가 동거하는데 그 중 하나가 죽고 아들이 없거든 그 죽은 자의 아내는 나가서 타인에게 시집가지 말 것이요 그 남편의 형제가 그에게로 들어가서 그를 취하여 아내를 삼아 그의 남편의 형제 된 의무를 그에게 다 행할 것이요"
+      ],
+      "raw_text_hashes": [
+        "b646b4e7111657dc09200504fe4df8de6972f04adf2676f2a02ac3a097e5aabf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:25:6",
+      "sequence": 5554,
+      "chapter_label": "DEU 25",
+      "verse_label": "6",
+      "locator": {
+        "book": "DEU",
+        "chapter": 25,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 25,
+          "verse": 6
+        }
+      ],
+      "en": "It shall be that the firstborn whom she bears shall succeed in the name of his brother who is dead, that his name not be blotted out of Israel.",
+      "ko": "그 여인의 낳은 첫 아들로 그 죽은 형제의 후사를 잇게 하여 그 이름을 이스라엘 중에서 끊어지지 않게 할 것이니라",
+      "source_text_hash": "55921b6ed014cbeedc8c650bcee5a318c060b47fcf11dddb9cf41f12f291404b",
+      "translation_text_hash": "be5d04d40c4246a41232c9faa5e879ec94b4430e0fcd0f97383957f1c5b47de8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 여인의 낳은 첫 아들로 그 죽은 형제의 후사를 잇게 하여 그 이름을 이스라엘 중에서 끊어지지 않게 할 것이니라"
+      ],
+      "raw_text_hashes": [
+        "be5d04d40c4246a41232c9faa5e879ec94b4430e0fcd0f97383957f1c5b47de8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:25:7",
+      "sequence": 5555,
+      "chapter_label": "DEU 25",
+      "verse_label": "7",
+      "locator": {
+        "book": "DEU",
+        "chapter": 25,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 25,
+          "verse": 7
+        }
+      ],
+      "en": "If the man doesn’t want to take his brother’s wife, then his brother’s wife shall go up to the gate to the elders, and say, “My husband’s brother refuses to raise up to his brother a name in Israel. He will not perform the duty of a husband’s brother to me.”",
+      "ko": "그러나 그 사람이 만일 그 형제의 아내 취하기를 즐겨하지 아니하거든 그 형제의 아내는 그 성문 장로들에게로 나아가서 말하기를 내 남편의 형제가 그 형제의 이름을 이스라엘 중에 잇기를 싫어하여 남편의 형제된 의무를 내게 행치 아니하나이다 할 것이요",
+      "source_text_hash": "bed8ba6481a4609d112b6046109fff43d4b22b23d31a5e1ed44bf02977ac2af4",
+      "translation_text_hash": "33269986aab9aa3b80a4b09076cc4c73a7be223c61d9bf8f1c5c02346774f638",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 그 사람이 만일 그 형제의 아내 취하기를 즐겨하지 아니하거든 그 형제의 아내는 그 성문 장로들에게로 나아가서 말하기를 내 남편의 형제가 그 형제의 이름을 이스라엘 중에 잇기를 싫어하여 남편의 형제된 의무를 내게 행치 아니하나이다 할 것이요"
+      ],
+      "raw_text_hashes": [
+        "33269986aab9aa3b80a4b09076cc4c73a7be223c61d9bf8f1c5c02346774f638"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:25:8",
+      "sequence": 5556,
+      "chapter_label": "DEU 25",
+      "verse_label": "8",
+      "locator": {
+        "book": "DEU",
+        "chapter": 25,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 25,
+          "verse": 8
+        }
+      ],
+      "en": "Then the elders of his city shall call him, and speak to him. If he stands and says, “I don’t want to take her,”",
+      "ko": "그 성읍 장로들은 그를 불러다가 이를 것이며 그가 이미 정한 뜻대로 말하기를 내가 그 여자 취하기를 즐겨 아니하노라 하거든",
+      "source_text_hash": "4b5ab25238876671c1ce31da45a1715338b08d744975ddbabcc9b1a069a4f7b0",
+      "translation_text_hash": "cdf09c8d81aa51ddf0215e6b3b3393b08b5da16640e7322a7bf9f6d912de3799",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 성읍 장로들은 그를 불러다가 이를 것이며 그가 이미 정한 뜻대로 말하기를 내가 그 여자 취하기를 즐겨 아니하노라 하거든"
+      ],
+      "raw_text_hashes": [
+        "cdf09c8d81aa51ddf0215e6b3b3393b08b5da16640e7322a7bf9f6d912de3799"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:25:9",
+      "sequence": 5557,
+      "chapter_label": "DEU 25",
+      "verse_label": "9",
+      "locator": {
+        "book": "DEU",
+        "chapter": 25,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 25,
+          "verse": 9
+        }
+      ],
+      "en": "then his brother’s wife shall come to him in the presence of the elders, and loose his sandal from off his foot, and spit in his face. She shall answer and say, “So shall it be done to the man who does not build up his brother’s house.”",
+      "ko": "그 형제의 아내가 장로들 앞에서 그에게 나아가서 그의 발에서 신을 벗기고 그 얼굴에 침을 뱉으며 이르기를 그 형제의 집 세우기를 즐겨 아니하는 자에게는 이같이 할 것이라 할 것이며",
+      "source_text_hash": "cee6d73770ccd3db1c949acad7f5bb1d7e41d377ad21977b19e1bd21cc434020",
+      "translation_text_hash": "7014c6f48739141c4d92355a3ae1323f87f72e1ac6aaabda8228712b0943b1ab",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 형제의 아내가 장로들 앞에서 그에게 나아가서 그의 발에서 신을 벗기고 그 얼굴에 침을 뱉으며 이르기를 그 형제의 집 세우기를 즐겨 아니하는 자에게는 이같이 할 것이라 할 것이며"
+      ],
+      "raw_text_hashes": [
+        "7014c6f48739141c4d92355a3ae1323f87f72e1ac6aaabda8228712b0943b1ab"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:25:10",
+      "sequence": 5558,
+      "chapter_label": "DEU 25",
+      "verse_label": "10",
+      "locator": {
+        "book": "DEU",
+        "chapter": 25,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 25,
+          "verse": 10
+        }
+      ],
+      "en": "His name shall be called in Israel, “The house of him who had his sandal removed.”",
+      "ko": "이스라엘 중에서 그의 이름을 신 벗기운 자의 집이라 칭할 것이니라",
+      "source_text_hash": "f7899c4e898ce0aceb637bc6a8b6a7f91cadaa4004b2325aebce70112a6cd00d",
+      "translation_text_hash": "1b0554e8ce13992fdd00e3622a33b4dd494a60061a64f28546416a96501475d0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 중에서 그의 이름을 신 벗기운 자의 집이라 칭할 것이니라"
+      ],
+      "raw_text_hashes": [
+        "1b0554e8ce13992fdd00e3622a33b4dd494a60061a64f28546416a96501475d0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:25:11",
+      "sequence": 5559,
+      "chapter_label": "DEU 25",
+      "verse_label": "11",
+      "locator": {
+        "book": "DEU",
+        "chapter": 25,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 25,
+          "verse": 11
+        }
+      ],
+      "en": "When men strive against each other, and the wife of one draws near to deliver her husband out of the hand of him who strikes him, and puts out her hand, and grabs him by his private parts,",
+      "ko": "두 사람이 서로 싸울 때에 한 사람의 아내가 그 남편을 그 치는 자의 손에서 구하려 하여 가까이 가서 손을 벌려 그 사람의 음낭을 잡거든",
+      "source_text_hash": "2d0d1df6824c902d8f9768afe610bc25f84cc1922a777ff2a29d1f1a97e6a8d9",
+      "translation_text_hash": "7fe6e33d89b4e9850c45208ffd519b19365c3543d7ee6b4ef6f3874d484e5502",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "두 사람이 서로 싸울 때에 한 사람의 아내가 그 남편을 그 치는 자의 손에서 구하려 하여 가까이 가서 손을 벌려 그 사람의 음낭을 잡거든"
+      ],
+      "raw_text_hashes": [
+        "7fe6e33d89b4e9850c45208ffd519b19365c3543d7ee6b4ef6f3874d484e5502"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:25:12",
+      "sequence": 5560,
+      "chapter_label": "DEU 25",
+      "verse_label": "12",
+      "locator": {
+        "book": "DEU",
+        "chapter": 25,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 25,
+          "verse": 12
+        }
+      ],
+      "en": "then you shall cut off her hand. Your eye shall have no pity.",
+      "ko": "너는 그 여인의 손을 찍어 버릴 것이고 네 눈이 그를 불쌍히 보지 말찌니라",
+      "source_text_hash": "0400b56d415c1f40a41de10564b34d761d90741499584171bf71f1042270c42a",
+      "translation_text_hash": "09cff1156190a6e0920404f946979700a6d4001feddff162e6cbb4b6be0da2ba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 그 여인의 손을 찍어 버릴 것이고 네 눈이 그를 불쌍히 보지 말찌니라"
+      ],
+      "raw_text_hashes": [
+        "09cff1156190a6e0920404f946979700a6d4001feddff162e6cbb4b6be0da2ba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:25:13",
+      "sequence": 5561,
+      "chapter_label": "DEU 25",
+      "verse_label": "13",
+      "locator": {
+        "book": "DEU",
+        "chapter": 25,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 25,
+          "verse": 13
+        }
+      ],
+      "en": "You shall not have in your bag diverse weights, one heavy and one light.",
+      "ko": "너는 주머니에 같지 않은 저울추 곧 큰 것과 작은 것을 넣지 말 것이며",
+      "source_text_hash": "8508d1090a041a7a1b314319dd33a6f88aabc6f751897c796a55734805812685",
+      "translation_text_hash": "52f26dda689daaebea96058963be8d64b154d420eb00017660f395a24d3c2a58",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 주머니에 같지 않은 저울추 곧 큰 것과 작은 것을 넣지 말 것이며"
+      ],
+      "raw_text_hashes": [
+        "52f26dda689daaebea96058963be8d64b154d420eb00017660f395a24d3c2a58"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:25:14",
+      "sequence": 5562,
+      "chapter_label": "DEU 25",
+      "verse_label": "14",
+      "locator": {
+        "book": "DEU",
+        "chapter": 25,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 25,
+          "verse": 14
+        }
+      ],
+      "en": "You shall not have in your house diverse measures, one large and one small.",
+      "ko": "네 집에 같지 않은 되 곧 큰 것과 작은 것을 두지 말 것이요",
+      "source_text_hash": "f8dab0b6ad1c5a1c4c513243cd7b83b4724c16be603bf5baaec20da5a5f302cc",
+      "translation_text_hash": "941dfcd096574ee712d42867760e90df044a775b7d09f56b49e3a5a4d8f88d1c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 집에 같지 않은 되 곧 큰 것과 작은 것을 두지 말 것이요"
+      ],
+      "raw_text_hashes": [
+        "941dfcd096574ee712d42867760e90df044a775b7d09f56b49e3a5a4d8f88d1c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:25:15",
+      "sequence": 5563,
+      "chapter_label": "DEU 25",
+      "verse_label": "15",
+      "locator": {
+        "book": "DEU",
+        "chapter": 25,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 25,
+          "verse": 15
+        }
+      ],
+      "en": "You shall have a perfect and just weight. You shall have a perfect and just measure, that your days may be long in the land which the LORD your God gives you.",
+      "ko": "오직 십분 공정한 저울추를 두며 십분 공정한 되를 둘 것이라 그리하면 네 하나님 여호와께서 네게 주시는 땅에서 네 날이 장구하리라",
+      "source_text_hash": "4776122c753da1e490f3dca3b0ca51793690c8240ae935d032e48d1f1871b042",
+      "translation_text_hash": "4e09b67a4bca352ad649b7498183c04bd5fd50ae0ebfb512ba691cc25559a546",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 십분 공정한 저울추를 두며 십분 공정한 되를 둘 것이라 그리하면 네 하나님 여호와께서 네게 주시는 땅에서 네 날이 장구하리라"
+      ],
+      "raw_text_hashes": [
+        "4e09b67a4bca352ad649b7498183c04bd5fd50ae0ebfb512ba691cc25559a546"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:25:16",
+      "sequence": 5564,
+      "chapter_label": "DEU 25",
+      "verse_label": "16",
+      "locator": {
+        "book": "DEU",
+        "chapter": 25,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 25,
+          "verse": 16
+        }
+      ],
+      "en": "For all who do such things, all who do unrighteously, are an abomination to the LORD your God.",
+      "ko": "무릇 이같이 하는자, 무릇 부정당히 행하는 자는 네 하나님 여호와께 가증하니라",
+      "source_text_hash": "0ed8d3c9f57515b4c29276f5ca6de9bbb958b9396f8f84a617af2396ec6c6e83",
+      "translation_text_hash": "c46aef0faddc6305f0e5bfa0f85c0a73df53d6acff1b9d4ab843956b35f91641",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 이같이 하는자, 무릇 부정당히 행하는 자는 네 하나님 여호와께 가증하니라"
+      ],
+      "raw_text_hashes": [
+        "c46aef0faddc6305f0e5bfa0f85c0a73df53d6acff1b9d4ab843956b35f91641"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:25:17",
+      "sequence": 5565,
+      "chapter_label": "DEU 25",
+      "verse_label": "17",
+      "locator": {
+        "book": "DEU",
+        "chapter": 25,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 25,
+          "verse": 17
+        }
+      ],
+      "en": "Remember what Amalek did to you by the way as you came out of Egypt,",
+      "ko": "너희가 애굽에서 나오는 길에 아말렉이 네게 행한 일을 기억하라",
+      "source_text_hash": "2d0c6b71bc38f2c59ef9b13fa7025371df715836d0a75e6d8663176b5b5bfdcd",
+      "translation_text_hash": "4909b1caf32973ac58bd2ddcefc554d43bb97f4ffe18067fb2e8f2b8764c6392",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 애굽에서 나오는 길에 아말렉이 네게 행한 일을 기억하라"
+      ],
+      "raw_text_hashes": [
+        "4909b1caf32973ac58bd2ddcefc554d43bb97f4ffe18067fb2e8f2b8764c6392"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:25:18",
+      "sequence": 5566,
+      "chapter_label": "DEU 25",
+      "verse_label": "18",
+      "locator": {
+        "book": "DEU",
+        "chapter": 25,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 25,
+          "verse": 18
+        }
+      ],
+      "en": "how he met you by the way, and struck the rearmost of you, all who were feeble behind you, when you were faint and weary; and he didn’t fear God.",
+      "ko": "곧 그들이 하나님을 두려워하지 아니하고 너를 길에서 만나 너의 피곤함을 타서 네 뒤에 떨어진 약한 자들을 쳤느니라",
+      "source_text_hash": "fc58d5e5f0973b7d4829c9702f21ccb6eb9e1cbd2dde682f27a5b01872d581d2",
+      "translation_text_hash": "3157ed999e102a5b224d5a7473c6c42b88d97b230403c76494b27aaf85caf859",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 그들이 하나님을 두려워하지 아니하고 너를 길에서 만나 너의 피곤함을 타서 네 뒤에 떨어진 약한 자들을 쳤느니라"
+      ],
+      "raw_text_hashes": [
+        "3157ed999e102a5b224d5a7473c6c42b88d97b230403c76494b27aaf85caf859"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:25:19",
+      "sequence": 5567,
+      "chapter_label": "DEU 25",
+      "verse_label": "19",
+      "locator": {
+        "book": "DEU",
+        "chapter": 25,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 25,
+          "verse": 19
+        }
+      ],
+      "en": "Therefore it shall be, when the LORD your God has given you rest from all your enemies all around, in the land which the LORD your God gives you for an inheritance to possess it, that you shall blot out the memory of Amalek from under the sky. You shall not forget.",
+      "ko": "그러므로 네 하나님 여호와께서 네게 주어 기업으로 얻게 하시는 땅에서 네 하나님 여호와께서 너로 사면에 있는 모든 대적을 벗어나게 하시고 네게 안식을 주실 때에 너는 아말렉의 이름을 천하에서 도말할찌니라 너는 잊지 말찌니라",
+      "source_text_hash": "aa314a9c69dcae0d50939fd6f7974195d33e852dbcf866a80598fdfcca0c6a44",
+      "translation_text_hash": "999c7d5cd1a43a35546a7aaf09962b4bf3f6171393bd42a6c9665b0962677e43",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 네 하나님 여호와께서 네게 주어 기업으로 얻게 하시는 땅에서 네 하나님 여호와께서 너로 사면에 있는 모든 대적을 벗어나게 하시고 네게 안식을 주실 때에 너는 아말렉의 이름을 천하에서 도말할찌니라 너는 잊지 말찌니라"
+      ],
+      "raw_text_hashes": [
+        "999c7d5cd1a43a35546a7aaf09962b4bf3f6171393bd42a6c9665b0962677e43"
+      ]
+    }
+  ]
+}

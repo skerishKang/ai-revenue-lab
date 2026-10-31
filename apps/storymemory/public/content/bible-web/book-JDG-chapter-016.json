@@ -1,0 +1,1005 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JDG:chapter:016",
+  "unit_ordinal": 227,
+  "unit_label": "JDG 16",
+  "book_code": "JDG",
+  "chapter_number": 16,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JDG:16:1",
+      "sequence": 6951,
+      "chapter_label": "JDG 16",
+      "verse_label": "1",
+      "locator": {
+        "book": "JDG",
+        "chapter": 16,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 16,
+          "verse": 1
+        }
+      ],
+      "en": "Samson went to Gaza, and saw there a prostitute, and went in to her.",
+      "ko": "삼손이 가사에 가서 거기서 한 기생을 보고 그에게로 들어갔더니",
+      "source_text_hash": "973237b21657bc855da0c91edef2ee4e05ba81c8d7986590306c6757ba47d051",
+      "translation_text_hash": "6ac75ab2a9c72f6e310650b654270cc1ea5eb91290db89e78343fe59e3b75cc6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "삼손이 가사에 가서 거기서 한 기생을 보고 그에게로 들어갔더니"
+      ],
+      "raw_text_hashes": [
+        "6ac75ab2a9c72f6e310650b654270cc1ea5eb91290db89e78343fe59e3b75cc6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:16:2",
+      "sequence": 6952,
+      "chapter_label": "JDG 16",
+      "verse_label": "2",
+      "locator": {
+        "book": "JDG",
+        "chapter": 16,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 16,
+          "verse": 2
+        }
+      ],
+      "en": "The Gazites were told, “Samson is here!” They surrounded him and laid wait for him all night in the gate of the city, and were quiet all the night, saying, “Wait until morning light; then we will kill him.”",
+      "ko": "혹이 가사 사람에게 고하여 가로되 삼손이 여기 왔다 하매 곧 그를 에워싸고 밤새도록 성문에 매복하고 밤새도록 종용히 하며 이르기를 새벽이 되거든 그를 죽이리라 하였더라",
+      "source_text_hash": "ebeeafbfbda93d206c7949ffd15320c98fd4eb35d09e0ff1409abdb2bcf9d543",
+      "translation_text_hash": "49964c9aa637c5c6303fe5b3ac4a6cabcd962a3d5791ccd382c33d7ff1300bf8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "혹이 가사 사람에게 고하여 가로되 삼손이 여기 왔다 하매 곧 그를 에워싸고 밤새도록 성문에 매복하고 밤새도록 종용히 하며 이르기를 새벽이 되거든 그를 죽이리라 하였더라"
+      ],
+      "raw_text_hashes": [
+        "49964c9aa637c5c6303fe5b3ac4a6cabcd962a3d5791ccd382c33d7ff1300bf8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:16:3",
+      "sequence": 6953,
+      "chapter_label": "JDG 16",
+      "verse_label": "3",
+      "locator": {
+        "book": "JDG",
+        "chapter": 16,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 16,
+          "verse": 3
+        }
+      ],
+      "en": "Samson lay until midnight, then arose at midnight and took hold of the doors of the gate of the city, with the two posts, and plucked them up, bar and all, and put them on his shoulders and carried them up to the top of the mountain that is before Hebron.",
+      "ko": "삼손이 밤중까지 누웠다가 그 밤중에 일어나 성문짝들과 두 설주와 빗장을 빼어 그것을 모두 어깨에 메고 헤브론 앞산 꼭대기로 가니라",
+      "source_text_hash": "ed1ec9f81d5b4db72f39d3178d208cdccb8fff5c6e6ff17815bb8a3f6e3e4a37",
+      "translation_text_hash": "4237618b2da41d54f0d39ce601a609f8676be26122d2c6c891caa24da0a9fb01",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "삼손이 밤중까지 누웠다가 그 밤중에 일어나 성문짝들과 두 설주와 빗장을 빼어 그것을 모두 어깨에 메고 헤브론 앞산 꼭대기로 가니라"
+      ],
+      "raw_text_hashes": [
+        "4237618b2da41d54f0d39ce601a609f8676be26122d2c6c891caa24da0a9fb01"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:16:4",
+      "sequence": 6954,
+      "chapter_label": "JDG 16",
+      "verse_label": "4",
+      "locator": {
+        "book": "JDG",
+        "chapter": 16,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 16,
+          "verse": 4
+        }
+      ],
+      "en": "It came to pass afterward that he loved a woman in the valley of Sorek, whose name was Delilah.",
+      "ko": "이 후에 삼손이 소렉 골짜기의 들릴라라 이름하는 여인을 사랑하매",
+      "source_text_hash": "227379d0ac1f87e3d731e73e538fba8841acfcd2cd5249f3c25d23edd8f08284",
+      "translation_text_hash": "4a8d16308164a297e3717a3876baf3a243e11c4b746393d2bf7e8b050f3e0790",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 후에 삼손이 소렉 골짜기의 들릴라라 이름하는 여인을 사랑하매"
+      ],
+      "raw_text_hashes": [
+        "4a8d16308164a297e3717a3876baf3a243e11c4b746393d2bf7e8b050f3e0790"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:16:5",
+      "sequence": 6955,
+      "chapter_label": "JDG 16",
+      "verse_label": "5",
+      "locator": {
+        "book": "JDG",
+        "chapter": 16,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 16,
+          "verse": 5
+        }
+      ],
+      "en": "The lords of the Philistines came up to her and said to her, “Entice him, and see in which his great strength lies, and by what means we may prevail against him, that we may bind him to afflict him; and we will each give you eleven hundred pieces of silver.”",
+      "ko": "블레셋 사람의 방백들이 그 여인에게로 올라와서 그에게 이르되 삼손을 꾀어서 무엇으로 말미암아 그 큰 힘이 있는지 우리가 어떻게 하면 그를 이기어서 결박하여 곤고케 할 수 있을는지 알아보라 그리하면 우리가 각각 은 일천 일백을 네게 주리라",
+      "source_text_hash": "3ae11ba4434c6465f7208286b4ee33a2d91746885c96ba82ab7bc72253666623",
+      "translation_text_hash": "ff5ac075c45e14366e02e20c1c989c7ea4e83e24cb3b007c04b6930376082027",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "블레셋 사람의 방백들이 그 여인에게로 올라와서 그에게 이르되 삼손을 꾀어서 무엇으로 말미암아 그 큰 힘이 있는지 우리가 어떻게 하면 그를 이기어서 결박하여 곤고케 할 수 있을는지 알아보라 그리하면 우리가 각각 은 일천 일백을 네게 주리라"
+      ],
+      "raw_text_hashes": [
+        "ff5ac075c45e14366e02e20c1c989c7ea4e83e24cb3b007c04b6930376082027"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:16:6",
+      "sequence": 6956,
+      "chapter_label": "JDG 16",
+      "verse_label": "6",
+      "locator": {
+        "book": "JDG",
+        "chapter": 16,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 16,
+          "verse": 6
+        }
+      ],
+      "en": "Delilah said to Samson, “Please tell me where your great strength lies, and what you might be bound to afflict you.”",
+      "ko": "들릴라가 삼손에게 말하되 청컨대 당신의 큰 힘이 무엇으로 말미암아 있으며 어떻게 하면 능히 당신을 결박하여 곤고케 할 수 있을는지 내게 말하라",
+      "source_text_hash": "1ab49daa521deb25c7eec226b2f61ce842132dcce2422b7af92d13904d6e5483",
+      "translation_text_hash": "b0c9e9b58404d75f59487c5a3821ebd1c601a7a385d30b59f30c9366ca3f5828",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "들릴라가 삼손에게 말하되 청컨대 당신의 큰 힘이 무엇으로 말미암아 있으며 어떻게 하면 능히 당신을 결박하여 곤고케 할 수 있을는지 내게 말하라"
+      ],
+      "raw_text_hashes": [
+        "b0c9e9b58404d75f59487c5a3821ebd1c601a7a385d30b59f30c9366ca3f5828"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:16:7",
+      "sequence": 6957,
+      "chapter_label": "JDG 16",
+      "verse_label": "7",
+      "locator": {
+        "book": "JDG",
+        "chapter": 16,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 16,
+          "verse": 7
+        }
+      ],
+      "en": "Samson said to her, “If they bind me with seven green cords that were never dried, then shall I become weak, and be as another man.”",
+      "ko": "삼손이 그에게 이르되 만일 마르지 아니한 푸른 칡 일곱으로 나를 결박하면 내가 약하여져서 다른 사람과 같으리라",
+      "source_text_hash": "054ad583772c0dffca4b109463341a3945f0dd93205a37fac97a15557d3779bb",
+      "translation_text_hash": "4e06b055d92a9b91ccd6136dde007ceb1caef6720f78b7d6cb0964f2e0a528ec",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "삼손이 그에게 이르되 만일 마르지 아니한 푸른 칡 일곱으로 나를 결박하면 내가 약하여져서 다른 사람과 같으리라"
+      ],
+      "raw_text_hashes": [
+        "4e06b055d92a9b91ccd6136dde007ceb1caef6720f78b7d6cb0964f2e0a528ec"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:16:8",
+      "sequence": 6958,
+      "chapter_label": "JDG 16",
+      "verse_label": "8",
+      "locator": {
+        "book": "JDG",
+        "chapter": 16,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 16,
+          "verse": 8
+        }
+      ],
+      "en": "Then the lords of the Philistines brought up to her seven green cords which had not been dried, and she bound him with them.",
+      "ko": "블레셋 사람의 방백들이 마르지 아니한 푸른 칡 일곱을 여인에게로 가져오매 그가 그것으로 삼손을 결박하고",
+      "source_text_hash": "5e2d067600fe48d30ca8ef88b8839c3eca1ff2a2ca53853dd6c63d71ca343f54",
+      "translation_text_hash": "824805e95bcca0acfc519dcdc93d34165706dc26794d9b5e41db8e7174619f49",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "블레셋 사람의 방백들이 마르지 아니한 푸른 칡 일곱을 여인에게로 가져오매 그가 그것으로 삼손을 결박하고"
+      ],
+      "raw_text_hashes": [
+        "824805e95bcca0acfc519dcdc93d34165706dc26794d9b5e41db8e7174619f49"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:16:9",
+      "sequence": 6959,
+      "chapter_label": "JDG 16",
+      "verse_label": "9",
+      "locator": {
+        "book": "JDG",
+        "chapter": 16,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 16,
+          "verse": 9
+        }
+      ],
+      "en": "Now she had an ambush waiting in the inner room. She said to him, “The Philistines are on you, Samson!” He broke the cords as a flax thread is broken when it touches the fire. So his strength was not known.",
+      "ko": "이미 사람을 내실에 매복시켰으므로 삼손에게 말하되 삼손이여 블레셋 사람이 당신에게 미쳤느니라 하니 삼손이 그 칡 끊기를 불탄 삼실을 끊음 같이 하였고 그 힘의 근본은 여전히 알지 못하니라",
+      "source_text_hash": "11f332b45141043a95768c5bc4a4b67adfbece1a1cc691a510a907c363e0b5dd",
+      "translation_text_hash": "15493b6a7273156f02ce7c251a9748288c80844ff512640401848f9b02af96c4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이미 사람을 내실에 매복시켰으므로 삼손에게 말하되 삼손이여 블레셋 사람이 당신에게 미쳤느니라 하니 삼손이 그 칡 끊기를 불탄 삼실을 끊음 같이 하였고 그 힘의 근본은 여전히 알지 못하니라"
+      ],
+      "raw_text_hashes": [
+        "15493b6a7273156f02ce7c251a9748288c80844ff512640401848f9b02af96c4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:16:10",
+      "sequence": 6960,
+      "chapter_label": "JDG 16",
+      "verse_label": "10",
+      "locator": {
+        "book": "JDG",
+        "chapter": 16,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 16,
+          "verse": 10
+        }
+      ],
+      "en": "Delilah said to Samson, “Behold, you have mocked me, and told me lies. Now please tell me how you might be bound.”",
+      "ko": "들릴라가 삼손에게 이르되 보라 당신이 나를 희롱하여 내게 거짓말을 하였도다 청컨대 무엇으로 하면 당신을 결박할 수 있을는지 이제는 내게 말하라",
+      "source_text_hash": "ab9eeb82470d78319c6ee7ebb3e8fed91657da9fb8f631058085c5c10b6f9d8b",
+      "translation_text_hash": "c724fe3ddd32a584451c76285f487989e67b88d5730b1cbcd686218f2ceadb6c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "들릴라가 삼손에게 이르되 보라 당신이 나를 희롱하여 내게 거짓말을 하였도다 청컨대 무엇으로 하면 당신을 결박할 수 있을는지 이제는 내게 말하라"
+      ],
+      "raw_text_hashes": [
+        "c724fe3ddd32a584451c76285f487989e67b88d5730b1cbcd686218f2ceadb6c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:16:11",
+      "sequence": 6961,
+      "chapter_label": "JDG 16",
+      "verse_label": "11",
+      "locator": {
+        "book": "JDG",
+        "chapter": 16,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 16,
+          "verse": 11
+        }
+      ],
+      "en": "He said to her, “If they only bind me with new ropes with which no work has been done, then I will become weak, and be as another man.”",
+      "ko": "삼손이 그에게 이르되 만일 쓰지 아니한 새 줄로 나를 결박하면 내가 약하여져서 다른 사람과 같으리라",
+      "source_text_hash": "62628b0458097bf4dec98106b694b7dadc0d13e54bcadaa61b054cd697f31f9c",
+      "translation_text_hash": "f02d4d44401453e0585deb2a86f3cb1626a097f3339ecd926bda54d542a6bd8a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "삼손이 그에게 이르되 만일 쓰지 아니한 새 줄로 나를 결박하면 내가 약하여져서 다른 사람과 같으리라"
+      ],
+      "raw_text_hashes": [
+        "f02d4d44401453e0585deb2a86f3cb1626a097f3339ecd926bda54d542a6bd8a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:16:12",
+      "sequence": 6962,
+      "chapter_label": "JDG 16",
+      "verse_label": "12",
+      "locator": {
+        "book": "JDG",
+        "chapter": 16,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 16,
+          "verse": 12
+        }
+      ],
+      "en": "So Delilah took new ropes and bound him with them, then said to him, “The Philistines are on you, Samson!” The ambush was waiting in the inner room. He broke them off his arms like a thread.",
+      "ko": "들릴라가 새 줄을 취하고 그것으로 그를 결박하고 그에게 이르되 삼손이여 블레셋 사람이 당신에게 미쳤느니라 하니 삼손이 팔 위의 줄 끊기를 실을 끊음 같이 하였고 그 때에도 사람이 내실에 매복하였었더라",
+      "source_text_hash": "537d8c37ef478c2343d3320ce99f12b537885c7aa82d1aba9806e2d6d189dfbd",
+      "translation_text_hash": "f8e7c4e6651ccae6892b31b12563e3402cd251cde68b1e71068f1e1f4638302d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "들릴라가 새 줄을 취하고 그것으로 그를 결박하고 그에게 이르되 삼손이여 블레셋 사람이 당신에게 미쳤느니라 하니 삼손이 팔 위의 줄 끊기를 실을 끊음 같이 하였고 그 때에도 사람이 내실에 매복하였었더라"
+      ],
+      "raw_text_hashes": [
+        "f8e7c4e6651ccae6892b31b12563e3402cd251cde68b1e71068f1e1f4638302d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:16:13",
+      "sequence": 6963,
+      "chapter_label": "JDG 16",
+      "verse_label": "13",
+      "locator": {
+        "book": "JDG",
+        "chapter": 16,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 16,
+          "verse": 13
+        }
+      ],
+      "en": "Delilah said to Samson, “Until now, you have mocked me and told me lies. Tell me with what you might be bound.” He said to her, “If you weave the seven locks of my head with the fabric on the loom.”",
+      "ko": "들릴라가 삼손에게 이르되 당신이 이때까지 나를 희롱하여 내게 거짓말을 하였도다 내가 무엇으로 하면 당신을 결박할 수 있을는지 내게 말하라 삼손이 그에게 이르되 그대가 만일 나의 머리털 일곱가닥을 위선에 섞어 짜면 되리라",
+      "source_text_hash": "7dc32ac2db4f6bebdf213bb1ad20d85ca81c57c32059d93ae7616ff9fd2bbdf3",
+      "translation_text_hash": "79c7b06e5608a750cb73abad89747f552cbded936577204bebd21b830ac07077",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "들릴라가 삼손에게 이르되 당신이 이때까지 나를 희롱하여 내게 거짓말을 하였도다 내가 무엇으로 하면 당신을 결박할 수 있을는지 내게 말하라 삼손이 그에게 이르되 그대가 만일 나의 머리털 일곱가닥을 위선에 섞어 짜면 되리라"
+      ],
+      "raw_text_hashes": [
+        "79c7b06e5608a750cb73abad89747f552cbded936577204bebd21b830ac07077"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:16:14",
+      "sequence": 6964,
+      "chapter_label": "JDG 16",
+      "verse_label": "14",
+      "locator": {
+        "book": "JDG",
+        "chapter": 16,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 16,
+          "verse": 14
+        }
+      ],
+      "en": "She fastened it with the pin, and said to him, “The Philistines are on you, Samson!” He awakened out of his sleep, and plucked away the pin of the beam and the fabric.",
+      "ko": "들릴라가 바디로 그 머리털을 단단히 짜고 그에게 이르되 삼손이여 블레셋 사람이 당신에게 미쳤느니라 하니 삼손이 잠을 깨어 직조틀의 바디와 위선을 다 빼어내니라",
+      "source_text_hash": "745ac31636f84afc62e68522f7ca1232772373ee3c75b2ef9fb10f63afba8628",
+      "translation_text_hash": "aa6502df500d15d00cf0d736a057827c17ac163c8b8335bef64510be631553d9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "들릴라가 바디로 그 머리털을 단단히 짜고 그에게 이르되 삼손이여 블레셋 사람이 당신에게 미쳤느니라 하니 삼손이 잠을 깨어 직조틀의 바디와 위선을 다 빼어내니라"
+      ],
+      "raw_text_hashes": [
+        "aa6502df500d15d00cf0d736a057827c17ac163c8b8335bef64510be631553d9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:16:15",
+      "sequence": 6965,
+      "chapter_label": "JDG 16",
+      "verse_label": "15",
+      "locator": {
+        "book": "JDG",
+        "chapter": 16,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 16,
+          "verse": 15
+        }
+      ],
+      "en": "She said to him, “How can you say, ‘I love you,’ when your heart is not with me? You have mocked me these three times, and have not told me where your great strength lies.”",
+      "ko": "들릴라가 삼손에게 이르되 당신의 마음이 내게 있지 아니하면서 당신이 어찌 나를 사랑한다 하느뇨 당신이 이 세번 나를 희롱하고 당신의 큰 힘이 무엇으로 말미암아 있는 것을 내게 말하지 아니하였도다 하며",
+      "source_text_hash": "ffee6c1a5e6ebe46a56e1d072b7c49db7cc3766257f1403ae58c286a487fb910",
+      "translation_text_hash": "ceceda914adeda3728a14a13c48b0a4a2e8d303ebaf25133e839497dd5821826",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "들릴라가 삼손에게 이르되 당신의 마음이 내게 있지 아니하면서 당신이 어찌 나를 사랑한다 하느뇨 당신이 이 세번 나를 희롱하고 당신의 큰 힘이 무엇으로 말미암아 있는 것을 내게 말하지 아니하였도다 하며"
+      ],
+      "raw_text_hashes": [
+        "ceceda914adeda3728a14a13c48b0a4a2e8d303ebaf25133e839497dd5821826"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:16:16",
+      "sequence": 6966,
+      "chapter_label": "JDG 16",
+      "verse_label": "16",
+      "locator": {
+        "book": "JDG",
+        "chapter": 16,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 16,
+          "verse": 16
+        }
+      ],
+      "en": "When she pressed him daily with her words and urged him, his soul was troubled to death.",
+      "ko": "날마다 그 말로 그를 재촉하여 조르매 삼손의 마음이 번뇌하여 죽을 지경이라",
+      "source_text_hash": "c73dfc2c3b6190ca06e38b9442b4e522417b62525cb8b584160420ac5952e85d",
+      "translation_text_hash": "5e4f37b9efe2d6a95470f56505560cb2aaa642f27cded6a23ea55586d72ea86f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "날마다 그 말로 그를 재촉하여 조르매 삼손의 마음이 번뇌하여 죽을 지경이라"
+      ],
+      "raw_text_hashes": [
+        "5e4f37b9efe2d6a95470f56505560cb2aaa642f27cded6a23ea55586d72ea86f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:16:17",
+      "sequence": 6967,
+      "chapter_label": "JDG 16",
+      "verse_label": "17",
+      "locator": {
+        "book": "JDG",
+        "chapter": 16,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 16,
+          "verse": 17
+        }
+      ],
+      "en": "He told her all his heart and said to her, “No razor has ever come on my head; for I have been a Nazirite to God from my mother’s womb. If I am shaved, then my strength will go from me and I will become weak, and be like any other man.”",
+      "ko": "삼손이 진정을 토하여 그에게 이르되 내 머리에는 삭도를 대지 아니하였나니 이는 내가 모태에서 하나님의 나실인이 되었음이라 만일 내 머리가 밀리우면 내 힘이 내게서 떠나고 나는 약하여져서 다른 사람과 같으리라",
+      "source_text_hash": "5f6cc853c7d9763bed14bf0d067b48d985bfaed244a191d0e5c5a789dfa50164",
+      "translation_text_hash": "6d8cb0c1d9791a3f62ff58ebb5dd1131e2e56c32193a6e92c24e721017448040",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "삼손이 진정을 토하여 그에게 이르되 내 머리에는 삭도를 대지 아니하였나니 이는 내가 모태에서 하나님의 나실인이 되었음이라 만일 내 머리가 밀리우면 내 힘이 내게서 떠나고 나는 약하여져서 다른 사람과 같으리라"
+      ],
+      "raw_text_hashes": [
+        "6d8cb0c1d9791a3f62ff58ebb5dd1131e2e56c32193a6e92c24e721017448040"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:16:18",
+      "sequence": 6968,
+      "chapter_label": "JDG 16",
+      "verse_label": "18",
+      "locator": {
+        "book": "JDG",
+        "chapter": 16,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 16,
+          "verse": 18
+        }
+      ],
+      "en": "When Delilah saw that he had told her all his heart, she sent and called for the lords of the Philistines, saying, “Come up this once, for he has told me all his heart.” Then the lords of the Philistines came up to her and brought the money in their hand.",
+      "ko": "들릴라가 삼손의 진정을 다 토함을 보고 보내어 블레셋 사람의 방백들을 불러 가로되 삼손이 내게 진정을 토하였으니 이제 한번만 올라오라 블레셋 방백들이 손에 은을 가지고 여인에게로 올라오니라",
+      "source_text_hash": "b3451312627da8c31197cfc37f424c447167e41ba2234ef6aa433f9b27bfa63f",
+      "translation_text_hash": "be26f4cd307dce916d76ad7b651653927731ac5bcda57a1173f8d2935af8823e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "들릴라가 삼손의 진정을 다 토함을 보고 보내어 블레셋 사람의 방백들을 불러 가로되 삼손이 내게 진정을 토하였으니 이제 한번만 올라오라 블레셋 방백들이 손에 은을 가지고 여인에게로 올라오니라"
+      ],
+      "raw_text_hashes": [
+        "be26f4cd307dce916d76ad7b651653927731ac5bcda57a1173f8d2935af8823e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:16:19",
+      "sequence": 6969,
+      "chapter_label": "JDG 16",
+      "verse_label": "19",
+      "locator": {
+        "book": "JDG",
+        "chapter": 16,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 16,
+          "verse": 19
+        }
+      ],
+      "en": "She made him sleep on her knees; and she called for a man and shaved off the seven locks of his head; and she began to afflict him, and his strength went from him.",
+      "ko": "들릴라가 삼손으로 자기 무릎을 베고 자게 하고 사람을 불러 그 머리털 일곱 가닥을 밀고 괴롭게 하여본즉 그 힘이 없어졌더라",
+      "source_text_hash": "f8d1571d119087c67c73a131ed54a19f01854361f13b9e8300b93b26cc0b09a4",
+      "translation_text_hash": "ab6d0cddb2cda6753dbe2fbc410281c873f1a5461a455ce7f0c751bbcf67c68e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "들릴라가 삼손으로 자기 무릎을 베고 자게 하고 사람을 불러 그 머리털 일곱 가닥을 밀고 괴롭게 하여본즉 그 힘이 없어졌더라"
+      ],
+      "raw_text_hashes": [
+        "ab6d0cddb2cda6753dbe2fbc410281c873f1a5461a455ce7f0c751bbcf67c68e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:16:20",
+      "sequence": 6970,
+      "chapter_label": "JDG 16",
+      "verse_label": "20",
+      "locator": {
+        "book": "JDG",
+        "chapter": 16,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 16,
+          "verse": 20
+        }
+      ],
+      "en": "She said, “The Philistines are upon you, Samson!” He awoke out of his sleep, and said, “I will go out as at other times, and shake myself free.” But he didn’t know that the LORD had departed from him.",
+      "ko": "들릴라가 가로되 삼손이여 블레셋 사람이 당신에게 미쳤느니라 하니 삼손이 잠을 깨며 이르기를 내가 전과 같이 나가서 몸을 떨치리라 하여도 여호와께서 이미 자기를 떠나신 줄을 깨닫지 못하였더라",
+      "source_text_hash": "2822ae9a4f1508639017a5401f2dd583463d1353ab57b41f6d610c546270093e",
+      "translation_text_hash": "450ffa13c50e8285eaf4012d53c5b46dd693778665aa26995766364fb41843cd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "들릴라가 가로되 삼손이여 블레셋 사람이 당신에게 미쳤느니라 하니 삼손이 잠을 깨며 이르기를 내가 전과 같이 나가서 몸을 떨치리라 하여도 여호와께서 이미 자기를 떠나신 줄을 깨닫지 못하였더라"
+      ],
+      "raw_text_hashes": [
+        "450ffa13c50e8285eaf4012d53c5b46dd693778665aa26995766364fb41843cd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:16:21",
+      "sequence": 6971,
+      "chapter_label": "JDG 16",
+      "verse_label": "21",
+      "locator": {
+        "book": "JDG",
+        "chapter": 16,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 16,
+          "verse": 21
+        }
+      ],
+      "en": "The Philistines laid hold on him and put out his eyes; and they brought him down to Gaza and bound him with fetters of bronze; and he ground at the mill in the prison.",
+      "ko": "블레셋 사람이 그를 잡아 그 눈을 빼고 끌고 가사에 내려가 놋줄로 매고 그로 옥중에서 맷돌을 돌리게 하였더라",
+      "source_text_hash": "2d7f9f309d9b6445da4b64a6dc225e4d0fd3466ff0de6a7d57099dc9690f8200",
+      "translation_text_hash": "d28d762fc1b4d1a428473df0ec175e970a46b86b85b6b200b190bde42654d6c2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "블레셋 사람이 그를 잡아 그 눈을 빼고 끌고 가사에 내려가 놋줄로 매고 그로 옥중에서 맷돌을 돌리게 하였더라"
+      ],
+      "raw_text_hashes": [
+        "d28d762fc1b4d1a428473df0ec175e970a46b86b85b6b200b190bde42654d6c2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:16:22",
+      "sequence": 6972,
+      "chapter_label": "JDG 16",
+      "verse_label": "22",
+      "locator": {
+        "book": "JDG",
+        "chapter": 16,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 16,
+          "verse": 22
+        }
+      ],
+      "en": "However, the hair of his head began to grow again after he was shaved.",
+      "ko": "그의 머리털이 밀리운 후에 다시 자라기 시작하니라",
+      "source_text_hash": "1f6548c2808444efdd788ce9e9c7ae38b4511859c54ba4ae1e5dd44a857ddefb",
+      "translation_text_hash": "f6789fa232740cb845bc3fed7fe1aa25798f60f956b6ac0d00623d342724d47d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그의 머리털이 밀리운 후에 다시 자라기 시작하니라"
+      ],
+      "raw_text_hashes": [
+        "f6789fa232740cb845bc3fed7fe1aa25798f60f956b6ac0d00623d342724d47d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:16:23",
+      "sequence": 6973,
+      "chapter_label": "JDG 16",
+      "verse_label": "23",
+      "locator": {
+        "book": "JDG",
+        "chapter": 16,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 16,
+          "verse": 23
+        }
+      ],
+      "en": "The lords of the Philistines gathered together to offer a great sacrifice to Dagon their god, and to rejoice; for they said, “Our god has delivered Samson our enemy into our hand.”",
+      "ko": "블레셋 사람의 방백이 가로되 우리의 신이 우리 원수 삼손을 우리 손에 붙였다 하고 다 모여 그 신 다곤에게 큰 제사를 드리고 즐거워하고",
+      "source_text_hash": "d902e191632be6aee4cc7dedab09531cab2ae6dc912a2d49d41ca37472c58e59",
+      "translation_text_hash": "2c7b9f24b0c57af43bcdd37035031814ce028e38bba7f5e599e0b9fb8d0d9c3d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "블레셋 사람의 방백이 가로되 우리의 신이 우리 원수 삼손을 우리 손에 붙였다 하고 다 모여 그 신 다곤에게 큰 제사를 드리고 즐거워하고"
+      ],
+      "raw_text_hashes": [
+        "2c7b9f24b0c57af43bcdd37035031814ce028e38bba7f5e599e0b9fb8d0d9c3d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:16:24",
+      "sequence": 6974,
+      "chapter_label": "JDG 16",
+      "verse_label": "24",
+      "locator": {
+        "book": "JDG",
+        "chapter": 16,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 16,
+          "verse": 24
+        }
+      ],
+      "en": "When the people saw him, they praised their god; for they said, “Our god has delivered our enemy and the destroyer of our country, who has slain many of us, into our hand.”",
+      "ko": "백성들도 삼손을 보았으므로 가로되 우리 토지를 헐고 우리 많은 사람을 죽인 원수를 우리의 신이 우리 손에 붙였다 하고 자기 신을 찬송하며",
+      "source_text_hash": "08607820746d7265959632f270c99ce479448b65975a9ed1b53faa821d8d9f2e",
+      "translation_text_hash": "097608bcc82450307b227f92cc509dd63fd2fb4c860e3eda57d0ecf253abb998",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "백성들도 삼손을 보았으므로 가로되 우리 토지를 헐고 우리 많은 사람을 죽인 원수를 우리의 신이 우리 손에 붙였다 하고 자기 신을 찬송하며"
+      ],
+      "raw_text_hashes": [
+        "097608bcc82450307b227f92cc509dd63fd2fb4c860e3eda57d0ecf253abb998"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:16:25",
+      "sequence": 6975,
+      "chapter_label": "JDG 16",
+      "verse_label": "25",
+      "locator": {
+        "book": "JDG",
+        "chapter": 16,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 16,
+          "verse": 25
+        }
+      ],
+      "en": "When their hearts were merry, they said, “Call for Samson, that he may entertain us.” They called for Samson out of the prison; and he performed before them. They set him between the pillars;",
+      "ko": "그들의 마음이 즐거울 때에 이르되 삼손을 불러다가 우리를 위하여 재주를 부리게 하자 하고 옥에서 삼손을 불러내매 삼손이 그들을 위하여 재주를 부리니라 그들이 삼손을 두 기둥 사이에 세웠더니",
+      "source_text_hash": "5e47e1969aa654a09b1dd59f235acb0fed217235695b9dac5a5f80c699185a01",
+      "translation_text_hash": "81c2d7f44357e752d431d16f52c4437364336d5bf9bb33cebcc6e011a30c8e23",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들의 마음이 즐거울 때에 이르되 삼손을 불러다가 우리를 위하여 재주를 부리게 하자 하고 옥에서 삼손을 불러내매 삼손이 그들을 위하여 재주를 부리니라 그들이 삼손을 두 기둥 사이에 세웠더니"
+      ],
+      "raw_text_hashes": [
+        "81c2d7f44357e752d431d16f52c4437364336d5bf9bb33cebcc6e011a30c8e23"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:16:26",
+      "sequence": 6976,
+      "chapter_label": "JDG 16",
+      "verse_label": "26",
+      "locator": {
+        "book": "JDG",
+        "chapter": 16,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 16,
+          "verse": 26
+        }
+      ],
+      "en": "and Samson said to the boy who held him by the hand, “Allow me to feel the pillars on which the house rests, that I may lean on them.”",
+      "ko": "삼손이 자기 손을 붙든 소년에게 이르되 나로 이 집을 버틴 기둥을 찾아서 그것을 의지하게 하라 하니라",
+      "source_text_hash": "1fef617df690b78d73bf754b77b47cc3f9185340790ed278e460710aa5a351ee",
+      "translation_text_hash": "d6db5038cde671e5b105dbd4bfe7ab8db5316dbc5ef74783ec3d97d407d04073",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "삼손이 자기 손을 붙든 소년에게 이르되 나로 이 집을 버틴 기둥을 찾아서 그것을 의지하게 하라 하니라"
+      ],
+      "raw_text_hashes": [
+        "d6db5038cde671e5b105dbd4bfe7ab8db5316dbc5ef74783ec3d97d407d04073"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:16:27",
+      "sequence": 6977,
+      "chapter_label": "JDG 16",
+      "verse_label": "27",
+      "locator": {
+        "book": "JDG",
+        "chapter": 16,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 16,
+          "verse": 27
+        }
+      ],
+      "en": "Now the house was full of men and women; and all the lords of the Philistines were there; and there were on the roof about three thousand men and women, who saw while Samson performed.",
+      "ko": "그 집에는 남녀가 가득하니 블레셋 모든 방백도 거기 있고 지붕에 있는 남녀도 삼천명 가량이라 다 삼손의 재주 부리는 것을 보더라",
+      "source_text_hash": "a68099ecb1b27b45341d7079c2817f7bfacdc6cd956f84a3cb3a0d3fd5907eeb",
+      "translation_text_hash": "5d089caa1384acc1b20b4e91ea72fd43c4302e6cc5fc7c0f152c576bc20eb8c8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 집에는 남녀가 가득하니 블레셋 모든 방백도 거기 있고 지붕에 있는 남녀도 삼천명 가량이라 다 삼손의 재주 부리는 것을 보더라"
+      ],
+      "raw_text_hashes": [
+        "5d089caa1384acc1b20b4e91ea72fd43c4302e6cc5fc7c0f152c576bc20eb8c8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:16:28",
+      "sequence": 6978,
+      "chapter_label": "JDG 16",
+      "verse_label": "28",
+      "locator": {
+        "book": "JDG",
+        "chapter": 16,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 16,
+          "verse": 28
+        }
+      ],
+      "en": "Samson called to the LORD, and said, “Lord GOD, remember me, please, and strengthen me, please, only this once, God, that I may be at once avenged of the Philistines for my two eyes.”",
+      "ko": "삼손이 여호와께 부르짖어 가로되 주 여호와여 구하옵나니 나를 생각하옵소서 하나님이여 구하옵나니 이번만 나로 강하게 하사 블레셋 사람이 나의 두 눈을 뺀 원수를 단번에 갚게 하옵소서 하고",
+      "source_text_hash": "82267f948f3cfb10038b3267373cdd0610c7452f6a13650e80c531c898378239",
+      "translation_text_hash": "7b0b17271e88c1cd7377c0d9c4271657ac04f7dc58892e267feccce60c71c6bf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "삼손이 여호와께 부르짖어 가로되 주 여호와여 구하옵나니 나를 생각하옵소서 하나님이여 구하옵나니 이번만 나로 강하게 하사 블레셋 사람이 나의 두 눈을 뺀 원수를 단번에 갚게 하옵소서 하고"
+      ],
+      "raw_text_hashes": [
+        "7b0b17271e88c1cd7377c0d9c4271657ac04f7dc58892e267feccce60c71c6bf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:16:29",
+      "sequence": 6979,
+      "chapter_label": "JDG 16",
+      "verse_label": "29",
+      "locator": {
+        "book": "JDG",
+        "chapter": 16,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 16,
+          "verse": 29
+        }
+      ],
+      "en": "Samson took hold of the two middle pillars on which the house rested and leaned on them, the one with his right hand and the other with his left.",
+      "ko": "집을 버틴 두 가운데 기둥을 하나는 왼손으로, 하나는 오른손으로 껴 의지하고",
+      "source_text_hash": "aaf35b7108c9aef023ba18bf427785a787f6afac334a9df4627f75b296dc728a",
+      "translation_text_hash": "e65ab19d6b920fea5d595c1471f7e1fa66774778a5a371b5c37d22aa6c61b5a8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "집을 버틴 두 가운데 기둥을 하나는 왼손으로, 하나는 오른손으로 껴 의지하고"
+      ],
+      "raw_text_hashes": [
+        "e65ab19d6b920fea5d595c1471f7e1fa66774778a5a371b5c37d22aa6c61b5a8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:16:30",
+      "sequence": 6980,
+      "chapter_label": "JDG 16",
+      "verse_label": "30",
+      "locator": {
+        "book": "JDG",
+        "chapter": 16,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 16,
+          "verse": 30
+        }
+      ],
+      "en": "Samson said, “Let me die with the Philistines!” He bowed himself with all his might; and the house fell on the lords, and on all the people who were in it. So the dead that he killed at his death were more than those who he killed in his life.",
+      "ko": "가로되 블레셋 사람과 함께 죽기를 원하노라 하고 힘을 다하여 몸을 굽히매 그 집이 곧 무너져 그 안에 있는 모든 방백과 온 백성에게 덮이니 삼손이 죽을 때에 죽인 자가 살았을 때에 죽인 자보다 더욱 많았더라",
+      "source_text_hash": "32a4559d7358871989173ba93db2660199c45f000d8a57859d30d64b61e304b2",
+      "translation_text_hash": "30f76c837c476510626d3f25af35791dd73238a70745907bcdcb43804d5fc17d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 블레셋 사람과 함께 죽기를 원하노라 하고 힘을 다하여 몸을 굽히매 그 집이 곧 무너져 그 안에 있는 모든 방백과 온 백성에게 덮이니 삼손이 죽을 때에 죽인 자가 살았을 때에 죽인 자보다 더욱 많았더라"
+      ],
+      "raw_text_hashes": [
+        "30f76c837c476510626d3f25af35791dd73238a70745907bcdcb43804d5fc17d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:16:31",
+      "sequence": 6981,
+      "chapter_label": "JDG 16",
+      "verse_label": "31",
+      "locator": {
+        "book": "JDG",
+        "chapter": 16,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 16,
+          "verse": 31
+        }
+      ],
+      "en": "Then his brothers and all the house of his father came down and took him, and brought him up and buried him between Zorah and Eshtaol in the burial site of Manoah his father. He judged Israel twenty years.",
+      "ko": "그의 형제와 아비의 온 집이 다 내려가서 그 시체를 취하여 가지고 올라와서 소라와 에스다올 사이 그 아비 마노아의 장지에 장사하니라 삼손이 이스라엘 사사로 이십년을 지내었더라",
+      "source_text_hash": "31f1de56dfa1bebd8dd1b639eaf495d8c33e35464197216922d331287c9fe54c",
+      "translation_text_hash": "ed13e723b51888f16e417cb7cf6ecaf6a4dc23eb39339cb43cd64a8954c5d05d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그의 형제와 아비의 온 집이 다 내려가서 그 시체를 취하여 가지고 올라와서 소라와 에스다올 사이 그 아비 마노아의 장지에 장사하니라 삼손이 이스라엘 사사로 이십년을 지내었더라"
+      ],
+      "raw_text_hashes": [
+        "ed13e723b51888f16e417cb7cf6ecaf6a4dc23eb39339cb43cd64a8954c5d05d"
+      ]
+    }
+  ]
+}

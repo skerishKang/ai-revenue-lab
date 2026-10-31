@@ -1,0 +1,845 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:044",
+  "unit_ordinal": 522,
+  "unit_label": "PSA 44",
+  "book_code": "PSA",
+  "chapter_number": 44,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:44:1",
+      "sequence": 14573,
+      "chapter_label": "PSA 44",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 44,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 44,
+          "verse": 1
+        }
+      ],
+      "en": "We have heard with our ears, God; our fathers have told us what work you did in their days, in the days of old.",
+      "ko": "하나님이여 주께서 우리 열조의 날 곧 옛날에 행하신 일을 저희가 우리에게 이르매 우리 귀로 들었나이다",
+      "source_text_hash": "f88c784acd0fb016bea7c78b3f8f15578a9015d19032cac365c6f6c5bc5f0311",
+      "translation_text_hash": "7bd5a0cca6cf9fa4738d14084e321826cf69486858d03e6c994335a22f327a04",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이여 주께서 우리 열조의 날 곧 옛날에 행하신 일을 저희가 우리에게 이르매 우리 귀로 들었나이다"
+      ],
+      "raw_text_hashes": [
+        "7bd5a0cca6cf9fa4738d14084e321826cf69486858d03e6c994335a22f327a04"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:44:2",
+      "sequence": 14574,
+      "chapter_label": "PSA 44",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 44,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 44,
+          "verse": 2
+        }
+      ],
+      "en": "You drove out the nations with your hand, but you planted them. You afflicted the peoples, but you spread them abroad.",
+      "ko": "주께서 주의 손으로 열방을 쫓으시고 열조를 심으시며 주께서 민족들은 괴롭게 하시고 열조는 번성케 하셨나이다",
+      "source_text_hash": "acb89d45d6b648949d19aa1540a4540bf9caa76511de220426d645125f2924bd",
+      "translation_text_hash": "46edcbe12e5ed09082cfa58ee03b0e8f78df8c9c2eb878c53016075740214c85",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 주의 손으로 열방을 쫓으시고 열조를 심으시며 주께서 민족들은 괴롭게 하시고 열조는 번성케 하셨나이다"
+      ],
+      "raw_text_hashes": [
+        "46edcbe12e5ed09082cfa58ee03b0e8f78df8c9c2eb878c53016075740214c85"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:44:3",
+      "sequence": 14575,
+      "chapter_label": "PSA 44",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 44,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 44,
+          "verse": 3
+        }
+      ],
+      "en": "For they didn’t get the land in possession by their own sword, neither did their own arm save them; but your right hand, your arm, and the light of your face, because you were favorable to them.",
+      "ko": "저희가 자기 칼로 땅을 얻어 차지함이 아니요 저희 팔이 저희를 구원함도 아니라 오직 주의 오른 손과 팔과 얼굴의 빛으로 하셨으니 주께서 저희를 기뻐하신 연고니이다",
+      "source_text_hash": "97a6940b1f59e2a796239f581f97fd5e53cd1e9166879000af002c0e8d5efe61",
+      "translation_text_hash": "8c635e3843c9189d970083b76a16dc4f1311cd853f14652aa99e33c337b56048",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 자기 칼로 땅을 얻어 차지함이 아니요 저희 팔이 저희를 구원함도 아니라 오직 주의 오른 손과 팔과 얼굴의 빛으로 하셨으니 주께서 저희를 기뻐하신 연고니이다"
+      ],
+      "raw_text_hashes": [
+        "8c635e3843c9189d970083b76a16dc4f1311cd853f14652aa99e33c337b56048"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:44:4",
+      "sequence": 14576,
+      "chapter_label": "PSA 44",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 44,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 44,
+          "verse": 4
+        }
+      ],
+      "en": "God, you are my King. Command victories for Jacob!",
+      "ko": "하나님이여 주는 나의 왕이시니 야곱에게 구원을 베푸소서",
+      "source_text_hash": "233e019e09b8ef5d031392f00fbe0c47b45c1967b7dffdb98b5cd87ee508cbf6",
+      "translation_text_hash": "590c81f35581ca3575e7408129ba8cb0c29c25ea9d9e65e73770eb89c1711960",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이여 주는 나의 왕이시니 야곱에게 구원을 베푸소서"
+      ],
+      "raw_text_hashes": [
+        "590c81f35581ca3575e7408129ba8cb0c29c25ea9d9e65e73770eb89c1711960"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:44:5",
+      "sequence": 14577,
+      "chapter_label": "PSA 44",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 44,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 44,
+          "verse": 5
+        }
+      ],
+      "en": "Through you, we will push down our adversaries. Through your name, we will tread down those who rise up against us.",
+      "ko": "우리가 주를 의지하여 우리 대적을 누르고 우리를 치려 일어나는 자를 주의 이름으로 밟으리이다",
+      "source_text_hash": "e076cecfd1024fbd946a4bed4ed207a6496a70c923ca05e707943434797b986d",
+      "translation_text_hash": "adbcf5667f2c237401751bb5c94cdcfdeca8413b51ac116f7b85d86739f31891",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 주를 의지하여 우리 대적을 누르고 우리를 치려 일어나는 자를 주의 이름으로 밟으리이다"
+      ],
+      "raw_text_hashes": [
+        "adbcf5667f2c237401751bb5c94cdcfdeca8413b51ac116f7b85d86739f31891"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:44:6",
+      "sequence": 14578,
+      "chapter_label": "PSA 44",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 44,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 44,
+          "verse": 6
+        }
+      ],
+      "en": "For I will not trust in my bow, neither will my sword save me.",
+      "ko": "나는 내 활을 의지하지 아니할 것이라 내 칼도 나를 구원치 못하리이다",
+      "source_text_hash": "8553e515a7ad69ea264063ae24ebdca5af4ed9bdbb22f06b96cb8783a261779c",
+      "translation_text_hash": "1ec183281324993793f5d4e83d1bd40decdbfe5594aadfbbef0885f4b48fb0bb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 내 활을 의지하지 아니할 것이라 내 칼도 나를 구원치 못하리이다"
+      ],
+      "raw_text_hashes": [
+        "1ec183281324993793f5d4e83d1bd40decdbfe5594aadfbbef0885f4b48fb0bb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:44:7",
+      "sequence": 14579,
+      "chapter_label": "PSA 44",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 44,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 44,
+          "verse": 7
+        }
+      ],
+      "en": "But you have saved us from our adversaries, and have shamed those who hate us.",
+      "ko": "오직 주께서 우리를 우리 대적에게서 구원하시고 우리를 미워하는 자로 수치를 당케 하셨나이다",
+      "source_text_hash": "6b381f015c7b6dd7127cc611e1fe166515255743bea87fa3ce88aa11c8d1047a",
+      "translation_text_hash": "b6bd30f49a0b68766098e6d593318efc3507df08bef266c9aef96ac77ff54a20",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 주께서 우리를 우리 대적에게서 구원하시고 우리를 미워하는 자로 수치를 당케 하셨나이다"
+      ],
+      "raw_text_hashes": [
+        "b6bd30f49a0b68766098e6d593318efc3507df08bef266c9aef96ac77ff54a20"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:44:8",
+      "sequence": 14580,
+      "chapter_label": "PSA 44",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 44,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 44,
+          "verse": 8
+        }
+      ],
+      "en": "In God we have made our boast all day long. We will give thanks to your name forever. Selah.",
+      "ko": "우리가 종일 하나님으로 자랑하였나이다 우리가 하나님의 이름을 영영히 감사하리이다(셀라)",
+      "source_text_hash": "b9283e805cf2d10eb794deb32d37c3dada96e0a1e4f47e0800551d48faf529ab",
+      "translation_text_hash": "0258625a689817ad272d534cc3cd92d57b1ab15caac9a400783e363e4f626265",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 종일 하나님으로 자랑하였나이다 우리가 하나님의 이름을 영영히 감사하리이다(셀라)"
+      ],
+      "raw_text_hashes": [
+        "0258625a689817ad272d534cc3cd92d57b1ab15caac9a400783e363e4f626265"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:44:9",
+      "sequence": 14581,
+      "chapter_label": "PSA 44",
+      "verse_label": "9",
+      "locator": {
+        "book": "PSA",
+        "chapter": 44,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 44,
+          "verse": 9
+        }
+      ],
+      "en": "But now you rejected us, and brought us to dishonor, and don’t go out with our armies.",
+      "ko": "그러나 이제는 주께서 우리를 버려 욕을 당케 하시고 우리 군대와 함께 나아가지 아니하시나이다",
+      "source_text_hash": "3a04deb5e5c96cd7d692d6f6ce23a5a8e8f3dd7ba57c68cb1467bace066a4c7b",
+      "translation_text_hash": "00a226ac83072c00ff302d33acb03ba344da330d5a19c057a3701d2449c75ff1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 이제는 주께서 우리를 버려 욕을 당케 하시고 우리 군대와 함께 나아가지 아니하시나이다"
+      ],
+      "raw_text_hashes": [
+        "00a226ac83072c00ff302d33acb03ba344da330d5a19c057a3701d2449c75ff1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:44:10",
+      "sequence": 14582,
+      "chapter_label": "PSA 44",
+      "verse_label": "10",
+      "locator": {
+        "book": "PSA",
+        "chapter": 44,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 44,
+          "verse": 10
+        }
+      ],
+      "en": "You make us turn back from the adversary. Those who hate us take plunder for themselves.",
+      "ko": "주께서 우리를 대적에게서 돌아서게 하시니 우리를 미워하는 자가 자기를 위하여 탈취하였나이다",
+      "source_text_hash": "62fe24c0857b9780af2bdd8c99805d888bb1c2fcc7ac981b72dd9468f89c8f46",
+      "translation_text_hash": "cc52f5db24640e0f9c2f0d7df62e477e603af08fb347f1df84022a1a7c294521",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 우리를 대적에게서 돌아서게 하시니 우리를 미워하는 자가 자기를 위하여 탈취하였나이다"
+      ],
+      "raw_text_hashes": [
+        "cc52f5db24640e0f9c2f0d7df62e477e603af08fb347f1df84022a1a7c294521"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:44:11",
+      "sequence": 14583,
+      "chapter_label": "PSA 44",
+      "verse_label": "11",
+      "locator": {
+        "book": "PSA",
+        "chapter": 44,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 44,
+          "verse": 11
+        }
+      ],
+      "en": "You have made us like sheep for food, and have scattered us among the nations.",
+      "ko": "주께서 우리로 먹힐 양 같게 하시고 열방 중에 흩으셨나이다",
+      "source_text_hash": "4769f080045a934775ca91fb06ca818c7e424158052701397cf154ed8a397a66",
+      "translation_text_hash": "d621f5fb6f0bbc1cea48f64c70df514bbedb4441a00c548eeb495c1156682fa5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 우리로 먹힐 양 같게 하시고 열방 중에 흩으셨나이다"
+      ],
+      "raw_text_hashes": [
+        "d621f5fb6f0bbc1cea48f64c70df514bbedb4441a00c548eeb495c1156682fa5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:44:12",
+      "sequence": 14584,
+      "chapter_label": "PSA 44",
+      "verse_label": "12",
+      "locator": {
+        "book": "PSA",
+        "chapter": 44,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 44,
+          "verse": 12
+        }
+      ],
+      "en": "You sell your people for nothing, and have gained nothing from their sale.",
+      "ko": "주께서 주의 백성을 무료로 파심이여 저희 값으로 이익을 얻지 못하셨나이다",
+      "source_text_hash": "deef704fe74d94e41f4eec943acae72b07fbcb4b247db381e32a23ca95d398e9",
+      "translation_text_hash": "3d26f0b052fe47e93120f4186701e9c5f2e669d268518b6e45ada7dfd9dd09b1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 주의 백성을 무료로 파심이여 저희 값으로 이익을 얻지 못하셨나이다"
+      ],
+      "raw_text_hashes": [
+        "3d26f0b052fe47e93120f4186701e9c5f2e669d268518b6e45ada7dfd9dd09b1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:44:13",
+      "sequence": 14585,
+      "chapter_label": "PSA 44",
+      "verse_label": "13",
+      "locator": {
+        "book": "PSA",
+        "chapter": 44,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 44,
+          "verse": 13
+        }
+      ],
+      "en": "You make us a reproach to our neighbors, a scoffing and a derision to those who are around us.",
+      "ko": "주께서 우리로 이웃에게 욕을 당케 하시니 둘러 있는 자가 조소하고 조롱하나이다",
+      "source_text_hash": "0bcf8edf6f73d2cd8093627f2261293d9d4379b430cf8d42a427ea39ebd582f2",
+      "translation_text_hash": "ec3a3951a85703fa30a0330264ba334a84ab8c03e56da59fb08a5e031d169210",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 우리로 이웃에게 욕을 당케 하시니 둘러 있는 자가 조소하고 조롱하나이다"
+      ],
+      "raw_text_hashes": [
+        "ec3a3951a85703fa30a0330264ba334a84ab8c03e56da59fb08a5e031d169210"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:44:14",
+      "sequence": 14586,
+      "chapter_label": "PSA 44",
+      "verse_label": "14",
+      "locator": {
+        "book": "PSA",
+        "chapter": 44,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 44,
+          "verse": 14
+        }
+      ],
+      "en": "You make us a byword among the nations, a shaking of the head among the peoples.",
+      "ko": "주께서 우리로 열방 중에 말거리가 되게 하시며 민족 중에서 머리 흔듦을 당케 하셨나이다",
+      "source_text_hash": "45e337e7d5ca11097ffa60591c710adea60f2f57448a1256c5add771057a1bb6",
+      "translation_text_hash": "4401fb7ed13fdc0f641f0219ff15937bd726aee508e1ba2bdf55316b8f0bad50",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 우리로 열방 중에 말거리가 되게 하시며 민족 중에서 머리 흔듦을 당케 하셨나이다"
+      ],
+      "raw_text_hashes": [
+        "4401fb7ed13fdc0f641f0219ff15937bd726aee508e1ba2bdf55316b8f0bad50"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:44:15",
+      "sequence": 14587,
+      "chapter_label": "PSA 44",
+      "verse_label": "15",
+      "locator": {
+        "book": "PSA",
+        "chapter": 44,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 44,
+          "verse": 15
+        }
+      ],
+      "en": "All day long my dishonor is before me, and shame covers my face,",
+      "ko": "나의 능욕이 종일 내 앞에 있으며 수치가 내 얼굴을 덮었으니",
+      "source_text_hash": "af3f1af6298ea03b54627c53ecea9fc7815ebab2b1898ea78f09d13ae61c7c93",
+      "translation_text_hash": "f6ec655b5e58df4215f32abd9dc5e1ff5f56bc6ffd0ffddf1de302d681ed81cb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 능욕이 종일 내 앞에 있으며 수치가 내 얼굴을 덮었으니"
+      ],
+      "raw_text_hashes": [
+        "f6ec655b5e58df4215f32abd9dc5e1ff5f56bc6ffd0ffddf1de302d681ed81cb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:44:16",
+      "sequence": 14588,
+      "chapter_label": "PSA 44",
+      "verse_label": "16",
+      "locator": {
+        "book": "PSA",
+        "chapter": 44,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 44,
+          "verse": 16
+        }
+      ],
+      "en": "at the taunt of one who reproaches and verbally abuses, because of the enemy and the avenger.",
+      "ko": "나를 비방하고 후욕하는 소리를 인함이요 나의 원수와 보수자의 연고니이다",
+      "source_text_hash": "efe48aef5e5355a44cd6e4041b70d3ebfd759a8dc2476a8478c0656cb67ccc2a",
+      "translation_text_hash": "8133c2e36c28340ee1e2c968d2341a85f836f170226766d86e960915c0222efa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나를 비방하고 후욕하는 소리를 인함이요 나의 원수와 보수자의 연고니이다"
+      ],
+      "raw_text_hashes": [
+        "8133c2e36c28340ee1e2c968d2341a85f836f170226766d86e960915c0222efa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:44:17",
+      "sequence": 14589,
+      "chapter_label": "PSA 44",
+      "verse_label": "17",
+      "locator": {
+        "book": "PSA",
+        "chapter": 44,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 44,
+          "verse": 17
+        }
+      ],
+      "en": "All this has come on us, yet we haven’t forgotten you. We haven’t been false to your covenant.",
+      "ko": "이 모든 일이 우리에게 임하였으나 우리가 주를 잊지 아니하며 주의 언약을 어기지 아니하였나이다",
+      "source_text_hash": "cc48e24b62b93995a6cf8aa1dfbe53a1437584a16edd8f3b3f00cfd09168ae9d",
+      "translation_text_hash": "4717600e24df8835bbcfb0958686bcf8bd51cd146d25328cd1f61ec204569aae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 모든 일이 우리에게 임하였으나 우리가 주를 잊지 아니하며 주의 언약을 어기지 아니하였나이다"
+      ],
+      "raw_text_hashes": [
+        "4717600e24df8835bbcfb0958686bcf8bd51cd146d25328cd1f61ec204569aae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:44:18",
+      "sequence": 14590,
+      "chapter_label": "PSA 44",
+      "verse_label": "18",
+      "locator": {
+        "book": "PSA",
+        "chapter": 44,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 44,
+          "verse": 18
+        }
+      ],
+      "en": "Our heart has not turned back, neither have our steps strayed from your path,",
+      "ko": "우리 마음이 퇴축지 아니하고 우리 걸음도 주의 길을 떠나지 아니하였으나",
+      "source_text_hash": "ad58da03836b849b7a066872d866f4bbe635af78bf8151387b430db4f1533eb7",
+      "translation_text_hash": "c85aed15f8d66205fd5f111041c714f31bae6d0a86b306d3930e06aeb4ea50be",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리 마음이 퇴축지 아니하고 우리 걸음도 주의 길을 떠나지 아니하였으나"
+      ],
+      "raw_text_hashes": [
+        "c85aed15f8d66205fd5f111041c714f31bae6d0a86b306d3930e06aeb4ea50be"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:44:19",
+      "sequence": 14591,
+      "chapter_label": "PSA 44",
+      "verse_label": "19",
+      "locator": {
+        "book": "PSA",
+        "chapter": 44,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 44,
+          "verse": 19
+        }
+      ],
+      "en": "though you have crushed us in the haunt of jackals, and covered us with the shadow of death.",
+      "ko": "주께서 우리를 시랑의 처소에서 심히 상해하시고 우리를 사망의 그늘로 덮으셨나이다",
+      "source_text_hash": "f1618c6bf89943d2becd4866cb8a3be0a1a5d4e5c7971bed21b947035d3ad19e",
+      "translation_text_hash": "deac399afac559f7f006ed923c5ce7c106f956fe71e192dcaef6beeab8fa64a2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 우리를 시랑의 처소에서 심히 상해하시고 우리를 사망의 그늘로 덮으셨나이다"
+      ],
+      "raw_text_hashes": [
+        "deac399afac559f7f006ed923c5ce7c106f956fe71e192dcaef6beeab8fa64a2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:44:20",
+      "sequence": 14592,
+      "chapter_label": "PSA 44",
+      "verse_label": "20",
+      "locator": {
+        "book": "PSA",
+        "chapter": 44,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 44,
+          "verse": 20
+        }
+      ],
+      "en": "If we have forgotten the name of our God, or spread out our hands to a strange god,",
+      "ko": "우리가 우리 하나님의 이름을 잊어버렸거나 우리 손을 이방 신에게 향하여 폈더면",
+      "source_text_hash": "999502dc53e58c5bb449b8c65636fecfbc85550832b9d9006d3944732f15113e",
+      "translation_text_hash": "ed59eb6563a423876389126c1cea84e4a39633636d8448af96fc259544951c20",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 우리 하나님의 이름을 잊어버렸거나 우리 손을 이방 신에게 향하여 폈더면"
+      ],
+      "raw_text_hashes": [
+        "ed59eb6563a423876389126c1cea84e4a39633636d8448af96fc259544951c20"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:44:21",
+      "sequence": 14593,
+      "chapter_label": "PSA 44",
+      "verse_label": "21",
+      "locator": {
+        "book": "PSA",
+        "chapter": 44,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 44,
+          "verse": 21
+        }
+      ],
+      "en": "won’t God search this out? For he knows the secrets of the heart.",
+      "ko": "하나님이 이를 더듬어 내지 아니하셨으리이까 대저 주는 마음의 비밀을 아시나이다",
+      "source_text_hash": "7d6d89437d126002531ddb2d7c2f108efdf50b5b0593844898b9b0225911ae77",
+      "translation_text_hash": "28abe4e6487c7e73f2c2dc1776ac563c45f0ea33abecb60f706a9f6704363a60",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 이를 더듬어 내지 아니하셨으리이까 대저 주는 마음의 비밀을 아시나이다"
+      ],
+      "raw_text_hashes": [
+        "28abe4e6487c7e73f2c2dc1776ac563c45f0ea33abecb60f706a9f6704363a60"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:44:22",
+      "sequence": 14594,
+      "chapter_label": "PSA 44",
+      "verse_label": "22",
+      "locator": {
+        "book": "PSA",
+        "chapter": 44,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 44,
+          "verse": 22
+        }
+      ],
+      "en": "Yes, for your sake we are killed all day long. We are regarded as sheep for the slaughter.",
+      "ko": "우리가 종일 주를 위하여 죽임을 당케 되며 도살할 양 같이 여김을 받았나이다",
+      "source_text_hash": "f2f6bdfc78424c59c5213c21e7b55ac68e17675e259026dd003e1bb171b92506",
+      "translation_text_hash": "3b962112763979bad94951eb4864e13f76d75f8476a4c4874bcbbfee805b856b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 종일 주를 위하여 죽임을 당케 되며 도살할 양 같이 여김을 받았나이다"
+      ],
+      "raw_text_hashes": [
+        "3b962112763979bad94951eb4864e13f76d75f8476a4c4874bcbbfee805b856b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:44:23",
+      "sequence": 14595,
+      "chapter_label": "PSA 44",
+      "verse_label": "23",
+      "locator": {
+        "book": "PSA",
+        "chapter": 44,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 44,
+          "verse": 23
+        }
+      ],
+      "en": "Wake up! Why do you sleep, Lord? Arise! Don’t reject us forever.",
+      "ko": "주여 깨소서 어찌하여 주무시나이까 일어나시고 우리를 영영히 버리지 마소서",
+      "source_text_hash": "1bc26e3fd9fc90b05fcc1924fe08d6ebec0378474da03f3b159006ba6064b9b5",
+      "translation_text_hash": "d32223aef448607bb3832219d8e4260b5cd353fb95a75eba849be3414435d4e3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주여 깨소서 어찌하여 주무시나이까 일어나시고 우리를 영영히 버리지 마소서"
+      ],
+      "raw_text_hashes": [
+        "d32223aef448607bb3832219d8e4260b5cd353fb95a75eba849be3414435d4e3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:44:24",
+      "sequence": 14596,
+      "chapter_label": "PSA 44",
+      "verse_label": "24",
+      "locator": {
+        "book": "PSA",
+        "chapter": 44,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 44,
+          "verse": 24
+        }
+      ],
+      "en": "Why do you hide your face, and forget our affliction and our oppression?",
+      "ko": "어찌하여 주의 얼굴을 가리우시고 우리 고난과 압제를 잊으시나이까",
+      "source_text_hash": "4b0ccc6dcde9cc40b53bf4e3d62a222358bbc14ccca98eff38313f5f836b5e78",
+      "translation_text_hash": "5782734c83fd7d23f72a0a8766d8f2a6a3a4e5fe32b83e68fc1a07b41152568d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어찌하여 주의 얼굴을 가리우시고 우리 고난과 압제를 잊으시나이까"
+      ],
+      "raw_text_hashes": [
+        "5782734c83fd7d23f72a0a8766d8f2a6a3a4e5fe32b83e68fc1a07b41152568d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:44:25",
+      "sequence": 14597,
+      "chapter_label": "PSA 44",
+      "verse_label": "25",
+      "locator": {
+        "book": "PSA",
+        "chapter": 44,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 44,
+          "verse": 25
+        }
+      ],
+      "en": "For our soul is bowed down to the dust. Our body clings to the earth.",
+      "ko": "우리 영혼은 진토에 구푸리고 우리 몸은 땅에 붙었나이다",
+      "source_text_hash": "e00baa276198eff1af0b24fcad7c68b0c2f912cf33ec3cc15c111344fe08ba16",
+      "translation_text_hash": "42f75c12cf2089902ff40c5265925e089e1a3bb1eb57994ecefdff985158fae2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리 영혼은 진토에 구푸리고 우리 몸은 땅에 붙었나이다"
+      ],
+      "raw_text_hashes": [
+        "42f75c12cf2089902ff40c5265925e089e1a3bb1eb57994ecefdff985158fae2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:44:26",
+      "sequence": 14598,
+      "chapter_label": "PSA 44",
+      "verse_label": "26",
+      "locator": {
+        "book": "PSA",
+        "chapter": 44,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 44,
+          "verse": 26
+        }
+      ],
+      "en": "Rise up to help us. Redeem us for your loving kindness’ sake.",
+      "ko": "일어나 우리를 도우소서 주의 인자하심을 인하여 우리를 구속하소서",
+      "source_text_hash": "b1586121ef8b2ed6f0653ee0159fc8205b9f965f23461699d8e3e31ccd3f6fa7",
+      "translation_text_hash": "5ff72bc5ad161b58821abbfb45c8c738e14bffa2fa9bac68bb9411af19d87d37",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "일어나 우리를 도우소서 주의 인자하심을 인하여 우리를 구속하소서"
+      ],
+      "raw_text_hashes": [
+        "5ff72bc5ad161b58821abbfb45c8c738e14bffa2fa9bac68bb9411af19d87d37"
+      ]
+    }
+  ]
+}

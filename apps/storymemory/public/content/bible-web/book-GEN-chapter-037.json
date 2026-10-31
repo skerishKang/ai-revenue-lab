@@ -1,0 +1,1165 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:GEN:chapter:037",
+  "unit_ordinal": 37,
+  "unit_label": "GEN 37",
+  "book_code": "GEN",
+  "chapter_number": 37,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:GEN:37:1",
+      "sequence": 1085,
+      "chapter_label": "GEN 37",
+      "verse_label": "1",
+      "locator": {
+        "book": "GEN",
+        "chapter": 37,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 37,
+          "verse": 1
+        }
+      ],
+      "en": "Jacob lived in the land of his father’s travels, in the land of Canaan.",
+      "ko": "야곱이 가나안 땅 곧 그 아비의 우거하던 땅에 거하였으니",
+      "source_text_hash": "3ea0a9b8c64fe37a4ae829a52695f31c40b763b55cb2bc9471ee231e7e128315",
+      "translation_text_hash": "9703d68d9e6fc34518f16f3f73be951c014f7b75f6a9d9c9d1ec22d3de693869",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야곱이 가나안 땅 곧 그 아비의 우거하던 땅에 거하였으니"
+      ],
+      "raw_text_hashes": [
+        "9703d68d9e6fc34518f16f3f73be951c014f7b75f6a9d9c9d1ec22d3de693869"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:37:2",
+      "sequence": 1086,
+      "chapter_label": "GEN 37",
+      "verse_label": "2",
+      "locator": {
+        "book": "GEN",
+        "chapter": 37,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 37,
+          "verse": 2
+        }
+      ],
+      "en": "This is the history of the generations of Jacob. Joseph, being seventeen years old, was feeding the flock with his brothers. He was a boy with the sons of Bilhah and Zilpah, his father’s wives. Joseph brought an evil report of them to their father.",
+      "ko": "야곱의 약전이 이러하니라 요셉이 십 칠세의 소년으로서 그 형제와 함께 양을 칠 때에 그 아비의 첩 빌하와 실바의 아들들로 더불어 함께하였더니 그가 그들의 과실을 아비에게 고하더라",
+      "source_text_hash": "0e3c9f2c3cc5125f0000aaa9ad8a7474e9d64748e2733ad4db0042e1798d7ff4",
+      "translation_text_hash": "a3608296d42f2163a41ad83e34c35bb38281a7a76ae66c12cb19e063567280cc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야곱의 약전이 이러하니라 요셉이 십 칠세의 소년으로서 그 형제와 함께 양을 칠 때에 그 아비의 첩 빌하와 실바의 아들들로 더불어 함께하였더니 그가 그들의 과실을 아비에게 고하더라"
+      ],
+      "raw_text_hashes": [
+        "a3608296d42f2163a41ad83e34c35bb38281a7a76ae66c12cb19e063567280cc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:37:3",
+      "sequence": 1087,
+      "chapter_label": "GEN 37",
+      "verse_label": "3",
+      "locator": {
+        "book": "GEN",
+        "chapter": 37,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 37,
+          "verse": 3
+        }
+      ],
+      "en": "Now Israel loved Joseph more than all his children, because he was the son of his old age, and he made him a tunic of many colors.",
+      "ko": "요셉은 노년에 얻은 아들이므로 이스라엘이 여러 아들보다 그를 깊이 사랑하여 위하여 채색옷을 지었더니",
+      "source_text_hash": "3f9c4a1ff66455bcbfb39ce3894dcf67c8fa0bf9aa5cbf053cc5442f91edc064",
+      "translation_text_hash": "822b19f004c45f570f172a217277a658b845a805f5b61b5ab32080752dd8a975",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요셉은 노년에 얻은 아들이므로 이스라엘이 여러 아들보다 그를 깊이 사랑하여 위하여 채색옷을 지었더니"
+      ],
+      "raw_text_hashes": [
+        "822b19f004c45f570f172a217277a658b845a805f5b61b5ab32080752dd8a975"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:37:4",
+      "sequence": 1088,
+      "chapter_label": "GEN 37",
+      "verse_label": "4",
+      "locator": {
+        "book": "GEN",
+        "chapter": 37,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 37,
+          "verse": 4
+        }
+      ],
+      "en": "His brothers saw that their father loved him more than all his brothers, and they hated him, and couldn’t speak peaceably to him.",
+      "ko": "그 형들이 아비가 형제들보다 그를 사랑함을 보고 그를 미워하여 그에게 언사가 불평하였더라",
+      "source_text_hash": "1f66f94703fd15dd2dce74c011b9e49638b369ad9cae453fca66fd7e0b1c959d",
+      "translation_text_hash": "cc8189f324a355740f84339cf8be9889b8b181508a139b62330eaa6410805aa6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 형들이 아비가 형제들보다 그를 사랑함을 보고 그를 미워하여 그에게 언사가 불평하였더라"
+      ],
+      "raw_text_hashes": [
+        "cc8189f324a355740f84339cf8be9889b8b181508a139b62330eaa6410805aa6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:37:5",
+      "sequence": 1089,
+      "chapter_label": "GEN 37",
+      "verse_label": "5",
+      "locator": {
+        "book": "GEN",
+        "chapter": 37,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 37,
+          "verse": 5
+        }
+      ],
+      "en": "Joseph dreamed a dream, and he told it to his brothers, and they hated him all the more.",
+      "ko": "요셉이 꿈을 꾸고 자기 형들에게 고하매 그들이 그를 더욱 미워하였더라",
+      "source_text_hash": "3893c045f3a664a014ee035bb93cb83d4b084f8c0134b897b7db3f05251547ce",
+      "translation_text_hash": "0016201e9782fb65e66d347075d6545f732018ca5a80713a843f53aadb417201",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요셉이 꿈을 꾸고 자기 형들에게 고하매 그들이 그를 더욱 미워하였더라"
+      ],
+      "raw_text_hashes": [
+        "0016201e9782fb65e66d347075d6545f732018ca5a80713a843f53aadb417201"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:37:6",
+      "sequence": 1090,
+      "chapter_label": "GEN 37",
+      "verse_label": "6",
+      "locator": {
+        "book": "GEN",
+        "chapter": 37,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 37,
+          "verse": 6
+        }
+      ],
+      "en": "He said to them, “Please hear this dream which I have dreamed:",
+      "ko": "요셉이 그들에게 이르되 청컨대 나의 꾼 꿈을 들으시오",
+      "source_text_hash": "27653bb2488eeb43a910eeb3163c2e1280aa0a3041108013810fe5c4bf43bfb6",
+      "translation_text_hash": "7d8708c51044d193aa5db8e7e18654ab5c44af252a0fe107674d851370c12ebe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요셉이 그들에게 이르되 청컨대 나의 꾼 꿈을 들으시오"
+      ],
+      "raw_text_hashes": [
+        "7d8708c51044d193aa5db8e7e18654ab5c44af252a0fe107674d851370c12ebe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:37:7",
+      "sequence": 1091,
+      "chapter_label": "GEN 37",
+      "verse_label": "7",
+      "locator": {
+        "book": "GEN",
+        "chapter": 37,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 37,
+          "verse": 7
+        }
+      ],
+      "en": "for behold, we were binding sheaves in the field, and behold, my sheaf arose and also stood upright; and behold, your sheaves came around, and bowed down to my sheaf.”",
+      "ko": "우리가 밭에서 곡식을 묶더니 내 단은 일어서고 당신들의 단은 내 단을 둘러서서 절하더이다",
+      "source_text_hash": "9324487454ecb845068ef44838f131748f7c02b899d2a1271b7fa9ce46f01fd1",
+      "translation_text_hash": "ba3870ee2889e43a7dec99b4e7b627ac8b2dd405e96e15cc6b8bd47c9c66252d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 밭에서 곡식을 묶더니 내 단은 일어서고 당신들의 단은 내 단을 둘러서서 절하더이다"
+      ],
+      "raw_text_hashes": [
+        "ba3870ee2889e43a7dec99b4e7b627ac8b2dd405e96e15cc6b8bd47c9c66252d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:37:8",
+      "sequence": 1092,
+      "chapter_label": "GEN 37",
+      "verse_label": "8",
+      "locator": {
+        "book": "GEN",
+        "chapter": 37,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 37,
+          "verse": 8
+        }
+      ],
+      "en": "His brothers asked him, “Will you indeed reign over us? Will you indeed have dominion over us?” They hated him all the more for his dreams and for his words.",
+      "ko": "그 형들이 그에게 이르되 네가 참으로 우리의 왕이 되겠느냐 참으로 우리를 다스리게 되겠느냐 하고 그 꿈과 그 말을 인하여 그를 더욱 미워하더니",
+      "source_text_hash": "0eba9122ba6e20537aafd17ffc4809888ec01b165a9df08190a33ad48d7797b4",
+      "translation_text_hash": "c411a65f620e61719187a9391559f9363dd27f9a5e1ebdc937ed01b17d438e19",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 형들이 그에게 이르되 네가 참으로 우리의 왕이 되겠느냐 참으로 우리를 다스리게 되겠느냐 하고 그 꿈과 그 말을 인하여 그를 더욱 미워하더니"
+      ],
+      "raw_text_hashes": [
+        "c411a65f620e61719187a9391559f9363dd27f9a5e1ebdc937ed01b17d438e19"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:37:9",
+      "sequence": 1093,
+      "chapter_label": "GEN 37",
+      "verse_label": "9",
+      "locator": {
+        "book": "GEN",
+        "chapter": 37,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 37,
+          "verse": 9
+        }
+      ],
+      "en": "He dreamed yet another dream, and told it to his brothers, and said, “Behold, I have dreamed yet another dream: and behold, the sun and the moon and eleven stars bowed down to me.”",
+      "ko": "요셉이 다시 꿈을 꾸고 그 형들에게 고하여 가로되 내가 또 꿈을 꾼즉 해와 달과 열 한 별이 내게 절하더이다 하니라",
+      "source_text_hash": "1ddf33e2547103254071a00a8b7d4e4f07266a7d47c1108aefd21701046300b6",
+      "translation_text_hash": "1a265829257bce769e64b9a1c1a42a78ed119d5339c8db79dd4565ffefb7f001",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요셉이 다시 꿈을 꾸고 그 형들에게 고하여 가로되 내가 또 꿈을 꾼즉 해와 달과 열 한 별이 내게 절하더이다 하니라"
+      ],
+      "raw_text_hashes": [
+        "1a265829257bce769e64b9a1c1a42a78ed119d5339c8db79dd4565ffefb7f001"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:37:10",
+      "sequence": 1094,
+      "chapter_label": "GEN 37",
+      "verse_label": "10",
+      "locator": {
+        "book": "GEN",
+        "chapter": 37,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 37,
+          "verse": 10
+        }
+      ],
+      "en": "He told it to his father and to his brothers. His father rebuked him, and said to him, “What is this dream that you have dreamed? Will I and your mother and your brothers indeed come to bow ourselves down to the earth before you?”",
+      "ko": "그가 그 꿈으로 부형에게 고하매 아비가 그를 꾸짖고 그에게 이르되 너의 꾼 꿈이 무엇이냐 나와 네 모와 네 형제들이 참으로 가서 땅에 엎드려 네게 절하겠느냐",
+      "source_text_hash": "012e906e6a2962c248a929dc68f59c5f78b2df19bbfb9de5d0f36ebe12de7b72",
+      "translation_text_hash": "758ced2e675bbde241128b58b94f7c0ee7a1994a66e0beac3c3e3cdcab662c81",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 그 꿈으로 부형에게 고하매 아비가 그를 꾸짖고 그에게 이르되 너의 꾼 꿈이 무엇이냐 나와 네 모와 네 형제들이 참으로 가서 땅에 엎드려 네게 절하겠느냐"
+      ],
+      "raw_text_hashes": [
+        "758ced2e675bbde241128b58b94f7c0ee7a1994a66e0beac3c3e3cdcab662c81"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:37:11",
+      "sequence": 1095,
+      "chapter_label": "GEN 37",
+      "verse_label": "11",
+      "locator": {
+        "book": "GEN",
+        "chapter": 37,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 37,
+          "verse": 11
+        }
+      ],
+      "en": "His brothers envied him, but his father kept this saying in mind.",
+      "ko": "그 형들은 시기하되 그 아비는 그 말을 마음에 두었더라",
+      "source_text_hash": "206797cee45ae389e7924b61acd358ffaf3fa6661d9fa61dfe0c5b4c85ebd28b",
+      "translation_text_hash": "60f0e6b54389a65b27f4930015b23b84cb372a893f4c04833ccad2c8da00a7ce",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 형들은 시기하되 그 아비는 그 말을 마음에 두었더라"
+      ],
+      "raw_text_hashes": [
+        "60f0e6b54389a65b27f4930015b23b84cb372a893f4c04833ccad2c8da00a7ce"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:37:12",
+      "sequence": 1096,
+      "chapter_label": "GEN 37",
+      "verse_label": "12",
+      "locator": {
+        "book": "GEN",
+        "chapter": 37,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 37,
+          "verse": 12
+        }
+      ],
+      "en": "His brothers went to feed their father’s flock in Shechem.",
+      "ko": "그 형들이 세겜에 가서 아비의 양떼를 칠 때에",
+      "source_text_hash": "6eb57b0d7af0b477dde2b7eab509ee5cc02fec3a62a1b3822a5f02307a4ac51e",
+      "translation_text_hash": "08493585ac699bdcb1700d1865030290bbe34a667e3219a9a7ff41e4bc005868",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 형들이 세겜에 가서 아비의 양떼를 칠 때에"
+      ],
+      "raw_text_hashes": [
+        "08493585ac699bdcb1700d1865030290bbe34a667e3219a9a7ff41e4bc005868"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:37:13",
+      "sequence": 1097,
+      "chapter_label": "GEN 37",
+      "verse_label": "13",
+      "locator": {
+        "book": "GEN",
+        "chapter": 37,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 37,
+          "verse": 13
+        }
+      ],
+      "en": "Israel said to Joseph, “Aren’t your brothers feeding the flock in Shechem? Come, and I will send you to them.” He said to him, “Here I am.”",
+      "ko": "이스라엘이 요셉에게 이르되 네 형들이 세겜에서 양을 치지 아니하느냐 너를 그들에게로 보내리라 요셉이 아비에게 대답하되 내가 그리하겠나이다",
+      "source_text_hash": "dbef9807a24bbbcacd9d34495f585e8b2f4457de4f67f8905348d72205908612",
+      "translation_text_hash": "f2876d75605de19649a9fbfd8111d60284623026fa8cbbe4a2502e9a2a65bb8b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘이 요셉에게 이르되 네 형들이 세겜에서 양을 치지 아니하느냐 너를 그들에게로 보내리라 요셉이 아비에게 대답하되 내가 그리하겠나이다"
+      ],
+      "raw_text_hashes": [
+        "f2876d75605de19649a9fbfd8111d60284623026fa8cbbe4a2502e9a2a65bb8b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:37:14",
+      "sequence": 1098,
+      "chapter_label": "GEN 37",
+      "verse_label": "14",
+      "locator": {
+        "book": "GEN",
+        "chapter": 37,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 37,
+          "verse": 14
+        }
+      ],
+      "en": "He said to him, “Go now, see whether it is well with your brothers, and well with the flock; and bring me word again.” So he sent him out of the valley of Hebron, and he came to Shechem.",
+      "ko": "이스라엘이 그에게 이르되 가서 네 형들과 양떼가 다 잘 있는 여부를 보고 돌아와 내게 고하라 하고 그를 헤브론 골짜기에서 보내매 이에 세겜으로 가니라",
+      "source_text_hash": "b8d4cbb0173da382d24a847a444f80b90c8b89a458c0d3dc5d36a143678d3539",
+      "translation_text_hash": "d682896e3564468ebd7b93315d5528b7527ceca2a230d54f9f82bb351e7cb159",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘이 그에게 이르되 가서 네 형들과 양떼가 다 잘 있는 여부를 보고 돌아와 내게 고하라 하고 그를 헤브론 골짜기에서 보내매 이에 세겜으로 가니라"
+      ],
+      "raw_text_hashes": [
+        "d682896e3564468ebd7b93315d5528b7527ceca2a230d54f9f82bb351e7cb159"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:37:15",
+      "sequence": 1099,
+      "chapter_label": "GEN 37",
+      "verse_label": "15",
+      "locator": {
+        "book": "GEN",
+        "chapter": 37,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 37,
+          "verse": 15
+        }
+      ],
+      "en": "A certain man found him, and behold, he was wandering in the field. The man asked him, “What are you looking for?”",
+      "ko": "어떤 사람이 그를 만난즉 그가 들에서 방황하는지라 그 사람이 그에게 물어 가로되 네가 무엇을 찾느냐",
+      "source_text_hash": "49eb156175bc1a313a26d884a4c539736d92206f8aede8df523c5e092e43fabb",
+      "translation_text_hash": "0450ec0a5f00841484bb908644e61806cbe0c1c84831ece3af4efb60ab482dfd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어떤 사람이 그를 만난즉 그가 들에서 방황하는지라 그 사람이 그에게 물어 가로되 네가 무엇을 찾느냐"
+      ],
+      "raw_text_hashes": [
+        "0450ec0a5f00841484bb908644e61806cbe0c1c84831ece3af4efb60ab482dfd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:37:16",
+      "sequence": 1100,
+      "chapter_label": "GEN 37",
+      "verse_label": "16",
+      "locator": {
+        "book": "GEN",
+        "chapter": 37,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 37,
+          "verse": 16
+        }
+      ],
+      "en": "He said, “I am looking for my brothers. Tell me, please, where they are feeding the flock.”",
+      "ko": "그가 가로되 내가 나의 형들을 찾으오니 청컨대 그들의 양 치는 곳을 내게 가르치소서",
+      "source_text_hash": "0e3d24b48d5541c1731e7a7379cfcf761ed38d984afe98aa5ca796d0bee0fa1f",
+      "translation_text_hash": "8dc9c9f9835b56e1e21000c4693fc7180e8001e6f5918d02b394b126ec99f1de",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 가로되 내가 나의 형들을 찾으오니 청컨대 그들의 양 치는 곳을 내게 가르치소서"
+      ],
+      "raw_text_hashes": [
+        "8dc9c9f9835b56e1e21000c4693fc7180e8001e6f5918d02b394b126ec99f1de"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:37:17",
+      "sequence": 1101,
+      "chapter_label": "GEN 37",
+      "verse_label": "17",
+      "locator": {
+        "book": "GEN",
+        "chapter": 37,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 37,
+          "verse": 17
+        }
+      ],
+      "en": "The man said, “They have left here, for I heard them say, ‘Let’s go to Dothan.’” Joseph went after his brothers, and found them in Dothan.",
+      "ko": "그 사람이 가로되 그들이 여기서 떠났느니라 내가 그들의 말을 들으니 도단으로 가자 하더라 요셉이 그 형들의 뒤를 따라 가서 도단에서 그들을 만나니라",
+      "source_text_hash": "55dee1af83e72a250a1ae2cec6e8abf68a0cbe9c156dac9a593506c27818410a",
+      "translation_text_hash": "1c14645c3acd535197182adac5a857c998a1919865193bd730c05de3cf78d5f1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 사람이 가로되 그들이 여기서 떠났느니라 내가 그들의 말을 들으니 도단으로 가자 하더라 요셉이 그 형들의 뒤를 따라 가서 도단에서 그들을 만나니라"
+      ],
+      "raw_text_hashes": [
+        "1c14645c3acd535197182adac5a857c998a1919865193bd730c05de3cf78d5f1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:37:18",
+      "sequence": 1102,
+      "chapter_label": "GEN 37",
+      "verse_label": "18",
+      "locator": {
+        "book": "GEN",
+        "chapter": 37,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 37,
+          "verse": 18
+        }
+      ],
+      "en": "They saw him afar off, and before he came near to them, they conspired against him to kill him.",
+      "ko": "요셉이 그들에게 가까이 오기 전에 그들이 요셉을 멀리서 보고 죽이기를 꾀하여",
+      "source_text_hash": "c3dd8ecdfab5653ccc5717e4fa0acd1214c5569ca1793380661ac7caa1e876f8",
+      "translation_text_hash": "25bfa2a6972dee821939cbed10bcb712ad80d52881aa93307ca71d80bc5082eb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요셉이 그들에게 가까이 오기 전에 그들이 요셉을 멀리서 보고 죽이기를 꾀하여"
+      ],
+      "raw_text_hashes": [
+        "25bfa2a6972dee821939cbed10bcb712ad80d52881aa93307ca71d80bc5082eb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:37:19",
+      "sequence": 1103,
+      "chapter_label": "GEN 37",
+      "verse_label": "19",
+      "locator": {
+        "book": "GEN",
+        "chapter": 37,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 37,
+          "verse": 19
+        }
+      ],
+      "en": "They said to one another, “Behold, this dreamer comes.",
+      "ko": "서로 이르되 꿈 꾸는 자가 오는도다",
+      "source_text_hash": "09ee906c6dab20a85e5ca15c9a2fad8d66872bb69ca459a6b0b1a29dde0635c8",
+      "translation_text_hash": "d968b1ec02affd47f13cce8ef8975048444802c2d3ef67bd7da420dbf2517e27",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "서로 이르되 꿈 꾸는 자가 오는도다"
+      ],
+      "raw_text_hashes": [
+        "d968b1ec02affd47f13cce8ef8975048444802c2d3ef67bd7da420dbf2517e27"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:37:20",
+      "sequence": 1104,
+      "chapter_label": "GEN 37",
+      "verse_label": "20",
+      "locator": {
+        "book": "GEN",
+        "chapter": 37,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 37,
+          "verse": 20
+        }
+      ],
+      "en": "Come now therefore, and let’s kill him, and cast him into one of the pits, and we will say, ‘An evil animal has devoured him.’ We will see what will become of his dreams.”",
+      "ko": "자, 그를 죽여 한 구덩이에 던지고 우리가 말하기를 악한 짐승이 그를 잡아먹었다 하자 그 꿈이 어떻게 되는 것을 우리가 볼 것이니라 하는지라",
+      "source_text_hash": "0f8d3392bad260825dc0eff0ba8119e421852d27070f1ff9585dce93e6b061ad",
+      "translation_text_hash": "16b9838b569047d02535258068b85736572aa78104207e4044ddfefc6ef80244",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자, 그를 죽여 한 구덩이에 던지고 우리가 말하기를 악한 짐승이 그를 잡아먹었다 하자 그 꿈이 어떻게 되는 것을 우리가 볼 것이니라 하는지라"
+      ],
+      "raw_text_hashes": [
+        "16b9838b569047d02535258068b85736572aa78104207e4044ddfefc6ef80244"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:37:21",
+      "sequence": 1105,
+      "chapter_label": "GEN 37",
+      "verse_label": "21",
+      "locator": {
+        "book": "GEN",
+        "chapter": 37,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 37,
+          "verse": 21
+        }
+      ],
+      "en": "Reuben heard it, and delivered him out of their hand, and said, “Let’s not take his life.”",
+      "ko": "르우벤이 듣고 요셉을 그들의 손에서 구원하려하여 가로되 우리가 그 생명은 상하지 말자",
+      "source_text_hash": "2e5fa0af625c441c3969d6e8035dfa562dc383687344418c3ceba6b721f7a690",
+      "translation_text_hash": "a2cc0766a7d6b0426d73788e0613b21d4bc10b592e88f8c7ab536b3eb81edabe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "르우벤이 듣고 요셉을 그들의 손에서 구원하려하여 가로되 우리가 그 생명은 상하지 말자"
+      ],
+      "raw_text_hashes": [
+        "a2cc0766a7d6b0426d73788e0613b21d4bc10b592e88f8c7ab536b3eb81edabe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:37:22",
+      "sequence": 1106,
+      "chapter_label": "GEN 37",
+      "verse_label": "22",
+      "locator": {
+        "book": "GEN",
+        "chapter": 37,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 37,
+          "verse": 22
+        }
+      ],
+      "en": "Reuben said to them, “Shed no blood. Throw him into this pit that is in the wilderness, but lay no hand on him”—that he might deliver him out of their hand, to restore him to his father.",
+      "ko": "르우벤이 또 그들에게 이르되 피를 흘리지 말라 그를 광야 그 구덩이에 던지고 손을 그에게 대지 말라 하니 이는 그가 요셉을 그들의 손에서 구원하여 그 아비에게로 돌리려 함이었더라",
+      "source_text_hash": "3315f95fc049d8f448dfd1fc9125e76a6b7162fd9dc6874802c63241fcd16e35",
+      "translation_text_hash": "51ac54d98b42365c499a5e60a7f27d49dfce9a209194a6ce5a13d495e57c8046",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "르우벤이 또 그들에게 이르되 피를 흘리지 말라 그를 광야 그 구덩이에 던지고 손을 그에게 대지 말라 하니 이는 그가 요셉을 그들의 손에서 구원하여 그 아비에게로 돌리려 함이었더라"
+      ],
+      "raw_text_hashes": [
+        "51ac54d98b42365c499a5e60a7f27d49dfce9a209194a6ce5a13d495e57c8046"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:37:23",
+      "sequence": 1107,
+      "chapter_label": "GEN 37",
+      "verse_label": "23",
+      "locator": {
+        "book": "GEN",
+        "chapter": 37,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 37,
+          "verse": 23
+        }
+      ],
+      "en": "When Joseph came to his brothers, they stripped Joseph of his tunic, the tunic of many colors that was on him;",
+      "ko": "요셉이 형들에게 이르매 그 형들이 요셉의 옷 곧 그 입은 채색옷을 벗기고",
+      "source_text_hash": "60353c2a55a4eba9e1680d01b24446a988a467bcefa649f8d3806829b873587b",
+      "translation_text_hash": "6987779770d93bb57f9cbb7e2e37ffdb93f00443413be919e4fccf457c6c65ef",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요셉이 형들에게 이르매 그 형들이 요셉의 옷 곧 그 입은 채색옷을 벗기고"
+      ],
+      "raw_text_hashes": [
+        "6987779770d93bb57f9cbb7e2e37ffdb93f00443413be919e4fccf457c6c65ef"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:37:24",
+      "sequence": 1108,
+      "chapter_label": "GEN 37",
+      "verse_label": "24",
+      "locator": {
+        "book": "GEN",
+        "chapter": 37,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 37,
+          "verse": 24
+        }
+      ],
+      "en": "and they took him, and threw him into the pit. The pit was empty. There was no water in it.",
+      "ko": "그를 잡아 구덩이에 던지니 그 구덩이는 빈 것이라 그 속에 물이 없었더라",
+      "source_text_hash": "275a42eb7e1617e1e042f90457e7bfc689d18f8e2c967e593e36c2a60d87d63e",
+      "translation_text_hash": "e704b013f2f68815844d1e77e210c2251a6cd80ca73dd50fb30d377a1621e6fe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그를 잡아 구덩이에 던지니 그 구덩이는 빈 것이라 그 속에 물이 없었더라"
+      ],
+      "raw_text_hashes": [
+        "e704b013f2f68815844d1e77e210c2251a6cd80ca73dd50fb30d377a1621e6fe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:37:25",
+      "sequence": 1109,
+      "chapter_label": "GEN 37",
+      "verse_label": "25",
+      "locator": {
+        "book": "GEN",
+        "chapter": 37,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 37,
+          "verse": 25
+        }
+      ],
+      "en": "They sat down to eat bread, and they lifted up their eyes and looked, and saw a caravan of Ishmaelites coming from Gilead, with their camels bearing spices and balm and myrrh, going to carry it down to Egypt.",
+      "ko": "그들이 앉아 음식을 먹다가 눈을 들어 본즉 한 떼 이스마엘 족속이 길르앗에서 오는데 그 약대들에 향품과 유향과 몰약을 싣고 애굽으로 내려가는지라",
+      "source_text_hash": "a0effb301e4c62a6f94e1ad99f4ddb0c0312efc47c9229688eb678c263fbe802",
+      "translation_text_hash": "d9241a66fcd54ac39044fabf05b504353b0a9705c861bd3cd1ff9576a4631843",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 앉아 음식을 먹다가 눈을 들어 본즉 한 떼 이스마엘 족속이 길르앗에서 오는데 그 약대들에 향품과 유향과 몰약을 싣고 애굽으로 내려가는지라"
+      ],
+      "raw_text_hashes": [
+        "d9241a66fcd54ac39044fabf05b504353b0a9705c861bd3cd1ff9576a4631843"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:37:26",
+      "sequence": 1110,
+      "chapter_label": "GEN 37",
+      "verse_label": "26",
+      "locator": {
+        "book": "GEN",
+        "chapter": 37,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 37,
+          "verse": 26
+        }
+      ],
+      "en": "Judah said to his brothers, “What profit is it if we kill our brother and conceal his blood?",
+      "ko": "유다가 자기 형제에게 이르되 우리가 우리 동생을 죽이고 그의 피를 은익한들 무엇이 유익할까",
+      "source_text_hash": "d48c30a8f3657e9d28c01535f98446bed3ac120e77ede527274eb2a3e8d17abb",
+      "translation_text_hash": "f4e76dfb35687a78eb488e356bf90653075ec02186c7c1cd1384ad0384f91e30",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다가 자기 형제에게 이르되 우리가 우리 동생을 죽이고 그의 피를 은익한들 무엇이 유익할까"
+      ],
+      "raw_text_hashes": [
+        "f4e76dfb35687a78eb488e356bf90653075ec02186c7c1cd1384ad0384f91e30"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:37:27",
+      "sequence": 1111,
+      "chapter_label": "GEN 37",
+      "verse_label": "27",
+      "locator": {
+        "book": "GEN",
+        "chapter": 37,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 37,
+          "verse": 27
+        }
+      ],
+      "en": "Come, and let’s sell him to the Ishmaelites, and not let our hand be on him; for he is our brother, our flesh.” His brothers listened to him.",
+      "ko": "자 그를 이스마엘 사람에게 팔고 우리 손을 그에게 대지 말자 그는 우리의 동생이요 우리의 골육이니라 하매 형제들이 청종하였더라",
+      "source_text_hash": "9d6584fa8c8fb8d9e5c59714bb1348b558f11ffa5b841bbe6bb3328746a3f349",
+      "translation_text_hash": "f74bbafeed3995aac009219a182aef2892da20991b5040090b53cb50dcb6c786",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자 그를 이스마엘 사람에게 팔고 우리 손을 그에게 대지 말자 그는 우리의 동생이요 우리의 골육이니라 하매 형제들이 청종하였더라"
+      ],
+      "raw_text_hashes": [
+        "f74bbafeed3995aac009219a182aef2892da20991b5040090b53cb50dcb6c786"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:37:28",
+      "sequence": 1112,
+      "chapter_label": "GEN 37",
+      "verse_label": "28",
+      "locator": {
+        "book": "GEN",
+        "chapter": 37,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 37,
+          "verse": 28
+        }
+      ],
+      "en": "Midianites who were merchants passed by, and they drew and lifted up Joseph out of the pit, and sold Joseph to the Ishmaelites for twenty pieces of silver. The merchants brought Joseph into Egypt.",
+      "ko": "때에 미디안 사람 상고들이 지나는지라 그들이 요셉을 구덩이에서 끌어올리고 은 이십개에 그를 이스마엘 사람들에게 팔매 그 상고들이 요셉을 데리고 애굽으로 갔더라",
+      "source_text_hash": "1d1ded195b9929a25c19f2dfcedafbe880149bee43fa4f9b9fe5b9e3df1cd870",
+      "translation_text_hash": "f737e03c50a5078429db9ec4b9988b2916fb38249ca6c34f301fba675ac5b639",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "때에 미디안 사람 상고들이 지나는지라 그들이 요셉을 구덩이에서 끌어올리고 은 이십개에 그를 이스마엘 사람들에게 팔매 그 상고들이 요셉을 데리고 애굽으로 갔더라"
+      ],
+      "raw_text_hashes": [
+        "f737e03c50a5078429db9ec4b9988b2916fb38249ca6c34f301fba675ac5b639"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:37:29",
+      "sequence": 1113,
+      "chapter_label": "GEN 37",
+      "verse_label": "29",
+      "locator": {
+        "book": "GEN",
+        "chapter": 37,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 37,
+          "verse": 29
+        }
+      ],
+      "en": "Reuben returned to the pit, and saw that Joseph wasn’t in the pit; and he tore his clothes.",
+      "ko": "르우벤이 돌아와서 구덩이에 이르러 본즉 거기 요셉이 없는지라 옷을 찢고",
+      "source_text_hash": "66850c9d40ad693a8582815d85579fb48a19bf4ec9baa86d1f13e09bd7586953",
+      "translation_text_hash": "5f0182de36356f7e19e15579d6d2fed1770b5074e8331b77a3ba3835e36be692",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "르우벤이 돌아와서 구덩이에 이르러 본즉 거기 요셉이 없는지라 옷을 찢고"
+      ],
+      "raw_text_hashes": [
+        "5f0182de36356f7e19e15579d6d2fed1770b5074e8331b77a3ba3835e36be692"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:37:30",
+      "sequence": 1114,
+      "chapter_label": "GEN 37",
+      "verse_label": "30",
+      "locator": {
+        "book": "GEN",
+        "chapter": 37,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 37,
+          "verse": 30
+        }
+      ],
+      "en": "He returned to his brothers, and said, “The child is no more; and I, where will I go?”",
+      "ko": "아우들에게로 와서 가로되 아이가 없도다 나는 나는 어디로 갈까",
+      "source_text_hash": "8de886c37dc3da251ae13d836689eead5c6aa639c7adba31c771b4d8a362e15e",
+      "translation_text_hash": "e99646db42f5f76ca7aee30dcc2550661743f59c8e50aefddfa0075079371f01",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아우들에게로 와서 가로되 아이가 없도다 나는 나는 어디로 갈까"
+      ],
+      "raw_text_hashes": [
+        "e99646db42f5f76ca7aee30dcc2550661743f59c8e50aefddfa0075079371f01"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:37:31",
+      "sequence": 1115,
+      "chapter_label": "GEN 37",
+      "verse_label": "31",
+      "locator": {
+        "book": "GEN",
+        "chapter": 37,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 37,
+          "verse": 31
+        }
+      ],
+      "en": "They took Joseph’s tunic, and killed a male goat, and dipped the tunic in the blood.",
+      "ko": "그들이 요셉의 옷을 취하고 수염소를 죽여 그 옷을 피에 적시고",
+      "source_text_hash": "4a7946c5e56b3bad74573b4f981a4703778b48c7a2bddcdecbeedc33b701b0d8",
+      "translation_text_hash": "079241f46edcd57300b99e4665f2ca4cf12393d814da8253e5313d5ba002ee1b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 요셉의 옷을 취하고 수염소를 죽여 그 옷을 피에 적시고"
+      ],
+      "raw_text_hashes": [
+        "079241f46edcd57300b99e4665f2ca4cf12393d814da8253e5313d5ba002ee1b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:37:32",
+      "sequence": 1116,
+      "chapter_label": "GEN 37",
+      "verse_label": "32",
+      "locator": {
+        "book": "GEN",
+        "chapter": 37,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 37,
+          "verse": 32
+        }
+      ],
+      "en": "They took the tunic of many colors, and they brought it to their father, and said, “We have found this. Examine it, now, and see if it is your son’s tunic or not.”",
+      "ko": "그 채색옷을 보내어 그 아비에게로 가져다가 이르기를 우리가 이것을 얻었으니 아버지의 아들의 옷인가 아닌가 보소서 하매",
+      "source_text_hash": "c3f08ecb79c66eced6b2f0cb4bc97dfc3df0368d92426902a4e7e460ea79cce4",
+      "translation_text_hash": "522a5f6fe88adc27158bd10d26e5ea947174af3fbbf4f5326e4d56fd9968d938",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 채색옷을 보내어 그 아비에게로 가져다가 이르기를 우리가 이것을 얻었으니 아버지의 아들의 옷인가 아닌가 보소서 하매"
+      ],
+      "raw_text_hashes": [
+        "522a5f6fe88adc27158bd10d26e5ea947174af3fbbf4f5326e4d56fd9968d938"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:37:33",
+      "sequence": 1117,
+      "chapter_label": "GEN 37",
+      "verse_label": "33",
+      "locator": {
+        "book": "GEN",
+        "chapter": 37,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 37,
+          "verse": 33
+        }
+      ],
+      "en": "He recognized it, and said, “It is my son’s tunic. An evil animal has devoured him. Joseph is without doubt torn in pieces.”",
+      "ko": "아비가 그것을 알아보고 가로되 내 아들의 옷이라 악한 짐승이 그를 먹었도다 요셉이 정녕 찢겼도다 하고",
+      "source_text_hash": "434c86470f0e0562acbb26418a761199056702de16a2d6197973d12b7e9ebb75",
+      "translation_text_hash": "b6d59a0b0b335ef1981a9710aa3f127baa97d63f409b3e7e6e65d5440777585e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아비가 그것을 알아보고 가로되 내 아들의 옷이라 악한 짐승이 그를 먹었도다 요셉이 정녕 찢겼도다 하고"
+      ],
+      "raw_text_hashes": [
+        "b6d59a0b0b335ef1981a9710aa3f127baa97d63f409b3e7e6e65d5440777585e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:37:34",
+      "sequence": 1118,
+      "chapter_label": "GEN 37",
+      "verse_label": "34",
+      "locator": {
+        "book": "GEN",
+        "chapter": 37,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 37,
+          "verse": 34
+        }
+      ],
+      "en": "Jacob tore his clothes, and put sackcloth on his waist, and mourned for his son many days.",
+      "ko": "자기 옷을 찢고 굵은 베로 허리를 묶고 오래도록 그 아들을 위하여 애통하니",
+      "source_text_hash": "1ccaf70c7b2e97bd5fa11ed4b3ea18ac6587086fff5ab5d78d157aa85930de9d",
+      "translation_text_hash": "69ca70bd627a4dff0ff36ae43b53f13b5a99b452030a742b32bb7220e6fa1277",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자기 옷을 찢고 굵은 베로 허리를 묶고 오래도록 그 아들을 위하여 애통하니"
+      ],
+      "raw_text_hashes": [
+        "69ca70bd627a4dff0ff36ae43b53f13b5a99b452030a742b32bb7220e6fa1277"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:37:35",
+      "sequence": 1119,
+      "chapter_label": "GEN 37",
+      "verse_label": "35",
+      "locator": {
+        "book": "GEN",
+        "chapter": 37,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 37,
+          "verse": 35
+        }
+      ],
+      "en": "All his sons and all his daughters rose up to comfort him, but he refused to be comforted. He said, “For I will go down to Sheol to my son, mourning.” His father wept for him.",
+      "ko": "그 모든 자녀가 위로하되 그가 그 위로를 받지 아니하여 가로되 내가 슬퍼하며 음부에 내려 아들에게로 가리라 하고 그 아비가 그를 위하여 울었더라",
+      "source_text_hash": "af913cd611902b97204b5e9a20df5d78e6e0b7137693fb4aea717b2b05e9283b",
+      "translation_text_hash": "fe0df483e7bf52d85db82f3e6f9d95671d797d82707642b07e4e93831513222f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 모든 자녀가 위로하되 그가 그 위로를 받지 아니하여 가로되 내가 슬퍼하며 음부에 내려 아들에게로 가리라 하고 그 아비가 그를 위하여 울었더라"
+      ],
+      "raw_text_hashes": [
+        "fe0df483e7bf52d85db82f3e6f9d95671d797d82707642b07e4e93831513222f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:37:36",
+      "sequence": 1120,
+      "chapter_label": "GEN 37",
+      "verse_label": "36",
+      "locator": {
+        "book": "GEN",
+        "chapter": 37,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 37,
+          "verse": 36
+        }
+      ],
+      "en": "The Midianites sold him into Egypt to Potiphar, an officer of Pharaoh’s, the captain of the guard.",
+      "ko": "미디안 사람이 애굽에서 바로의 신하 시위대장 보디발에게 요셉을 팔았더라",
+      "source_text_hash": "47e4aaed114d114d45938fbbb3f96cc93461c4689782c6ac6af29391fd4928df",
+      "translation_text_hash": "a0ee0206a52b48ed87e10961894d2c8b1556f74adf1685acd062c8096ced184b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "미디안 사람이 애굽에서 바로의 신하 시위대장 보디발에게 요셉을 팔았더라"
+      ],
+      "raw_text_hashes": [
+        "a0ee0206a52b48ed87e10961894d2c8b1556f74adf1685acd062c8096ced184b"
+      ]
+    }
+  ]
+}

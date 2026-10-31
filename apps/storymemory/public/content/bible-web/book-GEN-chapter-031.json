@@ -1,0 +1,1773 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:GEN:chapter:031",
+  "unit_ordinal": 31,
+  "unit_label": "GEN 31",
+  "book_code": "GEN",
+  "chapter_number": 31,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:GEN:31:1",
+      "sequence": 875,
+      "chapter_label": "GEN 31",
+      "verse_label": "1",
+      "locator": {
+        "book": "GEN",
+        "chapter": 31,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 31,
+          "verse": 1
+        }
+      ],
+      "en": "Jacob heard Laban’s sons’ words, saying, “Jacob has taken away all that was our father’s. He has obtained all this wealth from that which was our father’s.”",
+      "ko": "야곱이 들은즉 라반의 아들들의 말이 야곱이 우리 아버지의 소유를 다 빼앗고 우리 아버지의 소유로 인하여 이같이 거부가 되었다 하는지라",
+      "source_text_hash": "a6027fb3152a9958275d37bb1ad58ae4cfc5399db83aae4dc5817bd38c0112ae",
+      "translation_text_hash": "8d1b3e6652aba8fdb6cf270340f136e3bfab0e143597496e3659ba5860e6519f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야곱이 들은즉 라반의 아들들의 말이 야곱이 우리 아버지의 소유를 다 빼앗고 우리 아버지의 소유로 인하여 이같이 거부가 되었다 하는지라"
+      ],
+      "raw_text_hashes": [
+        "8d1b3e6652aba8fdb6cf270340f136e3bfab0e143597496e3659ba5860e6519f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:31:2",
+      "sequence": 876,
+      "chapter_label": "GEN 31",
+      "verse_label": "2",
+      "locator": {
+        "book": "GEN",
+        "chapter": 31,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 31,
+          "verse": 2
+        }
+      ],
+      "en": "Jacob saw the expression on Laban’s face, and, behold, it was not toward him as before.",
+      "ko": "야곱이 라반의 안색을 본즉 자기에게 대하여 전과 같지 아니하더라",
+      "source_text_hash": "611165ee5d095cf3d55d94efea0a1f7166e35cc889def7331e7e19e6a3c3eeb7",
+      "translation_text_hash": "855e4e9948c353935146f6622a2206418fde88eedc60c180111b864976ab7b4b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야곱이 라반의 안색을 본즉 자기에게 대하여 전과 같지 아니하더라"
+      ],
+      "raw_text_hashes": [
+        "855e4e9948c353935146f6622a2206418fde88eedc60c180111b864976ab7b4b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:31:3",
+      "sequence": 877,
+      "chapter_label": "GEN 31",
+      "verse_label": "3",
+      "locator": {
+        "book": "GEN",
+        "chapter": 31,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 31,
+          "verse": 3
+        }
+      ],
+      "en": "The LORD said to Jacob, “Return to the land of your fathers, and to your relatives, and I will be with you.”",
+      "ko": "여호와께서 야곱에게 이르시되 네 조상의 땅 네 족속에게로 돌아가라 내가 너와 함께 있으리라 하신지라",
+      "source_text_hash": "272aa3586453dcf976b29d1deed4c1dd956bd76ce5c5b373e8500635b3d42150",
+      "translation_text_hash": "703bfd464f9982b8feb48037ff220c3f06310de213060867db1c538ed2450391",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 야곱에게 이르시되 네 조상의 땅 네 족속에게로 돌아가라 내가 너와 함께 있으리라 하신지라"
+      ],
+      "raw_text_hashes": [
+        "703bfd464f9982b8feb48037ff220c3f06310de213060867db1c538ed2450391"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:31:4",
+      "sequence": 878,
+      "chapter_label": "GEN 31",
+      "verse_label": "4",
+      "locator": {
+        "book": "GEN",
+        "chapter": 31,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 31,
+          "verse": 4
+        }
+      ],
+      "en": "Jacob sent and called Rachel and Leah to the field to his flock,",
+      "ko": "야곱이 보내어 라헬과 레아를 자기 양떼 있는 들로 불러다가",
+      "source_text_hash": "229c6163b71128b2a1d81c3467e61690ed9fc3269064e7d922985b25bbb5d5e9",
+      "translation_text_hash": "698529beb44566f9681d65e21de7ab5f045b34c40ccd08d9eecd6f5a4662d815",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야곱이 보내어 라헬과 레아를 자기 양떼 있는 들로 불러다가"
+      ],
+      "raw_text_hashes": [
+        "698529beb44566f9681d65e21de7ab5f045b34c40ccd08d9eecd6f5a4662d815"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:31:5",
+      "sequence": 879,
+      "chapter_label": "GEN 31",
+      "verse_label": "5",
+      "locator": {
+        "book": "GEN",
+        "chapter": 31,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 31,
+          "verse": 5
+        }
+      ],
+      "en": "and said to them, “I see the expression on your father’s face, that it is not toward me as before; but the God of my father has been with me.",
+      "ko": "그들에게 이르되 내가 그대들의 아버지의 안색을 본즉 내게 대하여 전과 같지 아니하도다 그러할찌라도 내 아버지의 하나님은 나와 함께 계셨느니라",
+      "source_text_hash": "36155c9ce8405543392e1d539950616c26f415b7f006457459a01158c36383a4",
+      "translation_text_hash": "fc5fcab8fa32727257ab16eefea597e3681a24ac50e99a006e571f164a36dd37",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들에게 이르되 내가 그대들의 아버지의 안색을 본즉 내게 대하여 전과 같지 아니하도다 그러할찌라도 내 아버지의 하나님은 나와 함께 계셨느니라"
+      ],
+      "raw_text_hashes": [
+        "fc5fcab8fa32727257ab16eefea597e3681a24ac50e99a006e571f164a36dd37"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:31:6",
+      "sequence": 880,
+      "chapter_label": "GEN 31",
+      "verse_label": "6",
+      "locator": {
+        "book": "GEN",
+        "chapter": 31,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 31,
+          "verse": 6
+        }
+      ],
+      "en": "You know that I have served your father with all of my strength.",
+      "ko": "그대들도 알거니와 내가 힘을 다하여 그대들의 아버지를 섬겼거늘",
+      "source_text_hash": "51dc8774013d47700486b2201067a78f4ffdd70a2242f3dd67be61f97a0225b3",
+      "translation_text_hash": "b6ae1039d70d60c534df589870273a9c5222fd2a64e7aa708b0684c048baca27",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그대들도 알거니와 내가 힘을 다하여 그대들의 아버지를 섬겼거늘"
+      ],
+      "raw_text_hashes": [
+        "b6ae1039d70d60c534df589870273a9c5222fd2a64e7aa708b0684c048baca27"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:31:7",
+      "sequence": 881,
+      "chapter_label": "GEN 31",
+      "verse_label": "7",
+      "locator": {
+        "book": "GEN",
+        "chapter": 31,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 31,
+          "verse": 7
+        }
+      ],
+      "en": "Your father has deceived me, and changed my wages ten times, but God didn’t allow him to hurt me.",
+      "ko": "그대들의 아버지가 나를 속여 품삯을 열번이나 변역하였느니라 그러나 하나님이 그를 금하사 나를 해치 못하게 하셨으며",
+      "source_text_hash": "ed502aad13ccd704c3a481d185767095a510fad927ecac2b12c36dd66a357a53",
+      "translation_text_hash": "8fb86b43282b72992dd9db442ea2255fc0d4c137bfdda8ae3d9ec6546e8d5aa7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그대들의 아버지가 나를 속여 품삯을 열번이나 변역하였느니라 그러나 하나님이 그를 금하사 나를 해치 못하게 하셨으며"
+      ],
+      "raw_text_hashes": [
+        "8fb86b43282b72992dd9db442ea2255fc0d4c137bfdda8ae3d9ec6546e8d5aa7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:31:8",
+      "sequence": 882,
+      "chapter_label": "GEN 31",
+      "verse_label": "8",
+      "locator": {
+        "book": "GEN",
+        "chapter": 31,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 31,
+          "verse": 8
+        }
+      ],
+      "en": "If he said, ‘The speckled will be your wages,’ then all the flock bore speckled. If he said, ‘The streaked will be your wages,’ then all the flock bore streaked.",
+      "ko": "그가 이르기를 점 있는 것이 네 삯이 되리라 하면 온 양떼의 낳은 것이 점 있는 것이요 또 얼룩무늬 있는 것이 네 삯이 되리라 하면 온 양떼의 낳은 것이 얼룩무늬 있는 것이니",
+      "source_text_hash": "d652293a6b5dd45a6fe88daca7eb76923246e42cce16b2c0e1e3119051322445",
+      "translation_text_hash": "26e389dd23b5549a4b701962a5f09495f1bdc9767a80aca6dd5656fe215550e9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 이르기를 점 있는 것이 네 삯이 되리라 하면 온 양떼의 낳은 것이 점 있는 것이요 또 얼룩무늬 있는 것이 네 삯이 되리라 하면 온 양떼의 낳은 것이 얼룩무늬 있는 것이니"
+      ],
+      "raw_text_hashes": [
+        "26e389dd23b5549a4b701962a5f09495f1bdc9767a80aca6dd5656fe215550e9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:31:9",
+      "sequence": 883,
+      "chapter_label": "GEN 31",
+      "verse_label": "9",
+      "locator": {
+        "book": "GEN",
+        "chapter": 31,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 31,
+          "verse": 9
+        }
+      ],
+      "en": "Thus God has taken away your father’s livestock, and given them to me.",
+      "ko": "하나님이 이같이 그대들의 아버지의 짐승을 빼앗아 내게 주셨느니라",
+      "source_text_hash": "bd3c00f2f4629367fc344ed5db4cec9c3c17da3de140e49666d94cef86656ef8",
+      "translation_text_hash": "03290e8152c05f1e940dc7858e06fd8541bdfb887becd858d5091e467e729a24",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 이같이 그대들의 아버지의 짐승을 빼앗아 내게 주셨느니라"
+      ],
+      "raw_text_hashes": [
+        "03290e8152c05f1e940dc7858e06fd8541bdfb887becd858d5091e467e729a24"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:31:10",
+      "sequence": 884,
+      "chapter_label": "GEN 31",
+      "verse_label": "10",
+      "locator": {
+        "book": "GEN",
+        "chapter": 31,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 31,
+          "verse": 10
+        }
+      ],
+      "en": "During mating season, I lifted up my eyes, and saw in a dream, and behold, the male goats which leaped on the flock were streaked, speckled, and grizzled.",
+      "ko": "그 양떼가 새끼 밸 때에 내가 꿈에 눈을 들어 보니 양떼를 탄 수양은 다 얼룩무늬 있는 것, 점 있는 것, 아롱진 것이었더라",
+      "source_text_hash": "d24dc8160282d30db9bb398c16222d69e0065cb408535f9381fff9dd2dc437a0",
+      "translation_text_hash": "81cb44cc90ffe58d74cb1dfaef35343bf19743be6e55f79fcc260c7a06a09a83",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 양떼가 새끼 밸 때에 내가 꿈에 눈을 들어 보니 양떼를 탄 수양은 다 얼룩무늬 있는 것, 점 있는 것, 아롱진 것이었더라"
+      ],
+      "raw_text_hashes": [
+        "81cb44cc90ffe58d74cb1dfaef35343bf19743be6e55f79fcc260c7a06a09a83"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:31:11",
+      "sequence": 885,
+      "chapter_label": "GEN 31",
+      "verse_label": "11",
+      "locator": {
+        "book": "GEN",
+        "chapter": 31,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 31,
+          "verse": 11
+        }
+      ],
+      "en": "The angel of God said to me in the dream, ‘Jacob,’ and I said, ‘Here I am.’",
+      "ko": "꿈에 하나님의 사자가 내게 말씀하시기를 야곱아 하기로 내가 대답하기를 여기 있나이다 하매",
+      "source_text_hash": "1b9390b1cd04303f12de81ca4d63569e4d2f2715937ee8afa2624a5f40610d71",
+      "translation_text_hash": "78142cfbafe294ec3faf9ab0804b1dacdf5db12bddc0389600e9f906b5042dd2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "꿈에 하나님의 사자가 내게 말씀하시기를 야곱아 하기로 내가 대답하기를 여기 있나이다 하매"
+      ],
+      "raw_text_hashes": [
+        "78142cfbafe294ec3faf9ab0804b1dacdf5db12bddc0389600e9f906b5042dd2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:31:12",
+      "sequence": 886,
+      "chapter_label": "GEN 31",
+      "verse_label": "12",
+      "locator": {
+        "book": "GEN",
+        "chapter": 31,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 31,
+          "verse": 12
+        }
+      ],
+      "en": "He said, ‘Now lift up your eyes, and behold, all the male goats which leap on the flock are streaked, speckled, and grizzled, for I have seen all that Laban does to you.",
+      "ko": "가라사대 네 눈을 들어 보라 양떼를 탄 수양은 다 얼룩무늬 있는 것, 점 있는 것, 아롱진 것이니라 라반이 네게 행한 모든 것을 내가 보았노라",
+      "source_text_hash": "bc49dcbb415cbf8ab214ca43664cd1562a545ee8bbff64340e8f85af768e7fce",
+      "translation_text_hash": "dc381423fb5ba22bbc6bc8bd290c292b8f9993b87887ebf705e3d569a34fa312",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가라사대 네 눈을 들어 보라 양떼를 탄 수양은 다 얼룩무늬 있는 것, 점 있는 것, 아롱진 것이니라 라반이 네게 행한 모든 것을 내가 보았노라"
+      ],
+      "raw_text_hashes": [
+        "dc381423fb5ba22bbc6bc8bd290c292b8f9993b87887ebf705e3d569a34fa312"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:31:13",
+      "sequence": 887,
+      "chapter_label": "GEN 31",
+      "verse_label": "13",
+      "locator": {
+        "book": "GEN",
+        "chapter": 31,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 31,
+          "verse": 13
+        }
+      ],
+      "en": "I am the God of Bethel, where you anointed a pillar, where you vowed a vow to me. Now arise, get out from this land, and return to the land of your birth.’”",
+      "ko": "나는 벧엘 하나님이라 네가 거기서 기둥에 기름을 붓고 거기서 내게 서원하였으니 지금 일어나 이곳을 떠나서 네 출생지로 돌아가라 하셨느니라",
+      "source_text_hash": "7c320f88ba61472b52b697d14a177bc3373d5f78603ade778eae3b364097abcf",
+      "translation_text_hash": "a75717726610c1d316b0e2e15f5b70fc9bb37f886ee0a16fb4e36cac69190287",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 벧엘 하나님이라 네가 거기서 기둥에 기름을 붓고 거기서 내게 서원하였으니 지금 일어나 이곳을 떠나서 네 출생지로 돌아가라 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "a75717726610c1d316b0e2e15f5b70fc9bb37f886ee0a16fb4e36cac69190287"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:31:14",
+      "sequence": 888,
+      "chapter_label": "GEN 31",
+      "verse_label": "14",
+      "locator": {
+        "book": "GEN",
+        "chapter": 31,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 31,
+          "verse": 14
+        }
+      ],
+      "en": "Rachel and Leah answered him, “Is there yet any portion or inheritance for us in our father’s house?",
+      "ko": "라헬과 레아가 그에게 대답하여 가로되 우리가 우리 아버지 집에서 무슨 분깃이나 유업이나 있으리요",
+      "source_text_hash": "3004440673e6b4da86faaba0612d9518a363d1003c951e079ff0eebe3cb99082",
+      "translation_text_hash": "bbc58a2fe7cec4bb48465f0386b3855624ccce211e24b1632259c14af03d38cd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "라헬과 레아가 그에게 대답하여 가로되 우리가 우리 아버지 집에서 무슨 분깃이나 유업이나 있으리요"
+      ],
+      "raw_text_hashes": [
+        "bbc58a2fe7cec4bb48465f0386b3855624ccce211e24b1632259c14af03d38cd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:31:15",
+      "sequence": 889,
+      "chapter_label": "GEN 31",
+      "verse_label": "15",
+      "locator": {
+        "book": "GEN",
+        "chapter": 31,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 31,
+          "verse": 15
+        }
+      ],
+      "en": "Aren’t we considered as foreigners by him? For he has sold us, and has also used up our money.",
+      "ko": "아버지가 우리를 팔고 우리의 돈을 다 먹었으니 아버지가 우리를 외인으로 여기는 것이 아닌가",
+      "source_text_hash": "61f4b90bf715453ab8685c65b39c1d287405bf4f391ca24379e0582724c9d24a",
+      "translation_text_hash": "95fcd796579cce2e6a489b1980ff1259b0fdb4bf7618460113d20da670e30b2e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아버지가 우리를 팔고 우리의 돈을 다 먹었으니 아버지가 우리를 외인으로 여기는 것이 아닌가"
+      ],
+      "raw_text_hashes": [
+        "95fcd796579cce2e6a489b1980ff1259b0fdb4bf7618460113d20da670e30b2e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:31:16",
+      "sequence": 890,
+      "chapter_label": "GEN 31",
+      "verse_label": "16",
+      "locator": {
+        "book": "GEN",
+        "chapter": 31,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 31,
+          "verse": 16
+        }
+      ],
+      "en": "For all the riches which God has taken away from our father are ours and our children’s. Now then, whatever God has said to you, do.”",
+      "ko": "하나님이 우리 아버지에게서 취하신 재물은 우리와 우리 자식의 것이니 이제 하나님이 당신에게 이르신 일을 다 준행하라",
+      "source_text_hash": "7d5eaf6b3050065d68741c75989c48058b9ffe1934df17df3814cca252eee218",
+      "translation_text_hash": "c1a83d7216e9a2a30d2cbc382102bdf073df451f6f2f8143960b482d03d7c8de",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 우리 아버지에게서 취하신 재물은 우리와 우리 자식의 것이니 이제 하나님이 당신에게 이르신 일을 다 준행하라"
+      ],
+      "raw_text_hashes": [
+        "c1a83d7216e9a2a30d2cbc382102bdf073df451f6f2f8143960b482d03d7c8de"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:31:17",
+      "sequence": 891,
+      "chapter_label": "GEN 31",
+      "verse_label": "17",
+      "locator": {
+        "book": "GEN",
+        "chapter": 31,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 31,
+          "verse": 17
+        }
+      ],
+      "en": "Then Jacob rose up, and set his sons and his wives on the camels,",
+      "ko": "야곱이 일어나 자식들과 아내들을 약대들에게 태우고",
+      "source_text_hash": "ca4da8d28adaefb392b32997d00f3701cc814f32e40b8db6ed8f6fa976e5ccff",
+      "translation_text_hash": "f3dc75a93b90e016426fce795db8a37a382c42d55e3cabdeb9c7517bc5a0dc6a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야곱이 일어나 자식들과 아내들을 약대들에게 태우고"
+      ],
+      "raw_text_hashes": [
+        "f3dc75a93b90e016426fce795db8a37a382c42d55e3cabdeb9c7517bc5a0dc6a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:31:18",
+      "sequence": 892,
+      "chapter_label": "GEN 31",
+      "verse_label": "18",
+      "locator": {
+        "book": "GEN",
+        "chapter": 31,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 31,
+          "verse": 18
+        }
+      ],
+      "en": "and he took away all his livestock, and all his possessions which he had gathered, including the livestock which he had gained in Paddan Aram, to go to Isaac his father, to the land of Canaan.",
+      "ko": "그 얻은바 모든 짐승과 모든 소유물 곧 그가 밧단아람에서 얻은 짐승을 이끌고 가나안 땅에 있는 그 아비 이삭에게로 가려할쌔",
+      "source_text_hash": "bbbf74bdeb2521e280fab661ef141e228f00a81d138b3365a462137a72a4feb0",
+      "translation_text_hash": "ae9240b25115f952582a7bfd72984eb310466706c1276860210699bded609f19",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 얻은바 모든 짐승과 모든 소유물 곧 그가 밧단아람에서 얻은 짐승을 이끌고 가나안 땅에 있는 그 아비 이삭에게로 가려할쌔"
+      ],
+      "raw_text_hashes": [
+        "ae9240b25115f952582a7bfd72984eb310466706c1276860210699bded609f19"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:31:19",
+      "sequence": 893,
+      "chapter_label": "GEN 31",
+      "verse_label": "19",
+      "locator": {
+        "book": "GEN",
+        "chapter": 31,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 31,
+          "verse": 19
+        }
+      ],
+      "en": "Now Laban had gone to shear his sheep; and Rachel stole the teraphim that were her father’s.",
+      "ko": "때에 라반이 양털을 깎으러 갔으므로 라헬은 그 아비의 드라빔을 도적질하고",
+      "source_text_hash": "4e2aa176a16cc4c31b41a516a574fced0363d878ec7aca09dadef4140d2a4d34",
+      "translation_text_hash": "a56d7a8d06f7d9c5943452999b1abae1afd4b1f2a213674b1fe9dfade4b51368",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "때에 라반이 양털을 깎으러 갔으므로 라헬은 그 아비의 드라빔을 도적질하고"
+      ],
+      "raw_text_hashes": [
+        "a56d7a8d06f7d9c5943452999b1abae1afd4b1f2a213674b1fe9dfade4b51368"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:31:20",
+      "sequence": 894,
+      "chapter_label": "GEN 31",
+      "verse_label": "20",
+      "locator": {
+        "book": "GEN",
+        "chapter": 31,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 31,
+          "verse": 20
+        }
+      ],
+      "en": "Jacob deceived Laban the Syrian, in that he didn’t tell him that he was running away.",
+      "ko": "야곱은 그 거취를 아람 사람 라반에게 고하지 않고 가만히 떠났더라",
+      "source_text_hash": "6b52f1936465bdad74ceeaaa62e83264cbed87a4a7384af89e8b8b4ffef42b0c",
+      "translation_text_hash": "cf172371c2aee44674d63c431cc644ba914e0c2fc119a24186c471196cbb2e45",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야곱은 그 거취를 아람 사람 라반에게 고하지 않고 가만히 떠났더라"
+      ],
+      "raw_text_hashes": [
+        "cf172371c2aee44674d63c431cc644ba914e0c2fc119a24186c471196cbb2e45"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:31:21",
+      "sequence": 895,
+      "chapter_label": "GEN 31",
+      "verse_label": "21",
+      "locator": {
+        "book": "GEN",
+        "chapter": 31,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 31,
+          "verse": 21
+        }
+      ],
+      "en": "So he fled with all that he had. He rose up, passed over the River, and set his face toward the mountain of Gilead.",
+      "ko": "그가 그 모든 소유를 이끌고 강을 건너 길르앗산을 향하여 도망한지",
+      "source_text_hash": "7ec09e691a81c189b1deb9bfe31998bc43bc252fdd5788cfc66363c8371a7f11",
+      "translation_text_hash": "f8010c692bc734be72e9200e7a04d5f2c5a0dd282a3b0ac3ed6d2de671255c46",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 그 모든 소유를 이끌고 강을 건너 길르앗산을 향하여 도망한지"
+      ],
+      "raw_text_hashes": [
+        "f8010c692bc734be72e9200e7a04d5f2c5a0dd282a3b0ac3ed6d2de671255c46"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:31:22",
+      "sequence": 896,
+      "chapter_label": "GEN 31",
+      "verse_label": "22",
+      "locator": {
+        "book": "GEN",
+        "chapter": 31,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 31,
+          "verse": 22
+        }
+      ],
+      "en": "Laban was told on the third day that Jacob had fled.",
+      "ko": "삼일만에 야곱의 도망한 것이 라반에게 들린지라",
+      "source_text_hash": "9bb7021978120f26dbe5ea7b63b1d42e28d5edbe4e5ceb3c29614a999637fe77",
+      "translation_text_hash": "da3be5756c6f12d3149a39c62b2ccc9b1f8d130ff10d49b8d4ab2fcca871f5db",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "삼일만에 야곱의 도망한 것이 라반에게 들린지라"
+      ],
+      "raw_text_hashes": [
+        "da3be5756c6f12d3149a39c62b2ccc9b1f8d130ff10d49b8d4ab2fcca871f5db"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:31:23",
+      "sequence": 897,
+      "chapter_label": "GEN 31",
+      "verse_label": "23",
+      "locator": {
+        "book": "GEN",
+        "chapter": 31,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 31,
+          "verse": 23
+        }
+      ],
+      "en": "He took his relatives with him, and pursued him seven days’ journey. He overtook him in the mountain of Gilead.",
+      "ko": "라반이 그 형제를 거느리고 칠일 길을 쫓아가 길르앗산에서 그에게 미쳤더니",
+      "source_text_hash": "2200f4da8888d2f1e0ddfdfef50c143ef27811a51373763160965c2f8cd93432",
+      "translation_text_hash": "cc92760c3dbbcd33b77a52c2a6ba40d092e788fcdfbc0ecc263c986e441568a7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "라반이 그 형제를 거느리고 칠일 길을 쫓아가 길르앗산에서 그에게 미쳤더니"
+      ],
+      "raw_text_hashes": [
+        "cc92760c3dbbcd33b77a52c2a6ba40d092e788fcdfbc0ecc263c986e441568a7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:31:24",
+      "sequence": 898,
+      "chapter_label": "GEN 31",
+      "verse_label": "24",
+      "locator": {
+        "book": "GEN",
+        "chapter": 31,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 31,
+          "verse": 24
+        }
+      ],
+      "en": "God came to Laban the Syrian in a dream of the night, and said to him, “Be careful that you don’t speak to Jacob either good or bad.”",
+      "ko": "밤에 하나님이 아람 사람 라반에게 현몽하여 가라사대 너는 삼가 야곱에게 선악간 말하지 말라 하셨더라",
+      "source_text_hash": "8365690381623f58b265eb424754f039737f635f63142a2f56f94895d732f3d4",
+      "translation_text_hash": "ad617575ee8970301ccbff41ff567ec63a85eb02492e8f506bd3e1d3bd6fd5f4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "밤에 하나님이 아람 사람 라반에게 현몽하여 가라사대 너는 삼가 야곱에게 선악간 말하지 말라 하셨더라"
+      ],
+      "raw_text_hashes": [
+        "ad617575ee8970301ccbff41ff567ec63a85eb02492e8f506bd3e1d3bd6fd5f4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:31:25",
+      "sequence": 899,
+      "chapter_label": "GEN 31",
+      "verse_label": "25",
+      "locator": {
+        "book": "GEN",
+        "chapter": 31,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 31,
+          "verse": 25
+        }
+      ],
+      "en": "Laban caught up with Jacob. Now Jacob had pitched his tent in the mountain, and Laban with his relatives encamped in the mountain of Gilead.",
+      "ko": "라반이 야곱을 쫓아 미치니 야곱이 산에 장막을 쳤는지라 라반이 그 형제로 더불어 길르앗산에 장막을 치고",
+      "source_text_hash": "0f096f777e2d87f783d45caabf5ada49ee036718b69b744b9dfef9009d500ab3",
+      "translation_text_hash": "2dcef1015f30ebd5600a179bf4aca0aa7e6ed143f5f0cdc0f8749b9699ba6bee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "라반이 야곱을 쫓아 미치니 야곱이 산에 장막을 쳤는지라 라반이 그 형제로 더불어 길르앗산에 장막을 치고"
+      ],
+      "raw_text_hashes": [
+        "2dcef1015f30ebd5600a179bf4aca0aa7e6ed143f5f0cdc0f8749b9699ba6bee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:31:26",
+      "sequence": 900,
+      "chapter_label": "GEN 31",
+      "verse_label": "26",
+      "locator": {
+        "book": "GEN",
+        "chapter": 31,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 31,
+          "verse": 26
+        }
+      ],
+      "en": "Laban said to Jacob, “What have you done, that you have deceived me, and carried away my daughters like captives of the sword?",
+      "ko": "라반이 야곱에게 이르되 네가 내게 알리지 아니하고 가만히 내 딸들을 칼로 잡은 자 같이 끌고 갔으니 어찌 이같이 하였느냐",
+      "source_text_hash": "e44e688c83f5c2d6b3ab21a6ab9eac72954fc33df6767249b479618f723f8340",
+      "translation_text_hash": "d7d260c1f11c3408364ba067396330965f993f9d54a3b4a3c48940ed1eaa36b8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "라반이 야곱에게 이르되 네가 내게 알리지 아니하고 가만히 내 딸들을 칼로 잡은 자 같이 끌고 갔으니 어찌 이같이 하였느냐"
+      ],
+      "raw_text_hashes": [
+        "d7d260c1f11c3408364ba067396330965f993f9d54a3b4a3c48940ed1eaa36b8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:31:27",
+      "sequence": 901,
+      "chapter_label": "GEN 31",
+      "verse_label": "27",
+      "locator": {
+        "book": "GEN",
+        "chapter": 31,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 31,
+          "verse": 27
+        }
+      ],
+      "en": "Why did you flee secretly, and deceive me, and didn’t tell me, that I might have sent you away with mirth and with songs, with tambourine and with harp;",
+      "ko": "내가 즐거움과 노래와 북과 수금으로 너를 보내겠거늘 어찌하여 네가 나를 속이고 가만히 도망하고 내게 고하지 아니하였으며",
+      "source_text_hash": "8c8f451fa997d4c852866be34beda20dcd58aa2ebefefe7a5ac68a223eb4acb2",
+      "translation_text_hash": "75fe896c4e0007e40b5ab1c37c21628a9b8e0310e1d53a2474ca0e228a02fc19",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 즐거움과 노래와 북과 수금으로 너를 보내겠거늘 어찌하여 네가 나를 속이고 가만히 도망하고 내게 고하지 아니하였으며"
+      ],
+      "raw_text_hashes": [
+        "75fe896c4e0007e40b5ab1c37c21628a9b8e0310e1d53a2474ca0e228a02fc19"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:31:28",
+      "sequence": 902,
+      "chapter_label": "GEN 31",
+      "verse_label": "28",
+      "locator": {
+        "book": "GEN",
+        "chapter": 31,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 31,
+          "verse": 28
+        }
+      ],
+      "en": "and didn’t allow me to kiss my sons and my daughters? Now you have done foolishly.",
+      "ko": "나로 내 손자들과 딸들에게 입맞추지 못하게 하였느냐 네 소위가 실로 어리석도다",
+      "source_text_hash": "0d6f8882ba8e8976573e5cdfed7d2495e371829ba7c0fb1c16b32df345a52ae7",
+      "translation_text_hash": "a1a0a08cd36810090c76cea82782750a4b26761b8c3c07b5e3873d24dac85b9a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나로 내 손자들과 딸들에게 입맞추지 못하게 하였느냐 네 소위가 실로 어리석도다"
+      ],
+      "raw_text_hashes": [
+        "a1a0a08cd36810090c76cea82782750a4b26761b8c3c07b5e3873d24dac85b9a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:31:29",
+      "sequence": 903,
+      "chapter_label": "GEN 31",
+      "verse_label": "29",
+      "locator": {
+        "book": "GEN",
+        "chapter": 31,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 31,
+          "verse": 29
+        }
+      ],
+      "en": "It is in the power of my hand to hurt you, but the God of your father spoke to me last night, saying, ‘Be careful that you don’t speak to Jacob either good or bad.’",
+      "ko": "너를 해할만한 능력이 내 손에 있으나 너희 아버지의 하나님이 어제밤에 내게 말씀하시기를 너는 삼가 야곱에게 선악간 말하지 말라 하셨느니라",
+      "source_text_hash": "efe43fa66075e3e75adaee4c41b6f00ca7a5f784ae630b111f68a05b028e447d",
+      "translation_text_hash": "a4b15e123742f36141dfa857b087129c1340a720089301fac5f0752e9a8cb217",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너를 해할만한 능력이 내 손에 있으나 너희 아버지의 하나님이 어제밤에 내게 말씀하시기를 너는 삼가 야곱에게 선악간 말하지 말라 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "a4b15e123742f36141dfa857b087129c1340a720089301fac5f0752e9a8cb217"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:31:30",
+      "sequence": 904,
+      "chapter_label": "GEN 31",
+      "verse_label": "30",
+      "locator": {
+        "book": "GEN",
+        "chapter": 31,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 31,
+          "verse": 30
+        }
+      ],
+      "en": "Now, you want to be gone, because you greatly longed for your father’s house, but why have you stolen my gods?”",
+      "ko": "이제 네가 네 아비 집을 사모하여 돌아가려는 것은 가하거니와 어찌 내 신을 도적질하였느냐",
+      "source_text_hash": "ec1268cc714ed8a99c8e8b2c09c5d2c8a33041bd696f0e1e836993e6f9b329e8",
+      "translation_text_hash": "cfe66abff94445eaa5e5946ed5db48352350c188005095e1bd6bf86e4b0c3ef6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제 네가 네 아비 집을 사모하여 돌아가려는 것은 가하거니와 어찌 내 신을 도적질하였느냐"
+      ],
+      "raw_text_hashes": [
+        "cfe66abff94445eaa5e5946ed5db48352350c188005095e1bd6bf86e4b0c3ef6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:31:31",
+      "sequence": 905,
+      "chapter_label": "GEN 31",
+      "verse_label": "31",
+      "locator": {
+        "book": "GEN",
+        "chapter": 31,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 31,
+          "verse": 31
+        }
+      ],
+      "en": "Jacob answered Laban, “Because I was afraid, for I said, ‘Lest you should take your daughters from me by force.’",
+      "ko": "야곱이 라반에게 대답하여 가로되 내가 말하기를 외삼촌이 외삼촌의 딸들을 내게서 억지로 빼앗으리라 하여 두려워하였음이니이다",
+      "source_text_hash": "ab31eecce30d2c086054064b23a4a757ce4cb673e08235548b1586ee5e5caa4d",
+      "translation_text_hash": "0677cd22087d9c3eb2ebfdf6178e30bc75b220f801902f914cd482995e99b149",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야곱이 라반에게 대답하여 가로되 내가 말하기를 외삼촌이 외삼촌의 딸들을 내게서 억지로 빼앗으리라 하여 두려워하였음이니이다"
+      ],
+      "raw_text_hashes": [
+        "0677cd22087d9c3eb2ebfdf6178e30bc75b220f801902f914cd482995e99b149"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:31:32",
+      "sequence": 906,
+      "chapter_label": "GEN 31",
+      "verse_label": "32",
+      "locator": {
+        "book": "GEN",
+        "chapter": 31,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 31,
+          "verse": 32
+        }
+      ],
+      "en": "Anyone you find your gods with shall not live. Before our relatives, discern what is yours with me, and take it.” For Jacob didn’t know that Rachel had stolen them.",
+      "ko": "외삼촌의 신은 뉘게서 찾든지 그는 살지 못할 것이요 우리 형제들 앞에서 무엇이든지 외삼촌의 것이 발견되거든 외삼촌에게로 취하소서 하니 야곱은 라헬이 그것을 도적질한 줄을 알지 못함이었더라",
+      "source_text_hash": "b43119802a0794ce5351dd0ad2657f9b4e0d2499a0bc38216bb4d4a9873b44ae",
+      "translation_text_hash": "1847798d0d0f476029e31a614d3a08a6d800539a43e944546569491e587d0921",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "외삼촌의 신은 뉘게서 찾든지 그는 살지 못할 것이요 우리 형제들 앞에서 무엇이든지 외삼촌의 것이 발견되거든 외삼촌에게로 취하소서 하니 야곱은 라헬이 그것을 도적질한 줄을 알지 못함이었더라"
+      ],
+      "raw_text_hashes": [
+        "1847798d0d0f476029e31a614d3a08a6d800539a43e944546569491e587d0921"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:31:33",
+      "sequence": 907,
+      "chapter_label": "GEN 31",
+      "verse_label": "33",
+      "locator": {
+        "book": "GEN",
+        "chapter": 31,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 31,
+          "verse": 33
+        }
+      ],
+      "en": "Laban went into Jacob’s tent, into Leah’s tent, and into the tent of the two female servants; but he didn’t find them. He went out of Leah’s tent, and entered into Rachel’s tent.",
+      "ko": "라반이 야곱의 장막에 들어가고 레아의 장막에 들어가고 두 여종의 장막에 들어갔으나 찾지 못하고 레아의 장막에서 나와 라헬의 장막에 들어가매",
+      "source_text_hash": "44fb74425c1fb2a1feb8aee812f13e4061495d27c5e4ea00007b6c70c2e91bb3",
+      "translation_text_hash": "d068cbd50bfa72017877a014f55f80f8b03fa7d098d855328155052867561c85",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "라반이 야곱의 장막에 들어가고 레아의 장막에 들어가고 두 여종의 장막에 들어갔으나 찾지 못하고 레아의 장막에서 나와 라헬의 장막에 들어가매"
+      ],
+      "raw_text_hashes": [
+        "d068cbd50bfa72017877a014f55f80f8b03fa7d098d855328155052867561c85"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:31:34",
+      "sequence": 908,
+      "chapter_label": "GEN 31",
+      "verse_label": "34",
+      "locator": {
+        "book": "GEN",
+        "chapter": 31,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 31,
+          "verse": 34
+        }
+      ],
+      "en": "Now Rachel had taken the teraphim, put them in the camel’s saddle, and sat on them. Laban felt around all the tent, but didn’t find them.",
+      "ko": "라헬이 그 드라빔을 가져 약대 안장 아래 넣고 그 위에 앉은지라 라반이 그 장막에서 찾다가 얻지 못하매",
+      "source_text_hash": "5b89725e7548bf7a6e3b9359276f62e3d1f87c67d25341eacf0ccecb9fce5493",
+      "translation_text_hash": "554aca7d91502880f74446724a8880120d348b844368c515042c610cc58f72e5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "라헬이 그 드라빔을 가져 약대 안장 아래 넣고 그 위에 앉은지라 라반이 그 장막에서 찾다가 얻지 못하매"
+      ],
+      "raw_text_hashes": [
+        "554aca7d91502880f74446724a8880120d348b844368c515042c610cc58f72e5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:31:35",
+      "sequence": 909,
+      "chapter_label": "GEN 31",
+      "verse_label": "35",
+      "locator": {
+        "book": "GEN",
+        "chapter": 31,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 31,
+          "verse": 35
+        }
+      ],
+      "en": "She said to her father, “Don’t let my lord be angry that I can’t rise up before you; for I’m having my period.” He searched, but didn’t find the teraphim.",
+      "ko": "라헬이 그 아비에게 이르되 마침 경수가 나므로 일어나서 영접할 수 없사오니 내 주는 노하지 마소서 하니라 라반이 그 드라빔을 두루 찾다가 얻지 못한지라",
+      "source_text_hash": "530fb685b97251e7f3708c53d938db1e34a0ffb72157266cea9dc8a218d99550",
+      "translation_text_hash": "a21d39bb0e6d44366fe3abab4a0d2b971ce9533de91b1eab18c2db6213f372bd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "라헬이 그 아비에게 이르되 마침 경수가 나므로 일어나서 영접할 수 없사오니 내 주는 노하지 마소서 하니라 라반이 그 드라빔을 두루 찾다가 얻지 못한지라"
+      ],
+      "raw_text_hashes": [
+        "a21d39bb0e6d44366fe3abab4a0d2b971ce9533de91b1eab18c2db6213f372bd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:31:36",
+      "sequence": 910,
+      "chapter_label": "GEN 31",
+      "verse_label": "36",
+      "locator": {
+        "book": "GEN",
+        "chapter": 31,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 31,
+          "verse": 36
+        }
+      ],
+      "en": "Jacob was angry, and argued with Laban. Jacob answered Laban, “What is my trespass? What is my sin, that you have hotly pursued me?",
+      "ko": "야곱이 노하여 라반을 책망할쌔 야곱이 라반에게 대척하여 가로되 나의 허물이 무엇이니이까 무슨 죄가 있기에 외삼촌께서 나를 불같이 급히 쫓나이까",
+      "source_text_hash": "33c025468365f7fa744d0d4131a6d50d29db0161fb39ad0ec8f7899210b06ec5",
+      "translation_text_hash": "ad115aeba5bb6401a95e94d8235de8d3d1aa24d9a20dcd7749347ae09b1c6319",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야곱이 노하여 라반을 책망할쌔 야곱이 라반에게 대척하여 가로되 나의 허물이 무엇이니이까 무슨 죄가 있기에 외삼촌께서 나를 불같이 급히 쫓나이까"
+      ],
+      "raw_text_hashes": [
+        "ad115aeba5bb6401a95e94d8235de8d3d1aa24d9a20dcd7749347ae09b1c6319"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:31:37",
+      "sequence": 911,
+      "chapter_label": "GEN 31",
+      "verse_label": "37",
+      "locator": {
+        "book": "GEN",
+        "chapter": 31,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 31,
+          "verse": 37
+        }
+      ],
+      "en": "Now that you have felt around in all my stuff, what have you found of all your household stuff? Set it here before my relatives and your relatives, that they may judge between us two.",
+      "ko": "외삼촌께서 내 물건을 다 뒤져 보셨으니 외삼촌의 가장집물 중에 무엇을 찾았나이까 여기 나의 형제와 외삼촌의 형제 앞에 그것을 두고 우리 두 사이에 판단하게 하소서",
+      "source_text_hash": "250b11e1011cd74d2bdd2a9a7c0ca9f80c37c06d7da75687725b53ce337769ac",
+      "translation_text_hash": "4d84d8e86d955833b78dc8bcc31c0fdf1178f06fed8c7f6e05b45ba5b42d642a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "외삼촌께서 내 물건을 다 뒤져 보셨으니 외삼촌의 가장집물 중에 무엇을 찾았나이까 여기 나의 형제와 외삼촌의 형제 앞에 그것을 두고 우리 두 사이에 판단하게 하소서"
+      ],
+      "raw_text_hashes": [
+        "4d84d8e86d955833b78dc8bcc31c0fdf1178f06fed8c7f6e05b45ba5b42d642a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:31:38",
+      "sequence": 912,
+      "chapter_label": "GEN 31",
+      "verse_label": "38",
+      "locator": {
+        "book": "GEN",
+        "chapter": 31,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 31,
+          "verse": 38
+        }
+      ],
+      "en": "“These twenty years I have been with you. Your ewes and your female goats have not cast their young, and I haven’t eaten the rams of your flocks.",
+      "ko": "내가 이 이십년에 외삼촌과 함께하였거니와 외삼촌의 암양들이나 암염소들이 낙태하지 아니하였고 또 외삼촌의 양떼의 수양을 내가 먹지 아니하였으며",
+      "source_text_hash": "310a4dacfe8bcfb305e18ba372cf20559eaf4d5ec8f6b8d93fef854649a6ad62",
+      "translation_text_hash": "864eb936fb33b7aafb12cf3a51b27570f4351ca5e0a2e1cd9ddc98b7bdeb0df3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 이 이십년에 외삼촌과 함께하였거니와 외삼촌의 암양들이나 암염소들이 낙태하지 아니하였고 또 외삼촌의 양떼의 수양을 내가 먹지 아니하였으며"
+      ],
+      "raw_text_hashes": [
+        "864eb936fb33b7aafb12cf3a51b27570f4351ca5e0a2e1cd9ddc98b7bdeb0df3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:31:39",
+      "sequence": 913,
+      "chapter_label": "GEN 31",
+      "verse_label": "39",
+      "locator": {
+        "book": "GEN",
+        "chapter": 31,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 31,
+          "verse": 39
+        }
+      ],
+      "en": "That which was torn of animals, I didn’t bring to you. I bore its loss. Of my hand you required it, whether stolen by day or stolen by night.",
+      "ko": "물려 찢긴 것은 내가 외삼촌에게로 가져 가지 아니하고 스스로 그것을 보충하였으며 낮에 도적을 맞았든지 밤에 도적을 맞았든지 내가 외삼촌에게 물어 내었으며",
+      "source_text_hash": "b46e7c5138cddeaa693a74008592184e54219764f672e316ef94e7e65857fdd6",
+      "translation_text_hash": "4fe50a3976b9c1b81cb33558d39d038396b9dda8414498848b8b26f6509796ee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "물려 찢긴 것은 내가 외삼촌에게로 가져 가지 아니하고 스스로 그것을 보충하였으며 낮에 도적을 맞았든지 밤에 도적을 맞았든지 내가 외삼촌에게 물어 내었으며"
+      ],
+      "raw_text_hashes": [
+        "4fe50a3976b9c1b81cb33558d39d038396b9dda8414498848b8b26f6509796ee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:31:40",
+      "sequence": 914,
+      "chapter_label": "GEN 31",
+      "verse_label": "40",
+      "locator": {
+        "book": "GEN",
+        "chapter": 31,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 31,
+          "verse": 40
+        }
+      ],
+      "en": "This was my situation: in the day the drought consumed me, and the frost by night; and my sleep fled from my eyes.",
+      "ko": "내가 이와 같이 낮에는 더위를 무릅쓰고 밤에는 추위를 당하며 눈붙일 겨를도 없이 지내었나이다",
+      "source_text_hash": "e065596be1656d1af3e2a39ce4feb94d57dfddb053411565fa4a9774d19c44c1",
+      "translation_text_hash": "732c45ad82b1eae2378adf913377831c9bb866b3c8a8aad6c6038af364bffe56",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 이와 같이 낮에는 더위를 무릅쓰고 밤에는 추위를 당하며 눈붙일 겨를도 없이 지내었나이다"
+      ],
+      "raw_text_hashes": [
+        "732c45ad82b1eae2378adf913377831c9bb866b3c8a8aad6c6038af364bffe56"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:31:41",
+      "sequence": 915,
+      "chapter_label": "GEN 31",
+      "verse_label": "41",
+      "locator": {
+        "book": "GEN",
+        "chapter": 31,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 31,
+          "verse": 41
+        }
+      ],
+      "en": "These twenty years I have been in your house. I served you fourteen years for your two daughters, and six years for your flock, and you have changed my wages ten times.",
+      "ko": "내가 외삼촌의 집에 거한 이 이십년에 외삼촌의 두 딸을 위하여 십 사년, 외삼촌의 양떼를 위하여 육년을 외삼촌을 봉사하였거니와 외삼촌께서 내 품값을 열번이나 변역하셨으니",
+      "source_text_hash": "163445e7d51cc09806e1126df2f75d735108051c7abc2d532c5a8f86beec2086",
+      "translation_text_hash": "eb3f5b226a6904c4c36b311762bf67670b3f975abe03df679fc7f994c5df93df",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 외삼촌의 집에 거한 이 이십년에 외삼촌의 두 딸을 위하여 십 사년, 외삼촌의 양떼를 위하여 육년을 외삼촌을 봉사하였거니와 외삼촌께서 내 품값을 열번이나 변역하셨으니"
+      ],
+      "raw_text_hashes": [
+        "eb3f5b226a6904c4c36b311762bf67670b3f975abe03df679fc7f994c5df93df"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:31:42",
+      "sequence": 916,
+      "chapter_label": "GEN 31",
+      "verse_label": "42",
+      "locator": {
+        "book": "GEN",
+        "chapter": 31,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 31,
+          "verse": 42
+        }
+      ],
+      "en": "Unless the God of my father, the God of Abraham, and the fear of Isaac, had been with me, surely now you would have sent me away empty. God has seen my affliction and the labor of my hands, and rebuked you last night.”",
+      "ko": "우리 아버지의 하나님, 아브라함의 하나님 곧 이삭의 경외하는 이가 나와 함께 계시지 아니하셨더면 외삼촌께서 이제 나를 공수로 돌려 보내셨으리이다 마는 하나님이 나의 고난과 내 손의 수고를 감찰하시고 어제밤에 외삼촌을 책망하셨나이다",
+      "source_text_hash": "c3fbc2fde62b4fce4b2dd8775c4278818f8b2d66db48867a2f26a9ecbaa21622",
+      "translation_text_hash": "61fc523aaac545e0cb27d4f362a0c1e9eb6ed39ba6ecebe6517584941b6a0df0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리 아버지의 하나님, 아브라함의 하나님 곧 이삭의 경외하는 이가 나와 함께 계시지 아니하셨더면 외삼촌께서 이제 나를 공수로 돌려 보내셨으리이다 마는 하나님이 나의 고난과 내 손의 수고를 감찰하시고 어제밤에 외삼촌을 책망하셨나이다"
+      ],
+      "raw_text_hashes": [
+        "61fc523aaac545e0cb27d4f362a0c1e9eb6ed39ba6ecebe6517584941b6a0df0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:31:43",
+      "sequence": 917,
+      "chapter_label": "GEN 31",
+      "verse_label": "43",
+      "locator": {
+        "book": "GEN",
+        "chapter": 31,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 31,
+          "verse": 43
+        }
+      ],
+      "en": "Laban answered Jacob, “The daughters are my daughters, the children are my children, the flocks are my flocks, and all that you see is mine! What can I do today to these my daughters, or to their children whom they have borne?",
+      "ko": "라반이 야곱에게 대답하여 가로되 딸들은 내 딸이요 자식들은 내 자식이요 양떼는 나의 양떼요 네가 보는 것은 다 내 것이라 내가 오늘날 내 딸들과 그 낳은 자식들에게 어찌할 수 있으랴",
+      "source_text_hash": "1c8d0a82c939d006062251aec6d6268a56df7d04d48919b8a067e6e8d22731b8",
+      "translation_text_hash": "b256a120b41ad4b64176c60ffa2216ff0561e6d8381844ca69e050033b88937b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "라반이 야곱에게 대답하여 가로되 딸들은 내 딸이요 자식들은 내 자식이요 양떼는 나의 양떼요 네가 보는 것은 다 내 것이라 내가 오늘날 내 딸들과 그 낳은 자식들에게 어찌할 수 있으랴"
+      ],
+      "raw_text_hashes": [
+        "b256a120b41ad4b64176c60ffa2216ff0561e6d8381844ca69e050033b88937b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:31:44",
+      "sequence": 918,
+      "chapter_label": "GEN 31",
+      "verse_label": "44",
+      "locator": {
+        "book": "GEN",
+        "chapter": 31,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 31,
+          "verse": 44
+        }
+      ],
+      "en": "Now come, let’s make a covenant, you and I. Let it be for a witness between me and you.”",
+      "ko": "이제 오라 너와 내가 언약을 세워 그것으로 너와 나 사이에 증거를 삼을 것이니라",
+      "source_text_hash": "7ef02b7cbc38a2e1415aa84ef11ef1f20fa57113ecbb1095ee375b6954345052",
+      "translation_text_hash": "15f770f09cd0ba0f2c66c8f0dd067cc2365d720153a8043fde0e938e29aa2804",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제 오라 너와 내가 언약을 세워 그것으로 너와 나 사이에 증거를 삼을 것이니라"
+      ],
+      "raw_text_hashes": [
+        "15f770f09cd0ba0f2c66c8f0dd067cc2365d720153a8043fde0e938e29aa2804"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:31:45",
+      "sequence": 919,
+      "chapter_label": "GEN 31",
+      "verse_label": "45",
+      "locator": {
+        "book": "GEN",
+        "chapter": 31,
+        "verse": 45
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 31,
+          "verse": 45
+        }
+      ],
+      "en": "Jacob took a stone, and set it up for a pillar.",
+      "ko": "이에 야곱이 돌을 가져 기둥으로 세우고",
+      "source_text_hash": "a78d1644f3ae7fdc286485bf952cd06015bf60a88098d39f6805a423219d0f75",
+      "translation_text_hash": "80e93e4de22bfbdd9397aa57846267495142616f6ea07c2980205867623207ac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 야곱이 돌을 가져 기둥으로 세우고"
+      ],
+      "raw_text_hashes": [
+        "80e93e4de22bfbdd9397aa57846267495142616f6ea07c2980205867623207ac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:31:46",
+      "sequence": 920,
+      "chapter_label": "GEN 31",
+      "verse_label": "46",
+      "locator": {
+        "book": "GEN",
+        "chapter": 31,
+        "verse": 46
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 31,
+          "verse": 46
+        }
+      ],
+      "en": "Jacob said to his relatives, “Gather stones.” They took stones, and made a heap. They ate there by the heap.",
+      "ko": "또 그 형제들에게 돌을 모으라 하니 그들이 돌을 취하여 무더기를 이루매 무리가 거기 무더기 곁에서 먹고",
+      "source_text_hash": "21e0499d6e426da712e35838025b8a3a00a80924d0f24101468730ca1ef50ae4",
+      "translation_text_hash": "e12a1e64609889cc1d86dc9fce527d946d6e0a2a276238130699cca3f4a578a1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 그 형제들에게 돌을 모으라 하니 그들이 돌을 취하여 무더기를 이루매 무리가 거기 무더기 곁에서 먹고"
+      ],
+      "raw_text_hashes": [
+        "e12a1e64609889cc1d86dc9fce527d946d6e0a2a276238130699cca3f4a578a1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:31:47",
+      "sequence": 921,
+      "chapter_label": "GEN 31",
+      "verse_label": "47",
+      "locator": {
+        "book": "GEN",
+        "chapter": 31,
+        "verse": 47
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 31,
+          "verse": 47
+        }
+      ],
+      "en": "Laban called it Jegar Sahadutha, but Jacob called it Galeed.",
+      "ko": "라반은 그것을 여갈사하두다라 칭하였고 야곱은 그것을 갈르엣이라 칭하였으니",
+      "source_text_hash": "4f8feb875233e82ba72d5f07f7f900e843c3a6bd71ba69edf8022ee27cebcdb9",
+      "translation_text_hash": "9cab3bf919183c2b04027af298c76ea671c455e2fc2ad2cacf1018812718b30d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "라반은 그것을 여갈사하두다라 칭하였고 야곱은 그것을 갈르엣이라 칭하였으니"
+      ],
+      "raw_text_hashes": [
+        "9cab3bf919183c2b04027af298c76ea671c455e2fc2ad2cacf1018812718b30d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:31:48",
+      "sequence": 922,
+      "chapter_label": "GEN 31",
+      "verse_label": "48",
+      "locator": {
+        "book": "GEN",
+        "chapter": 31,
+        "verse": 48
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 31,
+          "verse": 48
+        }
+      ],
+      "en": "Laban said, “This heap is witness between me and you today.” Therefore it was named Galeed",
+      "ko": "라반의 말에 오늘날 이 무더기가 너와 나 사이에 증거가 된다 하였으므로 그 이름을 갈르엣이라 칭하였으며",
+      "source_text_hash": "bcc1f821e0687e3fbc1a50ee8a7e092d85bbcd1c1c18d25c3d73d41a1d44771d",
+      "translation_text_hash": "ca71c4727bfb13bf1fc2ff27fb16942a2c310988c64d670d7221ff4291246f98",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "라반의 말에 오늘날 이 무더기가 너와 나 사이에 증거가 된다 하였으므로 그 이름을 갈르엣이라 칭하였으며"
+      ],
+      "raw_text_hashes": [
+        "ca71c4727bfb13bf1fc2ff27fb16942a2c310988c64d670d7221ff4291246f98"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:31:49",
+      "sequence": 923,
+      "chapter_label": "GEN 31",
+      "verse_label": "49",
+      "locator": {
+        "book": "GEN",
+        "chapter": 31,
+        "verse": 49
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 31,
+          "verse": 49
+        }
+      ],
+      "en": "and Mizpah, for he said, “The LORD watch between me and you, when we are absent one from another.",
+      "ko": "또 미스바라 하였으니 이는 그의 말에 우리 피차 떠나 있을 때에 여호와께서 너와 나 사이에 감찰하옵소서 함이라",
+      "source_text_hash": "6a70f59493622e2b0d4179779c2b63faf0579401e6678dc0df5aa8b504fc1834",
+      "translation_text_hash": "d95ed77ccc6e7cf2ebb42666f981d8ea28c85c40cd5d55129898bf3ce580350b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 미스바라 하였으니 이는 그의 말에 우리 피차 떠나 있을 때에 여호와께서 너와 나 사이에 감찰하옵소서 함이라"
+      ],
+      "raw_text_hashes": [
+        "d95ed77ccc6e7cf2ebb42666f981d8ea28c85c40cd5d55129898bf3ce580350b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:31:50",
+      "sequence": 924,
+      "chapter_label": "GEN 31",
+      "verse_label": "50",
+      "locator": {
+        "book": "GEN",
+        "chapter": 31,
+        "verse": 50
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 31,
+          "verse": 50
+        }
+      ],
+      "en": "If you afflict my daughters, or if you take wives in addition to my daughters, no man is with us; behold, God is witness between me and you.”",
+      "ko": "네가 내 딸을 박대하거나 내 딸들 외에 다른 아내들을 취하면 사람은 우리와 함께할 자가 없어도 보라 하나님이 너와 나 사이에 증거하시느니라 하였더라",
+      "source_text_hash": "0779cca3194306e277e4662a77e2658217ef028b0b26e815b3f4ba5ed11d1de5",
+      "translation_text_hash": "f48c24211b02bcea7035b4a60c55dcf17dc49944ca2cd4c3268af482496febb6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 내 딸을 박대하거나 내 딸들 외에 다른 아내들을 취하면 사람은 우리와 함께할 자가 없어도 보라 하나님이 너와 나 사이에 증거하시느니라 하였더라"
+      ],
+      "raw_text_hashes": [
+        "f48c24211b02bcea7035b4a60c55dcf17dc49944ca2cd4c3268af482496febb6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:31:51",
+      "sequence": 925,
+      "chapter_label": "GEN 31",
+      "verse_label": "51",
+      "locator": {
+        "book": "GEN",
+        "chapter": 31,
+        "verse": 51
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 31,
+          "verse": 51
+        }
+      ],
+      "en": "Laban said to Jacob, “See this heap, and see the pillar, which I have set between me and you.",
+      "ko": "라반이 또 야곱에게 이르되 내가 너와 나 사이에 둔 이 무더기를 보라 또 이 기둥을 보라",
+      "source_text_hash": "2a05ade8ed25fad8fbf212956ace2688bb5128250da90a1610009d19fac42450",
+      "translation_text_hash": "3aeb69614a5078425411a5dae6daba08436f9e3d0c860a76d99afab180be1a52",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "라반이 또 야곱에게 이르되 내가 너와 나 사이에 둔 이 무더기를 보라 또 이 기둥을 보라"
+      ],
+      "raw_text_hashes": [
+        "3aeb69614a5078425411a5dae6daba08436f9e3d0c860a76d99afab180be1a52"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:31:52",
+      "sequence": 926,
+      "chapter_label": "GEN 31",
+      "verse_label": "52",
+      "locator": {
+        "book": "GEN",
+        "chapter": 31,
+        "verse": 52
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 31,
+          "verse": 52
+        }
+      ],
+      "en": "May this heap be a witness, and the pillar be a witness, that I will not pass over this heap to you, and that you will not pass over this heap and this pillar to me, for harm.",
+      "ko": "이 무더기가 증거가 되고 이 기둥이 증거가 되나니 내가 이 무더기를 넘어 네게로 가서 해하지 않을 것이요 네가 이 무더기, 이 기둥을 넘어 내게로 와서 해하지 않을 것이라",
+      "source_text_hash": "3299d4048ea52d2af85e27c20a1c7e0dd4fb22896dc3a87d89932e7173d856be",
+      "translation_text_hash": "12e2f1e14953be4b110d049e5e8d53ffa87b33ca3bc0bea4dd965e3655f60fb3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 무더기가 증거가 되고 이 기둥이 증거가 되나니 내가 이 무더기를 넘어 네게로 가서 해하지 않을 것이요 네가 이 무더기, 이 기둥을 넘어 내게로 와서 해하지 않을 것이라"
+      ],
+      "raw_text_hashes": [
+        "12e2f1e14953be4b110d049e5e8d53ffa87b33ca3bc0bea4dd965e3655f60fb3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:31:53",
+      "sequence": 927,
+      "chapter_label": "GEN 31",
+      "verse_label": "53",
+      "locator": {
+        "book": "GEN",
+        "chapter": 31,
+        "verse": 53
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 31,
+          "verse": 53
+        }
+      ],
+      "en": "The God of Abraham, and the God of Nahor, the God of their father, judge between us.” Then Jacob swore by the fear of his father, Isaac.",
+      "ko": "아브라함의 하나님, 나홀의 하나님, 그들의 조상의 하나님은 우리 사이에 판단하옵소서 하매 야곱이 그 아비 이삭의 경외하는 이를 가리켜 맹세하고",
+      "source_text_hash": "378cfdb50ff5ad6cf7271d2424c2a4e56deac1f70c7445f65be65fde3283e9d7",
+      "translation_text_hash": "a7ae87892fb84de6dc7cf653914b312bcbdf24aa1a1d168b08549814ba86e0c1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아브라함의 하나님, 나홀의 하나님, 그들의 조상의 하나님은 우리 사이에 판단하옵소서 하매 야곱이 그 아비 이삭의 경외하는 이를 가리켜 맹세하고"
+      ],
+      "raw_text_hashes": [
+        "a7ae87892fb84de6dc7cf653914b312bcbdf24aa1a1d168b08549814ba86e0c1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:31:54",
+      "sequence": 928,
+      "chapter_label": "GEN 31",
+      "verse_label": "54",
+      "locator": {
+        "book": "GEN",
+        "chapter": 31,
+        "verse": 54
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 31,
+          "verse": 54
+        }
+      ],
+      "en": "Jacob offered a sacrifice in the mountain, and called his relatives to eat bread. They ate bread, and stayed all night in the mountain.",
+      "ko": "야곱이 또 산에서 제사를 드리고 형제들을 불러 떡을 먹이니 그들이 떡을 먹고 산에서 경야하고",
+      "source_text_hash": "24b9eae297d25e51c2a2e59ed2e8d7db822256778c96e24ba718cb31bdf7c4e9",
+      "translation_text_hash": "62ffe663e0f9d842994a87790f97e0c36f7a5d58ae1c9f75cacf139cee3e8494",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야곱이 또 산에서 제사를 드리고 형제들을 불러 떡을 먹이니 그들이 떡을 먹고 산에서 경야하고"
+      ],
+      "raw_text_hashes": [
+        "62ffe663e0f9d842994a87790f97e0c36f7a5d58ae1c9f75cacf139cee3e8494"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:31:55",
+      "sequence": 929,
+      "chapter_label": "GEN 31",
+      "verse_label": "55",
+      "locator": {
+        "book": "GEN",
+        "chapter": 31,
+        "verse": 55
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 31,
+          "verse": 55
+        }
+      ],
+      "en": "Early in the morning, Laban rose up, and kissed his sons and his daughters, and blessed them. Laban departed and returned to his place.",
+      "ko": "라반이 아침에 일찌기 일어나 손자들과 딸들에게 입맞추며 그들에게 축복하고 떠나 고향으로 돌아갔더라",
+      "source_text_hash": "70b216e7d9b8bd6e555df556fcd9c7432cd5046c450bcd4da04f17d10d3ed766",
+      "translation_text_hash": "0255b8df83b7621b8b6615a4801c4888a7c09b3e8c3c6d987b8cc7f0c3bc4b95",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "라반이 아침에 일찌기 일어나 손자들과 딸들에게 입맞추며 그들에게 축복하고 떠나 고향으로 돌아갔더라"
+      ],
+      "raw_text_hashes": [
+        "0255b8df83b7621b8b6615a4801c4888a7c09b3e8c3c6d987b8cc7f0c3bc4b95"
+      ]
+    }
+  ]
+}

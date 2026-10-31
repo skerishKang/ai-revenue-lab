@@ -1,0 +1,909 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ACT:chapter:014",
+  "unit_ordinal": 1032,
+  "unit_label": "ACT 14",
+  "book_code": "ACT",
+  "chapter_number": 14,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ACT:14:1",
+      "sequence": 27414,
+      "chapter_label": "ACT 14",
+      "verse_label": "1",
+      "locator": {
+        "book": "ACT",
+        "chapter": 14,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 14,
+          "verse": 1
+        }
+      ],
+      "en": "In Iconium, they entered together into the synagogue of the Jews, and so spoke that a great multitude both of Jews and of Greeks believed.",
+      "ko": "이에 이고니온에서 두 사도가 함께 유대인의 회당에 들어가 말하니 유대와 헬라의 허다한 무리가 믿더라",
+      "source_text_hash": "9d0fb2c54deadcc528c3df218dceee63a251645a00604f41fb081e439beffb79",
+      "translation_text_hash": "87be9a8b44e7d367b7ea3927faf15db42ff3e51d64bc98df5eba12ecbe2aeef2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 이고니온에서 두 사도가 함께 유대인의 회당에 들어가 말하니 유대와 헬라의 허다한 무리가 믿더라"
+      ],
+      "raw_text_hashes": [
+        "87be9a8b44e7d367b7ea3927faf15db42ff3e51d64bc98df5eba12ecbe2aeef2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:14:2",
+      "sequence": 27415,
+      "chapter_label": "ACT 14",
+      "verse_label": "2",
+      "locator": {
+        "book": "ACT",
+        "chapter": 14,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 14,
+          "verse": 2
+        }
+      ],
+      "en": "But the disbelieving Jews stirred up and embittered the souls of the Gentiles against the brothers.",
+      "ko": "그러나 순종치 아니하는 유대인들이 이방인들의 마음을 선동하여 형제들에게 악감을 품게 하거늘",
+      "source_text_hash": "065a9056ea4635df8893593fbaf2facdb403fd252262e0a0a2be86738d5b5581",
+      "translation_text_hash": "792fe309214110473c991c61db6ff7cd2f4c7ee1bc331818849f14e14eff9418",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 순종치 아니하는 유대인들이 이방인들의 마음을 선동하여 형제들에게 악감을 품게 하거늘"
+      ],
+      "raw_text_hashes": [
+        "792fe309214110473c991c61db6ff7cd2f4c7ee1bc331818849f14e14eff9418"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:14:3",
+      "sequence": 27416,
+      "chapter_label": "ACT 14",
+      "verse_label": "3",
+      "locator": {
+        "book": "ACT",
+        "chapter": 14,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 14,
+          "verse": 3
+        }
+      ],
+      "en": "Therefore they stayed there a long time, speaking boldly in the Lord, who testified to the word of his grace, granting signs and wonders to be done by their hands.",
+      "ko": "두 사도가 오래 있어 주를 힘입어 담대히 말하니 주께서 저희 손으로 표적과 기사를 행하게 하여 주사 자기 은혜의 말씀을 증거하시니",
+      "source_text_hash": "7d2315bbfc3855fe9deac07a5e2b7fa40ba30b92e16bc038612ce103bbf2630d",
+      "translation_text_hash": "9be3f59a72815fea18e72e58c345c40ff8167a6780085c1f31e1de2117f2dfe0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "두 사도가 오래 있어 주를 힘입어 담대히 말하니 주께서 저희 손으로 표적과 기사를 행하게 하여 주사 자기 은혜의 말씀을 증거하시니"
+      ],
+      "raw_text_hashes": [
+        "9be3f59a72815fea18e72e58c345c40ff8167a6780085c1f31e1de2117f2dfe0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:14:4",
+      "sequence": 27417,
+      "chapter_label": "ACT 14",
+      "verse_label": "4",
+      "locator": {
+        "book": "ACT",
+        "chapter": 14,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 14,
+          "verse": 4
+        }
+      ],
+      "en": "But the multitude of the city was divided. Part sided with the Jews and part with the apostles.",
+      "ko": "그 성내 무리가 나뉘어 유대인을 좇는 자도 있고 두 사도를 좇는 자도 있는지라",
+      "source_text_hash": "7e49a76d2ecb4b0fd579c95d998d778a3004656921fb5b41f533dc2b4e2ffd94",
+      "translation_text_hash": "d42b6d1e1632b18dcf5664d25c0fee9a63658e1971add373a59ca25337a53f14",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 성내 무리가 나뉘어 유대인을 좇는 자도 있고 두 사도를 좇는 자도 있는지라"
+      ],
+      "raw_text_hashes": [
+        "d42b6d1e1632b18dcf5664d25c0fee9a63658e1971add373a59ca25337a53f14"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:14:5",
+      "sequence": 27418,
+      "chapter_label": "ACT 14",
+      "verse_label": "5",
+      "locator": {
+        "book": "ACT",
+        "chapter": 14,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 14,
+          "verse": 5
+        }
+      ],
+      "en": "When some of both the Gentiles and the Jews, with their rulers, made a violent attempt to mistreat and stone them,",
+      "ko": "이방인과 유대인과 그 관원들이 두 사도를 능욕하며 돌로 치려고 달려드니",
+      "source_text_hash": "ca7a71de64916300b3eb9551936a061bf6613ea66f6f57ab27ffd4efd32ddb43",
+      "translation_text_hash": "f9976f6424231d251aaaab7750174b4f59404feba92287c911029e31a301a3a8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이방인과 유대인과 그 관원들이 두 사도를 능욕하며 돌로 치려고 달려드니"
+      ],
+      "raw_text_hashes": [
+        "f9976f6424231d251aaaab7750174b4f59404feba92287c911029e31a301a3a8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:14:6",
+      "sequence": 27419,
+      "chapter_label": "ACT 14",
+      "verse_label": "6",
+      "locator": {
+        "book": "ACT",
+        "chapter": 14,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 14,
+          "verse": 6
+        }
+      ],
+      "en": "they became aware of it and fled to the cities of Lycaonia, Lystra, Derbe, and the surrounding region.",
+      "ko": "저희가 알고 도망하여 루가오니아의 두 성 루스드라와 더베와 및 그 근방으로 가서",
+      "source_text_hash": "2a3b4f724c1bf5a087d9328f936ff3edf502a2ec2bca1eccb7ac3429c847c676",
+      "translation_text_hash": "9d43c25d696ad1a4c4f010f811463162c0d0c3a665b86e932a50d52ecf1e87d7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 알고 도망하여 루가오니아의 두 성 루스드라와 더베와 및 그 근방으로 가서"
+      ],
+      "raw_text_hashes": [
+        "9d43c25d696ad1a4c4f010f811463162c0d0c3a665b86e932a50d52ecf1e87d7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:14:7",
+      "sequence": 27420,
+      "chapter_label": "ACT 14",
+      "verse_label": "7",
+      "locator": {
+        "book": "ACT",
+        "chapter": 14,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 14,
+          "verse": 7
+        }
+      ],
+      "en": "There they preached the Good News.",
+      "ko": "거기서 복음을 전하니라",
+      "source_text_hash": "7dbb5ec254981163b7c93b5a743405a9b69af89d493eef70be8a8e4b912a1813",
+      "translation_text_hash": "975fe1d4c1451a4df88d787d7a7de894a673c4a4a3c02e37756a3d6e5cee0da9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거기서 복음을 전하니라"
+      ],
+      "raw_text_hashes": [
+        "975fe1d4c1451a4df88d787d7a7de894a673c4a4a3c02e37756a3d6e5cee0da9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:14:8",
+      "sequence": 27421,
+      "chapter_label": "ACT 14",
+      "verse_label": "8",
+      "locator": {
+        "book": "ACT",
+        "chapter": 14,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 14,
+          "verse": 8
+        }
+      ],
+      "en": "At Lystra a certain man sat, impotent in his feet, a cripple from his mother’s womb, who never had walked.",
+      "ko": "루스드라에 발을 쓰지 못하는 한 사람이 있어 앉았는데 나면서 앉은뱅이 되어 걸어 본 적이 없는 자라",
+      "source_text_hash": "4455986ab4ded046a09789c9804433cb0b88b16e5a6d229f1eca4d51506f2d2a",
+      "translation_text_hash": "f0b68471885666022eb5ecb5a17d0ebb2a4f69c396816778f2633f715f6c5a7e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "루스드라에 발을 쓰지 못하는 한 사람이 있어 앉았는데 나면서 앉은뱅이 되어 걸어 본 적이 없는 자라"
+      ],
+      "raw_text_hashes": [
+        "f0b68471885666022eb5ecb5a17d0ebb2a4f69c396816778f2633f715f6c5a7e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:14:9",
+      "sequence": 27422,
+      "chapter_label": "ACT 14",
+      "verse_label": "9",
+      "locator": {
+        "book": "ACT",
+        "chapter": 14,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 14,
+          "verse": 9
+        }
+      ],
+      "en": "He was listening to Paul speaking, who, fastening eyes on him and seeing that he had faith to be made whole,",
+      "ko": "바울의 말하는 것을 듣거늘 바울이 주목하여 구원받을만한 믿음이 그에게 있는것을 보고",
+      "source_text_hash": "f11a1f8367862e43aa2b9f746f0b860eac454aa47b2591d9385843b928dc6ec9",
+      "translation_text_hash": "31c9f93ab123cb885c5caad7a3526306f66f85fc536b8df7e0d7e585ee7763c8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바울의 말하는 것을 듣거늘 바울이 주목하여 구원받을만한 믿음이 그에게 있는것을 보고"
+      ],
+      "raw_text_hashes": [
+        "31c9f93ab123cb885c5caad7a3526306f66f85fc536b8df7e0d7e585ee7763c8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:14:10",
+      "sequence": 27423,
+      "chapter_label": "ACT 14",
+      "verse_label": "10",
+      "locator": {
+        "book": "ACT",
+        "chapter": 14,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 14,
+          "verse": 10
+        }
+      ],
+      "en": "said with a loud voice, “Stand upright on your feet!” He leaped up and walked.",
+      "ko": "큰 소리로 가로되 네 발로 바로 일어서라 하니 그 사람이 뛰어 걷는지라",
+      "source_text_hash": "0a7b5a8c0b529aa44750324b8b7be5027c18d2fcb9b6603b8a7b45981f5cd77c",
+      "translation_text_hash": "c923b7feee68bfd5396e1d1166d64c4e37b52aaa59a4a33d44c0a677cb6bc7c2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "큰 소리로 가로되 네 발로 바로 일어서라 하니 그 사람이 뛰어 걷는지라"
+      ],
+      "raw_text_hashes": [
+        "c923b7feee68bfd5396e1d1166d64c4e37b52aaa59a4a33d44c0a677cb6bc7c2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:14:11",
+      "sequence": 27424,
+      "chapter_label": "ACT 14",
+      "verse_label": "11",
+      "locator": {
+        "book": "ACT",
+        "chapter": 14,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 14,
+          "verse": 11
+        }
+      ],
+      "en": "When the multitude saw what Paul had done, they lifted up their voice, saying in the language of Lycaonia, “The gods have come down to us in the likeness of men!”",
+      "ko": "무리가 바울의 행한 일을 보고 루가오니아 방언으로 소리질러 가로되 신들이 사람의 형상으로 우리 가운데 내려 오셨다 하여",
+      "source_text_hash": "863f3e4efe077aa6107b6731f9d7e801705339c441ddf2fd124deee6601947b5",
+      "translation_text_hash": "2ba7162fd1c041dc32df0a9715c0415074fd0ebc3c61fdeb66bc937d74a4dd39",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무리가 바울의 행한 일을 보고 루가오니아 방언으로 소리질러 가로되 신들이 사람의 형상으로 우리 가운데 내려 오셨다 하여"
+      ],
+      "raw_text_hashes": [
+        "2ba7162fd1c041dc32df0a9715c0415074fd0ebc3c61fdeb66bc937d74a4dd39"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:14:12",
+      "sequence": 27425,
+      "chapter_label": "ACT 14",
+      "verse_label": "12",
+      "locator": {
+        "book": "ACT",
+        "chapter": 14,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 14,
+          "verse": 12
+        }
+      ],
+      "en": "They called Barnabas “Jupiter”, and Paul “Mercury”, because he was the chief speaker.",
+      "ko": "바나바는 쓰스라 하고 바울은 그 중에 말하는 자이므로 허메라 하더라",
+      "source_text_hash": "cbef5792ed06d347d413375132196408ebd221fd6b8ebc157709d96c6cbd1583",
+      "translation_text_hash": "90274db0e8eb56ce5ecb41817a8c3a4dca7d6fd58ecd11ed429b4b133cb49c6f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바나바는 쓰스라 하고 바울은 그 중에 말하는 자이므로 허메라 하더라"
+      ],
+      "raw_text_hashes": [
+        "90274db0e8eb56ce5ecb41817a8c3a4dca7d6fd58ecd11ed429b4b133cb49c6f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:14:13",
+      "sequence": 27426,
+      "chapter_label": "ACT 14",
+      "verse_label": "13",
+      "locator": {
+        "book": "ACT",
+        "chapter": 14,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 14,
+          "verse": 13
+        }
+      ],
+      "en": "The priest of Jupiter, whose temple was in front of their city, brought oxen and garlands to the gates, and would have made a sacrifice along with the multitudes.",
+      "ko": "성밖 쓰스신당의 제사장이 소와 화관들을 가지고 대문 앞에 와서 무리와 함께 제사하고자 하니",
+      "source_text_hash": "8ede1eefb685bb7f4a0e630258750f5f7ce0dd71c3a506a5f47fd7a27e569cdf",
+      "translation_text_hash": "3e83f04e711b4daa6d95d5b36a54367f2328c054c0b78aeeeba4a85e2148e44f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "성밖 쓰스신당의 제사장이 소와 화관들을 가지고 대문 앞에 와서 무리와 함께 제사하고자 하니"
+      ],
+      "raw_text_hashes": [
+        "3e83f04e711b4daa6d95d5b36a54367f2328c054c0b78aeeeba4a85e2148e44f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:14:14",
+      "sequence": 27427,
+      "chapter_label": "ACT 14",
+      "verse_label": "14",
+      "locator": {
+        "book": "ACT",
+        "chapter": 14,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 14,
+          "verse": 14
+        }
+      ],
+      "en": "But when the apostles, Barnabas and Paul, heard of it, they tore their clothes and sprang into the multitude, crying out,",
+      "ko": "두 사도 바나바와 바울이 듣고 옷을 찢고 무리 가운데 뛰어 들어가서 소리질러",
+      "source_text_hash": "a7d8835a8f3c4f838a3fb8e4a27aef487524dd474ed62804501245e7e32a3b29",
+      "translation_text_hash": "d02e2af7f7340b4ab2729c7d2eeb5c82640ddff26c7d0f436684d0c9993b8682",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "두 사도 바나바와 바울이 듣고 옷을 찢고 무리 가운데 뛰어 들어가서 소리질러"
+      ],
+      "raw_text_hashes": [
+        "d02e2af7f7340b4ab2729c7d2eeb5c82640ddff26c7d0f436684d0c9993b8682"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:14:15",
+      "sequence": 27428,
+      "chapter_label": "ACT 14",
+      "verse_label": "15",
+      "locator": {
+        "book": "ACT",
+        "chapter": 14,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 14,
+          "verse": 15
+        }
+      ],
+      "en": "“Men, why are you doing these things? We also are men of the same nature as you, and bring you good news, that you should turn from these vain things to the living God, who made the sky, the earth, the sea, and all that is in them;",
+      "ko": "가로되 여러분이여 어찌하여 이러한 일을 하느냐 우리도 너희와 같은 성정을 가진 사람이라 너희에게 복음을 전하는 것은 이 헛된 일을 버리고 천지와 바다와 그 가운데 만유를 지으시고 살아 계신 하나님께로 돌아 오라 함이라",
+      "source_text_hash": "976d1d557e9286aa39d182e248fafdbbad7491783c101a6de61b47b0583a86d0",
+      "translation_text_hash": "7a322365ae9a03ad8116e02f7eca0739eb65cb20a6ebf3f20ee30d44b06b43a0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 여러분이여 어찌하여 이러한 일을 하느냐 우리도 너희와 같은 성정을 가진 사람이라 너희에게 복음을 전하는 것은 이 헛된 일을 버리고 천지와 바다와 그 가운데 만유를 지으시고 살아 계신 하나님께로 돌아 오라 함이라"
+      ],
+      "raw_text_hashes": [
+        "7a322365ae9a03ad8116e02f7eca0739eb65cb20a6ebf3f20ee30d44b06b43a0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:14:16",
+      "sequence": 27429,
+      "chapter_label": "ACT 14",
+      "verse_label": "16",
+      "locator": {
+        "book": "ACT",
+        "chapter": 14,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 14,
+          "verse": 16
+        }
+      ],
+      "en": "who in the generations gone by allowed all the nations to walk in their own ways.",
+      "ko": "하나님이 지나간 세대에는 모든 족속으로 자기의 길들을 다니게 묵인하셨으나",
+      "source_text_hash": "d55d5d1178c5b876e3f1ab32ef0407be382706f5d4cc501fa56c6e0c59dace58",
+      "translation_text_hash": "d3bc62a28ff7d5c607e14439fd2ab4b8e3d4d97ab9b0e651ad3853f05e100433",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 지나간 세대에는 모든 족속으로 자기의 길들을 다니게 묵인하셨으나"
+      ],
+      "raw_text_hashes": [
+        "d3bc62a28ff7d5c607e14439fd2ab4b8e3d4d97ab9b0e651ad3853f05e100433"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:14:17",
+      "sequence": 27430,
+      "chapter_label": "ACT 14",
+      "verse_label": "17",
+      "locator": {
+        "book": "ACT",
+        "chapter": 14,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 14,
+          "verse": 17
+        }
+      ],
+      "en": "Yet he didn’t leave himself without witness, in that he did good and gave you rains from the sky and fruitful seasons, filling our hearts with food and gladness.”",
+      "ko": "그러나 자기를 증거하지 아니하신 것이 아니니 곧 너희에게 하늘로서 비를 내리시며 결실기를 주시는 선한 일을 하사 음식과 기쁨으로 너희 마음에 만족케 하셨느니라 하고",
+      "source_text_hash": "184ec5a5a65253ade72e8952bd34a8a6a389fe27a4b5716a1adbce289714625d",
+      "translation_text_hash": "65202aa4af93931de84f5c1062e21892e8e167b3d3552eb68b5566bf5d35b51d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 자기를 증거하지 아니하신 것이 아니니 곧 너희에게 하늘로서 비를 내리시며 결실기를 주시는 선한 일을 하사 음식과 기쁨으로 너희 마음에 만족케 하셨느니라 하고"
+      ],
+      "raw_text_hashes": [
+        "65202aa4af93931de84f5c1062e21892e8e167b3d3552eb68b5566bf5d35b51d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:14:18",
+      "sequence": 27431,
+      "chapter_label": "ACT 14",
+      "verse_label": "18",
+      "locator": {
+        "book": "ACT",
+        "chapter": 14,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 14,
+          "verse": 18
+        }
+      ],
+      "en": "Even saying these things, they hardly stopped the multitudes from making a sacrifice to them.",
+      "ko": "이렇게 말하여 겨우 무리를 말려 자기들에게 제사를 못하게 하니라",
+      "source_text_hash": "dbc43f330d7bbaa4fbf4bb92a7f7b4619c24d08120e95727348545c092826fab",
+      "translation_text_hash": "558fc32d19a76abdc33fe71e52c7a56589c6663262d5bc70eabe487486e6e526",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이렇게 말하여 겨우 무리를 말려 자기들에게 제사를 못하게 하니라"
+      ],
+      "raw_text_hashes": [
+        "558fc32d19a76abdc33fe71e52c7a56589c6663262d5bc70eabe487486e6e526"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:14:19",
+      "sequence": 27432,
+      "chapter_label": "ACT 14",
+      "verse_label": "19",
+      "locator": {
+        "book": "ACT",
+        "chapter": 14,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 14,
+          "verse": 19
+        }
+      ],
+      "en": "But some Jews from Antioch and Iconium came there, and having persuaded the multitudes, they stoned Paul and dragged him out of the city, supposing that he was dead.",
+      "ko": "유대인들이 안디옥과 이고니온에서 와서 무리를 초인하여 돌로 바울을 쳐서 죽은 줄로 알고 성밖에 끌어 내치니라",
+      "source_text_hash": "2a4cdc073647e7304ad003255839249618f21c98a293e9d888ef651a9ca28524",
+      "translation_text_hash": "d9a05561a3c4e504669a41b6b77e213b6f4117a4a287fe202d5eb864379f6791",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유대인들이 안디옥과 이고니온에서 와서 무리를 초인하여 돌로 바울을 쳐서 죽은 줄로 알고 성밖에 끌어 내치니라"
+      ],
+      "raw_text_hashes": [
+        "d9a05561a3c4e504669a41b6b77e213b6f4117a4a287fe202d5eb864379f6791"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:14:20",
+      "sequence": 27433,
+      "chapter_label": "ACT 14",
+      "verse_label": "20",
+      "locator": {
+        "book": "ACT",
+        "chapter": 14,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 14,
+          "verse": 20
+        }
+      ],
+      "en": "But as the disciples stood around him, he rose up, and entered into the city. On the next day he went out with Barnabas to Derbe.",
+      "ko": "제자들이 둘러 섰을 때에 바울이 일어나 성에 들어갔다가 이튿날 바나바와 함께 더베로 가서",
+      "source_text_hash": "fb54b5d7c61d605a5b6b8967a165df89140e6e0ce1c6cc1423166129f4957d19",
+      "translation_text_hash": "b1ae68b467905645a64b44483087bb2490306a3fb3dc60c1fadc26eff42b66a7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제자들이 둘러 섰을 때에 바울이 일어나 성에 들어갔다가 이튿날 바나바와 함께 더베로 가서"
+      ],
+      "raw_text_hashes": [
+        "b1ae68b467905645a64b44483087bb2490306a3fb3dc60c1fadc26eff42b66a7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:14:21",
+      "sequence": 27434,
+      "chapter_label": "ACT 14",
+      "verse_label": "21",
+      "locator": {
+        "book": "ACT",
+        "chapter": 14,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 14,
+          "verse": 21
+        }
+      ],
+      "en": "When they had preached the Good News to that city and had made many disciples, they returned to Lystra, Iconium, and Antioch,",
+      "ko": "복음을 그 성에서 전하여 많은 사람을 제자로 삼고 루스드라와 이고니온과 안디옥으로 돌아가서",
+      "source_text_hash": "74804d545d2e25f0d5a24bc93e8ea3a502419dd340b924329d6e2221ee572d21",
+      "translation_text_hash": "7039a5f2fa7a2abcc73a888d0f0555006027adf2e0dc66cca92edcdbeac7182a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "복음을 그 성에서 전하여 많은 사람을 제자로 삼고 루스드라와 이고니온과 안디옥으로 돌아가서"
+      ],
+      "raw_text_hashes": [
+        "7039a5f2fa7a2abcc73a888d0f0555006027adf2e0dc66cca92edcdbeac7182a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:14:22",
+      "sequence": 27435,
+      "chapter_label": "ACT 14",
+      "verse_label": "22",
+      "locator": {
+        "book": "ACT",
+        "chapter": 14,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 14,
+          "verse": 22
+        }
+      ],
+      "en": "strengthening the souls of the disciples, exhorting them to continue in the faith, and that through many afflictions we must enter into God’s Kingdom.",
+      "ko": "제자들의 마음을 굳게 하여 이 믿음에 거하라 권하고 또 우리가 하나님 나라에 들어가려면 많은 환난을 겪어야 할 것이라 하고",
+      "source_text_hash": "b0ce261f640907df2ea00f645e45ac14067f21465b0a538126f7023e3bfacdec",
+      "translation_text_hash": "40ef09412e8ef5285c6c14fd80e7b735329b824488dd78f07aaac6296b1402fe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제자들의 마음을 굳게 하여 이 믿음에 거하라 권하고 또 우리가 하나님 나라에 들어가려면 많은 환난을 겪어야 할 것이라 하고"
+      ],
+      "raw_text_hashes": [
+        "40ef09412e8ef5285c6c14fd80e7b735329b824488dd78f07aaac6296b1402fe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:14:23",
+      "sequence": 27436,
+      "chapter_label": "ACT 14",
+      "verse_label": "23",
+      "locator": {
+        "book": "ACT",
+        "chapter": 14,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 14,
+          "verse": 23
+        }
+      ],
+      "en": "When they had appointed elders for them in every assembly, and had prayed with fasting, they commended them to the Lord on whom they had believed.",
+      "ko": "각 교회에서 장로들을 택하여 금식 기도하며 저희를 그 믿은바 주께 부탁하고",
+      "source_text_hash": "3e149051faece38f35d3cd360d294e5d0c410b0ba911f65bc881c9db8af38dda",
+      "translation_text_hash": "54694e3c4c3f6ac263e35b64262bc882a9022f5cb74facb7c7368523e7d86ef3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "각 교회에서 장로들을 택하여 금식 기도하며 저희를 그 믿은바 주께 부탁하고"
+      ],
+      "raw_text_hashes": [
+        "54694e3c4c3f6ac263e35b64262bc882a9022f5cb74facb7c7368523e7d86ef3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:14:24",
+      "sequence": 27437,
+      "chapter_label": "ACT 14",
+      "verse_label": "24",
+      "locator": {
+        "book": "ACT",
+        "chapter": 14,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 14,
+          "verse": 24
+        }
+      ],
+      "en": "They passed through Pisidia and came to Pamphylia.",
+      "ko": "비시디아 가운데로 지나가서 밤빌리아에 이르러",
+      "source_text_hash": "9089727e30d7d146ae2efe7e823bc8592041ff56b6900c0ec60368ed8dc42f7e",
+      "translation_text_hash": "e3f28c3691f54d5d37248d6e2d36dde7067e9e0c14ddfe1fccaeaaa10712423c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "비시디아 가운데로 지나가서 밤빌리아에 이르러"
+      ],
+      "raw_text_hashes": [
+        "e3f28c3691f54d5d37248d6e2d36dde7067e9e0c14ddfe1fccaeaaa10712423c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:14:25",
+      "sequence": 27438,
+      "chapter_label": "ACT 14",
+      "verse_label": "25",
+      "locator": {
+        "book": "ACT",
+        "chapter": 14,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 14,
+          "verse": 25
+        }
+      ],
+      "en": "When they had spoken the word in Perga, they went down to Attalia.",
+      "ko": "도를 버가에서 전하고 앗달리아로 내려가서",
+      "source_text_hash": "2f14b08a1ee0b944b4e578e9c65174c648c2e003881edeab9c7b248a55d51117",
+      "translation_text_hash": "ea27bf2c5d67ace4c5a250dffc0d276c7b09c75d85f21311d7e2b64c548a3397",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "도를 버가에서 전하고 앗달리아로 내려가서"
+      ],
+      "raw_text_hashes": [
+        "ea27bf2c5d67ace4c5a250dffc0d276c7b09c75d85f21311d7e2b64c548a3397"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:14:26",
+      "sequence": 27439,
+      "chapter_label": "ACT 14",
+      "verse_label": "26",
+      "locator": {
+        "book": "ACT",
+        "chapter": 14,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 14,
+          "verse": 26
+        }
+      ],
+      "en": "From there they sailed to Antioch, from where they had been committed to the grace of God for the work which they had fulfilled.",
+      "ko": "거기서 배 타고 안디옥에 이르니 이곳은 두 사도의 이룬 그 일을 위하여 전에 하나님의 은혜에 부탁하던 곳이라",
+      "source_text_hash": "c9d06de08bced7159e852ba2efdc182536360f82b4634fb645858e0b490e4f1c",
+      "translation_text_hash": "4c12d27b83de3c0f0bd43848e150a373f4670c0dc23852876df5654f9e326a47",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거기서 배 타고 안디옥에 이르니 이곳은 두 사도의 이룬 그 일을 위하여 전에 하나님의 은혜에 부탁하던 곳이라"
+      ],
+      "raw_text_hashes": [
+        "4c12d27b83de3c0f0bd43848e150a373f4670c0dc23852876df5654f9e326a47"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:14:27",
+      "sequence": 27440,
+      "chapter_label": "ACT 14",
+      "verse_label": "27",
+      "locator": {
+        "book": "ACT",
+        "chapter": 14,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 14,
+          "verse": 27
+        }
+      ],
+      "en": "When they had arrived and had gathered the assembly together, they reported all the things that God had done with them, and that he had opened a door of faith to the nations.",
+      "ko": "이르러 교회를 모아 하나님이 함께 행하신 모든 일과 이방인들에게 믿음의 문을 여신 것을 고하고",
+      "source_text_hash": "18b488105fab147772cb0140d0527937d0269f724e564fde97a420b1d466226e",
+      "translation_text_hash": "8d8ea2c5589b7bc545d7bddfcb6ba02cf01c3bb63dddc4230e71686e6870309a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이르러 교회를 모아 하나님이 함께 행하신 모든 일과 이방인들에게 믿음의 문을 여신 것을 고하고"
+      ],
+      "raw_text_hashes": [
+        "8d8ea2c5589b7bc545d7bddfcb6ba02cf01c3bb63dddc4230e71686e6870309a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:14:28",
+      "sequence": 27441,
+      "chapter_label": "ACT 14",
+      "verse_label": "28",
+      "locator": {
+        "book": "ACT",
+        "chapter": 14,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 14,
+          "verse": 28
+        }
+      ],
+      "en": "They stayed there with the disciples for a long time.",
+      "ko": "제자들과 함께 오래 있으니라",
+      "source_text_hash": "fd4e78d60a62f95ba5f68a70578bb0795f3ae3123a7837c7a2de95124bd79ad1",
+      "translation_text_hash": "24f9a30be3763f03180af442a229ef9a64b3844039c099e24b797300371067b9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제자들과 함께 오래 있으니라"
+      ],
+      "raw_text_hashes": [
+        "24f9a30be3763f03180af442a229ef9a64b3844039c099e24b797300371067b9"
+      ]
+    }
+  ]
+}

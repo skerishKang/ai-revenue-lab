@@ -1,0 +1,909 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ISA:chapter:044",
+  "unit_ordinal": 723,
+  "unit_label": "ISA 44",
+  "book_code": "ISA",
+  "chapter_number": 44,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ISA:44:1",
+      "sequence": 18535,
+      "chapter_label": "ISA 44",
+      "verse_label": "1",
+      "locator": {
+        "book": "ISA",
+        "chapter": 44,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 44,
+          "verse": 1
+        }
+      ],
+      "en": "Yet listen now, Jacob my servant, and Israel, whom I have chosen.",
+      "ko": "나의 종 야곱, 나의 택한 이스라엘아 이제 들으라",
+      "source_text_hash": "c5966ae2528571a18a8a1ec0825ed10f28ab28522948c2453e48d516c5513237",
+      "translation_text_hash": "7de18a14e944eac1d7caa1ace79d24b75347bb52a8b3d249f4be985bff470d37",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 종 야곱, 나의 택한 이스라엘아 이제 들으라"
+      ],
+      "raw_text_hashes": [
+        "7de18a14e944eac1d7caa1ace79d24b75347bb52a8b3d249f4be985bff470d37"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:44:2",
+      "sequence": 18536,
+      "chapter_label": "ISA 44",
+      "verse_label": "2",
+      "locator": {
+        "book": "ISA",
+        "chapter": 44,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 44,
+          "verse": 2
+        }
+      ],
+      "en": "This is what the LORD who made you, and formed you from the womb, who will help you says: “Don’t be afraid, Jacob my servant; and you, Jeshurun, whom I have chosen.",
+      "ko": "너를 지으며 너를 모태에서 조성하고 너를 도와줄 여호와가 말하노라 나의 종 야곱, 나의 택한 여수룬아 두려워 말라",
+      "source_text_hash": "13e386395adc4906bb04717f94266e8a241e3ca928111ede7835b53b4bd5c916",
+      "translation_text_hash": "215c7bd12e8b1cf8d75bac6ce2e5fcb20817516e14e94eb53615ab3d01f5aa54",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너를 지으며 너를 모태에서 조성하고 너를 도와줄 여호와가 말하노라 나의 종 야곱, 나의 택한 여수룬아 두려워 말라"
+      ],
+      "raw_text_hashes": [
+        "215c7bd12e8b1cf8d75bac6ce2e5fcb20817516e14e94eb53615ab3d01f5aa54"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:44:3",
+      "sequence": 18537,
+      "chapter_label": "ISA 44",
+      "verse_label": "3",
+      "locator": {
+        "book": "ISA",
+        "chapter": 44,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 44,
+          "verse": 3
+        }
+      ],
+      "en": "For I will pour water on him who is thirsty, and streams on the dry ground. I will pour my Spirit on your descendants, and my blessing on your offspring;",
+      "ko": "대저 내가 갈한 자에게 물을 주며 마른 땅에 시내가 흐르게 하며 나의 신을 네 자손에게, 나의 복을 네 후손에게 내리리니",
+      "source_text_hash": "606236ed97522349d025e76167782eca6d7ad14e86ce1e5c8cd439dd2f75d5c8",
+      "translation_text_hash": "a64a3fbf7969e6816be6fca4de415cf72d3b56cf5b3ee881db7856c6a1c13fc5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대저 내가 갈한 자에게 물을 주며 마른 땅에 시내가 흐르게 하며 나의 신을 네 자손에게, 나의 복을 네 후손에게 내리리니"
+      ],
+      "raw_text_hashes": [
+        "a64a3fbf7969e6816be6fca4de415cf72d3b56cf5b3ee881db7856c6a1c13fc5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:44:4",
+      "sequence": 18538,
+      "chapter_label": "ISA 44",
+      "verse_label": "4",
+      "locator": {
+        "book": "ISA",
+        "chapter": 44,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 44,
+          "verse": 4
+        }
+      ],
+      "en": "and they will spring up among the grass, as willows by the watercourses.",
+      "ko": "그들이 풀 가운데서 솟아나기를 시냇가의 버들 같이 할 것이라",
+      "source_text_hash": "3353e9e5328e6c91aef383954090a30978fb320ba58e2a85e22ce7e867d45ea7",
+      "translation_text_hash": "ce4db7010083ef8d39c8edd9ca21fa33a6e446a7c1ea397b73878d71a43f4817",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 풀 가운데서 솟아나기를 시냇가의 버들 같이 할 것이라"
+      ],
+      "raw_text_hashes": [
+        "ce4db7010083ef8d39c8edd9ca21fa33a6e446a7c1ea397b73878d71a43f4817"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:44:5",
+      "sequence": 18539,
+      "chapter_label": "ISA 44",
+      "verse_label": "5",
+      "locator": {
+        "book": "ISA",
+        "chapter": 44,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 44,
+          "verse": 5
+        }
+      ],
+      "en": "One will say, ‘I am the LORD’s.’ Another will be called by the name of Jacob; and another will write with his hand ‘to the LORD,’ and honor the name of Israel.”",
+      "ko": "혹은 이르기를 나는 여호와께 속하였다 할 것이며 혹은 야곱의 이름으로 자칭할 것이며 혹은 자기가 여호와께 속하였음을 손으로 기록하고 이스라엘의 이름으로 칭호하리라",
+      "source_text_hash": "ebbfe6df8e5f9c2d67da8736e5d733f1588c96fc013681f36d50bb2e1a835ded",
+      "translation_text_hash": "3b6a23ad421f792998af0f328810ab62af94b7a53a093bda3872c846d0c01f3c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "혹은 이르기를 나는 여호와께 속하였다 할 것이며 혹은 야곱의 이름으로 자칭할 것이며 혹은 자기가 여호와께 속하였음을 손으로 기록하고 이스라엘의 이름으로 칭호하리라"
+      ],
+      "raw_text_hashes": [
+        "3b6a23ad421f792998af0f328810ab62af94b7a53a093bda3872c846d0c01f3c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:44:6",
+      "sequence": 18540,
+      "chapter_label": "ISA 44",
+      "verse_label": "6",
+      "locator": {
+        "book": "ISA",
+        "chapter": 44,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 44,
+          "verse": 6
+        }
+      ],
+      "en": "This is what the LORD, the King of Israel, and his Redeemer, the LORD of Armies, says: “I am the first, and I am the last; and besides me there is no God.",
+      "ko": "이스라엘의 왕인 여호와, 이스라엘의 구속자인 만군의 여호와가 말하노라 나는 처음이요 나는 마지막이라 나 외에 다른 신이 없느니라",
+      "source_text_hash": "fe8d8f31acb9687ef2b71a9e4f7b4ca331ebe51b1d255e048259226500c922f1",
+      "translation_text_hash": "78eb50397e5b0c08d6b1dee3da4fe639b46a3678a59c63f75f1c0466de5b096d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘의 왕인 여호와, 이스라엘의 구속자인 만군의 여호와가 말하노라 나는 처음이요 나는 마지막이라 나 외에 다른 신이 없느니라"
+      ],
+      "raw_text_hashes": [
+        "78eb50397e5b0c08d6b1dee3da4fe639b46a3678a59c63f75f1c0466de5b096d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:44:7",
+      "sequence": 18541,
+      "chapter_label": "ISA 44",
+      "verse_label": "7",
+      "locator": {
+        "book": "ISA",
+        "chapter": 44,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 44,
+          "verse": 7
+        }
+      ],
+      "en": "Who is like me? Who will call, and will declare it, and set it in order for me, since I established the ancient people? Let them declare the things that are coming, and that will happen.",
+      "ko": "내가 옛날 백성을 세운 이후로 나처럼 외치며 고하며 진술할 자가 누구뇨 있거든 될 일과 장차 올 일을 고할찌어다",
+      "source_text_hash": "1af4eddf6ee5cf54b3da9316590d7b728c95389b0e7b16bd6fb153dc58fc8134",
+      "translation_text_hash": "e5763073a92b4e1213f85a4163e3f14c4fdfc59b542f887eb6904055fb5ff6eb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 옛날 백성을 세운 이후로 나처럼 외치며 고하며 진술할 자가 누구뇨 있거든 될 일과 장차 올 일을 고할찌어다"
+      ],
+      "raw_text_hashes": [
+        "e5763073a92b4e1213f85a4163e3f14c4fdfc59b542f887eb6904055fb5ff6eb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:44:8",
+      "sequence": 18542,
+      "chapter_label": "ISA 44",
+      "verse_label": "8",
+      "locator": {
+        "book": "ISA",
+        "chapter": 44,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 44,
+          "verse": 8
+        }
+      ],
+      "en": "Don’t fear, neither be afraid. Haven’t I declared it to you long ago, and shown it? You are my witnesses. Is there a God besides me? Indeed, there is not. I don’t know any other Rock.”",
+      "ko": "너희는 두려워 말며 겁내지 말라 내가 예로부터 너희에게 들리지 아니하였느냐 고하지 아니하였느냐 너희는 나의 증인이라 나 외에 신이 있겠느냐 과연 반석이 없나니 다른 신이 있음을 알지 못하노라",
+      "source_text_hash": "7f3fa0616875910064ec3eaf67e3b905d4847df968541362ddb7780a5ad60436",
+      "translation_text_hash": "a648a74b679d557dd54375ecff3ac0c5bcf4f200571d52fbd7382c0804a0a9f6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 두려워 말며 겁내지 말라 내가 예로부터 너희에게 들리지 아니하였느냐 고하지 아니하였느냐 너희는 나의 증인이라 나 외에 신이 있겠느냐 과연 반석이 없나니 다른 신이 있음을 알지 못하노라"
+      ],
+      "raw_text_hashes": [
+        "a648a74b679d557dd54375ecff3ac0c5bcf4f200571d52fbd7382c0804a0a9f6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:44:9",
+      "sequence": 18543,
+      "chapter_label": "ISA 44",
+      "verse_label": "9",
+      "locator": {
+        "book": "ISA",
+        "chapter": 44,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 44,
+          "verse": 9
+        }
+      ],
+      "en": "Everyone who makes a carved image is vain. The things that they delight in will not profit. Their own witnesses don’t see, nor know, that they may be disappointed.",
+      "ko": "우상을 만드는 자는 다 허망하도다 그들의 기뻐하는 우상은 무익한 것이어늘 그것의 증인들은 보지도 못하며 알지도 못하니 그러므로 수치를 당하리라",
+      "source_text_hash": "f0aef09a13e4f4d79a1f167b84dd3f85dc2922bc0338599e4e76e8cb31533bfa",
+      "translation_text_hash": "06d2db891d757dd25cd4802073dab3213ba7f3060eb30bca453fe26e8d5ce4f3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우상을 만드는 자는 다 허망하도다 그들의 기뻐하는 우상은 무익한 것이어늘 그것의 증인들은 보지도 못하며 알지도 못하니 그러므로 수치를 당하리라"
+      ],
+      "raw_text_hashes": [
+        "06d2db891d757dd25cd4802073dab3213ba7f3060eb30bca453fe26e8d5ce4f3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:44:10",
+      "sequence": 18544,
+      "chapter_label": "ISA 44",
+      "verse_label": "10",
+      "locator": {
+        "book": "ISA",
+        "chapter": 44,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 44,
+          "verse": 10
+        }
+      ],
+      "en": "Who has fashioned a god, or molds an image that is profitable for nothing?",
+      "ko": "신상을 만들며 무익한 우상을 부어 만든 자가 누구뇨",
+      "source_text_hash": "6844b32b967260b7c1099d4ebf97686ebaff466ef01214542f32c6f5599e7805",
+      "translation_text_hash": "085da749afba871b731ca355bfa110a867137ea6a468bac3602ebcd00f91dd67",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "신상을 만들며 무익한 우상을 부어 만든 자가 누구뇨"
+      ],
+      "raw_text_hashes": [
+        "085da749afba871b731ca355bfa110a867137ea6a468bac3602ebcd00f91dd67"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:44:11",
+      "sequence": 18545,
+      "chapter_label": "ISA 44",
+      "verse_label": "11",
+      "locator": {
+        "book": "ISA",
+        "chapter": 44,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 44,
+          "verse": 11
+        }
+      ],
+      "en": "Behold, all his fellows will be disappointed; and the workmen are mere men. Let them all be gathered together. Let them stand up. They will fear. They will be put to shame together.",
+      "ko": "보라 그 동류가 다 수치를 당할 것이라 그 장색들은 사람이라 그들이 다 모여 서서 두려워하며 함께 수치를 당할 것이니라",
+      "source_text_hash": "e1d28fb695080f4cf36a0455bdde214bac8c4d75d3f4b78495f59f4d3ad0eb1d",
+      "translation_text_hash": "6087d338338bb8b4f9512351202d15e232b5a8794ac436b4cbc672155be29b25",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보라 그 동류가 다 수치를 당할 것이라 그 장색들은 사람이라 그들이 다 모여 서서 두려워하며 함께 수치를 당할 것이니라"
+      ],
+      "raw_text_hashes": [
+        "6087d338338bb8b4f9512351202d15e232b5a8794ac436b4cbc672155be29b25"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:44:12",
+      "sequence": 18546,
+      "chapter_label": "ISA 44",
+      "verse_label": "12",
+      "locator": {
+        "book": "ISA",
+        "chapter": 44,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 44,
+          "verse": 12
+        }
+      ],
+      "en": "The blacksmith takes an ax, works in the coals, fashions it with hammers, and works it with his strong arm. He is hungry, and his strength fails; he drinks no water, and is faint.",
+      "ko": "철공은 철을 숯불에 불리고 메로 치고 강한 팔로 괄리므로 심지어 주려서 기력이 진하며 물을 마시지 아니하여 곤비하며",
+      "source_text_hash": "ee0060a4001990aae02bc78557f69bad19b01f24fca94b48e0a1f568f70b0c41",
+      "translation_text_hash": "88ad5de105d368fff0d801b8937335a7de7f2824907f882ee1ee3c2fa5c0a5f4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "철공은 철을 숯불에 불리고 메로 치고 강한 팔로 괄리므로 심지어 주려서 기력이 진하며 물을 마시지 아니하여 곤비하며"
+      ],
+      "raw_text_hashes": [
+        "88ad5de105d368fff0d801b8937335a7de7f2824907f882ee1ee3c2fa5c0a5f4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:44:13",
+      "sequence": 18547,
+      "chapter_label": "ISA 44",
+      "verse_label": "13",
+      "locator": {
+        "book": "ISA",
+        "chapter": 44,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 44,
+          "verse": 13
+        }
+      ],
+      "en": "The carpenter stretches out a line. He marks it out with a pencil. He shapes it with planes. He marks it out with compasses, and shapes it like the figure of a man, with the beauty of a man, to reside in a house.",
+      "ko": "목공은 줄을 늘여 재고 붓으로 긋고 대패로 밀고 정규로 그어 사람의 아름다움을 따라 인형을 새겨 집에 두게 하며",
+      "source_text_hash": "3bc4b69cc129bca25a2af8740a29a28345eff9e1b5e500ce7e3a889f8bd9b1ee",
+      "translation_text_hash": "a09f935f39fe78f199c7fc70243a3574e959946d6c42183ebde7f5d0431afab3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "목공은 줄을 늘여 재고 붓으로 긋고 대패로 밀고 정규로 그어 사람의 아름다움을 따라 인형을 새겨 집에 두게 하며"
+      ],
+      "raw_text_hashes": [
+        "a09f935f39fe78f199c7fc70243a3574e959946d6c42183ebde7f5d0431afab3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:44:14",
+      "sequence": 18548,
+      "chapter_label": "ISA 44",
+      "verse_label": "14",
+      "locator": {
+        "book": "ISA",
+        "chapter": 44,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 44,
+          "verse": 14
+        }
+      ],
+      "en": "He cuts down cedars for himself, and takes the cypress and the oak, and strengthens for himself one among the trees of the forest. He plants a cypress tree, and the rain nourishes it.",
+      "ko": "그는 혹 백향목을 베이며 혹 디르사나무와 상수리나무를 취하며 혹 삼림 중에 자기를 위하여 한 나무를 택하며 혹 나무를 심고 비에 자라게도 하나니",
+      "source_text_hash": "6739b25755559baed20907e510a6612dd48cdec21e6dbed6b5bafcaea726012a",
+      "translation_text_hash": "0795b191d028ed50c6b66a09fc207844bcef564827e2cfdc75ff12c715b28f40",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그는 혹 백향목을 베이며 혹 디르사나무와 상수리나무를 취하며 혹 삼림 중에 자기를 위하여 한 나무를 택하며 혹 나무를 심고 비에 자라게도 하나니"
+      ],
+      "raw_text_hashes": [
+        "0795b191d028ed50c6b66a09fc207844bcef564827e2cfdc75ff12c715b28f40"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:44:15",
+      "sequence": 18549,
+      "chapter_label": "ISA 44",
+      "verse_label": "15",
+      "locator": {
+        "book": "ISA",
+        "chapter": 44,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 44,
+          "verse": 15
+        }
+      ],
+      "en": "Then it will be for a man to burn; and he takes some of it and warms himself. Yes, he burns it and bakes bread. Yes, he makes a god and worships it; he makes it a carved image, and falls down to it.",
+      "ko": "무릇 이 나무는 사람이 화목을 삼는 것이어늘 그가 그것을 가지고 자기 몸을 더웁게도 하고 그것으로 불을 피워서 떡을 굽기도 하고 그것으로 신상을 만들어 숭배하며 우상을 만들고 그 앞에 부복하기도 하는구나",
+      "source_text_hash": "4e2d7e75d1441e1cf62c3a4d1cda3b775b696ffa2941066f39ca57c6521392a2",
+      "translation_text_hash": "1e80099fdf4cd338b6d78ae3071709a87e8a86833c26658ae7ab9619fc32e2a6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 이 나무는 사람이 화목을 삼는 것이어늘 그가 그것을 가지고 자기 몸을 더웁게도 하고 그것으로 불을 피워서 떡을 굽기도 하고 그것으로 신상을 만들어 숭배하며 우상을 만들고 그 앞에 부복하기도 하는구나"
+      ],
+      "raw_text_hashes": [
+        "1e80099fdf4cd338b6d78ae3071709a87e8a86833c26658ae7ab9619fc32e2a6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:44:16",
+      "sequence": 18550,
+      "chapter_label": "ISA 44",
+      "verse_label": "16",
+      "locator": {
+        "book": "ISA",
+        "chapter": 44,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 44,
+          "verse": 16
+        }
+      ],
+      "en": "He burns part of it in the fire. With part of it, he eats meat. He roasts a roast and is satisfied. Yes, he warms himself and says, “Aha! I am warm. I have seen the fire.”",
+      "ko": "그 중에 얼마는 불사르고 얼마는 고기를 삶아 먹기도 하며 고기를 구워 배불리기도 하며 또 몸을 더웁게 하여 이르기를 아하 따뜻하다 내가 불을 보았구나 하면서",
+      "source_text_hash": "b7b33dedc1300cf13a7e089bbaa15e4ef978966087d03322b7be25f79e396fe2",
+      "translation_text_hash": "528af21a23b1be97125faf629ce78659a9b5f26e75d3dd53d821001100e7163b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 중에 얼마는 불사르고 얼마는 고기를 삶아 먹기도 하며 고기를 구워 배불리기도 하며 또 몸을 더웁게 하여 이르기를 아하 따뜻하다 내가 불을 보았구나 하면서"
+      ],
+      "raw_text_hashes": [
+        "528af21a23b1be97125faf629ce78659a9b5f26e75d3dd53d821001100e7163b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:44:17",
+      "sequence": 18551,
+      "chapter_label": "ISA 44",
+      "verse_label": "17",
+      "locator": {
+        "book": "ISA",
+        "chapter": 44,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 44,
+          "verse": 17
+        }
+      ],
+      "en": "The rest of it he makes into a god, even his engraved image. He bows down to it and worships, and prays to it, and says, “Deliver me, for you are my god!”",
+      "ko": "그 나머지로 신상 곧 자기의 우상을 만들고 그 앞에 부복하여 경배하며 그것에게 기도하여 이르기를 너는 나의 신이니 나를 구원하라 하는도다",
+      "source_text_hash": "8074d93d67a2b75d0fffbebb351a6fe870f4a3393bd9a7dfc6f278440938c63e",
+      "translation_text_hash": "f75ff8bc85f95f9dcc630f412a531ed4f420f62f225eca5fce9d68ba65762c0f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 나머지로 신상 곧 자기의 우상을 만들고 그 앞에 부복하여 경배하며 그것에게 기도하여 이르기를 너는 나의 신이니 나를 구원하라 하는도다"
+      ],
+      "raw_text_hashes": [
+        "f75ff8bc85f95f9dcc630f412a531ed4f420f62f225eca5fce9d68ba65762c0f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:44:18",
+      "sequence": 18552,
+      "chapter_label": "ISA 44",
+      "verse_label": "18",
+      "locator": {
+        "book": "ISA",
+        "chapter": 44,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 44,
+          "verse": 18
+        }
+      ],
+      "en": "They don’t know, neither do they consider, for he has shut their eyes, that they can’t see, and their hearts, that they can’t understand.",
+      "ko": "그들이 알지도 못하고 깨닫지도 못함은 그 눈이 가리워져서 보지 못하며 그 마음이 어두워져서 깨닫지 못함이라",
+      "source_text_hash": "3132b1ef3b68a6f2f3658f5f02d1d32b5c7fc7cf91f4f31e2780820a5f5d3c80",
+      "translation_text_hash": "dbc04343e75b3a411d3f4d7a3c9dfc0d451dc90b80f2e00f893489957a14bd22",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 알지도 못하고 깨닫지도 못함은 그 눈이 가리워져서 보지 못하며 그 마음이 어두워져서 깨닫지 못함이라"
+      ],
+      "raw_text_hashes": [
+        "dbc04343e75b3a411d3f4d7a3c9dfc0d451dc90b80f2e00f893489957a14bd22"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:44:19",
+      "sequence": 18553,
+      "chapter_label": "ISA 44",
+      "verse_label": "19",
+      "locator": {
+        "book": "ISA",
+        "chapter": 44,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 44,
+          "verse": 19
+        }
+      ],
+      "en": "No one thinks, neither is there knowledge nor understanding to say, “I have burned part of it in the fire. Yes, I have also baked bread on its coals. I have roasted meat and eaten it. Shall I make the rest of it into an abomination? Shall I bow down to a tree trunk?”",
+      "ko": "마음에 생각도 없고 지식도 없고 총명도 없으므로 내가 그 나무의 얼마로 불을 사르고 그 숯불 위에 떡도 굽고 고기도 구워 먹었거늘 내가 어찌 그 나머지로 가증한 물건을 만들겠으며 내가 어찌 그 나무토막 앞에 굴복하리요 말하지 아니하니",
+      "source_text_hash": "3cbb3419d50fbae765b601ceff93a758c3b43d8936cc7040da5aab9f442fb1e2",
+      "translation_text_hash": "3eece3fdc7da7fa627bbc4bcd249c321295296c39614659c50f0806e74b78b53",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마음에 생각도 없고 지식도 없고 총명도 없으므로 내가 그 나무의 얼마로 불을 사르고 그 숯불 위에 떡도 굽고 고기도 구워 먹었거늘 내가 어찌 그 나머지로 가증한 물건을 만들겠으며 내가 어찌 그 나무토막 앞에 굴복하리요 말하지 아니하니"
+      ],
+      "raw_text_hashes": [
+        "3eece3fdc7da7fa627bbc4bcd249c321295296c39614659c50f0806e74b78b53"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:44:20",
+      "sequence": 18554,
+      "chapter_label": "ISA 44",
+      "verse_label": "20",
+      "locator": {
+        "book": "ISA",
+        "chapter": 44,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 44,
+          "verse": 20
+        }
+      ],
+      "en": "He feeds on ashes. A deceived heart has turned him aside; and he can’t deliver his soul, nor say, “Isn’t there a lie in my right hand?”",
+      "ko": "그는 재를 먹고 미혹한 마음에 미혹되어서 스스로 그 영혼을 구원하지 못하며 나의 오른손에 거짓 것이 있지 아니하냐 하지도 못하느니라",
+      "source_text_hash": "6a66ed01687679591cb04cd9ce94c445eb6c0f643db2017eee69a5a355559539",
+      "translation_text_hash": "c6f937f1df80f1ccb0d8665009c46f5d6a0edc1df1c849f6aa5f8d2d952a677c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그는 재를 먹고 미혹한 마음에 미혹되어서 스스로 그 영혼을 구원하지 못하며 나의 오른손에 거짓 것이 있지 아니하냐 하지도 못하느니라"
+      ],
+      "raw_text_hashes": [
+        "c6f937f1df80f1ccb0d8665009c46f5d6a0edc1df1c849f6aa5f8d2d952a677c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:44:21",
+      "sequence": 18555,
+      "chapter_label": "ISA 44",
+      "verse_label": "21",
+      "locator": {
+        "book": "ISA",
+        "chapter": 44,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 44,
+          "verse": 21
+        }
+      ],
+      "en": "Remember these things, Jacob and Israel, for you are my servant. I have formed you. You are my servant. Israel, you will not be forgotten by me.",
+      "ko": "야곱아 이스라엘아 이 일을 기억하라 너는 내 종이니라 내가 너를 지었으니 너는 내 종이니라 이스라엘아 너는 나의 잊음이 되지 아니하리라",
+      "source_text_hash": "a6be707a8d14a50a7bf5a7b44678d361f1bb31a71638268e519d1311a22f4626",
+      "translation_text_hash": "2b3a465a3886af7e406cbaa18bacadcc6505ed3b3ebd9615ee2e40ad7ba473c6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야곱아 이스라엘아 이 일을 기억하라 너는 내 종이니라 내가 너를 지었으니 너는 내 종이니라 이스라엘아 너는 나의 잊음이 되지 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "2b3a465a3886af7e406cbaa18bacadcc6505ed3b3ebd9615ee2e40ad7ba473c6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:44:22",
+      "sequence": 18556,
+      "chapter_label": "ISA 44",
+      "verse_label": "22",
+      "locator": {
+        "book": "ISA",
+        "chapter": 44,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 44,
+          "verse": 22
+        }
+      ],
+      "en": "I have blotted out, as a thick cloud, your transgressions, and, as a cloud, your sins. Return to me, for I have redeemed you.",
+      "ko": "내가 네 허물을 빽빽한 구름의 사라짐 같이, 네 죄를 안개의 사라짐 같이 도말하였으니 너는 내게로 돌아오라 내가 너를 구속하였음이니라",
+      "source_text_hash": "ae896bd44972998c6099c2cbc98605c58bd02983368d76cb6efcf824e821649d",
+      "translation_text_hash": "5549f8f1ea9d5347d30e945d0948a1e7c0933dacb1ae041f45cc5b39c196cb56",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 네 허물을 빽빽한 구름의 사라짐 같이, 네 죄를 안개의 사라짐 같이 도말하였으니 너는 내게로 돌아오라 내가 너를 구속하였음이니라"
+      ],
+      "raw_text_hashes": [
+        "5549f8f1ea9d5347d30e945d0948a1e7c0933dacb1ae041f45cc5b39c196cb56"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:44:23",
+      "sequence": 18557,
+      "chapter_label": "ISA 44",
+      "verse_label": "23",
+      "locator": {
+        "book": "ISA",
+        "chapter": 44,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 44,
+          "verse": 23
+        }
+      ],
+      "en": "Sing, you heavens, for the LORD has done it! Shout, you lower parts of the earth! Break out into singing, you mountains, O forest, all of your trees, for the LORD has redeemed Jacob, and will glorify himself in Israel.",
+      "ko": "여호와께서 이 일을 행하셨으니 하늘아 노래할찌어다 땅의 깊은 곳들아 높이 부를찌어다 산들아 삼림과 그 가운데 모든 나무들아 소리내어 노래할찌어다 여호와께서 야곱을 구속하셨으니 이스라엘로 자기를 영화롭게 하실 것임이로다",
+      "source_text_hash": "1f5e95f8bb8d56b7aa954837f3a3ed1aea607982166fb02bbe6d53abd29a2dc1",
+      "translation_text_hash": "7b1134c0a8fdc81c404a719be05dbc800c85ae28cf531d5a13358a568abb46e2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 이 일을 행하셨으니 하늘아 노래할찌어다 땅의 깊은 곳들아 높이 부를찌어다 산들아 삼림과 그 가운데 모든 나무들아 소리내어 노래할찌어다 여호와께서 야곱을 구속하셨으니 이스라엘로 자기를 영화롭게 하실 것임이로다"
+      ],
+      "raw_text_hashes": [
+        "7b1134c0a8fdc81c404a719be05dbc800c85ae28cf531d5a13358a568abb46e2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:44:24",
+      "sequence": 18558,
+      "chapter_label": "ISA 44",
+      "verse_label": "24",
+      "locator": {
+        "book": "ISA",
+        "chapter": 44,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 44,
+          "verse": 24
+        }
+      ],
+      "en": "The LORD, your Redeemer, and he who formed you from the womb says: “I am the LORD, who makes all things; who alone stretches out the heavens; who spreads out the earth by myself;",
+      "ko": "네 구속자요 모태에서 너를 조성한 나 여호와가 말하노라 나는 만물을 지은 여호와라 나와 함께한 자 없이 홀로 하늘을 폈으며 땅을 베풀었고",
+      "source_text_hash": "5472f08dac1123cd6d90c80f48afb661cdf8acbbbdaecf758198ba3d9e8d8136",
+      "translation_text_hash": "d47ea03ab7e7b30d9bc665e21dda3743b2de94e67e8ab4c91e13a39eb78c5d53",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 구속자요 모태에서 너를 조성한 나 여호와가 말하노라 나는 만물을 지은 여호와라 나와 함께한 자 없이 홀로 하늘을 폈으며 땅을 베풀었고"
+      ],
+      "raw_text_hashes": [
+        "d47ea03ab7e7b30d9bc665e21dda3743b2de94e67e8ab4c91e13a39eb78c5d53"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:44:25",
+      "sequence": 18559,
+      "chapter_label": "ISA 44",
+      "verse_label": "25",
+      "locator": {
+        "book": "ISA",
+        "chapter": 44,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 44,
+          "verse": 25
+        }
+      ],
+      "en": "who frustrates the signs of the liars, and makes diviners mad; who turns wise men backward, and makes their knowledge foolish;",
+      "ko": "거짓말 하는 자의 징조를 폐하며 점 치는 자를 미치게 하며 지혜로운 자들을 물리쳐 그 지식을 어리석게 하며",
+      "source_text_hash": "cfaf1690a5d54691b71ae0b01224420bcd994aa60f9ae7a71cafa94e96cc8ca4",
+      "translation_text_hash": "9c35beda360cdfec31af940d7971b924c34905fea09294c31b71586e1b837d52",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거짓말 하는 자의 징조를 폐하며 점 치는 자를 미치게 하며 지혜로운 자들을 물리쳐 그 지식을 어리석게 하며"
+      ],
+      "raw_text_hashes": [
+        "9c35beda360cdfec31af940d7971b924c34905fea09294c31b71586e1b837d52"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:44:26",
+      "sequence": 18560,
+      "chapter_label": "ISA 44",
+      "verse_label": "26",
+      "locator": {
+        "book": "ISA",
+        "chapter": 44,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 44,
+          "verse": 26
+        }
+      ],
+      "en": "who confirms the word of his servant, and performs the counsel of his messengers; who says of Jerusalem, ‘She will be inhabited;’ and of the cities of Judah, ‘They will be built,’ and ‘I will raise up its waste places;’",
+      "ko": "내 종의 말을 응하게 하며 내 사자의 모략을 성취하게 하며 예루살렘에 대하여는 이르기를 거기 사람이 살리라 하며 유다 성읍들에 대하여는 이르기를 중건될 것이라 내가 그 황폐한 곳들을 복구시키리라 하며",
+      "source_text_hash": "8eb283ef9af060a9c9be6a5bf174f841664f086a26f003fc9391f097fff33ad7",
+      "translation_text_hash": "f3f5b3143aeec5d1d09281130a474a6bcee7088f8dcdfae218b83197bcd57cda",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 종의 말을 응하게 하며 내 사자의 모략을 성취하게 하며 예루살렘에 대하여는 이르기를 거기 사람이 살리라 하며 유다 성읍들에 대하여는 이르기를 중건될 것이라 내가 그 황폐한 곳들을 복구시키리라 하며"
+      ],
+      "raw_text_hashes": [
+        "f3f5b3143aeec5d1d09281130a474a6bcee7088f8dcdfae218b83197bcd57cda"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:44:27",
+      "sequence": 18561,
+      "chapter_label": "ISA 44",
+      "verse_label": "27",
+      "locator": {
+        "book": "ISA",
+        "chapter": 44,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 44,
+          "verse": 27
+        }
+      ],
+      "en": "who says to the deep, ‘Be dry,’ and ‘I will dry up your rivers,’",
+      "ko": "깊음에 대하여는 이르기를 마르라 내가 네 강물들을 마르게 하리라 하며",
+      "source_text_hash": "5937f4b18836b5e7446a481384ae21e3140dba79f5834e53c0df153496e878bb",
+      "translation_text_hash": "9299502c267a1bfd2fc2422622aeeda9a9fb1e3da1f28a83a18223db6f9afa35",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "깊음에 대하여는 이르기를 마르라 내가 네 강물들을 마르게 하리라 하며"
+      ],
+      "raw_text_hashes": [
+        "9299502c267a1bfd2fc2422622aeeda9a9fb1e3da1f28a83a18223db6f9afa35"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:44:28",
+      "sequence": 18562,
+      "chapter_label": "ISA 44",
+      "verse_label": "28",
+      "locator": {
+        "book": "ISA",
+        "chapter": 44,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 44,
+          "verse": 28
+        }
+      ],
+      "en": "who says of Cyrus, ‘He is my shepherd, and shall perform all my pleasure,’ even saying of Jerusalem, ‘She will be built;’ and of the temple, ‘Your foundation will be laid.’”",
+      "ko": "고레스에 대하여는 이르기를 그는 나의 목자라 나의 모든 기쁨을 성취하리라 하며 예루살렘에 대하여는 이르기를 중건되리라 하며 성전에 대하여는 이르기를 네 기초가 세움이 되리라 하는 자니라",
+      "source_text_hash": "ae302e83c837e89786e7bd2bda126b2b6168ac43ea70e1a12a68a505257750f9",
+      "translation_text_hash": "26a9df518367b69157ab69cad4b219d2ef6f8dfd9b4e36552deac06d2ad5b1d4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "고레스에 대하여는 이르기를 그는 나의 목자라 나의 모든 기쁨을 성취하리라 하며 예루살렘에 대하여는 이르기를 중건되리라 하며 성전에 대하여는 이르기를 네 기초가 세움이 되리라 하는 자니라"
+      ],
+      "raw_text_hashes": [
+        "26a9df518367b69157ab69cad4b219d2ef6f8dfd9b4e36552deac06d2ad5b1d4"
+      ]
+    }
+  ]
+}

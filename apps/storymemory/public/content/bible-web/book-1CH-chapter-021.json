@@ -1,0 +1,973 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1CH:chapter:021",
+  "unit_ordinal": 359,
+  "unit_label": "1CH 21",
+  "book_code": "1CH",
+  "chapter_number": 21,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1CH:21:1",
+      "sequence": 10936,
+      "chapter_label": "1CH 21",
+      "verse_label": "1",
+      "locator": {
+        "book": "1CH",
+        "chapter": 21,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 21,
+          "verse": 1
+        }
+      ],
+      "en": "Satan stood up against Israel, and moved David to take a census of Israel.",
+      "ko": "사단이 일어나 이스라엘을 대적하고 다윗을 격동하여 이스라엘을 계수하게 하니라",
+      "source_text_hash": "3b67965b7d3135e632ba93aeea9fca96a57bc68b3b8d943ade9891805540f26f",
+      "translation_text_hash": "75eaf31ec83b5cda22c6594c08bdf7d1889e2ce31824796fec24574bfc16c8c8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사단이 일어나 이스라엘을 대적하고 다윗을 격동하여 이스라엘을 계수하게 하니라"
+      ],
+      "raw_text_hashes": [
+        "75eaf31ec83b5cda22c6594c08bdf7d1889e2ce31824796fec24574bfc16c8c8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:21:2",
+      "sequence": 10937,
+      "chapter_label": "1CH 21",
+      "verse_label": "2",
+      "locator": {
+        "book": "1CH",
+        "chapter": 21,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 21,
+          "verse": 2
+        }
+      ],
+      "en": "David said to Joab and to the princes of the people, “Go, count Israel from Beersheba even to Dan; and bring me word, that I may know how many there are.”",
+      "ko": "다윗이 요압과 백성의 두목에게 이르되 너희는 가서 브엘세바에서부터 단까지 이스라엘을 계수하고 돌아와서 내게 고하여 그 수효를 알게 하라",
+      "source_text_hash": "96a1be733cb0cbf55364f624595d09bc25ae9191386219d997fa2bd7395de8b1",
+      "translation_text_hash": "8abc3c0e343348fe2a857cfbc6e1fcce5359eb88fe2d0244ac534409ecfb0b31",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 요압과 백성의 두목에게 이르되 너희는 가서 브엘세바에서부터 단까지 이스라엘을 계수하고 돌아와서 내게 고하여 그 수효를 알게 하라"
+      ],
+      "raw_text_hashes": [
+        "8abc3c0e343348fe2a857cfbc6e1fcce5359eb88fe2d0244ac534409ecfb0b31"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:21:3",
+      "sequence": 10938,
+      "chapter_label": "1CH 21",
+      "verse_label": "3",
+      "locator": {
+        "book": "1CH",
+        "chapter": 21,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 21,
+          "verse": 3
+        }
+      ],
+      "en": "Joab said, “May the LORD make his people a hundred times as many as they are. But, my lord the king, aren’t they all my lord’s servants? Why does my lord require this thing? Why will he be a cause of guilt to Israel?”",
+      "ko": "요압이 가로되 여호와께서 그 백성을 지금보다 백배나 더하시기를 원하나이다 내 주 왕이여 이 백성이 다 내 주의 종이 아니니이까 내 주께서 어찌하여 이 일을 명하시나이까 어찌하여 이스라엘로 죄가 있게 하시나이까 하나",
+      "source_text_hash": "600980ea2b9c97f697d1cf0339b4ffbd34dadf64368cc608ddaf50533c7b136b",
+      "translation_text_hash": "6472820fd71ea1d9dfa1f587ab8ecf42bb6189f9b9239000fa71cab7a35afe56",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요압이 가로되 여호와께서 그 백성을 지금보다 백배나 더하시기를 원하나이다 내 주 왕이여 이 백성이 다 내 주의 종이 아니니이까 내 주께서 어찌하여 이 일을 명하시나이까 어찌하여 이스라엘로 죄가 있게 하시나이까 하나"
+      ],
+      "raw_text_hashes": [
+        "6472820fd71ea1d9dfa1f587ab8ecf42bb6189f9b9239000fa71cab7a35afe56"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:21:4",
+      "sequence": 10939,
+      "chapter_label": "1CH 21",
+      "verse_label": "4",
+      "locator": {
+        "book": "1CH",
+        "chapter": 21,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 21,
+          "verse": 4
+        }
+      ],
+      "en": "Nevertheless the king’s word prevailed against Joab. Therefore Joab departed and went throughout all Israel, then came to Jerusalem.",
+      "ko": "왕의 명령이 요압을 재촉한지라 드디어 떠나서 이스라엘 땅에 두루 다닌 후에 예루살렘으로 돌아와서",
+      "source_text_hash": "0825233c923cf68cc866204267e2491030e8f94040898b0878cc56d89d8d9d57",
+      "translation_text_hash": "2f2177db067235b67e1450aa772e34d5c18812b4099b78807b2fa5ff39364a4f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕의 명령이 요압을 재촉한지라 드디어 떠나서 이스라엘 땅에 두루 다닌 후에 예루살렘으로 돌아와서"
+      ],
+      "raw_text_hashes": [
+        "2f2177db067235b67e1450aa772e34d5c18812b4099b78807b2fa5ff39364a4f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:21:5",
+      "sequence": 10940,
+      "chapter_label": "1CH 21",
+      "verse_label": "5",
+      "locator": {
+        "book": "1CH",
+        "chapter": 21,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 21,
+          "verse": 5
+        }
+      ],
+      "en": "Joab gave the sum of the census of the people to David. All those of Israel were one million one hundred thousand men who drew a sword; and in Judah were four hundred seventy thousand men who drew a sword.",
+      "ko": "백성의 수효를 다윗에게 고하니 이스라엘 중에 칼을 뺄만한 자가 일백 십만이요 유다 중에 칼을 뺄만한 자가 사십 칠만이라",
+      "source_text_hash": "466425a689fa1bffbafb02b2d109c679680c0b89202a8572bc4110b2fbcfba37",
+      "translation_text_hash": "4a690601a5b691ab9de236f67541157e3d823abc5fbce4a38bfb5d4ad3eb1092",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "백성의 수효를 다윗에게 고하니 이스라엘 중에 칼을 뺄만한 자가 일백 십만이요 유다 중에 칼을 뺄만한 자가 사십 칠만이라"
+      ],
+      "raw_text_hashes": [
+        "4a690601a5b691ab9de236f67541157e3d823abc5fbce4a38bfb5d4ad3eb1092"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:21:6",
+      "sequence": 10941,
+      "chapter_label": "1CH 21",
+      "verse_label": "6",
+      "locator": {
+        "book": "1CH",
+        "chapter": 21,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 21,
+          "verse": 6
+        }
+      ],
+      "en": "But he didn’t count Levi and Benjamin among them, for the king’s word was abominable to Joab.",
+      "ko": "요압이 왕의 명령을 밉게 여겨 레위와 베냐민 사람은 계수하지 아니하였더라",
+      "source_text_hash": "c92ac8c553af172ac2dbff5aa4a20aeb0df867ee655f8de958a0936f117380e4",
+      "translation_text_hash": "19f011c70bfd701382947f890bbeb602b59c0e8bad57b03f3e46602fe579f2f1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요압이 왕의 명령을 밉게 여겨 레위와 베냐민 사람은 계수하지 아니하였더라"
+      ],
+      "raw_text_hashes": [
+        "19f011c70bfd701382947f890bbeb602b59c0e8bad57b03f3e46602fe579f2f1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:21:7",
+      "sequence": 10942,
+      "chapter_label": "1CH 21",
+      "verse_label": "7",
+      "locator": {
+        "book": "1CH",
+        "chapter": 21,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 21,
+          "verse": 7
+        }
+      ],
+      "en": "God was displeased with this thing; therefore he struck Israel.",
+      "ko": "하나님이 이 일을 괘씸히 여기사 이스라엘을 치시매",
+      "source_text_hash": "b4fb819ce1a1cdd302555c54d2c3f4f52de88ab881a6fe7c1dfe5362306b2d0f",
+      "translation_text_hash": "f863e3f85db71b573d371fbaab30627f5e463bf5db49d65646ea39c51a1fd9e5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 이 일을 괘씸히 여기사 이스라엘을 치시매"
+      ],
+      "raw_text_hashes": [
+        "f863e3f85db71b573d371fbaab30627f5e463bf5db49d65646ea39c51a1fd9e5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:21:8",
+      "sequence": 10943,
+      "chapter_label": "1CH 21",
+      "verse_label": "8",
+      "locator": {
+        "book": "1CH",
+        "chapter": 21,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 21,
+          "verse": 8
+        }
+      ],
+      "en": "David said to God, “I have sinned greatly, in that I have done this thing. But now put away, I beg you, the iniquity of your servant, for I have done very foolishly.”",
+      "ko": "다윗이 하나님께 아뢰되 내가 이 일을 행함으로 큰 죄를 범하였나이다 이제 간구하옵나니 종의 죄를 사하여 주옵소서 내가 심히 미련하게 행하였나이다 하니라",
+      "source_text_hash": "f865d82968aff016220103d86de095067d04d369ce334e7e2136a929a35a4933",
+      "translation_text_hash": "0e6fde727007b373cffaeeedab576d0664111b64aaaa28ff1f726dbe5af1941e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 하나님께 아뢰되 내가 이 일을 행함으로 큰 죄를 범하였나이다 이제 간구하옵나니 종의 죄를 사하여 주옵소서 내가 심히 미련하게 행하였나이다 하니라"
+      ],
+      "raw_text_hashes": [
+        "0e6fde727007b373cffaeeedab576d0664111b64aaaa28ff1f726dbe5af1941e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:21:9",
+      "sequence": 10944,
+      "chapter_label": "1CH 21",
+      "verse_label": "9",
+      "locator": {
+        "book": "1CH",
+        "chapter": 21,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 21,
+          "verse": 9
+        }
+      ],
+      "en": "The LORD spoke to Gad, David’s seer, saying,",
+      "ko": "여호와께서 다윗의 선견자 갓에게 이르시되",
+      "source_text_hash": "2855e32962ba46dc73408f479198a90dbc7a4b6b128a226d9d41439297df6692",
+      "translation_text_hash": "115c8b1c38858f7466435f9285316480e731256dc688601ae10bd5c3c69d5291",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 다윗의 선견자 갓에게 이르시되"
+      ],
+      "raw_text_hashes": [
+        "115c8b1c38858f7466435f9285316480e731256dc688601ae10bd5c3c69d5291"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:21:10",
+      "sequence": 10945,
+      "chapter_label": "1CH 21",
+      "verse_label": "10",
+      "locator": {
+        "book": "1CH",
+        "chapter": 21,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 21,
+          "verse": 10
+        }
+      ],
+      "en": "“Go and speak to David, saying, ‘The LORD says, “I offer you three things. Choose one of them, that I may do it to you.”’”",
+      "ko": "가서 다윗에게 말하여 이르기를 여호와의 말씀이 내가 네게 세가지를 보이노니 그 중에서 하나를 택하라 내가 그것을 네게 행하리라 하셨다 하라",
+      "source_text_hash": "12f6d3ecbaa3b2975f30ca5511be5aaa93cf70c6c768a9064609f22209bcb3c8",
+      "translation_text_hash": "f738f402375c3cbcfb7af018da23401780a4eee79a1ffaa49a1771c3ff5061ee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가서 다윗에게 말하여 이르기를 여호와의 말씀이 내가 네게 세가지를 보이노니 그 중에서 하나를 택하라 내가 그것을 네게 행하리라 하셨다 하라"
+      ],
+      "raw_text_hashes": [
+        "f738f402375c3cbcfb7af018da23401780a4eee79a1ffaa49a1771c3ff5061ee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:21:11",
+      "sequence": 10946,
+      "chapter_label": "1CH 21",
+      "verse_label": "11",
+      "locator": {
+        "book": "1CH",
+        "chapter": 21,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 21,
+          "verse": 11
+        }
+      ],
+      "en": "So Gad came to David and said to him, “The LORD says, ‘Take your choice:",
+      "ko": "갓이 다윗에게 나아가 고하되 여호와의 말씀이 너는 마음대로 택하라",
+      "source_text_hash": "2fe7a8fe0cb1687e0735e6dd7d40ae1ca528b86bcdbb1c22da8989d39eb09e40",
+      "translation_text_hash": "e9e93434f51f6272015606d641421f81d23c1a5c114563b34ff42bf648dc7902",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "갓이 다윗에게 나아가 고하되 여호와의 말씀이 너는 마음대로 택하라"
+      ],
+      "raw_text_hashes": [
+        "e9e93434f51f6272015606d641421f81d23c1a5c114563b34ff42bf648dc7902"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:21:12",
+      "sequence": 10947,
+      "chapter_label": "1CH 21",
+      "verse_label": "12",
+      "locator": {
+        "book": "1CH",
+        "chapter": 21,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 21,
+          "verse": 12
+        }
+      ],
+      "en": "either three years of famine; or three months to be consumed before your foes, while the sword of your enemies overtakes you; or else three days of the sword of the LORD, even pestilence in the land, and the LORD’s angel destroying throughout all the borders of Israel. Now therefore consider what answer I shall return to him who sent me.’”",
+      "ko": "혹 삼년 기근일찌, 혹 네가 석달을 대적에게 패하여 대적의 칼에 쫓길 일일찌, 혹 여호와의 칼 곧 온역이 사흘 동안 이 땅에 유행하며 여호와의 사자가 이스라엘 온 지경을 멸할 일일찌 하셨나니 내가 무슨 말로 나를 보내신 이에게 대답할 것을 결정하소서",
+      "source_text_hash": "337dcfd8566171b3e96907c21799a274955f01d09f8831a186653c00b625fcc0",
+      "translation_text_hash": "59c0f49e2f5fccb5e27c0b149d694304125a966cef09f3fbbb2ccc780dbcf250",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "혹 삼년 기근일찌, 혹 네가 석달을 대적에게 패하여 대적의 칼에 쫓길 일일찌, 혹 여호와의 칼 곧 온역이 사흘 동안 이 땅에 유행하며 여호와의 사자가 이스라엘 온 지경을 멸할 일일찌 하셨나니 내가 무슨 말로 나를 보내신 이에게 대답할 것을 결정하소서"
+      ],
+      "raw_text_hashes": [
+        "59c0f49e2f5fccb5e27c0b149d694304125a966cef09f3fbbb2ccc780dbcf250"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:21:13",
+      "sequence": 10948,
+      "chapter_label": "1CH 21",
+      "verse_label": "13",
+      "locator": {
+        "book": "1CH",
+        "chapter": 21,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 21,
+          "verse": 13
+        }
+      ],
+      "en": "David said to Gad, “I am in distress. Let me fall, I pray, into the LORD’s hand, for his mercies are very great. Don’t let me fall into man’s hand.”",
+      "ko": "다윗이 갓에게 이르되 내가 곤경에 있도다 여호와께서는 긍휼이 심히 크시니 내가 그의 손에 빠지고 사람의 손에 빠지지 않기를 원하나이다",
+      "source_text_hash": "41eadd75a11fa3aeadd8ffe602b22a5aa7839c96bc07903633c070e478668c4b",
+      "translation_text_hash": "2c1dac00a136513d03529099e66452820770466290b910f35de07e5289d150b1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 갓에게 이르되 내가 곤경에 있도다 여호와께서는 긍휼이 심히 크시니 내가 그의 손에 빠지고 사람의 손에 빠지지 않기를 원하나이다"
+      ],
+      "raw_text_hashes": [
+        "2c1dac00a136513d03529099e66452820770466290b910f35de07e5289d150b1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:21:14",
+      "sequence": 10949,
+      "chapter_label": "1CH 21",
+      "verse_label": "14",
+      "locator": {
+        "book": "1CH",
+        "chapter": 21,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 21,
+          "verse": 14
+        }
+      ],
+      "en": "So the LORD sent a pestilence on Israel, and seventy thousand men of Israel fell.",
+      "ko": "이에 여호와께서 이스라엘 백성에게 온역을 내리시매 이스라엘 백성의 죽은 자가 칠만이었더라",
+      "source_text_hash": "e17d2c03b6085d11d489160f9dc117de71538b4774c2dd97997a3f86584fa709",
+      "translation_text_hash": "ba7db2d99a4771b15262ea41750cfcf0fcaa2798ea5b8489763d2cf3abaff42e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 여호와께서 이스라엘 백성에게 온역을 내리시매 이스라엘 백성의 죽은 자가 칠만이었더라"
+      ],
+      "raw_text_hashes": [
+        "ba7db2d99a4771b15262ea41750cfcf0fcaa2798ea5b8489763d2cf3abaff42e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:21:15",
+      "sequence": 10950,
+      "chapter_label": "1CH 21",
+      "verse_label": "15",
+      "locator": {
+        "book": "1CH",
+        "chapter": 21,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 21,
+          "verse": 15
+        }
+      ],
+      "en": "God sent an angel to Jerusalem to destroy it. As he was about to destroy, the LORD saw, and he relented of the disaster, and said to the destroying angel, “It is enough. Now withdraw your hand.” the LORD’s angel was standing by the threshing floor of Ornan the Jebusite.",
+      "ko": "하나님이 예루살렘을 멸하러 사자를 보내셨더니 사자가 멸하려 할 때에 여호와께서 보시고 이 재앙 내림을 뉘우치사 멸하는 사자에게 이르시되 족하다 이제는 네 손을 거두라 하시니 때에 여호와의 사자가 여부스 사람 오르난의 타작 마당 곁에 선지라",
+      "source_text_hash": "3572c76503f08d9f88689e87d6781b45d0dc073937fedba9eee1f6c3151b303b",
+      "translation_text_hash": "14154571472b20f511df509330e801b7a4777a7272267898c33581c86dea6cfc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 예루살렘을 멸하러 사자를 보내셨더니 사자가 멸하려 할 때에 여호와께서 보시고 이 재앙 내림을 뉘우치사 멸하는 사자에게 이르시되 족하다 이제는 네 손을 거두라 하시니 때에 여호와의 사자가 여부스 사람 오르난의 타작 마당 곁에 선지라"
+      ],
+      "raw_text_hashes": [
+        "14154571472b20f511df509330e801b7a4777a7272267898c33581c86dea6cfc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:21:16",
+      "sequence": 10951,
+      "chapter_label": "1CH 21",
+      "verse_label": "16",
+      "locator": {
+        "book": "1CH",
+        "chapter": 21,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 21,
+          "verse": 16
+        }
+      ],
+      "en": "David lifted up his eyes, and saw the LORD’s angel standing between earth and the sky, having a drawn sword in his hand stretched out over Jerusalem. Then David and the elders, clothed in sackcloth, fell on their faces.",
+      "ko": "다윗이 눈을 들어보매 여호와의 사자가 천지 사이에 섰고 칼을 빼어 손에 들고 예루살렘 편을 가리켰는지라 다윗이 장로들로 더불어 굵은 베를 입고 얼굴을 땅에 대고 엎드려",
+      "source_text_hash": "940b69183d13acd1a915333eabba2a67f6157ebd4f9758ab4026f8e7357fba0e",
+      "translation_text_hash": "d99993c06452a35f62377f3711410f58ca7f3aa9d8905fcf4bee29749cd80afc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 눈을 들어보매 여호와의 사자가 천지 사이에 섰고 칼을 빼어 손에 들고 예루살렘 편을 가리켰는지라 다윗이 장로들로 더불어 굵은 베를 입고 얼굴을 땅에 대고 엎드려"
+      ],
+      "raw_text_hashes": [
+        "d99993c06452a35f62377f3711410f58ca7f3aa9d8905fcf4bee29749cd80afc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:21:17",
+      "sequence": 10952,
+      "chapter_label": "1CH 21",
+      "verse_label": "17",
+      "locator": {
+        "book": "1CH",
+        "chapter": 21,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 21,
+          "verse": 17
+        }
+      ],
+      "en": "David said to God, “Isn’t it I who commanded the people to be counted? It is even I who have sinned and done very wickedly; but these sheep, what have they done? Please let your hand, O LORD my God, be against me and against my father’s house; but not against your people, that they should be plagued.”",
+      "ko": "하나님께 아뢰되 명하여 백성을 계수하게 한 자가 내가 아니니이까 범죄하고 악을 행한 자는 곧 내니이다 이 양무리는 무엇을 행하였나이까 청컨대 나의 하나님 여호와여 주의 손으로 나와 내 아비의 집을 치시고 주의 백성에게 재앙을 내리지 마옵소서",
+      "source_text_hash": "4cacad6e884590de1350e9f99669a9fec164ca8cf53395523bcea574152bb799",
+      "translation_text_hash": "3997d89b0bedb28d0ea7f3c28331d42c8e1ef0ba237563de118b83ea8cfa50e2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님께 아뢰되 명하여 백성을 계수하게 한 자가 내가 아니니이까 범죄하고 악을 행한 자는 곧 내니이다 이 양무리는 무엇을 행하였나이까 청컨대 나의 하나님 여호와여 주의 손으로 나와 내 아비의 집을 치시고 주의 백성에게 재앙을 내리지 마옵소서"
+      ],
+      "raw_text_hashes": [
+        "3997d89b0bedb28d0ea7f3c28331d42c8e1ef0ba237563de118b83ea8cfa50e2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:21:18",
+      "sequence": 10953,
+      "chapter_label": "1CH 21",
+      "verse_label": "18",
+      "locator": {
+        "book": "1CH",
+        "chapter": 21,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 21,
+          "verse": 18
+        }
+      ],
+      "en": "Then the LORD’s angel commanded Gad to tell David that David should go up and raise an altar to the LORD on the threshing floor of Ornan the Jebusite.",
+      "ko": "여호와의 사자가 갓을 명하여 다윗에게 이르시기를 올라가서 여부스 사람 오르난의 타작마당에서 여호와를 위하여 단을 쌓으라 하신지라",
+      "source_text_hash": "6eb14d49167f054d2dce823beb98a1c85c5ef399d3d4454c701ce170c0b76d1f",
+      "translation_text_hash": "b4c5c17d1e42253a196540540b089b118ba413624fee94b0bb3527d466c7d1db",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 사자가 갓을 명하여 다윗에게 이르시기를 올라가서 여부스 사람 오르난의 타작마당에서 여호와를 위하여 단을 쌓으라 하신지라"
+      ],
+      "raw_text_hashes": [
+        "b4c5c17d1e42253a196540540b089b118ba413624fee94b0bb3527d466c7d1db"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:21:19",
+      "sequence": 10954,
+      "chapter_label": "1CH 21",
+      "verse_label": "19",
+      "locator": {
+        "book": "1CH",
+        "chapter": 21,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 21,
+          "verse": 19
+        }
+      ],
+      "en": "David went up at the saying of Gad, which he spoke in the LORD’s name.",
+      "ko": "다윗이 이에 갓이 여호와의 이름으로 이른 말씀대로 올라가니라",
+      "source_text_hash": "594dd3ba61cde60fc861dea2200224ecb19a5269d3d68eac72ac589db2cd41b7",
+      "translation_text_hash": "b07ea4c1d1993c9c9fd4c83ade60040ece05ed0c5fe218c6e7980e6a24c04b3e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 이에 갓이 여호와의 이름으로 이른 말씀대로 올라가니라"
+      ],
+      "raw_text_hashes": [
+        "b07ea4c1d1993c9c9fd4c83ade60040ece05ed0c5fe218c6e7980e6a24c04b3e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:21:20",
+      "sequence": 10955,
+      "chapter_label": "1CH 21",
+      "verse_label": "20",
+      "locator": {
+        "book": "1CH",
+        "chapter": 21,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 21,
+          "verse": 20
+        }
+      ],
+      "en": "Ornan turned back and saw the angel; and his four sons who were with him hid themselves. Now Ornan was threshing wheat.",
+      "ko": "때에 오르난이 밀을 타작하다가 돌이켜 천사를 보고 네 아들과 함께 숨었더니",
+      "source_text_hash": "60f91bde1714f45ac881ab0166c85524d8c9261ecbd658ab2bb3b9d9f65963e1",
+      "translation_text_hash": "2634c5e03a29cb4d07817e4f0315fe3f3825710efa339049566c2b9bdd55ecd8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "때에 오르난이 밀을 타작하다가 돌이켜 천사를 보고 네 아들과 함께 숨었더니"
+      ],
+      "raw_text_hashes": [
+        "2634c5e03a29cb4d07817e4f0315fe3f3825710efa339049566c2b9bdd55ecd8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:21:21",
+      "sequence": 10956,
+      "chapter_label": "1CH 21",
+      "verse_label": "21",
+      "locator": {
+        "book": "1CH",
+        "chapter": 21,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 21,
+          "verse": 21
+        }
+      ],
+      "en": "As David came to Ornan, Ornan looked and saw David, and went out of the threshing floor, and bowed himself to David with his face to the ground.",
+      "ko": "다윗이 오르난에게 나아가매 오르난이 내어다보다가 다윗을 보고 타작마당에서 나와서 얼굴을 땅에 대고 절하매",
+      "source_text_hash": "1fef7705ba72d756d903f64a2855f5bc14a881bea80388a220f7e447ac0e05a5",
+      "translation_text_hash": "edd25fa033cfc1228eb6150c03d1f4e70dbe945e8ec479ef84b150749ae8574f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 오르난에게 나아가매 오르난이 내어다보다가 다윗을 보고 타작마당에서 나와서 얼굴을 땅에 대고 절하매"
+      ],
+      "raw_text_hashes": [
+        "edd25fa033cfc1228eb6150c03d1f4e70dbe945e8ec479ef84b150749ae8574f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:21:22",
+      "sequence": 10957,
+      "chapter_label": "1CH 21",
+      "verse_label": "22",
+      "locator": {
+        "book": "1CH",
+        "chapter": 21,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 21,
+          "verse": 22
+        }
+      ],
+      "en": "Then David said to Ornan, “Sell me the place of this threshing floor, that I may build an altar to the LORD on it. You shall sell it to me for the full price, that the plague may be stopped from afflicting the people.”",
+      "ko": "다윗이 오르난에게 이르되 이 타작하는 곳을 내게 붙이라 너는 상당한 값으로 붙이라 내가 여호와를 위하여 여기 한 단을 쌓으리니 그리하면 온역이 백성 중에서 그치리라",
+      "source_text_hash": "2e3a96982c32d56ef81da5b0f3bc60b639eb76fb32e7715ca20b905ad362e5b6",
+      "translation_text_hash": "9586db362ff74c2766e21d3f1fb99ef6bb010fece3240e253edef5f940b1902d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 오르난에게 이르되 이 타작하는 곳을 내게 붙이라 너는 상당한 값으로 붙이라 내가 여호와를 위하여 여기 한 단을 쌓으리니 그리하면 온역이 백성 중에서 그치리라"
+      ],
+      "raw_text_hashes": [
+        "9586db362ff74c2766e21d3f1fb99ef6bb010fece3240e253edef5f940b1902d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:21:23",
+      "sequence": 10958,
+      "chapter_label": "1CH 21",
+      "verse_label": "23",
+      "locator": {
+        "book": "1CH",
+        "chapter": 21,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 21,
+          "verse": 23
+        }
+      ],
+      "en": "Ornan said to David, “Take it for yourself, and let my lord the king do that which is good in his eyes. Behold, I give the oxen for burnt offerings, and the threshing instruments for wood, and the wheat for the meal offering. I give it all.”",
+      "ko": "오르난이 다윗에게 고하되 왕은 취하소서 내 주 왕의 좋게 여기시는대로 행하소서 보소서 내가 이것들을 드리나이다 소들은 번제물로, 곡식 떠는 기계는 화목으로, 밀은 소제물로 삼으시기 위하여 다 드리나이다",
+      "source_text_hash": "2e7a80a271cf9af4e2264585abb6268467b38b70cbd015764a9020091e05e0dc",
+      "translation_text_hash": "822b4da0c86268f4933171d498e592abb5384ce49cf32a18ec823e0b9a97fceb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오르난이 다윗에게 고하되 왕은 취하소서 내 주 왕의 좋게 여기시는대로 행하소서 보소서 내가 이것들을 드리나이다 소들은 번제물로, 곡식 떠는 기계는 화목으로, 밀은 소제물로 삼으시기 위하여 다 드리나이다"
+      ],
+      "raw_text_hashes": [
+        "822b4da0c86268f4933171d498e592abb5384ce49cf32a18ec823e0b9a97fceb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:21:24",
+      "sequence": 10959,
+      "chapter_label": "1CH 21",
+      "verse_label": "24",
+      "locator": {
+        "book": "1CH",
+        "chapter": 21,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 21,
+          "verse": 24
+        }
+      ],
+      "en": "King David said to Ornan, “No, but I will most certainly buy it for the full price. For I will not take that which is yours for the LORD, nor offer a burnt offering that costs me nothing.”",
+      "ko": "다윗왕이 오르난에게 이르되 그렇지 아니하다 내가 결단코 상당한 값으로 사리라 내가 여호와께 드리려고 네 물건을 취하지 아니하겠고 값 없이는 번제를 드리지도 아니하리라 하고",
+      "source_text_hash": "780223cb428273913ad1840d4d76db1fce804612dbc3fa51b44140c884386687",
+      "translation_text_hash": "faa8012309567aea8d5e225c6fdaa00c4020df5d6089c2685220a9b019604123",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗왕이 오르난에게 이르되 그렇지 아니하다 내가 결단코 상당한 값으로 사리라 내가 여호와께 드리려고 네 물건을 취하지 아니하겠고 값 없이는 번제를 드리지도 아니하리라 하고"
+      ],
+      "raw_text_hashes": [
+        "faa8012309567aea8d5e225c6fdaa00c4020df5d6089c2685220a9b019604123"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:21:25",
+      "sequence": 10960,
+      "chapter_label": "1CH 21",
+      "verse_label": "25",
+      "locator": {
+        "book": "1CH",
+        "chapter": 21,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 21,
+          "verse": 25
+        }
+      ],
+      "en": "So David gave to Ornan six hundred shekels of gold by weight for the place.",
+      "ko": "그 기지 값으로 금 육백 세겔을 달아 오르난에게 주고",
+      "source_text_hash": "07f05ad31e67ffc7e0a80958d2f8864fc5600b84cf036f390fab42a43ed74332",
+      "translation_text_hash": "9d35cd19e9ddff0993b6e28e12d09bab781ac3e2a50660f30f650be15a07cfd7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 기지 값으로 금 육백 세겔을 달아 오르난에게 주고"
+      ],
+      "raw_text_hashes": [
+        "9d35cd19e9ddff0993b6e28e12d09bab781ac3e2a50660f30f650be15a07cfd7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:21:26",
+      "sequence": 10961,
+      "chapter_label": "1CH 21",
+      "verse_label": "26",
+      "locator": {
+        "book": "1CH",
+        "chapter": 21,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 21,
+          "verse": 26
+        }
+      ],
+      "en": "David built an altar to the LORD there, and offered burnt offerings and peace offerings, and called on the LORD; and he answered him from the sky by fire on the altar of burnt offering.",
+      "ko": "다윗이 거기서 여호와를 위하여 단을 쌓고 번제와 화목제를 드려 여호와께 아뢰었더니 여호와께서 하늘에서부터 번제단 위에 불을 내려 응답하시고",
+      "source_text_hash": "618a394b53c23e3753ea6c83d06757010061e1b1b6b75e3e1db0eb25ddb16da0",
+      "translation_text_hash": "eabfcaecc22a485ad76567c1ed9692e7885ac4aa3e4a939276f391e0f9f082af",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 거기서 여호와를 위하여 단을 쌓고 번제와 화목제를 드려 여호와께 아뢰었더니 여호와께서 하늘에서부터 번제단 위에 불을 내려 응답하시고"
+      ],
+      "raw_text_hashes": [
+        "eabfcaecc22a485ad76567c1ed9692e7885ac4aa3e4a939276f391e0f9f082af"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:21:27",
+      "sequence": 10962,
+      "chapter_label": "1CH 21",
+      "verse_label": "27",
+      "locator": {
+        "book": "1CH",
+        "chapter": 21,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 21,
+          "verse": 27
+        }
+      ],
+      "en": "Then the LORD commanded the angel, and he put his sword back into its sheath.",
+      "ko": "사자를 명하시매 저가 칼을 집에 꽂았더라",
+      "source_text_hash": "edf21a14bc15cca7d21035b5ad6f8439923aad28d03137105e8ba726922fcc24",
+      "translation_text_hash": "16803f8aaa06e8ebb5aa3e833e965aee81fb31272f76d1f6529c1de9f3ba8ac1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사자를 명하시매 저가 칼을 집에 꽂았더라"
+      ],
+      "raw_text_hashes": [
+        "16803f8aaa06e8ebb5aa3e833e965aee81fb31272f76d1f6529c1de9f3ba8ac1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:21:28",
+      "sequence": 10963,
+      "chapter_label": "1CH 21",
+      "verse_label": "28",
+      "locator": {
+        "book": "1CH",
+        "chapter": 21,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 21,
+          "verse": 28
+        }
+      ],
+      "en": "At that time, when David saw that the LORD had answered him in the threshing floor of Ornan the Jebusite, then he sacrificed there.",
+      "ko": "이 때에 다윗이 여호와께서 여부스 사람 오르난의 타작마당에서 응답하심을 보고 거기서 제사를 드렸으니",
+      "source_text_hash": "9d0e9d52b43bb1a0cad7a006c0d9e528672983a49278313722a3f6246d680fe4",
+      "translation_text_hash": "c5ee2f93748939277b8ad15778b450d3251a3b246f37120e44a6df482126fde6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 때에 다윗이 여호와께서 여부스 사람 오르난의 타작마당에서 응답하심을 보고 거기서 제사를 드렸으니"
+      ],
+      "raw_text_hashes": [
+        "c5ee2f93748939277b8ad15778b450d3251a3b246f37120e44a6df482126fde6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:21:29",
+      "sequence": 10964,
+      "chapter_label": "1CH 21",
+      "verse_label": "29",
+      "locator": {
+        "book": "1CH",
+        "chapter": 21,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 21,
+          "verse": 29
+        }
+      ],
+      "en": "For the LORD’s tabernacle, which Moses made in the wilderness, and the altar of burnt offering, were at that time in the high place at Gibeon.",
+      "ko": "옛적에 모세가 광야에서 지은 여호와의 장막과 번제단이 그 때에 기브온 산당에 있으나",
+      "source_text_hash": "d4dc17d9b712aedfb6d870df71f45887eb1babc3d964abe2ae3a8ea2fe77a397",
+      "translation_text_hash": "811e94ac10d907a647a52841a9ce5fb6ea06678c86f6802bb73ec0ca30c511cb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "옛적에 모세가 광야에서 지은 여호와의 장막과 번제단이 그 때에 기브온 산당에 있으나"
+      ],
+      "raw_text_hashes": [
+        "811e94ac10d907a647a52841a9ce5fb6ea06678c86f6802bb73ec0ca30c511cb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:21:30",
+      "sequence": 10965,
+      "chapter_label": "1CH 21",
+      "verse_label": "30",
+      "locator": {
+        "book": "1CH",
+        "chapter": 21,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 21,
+          "verse": 30
+        }
+      ],
+      "en": "But David couldn’t go before it to inquire of God, for he was afraid because of the sword of the LORD’s angel.",
+      "ko": "다윗이 여호와의 사자의 칼을 두려워하여 감히 그 앞에 가서 하나님께 묻지 못함이라",
+      "source_text_hash": "7417a61e1ee491621e6971bdb0a7591f5cfea5003212830af1fcddadfbdd0f23",
+      "translation_text_hash": "01ffd334dc181ed0aeb4ee72f308ab2188fa9b480d8b3b8d0dc1c3ea0c55ad26",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 여호와의 사자의 칼을 두려워하여 감히 그 앞에 가서 하나님께 묻지 못함이라"
+      ],
+      "raw_text_hashes": [
+        "01ffd334dc181ed0aeb4ee72f308ab2188fa9b480d8b3b8d0dc1c3ea0c55ad26"
+      ]
+    }
+  ]
+}

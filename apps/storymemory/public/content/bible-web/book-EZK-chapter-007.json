@@ -1,0 +1,877 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EZK:chapter:007",
+  "unit_ordinal": 809,
+  "unit_label": "EZK 7",
+  "book_code": "EZK",
+  "chapter_number": 7,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EZK:7:1",
+      "sequence": 20579,
+      "chapter_label": "EZK 7",
+      "verse_label": "1",
+      "locator": {
+        "book": "EZK",
+        "chapter": 7,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 7,
+          "verse": 1
+        }
+      ],
+      "en": "Moreover the LORD’s word came to me, saying,",
+      "ko": "여호와의 말씀이 또 내게 임하여 가라사대",
+      "source_text_hash": "4fe6548be4bc036eef72ed1db86f9dcc8989355e4d608b71dd65965f07c53184",
+      "translation_text_hash": "d80f64c74466735890f0e38292da375b0a0ec48e42ba77cef849f80e52a6bc56",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 말씀이 또 내게 임하여 가라사대"
+      ],
+      "raw_text_hashes": [
+        "d80f64c74466735890f0e38292da375b0a0ec48e42ba77cef849f80e52a6bc56"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:7:2",
+      "sequence": 20580,
+      "chapter_label": "EZK 7",
+      "verse_label": "2",
+      "locator": {
+        "book": "EZK",
+        "chapter": 7,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 7,
+          "verse": 2
+        }
+      ],
+      "en": "“You, son of man, the Lord GOD says to the land of Israel, ‘An end! The end has come on the four corners of the land.",
+      "ko": "너 인자야 주 여호와 내가 이스라엘 땅에 대하여 말하노라 끝났도다 이 땅 사방의 일이 끝났도다",
+      "source_text_hash": "22c25d2eff57c67917fe3a9e3992288a45a73ff1cf2b62c0190f1eab34a82ba4",
+      "translation_text_hash": "cf1fa36da5ed5ad06cfb95918b892b3c2d49b54ab0b3c458b8f9da32480e9037",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너 인자야 주 여호와 내가 이스라엘 땅에 대하여 말하노라 끝났도다 이 땅 사방의 일이 끝났도다"
+      ],
+      "raw_text_hashes": [
+        "cf1fa36da5ed5ad06cfb95918b892b3c2d49b54ab0b3c458b8f9da32480e9037"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:7:3",
+      "sequence": 20581,
+      "chapter_label": "EZK 7",
+      "verse_label": "3",
+      "locator": {
+        "book": "EZK",
+        "chapter": 7,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 7,
+          "verse": 3
+        }
+      ],
+      "en": "Now the end is on you, and I will send my anger on you, and will judge you according to your ways. I will bring on you all your abominations.",
+      "ko": "이제는 네게 끝이 이르렀나니 내가 내 진노를 네게 발하여 네 행위를 국문하고 너의 모든 가증한 일을 보응하리라",
+      "source_text_hash": "6c9ec158513d103d36b94d8b5fe579b9d1f02a54093309671ffccbab79275323",
+      "translation_text_hash": "c9330f90e0a71b39b805b4a3abcd0766be7b258e0b9f05822f3af5afb229a8d4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제는 네게 끝이 이르렀나니 내가 내 진노를 네게 발하여 네 행위를 국문하고 너의 모든 가증한 일을 보응하리라"
+      ],
+      "raw_text_hashes": [
+        "c9330f90e0a71b39b805b4a3abcd0766be7b258e0b9f05822f3af5afb229a8d4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:7:4",
+      "sequence": 20582,
+      "chapter_label": "EZK 7",
+      "verse_label": "4",
+      "locator": {
+        "book": "EZK",
+        "chapter": 7,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 7,
+          "verse": 4
+        }
+      ],
+      "en": "My eye will not spare you, neither will I have pity; but I will bring your ways on you, and your abominations will be among you. Then you will know that I am the LORD.’",
+      "ko": "내가 너를 아껴 보지 아니하며 긍휼히 여기지도 아니하고 네 행위대로 너를 벌하여 너의 가증한 일이 너희 중에 나타나게 하리니 너희가 나를 여호와인줄 알리라",
+      "source_text_hash": "e8aa585bfd221b878f0478fd783a4657e0423c990cc026a62a2f8971787506c1",
+      "translation_text_hash": "9d8d132d7776c2fc10c6d4e049b5f9a43d596dbc1341901a464c3abb2f9837d9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너를 아껴 보지 아니하며 긍휼히 여기지도 아니하고 네 행위대로 너를 벌하여 너의 가증한 일이 너희 중에 나타나게 하리니 너희가 나를 여호와인줄 알리라"
+      ],
+      "raw_text_hashes": [
+        "9d8d132d7776c2fc10c6d4e049b5f9a43d596dbc1341901a464c3abb2f9837d9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:7:5",
+      "sequence": 20583,
+      "chapter_label": "EZK 7",
+      "verse_label": "5",
+      "locator": {
+        "book": "EZK",
+        "chapter": 7,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 7,
+          "verse": 5
+        }
+      ],
+      "en": "“The Lord GOD says: ‘A disaster! A unique disaster! Behold, it comes.",
+      "ko": "주 여호와께서 가라사대 재앙이로다, 비상한 재앙이로다 볼찌어다 임박하도다",
+      "source_text_hash": "5faf6de806873e8f0cea4168d3088c2d9e8e75a84fa3f1690c771288ed97fbd8",
+      "translation_text_hash": "19607a2f67815858c24738252079d7cbc6d7ffcfb1cce1da365d05135deee85a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주 여호와께서 가라사대 재앙이로다, 비상한 재앙이로다 볼찌어다 임박하도다"
+      ],
+      "raw_text_hashes": [
+        "19607a2f67815858c24738252079d7cbc6d7ffcfb1cce1da365d05135deee85a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:7:6",
+      "sequence": 20584,
+      "chapter_label": "EZK 7",
+      "verse_label": "6",
+      "locator": {
+        "book": "EZK",
+        "chapter": 7,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 7,
+          "verse": 6
+        }
+      ],
+      "en": "An end has come. The end has come! It awakes against you. Behold, it comes.",
+      "ko": "끝이 났도다, 끝이 났도다, 끝이 너를 치러 일어났나니 볼찌어다 임박하도다",
+      "source_text_hash": "31a600d8ded323d7c7b294346fa5523cc177340c24648e1754dd7db8a774c5ed",
+      "translation_text_hash": "ddaff97ca5602f5acc05fed47f6c4be9aee26b2f9471f0745a7ad2d0f9066996",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "끝이 났도다, 끝이 났도다, 끝이 너를 치러 일어났나니 볼찌어다 임박하도다"
+      ],
+      "raw_text_hashes": [
+        "ddaff97ca5602f5acc05fed47f6c4be9aee26b2f9471f0745a7ad2d0f9066996"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:7:7",
+      "sequence": 20585,
+      "chapter_label": "EZK 7",
+      "verse_label": "7",
+      "locator": {
+        "book": "EZK",
+        "chapter": 7,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 7,
+          "verse": 7
+        }
+      ],
+      "en": "Your doom has come to you, inhabitant of the land! The time has come! The day is near, a day of tumult, and not of joyful shouting, on the mountains.",
+      "ko": "이 땅 거민아 정한 재앙이 네게 임하도다 때가 이르렀고 날이 가까왔으니 요란한 날이요 산에서 즐거이 부르는 날이 아니로다",
+      "source_text_hash": "15d54bf5e8d84ef8213d2bb75ebbb61eb677767290eab2fdbd8a794e696f210a",
+      "translation_text_hash": "2ba035d2ed31d840fd94574363132b01ea51be8a703e2419e36e3cdf5cb58d38",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 땅 거민아 정한 재앙이 네게 임하도다 때가 이르렀고 날이 가까왔으니 요란한 날이요 산에서 즐거이 부르는 날이 아니로다"
+      ],
+      "raw_text_hashes": [
+        "2ba035d2ed31d840fd94574363132b01ea51be8a703e2419e36e3cdf5cb58d38"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:7:8",
+      "sequence": 20586,
+      "chapter_label": "EZK 7",
+      "verse_label": "8",
+      "locator": {
+        "book": "EZK",
+        "chapter": 7,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 7,
+          "verse": 8
+        }
+      ],
+      "en": "Now I will shortly pour out my wrath on you, and accomplish my anger against you, and will judge you according to your ways. I will bring on you all your abominations.",
+      "ko": "이제 내가 속히 분을 네게 쏟고 내 진노를 네게 이루어서 네 행위대로 너를 심판하여 네 모든 가증한 일을 네게 보응하되",
+      "source_text_hash": "0cde849ef33cdcf28fde14abeab8a3865f17cb30374d333362237f148fe08a65",
+      "translation_text_hash": "4e63c2ea8372f434678881e34e89c7d18efdb21416689a4cdc105c3003b5d962",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제 내가 속히 분을 네게 쏟고 내 진노를 네게 이루어서 네 행위대로 너를 심판하여 네 모든 가증한 일을 네게 보응하되"
+      ],
+      "raw_text_hashes": [
+        "4e63c2ea8372f434678881e34e89c7d18efdb21416689a4cdc105c3003b5d962"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:7:9",
+      "sequence": 20587,
+      "chapter_label": "EZK 7",
+      "verse_label": "9",
+      "locator": {
+        "book": "EZK",
+        "chapter": 7,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 7,
+          "verse": 9
+        }
+      ],
+      "en": "My eye won’t spare, neither will I have pity. I will punish you according to your ways. Your abominations will be among you. Then you will know that I, the LORD, strike.",
+      "ko": "내가 너를 아껴 보지 아니하며 긍휼히 여기지도 아니하고 네 행위대로 너를 벌하여 너의 가증한 일이 너희 중에 나타나게 하리니 나 여호와가 치는 줄을 네가 알리라",
+      "source_text_hash": "81d400df89c700fb33d6c33573393e977b1c73d006cb2bb5c395f8c3516c769d",
+      "translation_text_hash": "fd517bedec877027a6a4b4c7385efaf6d1056845c19fe9b7493d27e505406bf6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너를 아껴 보지 아니하며 긍휼히 여기지도 아니하고 네 행위대로 너를 벌하여 너의 가증한 일이 너희 중에 나타나게 하리니 나 여호와가 치는 줄을 네가 알리라"
+      ],
+      "raw_text_hashes": [
+        "fd517bedec877027a6a4b4c7385efaf6d1056845c19fe9b7493d27e505406bf6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:7:10",
+      "sequence": 20588,
+      "chapter_label": "EZK 7",
+      "verse_label": "10",
+      "locator": {
+        "book": "EZK",
+        "chapter": 7,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 7,
+          "verse": 10
+        }
+      ],
+      "en": "“‘Behold, the day! Behold, it comes! Your doom has gone out. The rod has blossomed. Pride has budded.",
+      "ko": "볼찌어다 그 날이로다 볼찌어다 임박하도다 정한 재앙이 이르렀으니 몽둥이가 꽃 피며 교만이 싹났도다",
+      "source_text_hash": "db638e87851400dd9d1202af4067e6bc3e84451c23f37d6454f6971aee39775d",
+      "translation_text_hash": "0dddc897b44d3cef5cce13b3364cef420a2514c9f01709803c8391d826958bd1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "볼찌어다 그 날이로다 볼찌어다 임박하도다 정한 재앙이 이르렀으니 몽둥이가 꽃 피며 교만이 싹났도다"
+      ],
+      "raw_text_hashes": [
+        "0dddc897b44d3cef5cce13b3364cef420a2514c9f01709803c8391d826958bd1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:7:11",
+      "sequence": 20589,
+      "chapter_label": "EZK 7",
+      "verse_label": "11",
+      "locator": {
+        "book": "EZK",
+        "chapter": 7,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 7,
+          "verse": 11
+        }
+      ],
+      "en": "Violence has risen up into a rod of wickedness. None of them will remain, nor of their multitude, nor of their wealth. There will be nothing of value among them.",
+      "ko": "포학이 일어나서 죄악의 몽둥이가 되었은즉 그들도, 그 무리도, 그 재물도 하나도 남지 아니하고 그 중의 아름다운 것도 없어지리로다",
+      "source_text_hash": "7265b9d236285398b64efe1748cc4611b3101226a1b22dfec112944877ef29c1",
+      "translation_text_hash": "99036a27287b01f2f7d23f359c4d57e6717fc35999bab0dfe0bc72b2efaf8ea1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "포학이 일어나서 죄악의 몽둥이가 되었은즉 그들도, 그 무리도, 그 재물도 하나도 남지 아니하고 그 중의 아름다운 것도 없어지리로다"
+      ],
+      "raw_text_hashes": [
+        "99036a27287b01f2f7d23f359c4d57e6717fc35999bab0dfe0bc72b2efaf8ea1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:7:12",
+      "sequence": 20590,
+      "chapter_label": "EZK 7",
+      "verse_label": "12",
+      "locator": {
+        "book": "EZK",
+        "chapter": 7,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 7,
+          "verse": 12
+        }
+      ],
+      "en": "The time has come! The day draws near. Don’t let the buyer rejoice, nor the seller mourn; for wrath is on all its multitude.",
+      "ko": "때가 이르렀고 날이 가까왔으니 사는 자도 기뻐하지 말고 파는 자도 근심하지 말 것은 진노가 그 모든 무리에게 임함이로다",
+      "source_text_hash": "e8feedf380f3597884623e0c88aefe1032d54b5ddc41f06a45cf072324cfd3ef",
+      "translation_text_hash": "07086116b00776a4544360aa3e780965c9dfd5de6aec1b563bd32ba4f4323ebd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "때가 이르렀고 날이 가까왔으니 사는 자도 기뻐하지 말고 파는 자도 근심하지 말 것은 진노가 그 모든 무리에게 임함이로다"
+      ],
+      "raw_text_hashes": [
+        "07086116b00776a4544360aa3e780965c9dfd5de6aec1b563bd32ba4f4323ebd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:7:13",
+      "sequence": 20591,
+      "chapter_label": "EZK 7",
+      "verse_label": "13",
+      "locator": {
+        "book": "EZK",
+        "chapter": 7,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 7,
+          "verse": 13
+        }
+      ],
+      "en": "For the seller won’t return to that which is sold, although they are still alive; for the vision concerns the whole multitude of it. None will return. None will strengthen himself in the iniquity of his life.",
+      "ko": "판 자가 살아 있다 할찌라도 다시 돌아가서 그 판 것을 얻지 못하리니 이는 묵시로 그 모든 무리를 가리켜 말하기를 하나도 돌아갈 자가 없겠고 악한 생활로 스스로 강하게 할 자도 없으리라 하였음이로다",
+      "source_text_hash": "86666003cf90391ff78cdadd7014d198748dca44b63a42166a1ffc824609e9ab",
+      "translation_text_hash": "83d2d6a32034c0d5e5d0d09d7fc8bd51ffcd7509cb79b673c938506d7a8626da",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "판 자가 살아 있다 할찌라도 다시 돌아가서 그 판 것을 얻지 못하리니 이는 묵시로 그 모든 무리를 가리켜 말하기를 하나도 돌아갈 자가 없겠고 악한 생활로 스스로 강하게 할 자도 없으리라 하였음이로다"
+      ],
+      "raw_text_hashes": [
+        "83d2d6a32034c0d5e5d0d09d7fc8bd51ffcd7509cb79b673c938506d7a8626da"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:7:14",
+      "sequence": 20592,
+      "chapter_label": "EZK 7",
+      "verse_label": "14",
+      "locator": {
+        "book": "EZK",
+        "chapter": 7,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 7,
+          "verse": 14
+        }
+      ],
+      "en": "They have blown the trumpet, and have made all ready; but no one goes to the battle, for my wrath is on all its multitude.",
+      "ko": "그들이 나팔을 불어 온갖 것을 예비하였을찌라도 전쟁에 나갈 사람이 없나니 이는 내 진노가 그 모든 무리에게 미쳤음이라",
+      "source_text_hash": "d97f6370619cca761c31caf81d317ccae3a5fcb427f94e991caa6036c5684ca4",
+      "translation_text_hash": "d45801b5c352494d6dde872a2a6138813302e7bbf557e22f31d6abd4b21ddbf0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 나팔을 불어 온갖 것을 예비하였을찌라도 전쟁에 나갈 사람이 없나니 이는 내 진노가 그 모든 무리에게 미쳤음이라"
+      ],
+      "raw_text_hashes": [
+        "d45801b5c352494d6dde872a2a6138813302e7bbf557e22f31d6abd4b21ddbf0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:7:15",
+      "sequence": 20593,
+      "chapter_label": "EZK 7",
+      "verse_label": "15",
+      "locator": {
+        "book": "EZK",
+        "chapter": 7,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 7,
+          "verse": 15
+        }
+      ],
+      "en": "“‘The sword is outside, and the pestilence and the famine within. He who is in the field will die by the sword. He who is in the city will be devoured by famine and pestilence.",
+      "ko": "밖에는 칼이 있고 안에는 온역과 기근이 있어서 밭에 있는 자는 칼에 죽을 것이요 성읍에 있는 자는 기근과 온역에 망할 것이며",
+      "source_text_hash": "056424567d7cf892d2f61fd70c43dd7de3473f7e9d54b44e2abbec464df19d08",
+      "translation_text_hash": "40c8dea04659574983766720e5c5151a0e61f519ab07a8a6208b95f279ef8ab1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "밖에는 칼이 있고 안에는 온역과 기근이 있어서 밭에 있는 자는 칼에 죽을 것이요 성읍에 있는 자는 기근과 온역에 망할 것이며"
+      ],
+      "raw_text_hashes": [
+        "40c8dea04659574983766720e5c5151a0e61f519ab07a8a6208b95f279ef8ab1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:7:16",
+      "sequence": 20594,
+      "chapter_label": "EZK 7",
+      "verse_label": "16",
+      "locator": {
+        "book": "EZK",
+        "chapter": 7,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 7,
+          "verse": 16
+        }
+      ],
+      "en": "But of those who escape, they will escape and will be on the mountains like doves of the valleys, all of them moaning, everyone in his iniquity.",
+      "ko": "도망하는 자는 산 위로 피하여 다 각기 자기 죄악 까닭에 골짜기 비둘기처럼 슬피 울 것이며",
+      "source_text_hash": "9bad5a939a458ed711a3c4c48feeead1132bb1ccc89e1bfe78f8165ec4e6c4ad",
+      "translation_text_hash": "177dcf7c0baa0c7ac98bd7552305ca806a64995eeb90647db96486445f861d5f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "도망하는 자는 산 위로 피하여 다 각기 자기 죄악 까닭에 골짜기 비둘기처럼 슬피 울 것이며"
+      ],
+      "raw_text_hashes": [
+        "177dcf7c0baa0c7ac98bd7552305ca806a64995eeb90647db96486445f861d5f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:7:17",
+      "sequence": 20595,
+      "chapter_label": "EZK 7",
+      "verse_label": "17",
+      "locator": {
+        "book": "EZK",
+        "chapter": 7,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 7,
+          "verse": 17
+        }
+      ],
+      "en": "All hands will be feeble, and all knees will be weak as water.",
+      "ko": "모든 손은 피곤하고 모든 무릎은 물과 같이 약할 것이라",
+      "source_text_hash": "6761ddd6a2c1f93050ac9768398fb5a6e852d9006e53e3a06da0c2dd3a30bf7f",
+      "translation_text_hash": "6b4644648beba7a2085d9eea73025ddc51b00998f74b0f0c50b0c2a425444e35",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 손은 피곤하고 모든 무릎은 물과 같이 약할 것이라"
+      ],
+      "raw_text_hashes": [
+        "6b4644648beba7a2085d9eea73025ddc51b00998f74b0f0c50b0c2a425444e35"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:7:18",
+      "sequence": 20596,
+      "chapter_label": "EZK 7",
+      "verse_label": "18",
+      "locator": {
+        "book": "EZK",
+        "chapter": 7,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 7,
+          "verse": 18
+        }
+      ],
+      "en": "They will also clothe themselves with sackcloth, and horror will cover them. Shame will be on all faces, and baldness on all their heads.",
+      "ko": "그들이 굵은 베로 허리를 묶을 것이요 두려움이 그들을 덮을 것이요 모든 얼굴에는 수치가 있고 모든 머리는 대머리가 될 것이며",
+      "source_text_hash": "f1a858da4636d6de758d0ee50f65a48815061462c435d3fe3c216a10c6922e9b",
+      "translation_text_hash": "e96ca3da57b00f3c012e66156ef56f0a7c2384415c0c0ef6715fc699c2cc693e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 굵은 베로 허리를 묶을 것이요 두려움이 그들을 덮을 것이요 모든 얼굴에는 수치가 있고 모든 머리는 대머리가 될 것이며"
+      ],
+      "raw_text_hashes": [
+        "e96ca3da57b00f3c012e66156ef56f0a7c2384415c0c0ef6715fc699c2cc693e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:7:19",
+      "sequence": 20597,
+      "chapter_label": "EZK 7",
+      "verse_label": "19",
+      "locator": {
+        "book": "EZK",
+        "chapter": 7,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 7,
+          "verse": 19
+        }
+      ],
+      "en": "They will cast their silver in the streets, and their gold will be as an unclean thing. Their silver and their gold won’t be able to deliver them in the day of the LORD’s wrath. They won’t satisfy their souls or fill their bellies; because it has been the stumbling block of their iniquity.",
+      "ko": "그들이 그 은을 거리에 던지며 그 금을 오예물 같이 여기리니 이는 여호와 내가 진노를 베푸는 날에 그 은과 금이 능히 그들을 건지지 못하며 능히 그 심령을 족하게 하거나 그 창자를 채우지 못하고 오직 죄악에 빠치는 것이 됨이로다",
+      "source_text_hash": "f5ed857439bf0cb5378d6455d5b07876ffb8fa0f077b559430aa3dfb60613b74",
+      "translation_text_hash": "7d9b9d5fcc3964c5388c6b31af9d15b371b2899415a239d86f71d21b43235ab5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 그 은을 거리에 던지며 그 금을 오예물 같이 여기리니 이는 여호와 내가 진노를 베푸는 날에 그 은과 금이 능히 그들을 건지지 못하며 능히 그 심령을 족하게 하거나 그 창자를 채우지 못하고 오직 죄악에 빠치는 것이 됨이로다"
+      ],
+      "raw_text_hashes": [
+        "7d9b9d5fcc3964c5388c6b31af9d15b371b2899415a239d86f71d21b43235ab5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:7:20",
+      "sequence": 20598,
+      "chapter_label": "EZK 7",
+      "verse_label": "20",
+      "locator": {
+        "book": "EZK",
+        "chapter": 7,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 7,
+          "verse": 20
+        }
+      ],
+      "en": "As for the beauty of his ornament, he set it in majesty; but they made the images of their abominations and their detestable things therein. Therefore I have made it to them as an unclean thing.",
+      "ko": "그들이 그 화려한 장식으로 인하여 교만을 품었고 또 그것으로 가증한 우상과 미운 물건을 지었은즉 내가 그것으로 그들에게 오예물이 되게 하여",
+      "source_text_hash": "f2b732f53986f874137033eb42e924bdaf12480a85be15ada7429e625cf05e96",
+      "translation_text_hash": "41d9fef721e73d549c7830140304d55b8e9bc1eed6da366417f98c13119f4fb3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 그 화려한 장식으로 인하여 교만을 품었고 또 그것으로 가증한 우상과 미운 물건을 지었은즉 내가 그것으로 그들에게 오예물이 되게 하여"
+      ],
+      "raw_text_hashes": [
+        "41d9fef721e73d549c7830140304d55b8e9bc1eed6da366417f98c13119f4fb3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:7:21",
+      "sequence": 20599,
+      "chapter_label": "EZK 7",
+      "verse_label": "21",
+      "locator": {
+        "book": "EZK",
+        "chapter": 7,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 7,
+          "verse": 21
+        }
+      ],
+      "en": "I will give it into the hands of the strangers for a prey, and to the wicked of the earth for a plunder; and they will profane it.",
+      "ko": "외인의 손에 붙여 노략하게 하며 세상 악인에게 붙여 그들로 약탈하여 더럽히게 하고",
+      "source_text_hash": "98814915a7a772c1e1c39ba14c1474fd1c011cfda0bafde8c86a8d1c805df4cb",
+      "translation_text_hash": "6fd31cfc1702b3873c75f46782c89c531dea32287fab78ca27485e101f97ab1c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "외인의 손에 붙여 노략하게 하며 세상 악인에게 붙여 그들로 약탈하여 더럽히게 하고"
+      ],
+      "raw_text_hashes": [
+        "6fd31cfc1702b3873c75f46782c89c531dea32287fab78ca27485e101f97ab1c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:7:22",
+      "sequence": 20600,
+      "chapter_label": "EZK 7",
+      "verse_label": "22",
+      "locator": {
+        "book": "EZK",
+        "chapter": 7,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 7,
+          "verse": 22
+        }
+      ],
+      "en": "I will also turn my face from them, and they will profane my secret place. Robbers will enter into it, and profane it.",
+      "ko": "내가 또 내 얼굴을 그들에게서 돌이키리니 그들이 내 은밀한 처소를 더럽히고 강포한 자도 거기 들어와서 더럽히리라",
+      "source_text_hash": "d693ea200839381a10b330501ea2635272477c09cd52fc6810e5e251bee1942e",
+      "translation_text_hash": "9d3f728c75046cb866fc515400c2500e7ce90d3cc2a4a403749397c6cea169cf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 또 내 얼굴을 그들에게서 돌이키리니 그들이 내 은밀한 처소를 더럽히고 강포한 자도 거기 들어와서 더럽히리라"
+      ],
+      "raw_text_hashes": [
+        "9d3f728c75046cb866fc515400c2500e7ce90d3cc2a4a403749397c6cea169cf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:7:23",
+      "sequence": 20601,
+      "chapter_label": "EZK 7",
+      "verse_label": "23",
+      "locator": {
+        "book": "EZK",
+        "chapter": 7,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 7,
+          "verse": 23
+        }
+      ],
+      "en": "“‘Make chains, for the land is full of bloody crimes, and the city is full of violence.",
+      "ko": "너는 쇠사슬을 만들라 이는 피 흘리는 죄가 그 땅에 가득하고 강포가 그 성읍에 찼음이라",
+      "source_text_hash": "573dd19680cc3571221448ae8938d4fbc04ad296a7e62f638527a7287b15ed02",
+      "translation_text_hash": "5aa59002a87131d95f7f2e26643ddc6aa142d9f463c928599a54866040f11109",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 쇠사슬을 만들라 이는 피 흘리는 죄가 그 땅에 가득하고 강포가 그 성읍에 찼음이라"
+      ],
+      "raw_text_hashes": [
+        "5aa59002a87131d95f7f2e26643ddc6aa142d9f463c928599a54866040f11109"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:7:24",
+      "sequence": 20602,
+      "chapter_label": "EZK 7",
+      "verse_label": "24",
+      "locator": {
+        "book": "EZK",
+        "chapter": 7,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 7,
+          "verse": 24
+        }
+      ],
+      "en": "Therefore I will bring the worst of the nations, and they will possess their houses. I will also make the pride of the strong to cease. Their holy places will be profaned.",
+      "ko": "내가 극히 악한 이방인으로 이르러 그 집들을 점령하게 하고 악한 자의 교만을 그치게 하리니 그 성소가 더럽힘을 당하리라",
+      "source_text_hash": "75725c83d9223b14e4d33ddb4f83cee3e27070be26552e8e6c5daad5d82b054b",
+      "translation_text_hash": "6e687a0dc4c960d5919a7f12f17ad577d1b02f8d7253111fb097419ac6c8b1a2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 극히 악한 이방인으로 이르러 그 집들을 점령하게 하고 악한 자의 교만을 그치게 하리니 그 성소가 더럽힘을 당하리라"
+      ],
+      "raw_text_hashes": [
+        "6e687a0dc4c960d5919a7f12f17ad577d1b02f8d7253111fb097419ac6c8b1a2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:7:25",
+      "sequence": 20603,
+      "chapter_label": "EZK 7",
+      "verse_label": "25",
+      "locator": {
+        "book": "EZK",
+        "chapter": 7,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 7,
+          "verse": 25
+        }
+      ],
+      "en": "Destruction comes! They will seek peace, and there will be none.",
+      "ko": "패망이 이르리니 그들이 평강을 구하여도 없을 것이라",
+      "source_text_hash": "5c49438d5274114cdb3a857925f7c578037eb7b2c753743bd3d1c8f63466ff65",
+      "translation_text_hash": "12605263011c8e6d65d248db6ce093c234a04335aeaf634c2294899eab5d9fba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "패망이 이르리니 그들이 평강을 구하여도 없을 것이라"
+      ],
+      "raw_text_hashes": [
+        "12605263011c8e6d65d248db6ce093c234a04335aeaf634c2294899eab5d9fba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:7:26",
+      "sequence": 20604,
+      "chapter_label": "EZK 7",
+      "verse_label": "26",
+      "locator": {
+        "book": "EZK",
+        "chapter": 7,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 7,
+          "verse": 26
+        }
+      ],
+      "en": "Mischief will come on mischief, and rumor will be on rumor. They will seek a vision of the prophet; but the law will perish from the priest, and counsel from the elders.",
+      "ko": "환난에 환난이 더하고 소문에 소문이 더할 때에 그들이 선지자에게 묵시를 구하나 헛될 것이며 제사장에게는 율법이 없어질 것이요 장로에게는 모략이 없어질 것이며",
+      "source_text_hash": "c092598ac3d80d175ed2edb6e02e0d9a93c741dc66617bbdd799de605324c461",
+      "translation_text_hash": "86ca2ea803a1e99f5749c15fe57f850af1d33cac8ec54f4b7e50bd42cc646c61",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "환난에 환난이 더하고 소문에 소문이 더할 때에 그들이 선지자에게 묵시를 구하나 헛될 것이며 제사장에게는 율법이 없어질 것이요 장로에게는 모략이 없어질 것이며"
+      ],
+      "raw_text_hashes": [
+        "86ca2ea803a1e99f5749c15fe57f850af1d33cac8ec54f4b7e50bd42cc646c61"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:7:27",
+      "sequence": 20605,
+      "chapter_label": "EZK 7",
+      "verse_label": "27",
+      "locator": {
+        "book": "EZK",
+        "chapter": 7,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 7,
+          "verse": 27
+        }
+      ],
+      "en": "The king will mourn, and the prince will be clothed with desolation. The hands of the people of the land will be troubled. I will do to them after their way, and according to their own judgments I will judge them. Then they will know that I am the LORD.’”",
+      "ko": "왕은 애통하고 방백은 놀람을 옷 입듯하며 거민의 손은 떨리리라 내가 그 행위대로 그들에게 갚고 그 죄악대로 그들을 국문한즉 그들이 나를 여호와인줄 알리라",
+      "source_text_hash": "142e0cfb675abdff2ee176bdc3ca5d4d899e785182aeb2c8a73c09f1f3d162f0",
+      "translation_text_hash": "0cf0605c7986f98fc13e7b13ca186482b281ab3699731dd933880fb8e23ed31c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕은 애통하고 방백은 놀람을 옷 입듯하며 거민의 손은 떨리리라 내가 그 행위대로 그들에게 갚고 그 죄악대로 그들을 국문한즉 그들이 나를 여호와인줄 알리라"
+      ],
+      "raw_text_hashes": [
+        "0cf0605c7986f98fc13e7b13ca186482b281ab3699731dd933880fb8e23ed31c"
+      ]
+    }
+  ]
+}

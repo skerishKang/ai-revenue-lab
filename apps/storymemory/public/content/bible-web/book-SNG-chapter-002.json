@@ -1,0 +1,557 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:SNG:chapter:002",
+  "unit_ordinal": 673,
+  "unit_label": "SNG 2",
+  "book_code": "SNG",
+  "chapter_number": 2,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:SNG:2:1",
+      "sequence": 17556,
+      "chapter_label": "SNG 2",
+      "verse_label": "1",
+      "locator": {
+        "book": "SNG",
+        "chapter": 2,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 2,
+          "verse": 1
+        }
+      ],
+      "en": "I am a rose of Sharon, a lily of the valleys. Lover",
+      "ko": "나는 사론의 수선화요 골짜기의 백합화로구나",
+      "source_text_hash": "94ab71a56afa485f09db83ab72e434c134f8c08cae3a986fd3f80536c618da11",
+      "translation_text_hash": "a5e5652f441b618bcb23776e4e6250c4c6046e81971b58a4b95098ab9b07d479",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 사론의 수선화요 골짜기의 백합화로구나"
+      ],
+      "raw_text_hashes": [
+        "a5e5652f441b618bcb23776e4e6250c4c6046e81971b58a4b95098ab9b07d479"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:SNG:2:2",
+      "sequence": 17557,
+      "chapter_label": "SNG 2",
+      "verse_label": "2",
+      "locator": {
+        "book": "SNG",
+        "chapter": 2,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 2,
+          "verse": 2
+        }
+      ],
+      "en": "As a lily among thorns, so is my love among the daughters. Beloved",
+      "ko": "여자들 중에 내 사랑은 가시나무 가운데 백합화 같구나",
+      "source_text_hash": "321466a2836d088527af6529bdf051906a7a6b86c68dd4edf24fd8789af923f2",
+      "translation_text_hash": "dca59a541266e477159e5598a1befedcd6ed5eba55a5904843748d99df3ea536",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여자들 중에 내 사랑은 가시나무 가운데 백합화 같구나"
+      ],
+      "raw_text_hashes": [
+        "dca59a541266e477159e5598a1befedcd6ed5eba55a5904843748d99df3ea536"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:SNG:2:3",
+      "sequence": 17558,
+      "chapter_label": "SNG 2",
+      "verse_label": "3",
+      "locator": {
+        "book": "SNG",
+        "chapter": 2,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 2,
+          "verse": 3
+        }
+      ],
+      "en": "As the apple tree among the trees of the wood, so is my beloved among the sons. I sat down under his shadow with great delight, his fruit was sweet to my taste.",
+      "ko": "남자들 중에 나의 사랑하는 자는 수풀 가운데 사과나무 같구나 내가 그 그늘에 앉아서 심히 기뻐하였고 그 실과는 내 입에 달았구나",
+      "source_text_hash": "2c643db06bd57185ca3653b55528301b0865985bb739e6f7fbd55571f487a846",
+      "translation_text_hash": "5204d698d12a3a2f861556f7c43e2586fa0cdd1a75524761e53eb22e483d4b06",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "남자들 중에 나의 사랑하는 자는 수풀 가운데 사과나무 같구나 내가 그 그늘에 앉아서 심히 기뻐하였고 그 실과는 내 입에 달았구나"
+      ],
+      "raw_text_hashes": [
+        "5204d698d12a3a2f861556f7c43e2586fa0cdd1a75524761e53eb22e483d4b06"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:SNG:2:4",
+      "sequence": 17559,
+      "chapter_label": "SNG 2",
+      "verse_label": "4",
+      "locator": {
+        "book": "SNG",
+        "chapter": 2,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 2,
+          "verse": 4
+        }
+      ],
+      "en": "He brought me to the banquet hall. His banner over me is love.",
+      "ko": "그가 나를 인도하여 잔치집에 들어갔으니 그 사랑이 내 위에 기로구나",
+      "source_text_hash": "a3b273ff314beeead87f1bed1be3d10c5668a70275c8a628312dbba7c1819932",
+      "translation_text_hash": "66c67c9fe5dcc6163e625e2502af9c143251e75cabdbbb2471ceda5c6b0425ac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 나를 인도하여 잔치집에 들어갔으니 그 사랑이 내 위에 기로구나"
+      ],
+      "raw_text_hashes": [
+        "66c67c9fe5dcc6163e625e2502af9c143251e75cabdbbb2471ceda5c6b0425ac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:SNG:2:5",
+      "sequence": 17560,
+      "chapter_label": "SNG 2",
+      "verse_label": "5",
+      "locator": {
+        "book": "SNG",
+        "chapter": 2,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 2,
+          "verse": 5
+        }
+      ],
+      "en": "Strengthen me with raisins, refresh me with apples; for I am faint with love.",
+      "ko": "너희는 건포도로 내 힘을 돕고 사과로 나를 시원케 하라 내가 사랑하므로 병이 났음이니라",
+      "source_text_hash": "0f6558ee035b256f3f97849c22557df80a33a30728a8dba57e3cf80c459f07f2",
+      "translation_text_hash": "873c97e9ada893969eb820033b2305e96c71d145a574d3c936326a2d61a53cfb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 건포도로 내 힘을 돕고 사과로 나를 시원케 하라 내가 사랑하므로 병이 났음이니라"
+      ],
+      "raw_text_hashes": [
+        "873c97e9ada893969eb820033b2305e96c71d145a574d3c936326a2d61a53cfb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:SNG:2:6",
+      "sequence": 17561,
+      "chapter_label": "SNG 2",
+      "verse_label": "6",
+      "locator": {
+        "book": "SNG",
+        "chapter": 2,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 2,
+          "verse": 6
+        }
+      ],
+      "en": "His left hand is under my head. His right hand embraces me.",
+      "ko": "그가 왼손으로 내 머리에 베개하고 오른손으로 나를 안는구나",
+      "source_text_hash": "72236b6f2de42a8b6ec61f22f0eb8fc65e9ffb16d77719d15c75edf40429327d",
+      "translation_text_hash": "8fae995c5ee15b42647991c6d82627cc97a52274da384dcbce698043870f8f13",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 왼손으로 내 머리에 베개하고 오른손으로 나를 안는구나"
+      ],
+      "raw_text_hashes": [
+        "8fae995c5ee15b42647991c6d82627cc97a52274da384dcbce698043870f8f13"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:SNG:2:7",
+      "sequence": 17562,
+      "chapter_label": "SNG 2",
+      "verse_label": "7",
+      "locator": {
+        "book": "SNG",
+        "chapter": 2,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 2,
+          "verse": 7
+        }
+      ],
+      "en": "I adjure you, daughters of Jerusalem, by the roes, or by the hinds of the field, that you not stir up, nor awaken love, until it so desires.",
+      "ko": "예루살렘 여자들아 내가 노루와 들 사슴으로 너희에게 부탁한다 내 사랑이 원하기 전에는 흔들지 말고 깨우지 말찌니라",
+      "source_text_hash": "fcb49f71c113a43c1c637349bf5ed803ddf62c4a395e706a8e19a00b3176ff87",
+      "translation_text_hash": "f2d4309310b3992db9ff5311f9a683eb30a1d47463721f1cb7d874513355f182",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예루살렘 여자들아 내가 노루와 들 사슴으로 너희에게 부탁한다 내 사랑이 원하기 전에는 흔들지 말고 깨우지 말찌니라"
+      ],
+      "raw_text_hashes": [
+        "f2d4309310b3992db9ff5311f9a683eb30a1d47463721f1cb7d874513355f182"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:SNG:2:8",
+      "sequence": 17563,
+      "chapter_label": "SNG 2",
+      "verse_label": "8",
+      "locator": {
+        "book": "SNG",
+        "chapter": 2,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 2,
+          "verse": 8
+        }
+      ],
+      "en": "The voice of my beloved! Behold, he comes, leaping on the mountains, skipping on the hills.",
+      "ko": "나의 사랑하는 자의 목소리로구나 보라 그가 산에서 달리고 작은 산을 빨리 넘어 오는구나",
+      "source_text_hash": "986e043c44142ec0f7f7d3d7376d1291907ec2384086396edec2dc408061024f",
+      "translation_text_hash": "e0c261bd1e1ea7ef057051311465c2690476ed459aff4a2657cd501639270149",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 사랑하는 자의 목소리로구나 보라 그가 산에서 달리고 작은 산을 빨리 넘어 오는구나"
+      ],
+      "raw_text_hashes": [
+        "e0c261bd1e1ea7ef057051311465c2690476ed459aff4a2657cd501639270149"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:SNG:2:9",
+      "sequence": 17564,
+      "chapter_label": "SNG 2",
+      "verse_label": "9",
+      "locator": {
+        "book": "SNG",
+        "chapter": 2,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 2,
+          "verse": 9
+        }
+      ],
+      "en": "My beloved is like a roe or a young deer. Behold, he stands behind our wall! He looks in at the windows. He glances through the lattice.",
+      "ko": "나의 사랑하는 자는 노루와도 같고 어린 사슴과도 같아서 우리 벽 뒤에 서서 창으로 들여다보며 창살 틈으로 엿보는구나",
+      "source_text_hash": "56039143cc1d4d39a09adc4c0f894de4d5506289fe3cb3f45d9ee7e51173d471",
+      "translation_text_hash": "e59eb59f3e43a286ddd61cab3c55470e5ff0dce5ad4aed764f8887a74cb448bf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 사랑하는 자는 노루와도 같고 어린 사슴과도 같아서 우리 벽 뒤에 서서 창으로 들여다보며 창살 틈으로 엿보는구나"
+      ],
+      "raw_text_hashes": [
+        "e59eb59f3e43a286ddd61cab3c55470e5ff0dce5ad4aed764f8887a74cb448bf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:SNG:2:10",
+      "sequence": 17565,
+      "chapter_label": "SNG 2",
+      "verse_label": "10",
+      "locator": {
+        "book": "SNG",
+        "chapter": 2,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 2,
+          "verse": 10
+        }
+      ],
+      "en": "My beloved spoke, and said to me, “Rise up, my love, my beautiful one, and come away.",
+      "ko": "나의 사랑하는 자가 내게 말하여 이르기를 나의 사랑, 나의 어여쁜 자야 일어나서 함께 가자",
+      "source_text_hash": "bee37a7825011f38390ecb562f0728914bfe882a35dfc6aa5434154f38a4c55d",
+      "translation_text_hash": "3fdde0d5d69660ebf09abb188845eb4e9ef33fd7dfb74dea7d71510a372c2f76",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 사랑하는 자가 내게 말하여 이르기를 나의 사랑, 나의 어여쁜 자야 일어나서 함께 가자"
+      ],
+      "raw_text_hashes": [
+        "3fdde0d5d69660ebf09abb188845eb4e9ef33fd7dfb74dea7d71510a372c2f76"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:SNG:2:11",
+      "sequence": 17566,
+      "chapter_label": "SNG 2",
+      "verse_label": "11",
+      "locator": {
+        "book": "SNG",
+        "chapter": 2,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 2,
+          "verse": 11
+        }
+      ],
+      "en": "For behold, the winter is past. The rain is over and gone.",
+      "ko": "겨울도 지나고 비도 그쳤고",
+      "source_text_hash": "edf8b0237aedc8876e5e6c8fc90815ba20fc90a967bd691485e4f2ffde16f98c",
+      "translation_text_hash": "6e8f99a8c5d47e15d907fb50547ac40d5795729499c54cc15d672720fec10392",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "겨울도 지나고 비도 그쳤고"
+      ],
+      "raw_text_hashes": [
+        "6e8f99a8c5d47e15d907fb50547ac40d5795729499c54cc15d672720fec10392"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:SNG:2:12",
+      "sequence": 17567,
+      "chapter_label": "SNG 2",
+      "verse_label": "12",
+      "locator": {
+        "book": "SNG",
+        "chapter": 2,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 2,
+          "verse": 12
+        }
+      ],
+      "en": "The flowers appear on the earth. The time of the singing has come, and the voice of the turtledove is heard in our land.",
+      "ko": "지면에는 꽃이 피고 새의 노래할 때가 이르렀는데 반구의 소리가 우리 땅에 들리는구나",
+      "source_text_hash": "1ea99cdfb286db41f2caf7134f1757b11d0f396d772cac4cc6fa7bf0362cae3b",
+      "translation_text_hash": "6623f14fd1e2f63fbe149f91c2f693e7b2788e40d70869d5b333626bedd63ecd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "지면에는 꽃이 피고 새의 노래할 때가 이르렀는데 반구의 소리가 우리 땅에 들리는구나"
+      ],
+      "raw_text_hashes": [
+        "6623f14fd1e2f63fbe149f91c2f693e7b2788e40d70869d5b333626bedd63ecd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:SNG:2:13",
+      "sequence": 17568,
+      "chapter_label": "SNG 2",
+      "verse_label": "13",
+      "locator": {
+        "book": "SNG",
+        "chapter": 2,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 2,
+          "verse": 13
+        }
+      ],
+      "en": "The fig tree ripens her green figs. The vines are in blossom. They give out their fragrance. Arise, my love, my beautiful one, and come away.” Lover",
+      "ko": "무화과나무에는 푸른 열매가 익었고 포도나무는 꽃이 피어 향기를 토하는구나 나의 사랑, 나의 어여쁜 자야 일어나서 함께 가자",
+      "source_text_hash": "8556de37f53d017af37df779bc15e960708e2535aa2c29f7e42843d12243bf85",
+      "translation_text_hash": "85cf08b36b64252508cb0a7a053c4fb735b31f72357237d1987351faa72f3a92",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무화과나무에는 푸른 열매가 익었고 포도나무는 꽃이 피어 향기를 토하는구나 나의 사랑, 나의 어여쁜 자야 일어나서 함께 가자"
+      ],
+      "raw_text_hashes": [
+        "85cf08b36b64252508cb0a7a053c4fb735b31f72357237d1987351faa72f3a92"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:SNG:2:14",
+      "sequence": 17569,
+      "chapter_label": "SNG 2",
+      "verse_label": "14",
+      "locator": {
+        "book": "SNG",
+        "chapter": 2,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 2,
+          "verse": 14
+        }
+      ],
+      "en": "My dove in the clefts of the rock, in the hiding places of the mountainside, let me see your face. Let me hear your voice; for your voice is sweet and your face is lovely.",
+      "ko": "바위 틈 낭떠러지 은밀한 곳에 있는 나의 비둘기야 나로 네 얼굴을 보게 하라 네 소리를 듣게 하라 네 소리는 부드럽고 네 얼굴은 아름답구나",
+      "source_text_hash": "bffb2707020c08f032c25d981d884a1df0e196cbdca763d078c2ca487f52414f",
+      "translation_text_hash": "36db4fa42c1ac1547d3f96c2ea8627cb30a49213a53ed2566a439524e163a514",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바위 틈 낭떠러지 은밀한 곳에 있는 나의 비둘기야 나로 네 얼굴을 보게 하라 네 소리를 듣게 하라 네 소리는 부드럽고 네 얼굴은 아름답구나"
+      ],
+      "raw_text_hashes": [
+        "36db4fa42c1ac1547d3f96c2ea8627cb30a49213a53ed2566a439524e163a514"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:SNG:2:15",
+      "sequence": 17570,
+      "chapter_label": "SNG 2",
+      "verse_label": "15",
+      "locator": {
+        "book": "SNG",
+        "chapter": 2,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 2,
+          "verse": 15
+        }
+      ],
+      "en": "Catch for us the foxes, the little foxes that plunder the vineyards; for our vineyards are in blossom. Beloved",
+      "ko": "우리를 위하여 여우 곧 포도원을 허는 작은 여우를 잡으라 우리의 포도원에 꽃이 피었음이니라",
+      "source_text_hash": "3d8fa95a6959b7b3e2e2af3fff6a51402e362ad97b128bb16f9400623a0a1a1c",
+      "translation_text_hash": "40f820670ebc983a4591f852d3a29fae448f01efb5ff5347c6b75adf1b335370",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리를 위하여 여우 곧 포도원을 허는 작은 여우를 잡으라 우리의 포도원에 꽃이 피었음이니라"
+      ],
+      "raw_text_hashes": [
+        "40f820670ebc983a4591f852d3a29fae448f01efb5ff5347c6b75adf1b335370"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:SNG:2:16",
+      "sequence": 17571,
+      "chapter_label": "SNG 2",
+      "verse_label": "16",
+      "locator": {
+        "book": "SNG",
+        "chapter": 2,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 2,
+          "verse": 16
+        }
+      ],
+      "en": "My beloved is mine, and I am his. He browses among the lilies.",
+      "ko": "나의 사랑하는 자는 내게 속하였고 나는 그에게 속하였구나 그가 백합화 가운데서 양떼를 먹이는구나",
+      "source_text_hash": "780092ac406510a860f1cab4e7943bad35fef248c11f886a4d2407c367289cec",
+      "translation_text_hash": "ec3f4af1014dfbff6edef741866b61dfe9deeab8879e283af9d2298e563d2fb5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 사랑하는 자는 내게 속하였고 나는 그에게 속하였구나 그가 백합화 가운데서 양떼를 먹이는구나"
+      ],
+      "raw_text_hashes": [
+        "ec3f4af1014dfbff6edef741866b61dfe9deeab8879e283af9d2298e563d2fb5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:SNG:2:17",
+      "sequence": 17572,
+      "chapter_label": "SNG 2",
+      "verse_label": "17",
+      "locator": {
+        "book": "SNG",
+        "chapter": 2,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 2,
+          "verse": 17
+        }
+      ],
+      "en": "Until the day is cool, and the shadows flee away, turn, my beloved, and be like a roe or a young deer on the mountains of Bether.",
+      "ko": "나의 사랑하는 자야 날이 기울고 그림자가 갈 때에 돌아와서 베데르 산에서의 노루와 어린 사슴 같아여라",
+      "source_text_hash": "bd963f8f008e166de0e6d91dcefc5fb5e8c1931c0608e5523b211e5f1b8b8edc",
+      "translation_text_hash": "db4ebd00df7e7e647ede63240ada799abe9aa86c99f465ff4b4b43a7cef59717",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 사랑하는 자야 날이 기울고 그림자가 갈 때에 돌아와서 베데르 산에서의 노루와 어린 사슴 같아여라"
+      ],
+      "raw_text_hashes": [
+        "db4ebd00df7e7e647ede63240ada799abe9aa86c99f465ff4b4b43a7cef59717"
+      ]
+    }
+  ]
+}

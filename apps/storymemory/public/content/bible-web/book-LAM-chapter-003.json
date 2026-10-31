@@ -1,0 +1,2125 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:LAM:chapter:003",
+  "unit_ordinal": 800,
+  "unit_label": "LAM 3",
+  "book_code": "LAM",
+  "chapter_number": 3,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:LAM:3:1",
+      "sequence": 20356,
+      "chapter_label": "LAM 3",
+      "verse_label": "1",
+      "locator": {
+        "book": "LAM",
+        "chapter": 3,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 3,
+          "verse": 1
+        }
+      ],
+      "en": "I am the man who has seen affliction by the rod of his wrath.",
+      "ko": "여호와의 노하신 매로 인하여 고난 당한 자는 내로다",
+      "source_text_hash": "9f324ba2561d83fb145b94abb50351e09fb25297ddb7d9496b8edc4a36ac9261",
+      "translation_text_hash": "71e90241c79d39a4de836f55cf5c6fe5262c199a50e55d18eef938692865bf92",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 노하신 매로 인하여 고난 당한 자는 내로다"
+      ],
+      "raw_text_hashes": [
+        "71e90241c79d39a4de836f55cf5c6fe5262c199a50e55d18eef938692865bf92"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:3:2",
+      "sequence": 20357,
+      "chapter_label": "LAM 3",
+      "verse_label": "2",
+      "locator": {
+        "book": "LAM",
+        "chapter": 3,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 3,
+          "verse": 2
+        }
+      ],
+      "en": "He has led me and caused me to walk in darkness, and not in light.",
+      "ko": "나를 이끌어 흑암에 행하고 광명에 행치 않게 하셨으며",
+      "source_text_hash": "034f7c02d97b357eb78d64622d76cf1d0b66c1856d28c0e97f850351fc964773",
+      "translation_text_hash": "c9065dc66ae9258669e76c51885536555340b675dd45dfa891a49a12ef44f236",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나를 이끌어 흑암에 행하고 광명에 행치 않게 하셨으며"
+      ],
+      "raw_text_hashes": [
+        "c9065dc66ae9258669e76c51885536555340b675dd45dfa891a49a12ef44f236"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:3:3",
+      "sequence": 20358,
+      "chapter_label": "LAM 3",
+      "verse_label": "3",
+      "locator": {
+        "book": "LAM",
+        "chapter": 3,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 3,
+          "verse": 3
+        }
+      ],
+      "en": "Surely he turns his hand against me again and again all day long.",
+      "ko": "종일토록 손을 돌이켜 자주 자주 나를 치시도다",
+      "source_text_hash": "ab05ea47fb69447f39ff78f71a448e388b2ee249c2d8de1ea1eb79117f1d4051",
+      "translation_text_hash": "bdfaeb949ccd34e5e2e60fb72b97fd7a42461ece299d9a81c5e2ea34b95f1cf1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "종일토록 손을 돌이켜 자주 자주 나를 치시도다"
+      ],
+      "raw_text_hashes": [
+        "bdfaeb949ccd34e5e2e60fb72b97fd7a42461ece299d9a81c5e2ea34b95f1cf1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:3:4",
+      "sequence": 20359,
+      "chapter_label": "LAM 3",
+      "verse_label": "4",
+      "locator": {
+        "book": "LAM",
+        "chapter": 3,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 3,
+          "verse": 4
+        }
+      ],
+      "en": "He has made my flesh and my skin old. He has broken my bones.",
+      "ko": "나의 살과 가죽을 쇠하게 하시며 나의 뼈를 꺾으셨고",
+      "source_text_hash": "2b4c84a8ffffd1eafd41173e6d5eeaf769ce65abca66fe73557e6ba1d19346d9",
+      "translation_text_hash": "36c5bedc6eb3a5cc402782a51d7a97bb1fa51b0cc347db70b9779395a2378a8c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 살과 가죽을 쇠하게 하시며 나의 뼈를 꺾으셨고"
+      ],
+      "raw_text_hashes": [
+        "36c5bedc6eb3a5cc402782a51d7a97bb1fa51b0cc347db70b9779395a2378a8c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:3:5",
+      "sequence": 20360,
+      "chapter_label": "LAM 3",
+      "verse_label": "5",
+      "locator": {
+        "book": "LAM",
+        "chapter": 3,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 3,
+          "verse": 5
+        }
+      ],
+      "en": "He has built against me, and surrounded me with bitterness and hardship.",
+      "ko": "담즙과 수고를 쌓아 나를 에우셨으며",
+      "source_text_hash": "0c7888db9c285a3df4fa14bf30c0b285f5bc5190c78b9ef20f39a64f9389659d",
+      "translation_text_hash": "805626520896fff72490a7285db923e8336df0490e3a1eaaf3a95885a25eedce",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "담즙과 수고를 쌓아 나를 에우셨으며"
+      ],
+      "raw_text_hashes": [
+        "805626520896fff72490a7285db923e8336df0490e3a1eaaf3a95885a25eedce"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:3:6",
+      "sequence": 20361,
+      "chapter_label": "LAM 3",
+      "verse_label": "6",
+      "locator": {
+        "book": "LAM",
+        "chapter": 3,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 3,
+          "verse": 6
+        }
+      ],
+      "en": "He has made me dwell in dark places, as those who have been long dead.",
+      "ko": "나로 흑암에 거하게 하시기를 죽은지 오랜 자 같게 하셨도다",
+      "source_text_hash": "9b5d04e7b46466f277fa45952fee6f759c8c2ad7748be6a7a2dc214ee3b9021f",
+      "translation_text_hash": "2c6a0acd5ba6878ac007ad3c686d8481fe82df746dae1f30adc50a829426c217",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나로 흑암에 거하게 하시기를 죽은지 오랜 자 같게 하셨도다"
+      ],
+      "raw_text_hashes": [
+        "2c6a0acd5ba6878ac007ad3c686d8481fe82df746dae1f30adc50a829426c217"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:3:7",
+      "sequence": 20362,
+      "chapter_label": "LAM 3",
+      "verse_label": "7",
+      "locator": {
+        "book": "LAM",
+        "chapter": 3,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 3,
+          "verse": 7
+        }
+      ],
+      "en": "He has walled me about, so that I can’t go out. He has made my chain heavy.",
+      "ko": "나를 둘러 싸서 나가지 못하게 하시고 나의 사슬을 무겁게 하셨으며",
+      "source_text_hash": "2801bb10518fcdb0ab4e1d038f5f1f4054718f5f9b3f2d022e75967f454338a2",
+      "translation_text_hash": "c6ee175d992d8d2031b99d384767cd506e2d11ea5b12ff1200394273ed281a75",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나를 둘러 싸서 나가지 못하게 하시고 나의 사슬을 무겁게 하셨으며"
+      ],
+      "raw_text_hashes": [
+        "c6ee175d992d8d2031b99d384767cd506e2d11ea5b12ff1200394273ed281a75"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:3:8",
+      "sequence": 20363,
+      "chapter_label": "LAM 3",
+      "verse_label": "8",
+      "locator": {
+        "book": "LAM",
+        "chapter": 3,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 3,
+          "verse": 8
+        }
+      ],
+      "en": "Yes, when I cry, and call for help, he shuts out my prayer.",
+      "ko": "내가 부르짖어 도움을 구하나 내 기도를 물리치시며",
+      "source_text_hash": "71251217a2364c4ae140425dfb28a688c2aa33280de9f83cee35afd02280bbf5",
+      "translation_text_hash": "3996dbb79b29701b7534ae5b0697a18b880f15bd928b7841cc9f468f5a488730",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 부르짖어 도움을 구하나 내 기도를 물리치시며"
+      ],
+      "raw_text_hashes": [
+        "3996dbb79b29701b7534ae5b0697a18b880f15bd928b7841cc9f468f5a488730"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:3:9",
+      "sequence": 20364,
+      "chapter_label": "LAM 3",
+      "verse_label": "9",
+      "locator": {
+        "book": "LAM",
+        "chapter": 3,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 3,
+          "verse": 9
+        }
+      ],
+      "en": "He has walled up my ways with cut stone. He has made my paths crooked.",
+      "ko": "다듬은 돌을 쌓아 내 길을 막으사 내 첩경을 굽게 하셨도다",
+      "source_text_hash": "3d51de94936a6aa3c4eae2706b3375076999260b7f69b42c88d7933208dcd7d3",
+      "translation_text_hash": "7d04dead4843b12ee49acd7212bdb45831de37d300e2bb56160de975ccc2d441",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다듬은 돌을 쌓아 내 길을 막으사 내 첩경을 굽게 하셨도다"
+      ],
+      "raw_text_hashes": [
+        "7d04dead4843b12ee49acd7212bdb45831de37d300e2bb56160de975ccc2d441"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:3:10",
+      "sequence": 20365,
+      "chapter_label": "LAM 3",
+      "verse_label": "10",
+      "locator": {
+        "book": "LAM",
+        "chapter": 3,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 3,
+          "verse": 10
+        }
+      ],
+      "en": "He is to me as a bear lying in wait, as a lion in hiding.",
+      "ko": "저는 내게 대하여 엎드리어 기다리는 곰과 은밀한 곳의 사자 같으사",
+      "source_text_hash": "04b95f9fcc288a3a11a26594f58aa2707341afdcc33441f1043be5ca80cdce63",
+      "translation_text_hash": "9cd1e172a83ea05612fe3e0a6811da82c3970ef442d8b98ed89c2b062d846ce6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저는 내게 대하여 엎드리어 기다리는 곰과 은밀한 곳의 사자 같으사"
+      ],
+      "raw_text_hashes": [
+        "9cd1e172a83ea05612fe3e0a6811da82c3970ef442d8b98ed89c2b062d846ce6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:3:11",
+      "sequence": 20366,
+      "chapter_label": "LAM 3",
+      "verse_label": "11",
+      "locator": {
+        "book": "LAM",
+        "chapter": 3,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 3,
+          "verse": 11
+        }
+      ],
+      "en": "He has turned away my path, and pulled me in pieces. He has made me desolate.",
+      "ko": "나의 길로 치우치게 하시며 내 몸을 찢으시며 나로 적막하게 하셨도다",
+      "source_text_hash": "ba590b989807164564c7e1d5c8e80c9da3de25cb70155a4b302019bbeb7785fa",
+      "translation_text_hash": "35f924d9c81d74bf922c4fe66f553c5b31f92113281fce1f1f3c017838e61a66",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 길로 치우치게 하시며 내 몸을 찢으시며 나로 적막하게 하셨도다"
+      ],
+      "raw_text_hashes": [
+        "35f924d9c81d74bf922c4fe66f553c5b31f92113281fce1f1f3c017838e61a66"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:3:12",
+      "sequence": 20367,
+      "chapter_label": "LAM 3",
+      "verse_label": "12",
+      "locator": {
+        "book": "LAM",
+        "chapter": 3,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 3,
+          "verse": 12
+        }
+      ],
+      "en": "He has bent his bow, and set me as a mark for the arrow.",
+      "ko": "활을 당기고 나로 과녁을 삼으심이여",
+      "source_text_hash": "32372afe484e843c9aeca5097cf5cdfb1904beb34294e144bfc9660560e10fad",
+      "translation_text_hash": "4a3953f6cd845199bc267f82743aa19ac49b551e5574c23296501515fcb253c2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "활을 당기고 나로 과녁을 삼으심이여"
+      ],
+      "raw_text_hashes": [
+        "4a3953f6cd845199bc267f82743aa19ac49b551e5574c23296501515fcb253c2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:3:13",
+      "sequence": 20368,
+      "chapter_label": "LAM 3",
+      "verse_label": "13",
+      "locator": {
+        "book": "LAM",
+        "chapter": 3,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 3,
+          "verse": 13
+        }
+      ],
+      "en": "He has caused the shafts of his quiver to enter into my kidneys.",
+      "ko": "전동의 살로 내 허리를 맞추셨도다",
+      "source_text_hash": "70ed7debd110f26cc63dd70eef7649fa44f2db710f223e3b7d6b5a5d165259cc",
+      "translation_text_hash": "24fdf17daa562e7cd2e4c70d6662dab3777c6a67dc3cf3aef8586270fdf5296b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "전동의 살로 내 허리를 맞추셨도다"
+      ],
+      "raw_text_hashes": [
+        "24fdf17daa562e7cd2e4c70d6662dab3777c6a67dc3cf3aef8586270fdf5296b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:3:14",
+      "sequence": 20369,
+      "chapter_label": "LAM 3",
+      "verse_label": "14",
+      "locator": {
+        "book": "LAM",
+        "chapter": 3,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 3,
+          "verse": 14
+        }
+      ],
+      "en": "I have become a derision to all my people, and their song all day long.",
+      "ko": "나는 내 모든 백성에게 조롱거리 곧 종일토록 그들의 노랫거리가 되었도다",
+      "source_text_hash": "65249d965634988d9b501d8495d278ef26a34380311505ee6397167ff79a71e5",
+      "translation_text_hash": "4c8aa43a087292e1e23b149254e33b84dc086f20b742c3f24fb36264e6af51fd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 내 모든 백성에게 조롱거리 곧 종일토록 그들의 노랫거리가 되었도다"
+      ],
+      "raw_text_hashes": [
+        "4c8aa43a087292e1e23b149254e33b84dc086f20b742c3f24fb36264e6af51fd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:3:15",
+      "sequence": 20370,
+      "chapter_label": "LAM 3",
+      "verse_label": "15",
+      "locator": {
+        "book": "LAM",
+        "chapter": 3,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 3,
+          "verse": 15
+        }
+      ],
+      "en": "He has filled me with bitterness. He has stuffed me with wormwood.",
+      "ko": "나를 쓴 것으로 배불리시고 쑥으로 취하게 하셨으며",
+      "source_text_hash": "d691e297128fdded4caebc4b2fda979ff4f3d9765c0bf86d692458a32721e151",
+      "translation_text_hash": "c08b09a067c959ea6d3418547b36a0028259ef9b09a5eb9ab446b83a3c412a79",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나를 쓴 것으로 배불리시고 쑥으로 취하게 하셨으며"
+      ],
+      "raw_text_hashes": [
+        "c08b09a067c959ea6d3418547b36a0028259ef9b09a5eb9ab446b83a3c412a79"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:3:16",
+      "sequence": 20371,
+      "chapter_label": "LAM 3",
+      "verse_label": "16",
+      "locator": {
+        "book": "LAM",
+        "chapter": 3,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 3,
+          "verse": 16
+        }
+      ],
+      "en": "He has also broken my teeth with gravel. He has covered me with ashes.",
+      "ko": "조약돌로 내 이를 꺾으시고 재로 나를 덮으셨도다",
+      "source_text_hash": "2e8f8fb7dcd4d90ea9f0f18d7795d89efdb81bf60196a6bc9c6c5b0204cf6ca9",
+      "translation_text_hash": "a7139448a34d8cb986e22e80fcf48a153fe1eb600a3e539c5fa0b0662cc6265e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "조약돌로 내 이를 꺾으시고 재로 나를 덮으셨도다"
+      ],
+      "raw_text_hashes": [
+        "a7139448a34d8cb986e22e80fcf48a153fe1eb600a3e539c5fa0b0662cc6265e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:3:17",
+      "sequence": 20372,
+      "chapter_label": "LAM 3",
+      "verse_label": "17",
+      "locator": {
+        "book": "LAM",
+        "chapter": 3,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 3,
+          "verse": 17
+        }
+      ],
+      "en": "You have removed my soul far away from peace. I forgot prosperity.",
+      "ko": "주께서 내 심령으로 평강을 멀리 떠나게 하시니 내가 복을 잊어버렸음이여",
+      "source_text_hash": "ece3e5be3f9c24dcc6b9437ceefcb782b16df29ba61aeabae0b39e4f6a6be7e7",
+      "translation_text_hash": "bc0bf95fd3f3dbb94f53f0804c6e718ab24f7c0ccc9562727a6f5fcdd6703fba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 내 심령으로 평강을 멀리 떠나게 하시니 내가 복을 잊어버렸음이여"
+      ],
+      "raw_text_hashes": [
+        "bc0bf95fd3f3dbb94f53f0804c6e718ab24f7c0ccc9562727a6f5fcdd6703fba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:3:18",
+      "sequence": 20373,
+      "chapter_label": "LAM 3",
+      "verse_label": "18",
+      "locator": {
+        "book": "LAM",
+        "chapter": 3,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 3,
+          "verse": 18
+        }
+      ],
+      "en": "I said, “My strength has perished, along with my expectation from the LORD.”",
+      "ko": "스스로 이르기를 나의 힘과 여호와께 대한 내 소망이 끊어졌다 하였도다",
+      "source_text_hash": "e641a00034d504586938b3400bc4a4a8d6928b88e0ce4eef416fa546ea286ba1",
+      "translation_text_hash": "42ae245db7f2d04fe03d9833de8a322046e0566d327875f7d2808eace0ffd837",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "스스로 이르기를 나의 힘과 여호와께 대한 내 소망이 끊어졌다 하였도다"
+      ],
+      "raw_text_hashes": [
+        "42ae245db7f2d04fe03d9833de8a322046e0566d327875f7d2808eace0ffd837"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:3:19",
+      "sequence": 20374,
+      "chapter_label": "LAM 3",
+      "verse_label": "19",
+      "locator": {
+        "book": "LAM",
+        "chapter": 3,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 3,
+          "verse": 19
+        }
+      ],
+      "en": "Remember my affliction and my misery, the wormwood and the bitterness.",
+      "ko": "내 고초와 재난 곧 쑥과 담즙을 기억하소서",
+      "source_text_hash": "cfbd1d7825e0e3b162862872e12207c122b681e994739ca07e818625d9930063",
+      "translation_text_hash": "8dcd513f70d60e13475a4f5b7f03c364ff363b27829f9368c0c0a92ecfbecf05",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 고초와 재난 곧 쑥과 담즙을 기억하소서"
+      ],
+      "raw_text_hashes": [
+        "8dcd513f70d60e13475a4f5b7f03c364ff363b27829f9368c0c0a92ecfbecf05"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:3:20",
+      "sequence": 20375,
+      "chapter_label": "LAM 3",
+      "verse_label": "20",
+      "locator": {
+        "book": "LAM",
+        "chapter": 3,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 3,
+          "verse": 20
+        }
+      ],
+      "en": "My soul still remembers them, and is bowed down within me.",
+      "ko": "내 심령이 그것을 기억하고 낙심이 되오나",
+      "source_text_hash": "240c4fb8dfeeed0bfc23324cb8e8f2d306352b87a2df0091763beeaab3fff3ad",
+      "translation_text_hash": "a918828123df3102b94007a3c30e98bab08c037e61837f7d571e6ba1a040e30b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 심령이 그것을 기억하고 낙심이 되오나"
+      ],
+      "raw_text_hashes": [
+        "a918828123df3102b94007a3c30e98bab08c037e61837f7d571e6ba1a040e30b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:3:21",
+      "sequence": 20376,
+      "chapter_label": "LAM 3",
+      "verse_label": "21",
+      "locator": {
+        "book": "LAM",
+        "chapter": 3,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 3,
+          "verse": 21
+        }
+      ],
+      "en": "This I recall to my mind; therefore I have hope.",
+      "ko": "중심에 회상한즉 오히려 소망이 있사옴은",
+      "source_text_hash": "580e90e072002350b0fec74d5711c451cf9ae59eed3cce205c775ed20bb7f408",
+      "translation_text_hash": "df62050d828a7236029ba990d034acfbaf52dbed951a059ff2ed7b90ba3080cd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "중심에 회상한즉 오히려 소망이 있사옴은"
+      ],
+      "raw_text_hashes": [
+        "df62050d828a7236029ba990d034acfbaf52dbed951a059ff2ed7b90ba3080cd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:3:22",
+      "sequence": 20377,
+      "chapter_label": "LAM 3",
+      "verse_label": "22",
+      "locator": {
+        "book": "LAM",
+        "chapter": 3,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 3,
+          "verse": 22
+        }
+      ],
+      "en": "It is because of the LORD’s loving kindnesses that we are not consumed, because his mercies don’t fail.",
+      "ko": "여호와의 자비와 긍휼이 무궁하시므로 우리가 진멸되지 아니함이니이다",
+      "source_text_hash": "260dd750a483968b81a90247f144f65682b0d2554bed510042fe001970e54e3b",
+      "translation_text_hash": "746e1097cf217e298a92d977e57afdc2d8845e116c2c1c2cff1220213de61f21",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 자비와 긍휼이 무궁하시므로 우리가 진멸되지 아니함이니이다"
+      ],
+      "raw_text_hashes": [
+        "746e1097cf217e298a92d977e57afdc2d8845e116c2c1c2cff1220213de61f21"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:3:23",
+      "sequence": 20378,
+      "chapter_label": "LAM 3",
+      "verse_label": "23",
+      "locator": {
+        "book": "LAM",
+        "chapter": 3,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 3,
+          "verse": 23
+        }
+      ],
+      "en": "They are new every morning. Great is your faithfulness.",
+      "ko": "이것이 아침마다 새로우니 주의 성실이 크도소이다",
+      "source_text_hash": "f80e798d20f01e057c6c4877398ba9b9b51d445e1fad1fdcbf687b4306c715df",
+      "translation_text_hash": "fbb88f8304ff1773d7e7543fd7a28aae2501fd26bc30e66ce68b85f36ea3e994",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이것이 아침마다 새로우니 주의 성실이 크도소이다"
+      ],
+      "raw_text_hashes": [
+        "fbb88f8304ff1773d7e7543fd7a28aae2501fd26bc30e66ce68b85f36ea3e994"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:3:24",
+      "sequence": 20379,
+      "chapter_label": "LAM 3",
+      "verse_label": "24",
+      "locator": {
+        "book": "LAM",
+        "chapter": 3,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 3,
+          "verse": 24
+        }
+      ],
+      "en": "“The LORD is my portion,” says my soul. “Therefore I will hope in him.”",
+      "ko": "내 심령에 이르기를 여호와는 나의 기업이시니 그러므로 내가 저를 바라리라 하도다",
+      "source_text_hash": "098e17e56bb5e87b0136e030fa203ba8f083b70ed3116f742e4557c229e35cba",
+      "translation_text_hash": "1e27542edfefa95972b12cc8d6fbec4890f949a90e9bb4148a7c0dc9057f244b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 심령에 이르기를 여호와는 나의 기업이시니 그러므로 내가 저를 바라리라 하도다"
+      ],
+      "raw_text_hashes": [
+        "1e27542edfefa95972b12cc8d6fbec4890f949a90e9bb4148a7c0dc9057f244b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:3:25",
+      "sequence": 20380,
+      "chapter_label": "LAM 3",
+      "verse_label": "25",
+      "locator": {
+        "book": "LAM",
+        "chapter": 3,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 3,
+          "verse": 25
+        }
+      ],
+      "en": "The LORD is good to those who wait for him, to the soul who seeks him.",
+      "ko": "무릇 기다리는 자에게나 구하는 영혼에게 여호와께서 선을 베푸시는도다",
+      "source_text_hash": "682b43eadb59b685e2a5f46c8e875108ade2a6ce4daec4b74324536e2ad3f237",
+      "translation_text_hash": "61e604cb863111be43370806a65db755753a5b15b77f5a9d05b858136f1c77a2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 기다리는 자에게나 구하는 영혼에게 여호와께서 선을 베푸시는도다"
+      ],
+      "raw_text_hashes": [
+        "61e604cb863111be43370806a65db755753a5b15b77f5a9d05b858136f1c77a2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:3:26",
+      "sequence": 20381,
+      "chapter_label": "LAM 3",
+      "verse_label": "26",
+      "locator": {
+        "book": "LAM",
+        "chapter": 3,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 3,
+          "verse": 26
+        }
+      ],
+      "en": "It is good that a man should hope and quietly wait for the salvation of the LORD.",
+      "ko": "사람이 여호와의 구원을 바라고 잠잠히 기다림이 좋도다",
+      "source_text_hash": "f6ad67319b37d63c9b3647c2780d21d5ab989770c79bb9df2e4d9db15c5d950e",
+      "translation_text_hash": "4499046f8929dc5c36aa0f1842099a06cb559828e6fdcc40b266b55dd788d541",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 여호와의 구원을 바라고 잠잠히 기다림이 좋도다"
+      ],
+      "raw_text_hashes": [
+        "4499046f8929dc5c36aa0f1842099a06cb559828e6fdcc40b266b55dd788d541"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:3:27",
+      "sequence": 20382,
+      "chapter_label": "LAM 3",
+      "verse_label": "27",
+      "locator": {
+        "book": "LAM",
+        "chapter": 3,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 3,
+          "verse": 27
+        }
+      ],
+      "en": "It is good for a man that he bear the yoke in his youth.",
+      "ko": "사람이 젊었을 때에 멍에를 메는 것이 좋으니",
+      "source_text_hash": "82ed72e3e84a1c4ef631f0b0c1780a1ce0447652dc0fb6017f44dc3d3aea661f",
+      "translation_text_hash": "a938aefde66a8847fa701c23189c7cf34f2e265cf4c9e80a739ce7e92e459792",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 젊었을 때에 멍에를 메는 것이 좋으니"
+      ],
+      "raw_text_hashes": [
+        "a938aefde66a8847fa701c23189c7cf34f2e265cf4c9e80a739ce7e92e459792"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:3:28",
+      "sequence": 20383,
+      "chapter_label": "LAM 3",
+      "verse_label": "28",
+      "locator": {
+        "book": "LAM",
+        "chapter": 3,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 3,
+          "verse": 28
+        }
+      ],
+      "en": "Let him sit alone and keep silence, because he has laid it on him.",
+      "ko": "혼자 앉아서 잠잠할 것은 주께서 그것을 메우셨음이라",
+      "source_text_hash": "53564a6f0b4b71f1553c94e4a96e2bc070a5731ccdbb64d9893405b6917ab256",
+      "translation_text_hash": "6324e0b8767c8224008452486fcc00e4169447c65dd230ba78512f3aa5317245",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "혼자 앉아서 잠잠할 것은 주께서 그것을 메우셨음이라"
+      ],
+      "raw_text_hashes": [
+        "6324e0b8767c8224008452486fcc00e4169447c65dd230ba78512f3aa5317245"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:3:29",
+      "sequence": 20384,
+      "chapter_label": "LAM 3",
+      "verse_label": "29",
+      "locator": {
+        "book": "LAM",
+        "chapter": 3,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 3,
+          "verse": 29
+        }
+      ],
+      "en": "Let him put his mouth in the dust, if it is so that there may be hope.",
+      "ko": "입을 티끌에 댈찌어다 혹시 소망이 있을찌로다",
+      "source_text_hash": "834297a07025474e5d252417f43b0e32d986d857def84bd1b36be42129c49bed",
+      "translation_text_hash": "5fd53be8952676180ccdbb8b931d456d22d55839b235176ec24d5d85bf0965e8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "입을 티끌에 댈찌어다 혹시 소망이 있을찌로다"
+      ],
+      "raw_text_hashes": [
+        "5fd53be8952676180ccdbb8b931d456d22d55839b235176ec24d5d85bf0965e8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:3:30",
+      "sequence": 20385,
+      "chapter_label": "LAM 3",
+      "verse_label": "30",
+      "locator": {
+        "book": "LAM",
+        "chapter": 3,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 3,
+          "verse": 30
+        }
+      ],
+      "en": "Let him give his cheek to him who strikes him. Let him be filled full of reproach.",
+      "ko": "때리는 자에게 뺨을 향하여 수욕으로 배불릴찌어다",
+      "source_text_hash": "ac0bc6e685b21ba355769180db4179f3957e6adac915a444a165f8e580e460b4",
+      "translation_text_hash": "f74ed6285d79f0f285c3b1dd131ee2f8f8521b2f4d804fba4eb122de3fc9081a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "때리는 자에게 뺨을 향하여 수욕으로 배불릴찌어다"
+      ],
+      "raw_text_hashes": [
+        "f74ed6285d79f0f285c3b1dd131ee2f8f8521b2f4d804fba4eb122de3fc9081a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:3:31",
+      "sequence": 20386,
+      "chapter_label": "LAM 3",
+      "verse_label": "31",
+      "locator": {
+        "book": "LAM",
+        "chapter": 3,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 3,
+          "verse": 31
+        }
+      ],
+      "en": "For the Lord will not cast off forever.",
+      "ko": "이는 주께서 영원토록 버리지 않으실 것임이며",
+      "source_text_hash": "5102decb33bc7171c3f3d1466054603aab33f3d8d9253e1954437db236f5b855",
+      "translation_text_hash": "b3d7c676f168db3b24de27f1db71d85464be7fd5418ae07756258ef4dd65bfc1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 주께서 영원토록 버리지 않으실 것임이며"
+      ],
+      "raw_text_hashes": [
+        "b3d7c676f168db3b24de27f1db71d85464be7fd5418ae07756258ef4dd65bfc1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:3:32",
+      "sequence": 20387,
+      "chapter_label": "LAM 3",
+      "verse_label": "32",
+      "locator": {
+        "book": "LAM",
+        "chapter": 3,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 3,
+          "verse": 32
+        }
+      ],
+      "en": "For though he causes grief, yet he will have compassion according to the multitude of his loving kindnesses.",
+      "ko": "저가 비록 근심케 하시나 그 풍부한 자비대로 긍휼히 여기실 것임이라",
+      "source_text_hash": "39382ac6bca6db24c4ef3a080e03ac3de1f596d98680416fb69415fc3b539e07",
+      "translation_text_hash": "f881d383e8a2297c974094981fa8f4b15b6212e58dfbedb956e56c52c59c329c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 비록 근심케 하시나 그 풍부한 자비대로 긍휼히 여기실 것임이라"
+      ],
+      "raw_text_hashes": [
+        "f881d383e8a2297c974094981fa8f4b15b6212e58dfbedb956e56c52c59c329c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:3:33",
+      "sequence": 20388,
+      "chapter_label": "LAM 3",
+      "verse_label": "33",
+      "locator": {
+        "book": "LAM",
+        "chapter": 3,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 3,
+          "verse": 33
+        }
+      ],
+      "en": "For he does not afflict willingly, nor grieve the children of men.",
+      "ko": "주께서 인생으로 고생하며 근심하게 하심이 본심이 아니시로다",
+      "source_text_hash": "a72227f0bd498d74d44f93e92ef21852c0ed43cc2d58d9a400f75c23563c6174",
+      "translation_text_hash": "93f69dee171cdfac0730c5176ef4bb1cf6b95d00337683409caccea787a2b327",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 인생으로 고생하며 근심하게 하심이 본심이 아니시로다"
+      ],
+      "raw_text_hashes": [
+        "93f69dee171cdfac0730c5176ef4bb1cf6b95d00337683409caccea787a2b327"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:3:34",
+      "sequence": 20389,
+      "chapter_label": "LAM 3",
+      "verse_label": "34",
+      "locator": {
+        "book": "LAM",
+        "chapter": 3,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 3,
+          "verse": 34
+        }
+      ],
+      "en": "To crush under foot all the prisoners of the earth,",
+      "ko": "세상에 모든 갇힌 자를 발로 밟는 것과",
+      "source_text_hash": "460a67f6c0d5a358d672ba3898ab2b27a0c0acad6f6bee2c79febc8a07ac2c2b",
+      "translation_text_hash": "707974d16cd3e0ac19e37a0b6c0d1fb6cd3585de5cbe3a82e2dce8fbe99bdb13",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "세상에 모든 갇힌 자를 발로 밟는 것과"
+      ],
+      "raw_text_hashes": [
+        "707974d16cd3e0ac19e37a0b6c0d1fb6cd3585de5cbe3a82e2dce8fbe99bdb13"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:3:35",
+      "sequence": 20390,
+      "chapter_label": "LAM 3",
+      "verse_label": "35",
+      "locator": {
+        "book": "LAM",
+        "chapter": 3,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 3,
+          "verse": 35
+        }
+      ],
+      "en": "to turn away the right of a man before the face of the Most High,",
+      "ko": "지극히 높으신 자의 얼굴 앞에서 사람의 재판을 굽게 하는 것과",
+      "source_text_hash": "d5fd4813e71266b42f67261e1ede88bbc3fb025148adc87644ece258941d1902",
+      "translation_text_hash": "f2cad931336eba724f850cbba20f19ad387bd8dd3d4c023ff36094056cc6c8d7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "지극히 높으신 자의 얼굴 앞에서 사람의 재판을 굽게 하는 것과"
+      ],
+      "raw_text_hashes": [
+        "f2cad931336eba724f850cbba20f19ad387bd8dd3d4c023ff36094056cc6c8d7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:3:36",
+      "sequence": 20391,
+      "chapter_label": "LAM 3",
+      "verse_label": "36",
+      "locator": {
+        "book": "LAM",
+        "chapter": 3,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 3,
+          "verse": 36
+        }
+      ],
+      "en": "to subvert a man in his cause, the Lord doesn’t approve.",
+      "ko": "사람의 송사를 억울케 하는 것은 다 주의 기쁘게 보시는 것이 아니로다",
+      "source_text_hash": "ac0006a9fd9a0c7ffa51d594978b1b2daf60587a42a3a4b69d029a9a4c706a20",
+      "translation_text_hash": "6f360138bf683aef92b8d178377f2e1bb5a3af60e2dc04eb89872b1d2e1940d1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람의 송사를 억울케 하는 것은 다 주의 기쁘게 보시는 것이 아니로다"
+      ],
+      "raw_text_hashes": [
+        "6f360138bf683aef92b8d178377f2e1bb5a3af60e2dc04eb89872b1d2e1940d1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:3:37",
+      "sequence": 20392,
+      "chapter_label": "LAM 3",
+      "verse_label": "37",
+      "locator": {
+        "book": "LAM",
+        "chapter": 3,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 3,
+          "verse": 37
+        }
+      ],
+      "en": "Who is he who says, and it comes to pass, when the Lord doesn’t command it?",
+      "ko": "주의 명령이 아니면 누가 능히 말하여 이루게 하랴",
+      "source_text_hash": "3a982df7ddfc12d46554a8ff722b0a9029cd99e612eb10ae4cffc18965c48216",
+      "translation_text_hash": "30b0b4d4682a44f750cf282f97d99999f0b4c9882e8297833dcb0be7552514b0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 명령이 아니면 누가 능히 말하여 이루게 하랴"
+      ],
+      "raw_text_hashes": [
+        "30b0b4d4682a44f750cf282f97d99999f0b4c9882e8297833dcb0be7552514b0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:3:38",
+      "sequence": 20393,
+      "chapter_label": "LAM 3",
+      "verse_label": "38",
+      "locator": {
+        "book": "LAM",
+        "chapter": 3,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 3,
+          "verse": 38
+        }
+      ],
+      "en": "Doesn’t evil and good come out of the mouth of the Most High?",
+      "ko": "화, 복이 지극히 높으신 자의 입으로 나오지 아니하느냐",
+      "source_text_hash": "b7813c3ac1627652550d0f06ada0d39b902db360ff4ce39949a6046c40a5a946",
+      "translation_text_hash": "3a9147e56980c991d2cb40f75baea306d661e9d5bbd9888bced2b3bd85a5f907",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "화, 복이 지극히 높으신 자의 입으로 나오지 아니하느냐"
+      ],
+      "raw_text_hashes": [
+        "3a9147e56980c991d2cb40f75baea306d661e9d5bbd9888bced2b3bd85a5f907"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:3:39",
+      "sequence": 20394,
+      "chapter_label": "LAM 3",
+      "verse_label": "39",
+      "locator": {
+        "book": "LAM",
+        "chapter": 3,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 3,
+          "verse": 39
+        }
+      ],
+      "en": "Why should a living man complain, a man for the punishment of his sins?",
+      "ko": "살아 있는 사람은 자기 죄로 벌을 받나니 어찌 원망하랴",
+      "source_text_hash": "f074b3a5d7a1489e143cbac86130d85904ea4db351e95c130b8c25d2f0dea2cf",
+      "translation_text_hash": "1643dde14e33000db0085f586a43d90361c9b80c9a4c31dc9d61836989628bb2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "살아 있는 사람은 자기 죄로 벌을 받나니 어찌 원망하랴"
+      ],
+      "raw_text_hashes": [
+        "1643dde14e33000db0085f586a43d90361c9b80c9a4c31dc9d61836989628bb2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:3:40",
+      "sequence": 20395,
+      "chapter_label": "LAM 3",
+      "verse_label": "40",
+      "locator": {
+        "book": "LAM",
+        "chapter": 3,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 3,
+          "verse": 40
+        }
+      ],
+      "en": "Let us search and try our ways, and turn again to the LORD.",
+      "ko": "우리가 스스로 행위를 조사하고 여호와께로 돌아가자",
+      "source_text_hash": "eb81fa8e46c0e227e4c7dac79497d4a517b07932f438afb46e9271480dcd3319",
+      "translation_text_hash": "cde249798474ed3be1e5d45c012c61f5e66a96dea36d4d2b0fd812187df36b7d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 스스로 행위를 조사하고 여호와께로 돌아가자"
+      ],
+      "raw_text_hashes": [
+        "cde249798474ed3be1e5d45c012c61f5e66a96dea36d4d2b0fd812187df36b7d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:3:41",
+      "sequence": 20396,
+      "chapter_label": "LAM 3",
+      "verse_label": "41",
+      "locator": {
+        "book": "LAM",
+        "chapter": 3,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 3,
+          "verse": 41
+        }
+      ],
+      "en": "Let’s lift up our heart with our hands to God in the heavens.",
+      "ko": "마음과 손을 아울러 하늘에 계신 하나님께 들자",
+      "source_text_hash": "11c16cd7c9452b50a6ad0e76a2a6b6df03c6f0a1b3f48e540d818348d9684df2",
+      "translation_text_hash": "b4a17c135340befcc5232a81842239fc4862304c4ce62c0067b009289b5c5a71",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마음과 손을 아울러 하늘에 계신 하나님께 들자"
+      ],
+      "raw_text_hashes": [
+        "b4a17c135340befcc5232a81842239fc4862304c4ce62c0067b009289b5c5a71"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:3:42",
+      "sequence": 20397,
+      "chapter_label": "LAM 3",
+      "verse_label": "42",
+      "locator": {
+        "book": "LAM",
+        "chapter": 3,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 3,
+          "verse": 42
+        }
+      ],
+      "en": "“We have transgressed and have rebelled. You have not pardoned.",
+      "ko": "우리의 범죄함과 패역함을 주께서 사하지 아니하시고",
+      "source_text_hash": "fcfcc09252c918eac74814c0173d1cbff8b598780a1da07cb46c3530705bbb1b",
+      "translation_text_hash": "43f6bdaeb84f5b712af763699efc967cb02fcfd0a4a7e28b18867056e27938dc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리의 범죄함과 패역함을 주께서 사하지 아니하시고"
+      ],
+      "raw_text_hashes": [
+        "43f6bdaeb84f5b712af763699efc967cb02fcfd0a4a7e28b18867056e27938dc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:3:43",
+      "sequence": 20398,
+      "chapter_label": "LAM 3",
+      "verse_label": "43",
+      "locator": {
+        "book": "LAM",
+        "chapter": 3,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 3,
+          "verse": 43
+        }
+      ],
+      "en": "“You have covered us with anger and pursued us. You have killed. You have not pitied.",
+      "ko": "진노로 스스로 가리우시고 우리를 군축하시며 살륙하사 긍휼을 베풀지 아니하셨나이다",
+      "source_text_hash": "fedda891177481a71591b58cd1ea2d2b06680e958ffec69383ca22e32de415b7",
+      "translation_text_hash": "cc34f57fbdd25992a0e2538062f797c6be70b77c0d4f791d17c6619610cfa5f4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "진노로 스스로 가리우시고 우리를 군축하시며 살륙하사 긍휼을 베풀지 아니하셨나이다"
+      ],
+      "raw_text_hashes": [
+        "cc34f57fbdd25992a0e2538062f797c6be70b77c0d4f791d17c6619610cfa5f4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:3:44",
+      "sequence": 20399,
+      "chapter_label": "LAM 3",
+      "verse_label": "44",
+      "locator": {
+        "book": "LAM",
+        "chapter": 3,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 3,
+          "verse": 44
+        }
+      ],
+      "en": "You have covered yourself with a cloud, so that no prayer can pass through.",
+      "ko": "주께서 구름으로 스스로 가리우사 기도로 상달치 못하게 하시고",
+      "source_text_hash": "662d4e3d0c9922920440c491805db6f8cd2cf599bf5efc17d0d4db82de40d447",
+      "translation_text_hash": "2440a920e109a5fd1760977e2a9814d45ee07cd79c8ca56855c2e3f9245fbbe4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 구름으로 스스로 가리우사 기도로 상달치 못하게 하시고"
+      ],
+      "raw_text_hashes": [
+        "2440a920e109a5fd1760977e2a9814d45ee07cd79c8ca56855c2e3f9245fbbe4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:3:45",
+      "sequence": 20400,
+      "chapter_label": "LAM 3",
+      "verse_label": "45",
+      "locator": {
+        "book": "LAM",
+        "chapter": 3,
+        "verse": 45
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 3,
+          "verse": 45
+        }
+      ],
+      "en": "You have made us an off-scouring and refuse in the middle of the peoples.",
+      "ko": "우리를 열방 가운데서 진개와 폐물을 삼으셨으므로",
+      "source_text_hash": "c8f553d26e50d98c8579efccc507688fd400ae91e7c7f0c90b20ed05bbcaac57",
+      "translation_text_hash": "ddafdfba400b896ca689b19fdf6d40eff2e9f79d99976d34c0c53aee76d79905",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리를 열방 가운데서 진개와 폐물을 삼으셨으므로"
+      ],
+      "raw_text_hashes": [
+        "ddafdfba400b896ca689b19fdf6d40eff2e9f79d99976d34c0c53aee76d79905"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:3:46",
+      "sequence": 20401,
+      "chapter_label": "LAM 3",
+      "verse_label": "46",
+      "locator": {
+        "book": "LAM",
+        "chapter": 3,
+        "verse": 46
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 3,
+          "verse": 46
+        }
+      ],
+      "en": "“All our enemies have opened their mouth wide against us.",
+      "ko": "우리의 모든 대적이 우리를 향하여 입을 크게 벌렸나이다",
+      "source_text_hash": "fbb315712b7c24ee9a64a8a7a173c4745b491499572ce9a2c3b7baac9476a493",
+      "translation_text_hash": "4064c36e52c2cc4ba14df7f59a737d347f1bf0b4fbdef4e72eeec7022365b561",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리의 모든 대적이 우리를 향하여 입을 크게 벌렸나이다"
+      ],
+      "raw_text_hashes": [
+        "4064c36e52c2cc4ba14df7f59a737d347f1bf0b4fbdef4e72eeec7022365b561"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:3:47",
+      "sequence": 20402,
+      "chapter_label": "LAM 3",
+      "verse_label": "47",
+      "locator": {
+        "book": "LAM",
+        "chapter": 3,
+        "verse": 47
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 3,
+          "verse": 47
+        }
+      ],
+      "en": "Terror and the pit have come on us, devastation and destruction.”",
+      "ko": "두려움과 함정과 잔해와 멸망이 우리에게 임하였도다",
+      "source_text_hash": "4248ba45fdb31459d1ee5705c2937ab8f463b52a221346ff90787a98a22e93e6",
+      "translation_text_hash": "82654db06006a613dc2a6fedda741b0bffcdb091ad8f600085ed1a0b2a3b38ed",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "두려움과 함정과 잔해와 멸망이 우리에게 임하였도다"
+      ],
+      "raw_text_hashes": [
+        "82654db06006a613dc2a6fedda741b0bffcdb091ad8f600085ed1a0b2a3b38ed"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:3:48",
+      "sequence": 20403,
+      "chapter_label": "LAM 3",
+      "verse_label": "48",
+      "locator": {
+        "book": "LAM",
+        "chapter": 3,
+        "verse": 48
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 3,
+          "verse": 48
+        }
+      ],
+      "en": "My eye runs down with streams of water, for the destruction of the daughter of my people.",
+      "ko": "처녀 내 백성의 파멸을 인하여 내 눈에 눈물이 시내처럼 흐르도다",
+      "source_text_hash": "1ef2e182cd0dbdd91afbecfdae8016217a0244c2b6fa655f033fe474e9d4e778",
+      "translation_text_hash": "94f25baf073e4ba3540611c97b6bf18a8a5dbb29c8e7c3be9260d9cc619ebec6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "처녀 내 백성의 파멸을 인하여 내 눈에 눈물이 시내처럼 흐르도다"
+      ],
+      "raw_text_hashes": [
+        "94f25baf073e4ba3540611c97b6bf18a8a5dbb29c8e7c3be9260d9cc619ebec6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:3:49",
+      "sequence": 20404,
+      "chapter_label": "LAM 3",
+      "verse_label": "49",
+      "locator": {
+        "book": "LAM",
+        "chapter": 3,
+        "verse": 49
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 3,
+          "verse": 49
+        }
+      ],
+      "en": "My eye pours down and doesn’t cease, without any intermission,",
+      "ko": "내 눈의 흐르는 눈물이 그치지 아니하고 쉬지 아니함이여",
+      "source_text_hash": "ae92e274415cca65f5e97569202ffa33c1002b5eeaad14e9fae229b9ed82cd7e",
+      "translation_text_hash": "8a4d9de3c34d118d5a9938e981c312bc16ef23c399c771b06436d6912dac22bc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 눈의 흐르는 눈물이 그치지 아니하고 쉬지 아니함이여"
+      ],
+      "raw_text_hashes": [
+        "8a4d9de3c34d118d5a9938e981c312bc16ef23c399c771b06436d6912dac22bc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:3:50",
+      "sequence": 20405,
+      "chapter_label": "LAM 3",
+      "verse_label": "50",
+      "locator": {
+        "book": "LAM",
+        "chapter": 3,
+        "verse": 50
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 3,
+          "verse": 50
+        }
+      ],
+      "en": "until the LORD looks down, and sees from heaven.",
+      "ko": "여호와께서 하늘에서 살피시고 돌아보시기를 기다리는도다",
+      "source_text_hash": "9cfe06547050bb045e52cac916f970581995fd1fcce048a80d45ebb9cae9fbf0",
+      "translation_text_hash": "3cf19a1b300ecfb24766e19de814e34244a5f834cd743fbaa54e24e305d1c76b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 하늘에서 살피시고 돌아보시기를 기다리는도다"
+      ],
+      "raw_text_hashes": [
+        "3cf19a1b300ecfb24766e19de814e34244a5f834cd743fbaa54e24e305d1c76b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:3:51",
+      "sequence": 20406,
+      "chapter_label": "LAM 3",
+      "verse_label": "51",
+      "locator": {
+        "book": "LAM",
+        "chapter": 3,
+        "verse": 51
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 3,
+          "verse": 51
+        }
+      ],
+      "en": "My eye affects my soul, because of all the daughters of my city.",
+      "ko": "나의 성읍의 모든 여자를 인하여 내 눈이 내 심령을 상하게 하는도다",
+      "source_text_hash": "ce0e2a22473a5751f7a2f7f2158a6b98aacf2b1c3fc08bdb71e1dd6f0dd8ac45",
+      "translation_text_hash": "fcb712bacb413cb874a3cce41be27091c2cbfac04363dbd20eb7eb9693b696f3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 성읍의 모든 여자를 인하여 내 눈이 내 심령을 상하게 하는도다"
+      ],
+      "raw_text_hashes": [
+        "fcb712bacb413cb874a3cce41be27091c2cbfac04363dbd20eb7eb9693b696f3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:3:52",
+      "sequence": 20407,
+      "chapter_label": "LAM 3",
+      "verse_label": "52",
+      "locator": {
+        "book": "LAM",
+        "chapter": 3,
+        "verse": 52
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 3,
+          "verse": 52
+        }
+      ],
+      "en": "They have chased me relentlessly like a bird, those who are my enemies without cause.",
+      "ko": "무고히 나의 대적이 된 자가 나를 새와 같이 심히 쫓도다",
+      "source_text_hash": "cebf60e767b1485b565f2f2255710c00fe023df7e619972b434157164ceafdf5",
+      "translation_text_hash": "16d0ca3da2ca32ca584e26d905cb027ecc882de3e703422a1e232267e493aeb6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무고히 나의 대적이 된 자가 나를 새와 같이 심히 쫓도다"
+      ],
+      "raw_text_hashes": [
+        "16d0ca3da2ca32ca584e26d905cb027ecc882de3e703422a1e232267e493aeb6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:3:53",
+      "sequence": 20408,
+      "chapter_label": "LAM 3",
+      "verse_label": "53",
+      "locator": {
+        "book": "LAM",
+        "chapter": 3,
+        "verse": 53
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 3,
+          "verse": 53
+        }
+      ],
+      "en": "They have cut off my life in the dungeon, and have cast a stone on me.",
+      "ko": "저희가 내 생명을 끊으려고 나를 구덩이에 넣고 그 위에 돌을 던짐이여",
+      "source_text_hash": "3840bce821d77533d05dd0b8cec320213f35cc58edb1df4a6a367c92dfca5c64",
+      "translation_text_hash": "894c87e3ea37bd05401dfa14175d9cc877ad55a1001debcf51042df0394c1feb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 내 생명을 끊으려고 나를 구덩이에 넣고 그 위에 돌을 던짐이여"
+      ],
+      "raw_text_hashes": [
+        "894c87e3ea37bd05401dfa14175d9cc877ad55a1001debcf51042df0394c1feb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:3:54",
+      "sequence": 20409,
+      "chapter_label": "LAM 3",
+      "verse_label": "54",
+      "locator": {
+        "book": "LAM",
+        "chapter": 3,
+        "verse": 54
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 3,
+          "verse": 54
+        }
+      ],
+      "en": "Waters flowed over my head. I said, “I am cut off.”",
+      "ko": "물이 내 머리에 넘치니 내가 스스로 이르기를 이제는 멸절되었다 하도다",
+      "source_text_hash": "13dcf512a8259f87bdbe7d1561f0156baa88d35e675b95a23a8d10ce894ccd9e",
+      "translation_text_hash": "0b2b5dd6acafef318e3399faf60be2bacaf3ab7f8b7b6c415558a7b262129545",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "물이 내 머리에 넘치니 내가 스스로 이르기를 이제는 멸절되었다 하도다"
+      ],
+      "raw_text_hashes": [
+        "0b2b5dd6acafef318e3399faf60be2bacaf3ab7f8b7b6c415558a7b262129545"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:3:55",
+      "sequence": 20410,
+      "chapter_label": "LAM 3",
+      "verse_label": "55",
+      "locator": {
+        "book": "LAM",
+        "chapter": 3,
+        "verse": 55
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 3,
+          "verse": 55
+        }
+      ],
+      "en": "I called on your name, LORD, out of the lowest dungeon.",
+      "ko": "여호와여 내가 심히 깊은 구덩이에서 주의 이름을 불렀나이다",
+      "source_text_hash": "77b46650fe17f5b6a8ce63d35c537a4e990842c667056d7db4ed732c542e90b1",
+      "translation_text_hash": "3cd50c34624cf30b4bcab72199b881563f34746a8b495747584d2c72ebbc85e9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 내가 심히 깊은 구덩이에서 주의 이름을 불렀나이다"
+      ],
+      "raw_text_hashes": [
+        "3cd50c34624cf30b4bcab72199b881563f34746a8b495747584d2c72ebbc85e9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:3:56",
+      "sequence": 20411,
+      "chapter_label": "LAM 3",
+      "verse_label": "56",
+      "locator": {
+        "book": "LAM",
+        "chapter": 3,
+        "verse": 56
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 3,
+          "verse": 56
+        }
+      ],
+      "en": "You heard my voice: “Don’t hide your ear from my sighing, and my cry.”",
+      "ko": "주께서 이미 나의 음성을 들으셨사오니 이제 나의 탄식과 부르짖음에 주의 귀를 가리우지 마옵소서",
+      "source_text_hash": "4c76be2382990be341d683b997dcb5b11907f5b18f744da03eef936f5adbc202",
+      "translation_text_hash": "2f2a0d90f8aa99e94d8a2eaed20586f38c1f95d450960cd52b0ee8fa7dcc2ff0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 이미 나의 음성을 들으셨사오니 이제 나의 탄식과 부르짖음에 주의 귀를 가리우지 마옵소서"
+      ],
+      "raw_text_hashes": [
+        "2f2a0d90f8aa99e94d8a2eaed20586f38c1f95d450960cd52b0ee8fa7dcc2ff0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:3:57",
+      "sequence": 20412,
+      "chapter_label": "LAM 3",
+      "verse_label": "57",
+      "locator": {
+        "book": "LAM",
+        "chapter": 3,
+        "verse": 57
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 3,
+          "verse": 57
+        }
+      ],
+      "en": "You came near in the day that I called on you. You said, “Don’t be afraid.”",
+      "ko": "내가 주께 아뢴 날에 주께서 내게 가까이 하여 가라사대 두려워 말라 하셨나이다",
+      "source_text_hash": "d7bf5ca79187a0062d62c60f2bc87205269c7ee0e4619d28c3cd7d006a51795a",
+      "translation_text_hash": "9ab13bf6caf4611de4f467027d1572bd713cad16e09beed2c6a199036e4a75a2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 주께 아뢴 날에 주께서 내게 가까이 하여 가라사대 두려워 말라 하셨나이다"
+      ],
+      "raw_text_hashes": [
+        "9ab13bf6caf4611de4f467027d1572bd713cad16e09beed2c6a199036e4a75a2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:3:58",
+      "sequence": 20413,
+      "chapter_label": "LAM 3",
+      "verse_label": "58",
+      "locator": {
+        "book": "LAM",
+        "chapter": 3,
+        "verse": 58
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 3,
+          "verse": 58
+        }
+      ],
+      "en": "Lord, you have pleaded the causes of my soul. You have redeemed my life.",
+      "ko": "주여 주께서 내 심령의 원통을 펴셨고 내 생명을 속하셨나이다",
+      "source_text_hash": "08398f0b85eb214e6df12e1088c8b1fffecb38f4103403bec873afbfd0516750",
+      "translation_text_hash": "86e40138e29958df37648a5b093cb2124e462e0e742bfd4a0227eac2682fa9d3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주여 주께서 내 심령의 원통을 펴셨고 내 생명을 속하셨나이다"
+      ],
+      "raw_text_hashes": [
+        "86e40138e29958df37648a5b093cb2124e462e0e742bfd4a0227eac2682fa9d3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:3:59",
+      "sequence": 20414,
+      "chapter_label": "LAM 3",
+      "verse_label": "59",
+      "locator": {
+        "book": "LAM",
+        "chapter": 3,
+        "verse": 59
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 3,
+          "verse": 59
+        }
+      ],
+      "en": "LORD, you have seen my wrong. Judge my cause.",
+      "ko": "여호와여 나의 억울을 감찰하셨사오니 나를 위하여 신원하옵소서",
+      "source_text_hash": "bc13174885ccf0da96ca1f8ef72c22d7816b103cc603e3866d8fc5ded7df2460",
+      "translation_text_hash": "01ece69a9ea0fe42c9b1a1fc06bcb429ce712c289be6e00fb4510a00dccdc336",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 나의 억울을 감찰하셨사오니 나를 위하여 신원하옵소서"
+      ],
+      "raw_text_hashes": [
+        "01ece69a9ea0fe42c9b1a1fc06bcb429ce712c289be6e00fb4510a00dccdc336"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:3:60",
+      "sequence": 20415,
+      "chapter_label": "LAM 3",
+      "verse_label": "60",
+      "locator": {
+        "book": "LAM",
+        "chapter": 3,
+        "verse": 60
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 3,
+          "verse": 60
+        }
+      ],
+      "en": "You have seen all their vengeance and all their plans against me.",
+      "ko": "저희가 내게 보수하며 나를 모해함을 주께서 다 감찰하셨나이다",
+      "source_text_hash": "62d6baac87be57d0bfd5d506ecfb460e7e94d109c25ab2cbbdd0316259b6473b",
+      "translation_text_hash": "b26db4a21a861c5ffa304684702c11ae8291972cb915cf451856cd8a0a48ff68",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 내게 보수하며 나를 모해함을 주께서 다 감찰하셨나이다"
+      ],
+      "raw_text_hashes": [
+        "b26db4a21a861c5ffa304684702c11ae8291972cb915cf451856cd8a0a48ff68"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:3:61",
+      "sequence": 20416,
+      "chapter_label": "LAM 3",
+      "verse_label": "61",
+      "locator": {
+        "book": "LAM",
+        "chapter": 3,
+        "verse": 61
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 3,
+          "verse": 61
+        }
+      ],
+      "en": "You have heard their reproach, LORD, and all their plans against me,",
+      "ko": "여호와여 저희가 나를 훼파하며 나를 모해하는 것",
+      "source_text_hash": "896eac2571954ef8c3eecc1b97e5286c3d34bfc43fe7731a6761b0186ab362d7",
+      "translation_text_hash": "595424bd7e8e738ea616f8832529252644cf72e4f5465611ec02b5d34775ba6a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 저희가 나를 훼파하며 나를 모해하는 것"
+      ],
+      "raw_text_hashes": [
+        "595424bd7e8e738ea616f8832529252644cf72e4f5465611ec02b5d34775ba6a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:3:62",
+      "sequence": 20417,
+      "chapter_label": "LAM 3",
+      "verse_label": "62",
+      "locator": {
+        "book": "LAM",
+        "chapter": 3,
+        "verse": 62
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 3,
+          "verse": 62
+        }
+      ],
+      "en": "the lips of those that rose up against me, and their plots against me all day long.",
+      "ko": "곧 일어나 나를 치는 자의 입술에서 나오는 것과 종일 모해하는 것을 들으셨나이다",
+      "source_text_hash": "8f7d0797b33b57c47c6f15f4bd9ed26820e7c8126dcba4e6d7dd816b340c1f73",
+      "translation_text_hash": "90a93244a8734d959e27c4edccb1f257d2e55ca583b331cf35caca58c93e885c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 일어나 나를 치는 자의 입술에서 나오는 것과 종일 모해하는 것을 들으셨나이다"
+      ],
+      "raw_text_hashes": [
+        "90a93244a8734d959e27c4edccb1f257d2e55ca583b331cf35caca58c93e885c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:3:63",
+      "sequence": 20418,
+      "chapter_label": "LAM 3",
+      "verse_label": "63",
+      "locator": {
+        "book": "LAM",
+        "chapter": 3,
+        "verse": 63
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 3,
+          "verse": 63
+        }
+      ],
+      "en": "You see their sitting down and their rising up. I am their song.",
+      "ko": "저희가 앉든지 서든지 나를 노래하는 것을 주여 보옵소서",
+      "source_text_hash": "d172155225b4396f2304008b0759819b68899f0da0e020947ef1368e620fdfb8",
+      "translation_text_hash": "53299161f9c39b8c080cea5a892a9888f2f0eec49c8a0aa802f1f996811b9148",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 앉든지 서든지 나를 노래하는 것을 주여 보옵소서"
+      ],
+      "raw_text_hashes": [
+        "53299161f9c39b8c080cea5a892a9888f2f0eec49c8a0aa802f1f996811b9148"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:3:64",
+      "sequence": 20419,
+      "chapter_label": "LAM 3",
+      "verse_label": "64",
+      "locator": {
+        "book": "LAM",
+        "chapter": 3,
+        "verse": 64
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 3,
+          "verse": 64
+        }
+      ],
+      "en": "You will pay them back, LORD, according to the work of their hands.",
+      "ko": "여호와여 주께서 저의 손으로 행한대로 보응하사",
+      "source_text_hash": "0aab854093c918be6799d049ee8dc3b628a2576510a290b816ae749227af0d81",
+      "translation_text_hash": "15820d9b733645b36f312461f605d7dd1494ae9d174d3151a35572b66e98068b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 주께서 저의 손으로 행한대로 보응하사"
+      ],
+      "raw_text_hashes": [
+        "15820d9b733645b36f312461f605d7dd1494ae9d174d3151a35572b66e98068b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:3:65",
+      "sequence": 20420,
+      "chapter_label": "LAM 3",
+      "verse_label": "65",
+      "locator": {
+        "book": "LAM",
+        "chapter": 3,
+        "verse": 65
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 3,
+          "verse": 65
+        }
+      ],
+      "en": "You will give them hardness of heart, your curse to them.",
+      "ko": "그 마음을 강퍅하게 하시고 저주를 더하시며",
+      "source_text_hash": "aa8e823f723b86647959826c8d89e79df97d727c56648624870a50c77ba71e3e",
+      "translation_text_hash": "c4bb6cb8559e648ce4f870842c3252356c25d6e2669731a2b647a7e4a2f1d5cc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 마음을 강퍅하게 하시고 저주를 더하시며"
+      ],
+      "raw_text_hashes": [
+        "c4bb6cb8559e648ce4f870842c3252356c25d6e2669731a2b647a7e4a2f1d5cc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:3:66",
+      "sequence": 20421,
+      "chapter_label": "LAM 3",
+      "verse_label": "66",
+      "locator": {
+        "book": "LAM",
+        "chapter": 3,
+        "verse": 66
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 3,
+          "verse": 66
+        }
+      ],
+      "en": "You will pursue them in anger, and destroy them from under the heavens of the LORD.",
+      "ko": "진노로 저희를 군축하사 여호와의 천하에서 멸하시리이다",
+      "source_text_hash": "9a3de99284e9bf5343815cedf5075c55b50cc4bfcc72a98814cc6d369ccf20b5",
+      "translation_text_hash": "ab1361e2cc512f9b4f13380b3320aed045df85ecd1be0381e1f47750b859dbfc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "진노로 저희를 군축하사 여호와의 천하에서 멸하시리이다"
+      ],
+      "raw_text_hashes": [
+        "ab1361e2cc512f9b4f13380b3320aed045df85ecd1be0381e1f47750b859dbfc"
+      ]
+    }
+  ]
+}

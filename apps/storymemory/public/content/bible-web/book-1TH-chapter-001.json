@@ -1,0 +1,333 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1TH:chapter:001",
+  "unit_ordinal": 1112,
+  "unit_label": "1TH 1",
+  "book_code": "1TH",
+  "chapter_number": 1,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1TH:1:1",
+      "sequence": 29558,
+      "chapter_label": "1TH 1",
+      "verse_label": "1",
+      "locator": {
+        "book": "1TH",
+        "chapter": 1,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1TH",
+          "chapter": 1,
+          "verse": 1
+        }
+      ],
+      "en": "Paul, Silvanus, and Timothy, to the assembly of the Thessalonians in God the Father and the Lord Jesus Christ: Grace to you and peace from God our Father and the Lord Jesus Christ.",
+      "ko": "바울과 실루아노와 디모데는 하나님 아버지와 주 예수 그리스도 안에 있는 데살로니가인의 교회에 편지하노니 은혜와 평강이 너희에게 있을찌어다",
+      "source_text_hash": "2a9ebbfe57f5a325f1ffd4ef2dd15e383aabc01278142af9c5345b7ff24b5e0a",
+      "translation_text_hash": "702917a69f7b3100bbdc39e4345dcfc300297d2b30e5c1d3614da71d11a7bf32",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바울과 실루아노와 디모데는 하나님 아버지와 주 예수 그리스도 안에 있는 데살로니가인의 교회에 편지하노니 은혜와 평강이 너희에게 있을찌어다"
+      ],
+      "raw_text_hashes": [
+        "702917a69f7b3100bbdc39e4345dcfc300297d2b30e5c1d3614da71d11a7bf32"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TH:1:2",
+      "sequence": 29559,
+      "chapter_label": "1TH 1",
+      "verse_label": "2",
+      "locator": {
+        "book": "1TH",
+        "chapter": 1,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1TH",
+          "chapter": 1,
+          "verse": 2
+        }
+      ],
+      "en": "We always give thanks to God for all of you, mentioning you in our prayers,",
+      "ko": "우리가 너희 무리를 인하여 항상 하나님께 감사하고 기도할 때에 너희를 말함은",
+      "source_text_hash": "d19ea9ba1da63906a4861e0a4b7ac7fecc858c8464333bb48e093e9a0e054e44",
+      "translation_text_hash": "ae9740cec21c656f776fa9e2e7ffe220db441d7b4831c4118e018e73cd699c3a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 너희 무리를 인하여 항상 하나님께 감사하고 기도할 때에 너희를 말함은"
+      ],
+      "raw_text_hashes": [
+        "ae9740cec21c656f776fa9e2e7ffe220db441d7b4831c4118e018e73cd699c3a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TH:1:3",
+      "sequence": 29560,
+      "chapter_label": "1TH 1",
+      "verse_label": "3",
+      "locator": {
+        "book": "1TH",
+        "chapter": 1,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1TH",
+          "chapter": 1,
+          "verse": 3
+        }
+      ],
+      "en": "remembering without ceasing your work of faith and labor of love and perseverance of hope in our Lord Jesus Christ, before our God and Father.",
+      "ko": "너희의 믿음의 역사와 사랑의 수고와 우리 주 예수 그리스도에 대한 소망의 인내를 우리 하나님 아버지 앞에서 쉬지 않고 기억함이니",
+      "source_text_hash": "1d3f579031f79eb78783b5a73a439d22101af4338e8d20fb4489b3851839399d",
+      "translation_text_hash": "5cc10fbb9a2e41467a785f12929b8028c725b7e4ebfcc3f687f8b63842b86896",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희의 믿음의 역사와 사랑의 수고와 우리 주 예수 그리스도에 대한 소망의 인내를 우리 하나님 아버지 앞에서 쉬지 않고 기억함이니"
+      ],
+      "raw_text_hashes": [
+        "5cc10fbb9a2e41467a785f12929b8028c725b7e4ebfcc3f687f8b63842b86896"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TH:1:4",
+      "sequence": 29561,
+      "chapter_label": "1TH 1",
+      "verse_label": "4",
+      "locator": {
+        "book": "1TH",
+        "chapter": 1,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1TH",
+          "chapter": 1,
+          "verse": 4
+        }
+      ],
+      "en": "We know, brothers loved by God, that you are chosen,",
+      "ko": "하나님의 사랑하심을 받은 형제들아 너희를 택하심을 아노라",
+      "source_text_hash": "89019ba015a78eff0e76f903e65207b6b050a789f012cac6369732bb43bf9ca0",
+      "translation_text_hash": "e85901a0273382bede696ca372dab1d17b72a751b24671d390f507517c069f52",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님의 사랑하심을 받은 형제들아 너희를 택하심을 아노라"
+      ],
+      "raw_text_hashes": [
+        "e85901a0273382bede696ca372dab1d17b72a751b24671d390f507517c069f52"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TH:1:5",
+      "sequence": 29562,
+      "chapter_label": "1TH 1",
+      "verse_label": "5",
+      "locator": {
+        "book": "1TH",
+        "chapter": 1,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1TH",
+          "chapter": 1,
+          "verse": 5
+        }
+      ],
+      "en": "and that our Good News came to you not in word only, but also in power, and in the Holy Spirit and with much assurance. You know what kind of men we showed ourselves to be among you for your sake.",
+      "ko": "이는 우리 복음이 말로만 너희에게 이른 것이 아니라 오직 능력과 성령과 큰 확신으로 된 것이니 우리가 너희 가운데서 너희를 위하여 어떠한 사람이 된 것은 너희 아는 바와 같으니라",
+      "source_text_hash": "ee1694a8fa7868dbd99fd306e33f182854a8415d7783fc2542902a08fbddd94d",
+      "translation_text_hash": "23afcf3e8710f01efdae4305ffa3d4ff21bfff0c6b696afbf02a271e285e34be",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 우리 복음이 말로만 너희에게 이른 것이 아니라 오직 능력과 성령과 큰 확신으로 된 것이니 우리가 너희 가운데서 너희를 위하여 어떠한 사람이 된 것은 너희 아는 바와 같으니라"
+      ],
+      "raw_text_hashes": [
+        "23afcf3e8710f01efdae4305ffa3d4ff21bfff0c6b696afbf02a271e285e34be"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TH:1:6",
+      "sequence": 29563,
+      "chapter_label": "1TH 1",
+      "verse_label": "6",
+      "locator": {
+        "book": "1TH",
+        "chapter": 1,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1TH",
+          "chapter": 1,
+          "verse": 6
+        }
+      ],
+      "en": "You became imitators of us and of the Lord, having received the word in much affliction, with joy of the Holy Spirit,",
+      "ko": "또 너희는 많은 환난 가운데서 성령의 기쁨으로 도를 받아 우리와 주를 본받은 자가 되었으니",
+      "source_text_hash": "49c4e746dff5ac60620177abfd41bad429f09a11d3db21eb058147974a4c706d",
+      "translation_text_hash": "0ea140ef761e594de87e44c0baf81cb7972090e15a26dc15bee58f6007addcbc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 너희는 많은 환난 가운데서 성령의 기쁨으로 도를 받아 우리와 주를 본받은 자가 되었으니"
+      ],
+      "raw_text_hashes": [
+        "0ea140ef761e594de87e44c0baf81cb7972090e15a26dc15bee58f6007addcbc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TH:1:7",
+      "sequence": 29564,
+      "chapter_label": "1TH 1",
+      "verse_label": "7",
+      "locator": {
+        "book": "1TH",
+        "chapter": 1,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1TH",
+          "chapter": 1,
+          "verse": 7
+        }
+      ],
+      "en": "so that you became an example to all who believe in Macedonia and in Achaia.",
+      "ko": "그러므로 너희가 마게도냐와 아가야 모든 믿는 자의 본이 되었는지라",
+      "source_text_hash": "2687d288aad5abfa781ec1f5732e5f5bd39447054ec7cff3ad9ff3ca09c7a235",
+      "translation_text_hash": "7e3ecb81f613312ae16df3c5ce9fe02d40be3044b144de5cdc38852daa7b8211",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 너희가 마게도냐와 아가야 모든 믿는 자의 본이 되었는지라"
+      ],
+      "raw_text_hashes": [
+        "7e3ecb81f613312ae16df3c5ce9fe02d40be3044b144de5cdc38852daa7b8211"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TH:1:8",
+      "sequence": 29565,
+      "chapter_label": "1TH 1",
+      "verse_label": "8",
+      "locator": {
+        "book": "1TH",
+        "chapter": 1,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1TH",
+          "chapter": 1,
+          "verse": 8
+        }
+      ],
+      "en": "For from you the word of the Lord has been declared, not only in Macedonia and Achaia, but also in every place your faith toward God has gone out, so that we need not say anything.",
+      "ko": "주의 말씀이 너희에게로부터 마게도냐와 아가야에만 들릴 뿐아니라 하나님을 향하는 너희 믿음의 소문이 각처에 퍼진고로 우리는 아무 말도 할것이 없노라",
+      "source_text_hash": "0f5b0513b0fc842375b137e7fc72f60f22ca1ea20955e621fc7f1223976acc01",
+      "translation_text_hash": "2b53ef58d0086ff30db7c037c15ac734575424ed48db59c5f21ec472a8f2a5d7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 말씀이 너희에게로부터 마게도냐와 아가야에만 들릴 뿐아니라 하나님을 향하는 너희 믿음의 소문이 각처에 퍼진고로 우리는 아무 말도 할것이 없노라"
+      ],
+      "raw_text_hashes": [
+        "2b53ef58d0086ff30db7c037c15ac734575424ed48db59c5f21ec472a8f2a5d7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TH:1:9",
+      "sequence": 29566,
+      "chapter_label": "1TH 1",
+      "verse_label": "9",
+      "locator": {
+        "book": "1TH",
+        "chapter": 1,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1TH",
+          "chapter": 1,
+          "verse": 9
+        }
+      ],
+      "en": "For they themselves report concerning us what kind of a reception we had from you, and how you turned to God from idols to serve a living and true God,",
+      "ko": "저희가 우리에 대하여 스스로 고하기를 우리가 어떻게 너희 가운데 들어간 것과 너희가 어떻게 우상을 버리고 하나님께로 돌아와서 사시고 참되신 하나님을 섬기며",
+      "source_text_hash": "db225f24c750ffae3c0df7dea547c59fc8920b57ce8f22b224feec72c0b3ce31",
+      "translation_text_hash": "359f2369fc18c21b18bb7eb369b4c7f1eec8aadb1b182f8115ce6c8105385455",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 우리에 대하여 스스로 고하기를 우리가 어떻게 너희 가운데 들어간 것과 너희가 어떻게 우상을 버리고 하나님께로 돌아와서 사시고 참되신 하나님을 섬기며"
+      ],
+      "raw_text_hashes": [
+        "359f2369fc18c21b18bb7eb369b4c7f1eec8aadb1b182f8115ce6c8105385455"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TH:1:10",
+      "sequence": 29567,
+      "chapter_label": "1TH 1",
+      "verse_label": "10",
+      "locator": {
+        "book": "1TH",
+        "chapter": 1,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1TH",
+          "chapter": 1,
+          "verse": 10
+        }
+      ],
+      "en": "and to wait for his Son from heaven, whom he raised from the dead: Jesus, who delivers us from the wrath to come.",
+      "ko": "또 죽은 자들 가운데서 다시 살리신 그의 아들이 하늘로부터 강림하심을 기다린다고 말하니 이는 장래 노하심에서 우리를 건지시는 예수시니라",
+      "source_text_hash": "920e41ae1c29f9d3e870223986c3a477a2d4b99ed57eff6e81b3e575cb3c707c",
+      "translation_text_hash": "f3353885eb7b51c96f2fb9ab1e0ad19022ba2765450e7e3001ba5b045df14fa6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 죽은 자들 가운데서 다시 살리신 그의 아들이 하늘로부터 강림하심을 기다린다고 말하니 이는 장래 노하심에서 우리를 건지시는 예수시니라"
+      ],
+      "raw_text_hashes": [
+        "f3353885eb7b51c96f2fb9ab1e0ad19022ba2765450e7e3001ba5b045df14fa6"
+      ]
+    }
+  ]
+}

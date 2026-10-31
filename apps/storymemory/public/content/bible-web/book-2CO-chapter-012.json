@@ -1,0 +1,685 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:2CO:chapter:012",
+  "unit_ordinal": 1090,
+  "unit_label": "2CO 12",
+  "book_code": "2CO",
+  "chapter_number": 12,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:2CO:12:1",
+      "sequence": 29020,
+      "chapter_label": "2CO 12",
+      "verse_label": "1",
+      "locator": {
+        "book": "2CO",
+        "chapter": 12,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 12,
+          "verse": 1
+        }
+      ],
+      "en": "It is doubtless not profitable for me to boast, but I will come to visions and revelations of the Lord.",
+      "ko": "무익하나마 내가 부득불 자랑하노니 주의 환상과 계시를 말하리라",
+      "source_text_hash": "56806cc02ea33b7f4080f860269d878fa86388b7383f83f7ab623e73556c3832",
+      "translation_text_hash": "d63d6a3dfaf396184907ecdd76dabe30d54e93f718f7e2d989dcf58592875e26",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무익하나마 내가 부득불 자랑하노니 주의 환상과 계시를 말하리라"
+      ],
+      "raw_text_hashes": [
+        "d63d6a3dfaf396184907ecdd76dabe30d54e93f718f7e2d989dcf58592875e26"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:12:2",
+      "sequence": 29021,
+      "chapter_label": "2CO 12",
+      "verse_label": "2",
+      "locator": {
+        "book": "2CO",
+        "chapter": 12,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 12,
+          "verse": 2
+        }
+      ],
+      "en": "I know a man in Christ who was caught up into the third heaven fourteen years ago—whether in the body, I don’t know, or whether out of the body, I don’t know; God knows.",
+      "ko": "내가 그리스도 안에 있는 한 사람을 아노니 십 사년 전에 그가 세째 하늘에 이끌려 간 자라 (그가 몸 안에 있었는지 몸 밖에 있었는지 나는 모르거니와 하나님은 아시느니라)",
+      "source_text_hash": "7ea0e5163901ede91646aae7ce93086fcb2d37ba72a5a69e9d67a72307fdafb9",
+      "translation_text_hash": "c2a0bfd9cfabdbaf35240a605e0ee98fe77c7d11dc0b13d9cdb70fc6307ca275",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 그리스도 안에 있는 한 사람을 아노니 십 사년 전에 그가 세째 하늘에 이끌려 간 자라 (그가 몸 안에 있었는지 몸 밖에 있었는지 나는 모르거니와 하나님은 아시느니라)"
+      ],
+      "raw_text_hashes": [
+        "c2a0bfd9cfabdbaf35240a605e0ee98fe77c7d11dc0b13d9cdb70fc6307ca275"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:12:3",
+      "sequence": 29022,
+      "chapter_label": "2CO 12",
+      "verse_label": "3",
+      "locator": {
+        "book": "2CO",
+        "chapter": 12,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 12,
+          "verse": 3
+        }
+      ],
+      "en": "I know such a man (whether in the body, or outside of the body, I don’t know; God knows),",
+      "ko": "내가 이런 사람을 아노니 (그가 몸 안에 있었는지 몸 밖에 있었는지 나는 모르거니와 하나님은 아시느니라)",
+      "source_text_hash": "a94d4983c5359a5da98934a52f687bc109da9d3a716c998822a1af2d8c916518",
+      "translation_text_hash": "99de1cc92cee73ecb58d03e79d648f3f331a89b12a6df85bb302a9b8793fd56c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 이런 사람을 아노니 (그가 몸 안에 있었는지 몸 밖에 있었는지 나는 모르거니와 하나님은 아시느니라)"
+      ],
+      "raw_text_hashes": [
+        "99de1cc92cee73ecb58d03e79d648f3f331a89b12a6df85bb302a9b8793fd56c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:12:4",
+      "sequence": 29023,
+      "chapter_label": "2CO 12",
+      "verse_label": "4",
+      "locator": {
+        "book": "2CO",
+        "chapter": 12,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 12,
+          "verse": 4
+        }
+      ],
+      "en": "how he was caught up into Paradise and heard unspeakable words, which it is not lawful for a man to utter.",
+      "ko": "그가 낙원으로 이끌려가서 말할 수 없는 말을 들었으니 사람이 가히 이르지 못할 말이로다",
+      "source_text_hash": "c4bdba55586b1edb32f7b12e550e4e8d975f08fb603927cc6b08c8625d4771d6",
+      "translation_text_hash": "79fecd42e23bb8a9a718a2777f9045e271a7cbbb03615eca19b9cf959a38bc52",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 낙원으로 이끌려가서 말할 수 없는 말을 들었으니 사람이 가히 이르지 못할 말이로다"
+      ],
+      "raw_text_hashes": [
+        "79fecd42e23bb8a9a718a2777f9045e271a7cbbb03615eca19b9cf959a38bc52"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:12:5",
+      "sequence": 29024,
+      "chapter_label": "2CO 12",
+      "verse_label": "5",
+      "locator": {
+        "book": "2CO",
+        "chapter": 12,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 12,
+          "verse": 5
+        }
+      ],
+      "en": "On behalf of such a one I will boast, but on my own behalf I will not boast, except in my weaknesses.",
+      "ko": "내가 이런 사람을 위하여 자랑하겠으나 나를 위하여는 약한 것들 외에 자랑치 아니하리라",
+      "source_text_hash": "f8aa1e321e9058b642d11fcf484d57848cb1a199a30bde8b65e25b1c037175a8",
+      "translation_text_hash": "3854fef621b101d5c715b20ea7e2c6b0a1ccca7b0331a939c437526c61848bf8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 이런 사람을 위하여 자랑하겠으나 나를 위하여는 약한 것들 외에 자랑치 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "3854fef621b101d5c715b20ea7e2c6b0a1ccca7b0331a939c437526c61848bf8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:12:6",
+      "sequence": 29025,
+      "chapter_label": "2CO 12",
+      "verse_label": "6",
+      "locator": {
+        "book": "2CO",
+        "chapter": 12,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 12,
+          "verse": 6
+        }
+      ],
+      "en": "For if I would desire to boast, I will not be foolish; for I will speak the truth. But I refrain, so that no man may think more of me than that which he sees in me or hears from me.",
+      "ko": "내가 만일 자랑하고자 하여도 어리석은 자가 되지 아니할 것은 내가 참말을 함이라 그러나 누가 나를 보는 바와 내게 듣는 바에 지나치게 생각할까 두려워하여 그만 두노라",
+      "source_text_hash": "d0fd0e3ee94edcedd66264645859da535516e717d2b06b288b767e17321e3c32",
+      "translation_text_hash": "7d1de792b36cba8b7cd3408d5f33796b7ec9727090fa77c0f9eeac334358ac63",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 만일 자랑하고자 하여도 어리석은 자가 되지 아니할 것은 내가 참말을 함이라 그러나 누가 나를 보는 바와 내게 듣는 바에 지나치게 생각할까 두려워하여 그만 두노라"
+      ],
+      "raw_text_hashes": [
+        "7d1de792b36cba8b7cd3408d5f33796b7ec9727090fa77c0f9eeac334358ac63"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:12:7",
+      "sequence": 29026,
+      "chapter_label": "2CO 12",
+      "verse_label": "7",
+      "locator": {
+        "book": "2CO",
+        "chapter": 12,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 12,
+          "verse": 7
+        }
+      ],
+      "en": "By reason of the exceeding greatness of the revelations, that I should not be exalted excessively, a thorn in the flesh was given to me: a messenger of Satan to torment me, that I should not be exalted excessively.",
+      "ko": "여러 계시를 받은 것이 지극히 크므로 너무 자고하지 않게 하시려고 내 육체에 가시 곧 사단의 사자를 주셨으니 이는 나를 쳐서 너무 자고하지 않게 하려 하심이니라",
+      "source_text_hash": "597bb208c31707ca9c57b0a33754451020d42930307389593a891aa853d43240",
+      "translation_text_hash": "07fb9bc06e6eaca7b3936d4eaaa75d8a91b7522e535c6ab45fed827e39c2c4bc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여러 계시를 받은 것이 지극히 크므로 너무 자고하지 않게 하시려고 내 육체에 가시 곧 사단의 사자를 주셨으니 이는 나를 쳐서 너무 자고하지 않게 하려 하심이니라"
+      ],
+      "raw_text_hashes": [
+        "07fb9bc06e6eaca7b3936d4eaaa75d8a91b7522e535c6ab45fed827e39c2c4bc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:12:8",
+      "sequence": 29027,
+      "chapter_label": "2CO 12",
+      "verse_label": "8",
+      "locator": {
+        "book": "2CO",
+        "chapter": 12,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 12,
+          "verse": 8
+        }
+      ],
+      "en": "Concerning this thing, I begged the Lord three times that it might depart from me.",
+      "ko": "이것이 내게서 떠나기 위하여 내가 세번 주께 간구하였더니",
+      "source_text_hash": "e61e9359f6da0722368372c2be5216966dd2f8b1a8edf8a4247332e981c03731",
+      "translation_text_hash": "ff82834b425fc9dd14559874a5cf6e2b8c8b40815ff31e74a045b344f51f2b74",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이것이 내게서 떠나기 위하여 내가 세번 주께 간구하였더니"
+      ],
+      "raw_text_hashes": [
+        "ff82834b425fc9dd14559874a5cf6e2b8c8b40815ff31e74a045b344f51f2b74"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:12:9",
+      "sequence": 29028,
+      "chapter_label": "2CO 12",
+      "verse_label": "9",
+      "locator": {
+        "book": "2CO",
+        "chapter": 12,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 12,
+          "verse": 9
+        }
+      ],
+      "en": "He has said to me, “My grace is sufficient for you, for my power is made perfect in weakness.”Most gladly therefore I will rather glory in my weaknesses, that the power of Christ may rest on me.",
+      "ko": "내게 이르시기를 내 은혜가 네게 족하도다 이는 내 능력이 약한데서 온전하여짐이라 하신지라 이러므로 도리어 크게 기뻐함으로 나의 여러 약한 것들에 대하여 자랑하리니 이는 그리스도의 능력으로 내게 머물게 하려함이라",
+      "source_text_hash": "2b1e9ad79309e125fa88be873d6cd16d93cf5cd9902dbbae7dc7abbb9f4c6950",
+      "translation_text_hash": "37526f15d93f94d4003edfd8e9a38ab9edea618bf948151b1e8aa0dd2bdca835",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내게 이르시기를 내 은혜가 네게 족하도다 이는 내 능력이 약한데서 온전하여짐이라 하신지라 이러므로 도리어 크게 기뻐함으로 나의 여러 약한 것들에 대하여 자랑하리니 이는 그리스도의 능력으로 내게 머물게 하려함이라"
+      ],
+      "raw_text_hashes": [
+        "37526f15d93f94d4003edfd8e9a38ab9edea618bf948151b1e8aa0dd2bdca835"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:12:10",
+      "sequence": 29029,
+      "chapter_label": "2CO 12",
+      "verse_label": "10",
+      "locator": {
+        "book": "2CO",
+        "chapter": 12,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 12,
+          "verse": 10
+        }
+      ],
+      "en": "Therefore I take pleasure in weaknesses, in injuries, in necessities, in persecutions, and in distresses, for Christ’s sake. For when I am weak, then am I strong.",
+      "ko": "그러므로 내가 그리스도를 위하여 약한 것들과 능욕과 궁핍과 핍박과 곤란을 기뻐하노니 이는 내가 약할 그 때에 곧 강함이니라",
+      "source_text_hash": "3e9d312d421aa4ac71de232b1f5334c861a76a9ad06f5b7f9c8386df4d2662f7",
+      "translation_text_hash": "6d4cfb9c1dceb333a9490ac7954f9c03b1909ba624d6b90f5da275bf9c938c77",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 내가 그리스도를 위하여 약한 것들과 능욕과 궁핍과 핍박과 곤란을 기뻐하노니 이는 내가 약할 그 때에 곧 강함이니라"
+      ],
+      "raw_text_hashes": [
+        "6d4cfb9c1dceb333a9490ac7954f9c03b1909ba624d6b90f5da275bf9c938c77"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:12:11",
+      "sequence": 29030,
+      "chapter_label": "2CO 12",
+      "verse_label": "11",
+      "locator": {
+        "book": "2CO",
+        "chapter": 12,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 12,
+          "verse": 11
+        }
+      ],
+      "en": "I have become foolish in boasting. You compelled me, for I ought to have been commended by you, for I am in no way inferior to the very best apostles, though I am nothing.",
+      "ko": "내가 어리석은 자가 되었으나 너희가 억지로 시킨 것이니 내가 너희에게 칭찬을 받아야 마땅하도다 내가 아무것도 아니나 지극히 큰 사도들보다 조금도 부족하지 아니하니라",
+      "source_text_hash": "1720c935bf8bd0f860fdd2bae673f788f2f2653e1520cc50d4069bb00e19d7d7",
+      "translation_text_hash": "a1dd3e1161a8ebe15c936ec3bae42b4b0cf64438e4ae118a1f18a17afce1c7cc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 어리석은 자가 되었으나 너희가 억지로 시킨 것이니 내가 너희에게 칭찬을 받아야 마땅하도다 내가 아무것도 아니나 지극히 큰 사도들보다 조금도 부족하지 아니하니라"
+      ],
+      "raw_text_hashes": [
+        "a1dd3e1161a8ebe15c936ec3bae42b4b0cf64438e4ae118a1f18a17afce1c7cc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:12:12",
+      "sequence": 29031,
+      "chapter_label": "2CO 12",
+      "verse_label": "12",
+      "locator": {
+        "book": "2CO",
+        "chapter": 12,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 12,
+          "verse": 12
+        }
+      ],
+      "en": "Truly the signs of an apostle were worked among you in all perseverance, in signs and wonders and mighty works.",
+      "ko": "사도의 표 된 것은 내가 너희 가운데서 모든 참음과 표적과 기사와 능력을 행한 것이라",
+      "source_text_hash": "0c65433eb88bd1ece83614f9e5a075d61fb350b9833cd032d39fbeee702b9875",
+      "translation_text_hash": "9cf9b755210c65f1f07511fdcf93872ae6190cd83e3ef359d2b83fe68234f26c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사도의 표 된 것은 내가 너희 가운데서 모든 참음과 표적과 기사와 능력을 행한 것이라"
+      ],
+      "raw_text_hashes": [
+        "9cf9b755210c65f1f07511fdcf93872ae6190cd83e3ef359d2b83fe68234f26c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:12:13",
+      "sequence": 29032,
+      "chapter_label": "2CO 12",
+      "verse_label": "13",
+      "locator": {
+        "book": "2CO",
+        "chapter": 12,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 12,
+          "verse": 13
+        }
+      ],
+      "en": "For what is there in which you were made inferior to the rest of the assemblies, unless it is that I myself was not a burden to you? Forgive me this wrong!",
+      "ko": "내 자신이 너희에게 폐를 끼치지 아니한 일 밖에 다른 교회보다 부족하게 한 것이 무엇이 있느냐 너희는 나의 이 공평치 못한 것을 용서하라",
+      "source_text_hash": "7d23e8952e7c542c5758766f160b0b0e649ed406b94983bd61fbddc130483c81",
+      "translation_text_hash": "6700a4e3d4d96213350a632c0f40ef04b5d4c68296dcd2ecb5fb2782f68c1368",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 자신이 너희에게 폐를 끼치지 아니한 일 밖에 다른 교회보다 부족하게 한 것이 무엇이 있느냐 너희는 나의 이 공평치 못한 것을 용서하라"
+      ],
+      "raw_text_hashes": [
+        "6700a4e3d4d96213350a632c0f40ef04b5d4c68296dcd2ecb5fb2782f68c1368"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:12:14",
+      "sequence": 29033,
+      "chapter_label": "2CO 12",
+      "verse_label": "14",
+      "locator": {
+        "book": "2CO",
+        "chapter": 12,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 12,
+          "verse": 14
+        }
+      ],
+      "en": "Behold, this is the third time I am ready to come to you, and I will not be a burden to you; for I seek not your possessions, but you. For the children ought not to save up for the parents, but the parents for the children.",
+      "ko": "보라 이제 세 번째 너희에게 가기를 예비하였으나 너희에게 폐를 끼치지 아니하리라 나의 구하는 것은 너희 재물이 아니요 오직 너희니라 어린 아이가 부모를 위하여 재물을 저축하는 것이 아니요 이에 부모가 어린 아이를 위하여 하느니라",
+      "source_text_hash": "00966086ba5f7fb836c5e5984326d91d59a727e32c627458882363fff7056a81",
+      "translation_text_hash": "31828dab0fbea2ef35413bebe6b4ceaa015eb98641b1716287304271db429764",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보라 이제 세 번째 너희에게 가기를 예비하였으나 너희에게 폐를 끼치지 아니하리라 나의 구하는 것은 너희 재물이 아니요 오직 너희니라 어린 아이가 부모를 위하여 재물을 저축하는 것이 아니요 이에 부모가 어린 아이를 위하여 하느니라"
+      ],
+      "raw_text_hashes": [
+        "31828dab0fbea2ef35413bebe6b4ceaa015eb98641b1716287304271db429764"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:12:15",
+      "sequence": 29034,
+      "chapter_label": "2CO 12",
+      "verse_label": "15",
+      "locator": {
+        "book": "2CO",
+        "chapter": 12,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 12,
+          "verse": 15
+        }
+      ],
+      "en": "I will most gladly spend and be spent for your souls. If I love you more abundantly, am I loved the less?",
+      "ko": "내가 너희 영혼을 위하여 크게 기뻐함으로 재물을 허비하고 또 내 자신까지 허비하리니 너희를 더욱 사랑할수록 나는 덜 사랑을 받겠느냐",
+      "source_text_hash": "85b2c77a310b74440764230316422c93e5854e3970cfc2a379ef0e955f1b5655",
+      "translation_text_hash": "5b0712cf67e8702cfb86f5e3f00477b7833514bc0b871556ac10f196b1e215ca",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너희 영혼을 위하여 크게 기뻐함으로 재물을 허비하고 또 내 자신까지 허비하리니 너희를 더욱 사랑할수록 나는 덜 사랑을 받겠느냐"
+      ],
+      "raw_text_hashes": [
+        "5b0712cf67e8702cfb86f5e3f00477b7833514bc0b871556ac10f196b1e215ca"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:12:16",
+      "sequence": 29035,
+      "chapter_label": "2CO 12",
+      "verse_label": "16",
+      "locator": {
+        "book": "2CO",
+        "chapter": 12,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 12,
+          "verse": 16
+        }
+      ],
+      "en": "Even so, I myself didn’t burden you. But you might say that being crafty, I caught you with deception.",
+      "ko": "하여간 어떤이의 말이 내가 너희에게 짐을 지우지는 아니하였을지라도 공교한 자가 되어 궤계로 너희를 취하였다 하니",
+      "source_text_hash": "b6af1739ea74d68e1763bccd4e25f93be4c220b256bd0d6ecb6e09de68f8be5a",
+      "translation_text_hash": "cccb9f59b1eb3edfd3c4b8019bc71e77416194c47653cb795ace58514b1ca2f6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하여간 어떤이의 말이 내가 너희에게 짐을 지우지는 아니하였을지라도 공교한 자가 되어 궤계로 너희를 취하였다 하니"
+      ],
+      "raw_text_hashes": [
+        "cccb9f59b1eb3edfd3c4b8019bc71e77416194c47653cb795ace58514b1ca2f6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:12:17",
+      "sequence": 29036,
+      "chapter_label": "2CO 12",
+      "verse_label": "17",
+      "locator": {
+        "book": "2CO",
+        "chapter": 12,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 12,
+          "verse": 17
+        }
+      ],
+      "en": "Did I take advantage of you by anyone of those whom I have sent to you?",
+      "ko": "내가 너희에게 보낸 자 중에 누구로 너희의 이를 취하더냐",
+      "source_text_hash": "169f884c5289b797b25c3d5cfa79ed6fd2324091508c82ce7a15d1359bb32cd0",
+      "translation_text_hash": "b20d39b475b677fe70ec46faac85afc3f0e1074a898db20f31dec7716f2d264f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너희에게 보낸 자 중에 누구로 너희의 이를 취하더냐"
+      ],
+      "raw_text_hashes": [
+        "b20d39b475b677fe70ec46faac85afc3f0e1074a898db20f31dec7716f2d264f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:12:18",
+      "sequence": 29037,
+      "chapter_label": "2CO 12",
+      "verse_label": "18",
+      "locator": {
+        "book": "2CO",
+        "chapter": 12,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 12,
+          "verse": 18
+        }
+      ],
+      "en": "I exhorted Titus, and I sent the brother with him. Did Titus take any advantage of you? Didn’t we walk in the same spirit? Didn’t we walk in the same steps?",
+      "ko": "내가 디도를 권하고 함께 한 형제를 보내었으니 디도가 너희의 이를 취하더냐 우리가 동일한 성령으로 행하지 아니하더냐 동일한 보조로 하지 아니하더냐",
+      "source_text_hash": "0eac6f5df100ee8ef384fb44487fe57295d7ec58bc83d1a3f4cae8398e104661",
+      "translation_text_hash": "9c97de4665ff7be10688255167365e3400fa3ea1b53c910b0eacc39c3255ad0a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 디도를 권하고 함께 한 형제를 보내었으니 디도가 너희의 이를 취하더냐 우리가 동일한 성령으로 행하지 아니하더냐 동일한 보조로 하지 아니하더냐"
+      ],
+      "raw_text_hashes": [
+        "9c97de4665ff7be10688255167365e3400fa3ea1b53c910b0eacc39c3255ad0a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:12:19",
+      "sequence": 29038,
+      "chapter_label": "2CO 12",
+      "verse_label": "19",
+      "locator": {
+        "book": "2CO",
+        "chapter": 12,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 12,
+          "verse": 19
+        }
+      ],
+      "en": "Again, do you think that we are excusing ourselves to you? In the sight of God we speak in Christ. But all things, beloved, are for your edifying.",
+      "ko": "이 때까지 우리가 우리를 너희에게 변명하는 줄로 생각하는구나 우리가 그리스도 안에서 하나님 앞에 말하노라 사랑하는 자들아 이 모든 것은 너희의 덕을 세우기 위함이니라",
+      "source_text_hash": "100396d572413b9383580caca5008c1e1e56a3d4160ea63a748ef40c49b4eb73",
+      "translation_text_hash": "7c38cb793530c7c2a622a717fe6e3cb9741b5b36b31d90278b657e309a19fbc4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 때까지 우리가 우리를 너희에게 변명하는 줄로 생각하는구나 우리가 그리스도 안에서 하나님 앞에 말하노라 사랑하는 자들아 이 모든 것은 너희의 덕을 세우기 위함이니라"
+      ],
+      "raw_text_hashes": [
+        "7c38cb793530c7c2a622a717fe6e3cb9741b5b36b31d90278b657e309a19fbc4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:12:20",
+      "sequence": 29039,
+      "chapter_label": "2CO 12",
+      "verse_label": "20",
+      "locator": {
+        "book": "2CO",
+        "chapter": 12,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 12,
+          "verse": 20
+        }
+      ],
+      "en": "For I am afraid that perhaps when I come, I might find you not the way I want to, and that I might be found by you as you don’t desire, that perhaps there would be strife, jealousy, outbursts of anger, factions, slander, whisperings, proud thoughts, or riots,",
+      "ko": "내가 갈 때에 너희를 나의 원하는 것과 같이 보지 못하고 또 내가 너희에게 너희의 원치 않는 것과 같이 보일까 두려워하며 또 다툼과 시기와 분냄과 당짓는 것과 중상함과 수군수군하는 것과 거만함과 어지러운 것이 있을까 두려워하고",
+      "source_text_hash": "f1c970424f52d52199def434ec36e4e16d0e24e08cf1f8ff8147b8a640bb4d17",
+      "translation_text_hash": "f33bfa537e68e365333f21bcde45c12946e9acc0f058d560c8696a481ec8527d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 갈 때에 너희를 나의 원하는 것과 같이 보지 못하고 또 내가 너희에게 너희의 원치 않는 것과 같이 보일까 두려워하며 또 다툼과 시기와 분냄과 당짓는 것과 중상함과 수군수군하는 것과 거만함과 어지러운 것이 있을까 두려워하고"
+      ],
+      "raw_text_hashes": [
+        "f33bfa537e68e365333f21bcde45c12946e9acc0f058d560c8696a481ec8527d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:12:21",
+      "sequence": 29040,
+      "chapter_label": "2CO 12",
+      "verse_label": "21",
+      "locator": {
+        "book": "2CO",
+        "chapter": 12,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 12,
+          "verse": 21
+        }
+      ],
+      "en": "that again when I come my God would humble me before you, and I would mourn for many of those who have sinned before now, and not repented of the uncleanness, sexual immorality, and lustfulness which they committed.",
+      "ko": "또 내가 다시 갈 때에 내 하나님이 나를 너희 앞에서 낮추실까 두려워하고 또 내가 전에 죄를 지은 여러 사람의 그 행한바 더러움과 음란함과 호색함을 회개치 아니함을 인하여 근심할까 두려워하노라",
+      "source_text_hash": "6d81f81bc61d46a5be037cd74ff050fb5f7bf5e5a34f943f7ba02e33efb6d964",
+      "translation_text_hash": "f2a0686eb7a4546d06a47e50a4fcbe62ccaea6d07fd36fde38d092b218887392",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 내가 다시 갈 때에 내 하나님이 나를 너희 앞에서 낮추실까 두려워하고 또 내가 전에 죄를 지은 여러 사람의 그 행한바 더러움과 음란함과 호색함을 회개치 아니함을 인하여 근심할까 두려워하노라"
+      ],
+      "raw_text_hashes": [
+        "f2a0686eb7a4546d06a47e50a4fcbe62ccaea6d07fd36fde38d092b218887392"
+      ]
+    }
+  ]
+}

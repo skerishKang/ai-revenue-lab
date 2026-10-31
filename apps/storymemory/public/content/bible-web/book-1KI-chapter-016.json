@@ -1,0 +1,1101 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1KI:chapter:016",
+  "unit_ordinal": 307,
+  "unit_label": "1KI 16",
+  "book_code": "1KI",
+  "chapter_number": 16,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1KI:16:1",
+      "sequence": 9285,
+      "chapter_label": "1KI 16",
+      "verse_label": "1",
+      "locator": {
+        "book": "1KI",
+        "chapter": 16,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 16,
+          "verse": 1
+        }
+      ],
+      "en": "The LORD’s word came to Jehu the son of Hanani against Baasha, saying,",
+      "ko": "여호와의 말씀이 하나니의 아들 예후에게 임하여 바아사를 꾸짖어 가라사대",
+      "source_text_hash": "f70aa3a3a38ec519cf44a387a359500e195c8a420b766b3e612ae2688a1fa8a1",
+      "translation_text_hash": "edb1b27de5ad629802cfb7b90442ec21167b817e73b6f7197d767a2d7ccccefd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 말씀이 하나니의 아들 예후에게 임하여 바아사를 꾸짖어 가라사대"
+      ],
+      "raw_text_hashes": [
+        "edb1b27de5ad629802cfb7b90442ec21167b817e73b6f7197d767a2d7ccccefd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:16:2",
+      "sequence": 9286,
+      "chapter_label": "1KI 16",
+      "verse_label": "2",
+      "locator": {
+        "book": "1KI",
+        "chapter": 16,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 16,
+          "verse": 2
+        }
+      ],
+      "en": "“Because I exalted you out of the dust and made you prince over my people Israel, and you have walked in the way of Jeroboam and have made my people Israel to sin, to provoke me to anger with their sins,",
+      "ko": "내가 너를 진토에서 들어 나의 백성 이스라엘 위에 주권자가 되게 하였거늘 네가 여로보암의 길로 행하며 내 백성 이스라엘로 범죄케 하여 저희 죄로 나의 노를 격동하였은즉",
+      "source_text_hash": "c9e3dd321fcff941f948454177cfc12e51b6b12122967e905f967d30a622d727",
+      "translation_text_hash": "2a5d08710772d605d661f320ec882d12c361a22fa0a7bf574702eca03674f8f2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너를 진토에서 들어 나의 백성 이스라엘 위에 주권자가 되게 하였거늘 네가 여로보암의 길로 행하며 내 백성 이스라엘로 범죄케 하여 저희 죄로 나의 노를 격동하였은즉"
+      ],
+      "raw_text_hashes": [
+        "2a5d08710772d605d661f320ec882d12c361a22fa0a7bf574702eca03674f8f2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:16:3",
+      "sequence": 9287,
+      "chapter_label": "1KI 16",
+      "verse_label": "3",
+      "locator": {
+        "book": "1KI",
+        "chapter": 16,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 16,
+          "verse": 3
+        }
+      ],
+      "en": "behold, I will utterly sweep away Baasha and his house; and I will make your house like the house of Jeroboam the son of Nebat.",
+      "ko": "내가 너 바아사와 네 집을 쓸어버려 네 집으로 느밧의 아들 여로보암의 집 같이 되게 하리니",
+      "source_text_hash": "0979376a2362f2adc6ef656b062c406c6a8c8a575ff847b6da3f3956bf4b609b",
+      "translation_text_hash": "4d3377c77216a479ccf3d592ef3c549a2e08b7d28fd25afaf7c8e5424c94b6b1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너 바아사와 네 집을 쓸어버려 네 집으로 느밧의 아들 여로보암의 집 같이 되게 하리니"
+      ],
+      "raw_text_hashes": [
+        "4d3377c77216a479ccf3d592ef3c549a2e08b7d28fd25afaf7c8e5424c94b6b1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:16:4",
+      "sequence": 9288,
+      "chapter_label": "1KI 16",
+      "verse_label": "4",
+      "locator": {
+        "book": "1KI",
+        "chapter": 16,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 16,
+          "verse": 4
+        }
+      ],
+      "en": "The dogs will eat Baasha’s descendants who die in the city; and he who dies of his in the field, the birds of the sky will eat.”",
+      "ko": "바아사에게 속한 자가 성읍에서 죽은즉 개가 먹고 들에서 죽은즉 공중의 새가 먹으리라 하셨더라",
+      "source_text_hash": "28ae61b0d252a18bd81c43bdd266a5dd299425ce531eeeccb73fc5d333e04e49",
+      "translation_text_hash": "bbccd208c1e52263ef33f964935d7f6bfaf508778df6e3e89a1bcacbd2a52172",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바아사에게 속한 자가 성읍에서 죽은즉 개가 먹고 들에서 죽은즉 공중의 새가 먹으리라 하셨더라"
+      ],
+      "raw_text_hashes": [
+        "bbccd208c1e52263ef33f964935d7f6bfaf508778df6e3e89a1bcacbd2a52172"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:16:5",
+      "sequence": 9289,
+      "chapter_label": "1KI 16",
+      "verse_label": "5",
+      "locator": {
+        "book": "1KI",
+        "chapter": 16,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 16,
+          "verse": 5
+        }
+      ],
+      "en": "Now the rest of the acts of Baasha, and what he did, and his might, aren’t they written in the book of the chronicles of the kings of Israel?",
+      "ko": "바아사의 남은 사적과 무릇 행한 일과 권세는 이스라엘 왕 역대지략에 기록되지 아니하였느냐",
+      "source_text_hash": "b2c662c82dea95a3e5ac9da566472e1d15dc90e3bf8c3e23e8a4f2c629ed1e5f",
+      "translation_text_hash": "90be20db3c0433ab04ee2c037c6fe6d202747867df79574b0b965e6ab9a3bbec",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바아사의 남은 사적과 무릇 행한 일과 권세는 이스라엘 왕 역대지략에 기록되지 아니하였느냐"
+      ],
+      "raw_text_hashes": [
+        "90be20db3c0433ab04ee2c037c6fe6d202747867df79574b0b965e6ab9a3bbec"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:16:6",
+      "sequence": 9290,
+      "chapter_label": "1KI 16",
+      "verse_label": "6",
+      "locator": {
+        "book": "1KI",
+        "chapter": 16,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 16,
+          "verse": 6
+        }
+      ],
+      "en": "Baasha slept with his fathers, and was buried in Tirzah; and Elah his son reigned in his place.",
+      "ko": "바아사가 그 열조와 함께 자매 디르사에 장사되고 그 아들 엘라가 대신하여 왕이 되니라",
+      "source_text_hash": "d84b67317428436587c6f1dc7835f1ba4f97cda21cd6d9457c143fc001eb8586",
+      "translation_text_hash": "263e7773e29d9136f0486609eaba6ac83ba14fad824d5b3cb1fd8c0b1212c63f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바아사가 그 열조와 함께 자매 디르사에 장사되고 그 아들 엘라가 대신하여 왕이 되니라"
+      ],
+      "raw_text_hashes": [
+        "263e7773e29d9136f0486609eaba6ac83ba14fad824d5b3cb1fd8c0b1212c63f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:16:7",
+      "sequence": 9291,
+      "chapter_label": "1KI 16",
+      "verse_label": "7",
+      "locator": {
+        "book": "1KI",
+        "chapter": 16,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 16,
+          "verse": 7
+        }
+      ],
+      "en": "Moreover the LORD’s word came by the prophet Jehu the son of Hanani against Baasha and against his house, both because of all the evil that he did in the LORD’s sight, to provoke him to anger with the work of his hands, in being like the house of Jeroboam, and because he struck him.",
+      "ko": "여호와의 말씀이 하나니의 아들 선지자 예후에게 임하사 바아사와 그 집을 꾸짖으심은 저가 여로보암의 집을 본받아 여호와 보시기에 모든 악을 행하며 그 손의 소위로 여호와의 노를 격동하였음이며 또 그 집을 쳤음이더라",
+      "source_text_hash": "fb5c6fb831b26efcd7467070531d55888f04f207df2823c52d37a3c03624423c",
+      "translation_text_hash": "3fc57bf300a2c7b3110eed4a46c47d4105d823e7c2988547d13af442aa893cb2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 말씀이 하나니의 아들 선지자 예후에게 임하사 바아사와 그 집을 꾸짖으심은 저가 여로보암의 집을 본받아 여호와 보시기에 모든 악을 행하며 그 손의 소위로 여호와의 노를 격동하였음이며 또 그 집을 쳤음이더라"
+      ],
+      "raw_text_hashes": [
+        "3fc57bf300a2c7b3110eed4a46c47d4105d823e7c2988547d13af442aa893cb2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:16:8",
+      "sequence": 9292,
+      "chapter_label": "1KI 16",
+      "verse_label": "8",
+      "locator": {
+        "book": "1KI",
+        "chapter": 16,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 16,
+          "verse": 8
+        }
+      ],
+      "en": "In the twenty-sixth year of Asa king of Judah, Elah the son of Baasha began to reign over Israel in Tirzah for two years.",
+      "ko": "유다 왕 아사 제 이십 륙년에 바아사의 아들 엘라가 디르사에서 이스라엘 왕이 되어 이년을 위에 있으니라",
+      "source_text_hash": "c7b08ec673e089ac906f1202291d699e9c918f5e1c493555da3e2a1c06af4726",
+      "translation_text_hash": "f2b24c87bfa42a1f62ba36ba3ff9fb8419f17a6c20ccafb791a190c28dfa40df",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다 왕 아사 제 이십 륙년에 바아사의 아들 엘라가 디르사에서 이스라엘 왕이 되어 이년을 위에 있으니라"
+      ],
+      "raw_text_hashes": [
+        "f2b24c87bfa42a1f62ba36ba3ff9fb8419f17a6c20ccafb791a190c28dfa40df"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:16:9",
+      "sequence": 9293,
+      "chapter_label": "1KI 16",
+      "verse_label": "9",
+      "locator": {
+        "book": "1KI",
+        "chapter": 16,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 16,
+          "verse": 9
+        }
+      ],
+      "en": "His servant Zimri, captain of half his chariots, conspired against him. Now he was in Tirzah, drinking himself drunk in the house of Arza, who was over the household in Tirzah;",
+      "ko": "엘라가 디르사에 있어 궁내대신 아르사의 집에서 마시고 취할 때에 그 신복 곧 병거 절반을 통솔한 장관 시므리가 왕을 모반하여",
+      "source_text_hash": "1bce032fd8b31ab4c3a881554572dfad6f5bf602dc31cd40e1cd866789fd31e5",
+      "translation_text_hash": "bc8646e26af9a43d95e162a2cfb34553a53e32758bee69d36dbcecf8bb104a7f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "엘라가 디르사에 있어 궁내대신 아르사의 집에서 마시고 취할 때에 그 신복 곧 병거 절반을 통솔한 장관 시므리가 왕을 모반하여"
+      ],
+      "raw_text_hashes": [
+        "bc8646e26af9a43d95e162a2cfb34553a53e32758bee69d36dbcecf8bb104a7f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:16:10",
+      "sequence": 9294,
+      "chapter_label": "1KI 16",
+      "verse_label": "10",
+      "locator": {
+        "book": "1KI",
+        "chapter": 16,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 16,
+          "verse": 10
+        }
+      ],
+      "en": "and Zimri went in and struck him and killed him in the twenty-seventh year of Asa king of Judah, and reigned in his place.",
+      "ko": "들어가서 저를 쳐 죽이고 대신하여 왕이 되니 곧 유다 왕 아사 제 이십 칠년이라",
+      "source_text_hash": "b09ef84b58c4b978b03febe204a031f640f5672f046963ba063491bf9e2d844d",
+      "translation_text_hash": "9f57b92c6adf11f4d5ee7de54f0d0e162a4becc3727547f8531aa5665363bbbe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "들어가서 저를 쳐 죽이고 대신하여 왕이 되니 곧 유다 왕 아사 제 이십 칠년이라"
+      ],
+      "raw_text_hashes": [
+        "9f57b92c6adf11f4d5ee7de54f0d0e162a4becc3727547f8531aa5665363bbbe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:16:11",
+      "sequence": 9295,
+      "chapter_label": "1KI 16",
+      "verse_label": "11",
+      "locator": {
+        "book": "1KI",
+        "chapter": 16,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 16,
+          "verse": 11
+        }
+      ],
+      "en": "When he began to reign, as soon as he sat on his throne, he attacked all the house of Baasha. He didn’t leave him a single one who urinates on a wall among his relatives or his friends.",
+      "ko": "시므리가 왕이 되어 그 위에 오를 때에 바아사의 온 집을 죽이되 남자는 그 족속이든지 그 친구든지 하나도 남기지 아니하고",
+      "source_text_hash": "4dcdd467c0b6d618e12c7f4d35bfd7c07a15e666e50b4fbc9677c446f14f6cff",
+      "translation_text_hash": "3cd54e3ed95ea7b1fa45f14e37c99f09e4da2e608039e609ebf3612c461c3dd3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시므리가 왕이 되어 그 위에 오를 때에 바아사의 온 집을 죽이되 남자는 그 족속이든지 그 친구든지 하나도 남기지 아니하고"
+      ],
+      "raw_text_hashes": [
+        "3cd54e3ed95ea7b1fa45f14e37c99f09e4da2e608039e609ebf3612c461c3dd3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:16:12",
+      "sequence": 9296,
+      "chapter_label": "1KI 16",
+      "verse_label": "12",
+      "locator": {
+        "book": "1KI",
+        "chapter": 16,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 16,
+          "verse": 12
+        }
+      ],
+      "en": "Thus Zimri destroyed all the house of Baasha, according to the LORD’s word which he spoke against Baasha by Jehu the prophet,",
+      "ko": "바아사의 온 집을 멸하였는데 여호와께서 선지자 예후로 바아사를 꾸짖어 하신 말씀 같이 되었으니",
+      "source_text_hash": "aa674b09b874ed65c9410f5c16f155a0e8cb943a5b5e7ec5672662dddc894b7a",
+      "translation_text_hash": "d09c0c5e4c27b0f04afd07573314ca1a713f4d1bfc746587b5d1fe76fd9f2936",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바아사의 온 집을 멸하였는데 여호와께서 선지자 예후로 바아사를 꾸짖어 하신 말씀 같이 되었으니"
+      ],
+      "raw_text_hashes": [
+        "d09c0c5e4c27b0f04afd07573314ca1a713f4d1bfc746587b5d1fe76fd9f2936"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:16:13",
+      "sequence": 9297,
+      "chapter_label": "1KI 16",
+      "verse_label": "13",
+      "locator": {
+        "book": "1KI",
+        "chapter": 16,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 16,
+          "verse": 13
+        }
+      ],
+      "en": "for all the sins of Baasha, and the sins of Elah his son, which they sinned and with which they made Israel to sin, to provoke the LORD, the God of Israel, to anger with their vanities.",
+      "ko": "이는 바아사의 모든 죄와 그 아들 엘라의 죄를 인함이라 저희가 범죄하고 또 이스라엘로 범죄케 하여 그 헛된것으로 이스라엘 하나님 여호와의 노를 격발하였더라",
+      "source_text_hash": "0701445109f0da3154f00a08a35844ea56c0c273c11e9141e3c5949cddfa1d86",
+      "translation_text_hash": "991bee6a119c34076b982926ce552a3e18505907688bdd3a4e402783b1da843a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 바아사의 모든 죄와 그 아들 엘라의 죄를 인함이라 저희가 범죄하고 또 이스라엘로 범죄케 하여 그 헛된것으로 이스라엘 하나님 여호와의 노를 격발하였더라"
+      ],
+      "raw_text_hashes": [
+        "991bee6a119c34076b982926ce552a3e18505907688bdd3a4e402783b1da843a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:16:14",
+      "sequence": 9298,
+      "chapter_label": "1KI 16",
+      "verse_label": "14",
+      "locator": {
+        "book": "1KI",
+        "chapter": 16,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 16,
+          "verse": 14
+        }
+      ],
+      "en": "Now the rest of the acts of Elah, and all that he did, aren’t they written in the book of the chronicles of the kings of Israel?",
+      "ko": "엘라의 남은 사적과 무릇 행한 일이 이스라엘 왕 역대지략에 기록되지 아니하였느냐",
+      "source_text_hash": "645bb8bb49dc50d6cb9e63b7734face7d5aa880efd0430bb98560bdad2dbf11d",
+      "translation_text_hash": "2b2d5c10cac2543ab4ff8356dc7927c52abfb330d6de5cb412cde1ebcae0894b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "엘라의 남은 사적과 무릇 행한 일이 이스라엘 왕 역대지략에 기록되지 아니하였느냐"
+      ],
+      "raw_text_hashes": [
+        "2b2d5c10cac2543ab4ff8356dc7927c52abfb330d6de5cb412cde1ebcae0894b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:16:15",
+      "sequence": 9299,
+      "chapter_label": "1KI 16",
+      "verse_label": "15",
+      "locator": {
+        "book": "1KI",
+        "chapter": 16,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 16,
+          "verse": 15
+        }
+      ],
+      "en": "In the twenty-seventh year of Asa king of Judah, Zimri reigned seven days in Tirzah. Now the people were encamped against Gibbethon, which belonged to the Philistines.",
+      "ko": "유다 왕 아사 제 이십 칠년에 시므리가 디르사에서 칠일 동안 왕이 되니라 때에 백성들이 블레셋 사람에게 속한 깁브돈을 향하여 진을 치고 있더니",
+      "source_text_hash": "057e6d80da2a21ffc592085893396eeb163ee8be9ea8707b07abf9014bc699b8",
+      "translation_text_hash": "be16ae8d93a199aa1afef2cb0b2073627c7cdf2bd0c3c8ff0344e9fe354f4e96",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다 왕 아사 제 이십 칠년에 시므리가 디르사에서 칠일 동안 왕이 되니라 때에 백성들이 블레셋 사람에게 속한 깁브돈을 향하여 진을 치고 있더니"
+      ],
+      "raw_text_hashes": [
+        "be16ae8d93a199aa1afef2cb0b2073627c7cdf2bd0c3c8ff0344e9fe354f4e96"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:16:16",
+      "sequence": 9300,
+      "chapter_label": "1KI 16",
+      "verse_label": "16",
+      "locator": {
+        "book": "1KI",
+        "chapter": 16,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 16,
+          "verse": 16
+        }
+      ],
+      "en": "The people who were encamped heard that Zimri had conspired, and had also killed the king. Therefore all Israel made Omri, the captain of the army, king over Israel that day in the camp.",
+      "ko": "진중 백성들이 시므리가 모반하여 왕을 죽였다는 말을 들은지라 그 날에 이스라엘의 무리가 진에서 군대장관 오므리로 이스라엘 왕을 삼으매",
+      "source_text_hash": "4b4035f3397de078805d6895087dce077d96896febe8de06b40a6427cb185464",
+      "translation_text_hash": "f1de44be87f22b856ebda1f1a90e44d61883c8961b7b239550e2402b540dd9d5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "진중 백성들이 시므리가 모반하여 왕을 죽였다는 말을 들은지라 그 날에 이스라엘의 무리가 진에서 군대장관 오므리로 이스라엘 왕을 삼으매"
+      ],
+      "raw_text_hashes": [
+        "f1de44be87f22b856ebda1f1a90e44d61883c8961b7b239550e2402b540dd9d5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:16:17",
+      "sequence": 9301,
+      "chapter_label": "1KI 16",
+      "verse_label": "17",
+      "locator": {
+        "book": "1KI",
+        "chapter": 16,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 16,
+          "verse": 17
+        }
+      ],
+      "en": "Omri went up from Gibbethon, and all Israel with him, and they besieged Tirzah.",
+      "ko": "오므리가 이에 이스라엘 무리를 거느리고 깁브돈에서부터 올라와서 디르사를 에워 쌌더라",
+      "source_text_hash": "fbda0d123b04c56c846f6a52bc6c796806916d0fd3ce1dbaa972513730c52067",
+      "translation_text_hash": "a10c00a73140dea1439a564d2275262aa58106489ba1058c1f977f405c7392d6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오므리가 이에 이스라엘 무리를 거느리고 깁브돈에서부터 올라와서 디르사를 에워 쌌더라"
+      ],
+      "raw_text_hashes": [
+        "a10c00a73140dea1439a564d2275262aa58106489ba1058c1f977f405c7392d6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:16:18",
+      "sequence": 9302,
+      "chapter_label": "1KI 16",
+      "verse_label": "18",
+      "locator": {
+        "book": "1KI",
+        "chapter": 16,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 16,
+          "verse": 18
+        }
+      ],
+      "en": "When Zimri saw that the city was taken, he went into the fortified part of the king’s house and burned the king’s house over him with fire, and died,",
+      "ko": "시므리가 성이 함락됨을 보고 왕궁 위소에 들어가서 왕궁에 불을 놓고 그 가운데서 죽었으니",
+      "source_text_hash": "2516bf23522a655e39cc9d88af15167a0215bd649eaf8bbe18b7c82f0467b502",
+      "translation_text_hash": "b49c00be678c51fd02300fd79097193576ea1290396eeeb621dbef4b4f422c32",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시므리가 성이 함락됨을 보고 왕궁 위소에 들어가서 왕궁에 불을 놓고 그 가운데서 죽었으니"
+      ],
+      "raw_text_hashes": [
+        "b49c00be678c51fd02300fd79097193576ea1290396eeeb621dbef4b4f422c32"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:16:19",
+      "sequence": 9303,
+      "chapter_label": "1KI 16",
+      "verse_label": "19",
+      "locator": {
+        "book": "1KI",
+        "chapter": 16,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 16,
+          "verse": 19
+        }
+      ],
+      "en": "for his sins which he sinned in doing that which was evil in the LORD’s sight, in walking in the way of Jeroboam, and in his sin which he did to make Israel to sin.",
+      "ko": "이는 저가 여호와 보시기에 악을 행하여 범죄함을 인함이라 저가 여로보암의 길로 행하며 그가 이스라엘로 죄를 범하게 한 그 죄 중에 행하였더라",
+      "source_text_hash": "e25228b2140a92cf452691576e632d0598667338367fcd2c7e83f2f9cff89de1",
+      "translation_text_hash": "9283ecd8a3c9f11a37a9fef0b1088dead89a8c9ffebb4c79974290f0f69e1e44",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 저가 여호와 보시기에 악을 행하여 범죄함을 인함이라 저가 여로보암의 길로 행하며 그가 이스라엘로 죄를 범하게 한 그 죄 중에 행하였더라"
+      ],
+      "raw_text_hashes": [
+        "9283ecd8a3c9f11a37a9fef0b1088dead89a8c9ffebb4c79974290f0f69e1e44"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:16:20",
+      "sequence": 9304,
+      "chapter_label": "1KI 16",
+      "verse_label": "20",
+      "locator": {
+        "book": "1KI",
+        "chapter": 16,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 16,
+          "verse": 20
+        }
+      ],
+      "en": "Now the rest of the acts of Zimri, and his treason that he committed, aren’t they written in the book of the chronicles of the kings of Israel?",
+      "ko": "시므리의 남은 행위와 그 모반한 일이 이스라엘 왕 역대지략에 기록되지 아니하였느냐",
+      "source_text_hash": "ac04383299ec74d4f01b702444230ba6589dc26ce036079fecf0f96e5f8bbea0",
+      "translation_text_hash": "9ce16d4952558e2b3b57493dcea15e6f5054039acf4771f861c317675350a8c0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시므리의 남은 행위와 그 모반한 일이 이스라엘 왕 역대지략에 기록되지 아니하였느냐"
+      ],
+      "raw_text_hashes": [
+        "9ce16d4952558e2b3b57493dcea15e6f5054039acf4771f861c317675350a8c0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:16:21",
+      "sequence": 9305,
+      "chapter_label": "1KI 16",
+      "verse_label": "21",
+      "locator": {
+        "book": "1KI",
+        "chapter": 16,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 16,
+          "verse": 21
+        }
+      ],
+      "en": "Then the people of Israel were divided into two parts: half of the people followed Tibni the son of Ginath, to make him king, and half followed Omri.",
+      "ko": "그 때에 이스라엘 백성이 둘에 나뉘어 그 절반은 기낫의 아들 디브니를 좇아 저로 왕을 삼으려하고 그 절반은 오므리를 좇았더니",
+      "source_text_hash": "1a343e4076b34d989c0975e0719b0489ecde980866a398497620ca786cdaa630",
+      "translation_text_hash": "62cf0486e9acf73516650b1c27bea1f4b27579023b35c9cc43d79c897aee8551",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 이스라엘 백성이 둘에 나뉘어 그 절반은 기낫의 아들 디브니를 좇아 저로 왕을 삼으려하고 그 절반은 오므리를 좇았더니"
+      ],
+      "raw_text_hashes": [
+        "62cf0486e9acf73516650b1c27bea1f4b27579023b35c9cc43d79c897aee8551"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:16:22",
+      "sequence": 9306,
+      "chapter_label": "1KI 16",
+      "verse_label": "22",
+      "locator": {
+        "book": "1KI",
+        "chapter": 16,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 16,
+          "verse": 22
+        }
+      ],
+      "en": "But the people who followed Omri prevailed against the people who followed Tibni the son of Ginath; so Tibni died, and Omri reigned.",
+      "ko": "오므리를 좇은 백성이 기낫의 아들 디브니를 좇은 백성을 이긴지라 디브니가 죽으매 오므리가 왕이 되니라",
+      "source_text_hash": "ece6195c7f59acb43448a46106fb93b0b7ef56afac4f490748c431a11f3d06e0",
+      "translation_text_hash": "c86df29d17170bd0582565da873a1462e9138124d56cb80221d0fd42b91eedce",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오므리를 좇은 백성이 기낫의 아들 디브니를 좇은 백성을 이긴지라 디브니가 죽으매 오므리가 왕이 되니라"
+      ],
+      "raw_text_hashes": [
+        "c86df29d17170bd0582565da873a1462e9138124d56cb80221d0fd42b91eedce"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:16:23",
+      "sequence": 9307,
+      "chapter_label": "1KI 16",
+      "verse_label": "23",
+      "locator": {
+        "book": "1KI",
+        "chapter": 16,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 16,
+          "verse": 23
+        }
+      ],
+      "en": "In the thirty-first year of Asa king of Judah, Omri began to reign over Israel for twelve years. He reigned six years in Tirzah.",
+      "ko": "유다 왕 아사 제 삼십 일년에 오므리가 이스라엘 왕이 되어 십 이년을 위에 있으며 디르사에서 육년 동안 치리하니라",
+      "source_text_hash": "041593671bba7d905cfe8261812627fccfd539e6b768470ff65f0624fa340cbe",
+      "translation_text_hash": "6c9d369af399a76c60e41f3a769201d6cc1ae5de08e5760d0de495ca61f2e4c3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다 왕 아사 제 삼십 일년에 오므리가 이스라엘 왕이 되어 십 이년을 위에 있으며 디르사에서 육년 동안 치리하니라"
+      ],
+      "raw_text_hashes": [
+        "6c9d369af399a76c60e41f3a769201d6cc1ae5de08e5760d0de495ca61f2e4c3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:16:24",
+      "sequence": 9308,
+      "chapter_label": "1KI 16",
+      "verse_label": "24",
+      "locator": {
+        "book": "1KI",
+        "chapter": 16,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 16,
+          "verse": 24
+        }
+      ],
+      "en": "He bought the hill Samaria of Shemer for two talents of silver; and he built on the hill, and called the name of the city which he built, Samaria, after the name of Shemer, the owner of the hill.",
+      "ko": "저가 은 두 달란트로 세멜에게서 사마리아산을 사고 그 산 위에 성을 건축하고 그 건축한 성 이름을 그 산 주인이 되었던 세멜의 이름을 좇아 사마리아라 일컬었더라",
+      "source_text_hash": "749c8a0142d5f066fcb8ee79d2de3edfa01744af27ebd7d0b8fb3de83c035b96",
+      "translation_text_hash": "cddb8d0afb1119c69594a70e162400413b4730da83063eb9c7589af382c4d06b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 은 두 달란트로 세멜에게서 사마리아산을 사고 그 산 위에 성을 건축하고 그 건축한 성 이름을 그 산 주인이 되었던 세멜의 이름을 좇아 사마리아라 일컬었더라"
+      ],
+      "raw_text_hashes": [
+        "cddb8d0afb1119c69594a70e162400413b4730da83063eb9c7589af382c4d06b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:16:25",
+      "sequence": 9309,
+      "chapter_label": "1KI 16",
+      "verse_label": "25",
+      "locator": {
+        "book": "1KI",
+        "chapter": 16,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 16,
+          "verse": 25
+        }
+      ],
+      "en": "Omri did that which was evil in the LORD’s sight, and dealt wickedly above all who were before him.",
+      "ko": "오므리가 여호와 보시기에 악을 행하되 그 전의 모든 사람보다 더욱 악하게 행하여",
+      "source_text_hash": "8f286ecc7a07c731ef5cfca24b82a0f5817d136bf78b02f7e875113cc851d378",
+      "translation_text_hash": "e1aae4cf26151b5a30bf9b0980949541222e46c50342da53afd2f7a5cd6ebde4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오므리가 여호와 보시기에 악을 행하되 그 전의 모든 사람보다 더욱 악하게 행하여"
+      ],
+      "raw_text_hashes": [
+        "e1aae4cf26151b5a30bf9b0980949541222e46c50342da53afd2f7a5cd6ebde4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:16:26",
+      "sequence": 9310,
+      "chapter_label": "1KI 16",
+      "verse_label": "26",
+      "locator": {
+        "book": "1KI",
+        "chapter": 16,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 16,
+          "verse": 26
+        }
+      ],
+      "en": "For he walked in all the way of Jeroboam the son of Nebat, and in his sins with which he made Israel to sin, to provoke the LORD, the God of Israel, to anger with their vanities.",
+      "ko": "느밧의 아들 여로보암의 모든 길로 행하며 그가 이스라엘로 죄를 범하게 한 그 죄 중에 행하여 그 헛된 것으로 이스라엘 하나님 여호와의 노를 격발케 하였더라",
+      "source_text_hash": "484537a9678cff24c41643f5d693d86598febce778401c1b9472819b7e4f1336",
+      "translation_text_hash": "be76b9eacd5ec35b9069ead2fca4b93b4567083699f493575ff341d51a5a2eff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "느밧의 아들 여로보암의 모든 길로 행하며 그가 이스라엘로 죄를 범하게 한 그 죄 중에 행하여 그 헛된 것으로 이스라엘 하나님 여호와의 노를 격발케 하였더라"
+      ],
+      "raw_text_hashes": [
+        "be76b9eacd5ec35b9069ead2fca4b93b4567083699f493575ff341d51a5a2eff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:16:27",
+      "sequence": 9311,
+      "chapter_label": "1KI 16",
+      "verse_label": "27",
+      "locator": {
+        "book": "1KI",
+        "chapter": 16,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 16,
+          "verse": 27
+        }
+      ],
+      "en": "Now the rest of the acts of Omri which he did, and his might that he showed, aren’t they written in the book of the chronicles of the kings of Israel?",
+      "ko": "오므리의 행한 그 남은 사적과 그 베푼 권세가 이스라엘 왕 역대지략에 기록되지 아니하였느냐",
+      "source_text_hash": "44d2d6c6fb3ee7ba2c5113b8005fb3519b0cbab6a0a94ed880f4120a50e1e2db",
+      "translation_text_hash": "0b4bcc1febe0ad783d90123af308413002394dc5d6267f55c283c9803c336096",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오므리의 행한 그 남은 사적과 그 베푼 권세가 이스라엘 왕 역대지략에 기록되지 아니하였느냐"
+      ],
+      "raw_text_hashes": [
+        "0b4bcc1febe0ad783d90123af308413002394dc5d6267f55c283c9803c336096"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:16:28",
+      "sequence": 9312,
+      "chapter_label": "1KI 16",
+      "verse_label": "28",
+      "locator": {
+        "book": "1KI",
+        "chapter": 16,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 16,
+          "verse": 28
+        }
+      ],
+      "en": "So Omri slept with his fathers, and was buried in Samaria; and Ahab his son reigned in his place.",
+      "ko": "오므리가 그 열조와 함께 자매 사마리아에 장사되고 그 아들 아합이 대신하여 왕이 되니라",
+      "source_text_hash": "0b31c0ba93de509b3f80c1ac82b27a998bb2ee5ce0a88183378e0a4e213ba5cf",
+      "translation_text_hash": "2bb96997f839d45e342520bce0cb9ae3310315773e9accc84e1c2735afbde4e5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오므리가 그 열조와 함께 자매 사마리아에 장사되고 그 아들 아합이 대신하여 왕이 되니라"
+      ],
+      "raw_text_hashes": [
+        "2bb96997f839d45e342520bce0cb9ae3310315773e9accc84e1c2735afbde4e5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:16:29",
+      "sequence": 9313,
+      "chapter_label": "1KI 16",
+      "verse_label": "29",
+      "locator": {
+        "book": "1KI",
+        "chapter": 16,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 16,
+          "verse": 29
+        }
+      ],
+      "en": "In the thirty-eighth year of Asa king of Judah, Ahab the son of Omri began to reign over Israel. Ahab the son of Omri reigned over Israel in Samaria twenty-two years.",
+      "ko": "유다 왕 아사 제 삼십 팔년에 오므리의 아들 아합이 이스라엘 왕이 되니라 오므리의 아들 아합이 사마리아에서 이십 이년을 이스라엘을 다스리니라",
+      "source_text_hash": "3b1a8cb166804b7c4d83a6b710a8da7f849449fda3deacf6bf44b304cc543b7a",
+      "translation_text_hash": "6b63f77819767df2a9cc6a49fe4b7c92335d75c0d85c34a1a1cdb37f29f8a81d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다 왕 아사 제 삼십 팔년에 오므리의 아들 아합이 이스라엘 왕이 되니라 오므리의 아들 아합이 사마리아에서 이십 이년을 이스라엘을 다스리니라"
+      ],
+      "raw_text_hashes": [
+        "6b63f77819767df2a9cc6a49fe4b7c92335d75c0d85c34a1a1cdb37f29f8a81d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:16:30",
+      "sequence": 9314,
+      "chapter_label": "1KI 16",
+      "verse_label": "30",
+      "locator": {
+        "book": "1KI",
+        "chapter": 16,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 16,
+          "verse": 30
+        }
+      ],
+      "en": "Ahab the son of Omri did that which was evil in the LORD’s sight above all that were before him.",
+      "ko": "오므리의 아들 아합이 그 전의 모든 사람보다 여호와 보시기에 악을 더욱 행하여",
+      "source_text_hash": "2671d64fbfdaa70d55b008fd1423f84a6a12abc7f324ba9dec9cbee13de3aad6",
+      "translation_text_hash": "0b79e81d7f267ecb3872589e0f2ee190310b98145b2c9a28a281f80f32233df9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오므리의 아들 아합이 그 전의 모든 사람보다 여호와 보시기에 악을 더욱 행하여"
+      ],
+      "raw_text_hashes": [
+        "0b79e81d7f267ecb3872589e0f2ee190310b98145b2c9a28a281f80f32233df9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:16:31",
+      "sequence": 9315,
+      "chapter_label": "1KI 16",
+      "verse_label": "31",
+      "locator": {
+        "book": "1KI",
+        "chapter": 16,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 16,
+          "verse": 31
+        }
+      ],
+      "en": "As if it had been a light thing for him to walk in the sins of Jeroboam the son of Nebat, he took as wife Jezebel the daughter of Ethbaal king of the Sidonians, and went and served Baal and worshiped him.",
+      "ko": "느밧의 아들 여로보암의 죄를 따라 행하는 것을 오히려 가볍게 여기며 시돈 사람의 왕 엣바알의 딸 이세벨로 아내를 삼고 가서 바알을 섬겨 숭배하고",
+      "source_text_hash": "3483f56b9f3223078a2fb3828a01a664d014f87b452637920e05e480b9f91044",
+      "translation_text_hash": "896bd6a5f3642aec41282b9c7813db17fbbae9c5e97354ae05a245c3fa160f28",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "느밧의 아들 여로보암의 죄를 따라 행하는 것을 오히려 가볍게 여기며 시돈 사람의 왕 엣바알의 딸 이세벨로 아내를 삼고 가서 바알을 섬겨 숭배하고"
+      ],
+      "raw_text_hashes": [
+        "896bd6a5f3642aec41282b9c7813db17fbbae9c5e97354ae05a245c3fa160f28"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:16:32",
+      "sequence": 9316,
+      "chapter_label": "1KI 16",
+      "verse_label": "32",
+      "locator": {
+        "book": "1KI",
+        "chapter": 16,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 16,
+          "verse": 32
+        }
+      ],
+      "en": "He raised up an altar for Baal in the house of Baal, which he had built in Samaria.",
+      "ko": "사마리아에 건축한 바알의 사당 속에 바알을 위하여 단을 쌓으며",
+      "source_text_hash": "2ee82c8e2f0cd8aec2db1910c002fc7f724c49aabe45332e3bf334858caf360e",
+      "translation_text_hash": "962c5b35d20fecf35de885aef1a0536e416deed5fffc588db42824c0021cb690",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사마리아에 건축한 바알의 사당 속에 바알을 위하여 단을 쌓으며"
+      ],
+      "raw_text_hashes": [
+        "962c5b35d20fecf35de885aef1a0536e416deed5fffc588db42824c0021cb690"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:16:33",
+      "sequence": 9317,
+      "chapter_label": "1KI 16",
+      "verse_label": "33",
+      "locator": {
+        "book": "1KI",
+        "chapter": 16,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 16,
+          "verse": 33
+        }
+      ],
+      "en": "Ahab made the Asherah; and Ahab did more yet to provoke the LORD, the God of Israel, to anger than all the kings of Israel who were before him.",
+      "ko": "또 아세라 목상을 만들었으니 저는 그 전의 모든 이스라엘 왕보다 심히 이스라엘 하나님 여호와의 노를 격발하였더라",
+      "source_text_hash": "86ceae0b5327dea286caf770f064ac935787574ef3ed6510a1bf9d85bf84d7c1",
+      "translation_text_hash": "4e06b64773e3a5729d488fc2efd86c54a8d2eed4c7cb017ba77da2cddeb2b4a8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 아세라 목상을 만들었으니 저는 그 전의 모든 이스라엘 왕보다 심히 이스라엘 하나님 여호와의 노를 격발하였더라"
+      ],
+      "raw_text_hashes": [
+        "4e06b64773e3a5729d488fc2efd86c54a8d2eed4c7cb017ba77da2cddeb2b4a8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:16:34",
+      "sequence": 9318,
+      "chapter_label": "1KI 16",
+      "verse_label": "34",
+      "locator": {
+        "book": "1KI",
+        "chapter": 16,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 16,
+          "verse": 34
+        }
+      ],
+      "en": "In his days Hiel the Bethelite built Jericho. He laid its foundation with the loss of Abiram his firstborn, and set up its gates with the loss of his youngest son Segub, according to the LORD’s word, which he spoke by Joshua the son of Nun.",
+      "ko": "그 시대에 벧엘 사람 히엘이 여리고를 건축하였는데 저가 그 터를 쌓을 때에 맏아들 아비람을 잃었고 그 문을 세울 때에 말째 아들 스굽을 잃었으니 여호와께서 눈의 아들 여호수아로 하신 말씀과 같이 되었더라",
+      "source_text_hash": "dda4cfe6330f6d6859c52c9448a9c4a490135708edce42df967d38c275e900de",
+      "translation_text_hash": "68e56aab3079843a2bacdc47a7dbfc0caa4f2e70895ce3e6f937923bf4b91fc9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 시대에 벧엘 사람 히엘이 여리고를 건축하였는데 저가 그 터를 쌓을 때에 맏아들 아비람을 잃었고 그 문을 세울 때에 말째 아들 스굽을 잃었으니 여호와께서 눈의 아들 여호수아로 하신 말씀과 같이 되었더라"
+      ],
+      "raw_text_hashes": [
+        "68e56aab3079843a2bacdc47a7dbfc0caa4f2e70895ce3e6f937923bf4b91fc9"
+      ]
+    }
+  ]
+}

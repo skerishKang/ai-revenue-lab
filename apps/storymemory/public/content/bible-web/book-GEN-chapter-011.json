@@ -1,0 +1,1037 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:GEN:chapter:011",
+  "unit_ordinal": 11,
+  "unit_label": "GEN 11",
+  "book_code": "GEN",
+  "chapter_number": 11,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:GEN:11:1",
+      "sequence": 268,
+      "chapter_label": "GEN 11",
+      "verse_label": "1",
+      "locator": {
+        "book": "GEN",
+        "chapter": 11,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 11,
+          "verse": 1
+        }
+      ],
+      "en": "The whole earth was of one language and of one speech.",
+      "ko": "온 땅의 구음이 하나이요 언어가 하나이었더라",
+      "source_text_hash": "b78a18651c424b049c09df18d247f9bd8b1c4b766bf7bea2a2834da4a510b7ad",
+      "translation_text_hash": "646dfc2b775a1abf6e3ab8513a94994d6417d43b9bb5c3d725de7ad2023e2d08",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "온 땅의 구음이 하나이요 언어가 하나이었더라"
+      ],
+      "raw_text_hashes": [
+        "646dfc2b775a1abf6e3ab8513a94994d6417d43b9bb5c3d725de7ad2023e2d08"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:11:2",
+      "sequence": 269,
+      "chapter_label": "GEN 11",
+      "verse_label": "2",
+      "locator": {
+        "book": "GEN",
+        "chapter": 11,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 11,
+          "verse": 2
+        }
+      ],
+      "en": "As they traveled east, they found a plain in the land of Shinar, and they lived there.",
+      "ko": "이에 그들이 동방으로 옮기다가 시날 평지를 만나 거기 거하고",
+      "source_text_hash": "43883f7dc080d6b8a64aec631da8dea383d5680d0a1de94e2a6ed70e11329276",
+      "translation_text_hash": "e209375ae1a9ecf6408fca212df01cc1d5c5f6caf45bf8fcd1b8b44c17284d2a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 그들이 동방으로 옮기다가 시날 평지를 만나 거기 거하고"
+      ],
+      "raw_text_hashes": [
+        "e209375ae1a9ecf6408fca212df01cc1d5c5f6caf45bf8fcd1b8b44c17284d2a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:11:3",
+      "sequence": 270,
+      "chapter_label": "GEN 11",
+      "verse_label": "3",
+      "locator": {
+        "book": "GEN",
+        "chapter": 11,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 11,
+          "verse": 3
+        }
+      ],
+      "en": "They said to one another, “Come, let’s make bricks, and burn them thoroughly.” They had brick for stone, and they used tar for mortar.",
+      "ko": "서로 말하되 자, 벽돌을 만들어 견고히 굽자 하고 이에 벽돌로 돌을 대신하며 역청으로 진흙을 대신하고",
+      "source_text_hash": "445315774102c7f98b68a68de03356ac747c1ca450e8d1955f218bd904e073a2",
+      "translation_text_hash": "4ba485fc6bf7324ca985c3b6e6c260d14ddc580827567afdad99dceaf6556245",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "서로 말하되 자, 벽돌을 만들어 견고히 굽자 하고 이에 벽돌로 돌을 대신하며 역청으로 진흙을 대신하고"
+      ],
+      "raw_text_hashes": [
+        "4ba485fc6bf7324ca985c3b6e6c260d14ddc580827567afdad99dceaf6556245"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:11:4",
+      "sequence": 271,
+      "chapter_label": "GEN 11",
+      "verse_label": "4",
+      "locator": {
+        "book": "GEN",
+        "chapter": 11,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 11,
+          "verse": 4
+        }
+      ],
+      "en": "They said, “Come, let’s build ourselves a city, and a tower whose top reaches to the sky, and let’s make a name for ourselves, lest we be scattered abroad on the surface of the whole earth.”",
+      "ko": "또 말하되 자, 성과 대를 쌓아 대 꼭대기를 하늘에 닿게하여 우리 이름을 내고 온 지면에 흩어짐을 면하자 하였더니",
+      "source_text_hash": "e1f523cce839a13775053c1493980939186b1b1c7abcaa6cf727161891bdd8e1",
+      "translation_text_hash": "cce44af5d39a285747b0c1c1ad13253cbdceda53e2831537b6d7197459ad0c0a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 말하되 자, 성과 대를 쌓아 대 꼭대기를 하늘에 닿게하여 우리 이름을 내고 온 지면에 흩어짐을 면하자 하였더니"
+      ],
+      "raw_text_hashes": [
+        "cce44af5d39a285747b0c1c1ad13253cbdceda53e2831537b6d7197459ad0c0a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:11:5",
+      "sequence": 272,
+      "chapter_label": "GEN 11",
+      "verse_label": "5",
+      "locator": {
+        "book": "GEN",
+        "chapter": 11,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 11,
+          "verse": 5
+        }
+      ],
+      "en": "The LORD came down to see the city and the tower, which the children of men built.",
+      "ko": "여호와께서 인생들의 쌓는 성과 대를 보시려고 강림하셨더라",
+      "source_text_hash": "c966355e6815269a1e574ebb9e8430a14d4c631cf44b9e06ce81695a4c89aef8",
+      "translation_text_hash": "d61faff7034c079a7c3b150e3ed3a5a63f09161129a32250344949be6be0427b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 인생들의 쌓는 성과 대를 보시려고 강림하셨더라"
+      ],
+      "raw_text_hashes": [
+        "d61faff7034c079a7c3b150e3ed3a5a63f09161129a32250344949be6be0427b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:11:6",
+      "sequence": 273,
+      "chapter_label": "GEN 11",
+      "verse_label": "6",
+      "locator": {
+        "book": "GEN",
+        "chapter": 11,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 11,
+          "verse": 6
+        }
+      ],
+      "en": "The LORD said, “Behold, they are one people, and they all have one language, and this is what they begin to do. Now nothing will be withheld from them, which they intend to do.",
+      "ko": "여호와께서 가라사대 이 무리가 한 족속이요 언어도 하나이므로 이같이 시작하였으니 이후로는 그 경영하는 일을 금지할 수 없으리로다",
+      "source_text_hash": "0eafcc776194b0bfc4cce0edda2ded53cb9476da32e59d7a0952730243f26355",
+      "translation_text_hash": "ce4b3718948e019094f2dbeb0e22169c799996e60020db3bae9b232021955b8a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 가라사대 이 무리가 한 족속이요 언어도 하나이므로 이같이 시작하였으니 이후로는 그 경영하는 일을 금지할 수 없으리로다"
+      ],
+      "raw_text_hashes": [
+        "ce4b3718948e019094f2dbeb0e22169c799996e60020db3bae9b232021955b8a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:11:7",
+      "sequence": 274,
+      "chapter_label": "GEN 11",
+      "verse_label": "7",
+      "locator": {
+        "book": "GEN",
+        "chapter": 11,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 11,
+          "verse": 7
+        }
+      ],
+      "en": "Come, let’s go down, and there confuse their language, that they may not understand one another’s speech.”",
+      "ko": "자, 우리가 내려가서 거기서 그들의 언어를 혼잡케 하여 그들로 서로 알아듣지 못하게 하자 하시고",
+      "source_text_hash": "b9da7131bebdd5b0b77fb2a42a149da900cdfeae3e0fe35a7191ce9025ca18e0",
+      "translation_text_hash": "9d67448dc8414d5839a293689b8e21cd4daf69bdf4e4db5e71c16de3ce6f2a60",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자, 우리가 내려가서 거기서 그들의 언어를 혼잡케 하여 그들로 서로 알아듣지 못하게 하자 하시고"
+      ],
+      "raw_text_hashes": [
+        "9d67448dc8414d5839a293689b8e21cd4daf69bdf4e4db5e71c16de3ce6f2a60"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:11:8",
+      "sequence": 275,
+      "chapter_label": "GEN 11",
+      "verse_label": "8",
+      "locator": {
+        "book": "GEN",
+        "chapter": 11,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 11,
+          "verse": 8
+        }
+      ],
+      "en": "So the LORD scattered them abroad from there on the surface of all the earth. They stopped building the city.",
+      "ko": "여호와께서 거기서 그들을 온 지면에 흩으신고로 그들이 성 쌓기를 그쳤더라",
+      "source_text_hash": "3302f8154f71d3cdd381ef5bfa1f83f06055eee8d8fb86dc99ea8fd1ddf44294",
+      "translation_text_hash": "e05a5e9613d7d4aec0d01cf1b0f0b10b23dfd5167cc193f695a059fc0dcd3b79",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 거기서 그들을 온 지면에 흩으신고로 그들이 성 쌓기를 그쳤더라"
+      ],
+      "raw_text_hashes": [
+        "e05a5e9613d7d4aec0d01cf1b0f0b10b23dfd5167cc193f695a059fc0dcd3b79"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:11:9",
+      "sequence": 276,
+      "chapter_label": "GEN 11",
+      "verse_label": "9",
+      "locator": {
+        "book": "GEN",
+        "chapter": 11,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 11,
+          "verse": 9
+        }
+      ],
+      "en": "Therefore its name was called Babel, because there the LORD confused the language of all the earth. From there, the LORD scattered them abroad on the surface of all the earth.",
+      "ko": "그러므로 그 이름을 바벨이라 하니 이는 여호와께서 거기서 온 땅의 언어를 혼잡케 하셨음이라 여호와께서 거기서 그들을 온 지면에 흩으셨더라",
+      "source_text_hash": "6bfbe45b7f847d0a5e238ae59eb5fff2d0a7e40099f913917bdd644280b0ccb0",
+      "translation_text_hash": "d6f0ca20ee73053a5de3f7e91252b00c62a273d5ee6381e5d87d21b74282944b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 그 이름을 바벨이라 하니 이는 여호와께서 거기서 온 땅의 언어를 혼잡케 하셨음이라 여호와께서 거기서 그들을 온 지면에 흩으셨더라"
+      ],
+      "raw_text_hashes": [
+        "d6f0ca20ee73053a5de3f7e91252b00c62a273d5ee6381e5d87d21b74282944b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:11:10",
+      "sequence": 277,
+      "chapter_label": "GEN 11",
+      "verse_label": "10",
+      "locator": {
+        "book": "GEN",
+        "chapter": 11,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 11,
+          "verse": 10
+        }
+      ],
+      "en": "This is the history of the generations of Shem: Shem was one hundred years old when he became the father of Arpachshad two years after the flood.",
+      "ko": "셈의 후예는 이러하니라 셈은 일백세 곧 홍수 후 이년에 아르박삿을 낳았고",
+      "source_text_hash": "21bb1f97c388a4d1798dcdd2e5ed73b4517268e9da05073e69e9feabf67a2461",
+      "translation_text_hash": "84f240135429b01dcd6b524b9eb1e0e7b414189962c22c2316c88c2f36210b34",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "셈의 후예는 이러하니라 셈은 일백세 곧 홍수 후 이년에 아르박삿을 낳았고"
+      ],
+      "raw_text_hashes": [
+        "84f240135429b01dcd6b524b9eb1e0e7b414189962c22c2316c88c2f36210b34"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:11:11",
+      "sequence": 278,
+      "chapter_label": "GEN 11",
+      "verse_label": "11",
+      "locator": {
+        "book": "GEN",
+        "chapter": 11,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 11,
+          "verse": 11
+        }
+      ],
+      "en": "Shem lived five hundred years after he became the father of Arpachshad, and became the father of more sons and daughters.",
+      "ko": "아르박삿을 낳은 후에 오백년을 지내며 자녀를 낳았으며",
+      "source_text_hash": "d9e9d33ec866d398acfd2f64ed5b5338881864db5538260c60db7ded3d815f39",
+      "translation_text_hash": "4c5c2a4ce212bbcc8f5ed6a4df9370f351ba5521df936367e18cbbd79fb45ec4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아르박삿을 낳은 후에 오백년을 지내며 자녀를 낳았으며"
+      ],
+      "raw_text_hashes": [
+        "4c5c2a4ce212bbcc8f5ed6a4df9370f351ba5521df936367e18cbbd79fb45ec4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:11:12",
+      "sequence": 279,
+      "chapter_label": "GEN 11",
+      "verse_label": "12",
+      "locator": {
+        "book": "GEN",
+        "chapter": 11,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 11,
+          "verse": 12
+        }
+      ],
+      "en": "Arpachshad lived thirty-five years and became the father of Shelah.",
+      "ko": "아르박삿은 삼십 오세에 셀라를 낳았고",
+      "source_text_hash": "67b14ef4f5ca5440e007cb1bb464876e8ac551b7d843e2be20fa643351a9de23",
+      "translation_text_hash": "a178a04a9dda5c08d9b8790014588556d81af094da46d535cf9e5312053f902a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아르박삿은 삼십 오세에 셀라를 낳았고"
+      ],
+      "raw_text_hashes": [
+        "a178a04a9dda5c08d9b8790014588556d81af094da46d535cf9e5312053f902a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:11:13",
+      "sequence": 280,
+      "chapter_label": "GEN 11",
+      "verse_label": "13",
+      "locator": {
+        "book": "GEN",
+        "chapter": 11,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 11,
+          "verse": 13
+        }
+      ],
+      "en": "Arpachshad lived four hundred three years after he became the father of Shelah, and became the father of more sons and daughters.",
+      "ko": "셀라를 낳은 후에 사백 삼년을 지내며 자녀를 낳았으며",
+      "source_text_hash": "ec9dcaba247d92ef34f97476ca85c0465deada591c29d1cb3f9c35bc83b84ad9",
+      "translation_text_hash": "46316c7558da7b33e411fb6b58621e677e38944c37c2dbd75f56a9ccb8e34473",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "셀라를 낳은 후에 사백 삼년을 지내며 자녀를 낳았으며"
+      ],
+      "raw_text_hashes": [
+        "46316c7558da7b33e411fb6b58621e677e38944c37c2dbd75f56a9ccb8e34473"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:11:14",
+      "sequence": 281,
+      "chapter_label": "GEN 11",
+      "verse_label": "14",
+      "locator": {
+        "book": "GEN",
+        "chapter": 11,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 11,
+          "verse": 14
+        }
+      ],
+      "en": "Shelah lived thirty years, and became the father of Eber.",
+      "ko": "셀라는 삼십세에 에벨을 낳았고",
+      "source_text_hash": "e81ba2bbca74fc431470f575ead43c8cdf61ce680d92db666327958477252870",
+      "translation_text_hash": "10cee20315c0f2e339e15429cf9932eb7c0ea15e21cc910463cfeaeb288b4350",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "셀라는 삼십세에 에벨을 낳았고"
+      ],
+      "raw_text_hashes": [
+        "10cee20315c0f2e339e15429cf9932eb7c0ea15e21cc910463cfeaeb288b4350"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:11:15",
+      "sequence": 282,
+      "chapter_label": "GEN 11",
+      "verse_label": "15",
+      "locator": {
+        "book": "GEN",
+        "chapter": 11,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 11,
+          "verse": 15
+        }
+      ],
+      "en": "Shelah lived four hundred three years after he became the father of Eber, and became the father of more sons and daughters.",
+      "ko": "에벨을 낳은 후에 사백 삼년을 지내며 자녀를 낳았으며",
+      "source_text_hash": "8a6228789d578a37de5f2507c8536f6c04499dffb2041768042ef6adc53bebd9",
+      "translation_text_hash": "e37c8f26e7d9e068e73fa7dec603e72963414c71af3f7cc4f66bc73ba3ddf6b7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에벨을 낳은 후에 사백 삼년을 지내며 자녀를 낳았으며"
+      ],
+      "raw_text_hashes": [
+        "e37c8f26e7d9e068e73fa7dec603e72963414c71af3f7cc4f66bc73ba3ddf6b7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:11:16",
+      "sequence": 283,
+      "chapter_label": "GEN 11",
+      "verse_label": "16",
+      "locator": {
+        "book": "GEN",
+        "chapter": 11,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 11,
+          "verse": 16
+        }
+      ],
+      "en": "Eber lived thirty-four years, and became the father of Peleg.",
+      "ko": "에벨은 삼십 사세에 벨렉을 낳았고",
+      "source_text_hash": "0f235b18785dad7b9301515e3492c5a4c420ee46fa2599d8492f590b06805019",
+      "translation_text_hash": "7ff7b433db03ca3edeec52f40516a5f47f6eace877a7ea6e452d644386314778",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에벨은 삼십 사세에 벨렉을 낳았고"
+      ],
+      "raw_text_hashes": [
+        "7ff7b433db03ca3edeec52f40516a5f47f6eace877a7ea6e452d644386314778"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:11:17",
+      "sequence": 284,
+      "chapter_label": "GEN 11",
+      "verse_label": "17",
+      "locator": {
+        "book": "GEN",
+        "chapter": 11,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 11,
+          "verse": 17
+        }
+      ],
+      "en": "Eber lived four hundred thirty years after he became the father of Peleg, and became the father of more sons and daughters.",
+      "ko": "벨렉을 낳은 후에 사백 삼십년을 지내며 자녀를 낳았으며",
+      "source_text_hash": "03cf4e0c61e655d38cab3c069446373c00af90b11e1fbb173ec25be8a4d8728f",
+      "translation_text_hash": "7c69711791ab5f31ee530bfefaad8f6eee64df6d3ab2753c4e5a260926b5e7d2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "벨렉을 낳은 후에 사백 삼십년을 지내며 자녀를 낳았으며"
+      ],
+      "raw_text_hashes": [
+        "7c69711791ab5f31ee530bfefaad8f6eee64df6d3ab2753c4e5a260926b5e7d2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:11:18",
+      "sequence": 285,
+      "chapter_label": "GEN 11",
+      "verse_label": "18",
+      "locator": {
+        "book": "GEN",
+        "chapter": 11,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 11,
+          "verse": 18
+        }
+      ],
+      "en": "Peleg lived thirty years, and became the father of Reu.",
+      "ko": "벨렉은 삼십세에 르우를 낳았고",
+      "source_text_hash": "e7d4fb63148fce72af15b40bd6ddc23b4d1fa1a1cbfbf550e3e45daa61ac149f",
+      "translation_text_hash": "dbc63834db277f052de5ea17a9b8f785a6b3b46dc265aba8c3b1bc7d46f622d5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "벨렉은 삼십세에 르우를 낳았고"
+      ],
+      "raw_text_hashes": [
+        "dbc63834db277f052de5ea17a9b8f785a6b3b46dc265aba8c3b1bc7d46f622d5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:11:19",
+      "sequence": 286,
+      "chapter_label": "GEN 11",
+      "verse_label": "19",
+      "locator": {
+        "book": "GEN",
+        "chapter": 11,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 11,
+          "verse": 19
+        }
+      ],
+      "en": "Peleg lived two hundred nine years after he became the father of Reu, and became the father of more sons and daughters.",
+      "ko": "르우를 낳은 후에 이백 구년을 지내며 자녀를 낳았으며",
+      "source_text_hash": "df4a8dbf49e3626a8fe20ff4e98b9883b9f41e4516519bc8f5067be6bf51084f",
+      "translation_text_hash": "d4c9b7a792d73b614467ddb6e979509b310eb005cb72c0b3164d791e3f8ef7a7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "르우를 낳은 후에 이백 구년을 지내며 자녀를 낳았으며"
+      ],
+      "raw_text_hashes": [
+        "d4c9b7a792d73b614467ddb6e979509b310eb005cb72c0b3164d791e3f8ef7a7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:11:20",
+      "sequence": 287,
+      "chapter_label": "GEN 11",
+      "verse_label": "20",
+      "locator": {
+        "book": "GEN",
+        "chapter": 11,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 11,
+          "verse": 20
+        }
+      ],
+      "en": "Reu lived thirty-two years, and became the father of Serug.",
+      "ko": "르우는 삼십 이세에 스룩을 낳았고",
+      "source_text_hash": "ac1882108b760ceea6512502c414c15c7d1685e18d04a1869e43a9d4eb7984c8",
+      "translation_text_hash": "88113f5e5c7db3190e79e4f0135f7804c9436b8661ab2e60637a79ff3351c0c6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "르우는 삼십 이세에 스룩을 낳았고"
+      ],
+      "raw_text_hashes": [
+        "88113f5e5c7db3190e79e4f0135f7804c9436b8661ab2e60637a79ff3351c0c6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:11:21",
+      "sequence": 288,
+      "chapter_label": "GEN 11",
+      "verse_label": "21",
+      "locator": {
+        "book": "GEN",
+        "chapter": 11,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 11,
+          "verse": 21
+        }
+      ],
+      "en": "Reu lived two hundred seven years after he became the father of Serug, and became the father of more sons and daughters.",
+      "ko": "스룩을 낳은 후에 이백 칠년을 지내며 자녀를 낳았으며",
+      "source_text_hash": "7b5554cfd5578ed4d8937c369d06cc28e0ee26cd1095993918c923c67af9ec9b",
+      "translation_text_hash": "12440342efce98687b6ad9376a85f80d46cfef768c84ad785f98cc11337c4410",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "스룩을 낳은 후에 이백 칠년을 지내며 자녀를 낳았으며"
+      ],
+      "raw_text_hashes": [
+        "12440342efce98687b6ad9376a85f80d46cfef768c84ad785f98cc11337c4410"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:11:22",
+      "sequence": 289,
+      "chapter_label": "GEN 11",
+      "verse_label": "22",
+      "locator": {
+        "book": "GEN",
+        "chapter": 11,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 11,
+          "verse": 22
+        }
+      ],
+      "en": "Serug lived thirty years, and became the father of Nahor.",
+      "ko": "스룩은 삼십세에 나홀을 낳았고",
+      "source_text_hash": "58a362c0c0129ac346ee657f71a99be3897af8e5c09ec921f702629c2d7ffbf3",
+      "translation_text_hash": "88791a81b13ffb46bc91dc02d8dbb215263285dfe184f85e6ef572ae70e6b467",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "스룩은 삼십세에 나홀을 낳았고"
+      ],
+      "raw_text_hashes": [
+        "88791a81b13ffb46bc91dc02d8dbb215263285dfe184f85e6ef572ae70e6b467"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:11:23",
+      "sequence": 290,
+      "chapter_label": "GEN 11",
+      "verse_label": "23",
+      "locator": {
+        "book": "GEN",
+        "chapter": 11,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 11,
+          "verse": 23
+        }
+      ],
+      "en": "Serug lived two hundred years after he became the father of Nahor, and became the father of more sons and daughters.",
+      "ko": "나홀을 낳은 후에 이백년을 지내며 자녀를 낳았으며",
+      "source_text_hash": "08c76aef8ba746be72504b2d860cd446856b57323307a0289fa213b948d697b5",
+      "translation_text_hash": "85303cac093f8c2d898a86eafcfb38328e5d689208cef767d331e710f36887e1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나홀을 낳은 후에 이백년을 지내며 자녀를 낳았으며"
+      ],
+      "raw_text_hashes": [
+        "85303cac093f8c2d898a86eafcfb38328e5d689208cef767d331e710f36887e1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:11:24",
+      "sequence": 291,
+      "chapter_label": "GEN 11",
+      "verse_label": "24",
+      "locator": {
+        "book": "GEN",
+        "chapter": 11,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 11,
+          "verse": 24
+        }
+      ],
+      "en": "Nahor lived twenty-nine years, and became the father of Terah.",
+      "ko": "나홀은 이십 구세에 데라를 낳았고",
+      "source_text_hash": "89b99fcbaa576e410e38c2705301e28ea1697b5e9d54977628df0b5c1e77d1aa",
+      "translation_text_hash": "b4d41dd615682e8e579cbd6bedebcf7088832c121e1cbfba5c468f152a686241",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나홀은 이십 구세에 데라를 낳았고"
+      ],
+      "raw_text_hashes": [
+        "b4d41dd615682e8e579cbd6bedebcf7088832c121e1cbfba5c468f152a686241"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:11:25",
+      "sequence": 292,
+      "chapter_label": "GEN 11",
+      "verse_label": "25",
+      "locator": {
+        "book": "GEN",
+        "chapter": 11,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 11,
+          "verse": 25
+        }
+      ],
+      "en": "Nahor lived one hundred nineteen years after he became the father of Terah, and became the father of more sons and daughters.",
+      "ko": "데라를 낳은 후에 일백 십구년을 지내며 자녀를 낳았으며",
+      "source_text_hash": "04ead758de81574690f2621f5350d4795a9f9312d8a92be06b086e8c2d63c2c8",
+      "translation_text_hash": "04f7816a2ca19b12157a40ba70528403c1283cebb05ac9f1cbb25e53b4620489",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "데라를 낳은 후에 일백 십구년을 지내며 자녀를 낳았으며"
+      ],
+      "raw_text_hashes": [
+        "04f7816a2ca19b12157a40ba70528403c1283cebb05ac9f1cbb25e53b4620489"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:11:26",
+      "sequence": 293,
+      "chapter_label": "GEN 11",
+      "verse_label": "26",
+      "locator": {
+        "book": "GEN",
+        "chapter": 11,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 11,
+          "verse": 26
+        }
+      ],
+      "en": "Terah lived seventy years, and became the father of Abram, Nahor, and Haran.",
+      "ko": "데라는 칠십세에 아브람과 나홀과 하란을 낳았더라",
+      "source_text_hash": "0425e522bd9e26e10e1fc99927076203426ed7f273e8ac7742ec0fca8f34e03b",
+      "translation_text_hash": "b8ef8fe8304db7b25be7b45f26b07fa569ae0a3467097a86b73ea9c4a86d9db7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "데라는 칠십세에 아브람과 나홀과 하란을 낳았더라"
+      ],
+      "raw_text_hashes": [
+        "b8ef8fe8304db7b25be7b45f26b07fa569ae0a3467097a86b73ea9c4a86d9db7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:11:27",
+      "sequence": 294,
+      "chapter_label": "GEN 11",
+      "verse_label": "27",
+      "locator": {
+        "book": "GEN",
+        "chapter": 11,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 11,
+          "verse": 27
+        }
+      ],
+      "en": "Now this is the history of the generations of Terah. Terah became the father of Abram, Nahor, and Haran. Haran became the father of Lot.",
+      "ko": "데라의 후예는 이러하니라 데라는 아브람과 나홀과 하란을 낳았고 하란은 롯을 낳았으며",
+      "source_text_hash": "48737c62534752e8e0707834f21312a9afdf4ae92a26ee8715cae93346807431",
+      "translation_text_hash": "0fa49239908c4e38767d5d7f600f82b2761fa5d99bffc9a309fa53e0a5a76843",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "데라의 후예는 이러하니라 데라는 아브람과 나홀과 하란을 낳았고 하란은 롯을 낳았으며"
+      ],
+      "raw_text_hashes": [
+        "0fa49239908c4e38767d5d7f600f82b2761fa5d99bffc9a309fa53e0a5a76843"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:11:28",
+      "sequence": 295,
+      "chapter_label": "GEN 11",
+      "verse_label": "28",
+      "locator": {
+        "book": "GEN",
+        "chapter": 11,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 11,
+          "verse": 28
+        }
+      ],
+      "en": "Haran died in the land of his birth, in Ur of the Chaldees, while his father Terah was still alive.",
+      "ko": "하란은 그 아비 데라보다 먼저 본토 갈대아 우르에서 죽었더라",
+      "source_text_hash": "13aa48b67f5389549612a0e1e962b61b7106fb680a83aba23016cce1bc72938c",
+      "translation_text_hash": "bb0ae416af989c6f9e7720c47794ea8f6c5bdaebab7e32d72031a8e726772949",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하란은 그 아비 데라보다 먼저 본토 갈대아 우르에서 죽었더라"
+      ],
+      "raw_text_hashes": [
+        "bb0ae416af989c6f9e7720c47794ea8f6c5bdaebab7e32d72031a8e726772949"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:11:29",
+      "sequence": 296,
+      "chapter_label": "GEN 11",
+      "verse_label": "29",
+      "locator": {
+        "book": "GEN",
+        "chapter": 11,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 11,
+          "verse": 29
+        }
+      ],
+      "en": "Abram and Nahor married wives. The name of Abram’s wife was Sarai, and the name of Nahor’s wife was Milcah, the daughter of Haran, who was also the father of Iscah.",
+      "ko": "아브람과 나홀이 장가 들었으니 아브람의 아내 이름은 사래며 나홀의 아내 이름은 밀가니 하란의 딸이요 하란은 밀가의 아비며 또 이스가의 아비더라",
+      "source_text_hash": "396d9d5d40992969d7334f82486bfbffa70ebdc8042954a600132cbf7983a64c",
+      "translation_text_hash": "9b5ee5faf9f3c992ef4fa16e946f843aade20ea8b0ee8ee629502b51fa010069",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아브람과 나홀이 장가 들었으니 아브람의 아내 이름은 사래며 나홀의 아내 이름은 밀가니 하란의 딸이요 하란은 밀가의 아비며 또 이스가의 아비더라"
+      ],
+      "raw_text_hashes": [
+        "9b5ee5faf9f3c992ef4fa16e946f843aade20ea8b0ee8ee629502b51fa010069"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:11:30",
+      "sequence": 297,
+      "chapter_label": "GEN 11",
+      "verse_label": "30",
+      "locator": {
+        "book": "GEN",
+        "chapter": 11,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 11,
+          "verse": 30
+        }
+      ],
+      "en": "Sarai was barren. She had no child.",
+      "ko": "사래는 잉태하지 못하므로 자식이 없었더라",
+      "source_text_hash": "0211cf923ec865396dcee6ed9cc55fda62c70adc72c2e72536333da0e4d93a62",
+      "translation_text_hash": "c3eb109151125ad11974f56854906c41b0ba7f0bf8b80cc51eb0354c1957d523",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사래는 잉태하지 못하므로 자식이 없었더라"
+      ],
+      "raw_text_hashes": [
+        "c3eb109151125ad11974f56854906c41b0ba7f0bf8b80cc51eb0354c1957d523"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:11:31",
+      "sequence": 298,
+      "chapter_label": "GEN 11",
+      "verse_label": "31",
+      "locator": {
+        "book": "GEN",
+        "chapter": 11,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 11,
+          "verse": 31
+        }
+      ],
+      "en": "Terah took Abram his son, Lot the son of Haran, his son’s son, and Sarai his daughter-in-law, his son Abram’s wife. They went from Ur of the Chaldees, to go into the land of Canaan. They came to Haran and lived there.",
+      "ko": "데라가 그 아들 아브람과 하란의 아들 그 손자 롯과 그 자부 아브람의 아내 사래를 데리고 갈대아 우르에서 떠나 가나안 땅으로 가고자 하더니 하란에 이르러 거기 거하였으며",
+      "source_text_hash": "9087b1fe67c4301e479e9e2fcb5d46691b85f62bb80abf672145da07f80a6dd8",
+      "translation_text_hash": "68673ef7f70ffa567b013dab2e14da836796f565c84547d70e112a7e7995a0ff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "데라가 그 아들 아브람과 하란의 아들 그 손자 롯과 그 자부 아브람의 아내 사래를 데리고 갈대아 우르에서 떠나 가나안 땅으로 가고자 하더니 하란에 이르러 거기 거하였으며"
+      ],
+      "raw_text_hashes": [
+        "68673ef7f70ffa567b013dab2e14da836796f565c84547d70e112a7e7995a0ff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:11:32",
+      "sequence": 299,
+      "chapter_label": "GEN 11",
+      "verse_label": "32",
+      "locator": {
+        "book": "GEN",
+        "chapter": 11,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 11,
+          "verse": 32
+        }
+      ],
+      "en": "The days of Terah were two hundred five years. Terah died in Haran.",
+      "ko": "데라는 이백 오세를 향수하고 하란에서 죽었더라",
+      "source_text_hash": "4094a365962e1ed8e92e81d3aee4574690734d594e06ea47c15952f8e5bde079",
+      "translation_text_hash": "c8ba0e7c76f3f60101d2444a48c6ed5208920a01e1b502f572ba6c04887471ba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "데라는 이백 오세를 향수하고 하란에서 죽었더라"
+      ],
+      "raw_text_hashes": [
+        "c8ba0e7c76f3f60101d2444a48c6ed5208920a01e1b502f572ba6c04887471ba"
+      ]
+    }
+  ]
+}

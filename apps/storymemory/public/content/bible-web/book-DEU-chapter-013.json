@@ -1,0 +1,589 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:DEU:chapter:013",
+  "unit_ordinal": 166,
+  "unit_label": "DEU 13",
+  "book_code": "DEU",
+  "chapter_number": 13,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:DEU:13:1",
+      "sequence": 5274,
+      "chapter_label": "DEU 13",
+      "verse_label": "1",
+      "locator": {
+        "book": "DEU",
+        "chapter": 13,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 13,
+          "verse": 1
+        }
+      ],
+      "en": "If a prophet or a dreamer of dreams arises among you, and he gives you a sign or a wonder,",
+      "ko": "너희 중에 선지자나 꿈 꾸는 자가 일어나서 이적과 기사를 네게 보이고",
+      "source_text_hash": "a2b2675c4bc3c8a3330d68466793688dc563dcbf87eb6d418c3aaedcacefb6f4",
+      "translation_text_hash": "52374da37d668a681cc8c5048803e1ded0b0b557c116936b0cc23d98a0a3865f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 중에 선지자나 꿈 꾸는 자가 일어나서 이적과 기사를 네게 보이고"
+      ],
+      "raw_text_hashes": [
+        "52374da37d668a681cc8c5048803e1ded0b0b557c116936b0cc23d98a0a3865f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:13:2",
+      "sequence": 5275,
+      "chapter_label": "DEU 13",
+      "verse_label": "2",
+      "locator": {
+        "book": "DEU",
+        "chapter": 13,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 13,
+          "verse": 2
+        }
+      ],
+      "en": "and the sign or the wonder comes to pass, of which he spoke to you, saying, “Let’s go after other gods” (which you have not known) “and let’s serve them,”",
+      "ko": "네게 말하기를 네가 본래 알지 못하던 다른 신들을 우리가 좇아 섬기자 하며 이적과 기사가 그 말대로 이룰찌라도",
+      "source_text_hash": "00c632a3afd4e4c03b5cef77108a4a43116556fbbe32fe677502b09d76334045",
+      "translation_text_hash": "14c72963eb5a0e87cac2b0840dd6beba8b18535d382bcd9b3c79fe52922d276b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네게 말하기를 네가 본래 알지 못하던 다른 신들을 우리가 좇아 섬기자 하며 이적과 기사가 그 말대로 이룰찌라도"
+      ],
+      "raw_text_hashes": [
+        "14c72963eb5a0e87cac2b0840dd6beba8b18535d382bcd9b3c79fe52922d276b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:13:3",
+      "sequence": 5276,
+      "chapter_label": "DEU 13",
+      "verse_label": "3",
+      "locator": {
+        "book": "DEU",
+        "chapter": 13,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 13,
+          "verse": 3
+        }
+      ],
+      "en": "you shall not listen to the words of that prophet, or to that dreamer of dreams; for the LORD your God is testing you, to know whether you love the LORD your God with all your heart and with all your soul.",
+      "ko": "너는 그 선지자나 꿈 꾸는 자의 말을 청종하지 말라 이는 너희 하나님 여호와께서 너희가 마음을 다하고 성품을 다하여 너희 하나님 여호와를 사랑하는 여부를 알려하사 너희를 시험하심이니라",
+      "source_text_hash": "7fac1c2a01df6e7b17a505764824626be19acebdd04d75f02d93e84cb1cb7415",
+      "translation_text_hash": "97a0ea86027fc6ada299df73d2175e988d34298e55b2cc275044ed7f76b0a1c8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 그 선지자나 꿈 꾸는 자의 말을 청종하지 말라 이는 너희 하나님 여호와께서 너희가 마음을 다하고 성품을 다하여 너희 하나님 여호와를 사랑하는 여부를 알려하사 너희를 시험하심이니라"
+      ],
+      "raw_text_hashes": [
+        "97a0ea86027fc6ada299df73d2175e988d34298e55b2cc275044ed7f76b0a1c8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:13:4",
+      "sequence": 5277,
+      "chapter_label": "DEU 13",
+      "verse_label": "4",
+      "locator": {
+        "book": "DEU",
+        "chapter": 13,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 13,
+          "verse": 4
+        }
+      ],
+      "en": "You shall walk after the LORD your God, fear him, keep his commandments, and obey his voice. You shall serve him, and cling to him.",
+      "ko": "너희는 너희 하나님 여호와를 순종하며 그를 경외하며 그 명령을 지키며 그 목소리를 청종하며 그를 섬기며 그에게 부종하고",
+      "source_text_hash": "871bd3378f4f85f054394682ce5bb0f085b5850e9631c45f081a6e1215555555",
+      "translation_text_hash": "0791721b15be6c072a5b51335c799608cb2930be6d069c72a2b8595d41ec9593",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 너희 하나님 여호와를 순종하며 그를 경외하며 그 명령을 지키며 그 목소리를 청종하며 그를 섬기며 그에게 부종하고"
+      ],
+      "raw_text_hashes": [
+        "0791721b15be6c072a5b51335c799608cb2930be6d069c72a2b8595d41ec9593"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:13:5",
+      "sequence": 5278,
+      "chapter_label": "DEU 13",
+      "verse_label": "5",
+      "locator": {
+        "book": "DEU",
+        "chapter": 13,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 13,
+          "verse": 5
+        }
+      ],
+      "en": "That prophet, or that dreamer of dreams, shall be put to death, because he has spoken rebellion against the LORD your God, who brought you out of the land of Egypt and redeemed you out of the house of bondage, to draw you aside out of the way which the LORD your God commanded you to walk in. So you shall remove the evil from among you.",
+      "ko": "그 선지자나 꿈 꾸는 자는 죽이라 이는 그가 너희로 너희를 애굽 땅에서 인도하여 내시며 종 되었던 집에서 속량하여 취하신 너희 하나님 여호와를 배반케 하려 하며 너희 하나님 여호와께서 네게 행하라 명하신 도에서 너를 꾀어내려고 말하였음이라 너는 이같이 하여 너희 중에서 악을 제할찌니라",
+      "source_text_hash": "aeb43464048ad4e145a5daed3e2b1108f53117d2b607cb85117b265ef2b1cb53",
+      "translation_text_hash": "e6a30e9daa27b1a893c99f58e43566dc0eabbd8a24f9cbe694eaeb0653f07831",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 선지자나 꿈 꾸는 자는 죽이라 이는 그가 너희로 너희를 애굽 땅에서 인도하여 내시며 종 되었던 집에서 속량하여 취하신 너희 하나님 여호와를 배반케 하려 하며 너희 하나님 여호와께서 네게 행하라 명하신 도에서 너를 꾀어내려고 말하였음이라 너는 이같이 하여 너희 중에서 악을 제할찌니라"
+      ],
+      "raw_text_hashes": [
+        "e6a30e9daa27b1a893c99f58e43566dc0eabbd8a24f9cbe694eaeb0653f07831"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:13:6",
+      "sequence": 5279,
+      "chapter_label": "DEU 13",
+      "verse_label": "6",
+      "locator": {
+        "book": "DEU",
+        "chapter": 13,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 13,
+          "verse": 6
+        }
+      ],
+      "en": "If your brother, the son of your mother, or your son, or your daughter, or the wife of your bosom, or your friend who is as your own soul, entices you secretly, saying, “Let’s go and serve other gods”—which you have not known, you, nor your fathers;",
+      "ko": "네 동복 형제나 네 자녀나 네 품의 아내나 너와 생명을 함께하는 친구가 가만히 너를 꾀어 이르기를 너와 네 열조가 알지 못하던 다른 신들",
+      "source_text_hash": "254caf081161ff813bc464f2d1b86d7c5a3a29473b9d1d5983da20f2f33960fb",
+      "translation_text_hash": "7d4a71d201db6cd9a98c56b3625576f770d4a8baa2cbc6da853f9d6c68648932",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 동복 형제나 네 자녀나 네 품의 아내나 너와 생명을 함께하는 친구가 가만히 너를 꾀어 이르기를 너와 네 열조가 알지 못하던 다른 신들"
+      ],
+      "raw_text_hashes": [
+        "7d4a71d201db6cd9a98c56b3625576f770d4a8baa2cbc6da853f9d6c68648932"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:13:7",
+      "sequence": 5280,
+      "chapter_label": "DEU 13",
+      "verse_label": "7",
+      "locator": {
+        "book": "DEU",
+        "chapter": 13,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 13,
+          "verse": 7
+        }
+      ],
+      "en": "of the gods of the peoples who are around you, near to you, or far off from you, from the one end of the earth even to the other end of the earth—",
+      "ko": "곧 네 사방에 둘러 있는 민족 혹 네게서 가깝든지 네게서 멀든지 땅 이 끝에서 저 끝까지 있는 민족의 신들을 우리가 가서 섬기자 할찌라도",
+      "source_text_hash": "3339741642649d0edf722121b60f6d1739bbe4baa96d59c008481a58778aeee1",
+      "translation_text_hash": "c40b052330b1c49e0c22339fd13af8098fc33e1f48dd403f8f50c82153149454",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 네 사방에 둘러 있는 민족 혹 네게서 가깝든지 네게서 멀든지 땅 이 끝에서 저 끝까지 있는 민족의 신들을 우리가 가서 섬기자 할찌라도"
+      ],
+      "raw_text_hashes": [
+        "c40b052330b1c49e0c22339fd13af8098fc33e1f48dd403f8f50c82153149454"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:13:8",
+      "sequence": 5281,
+      "chapter_label": "DEU 13",
+      "verse_label": "8",
+      "locator": {
+        "book": "DEU",
+        "chapter": 13,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 13,
+          "verse": 8
+        }
+      ],
+      "en": "you shall not consent to him nor listen to him; neither shall your eye pity him, neither shall you spare, neither shall you conceal him;",
+      "ko": "너는 그를 좇지 말며 듣지 말며 긍휼히 보지 말며 애석히 여기지 말며 덮어 숨기지 말고",
+      "source_text_hash": "8949fcd0f920364d3cefa0680c4b0ac56d90ebad0663c3f7df874bb3a0b957d2",
+      "translation_text_hash": "d851d0b65bfae9891f225f7fa2e6d14b1b004026ece921b5db2d6ff76849b2cf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 그를 좇지 말며 듣지 말며 긍휼히 보지 말며 애석히 여기지 말며 덮어 숨기지 말고"
+      ],
+      "raw_text_hashes": [
+        "d851d0b65bfae9891f225f7fa2e6d14b1b004026ece921b5db2d6ff76849b2cf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:13:9",
+      "sequence": 5282,
+      "chapter_label": "DEU 13",
+      "verse_label": "9",
+      "locator": {
+        "book": "DEU",
+        "chapter": 13,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 13,
+          "verse": 9
+        }
+      ],
+      "en": "but you shall surely kill him. Your hand shall be first on him to put him to death, and afterwards the hands of all the people.",
+      "ko": "너는 용서 없이 그를 죽이되 죽일 때에 네가 먼저 그에게 손을 대고 후에 뭇 백성이 손을 대라",
+      "source_text_hash": "a373b8a076c8e7b8d7fc8c411597239b555f3511725f36d921cec08e95a65086",
+      "translation_text_hash": "4ae70bea554f8e6b727164c601ebab3064208a2febf21e7beac9bcd251effe5c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 용서 없이 그를 죽이되 죽일 때에 네가 먼저 그에게 손을 대고 후에 뭇 백성이 손을 대라"
+      ],
+      "raw_text_hashes": [
+        "4ae70bea554f8e6b727164c601ebab3064208a2febf21e7beac9bcd251effe5c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:13:10",
+      "sequence": 5283,
+      "chapter_label": "DEU 13",
+      "verse_label": "10",
+      "locator": {
+        "book": "DEU",
+        "chapter": 13,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 13,
+          "verse": 10
+        }
+      ],
+      "en": "You shall stone him to death with stones, because he has sought to draw you away from the LORD your God, who brought you out of the land of Egypt, out of the house of bondage.",
+      "ko": "그는 애굽 땅 종 되었던 집에서 너를 인도하여 내신 네 하나님 여호와에게서 너를 꾀어 떠나게 하려한 자니 너는 돌로 쳐 죽이라",
+      "source_text_hash": "46e046d678456b5cd07db7a78f511bf4e6028a8747729c4fe3ddb0a2adf9b6af",
+      "translation_text_hash": "8d9c2dc5678fd35002dfb746635b723715513068a23267e10449313c464a75b1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그는 애굽 땅 종 되었던 집에서 너를 인도하여 내신 네 하나님 여호와에게서 너를 꾀어 떠나게 하려한 자니 너는 돌로 쳐 죽이라"
+      ],
+      "raw_text_hashes": [
+        "8d9c2dc5678fd35002dfb746635b723715513068a23267e10449313c464a75b1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:13:11",
+      "sequence": 5284,
+      "chapter_label": "DEU 13",
+      "verse_label": "11",
+      "locator": {
+        "book": "DEU",
+        "chapter": 13,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 13,
+          "verse": 11
+        }
+      ],
+      "en": "All Israel shall hear, and fear, and shall not do any more wickedness like this among you.",
+      "ko": "그리하면 온 이스라엘이 듣고 두려워하여 이같은 악을 다시는 너희 중에서 행하지 못하리라",
+      "source_text_hash": "6ebf9daa8cb3141ca4760a60ee053cd6c3878763749cd2c7678e6439f83c77b2",
+      "translation_text_hash": "5b23f4d9a794470ba8a55277d85086671394bed0fff5be4dc270b71da297e3a4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그리하면 온 이스라엘이 듣고 두려워하여 이같은 악을 다시는 너희 중에서 행하지 못하리라"
+      ],
+      "raw_text_hashes": [
+        "5b23f4d9a794470ba8a55277d85086671394bed0fff5be4dc270b71da297e3a4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:13:12",
+      "sequence": 5285,
+      "chapter_label": "DEU 13",
+      "verse_label": "12",
+      "locator": {
+        "book": "DEU",
+        "chapter": 13,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 13,
+          "verse": 12
+        }
+      ],
+      "en": "If you hear about one of your cities, which the LORD your God gives you to dwell there, that",
+      "ko": "네 하나님 여호와께서 네게 주어 거하게 하시는 한 성읍에 대하여 네게 소문이 들리기를",
+      "source_text_hash": "6ea288f57e401b887e0d555c42baebe4f404ca5be51d8ba3acb3faf03a1ee890",
+      "translation_text_hash": "ba0e262ccde7860acee14e2aa3bb61bdba25b33c09f84a6fe4081c898a549211",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 하나님 여호와께서 네게 주어 거하게 하시는 한 성읍에 대하여 네게 소문이 들리기를"
+      ],
+      "raw_text_hashes": [
+        "ba0e262ccde7860acee14e2aa3bb61bdba25b33c09f84a6fe4081c898a549211"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:13:13",
+      "sequence": 5286,
+      "chapter_label": "DEU 13",
+      "verse_label": "13",
+      "locator": {
+        "book": "DEU",
+        "chapter": 13,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 13,
+          "verse": 13
+        }
+      ],
+      "en": "certain wicked fellows have gone out from among you and have drawn away the inhabitants of their city, saying, “Let’s go and serve other gods,” which you have not known,",
+      "ko": "너희 중 어떤 잡류가 일어나서 그 성읍 거민을 유혹하여 이르기를 너희가 알지 못하던 다른 신들을 우리가 가서 섬기자 한다 하거든",
+      "source_text_hash": "1acb54b373866205f335fbef9d06b28755021bbfa28fa61b3bf968b06ffb3619",
+      "translation_text_hash": "1a7168722fa82bdb6daa953c4cd144514544fbced5af85262266f541f7394f1d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 중 어떤 잡류가 일어나서 그 성읍 거민을 유혹하여 이르기를 너희가 알지 못하던 다른 신들을 우리가 가서 섬기자 한다 하거든"
+      ],
+      "raw_text_hashes": [
+        "1a7168722fa82bdb6daa953c4cd144514544fbced5af85262266f541f7394f1d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:13:14",
+      "sequence": 5287,
+      "chapter_label": "DEU 13",
+      "verse_label": "14",
+      "locator": {
+        "book": "DEU",
+        "chapter": 13,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 13,
+          "verse": 14
+        }
+      ],
+      "en": "then you shall inquire, investigate, and ask diligently. Behold, if it is true, and the thing certain, that such abomination was done among you,",
+      "ko": "너는 자세히 묻고 살펴보아서 이런 가증한 일이 참 사실로 너희 중에 있으면",
+      "source_text_hash": "bd21c14e1fa681d9c0e157028bd0dd699eff6edc0acad7403534904b155cedd5",
+      "translation_text_hash": "19ecea602710ed78facbcc6f9ffce80cff3e98afae94a573c674a8068d8c3ae9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 자세히 묻고 살펴보아서 이런 가증한 일이 참 사실로 너희 중에 있으면"
+      ],
+      "raw_text_hashes": [
+        "19ecea602710ed78facbcc6f9ffce80cff3e98afae94a573c674a8068d8c3ae9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:13:15",
+      "sequence": 5288,
+      "chapter_label": "DEU 13",
+      "verse_label": "15",
+      "locator": {
+        "book": "DEU",
+        "chapter": 13,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 13,
+          "verse": 15
+        }
+      ],
+      "en": "you shall surely strike the inhabitants of that city with the edge of the sword, destroying it utterly, with all that is therein and its livestock, with the edge of the sword.",
+      "ko": "너는 마땅히 그 성읍 거민을 칼날로 죽이고 그 성읍과 그 중에 거하는 모든 것과 그 생축을 칼날로 진멸하고",
+      "source_text_hash": "c5d49295b7473325ddca41eb31e04c5e4e7d3c4e8e41d0b69f5516bd898f034b",
+      "translation_text_hash": "375e037dfb0e051525ebf7b2bcc4a4a256b8ae8258743edc0dddc2fc072e9546",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 마땅히 그 성읍 거민을 칼날로 죽이고 그 성읍과 그 중에 거하는 모든 것과 그 생축을 칼날로 진멸하고"
+      ],
+      "raw_text_hashes": [
+        "375e037dfb0e051525ebf7b2bcc4a4a256b8ae8258743edc0dddc2fc072e9546"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:13:16",
+      "sequence": 5289,
+      "chapter_label": "DEU 13",
+      "verse_label": "16",
+      "locator": {
+        "book": "DEU",
+        "chapter": 13,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 13,
+          "verse": 16
+        }
+      ],
+      "en": "You shall gather all its plunder into the middle of its street, and shall burn with fire the city, with all of its plunder, to the LORD your God. It shall be a heap forever. It shall not be built again.",
+      "ko": "또 그 속에서 빼앗아 얻은 물건을 다 거리에 모아 놓고 그 성읍과 그 탈취물 전부를 불살라 네 하나님 여호와께 드릴찌니 그 성읍은 영영히 무더기가 되어 다시는 건축됨이 없을 것이니라",
+      "source_text_hash": "c83feb36c37a46c57f51f58ef7e369f7fd2c692343a8af8ed4e16213f47ff6a9",
+      "translation_text_hash": "94504991f21e0ef3a54f2a7c5a4ff0e37dc030564f4782ba7c790bd4fb286fa8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 그 속에서 빼앗아 얻은 물건을 다 거리에 모아 놓고 그 성읍과 그 탈취물 전부를 불살라 네 하나님 여호와께 드릴찌니 그 성읍은 영영히 무더기가 되어 다시는 건축됨이 없을 것이니라"
+      ],
+      "raw_text_hashes": [
+        "94504991f21e0ef3a54f2a7c5a4ff0e37dc030564f4782ba7c790bd4fb286fa8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:13:17",
+      "sequence": 5290,
+      "chapter_label": "DEU 13",
+      "verse_label": "17",
+      "locator": {
+        "book": "DEU",
+        "chapter": 13,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 13,
+          "verse": 17
+        }
+      ],
+      "en": "Nothing of the devoted thing shall cling to your hand, that the LORD may turn from the fierceness of his anger and show you mercy, and have compassion on you and multiply you, as he has sworn to your fathers,",
+      "ko": "너는 이 진멸할 물건을 조금도 네 손에 대지 말라 그리하면 여호와께서 그 진노를 그치시고 너를 긍휼히 여기시고 자비를 더하사 너의 열조에게 맹세하심 같이 네 수효를 번성케 하실 것이라",
+      "source_text_hash": "958a152d17da8cb6f9669191b3f36435dbd603a5203e5cac210cb9cda0142d6e",
+      "translation_text_hash": "5ca4bdc0f51a5759c9809fa0c252e116e5e47f3c8d9c51bb6645e5a19d0f40b7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 이 진멸할 물건을 조금도 네 손에 대지 말라 그리하면 여호와께서 그 진노를 그치시고 너를 긍휼히 여기시고 자비를 더하사 너의 열조에게 맹세하심 같이 네 수효를 번성케 하실 것이라"
+      ],
+      "raw_text_hashes": [
+        "5ca4bdc0f51a5759c9809fa0c252e116e5e47f3c8d9c51bb6645e5a19d0f40b7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:13:18",
+      "sequence": 5291,
+      "chapter_label": "DEU 13",
+      "verse_label": "18",
+      "locator": {
+        "book": "DEU",
+        "chapter": 13,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 13,
+          "verse": 18
+        }
+      ],
+      "en": "when you listen to the LORD your God’s voice, to keep all his commandments which I command you today, to do that which is right in the LORD your God’s eyes.",
+      "ko": "네가 만일 네 하나님 여호와의 말씀을 듣고 오늘날 내가 네게 명하는 그 모든 명령을 지켜 네 하나님 여호와의 목전에 정직을 행하면 이같이 되리라",
+      "source_text_hash": "8e06169f6cec6e071b3b99e2d9be5d372b0a48c9fd6207bcaa20f19cb6ea60db",
+      "translation_text_hash": "6fbae1d2c43eed72dd8fd0eb9ebfe5dec90ac3124849954862f83efcf23e1ac7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 만일 네 하나님 여호와의 말씀을 듣고 오늘날 내가 네게 명하는 그 모든 명령을 지켜 네 하나님 여호와의 목전에 정직을 행하면 이같이 되리라"
+      ],
+      "raw_text_hashes": [
+        "6fbae1d2c43eed72dd8fd0eb9ebfe5dec90ac3124849954862f83efcf23e1ac7"
+      ]
+    }
+  ]
+}

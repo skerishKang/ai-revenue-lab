@@ -1,0 +1,653 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ECC:chapter:005",
+  "unit_ordinal": 664,
+  "unit_label": "ECC 5",
+  "book_code": "ECC",
+  "chapter_number": 5,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ECC:5:1",
+      "sequence": 17399,
+      "chapter_label": "ECC 5",
+      "verse_label": "1",
+      "locator": {
+        "book": "ECC",
+        "chapter": 5,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 5,
+          "verse": 1
+        }
+      ],
+      "en": "Guard your steps when you go to God’s house; for to draw near to listen is better than to give the sacrifice of fools, for they don’t know that they do evil.",
+      "ko": "너는 하나님의 전에 들어갈 때에 네 발을 삼갈찌어다 가까이 하여 말씀을 듣는 것이 우매자의 제사 드리는 것보다 나으니 저희는 악을 행하면서도 깨닫지 못함이니라",
+      "source_text_hash": "17dfa6205df7a3ab30ef3799cace3ab89bf9fc3c1d069dcc16ec99d7e5aac442",
+      "translation_text_hash": "cbefec98b09de10e6342c1b26cf1d1ec99f924744fe0477e80efeb0049695003",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 하나님의 전에 들어갈 때에 네 발을 삼갈찌어다 가까이 하여 말씀을 듣는 것이 우매자의 제사 드리는 것보다 나으니 저희는 악을 행하면서도 깨닫지 못함이니라"
+      ],
+      "raw_text_hashes": [
+        "cbefec98b09de10e6342c1b26cf1d1ec99f924744fe0477e80efeb0049695003"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:5:2",
+      "sequence": 17400,
+      "chapter_label": "ECC 5",
+      "verse_label": "2",
+      "locator": {
+        "book": "ECC",
+        "chapter": 5,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 5,
+          "verse": 2
+        }
+      ],
+      "en": "Don’t be rash with your mouth, and don’t let your heart be hasty to utter anything before God; for God is in heaven, and you on earth. Therefore let your words be few.",
+      "ko": "너는 하나님 앞에서 함부로 입을 열지 말며 급한 마음으로 말을 내지 말라 하나님은 하늘에 계시고 너는 땅에 있음이니라 그런즉 마땅히 말을 적게 할 것이라",
+      "source_text_hash": "3e46871a7d25e81a565a9119c5d450244f6fb16d3c4dee551bf44d8b51712ab4",
+      "translation_text_hash": "d8015a8a102c2b4fe5ff40b5ebe3bb05d1f8fba33a60516adafe3f62621753f5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 하나님 앞에서 함부로 입을 열지 말며 급한 마음으로 말을 내지 말라 하나님은 하늘에 계시고 너는 땅에 있음이니라 그런즉 마땅히 말을 적게 할 것이라"
+      ],
+      "raw_text_hashes": [
+        "d8015a8a102c2b4fe5ff40b5ebe3bb05d1f8fba33a60516adafe3f62621753f5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:5:3",
+      "sequence": 17401,
+      "chapter_label": "ECC 5",
+      "verse_label": "3",
+      "locator": {
+        "book": "ECC",
+        "chapter": 5,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 5,
+          "verse": 3
+        }
+      ],
+      "en": "For as a dream comes with a multitude of cares, so a fool’s speech with a multitude of words.",
+      "ko": "일이 많으면 꿈이 생기고 말이 많으면 우매자의 소리가 나타나느니라",
+      "source_text_hash": "afbb2a11a9b26ba6ed2a32a1d8328535c589953bfa09a56affbe7d5835187789",
+      "translation_text_hash": "d881d05aa4cc3298a8151986a8fd18fe4324aaf5e7eeea9e5221bb0f7d30b6ef",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "일이 많으면 꿈이 생기고 말이 많으면 우매자의 소리가 나타나느니라"
+      ],
+      "raw_text_hashes": [
+        "d881d05aa4cc3298a8151986a8fd18fe4324aaf5e7eeea9e5221bb0f7d30b6ef"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:5:4",
+      "sequence": 17402,
+      "chapter_label": "ECC 5",
+      "verse_label": "4",
+      "locator": {
+        "book": "ECC",
+        "chapter": 5,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 5,
+          "verse": 4
+        }
+      ],
+      "en": "When you vow a vow to God, don’t defer to pay it; for he has no pleasure in fools. Pay that which you vow.",
+      "ko": "네가 하나님께 서원하였거든 갚기를 더디게 말라 하나님은 우매자를 기뻐하지 아니하시나니 서원한 것을 갚으라",
+      "source_text_hash": "3201dee53b2a8d9b45a0a28dced1d3847fc06bad3314e38acfa82692ec151846",
+      "translation_text_hash": "3460189607fd91a23b6da99977a8a7f9776067925d7e896becbf76cc69f65337",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 하나님께 서원하였거든 갚기를 더디게 말라 하나님은 우매자를 기뻐하지 아니하시나니 서원한 것을 갚으라"
+      ],
+      "raw_text_hashes": [
+        "3460189607fd91a23b6da99977a8a7f9776067925d7e896becbf76cc69f65337"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:5:5",
+      "sequence": 17403,
+      "chapter_label": "ECC 5",
+      "verse_label": "5",
+      "locator": {
+        "book": "ECC",
+        "chapter": 5,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 5,
+          "verse": 5
+        }
+      ],
+      "en": "It is better that you should not vow, than that you should vow and not pay.",
+      "ko": "서원하고 갚지 아니하는 것보다 서원하지 아니하는 것이 나으니",
+      "source_text_hash": "7d6c5daa6cc177601ae49cb5110d72e35a37ac295bb81219aded974691055150",
+      "translation_text_hash": "1f5c39accdfa48c827bb6cc52ec2e3a5fec3a597034157c54db856619b433408",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "서원하고 갚지 아니하는 것보다 서원하지 아니하는 것이 나으니"
+      ],
+      "raw_text_hashes": [
+        "1f5c39accdfa48c827bb6cc52ec2e3a5fec3a597034157c54db856619b433408"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:5:6",
+      "sequence": 17404,
+      "chapter_label": "ECC 5",
+      "verse_label": "6",
+      "locator": {
+        "book": "ECC",
+        "chapter": 5,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 5,
+          "verse": 6
+        }
+      ],
+      "en": "Don’t allow your mouth to lead you into sin. Don’t protest before the messenger that this was a mistake. Why should God be angry at your voice, and destroy the work of your hands?",
+      "ko": "네 입으로 네 육체를 범죄케 말라 사자 앞에서 내가 서원한 것이 실수라고 말하지 말라 어찌 하나님으로 네 말 소리를 진노하사 네 손으로 한 것을 멸하시게 하랴",
+      "source_text_hash": "99903d6b0c69606e02bfc74c5bdec920184ac6f3e8fc5f1de1bad32d3cb73f37",
+      "translation_text_hash": "b88dddd5a0c5d83c450f7c09f416a7b9b96db2e135cac2f3de2a1106a2ded89a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 입으로 네 육체를 범죄케 말라 사자 앞에서 내가 서원한 것이 실수라고 말하지 말라 어찌 하나님으로 네 말 소리를 진노하사 네 손으로 한 것을 멸하시게 하랴"
+      ],
+      "raw_text_hashes": [
+        "b88dddd5a0c5d83c450f7c09f416a7b9b96db2e135cac2f3de2a1106a2ded89a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:5:7",
+      "sequence": 17405,
+      "chapter_label": "ECC 5",
+      "verse_label": "7",
+      "locator": {
+        "book": "ECC",
+        "chapter": 5,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 5,
+          "verse": 7
+        }
+      ],
+      "en": "For in the multitude of dreams there are vanities, as well as in many words; but you must fear God.",
+      "ko": "꿈이 많으면 헛된 것이 많고 말이 많아도 그러하니 오직 너는 하나님을 경외할찌니라",
+      "source_text_hash": "35c8adb601f02b4fb98beb133d4670f8d60c2d02fe4e628e44c14e1431c4bc8c",
+      "translation_text_hash": "71f61e83c132483be75e0b0aabf78c15c6b64cf9b6a87fcac7bf46aecd8f8aa4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "꿈이 많으면 헛된 것이 많고 말이 많아도 그러하니 오직 너는 하나님을 경외할찌니라"
+      ],
+      "raw_text_hashes": [
+        "71f61e83c132483be75e0b0aabf78c15c6b64cf9b6a87fcac7bf46aecd8f8aa4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:5:8",
+      "sequence": 17406,
+      "chapter_label": "ECC 5",
+      "verse_label": "8",
+      "locator": {
+        "book": "ECC",
+        "chapter": 5,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 5,
+          "verse": 8
+        }
+      ],
+      "en": "If you see the oppression of the poor, and the violent taking away of justice and righteousness in a district, don’t marvel at the matter, for one official is eyed by a higher one, and there are officials over them.",
+      "ko": "너는 어느 도에서든지 빈민을 학대하는 것과 공의를 박멸하는 것을 볼찌라도 그것을 이상히 여기지 말라 높은 자보다 더 높은 자가 감찰하고 그들보다 더 높은 자들이 있음이니라",
+      "source_text_hash": "6505b02045349833b2f31af117dc54d84e17a7fae0bbc1a6d31f21c9515be697",
+      "translation_text_hash": "c6d9807b1ab82a42e472112f141022b66e656bc3560d0575fe05f93627db0b5a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 어느 도에서든지 빈민을 학대하는 것과 공의를 박멸하는 것을 볼찌라도 그것을 이상히 여기지 말라 높은 자보다 더 높은 자가 감찰하고 그들보다 더 높은 자들이 있음이니라"
+      ],
+      "raw_text_hashes": [
+        "c6d9807b1ab82a42e472112f141022b66e656bc3560d0575fe05f93627db0b5a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:5:9",
+      "sequence": 17407,
+      "chapter_label": "ECC 5",
+      "verse_label": "9",
+      "locator": {
+        "book": "ECC",
+        "chapter": 5,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 5,
+          "verse": 9
+        }
+      ],
+      "en": "Moreover the profit of the earth is for all. The king profits from the field.",
+      "ko": "땅의 이익은 뭇사람을 위하여 있나니 왕도 밭의 소산을 받느니라",
+      "source_text_hash": "f1d331ffc3cfead472687e689d90e5b1bcc6e1f32bfecce4ebfedefbf9fa5f08",
+      "translation_text_hash": "027ac805b3468c51291314614be3b9713d1465dfef287b771fa373399b4dafde",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "땅의 이익은 뭇사람을 위하여 있나니 왕도 밭의 소산을 받느니라"
+      ],
+      "raw_text_hashes": [
+        "027ac805b3468c51291314614be3b9713d1465dfef287b771fa373399b4dafde"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:5:10",
+      "sequence": 17408,
+      "chapter_label": "ECC 5",
+      "verse_label": "10",
+      "locator": {
+        "book": "ECC",
+        "chapter": 5,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 5,
+          "verse": 10
+        }
+      ],
+      "en": "He who loves silver shall not be satisfied with silver, nor he who loves abundance, with increase. This also is vanity.",
+      "ko": "은을 사랑하는 자는 은으로 만족함이 없고 풍부를 사랑하는 자는 소득으로 만족함이 없나니 이것도 헛되도다",
+      "source_text_hash": "eba346df64a4537001fc5506fd2004197bd79569a491beb8f1de85ec08cf7c86",
+      "translation_text_hash": "bd4b9f376d557018f89d2a3a3097e1c6924ebf11f7adf947b6ceeb2726570cfd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "은을 사랑하는 자는 은으로 만족함이 없고 풍부를 사랑하는 자는 소득으로 만족함이 없나니 이것도 헛되도다"
+      ],
+      "raw_text_hashes": [
+        "bd4b9f376d557018f89d2a3a3097e1c6924ebf11f7adf947b6ceeb2726570cfd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:5:11",
+      "sequence": 17409,
+      "chapter_label": "ECC 5",
+      "verse_label": "11",
+      "locator": {
+        "book": "ECC",
+        "chapter": 5,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 5,
+          "verse": 11
+        }
+      ],
+      "en": "When goods increase, those who eat them are increased; and what advantage is there to its owner, except to feast on them with his eyes?",
+      "ko": "재산이 더하면 먹는 자도 더하나니 그 소유주가 눈으로 보는 외에 무엇이 유익하랴",
+      "source_text_hash": "20f22811ba10265bfffe0af21e1fe748f46873b589e9431b77780d2249a3654f",
+      "translation_text_hash": "a228ecf76e763d8355ae573a214d5742d0e3ec7bb6bdafdf3ddb5bc26e55ebf5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "재산이 더하면 먹는 자도 더하나니 그 소유주가 눈으로 보는 외에 무엇이 유익하랴"
+      ],
+      "raw_text_hashes": [
+        "a228ecf76e763d8355ae573a214d5742d0e3ec7bb6bdafdf3ddb5bc26e55ebf5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:5:12",
+      "sequence": 17410,
+      "chapter_label": "ECC 5",
+      "verse_label": "12",
+      "locator": {
+        "book": "ECC",
+        "chapter": 5,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 5,
+          "verse": 12
+        }
+      ],
+      "en": "The sleep of a laboring man is sweet, whether he eats little or much; but the abundance of the rich will not allow him to sleep.",
+      "ko": "노동자는 먹는 것이 많든지 적든지 잠을 달게 자거니와 부자는 배부름으로 자지 못하느니라",
+      "source_text_hash": "1e4a0bd42e2902fe21dae6810c363ca7c4bd603d580692e0195aa2946c72e033",
+      "translation_text_hash": "394b8760e275ccee9a36ebeb1e9c671208c1681836d26448484c539eb7ca7b24",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "노동자는 먹는 것이 많든지 적든지 잠을 달게 자거니와 부자는 배부름으로 자지 못하느니라"
+      ],
+      "raw_text_hashes": [
+        "394b8760e275ccee9a36ebeb1e9c671208c1681836d26448484c539eb7ca7b24"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:5:13",
+      "sequence": 17411,
+      "chapter_label": "ECC 5",
+      "verse_label": "13",
+      "locator": {
+        "book": "ECC",
+        "chapter": 5,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 5,
+          "verse": 13
+        }
+      ],
+      "en": "There is a grievous evil which I have seen under the sun: wealth kept by its owner to his harm.",
+      "ko": "내가 해 아래서 큰 폐단 되는 것을 보았나니 곧 소유주가 재물을 자기에게 해 되도록 지키는 것이라",
+      "source_text_hash": "96ee0830e4c426789ab99da850a3f4f231aa60d2e2628aa598b96f8cfbdd1995",
+      "translation_text_hash": "fa33f8a5c5c064a9e010957389dc3930ebe254e2896e9d1ad09fb9c1a023404c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 해 아래서 큰 폐단 되는 것을 보았나니 곧 소유주가 재물을 자기에게 해 되도록 지키는 것이라"
+      ],
+      "raw_text_hashes": [
+        "fa33f8a5c5c064a9e010957389dc3930ebe254e2896e9d1ad09fb9c1a023404c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:5:14",
+      "sequence": 17412,
+      "chapter_label": "ECC 5",
+      "verse_label": "14",
+      "locator": {
+        "book": "ECC",
+        "chapter": 5,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 5,
+          "verse": 14
+        }
+      ],
+      "en": "Those riches perish by misfortune, and if he has fathered a son, there is nothing in his hand.",
+      "ko": "그 재물이 재난을 인하여 패하나니 비록 아들은 낳았으나 그 손에 아무 것도 없느니라",
+      "source_text_hash": "8b6999adcebd5bfdddc187dcec4a013e02918dc8c48ddd3e5596081cdbdc03fe",
+      "translation_text_hash": "5f00fcaec2c31042ef7c4a63664eb33c708db36fcf6211ee342c407a6ebea358",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 재물이 재난을 인하여 패하나니 비록 아들은 낳았으나 그 손에 아무 것도 없느니라"
+      ],
+      "raw_text_hashes": [
+        "5f00fcaec2c31042ef7c4a63664eb33c708db36fcf6211ee342c407a6ebea358"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:5:15",
+      "sequence": 17413,
+      "chapter_label": "ECC 5",
+      "verse_label": "15",
+      "locator": {
+        "book": "ECC",
+        "chapter": 5,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 5,
+          "verse": 15
+        }
+      ],
+      "en": "As he came out of his mother’s womb, naked shall he go again as he came, and shall take nothing for his labor, which he may carry away in his hand.",
+      "ko": "저가 모태에서 벌거벗고 나왔은즉 그 나온대로 돌아가고 수고하여 얻은 것을 아무 것도 손에 가지고 가지 못하리니",
+      "source_text_hash": "6870a275fc8b4c62695c7a1c08a60ef32d8cf237329c5fd8aefc4500a763316c",
+      "translation_text_hash": "892f8a12b52d79f2d844ce481df69a106c308f563cfac14736ce0029ac3fd9f8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 모태에서 벌거벗고 나왔은즉 그 나온대로 돌아가고 수고하여 얻은 것을 아무 것도 손에 가지고 가지 못하리니"
+      ],
+      "raw_text_hashes": [
+        "892f8a12b52d79f2d844ce481df69a106c308f563cfac14736ce0029ac3fd9f8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:5:16",
+      "sequence": 17414,
+      "chapter_label": "ECC 5",
+      "verse_label": "16",
+      "locator": {
+        "book": "ECC",
+        "chapter": 5,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 5,
+          "verse": 16
+        }
+      ],
+      "en": "This also is a grievous evil, that in all points as he came, so shall he go. And what profit does he have who labors for the wind?",
+      "ko": "이것도 폐단이라 어떻게 왔든지 그대로 가리니 바람을 잡으려는 수고가 저에게 무엇이 유익하랴",
+      "source_text_hash": "811eac2459fd55ec40a3d894d29c563136bfe357dd3457b7fdc5ae250958533f",
+      "translation_text_hash": "084c583a0a6670c036d44f9bae5b5d7238451510801b932368736e921f6d0e86",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이것도 폐단이라 어떻게 왔든지 그대로 가리니 바람을 잡으려는 수고가 저에게 무엇이 유익하랴"
+      ],
+      "raw_text_hashes": [
+        "084c583a0a6670c036d44f9bae5b5d7238451510801b932368736e921f6d0e86"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:5:17",
+      "sequence": 17415,
+      "chapter_label": "ECC 5",
+      "verse_label": "17",
+      "locator": {
+        "book": "ECC",
+        "chapter": 5,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 5,
+          "verse": 17
+        }
+      ],
+      "en": "All his days he also eats in darkness, he is frustrated, and has sickness and wrath.",
+      "ko": "일평생을 어두운데서 먹으며 번뇌와 병과 분노가 저에게 있느니라",
+      "source_text_hash": "2f911ef45a7bb2a7f1130843fd37210b71d70ea07b8b3ccec799f77a475599f8",
+      "translation_text_hash": "465866c6c3fb771a5c05f0d22e172a141604b0667d8fd38d378b0d710f04782e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "일평생을 어두운데서 먹으며 번뇌와 병과 분노가 저에게 있느니라"
+      ],
+      "raw_text_hashes": [
+        "465866c6c3fb771a5c05f0d22e172a141604b0667d8fd38d378b0d710f04782e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:5:18",
+      "sequence": 17416,
+      "chapter_label": "ECC 5",
+      "verse_label": "18",
+      "locator": {
+        "book": "ECC",
+        "chapter": 5,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 5,
+          "verse": 18
+        }
+      ],
+      "en": "Behold, that which I have seen to be good and proper is for one to eat and to drink, and to enjoy good in all his labor, in which he labors under the sun, all the days of his life which God has given him; for this is his portion.",
+      "ko": "사람이 하나님의 주신바 그 일평생에 먹고 마시며 해 아래서 수고하는 모든 수고 중에서 낙을 누리는 것이 선하고 아름다움을 내가 보았나니 이것이 그의 분복이로다",
+      "source_text_hash": "ec30822d9712af99a258a3d30472c096bfe040cbe99767b72852a47a1c4ee7d9",
+      "translation_text_hash": "4fb7c1caaeb82d56f1cceae5effb9a92133210b8ce04bce3317479453aa152cc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 하나님의 주신바 그 일평생에 먹고 마시며 해 아래서 수고하는 모든 수고 중에서 낙을 누리는 것이 선하고 아름다움을 내가 보았나니 이것이 그의 분복이로다"
+      ],
+      "raw_text_hashes": [
+        "4fb7c1caaeb82d56f1cceae5effb9a92133210b8ce04bce3317479453aa152cc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:5:19",
+      "sequence": 17417,
+      "chapter_label": "ECC 5",
+      "verse_label": "19",
+      "locator": {
+        "book": "ECC",
+        "chapter": 5,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 5,
+          "verse": 19
+        }
+      ],
+      "en": "Every man also to whom God has given riches and wealth, and has given him power to eat of it, and to take his portion, and to rejoice in his labor—this is the gift of God.",
+      "ko": "어떤 사람에게든지 하나님이 재물과 부요를 주사 능히 누리게 하시며 분복을 받아 수고함으로 즐거워하게 하신 것은 하나님의 선물이라",
+      "source_text_hash": "599c072f732e08747907b085c10f80d29340232b8cc34e65d4e9929961264313",
+      "translation_text_hash": "f0622caa0b9cef2a70f9048ec2bb7eb629b4d2b97f42ea851c613466a93aba2e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어떤 사람에게든지 하나님이 재물과 부요를 주사 능히 누리게 하시며 분복을 받아 수고함으로 즐거워하게 하신 것은 하나님의 선물이라"
+      ],
+      "raw_text_hashes": [
+        "f0622caa0b9cef2a70f9048ec2bb7eb629b4d2b97f42ea851c613466a93aba2e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:5:20",
+      "sequence": 17418,
+      "chapter_label": "ECC 5",
+      "verse_label": "20",
+      "locator": {
+        "book": "ECC",
+        "chapter": 5,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 5,
+          "verse": 20
+        }
+      ],
+      "en": "For he shall not often reflect on the days of his life, because God occupies him with the joy of his heart.",
+      "ko": "저는 그 생명의 날을 깊이 관념치 아니하리니 이는 하나님이 저의 마음의 기뻐하는 것으로 응하심이니라",
+      "source_text_hash": "668825076eb8c336dfa341ad9f0defb53f4f402506f0faa8488b98b82fe97ce4",
+      "translation_text_hash": "c58565bb5d218e06ca418f854f260bdf18a92ed931c4e306c45312e984b97102",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저는 그 생명의 날을 깊이 관념치 아니하리니 이는 하나님이 저의 마음의 기뻐하는 것으로 응하심이니라"
+      ],
+      "raw_text_hashes": [
+        "c58565bb5d218e06ca418f854f260bdf18a92ed931c4e306c45312e984b97102"
+      ]
+    }
+  ]
+}

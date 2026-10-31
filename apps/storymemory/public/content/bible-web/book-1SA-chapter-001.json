@@ -1,0 +1,909 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1SA:chapter:001",
+  "unit_ordinal": 237,
+  "unit_label": "1SA 1",
+  "book_code": "1SA",
+  "chapter_number": 1,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1SA:1:1",
+      "sequence": 7214,
+      "chapter_label": "1SA 1",
+      "verse_label": "1",
+      "locator": {
+        "book": "1SA",
+        "chapter": 1,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 1,
+          "verse": 1
+        }
+      ],
+      "en": "Now there was a certain man of Ramathaim Zophim, of the hill country of Ephraim, and his name was Elkanah, the son of Jeroham, the son of Elihu, the son of Tohu, the son of Zuph, an Ephraimite.",
+      "ko": "에브라임 산지 라마다임소빔에 에브라임 사람 엘가나라 하는 자가 있으니 그는 여로함의 아들이요 엘리후의 손자요 도후의 증손이요 숩의 현손이더라",
+      "source_text_hash": "b424407482603bcac62fd6a6b3f6ca8566a5a2186ab8ab8ae558ca913139c185",
+      "translation_text_hash": "28232270873efdeab5434dcb7e535171b649955d4f618a843cbaff72156a4a26",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에브라임 산지 라마다임소빔에 에브라임 사람 엘가나라 하는 자가 있으니 그는 여로함의 아들이요 엘리후의 손자요 도후의 증손이요 숩의 현손이더라"
+      ],
+      "raw_text_hashes": [
+        "28232270873efdeab5434dcb7e535171b649955d4f618a843cbaff72156a4a26"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:1:2",
+      "sequence": 7215,
+      "chapter_label": "1SA 1",
+      "verse_label": "2",
+      "locator": {
+        "book": "1SA",
+        "chapter": 1,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 1,
+          "verse": 2
+        }
+      ],
+      "en": "He had two wives. The name of one was Hannah, and the name of the other Peninnah. Peninnah had children, but Hannah had no children.",
+      "ko": "그에게 두 아내가 있으니 하나의 이름은 한나요 하나의 이름은 브닌나라 브닌나는 자식이 있고 한나는 무자하더라",
+      "source_text_hash": "b69e2b1571cca6262656d5ce95843a4541e59fb3b55d394702a47df1b6db86d5",
+      "translation_text_hash": "96b8493b1fdce4d956f06b08aa96014b31acf6b9180f4b59c6efeb9b1090ecab",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그에게 두 아내가 있으니 하나의 이름은 한나요 하나의 이름은 브닌나라 브닌나는 자식이 있고 한나는 무자하더라"
+      ],
+      "raw_text_hashes": [
+        "96b8493b1fdce4d956f06b08aa96014b31acf6b9180f4b59c6efeb9b1090ecab"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:1:3",
+      "sequence": 7216,
+      "chapter_label": "1SA 1",
+      "verse_label": "3",
+      "locator": {
+        "book": "1SA",
+        "chapter": 1,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 1,
+          "verse": 3
+        }
+      ],
+      "en": "This man went up out of his city from year to year to worship and to sacrifice to the LORD of Armies in Shiloh. The two sons of Eli, Hophni and Phinehas, priests to the LORD, were there.",
+      "ko": "이 사람이 매년에 자기 성읍에서 나와서 실로에 올라가서 만군의 여호와께 경배하며 제사를 드렸는데 엘리의 두 아들 홉니와 비느하스가 여호와의 제사장으로 거기 있었더라",
+      "source_text_hash": "ba51f8d704fbe98efa8edd82f94d6bf3fb882d42cc55d568f0b29ff5bc5e1ca3",
+      "translation_text_hash": "3693eca628b804a4d7a29142535399ecf5c77ee785a307ed57c42d1ff90cc5a8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 사람이 매년에 자기 성읍에서 나와서 실로에 올라가서 만군의 여호와께 경배하며 제사를 드렸는데 엘리의 두 아들 홉니와 비느하스가 여호와의 제사장으로 거기 있었더라"
+      ],
+      "raw_text_hashes": [
+        "3693eca628b804a4d7a29142535399ecf5c77ee785a307ed57c42d1ff90cc5a8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:1:4",
+      "sequence": 7217,
+      "chapter_label": "1SA 1",
+      "verse_label": "4",
+      "locator": {
+        "book": "1SA",
+        "chapter": 1,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 1,
+          "verse": 4
+        }
+      ],
+      "en": "When the day came that Elkanah sacrificed, he gave portions to Peninnah his wife and to all her sons and her daughters;",
+      "ko": "엘가나가 제사를 드리는 날에는 제물의 분깃을 그 아내 브닌나와 그 모든 자녀에게 주고",
+      "source_text_hash": "bf6a200e7638b853b14844ee577829345d2d951b8222ebb17051832d6bbbd442",
+      "translation_text_hash": "e969472369f8cc0d68cd5caa810893128955d922b22f797510f356385f324cf0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "엘가나가 제사를 드리는 날에는 제물의 분깃을 그 아내 브닌나와 그 모든 자녀에게 주고"
+      ],
+      "raw_text_hashes": [
+        "e969472369f8cc0d68cd5caa810893128955d922b22f797510f356385f324cf0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:1:5",
+      "sequence": 7218,
+      "chapter_label": "1SA 1",
+      "verse_label": "5",
+      "locator": {
+        "book": "1SA",
+        "chapter": 1,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 1,
+          "verse": 5
+        }
+      ],
+      "en": "but he gave a double portion to Hannah, for he loved Hannah, but the LORD had shut up her womb.",
+      "ko": "한나에게는 갑절을 주니 이는 그를 사랑함이라 그러나 여호와께서 그로 성태치 못하게 하시니",
+      "source_text_hash": "a9011dd2f4254cbb921f137e23d792f06eb9ff6d3bcbf53919d5ad3d43ed2b96",
+      "translation_text_hash": "e2fd43b0a38eade3a0deaf5e1e6c5bb3a6f2659ccb66ecaff93fd22713fc1615",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "한나에게는 갑절을 주니 이는 그를 사랑함이라 그러나 여호와께서 그로 성태치 못하게 하시니"
+      ],
+      "raw_text_hashes": [
+        "e2fd43b0a38eade3a0deaf5e1e6c5bb3a6f2659ccb66ecaff93fd22713fc1615"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:1:6",
+      "sequence": 7219,
+      "chapter_label": "1SA 1",
+      "verse_label": "6",
+      "locator": {
+        "book": "1SA",
+        "chapter": 1,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 1,
+          "verse": 6
+        }
+      ],
+      "en": "Her rival provoked her severely, to irritate her, because the LORD had shut up her womb.",
+      "ko": "여호와께서 그로 성태치 못하게 하시므로 그 대적 브닌나가 그를 심히 격동하여 번민케 하더라",
+      "source_text_hash": "ba1b8f8c42c66f160a01d45bc37ff85b84d04b3700d6d626f8dd972f501d6d37",
+      "translation_text_hash": "2e764bbd84f77003cf1a6778af80ef736e9e7ea65421458cf9a131b1fb0f4575",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 그로 성태치 못하게 하시므로 그 대적 브닌나가 그를 심히 격동하여 번민케 하더라"
+      ],
+      "raw_text_hashes": [
+        "2e764bbd84f77003cf1a6778af80ef736e9e7ea65421458cf9a131b1fb0f4575"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:1:7",
+      "sequence": 7220,
+      "chapter_label": "1SA 1",
+      "verse_label": "7",
+      "locator": {
+        "book": "1SA",
+        "chapter": 1,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 1,
+          "verse": 7
+        }
+      ],
+      "en": "So year by year, when she went up to the LORD’s house, her rival provoked her. Therefore she wept, and didn’t eat.",
+      "ko": "매년에 한나가 여호와의 집에 올라갈 때마다 남편이 그같이 하매 브닌나가 그를 격동시키므로 그가 울고 먹지 아니하니",
+      "source_text_hash": "b780c695584548a68a8119e7d7e781a5f657076d3dcc89e7bebe225d9d1852a4",
+      "translation_text_hash": "11aee65e5e6d1a1dfe3a10bfaaf8f1b54125ebb203b6f38e24a262ca3f50458a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "매년에 한나가 여호와의 집에 올라갈 때마다 남편이 그같이 하매 브닌나가 그를 격동시키므로 그가 울고 먹지 아니하니"
+      ],
+      "raw_text_hashes": [
+        "11aee65e5e6d1a1dfe3a10bfaaf8f1b54125ebb203b6f38e24a262ca3f50458a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:1:8",
+      "sequence": 7221,
+      "chapter_label": "1SA 1",
+      "verse_label": "8",
+      "locator": {
+        "book": "1SA",
+        "chapter": 1,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 1,
+          "verse": 8
+        }
+      ],
+      "en": "Elkanah her husband said to her, “Hannah, why do you weep? Why don’t you eat? Why is your heart grieved? Am I not better to you than ten sons?”",
+      "ko": "그 남편 엘가나가 그에게 이르되 한나여 어찌하여 울며 어찌하여 먹지 아니하며 어찌하여 그대의 마음이 슬프뇨 내가 그대에게 열 아들보다 낫지 아니하뇨",
+      "source_text_hash": "5109237664a677cf9b58861157b181da2a58dbc8dee7811950822bb808dbaa0d",
+      "translation_text_hash": "b4dd9350a50fac0be611eeb502e10b55bf6ae580f554c859e954ec759b654d86",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 남편 엘가나가 그에게 이르되 한나여 어찌하여 울며 어찌하여 먹지 아니하며 어찌하여 그대의 마음이 슬프뇨 내가 그대에게 열 아들보다 낫지 아니하뇨"
+      ],
+      "raw_text_hashes": [
+        "b4dd9350a50fac0be611eeb502e10b55bf6ae580f554c859e954ec759b654d86"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:1:9",
+      "sequence": 7222,
+      "chapter_label": "1SA 1",
+      "verse_label": "9",
+      "locator": {
+        "book": "1SA",
+        "chapter": 1,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 1,
+          "verse": 9
+        }
+      ],
+      "en": "So Hannah rose up after they had finished eating and drinking in Shiloh. Now Eli the priest was sitting on his seat by the doorpost of the LORD’s temple.",
+      "ko": "그들이 실로에서 먹고 마신 후에 한나가 일어나니 때에 제사장 엘리는 여호와의 전 문설주 곁 그 의자에 앉았더라",
+      "source_text_hash": "ff6d8ac6485309ac7d205b7cd8af6cccd5f3f5d4517c47c463557e2c8a41fad9",
+      "translation_text_hash": "09447dc5e3a870a72557cb0620b76ea3d8cf34b76ac681fa61c44a66cfe7593a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 실로에서 먹고 마신 후에 한나가 일어나니 때에 제사장 엘리는 여호와의 전 문설주 곁 그 의자에 앉았더라"
+      ],
+      "raw_text_hashes": [
+        "09447dc5e3a870a72557cb0620b76ea3d8cf34b76ac681fa61c44a66cfe7593a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:1:10",
+      "sequence": 7223,
+      "chapter_label": "1SA 1",
+      "verse_label": "10",
+      "locator": {
+        "book": "1SA",
+        "chapter": 1,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 1,
+          "verse": 10
+        }
+      ],
+      "en": "She was in bitterness of soul, and prayed to the LORD, weeping bitterly.",
+      "ko": "한나가 마음이 괴로와서 여호와께 기도하고 통곡하며",
+      "source_text_hash": "6a8630779b8457367e6a563b1cfbf90c73d33a16bd65ba6bf018510b9f7304b2",
+      "translation_text_hash": "f399973c575fc6f8cd0ff026b8ac5fc84b74fe600dd3a082253a85eccfc9c949",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "한나가 마음이 괴로와서 여호와께 기도하고 통곡하며"
+      ],
+      "raw_text_hashes": [
+        "f399973c575fc6f8cd0ff026b8ac5fc84b74fe600dd3a082253a85eccfc9c949"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:1:11",
+      "sequence": 7224,
+      "chapter_label": "1SA 1",
+      "verse_label": "11",
+      "locator": {
+        "book": "1SA",
+        "chapter": 1,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 1,
+          "verse": 11
+        }
+      ],
+      "en": "She vowed a vow, and said, “LORD of Armies, if you will indeed look at the affliction of your servant and remember me, and not forget your servant, but will give to your servant a boy, then I will give him to the LORD all the days of his life, and no razor shall come on his head.”",
+      "ko": "서원하여 가로되 만군의 여호와여 만일 주의 여종의 고통을 돌아보시고 나를 생각하시고 주의 여종을 잊지 아니하사 아들을 주시면 내가 그의 평생에 그를 여호와께 드리고 삭도를 그 머리에 대지 아니하겠나이다",
+      "source_text_hash": "0e70202eed4f028d84279f587704be2f8d5b0cabda02108d86d783b80fa7d7a0",
+      "translation_text_hash": "cc1f401a314e8e64666faa28b05bb48cc0236c301b30b8e13241f2f5a6a7b4f5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "서원하여 가로되 만군의 여호와여 만일 주의 여종의 고통을 돌아보시고 나를 생각하시고 주의 여종을 잊지 아니하사 아들을 주시면 내가 그의 평생에 그를 여호와께 드리고 삭도를 그 머리에 대지 아니하겠나이다"
+      ],
+      "raw_text_hashes": [
+        "cc1f401a314e8e64666faa28b05bb48cc0236c301b30b8e13241f2f5a6a7b4f5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:1:12",
+      "sequence": 7225,
+      "chapter_label": "1SA 1",
+      "verse_label": "12",
+      "locator": {
+        "book": "1SA",
+        "chapter": 1,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 1,
+          "verse": 12
+        }
+      ],
+      "en": "As she continued praying before the LORD, Eli saw her mouth.",
+      "ko": "그가 여호와 앞에 오래 기도하는 동안에 엘리가 그의 입을 주목한즉",
+      "source_text_hash": "cf3e3e7df88a4b8ebd4be16ed7f77efee122466db13dad3d6be2dc38980884a5",
+      "translation_text_hash": "a53e115eb7e0e4f48e60f86d8de3200cc1eb2c819e63e6a2e66a084e211c44e3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 여호와 앞에 오래 기도하는 동안에 엘리가 그의 입을 주목한즉"
+      ],
+      "raw_text_hashes": [
+        "a53e115eb7e0e4f48e60f86d8de3200cc1eb2c819e63e6a2e66a084e211c44e3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:1:13",
+      "sequence": 7226,
+      "chapter_label": "1SA 1",
+      "verse_label": "13",
+      "locator": {
+        "book": "1SA",
+        "chapter": 1,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 1,
+          "verse": 13
+        }
+      ],
+      "en": "Now Hannah spoke in her heart. Only her lips moved, but her voice was not heard. Therefore Eli thought she was drunk.",
+      "ko": "한나가 속으로 말하매 입술만 동하고 음성은 들리지 아니하므로 엘리는 그가 취한줄로 생각한지라",
+      "source_text_hash": "139b929f7517082ffb102897ddb91ee329775d07a95c3409c30c49a85d21e6fd",
+      "translation_text_hash": "2ab36baca61cb60a73967c1895ccd8e4c88ce7edb0719f659d65a75165a7f8fb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "한나가 속으로 말하매 입술만 동하고 음성은 들리지 아니하므로 엘리는 그가 취한줄로 생각한지라"
+      ],
+      "raw_text_hashes": [
+        "2ab36baca61cb60a73967c1895ccd8e4c88ce7edb0719f659d65a75165a7f8fb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:1:14",
+      "sequence": 7227,
+      "chapter_label": "1SA 1",
+      "verse_label": "14",
+      "locator": {
+        "book": "1SA",
+        "chapter": 1,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 1,
+          "verse": 14
+        }
+      ],
+      "en": "Eli said to her, “How long will you be drunk? Get rid of your wine!”",
+      "ko": "엘리가 그에게 이르되 네가 언제까지 취하여 있겠느냐 포도주를 끊으라",
+      "source_text_hash": "7d420f441e4e08fe7d8c05f6456cec51163f9a3986765ea5f0c89318e4ab274c",
+      "translation_text_hash": "e8a7ae40bea2d5ad8604814895eefd464cade16a6f05f7c53d1d2df350a334f2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "엘리가 그에게 이르되 네가 언제까지 취하여 있겠느냐 포도주를 끊으라"
+      ],
+      "raw_text_hashes": [
+        "e8a7ae40bea2d5ad8604814895eefd464cade16a6f05f7c53d1d2df350a334f2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:1:15",
+      "sequence": 7228,
+      "chapter_label": "1SA 1",
+      "verse_label": "15",
+      "locator": {
+        "book": "1SA",
+        "chapter": 1,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 1,
+          "verse": 15
+        }
+      ],
+      "en": "Hannah answered, “No, my lord, I am a woman of a sorrowful spirit. I have not been drinking wine or strong drink, but I poured out my soul before the LORD.",
+      "ko": "한나가 대답하여 가로되 나의 주여 그렇지 아니하니이다 나는 마음이 슬픈 여자라 포도주나 독주를 마신 것이 아니요 여호와 앞에 나의 심정을 통한것 뿐이오니",
+      "source_text_hash": "cb28c6a917487ad0af11d57adba8fc70e72fed3c1eb8fd361fecb1558da34ba9",
+      "translation_text_hash": "2fbdaf7e5b5dbbbbd86531ce2a0c83d4456e9a150f910f911e506049b526c466",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "한나가 대답하여 가로되 나의 주여 그렇지 아니하니이다 나는 마음이 슬픈 여자라 포도주나 독주를 마신 것이 아니요 여호와 앞에 나의 심정을 통한것 뿐이오니"
+      ],
+      "raw_text_hashes": [
+        "2fbdaf7e5b5dbbbbd86531ce2a0c83d4456e9a150f910f911e506049b526c466"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:1:16",
+      "sequence": 7229,
+      "chapter_label": "1SA 1",
+      "verse_label": "16",
+      "locator": {
+        "book": "1SA",
+        "chapter": 1,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 1,
+          "verse": 16
+        }
+      ],
+      "en": "Don’t consider your servant a wicked woman; for I have been speaking out of the abundance of my complaint and my provocation.”",
+      "ko": "당신의 여종을 악한 여자로 여기지 마옵소서 내가 지금까지 말한 것은 나의 원통함과 격동됨이 많음을 인함이니이다",
+      "source_text_hash": "d13066f4b4675fc21939a31e19d0be8a2dbbd9e1fcdbcba99c54dcf2a4c1dd3a",
+      "translation_text_hash": "b1d71e5441372c93f070835b907ca1c4c2e409ca503d549f47d68012bc76e80a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "당신의 여종을 악한 여자로 여기지 마옵소서 내가 지금까지 말한 것은 나의 원통함과 격동됨이 많음을 인함이니이다"
+      ],
+      "raw_text_hashes": [
+        "b1d71e5441372c93f070835b907ca1c4c2e409ca503d549f47d68012bc76e80a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:1:17",
+      "sequence": 7230,
+      "chapter_label": "1SA 1",
+      "verse_label": "17",
+      "locator": {
+        "book": "1SA",
+        "chapter": 1,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 1,
+          "verse": 17
+        }
+      ],
+      "en": "Then Eli answered, “Go in peace; and may the God of Israel grant your petition that you have asked of him.”",
+      "ko": "엘리가 대답하여 가로되 평안히 가라 이스라엘의 하나님이 너의 기도하여 구한 것을 허락하시기를 원하노라",
+      "source_text_hash": "fbeec4fe96bf1793b4f6a9175794c42af4e7e01d06861005498e79c6380b2b21",
+      "translation_text_hash": "1172d0174d2e4a4a68e34671f5a3296517a090ed42a6ce783578e188a3357d74",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "엘리가 대답하여 가로되 평안히 가라 이스라엘의 하나님이 너의 기도하여 구한 것을 허락하시기를 원하노라"
+      ],
+      "raw_text_hashes": [
+        "1172d0174d2e4a4a68e34671f5a3296517a090ed42a6ce783578e188a3357d74"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:1:18",
+      "sequence": 7231,
+      "chapter_label": "1SA 1",
+      "verse_label": "18",
+      "locator": {
+        "book": "1SA",
+        "chapter": 1,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 1,
+          "verse": 18
+        }
+      ],
+      "en": "She said, “Let your servant find favor in your sight.” So the woman went her way and ate; and her facial expression wasn’t sad any more.",
+      "ko": "가로되 당신의 여종이 당신께 은혜 입기를 원하나이다 하고 가서 먹고 얼굴에 다시는 수색이 없으니라",
+      "source_text_hash": "c3491bf02e0613fb826c82fcb8880701460f659c3f588b1604034b9d50695985",
+      "translation_text_hash": "62f78ae19bf118c94a53a1e249c315446e35bc0dd5cfef04146dce0b765007f2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 당신의 여종이 당신께 은혜 입기를 원하나이다 하고 가서 먹고 얼굴에 다시는 수색이 없으니라"
+      ],
+      "raw_text_hashes": [
+        "62f78ae19bf118c94a53a1e249c315446e35bc0dd5cfef04146dce0b765007f2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:1:19",
+      "sequence": 7232,
+      "chapter_label": "1SA 1",
+      "verse_label": "19",
+      "locator": {
+        "book": "1SA",
+        "chapter": 1,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 1,
+          "verse": 19
+        }
+      ],
+      "en": "They rose up in the morning early and worshiped the LORD, then returned and came to their house to Ramah. Then Elkanah knew Hannah his wife; and the LORD remembered her.",
+      "ko": "그들이 아침에 일찌기 일어나 여호와 앞에 경배하고 돌아가서 라마의 자기 집에 이르니라 엘가나가 그 아내 한나와 동침하매 여호와께서 그를 생각하신지라",
+      "source_text_hash": "170cc24dc2dfded96684bc5d299941496368102c8986216660fe202fd66d0215",
+      "translation_text_hash": "ede453bfd131141c5d188565c82cf194bb88b41887a94da585dae4273cf224bf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 아침에 일찌기 일어나 여호와 앞에 경배하고 돌아가서 라마의 자기 집에 이르니라 엘가나가 그 아내 한나와 동침하매 여호와께서 그를 생각하신지라"
+      ],
+      "raw_text_hashes": [
+        "ede453bfd131141c5d188565c82cf194bb88b41887a94da585dae4273cf224bf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:1:20",
+      "sequence": 7233,
+      "chapter_label": "1SA 1",
+      "verse_label": "20",
+      "locator": {
+        "book": "1SA",
+        "chapter": 1,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 1,
+          "verse": 20
+        }
+      ],
+      "en": "When the time had come, Hannah conceived, and bore a son; and she named him Samuel, saying, “Because I have asked him of the LORD.”",
+      "ko": "한나가 잉태하고 때가 이르매 아들을 낳아 사무엘이라 이름하였으니 이는 내가 여호와께 그를 구하였다 함이더라",
+      "source_text_hash": "6540d7f0626ed15572a25171dd896c65d0e289f240dd8302b8262952b3ae404d",
+      "translation_text_hash": "d68a477c40f35812d4574cc6f618a1218868fe35b98e40bda23220f067bf8b9a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "한나가 잉태하고 때가 이르매 아들을 낳아 사무엘이라 이름하였으니 이는 내가 여호와께 그를 구하였다 함이더라"
+      ],
+      "raw_text_hashes": [
+        "d68a477c40f35812d4574cc6f618a1218868fe35b98e40bda23220f067bf8b9a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:1:21",
+      "sequence": 7234,
+      "chapter_label": "1SA 1",
+      "verse_label": "21",
+      "locator": {
+        "book": "1SA",
+        "chapter": 1,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 1,
+          "verse": 21
+        }
+      ],
+      "en": "The man Elkanah, and all his house, went up to offer to the LORD the yearly sacrifice and his vow.",
+      "ko": "그 사람 엘가나와 그 온 집이 여호와께 매년제와 그 서원제를 드리러 올라갈 때에",
+      "source_text_hash": "20dfedf6ef41f092c6416ded68461170e51012318a024a466e30c089620261df",
+      "translation_text_hash": "6c8dc7f35dcf9b6d01752867de51651f6105973a906998a8b53fc44dfece3393",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 사람 엘가나와 그 온 집이 여호와께 매년제와 그 서원제를 드리러 올라갈 때에"
+      ],
+      "raw_text_hashes": [
+        "6c8dc7f35dcf9b6d01752867de51651f6105973a906998a8b53fc44dfece3393"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:1:22",
+      "sequence": 7235,
+      "chapter_label": "1SA 1",
+      "verse_label": "22",
+      "locator": {
+        "book": "1SA",
+        "chapter": 1,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 1,
+          "verse": 22
+        }
+      ],
+      "en": "But Hannah didn’t go up, for she said to her husband, “Not until the child is weaned; then I will bring him, that he may appear before the LORD, and stay there forever.”",
+      "ko": "오직 한나는 올라가지 아니하고 그 남편에게 이르되 아이를 젖 떼거든 내가 그를 데리고 가서 여호와 앞에 뵈게 하고 거기 영영히 있게 하리이다",
+      "source_text_hash": "db3d5ffccd1a62f9b7014617089899ae6a74ae35fe9495e91a09228df67f398c",
+      "translation_text_hash": "c9618c4b6f3a0b7a86435bc414c495ba07477c4b30e4b746c22792205b0e0938",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 한나는 올라가지 아니하고 그 남편에게 이르되 아이를 젖 떼거든 내가 그를 데리고 가서 여호와 앞에 뵈게 하고 거기 영영히 있게 하리이다"
+      ],
+      "raw_text_hashes": [
+        "c9618c4b6f3a0b7a86435bc414c495ba07477c4b30e4b746c22792205b0e0938"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:1:23",
+      "sequence": 7236,
+      "chapter_label": "1SA 1",
+      "verse_label": "23",
+      "locator": {
+        "book": "1SA",
+        "chapter": 1,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 1,
+          "verse": 23
+        }
+      ],
+      "en": "Elkanah her husband said to her, “Do what seems good to you. Wait until you have weaned him; only may the LORD establish his word.” So the woman waited and nursed her son until she weaned him.",
+      "ko": "그 남편 엘가나가 그에게 이르되 그대의 소견에 선한대로 하여 그를 젖 떼기까지 기다리라 오직 여호와께서 그 말씀대로 이루시기를 원하노라 이에 그 여자가 그 아들을 양육하며 그 젖 떼기까지 기다리다가",
+      "source_text_hash": "cba6e0525345ae38f73a6303194d770ceeae7b636e5753447d6afd9d729075dc",
+      "translation_text_hash": "63eed2458298cf5c3c600afffe9e958ae678bc4c511c1a4c53f56186871c27a1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 남편 엘가나가 그에게 이르되 그대의 소견에 선한대로 하여 그를 젖 떼기까지 기다리라 오직 여호와께서 그 말씀대로 이루시기를 원하노라 이에 그 여자가 그 아들을 양육하며 그 젖 떼기까지 기다리다가"
+      ],
+      "raw_text_hashes": [
+        "63eed2458298cf5c3c600afffe9e958ae678bc4c511c1a4c53f56186871c27a1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:1:24",
+      "sequence": 7237,
+      "chapter_label": "1SA 1",
+      "verse_label": "24",
+      "locator": {
+        "book": "1SA",
+        "chapter": 1,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 1,
+          "verse": 24
+        }
+      ],
+      "en": "When she had weaned him, she took him up with her, with three bulls, and one ephah of meal, and a container of wine, and brought him to the LORD’s house in Shiloh. The child was young.",
+      "ko": "젖을 뗀 후에 그를 데리고 올라갈쌔 수소 셋과 가루 한 에바와 포도주 한 가죽부대를 가지고 실로 여호와의 집에 나아갔는데 아이가 어리더라",
+      "source_text_hash": "9a9b3d5b73c5b83b367665ac723fc47423079db96773bd0a7883b4c02f78db54",
+      "translation_text_hash": "01d459e65e4b5286f5d5b82593921de972df4e8f49508eae9c99d6fd3b33cab0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "젖을 뗀 후에 그를 데리고 올라갈쌔 수소 셋과 가루 한 에바와 포도주 한 가죽부대를 가지고 실로 여호와의 집에 나아갔는데 아이가 어리더라"
+      ],
+      "raw_text_hashes": [
+        "01d459e65e4b5286f5d5b82593921de972df4e8f49508eae9c99d6fd3b33cab0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:1:25",
+      "sequence": 7238,
+      "chapter_label": "1SA 1",
+      "verse_label": "25",
+      "locator": {
+        "book": "1SA",
+        "chapter": 1,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 1,
+          "verse": 25
+        }
+      ],
+      "en": "They killed the bull, and brought the child to Eli.",
+      "ko": "그들이 수소를 잡고 아이를 데리고 엘리에게 가서",
+      "source_text_hash": "f0621cb5926e2e3ccfc792c4418688030759b798d092a940feedc144164338d0",
+      "translation_text_hash": "daf813f5bdf8994e20062d3210ed2be4d3316e0d990f1bdd33131c4b589d3e78",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 수소를 잡고 아이를 데리고 엘리에게 가서"
+      ],
+      "raw_text_hashes": [
+        "daf813f5bdf8994e20062d3210ed2be4d3316e0d990f1bdd33131c4b589d3e78"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:1:26",
+      "sequence": 7239,
+      "chapter_label": "1SA 1",
+      "verse_label": "26",
+      "locator": {
+        "book": "1SA",
+        "chapter": 1,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 1,
+          "verse": 26
+        }
+      ],
+      "en": "She said, “Oh, my lord, as your soul lives, my lord, I am the woman who stood by you here, praying to the LORD.",
+      "ko": "한나가 가로되 나의 주여 당신의 사심으로 맹세하나이다 나는 여기서 나의 주 당신 곁에 서서 여호와께 기도하던 여자라",
+      "source_text_hash": "ae24011e3cc6c474157acc96f085e09bddc8619049d3582320a637b69f9ee9c1",
+      "translation_text_hash": "cd7c467813be45226d1f5023aa2ba7dc01481100963b741a097a948bd4222ffe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "한나가 가로되 나의 주여 당신의 사심으로 맹세하나이다 나는 여기서 나의 주 당신 곁에 서서 여호와께 기도하던 여자라"
+      ],
+      "raw_text_hashes": [
+        "cd7c467813be45226d1f5023aa2ba7dc01481100963b741a097a948bd4222ffe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:1:27",
+      "sequence": 7240,
+      "chapter_label": "1SA 1",
+      "verse_label": "27",
+      "locator": {
+        "book": "1SA",
+        "chapter": 1,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 1,
+          "verse": 27
+        }
+      ],
+      "en": "I prayed for this child, and the LORD has given me my petition which I asked of him.",
+      "ko": "이 아이를 위하여 내가 기도하였더니 여호와께서 나의 구하여 기도한 바를 허락하신지라",
+      "source_text_hash": "e14f3590a146b9f8b15aa6f4e1be33d76d73943807d22c45f0678f44d342e070",
+      "translation_text_hash": "ae2167e8194b99a74a6ef12b7312cb85166ecb18446a5babe96a19b618e9149e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 아이를 위하여 내가 기도하였더니 여호와께서 나의 구하여 기도한 바를 허락하신지라"
+      ],
+      "raw_text_hashes": [
+        "ae2167e8194b99a74a6ef12b7312cb85166ecb18446a5babe96a19b618e9149e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:1:28",
+      "sequence": 7241,
+      "chapter_label": "1SA 1",
+      "verse_label": "28",
+      "locator": {
+        "book": "1SA",
+        "chapter": 1,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 1,
+          "verse": 28
+        }
+      ],
+      "en": "Therefore I have also given him to the LORD. As long as he lives he is given to the LORD.” He worshiped the LORD there.",
+      "ko": "그러므로 나도 그를 여호와께 드리되 그의 평생을 여호와께 드리나이다 하고 그 아이는 거기서 여호와께 경배하니라",
+      "source_text_hash": "296d256c463aacaa55cfbfcb00d64b692dea5296b3938a3adc5ba7f5e8c9edd0",
+      "translation_text_hash": "68da6b9bdb6b3ee96e3d5cd6b45cd76c6f194f8524c4ae9d4f1f525d1b4105be",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 나도 그를 여호와께 드리되 그의 평생을 여호와께 드리나이다 하고 그 아이는 거기서 여호와께 경배하니라"
+      ],
+      "raw_text_hashes": [
+        "68da6b9bdb6b3ee96e3d5cd6b45cd76c6f194f8524c4ae9d4f1f525d1b4105be"
+      ]
+    }
+  ]
+}
