@@ -14,6 +14,7 @@ import os
 import sys
 
 from .config import ConfigError, Settings
+from .local_p01_engine import LOCAL_P01_UNBOUND_DIAGNOSTIC, build_local_p01_adapter
 
 STATUS_PREFIX = "CHAT_LOCAL_CRON="
 
@@ -71,9 +72,25 @@ def run_once(environ: dict[str, str] | None = None) -> str:
         "PADIEM_CHAT_LOCAL_IDENTITY_RPC_SECRET"
     ):
         return STATUS_PREFIX + "NOT_CONFIGURED reason=identity_rpc_unbound"
-    # The tick's executor is the P01 engine adapter. Its HTTPS stand-in lands
-    # with the engine bridge; until then the lane is reported, not simulated.
-    return STATUS_PREFIX + "NOT_CONFIGURED reason=p01_engine_transport_unbound"
+    # The tick's executor is the P01 engine adapter, which now has a host
+    # transport (configured loopback origin, default off). Bounding the gate
+    # here keeps the report truthful: the executor is reachable, the run itself
+    # still needs the Worker-side execution ports.
+    adapter, diagnostic = _local_engine_adapter(env)
+    if adapter is None:
+        return STATUS_PREFIX + "NOT_CONFIGURED reason=" + (
+            diagnostic or LOCAL_P01_UNBOUND_DIAGNOSTIC
+        )
+    return STATUS_PREFIX + "P01_ENGINE_CONNECTED transport=loopback_http"
+
+
+def _local_engine_adapter(env) -> tuple[object | None, str | None]:
+    try:
+        return build_local_p01_adapter(env)
+    except Exception:
+        # A composition failure is a bounded state, never a traceback on the
+        # timer's stdout and never a claimed tick.
+        return None, "composition_unavailable"
 
 
 def main(argv: list[str] | None = None) -> int:

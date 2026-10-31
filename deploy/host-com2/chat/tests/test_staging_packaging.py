@@ -55,6 +55,9 @@ class StagingPackaging(unittest.TestCase):
                 continue
             name, _, value = line.partition("=")
             values[name] = value
+            if name == "PADIEM_CHAT_SHARED_AUTH_CLIENT_ID":
+                self.assertEqual(value, "b62-staging")
+                continue
             self.assertIn(
                 value,
                 ("", "1", "true", "false", "mock", "off", "600", "com2",
@@ -69,6 +72,7 @@ class StagingPackaging(unittest.TestCase):
         self.assertEqual(values["PC_QUEUE_ORIGIN"], "http://127.0.0.1:8830")
         self.assertEqual(values["PADIEM_CHAT_QUEUE_ALLOW_LOOPBACK_HTTP"], "1")
         self.assertEqual(values["PADIEM_CHAT_SHARED_LOGIN_ENABLED"], "true")
+        self.assertEqual(values["PADIEM_CHAT_SHARED_AUTH_CLIENT_ID"], "b62-staging")
         self.assertEqual(
             values["PC_QUEUE_SERVICE_SECRET_FILE"],
             "/opt/padiem/mesh-queue-staging/service-secret.txt",
@@ -117,13 +121,16 @@ class StagingCheckConfig(unittest.TestCase):
             module.DATA = data
             with unittest.mock.patch.dict(os.environ, self._full_env(data, secret), clear=True):
                 self.assertTrue(module.ready())
+            disabled = self._full_env(data, secret)
+            disabled["PADIEM_CHAT_SHARED_LOGIN_ENABLED"] = "false"
+            with unittest.mock.patch.dict(os.environ, disabled, clear=True):
+                self.assertTrue(module.ready())
             for broken in (
                 {"PADIEM_LOCAL_DEV": "1"},
                 {"PADIEM_CHAT_PUBLIC_BASE_URL": "https://chat.padiem.net"},
                 {"PADIEM_CHAT_COOKIE_SECURE": "false"},
                 {"PADIEM_CHAT_SESSION_SECRET": "short"},
                 {"PADIEM_CHAT_RUNTIME_MODE": "b14"},
-                {"PADIEM_CHAT_SHARED_LOGIN_ENABLED": "false"},
                 {"PC_QUEUE_BACKEND": "d1"},
                 {"PC_QUEUE_ORIGIN": "http://127.0.0.1:8797"},
                 {"PADIEM_CHAT_QUEUE_ALLOW_LOOPBACK_HTTP": "0"},

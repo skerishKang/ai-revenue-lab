@@ -104,6 +104,15 @@ ISSUE=#5115 (COM2 이전 추적)
 - **되돌리기**: 도메인을 Worker로 복귀하고 ③의 핸드백 절차로 컴2 변경분을 D1에 반영한 뒤 쓰기 재개.
 - **레인 PR**: ④-1 앞단 라우팅 구성(쓰기 효과 기준 폴백 분류 + 테스트) ④-2 전환 후 관찰·스모크 자동화 ④-3 스테이징에서 원복 리허설 1회 기록 — **3개**.
 
+**④ 전환 방식 = 사용자 지정 도메인 이동 (이번 PR 정정)**: 운영 전환은 tunnel ingress를 바꾸는 방식이 아닙니다. `chat.padiem.net` Custom Domain을 `padiem-chat`(Python Worker)에서 `padiem-chat-front`로 **한 번 이동**하고, front가 서명한 뒤 `FRONT_ORIGIN=https://chat-com2.padiem.net`(tunnel → `127.0.0.1:8798`)으로 전달합니다. 근거: #6400 브랜치(`feat/chat-com2-edge-gate-261031`)의 `apps/padiem-chat-front/wrangler.toml`과 `docs/operations/CHAT_COM2_FRONT_RUNBOOK.md`.
+
+- `deploy/host-com2/**`의 cloudflared 예시에는 `chat.padiem.net` hostname을 두지 않습니다. tunnel이 직접 받으면 front를 건너뛰어 서명 없는 요청이 컴2로 들어옵니다. `deploy/host-com2/chat/tests/test_ingress_public_hostname_guard.py`가 이 금지를 고정합니다.
+- tunnel은 지금처럼 `chat-com2.padiem.net` → `127.0.0.1:8798` 하나입니다. 이 hostname·포트가 운영 유닛(`padiem-chat-com2.service`)과 같은지, #6400의 `FRONT_ORIGIN`과 같은지 시험이 대조합니다(#6400이 main에 없으면 skip 사유를 남기고 대기).
+- 확인된 사항(읽기 전용 조사): front의 `UPSTREAM_TIMEOUT_MS`(8초)는 **응답 헤더 수신까지만** 적용됩니다. 헤더가 오면 `forward()`가 타이머를 해제하고 받은 `Response`를 그대로 반환하므로 SSE/NDJSON 본문은 8초에서 끊기지 않고, 응답이 시작된 뒤 fallback이 끼어들지도 않습니다(5xx·헤더 지연은 본문 전달 전에 대체). WebSocket 업그레이드도 같은 헤더 대기 시간만 적용됩니다. 재현 시험: `apps/padiem-chat-front/test/stream_timeout.test.mjs`.
+- `chat-com2.padiem.net`은 공개 hostname이라 front를 거치지 않고 직접 들어올 수 있습니다. 그 경로는 #6400 `EdgeProofMiddleware`가 막습니다: `GET /health`를 뺀 **모든 http·websocket 요청**이 서명을 요구하고, 검증기는 `GET /api/claw/connector/gateway/session` 외에는 통과시키지 않습니다(그 밖의 경로는 403, WSS는 close 1008).
+- 전환·원복은 각각 1회입니다: 런북 §2(도메인 이동) / §3(재이동). 앞단 배포·도메인 이동은 저장소 PR로 실행되지 않습니다.
+- 되돌리기: Custom Domain을 `padiem-chat`으로 재이동(1회)하고, 컴2에만 쓰인 데이터는 핸드백으로 D1에 반영한 뒤 쓰기 재개.
+
 ### ⑤ Cloudflare Chat Worker를 정적 파일·입구만 남기고 정리
 
 - **완료 기준**: `padiem-chat` Worker에 남는 바인딩이 정적 assets·도메인·버전 메타데이터(및 봇 차단 설정)뿐. `B14_SERVICE`·`PADIEM_CHAT_DB`·`PADIEM_WORKSPACE_FILES`·identity/broker/STT/PDF/OAuth-state 서비스 바인딩·`PADIEM_*` 변수·시크릿이 기준선에서 제거되고, 기준선 파일이 새 상태로 리뷰 갱신. `scheduled()` 핸들러 제거 또는 비활성. R2는 컴2 백업 버킷만 남긴다.

@@ -28,6 +28,7 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
+  "websockets>=10,<16",
   "cryptography>=42,<47",
   "PyMuPDF==1.26.3",
   "pytest>=8,<10",

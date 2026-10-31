@@ -1,4 +1,13 @@
-"""Loopback-only staging Chat contract checks. Requires an isolated mock runtime."""
+"""Loopback-only staging Chat contract checks. Requires an isolated mock runtime.
+
+Without STAGING_CHAT_COOKIE the two guest checks still run and the six
+login-dependent checks are reported as SKIP (no requests, no writes).
+
+Staging-shaped servers enforce the #3476 same-origin guard with the server's
+configured public origin; set STAGING_CHAT_EXPECTED_ORIGIN to that exact
+public origin (a config value, never a secret) so the probe's POST/DELETE
+carry the Origin the server expects. The transport stays loopback HTTP.
+"""
 import argparse
 import json
 import os
@@ -12,13 +21,19 @@ class NoRedirect(HTTPRedirectHandler):
         return None
 
 
-def run(base, cookie):
+def run(base, cookie, expected_origin=""):
     u = urlsplit(base)
     if (u.scheme != "http" or u.hostname not in ("127.0.0.1", "::1", "localhost")
             or u.username or u.password or u.path not in ("", "/") or u.query or u.fragment):
         raise ValueError("Only an HTTP loopback origin is allowed")
     base = base.rstrip("/")
-    if not cookie or "\n" in cookie or "\r" in cookie:
+    mutate_origin = expected_origin.strip()
+    if mutate_origin and not mutate_origin.startswith("https://"):
+        raise ValueError("STAGING_CHAT_EXPECTED_ORIGIN must be the exact https public origin")
+    if not mutate_origin:
+        mutate_origin = base
+    signed = bool(cookie)
+    if signed and ("\n" in cookie or "\r" in cookie):
         raise ValueError("STAGING_CHAT_COOKIE must contain a session cookie header")
     opener = build_opener(ProxyHandler({}), NoRedirect())
 
@@ -28,7 +43,7 @@ def run(base, cookie):
             headers["Cookie"] = cookie
         if body is not None:
             headers["Content-Type"] = "application/json"
-            headers["Origin"] = base
+            headers["Origin"] = mutate_origin
         req = Request(base + path, data=json.dumps(body).encode() if body is not None else None,
                       headers=headers, method=method)
         try:
@@ -46,6 +61,11 @@ def run(base, cookie):
     status, guest = request("GET", "/api/auth/status", signed=False)
     assert status == 200 and guest.get("authenticated") is False and guest.get("user") is None
     print("PASS auth guest")
+    if not signed:
+        for name in ("auth signed in", "first chat turn and creation", "conversation list",
+                     "project files", "attachment capabilities", "PC cards"):
+            print("SKIP", name)
+        return 2, 6
     status, auth = request("GET", "/api/auth/status")
     assert status == 200 and auth.get("ready") is True and auth.get("authenticated") is True
     assert isinstance(auth.get("user"), dict) and auth.get("history_ready") is True
@@ -79,7 +99,7 @@ def run(base, cookie):
     else:
         assert "devices" not in pc
         print("PASS PC cards unavailable")
-    return 8
+    return 8, 0
 
 
 def main():
@@ -87,12 +107,15 @@ def main():
     parser.add_argument("base_url", help="isolated mock Chat loopback origin")
     args = parser.parse_args()
     try:
-        count = run(args.base_url, os.environ.get("STAGING_CHAT_COOKIE", ""))
+        passed, skipped = run(args.base_url, os.environ.get("STAGING_CHAT_COOKIE", ""),
+                              os.environ.get("STAGING_CHAT_EXPECTED_ORIGIN", ""))
     except Exception as exc:
         # Never include URLs, response bodies, cookies or exception messages.
         print("FAIL", type(exc).__name__)
         return 1
-    print("PASS", count, "checks")
+    print("PASS", passed, "checks")
+    if skipped:
+        print("SKIP", skipped, "checks")
     return 0
 
 

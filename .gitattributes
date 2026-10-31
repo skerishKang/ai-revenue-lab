@@ -50,8 +50,26 @@ apps/padiem-mesh-queue/requirements.txt text eol=lf
 deploy/host-com2/**/*.sh text eol=lf
 apps/padiem-broker/deploy/*.sh text eol=lf
 
+# The staging .env example is copied verbatim to /opt/padiem and sourced by
+# systemd/start scripts; CRLF on a Windows checkout corrupts the values.
+deploy/host-com2/chat/.env.staging.example text eol=lf
+
+# The P01 COM2 package's unit and env example are copied verbatim to /opt/padiem
+# and read by systemd; CRLF on a Windows checkout breaks the unit file.
+deploy/host-com2/p01/*.service.example text eol=lf
+deploy/host-com2/p01/p01.env.example text eol=lf
+
 # Chat first-paint byte checks require LF on Windows checkouts.
 apps/padiem-chat/static/index.html text eol=lf
 apps/padiem-chat/static/padiem-glass.css text eol=lf
 apps/padiem-chat/static/padiem-glass-portrait.css text eol=lf
 apps/padiem-chat/static/theme-init.js text eol=lf
+
+# Staging service units and environment examples must stay LF on Windows checkouts.
+deploy/host-com2/broker/*.service text eol=lf
+deploy/host-com2/broker/*.env.example text eol=lf
+deploy/host-com2/identity/*.service text eol=lf
+deploy/host-com2/identity/*-staging.env.example text eol=lf
+
+# Android Gradle wrapper is stored with CRLF.
+apps/padiem-android-connector/gradlew.bat whitespace=trailing,cr-at-eol,blank-at-eof,space-before-tab

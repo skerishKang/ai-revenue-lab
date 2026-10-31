@@ -55,7 +55,6 @@ def ready() -> bool:
         and _pairs_consistent(
             "PADIEM_CHAT_LOCAL_B66_PDF_ORIGIN", "PADIEM_CHAT_LOCAL_B66_PDF_SECRET"
         )
-        and _flag("PADIEM_CHAT_SHARED_LOGIN_ENABLED")
         and _queue_ready()
     )
 

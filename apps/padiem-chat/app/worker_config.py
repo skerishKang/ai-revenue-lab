@@ -356,6 +356,26 @@ def p01_engine_binding_diagnostic(env: Any) -> str | None:
     return diagnostic
 
 
+def validate_p01_caller_and_credential(caller_id: str, credential: str) -> str | None:
+    """The single P01 caller-identity validation (#2229), shared by both hosts.
+
+    The deployed Worker projects these values from bindings and the CPython host
+    reads them from its own environment; both must accept exactly the same
+    shape, so the rule lives here once and returns one bounded constant or
+    ``None``. No value, length or hash is returned.
+    """
+    if (
+        not caller_id
+        or len(caller_id) > _P01_CALLER_ID_MAX
+        or not _P01_SAFE_ID_RE.fullmatch(caller_id)
+    ):
+        return P01_DIAG_CALLER_ID_SHAPE_INVALID
+    credential_bytes = len(credential.encode("utf-8"))
+    if not _P01_CREDENTIAL_MIN_BYTES <= credential_bytes <= _P01_CREDENTIAL_MAX_BYTES:
+        return P01_DIAG_CREDENTIAL_LENGTH_INVALID
+    return None
+
+
 def _p01_engine_config_and_diagnostic(
     env: Any,
 ) -> tuple[P01EngineWorkerConfig | None, str | None]:
@@ -369,15 +389,9 @@ def _p01_engine_config_and_diagnostic(
         return None, P01_DIAG_ENGINE_SERVICE_MISSING
     if service_binding is None:
         return None, P01_DIAG_ENGINE_SERVICE_MISSING
-    if (
-        not caller_id
-        or len(caller_id) > _P01_CALLER_ID_MAX
-        or not _P01_SAFE_ID_RE.fullmatch(caller_id)
-    ):
-        return None, P01_DIAG_CALLER_ID_SHAPE_INVALID
-    credential_bytes = len(credential.encode("utf-8"))
-    if not _P01_CREDENTIAL_MIN_BYTES <= credential_bytes <= _P01_CREDENTIAL_MAX_BYTES:
-        return None, P01_DIAG_CREDENTIAL_LENGTH_INVALID
+    diagnostic = validate_p01_caller_and_credential(caller_id, credential)
+    if diagnostic is not None:
+        return None, diagnostic
     return (
         P01EngineWorkerConfig(
             service_binding=service_binding,

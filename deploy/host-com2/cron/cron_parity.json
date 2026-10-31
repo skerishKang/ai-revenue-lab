@@ -1,0 +1,17 @@
+{
+  "timezone": "UTC",
+  "worker_cron_source": "dashboard",
+  "note": "The Chat wrangler configs declare no [triggers]/crons, so the deployed Cloudflare cron expression is dashboard-owned and cannot be read from the repository. CRON_SCHEDULE must be entered at install time from that dashboard value. This manifest keeps the source-declared lane, the Worker dispatch and the timer units 1:1; .github/tests/test_com2_cron_parity_261031.py fails when they drift.",
+  "jobs": [
+    {
+      "id": "automation_tick",
+      "worker_handler": "run_scheduled_automation_source",
+      "worker_cron": null,
+      "unit_prefix": "padiem-chat-cron",
+      "service_template": "padiem-chat-cron.service.template",
+      "timer_template": "padiem-chat-cron.timer.template",
+      "local_entry": "app.local_cron",
+      "command": "python -m app.local_cron --once"
+    }
+  ]
+}
