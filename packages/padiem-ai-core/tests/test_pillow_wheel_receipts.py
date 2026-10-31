@@ -35,16 +35,24 @@ def test_runtime_adoption_is_exact_and_ci_scoped():
     workflow = (root / ".github/workflows/validate-b54-kagent.yml").read_text(
         encoding="utf-8"
     )
+    action = (root / ".github/actions/shared-python-install/action.yml").read_text(
+        encoding="utf-8"
+    )
     receipt_path = (
         root / "packages/padiem-ai-core/padiem_ai_core/pillow_wheel_receipts.py"
     )
 
     assert "Pillow" not in kagent
-    assert "python -m padiem_ai_core.pillow_wheel_receipts" not in workflow
+    assert "uses: ./.github/actions/shared-python-install" in workflow
+    assert "lane: kagent" in workflow
+    for source in (workflow, action):
+        assert "python -m padiem_ai_core.pillow_wheel_receipts" not in source
     assert (
         'python "$GITHUB_WORKSPACE/packages/padiem-ai-core/padiem_ai_core/'
-        'pillow_wheel_receipts.py"' in workflow
+        'pillow_wheel_receipts.py"' in action
     )
+    assert "Verify the downloaded Pillow wheel against the receipt" in action
+    assert "--no-index --no-deps --force-reinstall" in action
 
     completed = subprocess.run(
         [sys.executable, str(receipt_path), "Linux"],
