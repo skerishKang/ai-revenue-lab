@@ -299,7 +299,7 @@ def test_lane_refusal_survives_browser_transport(chat_client, encrypted):
     )
     error = json.loads(result.stdout)
     assert error == {
-        "message": ENCRYPTED_DOCX_WORDING if encrypted else GENERAL_WORDING,
+        "message": ENCRYPTED_DOCX_WORDING if encrypted else "요청 내용을 확인할 수 없습니다. 내용을 확인한 뒤 다시 시도해 주세요.",
         "code": "invalid_request",
     }
     assert "EncryptedPackage" not in result.stdout

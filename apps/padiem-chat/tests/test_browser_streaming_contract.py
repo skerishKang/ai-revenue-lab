@@ -356,7 +356,7 @@ const renderEnd = app.indexOf("\n  function renderCancelled(", renderStart);
       assert.equal(state,"failed");
       assert.equal(typing.removed,true);
       assert.equal(label,"연결 오류");
-      assert.equal(rendered.textContent,message || "요청을 처리하지 못했습니다 (input_schema_rejected). 다시 시도해 주세요.");
+      assert.equal(rendered.textContent,"요청 내용을 확인할 수 없습니다. 내용을 확인한 뒤 다시 시도해 주세요.");
       assert.equal(released,true);
       if (!wire.endsWith("eof")) assert.equal(cancelled,true);
     }
@@ -366,10 +366,20 @@ const renderEnd = app.indexOf("\n  function renderCancelled(", renderStart);
     : {ok:true,headers:new Headers({"content-type":"application/json"}),
        json:async()=>({ok:false,error:{code:"input_schema_rejected",message:"입력이 거부되었습니다."}})};
   await assert.rejects(PadiemChatTransport.requestStreaming({},null), error =>
-    error.terminalRecord === true && error.code === "input_schema_rejected" && error.message === "입력이 거부되었습니다.");
+    error.terminalRecord === true && error.code === "input_schema_rejected" && error.message === "요청 내용을 확인할 수 없습니다. 내용을 확인한 뒤 다시 시도해 주세요.");
   assert.equal(PadiemChatTransport.streamErrorMessage({error:{code:"upstream_timeout"}}),
     "응답 시간이 초과되었습니다. 다시 시도해 주세요.");
   console.log("terminal error records displayed; pending recovery not entered");
 })().catch(error=>{console.error(error);process.exit(1);});
 '''
     assert "pending recovery not entered" in _run_node(script, str(APP_PATH))
+
+
+def test_plain_korean_error_display_and_reference_code() -> None:
+    completed = subprocess.run(
+        ["node", str(ROOT / "tests" / "test_plain_korean_error_display.cjs")],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    assert "three error cases" in completed.stdout
