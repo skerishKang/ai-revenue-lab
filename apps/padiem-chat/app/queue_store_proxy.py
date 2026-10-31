@@ -19,6 +19,7 @@ import json
 import logging
 import time
 from typing import Any, Callable
+from urllib.parse import urlsplit
 
 from .history import VerifiedDispatch, _tagged
 from . import httpx_compat as httpx
@@ -118,13 +119,43 @@ def _https_root_origin(value: Any) -> str:
     return origin[:len("https://")] + remainder
 
 
+def _loopback_http_root_origin(value: Any) -> str:
+    """A bare loopback http origin, only for the explicit staging opt-in.
+
+    The queue normally sits behind https. A staging Chat on the same host may
+    reach the 8830 queue over http, but only 127.0.0.1/localhost, only with an
+    explicit port, and only when the deployment asks for it: no path, no
+    userinfo, no query, no second scheme.
+    """
+
+    origin = (value or "").strip() if isinstance(value, str) else ""
+    if not origin.startswith("http://") or len(origin) > 200:
+        raise QueueUnavailable("the queue origin must be a bare loopback http origin")
+    try:
+        parsed = urlsplit(origin)
+        port = parsed.port
+    except ValueError as exc:
+        raise QueueUnavailable(
+            "the queue origin must be a bare loopback http origin"
+        ) from exc
+    if (parsed.scheme != "http" or parsed.hostname not in {"127.0.0.1", "localhost"}
+            or port is None or parsed.username or parsed.password
+            or parsed.path not in {"", "/"} or parsed.query or parsed.fragment):
+        raise QueueUnavailable("the queue origin must be a bare loopback http origin")
+    return f"http://{parsed.netloc}"
+
+
 class QueueStoreClient:
     """One call shape: a declared name, its keyword arguments, its answer."""
 
     def __init__(self, *, origin: Any, service_secret: Any,
                  client_factory: Callable[..., Any] | None = None,
-                 timeout_seconds: float = QUEUE_TIMEOUT_SECONDS):
-        self._origin = _https_root_origin(origin)
+                 timeout_seconds: float = QUEUE_TIMEOUT_SECONDS,
+                 allow_loopback_http: bool = False):
+        self._origin = (
+            _loopback_http_root_origin(origin) if allow_loopback_http
+            else _https_root_origin(origin)
+        )
         secret = service_secret if isinstance(service_secret, str) else ""
         if not 16 <= len(secret) <= MAX_SECRET_CHARS or any(
                 ord(ch) < 33 or ord(ch) > 126 for ch in secret):
@@ -233,8 +264,12 @@ def build_queue_client(env: Any) -> QueueStoreClient | None:
 
     if queue_backend(getattr(env, "PC_QUEUE_BACKEND", None)) != QUEUE_BACKEND_COM2:
         return None
+    allow_loopback_http = str(
+        getattr(env, "PADIEM_CHAT_QUEUE_ALLOW_LOOPBACK_HTTP", "") or ""
+    ).strip().lower() in {"1", "true"}
     return QueueStoreClient(origin=getattr(env, "PC_QUEUE_ORIGIN", None),
-                            service_secret=getattr(env, "PC_QUEUE_SERVICE_SECRET", None))
+                            service_secret=getattr(env, "PC_QUEUE_SERVICE_SECRET", None),
+                            allow_loopback_http=allow_loopback_http)
 
 
 def _wire(value: Any) -> Any:

@@ -24,6 +24,11 @@ from app.config import ConfigError, Settings
 from app.local_cpython import _ensure_session_secret, apply_migrations, build_app
 from app.local_r2 import LocalDiskR2
 from app.local_service_bridge import HttpRpcBinding, LocalB66PdfRendererClient
+from app.queue_store_proxy import (
+    QueueBackedPairingStore,
+    QueueBackedPresenceStore,
+    QueueForwardingHistoryStore,
+)
 from app.same_origin_guard import expected_browser_origin
 from app.web_tools import create_web_provider
 from app.workspace_storage import _read_r2_object_bytes
@@ -165,6 +170,53 @@ def local_env(tmp_path, monkeypatch):
     monkeypatch.setenv("PADIEM_CHAT_LOCAL_DATA_DIR", str(tmp_path))
     monkeypatch.setenv("PADIEM_CHAT_SESSION_SECRET", "test-local-secret-0123456789abcdef")
     return tmp_path
+
+
+@pytest.fixture()
+def staging_host_env(tmp_path, monkeypatch):
+    monkeypatch.setenv("PADIEM_CHAT_CPYTHON_HOST", "1")
+    monkeypatch.setenv("PADIEM_CHAT_PUBLIC_BASE_URL", "https://chat-com2-staging.padiem.net")
+    monkeypatch.setenv("PADIEM_CHAT_AUTH_MODE", "off")
+    monkeypatch.setenv("PADIEM_CHAT_WEB_PROVIDER", "off")
+    monkeypatch.setenv("PADIEM_CHAT_RUNTIME_MODE", "mock")
+    monkeypatch.setenv("PADIEM_CHAT_LOCAL_DATA_DIR", str(tmp_path))
+    monkeypatch.setenv("PADIEM_CHAT_SESSION_SECRET", "test-local-secret-0123456789abcdef")
+    return tmp_path
+
+
+def test_queue_wiring_stays_off_by_default(local_env, monkeypatch):
+    monkeypatch.delenv("PC_QUEUE_BACKEND", raising=False)
+    monkeypatch.delenv("PC_QUEUE_SERVICE_SECRET_FILE", raising=False)
+    app = build_app()
+    assert not isinstance(app.state.history_store, QueueForwardingHistoryStore)
+    assert getattr(app.state, "pc_device_pairing_store", None) is None
+    assert getattr(app.state, "mesh_device_presence_store", None) is None
+
+
+def test_staging_queue_wiring_reads_the_secret_from_a_file(staging_host_env, monkeypatch):
+    secret_file = staging_host_env / "queue-service-secret.txt"
+    secret_file.write_text("queue-service-secret-0123456789", encoding="utf-8")
+    monkeypatch.delenv("PC_QUEUE_SERVICE_SECRET", raising=False)
+    monkeypatch.setenv("PC_QUEUE_BACKEND", "com2")
+    monkeypatch.setenv("PC_QUEUE_ORIGIN", "http://127.0.0.1:8830")
+    monkeypatch.setenv("PADIEM_CHAT_QUEUE_ALLOW_LOOPBACK_HTTP", "1")
+    monkeypatch.setenv("PC_QUEUE_SERVICE_SECRET_FILE", str(secret_file))
+
+    app = build_app()
+    assert isinstance(app.state.history_store, QueueForwardingHistoryStore)
+    assert isinstance(app.state.pc_device_pairing_store, QueueBackedPairingStore)
+    assert isinstance(app.state.mesh_device_presence_store, QueueBackedPresenceStore)
+
+
+def test_staging_queue_wiring_fails_closed_without_a_readable_secret(staging_host_env, monkeypatch):
+    monkeypatch.delenv("PC_QUEUE_SERVICE_SECRET", raising=False)
+    monkeypatch.setenv("PC_QUEUE_BACKEND", "com2")
+    monkeypatch.setenv("PC_QUEUE_ORIGIN", "http://127.0.0.1:8830")
+    monkeypatch.setenv("PADIEM_CHAT_QUEUE_ALLOW_LOOPBACK_HTTP", "1")
+    monkeypatch.setenv("PC_QUEUE_SERVICE_SECRET_FILE", str(staging_host_env / "missing.txt"))
+
+    with pytest.raises(ConfigError):
+        build_app()
 
 
 def test_service_stand_ins_bind_only_when_their_pair_is_configured(local_env, monkeypatch):
