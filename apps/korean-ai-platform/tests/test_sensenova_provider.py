@@ -87,7 +87,7 @@ def test_provider_spec_pinned_origin_and_binding():
     assert spec.base_origin == SENSENOVA_BASE_ORIGIN
     assert spec.allowed_hosts == (SENSENOVA_ALLOWED_HOST,)
     assert spec.credential_binding_name == SENSENOVA_CREDENTIAL_BINDING
-    assert spec.enabled
+    assert spec.enabled is False
 
 
 def test_retired_kilo_secondary_route_unregistered():
@@ -163,10 +163,10 @@ def test_readiness_reports_not_ready_without_key(monkeypatch):
     sensenova = next(
         p for p in response.json()["providers"] if p["provider_id"] == SENSENOVA_PROVIDER_ID
     )
-    assert sensenova["enabled"] is True
+    assert sensenova["enabled"] is False
     assert sensenova["credential_ready"] is False
     assert sensenova["route_ready"] is False
-    assert SENSENOVA_MODEL_ID in sensenova["models"]
+    assert sensenova["models"] == []
     # no secret metadata leaks
     assert SENSENOVA_CREDENTIAL_BINDING not in response.text
 
@@ -181,8 +181,10 @@ def test_readiness_ready_with_key(monkeypatch):
     sensenova = next(
         p for p in response.json()["providers"] if p["provider_id"] == SENSENOVA_PROVIDER_ID
     )
+    assert sensenova["enabled"] is False
     assert sensenova["credential_ready"] is True
-    assert sensenova["route_ready"] is True
+    assert sensenova["route_ready"] is False
+    assert sensenova["models"] == []
     assert SENSENOVA_SECRET not in response.text
 
 
@@ -226,6 +228,13 @@ async def test_busy_429_absorbed_by_gateway_retry(client, monkeypatch):
     """End-to-end through the manual-pin route: first attempt answers the
     measured busy 429, the #1988 same-route retry absorbs it."""
     from app.pilot import gateway as gw
+    from app.pilot import catalog, platform_secrets
+    from dataclasses import replace
+    # Test-only enabled registry preserves the real busy-retry contract.
+    monkeypatch.setitem(catalog.CATALOG_BY_ID, SENSENOVA_MODEL_ID,
+                        replace(catalog.CATALOG_BY_ID[SENSENOVA_MODEL_ID], enabled=True))
+    monkeypatch.setitem(platform_secrets._PLATFORM_PROVIDERS, SENSENOVA_PROVIDER_ID,
+                        replace(platform_secrets._PLATFORM_PROVIDERS[SENSENOVA_PROVIDER_ID], enabled=True))
 
     monkeypatch.setenv("B14_PROVIDER_MODE", "live")
     monkeypatch.setenv(SENSENOVA_CREDENTIAL_BINDING, SENSENOVA_SECRET)
@@ -272,3 +281,16 @@ async def test_busy_429_absorbed_by_gateway_retry(client, monkeypatch):
     assert "upstream_retry:1" in biz14["reason_codes"]
     assert biz14["attempt_evidence"][0]["error_code"] == "upstream_rate_limited_busy"
     assert biz14["attempt_evidence"][1]["outcome"] == "success"
+
+
+def test_disabled_model_is_rejected_before_provider_call(client, monkeypatch):
+    calls = []
+    async def fail_if_called(**kwargs):
+        calls.append(1)
+        raise AssertionError("disabled route dispatched")
+    monkeypatch.setattr(plat, "call_platform_chat_completions", fail_if_called)
+    response = client.post("/api/pilot/v1/chat/completions",
+        json={"model": SENSENOVA_MODEL_ID, "messages": [{"role": "user", "content": "hi"}]})
+    assert response.status_code == 503
+    assert "model_disabled" in str(response.json())
+    assert calls == []
