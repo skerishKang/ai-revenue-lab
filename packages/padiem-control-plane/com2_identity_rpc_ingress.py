@@ -23,6 +23,11 @@ COM2_IDENTITY_RPC_METHODS = frozenset({
     "resolve_connector_enrollment_consent_for_device",
     "bind_connector_enrollment_challenge",
     "authorize_connector_enrollment_redeem",
+    "issue_google_connect_ticket", "create_tenant", "get_tenant",
+    "assign_tenant_membership", "revoke_tenant_membership",
+    "resolve_active_memberships", "resolve_active_tenant_membership",
+    "install_connector_enrollment_schema", "resolve_connector_owner_scope",
+    "grant_connector_enrollment_consent", "revoke_connector_enrollment_consent",
 })
 
 
