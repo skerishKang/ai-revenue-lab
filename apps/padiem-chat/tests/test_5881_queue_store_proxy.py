@@ -106,6 +106,53 @@ def test_no_client_is_built_without_the_switch_or_without_material():
     assert isinstance(proxy.build_queue_client(Switched()), proxy.QueueStoreClient)
 
 
+def test_loopback_http_is_opt_in_and_narrow():
+    """The 8830 staging queue is plain http on loopback; https stays the default."""
+
+    with pytest.raises(proxy.QueueUnavailable):
+        proxy.QueueStoreClient(origin="http://127.0.0.1:8830", service_secret=SECRET)
+
+    client = proxy.QueueStoreClient(
+        origin="http://127.0.0.1:8830/", service_secret=SECRET,
+        allow_loopback_http=True,
+    )
+    assert client._origin == "http://127.0.0.1:8830"
+    assert proxy.QueueStoreClient(
+        origin="http://localhost:8830", service_secret=SECRET,
+        allow_loopback_http=True,
+    )._origin == "http://localhost:8830"
+
+    for bad in (
+        "http://example.com:8830",
+        "http://127.0.0.1",
+        "http://127.0.0.1:8830/path",
+        "http://user@127.0.0.1:8830",
+        "https://127.0.0.1:8830",
+        "http://[::1]:8830",
+        "http://127.0.0.1:8830?x=1",
+    ):
+        with pytest.raises(proxy.QueueUnavailable):
+            proxy.QueueStoreClient(origin=bad, service_secret=SECRET,
+                                   allow_loopback_http=True)
+
+
+def test_build_queue_client_reads_the_loopback_flag_strictly():
+    class Env:
+        PC_QUEUE_BACKEND = "com2"
+        PC_QUEUE_ORIGIN = "http://127.0.0.1:8830"
+        PC_QUEUE_SERVICE_SECRET = SECRET
+
+    with pytest.raises(proxy.QueueUnavailable):
+        proxy.build_queue_client(Env())
+
+    Env.PADIEM_CHAT_QUEUE_ALLOW_LOOPBACK_HTTP = "0"
+    with pytest.raises(proxy.QueueUnavailable):
+        proxy.build_queue_client(Env())
+
+    Env.PADIEM_CHAT_QUEUE_ALLOW_LOOPBACK_HTTP = "true"
+    assert isinstance(proxy.build_queue_client(Env()), proxy.QueueStoreClient)
+
+
 def test_the_call_sends_the_declared_name_and_proves_the_service_secret():
     seen: dict[str, Any] = {}
 

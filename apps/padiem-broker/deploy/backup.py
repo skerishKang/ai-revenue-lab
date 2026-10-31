@@ -45,12 +45,24 @@ def snapshot(db_path: Path, dest_dir: Path, keep: int) -> dict:
     try:
         integrity = copy.execute("PRAGMA integrity_check").fetchone()[0]
         copy_counts = _counts(copy)
-    finally:
+        if integrity != "ok" or copy_counts != source_counts:
+            raise ValueError("unverifiable snapshot")
+        # Purge expired material from the disposable snapshot only; never mutate live DB.
+        cutoff = dt.datetime.now(dt.timezone.utc).isoformat()
+        invalid = copy.execute(
+            "SELECT COUNT(*) FROM local_agent_command_material WHERE julianday(expires_at) IS NULL"
+        ).fetchone()[0]
+        if invalid:
+            raise ValueError("invalid material expiry")
+        copy.execute("DELETE FROM local_agent_command_material WHERE julianday(expires_at) <= julianday(?)", (cutoff,))
+        copy.commit()
+        copy_counts = _counts(copy)
+    except (sqlite3.DatabaseError, ValueError):
         copy.close()
-    if integrity != "ok" or copy_counts != source_counts:
         target.unlink(missing_ok=True)
         raise SystemExit("BROKER_BACKUP=FAIL reason=unverifiable_snapshot")
-
+    finally:
+        copy.close()
     backups = sorted(dest_dir.glob("broker-*.sqlite3"))
     removed = 0
     for stale in (backups[:-keep] if keep > 0 else []):

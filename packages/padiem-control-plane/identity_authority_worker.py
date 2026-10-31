@@ -41,6 +41,20 @@ IDENTITY_RPC_INGRESS_METHODS: frozenset[str] = frozenset({
     "resolve_product_user_for_subject",
     "resolve_connector_workspace",
     "resolve_connector_context",
+    # Source-evidenced COM2 Chat callers; existing per-method authority gates
+    # still apply. This does not change the default-off HTTPS ingress.
+    "issue_google_connect_ticket",
+    "create_tenant",
+    "assign_tenant_membership",
+    "resolve_active_memberships",
+    "resolve_active_tenant_membership",
+    "install_connector_enrollment_schema",
+    "resolve_connector_owner_scope",
+    "grant_connector_enrollment_consent",
+    "revoke_connector_enrollment_consent",
+    "resolve_connector_enrollment_consent_for_device",
+    "bind_connector_enrollment_challenge",
+    "authorize_connector_enrollment_redeem",
 })
 _LINK_KEYS = frozenset({"product_id", "product_user_id", "auth_provider", "provider_subject"})
 _SESSION_KEYS = frozenset({"product_id", "subject", "authenticated_at", "not_after"})
@@ -208,13 +222,18 @@ class CanonicalIdentityDurableObject(CanonicalIdentityEnrollmentConsentRPC, Dura
 
     async def resolve_or_create_product_link(self, payload: dict) -> dict:
         try:
-            wire = _closed(payload, _LINK_KEYS, "identity-link RPC")
+            keys = _LINK_KEYS | {"expected_canonical_subject_id"} if isinstance(payload, dict) and "expected_canonical_subject_id" in payload else _LINK_KEYS
+            wire = _closed(payload, keys, "identity-link RPC")
+            expected = wire.get("expected_canonical_subject_id")
+            if "expected_canonical_subject_id" in wire and not isinstance(expected, str):
+                raise ControlPlaneContractError("invalid_identity_authority_rpc", "invalid expected subject")
             link = self._store.resolve_or_create_product_link(
                 product_id=wire["product_id"],
                 product_user_id=wire["product_user_id"],
                 auth_provider=wire["auth_provider"],
                 provider_subject=wire["provider_subject"],
                 now=datetime.now().astimezone(),
+                **({"expected_canonical_subject_id": expected} if expected is not None else {}),
             )
             return {"ok": True, "link": link.to_public_dict()}
         except ControlPlaneContractError as exc:

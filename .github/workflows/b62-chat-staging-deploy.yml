@@ -95,7 +95,7 @@ jobs:
           npx --yes wrangler@4 deployments list --name padiem-chat-staging --json > "$RUNNER_TEMP/staging-before.json"
           version="$(python apps/padiem-chat/scripts/staging_verify.py active "$RUNNER_TEMP/staging-before.json")"
           npx --yes wrangler@4 versions view "$version" --name padiem-chat-staging --json > "$RUNNER_TEMP/staging-before-version.json"
-          python apps/padiem-chat/scripts/staging_verify.py bindings "$RUNNER_TEMP/staging-before-version.json"
+          python apps/padiem-chat/scripts/staging_verify.py bindings-before "$RUNNER_TEMP/staging-before-version.json"
       - name: Deploy staging Worker
         working-directory: apps/padiem-chat
         run: |

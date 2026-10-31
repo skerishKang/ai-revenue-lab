@@ -64,9 +64,10 @@ class WorkerJwksVerifier:
     audience = 'b62'
     jwks_url = AUTH + '/.well-known/jwks.json'
 
-    def __init__(self, *, crypto=None, clock=time.time, cache_seconds=300):
-        if cache_seconds <= 0:
+    def __init__(self, *, crypto=None, clock=time.time, cache_seconds=300, audience='b62'):
+        if not isinstance(audience, str) or not audience or cache_seconds <= 0:
             raise ValueError('invalid_verifier_configuration')
+        self.audience = audience
         self.crypto, self.clock, self.cache_seconds = crypto or WorkerES256(), clock, cache_seconds
         self.keys, self.until = None, 0
 

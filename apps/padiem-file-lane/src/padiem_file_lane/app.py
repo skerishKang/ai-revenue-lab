@@ -13,6 +13,7 @@ from starlette.responses import FileResponse, JSONResponse, PlainTextResponse
 from starlette.routing import Route
 
 from .storage import FileError, Store, disk_error, require_space
+from .journal import RequestJournal, RequestJournalMiddleware, row_from_scope
 from . import xlsx_edit
 from . import hwp_text
 from .tickets import InvalidTicket, verify_ticket
@@ -38,6 +39,16 @@ def create_app(*, root: Path | None = None, secret: str | None = None, origins=N
     if len(secret) < 32:
         raise RuntimeError("FILE_LANE_TICKET_SECRET must contain at least 32 characters")
     store = Store(root)
+    journal = RequestJournal(root)
+
+    def mark(request, *, code=None, size=None):
+        """Place a constant error code or byte count on the request's journal
+        row. Names, content, tickets and exception text never go through here."""
+        row = row_from_scope(request.scope)
+        if code is not None:
+            row["error_code"] = code
+        if size is not None:
+            row["file_size"] = size
 
     def _xlsx_source(store, user_id, file_id):
         meta = store.meta(user_id, file_id)
@@ -70,6 +81,7 @@ def create_app(*, root: Path | None = None, secret: str | None = None, origins=N
             if length is not None and pending.size != length:
                 raise FileError("content_length_mismatch", 400)
             meta = await run_in_threadpool(pending.finish)
+            mark(request, size=meta["size_bytes"])
             return JSONResponse({"ok": True, **meta}, status_code=201, headers={"Cache-Control": "no-store"})
         except ClientDisconnect:
             raise FileError("upload_interrupted", 400) from None
@@ -82,6 +94,7 @@ def create_app(*, root: Path | None = None, secret: str | None = None, origins=N
     async def metadata(request: Request):
         claims = ticket(request)
         meta = await run_in_threadpool(store.meta, claims.user_id, request.path_params["file_id"])
+        mark(request, size=meta["size_bytes"])
         return JSONResponse({"ok": True, **meta}, headers={"Cache-Control": "no-store"})
 
     async def text(request: Request):
@@ -100,6 +113,7 @@ def create_app(*, root: Path | None = None, secret: str | None = None, origins=N
                 raise FileError("invalid_text_window", 400) from None
             bounds.append(value)
         path = await run_in_threadpool(store.text, claims.user_id, request.path_params["file_id"])
+        mark(request, size=path.stat().st_size)
         if window:
             offset, max_chars = bounds
             content, eof = await run_in_threadpool(store.text_window, path, offset, max_chars)
@@ -113,6 +127,7 @@ def create_app(*, root: Path | None = None, secret: str | None = None, origins=N
         claims = ticket(request)
         data, meta = await run_in_threadpool(_xlsx_source, store, claims.user_id,
                                              request.path_params["file_id"])
+        mark(request, size=meta["size_bytes"])
         form = await run_in_threadpool(xlsx_edit.describe, data)
         return JSONResponse({"ok": True, "file_id": meta["file_id"], "name": meta["name"],
                              **form}, headers={"Cache-Control": "no-store"})
@@ -140,6 +155,7 @@ def create_app(*, root: Path | None = None, secret: str | None = None, origins=N
             await run_in_threadpool(pending.open)
             await run_in_threadpool(pending.write, filled, claims.max_bytes)
             meta = await run_in_threadpool(pending.finish)
+            mark(request, size=meta["size_bytes"])
         finally:
             with anyio.CancelScope(shield=True):
                 if not pending.committed:
@@ -153,6 +169,7 @@ def create_app(*, root: Path | None = None, secret: str | None = None, origins=N
                                             request.path_params["file_id"])
         meta = await run_in_threadpool(store.meta, claims.user_id,
                                        request.path_params["file_id"])
+        mark(request, size=meta["size_bytes"])
         media = _MEDIA_BY_KIND.get(meta.get("kind"), "application/octet-stream")
         return FileResponse(directory / "data", media_type=media,
                             filename=meta["name"], headers={"Cache-Control": "no-store"})
@@ -179,6 +196,7 @@ def create_app(*, root: Path | None = None, secret: str | None = None, origins=N
             text = await run_in_threadpool(hwp_text.extract_text, b"".join(chunks))
         except hwp_text.HwpError as exc:
             raise FileError(exc.code, 422) from None
+        mark(request, size=received)
         return JSONResponse({"ok": True, "text": text, "chars": len(text)},
                             headers={"Cache-Control": "no-store"})
 
@@ -186,13 +204,16 @@ def create_app(*, root: Path | None = None, secret: str | None = None, origins=N
         return JSONResponse({"ok": True}, headers={"Cache-Control": "no-store"})
 
     async def denied(request, exc):
+        mark(request, code="invalid_ticket")
         return error("invalid_ticket", 401)
 
     async def failed(request, exc):
+        mark(request, code=exc.code)
         return error(exc.code, exc.status)
 
     async def disk_failed(request, exc):
         failure = disk_error(exc)
+        mark(request, code=failure.code)
         return error(failure.code, failure.status)
 
     app = Starlette(routes=[Route("/health", health), Route("/files", upload, methods=["POST"]),
@@ -203,6 +224,8 @@ def create_app(*, root: Path | None = None, secret: str | None = None, origins=N
                             Route("/files/hwp-text", hwp_reference, methods=["POST"])],
                     exception_handlers={InvalidTicket: denied, FileError: failed, OSError: disk_failed})
     app.state.store = store
+    app.state.journal = journal
+    app.add_middleware(RequestJournalMiddleware, journal=journal)
     allowed = origins if origins is not None else [x.strip() for x in os.environ.get("FILE_LANE_ALLOWED_ORIGINS", "").split(",") if x.strip()]
     if "*" in allowed:
         raise RuntimeError("FILE_LANE_ALLOWED_ORIGINS must name explicit Chat origins")
