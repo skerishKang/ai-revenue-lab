@@ -13,7 +13,11 @@ class Check(unittest.TestCase):
     def test_config_rejects_target_change_and_vars(self):
         m.validate_config(config, base)
         with self.assertRaises(ValueError): m.validate_config({**config, 'vars': {'X': 'bad'}}, base)
-        with self.assertRaises(ValueError): m.validate_config({**config, 'services': []}, base)
+        import contextlib, io
+        output = io.StringIO()
+        with contextlib.redirect_stdout(output), contextlib.redirect_stderr(output), self.assertRaises(ValueError):
+            m.validate_config({**config, 'services': []}, base)
+        self.assertIn('PADIEM_AUTH_PREFLIGHT_SERVICE_MISMATCH=FAIL', output.getvalue())
     def test_split_or_changed_active_version_is_rejected(self):
         m.verify_deployment([{'created_on': '2026-01-01', 'versions': [{'version_id': version, 'percentage': 100}]}], version)
         with self.assertRaises(ValueError): m.verify_deployment([{'versions': [{'version_id': version, 'percentage': 50}]}], version)
