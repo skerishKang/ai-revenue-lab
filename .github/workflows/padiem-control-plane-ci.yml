@@ -3,6 +3,7 @@ name: Padiem Control Plane CI
 on:
   pull_request:
     paths:
+      - '.github/actions/shared-python-install/**'
       - 'packages/padiem-control-plane/**'
       - '.github/tests/test_identity_staging_config_261031.py'
       - '.github/workflows/padiem-control-plane-ci.yml'
@@ -40,12 +41,9 @@ jobs:
           python-version: '3.12'
 
       - name: Install Control Plane package
-        run: |
-          # #4139: the real Claw TXT projector is exercised by the canonical
-          # Broker race regression and imports the existing PADIEM Core.
-          # Install the actual package, never a test-only import shim.
-          python -m pip install --disable-pip-version-check -e 'packages/padiem-control-plane[dev]' -e packages/padiem-ai-core
-          python -m pip check
+        uses: ./.github/actions/shared-python-install
+        with:
+          lane: control-plane
 
       - name: Compile Control Plane contracts
         run: |
