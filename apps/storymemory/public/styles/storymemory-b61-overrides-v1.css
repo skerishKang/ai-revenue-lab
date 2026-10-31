@@ -47,7 +47,7 @@
 #readerPageBody .verse{font:400 clamp(17px,1.4vw,21px)/1.9 var(--font-bible);margin:0 0 8px;word-break:keep-all;letter-spacing:-.005em;color:var(--ink)}
 #readerPageBody .verse-en{font:400 clamp(13px,1.1vw,15px)/1.65 var(--sans);color:var(--muted);margin:2px 0 12px;padding-left:22px;opacity:.72}
 .paper-footer{display:none}
-.page-turn-btn{position:absolute;top:50%;transform:translateY(-50%);width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:rgba(255,255,255,.85);color:var(--ink);font-size:14px;cursor:pointer;z-index:10;backdrop-filter:blur(4px)}
+.page-turn-btn{position:absolute;top:50%;transform:translateY(-50%);width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:rgba(255,255,255,.85);color:var(--ink);font-size:14px;cursor:pointer;z-index:32;backdrop-filter:blur(4px)}
 .page-turn-prev{left:8px}
 .page-turn-next{right:8px}
 .reading-progress-edge{position:absolute;right:4px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;align-items:center;gap:4px;z-index:10}
@@ -70,7 +70,7 @@
   .paper-head{margin-bottom:6px;padding-bottom:0}
   #readerPageBody .verse{font-size:16px;line-height:1.8;margin-bottom:6px}
   #readerPageBody .verse-en{font-size:13px;padding-left:0;margin-bottom:8px}
-  .page-turn-btn{width:30px;height:30px;font-size:12px}
+  .page-turn-btn{width:44px;height:44px;font-size:12px}
   .reading-progress-edge{display:none}
 }
 
@@ -135,3 +135,6 @@
   .hero-title{font-size:36px}
 }
 
+
+/* The later inline reader rule shrinks these controls; retain a 44px touch target. */
+@media(max-width:768px){#reader .page-turn-btn{width:44px!important;height:44px!important}}
