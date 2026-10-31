@@ -75,7 +75,7 @@ PADIEM_CHAT_WRITE_FREEZE_PATHS=/auth/google/callback,/auth/lovetree/start,/api/c
 | 2 늦은 쓰기 확인 | 4개 동결 경로 GET 503 확인 + D1 스냅숏 2회 비교(관찰 창 10분) + §4b 관찰 목록 확인 | 12분 | 두 스냅숏의 행 수·정렬 해시·`updated_at` 최대값 차이 0, 동결 경로 4개 모두 503 | 창 유지, 원인 경로를 목록에 추가 |
 | 3 D1 내보내기 | `wrangler d1 export --remote` | 5분 | 파일 크기 > 0, 표 수가 기준선과 동일 | 재시도 |
 | 4 COM2 반영 | 동기화 러너로 내보내기 반영 | 5분 | 반영 스크립트 종료 코드 0 | 핸드백 |
-| 4b 객체 참조 | `chat_object_reference_check`로 참조 키 ↔ 미러 목록 대조 | 3분 | `CHAT_OBJECT_REFERENCE=MATCH` (종료 코드 0) | 누락 키를 R2로 올린 뒤 재실행, 해결되지 않으면 6번 대신 CTO 보고 |
+| 4b 객체 참조 | `chat_object_reference_check`로 참조 키 ↔ 버킷별 미러 목록 합집합 대조 | 3분 | `CHAT_OBJECT_REFERENCE=MATCH` (종료 코드 0) | 누락 키를 R2로 올린 뒤 재실행, 해결되지 않으면 6번 대신 CTO 보고 |
 | 5 패리티 | `chat_copy_parity` | 2분 | `CHAT_COPY_PARITY=MATCH` (종료 코드 0) | 6번 |
 | 6 되돌림 | `chat_d1_handback_gate` plan → apply | 10분 | 적용 후 5번이 `MATCH` | 창 유지, CTO 보고 |
 
@@ -97,6 +97,7 @@ python .github/scripts/chat_cutover_rehearsal.py \
   --staging-db /mnt/d/padiem/chat-staging/chat.sqlite3 \
   --sentinel /mnt/d/padiem/chat-staging/MAINTENANCE \
   --mirror-inventory /mnt/d/padiem/chat-staging/r2-inventory.json \
+  --mirror-inventory /mnt/d/padiem/chat-staging/workspace-inventory.json \
   --confirm-stop-tick --confirm-stop-wss --confirm-stop-queue
 ```
 
@@ -105,6 +106,7 @@ python .github/scripts/chat_cutover_rehearsal.py \
 - 실패하면 그 자리에서 멈추고 되돌림 안내를 출력한 뒤, 읽기 전용인 `chat_d1_handback_gate plan` → `verify`만 실행합니다. `apply`는 CTO 승인 뒤 별도 실행입니다. 창은 스크립트가 닫지 않습니다.
 - 운영 주소(`chat.padiem.net`), 운영 DB 경로(`/mnt/d/padiem/chat-com2`), `b62-chat-api`, 큐 `8797`이 인자에 있으면 아무것도 실행하지 않고 거부합니다. 운영 전환은 별도 지시로 이 제한을 풉니다.
 - `--dry-run`은 실행 없이 단계·명령만 출력합니다. `--synthetic`은 배치 규칙만 완화하고 운영 거부는 그대로 둡니다(합성 검증용).
+- `--mirror-inventory`는 반복 지정할 수 있습니다. 버킷별 목록(media·workspace·b66)은 합집합으로 대조하고, 결과 줄에 `inventories=N`과 누락이 있는 `표.열=건수`(`CHAT_OBJECT_MISSING_SOURCES`)가 함께 나옵니다. UTF-8 BOM이 붙은 목록도 그대로 읽습니다.
 - 운영 D1이 저장소보다 마이그레이션이 뒤져 reflect에서 `STAGING_DB_REFUSED reason=staging_ledger_incomplete`로 멈추면 `--apply-pending`을 붙여 다시 실행합니다. 사본 패리티는 마이그레이션 전에 확인하고, 적용한 번호는 `STAGING_DB_PENDING_APPLIED count=N`으로 보고됩니다. 기본값은 꺼짐(기존 동작)입니다.
 - 1b 중지는 스크립트가 관측할 수 없습니다. `--confirm-stop-tick`·`--confirm-stop-wss`·`--confirm-stop-queue`로 운영자 확인을 받고, 없으면 동결을 켜기 전에 멈춥니다.
 

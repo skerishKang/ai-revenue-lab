@@ -117,7 +117,7 @@ class Env:
             "generations_dir": str(self.generations_dir),
             "snapshot_a": str(self.snapshot_a),
             "snapshot_b": str(self.snapshot_b),
-            "mirror_inventory": str(self.inventory),
+            "mirror_inventories": (str(self.inventory),),
             "migrations_dir": str(self.migrations),
             "queue_origin": "http://127.0.0.1:8830",
             "plan_out": str(self.plan_out),
@@ -397,6 +397,46 @@ def test_object_gap_fails_last_stage_and_reports_rollback(
     assert "CHAT_OBJECT_REFERENCE=GAP" in printed
     assert "CHAT_OBJECT_MISSING_DIGEST=" in printed
     assert "REHEARSAL_ROLLBACK=VERIFY result=PASS" in printed
+
+
+def test_two_bucket_inventories_reach_the_object_check(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    env = Env(tmp_path)
+    workspace = tmp_path / "workspace-inventory.json"
+    workspace.write_text(json.dumps({"keys": ["objects/u0.png"]}), encoding="utf-8")
+
+    assert rehearsal.main(env.argv("--dry-run", "--mirror-inventory", str(workspace))) == 0
+    printed = capsys.readouterr().out
+
+    command = next(
+        line
+        for line in printed.splitlines()
+        if line.startswith("REHEARSAL_COMMAND stage=object_reference")
+    )
+    assert command.count("--inventory") == 2
+    assert str(env.inventory) in command
+    assert str(workspace) in command
+
+
+def test_one_missing_inventory_stops_the_run(tmp_path: Path) -> None:
+    env = Env(tmp_path)
+    config = env.config(
+        mirror_inventories=(str(env.inventory), str(tmp_path / "absent.json"))
+    )
+    with pytest.raises(rehearsal.RehearsalError) as refusal:
+        rehearsal.guard_target(config)
+    assert str(refusal.value) == "artifact_missing:mirror_inventory"
+
+
+def test_an_inventory_in_a_production_path_is_refused(tmp_path: Path) -> None:
+    env = Env(tmp_path)
+    config = env.config(
+        mirror_inventories=(str(env.inventory), "D:/PADIEM-Servers/b62-chat-api/r2.json")
+    )
+    with pytest.raises(rehearsal.RehearsalError) as refusal:
+        rehearsal.guard_target(config)
+    assert str(refusal.value) == "production_target"
 
 
 def test_sentinel_is_the_only_write_in_the_window(
