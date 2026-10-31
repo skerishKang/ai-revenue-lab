@@ -65,9 +65,16 @@ def test_package_root_all_is_unique_and_keeps_approved_contract_families() -> No
 
 
 def test_package_root_all_names_are_direct_or_lazy_exports() -> None:
-    lazy_exports = set(core._TOOL_RUNTIME_EXPORTS) | set(core._IMAGE_HELPER_EXPORTS)
+    lazy_exports = (
+        set(core._TOOL_RUNTIME_EXPORTS)
+        | set(core._IMAGE_HELPER_EXPORTS)
+        | set(core._LAZY_SUBMODULE_EXPORTS)
+    )
 
-    assert lazy_exports <= set(core.__all__)
+    # MultimodalStreamingExecutionRuntime was eagerly imported by the old root
+    # without an __all__ entry, and stays importable the same way now.
+    undeclared_lazy = lazy_exports - set(core.__all__)
+    assert undeclared_lazy == {"MultimodalStreamingExecutionRuntime"}
     unresolved = {
         name
         for name in core.__all__

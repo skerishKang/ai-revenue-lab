@@ -1,13 +1,11 @@
 from __future__ import annotations
 
-import ast
 from pathlib import Path
 
 import padiem_ai_core as core
 
 
 PACKAGE_DIR = Path(__file__).resolve().parents[1] / "padiem_ai_core"
-INIT_PATH = PACKAGE_DIR / "__init__.py"
 
 EXPECTED_DIRECT_TOOL_RUNTIME_EXPORTS = {
     "OrchestrationEvent",
@@ -51,18 +49,17 @@ EXPECTED_LAZY_EXPORT_OWNERS = {
 
 
 def _direct_export_owners() -> dict[str, set[str]]:
-    tree = ast.parse(INIT_PATH.read_text(encoding="utf-8"), filename=str(INIT_PATH))
-    owners: dict[str, set[str]] = {}
+    """The declared name -> owning submodule map of the package root.
 
-    for node in tree.body:
-        if not isinstance(node, ast.ImportFrom):
-            continue
-        if node.level != 1 or not node.module:
-            continue
-        for alias in node.names:
-            owners.setdefault(alias.asname or alias.name, set()).add(node.module)
-
-    return owners
+    The root no longer imports anything eagerly: every export is declared in
+    ``_LAZY_SUBMODULE_EXPORTS`` (name -> submodule), so ownership is read from
+    that map instead of parsing eager ``from .x import y`` statements that no
+    longer exist.
+    """
+    return {
+        name: {submodule.lstrip(".")}
+        for name, submodule in core._LAZY_SUBMODULE_EXPORTS.items()
+    }
 
 
 def _resolved_owner_map() -> dict[str, str]:
@@ -75,7 +72,7 @@ def _resolved_owner_map() -> dict[str, str]:
     ambiguous = {
         name: modules
         for name, modules in direct.items()
-        if name in exported and len(modules) != 1
+        if len(modules) != 1
     }
     assert ambiguous == {}
 

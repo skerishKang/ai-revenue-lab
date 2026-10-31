@@ -1,408 +1,16 @@
-"""Padiem AI Core package entrypoint."""
+"""Padiem AI Core package entrypoint.
+
+The public surface is exported lazily: importing the package no longer executes
+every submodule eagerly, so a Worker isolate or any short-lived consumer pays
+only the modules it actually touches. Every name in ``__all__`` still resolves
+to exactly the same object as before — only the import moment moved to first
+use, via the module ``__getattr__`` this file already used for the optional
+tool-runtime and image-helper groups.
+"""
 
 from __future__ import annotations
 
 import importlib
-
-from .contracts import (
-    AgentProfile,
-    ApprovalPolicy,
-    ErrorClass,
-    Evidence,
-    RunMetadata,
-    RunStatus,
-    ToolEvent,
-    ToolSideEffect,
-    ToolSpec,
-    UsageMetadata,
-)
-from .web_runtime import (
-    FIRECRAWL_ORIGIN,
-    MAX_PROVIDER_RESPONSE_BYTES,
-    MAX_QUERY_CHARS,
-    MAX_RESULTS,
-    MAX_SNIPPET_CHARS,
-    MAX_TITLE_CHARS,
-    MAX_URL_CHARS,
-    TINYFISH_FETCH_ORIGIN,
-    TINYFISH_SEARCH_ORIGIN,
-    FirecrawlWebProvider,
-    MockWebProvider,
-    OffWebProvider,
-    TinyFishWebProvider,
-    WebProvider,
-    WebRuntimeConfig,
-    WebRuntimeError,
-    create_web_provider,
-    normalize_public_url,
-)
-from .b14_execution import (
-    B14_CHAT_COMPLETIONS_PATH,
-    MAX_B14_RESPONSE_BYTES,
-    B14ChatRequest,
-    B14ExecutionClient,
-    B14ExecutionConfig,
-    B14ExecutionError,
-    B14ExecutionResult,
-    B14RouteMetadata,
-    B14RoutingOptions,
-)
-from .b14_multimodal import (
-    B14MultimodalChatRequest,
-    MAX_B14_IMAGE_BYTES,
-    MAX_B14_MULTIMODAL_PARTS,
-)
-from .b14_transport import (
-    B14PostJSONTransport,
-    B14Transport,
-    B14TransportResponse,
-)
-from .b14_streaming import (
-    B14_STREAM_PREVIEW_PATH,
-    B14StreamEvent,
-    B14StreamingClient,
-)
-from .grounding_runtime import (
-    DEFAULT_GROUNDING_PREAMBLE,
-    MAX_GROUNDED_EVIDENCE_CONTEXT_CHARS,
-    MAX_GROUNDED_SOURCES,
-    MAX_RESEARCH_PAGE_FETCHES,
-    MAX_RESEARCH_QUERIES,
-    MAX_RESEARCH_SOURCES,
-    GroundedResearchResult,
-    GroundedResearchRuntime,
-    GroundedSynthesisResult,
-    GroundingPolicy,
-    GroundingRuntimeError,
-    PreparedGrounding,
-    ResearchProgress,
-    dedupe_evidence,
-    parse_research_queries,
-    prepare_combined_grounding_context,
-    prepare_grounding_context,
-)
-from .execution_runtime import (
-    B14Executor,
-    ExecutionRequest,
-    ExecutionResult,
-    ExecutionRuntime,
-    ExecutionRuntimeError,
-)
-from .multimodal_execution_runtime import (
-    MultimodalExecutionRequest,
-    MultimodalExecutionRuntime,
-    MultimodalStreamingExecutionRuntime,
-)
-from .streaming_runtime import (
-    B14StreamExecutor,
-    StreamingExecutionEvent,
-    StreamingExecutionRuntime,
-)
-from .execution_state_machine import (
-    ExecutionState,
-    ExecutionStateMachine,
-    ExecutionStateMachineError,
-    ExecutionTransition,
-    InvalidTransitionError,
-    is_terminal_state,
-    is_valid_transition,
-)
-from .execution_context import (
-    ExecutionContext,
-    IdempotencyAdapter,
-    IdempotencyConflictError,
-    request_fingerprint,
-)
-from .contextual_execution import (
-    ContextualExecutionRunner,
-    PreparedExecution,
-    prepare_execution,
-)
-from .retrieval import (
-    MAX_RETRIEVAL_NAMESPACES,
-    MAX_RETRIEVAL_RESULTS,
-    PreparedRetrieval,
-    RetrievalContractError,
-    RetrievalPolicy,
-    RetrievalProvider,
-    RetrievalRequest,
-    RetrievedItem,
-    prepare_retrieval_context,
-)
-from .document_semantics import (
-    DOCUMENT_CONTENT_TRUST_CLASS,
-    KIND_BY_MEDIA_TYPE,
-    MAX_DOCUMENT_SEGMENTS,
-    MAX_DOCUMENT_WARNINGS,
-    MAX_SEGMENT_TEXT_CHARS,
-    DocumentKind,
-    DocumentLocator,
-    DocumentNormalizationError,
-    DocumentSegment,
-    ExtractionStatus,
-    LocatorKind,
-    LocatorPrecision,
-    document_kind_for_media,
-    normalize_document_warnings,
-    validate_locator_value,
-)
-from .memory import (
-    MAX_MEMORY_APPROVED_PROPOSALS,
-    MAX_MEMORY_AUTH_NAMESPACES,
-    MAX_MEMORY_CONTENT_CHARS,
-    MAX_MEMORY_DERIVED_FROM,
-    MAX_MEMORY_SOURCE_REF_CHARS,
-    MemoryContractError,
-    MemoryNamespace,
-    MemoryProvenance,
-    MemoryScope,
-    MemoryWriteAuthorization,
-    MemoryWriteOrigin,
-    MemoryWritePolicy,
-    MemoryWriteRequest,
-    PreparedMemoryWrite,
-    authorize_memory_write,
-)
-from .memory_read import (
-    MemoryReadAuthorization,
-    MemoryReadPolicy,
-    authorize_memory_retrieval,
-)
-from .memory_receipt import (
-    IdempotentMemoryWriteAdapter,
-    MemoryWriteDisposition,
-    MemoryWriteReceipt,
-    persist_authorized_memory_write,
-    validate_memory_write_receipt,
-)
-from .memory_context import (
-    RankedMemoryItem,
-    RetrievalScore,
-    assemble_long_context,
-    rank_retrieval_results,
-)
-from .agent_approval import (
-    AgentApprovalError,
-    AgentContinuationState,
-    ApprovalOutcome,
-    ApprovalPause,
-    ApprovalRequirement,
-    ContinuationStatus,
-    VerifiedApprovalDecision,
-    approval_pause_from_tool_error,
-    resolve_approval_pause,
-    assert_same_invocation,
-    tool_invocation_digest,
-)
-from .agent_definition import (
-    MAX_APPROVAL_CHECKPOINTS,
-    MAX_CAPABILITIES,
-    MAX_CONNECTOR_IDS,
-    MAX_DESCRIPTION_CHARS,
-    MAX_INSTRUCTION_CHARS,
-    MAX_SKILL_IDS,
-    MAX_TOOL_IDS,
-    AgentApprovalCheckpoint,
-    AgentDefinitionError,
-    AgentExecutionBudget,
-    AgentTerminalReason,
-    BoundedAgentDefinition,
-    missing_agent_capabilities,
-)
-from .agent_tool_result_ledger import (
-    InMemoryToolResultLedger,
-    ToolResultLedger,
-    ToolResultLedgerError,
-    ToolResultRef,
-)
-from .agent_profile_adapter import (
-    AgentProfileCompilationError,    CompiledAgentProfile,
-    ToolRuntimeBinding,
-    TrustedAgentRuntimePolicy,
-    compile_agent_profile,
-    effective_max_steps,
-    effective_max_tokens,
-)
-from .agent_planner import (
-    MAX_AGENT_PLAN_DEPENDENCIES,
-    MAX_AGENT_PLAN_INPUT_CHARS,
-    MAX_AGENT_PLAN_OBJECTIVE_CHARS,
-    MAX_AGENT_PLAN_STEPS,
-    AgentPlan,
-    AgentPlanStep,
-    AgentPlanner,
-    AgentPlannerError,
-    validate_agent_plan,
-    validate_agent_plan_input,
-)
-from .agent_recovery import (
-    AgentFailure,
-    AgentFailureSource,
-    AgentRecoveryAction,
-    AgentRecoveryContext,
-    AgentRecoveryDecision,
-    AgentRecoveryError,
-    AgentRecoveryPolicy,
-    decide_agent_recovery,
-)
-from .agent_events import (
-    AgentEvent,
-    AgentEventError,
-    AgentEventKind,
-    public_agent_event,
-)
-from .document_template import (
-    DOCUMENT_TEMPLATE_SCHEMA_VERSION,
-    MAX_TEMPLATE_COLLECTION_ITEMS,
-    MAX_TEMPLATE_NESTING_DEPTH,
-    MAX_TEMPLATE_NODES,
-    DocumentTemplateApproval,
-    DocumentTemplateCandidate,
-    DocumentTemplateError,
-    DocumentTemplateProfile,
-    DocumentTemplateSourceProvenance,
-    FrozenTemplateArray,
-    FrozenTemplateObject,
-    approve_document_template_candidate,
-)
-from .skill_package import (
-    ApprovalHook,
-    MAX_ALLOWED_TOOLS,
-    MAX_APPROVAL_HOOKS,
-    MAX_CONNECTOR_REQUIREMENTS,
-    MAX_REQUIRED_CAPABILITIES,
-    ReusableSkillPackage,
-    SkillPackageError,
-    missing_required_capabilities,
-)
-from .skill_versioning import (
-    SkillCompatibility,
-    SkillCompatibilityDecision,
-    SkillMigrationMap,
-    SkillVersionError,
-    evaluate_skill_compatibility,
-    parse_skill_major,
-)
-from .skill_registry import (
-    SkillInstallation,
-    SkillInstallationSnapshot,
-    SkillInstallStatus,
-    SkillRegistryError,
-    SkillRegistrySnapshot,
-    resolve_enabled_skill,
-)
-from .skill_activation import (
-    ActivatedSkillProfile,
-    compile_enabled_skill,
-)
-from .skill_runtime_adapter import (
-    CompiledSkillProfile,
-    SkillRuntimeAdapterError,
-    TrustedSkillRuntimePolicy,
-    compile_skill_profile,
-)
-from .tool_registry import (
-    MAX_REGISTERED_TOOLS,
-    ToolRegistryError,
-    ToolRegistrySnapshot,
-)
-from .connector_registry import (
-    ConnectorDescriptor,
-    ConnectorRegistryError,
-    ConnectorRegistrySnapshot,
-    MAX_CONNECTOR_TOOLS,
-    MAX_REGISTERED_CONNECTORS,
-)
-from .connectors import (
-    GMAIL_CANONICAL_TOOL_IDS,
-    GMAIL_CONNECTOR_ID,
-    GMAIL_DESCRIPTOR,
-    GMAIL_READONLY_AUTH_SCOPE,
-    GMAIL_READONLY_SCOPE,
-    GmailContractError,
-    GmailReadPort,
-    build_gmail_read_handlers,
-    gmail_read_tool_specs,
-    register_gmail_read_tools,
-)
-from .tool_resource_policy import (
-    EffectiveToolResources,
-    ToolResourcePolicy,
-    ToolResourcePolicyError,
-    resolve_tool_resources,
-)
-from .tool_lifecycle import (
-    ConnectorLifecycleEvent,
-    ConnectorLifecycleKind,
-    ToolLifecycleError,
-    ToolLifecycleEvent,
-    ToolLifecycleKind,
-)
-from .evidence_graph import (
-    ClaimDerivation,
-    ClaimEvidenceLink,
-    ClaimEvidenceRelation,
-    EvidenceClaim,
-    EvidenceGraph,
-    EvidenceGraphError,
-    evidence_graph,
-)
-from .evidence_verification import (
-    AcceptedVerification,
-    EvidenceValidator,
-    EvidenceVerificationError,
-    MAX_ALLOWED_VALIDATORS,
-    MAX_VERIFICATION_EVIDENCE_IDS,
-    MAX_VERIFICATION_SUMMARY_CHARS,
-    TrustedVerificationPolicy,
-    VerificationDisposition,
-    VerificationRequest,
-    VerificationVerdict,
-    accept_verification_verdict,
-)
-from .evidence_citation import (
-    EvidenceCitationError,
-    GroundedCitation,
-    GroundedCitationBundle,
-    MAX_CITATIONS_PER_CLAIM,
-    project_grounded_citations,
-)
-from .evidence_assessment import (
-    ClaimAssessment,
-    ClaimAssessmentState,
-    EvidenceAssessmentError,
-    MAX_ASSESSMENT_EVIDENCE_IDS,
-    assess_claim,
-    is_verification_satisfied,
-)
-
-from .orchestration_events import (
-    OrchestrationEvent,
-    OrchestrationEventError,
-    OrchestrationEventKind,
-    orchestration_event_from_public,
-    public_orchestration_event,
-)
-from .public_ui_events import (
-    PublicUiEvent,
-    PublicUiEventError,
-    PublicUiEventKind,
-    PublicUiEventStream,
-)
-from .orchestration import (
-    OrchestrationError,
-    OrchestrationRequest,
-    OrchestrationResult,
-    OrchestrationResumeRequest,
-    OrchestrationRunner,
-    execution_result_from_public,
-    execution_transition_from_public,
-    orchestration_result_from_public,
-    route_metadata_from_public,
-    run_metadata_from_public,
-    tool_event_from_public,
-    usage_metadata_from_public,
-)
 
 _TOOL_RUNTIME_EXPORTS = frozenset(
     {
@@ -444,9 +52,394 @@ _IMAGE_HELPER_EXPORTS = frozenset(
     }
 )
 
+# The eager surface of this package: public name -> the submodule that owns it.
+# Importing the package executes none of these; first attribute access imports
+# the owning submodule, resolves the name and caches it on this module.
+_LAZY_SUBMODULE_EXPORTS = {
+    # from .contracts
+    "AgentProfile": ".contracts",
+    "ApprovalPolicy": ".contracts",
+    "ErrorClass": ".contracts",
+    "Evidence": ".contracts",
+    "RunMetadata": ".contracts",
+    "RunStatus": ".contracts",
+    "ToolEvent": ".contracts",
+    "ToolSideEffect": ".contracts",
+    "ToolSpec": ".contracts",
+    "UsageMetadata": ".contracts",
+    # from .web_runtime
+    "FIRECRAWL_ORIGIN": ".web_runtime",
+    "MAX_PROVIDER_RESPONSE_BYTES": ".web_runtime",
+    "MAX_QUERY_CHARS": ".web_runtime",
+    "MAX_RESULTS": ".web_runtime",
+    "MAX_SNIPPET_CHARS": ".web_runtime",
+    "MAX_TITLE_CHARS": ".web_runtime",
+    "MAX_URL_CHARS": ".web_runtime",
+    "TINYFISH_FETCH_ORIGIN": ".web_runtime",
+    "TINYFISH_SEARCH_ORIGIN": ".web_runtime",
+    "FirecrawlWebProvider": ".web_runtime",
+    "MockWebProvider": ".web_runtime",
+    "OffWebProvider": ".web_runtime",
+    "TinyFishWebProvider": ".web_runtime",
+    "WebProvider": ".web_runtime",
+    "WebRuntimeConfig": ".web_runtime",
+    "WebRuntimeError": ".web_runtime",
+    "create_web_provider": ".web_runtime",
+    "normalize_public_url": ".web_runtime",
+    # from .b14_execution
+    "B14_CHAT_COMPLETIONS_PATH": ".b14_execution",
+    "MAX_B14_RESPONSE_BYTES": ".b14_execution",
+    "B14ChatRequest": ".b14_execution",
+    "B14ExecutionClient": ".b14_execution",
+    "B14ExecutionConfig": ".b14_execution",
+    "B14ExecutionError": ".b14_execution",
+    "B14ExecutionResult": ".b14_execution",
+    "B14RouteMetadata": ".b14_execution",
+    "B14RoutingOptions": ".b14_execution",
+    # from .b14_multimodal
+    "B14MultimodalChatRequest": ".b14_multimodal",
+    "MAX_B14_IMAGE_BYTES": ".b14_multimodal",
+    "MAX_B14_MULTIMODAL_PARTS": ".b14_multimodal",
+    # from .b14_transport
+    "B14PostJSONTransport": ".b14_transport",
+    "B14Transport": ".b14_transport",
+    "B14TransportResponse": ".b14_transport",
+    # from .b14_streaming
+    "B14_STREAM_PREVIEW_PATH": ".b14_streaming",
+    "B14StreamEvent": ".b14_streaming",
+    "B14StreamingClient": ".b14_streaming",
+    # from .grounding_runtime
+    "DEFAULT_GROUNDING_PREAMBLE": ".grounding_runtime",
+    "MAX_GROUNDED_EVIDENCE_CONTEXT_CHARS": ".grounding_runtime",
+    "MAX_GROUNDED_SOURCES": ".grounding_runtime",
+    "MAX_RESEARCH_PAGE_FETCHES": ".grounding_runtime",
+    "MAX_RESEARCH_QUERIES": ".grounding_runtime",
+    "MAX_RESEARCH_SOURCES": ".grounding_runtime",
+    "GroundedResearchResult": ".grounding_runtime",
+    "GroundedResearchRuntime": ".grounding_runtime",
+    "GroundedSynthesisResult": ".grounding_runtime",
+    "GroundingPolicy": ".grounding_runtime",
+    "GroundingRuntimeError": ".grounding_runtime",
+    "PreparedGrounding": ".grounding_runtime",
+    "ResearchProgress": ".grounding_runtime",
+    "dedupe_evidence": ".grounding_runtime",
+    "parse_research_queries": ".grounding_runtime",
+    "prepare_combined_grounding_context": ".grounding_runtime",
+    "prepare_grounding_context": ".grounding_runtime",
+    # from .execution_runtime
+    "B14Executor": ".execution_runtime",
+    "ExecutionRequest": ".execution_runtime",
+    "ExecutionResult": ".execution_runtime",
+    "ExecutionRuntime": ".execution_runtime",
+    "ExecutionRuntimeError": ".execution_runtime",
+    # from .multimodal_execution_runtime
+    "MultimodalExecutionRequest": ".multimodal_execution_runtime",
+    "MultimodalExecutionRuntime": ".multimodal_execution_runtime",
+    "MultimodalStreamingExecutionRuntime": ".multimodal_execution_runtime",
+    # from .streaming_runtime
+    "B14StreamExecutor": ".streaming_runtime",
+    "StreamingExecutionEvent": ".streaming_runtime",
+    "StreamingExecutionRuntime": ".streaming_runtime",
+    # from .execution_state_machine
+    "ExecutionState": ".execution_state_machine",
+    "ExecutionStateMachine": ".execution_state_machine",
+    "ExecutionStateMachineError": ".execution_state_machine",
+    "ExecutionTransition": ".execution_state_machine",
+    "InvalidTransitionError": ".execution_state_machine",
+    "is_terminal_state": ".execution_state_machine",
+    "is_valid_transition": ".execution_state_machine",
+    # from .execution_context
+    "ExecutionContext": ".execution_context",
+    "IdempotencyAdapter": ".execution_context",
+    "IdempotencyConflictError": ".execution_context",
+    "request_fingerprint": ".execution_context",
+    # from .contextual_execution
+    "ContextualExecutionRunner": ".contextual_execution",
+    "PreparedExecution": ".contextual_execution",
+    "prepare_execution": ".contextual_execution",
+    # from .retrieval
+    "MAX_RETRIEVAL_NAMESPACES": ".retrieval",
+    "MAX_RETRIEVAL_RESULTS": ".retrieval",
+    "PreparedRetrieval": ".retrieval",
+    "RetrievalContractError": ".retrieval",
+    "RetrievalPolicy": ".retrieval",
+    "RetrievalProvider": ".retrieval",
+    "RetrievalRequest": ".retrieval",
+    "RetrievedItem": ".retrieval",
+    "prepare_retrieval_context": ".retrieval",
+    # from .document_semantics
+    "DOCUMENT_CONTENT_TRUST_CLASS": ".document_semantics",
+    "KIND_BY_MEDIA_TYPE": ".document_semantics",
+    "MAX_DOCUMENT_SEGMENTS": ".document_semantics",
+    "MAX_DOCUMENT_WARNINGS": ".document_semantics",
+    "MAX_SEGMENT_TEXT_CHARS": ".document_semantics",
+    "DocumentKind": ".document_semantics",
+    "DocumentLocator": ".document_semantics",
+    "DocumentNormalizationError": ".document_semantics",
+    "DocumentSegment": ".document_semantics",
+    "ExtractionStatus": ".document_semantics",
+    "LocatorKind": ".document_semantics",
+    "LocatorPrecision": ".document_semantics",
+    "document_kind_for_media": ".document_semantics",
+    "normalize_document_warnings": ".document_semantics",
+    "validate_locator_value": ".document_semantics",
+    # from .memory
+    "MAX_MEMORY_APPROVED_PROPOSALS": ".memory",
+    "MAX_MEMORY_AUTH_NAMESPACES": ".memory",
+    "MAX_MEMORY_CONTENT_CHARS": ".memory",
+    "MAX_MEMORY_DERIVED_FROM": ".memory",
+    "MAX_MEMORY_SOURCE_REF_CHARS": ".memory",
+    "MemoryContractError": ".memory",
+    "MemoryNamespace": ".memory",
+    "MemoryProvenance": ".memory",
+    "MemoryScope": ".memory",
+    "MemoryWriteAuthorization": ".memory",
+    "MemoryWriteOrigin": ".memory",
+    "MemoryWritePolicy": ".memory",
+    "MemoryWriteRequest": ".memory",
+    "PreparedMemoryWrite": ".memory",
+    "authorize_memory_write": ".memory",
+    # from .memory_read
+    "MemoryReadAuthorization": ".memory_read",
+    "MemoryReadPolicy": ".memory_read",
+    "authorize_memory_retrieval": ".memory_read",
+    # from .memory_receipt
+    "IdempotentMemoryWriteAdapter": ".memory_receipt",
+    "MemoryWriteDisposition": ".memory_receipt",
+    "MemoryWriteReceipt": ".memory_receipt",
+    "persist_authorized_memory_write": ".memory_receipt",
+    "validate_memory_write_receipt": ".memory_receipt",
+    # from .memory_context
+    "RankedMemoryItem": ".memory_context",
+    "RetrievalScore": ".memory_context",
+    "assemble_long_context": ".memory_context",
+    "rank_retrieval_results": ".memory_context",
+    # from .agent_approval
+    "AgentApprovalError": ".agent_approval",
+    "AgentContinuationState": ".agent_approval",
+    "ApprovalOutcome": ".agent_approval",
+    "ApprovalPause": ".agent_approval",
+    "ApprovalRequirement": ".agent_approval",
+    "ContinuationStatus": ".agent_approval",
+    "VerifiedApprovalDecision": ".agent_approval",
+    "approval_pause_from_tool_error": ".agent_approval",
+    "resolve_approval_pause": ".agent_approval",
+    "assert_same_invocation": ".agent_approval",
+    "tool_invocation_digest": ".agent_approval",
+    # from .agent_definition
+    "MAX_APPROVAL_CHECKPOINTS": ".agent_definition",
+    "MAX_CAPABILITIES": ".agent_definition",
+    "MAX_CONNECTOR_IDS": ".agent_definition",
+    "MAX_DESCRIPTION_CHARS": ".agent_definition",
+    "MAX_INSTRUCTION_CHARS": ".agent_definition",
+    "MAX_SKILL_IDS": ".agent_definition",
+    "MAX_TOOL_IDS": ".agent_definition",
+    "AgentApprovalCheckpoint": ".agent_definition",
+    "AgentDefinitionError": ".agent_definition",
+    "AgentExecutionBudget": ".agent_definition",
+    "AgentTerminalReason": ".agent_definition",
+    "BoundedAgentDefinition": ".agent_definition",
+    "missing_agent_capabilities": ".agent_definition",
+    # from .agent_tool_result_ledger
+    "InMemoryToolResultLedger": ".agent_tool_result_ledger",
+    "ToolResultLedger": ".agent_tool_result_ledger",
+    "ToolResultLedgerError": ".agent_tool_result_ledger",
+    "ToolResultRef": ".agent_tool_result_ledger",
+    # from .agent_profile_adapter
+    "AgentProfileCompilationError": ".agent_profile_adapter",
+    "CompiledAgentProfile": ".agent_profile_adapter",
+    "ToolRuntimeBinding": ".agent_profile_adapter",
+    "TrustedAgentRuntimePolicy": ".agent_profile_adapter",
+    "compile_agent_profile": ".agent_profile_adapter",
+    "effective_max_steps": ".agent_profile_adapter",
+    "effective_max_tokens": ".agent_profile_adapter",
+    # from .agent_planner
+    "MAX_AGENT_PLAN_DEPENDENCIES": ".agent_planner",
+    "MAX_AGENT_PLAN_INPUT_CHARS": ".agent_planner",
+    "MAX_AGENT_PLAN_OBJECTIVE_CHARS": ".agent_planner",
+    "MAX_AGENT_PLAN_STEPS": ".agent_planner",
+    "AgentPlan": ".agent_planner",
+    "AgentPlanStep": ".agent_planner",
+    "AgentPlanner": ".agent_planner",
+    "AgentPlannerError": ".agent_planner",
+    "validate_agent_plan": ".agent_planner",
+    "validate_agent_plan_input": ".agent_planner",
+    # from .agent_recovery
+    "AgentFailure": ".agent_recovery",
+    "AgentFailureSource": ".agent_recovery",
+    "AgentRecoveryAction": ".agent_recovery",
+    "AgentRecoveryContext": ".agent_recovery",
+    "AgentRecoveryDecision": ".agent_recovery",
+    "AgentRecoveryError": ".agent_recovery",
+    "AgentRecoveryPolicy": ".agent_recovery",
+    "decide_agent_recovery": ".agent_recovery",
+    # from .agent_events
+    "AgentEvent": ".agent_events",
+    "AgentEventError": ".agent_events",
+    "AgentEventKind": ".agent_events",
+    "public_agent_event": ".agent_events",
+    # from .document_template
+    "DOCUMENT_TEMPLATE_SCHEMA_VERSION": ".document_template",
+    "MAX_TEMPLATE_COLLECTION_ITEMS": ".document_template",
+    "MAX_TEMPLATE_NESTING_DEPTH": ".document_template",
+    "MAX_TEMPLATE_NODES": ".document_template",
+    "DocumentTemplateApproval": ".document_template",
+    "DocumentTemplateCandidate": ".document_template",
+    "DocumentTemplateError": ".document_template",
+    "DocumentTemplateProfile": ".document_template",
+    "DocumentTemplateSourceProvenance": ".document_template",
+    "FrozenTemplateArray": ".document_template",
+    "FrozenTemplateObject": ".document_template",
+    "approve_document_template_candidate": ".document_template",
+    # from .skill_package
+    "ApprovalHook": ".skill_package",
+    "MAX_ALLOWED_TOOLS": ".skill_package",
+    "MAX_APPROVAL_HOOKS": ".skill_package",
+    "MAX_CONNECTOR_REQUIREMENTS": ".skill_package",
+    "MAX_REQUIRED_CAPABILITIES": ".skill_package",
+    "ReusableSkillPackage": ".skill_package",
+    "SkillPackageError": ".skill_package",
+    "missing_required_capabilities": ".skill_package",
+    # from .skill_versioning
+    "SkillCompatibility": ".skill_versioning",
+    "SkillCompatibilityDecision": ".skill_versioning",
+    "SkillMigrationMap": ".skill_versioning",
+    "SkillVersionError": ".skill_versioning",
+    "evaluate_skill_compatibility": ".skill_versioning",
+    "parse_skill_major": ".skill_versioning",
+    # from .skill_registry
+    "SkillInstallation": ".skill_registry",
+    "SkillInstallationSnapshot": ".skill_registry",
+    "SkillInstallStatus": ".skill_registry",
+    "SkillRegistryError": ".skill_registry",
+    "SkillRegistrySnapshot": ".skill_registry",
+    "resolve_enabled_skill": ".skill_registry",
+    # from .skill_activation
+    "ActivatedSkillProfile": ".skill_activation",
+    "compile_enabled_skill": ".skill_activation",
+    # from .skill_runtime_adapter
+    "CompiledSkillProfile": ".skill_runtime_adapter",
+    "SkillRuntimeAdapterError": ".skill_runtime_adapter",
+    "TrustedSkillRuntimePolicy": ".skill_runtime_adapter",
+    "compile_skill_profile": ".skill_runtime_adapter",
+    # from .tool_registry
+    "MAX_REGISTERED_TOOLS": ".tool_registry",
+    "ToolRegistryError": ".tool_registry",
+    "ToolRegistrySnapshot": ".tool_registry",
+    # from .connector_registry
+    "ConnectorDescriptor": ".connector_registry",
+    "ConnectorRegistryError": ".connector_registry",
+    "ConnectorRegistrySnapshot": ".connector_registry",
+    "MAX_CONNECTOR_TOOLS": ".connector_registry",
+    "MAX_REGISTERED_CONNECTORS": ".connector_registry",
+    # from .connectors
+    "GMAIL_CANONICAL_TOOL_IDS": ".connectors",
+    "GMAIL_CONNECTOR_ID": ".connectors",
+    "GMAIL_DESCRIPTOR": ".connectors",
+    "GMAIL_READONLY_AUTH_SCOPE": ".connectors",
+    "GMAIL_READONLY_SCOPE": ".connectors",
+    "GmailContractError": ".connectors",
+    "GmailReadPort": ".connectors",
+    "build_gmail_read_handlers": ".connectors",
+    "gmail_read_tool_specs": ".connectors",
+    "register_gmail_read_tools": ".connectors",
+    # from .tool_resource_policy
+    "EffectiveToolResources": ".tool_resource_policy",
+    "ToolResourcePolicy": ".tool_resource_policy",
+    "ToolResourcePolicyError": ".tool_resource_policy",
+    "resolve_tool_resources": ".tool_resource_policy",
+    # from .tool_lifecycle
+    "ConnectorLifecycleEvent": ".tool_lifecycle",
+    "ConnectorLifecycleKind": ".tool_lifecycle",
+    "ToolLifecycleError": ".tool_lifecycle",
+    "ToolLifecycleEvent": ".tool_lifecycle",
+    "ToolLifecycleKind": ".tool_lifecycle",
+    # from .evidence_graph
+    "ClaimDerivation": ".evidence_graph",
+    "ClaimEvidenceLink": ".evidence_graph",
+    "ClaimEvidenceRelation": ".evidence_graph",
+    "EvidenceClaim": ".evidence_graph",
+    "EvidenceGraph": ".evidence_graph",
+    "EvidenceGraphError": ".evidence_graph",
+    "evidence_graph": ".evidence_graph",
+    # from .evidence_verification
+    "AcceptedVerification": ".evidence_verification",
+    "EvidenceValidator": ".evidence_verification",
+    "EvidenceVerificationError": ".evidence_verification",
+    "MAX_ALLOWED_VALIDATORS": ".evidence_verification",
+    "MAX_VERIFICATION_EVIDENCE_IDS": ".evidence_verification",
+    "MAX_VERIFICATION_SUMMARY_CHARS": ".evidence_verification",
+    "TrustedVerificationPolicy": ".evidence_verification",
+    "VerificationDisposition": ".evidence_verification",
+    "VerificationRequest": ".evidence_verification",
+    "VerificationVerdict": ".evidence_verification",
+    "accept_verification_verdict": ".evidence_verification",
+    # from .evidence_citation
+    "EvidenceCitationError": ".evidence_citation",
+    "GroundedCitation": ".evidence_citation",
+    "GroundedCitationBundle": ".evidence_citation",
+    "MAX_CITATIONS_PER_CLAIM": ".evidence_citation",
+    "project_grounded_citations": ".evidence_citation",
+    # from .evidence_assessment
+    "ClaimAssessment": ".evidence_assessment",
+    "ClaimAssessmentState": ".evidence_assessment",
+    "EvidenceAssessmentError": ".evidence_assessment",
+    "MAX_ASSESSMENT_EVIDENCE_IDS": ".evidence_assessment",
+    "assess_claim": ".evidence_assessment",
+    "is_verification_satisfied": ".evidence_assessment",
+    # from .orchestration_events
+    "OrchestrationEvent": ".orchestration_events",
+    "OrchestrationEventError": ".orchestration_events",
+    "OrchestrationEventKind": ".orchestration_events",
+    "orchestration_event_from_public": ".orchestration_events",
+    "public_orchestration_event": ".orchestration_events",
+    # from .public_ui_events
+    "PublicUiEvent": ".public_ui_events",
+    "PublicUiEventError": ".public_ui_events",
+    "PublicUiEventKind": ".public_ui_events",
+    "PublicUiEventStream": ".public_ui_events",
+    # from .orchestration
+    "OrchestrationError": ".orchestration",
+    "OrchestrationRequest": ".orchestration",
+    "OrchestrationResult": ".orchestration",
+    "OrchestrationResumeRequest": ".orchestration",
+    "OrchestrationRunner": ".orchestration",
+    "execution_result_from_public": ".orchestration",
+    "execution_transition_from_public": ".orchestration",
+    "orchestration_result_from_public": ".orchestration",
+    "route_metadata_from_public": ".orchestration",
+    "run_metadata_from_public": ".orchestration",
+    "tool_event_from_public": ".orchestration",
+    "usage_metadata_from_public": ".orchestration",
+    # from .agent_execution_bridge
+    "AgentPlanExecutor": ".agent_execution_bridge",
+    "PlanBackedStepDriver": ".agent_execution_bridge",
+    # from .adapter_configuration_gate
+    "AdapterConfigurationGateError": ".adapter_configuration_gate",
+    "AdapterProbe": ".adapter_configuration_gate",
+    "AdapterProbeState": ".adapter_configuration_gate",
+    "CapabilityGateResult": ".adapter_configuration_gate",
+    "ExternalAdapterKind": ".adapter_configuration_gate",
+    "LiveCapability": ".adapter_configuration_gate",
+    "evaluate_capability_gate": ".adapter_configuration_gate",
+    "required_adapters_for": ".adapter_configuration_gate",
+    # from .cancellation_barrier
+    "TEARDOWN_TRANSITION": ".cancellation_barrier",
+    "CancellationBarrier": ".cancellation_barrier",
+    "CancellationBarrierError": ".cancellation_barrier",
+    "CancellationBarrierState": ".cancellation_barrier",
+    "CancellationProjection": ".cancellation_barrier",
+    "is_terminal_barrier_state": ".cancellation_barrier",
+}
+
 
 def __getattr__(name: str):
-    if name in _TOOL_RUNTIME_EXPORTS:
+    # The eager surface wins: a name this package historically exported from a
+    # concrete submodule resolves there first, exactly as the eager import did.
+    submodule = _LAZY_SUBMODULE_EXPORTS.get(name)
+    if submodule is not None:
+        module = importlib.import_module(submodule, __name__)
+    elif name in _TOOL_RUNTIME_EXPORTS:
         try:
             module = importlib.import_module(".tool_runtime", __name__)
         except ModuleNotFoundError as exc:
@@ -473,30 +466,9 @@ def __getattr__(name: str):
     return value
 
 
-from .agent_execution_bridge import (
-    AgentPlanExecutor,
-    PlanBackedStepDriver,
-)
+def __dir__() -> list[str]:
+    return sorted(set(globals()) | set(__all__))
 
-from .adapter_configuration_gate import (
-    AdapterConfigurationGateError,
-    AdapterProbe,
-    AdapterProbeState,
-    CapabilityGateResult,
-    ExternalAdapterKind,
-    LiveCapability,
-    evaluate_capability_gate,
-    required_adapters_for,
-)
-
-from .cancellation_barrier import (
-    TEARDOWN_TRANSITION,
-    CancellationBarrier,
-    CancellationBarrierError,
-    CancellationBarrierState,
-    CancellationProjection,
-    is_terminal_barrier_state,
-)
 
 __all__ = [
     "AgentPlanExecutor",
@@ -515,7 +487,6 @@ __all__ = [
     "CancellationBarrierState",
     "CancellationProjection",
     "is_terminal_barrier_state",
-
     "AgentProfile",
     "ApprovalPolicy",
     "ErrorClass",

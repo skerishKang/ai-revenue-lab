@@ -476,6 +476,7 @@ def test_root_module_attribute_access_is_declared_or_audited_private_surface() -
         "__all__",
         "_TOOL_RUNTIME_EXPORTS",
         "_IMAGE_HELPER_EXPORTS",
+        "_LAZY_SUBMODULE_EXPORTS",
     }
 
     undeclared = {

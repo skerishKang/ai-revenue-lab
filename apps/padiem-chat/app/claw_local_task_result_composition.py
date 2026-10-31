@@ -17,7 +17,6 @@ from __future__ import annotations
 import inspect
 from typing import Any
 
-from .claw_local_access_composition import LOCAL_AGENT_BROKER_AUTHORITY_SERVICE_BINDING_NAME
 from .worker_config import binding_value
 from .history import HistoryError
 from .claw_local_task_result_projection import (
@@ -443,6 +442,13 @@ def build_local_task_result_source_with_diagnostic(
     env: Any, history_store: Any, *, office_completion=None
 ) -> tuple[LocalRunnerResultSource | None, str | None]:
     """Compose the concrete source from the trusted binding, or fail closed."""
+
+    # Cold-import boundary: the broker-authority constant lives in the local
+    # access composition, which belongs to the build, not to the isolate's
+    # own import graph.
+    from .claw_local_access_composition import (
+        LOCAL_AGENT_BROKER_AUTHORITY_SERVICE_BINDING_NAME,
+    )
 
     if history_store is None:
         return None, LOCAL_RUNNER_RESULT_DIAG_BOUNDING_ABSENT

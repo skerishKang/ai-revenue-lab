@@ -21,16 +21,10 @@ from urllib.parse import urlparse
 # Service-Binding transport must use that same httpx Request/Response/stream
 # type family; app.httpx_compat is only for app-owned JS-fetch clients.
 import httpx
-from padiem_ai_core.b14_execution import MAX_CONFIGURED_B14_RESPONSE_BYTES
 from app.b14_upstream_composition import (
     compose_b14_transports,
     request_correlation_headers,
 )
-from padiem_ai_core.isolated_parser_composition import (
-    compose_worker_isolated_parser_authority_async,
-    reset_worker_isolated_parser_async_composition,
-)
-from app.document_parser_transport import CloudflareDocumentParserServiceTransport
 from app.padiem_super_admin_bootstrap import resolve_super_admin_bootstrap
 from app.service_binding_response import (
     ServiceBindingResponseError,
@@ -38,22 +32,11 @@ from app.service_binding_response import (
     cloudflare_chunk_bytes,
     read_bounded_service_binding_body,
 )
-from app.claw_automation_due_workspace_discovery import (
-    compose_canonical_due_workspace_discovery,
-)
-from app.claw_automation_owner_resolution import ClawAutomationOwnerResolver
-from app.claw_automation_scheduled_execution import (
-    compose_scheduled_automation_execution,
-)
 from app.claw_automation_store import D1ClawAutomationStore
 from app.central_model_policy_d1 import D1CentralModelPolicyStore
 from app.central_model_route_d1 import D1CentralModelRouteStore
 from app.platform_admin_roles import D1PlatformAdminRoleStore
 from app.central_model_route_runtime import resolve_claw_tier_model_from_stores
-from app.claw_local_access_composition import (
-    build_claw_local_access_source_with_diagnostic,
-    build_mesh_presence_generation_resolver,
-)
 from app.claw_device_directory_routes import build_broker_device_directory_source
 from app.mesh_device_presence_store import D1MeshDevicePresenceStore
 from app.pc_device_pairing_store import D1PcPairingStore
@@ -65,16 +48,6 @@ from app.queue_store_proxy import (
 )
 from app.desktop_conversation_authority import (
     build_desktop_device_session_authority_with_diagnostic,
-)
-from app.claw_p01_composition import (
-    build_claw_p01_adapter,
-    build_claw_p01_lanes_with_diagnostic,
-)
-from app.claw_drive_upload_host_composition import (
-    build_claw_drive_artifact_uploader,
-)
-from app.claw_telegram_delivery_host_composition import (
-    build_claw_telegram_artifact_delivery,
 )
 from app.claw_artifact_delivery_receipt_store import (
     D1ArtifactDeliveryReceiptStore,
@@ -149,8 +122,6 @@ from app.web_xlsx_p01_engine_client import build_web_xlsx_p01_engine_client
 from app.web_xlsx_quote_write_engine_client import build_web_quote_write_engine_client
 from app.claw_web_xlsx_quote_pdf import BrowserQuotePdfRenderer
 from app.claw_search_decision import trusted_claw_search_activation
-from kagent.claw_automation import ClawAutomationTickRuntime
-from kagent.claw_automation_trigger import ClawAutomationTriggerBoundary
 from workers import Request, Response, WorkerEntrypoint
 
 class ChatInitUnavailableError(RuntimeError):
@@ -246,6 +217,18 @@ async def run_scheduled_automation_source(
 
     if not _automation_source_enabled(env):
         return None
+    # Cold-import boundary: the whole cron lane loads on the first tick of the
+    # scheduled source, never during the request path's isolate import.
+    from app.claw_automation_due_workspace_discovery import (
+        compose_canonical_due_workspace_discovery,
+    )
+    from app.claw_automation_owner_resolution import ClawAutomationOwnerResolver
+    from app.claw_automation_scheduled_execution import (
+        compose_scheduled_automation_execution,
+    )
+    from app.claw_p01_composition import build_claw_p01_adapter
+    from kagent.claw_automation import ClawAutomationTickRuntime
+    from kagent.claw_automation_trigger import ClawAutomationTriggerBoundary
     db_binding = binding_value(env, D1_BINDING_NAME)
     identity_binding = binding_value(env, IDENTITY_AUTHORITY_SERVICE_BINDING_NAME)
     if automation_store is None and db_binding is None:
@@ -429,6 +412,9 @@ class CloudflareB14ServiceTransport:
         return status, body
 
     async def post_json(self, url: str, payload: dict[str, Any]) -> tuple[int, bytes]:
+        # First-use import: the response ceiling is a B14 execution constant,
+        # so the isolate's own import path stays free of the Core B14 module.
+        from padiem_ai_core.b14_execution import MAX_CONFIGURED_B14_RESPONSE_BYTES
         trace_headers = {}
         try:
             from app.request_telemetry import current_request_id, is_safe_request_id
@@ -1050,6 +1036,27 @@ class Default(WorkerEntrypoint):
         await run_scheduled_automation_source(env)
 
     async def _build_worker_app(self) -> Any:
+        # First-use imports: these composition modules belong to the features
+        # that mount here, so the isolate's own import stays free of them and
+        # every name still loads exactly once, on this first build.
+        from app.claw_drive_upload_host_composition import (
+            build_claw_drive_artifact_uploader,
+        )
+        from app.claw_local_access_composition import (
+            build_claw_local_access_source_with_diagnostic,
+            build_mesh_presence_generation_resolver,
+        )
+        from app.claw_p01_composition import build_claw_p01_lanes_with_diagnostic
+        from app.claw_telegram_delivery_host_composition import (
+            build_claw_telegram_artifact_delivery,
+        )
+        from app.document_parser_transport import (
+            CloudflareDocumentParserServiceTransport,
+        )
+        from padiem_ai_core.isolated_parser_composition import (
+            compose_worker_isolated_parser_authority_async,
+            reset_worker_isolated_parser_async_composition,
+        )
         # Resolve Cloudflare same-account Secrets Store bindings only
         # for an explicitly selected or live-armed public Search route.
         # Values stay server-side; no user input can name a binding.
