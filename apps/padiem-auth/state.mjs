@@ -20,6 +20,7 @@ export class AuthState {
       digest TEXT PRIMARY KEY, client TEXT NOT NULL, redirect TEXT NOT NULL,
       challenge TEXT NOT NULL, subject TEXT NOT NULL, account_id TEXT NOT NULL, expires INTEGER NOT NULL, consumed INTEGER NOT NULL DEFAULT 0
     )`);
+    this.sql.exec('CREATE TABLE IF NOT EXISTS code_profiles (digest TEXT PRIMARY KEY, ciphertext TEXT NOT NULL, expires INTEGER NOT NULL)');
     this.sql.exec(`CREATE TABLE IF NOT EXISTS sessions (
       id TEXT PRIMARY KEY, client TEXT NOT NULL, subject TEXT NOT NULL, account_id TEXT NOT NULL,
       expires INTEGER NOT NULL, revoked INTEGER NOT NULL DEFAULT 0
@@ -76,8 +77,15 @@ export class AuthState {
     });
   }
 
-  createCode({ digest, client, redirect, challenge, subject, accountId, expires }) {
-    this.sql.exec('INSERT INTO codes(digest,client,redirect,challenge,subject,account_id,expires) VALUES(?,?,?,?,?,?,?)', digest, client, redirect, challenge, subject, accountId, expires);
+  createCode({ digest, client, redirect, challenge, subject, accountId, expires, encryptedProfile }) {
+    return this.storage.transactionSync(() => {
+      this.sql.exec('INSERT INTO codes(digest,client,redirect,challenge,subject,account_id,expires) VALUES(?,?,?,?,?,?,?)', digest, client, redirect, challenge, subject, accountId, expires);
+      if (encryptedProfile) this.sql.exec('INSERT INTO code_profiles(digest,ciphertext,expires) VALUES(?,?,?)', digest, encryptedProfile, expires);
+    });
+  }
+
+  clearExpiredProfiles(now) {
+    this.sql.exec('DELETE FROM code_profiles WHERE expires<=?', now);
   }
 
   consumeCode({ digest, client, redirect, challenge, now }) {
@@ -101,9 +109,13 @@ export class AuthState {
     return this.storage.transactionSync(() => {
       const rows = this.sql.exec('UPDATE codes SET consumed=1 WHERE digest=? AND client=? AND redirect=? AND challenge=? AND consumed=0 AND expires>? RETURNING subject,account_id', codeDigest, client, redirect, challenge, now).toArray();
       if (rows.length !== 1) return false;
+      const profile = this.sql.exec('DELETE FROM code_profiles WHERE digest=? AND expires>? RETURNING ciphertext', codeDigest, now).toArray()[0];
+      this.sql.exec('DELETE FROM code_profiles WHERE digest=?', codeDigest);
       this.sql.exec('INSERT INTO sessions(id,client,subject,account_id,expires) VALUES(?,?,?,?,?)', id, client, rows[0].subject, rows[0].account_id, expires);
       this.sql.exec('INSERT INTO refresh_tokens(digest,session_id) VALUES(?,?)', refreshDigest, id);
-      return { subject: rows[0].subject, accountId: rows[0].account_id };
+      const result = { subject: rows[0].subject, accountId: rows[0].account_id };
+      if (profile) result.encryptedProfile = profile.ciphertext;
+      return result;
     });
   }
 

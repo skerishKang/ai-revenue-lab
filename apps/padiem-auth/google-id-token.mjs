@@ -1,3 +1,5 @@
+import { verifiedProfile } from './profile-claims.mjs';
+
 const decoder = new TextDecoder();
 const encoder = new TextEncoder();
 const validPart = /^[A-Za-z0-9_-]+$/;
@@ -10,7 +12,7 @@ function decode(part) {
 
 // jwks must come from the fixed Google JWKS endpoint, never from token headers.
 // The caller must consume and check the login state and nonce before trusting this result.
-export async function verifyGoogleIdToken({ token, jwks, clientId, nonce, now }) {
+export async function verifyGoogleIdToken({ token, jwks, clientId, nonce, now, profile = false }) {
   if (typeof token !== 'string' || !clientId || !nonce || !Number.isSafeInteger(now)) throw new Error('invalid token arguments');
   const parts = token.split('.');
   if (parts.length !== 3) throw new Error('invalid token');
@@ -29,5 +31,6 @@ export async function verifyGoogleIdToken({ token, jwks, clientId, nonce, now })
   if (!Number.isSafeInteger(claims.iat) || claims.iat > now) throw new Error('invalid token issued time');
   if (claims.nonce !== nonce) throw new Error('invalid token nonce');
   if (typeof claims.sub !== 'string' || !claims.sub) throw new Error('invalid token subject');
-  return { sub: claims.sub };
+  if (!profile) return { sub: claims.sub };
+  return { sub: claims.sub, profile: verifiedProfile(claims, ['email', 'email_verified', 'name', 'picture']) };
 }
