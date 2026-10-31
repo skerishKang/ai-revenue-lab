@@ -38,7 +38,7 @@ ISSUE=#5115 (COM2 이전 추적)
 | `docs/architecture/COM2_CHAT_CPYTHON_STAGE2_20261029.md` | CPython 단일 프로세스 기동 검증(가입·로그인·대화·mock 채팅), D1→SQLite facade, R2 디스크 어댑터, 병행 비교 계획 §8, D1 이전 도구 §9 | 2026-10-29 | **손봄** — §9가 001–077 기준. §8 비교 시나리오는 S4(PC 읽기) 전제가 broker 미개방. `app/local_cron.py`가 `PADIEM_LOCAL_DEV=1`을 요구해 컴2 호스트 모드(`PADIEM_CHAT_CPYTHON_HOST=1`)와 **동시 사용 불가** — 크론 이전의 실제 차단 항목 |
 | `docs/architecture/COM2_CHAT_SERVICE_BINDINGS_20261029.md` | 서비스 바인딩 8종 대체표, proof 계약(v1), Google OAuth 병행 호스트 절차, WSS·cron 원인 | 2026-10-29 | **손봄** — 그 뒤 파일 레인(HTTP 터널 + 티켓 시크릿)과 큐(HTTPS origin + 서비스 시크릿)가 실제로 붙어 대체표가 8종→10종이 됐다. B14는 `B14_UPSTREAM_MODE=https`로 이미 닫혔다 |
 | `docs/architecture/COM2_CONTROL_PLANE_RPC_INGRESS_20261029.md` | identity/google-state 대상 `POST /internal/rpc/<method>` + v1 proof 입구 설계, allowlist 9+1, broker는 Stage 2-C로 이연 | 2026-10-29 | **그대로** — 대상 입구는 구현돼 있고 기본 꺼짐 상태다. 배포·비밀 배치가 남은 실행 항목 |
-| `docs/architecture/COM2_BROKER_STAGE2C_DESIGN_20261029.md` | broker/device 레인 이전 설계: 별도 `padiem-broker`, SQLite, 단일 프로세스 잠금, pepper 분리, Stage A/B/C, 차동 테스트 | 2026-10-29 | **그대로** — 설계는 유효. 구현 0건 |
+| `docs/architecture/COM2_BROKER_STAGE2C_DESIGN_20261029.md` | broker Stage 2-C design | 2026-10-29 | Valid design; #6162 already implements broker service and state. See BROKER_GAP_TABLE_20261031.md for remaining gaps. |
 | `docs/architecture/COM2_MIGRATION_INVENTORY_20261025.md` | Worker 22개·워크플로 235개 전수 정적 목록, 서비스·D1·R2·KV·DO·Secrets Store 이름, "인증만 Cloudflare" 분류 | 2026-10-25 | **손봄** — 기준 main `ac24435`. 이후 큐·파일 레인·padiem-auth·스테이징 Worker가 추가돼 목록이 부분적으로 낡았다. 인증 분류는 10-31 결정(신원기관 이전, 로그인은 padiem-auth)으로 갱신 필요 |
 | `docs/operations/CHAT_COM2_FRONT_RUNBOOK.md` · `CHAT_COM2_RUNBOOK.md` · `deploy/host-com2/chat/` | 앞단 구성, 설치(비기동)·health·백업·터널 꾸러미, systemd 유닛 5종, `check_config.py` | 2026-10-29 | **손봄** — 설치 꾸러미는 재사용 가능. `local_cron.py` 게이트 결함(위), 로그인 경로가 padiem-auth로 바뀐 점, 마이그레이션 079 반영 필요 |
 | `docs/architecture/FILE_LANE_COM2_MIGRATION_20261026.md` · `docs/architecture/BINARY_ATTACHMENT_VIA_COM2_FILE_LANE_20261030.md` | 파일 레인 이전 설계와 Chat 연결(티켓·텍스트 읽기) | 2026-10-30 | **그대로** — 이미 가동. Chat 이전 시 `PADIEM_CHAT_FILE_LANE_ORIGIN`·티켓 시크릿을 com2 env로 옮기는 항목만 추가 |
@@ -63,7 +63,7 @@ ISSUE=#5115 (COM2 이전 추적)
 ### 3.1 broker RPC (PC 기기 세션·등록·읽기)
 
 - **무엇**: `padiem-local-agent-broker-state` DO의 device HTTP·enrollment·session·read·command material RPC 30여 개를 컴2 단일 프로세스 + SQLite로 옮기는 Stage 2-C.
-- **지금까지**: 설계 확정(별도 `padiem-broker`, `127.0.0.1:8799`, SQLite WAL, `BEGIN IMMEDIATE` CAS, pepper 0600 분리 보관, Stage A 100% 읽기 그림자 → Stage B 05:00–06:00 창). 큐가 흡수하는 표(dispatch·pairing·presence)는 이미 컴2 정본. **구현 코드 0건**(`apps/padiem-broker/`는 systemd 꾸러미·health만 있고 상태 레인 없음).
+- **Correction**: #6162 already implements broker service, SQLite state, session, material and some differential tests. Queue-owned tables remain separate. See BROKER_GAP_TABLE_20261031.md for evidence and open gaps.
 - **남은 작업량**: ① 서비스 골격 + RPC 봉투 ② 상태 표·마이그레이션 ③ 세션·자격증명 해시 검증기 이전 ④ material purge ⑤ CAS 경쟁 테스트 ⑥ 읽기 그림자 러너 ⑦ Stage B 전환·원복 리허설. **PR 3~4개 분량, 가장 큰 레인**.
 
 ### 3.2 WebSocket (커넥터 게이트웨이)
@@ -147,6 +147,6 @@ ISSUE=#5115 (COM2 이전 추적)
 ## 8. 이 문서가 주장하지 않는 것
 
 - 어떤 설치·기동·전환·배포도 수행하지 않았다. 리허설 수치(170.89초, 80표 3,308행, 불일치 0)는 **10-29 초안의 기록**이며 현재 스키마·현재 데이터로 재측정한 값이 아니다.
-- broker·WSS·동결 증명의 완료를 주장하지 않는다. 셋 다 구현 0건이다.
+- Broker, WSS and freeze proof are not claimed complete. Broker has existing code; its outstanding evidence is in BROKER_GAP_TABLE_20261031.md.
 - Cloudflare 운영 계정의 실측(플랜·사용량·서빙 버전)을 새로 조회하지 않았다.
 - 모델·공급자 선택은 이 문서가 정하지 않는다(`MODEL_CHANGE_OWNER_APPROVAL_POLICY`).
