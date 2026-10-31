@@ -86,7 +86,7 @@ def test_pc_offer_first_frame_production_and_com2_match(monkeypatch, tmp_path):
             async def send(self, value):
                 await self.actor.message(value, owner_do=SimpleNamespace())
             def __aiter__(self): return self
-            async def __anext__(self): return await self.queue.get()
+            async def __anext__(self): return await asyncio.wait_for(self.queue.get(), timeout=5)
         monkeypatch.setattr(relay, "_upstream", lambda secret: Bridge())
         binding = Broker()
         binding._secret = SECRET
