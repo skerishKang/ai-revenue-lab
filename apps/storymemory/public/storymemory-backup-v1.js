@@ -38,11 +38,19 @@
   function restore(storage, text) {
     const entries = parse(text);
     const previous = entries.map(([key]) => [key,storage.getItem(key)]);
-    try { for (const [key,value] of entries) storage.setItem(key,value); }
+    const written = [];
+    try { for (const [key,value] of entries) { storage.setItem(key,value); written.push(key); } }
     catch (error) {
-      for (const [key,value] of previous) {
-        try { if (value === null) storage.removeItem(key); else storage.setItem(key,value); } catch (_) {}
+      const changed = new Set(written);
+      let rollbackFailed = false;
+      // Release space used by all new values before restoring the previous ones.
+      for (const [key] of previous) if (changed.has(key)) {
+        try { storage.removeItem(key); } catch (_) { rollbackFailed = true; }
       }
+      for (const [key,value] of previous) if (changed.has(key) && value !== null) {
+        try { storage.setItem(key,value); } catch (_) { rollbackFailed = true; }
+      }
+      if (rollbackFailed) throw new Error('backup_rollback_failed', {cause:error});
       throw error;
     }
   }
