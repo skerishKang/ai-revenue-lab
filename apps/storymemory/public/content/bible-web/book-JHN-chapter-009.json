@@ -1,0 +1,1325 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JHN:chapter:009",
+  "unit_ordinal": 1006,
+  "unit_label": "JHN 9",
+  "book_code": "JHN",
+  "chapter_number": 9,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JHN:9:1",
+      "sequence": 26441,
+      "chapter_label": "JHN 9",
+      "verse_label": "1",
+      "locator": {
+        "book": "JHN",
+        "chapter": 9,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 9,
+          "verse": 1
+        }
+      ],
+      "en": "As he passed by, he saw a man blind from birth.",
+      "ko": "예수께서 길 가실 때에 날 때부터 소경된 사람을 보신지라",
+      "source_text_hash": "6723d921a96b237ace4a57f9b35653a0d116984353838e11ff256c37d25a48db",
+      "translation_text_hash": "5c1d378b246368835e0b0fbaaa927dcbb13ca8713da92342eea2108a841ec129",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 길 가실 때에 날 때부터 소경된 사람을 보신지라"
+      ],
+      "raw_text_hashes": [
+        "5c1d378b246368835e0b0fbaaa927dcbb13ca8713da92342eea2108a841ec129"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:9:2",
+      "sequence": 26442,
+      "chapter_label": "JHN 9",
+      "verse_label": "2",
+      "locator": {
+        "book": "JHN",
+        "chapter": 9,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 9,
+          "verse": 2
+        }
+      ],
+      "en": "His disciples asked him, “Rabbi, who sinned, this man or his parents, that he was born blind?”",
+      "ko": "제자들이 물어 가로되 랍비여 이 사람이 소경으로 난 것이 뉘 죄로 인함이오니이까 자기오니이까 그 부모오니이까",
+      "source_text_hash": "b3a215ec896a6e8855e1be943fb45ad5e4a9397719a27f24a5b42604d9b2b050",
+      "translation_text_hash": "8ad697a7ccbf0c8bfa50fe8a3f925cbe40b029cae0f8912a8ecf48d22560e01f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제자들이 물어 가로되 랍비여 이 사람이 소경으로 난 것이 뉘 죄로 인함이오니이까 자기오니이까 그 부모오니이까"
+      ],
+      "raw_text_hashes": [
+        "8ad697a7ccbf0c8bfa50fe8a3f925cbe40b029cae0f8912a8ecf48d22560e01f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:9:3",
+      "sequence": 26443,
+      "chapter_label": "JHN 9",
+      "verse_label": "3",
+      "locator": {
+        "book": "JHN",
+        "chapter": 9,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 9,
+          "verse": 3
+        }
+      ],
+      "en": "Jesus answered, “This man didn’t sin, nor did his parents, but that the works of God might be revealed in him.",
+      "ko": "예수께서 대답하시되 이 사람이나 그 부모가 죄를 범한 것이 아니라 그에게서 하나님의 하시는 일을 나타내고자 하심이니라",
+      "source_text_hash": "765064eb6f368482ccc5776b45f87d43755b1461292dfa8fb4fb8ffa8fbd96a3",
+      "translation_text_hash": "bb03571d96964aea989d06e9732d8d2a61d4fecf2be96ec96e6e1e9f85283fbe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 대답하시되 이 사람이나 그 부모가 죄를 범한 것이 아니라 그에게서 하나님의 하시는 일을 나타내고자 하심이니라"
+      ],
+      "raw_text_hashes": [
+        "bb03571d96964aea989d06e9732d8d2a61d4fecf2be96ec96e6e1e9f85283fbe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:9:4",
+      "sequence": 26444,
+      "chapter_label": "JHN 9",
+      "verse_label": "4",
+      "locator": {
+        "book": "JHN",
+        "chapter": 9,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 9,
+          "verse": 4
+        }
+      ],
+      "en": "I must work the works of him who sent me while it is day. The night is coming, when no one can work.",
+      "ko": "때가 아직 낮이매 나를 보내신 이의 일을 우리가 하여야 하리라 밤이 오리니 그때는 아무도 일할 수 없느니라",
+      "source_text_hash": "e847ddc54c57a0c39b0bff036f9ef54bdb23800aa87dd54b616af7e7a2704ad7",
+      "translation_text_hash": "caea9cdc26c0b2428e99861691b74d8800a1719bf994bacff53ae384b7113ac2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "때가 아직 낮이매 나를 보내신 이의 일을 우리가 하여야 하리라 밤이 오리니 그때는 아무도 일할 수 없느니라"
+      ],
+      "raw_text_hashes": [
+        "caea9cdc26c0b2428e99861691b74d8800a1719bf994bacff53ae384b7113ac2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:9:5",
+      "sequence": 26445,
+      "chapter_label": "JHN 9",
+      "verse_label": "5",
+      "locator": {
+        "book": "JHN",
+        "chapter": 9,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 9,
+          "verse": 5
+        }
+      ],
+      "en": "While I am in the world, I am the light of the world.”",
+      "ko": "내가 세상에 있는 동안에는 세상의 빛이로라",
+      "source_text_hash": "136f0c2eed8e159071d9f8073ffd6c58d24d91c374838b134723f2173ea65a18",
+      "translation_text_hash": "253233d20ab10b3904e3b58cd2bc1fc6dc15b79838ff5d05a9ba395dd3b4a3cc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 세상에 있는 동안에는 세상의 빛이로라"
+      ],
+      "raw_text_hashes": [
+        "253233d20ab10b3904e3b58cd2bc1fc6dc15b79838ff5d05a9ba395dd3b4a3cc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:9:6",
+      "sequence": 26446,
+      "chapter_label": "JHN 9",
+      "verse_label": "6",
+      "locator": {
+        "book": "JHN",
+        "chapter": 9,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 9,
+          "verse": 6
+        }
+      ],
+      "en": "When he had said this, he spat on the ground, made mud with the saliva, anointed the blind man’s eyes with the mud,",
+      "ko": "이 말씀을 하시고 땅에 침을 뱉아 진흙을 이겨 그의 눈에 바르시고",
+      "source_text_hash": "052795d0a9bc7688cb8ef787fe6ddb28d6ba978904a7f7cd9462e0c86bf0baa0",
+      "translation_text_hash": "a155001b3f3a44599ec3b0b99293af261dfda9e9fb4b15bdf800a8e61f389502",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 말씀을 하시고 땅에 침을 뱉아 진흙을 이겨 그의 눈에 바르시고"
+      ],
+      "raw_text_hashes": [
+        "a155001b3f3a44599ec3b0b99293af261dfda9e9fb4b15bdf800a8e61f389502"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:9:7",
+      "sequence": 26447,
+      "chapter_label": "JHN 9",
+      "verse_label": "7",
+      "locator": {
+        "book": "JHN",
+        "chapter": 9,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 9,
+          "verse": 7
+        }
+      ],
+      "en": "and said to him, “Go, wash in the pool of Siloam”(which means “Sent”). So he went away, washed, and came back seeing.",
+      "ko": "이르시되 실로암 못에 가서 씻으라 하시니 (실로암은 번역하면 보냄을 받았다는 뜻이라) 이에 가서 씻고 밝은 눈으로 왔더라",
+      "source_text_hash": "8449571c8948b5064bd8d793e87f29a2ddc652728387d36213f34041fd5a8652",
+      "translation_text_hash": "8da351f13c72075786bd7a9e4fee86b57fdaf477994c72885843a35657e4b0f1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이르시되 실로암 못에 가서 씻으라 하시니 (실로암은 번역하면 보냄을 받았다는 뜻이라) 이에 가서 씻고 밝은 눈으로 왔더라"
+      ],
+      "raw_text_hashes": [
+        "8da351f13c72075786bd7a9e4fee86b57fdaf477994c72885843a35657e4b0f1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:9:8",
+      "sequence": 26448,
+      "chapter_label": "JHN 9",
+      "verse_label": "8",
+      "locator": {
+        "book": "JHN",
+        "chapter": 9,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 9,
+          "verse": 8
+        }
+      ],
+      "en": "Therefore the neighbors and those who saw that he was blind before said, “Isn’t this he who sat and begged?”",
+      "ko": "이웃 사람들과 및 전에 저가 걸인인 것을 보았던 사람들이 가로되 이는 앉아서 구걸하던 자가 아니냐",
+      "source_text_hash": "8371a3198e982a28280227aeb299b811136e923bbb52599ef2d6e3e5eb8ecf13",
+      "translation_text_hash": "97fedbaa6f0b7226f7ba46c2791fddd37b47620dfebb8fcf93e69a07cbe0bb13",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이웃 사람들과 및 전에 저가 걸인인 것을 보았던 사람들이 가로되 이는 앉아서 구걸하던 자가 아니냐"
+      ],
+      "raw_text_hashes": [
+        "97fedbaa6f0b7226f7ba46c2791fddd37b47620dfebb8fcf93e69a07cbe0bb13"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:9:9",
+      "sequence": 26449,
+      "chapter_label": "JHN 9",
+      "verse_label": "9",
+      "locator": {
+        "book": "JHN",
+        "chapter": 9,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 9,
+          "verse": 9
+        }
+      ],
+      "en": "Others were saying, “It is he.” Still others were saying, “He looks like him.” He said, “I am he.”",
+      "ko": "혹은 그 사람이라 하며 혹은 아니라 그와 비슷하다 하거늘 제 말은 내가 그로라 하니",
+      "source_text_hash": "bcab68e3686cd640baeefde2dff1ea1fa7d0cc5d87e7980548180f017bcdec45",
+      "translation_text_hash": "12dab7997393096bfe0435878b5725124eb086ad6394b26f17dde449ce6bd9f3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "혹은 그 사람이라 하며 혹은 아니라 그와 비슷하다 하거늘 제 말은 내가 그로라 하니"
+      ],
+      "raw_text_hashes": [
+        "12dab7997393096bfe0435878b5725124eb086ad6394b26f17dde449ce6bd9f3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:9:10",
+      "sequence": 26450,
+      "chapter_label": "JHN 9",
+      "verse_label": "10",
+      "locator": {
+        "book": "JHN",
+        "chapter": 9,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 9,
+          "verse": 10
+        }
+      ],
+      "en": "They therefore were asking him, “How were your eyes opened?”",
+      "ko": "저희가 묻되 그러면 네 눈이 어떻게 떠졌느냐",
+      "source_text_hash": "2dc5bd4dcfc2ef92c48e86a7d57ff31fab5065efdb54f2cc41dbddbf5da82cf0",
+      "translation_text_hash": "95f570563bbef36d679a70ac4e81582e6c0213e797429374e8bc28c0efbfb2a5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 묻되 그러면 네 눈이 어떻게 떠졌느냐"
+      ],
+      "raw_text_hashes": [
+        "95f570563bbef36d679a70ac4e81582e6c0213e797429374e8bc28c0efbfb2a5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:9:11",
+      "sequence": 26451,
+      "chapter_label": "JHN 9",
+      "verse_label": "11",
+      "locator": {
+        "book": "JHN",
+        "chapter": 9,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 9,
+          "verse": 11
+        }
+      ],
+      "en": "He answered, “A man called Jesus made mud, anointed my eyes, and said to me, ‘Go to the pool of Siloam and wash.’So I went away and washed, and I received sight.”",
+      "ko": "대답하되 예수라 하는 그 사람이 진흙을 이겨 내 눈에 바르고 나더러 실로암에 가서 씻으라 하기에 가서 씻었더니 보게 되었노라",
+      "source_text_hash": "8a08a04747b2a9ddefa638aa6b4aea4970a5c2d9b97e6b821db0bdc46710604e",
+      "translation_text_hash": "77ac419b521c2d94e92412ef33c000c8869eb83fefcd73d3c01fc769cdd2b9b3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대답하되 예수라 하는 그 사람이 진흙을 이겨 내 눈에 바르고 나더러 실로암에 가서 씻으라 하기에 가서 씻었더니 보게 되었노라"
+      ],
+      "raw_text_hashes": [
+        "77ac419b521c2d94e92412ef33c000c8869eb83fefcd73d3c01fc769cdd2b9b3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:9:12",
+      "sequence": 26452,
+      "chapter_label": "JHN 9",
+      "verse_label": "12",
+      "locator": {
+        "book": "JHN",
+        "chapter": 9,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 9,
+          "verse": 12
+        }
+      ],
+      "en": "Then they asked him, “Where is he?” He said, “I don’t know.”",
+      "ko": "저희가 가로되 그가 어디 있느냐 가로되 알지 못하노라 하니라",
+      "source_text_hash": "84e141119ec0bd6124c14d8b99553d0f5cd65e6dd2a3b7474ec6d5b43441d623",
+      "translation_text_hash": "04da74c812a8be6cab2b26481b15bea1b976761e065dffeef2012a6cc33f53bf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 가로되 그가 어디 있느냐 가로되 알지 못하노라 하니라"
+      ],
+      "raw_text_hashes": [
+        "04da74c812a8be6cab2b26481b15bea1b976761e065dffeef2012a6cc33f53bf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:9:13",
+      "sequence": 26453,
+      "chapter_label": "JHN 9",
+      "verse_label": "13",
+      "locator": {
+        "book": "JHN",
+        "chapter": 9,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 9,
+          "verse": 13
+        }
+      ],
+      "en": "They brought him who had been blind to the Pharisees.",
+      "ko": "저희가 전에 소경 되었던 사람을 데리고 바리새인들에게 갔더라",
+      "source_text_hash": "38d10edb11c4ddbbe79a09a8df76d015bacb4d27552e9e0e3520e9b442799cce",
+      "translation_text_hash": "b40bb82f2d2bfd6d440eddd50022e062996aa87aafdb7f6fc306ca01b6a6aadd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 전에 소경 되었던 사람을 데리고 바리새인들에게 갔더라"
+      ],
+      "raw_text_hashes": [
+        "b40bb82f2d2bfd6d440eddd50022e062996aa87aafdb7f6fc306ca01b6a6aadd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:9:14",
+      "sequence": 26454,
+      "chapter_label": "JHN 9",
+      "verse_label": "14",
+      "locator": {
+        "book": "JHN",
+        "chapter": 9,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 9,
+          "verse": 14
+        }
+      ],
+      "en": "It was a Sabbath when Jesus made the mud and opened his eyes.",
+      "ko": "예수께서 진흙을 이겨 눈을 뜨게 하신 날은 안식일이라",
+      "source_text_hash": "9ef4ce00bf14153874e83b51cb1732eea554d6a4ebcfba1a7d1c9fb47f414e32",
+      "translation_text_hash": "c61a554b0a70e819d5ab8c969d74d4953b53c7bb234793a63cae1a99afa0a3ec",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 진흙을 이겨 눈을 뜨게 하신 날은 안식일이라"
+      ],
+      "raw_text_hashes": [
+        "c61a554b0a70e819d5ab8c969d74d4953b53c7bb234793a63cae1a99afa0a3ec"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:9:15",
+      "sequence": 26455,
+      "chapter_label": "JHN 9",
+      "verse_label": "15",
+      "locator": {
+        "book": "JHN",
+        "chapter": 9,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 9,
+          "verse": 15
+        }
+      ],
+      "en": "Again therefore the Pharisees also asked him how he received his sight. He said to them, “He put mud on my eyes, I washed, and I see.”",
+      "ko": "그러므로 바리새인들도 그 어떻게 보게 된 것을 물으니 가로되 그 사람이 진흙을 내 눈에 바르매 내가 씻고 보나이다 하니",
+      "source_text_hash": "ee05bc664de654e5c834d26b59569ac79217508dc3bc8319e69a6305269c83eb",
+      "translation_text_hash": "c758bc3ec06c8cd23e340ca69a707f46c3fa501ac051c7f12e3a38d49732858d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 바리새인들도 그 어떻게 보게 된 것을 물으니 가로되 그 사람이 진흙을 내 눈에 바르매 내가 씻고 보나이다 하니"
+      ],
+      "raw_text_hashes": [
+        "c758bc3ec06c8cd23e340ca69a707f46c3fa501ac051c7f12e3a38d49732858d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:9:16",
+      "sequence": 26456,
+      "chapter_label": "JHN 9",
+      "verse_label": "16",
+      "locator": {
+        "book": "JHN",
+        "chapter": 9,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 9,
+          "verse": 16
+        }
+      ],
+      "en": "Some therefore of the Pharisees said, “This man is not from God, because he doesn’t keep the Sabbath.” Others said, “How can a man who is a sinner do such signs?” So there was division among them.",
+      "ko": "바리새인 중에 혹은 말하되 이 사람이 안식일을 지키지 아니하니 하나님께로서 온 자가 아니라 하며 혹은 말하되 죄인으로서 어떻게 이러한 표적을 행하겠느냐 하여 피차 쟁론이 되었더니",
+      "source_text_hash": "c023ce58ac3f6510714b360e6a578405534c903246c0b8c5caf7327c5b1e5c40",
+      "translation_text_hash": "f7a7a37e9b869e11cab20dfa8c766a0fa2613f84f816b0a5e8020d25fe58e0ff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바리새인 중에 혹은 말하되 이 사람이 안식일을 지키지 아니하니 하나님께로서 온 자가 아니라 하며 혹은 말하되 죄인으로서 어떻게 이러한 표적을 행하겠느냐 하여 피차 쟁론이 되었더니"
+      ],
+      "raw_text_hashes": [
+        "f7a7a37e9b869e11cab20dfa8c766a0fa2613f84f816b0a5e8020d25fe58e0ff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:9:17",
+      "sequence": 26457,
+      "chapter_label": "JHN 9",
+      "verse_label": "17",
+      "locator": {
+        "book": "JHN",
+        "chapter": 9,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 9,
+          "verse": 17
+        }
+      ],
+      "en": "Therefore they asked the blind man again, “What do you say about him, because he opened your eyes?” He said, “He is a prophet.”",
+      "ko": "이에 소경 되었던 자에게 다시 묻되 그 사람이 네 눈을 뜨게 하였으니 너는 그를 어떠한 사람이라 하느냐 대답하되 선지자니이다 한대",
+      "source_text_hash": "acd33e404fb859e882e95afa649d98b62ac0c27c95215e08beca0239f03459fb",
+      "translation_text_hash": "5491285efe9eb2c66f83d3c0dcc90b550bcc4c30a88c697379e57f7cebc708fe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 소경 되었던 자에게 다시 묻되 그 사람이 네 눈을 뜨게 하였으니 너는 그를 어떠한 사람이라 하느냐 대답하되 선지자니이다 한대"
+      ],
+      "raw_text_hashes": [
+        "5491285efe9eb2c66f83d3c0dcc90b550bcc4c30a88c697379e57f7cebc708fe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:9:18",
+      "sequence": 26458,
+      "chapter_label": "JHN 9",
+      "verse_label": "18",
+      "locator": {
+        "book": "JHN",
+        "chapter": 9,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 9,
+          "verse": 18
+        }
+      ],
+      "en": "The Jews therefore didn’t believe concerning him, that he had been blind and had received his sight, until they called the parents of him who had received his sight,",
+      "ko": "유대인들이 저가 소경으로 있다가 보게 된 것을 믿지 아니하고 그 부모를 불러 묻되",
+      "source_text_hash": "a6bff081b5f10c1c8aa726ec3b23eb5cc15b6a2dbe639fc98bfaa053c910c4c2",
+      "translation_text_hash": "ae9ffad94254090a6eeb6c90e4b7330b565cfa02f9dbf36c44fdfa0b22c4380a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유대인들이 저가 소경으로 있다가 보게 된 것을 믿지 아니하고 그 부모를 불러 묻되"
+      ],
+      "raw_text_hashes": [
+        "ae9ffad94254090a6eeb6c90e4b7330b565cfa02f9dbf36c44fdfa0b22c4380a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:9:19",
+      "sequence": 26459,
+      "chapter_label": "JHN 9",
+      "verse_label": "19",
+      "locator": {
+        "book": "JHN",
+        "chapter": 9,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 9,
+          "verse": 19
+        }
+      ],
+      "en": "and asked them, “Is this your son, whom you say was born blind? How then does he now see?”",
+      "ko": "이는 너희 말에 소경으로 났다 하는 너희 아들이냐 그러면 지금은 어떻게 되어 보느냐",
+      "source_text_hash": "3dc96bffa4945952ea40d231197a047e5be75d788e5c5a61de64863d3e6a3d08",
+      "translation_text_hash": "ac2b484c392955977563465857b59914ec0eab490c0744888e8174e1b77228b1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 너희 말에 소경으로 났다 하는 너희 아들이냐 그러면 지금은 어떻게 되어 보느냐"
+      ],
+      "raw_text_hashes": [
+        "ac2b484c392955977563465857b59914ec0eab490c0744888e8174e1b77228b1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:9:20",
+      "sequence": 26460,
+      "chapter_label": "JHN 9",
+      "verse_label": "20",
+      "locator": {
+        "book": "JHN",
+        "chapter": 9,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 9,
+          "verse": 20
+        }
+      ],
+      "en": "His parents answered them, “We know that this is our son, and that he was born blind;",
+      "ko": "그 부모가 대답하여 가로되 이가 우리 아들인 것과 소경으로 난 것을 아나이다",
+      "source_text_hash": "61ebad3c1102a4ed05d8776ec38cc628883f0f306f22d1d1e0183aba0e1ba0ef",
+      "translation_text_hash": "261987d0ce7987e39a519e3654494c0b625d6d1a674eb4a5da0e23c2b61d888a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 부모가 대답하여 가로되 이가 우리 아들인 것과 소경으로 난 것을 아나이다"
+      ],
+      "raw_text_hashes": [
+        "261987d0ce7987e39a519e3654494c0b625d6d1a674eb4a5da0e23c2b61d888a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:9:21",
+      "sequence": 26461,
+      "chapter_label": "JHN 9",
+      "verse_label": "21",
+      "locator": {
+        "book": "JHN",
+        "chapter": 9,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 9,
+          "verse": 21
+        }
+      ],
+      "en": "but how he now sees, we don’t know; or who opened his eyes, we don’t know. He is of age. Ask him. He will speak for himself.”",
+      "ko": "그러나 지금 어떻게 되어 보는지 또는 누가 그 눈을 뜨게 하였는지 우리는 알지 못하나이다 저에게 물어 보시오 저가 장성하였으니 자기 일을 말하리이다",
+      "source_text_hash": "dc4e2f8c49f96522333c83e623bed4817eda865abe3c04a77045e9c3ae6c5423",
+      "translation_text_hash": "fc8c1acce0fc402a4df7bb06533da28df41c5633c22fa92c1c962f54d2cbbeb8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 지금 어떻게 되어 보는지 또는 누가 그 눈을 뜨게 하였는지 우리는 알지 못하나이다 저에게 물어 보시오 저가 장성하였으니 자기 일을 말하리이다"
+      ],
+      "raw_text_hashes": [
+        "fc8c1acce0fc402a4df7bb06533da28df41c5633c22fa92c1c962f54d2cbbeb8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:9:22",
+      "sequence": 26462,
+      "chapter_label": "JHN 9",
+      "verse_label": "22",
+      "locator": {
+        "book": "JHN",
+        "chapter": 9,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 9,
+          "verse": 22
+        }
+      ],
+      "en": "His parents said these things because they feared the Jews; for the Jews had already agreed that if any man would confess him as Christ, he would be put out of the synagogue.",
+      "ko": "그 부모가 이렇게 말한 것은 이미 유대인들이 누구든지 예수를 그리스도로 시인하는 자는 출교하기로 결의하였으므로 저희를 무서워함이러라",
+      "source_text_hash": "0a40e35bf05d29a8be3125cc8676a4d973f4467c1966b2bf2e7a351d09aa5939",
+      "translation_text_hash": "8cf56cf0dae1777b6c26493c5c299c12f2e5fe8874fb0576b2c683cfb2df68f9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 부모가 이렇게 말한 것은 이미 유대인들이 누구든지 예수를 그리스도로 시인하는 자는 출교하기로 결의하였으므로 저희를 무서워함이러라"
+      ],
+      "raw_text_hashes": [
+        "8cf56cf0dae1777b6c26493c5c299c12f2e5fe8874fb0576b2c683cfb2df68f9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:9:23",
+      "sequence": 26463,
+      "chapter_label": "JHN 9",
+      "verse_label": "23",
+      "locator": {
+        "book": "JHN",
+        "chapter": 9,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 9,
+          "verse": 23
+        }
+      ],
+      "en": "Therefore his parents said, “He is of age. Ask him.”",
+      "ko": "이러므로 그 부모가 말하기를 저가 장성하였으니 저에게 물어 보시오 하였더라",
+      "source_text_hash": "28a47adb2e12cc4a6fac6a338cf0557e9cb680875a543f283597a35b96cb991e",
+      "translation_text_hash": "37d4d5dbb21a9bd6e3501d7a165fafd0cc2d2a874e1f3fc4e49fd25e8f969bad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러므로 그 부모가 말하기를 저가 장성하였으니 저에게 물어 보시오 하였더라"
+      ],
+      "raw_text_hashes": [
+        "37d4d5dbb21a9bd6e3501d7a165fafd0cc2d2a874e1f3fc4e49fd25e8f969bad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:9:24",
+      "sequence": 26464,
+      "chapter_label": "JHN 9",
+      "verse_label": "24",
+      "locator": {
+        "book": "JHN",
+        "chapter": 9,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 9,
+          "verse": 24
+        }
+      ],
+      "en": "So they called the man who was blind a second time, and said to him, “Give glory to God. We know that this man is a sinner.”",
+      "ko": "이에 저희가 소경 되었던 사람을 두번째 불러 이르되 너는 영광을 하나님께 돌리라 우리는 저 사람이 죄인인줄 아노라",
+      "source_text_hash": "48e0407d93e8481f6681017ffe6280654a68ebe0d73aa1bf9f4a630e44632e40",
+      "translation_text_hash": "53f2b1371ab15389142ecb6afd0a93651c121abec984c2c417759279fea54e38",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 저희가 소경 되었던 사람을 두번째 불러 이르되 너는 영광을 하나님께 돌리라 우리는 저 사람이 죄인인줄 아노라"
+      ],
+      "raw_text_hashes": [
+        "53f2b1371ab15389142ecb6afd0a93651c121abec984c2c417759279fea54e38"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:9:25",
+      "sequence": 26465,
+      "chapter_label": "JHN 9",
+      "verse_label": "25",
+      "locator": {
+        "book": "JHN",
+        "chapter": 9,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 9,
+          "verse": 25
+        }
+      ],
+      "en": "He therefore answered, “I don’t know if he is a sinner. One thing I do know: that though I was blind, now I see.”",
+      "ko": "대답하되 그가 죄인인지 내가 알지 못하나 한 가지 아는 것은 내가 소경으로 있다가 지금 보는 그것이니이다",
+      "source_text_hash": "c537e80684dda5234e7bcbc26e3e920552290c77ca10d9ad9d8761638c374a7f",
+      "translation_text_hash": "60f4c34c167b9bfc392a7c83f9a43309758e31b95c4eb034eb974b19bbaef708",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대답하되 그가 죄인인지 내가 알지 못하나 한 가지 아는 것은 내가 소경으로 있다가 지금 보는 그것이니이다"
+      ],
+      "raw_text_hashes": [
+        "60f4c34c167b9bfc392a7c83f9a43309758e31b95c4eb034eb974b19bbaef708"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:9:26",
+      "sequence": 26466,
+      "chapter_label": "JHN 9",
+      "verse_label": "26",
+      "locator": {
+        "book": "JHN",
+        "chapter": 9,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 9,
+          "verse": 26
+        }
+      ],
+      "en": "They said to him again, “What did he do to you? How did he open your eyes?”",
+      "ko": "저희가 가로되 그 사람이 네게 무엇을 하였느냐 어떻게 네 눈을 뜨게 하였느냐",
+      "source_text_hash": "cac1946739213e4ca1b39bbba4d2d2026868820089e58c17623f3da63f4e0db7",
+      "translation_text_hash": "68598e7cba283ee07c93f1a93c57561f1fcb9ac9a16adce3913749f97b2d1563",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 가로되 그 사람이 네게 무엇을 하였느냐 어떻게 네 눈을 뜨게 하였느냐"
+      ],
+      "raw_text_hashes": [
+        "68598e7cba283ee07c93f1a93c57561f1fcb9ac9a16adce3913749f97b2d1563"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:9:27",
+      "sequence": 26467,
+      "chapter_label": "JHN 9",
+      "verse_label": "27",
+      "locator": {
+        "book": "JHN",
+        "chapter": 9,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 9,
+          "verse": 27
+        }
+      ],
+      "en": "He answered them, “I told you already, and you didn’t listen. Why do you want to hear it again? You don’t also want to become his disciples, do you?”",
+      "ko": "대답하되 내가 이미 일렀어도 듣지 아니하고 어찌하여 다시 듣고자 하나이까 당신들도 그 제자가 되려 하나이까",
+      "source_text_hash": "39fe7d93012bc32d1be9e80d6438da8b80c84d13535871a8fcbca9e6d1d56602",
+      "translation_text_hash": "a64d41029c2686dbba63871eb7cbb0f362632fee4366c809770594efc8b6e95b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대답하되 내가 이미 일렀어도 듣지 아니하고 어찌하여 다시 듣고자 하나이까 당신들도 그 제자가 되려 하나이까"
+      ],
+      "raw_text_hashes": [
+        "a64d41029c2686dbba63871eb7cbb0f362632fee4366c809770594efc8b6e95b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:9:28",
+      "sequence": 26468,
+      "chapter_label": "JHN 9",
+      "verse_label": "28",
+      "locator": {
+        "book": "JHN",
+        "chapter": 9,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 9,
+          "verse": 28
+        }
+      ],
+      "en": "They insulted him and said, “You are his disciple, but we are disciples of Moses.",
+      "ko": "저희가 욕하여 가로되 너는 그의 제자나 우리는 모세의 제자라",
+      "source_text_hash": "7413d1e34db34d59ca15fd886614f8c5a0e5cc279728c9a9b9099b71a9d7a966",
+      "translation_text_hash": "2a4889e5a7c2b0f9ec3092662814fb912ebbad7a3f22fdfbe3b6862d56b27792",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 욕하여 가로되 너는 그의 제자나 우리는 모세의 제자라"
+      ],
+      "raw_text_hashes": [
+        "2a4889e5a7c2b0f9ec3092662814fb912ebbad7a3f22fdfbe3b6862d56b27792"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:9:29",
+      "sequence": 26469,
+      "chapter_label": "JHN 9",
+      "verse_label": "29",
+      "locator": {
+        "book": "JHN",
+        "chapter": 9,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 9,
+          "verse": 29
+        }
+      ],
+      "en": "We know that God has spoken to Moses. But as for this man, we don’t know where he comes from.”",
+      "ko": "하나님이 모세에게는 말씀하신 줄을 우리가 알거니와 이 사람은 어디서 왔는지 알지 못하노라",
+      "source_text_hash": "9e951705dcf9a654382a00c9322f253f3461567d48fa0f53dd47bbb7724bfd17",
+      "translation_text_hash": "8cc124e632d731026264c658c9e505235b676bf797d5ef28ed5b0924f8d05655",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 모세에게는 말씀하신 줄을 우리가 알거니와 이 사람은 어디서 왔는지 알지 못하노라"
+      ],
+      "raw_text_hashes": [
+        "8cc124e632d731026264c658c9e505235b676bf797d5ef28ed5b0924f8d05655"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:9:30",
+      "sequence": 26470,
+      "chapter_label": "JHN 9",
+      "verse_label": "30",
+      "locator": {
+        "book": "JHN",
+        "chapter": 9,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 9,
+          "verse": 30
+        }
+      ],
+      "en": "The man answered them, “How amazing! You don’t know where he comes from, yet he opened my eyes.",
+      "ko": "그 사람이 대답하여 가로되 이상하다 이 사람이 내 눈을 뜨게 하였으되 당신들이 그가 어디서 왔는지 알지 못하는도다",
+      "source_text_hash": "649b8eb62f512350917d2ba743576395e68889fab1c87ec7bdb334faf9575d6a",
+      "translation_text_hash": "6fbc58c108f7408b08e863bfff5c857d96a0787d1be1e7c8d7262971f364fa43",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 사람이 대답하여 가로되 이상하다 이 사람이 내 눈을 뜨게 하였으되 당신들이 그가 어디서 왔는지 알지 못하는도다"
+      ],
+      "raw_text_hashes": [
+        "6fbc58c108f7408b08e863bfff5c857d96a0787d1be1e7c8d7262971f364fa43"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:9:31",
+      "sequence": 26471,
+      "chapter_label": "JHN 9",
+      "verse_label": "31",
+      "locator": {
+        "book": "JHN",
+        "chapter": 9,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 9,
+          "verse": 31
+        }
+      ],
+      "en": "We know that God doesn’t listen to sinners, but if anyone is a worshiper of God and does his will, he listens to him.",
+      "ko": "하나님이 죄인을 듣지 아니하시고 경건하여 그의 뜻대로 행하는 자는 들으시는 줄을 우리가 아나이다",
+      "source_text_hash": "2cd6baf128ccb54ef7c1b1212c080d309d09d84d9dc26be50f35de2051d47c35",
+      "translation_text_hash": "c9e35ce0c03bd361dd4b3df5a917c4abd245655d417b261837a445932632d03a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 죄인을 듣지 아니하시고 경건하여 그의 뜻대로 행하는 자는 들으시는 줄을 우리가 아나이다"
+      ],
+      "raw_text_hashes": [
+        "c9e35ce0c03bd361dd4b3df5a917c4abd245655d417b261837a445932632d03a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:9:32",
+      "sequence": 26472,
+      "chapter_label": "JHN 9",
+      "verse_label": "32",
+      "locator": {
+        "book": "JHN",
+        "chapter": 9,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 9,
+          "verse": 32
+        }
+      ],
+      "en": "Since the world began it has never been heard of that anyone opened the eyes of someone born blind.",
+      "ko": "창세 이후로 소경으로난 자의 눈을 뜨게 하였다 함을 듣지 못하였으니",
+      "source_text_hash": "f6490da7ef5f8669e33df7e5239d350f5cd1d724b1ab1658e7f6dacdde006909",
+      "translation_text_hash": "53fbac0bbec568ad5eda413aa3bae55815acb6591660928000d061745367bab3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "창세 이후로 소경으로난 자의 눈을 뜨게 하였다 함을 듣지 못하였으니"
+      ],
+      "raw_text_hashes": [
+        "53fbac0bbec568ad5eda413aa3bae55815acb6591660928000d061745367bab3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:9:33",
+      "sequence": 26473,
+      "chapter_label": "JHN 9",
+      "verse_label": "33",
+      "locator": {
+        "book": "JHN",
+        "chapter": 9,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 9,
+          "verse": 33
+        }
+      ],
+      "en": "If this man were not from God, he could do nothing.”",
+      "ko": "이 사람이 하나님께로부터 오지 아니하였으면 아무 일도 할 수 없으리이다",
+      "source_text_hash": "b6e86c1b50941346c8d02a04ece1e9553399cd052846917c212ecc6da9830e85",
+      "translation_text_hash": "4d506679b9f699a15d69e96dbb46f03e3a12bf65339358cd55ba8cdc4afef22c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 사람이 하나님께로부터 오지 아니하였으면 아무 일도 할 수 없으리이다"
+      ],
+      "raw_text_hashes": [
+        "4d506679b9f699a15d69e96dbb46f03e3a12bf65339358cd55ba8cdc4afef22c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:9:34",
+      "sequence": 26474,
+      "chapter_label": "JHN 9",
+      "verse_label": "34",
+      "locator": {
+        "book": "JHN",
+        "chapter": 9,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 9,
+          "verse": 34
+        }
+      ],
+      "en": "They answered him, “You were altogether born in sins, and do you teach us?” Then they threw him out.",
+      "ko": "저희가 대답하여 가로되 네가 온전히 죄 가운데서 나서 우리를 가르치느냐 하고 이에 쫓아내어 보내니라",
+      "source_text_hash": "0c211f8802bf3c4784b6525425a5b729176198d7757c7fb1dad5f34921093589",
+      "translation_text_hash": "da77c007038693ee0e9f8f1cdc4a78e70a691354f35c17998e4e8cebdc255abe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 대답하여 가로되 네가 온전히 죄 가운데서 나서 우리를 가르치느냐 하고 이에 쫓아내어 보내니라"
+      ],
+      "raw_text_hashes": [
+        "da77c007038693ee0e9f8f1cdc4a78e70a691354f35c17998e4e8cebdc255abe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:9:35",
+      "sequence": 26475,
+      "chapter_label": "JHN 9",
+      "verse_label": "35",
+      "locator": {
+        "book": "JHN",
+        "chapter": 9,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 9,
+          "verse": 35
+        }
+      ],
+      "en": "Jesus heard that they had thrown him out, and finding him, he said, “Do you believe in the Son of God?”",
+      "ko": "예수께서 저희가 그 사람을 쫓아냈다 하는 말을 들으셨더니 그를 만나사 가라사대 네가 인자를 믿느냐",
+      "source_text_hash": "96494f4a186e8a4ca577fb385cf36da645dcb0e5ef1c802a6cc0b195f37fae9e",
+      "translation_text_hash": "c679513212db8e4de0d149dd5ef90a70379f1030dd73db128bd9ec89354a4f76",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 저희가 그 사람을 쫓아냈다 하는 말을 들으셨더니 그를 만나사 가라사대 네가 인자를 믿느냐"
+      ],
+      "raw_text_hashes": [
+        "c679513212db8e4de0d149dd5ef90a70379f1030dd73db128bd9ec89354a4f76"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:9:36",
+      "sequence": 26476,
+      "chapter_label": "JHN 9",
+      "verse_label": "36",
+      "locator": {
+        "book": "JHN",
+        "chapter": 9,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 9,
+          "verse": 36
+        }
+      ],
+      "en": "He answered, “Who is he, Lord, that I may believe in him?”",
+      "ko": "대답하여 가로되 주여 그가 누구시오니이까 내가 믿고자 하나이다",
+      "source_text_hash": "e5a81e732527561e71b455be2216e2c2e1b588c06b87f8f48494c351d4bfd8c6",
+      "translation_text_hash": "f73219857edff78f70bd4583a63f16a8d7806f4f4b5280ae68b328621488f291",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대답하여 가로되 주여 그가 누구시오니이까 내가 믿고자 하나이다"
+      ],
+      "raw_text_hashes": [
+        "f73219857edff78f70bd4583a63f16a8d7806f4f4b5280ae68b328621488f291"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:9:37",
+      "sequence": 26477,
+      "chapter_label": "JHN 9",
+      "verse_label": "37",
+      "locator": {
+        "book": "JHN",
+        "chapter": 9,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 9,
+          "verse": 37
+        }
+      ],
+      "en": "Jesus said to him, “You have both seen him, and it is he who speaks with you.”",
+      "ko": "예수께서 가라사대 네가 그를 보았거니와 지금 너와 말하는 자가 그이니라",
+      "source_text_hash": "a421681443f97a635c2e95a244b0bb069b52e0cc020221ea7c74d006b2f7fc31",
+      "translation_text_hash": "45d960c5d6dd5b20fbcd0ee8b6f24644c82c9e52f74f6b5a65ac7d17bab60d91",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 가라사대 네가 그를 보았거니와 지금 너와 말하는 자가 그이니라"
+      ],
+      "raw_text_hashes": [
+        "45d960c5d6dd5b20fbcd0ee8b6f24644c82c9e52f74f6b5a65ac7d17bab60d91"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:9:38",
+      "sequence": 26478,
+      "chapter_label": "JHN 9",
+      "verse_label": "38",
+      "locator": {
+        "book": "JHN",
+        "chapter": 9,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 9,
+          "verse": 38
+        }
+      ],
+      "en": "He said, “Lord, I believe!” and he worshiped him.",
+      "ko": "가로되 주여 내가 믿나이다 하고 절하는지라",
+      "source_text_hash": "36c739d81d173b5a4c1bfc102a086c6d46dabaff15272b1c11a6a42d3c3d4763",
+      "translation_text_hash": "52aed3ce3f7c01793e6549501ca07cfc3107ba155163407f34467c9ba03e57b2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 주여 내가 믿나이다 하고 절하는지라"
+      ],
+      "raw_text_hashes": [
+        "52aed3ce3f7c01793e6549501ca07cfc3107ba155163407f34467c9ba03e57b2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:9:39",
+      "sequence": 26479,
+      "chapter_label": "JHN 9",
+      "verse_label": "39",
+      "locator": {
+        "book": "JHN",
+        "chapter": 9,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 9,
+          "verse": 39
+        }
+      ],
+      "en": "Jesus said, “I came into this world for judgment, that those who don’t see may see; and that those who see may become blind.”",
+      "ko": "예수께서 가라사대 내가 심판하러 이 세상에 왔으니 보지 못하는 자들은 보게 하고 보는 자들은 소경되게 하려 함이라 하시니",
+      "source_text_hash": "a046af22d04d793c7c21e0ce2085fab10d9fe222b97fb099fd1eb41c68a2e085",
+      "translation_text_hash": "960584448f7ed0579cb25b7f0691008af0ffc5dc9d50ecc37b5a2e1da174e8ef",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 가라사대 내가 심판하러 이 세상에 왔으니 보지 못하는 자들은 보게 하고 보는 자들은 소경되게 하려 함이라 하시니"
+      ],
+      "raw_text_hashes": [
+        "960584448f7ed0579cb25b7f0691008af0ffc5dc9d50ecc37b5a2e1da174e8ef"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:9:40",
+      "sequence": 26480,
+      "chapter_label": "JHN 9",
+      "verse_label": "40",
+      "locator": {
+        "book": "JHN",
+        "chapter": 9,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 9,
+          "verse": 40
+        }
+      ],
+      "en": "Those of the Pharisees who were with him heard these things, and said to him, “Are we also blind?”",
+      "ko": "바리새인 중에 예수와 함께 있던 자들이 이 말씀을 듣고 가로되 우리도 소경인가",
+      "source_text_hash": "33487e34f1c925d254e3ba417431835882f501fac6018a7b22bb13e4fa37ff6d",
+      "translation_text_hash": "9c445ea81d4e2ed076f7c627100edd443bcf1cfd49b522fe726862986bf32114",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바리새인 중에 예수와 함께 있던 자들이 이 말씀을 듣고 가로되 우리도 소경인가"
+      ],
+      "raw_text_hashes": [
+        "9c445ea81d4e2ed076f7c627100edd443bcf1cfd49b522fe726862986bf32114"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:9:41",
+      "sequence": 26481,
+      "chapter_label": "JHN 9",
+      "verse_label": "41",
+      "locator": {
+        "book": "JHN",
+        "chapter": 9,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 9,
+          "verse": 41
+        }
+      ],
+      "en": "Jesus said to them, “If you were blind, you would have no sin; but now you say, ‘We see.’ Therefore your sin remains.",
+      "ko": "예수께서 가라사대 너희가 소경 되었더면 죄가 없으려니와 본다고 하니 너희 죄가 그저 있느니라",
+      "source_text_hash": "73a6a01166a341b60119bdbed1cd51d689ff928d6bf905cad8f0e4573ee9e15f",
+      "translation_text_hash": "14a8f0b5dfaf0a45c0096e2d2935843d069086db72668ca0efadb957b5916267",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 가라사대 너희가 소경 되었더면 죄가 없으려니와 본다고 하니 너희 죄가 그저 있느니라"
+      ],
+      "raw_text_hashes": [
+        "14a8f0b5dfaf0a45c0096e2d2935843d069086db72668ca0efadb957b5916267"
+      ]
+    }
+  ]
+}

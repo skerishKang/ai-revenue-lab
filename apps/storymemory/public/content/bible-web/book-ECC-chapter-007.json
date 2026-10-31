@@ -1,0 +1,941 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ECC:chapter:007",
+  "unit_ordinal": 666,
+  "unit_label": "ECC 7",
+  "book_code": "ECC",
+  "chapter_number": 7,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ECC:7:1",
+      "sequence": 17431,
+      "chapter_label": "ECC 7",
+      "verse_label": "1",
+      "locator": {
+        "book": "ECC",
+        "chapter": 7,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 7,
+          "verse": 1
+        }
+      ],
+      "en": "A good name is better than fine perfume; and the day of death better than the day of one’s birth.",
+      "ko": "아름다운 이름이 보배로운 기름보다 낫고 죽는 날이 출생하는 날보다 나으며",
+      "source_text_hash": "ee0f2121c259612363e0e4051a94fb12fed00510a8524dd91024c1f45fe3daf6",
+      "translation_text_hash": "c8b015f79e70f1efa4af0347a490a83b855819e42afc8b921cf8808523ba8c7a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아름다운 이름이 보배로운 기름보다 낫고 죽는 날이 출생하는 날보다 나으며"
+      ],
+      "raw_text_hashes": [
+        "c8b015f79e70f1efa4af0347a490a83b855819e42afc8b921cf8808523ba8c7a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:7:2",
+      "sequence": 17432,
+      "chapter_label": "ECC 7",
+      "verse_label": "2",
+      "locator": {
+        "book": "ECC",
+        "chapter": 7,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 7,
+          "verse": 2
+        }
+      ],
+      "en": "It is better to go to the house of mourning than to go to the house of feasting; for that is the end of all men, and the living should take this to heart.",
+      "ko": "초상집에 가는 것이 잔치집에 가는 것보다 나으니 모든 사람의 결국이 이와 같이 됨이라 산 자가 이것에 유심하리로다",
+      "source_text_hash": "2b8ec2e04290efc1da27b6d2ddac731e1cfd1285cd84aeefde4d1532350eb0b9",
+      "translation_text_hash": "95f3093e63265c8a8a943179238f7ef2b3d4c6bf4d5b442b798d5e84231f1105",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "초상집에 가는 것이 잔치집에 가는 것보다 나으니 모든 사람의 결국이 이와 같이 됨이라 산 자가 이것에 유심하리로다"
+      ],
+      "raw_text_hashes": [
+        "95f3093e63265c8a8a943179238f7ef2b3d4c6bf4d5b442b798d5e84231f1105"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:7:3",
+      "sequence": 17433,
+      "chapter_label": "ECC 7",
+      "verse_label": "3",
+      "locator": {
+        "book": "ECC",
+        "chapter": 7,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 7,
+          "verse": 3
+        }
+      ],
+      "en": "Sorrow is better than laughter; for by the sadness of the face the heart is made good.",
+      "ko": "슬픔이 웃음보다 나음은 얼굴에 근심함으로 마음이 좋게 됨이니라",
+      "source_text_hash": "0ff929849d0a6a8980e31efa46000b61fcb98a26ae65280978eb71d4bd817401",
+      "translation_text_hash": "532db69f705f53f25dc59f47e823b85fc406b61b433ca8c9a99713c168dbb3dc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "슬픔이 웃음보다 나음은 얼굴에 근심함으로 마음이 좋게 됨이니라"
+      ],
+      "raw_text_hashes": [
+        "532db69f705f53f25dc59f47e823b85fc406b61b433ca8c9a99713c168dbb3dc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:7:4",
+      "sequence": 17434,
+      "chapter_label": "ECC 7",
+      "verse_label": "4",
+      "locator": {
+        "book": "ECC",
+        "chapter": 7,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 7,
+          "verse": 4
+        }
+      ],
+      "en": "The heart of the wise is in the house of mourning; but the heart of fools is in the house of mirth.",
+      "ko": "지혜자의 마음은 초상집에 있으되 우매자의 마음은 연락하는 집에 있느니라",
+      "source_text_hash": "18516a1ac3e1a8c169a6469eea4976908e27b4620bd067b786a9298925b31514",
+      "translation_text_hash": "6e74552328569a72a4014ba11f4ccd3e1fd1f813b99181fae444bb35a64e32ef",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "지혜자의 마음은 초상집에 있으되 우매자의 마음은 연락하는 집에 있느니라"
+      ],
+      "raw_text_hashes": [
+        "6e74552328569a72a4014ba11f4ccd3e1fd1f813b99181fae444bb35a64e32ef"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:7:5",
+      "sequence": 17435,
+      "chapter_label": "ECC 7",
+      "verse_label": "5",
+      "locator": {
+        "book": "ECC",
+        "chapter": 7,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 7,
+          "verse": 5
+        }
+      ],
+      "en": "It is better to hear the rebuke of the wise than for a man to hear the song of fools.",
+      "ko": "사람이 지혜자의 책망을 듣는 것이 우매자의 노래를 듣는 것보다 나으니라",
+      "source_text_hash": "2e12f918096658d73c5346a549ab6b28c3b5eca713e502ade375df59aeaa69e9",
+      "translation_text_hash": "d812f9df853b577fe64aab54521f96c4d28627cd1408e9a41353b0ad43abdd41",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 지혜자의 책망을 듣는 것이 우매자의 노래를 듣는 것보다 나으니라"
+      ],
+      "raw_text_hashes": [
+        "d812f9df853b577fe64aab54521f96c4d28627cd1408e9a41353b0ad43abdd41"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:7:6",
+      "sequence": 17436,
+      "chapter_label": "ECC 7",
+      "verse_label": "6",
+      "locator": {
+        "book": "ECC",
+        "chapter": 7,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 7,
+          "verse": 6
+        }
+      ],
+      "en": "For as the crackling of thorns under a pot, so is the laughter of the fool. This also is vanity.",
+      "ko": "우매자의 웃음 소리는 솥 밑에서 가시나무의 타는 소리 같으니 이것도 헛되니라",
+      "source_text_hash": "a13ccf492b1323c8d9dd53de5a45b866c3417cdd440c119dbfe4cd5a7a8cdfe8",
+      "translation_text_hash": "1cc7330a712e075b7514a90487e4ff4a86b228a3c78bbcb78edc4cd7e6c4928f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우매자의 웃음 소리는 솥 밑에서 가시나무의 타는 소리 같으니 이것도 헛되니라"
+      ],
+      "raw_text_hashes": [
+        "1cc7330a712e075b7514a90487e4ff4a86b228a3c78bbcb78edc4cd7e6c4928f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:7:7",
+      "sequence": 17437,
+      "chapter_label": "ECC 7",
+      "verse_label": "7",
+      "locator": {
+        "book": "ECC",
+        "chapter": 7,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 7,
+          "verse": 7
+        }
+      ],
+      "en": "Surely extortion makes the wise man foolish; and a bribe destroys the understanding.",
+      "ko": "탐학이 지혜자를 우매하게 하고 뇌물이 사람의 명철을 망케 하느니라",
+      "source_text_hash": "70fa113bd1b24eb3fb8c43e4dd87dcbb79888529cca3c7fbe7b3ebec96e821b4",
+      "translation_text_hash": "14c293e87c2e9ab85a20754a9178d69bf239d0b7c4a5d54c4be7bc52401219ff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "탐학이 지혜자를 우매하게 하고 뇌물이 사람의 명철을 망케 하느니라"
+      ],
+      "raw_text_hashes": [
+        "14c293e87c2e9ab85a20754a9178d69bf239d0b7c4a5d54c4be7bc52401219ff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:7:8",
+      "sequence": 17438,
+      "chapter_label": "ECC 7",
+      "verse_label": "8",
+      "locator": {
+        "book": "ECC",
+        "chapter": 7,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 7,
+          "verse": 8
+        }
+      ],
+      "en": "Better is the end of a thing than its beginning. The patient in spirit is better than the proud in spirit.",
+      "ko": "일의 끝이 시작보다 낫고 참는 마음이 교만한 마음보다 나으니",
+      "source_text_hash": "1a7585f962f70a73f30b5711fb5f8239688a7d521b4ec4d807875dc9f17560da",
+      "translation_text_hash": "e62e7141c8762c1d98e1debc65bcc3953018eb4df68a36ccf023c986ef63d155",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "일의 끝이 시작보다 낫고 참는 마음이 교만한 마음보다 나으니"
+      ],
+      "raw_text_hashes": [
+        "e62e7141c8762c1d98e1debc65bcc3953018eb4df68a36ccf023c986ef63d155"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:7:9",
+      "sequence": 17439,
+      "chapter_label": "ECC 7",
+      "verse_label": "9",
+      "locator": {
+        "book": "ECC",
+        "chapter": 7,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 7,
+          "verse": 9
+        }
+      ],
+      "en": "Don’t be hasty in your spirit to be angry, for anger rests in the bosom of fools.",
+      "ko": "급한 마음으로 노를 발하지 말라 노는 우매자의 품에 머무름이니라",
+      "source_text_hash": "f4ff667ca5849d041bac1f4e557125ea5c29d134aab4f39aa8a72c4e9e9c7784",
+      "translation_text_hash": "e20e2688557a4fd5c0062952afc58650bbbdfa08039b1496c7ab968f28d79f84",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "급한 마음으로 노를 발하지 말라 노는 우매자의 품에 머무름이니라"
+      ],
+      "raw_text_hashes": [
+        "e20e2688557a4fd5c0062952afc58650bbbdfa08039b1496c7ab968f28d79f84"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:7:10",
+      "sequence": 17440,
+      "chapter_label": "ECC 7",
+      "verse_label": "10",
+      "locator": {
+        "book": "ECC",
+        "chapter": 7,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 7,
+          "verse": 10
+        }
+      ],
+      "en": "Don’t say, “Why were the former days better than these?” For you do not ask wisely about this.",
+      "ko": "옛날이 오늘보다 나은 것이 어찜이냐 하지 말라 이렇게 묻는 것이 지혜가 아니니라",
+      "source_text_hash": "f5984db1c2126ecf89276e59fbf964d102291fbb51810e3ad3a50983807d8cab",
+      "translation_text_hash": "f556c105760cef956135bdb087f07c219584164d2a60784291e1effe3994eb6d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "옛날이 오늘보다 나은 것이 어찜이냐 하지 말라 이렇게 묻는 것이 지혜가 아니니라"
+      ],
+      "raw_text_hashes": [
+        "f556c105760cef956135bdb087f07c219584164d2a60784291e1effe3994eb6d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:7:11",
+      "sequence": 17441,
+      "chapter_label": "ECC 7",
+      "verse_label": "11",
+      "locator": {
+        "book": "ECC",
+        "chapter": 7,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 7,
+          "verse": 11
+        }
+      ],
+      "en": "Wisdom is as good as an inheritance. Yes, it is more excellent for those who see the sun.",
+      "ko": "지혜는 유업 같이 아름답고 햇빛을 보는 자에게 유익하도다",
+      "source_text_hash": "64f183f07297f75ff99c03adf25aa78209eaca0295a6d8caadd09442e0109b22",
+      "translation_text_hash": "5e475f4411a3acb2cbe9184d58f03469063d47caef421115ba5445b21b3698e7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "지혜는 유업 같이 아름답고 햇빛을 보는 자에게 유익하도다"
+      ],
+      "raw_text_hashes": [
+        "5e475f4411a3acb2cbe9184d58f03469063d47caef421115ba5445b21b3698e7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:7:12",
+      "sequence": 17442,
+      "chapter_label": "ECC 7",
+      "verse_label": "12",
+      "locator": {
+        "book": "ECC",
+        "chapter": 7,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 7,
+          "verse": 12
+        }
+      ],
+      "en": "For wisdom is a defense, even as money is a defense; but the excellency of knowledge is that wisdom preserves the life of him who has it.",
+      "ko": "지혜도 보호하는 것이 되고 돈도 보호하는 것이 되나 지식이 더욱 아름다움은 지혜는 지혜 얻은 자의 생명을 보존함이니라",
+      "source_text_hash": "971a7c6f4d45a0478628d7b6c1bb2c1c5d7feaef660a13175b2917f028100f5e",
+      "translation_text_hash": "395865ae9687e022a28913c5056f7a5f214ac2942b5ed0234f7bed8d9d87c233",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "지혜도 보호하는 것이 되고 돈도 보호하는 것이 되나 지식이 더욱 아름다움은 지혜는 지혜 얻은 자의 생명을 보존함이니라"
+      ],
+      "raw_text_hashes": [
+        "395865ae9687e022a28913c5056f7a5f214ac2942b5ed0234f7bed8d9d87c233"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:7:13",
+      "sequence": 17443,
+      "chapter_label": "ECC 7",
+      "verse_label": "13",
+      "locator": {
+        "book": "ECC",
+        "chapter": 7,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 7,
+          "verse": 13
+        }
+      ],
+      "en": "Consider the work of God, for who can make that straight which he has made crooked?",
+      "ko": "하나님의 행하시는 일을 보라 하나님이 굽게 하신 것을 누가 능히 곧게 하겠느냐",
+      "source_text_hash": "db7683b8fb70a1f7b6ffff36c1bc4572324ce3a16e67681237b59ac9d8a63953",
+      "translation_text_hash": "51c0dca9f30b599e47f4cce54bc45adc9ebc74209bce3cec044e0e87186af177",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님의 행하시는 일을 보라 하나님이 굽게 하신 것을 누가 능히 곧게 하겠느냐"
+      ],
+      "raw_text_hashes": [
+        "51c0dca9f30b599e47f4cce54bc45adc9ebc74209bce3cec044e0e87186af177"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:7:14",
+      "sequence": 17444,
+      "chapter_label": "ECC 7",
+      "verse_label": "14",
+      "locator": {
+        "book": "ECC",
+        "chapter": 7,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 7,
+          "verse": 14
+        }
+      ],
+      "en": "In the day of prosperity be joyful, and in the day of adversity consider; yes, God has made the one side by side with the other, to the end that man should not find out anything after him.",
+      "ko": "형통한 날에는 기뻐하고 곤고한 날에는 생각하라 하나님이 이 두 가지를 병행하게 하사 사람으로 그 장래 일을 능히 헤아려 알지 못하게 하셨느니라",
+      "source_text_hash": "474f4171b6d36be3a0ec0f4576619273466e2cf241eb613762cda8f4ab56db29",
+      "translation_text_hash": "f5a515a3edfc6822c1f102f74b4010de0a577c9254f5c15050906407972cec10",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "형통한 날에는 기뻐하고 곤고한 날에는 생각하라 하나님이 이 두 가지를 병행하게 하사 사람으로 그 장래 일을 능히 헤아려 알지 못하게 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "f5a515a3edfc6822c1f102f74b4010de0a577c9254f5c15050906407972cec10"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:7:15",
+      "sequence": 17445,
+      "chapter_label": "ECC 7",
+      "verse_label": "15",
+      "locator": {
+        "book": "ECC",
+        "chapter": 7,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 7,
+          "verse": 15
+        }
+      ],
+      "en": "All this I have seen in my days of vanity: there is a righteous man who perishes in his righteousness, and there is a wicked man who lives long in his evildoing.",
+      "ko": "내가 내 헛된 날에 이 모든 일을 본즉 자기의 의로운 중에서 멸망하는 의인이 있고 자기의 악행 중에서 장수하는 악인이 있으니",
+      "source_text_hash": "25e88873049b7f39759663e7730379cb6adf161b82ca41cabe1ab59d6c334bba",
+      "translation_text_hash": "188df65ce6fb80b448c578f381340a755a13c67b340b16495f42d001bd04e44a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 내 헛된 날에 이 모든 일을 본즉 자기의 의로운 중에서 멸망하는 의인이 있고 자기의 악행 중에서 장수하는 악인이 있으니"
+      ],
+      "raw_text_hashes": [
+        "188df65ce6fb80b448c578f381340a755a13c67b340b16495f42d001bd04e44a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:7:16",
+      "sequence": 17446,
+      "chapter_label": "ECC 7",
+      "verse_label": "16",
+      "locator": {
+        "book": "ECC",
+        "chapter": 7,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 7,
+          "verse": 16
+        }
+      ],
+      "en": "Don’t be overly righteous, neither make yourself overly wise. Why should you destroy yourself?",
+      "ko": "지나치게 의인이 되지 말며 지나치게 지혜자도 되지 말라 어찌하여 스스로 패망케 하겠느냐",
+      "source_text_hash": "05deea106206f9a5ae0e808bc411db260fa7d101585e3f06f7cd8ed1f8fac998",
+      "translation_text_hash": "2110fc7f02df4d5b8a480547528735d9f9439710c9c154ada22fa5c2106de907",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "지나치게 의인이 되지 말며 지나치게 지혜자도 되지 말라 어찌하여 스스로 패망케 하겠느냐"
+      ],
+      "raw_text_hashes": [
+        "2110fc7f02df4d5b8a480547528735d9f9439710c9c154ada22fa5c2106de907"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:7:17",
+      "sequence": 17447,
+      "chapter_label": "ECC 7",
+      "verse_label": "17",
+      "locator": {
+        "book": "ECC",
+        "chapter": 7,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 7,
+          "verse": 17
+        }
+      ],
+      "en": "Don’t be too wicked, neither be foolish. Why should you die before your time?",
+      "ko": "지나치게 악인이 되지 말며 우매자도 되지 말라 어찌하여 기한 전에 죽으려느냐",
+      "source_text_hash": "4149a6ef6c89bb2d5c8f2f00b5c4326809220c4184a99ba3c037d895f9583c91",
+      "translation_text_hash": "2ed75c93021e0e1e90f31fec27ef1594ec1ad4e2a920ccbcf582e39c8a4eb647",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "지나치게 악인이 되지 말며 우매자도 되지 말라 어찌하여 기한 전에 죽으려느냐"
+      ],
+      "raw_text_hashes": [
+        "2ed75c93021e0e1e90f31fec27ef1594ec1ad4e2a920ccbcf582e39c8a4eb647"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:7:18",
+      "sequence": 17448,
+      "chapter_label": "ECC 7",
+      "verse_label": "18",
+      "locator": {
+        "book": "ECC",
+        "chapter": 7,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 7,
+          "verse": 18
+        }
+      ],
+      "en": "It is good that you should take hold of this. Yes, also don’t withdraw your hand from that; for he who fears God will come out of them all.",
+      "ko": "너는 이것을 잡으며 저것을 놓지 마는 것이 좋으니 하나님을 경외하는 자는 이 모든 일에서 벗어날 것임이니라",
+      "source_text_hash": "35841759712e6d89675c26c0277c1d16ac188194eb03f60eb2855700ea6e5252",
+      "translation_text_hash": "b64e0cb11158ad781f9618bdb06e7c8974671aae52cce5057e6d70a9d3dcaf72",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 이것을 잡으며 저것을 놓지 마는 것이 좋으니 하나님을 경외하는 자는 이 모든 일에서 벗어날 것임이니라"
+      ],
+      "raw_text_hashes": [
+        "b64e0cb11158ad781f9618bdb06e7c8974671aae52cce5057e6d70a9d3dcaf72"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:7:19",
+      "sequence": 17449,
+      "chapter_label": "ECC 7",
+      "verse_label": "19",
+      "locator": {
+        "book": "ECC",
+        "chapter": 7,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 7,
+          "verse": 19
+        }
+      ],
+      "en": "Wisdom is a strength to the wise man more than ten rulers who are in a city.",
+      "ko": "지혜가 지혜자로 성읍 가운데 열 유사보다 능력이 있게 하느니라",
+      "source_text_hash": "c62990efb5572aabde3289ac834e41744fc0e59e59d324216207a93c41685e48",
+      "translation_text_hash": "05b2a56bce0ba409f29ffc044efea4a26d3bc9ac8bbed0edf6658398195a03ff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "지혜가 지혜자로 성읍 가운데 열 유사보다 능력이 있게 하느니라"
+      ],
+      "raw_text_hashes": [
+        "05b2a56bce0ba409f29ffc044efea4a26d3bc9ac8bbed0edf6658398195a03ff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:7:20",
+      "sequence": 17450,
+      "chapter_label": "ECC 7",
+      "verse_label": "20",
+      "locator": {
+        "book": "ECC",
+        "chapter": 7,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 7,
+          "verse": 20
+        }
+      ],
+      "en": "Surely there is not a righteous man on earth who does good and doesn’t sin.",
+      "ko": "선을 행하고 죄를 범치 아니하는 의인은 세상에 아주 없느니라",
+      "source_text_hash": "7b7c7507dd8494f5d28d9d3255c8e1f45a91db5efec0439d03407a21cb469f04",
+      "translation_text_hash": "4a4960ffb7634c1d421c351d04c1443602a2df47c3e2b0ec0a9a5523af165df6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "선을 행하고 죄를 범치 아니하는 의인은 세상에 아주 없느니라"
+      ],
+      "raw_text_hashes": [
+        "4a4960ffb7634c1d421c351d04c1443602a2df47c3e2b0ec0a9a5523af165df6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:7:21",
+      "sequence": 17451,
+      "chapter_label": "ECC 7",
+      "verse_label": "21",
+      "locator": {
+        "book": "ECC",
+        "chapter": 7,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 7,
+          "verse": 21
+        }
+      ],
+      "en": "Also don’t take heed to all words that are spoken, lest you hear your servant curse you;",
+      "ko": "무릇 사람의 말을 들으려고 마음을 두지 말라 염려컨대 네 종이 너를 저주하는 것을 들으리라",
+      "source_text_hash": "c0436f4605495aa41a920f7990d8891c9de6272a02ce312211360beda00f4410",
+      "translation_text_hash": "bb55e25a49d18cdcbd05b2b1e31fc67edb401b31db17c1f27e9839bf6d444b95",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 사람의 말을 들으려고 마음을 두지 말라 염려컨대 네 종이 너를 저주하는 것을 들으리라"
+      ],
+      "raw_text_hashes": [
+        "bb55e25a49d18cdcbd05b2b1e31fc67edb401b31db17c1f27e9839bf6d444b95"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:7:22",
+      "sequence": 17452,
+      "chapter_label": "ECC 7",
+      "verse_label": "22",
+      "locator": {
+        "book": "ECC",
+        "chapter": 7,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 7,
+          "verse": 22
+        }
+      ],
+      "en": "for often your own heart knows that you yourself have likewise cursed others.",
+      "ko": "너도 가끔 사람을 저주한 것을 네 마음이 아느니라",
+      "source_text_hash": "bd20ae9f8a47a91a0cce9990165ced2f6b3b0c3ea12ae865a7cc7055c168e780",
+      "translation_text_hash": "22aacc55589e6a89cf1df73fc25fc7d6d9eba0cb1e6665d5252cb528b1a3c02b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너도 가끔 사람을 저주한 것을 네 마음이 아느니라"
+      ],
+      "raw_text_hashes": [
+        "22aacc55589e6a89cf1df73fc25fc7d6d9eba0cb1e6665d5252cb528b1a3c02b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:7:23",
+      "sequence": 17453,
+      "chapter_label": "ECC 7",
+      "verse_label": "23",
+      "locator": {
+        "book": "ECC",
+        "chapter": 7,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 7,
+          "verse": 23
+        }
+      ],
+      "en": "All this I have proved in wisdom. I said, “I will be wise;” but it was far from me.",
+      "ko": "내가 이 모든 것을 지혜로 시험하며 스스로 이르기를 내가 지혜자가 되리라 하였으나 지혜가 나를 멀리하였도다",
+      "source_text_hash": "8b469236d748d6d274d9b2b9ef6eff90ff0260ed97106d3a1d7192f56ab35094",
+      "translation_text_hash": "5c15b4692a8a99d0b409314b77a7a7932ba3dd1a2736b98af935e94393132426",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 이 모든 것을 지혜로 시험하며 스스로 이르기를 내가 지혜자가 되리라 하였으나 지혜가 나를 멀리하였도다"
+      ],
+      "raw_text_hashes": [
+        "5c15b4692a8a99d0b409314b77a7a7932ba3dd1a2736b98af935e94393132426"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:7:24",
+      "sequence": 17454,
+      "chapter_label": "ECC 7",
+      "verse_label": "24",
+      "locator": {
+        "book": "ECC",
+        "chapter": 7,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 7,
+          "verse": 24
+        }
+      ],
+      "en": "That which is, is far off and exceedingly deep. Who can find it out?",
+      "ko": "무릇 된 것이 멀고 깊고 깊도다 누가 능히 통달하랴",
+      "source_text_hash": "432b894d1dbd820323692afd05b5bb9f05412c1c1dabac4fe35e35e4af6f514c",
+      "translation_text_hash": "e4df285e0a843cddf6038caf22b2562180e6c95202850a39cdcc45213f4bbc00",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 된 것이 멀고 깊고 깊도다 누가 능히 통달하랴"
+      ],
+      "raw_text_hashes": [
+        "e4df285e0a843cddf6038caf22b2562180e6c95202850a39cdcc45213f4bbc00"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:7:25",
+      "sequence": 17455,
+      "chapter_label": "ECC 7",
+      "verse_label": "25",
+      "locator": {
+        "book": "ECC",
+        "chapter": 7,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 7,
+          "verse": 25
+        }
+      ],
+      "en": "I turned around, and my heart sought to know and to search out, and to seek wisdom and the scheme of things, and to know that wickedness is stupidity, and that foolishness is madness.",
+      "ko": "내가 돌이켜 전심으로 지혜와 명철을 살피고 궁구하여 악한 것이 어리석은 것이요 어리석은 것이 미친 것인줄을 알고자 하였더니",
+      "source_text_hash": "3f414448057c463edca31345ae27bde1c764cf91d53fc56f0e1a60bb85996a6d",
+      "translation_text_hash": "978188969df0aee9199230195e7863230f2278161c6884960cb53e26bdce2ade",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 돌이켜 전심으로 지혜와 명철을 살피고 궁구하여 악한 것이 어리석은 것이요 어리석은 것이 미친 것인줄을 알고자 하였더니"
+      ],
+      "raw_text_hashes": [
+        "978188969df0aee9199230195e7863230f2278161c6884960cb53e26bdce2ade"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:7:26",
+      "sequence": 17456,
+      "chapter_label": "ECC 7",
+      "verse_label": "26",
+      "locator": {
+        "book": "ECC",
+        "chapter": 7,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 7,
+          "verse": 26
+        }
+      ],
+      "en": "I find more bitter than death the woman whose heart is snares and traps, whose hands are chains. Whoever pleases God shall escape from her; but the sinner will be ensnared by her.",
+      "ko": "내가 깨달은즉 마음이 올무와 그물 같고 손이 포승 같은 여인은 사망보다 독한 자라 하나님을 기뻐하는 자는 저를 피하려니와 죄인은 저에게 잡히리로다",
+      "source_text_hash": "c985b23079bb61294133f1b26f92c0d05e4e21e44e89dce760721b2625dc53f1",
+      "translation_text_hash": "8876b64d86c5ce34944389c90f1867de3843033dca24edb988eef45917b1de72",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 깨달은즉 마음이 올무와 그물 같고 손이 포승 같은 여인은 사망보다 독한 자라 하나님을 기뻐하는 자는 저를 피하려니와 죄인은 저에게 잡히리로다"
+      ],
+      "raw_text_hashes": [
+        "8876b64d86c5ce34944389c90f1867de3843033dca24edb988eef45917b1de72"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:7:27",
+      "sequence": 17457,
+      "chapter_label": "ECC 7",
+      "verse_label": "27",
+      "locator": {
+        "book": "ECC",
+        "chapter": 7,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 7,
+          "verse": 27
+        }
+      ],
+      "en": "“Behold, I have found this,” says the Preacher, “to one another, to find an explanation",
+      "ko": "전도자가 가로되 내가 낱낱이 살펴 그 이치를 궁구하여 이것을 깨달았노라",
+      "source_text_hash": "23905c9ad6ef50ba77a2fd81f995c05e81c0b2468a8058124941d7c1a4228613",
+      "translation_text_hash": "d0c9fd49a0252307d78c10c4712e5f37bed03a114b7f5de1ff688d55e73787ae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "전도자가 가로되 내가 낱낱이 살펴 그 이치를 궁구하여 이것을 깨달았노라"
+      ],
+      "raw_text_hashes": [
+        "d0c9fd49a0252307d78c10c4712e5f37bed03a114b7f5de1ff688d55e73787ae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:7:28",
+      "sequence": 17458,
+      "chapter_label": "ECC 7",
+      "verse_label": "28",
+      "locator": {
+        "book": "ECC",
+        "chapter": 7,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 7,
+          "verse": 28
+        }
+      ],
+      "en": "which my soul still seeks, but I have not found. I have found one man among a thousand, but I have not found a woman among all those.",
+      "ko": "내 마음에 찾아도 아직 얻지 못한 것이 이것이라 일천 남자 중에서 하나를 얻었거니와 일천 여인 중에서는 하나도 얻지 못하였느니라",
+      "source_text_hash": "e0a2dc5231ada8e94222240323581360b24c31a2614b3f6608966525f6fe0655",
+      "translation_text_hash": "f7ea5f055c189803aaf9b3fb8cad77ac401bded63d6fcf0a3315924bfb823045",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 마음에 찾아도 아직 얻지 못한 것이 이것이라 일천 남자 중에서 하나를 얻었거니와 일천 여인 중에서는 하나도 얻지 못하였느니라"
+      ],
+      "raw_text_hashes": [
+        "f7ea5f055c189803aaf9b3fb8cad77ac401bded63d6fcf0a3315924bfb823045"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:7:29",
+      "sequence": 17459,
+      "chapter_label": "ECC 7",
+      "verse_label": "29",
+      "locator": {
+        "book": "ECC",
+        "chapter": 7,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 7,
+          "verse": 29
+        }
+      ],
+      "en": "Behold, I have only found this: that God made mankind upright; but they search for many inventions.”",
+      "ko": "나의 깨달은 것이 이것이라 곧 하나님이 사람을 정직하게 지으셨으나 사람은 많은 꾀를 낸 것이니라",
+      "source_text_hash": "29570040cb696ccb5b9e8e1e158904eea33e9bbdcdcf8d0ddc4614d00dfc83ed",
+      "translation_text_hash": "692b761e9a0ca7999212493a23cce3b8061f6e1a3c66a6baba6b35784a08dbe8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 깨달은 것이 이것이라 곧 하나님이 사람을 정직하게 지으셨으나 사람은 많은 꾀를 낸 것이니라"
+      ],
+      "raw_text_hashes": [
+        "692b761e9a0ca7999212493a23cce3b8061f6e1a3c66a6baba6b35784a08dbe8"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,781 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:139",
+  "unit_ordinal": 617,
+  "unit_label": "PSA 139",
+  "book_code": "PSA",
+  "chapter_number": 139,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:139:1",
+      "sequence": 16241,
+      "chapter_label": "PSA 139",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 139,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 139,
+          "verse": 1
+        }
+      ],
+      "en": "LORD, you have searched me, and you know me.",
+      "ko": "여호와여 주께서 나를 감찰하시고 아셨나이다",
+      "source_text_hash": "0dcbf7b7866a12df4455936c644d72758e34c754b30e546d10718c5057b6c1a0",
+      "translation_text_hash": "98a4e71b1205cdc734fe3c13f757d4144bdafe6eef61ccfd0d257acf79ee8767",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 주께서 나를 감찰하시고 아셨나이다"
+      ],
+      "raw_text_hashes": [
+        "98a4e71b1205cdc734fe3c13f757d4144bdafe6eef61ccfd0d257acf79ee8767"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:139:2",
+      "sequence": 16242,
+      "chapter_label": "PSA 139",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 139,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 139,
+          "verse": 2
+        }
+      ],
+      "en": "You know my sitting down and my rising up. You perceive my thoughts from afar.",
+      "ko": "주께서 나의 앉고 일어섬을 아시며 멀리서도 나의 생각을 통촉하시오며",
+      "source_text_hash": "3e40a3076a01dca95e3b03af00c56971f3d08112be47874c3a07e21f1be8d322",
+      "translation_text_hash": "c86e56183ee6d8a989663ea31a5383ba2a2fcd1dcf8b350e89aa90de21c1e393",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 나의 앉고 일어섬을 아시며 멀리서도 나의 생각을 통촉하시오며"
+      ],
+      "raw_text_hashes": [
+        "c86e56183ee6d8a989663ea31a5383ba2a2fcd1dcf8b350e89aa90de21c1e393"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:139:3",
+      "sequence": 16243,
+      "chapter_label": "PSA 139",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 139,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 139,
+          "verse": 3
+        }
+      ],
+      "en": "You search out my path and my lying down, and are acquainted with all my ways.",
+      "ko": "나의 길과 눕는 것을 감찰하시며 나의 모든 행위를 익히 아시오니",
+      "source_text_hash": "0db492e7ab83fc0a267f18729c6948b39b01cbb58d3413529bcf14a2a58ca3ee",
+      "translation_text_hash": "d13368eed808e96a5d5ffea6940a7987b4f20c8c3cf87613fd8d23e1f050994b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 길과 눕는 것을 감찰하시며 나의 모든 행위를 익히 아시오니"
+      ],
+      "raw_text_hashes": [
+        "d13368eed808e96a5d5ffea6940a7987b4f20c8c3cf87613fd8d23e1f050994b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:139:4",
+      "sequence": 16244,
+      "chapter_label": "PSA 139",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 139,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 139,
+          "verse": 4
+        }
+      ],
+      "en": "For there is not a word on my tongue, but behold, LORD, you know it altogether.",
+      "ko": "여호와여 내 혀의 말을 알지 못하시는 것이 하나도 없으시니이다",
+      "source_text_hash": "a358d971784ecda41f06d857102f336b2b6719be028b0fb3867941824c05737c",
+      "translation_text_hash": "0f87456ec7ab6f956c6c183606cd2ebb887662e55b9a0fe46442c127213efc5e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 내 혀의 말을 알지 못하시는 것이 하나도 없으시니이다"
+      ],
+      "raw_text_hashes": [
+        "0f87456ec7ab6f956c6c183606cd2ebb887662e55b9a0fe46442c127213efc5e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:139:5",
+      "sequence": 16245,
+      "chapter_label": "PSA 139",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 139,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 139,
+          "verse": 5
+        }
+      ],
+      "en": "You hem me in behind and before. You laid your hand on me.",
+      "ko": "주께서 나의 전후를 두르시며 내게 안수하셨나이다",
+      "source_text_hash": "59e7456078e6670aec773c9049c8670823b561d0eee18fa7726093ab3cf305b6",
+      "translation_text_hash": "9272734fb3d5b906733b7e2f665a12fc00586ec05f3559b05571875be7ddcd8d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 나의 전후를 두르시며 내게 안수하셨나이다"
+      ],
+      "raw_text_hashes": [
+        "9272734fb3d5b906733b7e2f665a12fc00586ec05f3559b05571875be7ddcd8d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:139:6",
+      "sequence": 16246,
+      "chapter_label": "PSA 139",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 139,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 139,
+          "verse": 6
+        }
+      ],
+      "en": "This knowledge is beyond me. It’s lofty. I can’t attain it.",
+      "ko": "이 지식이 내게 너무 기이하니 높아서 내가 능히 미치지 못하나이다",
+      "source_text_hash": "b2f4f30efb476eb5ea5d0a0384ee9e836c7743c075bfa68add9fa18640663b97",
+      "translation_text_hash": "78dbd127eb6d2b8168e8828930fa9854ea4b0658f885587140479f715fee64dd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 지식이 내게 너무 기이하니 높아서 내가 능히 미치지 못하나이다"
+      ],
+      "raw_text_hashes": [
+        "78dbd127eb6d2b8168e8828930fa9854ea4b0658f885587140479f715fee64dd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:139:7",
+      "sequence": 16247,
+      "chapter_label": "PSA 139",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 139,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 139,
+          "verse": 7
+        }
+      ],
+      "en": "Where could I go from your Spirit? Or where could I flee from your presence?",
+      "ko": "내가 주의 신을 떠나 어디로 가며 주의 앞에서 어디로 피하리이까",
+      "source_text_hash": "de6824fec5ea5eb5f2ae02704f18802bd76da31f37d147aa5bd4aef1f22bf6c3",
+      "translation_text_hash": "76b4eb4a2f912f835720cea3a4c20674eb0098e7d6911699e0b8edf035930209",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 주의 신을 떠나 어디로 가며 주의 앞에서 어디로 피하리이까"
+      ],
+      "raw_text_hashes": [
+        "76b4eb4a2f912f835720cea3a4c20674eb0098e7d6911699e0b8edf035930209"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:139:8",
+      "sequence": 16248,
+      "chapter_label": "PSA 139",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 139,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 139,
+          "verse": 8
+        }
+      ],
+      "en": "If I ascend up into heaven, you are there. If I make my bed in Sheol, behold, you are there!",
+      "ko": "내가 하늘에 올라갈찌라도 거기 계시며 음부에 내 자리를 펼찌라도 거기 계시니이다",
+      "source_text_hash": "396f8870704e739dde6704a3b39c6a219f2c0760383b211ebdfa8647953ed444",
+      "translation_text_hash": "a449e015d9f81f17288c16210b47f2dea0466e87fee7ef92cb110cb6f021884d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 하늘에 올라갈찌라도 거기 계시며 음부에 내 자리를 펼찌라도 거기 계시니이다"
+      ],
+      "raw_text_hashes": [
+        "a449e015d9f81f17288c16210b47f2dea0466e87fee7ef92cb110cb6f021884d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:139:9",
+      "sequence": 16249,
+      "chapter_label": "PSA 139",
+      "verse_label": "9",
+      "locator": {
+        "book": "PSA",
+        "chapter": 139,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 139,
+          "verse": 9
+        }
+      ],
+      "en": "If I take the wings of the dawn, and settle in the uttermost parts of the sea,",
+      "ko": "내가 새벽 날개를 치며 바다 끝에 가서 거할찌라도",
+      "source_text_hash": "4eb227ff565cf03cb368faaa0cfb368689f41b51aad12dcdaa7daee4b5139638",
+      "translation_text_hash": "16306ddc53b4783adf6620457c676f788f94a1a44b8213fd80477123b1836ac5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 새벽 날개를 치며 바다 끝에 가서 거할찌라도"
+      ],
+      "raw_text_hashes": [
+        "16306ddc53b4783adf6620457c676f788f94a1a44b8213fd80477123b1836ac5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:139:10",
+      "sequence": 16250,
+      "chapter_label": "PSA 139",
+      "verse_label": "10",
+      "locator": {
+        "book": "PSA",
+        "chapter": 139,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 139,
+          "verse": 10
+        }
+      ],
+      "en": "even there your hand will lead me, and your right hand will hold me.",
+      "ko": "곧 거기서도 주의 손이 나를 인도하시며 주의 오른손이 나를 붙드시리이다",
+      "source_text_hash": "e13ea503368d594bcdba4a9282c47e5a75bcdf423bf7b3c575166c6e935a534b",
+      "translation_text_hash": "d07fec463c2ad7f757028e2ecca70e3aa8d5bd9d9001acd2a5532607341005a6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 거기서도 주의 손이 나를 인도하시며 주의 오른손이 나를 붙드시리이다"
+      ],
+      "raw_text_hashes": [
+        "d07fec463c2ad7f757028e2ecca70e3aa8d5bd9d9001acd2a5532607341005a6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:139:11",
+      "sequence": 16251,
+      "chapter_label": "PSA 139",
+      "verse_label": "11",
+      "locator": {
+        "book": "PSA",
+        "chapter": 139,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 139,
+          "verse": 11
+        }
+      ],
+      "en": "If I say, “Surely the darkness will overwhelm me. The light around me will be night,”",
+      "ko": "내가 혹시 말하기를 흑암이 정녕 나를 덮고 나를 두른 빛은 밤이 되리라 할찌라도",
+      "source_text_hash": "6a01cb3d61d29792ce7da57c5dca9ee31dff177e5dc376734b04dbfffe11ad3f",
+      "translation_text_hash": "ce461c5f92c1f5949edd108f7618bdab0927e8a584d0841eb051fb422f9d2edc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 혹시 말하기를 흑암이 정녕 나를 덮고 나를 두른 빛은 밤이 되리라 할찌라도"
+      ],
+      "raw_text_hashes": [
+        "ce461c5f92c1f5949edd108f7618bdab0927e8a584d0841eb051fb422f9d2edc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:139:12",
+      "sequence": 16252,
+      "chapter_label": "PSA 139",
+      "verse_label": "12",
+      "locator": {
+        "book": "PSA",
+        "chapter": 139,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 139,
+          "verse": 12
+        }
+      ],
+      "en": "even the darkness doesn’t hide from you, but the night shines as the day. The darkness is like light to you.",
+      "ko": "주에게서는 흑암이 숨기지 못하며 밤이 낮과 같이 비취나니 주에게는 흑암과 빛이 일반이니이다",
+      "source_text_hash": "cf42a163e2cea9ce51f2b1806045b95ece3c6c4955afc61a924affdde2642e27",
+      "translation_text_hash": "31651035347c510755ff225a02bc71441f6041d0dad0fd8d3bff5d3cc2b16038",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주에게서는 흑암이 숨기지 못하며 밤이 낮과 같이 비취나니 주에게는 흑암과 빛이 일반이니이다"
+      ],
+      "raw_text_hashes": [
+        "31651035347c510755ff225a02bc71441f6041d0dad0fd8d3bff5d3cc2b16038"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:139:13",
+      "sequence": 16253,
+      "chapter_label": "PSA 139",
+      "verse_label": "13",
+      "locator": {
+        "book": "PSA",
+        "chapter": 139,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 139,
+          "verse": 13
+        }
+      ],
+      "en": "For you formed my inmost being. You knit me together in my mother’s womb.",
+      "ko": "주께서 내 장부를 지으시며 나의 모태에서 나를 조직하셨나이다",
+      "source_text_hash": "00ee21995120425bbbf979a565f5620b0ed819e857f2476899724bb68b2173df",
+      "translation_text_hash": "3941c5fd68f7f3fc65e98b9ff95cf7a219895a830adad6c9ccd090c33378ac6f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 내 장부를 지으시며 나의 모태에서 나를 조직하셨나이다"
+      ],
+      "raw_text_hashes": [
+        "3941c5fd68f7f3fc65e98b9ff95cf7a219895a830adad6c9ccd090c33378ac6f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:139:14",
+      "sequence": 16254,
+      "chapter_label": "PSA 139",
+      "verse_label": "14",
+      "locator": {
+        "book": "PSA",
+        "chapter": 139,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 139,
+          "verse": 14
+        }
+      ],
+      "en": "I will give thanks to you, for I am fearfully and wonderfully made. Your works are wonderful. My soul knows that very well.",
+      "ko": "내가 주께 감사하옴은 나를 지으심이 신묘막측하심이라 주의 행사가 기이함을 내 영혼이 잘 아나이다",
+      "source_text_hash": "1086f4b3950313d7f346c714135b4d09817c5fce503bd9649d5079d4e33a8dcb",
+      "translation_text_hash": "825e41a55162e4f43818642c461ed9af6ad714e993cc9a44ac661b5078a2747b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 주께 감사하옴은 나를 지으심이 신묘막측하심이라 주의 행사가 기이함을 내 영혼이 잘 아나이다"
+      ],
+      "raw_text_hashes": [
+        "825e41a55162e4f43818642c461ed9af6ad714e993cc9a44ac661b5078a2747b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:139:15",
+      "sequence": 16255,
+      "chapter_label": "PSA 139",
+      "verse_label": "15",
+      "locator": {
+        "book": "PSA",
+        "chapter": 139,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 139,
+          "verse": 15
+        }
+      ],
+      "en": "My frame wasn’t hidden from you, when I was made in secret, woven together in the depths of the earth.",
+      "ko": "내가 은밀한데서 지음을 받고 땅의 깊은 곳에서 기이하게 지음을 받은 때에 나의 형체가 주의 앞에 숨기우지 못하였나이다",
+      "source_text_hash": "0a04283f3eceda304c76043fba1db8614f501cace8fbb63c04f433f95d029f32",
+      "translation_text_hash": "e2c761f769e68d13e4964f3f5af78a26a902c7169d3345123b4ce552f91064cd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 은밀한데서 지음을 받고 땅의 깊은 곳에서 기이하게 지음을 받은 때에 나의 형체가 주의 앞에 숨기우지 못하였나이다"
+      ],
+      "raw_text_hashes": [
+        "e2c761f769e68d13e4964f3f5af78a26a902c7169d3345123b4ce552f91064cd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:139:16",
+      "sequence": 16256,
+      "chapter_label": "PSA 139",
+      "verse_label": "16",
+      "locator": {
+        "book": "PSA",
+        "chapter": 139,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 139,
+          "verse": 16
+        }
+      ],
+      "en": "Your eyes saw my body. In your book they were all written, the days that were ordained for me, when as yet there were none of them.",
+      "ko": "내 형질이 이루기 전에 주의 눈이 보셨으며 나를 위하여 정한 날이 하나도 되기 전에 주의 책에 다 기록이 되었나이다",
+      "source_text_hash": "a9b36c5b277b8563c17bca202ff32bc8634a390c477f06c759ab301ee9dd4c1a",
+      "translation_text_hash": "f71a50f1af947b5efb1c0797698d668d9b86c4dc929a01f1002192239bf487b3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 형질이 이루기 전에 주의 눈이 보셨으며 나를 위하여 정한 날이 하나도 되기 전에 주의 책에 다 기록이 되었나이다"
+      ],
+      "raw_text_hashes": [
+        "f71a50f1af947b5efb1c0797698d668d9b86c4dc929a01f1002192239bf487b3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:139:17",
+      "sequence": 16257,
+      "chapter_label": "PSA 139",
+      "verse_label": "17",
+      "locator": {
+        "book": "PSA",
+        "chapter": 139,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 139,
+          "verse": 17
+        }
+      ],
+      "en": "How precious to me are your thoughts, God! How vast is their sum!",
+      "ko": "하나님이여 주의 생각이 내게 어찌 그리 보배로우신지요 그 수가 어찌 그리 많은지요",
+      "source_text_hash": "048d37f203b473a4ed83ca1bc65331c474440e4f789eecfcfd853d4fcabee3a4",
+      "translation_text_hash": "0f159816ad9d68a2ca9f0395646967c0c9ee4929020c1b2b4126b280b988cb2f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이여 주의 생각이 내게 어찌 그리 보배로우신지요 그 수가 어찌 그리 많은지요"
+      ],
+      "raw_text_hashes": [
+        "0f159816ad9d68a2ca9f0395646967c0c9ee4929020c1b2b4126b280b988cb2f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:139:18",
+      "sequence": 16258,
+      "chapter_label": "PSA 139",
+      "verse_label": "18",
+      "locator": {
+        "book": "PSA",
+        "chapter": 139,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 139,
+          "verse": 18
+        }
+      ],
+      "en": "If I would count them, they are more in number than the sand. When I wake up, I am still with you.",
+      "ko": "내가 세려고 할찌라도 그 수가 모래보다 많도소이다 내가 깰 때에도 오히려 주와 함께 있나이다",
+      "source_text_hash": "4f0c60a3f466016f54bdd7ed3d3e051ab04115e0d147f50b1dd796d2d9adc953",
+      "translation_text_hash": "2876b435be27b0f45c6f4831367e63d7fa4a070dee45f24d0939317011547da9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 세려고 할찌라도 그 수가 모래보다 많도소이다 내가 깰 때에도 오히려 주와 함께 있나이다"
+      ],
+      "raw_text_hashes": [
+        "2876b435be27b0f45c6f4831367e63d7fa4a070dee45f24d0939317011547da9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:139:19",
+      "sequence": 16259,
+      "chapter_label": "PSA 139",
+      "verse_label": "19",
+      "locator": {
+        "book": "PSA",
+        "chapter": 139,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 139,
+          "verse": 19
+        }
+      ],
+      "en": "If only you, God, would kill the wicked. Get away from me, you bloodthirsty men!",
+      "ko": "하나님이여 주께서 정녕히 악인을 죽이시리이다 피 흘리기를 즐기는 자들아 나를 떠날찌어다",
+      "source_text_hash": "bfad2be9918aa87939a54b49730682a5afc187161ba9919280395c7b1daaa263",
+      "translation_text_hash": "366f7cc0c6946b2fe5fcac5642d09498c103bec1d8465cb5311807954699f4ea",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이여 주께서 정녕히 악인을 죽이시리이다 피 흘리기를 즐기는 자들아 나를 떠날찌어다"
+      ],
+      "raw_text_hashes": [
+        "366f7cc0c6946b2fe5fcac5642d09498c103bec1d8465cb5311807954699f4ea"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:139:20",
+      "sequence": 16260,
+      "chapter_label": "PSA 139",
+      "verse_label": "20",
+      "locator": {
+        "book": "PSA",
+        "chapter": 139,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 139,
+          "verse": 20
+        }
+      ],
+      "en": "For they speak against you wickedly. Your enemies take your name in vain.",
+      "ko": "저희가 주를 대하여 악하게 말하며 주의 원수들이 헛되이 주의 이름을 칭하나이다",
+      "source_text_hash": "237084b7912211dadcddee73af1e17b0aac71d61b0c7744b75f3782282f9178c",
+      "translation_text_hash": "c3f7ccb082da36b0440ba542fa93e654d222ea6238e646a4f0f1319703672d08",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 주를 대하여 악하게 말하며 주의 원수들이 헛되이 주의 이름을 칭하나이다"
+      ],
+      "raw_text_hashes": [
+        "c3f7ccb082da36b0440ba542fa93e654d222ea6238e646a4f0f1319703672d08"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:139:21",
+      "sequence": 16261,
+      "chapter_label": "PSA 139",
+      "verse_label": "21",
+      "locator": {
+        "book": "PSA",
+        "chapter": 139,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 139,
+          "verse": 21
+        }
+      ],
+      "en": "LORD, don’t I hate those who hate you? Am I not grieved with those who rise up against you?",
+      "ko": "여호와여 내가 주를 미워하는 자를 미워하지 아니하오며 주를 치러 일어나는 자를 한하지 아니하나이까",
+      "source_text_hash": "23a217d268b6e3dd0973e982a4276adeb06f1c8dc3b0df0bd1cedf3a6004b390",
+      "translation_text_hash": "2dff13477da20ec16f75a768b236a586dc274e94541910e01c81fab5a474b072",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 내가 주를 미워하는 자를 미워하지 아니하오며 주를 치러 일어나는 자를 한하지 아니하나이까"
+      ],
+      "raw_text_hashes": [
+        "2dff13477da20ec16f75a768b236a586dc274e94541910e01c81fab5a474b072"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:139:22",
+      "sequence": 16262,
+      "chapter_label": "PSA 139",
+      "verse_label": "22",
+      "locator": {
+        "book": "PSA",
+        "chapter": 139,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 139,
+          "verse": 22
+        }
+      ],
+      "en": "I hate them with perfect hatred. They have become my enemies.",
+      "ko": "내가 저희를 심히 미워하니 저희는 나의 원수니이다",
+      "source_text_hash": "72322ede307bbb63ccc826fb951caa70af2dd9c531f5e2f31ba24ecd5c1ffd3e",
+      "translation_text_hash": "1fe21bb7bc4fe4d2226e9d2b5545e1d350e8fd367b09edb4e04cc5a7916f977f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 저희를 심히 미워하니 저희는 나의 원수니이다"
+      ],
+      "raw_text_hashes": [
+        "1fe21bb7bc4fe4d2226e9d2b5545e1d350e8fd367b09edb4e04cc5a7916f977f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:139:23",
+      "sequence": 16263,
+      "chapter_label": "PSA 139",
+      "verse_label": "23",
+      "locator": {
+        "book": "PSA",
+        "chapter": 139,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 139,
+          "verse": 23
+        }
+      ],
+      "en": "Search me, God, and know my heart. Try me, and know my thoughts.",
+      "ko": "하나님이여 나를 살피사 내 마음을 아시며 나를 시험하사 내 뜻을 아옵소서",
+      "source_text_hash": "0a51dc1317874f038cb6ed08eae671ec02f37dd63ce6f8bdc42ecd04dc078d1b",
+      "translation_text_hash": "abe173787c3d92df4aec14d07f23643f16286f019addd0c25f043a0d3dc484e5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이여 나를 살피사 내 마음을 아시며 나를 시험하사 내 뜻을 아옵소서"
+      ],
+      "raw_text_hashes": [
+        "abe173787c3d92df4aec14d07f23643f16286f019addd0c25f043a0d3dc484e5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:139:24",
+      "sequence": 16264,
+      "chapter_label": "PSA 139",
+      "verse_label": "24",
+      "locator": {
+        "book": "PSA",
+        "chapter": 139,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 139,
+          "verse": 24
+        }
+      ],
+      "en": "See if there is any wicked way in me, and lead me in the everlasting way.",
+      "ko": "내게 무슨 악한 행위가 있나 보시고 나를 영원한 길로 인도하소서",
+      "source_text_hash": "f1a4bfa6354bd477d717106ca7b9d742ece3afa3363c4e0480b8ba4bfe9f6ed3",
+      "translation_text_hash": "507fee39aead6d993efe40b9930999265dcf4abdd358c1ac398e3298b64cf755",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내게 무슨 악한 행위가 있나 보시고 나를 영원한 길로 인도하소서"
+      ],
+      "raw_text_hashes": [
+        "507fee39aead6d993efe40b9930999265dcf4abdd358c1ac398e3298b64cf755"
+      ]
+    }
+  ]
+}

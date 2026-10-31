@@ -1,0 +1,461 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ZEC:chapter:004",
+  "unit_ordinal": 915,
+  "unit_label": "ZEC 4",
+  "book_code": "ZEC",
+  "chapter_number": 4,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ZEC:4:1",
+      "sequence": 22924,
+      "chapter_label": "ZEC 4",
+      "verse_label": "1",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 4,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 4,
+          "verse": 1
+        }
+      ],
+      "en": "The angel who talked with me came again and wakened me, as a man who is wakened out of his sleep.",
+      "ko": "내게 말하던 천사가 다시 와서 나를 깨우니 마치 자는 사람이 깨우임 같더라",
+      "source_text_hash": "600459a2ee9ba6d70c03e14cdc7f7a53fa542c35ff9209bca1bf83aa1bb01775",
+      "translation_text_hash": "dd895d3ff38a84e559b4e68b5e8e95704fc058e4fa61cf34e19f73f91441ddb8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내게 말하던 천사가 다시 와서 나를 깨우니 마치 자는 사람이 깨우임 같더라"
+      ],
+      "raw_text_hashes": [
+        "dd895d3ff38a84e559b4e68b5e8e95704fc058e4fa61cf34e19f73f91441ddb8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:4:2",
+      "sequence": 22925,
+      "chapter_label": "ZEC 4",
+      "verse_label": "2",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 4,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 4,
+          "verse": 2
+        }
+      ],
+      "en": "He said to me, “What do you see?” I said, “I have seen, and behold, a lamp stand all of gold, with its bowl on the top of it, and its seven lamps on it; there are seven pipes to each of the lamps which are on the top of it;",
+      "ko": "그가 내게 묻되 네가 무엇을 보느냐 내가 대답하되 내가 보니 순금 등대가 있는데 그 꼭대기에 주발 같은 것이 있고 또 그 등대에 일곱 등잔이 있으며 그 등대 꼭대기 등잔에는 일곱 관이 있고",
+      "source_text_hash": "5385728c61811137ef43140a4adb54bc21d3cd063254f603abefc1ec83e31a03",
+      "translation_text_hash": "28f52e5e1dcad5214c40011552a9c791fcf1aea139f60707c8a38b39266da89e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 내게 묻되 네가 무엇을 보느냐 내가 대답하되 내가 보니 순금 등대가 있는데 그 꼭대기에 주발 같은 것이 있고 또 그 등대에 일곱 등잔이 있으며 그 등대 꼭대기 등잔에는 일곱 관이 있고"
+      ],
+      "raw_text_hashes": [
+        "28f52e5e1dcad5214c40011552a9c791fcf1aea139f60707c8a38b39266da89e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:4:3",
+      "sequence": 22926,
+      "chapter_label": "ZEC 4",
+      "verse_label": "3",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 4,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 4,
+          "verse": 3
+        }
+      ],
+      "en": "and two olive trees by it, one on the right side of the bowl, and the other on the left side of it.”",
+      "ko": "그 등대 곁에 두 감람나무가 있는데 하나는 그 주발 우편에 있고 하나는 그 좌편에 있나이다 하고",
+      "source_text_hash": "2f5d4247e3d7d6a91a19401c1e631c581f0edb4fe1048b32aa4582bd7100ef1b",
+      "translation_text_hash": "6a7484b96c33140f3a37cb16580fc9650128a61343b83bbc9c0cab86f48a73a2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 등대 곁에 두 감람나무가 있는데 하나는 그 주발 우편에 있고 하나는 그 좌편에 있나이다 하고"
+      ],
+      "raw_text_hashes": [
+        "6a7484b96c33140f3a37cb16580fc9650128a61343b83bbc9c0cab86f48a73a2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:4:4",
+      "sequence": 22927,
+      "chapter_label": "ZEC 4",
+      "verse_label": "4",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 4,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 4,
+          "verse": 4
+        }
+      ],
+      "en": "I answered and spoke to the angel who talked with me, saying, “What are these, my lord?”",
+      "ko": "내게 말하는 천사에게 물어 가로되 내 주여 이것들이 무엇이니이까",
+      "source_text_hash": "121deba8f643aae633fc145d255a39c0dffae8d8bacd153ade77c7942f9a8786",
+      "translation_text_hash": "c713535b5396d0421943887f42f9dc31116cb375b2d1fb5e8d9cb4ef8f13f8d2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내게 말하는 천사에게 물어 가로되 내 주여 이것들이 무엇이니이까"
+      ],
+      "raw_text_hashes": [
+        "c713535b5396d0421943887f42f9dc31116cb375b2d1fb5e8d9cb4ef8f13f8d2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:4:5",
+      "sequence": 22928,
+      "chapter_label": "ZEC 4",
+      "verse_label": "5",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 4,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 4,
+          "verse": 5
+        }
+      ],
+      "en": "Then the angel who talked with me answered me, “Don’t you know what these are?” I said, “No, my lord.”",
+      "ko": "내게 말하는 천사가 대답하여 가로되 네가 이것들이 무엇인지 알지 못하느냐 내가 대답하되 내 주여 내가 알지 못하나이다",
+      "source_text_hash": "85b2ddc6cb90bde62de0e80fe5b310d2da9461fcf6028992496e3dc122dcbd33",
+      "translation_text_hash": "32b999c39cc97b061f0824b60a1b0a2efdc2fec55ce08b87a64b3bb4e016e191",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내게 말하는 천사가 대답하여 가로되 네가 이것들이 무엇인지 알지 못하느냐 내가 대답하되 내 주여 내가 알지 못하나이다"
+      ],
+      "raw_text_hashes": [
+        "32b999c39cc97b061f0824b60a1b0a2efdc2fec55ce08b87a64b3bb4e016e191"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:4:6",
+      "sequence": 22929,
+      "chapter_label": "ZEC 4",
+      "verse_label": "6",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 4,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 4,
+          "verse": 6
+        }
+      ],
+      "en": "Then he answered and spoke to me, saying, “This is the LORD’s word to Zerubbabel, saying, ‘Not by might, nor by power, but by my Spirit,’ says the LORD of Armies.",
+      "ko": "그가 내게 일러 가로되 여호와께서 스룹바벨에게 하신 말씀이 이러하니라 만군의 여호와께서 말씀하시되 이는 힘으로 되지 아니하며 능으로 되지아니하고 오직 나의 신으로 되느니라",
+      "source_text_hash": "3b794489585b33095bd003fbe8367d3f484c5a5a89ca59a8c5228bdea0c3b261",
+      "translation_text_hash": "95da41da2a393cbf1b066cfd493b6c67a0dc73ad4f655af53e882175e97a4602",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 내게 일러 가로되 여호와께서 스룹바벨에게 하신 말씀이 이러하니라 만군의 여호와께서 말씀하시되 이는 힘으로 되지 아니하며 능으로 되지아니하고 오직 나의 신으로 되느니라"
+      ],
+      "raw_text_hashes": [
+        "95da41da2a393cbf1b066cfd493b6c67a0dc73ad4f655af53e882175e97a4602"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:4:7",
+      "sequence": 22930,
+      "chapter_label": "ZEC 4",
+      "verse_label": "7",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 4,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 4,
+          "verse": 7
+        }
+      ],
+      "en": "Who are you, great mountain? Before Zerubbabel you are a plain; and he will bring out the capstone with shouts of ‘Grace, grace, to it!’”",
+      "ko": "큰 산아 네가 무엇이냐 네가 스룹바벨 앞에서 평지가 되리라 그가 머릿돌을 내어 놓을 때에 무리가 외치기를 은총, 은총이 그에게 있을찌어다 하리라 하셨고",
+      "source_text_hash": "aa6c5283d5b395d877fb3acb7b4dd943ed67170fe14a08c2af06bf1375a7ec16",
+      "translation_text_hash": "370b9f2d5752839c097ec734848da30dfc1e1009ae2c13ed3f0d1fda5387c8a2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "큰 산아 네가 무엇이냐 네가 스룹바벨 앞에서 평지가 되리라 그가 머릿돌을 내어 놓을 때에 무리가 외치기를 은총, 은총이 그에게 있을찌어다 하리라 하셨고"
+      ],
+      "raw_text_hashes": [
+        "370b9f2d5752839c097ec734848da30dfc1e1009ae2c13ed3f0d1fda5387c8a2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:4:8",
+      "sequence": 22931,
+      "chapter_label": "ZEC 4",
+      "verse_label": "8",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 4,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 4,
+          "verse": 8
+        }
+      ],
+      "en": "Moreover the LORD’s word came to me, saying,",
+      "ko": "여호와의 말씀이 또 내게 임하여 가라사대",
+      "source_text_hash": "4fe6548be4bc036eef72ed1db86f9dcc8989355e4d608b71dd65965f07c53184",
+      "translation_text_hash": "d80f64c74466735890f0e38292da375b0a0ec48e42ba77cef849f80e52a6bc56",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 말씀이 또 내게 임하여 가라사대"
+      ],
+      "raw_text_hashes": [
+        "d80f64c74466735890f0e38292da375b0a0ec48e42ba77cef849f80e52a6bc56"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:4:9",
+      "sequence": 22932,
+      "chapter_label": "ZEC 4",
+      "verse_label": "9",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 4,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 4,
+          "verse": 9
+        }
+      ],
+      "en": "“The hands of Zerubbabel have laid the foundation of this house. His hands shall also finish it; and you will know that the LORD of Armies has sent me to you.",
+      "ko": "스룹바벨의 손이 이 전의 지대를 놓았은즉 그 손이 또한 그것을 마치리라 하셨나니 만군의 여호와께서 나를 너희에게 보내신 줄을 네가 알리라 하셨느니라",
+      "source_text_hash": "6610b0ac28092c917ada1090c25b0a908f1b15bc6c33a4ef320dcac6de5a4e7c",
+      "translation_text_hash": "53c7231807b1b8a727346e8cafc334f1d58056c82b77786d4e5d3d3cde442dd5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "스룹바벨의 손이 이 전의 지대를 놓았은즉 그 손이 또한 그것을 마치리라 하셨나니 만군의 여호와께서 나를 너희에게 보내신 줄을 네가 알리라 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "53c7231807b1b8a727346e8cafc334f1d58056c82b77786d4e5d3d3cde442dd5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:4:10",
+      "sequence": 22933,
+      "chapter_label": "ZEC 4",
+      "verse_label": "10",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 4,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 4,
+          "verse": 10
+        }
+      ],
+      "en": "Indeed, who despises the day of small things? For these seven shall rejoice, and shall see the plumb line in the hand of Zerubbabel. These are the LORD’s eyes, which run back and forth through the whole earth.”",
+      "ko": "작은 일의 날이라고 멸시하는 자가 누구냐 이 일곱은 온 세상에 두루 행하는 여호와의 눈이라 다림줄이 스룹바벨의 손에 있음을 보고 기뻐하리라",
+      "source_text_hash": "8c57c7dfe559e5f98d3b4b20429f55d381155f3e367a050b0472629fea038343",
+      "translation_text_hash": "0e1353129b447e776c82337b4655eb63b980656bb08c8599783a1a6f8f580d9e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "작은 일의 날이라고 멸시하는 자가 누구냐 이 일곱은 온 세상에 두루 행하는 여호와의 눈이라 다림줄이 스룹바벨의 손에 있음을 보고 기뻐하리라"
+      ],
+      "raw_text_hashes": [
+        "0e1353129b447e776c82337b4655eb63b980656bb08c8599783a1a6f8f580d9e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:4:11",
+      "sequence": 22934,
+      "chapter_label": "ZEC 4",
+      "verse_label": "11",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 4,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 4,
+          "verse": 11
+        }
+      ],
+      "en": "Then I asked him, “What are these two olive trees on the right side of the lamp stand and on the left side of it?”",
+      "ko": "내가 그에게 물어 가로되 등대 좌우의 두 감람나무는 무슨 뜻이니이까 하고",
+      "source_text_hash": "9d33351e3fc28278214bbb6e5616f69c1a68b92289a98ddcfe1bc43bed990e7e",
+      "translation_text_hash": "992c9a9c4db34fafe275adec422ac1ef31fd9499a2d8170fa819810c37d6c201",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 그에게 물어 가로되 등대 좌우의 두 감람나무는 무슨 뜻이니이까 하고"
+      ],
+      "raw_text_hashes": [
+        "992c9a9c4db34fafe275adec422ac1ef31fd9499a2d8170fa819810c37d6c201"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:4:12",
+      "sequence": 22935,
+      "chapter_label": "ZEC 4",
+      "verse_label": "12",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 4,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 4,
+          "verse": 12
+        }
+      ],
+      "en": "I asked him the second time, “What are these two olive branches, which are beside the two golden spouts that pour the golden oil out of themselves?”",
+      "ko": "다시 그에게 물어 가로되 금 기름을 흘려내는 두 금관 옆에 있는 이 감람나무 두 가지는 무슨 뜻이니이까",
+      "source_text_hash": "ee85e43c79e71ed3bc12391cc4a3fb7eaa12d0419c0ad54ada3c7628cd86e5f1",
+      "translation_text_hash": "90f53d7fce73ca2d6879108ed74f80b72fa74ee320a34ea9d8d280a5ac36d351",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다시 그에게 물어 가로되 금 기름을 흘려내는 두 금관 옆에 있는 이 감람나무 두 가지는 무슨 뜻이니이까"
+      ],
+      "raw_text_hashes": [
+        "90f53d7fce73ca2d6879108ed74f80b72fa74ee320a34ea9d8d280a5ac36d351"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:4:13",
+      "sequence": 22936,
+      "chapter_label": "ZEC 4",
+      "verse_label": "13",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 4,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 4,
+          "verse": 13
+        }
+      ],
+      "en": "He answered me, “Don’t you know what these are?” I said, “No, my lord.”",
+      "ko": "그가 내게 대답하여 가로되 네가 이것이 무엇인지 알지 못하느냐 대답하되 내 주여 알지 못하나이다",
+      "source_text_hash": "a08be4a933548d8efd5e202ea4ad96268b34f25da41384f974a68513fa493587",
+      "translation_text_hash": "d0b0ac531b8db0cdae70838c8ccad90870b66f2d921d2ddc5951a822de569933",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 내게 대답하여 가로되 네가 이것이 무엇인지 알지 못하느냐 대답하되 내 주여 알지 못하나이다"
+      ],
+      "raw_text_hashes": [
+        "d0b0ac531b8db0cdae70838c8ccad90870b66f2d921d2ddc5951a822de569933"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:4:14",
+      "sequence": 22937,
+      "chapter_label": "ZEC 4",
+      "verse_label": "14",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 4,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 4,
+          "verse": 14
+        }
+      ],
+      "en": "Then he said, “These are the two anointed ones who stand by the Lord of the whole earth.”",
+      "ko": "가로되 이는 기름 발리운 자 둘이니 온 세상의 주 앞에 모셔 섰는 자니라 하더라",
+      "source_text_hash": "c52de6a83635e1bed85a395eae44903cba4860158db1ac2afd8567e2dad22868",
+      "translation_text_hash": "ccb43b0e1f6ea6165016bd1f7e5a24e3058a4043c973d61b9ce8afcc8077a3e1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 이는 기름 발리운 자 둘이니 온 세상의 주 앞에 모셔 섰는 자니라 하더라"
+      ],
+      "raw_text_hashes": [
+        "ccb43b0e1f6ea6165016bd1f7e5a24e3058a4043c973d61b9ce8afcc8077a3e1"
+      ]
+    }
+  ]
+}

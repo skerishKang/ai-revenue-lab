@@ -1,0 +1,2413 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:MAT:chapter:026",
+  "unit_ordinal": 955,
+  "unit_label": "MAT 26",
+  "book_code": "MAT",
+  "chapter_number": 26,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:MAT:26:1",
+      "sequence": 24056,
+      "chapter_label": "MAT 26",
+      "verse_label": "1",
+      "locator": {
+        "book": "MAT",
+        "chapter": 26,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 26,
+          "verse": 1
+        }
+      ],
+      "en": "When Jesus had finished all these words, he said to his disciples,",
+      "ko": "예수께서 이 말씀을 다 마치시고 제자들에게 이르시되",
+      "source_text_hash": "3d5a188cb262c7772b839706e9ace4ad76c73a3bd040a90027afc1524dda3eef",
+      "translation_text_hash": "8ad975d9cd561020d60729e877d4123b6d8deb6ab34f3faf48a9b94d1e1e5371",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 이 말씀을 다 마치시고 제자들에게 이르시되"
+      ],
+      "raw_text_hashes": [
+        "8ad975d9cd561020d60729e877d4123b6d8deb6ab34f3faf48a9b94d1e1e5371"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:26:2",
+      "sequence": 24057,
+      "chapter_label": "MAT 26",
+      "verse_label": "2",
+      "locator": {
+        "book": "MAT",
+        "chapter": 26,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 26,
+          "verse": 2
+        }
+      ],
+      "en": "“You know that after two days the Passover is coming, and the Son of Man will be delivered up to be crucified.”",
+      "ko": "너희의 아는 바와 같이 이틀을 지나면 유월절이라 인자가 십자가에 못 박히기 위하여 팔리우리라 하시더라",
+      "source_text_hash": "e1e6f458258ea281289da97decdce01ed70910e30648afb7acca0f8cd4bb7070",
+      "translation_text_hash": "23c92e4a775d0e9325d0646935b6ab0946aea63203e0b22c48ee8cc15f0eaf04",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희의 아는 바와 같이 이틀을 지나면 유월절이라 인자가 십자가에 못 박히기 위하여 팔리우리라 하시더라"
+      ],
+      "raw_text_hashes": [
+        "23c92e4a775d0e9325d0646935b6ab0946aea63203e0b22c48ee8cc15f0eaf04"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:26:3",
+      "sequence": 24058,
+      "chapter_label": "MAT 26",
+      "verse_label": "3",
+      "locator": {
+        "book": "MAT",
+        "chapter": 26,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 26,
+          "verse": 3
+        }
+      ],
+      "en": "Then the chief priests, the scribes, and the elders of the people were gathered together in the court of the high priest, who was called Caiaphas.",
+      "ko": "그 때에 대제사장들과 백성의 장로들이 가야바라 하는 대제사장의 아문에 모여",
+      "source_text_hash": "9ab63b35bc7a7790cf98184cfd3f21225fbdab91c68ad7fa91593ba2c46d871f",
+      "translation_text_hash": "baa191ebeb4827e96e4dfda5bc760f99517a404761acda9cac16d5ee53f9fc69",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 대제사장들과 백성의 장로들이 가야바라 하는 대제사장의 아문에 모여"
+      ],
+      "raw_text_hashes": [
+        "baa191ebeb4827e96e4dfda5bc760f99517a404761acda9cac16d5ee53f9fc69"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:26:4",
+      "sequence": 24059,
+      "chapter_label": "MAT 26",
+      "verse_label": "4",
+      "locator": {
+        "book": "MAT",
+        "chapter": 26,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 26,
+          "verse": 4
+        }
+      ],
+      "en": "They took counsel together that they might take Jesus by deceit and kill him.",
+      "ko": "예수를 궤계로 잡아 죽이려고 의논하되",
+      "source_text_hash": "f9d0dea2b486fc12fd4cdfae69501baf0bd27da874344125a49654092d0bc24e",
+      "translation_text_hash": "17f8d2a289097bf0faa0ba09d17e8ed2d0a3baf5f8b2d2fc584274498d17e0c7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수를 궤계로 잡아 죽이려고 의논하되"
+      ],
+      "raw_text_hashes": [
+        "17f8d2a289097bf0faa0ba09d17e8ed2d0a3baf5f8b2d2fc584274498d17e0c7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:26:5",
+      "sequence": 24060,
+      "chapter_label": "MAT 26",
+      "verse_label": "5",
+      "locator": {
+        "book": "MAT",
+        "chapter": 26,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 26,
+          "verse": 5
+        }
+      ],
+      "en": "But they said, “Not during the feast, lest a riot occur among the people.”",
+      "ko": "말하기를 민요가 날까 하노니 명절에는 말자 하더라",
+      "source_text_hash": "f516b49d830ee4a4c5fa8e9d7d4c58ead58fe9446e76255e99f4a03ad45ce46d",
+      "translation_text_hash": "df656ac52f58aa4c47bca37a80d62123c93e934e40ae2f098d73f1f3d8be79a0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "말하기를 민요가 날까 하노니 명절에는 말자 하더라"
+      ],
+      "raw_text_hashes": [
+        "df656ac52f58aa4c47bca37a80d62123c93e934e40ae2f098d73f1f3d8be79a0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:26:6",
+      "sequence": 24061,
+      "chapter_label": "MAT 26",
+      "verse_label": "6",
+      "locator": {
+        "book": "MAT",
+        "chapter": 26,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 26,
+          "verse": 6
+        }
+      ],
+      "en": "Now when Jesus was in Bethany, in the house of Simon the leper,",
+      "ko": "예수께서 베다니 문둥이 시몬의 집에 계실 때에",
+      "source_text_hash": "e497e80e3a66a1904fa085c94d17692efb5afb9da89b1978f64cdf709eb4f453",
+      "translation_text_hash": "6c4f79c0ce5c2d5778cd18d2faa8b6923a112e8263e151e3f7dc727d82899b9c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 베다니 문둥이 시몬의 집에 계실 때에"
+      ],
+      "raw_text_hashes": [
+        "6c4f79c0ce5c2d5778cd18d2faa8b6923a112e8263e151e3f7dc727d82899b9c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:26:7",
+      "sequence": 24062,
+      "chapter_label": "MAT 26",
+      "verse_label": "7",
+      "locator": {
+        "book": "MAT",
+        "chapter": 26,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 26,
+          "verse": 7
+        }
+      ],
+      "en": "a woman came to him having an alabaster jar of very expensive ointment, and she poured it on his head as he sat at the table.",
+      "ko": "한 여자가 매우 귀한 향유 한 옥합을 가지고 나아와서 식사하시는 예수의 머리에 부으니",
+      "source_text_hash": "420dda4dcd09af47f9e34e64154af00695e3542bd70019e4f0cab3ec8a11242c",
+      "translation_text_hash": "694293313d87371fd62d15fea03b02049c83f31752ebb8e08bd019767f8f5811",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "한 여자가 매우 귀한 향유 한 옥합을 가지고 나아와서 식사하시는 예수의 머리에 부으니"
+      ],
+      "raw_text_hashes": [
+        "694293313d87371fd62d15fea03b02049c83f31752ebb8e08bd019767f8f5811"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:26:8",
+      "sequence": 24063,
+      "chapter_label": "MAT 26",
+      "verse_label": "8",
+      "locator": {
+        "book": "MAT",
+        "chapter": 26,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 26,
+          "verse": 8
+        }
+      ],
+      "en": "But when his disciples saw this, they were indignant, saying, “Why this waste?",
+      "ko": "제자들이 보고 분하여 가로되 무슨 의사로 이것을 허비하느뇨",
+      "source_text_hash": "a93a837eb7c1252fdd2ec7a67041841cdaab32d865d439dab8fffb4e0c751cb8",
+      "translation_text_hash": "cf95a4726b08f70e7e203c93dc6f49b913df8d4ba0ec4337a88fc2a2419fb7a7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제자들이 보고 분하여 가로되 무슨 의사로 이것을 허비하느뇨"
+      ],
+      "raw_text_hashes": [
+        "cf95a4726b08f70e7e203c93dc6f49b913df8d4ba0ec4337a88fc2a2419fb7a7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:26:9",
+      "sequence": 24064,
+      "chapter_label": "MAT 26",
+      "verse_label": "9",
+      "locator": {
+        "book": "MAT",
+        "chapter": 26,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 26,
+          "verse": 9
+        }
+      ],
+      "en": "For this ointment might have been sold for much and given to the poor.”",
+      "ko": "이것을 많은 값에 팔아 가난한 자들에게 줄 수 있었겠도다 하거늘",
+      "source_text_hash": "b645eaebf8a40208f449dd7bbbe41656f701489c19ebcc4de65e38a3590970cb",
+      "translation_text_hash": "9f06f66b65dfce035c8265f3baf1076a93b0e4112abcb3fe5c5165441595cb98",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이것을 많은 값에 팔아 가난한 자들에게 줄 수 있었겠도다 하거늘"
+      ],
+      "raw_text_hashes": [
+        "9f06f66b65dfce035c8265f3baf1076a93b0e4112abcb3fe5c5165441595cb98"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:26:10",
+      "sequence": 24065,
+      "chapter_label": "MAT 26",
+      "verse_label": "10",
+      "locator": {
+        "book": "MAT",
+        "chapter": 26,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 26,
+          "verse": 10
+        }
+      ],
+      "en": "However, knowing this, Jesus said to them, “Why do you trouble the woman? She has done a good work for me.",
+      "ko": "예수께서 아시고 저희에게 이르시되 너희가 어찌하여 이 여자를 괴롭게 하느냐 저가 내게 좋은 일을 하였느니라",
+      "source_text_hash": "9e7c53aa9bbd9109e358a9bd943154a78f0932fc1fbe8c2ec8befcb568f47c86",
+      "translation_text_hash": "4056e983c228df6d6662208b4aeadd6130adae87bc583ba71793056f741e8727",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 아시고 저희에게 이르시되 너희가 어찌하여 이 여자를 괴롭게 하느냐 저가 내게 좋은 일을 하였느니라"
+      ],
+      "raw_text_hashes": [
+        "4056e983c228df6d6662208b4aeadd6130adae87bc583ba71793056f741e8727"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:26:11",
+      "sequence": 24066,
+      "chapter_label": "MAT 26",
+      "verse_label": "11",
+      "locator": {
+        "book": "MAT",
+        "chapter": 26,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 26,
+          "verse": 11
+        }
+      ],
+      "en": "For you always have the poor with you, but you don’t always have me.",
+      "ko": "가난한 자들은 항상 너희와 함께 있거니와 나는 항상 함께 있지 아니하리라",
+      "source_text_hash": "e6c363439f3383a73ce12ae940b0de0bcbe8a9bd0d507f92803e89e1e0618cbd",
+      "translation_text_hash": "68ca4dc9ff0af7a6b34d95f460e5c17ed1eb74c9326d7c8f8e9443f813fc4532",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가난한 자들은 항상 너희와 함께 있거니와 나는 항상 함께 있지 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "68ca4dc9ff0af7a6b34d95f460e5c17ed1eb74c9326d7c8f8e9443f813fc4532"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:26:12",
+      "sequence": 24067,
+      "chapter_label": "MAT 26",
+      "verse_label": "12",
+      "locator": {
+        "book": "MAT",
+        "chapter": 26,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 26,
+          "verse": 12
+        }
+      ],
+      "en": "For in pouring this ointment on my body, she did it to prepare me for burial.",
+      "ko": "이 여자가 내 몸에 이 향유를 부은 것은 내 장사를 위하여 함이니라",
+      "source_text_hash": "103524a322a1ef1aeac25f2f006ea7fbb49e6ea3a99307a916285112ea3ec216",
+      "translation_text_hash": "d4835d8e5f3c898abcdec961517032468582110fcd44f3587883850163a749a8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 여자가 내 몸에 이 향유를 부은 것은 내 장사를 위하여 함이니라"
+      ],
+      "raw_text_hashes": [
+        "d4835d8e5f3c898abcdec961517032468582110fcd44f3587883850163a749a8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:26:13",
+      "sequence": 24068,
+      "chapter_label": "MAT 26",
+      "verse_label": "13",
+      "locator": {
+        "book": "MAT",
+        "chapter": 26,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 26,
+          "verse": 13
+        }
+      ],
+      "en": "Most certainly I tell you, wherever this Good News is preached in the whole world, what this woman has done will also be spoken of as a memorial of her.”",
+      "ko": "내가 진실로 너희에게 이르노니 온 천하에 어디서든지 이 복음이 전파되는 곳에는 이 여자의 행한 일도 말하여 저를 기념하리라 하시니라",
+      "source_text_hash": "99f29c616b90c84672ebcea80dc2b736847e5f7500bef5fb2d0c309d5688809d",
+      "translation_text_hash": "55027ac1e637e55800becf7badd0b0ee56306c5c77b42973c80209b717f3909c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 진실로 너희에게 이르노니 온 천하에 어디서든지 이 복음이 전파되는 곳에는 이 여자의 행한 일도 말하여 저를 기념하리라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "55027ac1e637e55800becf7badd0b0ee56306c5c77b42973c80209b717f3909c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:26:14",
+      "sequence": 24069,
+      "chapter_label": "MAT 26",
+      "verse_label": "14",
+      "locator": {
+        "book": "MAT",
+        "chapter": 26,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 26,
+          "verse": 14
+        }
+      ],
+      "en": "Then one of the twelve, who was called Judas Iscariot, went to the chief priests",
+      "ko": "그 때에 열 둘 중에 하나인 가룟 유다라 하는 자가 대제사장들에게 가서 말하되",
+      "source_text_hash": "b38d20475de30d959347fa56d9183f6b2bbadb50f9e02f1ef0a80cced46f30ee",
+      "translation_text_hash": "a62b49c95c4dfdbc23643328b488572172791b2d543b01f5186c328a0d785e59",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 열 둘 중에 하나인 가룟 유다라 하는 자가 대제사장들에게 가서 말하되"
+      ],
+      "raw_text_hashes": [
+        "a62b49c95c4dfdbc23643328b488572172791b2d543b01f5186c328a0d785e59"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:26:15",
+      "sequence": 24070,
+      "chapter_label": "MAT 26",
+      "verse_label": "15",
+      "locator": {
+        "book": "MAT",
+        "chapter": 26,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 26,
+          "verse": 15
+        }
+      ],
+      "en": "and said, “What are you willing to give me if I deliver him to you?” So they weighed out for him thirty pieces of silver.",
+      "ko": "내가 예수를 너희에게 넘겨주리니 얼마나 주려느냐 하니 그들이 은 삼십을 달아 주거늘",
+      "source_text_hash": "e0ba101a75a7af902afde6573c679dfd93776e0556003af3f4bda750e12ca1ce",
+      "translation_text_hash": "e32b486305299a297b1460e66be0eeb2e77927e56610661507c38871e8dae6da",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 예수를 너희에게 넘겨주리니 얼마나 주려느냐 하니 그들이 은 삼십을 달아 주거늘"
+      ],
+      "raw_text_hashes": [
+        "e32b486305299a297b1460e66be0eeb2e77927e56610661507c38871e8dae6da"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:26:16",
+      "sequence": 24071,
+      "chapter_label": "MAT 26",
+      "verse_label": "16",
+      "locator": {
+        "book": "MAT",
+        "chapter": 26,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 26,
+          "verse": 16
+        }
+      ],
+      "en": "From that time he sought opportunity to betray him.",
+      "ko": "저가 그 때부터 예수를 넘겨줄 기회를 찾더라",
+      "source_text_hash": "7d1f2eed082f05ddbc36a3bc9be45dca0547514636e493f059851557e84d7a8d",
+      "translation_text_hash": "32ed1337968570e5347572e6e4a8b74c4412edcfada0c3a2ddc48a5da1641e22",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 그 때부터 예수를 넘겨줄 기회를 찾더라"
+      ],
+      "raw_text_hashes": [
+        "32ed1337968570e5347572e6e4a8b74c4412edcfada0c3a2ddc48a5da1641e22"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:26:17",
+      "sequence": 24072,
+      "chapter_label": "MAT 26",
+      "verse_label": "17",
+      "locator": {
+        "book": "MAT",
+        "chapter": 26,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 26,
+          "verse": 17
+        }
+      ],
+      "en": "Now on the first day of unleavened bread, the disciples came to Jesus, saying to him, “Where do you want us to prepare for you to eat the Passover?”",
+      "ko": "무교절의 첫날에 제자들이 예수께 나아와서 가로되 유월절 잡수실 것을 우리가 어디서 예비하기를 원하시나이까",
+      "source_text_hash": "4cc4c4c1ba934994be27a278e40765f60ec9f4073764e270929b3b94c6c016f1",
+      "translation_text_hash": "2edcd0e26beeb74c36787529fe209f5e36780e39e55f9e8fdf6cb0b0be68007c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무교절의 첫날에 제자들이 예수께 나아와서 가로되 유월절 잡수실 것을 우리가 어디서 예비하기를 원하시나이까"
+      ],
+      "raw_text_hashes": [
+        "2edcd0e26beeb74c36787529fe209f5e36780e39e55f9e8fdf6cb0b0be68007c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:26:18",
+      "sequence": 24073,
+      "chapter_label": "MAT 26",
+      "verse_label": "18",
+      "locator": {
+        "book": "MAT",
+        "chapter": 26,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 26,
+          "verse": 18
+        }
+      ],
+      "en": "He said, “Go into the city to a certain person, and tell him, ‘The Teacher says, “My time is at hand. I will keep the Passover at your house with my disciples.”’”",
+      "ko": "가라사대 성안 아무에게 가서 이르되 선생님 말씀이 내 때가 가까왔으니 내 제자들과 함께 유월절을 네 집에서 지키겠다 하시더라 하라 하신대",
+      "source_text_hash": "433461cfe135127f237ced9f1d787d10ad646283f5fc9d498748d8fcebf6505b",
+      "translation_text_hash": "b1f1f07fa0b6252990747c22595b361c5af0718a14547d31b64cde65cce8c0b1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가라사대 성안 아무에게 가서 이르되 선생님 말씀이 내 때가 가까왔으니 내 제자들과 함께 유월절을 네 집에서 지키겠다 하시더라 하라 하신대"
+      ],
+      "raw_text_hashes": [
+        "b1f1f07fa0b6252990747c22595b361c5af0718a14547d31b64cde65cce8c0b1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:26:19",
+      "sequence": 24074,
+      "chapter_label": "MAT 26",
+      "verse_label": "19",
+      "locator": {
+        "book": "MAT",
+        "chapter": 26,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 26,
+          "verse": 19
+        }
+      ],
+      "en": "The disciples did as Jesus commanded them, and they prepared the Passover.",
+      "ko": "제자들이 예수의 시키신대로 하여 유월절을 예비하였더라",
+      "source_text_hash": "651ccd069fdac532a62fbc9e1a94626cbc786faa6234ec10fb00fd0d785d22dc",
+      "translation_text_hash": "a13473fcab3c149e90774a361f9adc244f307b6db25bf9f5392b4d569a9986f2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제자들이 예수의 시키신대로 하여 유월절을 예비하였더라"
+      ],
+      "raw_text_hashes": [
+        "a13473fcab3c149e90774a361f9adc244f307b6db25bf9f5392b4d569a9986f2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:26:20",
+      "sequence": 24075,
+      "chapter_label": "MAT 26",
+      "verse_label": "20",
+      "locator": {
+        "book": "MAT",
+        "chapter": 26,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 26,
+          "verse": 20
+        }
+      ],
+      "en": "Now when evening had come, he was reclining at the table with the twelve disciples.",
+      "ko": "저물 때에 예수께서 열 두 제자와 함께 앉으셨더니",
+      "source_text_hash": "61838fc0ecb50fbe952e35a27345f19ae5a54b76ae7b8e3d8da77022aa981f84",
+      "translation_text_hash": "f71f867bd079282ae4bb2fcf8b65eb5eb989091fa4535956198a99ee3f7ccdf3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저물 때에 예수께서 열 두 제자와 함께 앉으셨더니"
+      ],
+      "raw_text_hashes": [
+        "f71f867bd079282ae4bb2fcf8b65eb5eb989091fa4535956198a99ee3f7ccdf3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:26:21",
+      "sequence": 24076,
+      "chapter_label": "MAT 26",
+      "verse_label": "21",
+      "locator": {
+        "book": "MAT",
+        "chapter": 26,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 26,
+          "verse": 21
+        }
+      ],
+      "en": "As they were eating, he said, “Most certainly I tell you that one of you will betray me.”",
+      "ko": "저희가 먹을 때에 이르시되 내가 진실로 너희에게 이르노니 너희 중에 한 사람이 나를 팔리라 하시니",
+      "source_text_hash": "4bb90d666d48b444198db71055d628e7046b4ddcd2160dafefed6a428f35af4c",
+      "translation_text_hash": "5e88f3ee7bdf4f2bade442e7505a7076293dcb38ff4134d4d62ca75eca963c07",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 먹을 때에 이르시되 내가 진실로 너희에게 이르노니 너희 중에 한 사람이 나를 팔리라 하시니"
+      ],
+      "raw_text_hashes": [
+        "5e88f3ee7bdf4f2bade442e7505a7076293dcb38ff4134d4d62ca75eca963c07"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:26:22",
+      "sequence": 24077,
+      "chapter_label": "MAT 26",
+      "verse_label": "22",
+      "locator": {
+        "book": "MAT",
+        "chapter": 26,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 26,
+          "verse": 22
+        }
+      ],
+      "en": "They were exceedingly sorrowful, and each began to ask him, “It isn’t me, is it, Lord?”",
+      "ko": "저희가 심히 근심하여 각각 여짜오되 주여 내니이까",
+      "source_text_hash": "74967a14e2bc3ef0c2ee35d850c987e0e198053c63ad9f8b8ad8cf3a744cf02f",
+      "translation_text_hash": "e3b512ce425b65d19108852230c2b3e2cc5964e0a8f06ffd1e43ecb73642897a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 심히 근심하여 각각 여짜오되 주여 내니이까"
+      ],
+      "raw_text_hashes": [
+        "e3b512ce425b65d19108852230c2b3e2cc5964e0a8f06ffd1e43ecb73642897a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:26:23",
+      "sequence": 24078,
+      "chapter_label": "MAT 26",
+      "verse_label": "23",
+      "locator": {
+        "book": "MAT",
+        "chapter": 26,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 26,
+          "verse": 23
+        }
+      ],
+      "en": "He answered, “He who dipped his hand with me in the dish will betray me.",
+      "ko": "대답하여 가라사대 나와 함께 그릇에 손을 넣는 그가 나를 팔리라",
+      "source_text_hash": "e26a11e473453d0bc28c68bf5d03c15482a4c30106a4dab18b39be010ac245ff",
+      "translation_text_hash": "7d671b27d112c8d114a77766ea265808dd50c37be1896d248c5a447d46aee6fb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대답하여 가라사대 나와 함께 그릇에 손을 넣는 그가 나를 팔리라"
+      ],
+      "raw_text_hashes": [
+        "7d671b27d112c8d114a77766ea265808dd50c37be1896d248c5a447d46aee6fb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:26:24",
+      "sequence": 24079,
+      "chapter_label": "MAT 26",
+      "verse_label": "24",
+      "locator": {
+        "book": "MAT",
+        "chapter": 26,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 26,
+          "verse": 24
+        }
+      ],
+      "en": "The Son of Man goes even as it is written of him, but woe to that man through whom the Son of Man is betrayed! It would be better for that man if he had not been born.”",
+      "ko": "인자는 자기에게 대하여 기록된대로 가거니와 인자를 파는 그 사람에게는 화가 있으리로다 그 사람은 차라리 나지 아니 하였더면 제게 좋을뻔 하였느니라",
+      "source_text_hash": "9eb2356fde050a6e3b6b08ebe7306bd04ace23bde9cb05242da95710dbded281",
+      "translation_text_hash": "c8c0aaf21682fa7cb07ca564bc902c5e83d9f3b53891e8a00c850b4382ae5abd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "인자는 자기에게 대하여 기록된대로 가거니와 인자를 파는 그 사람에게는 화가 있으리로다 그 사람은 차라리 나지 아니 하였더면 제게 좋을뻔 하였느니라"
+      ],
+      "raw_text_hashes": [
+        "c8c0aaf21682fa7cb07ca564bc902c5e83d9f3b53891e8a00c850b4382ae5abd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:26:25",
+      "sequence": 24080,
+      "chapter_label": "MAT 26",
+      "verse_label": "25",
+      "locator": {
+        "book": "MAT",
+        "chapter": 26,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 26,
+          "verse": 25
+        }
+      ],
+      "en": "Judas, who betrayed him, answered, “It isn’t me, is it, Rabbi?” He said to him, “You said it.”",
+      "ko": "예수를 파는 유다가 대답하여 가로되 랍비여 내니이까 대답하시되 네가 말하였도다 하시니라",
+      "source_text_hash": "95beaae74c4e8137cfd99b5e022920d4dbeb5f5eab11466f3b42d67a8a069556",
+      "translation_text_hash": "27e4b6ee6cdb9cfe6ca5ad7e5435f12043ecc66ede4e5a612f0144c8e8e2ed81",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수를 파는 유다가 대답하여 가로되 랍비여 내니이까 대답하시되 네가 말하였도다 하시니라"
+      ],
+      "raw_text_hashes": [
+        "27e4b6ee6cdb9cfe6ca5ad7e5435f12043ecc66ede4e5a612f0144c8e8e2ed81"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:26:26",
+      "sequence": 24081,
+      "chapter_label": "MAT 26",
+      "verse_label": "26",
+      "locator": {
+        "book": "MAT",
+        "chapter": 26,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 26,
+          "verse": 26
+        }
+      ],
+      "en": "As they were eating, Jesus took bread, gave thanks for it, and broke it. He gave to the disciples and said, “Take, eat; this is my body.”",
+      "ko": "저희가 먹을 때에 예수께서 떡을 가지사 축복하시고 떼어 제자들을 주시며 가라사대 받아 먹으라 이것이 내 몸이니라 하시고",
+      "source_text_hash": "47a343c4d0d6d0d6d714cf0f126ceb4e9a0f2c089de85b4336133771fa0b88a5",
+      "translation_text_hash": "8f1f0be3f187191c7005b7ea664a1c3b58c6b065715b8f701c768345d1e799cb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 먹을 때에 예수께서 떡을 가지사 축복하시고 떼어 제자들을 주시며 가라사대 받아 먹으라 이것이 내 몸이니라 하시고"
+      ],
+      "raw_text_hashes": [
+        "8f1f0be3f187191c7005b7ea664a1c3b58c6b065715b8f701c768345d1e799cb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:26:27",
+      "sequence": 24082,
+      "chapter_label": "MAT 26",
+      "verse_label": "27",
+      "locator": {
+        "book": "MAT",
+        "chapter": 26,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 26,
+          "verse": 27
+        }
+      ],
+      "en": "He took the cup, gave thanks, and gave to them, saying, “All of you drink it,",
+      "ko": "또 잔을 가지사 사례하시고 저희에게 주시며 가라사대 너희가 다 이것을 마시라",
+      "source_text_hash": "51502d2fc281c52bd460248cb0fce5329e117545597fadd50785e0363606668a",
+      "translation_text_hash": "e523e36657dac1cc12152a71408e309b3d17fec4d26b5226518db0e84406bec7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 잔을 가지사 사례하시고 저희에게 주시며 가라사대 너희가 다 이것을 마시라"
+      ],
+      "raw_text_hashes": [
+        "e523e36657dac1cc12152a71408e309b3d17fec4d26b5226518db0e84406bec7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:26:28",
+      "sequence": 24083,
+      "chapter_label": "MAT 26",
+      "verse_label": "28",
+      "locator": {
+        "book": "MAT",
+        "chapter": 26,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 26,
+          "verse": 28
+        }
+      ],
+      "en": "for this is my blood of the new covenant, which is poured out for many for the remission of sins.",
+      "ko": "이것은 죄 사함을 얻게 하려고 많은 사람을 위하여 흘리는바 나의 피 곧 언약의 피니라",
+      "source_text_hash": "43478607d3fa07ab879d84cdf53a152630956c95cc844fbdd73016113e1d70b7",
+      "translation_text_hash": "812b5c8a64fd4b43efcb88a75c63bc5e2ecc708e9c717ef61654c73a99a45f21",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이것은 죄 사함을 얻게 하려고 많은 사람을 위하여 흘리는바 나의 피 곧 언약의 피니라"
+      ],
+      "raw_text_hashes": [
+        "812b5c8a64fd4b43efcb88a75c63bc5e2ecc708e9c717ef61654c73a99a45f21"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:26:29",
+      "sequence": 24084,
+      "chapter_label": "MAT 26",
+      "verse_label": "29",
+      "locator": {
+        "book": "MAT",
+        "chapter": 26,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 26,
+          "verse": 29
+        }
+      ],
+      "en": "But I tell you that I will not drink of this fruit of the vine from now on, until that day when I drink it anew with you in my Father’s Kingdom.”",
+      "ko": "그러나 너희에게 이르노니 내가 포도나무에서 난 것을 이제부터 내 아버지의 나라에서 새것으로 너희와 함께 마시는 날까지 마시지 아니하리라 하시니라",
+      "source_text_hash": "0b1c8676afc5033b6277b0cc9ea271f223d235db935af8b6f98b0ce997503329",
+      "translation_text_hash": "099be513b5f41ecfd841d2489fbf9f96fc9e440d4fe7d74ca7b45f5a28676f92",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 너희에게 이르노니 내가 포도나무에서 난 것을 이제부터 내 아버지의 나라에서 새것으로 너희와 함께 마시는 날까지 마시지 아니하리라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "099be513b5f41ecfd841d2489fbf9f96fc9e440d4fe7d74ca7b45f5a28676f92"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:26:30",
+      "sequence": 24085,
+      "chapter_label": "MAT 26",
+      "verse_label": "30",
+      "locator": {
+        "book": "MAT",
+        "chapter": 26,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 26,
+          "verse": 30
+        }
+      ],
+      "en": "When they had sung a hymn, they went out to the Mount of Olives.",
+      "ko": "이에 저희가 찬미하고 감람산으로 나아가니라",
+      "source_text_hash": "5c3f29bec87b127bea8af374ed30a6acf65ae18dec3d9b3dbf3e84f2f22dd74e",
+      "translation_text_hash": "7f1fb512ea1051c9c620ac7705f6e9c7aa7909cdf2be8fca2865825a444bd86f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 저희가 찬미하고 감람산으로 나아가니라"
+      ],
+      "raw_text_hashes": [
+        "7f1fb512ea1051c9c620ac7705f6e9c7aa7909cdf2be8fca2865825a444bd86f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:26:31",
+      "sequence": 24086,
+      "chapter_label": "MAT 26",
+      "verse_label": "31",
+      "locator": {
+        "book": "MAT",
+        "chapter": 26,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 26,
+          "verse": 31
+        }
+      ],
+      "en": "Then Jesus said to them, “All of you will be made to stumble because of me tonight, for it is written, ‘I will strike the shepherd, and the sheep of the flock will be scattered.’",
+      "ko": "때에 예수께서 제자들에게 이르시되 오늘 밤에 너희가 다 나를 버리리라 기록된바 내가 목자를 치리니 양의 떼가 흩어지리라 하였느니라",
+      "source_text_hash": "54bcfccda691efc7aec402bff677180a6ab7bd039b7aab367738e8cbaaf45de0",
+      "translation_text_hash": "dc597aa01e0910a4bff6ed61c2ee682d52f76c23cd698016f948e8f78b599ced",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "때에 예수께서 제자들에게 이르시되 오늘 밤에 너희가 다 나를 버리리라 기록된바 내가 목자를 치리니 양의 떼가 흩어지리라 하였느니라"
+      ],
+      "raw_text_hashes": [
+        "dc597aa01e0910a4bff6ed61c2ee682d52f76c23cd698016f948e8f78b599ced"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:26:32",
+      "sequence": 24087,
+      "chapter_label": "MAT 26",
+      "verse_label": "32",
+      "locator": {
+        "book": "MAT",
+        "chapter": 26,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 26,
+          "verse": 32
+        }
+      ],
+      "en": "But after I am raised up, I will go before you into Galilee.”",
+      "ko": "그러나 내가 살아난 후에 너희보다 먼저 갈릴리로 가리라",
+      "source_text_hash": "89cacaee91328a913705c15f393ec39fa0111d098ca576f1e988b7945e2954d8",
+      "translation_text_hash": "ba62fb41a09c409b390ebdd1a787f94c727ab2e8637ddf9ac8518ea54466d54e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 내가 살아난 후에 너희보다 먼저 갈릴리로 가리라"
+      ],
+      "raw_text_hashes": [
+        "ba62fb41a09c409b390ebdd1a787f94c727ab2e8637ddf9ac8518ea54466d54e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:26:33",
+      "sequence": 24088,
+      "chapter_label": "MAT 26",
+      "verse_label": "33",
+      "locator": {
+        "book": "MAT",
+        "chapter": 26,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 26,
+          "verse": 33
+        }
+      ],
+      "en": "But Peter answered him, “Even if all will be made to stumble because of you, I will never be made to stumble.”",
+      "ko": "베드로가 대답하여 가로되 다 주를 버릴찌라도 나는 언제든지 버리지 않겠나이다",
+      "source_text_hash": "a26af42b8a7de8eaf845acae24e81ca58d8b7f6cc1021400c6b39c1e6250f20e",
+      "translation_text_hash": "baa3a1829ee48fbb9c6fdbb99112b339938032094c389845e8d199746218758d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베드로가 대답하여 가로되 다 주를 버릴찌라도 나는 언제든지 버리지 않겠나이다"
+      ],
+      "raw_text_hashes": [
+        "baa3a1829ee48fbb9c6fdbb99112b339938032094c389845e8d199746218758d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:26:34",
+      "sequence": 24089,
+      "chapter_label": "MAT 26",
+      "verse_label": "34",
+      "locator": {
+        "book": "MAT",
+        "chapter": 26,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 26,
+          "verse": 34
+        }
+      ],
+      "en": "Jesus said to him, “Most certainly I tell you that tonight, before the rooster crows, you will deny me three times.”",
+      "ko": "예수께서 가라사대 내가 진실로 네게 이르노니 오늘밤 닭 울기 전에 네가 세번 나를 부인하리라",
+      "source_text_hash": "a50b09f21699da8e4f2992029e163fd428c559b6236dbadaa16532e289038356",
+      "translation_text_hash": "abb2358a022a4699afc20a682ce0b5845e8012109a022ade212b1408b06f4294",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 가라사대 내가 진실로 네게 이르노니 오늘밤 닭 울기 전에 네가 세번 나를 부인하리라"
+      ],
+      "raw_text_hashes": [
+        "abb2358a022a4699afc20a682ce0b5845e8012109a022ade212b1408b06f4294"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:26:35",
+      "sequence": 24090,
+      "chapter_label": "MAT 26",
+      "verse_label": "35",
+      "locator": {
+        "book": "MAT",
+        "chapter": 26,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 26,
+          "verse": 35
+        }
+      ],
+      "en": "Peter said to him, “Even if I must die with you, I will not deny you.” All of the disciples also said likewise.",
+      "ko": "베드로가 가로되 내가 주와 함께 죽을찌언정 주를 부인하지 않겠나이다 하고 모든 제자도 이와 같이 말하니라",
+      "source_text_hash": "5e1da7f2da9b1e9aa37e4a3175c08aaf7f941d2343776a71a0b9470f97da4954",
+      "translation_text_hash": "f4964d43762fcba2023c8e1de45be7f9638283204ad220a69c48705dc5330684",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베드로가 가로되 내가 주와 함께 죽을찌언정 주를 부인하지 않겠나이다 하고 모든 제자도 이와 같이 말하니라"
+      ],
+      "raw_text_hashes": [
+        "f4964d43762fcba2023c8e1de45be7f9638283204ad220a69c48705dc5330684"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:26:36",
+      "sequence": 24091,
+      "chapter_label": "MAT 26",
+      "verse_label": "36",
+      "locator": {
+        "book": "MAT",
+        "chapter": 26,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 26,
+          "verse": 36
+        }
+      ],
+      "en": "Then Jesus came with them to a place called Gethsemane, and said to his disciples, “Sit here, while I go there and pray.”",
+      "ko": "이에 예수께서 제자들과 함께 겟세마네라 하는 곳에 이르러 제자들에게 이르시되 내가 저기 가서 기도할 동안에 너희는 여기 앉아 있으라 하시고",
+      "source_text_hash": "00a96b4cb14fe54ae75bcc3028fee9eb4c6cc4fb4bd0b7668ea909be9496c188",
+      "translation_text_hash": "aae03353b24fceacf2000878da31b28ded63d044f2715b488746e7a254931144",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 예수께서 제자들과 함께 겟세마네라 하는 곳에 이르러 제자들에게 이르시되 내가 저기 가서 기도할 동안에 너희는 여기 앉아 있으라 하시고"
+      ],
+      "raw_text_hashes": [
+        "aae03353b24fceacf2000878da31b28ded63d044f2715b488746e7a254931144"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:26:37",
+      "sequence": 24092,
+      "chapter_label": "MAT 26",
+      "verse_label": "37",
+      "locator": {
+        "book": "MAT",
+        "chapter": 26,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 26,
+          "verse": 37
+        }
+      ],
+      "en": "He took with him Peter and the two sons of Zebedee, and began to be sorrowful and severely troubled.",
+      "ko": "베드로와 세베대의 두 아들을 데리고 가실쌔 고민하고 슬퍼하사",
+      "source_text_hash": "893d1f58cf121da478c3aa91adc21ab8eb6f4ccc9ef21d234b7b531af2820090",
+      "translation_text_hash": "c8c12da6647a91f4216d836b9c4a7bd3833a310261f5f2ed71a3f23f18c2e903",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베드로와 세베대의 두 아들을 데리고 가실쌔 고민하고 슬퍼하사"
+      ],
+      "raw_text_hashes": [
+        "c8c12da6647a91f4216d836b9c4a7bd3833a310261f5f2ed71a3f23f18c2e903"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:26:38",
+      "sequence": 24093,
+      "chapter_label": "MAT 26",
+      "verse_label": "38",
+      "locator": {
+        "book": "MAT",
+        "chapter": 26,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 26,
+          "verse": 38
+        }
+      ],
+      "en": "Then Jesus said to them, “My soul is exceedingly sorrowful, even to death. Stay here and watch with me.”",
+      "ko": "이에 말씀하시되 내 마음이 심히 고민하여 죽게 되었으니 너희는 여기 머물러 나와 함께 깨어 있으라 하시고",
+      "source_text_hash": "39e72fe7bc492356dc079cae519ccd681351225df6e1bf9a65eebe685fa9378c",
+      "translation_text_hash": "c92349db1c44e34ce8ae36422bb9fcfab3e98935f30679a66caffa01f8b0ec54",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 말씀하시되 내 마음이 심히 고민하여 죽게 되었으니 너희는 여기 머물러 나와 함께 깨어 있으라 하시고"
+      ],
+      "raw_text_hashes": [
+        "c92349db1c44e34ce8ae36422bb9fcfab3e98935f30679a66caffa01f8b0ec54"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:26:39",
+      "sequence": 24094,
+      "chapter_label": "MAT 26",
+      "verse_label": "39",
+      "locator": {
+        "book": "MAT",
+        "chapter": 26,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 26,
+          "verse": 39
+        }
+      ],
+      "en": "He went forward a little, fell on his face, and prayed, saying, “My Father, if it is possible, let this cup pass away from me; nevertheless, not what I desire, but what you desire.”",
+      "ko": "조금 나아가사 얼굴을 땅에 대시고 엎드려 기도하여 가라사대 내 아버지여 만일 할만하시거든 이 잔을 내게서 지나가게 하옵소서 그러나 나의 원대로 마옵시고 아버지의 원대로 하옵소서 하시고",
+      "source_text_hash": "56c633b2d530cb08b333eb02683e57f01665435e8cb7668e7025e5b621b16b09",
+      "translation_text_hash": "6beca82898a3e306d4b38a4058b89832658cc6411a8dc62ea3ff89c36deb0781",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "조금 나아가사 얼굴을 땅에 대시고 엎드려 기도하여 가라사대 내 아버지여 만일 할만하시거든 이 잔을 내게서 지나가게 하옵소서 그러나 나의 원대로 마옵시고 아버지의 원대로 하옵소서 하시고"
+      ],
+      "raw_text_hashes": [
+        "6beca82898a3e306d4b38a4058b89832658cc6411a8dc62ea3ff89c36deb0781"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:26:40",
+      "sequence": 24095,
+      "chapter_label": "MAT 26",
+      "verse_label": "40",
+      "locator": {
+        "book": "MAT",
+        "chapter": 26,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 26,
+          "verse": 40
+        }
+      ],
+      "en": "He came to the disciples and found them sleeping, and said to Peter, “What, couldn’t you watch with me for one hour?",
+      "ko": "제자들에게 오사 그 자는 것을 보시고 베드로에게 말씀하시되 너희가 나와 함께 한 시 동안도 이렇게 깨어 있을 수 없더냐",
+      "source_text_hash": "8f949391c29b20eef0d2493b5a0642b74e2960ec6b390089142378ba467e7751",
+      "translation_text_hash": "81049325c0b50d18d9f80479143189876fb2ed2b611dc13654c1c68b21217535",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제자들에게 오사 그 자는 것을 보시고 베드로에게 말씀하시되 너희가 나와 함께 한 시 동안도 이렇게 깨어 있을 수 없더냐"
+      ],
+      "raw_text_hashes": [
+        "81049325c0b50d18d9f80479143189876fb2ed2b611dc13654c1c68b21217535"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:26:41",
+      "sequence": 24096,
+      "chapter_label": "MAT 26",
+      "verse_label": "41",
+      "locator": {
+        "book": "MAT",
+        "chapter": 26,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 26,
+          "verse": 41
+        }
+      ],
+      "en": "Watch and pray, that you don’t enter into temptation. The spirit indeed is willing, but the flesh is weak.”",
+      "ko": "시험에 들지 않게 깨어 있어 기도하라 마음에는 원이로되 육신이 약하도다 하시고",
+      "source_text_hash": "3276bf0330da62a90c9715eebaee3a468a53abb2eb223830a0a737a5edf34edb",
+      "translation_text_hash": "9b592937a5e487d0b86fa148f33a806f71f6f1d26d336e5a3fb19bcc3247f8df",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시험에 들지 않게 깨어 있어 기도하라 마음에는 원이로되 육신이 약하도다 하시고"
+      ],
+      "raw_text_hashes": [
+        "9b592937a5e487d0b86fa148f33a806f71f6f1d26d336e5a3fb19bcc3247f8df"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:26:42",
+      "sequence": 24097,
+      "chapter_label": "MAT 26",
+      "verse_label": "42",
+      "locator": {
+        "book": "MAT",
+        "chapter": 26,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 26,
+          "verse": 42
+        }
+      ],
+      "en": "Again, a second time he went away and prayed, saying, “My Father, if this cup can’t pass away from me unless I drink it, your desire be done.”",
+      "ko": "다시 두번째 나아가 기도하여 가라사대 내 아버지여 만일 내가 마시지 않고는 이 잔이 내게서 지나갈 수 없거든 아버지의 원대로 되기를 원하나이다 하시고",
+      "source_text_hash": "a61bc97c459398d592a0d57c32eeb6ec6bc5e65305811ad3df55c603db44ff65",
+      "translation_text_hash": "ff060e01a8e8625b4cc313fe16f08f3cce22f4a4b950e220211e9097564cfbf1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다시 두번째 나아가 기도하여 가라사대 내 아버지여 만일 내가 마시지 않고는 이 잔이 내게서 지나갈 수 없거든 아버지의 원대로 되기를 원하나이다 하시고"
+      ],
+      "raw_text_hashes": [
+        "ff060e01a8e8625b4cc313fe16f08f3cce22f4a4b950e220211e9097564cfbf1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:26:43",
+      "sequence": 24098,
+      "chapter_label": "MAT 26",
+      "verse_label": "43",
+      "locator": {
+        "book": "MAT",
+        "chapter": 26,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 26,
+          "verse": 43
+        }
+      ],
+      "en": "He came again and found them sleeping, for their eyes were heavy.",
+      "ko": "다시 오사 보신즉 저희가 자니 이는 저희 눈이 피곤함일러라",
+      "source_text_hash": "c567c8d3ce52673c5da5a78f33ecb19147a8828fdaf002f0260d5b195e144ebc",
+      "translation_text_hash": "f647a223339c21c0c18c901b1fd9586ec97547b3d31c6e741a1bf0736d6856d0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다시 오사 보신즉 저희가 자니 이는 저희 눈이 피곤함일러라"
+      ],
+      "raw_text_hashes": [
+        "f647a223339c21c0c18c901b1fd9586ec97547b3d31c6e741a1bf0736d6856d0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:26:44",
+      "sequence": 24099,
+      "chapter_label": "MAT 26",
+      "verse_label": "44",
+      "locator": {
+        "book": "MAT",
+        "chapter": 26,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 26,
+          "verse": 44
+        }
+      ],
+      "en": "He left them again, went away, and prayed a third time, saying the same words.",
+      "ko": "또 저희를 두시고 나아가 세번째 동일한 말씀으로 기도하신 후",
+      "source_text_hash": "65e8c244ba0e4e0926b19bcee38407f0a5d8d65ac5bdd2d3a958c933c552f216",
+      "translation_text_hash": "cfa1ae834725bb3b053992e5eac4a24d957f92dbcecaa42beb6f3ca492e777fe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 저희를 두시고 나아가 세번째 동일한 말씀으로 기도하신 후"
+      ],
+      "raw_text_hashes": [
+        "cfa1ae834725bb3b053992e5eac4a24d957f92dbcecaa42beb6f3ca492e777fe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:26:45",
+      "sequence": 24100,
+      "chapter_label": "MAT 26",
+      "verse_label": "45",
+      "locator": {
+        "book": "MAT",
+        "chapter": 26,
+        "verse": 45
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 26,
+          "verse": 45
+        }
+      ],
+      "en": "Then he came to his disciples and said to them, “Are you still sleeping and resting? Behold, the hour is at hand, and the Son of Man is betrayed into the hands of sinners.",
+      "ko": "이에 제자들에게 오사 이르시되 이제는 자고 쉬라 보라 때가 가까왔으니 인자가 죄인의 손에 팔리우느니라",
+      "source_text_hash": "1e808a2a50b7b4f7a4907dcea484a0699509945c3981f219eaf75eca28e07749",
+      "translation_text_hash": "f6d1489faf90368e6a084008030cb7b308992dbdfdd31102cdf140f8a8c5b60e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 제자들에게 오사 이르시되 이제는 자고 쉬라 보라 때가 가까왔으니 인자가 죄인의 손에 팔리우느니라"
+      ],
+      "raw_text_hashes": [
+        "f6d1489faf90368e6a084008030cb7b308992dbdfdd31102cdf140f8a8c5b60e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:26:46",
+      "sequence": 24101,
+      "chapter_label": "MAT 26",
+      "verse_label": "46",
+      "locator": {
+        "book": "MAT",
+        "chapter": 26,
+        "verse": 46
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 26,
+          "verse": 46
+        }
+      ],
+      "en": "Arise, let’s be going. Behold, he who betrays me is at hand.”",
+      "ko": "일어나라 함께 가자 보라 나를 파는 자가 가까이 왔느니라",
+      "source_text_hash": "5ab2f4672aacf55df8331887133bdf1a0a22a4835bd408f9e13f9c43e09ba3c7",
+      "translation_text_hash": "e859fa5283a031889b1b57de43f88cb94a387908ef7891b2adf94a0308b5b76e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "일어나라 함께 가자 보라 나를 파는 자가 가까이 왔느니라"
+      ],
+      "raw_text_hashes": [
+        "e859fa5283a031889b1b57de43f88cb94a387908ef7891b2adf94a0308b5b76e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:26:47",
+      "sequence": 24102,
+      "chapter_label": "MAT 26",
+      "verse_label": "47",
+      "locator": {
+        "book": "MAT",
+        "chapter": 26,
+        "verse": 47
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 26,
+          "verse": 47
+        }
+      ],
+      "en": "While he was still speaking, behold, Judas, one of the twelve, came, and with him a great multitude with swords and clubs, from the chief priests and elders of the people.",
+      "ko": "말씀하실 때에 열 둘 중에 하나인 유다가 왔는데 대제사장들과 백성의 장로들에게서 파송된 큰 무리가 검과 몽치를 가지고 그와 함께 하였더라",
+      "source_text_hash": "42ed4aa12d498dc49483f05f7fcc7d048fd34760fc16188fab99779bd60c09bf",
+      "translation_text_hash": "ac960fca27d8a7c7d2ff7ee3921c91908ca756d82a8ea9fb925ae962289a585a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "말씀하실 때에 열 둘 중에 하나인 유다가 왔는데 대제사장들과 백성의 장로들에게서 파송된 큰 무리가 검과 몽치를 가지고 그와 함께 하였더라"
+      ],
+      "raw_text_hashes": [
+        "ac960fca27d8a7c7d2ff7ee3921c91908ca756d82a8ea9fb925ae962289a585a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:26:48",
+      "sequence": 24103,
+      "chapter_label": "MAT 26",
+      "verse_label": "48",
+      "locator": {
+        "book": "MAT",
+        "chapter": 26,
+        "verse": 48
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 26,
+          "verse": 48
+        }
+      ],
+      "en": "Now he who betrayed him had given them a sign, saying, “Whoever I kiss, he is the one. Seize him.”",
+      "ko": "예수를 파는 자가 그들에게 군호를 짜 가로되 내가 입맞추는 자가 그이니 그를 잡으라 하였는지라",
+      "source_text_hash": "b291258053bc594639735246d8867693dd053571ca235f37d2132fba21971171",
+      "translation_text_hash": "e614a7c789ee898b80cc67d793d732e02f19cd1461ec5cb8a2cf83f6953e5f94",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수를 파는 자가 그들에게 군호를 짜 가로되 내가 입맞추는 자가 그이니 그를 잡으라 하였는지라"
+      ],
+      "raw_text_hashes": [
+        "e614a7c789ee898b80cc67d793d732e02f19cd1461ec5cb8a2cf83f6953e5f94"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:26:49",
+      "sequence": 24104,
+      "chapter_label": "MAT 26",
+      "verse_label": "49",
+      "locator": {
+        "book": "MAT",
+        "chapter": 26,
+        "verse": 49
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 26,
+          "verse": 49
+        }
+      ],
+      "en": "Immediately he came to Jesus, and said, “Greetings, Rabbi!” and kissed him.",
+      "ko": "곧 예수께 나아와 랍비여 안녕하시옵니까 하고 입을 맞추니",
+      "source_text_hash": "64783f159ede7ff6654f34bfcc3430cf0a5cb631d28b0dc0314d6bdf38353057",
+      "translation_text_hash": "d5b314cc9bd914eff56b978adfe8834dfd17e308ab8ec7ef6f642f2b94b93dab",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 예수께 나아와 랍비여 안녕하시옵니까 하고 입을 맞추니"
+      ],
+      "raw_text_hashes": [
+        "d5b314cc9bd914eff56b978adfe8834dfd17e308ab8ec7ef6f642f2b94b93dab"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:26:50",
+      "sequence": 24105,
+      "chapter_label": "MAT 26",
+      "verse_label": "50",
+      "locator": {
+        "book": "MAT",
+        "chapter": 26,
+        "verse": 50
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 26,
+          "verse": 50
+        }
+      ],
+      "en": "Jesus said to him, “Friend, why are you here?”Then they came and laid hands on Jesus, and took him.",
+      "ko": "예수께서 가라사대 친구여 네가 무엇을 하려고 왔는지 행하라 하신대 이에 저희가 나아와 예수께 손을 대어 잡는지라",
+      "source_text_hash": "108b7732965b75ee812d6612d9a23a94321dcaa186ffb0ad292fa999a8c83aa2",
+      "translation_text_hash": "d4933dd040aa94fd0ae8544de29b00a1e7c11b1659a8449ec319ee09efcd0728",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 가라사대 친구여 네가 무엇을 하려고 왔는지 행하라 하신대 이에 저희가 나아와 예수께 손을 대어 잡는지라"
+      ],
+      "raw_text_hashes": [
+        "d4933dd040aa94fd0ae8544de29b00a1e7c11b1659a8449ec319ee09efcd0728"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:26:51",
+      "sequence": 24106,
+      "chapter_label": "MAT 26",
+      "verse_label": "51",
+      "locator": {
+        "book": "MAT",
+        "chapter": 26,
+        "verse": 51
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 26,
+          "verse": 51
+        }
+      ],
+      "en": "Behold, one of those who were with Jesus stretched out his hand and drew his sword, and struck the servant of the high priest, and cut off his ear.",
+      "ko": "예수와 함께 있던 자 중에 하나가 손을 펴 검을 빼어 대제사장의 종을 쳐 그 귀를 떨어뜨리니",
+      "source_text_hash": "59de209e195af492e2ed8807733e29d3afbd7f2cc383bd30be5673041f45fb6f",
+      "translation_text_hash": "7c76e15089cae2433b79e345660e3517771dfbe1853ec844a05f2d28b2ef3b43",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수와 함께 있던 자 중에 하나가 손을 펴 검을 빼어 대제사장의 종을 쳐 그 귀를 떨어뜨리니"
+      ],
+      "raw_text_hashes": [
+        "7c76e15089cae2433b79e345660e3517771dfbe1853ec844a05f2d28b2ef3b43"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:26:52",
+      "sequence": 24107,
+      "chapter_label": "MAT 26",
+      "verse_label": "52",
+      "locator": {
+        "book": "MAT",
+        "chapter": 26,
+        "verse": 52
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 26,
+          "verse": 52
+        }
+      ],
+      "en": "Then Jesus said to him, “Put your sword back into its place, for all those who take the sword will die by the sword.",
+      "ko": "이에 예수께서 이르시되 네 검을 도로 집에 꽂으라 검을 가지는 자는 다 검으로 망하느니라",
+      "source_text_hash": "7679710561761be87ff33646802fe6271c15bed9d3c7bb2d222bf8c317cf8e41",
+      "translation_text_hash": "266e073c98dbd4a705e9e096c0c781cfeace91cee372283636f0b963c0b937fb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 예수께서 이르시되 네 검을 도로 집에 꽂으라 검을 가지는 자는 다 검으로 망하느니라"
+      ],
+      "raw_text_hashes": [
+        "266e073c98dbd4a705e9e096c0c781cfeace91cee372283636f0b963c0b937fb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:26:53",
+      "sequence": 24108,
+      "chapter_label": "MAT 26",
+      "verse_label": "53",
+      "locator": {
+        "book": "MAT",
+        "chapter": 26,
+        "verse": 53
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 26,
+          "verse": 53
+        }
+      ],
+      "en": "Or do you think that I couldn’t ask my Father, and he would even now send me more than twelve legions of angels?",
+      "ko": "너는 내가 내 아버지께 구하여 지금 열 두 영 더되는 천사를 보내시게 할 수 없는 줄로 아느냐",
+      "source_text_hash": "a4a70e36e4cf8fb7dd3482d53f1a2eeb4dbe256f8247ac6ad590bc3dea430389",
+      "translation_text_hash": "9cb02cbd9a18a0cf3b40fd09e5238fb020c6ef23dde0e1b50357851fc1c6edb0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 내가 내 아버지께 구하여 지금 열 두 영 더되는 천사를 보내시게 할 수 없는 줄로 아느냐"
+      ],
+      "raw_text_hashes": [
+        "9cb02cbd9a18a0cf3b40fd09e5238fb020c6ef23dde0e1b50357851fc1c6edb0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:26:54",
+      "sequence": 24109,
+      "chapter_label": "MAT 26",
+      "verse_label": "54",
+      "locator": {
+        "book": "MAT",
+        "chapter": 26,
+        "verse": 54
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 26,
+          "verse": 54
+        }
+      ],
+      "en": "How then would the Scriptures be fulfilled that it must be so?”",
+      "ko": "내가 만일 그렇게 하면 이런 일이 있으리라 한 성경이 어떻게 이루어지리요 하시더라",
+      "source_text_hash": "a2f21f666508513d7750a50a02e2e610b83640b6f1ad82de0cbaf0ff1fe9bf42",
+      "translation_text_hash": "6afbc38182ee708c0f0fd5670168464c0acbc1155a50d836c896047ce155eb9a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 만일 그렇게 하면 이런 일이 있으리라 한 성경이 어떻게 이루어지리요 하시더라"
+      ],
+      "raw_text_hashes": [
+        "6afbc38182ee708c0f0fd5670168464c0acbc1155a50d836c896047ce155eb9a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:26:55",
+      "sequence": 24110,
+      "chapter_label": "MAT 26",
+      "verse_label": "55",
+      "locator": {
+        "book": "MAT",
+        "chapter": 26,
+        "verse": 55
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 26,
+          "verse": 55
+        }
+      ],
+      "en": "In that hour Jesus said to the multitudes, “Have you come out as against a robber with swords and clubs to seize me? I sat daily in the temple teaching, and you didn’t arrest me.",
+      "ko": "그 때에 예수께서 무리에게 말씀하시되 너희가 강도를 잡는 것 같이 검과 몽치를 가지고 나를 잡으러 나왔느냐 내가 날마다 성전에 앉아 가르쳤으되 너희가 나를 잡지 아니하였도다",
+      "source_text_hash": "881c14c992f7f1c933c7f69e17a71946a5c58e6eac5056dbbe5b4bef126bcc9b",
+      "translation_text_hash": "0ef64f06f88d2de86aa6ffc3f6bd380afb47babc8e3b88f124ab29a445609322",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 예수께서 무리에게 말씀하시되 너희가 강도를 잡는 것 같이 검과 몽치를 가지고 나를 잡으러 나왔느냐 내가 날마다 성전에 앉아 가르쳤으되 너희가 나를 잡지 아니하였도다"
+      ],
+      "raw_text_hashes": [
+        "0ef64f06f88d2de86aa6ffc3f6bd380afb47babc8e3b88f124ab29a445609322"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:26:56",
+      "sequence": 24111,
+      "chapter_label": "MAT 26",
+      "verse_label": "56",
+      "locator": {
+        "book": "MAT",
+        "chapter": 26,
+        "verse": 56
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 26,
+          "verse": 56
+        }
+      ],
+      "en": "But all this has happened that the Scriptures of the prophets might be fulfilled.”Then all the disciples left him and fled.",
+      "ko": "그러나 이렇게 된 것은 다 선지자들의 글을 이루려 함이니라 하시더라 이에 제자들이 다 예수를 버리고 도망하니라",
+      "source_text_hash": "cfdfe5a6d0f1b4de6e4cc33141c9346f42bc0a6271abd510037e139daee44791",
+      "translation_text_hash": "626807c1b0c0489d469023fc94d8bb8c001d2ae5dd2b7c650e9ce89dff447841",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 이렇게 된 것은 다 선지자들의 글을 이루려 함이니라 하시더라 이에 제자들이 다 예수를 버리고 도망하니라"
+      ],
+      "raw_text_hashes": [
+        "626807c1b0c0489d469023fc94d8bb8c001d2ae5dd2b7c650e9ce89dff447841"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:26:57",
+      "sequence": 24112,
+      "chapter_label": "MAT 26",
+      "verse_label": "57",
+      "locator": {
+        "book": "MAT",
+        "chapter": 26,
+        "verse": 57
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 26,
+          "verse": 57
+        }
+      ],
+      "en": "Those who had taken Jesus led him away to Caiaphas the high priest, where the scribes and the elders were gathered together.",
+      "ko": "예수를 잡은 자들이 끌고 대제사장 가야바에게로 가니 거기 서기관과 장로들이 모여 있더라",
+      "source_text_hash": "37190862e695b54aeba50b1b6d74addbb1b32771bd7cd66560e62e49276c1750",
+      "translation_text_hash": "f6d46f7b3d6d53c161bebc9d8b78f54137767db6cfc15cac286bf2a5736e6651",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수를 잡은 자들이 끌고 대제사장 가야바에게로 가니 거기 서기관과 장로들이 모여 있더라"
+      ],
+      "raw_text_hashes": [
+        "f6d46f7b3d6d53c161bebc9d8b78f54137767db6cfc15cac286bf2a5736e6651"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:26:58",
+      "sequence": 24113,
+      "chapter_label": "MAT 26",
+      "verse_label": "58",
+      "locator": {
+        "book": "MAT",
+        "chapter": 26,
+        "verse": 58
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 26,
+          "verse": 58
+        }
+      ],
+      "en": "But Peter followed him from a distance to the court of the high priest, and entered in and sat with the officers, to see the end.",
+      "ko": "베드로가 멀찍이 예수를 좇아 대제사장의 집 뜰에까지 가서 그 결국을 보려고 안에 들어가 하속들과 함께 앉았더라",
+      "source_text_hash": "98e81ad54949372e3112fa2ece7b590f4cc3dcf4df41db0eb71d3eb4fc43d716",
+      "translation_text_hash": "2d7e9afe04b19bbe09da1d5d93768f6d03bd1a145ae34bde3cef640ce38d4e7f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베드로가 멀찍이 예수를 좇아 대제사장의 집 뜰에까지 가서 그 결국을 보려고 안에 들어가 하속들과 함께 앉았더라"
+      ],
+      "raw_text_hashes": [
+        "2d7e9afe04b19bbe09da1d5d93768f6d03bd1a145ae34bde3cef640ce38d4e7f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:26:59",
+      "sequence": 24114,
+      "chapter_label": "MAT 26",
+      "verse_label": "59",
+      "locator": {
+        "book": "MAT",
+        "chapter": 26,
+        "verse": 59
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 26,
+          "verse": 59
+        }
+      ],
+      "en": "Now the chief priests, the elders, and the whole council sought false testimony against Jesus, that they might put him to death,",
+      "ko": "대제사장들과 온 공회가 예수를 죽이려고 그를 칠 거짓증거를 찾으매",
+      "source_text_hash": "ad0b40880952353d86ef37972a3b5d717dc05d6aeafe62283d67c47fff4adc62",
+      "translation_text_hash": "bd86665b785978c608a10ccbffb0a574184e866fbf2c9929efa2886a4de13555",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대제사장들과 온 공회가 예수를 죽이려고 그를 칠 거짓증거를 찾으매"
+      ],
+      "raw_text_hashes": [
+        "bd86665b785978c608a10ccbffb0a574184e866fbf2c9929efa2886a4de13555"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:26:60",
+      "sequence": 24115,
+      "chapter_label": "MAT 26",
+      "verse_label": "60",
+      "locator": {
+        "book": "MAT",
+        "chapter": 26,
+        "verse": 60
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 26,
+          "verse": 60
+        }
+      ],
+      "en": "and they found none. Even though many false witnesses came forward, they found none. But at last two false witnesses came forward",
+      "ko": "거짓 증인이 많이 왔으나 얻지 못하더니 후에 두 사람이 와서",
+      "source_text_hash": "ccd382abea5419888d07583735703ad35d6f1664ca390e3be02def357090c490",
+      "translation_text_hash": "e64bd2f89e6196ba661948f9f2ac718f31f90246e8546cbf344a4d74b5b2a266",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거짓 증인이 많이 왔으나 얻지 못하더니 후에 두 사람이 와서"
+      ],
+      "raw_text_hashes": [
+        "e64bd2f89e6196ba661948f9f2ac718f31f90246e8546cbf344a4d74b5b2a266"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:26:61",
+      "sequence": 24116,
+      "chapter_label": "MAT 26",
+      "verse_label": "61",
+      "locator": {
+        "book": "MAT",
+        "chapter": 26,
+        "verse": 61
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 26,
+          "verse": 61
+        }
+      ],
+      "en": "and said, “This man said, ‘I am able to destroy the temple of God, and to build it in three days.’”",
+      "ko": "가로되 이 사람의 말이 내가 하나님의 성전을 헐고 사흘에 지을 수 있다 하더라 하니",
+      "source_text_hash": "e27f0a0a6a50e1d7e8d8c4bdc19264f2ee572b1cd910fe7c354ff6cd0f79a450",
+      "translation_text_hash": "3477e0d574730ab778b99b6e10469cbf38a8f68edb6c4402958ba816dd6a855c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 이 사람의 말이 내가 하나님의 성전을 헐고 사흘에 지을 수 있다 하더라 하니"
+      ],
+      "raw_text_hashes": [
+        "3477e0d574730ab778b99b6e10469cbf38a8f68edb6c4402958ba816dd6a855c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:26:62",
+      "sequence": 24117,
+      "chapter_label": "MAT 26",
+      "verse_label": "62",
+      "locator": {
+        "book": "MAT",
+        "chapter": 26,
+        "verse": 62
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 26,
+          "verse": 62
+        }
+      ],
+      "en": "The high priest stood up and said to him, “Have you no answer? What is this that these testify against you?”",
+      "ko": "대제사장이 일어서서 예수께 묻되 아무 대답도 없느냐 이 사람들의 너를 치는 증거가 어떠하뇨 하되",
+      "source_text_hash": "93c46b21ad1fe141489ef77ee124203fb553b2e6223a36e42e38a621a8636a9b",
+      "translation_text_hash": "ac68c0a01d2444153cbbcf1744008263ffee2e4c9bbad5d7432413b8c34e594f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대제사장이 일어서서 예수께 묻되 아무 대답도 없느냐 이 사람들의 너를 치는 증거가 어떠하뇨 하되"
+      ],
+      "raw_text_hashes": [
+        "ac68c0a01d2444153cbbcf1744008263ffee2e4c9bbad5d7432413b8c34e594f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:26:63",
+      "sequence": 24118,
+      "chapter_label": "MAT 26",
+      "verse_label": "63",
+      "locator": {
+        "book": "MAT",
+        "chapter": 26,
+        "verse": 63
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 26,
+          "verse": 63
+        }
+      ],
+      "en": "But Jesus stayed silent. The high priest answered him, “I adjure you by the living God that you tell us whether you are the Christ, the Son of God.”",
+      "ko": "예수께서 잠잠하시거늘 대제사장이 가로되 내가 너로 살아 계신 하나님께 맹세하게 하노니 네가 하나님의 아들 그리스도인지 우리에게 말하라",
+      "source_text_hash": "b17ccf03b86a3edc435eb7703fe837c5f4e17efa8cf45f018c4750a7077c3d0d",
+      "translation_text_hash": "46ec989337f67ff00953a6e04cfc4fd86427ea96a5fd6573fc9ccedc48b7e22d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 잠잠하시거늘 대제사장이 가로되 내가 너로 살아 계신 하나님께 맹세하게 하노니 네가 하나님의 아들 그리스도인지 우리에게 말하라"
+      ],
+      "raw_text_hashes": [
+        "46ec989337f67ff00953a6e04cfc4fd86427ea96a5fd6573fc9ccedc48b7e22d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:26:64",
+      "sequence": 24119,
+      "chapter_label": "MAT 26",
+      "verse_label": "64",
+      "locator": {
+        "book": "MAT",
+        "chapter": 26,
+        "verse": 64
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 26,
+          "verse": 64
+        }
+      ],
+      "en": "Jesus said to him, “You have said so. Nevertheless, I tell you, after this you will see the Son of Man sitting at the right hand of Power, and coming on the clouds of the sky.”",
+      "ko": "예수께서 가라사대 네가 말하였느니라 그러나 내가 너희에게 이르노니 이 후에 인자가 권능의 우편에 앉은 것과 하늘 구름을 타고 오는 것을 너희가 보리라 하시니",
+      "source_text_hash": "b7bdb551c5e63904c94022bbdbbd8b10d8051af53efc38520cf43fd4691565b0",
+      "translation_text_hash": "d577865eb3612c1d01e376c4786e61dd1a268d78593d20814d73657a23ef2b6f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 가라사대 네가 말하였느니라 그러나 내가 너희에게 이르노니 이 후에 인자가 권능의 우편에 앉은 것과 하늘 구름을 타고 오는 것을 너희가 보리라 하시니"
+      ],
+      "raw_text_hashes": [
+        "d577865eb3612c1d01e376c4786e61dd1a268d78593d20814d73657a23ef2b6f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:26:65",
+      "sequence": 24120,
+      "chapter_label": "MAT 26",
+      "verse_label": "65",
+      "locator": {
+        "book": "MAT",
+        "chapter": 26,
+        "verse": 65
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 26,
+          "verse": 65
+        }
+      ],
+      "en": "Then the high priest tore his clothing, saying, “He has spoken blasphemy! Why do we need any more witnesses? Behold, now you have heard his blasphemy.",
+      "ko": "이에 대제사장이 자기 옷을 찢으며 가로되 저가 참람한 말을 하였으니 어찌 더 증인을 요구하리요 보라 너희가 지금 이 참람한 말을 들었도다",
+      "source_text_hash": "fca9482f0afd93a5aaf9055e117c4e32f64eac047fbb52449be4419cc365b2d0",
+      "translation_text_hash": "394911ce90f8a9038e1d746deeb649e259e4085d02df14bfb5d6e618468f5909",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 대제사장이 자기 옷을 찢으며 가로되 저가 참람한 말을 하였으니 어찌 더 증인을 요구하리요 보라 너희가 지금 이 참람한 말을 들었도다"
+      ],
+      "raw_text_hashes": [
+        "394911ce90f8a9038e1d746deeb649e259e4085d02df14bfb5d6e618468f5909"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:26:66",
+      "sequence": 24121,
+      "chapter_label": "MAT 26",
+      "verse_label": "66",
+      "locator": {
+        "book": "MAT",
+        "chapter": 26,
+        "verse": 66
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 26,
+          "verse": 66
+        }
+      ],
+      "en": "What do you think?” They answered, “He is worthy of death!”",
+      "ko": "생각이 어떠하뇨 대답하여 가로되 저는 사형에 해당하니라 하고",
+      "source_text_hash": "522a41e984ffb6e8cff76273d767e13bbf803fd6449d9de883ad410e8c888f09",
+      "translation_text_hash": "09e8bbadc712d2cd7938598e3e18a09d623120f01690c99621110c5ef30110a0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "생각이 어떠하뇨 대답하여 가로되 저는 사형에 해당하니라 하고"
+      ],
+      "raw_text_hashes": [
+        "09e8bbadc712d2cd7938598e3e18a09d623120f01690c99621110c5ef30110a0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:26:67",
+      "sequence": 24122,
+      "chapter_label": "MAT 26",
+      "verse_label": "67",
+      "locator": {
+        "book": "MAT",
+        "chapter": 26,
+        "verse": 67
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 26,
+          "verse": 67
+        }
+      ],
+      "en": "Then they spat in his face and beat him with their fists, and some slapped him,",
+      "ko": "이에 예수의 얼굴에 침 뱉으며 주먹으로 치고 혹은 손바닥으로 때리며",
+      "source_text_hash": "ca461929d626f8f7db863146a519303922fb11b4186f5ac8fa033f12e7cc146f",
+      "translation_text_hash": "c238bce84821f47e105a771f83f520d552c260f6b242b7eb7d9f9ac821fbbec8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 예수의 얼굴에 침 뱉으며 주먹으로 치고 혹은 손바닥으로 때리며"
+      ],
+      "raw_text_hashes": [
+        "c238bce84821f47e105a771f83f520d552c260f6b242b7eb7d9f9ac821fbbec8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:26:68",
+      "sequence": 24123,
+      "chapter_label": "MAT 26",
+      "verse_label": "68",
+      "locator": {
+        "book": "MAT",
+        "chapter": 26,
+        "verse": 68
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 26,
+          "verse": 68
+        }
+      ],
+      "en": "saying, “Prophesy to us, you Christ! Who hit you?”",
+      "ko": "가로되 그리스도야 우리에게 선지자 노릇을 하라 너를 친 자가 누구냐 하더라",
+      "source_text_hash": "6c56d782a427181242afe2fc584dc623185e8494e9c9f8f76c0d09fe0554373c",
+      "translation_text_hash": "af494c10a7b5264ea998354c5a6121cd1f1c22554bdf464570b1a1e815075797",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 그리스도야 우리에게 선지자 노릇을 하라 너를 친 자가 누구냐 하더라"
+      ],
+      "raw_text_hashes": [
+        "af494c10a7b5264ea998354c5a6121cd1f1c22554bdf464570b1a1e815075797"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:26:69",
+      "sequence": 24124,
+      "chapter_label": "MAT 26",
+      "verse_label": "69",
+      "locator": {
+        "book": "MAT",
+        "chapter": 26,
+        "verse": 69
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 26,
+          "verse": 69
+        }
+      ],
+      "en": "Now Peter was sitting outside in the court, and a maid came to him, saying, “You were also with Jesus, the Galilean!”",
+      "ko": "베드로가 바깥 뜰에 앉았더니 한 비자가 나아와 가로되 너도 갈릴리 사람 예수와 함께 있었도다 하거늘",
+      "source_text_hash": "0fb21b57da3dc260cf3ec05dd73d68dd25107ae7f3ed7133f010954cfde56e6d",
+      "translation_text_hash": "dd9dc6c74a9fbf1b16be1ccc5f3bf3cd68af7390ff9ad1b737a5794973644c9d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베드로가 바깥 뜰에 앉았더니 한 비자가 나아와 가로되 너도 갈릴리 사람 예수와 함께 있었도다 하거늘"
+      ],
+      "raw_text_hashes": [
+        "dd9dc6c74a9fbf1b16be1ccc5f3bf3cd68af7390ff9ad1b737a5794973644c9d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:26:70",
+      "sequence": 24125,
+      "chapter_label": "MAT 26",
+      "verse_label": "70",
+      "locator": {
+        "book": "MAT",
+        "chapter": 26,
+        "verse": 70
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 26,
+          "verse": 70
+        }
+      ],
+      "en": "But he denied it before them all, saying, “I don’t know what you are talking about.”",
+      "ko": "베드로가 모든 사람 앞에서 부인하여 가로되 나는 네 말하는 것이 무엇인지 알지 못하겠노라 하며",
+      "source_text_hash": "e061b26abc489044bb05d67f87483688809e00cbca3c0789aecb1d5f24795a0e",
+      "translation_text_hash": "d7743f8fab028363850daffc4480ead7a77fe798116ae34f88be6c4ef2e760c5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베드로가 모든 사람 앞에서 부인하여 가로되 나는 네 말하는 것이 무엇인지 알지 못하겠노라 하며"
+      ],
+      "raw_text_hashes": [
+        "d7743f8fab028363850daffc4480ead7a77fe798116ae34f88be6c4ef2e760c5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:26:71",
+      "sequence": 24126,
+      "chapter_label": "MAT 26",
+      "verse_label": "71",
+      "locator": {
+        "book": "MAT",
+        "chapter": 26,
+        "verse": 71
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 26,
+          "verse": 71
+        }
+      ],
+      "en": "When he had gone out onto the porch, someone else saw him and said to those who were there, “This man also was with Jesus of Nazareth.”",
+      "ko": "앞문까지 나아가니 다른 비자가 저를 보고 거기 있는 사람들에게 말하되 이 사람은 나사렛 예수와 함께 있었도다 하매",
+      "source_text_hash": "14a7da7a32280b13dcb7792726b3939f329ca13e48b5046a7c3c8e5dabf02e93",
+      "translation_text_hash": "657458074319f367c0bad5fd7c327a3617b2ecd2d7337480bac78f5518d39cec",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "앞문까지 나아가니 다른 비자가 저를 보고 거기 있는 사람들에게 말하되 이 사람은 나사렛 예수와 함께 있었도다 하매"
+      ],
+      "raw_text_hashes": [
+        "657458074319f367c0bad5fd7c327a3617b2ecd2d7337480bac78f5518d39cec"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:26:72",
+      "sequence": 24127,
+      "chapter_label": "MAT 26",
+      "verse_label": "72",
+      "locator": {
+        "book": "MAT",
+        "chapter": 26,
+        "verse": 72
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 26,
+          "verse": 72
+        }
+      ],
+      "en": "Again he denied it with an oath, “I don’t know the man.”",
+      "ko": "베드로가 맹세하고 또 부인하여 가로되 내가 그 사람을 알지 못하노라 하더라",
+      "source_text_hash": "d8f33e4b4343f2e42906a856c65bb12236cd0da6461a4db338a138472e2d5112",
+      "translation_text_hash": "1c648cd9d67c7ce283ce74d370b291d0c8fb2f9fa2158b4f545eba6630a45b37",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베드로가 맹세하고 또 부인하여 가로되 내가 그 사람을 알지 못하노라 하더라"
+      ],
+      "raw_text_hashes": [
+        "1c648cd9d67c7ce283ce74d370b291d0c8fb2f9fa2158b4f545eba6630a45b37"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:26:73",
+      "sequence": 24128,
+      "chapter_label": "MAT 26",
+      "verse_label": "73",
+      "locator": {
+        "book": "MAT",
+        "chapter": 26,
+        "verse": 73
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 26,
+          "verse": 73
+        }
+      ],
+      "en": "After a little while those who stood by came and said to Peter, “Surely you are also one of them, for your speech makes you known.”",
+      "ko": "조금 후에 곁에 섰던 사람들이 나아와 베드로에게 이르되 너도 진실로 그 당이라 네 말소리가 너를 표명한다 하거늘",
+      "source_text_hash": "771bf23ea8cb55d349176a28b82894944b60ef72f9b8fe572305572e618fe9b2",
+      "translation_text_hash": "a219e99491b27f3409590bee793570e09581ea5b1b8557c973e84adde6c5168a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "조금 후에 곁에 섰던 사람들이 나아와 베드로에게 이르되 너도 진실로 그 당이라 네 말소리가 너를 표명한다 하거늘"
+      ],
+      "raw_text_hashes": [
+        "a219e99491b27f3409590bee793570e09581ea5b1b8557c973e84adde6c5168a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:26:74",
+      "sequence": 24129,
+      "chapter_label": "MAT 26",
+      "verse_label": "74",
+      "locator": {
+        "book": "MAT",
+        "chapter": 26,
+        "verse": 74
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 26,
+          "verse": 74
+        }
+      ],
+      "en": "Then he began to curse and to swear, “I don’t know the man!” Immediately the rooster crowed.",
+      "ko": "저가 저주하며 맹세하여 가로되 내가 그 사람을 알지 못하노라 하니 닭이 곧 울더라",
+      "source_text_hash": "bdda1bc3af934d9b18488a2912bafc2370504163934e3182cae95e3465099555",
+      "translation_text_hash": "506f2da1f010efeaa5777da901d2d557555fa6a3353ae7fbfd915fbf8ed77085",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 저주하며 맹세하여 가로되 내가 그 사람을 알지 못하노라 하니 닭이 곧 울더라"
+      ],
+      "raw_text_hashes": [
+        "506f2da1f010efeaa5777da901d2d557555fa6a3353ae7fbfd915fbf8ed77085"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:26:75",
+      "sequence": 24130,
+      "chapter_label": "MAT 26",
+      "verse_label": "75",
+      "locator": {
+        "book": "MAT",
+        "chapter": 26,
+        "verse": 75
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 26,
+          "verse": 75
+        }
+      ],
+      "en": "Peter remembered the word which Jesus had said to him, “Before the rooster crows, you will deny me three times.”Then he went out and wept bitterly.",
+      "ko": "이에 베드로가 예수의 말씀에 닭 울기 전에 네가 세번 나를 부인하리라 하심이 생각나서 밖에 나가서 심히 통곡하니라",
+      "source_text_hash": "28961b00d8ab392bff46620e2cfae380b2295a425a1f3ac9b48f494afd435617",
+      "translation_text_hash": "e17f0ca91362df99e674a6aa22415bd60e415fc3cf516771c7b66ac233e7e273",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 베드로가 예수의 말씀에 닭 울기 전에 네가 세번 나를 부인하리라 하심이 생각나서 밖에 나가서 심히 통곡하니라"
+      ],
+      "raw_text_hashes": [
+        "e17f0ca91362df99e674a6aa22415bd60e415fc3cf516771c7b66ac233e7e273"
+      ]
+    }
+  ]
+}

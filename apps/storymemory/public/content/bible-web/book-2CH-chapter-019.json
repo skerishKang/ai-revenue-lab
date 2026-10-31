@@ -1,0 +1,365 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:2CH:chapter:019",
+  "unit_ordinal": 386,
+  "unit_label": "2CH 19",
+  "book_code": "2CH",
+  "chapter_number": 19,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:2CH:19:1",
+      "sequence": 11578,
+      "chapter_label": "2CH 19",
+      "verse_label": "1",
+      "locator": {
+        "book": "2CH",
+        "chapter": 19,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 19,
+          "verse": 1
+        }
+      ],
+      "en": "Jehoshaphat the king of Judah returned to his house in peace to Jerusalem.",
+      "ko": "유다 왕 여호사밧이 평안히 예루살렘에 돌아와서 그 궁으로 들어가니라",
+      "source_text_hash": "3807441c752ba3a871acce698409383897a38097861010de850f29ba0fee6edf",
+      "translation_text_hash": "958f303058f99d1d93bfdfcdf0bfea39508a8881059e6ee71d4f4e2e47a57768",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다 왕 여호사밧이 평안히 예루살렘에 돌아와서 그 궁으로 들어가니라"
+      ],
+      "raw_text_hashes": [
+        "958f303058f99d1d93bfdfcdf0bfea39508a8881059e6ee71d4f4e2e47a57768"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:19:2",
+      "sequence": 11579,
+      "chapter_label": "2CH 19",
+      "verse_label": "2",
+      "locator": {
+        "book": "2CH",
+        "chapter": 19,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 19,
+          "verse": 2
+        }
+      ],
+      "en": "Jehu the son of Hanani the seer went out to meet him, and said to King Jehoshaphat, “Should you help the wicked, and love those who hate the LORD? Because of this, wrath is on you from before the LORD.",
+      "ko": "하나니의 아들 선견자 예후가 나가서 여호사밧 왕을 맞아 가로되 왕이 악한 자를 돕고 여호와를 미워하는 자를 사랑하는 것이 가하니이까 그러므로 여호와께로서 진노하심이 왕에게 임하리이다",
+      "source_text_hash": "2110117ce4353da740ea060e7ad4620d571a948c4f6f6f4c81f2e44b2092f8b8",
+      "translation_text_hash": "411700b622f5ffc917832ac8b77a57d093919fc26e2ef683ee80ab9bff875f5a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나니의 아들 선견자 예후가 나가서 여호사밧 왕을 맞아 가로되 왕이 악한 자를 돕고 여호와를 미워하는 자를 사랑하는 것이 가하니이까 그러므로 여호와께로서 진노하심이 왕에게 임하리이다"
+      ],
+      "raw_text_hashes": [
+        "411700b622f5ffc917832ac8b77a57d093919fc26e2ef683ee80ab9bff875f5a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:19:3",
+      "sequence": 11580,
+      "chapter_label": "2CH 19",
+      "verse_label": "3",
+      "locator": {
+        "book": "2CH",
+        "chapter": 19,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 19,
+          "verse": 3
+        }
+      ],
+      "en": "Nevertheless there are good things found in you, in that you have put away the Asheroth out of the land, and have set your heart to seek God.”",
+      "ko": "그러나 왕에게 선한 일도 있으니 이는 왕이 아세라 목상들을 이 땅에서 없이하고 마음을 오로지하여 하나님을 찾음이니이다 하였더라",
+      "source_text_hash": "d6781debb90245801e541fac35382fb183df72cd53c0651b1f04dd7feda8da0f",
+      "translation_text_hash": "355c150f169dce916e8ad1b621b0311eb2d37efd0b58d920c7a3748eb395ea13",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 왕에게 선한 일도 있으니 이는 왕이 아세라 목상들을 이 땅에서 없이하고 마음을 오로지하여 하나님을 찾음이니이다 하였더라"
+      ],
+      "raw_text_hashes": [
+        "355c150f169dce916e8ad1b621b0311eb2d37efd0b58d920c7a3748eb395ea13"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:19:4",
+      "sequence": 11581,
+      "chapter_label": "2CH 19",
+      "verse_label": "4",
+      "locator": {
+        "book": "2CH",
+        "chapter": 19,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 19,
+          "verse": 4
+        }
+      ],
+      "en": "Jehoshaphat lived at Jerusalem; and he went out again among the people from Beersheba to the hill country of Ephraim, and brought them back to the LORD, the God of their fathers.",
+      "ko": "여호사밧이 예루살렘에 거하더니 나가서 브엘세바에서부터 에브라임 산지까지 민간에 순행하며 저희를 그 열조의 하나님 여호와께로 돌아오게 하고",
+      "source_text_hash": "f870fdef7746592ff56a8d4bff884443ebe5b2f37839218d6885547e78932110",
+      "translation_text_hash": "23bfcfdb1de5e07628cd0c9b755a6830b3fbe6d8038011e6e317f6138d770b5a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호사밧이 예루살렘에 거하더니 나가서 브엘세바에서부터 에브라임 산지까지 민간에 순행하며 저희를 그 열조의 하나님 여호와께로 돌아오게 하고"
+      ],
+      "raw_text_hashes": [
+        "23bfcfdb1de5e07628cd0c9b755a6830b3fbe6d8038011e6e317f6138d770b5a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:19:5",
+      "sequence": 11582,
+      "chapter_label": "2CH 19",
+      "verse_label": "5",
+      "locator": {
+        "book": "2CH",
+        "chapter": 19,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 19,
+          "verse": 5
+        }
+      ],
+      "en": "He set judges in the land throughout all the fortified cities of Judah, city by city,",
+      "ko": "또 유다 온 나라 견고한 성에 재판관을 세우되 성마다 있게 하고",
+      "source_text_hash": "1c591d6d8b6b040417da2e687614075622860846f78f6c3dde2c931a5a2a3694",
+      "translation_text_hash": "36a995387988e39b0c288a20918d27bb053d678ee587417f983eb222ffd24e8f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 유다 온 나라 견고한 성에 재판관을 세우되 성마다 있게 하고"
+      ],
+      "raw_text_hashes": [
+        "36a995387988e39b0c288a20918d27bb053d678ee587417f983eb222ffd24e8f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:19:6",
+      "sequence": 11583,
+      "chapter_label": "2CH 19",
+      "verse_label": "6",
+      "locator": {
+        "book": "2CH",
+        "chapter": 19,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 19,
+          "verse": 6
+        }
+      ],
+      "en": "and said to the judges, “Consider what you do, for you don’t judge for man, but for the LORD; and he is with you in the judgment.",
+      "ko": "재판관에게 이르되 너희는 행하는 바를 삼가하라 너희의 재판하는 것이 사람을 위함이 아니요 여호와를 위함이니 너희가 재판할 때에 여호와께서 너희와 함께하실지라",
+      "source_text_hash": "3cb396d29d57e205945415bbc4e16a480d6c3debf4a855a0a27b8492ff12f6ce",
+      "translation_text_hash": "ae131fcd521adb22dded395db5666eca522b47f04db8d4757c9b77c1496e8d4e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "재판관에게 이르되 너희는 행하는 바를 삼가하라 너희의 재판하는 것이 사람을 위함이 아니요 여호와를 위함이니 너희가 재판할 때에 여호와께서 너희와 함께하실지라"
+      ],
+      "raw_text_hashes": [
+        "ae131fcd521adb22dded395db5666eca522b47f04db8d4757c9b77c1496e8d4e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:19:7",
+      "sequence": 11584,
+      "chapter_label": "2CH 19",
+      "verse_label": "7",
+      "locator": {
+        "book": "2CH",
+        "chapter": 19,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 19,
+          "verse": 7
+        }
+      ],
+      "en": "Now therefore let the fear of the LORD be on you. Take heed and do it; for there is no iniquity with the LORD our God, nor respect of persons, nor taking of bribes.”",
+      "ko": "그런즉 너희는 여호와를 두려워하는 마음으로 삼가 행하라 우리의 하나님 여호와께서는 불의함도 없으시고 편벽됨도 없으시고 뇌물을 받으심도 없으시니라",
+      "source_text_hash": "6098367563990377960fdd14265f35ed5be1b33ba530d80ad3c96f5a0586414e",
+      "translation_text_hash": "8c02c09f2ef068367eb3c78781e59715cee010e01284a01a77b49f8962ec1077",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 너희는 여호와를 두려워하는 마음으로 삼가 행하라 우리의 하나님 여호와께서는 불의함도 없으시고 편벽됨도 없으시고 뇌물을 받으심도 없으시니라"
+      ],
+      "raw_text_hashes": [
+        "8c02c09f2ef068367eb3c78781e59715cee010e01284a01a77b49f8962ec1077"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:19:8",
+      "sequence": 11585,
+      "chapter_label": "2CH 19",
+      "verse_label": "8",
+      "locator": {
+        "book": "2CH",
+        "chapter": 19,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 19,
+          "verse": 8
+        }
+      ],
+      "en": "Moreover in Jerusalem Jehoshaphat appointed certain Levites, priests, and heads of the fathers’ households of Israel to give judgment for the LORD and for controversies. They returned to Jerusalem.",
+      "ko": "여호사밧이 또 예루살렘에서 레위 사람과 제사장과 이스라엘 족장 중에서 사람을 세워 여호와께 속한 일과 예루살렘 거민의 모든 송사를 재판하게 하고",
+      "source_text_hash": "3a7dc30bb05201f19157db4a5eeb97d9878b346b7d2692d321dc0ce86e8f3197",
+      "translation_text_hash": "d57167db5545cb1c377db4757d0fa3f372166599663030bfa016b63586ef815c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호사밧이 또 예루살렘에서 레위 사람과 제사장과 이스라엘 족장 중에서 사람을 세워 여호와께 속한 일과 예루살렘 거민의 모든 송사를 재판하게 하고"
+      ],
+      "raw_text_hashes": [
+        "d57167db5545cb1c377db4757d0fa3f372166599663030bfa016b63586ef815c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:19:9",
+      "sequence": 11586,
+      "chapter_label": "2CH 19",
+      "verse_label": "9",
+      "locator": {
+        "book": "2CH",
+        "chapter": 19,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 19,
+          "verse": 9
+        }
+      ],
+      "en": "He commanded them, saying, “You shall do this in the fear of the LORD, faithfully, and with a perfect heart.",
+      "ko": "저희에게 명하여 가로되 너희는 여호와를 경외하고 충의와 성심으로 이 일을 행하라",
+      "source_text_hash": "ca50163063a05e35b0ca0b19bbc88dc7e58737dcbf5c288175b4e348e06c1be9",
+      "translation_text_hash": "9507a98247e224b98b0e585ef7a6f23affcebd505d5ee8410f7ad43524d64374",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희에게 명하여 가로되 너희는 여호와를 경외하고 충의와 성심으로 이 일을 행하라"
+      ],
+      "raw_text_hashes": [
+        "9507a98247e224b98b0e585ef7a6f23affcebd505d5ee8410f7ad43524d64374"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:19:10",
+      "sequence": 11587,
+      "chapter_label": "2CH 19",
+      "verse_label": "10",
+      "locator": {
+        "book": "2CH",
+        "chapter": 19,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 19,
+          "verse": 10
+        }
+      ],
+      "en": "Whenever any controversy comes to you from your brothers who dwell in their cities, between blood and blood, between law and commandment, statutes and ordinances, you must warn them, that they not be guilty toward the LORD, and so wrath come on you and on your brothers. Do this, and you will not be guilty.",
+      "ko": "무릇 어느 성읍에 거한 너희 형제가 혹 피를 흘림이나 혹 율법이나 계명이나 율례나 규례를 인하여 너희에게 와서 송사하거든 저희를 경계하여 여호와께 죄를 얻지 않게 하여 너희와 너희 형제에게 진노하심이 임하지 말게 하라 너희가 이렇게 행하면 죄가 없으리라",
+      "source_text_hash": "eb7c3df81634d8c5fd61a29ccd232d9443c2ec28bc1b4e3615cbdbebb9121dea",
+      "translation_text_hash": "2abd3d9a3da8c4e96b4087ebb618f7d4425a81a209515a9f21521633915d1eb4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 어느 성읍에 거한 너희 형제가 혹 피를 흘림이나 혹 율법이나 계명이나 율례나 규례를 인하여 너희에게 와서 송사하거든 저희를 경계하여 여호와께 죄를 얻지 않게 하여 너희와 너희 형제에게 진노하심이 임하지 말게 하라 너희가 이렇게 행하면 죄가 없으리라"
+      ],
+      "raw_text_hashes": [
+        "2abd3d9a3da8c4e96b4087ebb618f7d4425a81a209515a9f21521633915d1eb4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:19:11",
+      "sequence": 11588,
+      "chapter_label": "2CH 19",
+      "verse_label": "11",
+      "locator": {
+        "book": "2CH",
+        "chapter": 19,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 19,
+          "verse": 11
+        }
+      ],
+      "en": "Behold, Amariah the chief priest is over you in all matters of the LORD; and Zebadiah the son of Ishmael, the ruler of the house of Judah, in all the king’s matters. Also the Levites shall be officers before you. Deal courageously, and may the LORD be with the good.”",
+      "ko": "여호와께 속한 모든 일에는 대제사장 아마랴가 너희를 다스리고 왕에게 속한 모든 일은 유다 지파의 어른 이스마엘의 아들 스바댜가 다스리고 레위 사람들은 너희 앞에 관리가 되리라 너희는 힘써 행하라 여호와께서 선한 자와 함께 하실찌로다 하니라",
+      "source_text_hash": "cacd5b39b26d3817aa8e0ad149af92fd8dc770da18142f5cee5a5111f7657dcc",
+      "translation_text_hash": "14e07d3b7f6ff0882c046ced07a5964a9df91cd953a2cf86343ae8cf18a8cc98",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께 속한 모든 일에는 대제사장 아마랴가 너희를 다스리고 왕에게 속한 모든 일은 유다 지파의 어른 이스마엘의 아들 스바댜가 다스리고 레위 사람들은 너희 앞에 관리가 되리라 너희는 힘써 행하라 여호와께서 선한 자와 함께 하실찌로다 하니라"
+      ],
+      "raw_text_hashes": [
+        "14e07d3b7f6ff0882c046ced07a5964a9df91cd953a2cf86343ae8cf18a8cc98"
+      ]
+    }
+  ]
+}

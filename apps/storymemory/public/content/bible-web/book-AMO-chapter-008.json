@@ -1,0 +1,461 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:AMO:chapter:008",
+  "unit_ordinal": 887,
+  "unit_label": "AMO 8",
+  "book_code": "AMO",
+  "chapter_number": 8,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:AMO:8:1",
+      "sequence": 22483,
+      "chapter_label": "AMO 8",
+      "verse_label": "1",
+      "locator": {
+        "book": "AMO",
+        "chapter": 8,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 8,
+          "verse": 1
+        }
+      ],
+      "en": "Thus the Lord GOD showed me: behold, a basket of summer fruit.",
+      "ko": "주 여호와께서 또 내게 여름 실과 한 광주리를 보이시며",
+      "source_text_hash": "3371afa3fd593ad2c7562a5f73c1e6e15dc0b548d828b13417025ff7fb4a0b79",
+      "translation_text_hash": "5801448821c6aada3817690521cee065bcb6cc26b5de6c8b8dfa86a1422c9ede",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주 여호와께서 또 내게 여름 실과 한 광주리를 보이시며"
+      ],
+      "raw_text_hashes": [
+        "5801448821c6aada3817690521cee065bcb6cc26b5de6c8b8dfa86a1422c9ede"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:8:2",
+      "sequence": 22484,
+      "chapter_label": "AMO 8",
+      "verse_label": "2",
+      "locator": {
+        "book": "AMO",
+        "chapter": 8,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 8,
+          "verse": 2
+        }
+      ],
+      "en": "He said, “Amos, what do you see?” I said, “A basket of summer fruit.” Then the LORD said to me, “The end has come on my people Israel. I will not again pass by them any more.",
+      "ko": "가라사대 아모스야 네가 무엇을 보느냐 내가 가로되 여름 실과 한 광주리니이다 하매 여호와께서 내게 이르시되 내 백성 이스라엘의 끝이 이르렀은즉 내가 다시는 저를 용서치 아니하리니",
+      "source_text_hash": "7be379d559306586ae168bc96572eb2874be1239026978c598139fbbce65223d",
+      "translation_text_hash": "26745bf71d3c97528dd9e88086c329df767f0b7c801832f148c9b80501d98bd1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가라사대 아모스야 네가 무엇을 보느냐 내가 가로되 여름 실과 한 광주리니이다 하매 여호와께서 내게 이르시되 내 백성 이스라엘의 끝이 이르렀은즉 내가 다시는 저를 용서치 아니하리니"
+      ],
+      "raw_text_hashes": [
+        "26745bf71d3c97528dd9e88086c329df767f0b7c801832f148c9b80501d98bd1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:8:3",
+      "sequence": 22485,
+      "chapter_label": "AMO 8",
+      "verse_label": "3",
+      "locator": {
+        "book": "AMO",
+        "chapter": 8,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 8,
+          "verse": 3
+        }
+      ],
+      "en": "The songs of the temple will be wailing in that day,” says the Lord GOD. “The dead bodies will be many. In every place they will throw them out with silence.",
+      "ko": "그 날에 궁전의 노래가 애곡으로 변할 것이며 시체가 많아서 사람이 잠잠히 처처에 내어버리리라 이는 주 여호와의 말씀이니라",
+      "source_text_hash": "7ada2bdb883ec39a2fbfb84d81d6e6a1895336b4ef033a099eaf12023560845a",
+      "translation_text_hash": "6cc9cb4d8cf846b964fbe3d512ac4677171cfc1bdfa8a6fb327f87a78779e979",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날에 궁전의 노래가 애곡으로 변할 것이며 시체가 많아서 사람이 잠잠히 처처에 내어버리리라 이는 주 여호와의 말씀이니라"
+      ],
+      "raw_text_hashes": [
+        "6cc9cb4d8cf846b964fbe3d512ac4677171cfc1bdfa8a6fb327f87a78779e979"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:8:4",
+      "sequence": 22486,
+      "chapter_label": "AMO 8",
+      "verse_label": "4",
+      "locator": {
+        "book": "AMO",
+        "chapter": 8,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 8,
+          "verse": 4
+        }
+      ],
+      "en": "Hear this, you who desire to swallow up the needy, and cause the poor of the land to fail,",
+      "ko": "궁핍한 자를 삼키며 땅의 가난한 자를 망케 하려는 자들아 이 말을 들으라",
+      "source_text_hash": "b8e3901c1f4bd6c16cd22118c231873a0b05ff86d096d7b6a05fa61b048f6281",
+      "translation_text_hash": "5a338cf570e2464dbd9b8212e2ac2feaae607aab4c268d6fb8e49879dde84140",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "궁핍한 자를 삼키며 땅의 가난한 자를 망케 하려는 자들아 이 말을 들으라"
+      ],
+      "raw_text_hashes": [
+        "5a338cf570e2464dbd9b8212e2ac2feaae607aab4c268d6fb8e49879dde84140"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:8:5",
+      "sequence": 22487,
+      "chapter_label": "AMO 8",
+      "verse_label": "5",
+      "locator": {
+        "book": "AMO",
+        "chapter": 8,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 8,
+          "verse": 5
+        }
+      ],
+      "en": "saying, ‘When will the new moon be gone, that we may sell grain? And the Sabbath, that we may market wheat, making the ephah small, and the shekel large, and dealing falsely with balances of deceit;",
+      "ko": "너희가 이르기를 월삭이 언제나 지나서 우리로 곡식을 팔게 하며 안식일이 언제나 지나서 우리로 밀을 내게 할꼬 에바를 작게 하여 세겔을 크게 하며 거짓 저울로 속이며",
+      "source_text_hash": "46755fe93fb1130537e51b998ce2b31aeaa7e8b12b5327cdb27c04b3372445d3",
+      "translation_text_hash": "ab5a748a8137767d679dd9b5eb5253624c664b005e041b09d7eef595823226a0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 이르기를 월삭이 언제나 지나서 우리로 곡식을 팔게 하며 안식일이 언제나 지나서 우리로 밀을 내게 할꼬 에바를 작게 하여 세겔을 크게 하며 거짓 저울로 속이며"
+      ],
+      "raw_text_hashes": [
+        "ab5a748a8137767d679dd9b5eb5253624c664b005e041b09d7eef595823226a0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:8:6",
+      "sequence": 22488,
+      "chapter_label": "AMO 8",
+      "verse_label": "6",
+      "locator": {
+        "book": "AMO",
+        "chapter": 8,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 8,
+          "verse": 6
+        }
+      ],
+      "en": "that we may buy the poor for silver, and the needy for a pair of sandals, and sell the sweepings with the wheat?’”",
+      "ko": "은으로 가난한 자를 사며 신 한 켤레로 궁핍한 자를 사며 잿밀을 팔자 하는도다",
+      "source_text_hash": "c5e4fc16cb663606567d14f65996dc4df512aa2f71ff342ab7548137e558c26b",
+      "translation_text_hash": "c1997a7eda41e8a9c929c51e165f6e6657c4f10821ac3cefa5f131ea5b5586df",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "은으로 가난한 자를 사며 신 한 켤레로 궁핍한 자를 사며 잿밀을 팔자 하는도다"
+      ],
+      "raw_text_hashes": [
+        "c1997a7eda41e8a9c929c51e165f6e6657c4f10821ac3cefa5f131ea5b5586df"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:8:7",
+      "sequence": 22489,
+      "chapter_label": "AMO 8",
+      "verse_label": "7",
+      "locator": {
+        "book": "AMO",
+        "chapter": 8,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 8,
+          "verse": 7
+        }
+      ],
+      "en": "The LORD has sworn by the pride of Jacob, “Surely I will never forget any of their works.",
+      "ko": "여호와께서 야곱의 영광을 가리켜 맹세하시되 내가 저희의 모든 소위를 영영 잊지 아니하리라 하셨나니",
+      "source_text_hash": "877e674f5e75563cac110f1ae4520ed21216d75948954a1b134baee21d97f579",
+      "translation_text_hash": "e6853fb84a06f3cad21093932eead39a0a1dea3ec5cef8c94f3621e97e321d6d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 야곱의 영광을 가리켜 맹세하시되 내가 저희의 모든 소위를 영영 잊지 아니하리라 하셨나니"
+      ],
+      "raw_text_hashes": [
+        "e6853fb84a06f3cad21093932eead39a0a1dea3ec5cef8c94f3621e97e321d6d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:8:8",
+      "sequence": 22490,
+      "chapter_label": "AMO 8",
+      "verse_label": "8",
+      "locator": {
+        "book": "AMO",
+        "chapter": 8,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 8,
+          "verse": 8
+        }
+      ],
+      "en": "Won’t the land tremble for this, and everyone mourn who dwells in it? Yes, it will rise up wholly like the River; and it will be stirred up and sink again, like the River of Egypt.",
+      "ko": "이로 인하여 땅이 떨지 않겠으며 그 가운데 모든 거민이 애통하지 않겠느냐 온 땅이 하수의 넘침 같이 솟아오르며 애굽강 같이 뛰놀다가 낮아지리라",
+      "source_text_hash": "d486e85b854ad0ccda3af3a4a5c78f0be4aee542181dfa00057490c30da4736b",
+      "translation_text_hash": "5fcd1e697968cb47ea783f9576ba7d7c4fc6cba9c9e9322fdd749d5a66ec4bed",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이로 인하여 땅이 떨지 않겠으며 그 가운데 모든 거민이 애통하지 않겠느냐 온 땅이 하수의 넘침 같이 솟아오르며 애굽강 같이 뛰놀다가 낮아지리라"
+      ],
+      "raw_text_hashes": [
+        "5fcd1e697968cb47ea783f9576ba7d7c4fc6cba9c9e9322fdd749d5a66ec4bed"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:8:9",
+      "sequence": 22491,
+      "chapter_label": "AMO 8",
+      "verse_label": "9",
+      "locator": {
+        "book": "AMO",
+        "chapter": 8,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 8,
+          "verse": 9
+        }
+      ],
+      "en": "It will happen in that day,” says the Lord GOD, “that I will cause the sun to go down at noon, and I will darken the earth in the clear day.",
+      "ko": "주 여호와께서 가라사대 그 날에 내가 해로 대낮에 지게 하여 백주에 땅을 캄캄케 하며",
+      "source_text_hash": "7043c223fcaaa6af0ef0a094267a0824a0ed32da66011ff3c5697d622b31e44a",
+      "translation_text_hash": "0c896cadeac1614956824f6dcb7ab684a21c4dcdcec6869b3b0dc750aca7d3d9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주 여호와께서 가라사대 그 날에 내가 해로 대낮에 지게 하여 백주에 땅을 캄캄케 하며"
+      ],
+      "raw_text_hashes": [
+        "0c896cadeac1614956824f6dcb7ab684a21c4dcdcec6869b3b0dc750aca7d3d9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:8:10",
+      "sequence": 22492,
+      "chapter_label": "AMO 8",
+      "verse_label": "10",
+      "locator": {
+        "book": "AMO",
+        "chapter": 8,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 8,
+          "verse": 10
+        }
+      ],
+      "en": "I will turn your feasts into mourning, and all your songs into lamentation; and I will make you wear sackcloth on all your bodies, and baldness on every head. I will make it like the mourning for an only son, and its end like a bitter day.",
+      "ko": "너희 절기를 애통으로, 너희 모든 노래를 애곡으로 변하며 모든 사람으로 굵은 베로 허리를 동이게 하며 모든 머리를 대머리 되게 하며 독자의 죽음을 인하여 애통하듯하게 하며 그 결국으로 곤고한 날과 같게 하리라",
+      "source_text_hash": "e8db7b67eccdc5e6913f11897d65d6b947c118af8426c39f7f724399b8d24b11",
+      "translation_text_hash": "055eb472aa3198a046d80d3c3e31f9da95436d7c89d2f8be715918042a1a0b1b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 절기를 애통으로, 너희 모든 노래를 애곡으로 변하며 모든 사람으로 굵은 베로 허리를 동이게 하며 모든 머리를 대머리 되게 하며 독자의 죽음을 인하여 애통하듯하게 하며 그 결국으로 곤고한 날과 같게 하리라"
+      ],
+      "raw_text_hashes": [
+        "055eb472aa3198a046d80d3c3e31f9da95436d7c89d2f8be715918042a1a0b1b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:8:11",
+      "sequence": 22493,
+      "chapter_label": "AMO 8",
+      "verse_label": "11",
+      "locator": {
+        "book": "AMO",
+        "chapter": 8,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 8,
+          "verse": 11
+        }
+      ],
+      "en": "Behold, the days come,” says the Lord GOD, “that I will send a famine in the land, not a famine of bread, nor a thirst for water, but of hearing the LORD’s words.",
+      "ko": "주 여호와께서 가라사대 보라 날이 이를찌라 내가 기근을 땅에 보내리니 양식이 없어 주림이 아니며 물이 없어 갈함이 아니요 여호와의 말씀을 듣지 못한 기갈이라",
+      "source_text_hash": "8e8f4452d140bf767be11a2e228a525dfa5645810d535dfddbd12c13b810558c",
+      "translation_text_hash": "36da115c9e75556bff0e1b6248767c779a6b3f38a58b3ceef23fb75114f83b5a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주 여호와께서 가라사대 보라 날이 이를찌라 내가 기근을 땅에 보내리니 양식이 없어 주림이 아니며 물이 없어 갈함이 아니요 여호와의 말씀을 듣지 못한 기갈이라"
+      ],
+      "raw_text_hashes": [
+        "36da115c9e75556bff0e1b6248767c779a6b3f38a58b3ceef23fb75114f83b5a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:8:12",
+      "sequence": 22494,
+      "chapter_label": "AMO 8",
+      "verse_label": "12",
+      "locator": {
+        "book": "AMO",
+        "chapter": 8,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 8,
+          "verse": 12
+        }
+      ],
+      "en": "They will wander from sea to sea, and from the north even to the east; they will run back and forth to seek the LORD’s word, and will not find it.",
+      "ko": "사람이 이 바다에서 저 바다까지, 북에서 동까지 비틀거리며 여호와의 말씀을 구하려고 달려 왕래하되 얻지 못하리니",
+      "source_text_hash": "f0e5e3695bd6347eb17f27f6f58fb807d94820f166ae31af56eebf1b96b6fcb3",
+      "translation_text_hash": "2bddff12c706b11e86a18d8aef06b4897215b1b61d2b835defe69dc96775af0a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 이 바다에서 저 바다까지, 북에서 동까지 비틀거리며 여호와의 말씀을 구하려고 달려 왕래하되 얻지 못하리니"
+      ],
+      "raw_text_hashes": [
+        "2bddff12c706b11e86a18d8aef06b4897215b1b61d2b835defe69dc96775af0a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:8:13",
+      "sequence": 22495,
+      "chapter_label": "AMO 8",
+      "verse_label": "13",
+      "locator": {
+        "book": "AMO",
+        "chapter": 8,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 8,
+          "verse": 13
+        }
+      ],
+      "en": "In that day the beautiful virgins and the young men will faint for thirst.",
+      "ko": "그 날에 아름다운 처녀와 젊은 남자가 다 갈하여 피곤하리라",
+      "source_text_hash": "ddcdca9063cc67a999a5055455528ccfe3628db911bf11c9b24dd26b7c0423b8",
+      "translation_text_hash": "b5abf46ccab6f0ce6b5d5304bb89685e2032986f87a6d053894a5598a0781618",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날에 아름다운 처녀와 젊은 남자가 다 갈하여 피곤하리라"
+      ],
+      "raw_text_hashes": [
+        "b5abf46ccab6f0ce6b5d5304bb89685e2032986f87a6d053894a5598a0781618"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:8:14",
+      "sequence": 22496,
+      "chapter_label": "AMO 8",
+      "verse_label": "14",
+      "locator": {
+        "book": "AMO",
+        "chapter": 8,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 8,
+          "verse": 14
+        }
+      ],
+      "en": "Those who swear by the sin of Samaria, and say, ‘As your god, Dan, lives,’ and, ‘As the way of Beersheba lives,’ they will fall, and never rise up again.”",
+      "ko": "무릇 사마리아의 죄된 우상을 가리켜 맹세하여 이르기를 단아 네 신의 생존을 가리켜 맹세하노라 하거나 브엘세바의 위하는 것의 생존을 가리켜 맹세하노라 하는 사람은 엎드러지고 다시 일어나지 못하리라",
+      "source_text_hash": "abf8d02fa5f483b70678fbab9e01d6147d143334127b257815a31866d83c5823",
+      "translation_text_hash": "717ba22947c15da25561f05429c1f6f2efdc679b66b09e201ff4d187d2ae87b4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 사마리아의 죄된 우상을 가리켜 맹세하여 이르기를 단아 네 신의 생존을 가리켜 맹세하노라 하거나 브엘세바의 위하는 것의 생존을 가리켜 맹세하노라 하는 사람은 엎드러지고 다시 일어나지 못하리라"
+      ],
+      "raw_text_hashes": [
+        "717ba22947c15da25561f05429c1f6f2efdc679b66b09e201ff4d187d2ae87b4"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,436 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:SNG:chapter:006",
+  "unit_ordinal": 677,
+  "unit_label": "SNG 6",
+  "book_code": "SNG",
+  "chapter_number": 6,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:SNG:6:1",
+      "sequence": 17616,
+      "chapter_label": "SNG 6",
+      "verse_label": "1",
+      "locator": {
+        "book": "SNG",
+        "chapter": 6,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 6,
+          "verse": 1
+        }
+      ],
+      "en": "Where has your beloved gone, you fairest among women? Where has your beloved turned, that we may seek him with you? Beloved",
+      "ko": "여자 중 극히 어여쁜 자야 너의 사랑하는 자가 어디로 갔는가 너의 사랑하는 자가 어디로 돌이켰는가 우리가 너와 함께 찾으리라",
+      "source_text_hash": "3c949e5872aa626c3dd0e05e4a9d2d07a8f6697782e4f92065120eabef1ec061",
+      "translation_text_hash": "e1758193d3ff4f992de72fef5751f60b348477e9f627fe38ad19f21711fbe544",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여자 중 극히 어여쁜 자야 너의 사랑하는 자가 어디로 갔는가 너의 사랑하는 자가 어디로 돌이켰는가 우리가 너와 함께 찾으리라"
+      ],
+      "raw_text_hashes": [
+        "e1758193d3ff4f992de72fef5751f60b348477e9f627fe38ad19f21711fbe544"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:SNG:6:2",
+      "sequence": 17617,
+      "chapter_label": "SNG 6",
+      "verse_label": "2",
+      "locator": {
+        "book": "SNG",
+        "chapter": 6,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 6,
+          "verse": 2
+        }
+      ],
+      "en": "My beloved has gone down to his garden, to the beds of spices, to pasture his flock in the gardens, and to gather lilies.",
+      "ko": "나의 사랑하는 자가 자기 동산으로 내려가 향기로운 꽃밭에 이르러서 동산 가운데서 양떼를 먹이며 백합화를 꺾는구나",
+      "source_text_hash": "40940e2de4f5f63c452f3d52b1af0df33b9ac8f3ac530ddee6f5dd8a6be4bc53",
+      "translation_text_hash": "1e4dda1fc27054abf99c77ce404753cceeea3a70425624360e6c3359766f8943",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 사랑하는 자가 자기 동산으로 내려가 향기로운 꽃밭에 이르러서 동산 가운데서 양떼를 먹이며 백합화를 꺾는구나"
+      ],
+      "raw_text_hashes": [
+        "1e4dda1fc27054abf99c77ce404753cceeea3a70425624360e6c3359766f8943"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:SNG:6:3",
+      "sequence": 17618,
+      "chapter_label": "SNG 6",
+      "verse_label": "3",
+      "locator": {
+        "book": "SNG",
+        "chapter": 6,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 6,
+          "verse": 3
+        }
+      ],
+      "en": "I am my beloved’s, and my beloved is mine. He browses among the lilies. Lover",
+      "ko": "나는 나의 사랑하는 자에게 속하였고 나의 사랑하는 자는 내게 속하였다 그가 백합화 가운데서 그 양떼를 먹이는구나",
+      "source_text_hash": "e8378fdc38e223d39c4bb1dffb18613b748873a79e4dd7919316db2c6d1f1f83",
+      "translation_text_hash": "291bd382aea35616a5d0aa10fb5cc3bdcfbc964750b55207e6ed64c8c98f5195",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 나의 사랑하는 자에게 속하였고 나의 사랑하는 자는 내게 속하였다 그가 백합화 가운데서 그 양떼를 먹이는구나"
+      ],
+      "raw_text_hashes": [
+        "291bd382aea35616a5d0aa10fb5cc3bdcfbc964750b55207e6ed64c8c98f5195"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:SNG:6:4",
+      "sequence": 17619,
+      "chapter_label": "SNG 6",
+      "verse_label": "4",
+      "locator": {
+        "book": "SNG",
+        "chapter": 6,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 6,
+          "verse": 4
+        }
+      ],
+      "en": "You are beautiful, my love, as Tirzah, lovely as Jerusalem, awesome as an army with banners.",
+      "ko": "내 사랑아 너의 어여쁨이 디르사 같고 너의 고움이 예루살렘 같고 엄위함이 기치를 벌인 군대 같구나",
+      "source_text_hash": "138db81855b4dafb408f91e112641977afdbd958f48b3b127b87aa287054c5b7",
+      "translation_text_hash": "df5033a430c60ab77c3fb768eb3206a3fb93b6710856b800b83b56dde6064875",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 사랑아 너의 어여쁨이 디르사 같고 너의 고움이 예루살렘 같고 엄위함이 기치를 벌인 군대 같구나"
+      ],
+      "raw_text_hashes": [
+        "df5033a430c60ab77c3fb768eb3206a3fb93b6710856b800b83b56dde6064875"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:SNG:6:5",
+      "sequence": 17620,
+      "chapter_label": "SNG 6",
+      "verse_label": "5",
+      "locator": {
+        "book": "SNG",
+        "chapter": 6,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 6,
+          "verse": 5
+        }
+      ],
+      "en": "Turn away your eyes from me, for they have overcome me. Your hair is like a flock of goats, that lie along the side of Gilead.",
+      "ko": "네 눈이 나를 놀래니 돌이켜 나를 보지 말라 네 머리털은 길르앗산 기슭에 누운 염소떼 같고",
+      "source_text_hash": "74a03b29c954c99d5367b8dd268d977f5c371b9bcf6d16d8caddf6da6947b2b8",
+      "translation_text_hash": "c22a2335eee9cafadc7d572af52e5d4f35bb450663a811c39a53bd1deddf12da",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 눈이 나를 놀래니 돌이켜 나를 보지 말라 네 머리털은 길르앗산 기슭에 누운 염소떼 같고"
+      ],
+      "raw_text_hashes": [
+        "c22a2335eee9cafadc7d572af52e5d4f35bb450663a811c39a53bd1deddf12da"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:SNG:6:6",
+      "sequence": 17621,
+      "chapter_label": "SNG 6",
+      "verse_label": "6",
+      "locator": {
+        "book": "SNG",
+        "chapter": 6,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 6,
+          "verse": 6
+        }
+      ],
+      "en": "Your teeth are like a flock of ewes, which have come up from the washing, of which every one has twins; not one is bereaved among them.",
+      "ko": "네 이는 목욕장에서 나온 암양떼 곧 새끼 없는 것은 하나도 없이 각각 쌍태를 낳은 양 같고",
+      "source_text_hash": "acfc8fb32c847b8b78ab470ba07ab05c44344473d0b40e49abc0af29bbbc33b6",
+      "translation_text_hash": "58beb64bbfd30479099c5fb76fb371fcf57ff9de5a03ac098e227cae4c61015b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 이는 목욕장에서 나온 암양떼 곧 새끼 없는 것은 하나도 없이 각각 쌍태를 낳은 양 같고"
+      ],
+      "raw_text_hashes": [
+        "58beb64bbfd30479099c5fb76fb371fcf57ff9de5a03ac098e227cae4c61015b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:SNG:6:7",
+      "sequence": 17622,
+      "chapter_label": "SNG 6",
+      "verse_label": "7",
+      "locator": {
+        "book": "SNG",
+        "chapter": 6,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 6,
+          "verse": 7
+        }
+      ],
+      "en": "Your temples are like a piece of a pomegranate behind your veil.",
+      "ko": "너울 속의 너의 뺨은 석류 한쪽 같구나",
+      "source_text_hash": "9d8fb2da25a0bfcdfb622ad4d188161b5b65ca3fea90ed10a90876f681b69880",
+      "translation_text_hash": "fc56b440351248e27de76ea651f52c792fe7a1b194e40401b8bbd4ff238fa085",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너울 속의 너의 뺨은 석류 한쪽 같구나"
+      ],
+      "raw_text_hashes": [
+        "fc56b440351248e27de76ea651f52c792fe7a1b194e40401b8bbd4ff238fa085"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:SNG:6:8",
+      "sequence": 17623,
+      "chapter_label": "SNG 6",
+      "verse_label": "8",
+      "locator": {
+        "book": "SNG",
+        "chapter": 6,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 6,
+          "verse": 8
+        }
+      ],
+      "en": "There are sixty queens, eighty concubines, and virgins without number.",
+      "ko": "왕후가 육십이요 비빈이 팔십이요 시녀가 무수하되",
+      "source_text_hash": "cbf3e1d9f9739382a28f7640be42a5f9e032596abb1f6f2ad9ce3f439ce8d541",
+      "translation_text_hash": "9caba9d2311436558eed3890b6558f2ceb36dccfa6d2a6693719d3c1d3432290",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕후가 육십이요 비빈이 팔십이요 시녀가 무수하되"
+      ],
+      "raw_text_hashes": [
+        "9caba9d2311436558eed3890b6558f2ceb36dccfa6d2a6693719d3c1d3432290"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:SNG:6:9",
+      "sequence": 17624,
+      "chapter_label": "SNG 6",
+      "verse_label": "9",
+      "locator": {
+        "book": "SNG",
+        "chapter": 6,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 6,
+          "verse": 9
+        }
+      ],
+      "en": "My dove, my perfect one, is unique. She is her mother’s only daughter. She is the favorite one of her who bore her. The daughters saw her, and called her blessed. The queens and the concubines saw her, and they praised her.",
+      "ko": "나의 비둘기, 나의 완전한 자는 하나 뿐이로구나 그는 그 어미의 외딸이요 그 낳은 자의 귀중히 여기는 자로구나 여자들이 그를 보고 복된 자라 하고 왕후와 비빈들도 그를 칭찬하는구나",
+      "source_text_hash": "96402af575b34df77822f91ca135e542ba3fc08b4f3daf8e01aacc317f859e6e",
+      "translation_text_hash": "7b8f437a7fc70b57d61fa4bc77a98fd78592085b59deaaa4d9631eb6bbf1fb9c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 비둘기, 나의 완전한 자는 하나 뿐이로구나 그는 그 어미의 외딸이요 그 낳은 자의 귀중히 여기는 자로구나 여자들이 그를 보고 복된 자라 하고 왕후와 비빈들도 그를 칭찬하는구나"
+      ],
+      "raw_text_hashes": [
+        "7b8f437a7fc70b57d61fa4bc77a98fd78592085b59deaaa4d9631eb6bbf1fb9c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:SNG:6:10",
+      "sequence": 17625,
+      "chapter_label": "SNG 6",
+      "verse_label": "10",
+      "locator": {
+        "book": "SNG",
+        "chapter": 6,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 6,
+          "verse": 10
+        }
+      ],
+      "en": "Who is she who looks out as the morning, beautiful as the moon, clear as the sun, and awesome as an army with banners?",
+      "ko": "아침빛 같이 뚜렷하고 달 같이 아름답고 해 같이 맑고 기치를 벌인 군대 같이 엄위한 여자가 누구인가",
+      "source_text_hash": "c050274dc81ff358efb03ca9a9aa98dfea2b4aa8eda6cc078b0b8bb869182fe9",
+      "translation_text_hash": "22170ec0db6de4ee4fb435ded373e1798188fa91a788e97046544acc06593f91",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아침빛 같이 뚜렷하고 달 같이 아름답고 해 같이 맑고 기치를 벌인 군대 같이 엄위한 여자가 누구인가"
+      ],
+      "raw_text_hashes": [
+        "22170ec0db6de4ee4fb435ded373e1798188fa91a788e97046544acc06593f91"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:SNG:6:11",
+      "sequence": 17626,
+      "chapter_label": "SNG 6",
+      "verse_label": "11",
+      "locator": {
+        "book": "SNG",
+        "chapter": 6,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 6,
+          "verse": 11
+        }
+      ],
+      "en": "I went down into the nut tree grove, to see the green plants of the valley, to see whether the vine budded, and the pomegranates were in flower.",
+      "ko": "골짜기의 푸른 초목을 보려고 포도나무가 순이 났는가 석류나무가 꽃이 피었는가 알려고 내가 호도 동산으로 내려갔을 때에",
+      "source_text_hash": "780140bd5f7628bff251324b281c4b960c55662ebd4c4508cd858584d8ac30c8",
+      "translation_text_hash": "666545599eefe7765ae1511430ef0bd4b69adbe65349b6dfd177058d538d19df",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "골짜기의 푸른 초목을 보려고 포도나무가 순이 났는가 석류나무가 꽃이 피었는가 알려고 내가 호도 동산으로 내려갔을 때에"
+      ],
+      "raw_text_hashes": [
+        "666545599eefe7765ae1511430ef0bd4b69adbe65349b6dfd177058d538d19df"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:SNG:6:12",
+      "sequence": 17627,
+      "chapter_label": "SNG 6",
+      "verse_label": "12",
+      "locator": {
+        "book": "SNG",
+        "chapter": 6,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 6,
+          "verse": 12
+        }
+      ],
+      "en": "Without realizing it, my desire set me with my royal people’s chariots. Friends",
+      "ko": "부지중에 내 마음이 나로 내 귀한 백성의 수레 가운데 이르게 하였구나",
+      "source_text_hash": "1c5722126baf6a5b8832dab49f13ac665a605418b138eb532c825cb8ed9f36f7",
+      "translation_text_hash": "6f76ed949ad68483ad7502d244488c2ec16206505e3ec09f1b5adc84bc84c793",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "부지중에 내 마음이 나로 내 귀한 백성의 수레 가운데 이르게 하였구나"
+      ],
+      "raw_text_hashes": [
+        "6f76ed949ad68483ad7502d244488c2ec16206505e3ec09f1b5adc84bc84c793"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:SNG:6:13",
+      "sequence": 17628,
+      "chapter_label": "SNG 6",
+      "verse_label": "13",
+      "locator": {
+        "book": "SNG",
+        "chapter": 6,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 6,
+          "verse": 13
+        },
+        {
+          "book": "SNG",
+          "chapter": 6,
+          "verse": 14
+        }
+      ],
+      "en": "Return, return, Shulammite! Return, return, that we may gaze at you. Lover Why do you desire to gaze at the Shulammite, as at the dance of Mahanaim?",
+      "ko": "돌아오고 돌아오라 술람미 여자야 돌아오고 돌아오라 우리로 너를 보게 하라 너희가 어찌하여 마하나임의 춤추는 것을 보는 것처럼 술람미 여자를 보려느냐",
+      "source_text_hash": "29644553549c54245560fecd078d18b1d4c7d20449470ccb257873fa314c06ab",
+      "translation_text_hash": "4cf85c93b166f9d59e774078270299d304793f806a5c90cc06e0eae2ce50f806",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "split",
+      "mapping_note": "WEB SNG 6:13 is split across KRV 6:13/6:14.",
+      "raw_texts": [
+        "돌아오고 돌아오라 술람미 여자야 돌아오고 돌아오라 우리로 너를 보게 하라",
+        "너희가 어찌하여 마하나임의 춤추는 것을 보는 것처럼 술람미 여자를 보려느냐"
+      ],
+      "raw_text_hashes": [
+        "e0aa33833b670d1d05090f86c687c3b823a686adb1cffad665b4d0384e8c6570",
+        "c92328c1a50f6dc0ba6e410a9cf9ae620b4218f33522ac9ee69193b4dba7a132"
+      ]
+    }
+  ]
+}

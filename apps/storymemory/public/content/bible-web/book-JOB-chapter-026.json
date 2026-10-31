@@ -1,0 +1,461 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JOB:chapter:026",
+  "unit_ordinal": 462,
+  "unit_label": "JOB 26",
+  "book_code": "JOB",
+  "chapter_number": 26,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JOB:26:1",
+      "sequence": 13469,
+      "chapter_label": "JOB 26",
+      "verse_label": "1",
+      "locator": {
+        "book": "JOB",
+        "chapter": 26,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 26,
+          "verse": 1
+        }
+      ],
+      "en": "Then Job answered,",
+      "ko": "욥이 대답하여 가로되",
+      "source_text_hash": "5263caab7b43bc090defa0c0dbc9d551ac80859d1634826a141a04fc1349df96",
+      "translation_text_hash": "6e432eb41091f2b4077fe347703fb37615a4e3a45f9b3ead4a29e1a2b2065a30",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "욥이 대답하여 가로되"
+      ],
+      "raw_text_hashes": [
+        "6e432eb41091f2b4077fe347703fb37615a4e3a45f9b3ead4a29e1a2b2065a30"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:26:2",
+      "sequence": 13470,
+      "chapter_label": "JOB 26",
+      "verse_label": "2",
+      "locator": {
+        "book": "JOB",
+        "chapter": 26,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 26,
+          "verse": 2
+        }
+      ],
+      "en": "“How have you helped him who is without power! How have you saved the arm that has no strength!",
+      "ko": "네가 힘 없는 자를 참 잘 도왔구나 기력 없는 팔을 참 잘 구원하였구나",
+      "source_text_hash": "99613a1112e79d7fef7ca2d36544ffb24610e1e7a2cee519a46a60cd25519a10",
+      "translation_text_hash": "b60a37737496d14c52d730ba0a92a84a3893d2eb4f41bab537d134abe608a08f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 힘 없는 자를 참 잘 도왔구나 기력 없는 팔을 참 잘 구원하였구나"
+      ],
+      "raw_text_hashes": [
+        "b60a37737496d14c52d730ba0a92a84a3893d2eb4f41bab537d134abe608a08f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:26:3",
+      "sequence": 13471,
+      "chapter_label": "JOB 26",
+      "verse_label": "3",
+      "locator": {
+        "book": "JOB",
+        "chapter": 26,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 26,
+          "verse": 3
+        }
+      ],
+      "en": "How have you counseled him who has no wisdom, and plentifully declared sound knowledge!",
+      "ko": "지혜 없는 자를 참 잘 가르쳤구나 큰 지식을 참 잘 나타내었구나",
+      "source_text_hash": "44ce5ce9168e48759e1097d5b35cd9c740c29fd29993920772e5df3e5ce688a6",
+      "translation_text_hash": "3a18b158595cf4545650919fb68ee7f73e332f0fe9a88904d32e212e145681ea",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "지혜 없는 자를 참 잘 가르쳤구나 큰 지식을 참 잘 나타내었구나"
+      ],
+      "raw_text_hashes": [
+        "3a18b158595cf4545650919fb68ee7f73e332f0fe9a88904d32e212e145681ea"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:26:4",
+      "sequence": 13472,
+      "chapter_label": "JOB 26",
+      "verse_label": "4",
+      "locator": {
+        "book": "JOB",
+        "chapter": 26,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 26,
+          "verse": 4
+        }
+      ],
+      "en": "To whom have you uttered words? Whose spirit came out of you?",
+      "ko": "네가 누구를 향하여 말을 내었느냐 뉘 신이 네게서 나왔느냐",
+      "source_text_hash": "857a5a0c62821e5d1f77b174737fcc85f61463190c50f96a91dbbf163a8fad27",
+      "translation_text_hash": "43b23c5b41cfb5000b5c8f8f1a9b8457a1e82924fe05685f2acbad80c702f0e3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 누구를 향하여 말을 내었느냐 뉘 신이 네게서 나왔느냐"
+      ],
+      "raw_text_hashes": [
+        "43b23c5b41cfb5000b5c8f8f1a9b8457a1e82924fe05685f2acbad80c702f0e3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:26:5",
+      "sequence": 13473,
+      "chapter_label": "JOB 26",
+      "verse_label": "5",
+      "locator": {
+        "book": "JOB",
+        "chapter": 26,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 26,
+          "verse": 5
+        }
+      ],
+      "en": "“The departed spirits tremble, those beneath the waters and all that live in them.",
+      "ko": "음령들이 큰 물과 수족 밑에서 떠나니",
+      "source_text_hash": "afc04f6503738a0765fb139349638e241e1e42caf936be1e65bc3500e0728af7",
+      "translation_text_hash": "d4ba6c17a1286b5860ec937e710ee18a8759dbcfc4833dfef1293d4d9b835930",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "음령들이 큰 물과 수족 밑에서 떠나니"
+      ],
+      "raw_text_hashes": [
+        "d4ba6c17a1286b5860ec937e710ee18a8759dbcfc4833dfef1293d4d9b835930"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:26:6",
+      "sequence": 13474,
+      "chapter_label": "JOB 26",
+      "verse_label": "6",
+      "locator": {
+        "book": "JOB",
+        "chapter": 26,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 26,
+          "verse": 6
+        }
+      ],
+      "en": "Sheol is naked before God, and Abaddon has no covering.",
+      "ko": "하나님 앞에는 음부도 드러나며 멸망의 웅덩이도 가리움이 없음이니라",
+      "source_text_hash": "d779eac5bb3f5e72f77de143c7cd053886eec073caadea56de00393fda45c3b5",
+      "translation_text_hash": "8d12c8355bcd1bd2031bc85931baa108c6b330164b269340ebd1af760fb24755",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님 앞에는 음부도 드러나며 멸망의 웅덩이도 가리움이 없음이니라"
+      ],
+      "raw_text_hashes": [
+        "8d12c8355bcd1bd2031bc85931baa108c6b330164b269340ebd1af760fb24755"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:26:7",
+      "sequence": 13475,
+      "chapter_label": "JOB 26",
+      "verse_label": "7",
+      "locator": {
+        "book": "JOB",
+        "chapter": 26,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 26,
+          "verse": 7
+        }
+      ],
+      "en": "He stretches out the north over empty space, and hangs the earth on nothing.",
+      "ko": "그는 북편 하늘을 허공에 펴시며 땅을 공간에 다시며",
+      "source_text_hash": "6a0d666909ef4934d1e5938555c99873cd94b93de7aecc141350d9590fa96df3",
+      "translation_text_hash": "af4bf5759eb179a25c29c7ae5d3bf5c747a91375b8999d83a9d5aff28eb0295d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그는 북편 하늘을 허공에 펴시며 땅을 공간에 다시며"
+      ],
+      "raw_text_hashes": [
+        "af4bf5759eb179a25c29c7ae5d3bf5c747a91375b8999d83a9d5aff28eb0295d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:26:8",
+      "sequence": 13476,
+      "chapter_label": "JOB 26",
+      "verse_label": "8",
+      "locator": {
+        "book": "JOB",
+        "chapter": 26,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 26,
+          "verse": 8
+        }
+      ],
+      "en": "He binds up the waters in his thick clouds, and the cloud is not burst under them.",
+      "ko": "물을 빽빽한 구름에 싸시나 그 밑의 구름이 찢어지지 아니하느니라",
+      "source_text_hash": "38106a6d193c05c2619ffd100045d911216699663c4f8962b0e8040c58249525",
+      "translation_text_hash": "eaeac51d1806310b835def867f366c556a8283f976e47f136b1179efa8a143d2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "물을 빽빽한 구름에 싸시나 그 밑의 구름이 찢어지지 아니하느니라"
+      ],
+      "raw_text_hashes": [
+        "eaeac51d1806310b835def867f366c556a8283f976e47f136b1179efa8a143d2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:26:9",
+      "sequence": 13477,
+      "chapter_label": "JOB 26",
+      "verse_label": "9",
+      "locator": {
+        "book": "JOB",
+        "chapter": 26,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 26,
+          "verse": 9
+        }
+      ],
+      "en": "He encloses the face of his throne, and spreads his cloud on it.",
+      "ko": "그는 자기의 보좌 앞을 가리우시고 자기 구름으로 그 위에 펴시며",
+      "source_text_hash": "28e49fafee6aa73dc48d7613b8a0002e16a991f1bb2235bdf70f5b27c9e5f955",
+      "translation_text_hash": "abd6fa05606c453cb5bf3d1e5dc06dd30fc7cf7ac06842d69d9e2336d4d15d89",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그는 자기의 보좌 앞을 가리우시고 자기 구름으로 그 위에 펴시며"
+      ],
+      "raw_text_hashes": [
+        "abd6fa05606c453cb5bf3d1e5dc06dd30fc7cf7ac06842d69d9e2336d4d15d89"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:26:10",
+      "sequence": 13478,
+      "chapter_label": "JOB 26",
+      "verse_label": "10",
+      "locator": {
+        "book": "JOB",
+        "chapter": 26,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 26,
+          "verse": 10
+        }
+      ],
+      "en": "He has described a boundary on the surface of the waters, and to the confines of light and darkness.",
+      "ko": "수면에 경계를 그으셨으되 빛과 어두움의 지경까지 한정을 세우셨느니라",
+      "source_text_hash": "2ed4c8c22f7ba3c30b077f81bc8278dd0c91530a49792df5c0074abcea76104f",
+      "translation_text_hash": "ec87a9abb10b90901d48c0da1de972b3fff25ba426e2abe8f9350fe99d8e4fb3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "수면에 경계를 그으셨으되 빛과 어두움의 지경까지 한정을 세우셨느니라"
+      ],
+      "raw_text_hashes": [
+        "ec87a9abb10b90901d48c0da1de972b3fff25ba426e2abe8f9350fe99d8e4fb3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:26:11",
+      "sequence": 13479,
+      "chapter_label": "JOB 26",
+      "verse_label": "11",
+      "locator": {
+        "book": "JOB",
+        "chapter": 26,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 26,
+          "verse": 11
+        }
+      ],
+      "en": "The pillars of heaven tremble and are astonished at his rebuke.",
+      "ko": "그가 꾸짖으신즉 하늘기둥이 떨며 놀라느니라",
+      "source_text_hash": "5eca20f983a6f57d4959f588105738aeb0e2766f68b8b92c4f79bd6e478b9f68",
+      "translation_text_hash": "394299b9b590d4adcd2434ed229bf663a80d99f3680a77deb619f5479aeaf998",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 꾸짖으신즉 하늘기둥이 떨며 놀라느니라"
+      ],
+      "raw_text_hashes": [
+        "394299b9b590d4adcd2434ed229bf663a80d99f3680a77deb619f5479aeaf998"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:26:12",
+      "sequence": 13480,
+      "chapter_label": "JOB 26",
+      "verse_label": "12",
+      "locator": {
+        "book": "JOB",
+        "chapter": 26,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 26,
+          "verse": 12
+        }
+      ],
+      "en": "He stirs up the sea with his power, and by his understanding he strikes through Rahab.",
+      "ko": "그는 권능으로 바다를 흉용케 하시며 지혜로 라합을 쳐서 파하시며",
+      "source_text_hash": "cb530bcab35b14fb1c1d9ff759c96bbcc24c233d631396a80774a9cb3e849482",
+      "translation_text_hash": "f596087483a89a2c00c4e2afc63269d71a58290577699a58844b88b56fcec826",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그는 권능으로 바다를 흉용케 하시며 지혜로 라합을 쳐서 파하시며"
+      ],
+      "raw_text_hashes": [
+        "f596087483a89a2c00c4e2afc63269d71a58290577699a58844b88b56fcec826"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:26:13",
+      "sequence": 13481,
+      "chapter_label": "JOB 26",
+      "verse_label": "13",
+      "locator": {
+        "book": "JOB",
+        "chapter": 26,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 26,
+          "verse": 13
+        }
+      ],
+      "en": "By his Spirit the heavens are garnished. His hand has pierced the swift serpent.",
+      "ko": "그 신으로 하늘을 단장하시고 손으로 날랜 뱀을 찌르시나니",
+      "source_text_hash": "c7615109782287a83ea7381320f6857c95a7ae23cb6782191c82e2afb912f131",
+      "translation_text_hash": "6765aaf82c026dc8898551171fc27e4e5b84a155114e2365d080b43497c65db5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 신으로 하늘을 단장하시고 손으로 날랜 뱀을 찌르시나니"
+      ],
+      "raw_text_hashes": [
+        "6765aaf82c026dc8898551171fc27e4e5b84a155114e2365d080b43497c65db5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:26:14",
+      "sequence": 13482,
+      "chapter_label": "JOB 26",
+      "verse_label": "14",
+      "locator": {
+        "book": "JOB",
+        "chapter": 26,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 26,
+          "verse": 14
+        }
+      ],
+      "en": "Behold, these are but the outskirts of his ways. How small a whisper do we hear of him! But the thunder of his power who can understand?”",
+      "ko": "이런 것은 그 행사의 시작점이요 우리가 그에게 대하여 들은 것도 심히 세미한 소리뿐이니라 그 큰 능력의 우뢰야 누가 능히 측량하랴",
+      "source_text_hash": "f8ecfdb8404fd3ae8156467f656906dc6066f4809469a413c07e836c5289e5ec",
+      "translation_text_hash": "7a50b18e71cd207c666a9a13ec752863b5e5b89ed2b249d60806b6d73a0970f1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이런 것은 그 행사의 시작점이요 우리가 그에게 대하여 들은 것도 심히 세미한 소리뿐이니라 그 큰 능력의 우뢰야 누가 능히 측량하랴"
+      ],
+      "raw_text_hashes": [
+        "7a50b18e71cd207c666a9a13ec752863b5e5b89ed2b249d60806b6d73a0970f1"
+      ]
+    }
+  ]
+}

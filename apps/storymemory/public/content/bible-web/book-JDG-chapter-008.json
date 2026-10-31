@@ -1,0 +1,1133 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JDG:chapter:008",
+  "unit_ordinal": 219,
+  "unit_label": "JDG 8",
+  "book_code": "JDG",
+  "chapter_number": 8,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JDG:8:1",
+      "sequence": 6721,
+      "chapter_label": "JDG 8",
+      "verse_label": "1",
+      "locator": {
+        "book": "JDG",
+        "chapter": 8,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 8,
+          "verse": 1
+        }
+      ],
+      "en": "The men of Ephraim said to him, “Why have you treated us this way, that you didn’t call us when you went to fight with Midian?” They rebuked him sharply.",
+      "ko": "에브라임 사람들이 기드온에게 이르되 네가 미디안과 싸우러 갈 때에 우리를 부르지 아니하였으니 우리를 이같이 대접함은 어찜이뇨 하고 크게 다투는지라",
+      "source_text_hash": "d70d6330e3713733d788086f8f547091b2877218df6e83afb38462582643d6a6",
+      "translation_text_hash": "9967d7bb2f7ee9f22516496de9205d78baa9308715abd71c38b02590687348d1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에브라임 사람들이 기드온에게 이르되 네가 미디안과 싸우러 갈 때에 우리를 부르지 아니하였으니 우리를 이같이 대접함은 어찜이뇨 하고 크게 다투는지라"
+      ],
+      "raw_text_hashes": [
+        "9967d7bb2f7ee9f22516496de9205d78baa9308715abd71c38b02590687348d1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:8:2",
+      "sequence": 6722,
+      "chapter_label": "JDG 8",
+      "verse_label": "2",
+      "locator": {
+        "book": "JDG",
+        "chapter": 8,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 8,
+          "verse": 2
+        }
+      ],
+      "en": "He said to them, “What have I now done in comparison with you? Isn’t the gleaning of the grapes of Ephraim better than the vintage of Abiezer?",
+      "ko": "기드온이 그들에게 이르되 나의 이제 행한 일이 너희의 한 것에 비교되겠느냐 에브라임의 끝물 포도가 아비에셀의 맏물 포도보다 낫지 아니하냐",
+      "source_text_hash": "ce4a7e089a0ac5287a78c938442f3a953bbb6e2bec93f58cf079d6db86dc84c7",
+      "translation_text_hash": "9df3d03ad3c1f19f2bbf3e9c2095d496482de5bdeadf8e53279b8690b60b1d8d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "기드온이 그들에게 이르되 나의 이제 행한 일이 너희의 한 것에 비교되겠느냐 에브라임의 끝물 포도가 아비에셀의 맏물 포도보다 낫지 아니하냐"
+      ],
+      "raw_text_hashes": [
+        "9df3d03ad3c1f19f2bbf3e9c2095d496482de5bdeadf8e53279b8690b60b1d8d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:8:3",
+      "sequence": 6723,
+      "chapter_label": "JDG 8",
+      "verse_label": "3",
+      "locator": {
+        "book": "JDG",
+        "chapter": 8,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 8,
+          "verse": 3
+        }
+      ],
+      "en": "God has delivered into your hand the princes of Midian, Oreb and Zeeb! What was I able to do in comparison with you?” Then their anger was abated toward him when he had said that.",
+      "ko": "하나님이 미디안 방백 오렙과 스엡을 너희 손에 붙이셨으니 나의 한 일이 어찌 능히 너희의 한 것에 비교되겠느냐 기드온이 이 말을 하매 그들의 노가 풀리니라",
+      "source_text_hash": "f5b60fd7ac875a59160253bfb24324cffd872f8c2a731b36ef67b3a6ff9f831d",
+      "translation_text_hash": "c8e09c7caa4c69027505bb8570b9735b8b91694938aeb4490d7b7c4dc6807076",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 미디안 방백 오렙과 스엡을 너희 손에 붙이셨으니 나의 한 일이 어찌 능히 너희의 한 것에 비교되겠느냐 기드온이 이 말을 하매 그들의 노가 풀리니라"
+      ],
+      "raw_text_hashes": [
+        "c8e09c7caa4c69027505bb8570b9735b8b91694938aeb4490d7b7c4dc6807076"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:8:4",
+      "sequence": 6724,
+      "chapter_label": "JDG 8",
+      "verse_label": "4",
+      "locator": {
+        "book": "JDG",
+        "chapter": 8,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 8,
+          "verse": 4
+        }
+      ],
+      "en": "Gideon came to the Jordan and passed over, he and the three hundred men who were with him, faint, yet pursuing.",
+      "ko": "기드온과 그 좇은 자 삼백명이 요단에 이르러 건너고 비록 피곤하나 따르며",
+      "source_text_hash": "1d0a438a03378323af0b834f4d4991032dc460755cde2766d6ef7a3e04a91aa9",
+      "translation_text_hash": "a8d4110a7b6d479efd897615817d8c2447d31b9ac7c8ff2535262e3b3d161b01",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "기드온과 그 좇은 자 삼백명이 요단에 이르러 건너고 비록 피곤하나 따르며"
+      ],
+      "raw_text_hashes": [
+        "a8d4110a7b6d479efd897615817d8c2447d31b9ac7c8ff2535262e3b3d161b01"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:8:5",
+      "sequence": 6725,
+      "chapter_label": "JDG 8",
+      "verse_label": "5",
+      "locator": {
+        "book": "JDG",
+        "chapter": 8,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 8,
+          "verse": 5
+        }
+      ],
+      "en": "He said to the men of Succoth, “Please give loaves of bread to the people who follow me; for they are faint, and I am pursuing after Zebah and Zalmunna, the kings of Midian.”",
+      "ko": "그가 숙곳 사람들에게 이르되 나의 종자가 피곤하여 하니 청컨대 그들에게 떡덩이를 주라 나는 미디안 두 왕 세바와 살문나를 따르노라",
+      "source_text_hash": "cd7844a309517a5ef72e3e3a03e2fae5239b7ae1ae2aa6bfd83d6f9984bc84c6",
+      "translation_text_hash": "7ba70f9e9cd3b2063241481f04f4aa39eea26aecab1d94faa9fb705cc5e26211",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 숙곳 사람들에게 이르되 나의 종자가 피곤하여 하니 청컨대 그들에게 떡덩이를 주라 나는 미디안 두 왕 세바와 살문나를 따르노라"
+      ],
+      "raw_text_hashes": [
+        "7ba70f9e9cd3b2063241481f04f4aa39eea26aecab1d94faa9fb705cc5e26211"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:8:6",
+      "sequence": 6726,
+      "chapter_label": "JDG 8",
+      "verse_label": "6",
+      "locator": {
+        "book": "JDG",
+        "chapter": 8,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 8,
+          "verse": 6
+        }
+      ],
+      "en": "The princes of Succoth said, “Are the hands of Zebah and Zalmunna now in your hand, that we should give bread to your army?”",
+      "ko": "숙곳 방백들이 가로되 세바와 살문나의 손이 지금 어찌 네 손에 있관대 우리가 네 군대에게 떡을 주겠느냐",
+      "source_text_hash": "090f57ad89494297482bca09f6fceab986036e7bc4de47eb01f90fc4d5aa44d7",
+      "translation_text_hash": "3757c48c3bf3ec9d1676a10b5afdff8f50d7564158cf97fba17b589e603b46b9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "숙곳 방백들이 가로되 세바와 살문나의 손이 지금 어찌 네 손에 있관대 우리가 네 군대에게 떡을 주겠느냐"
+      ],
+      "raw_text_hashes": [
+        "3757c48c3bf3ec9d1676a10b5afdff8f50d7564158cf97fba17b589e603b46b9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:8:7",
+      "sequence": 6727,
+      "chapter_label": "JDG 8",
+      "verse_label": "7",
+      "locator": {
+        "book": "JDG",
+        "chapter": 8,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 8,
+          "verse": 7
+        }
+      ],
+      "en": "Gideon said, “Therefore when the LORD has delivered Zebah and Zalmunna into my hand, then I will tear your flesh with the thorns of the wilderness and with briers.”",
+      "ko": "기드온이 가로되 그러면 여호와께서 세바와 살문나를 내 손에 붙이신 후에 내가 들가시와 찔레로 너희 살을 찢으리라 하고",
+      "source_text_hash": "216ad80f206f32896047275bbdb5f3ed8577440725c1d795610d91f7ff63fd54",
+      "translation_text_hash": "248d3b8da7b5063c9a172e52477baddf7bb07bd3858f8bc4821d377e59b2b0af",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "기드온이 가로되 그러면 여호와께서 세바와 살문나를 내 손에 붙이신 후에 내가 들가시와 찔레로 너희 살을 찢으리라 하고"
+      ],
+      "raw_text_hashes": [
+        "248d3b8da7b5063c9a172e52477baddf7bb07bd3858f8bc4821d377e59b2b0af"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:8:8",
+      "sequence": 6728,
+      "chapter_label": "JDG 8",
+      "verse_label": "8",
+      "locator": {
+        "book": "JDG",
+        "chapter": 8,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 8,
+          "verse": 8
+        }
+      ],
+      "en": "He went up there to Penuel, and spoke to them in the same way; and the men of Penuel answered him as the men of Succoth had answered.",
+      "ko": "거기서 브누엘에 올라가서 그들에게도 그같이 구한즉 브누엘 사람들의 대답도 숙곳 사람들의 대답과 같은지라",
+      "source_text_hash": "06c669cfcad0be3a1487d4ee36daacf2556b0f9a71e5d5075f7d1375274533bd",
+      "translation_text_hash": "9eff9001cbaaa22138452b8bfaaab77f799ec93a2aaaeb103f207de5bd859246",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거기서 브누엘에 올라가서 그들에게도 그같이 구한즉 브누엘 사람들의 대답도 숙곳 사람들의 대답과 같은지라"
+      ],
+      "raw_text_hashes": [
+        "9eff9001cbaaa22138452b8bfaaab77f799ec93a2aaaeb103f207de5bd859246"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:8:9",
+      "sequence": 6729,
+      "chapter_label": "JDG 8",
+      "verse_label": "9",
+      "locator": {
+        "book": "JDG",
+        "chapter": 8,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 8,
+          "verse": 9
+        }
+      ],
+      "en": "He spoke also to the men of Penuel, saying, “When I come again in peace, I will break down this tower.”",
+      "ko": "기드온이 또 브누엘 사람들에게 일러 가로되 내가 평안히 돌아올 때에 이 망대를 헐리라 하니라",
+      "source_text_hash": "f399485695907c2af722705d6c7c5e2b74e17df7d775dbfd65f854550609efca",
+      "translation_text_hash": "a5db29f73d369d18b0e021f89ee43969ba6bac7f6c7b2b60f114dfb0e05dd4a9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "기드온이 또 브누엘 사람들에게 일러 가로되 내가 평안히 돌아올 때에 이 망대를 헐리라 하니라"
+      ],
+      "raw_text_hashes": [
+        "a5db29f73d369d18b0e021f89ee43969ba6bac7f6c7b2b60f114dfb0e05dd4a9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:8:10",
+      "sequence": 6730,
+      "chapter_label": "JDG 8",
+      "verse_label": "10",
+      "locator": {
+        "book": "JDG",
+        "chapter": 8,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 8,
+          "verse": 10
+        }
+      ],
+      "en": "Now Zebah and Zalmunna were in Karkor, and their armies with them, about fifteen thousand men, all who were left of all the army of the children of the east; for there fell one hundred twenty thousand men who drew sword.",
+      "ko": "이 때에 세바와 살문나가 갈골에 있는데 동방 사람의 모든 군대 중에 칼 든 자 십 이만명이 죽었고 그 남은 일만 오천명 가량은 그들을 좇아 거기 있더라",
+      "source_text_hash": "cc3c6353f840d4f509614c9a813636528096aea2d7c5ba6d8ada0aef9704ac77",
+      "translation_text_hash": "b2c263dddf8b842c9c98dac22a804c9a266a6bb13472366b3cc662d142b5b0c6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 때에 세바와 살문나가 갈골에 있는데 동방 사람의 모든 군대 중에 칼 든 자 십 이만명이 죽었고 그 남은 일만 오천명 가량은 그들을 좇아 거기 있더라"
+      ],
+      "raw_text_hashes": [
+        "b2c263dddf8b842c9c98dac22a804c9a266a6bb13472366b3cc662d142b5b0c6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:8:11",
+      "sequence": 6731,
+      "chapter_label": "JDG 8",
+      "verse_label": "11",
+      "locator": {
+        "book": "JDG",
+        "chapter": 8,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 8,
+          "verse": 11
+        }
+      ],
+      "en": "Gideon went up by the way of those who lived in tents on the east of Nobah and Jogbehah, and struck the army; for the army felt secure.",
+      "ko": "적군이 안연히 있는 중에 기드온이 노바와 욕브하 동편 장막에 거한 자의 길로 올라가서 적군을 치니",
+      "source_text_hash": "9fc9e51b1c62937aab8d1cf14ea2c4c2fb82a456743a110842d4c8bd1e7257ec",
+      "translation_text_hash": "faf0d67cc854c0bf5df3f0e1c6a55add77a5e7cad5ce8122233f3744522146e5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "적군이 안연히 있는 중에 기드온이 노바와 욕브하 동편 장막에 거한 자의 길로 올라가서 적군을 치니"
+      ],
+      "raw_text_hashes": [
+        "faf0d67cc854c0bf5df3f0e1c6a55add77a5e7cad5ce8122233f3744522146e5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:8:12",
+      "sequence": 6732,
+      "chapter_label": "JDG 8",
+      "verse_label": "12",
+      "locator": {
+        "book": "JDG",
+        "chapter": 8,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 8,
+          "verse": 12
+        }
+      ],
+      "en": "Zebah and Zalmunna fled and he pursued them. He took the two kings of Midian, Zebah and Zalmunna, and confused all the army.",
+      "ko": "세바와 살문나가 도망하는지라 기드온이 추격하여 미디안 두 왕 세바와 살문나를 사로잡고 그 온 군대를 파하니라",
+      "source_text_hash": "db33f1c8f445f8ee22a279c58ce5a26704ed6221d985365d0b7a9751bb9a8f4a",
+      "translation_text_hash": "8ac0f276d667573c7f65cb965e79a951685fe6f40a20a737b71e6439efb5d4b4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "세바와 살문나가 도망하는지라 기드온이 추격하여 미디안 두 왕 세바와 살문나를 사로잡고 그 온 군대를 파하니라"
+      ],
+      "raw_text_hashes": [
+        "8ac0f276d667573c7f65cb965e79a951685fe6f40a20a737b71e6439efb5d4b4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:8:13",
+      "sequence": 6733,
+      "chapter_label": "JDG 8",
+      "verse_label": "13",
+      "locator": {
+        "book": "JDG",
+        "chapter": 8,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 8,
+          "verse": 13
+        }
+      ],
+      "en": "Gideon the son of Joash returned from the battle from the ascent of Heres.",
+      "ko": "요아스의 아들 기드온이 헤레스 비탈 전장에서 돌아오다가",
+      "source_text_hash": "4cc36e668441387f0a4f7304870e309ccb7bf4e023e8ad052709507228c15304",
+      "translation_text_hash": "f29820d945e3da3a57275e62f1b57799093bb359d6ad483ed171dec878bf32ec",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요아스의 아들 기드온이 헤레스 비탈 전장에서 돌아오다가"
+      ],
+      "raw_text_hashes": [
+        "f29820d945e3da3a57275e62f1b57799093bb359d6ad483ed171dec878bf32ec"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:8:14",
+      "sequence": 6734,
+      "chapter_label": "JDG 8",
+      "verse_label": "14",
+      "locator": {
+        "book": "JDG",
+        "chapter": 8,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 8,
+          "verse": 14
+        }
+      ],
+      "en": "He caught a young man of the men of Succoth, and inquired of him; and he described for him the princes of Succoth, and its elders, seventy-seven men.",
+      "ko": "숙곳 사람 중 한 소년을 잡아 신문하매 숙곳 방백과 장로 칠십 칠인을 그를 위하여 기록한지라",
+      "source_text_hash": "caf0e696c9e33feafd356102a60049520503e172937b6393a904511ce57e679f",
+      "translation_text_hash": "42e22227d3938f9b38bfa4b91dc3a2b07d13bdb57f76287a9db1ea0e3e114697",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "숙곳 사람 중 한 소년을 잡아 신문하매 숙곳 방백과 장로 칠십 칠인을 그를 위하여 기록한지라"
+      ],
+      "raw_text_hashes": [
+        "42e22227d3938f9b38bfa4b91dc3a2b07d13bdb57f76287a9db1ea0e3e114697"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:8:15",
+      "sequence": 6735,
+      "chapter_label": "JDG 8",
+      "verse_label": "15",
+      "locator": {
+        "book": "JDG",
+        "chapter": 8,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 8,
+          "verse": 15
+        }
+      ],
+      "en": "He came to the men of Succoth, and said, “See Zebah and Zalmunna, concerning whom you taunted me, saying, ‘Are the hands of Zebah and Zalmunna now in your hand, that we should give bread to your men who are weary?’”",
+      "ko": "기드온이 숙곳 사람들에게 이르러 가로되 너희가 전에 나를 기롱하여 이르기를 세바와 살문나의 손이 지금 어찌 네 손에 있관대 우리가 네 피곤한 사람에게 떡을 주겠느냐 한 그 세바와 살문나를 보라 하고",
+      "source_text_hash": "e7fe87701d4319e9be1eb6902ec1d700099bf05a511b00758c288f6fea1a7f5d",
+      "translation_text_hash": "325bbe9e2a04ff3633a80f11511c8db9965cdd6c13ff1b350db644d9679c4d41",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "기드온이 숙곳 사람들에게 이르러 가로되 너희가 전에 나를 기롱하여 이르기를 세바와 살문나의 손이 지금 어찌 네 손에 있관대 우리가 네 피곤한 사람에게 떡을 주겠느냐 한 그 세바와 살문나를 보라 하고"
+      ],
+      "raw_text_hashes": [
+        "325bbe9e2a04ff3633a80f11511c8db9965cdd6c13ff1b350db644d9679c4d41"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:8:16",
+      "sequence": 6736,
+      "chapter_label": "JDG 8",
+      "verse_label": "16",
+      "locator": {
+        "book": "JDG",
+        "chapter": 8,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 8,
+          "verse": 16
+        }
+      ],
+      "en": "He took the elders of the city, and thorns of the wilderness and briers, and with them he taught the men of Succoth.",
+      "ko": "그 성읍 장로들을 잡고 들가시와 찔레로 숙곳 사람들을 징벌하고",
+      "source_text_hash": "70a1498042ea9025e720c2a260841e55d68d43a07c70a0f698c73f568f1c0c7c",
+      "translation_text_hash": "3f29754dae9bd8279ceebd1e5f8110f401a7d2d82c7ac166cbe8865b103774fc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 성읍 장로들을 잡고 들가시와 찔레로 숙곳 사람들을 징벌하고"
+      ],
+      "raw_text_hashes": [
+        "3f29754dae9bd8279ceebd1e5f8110f401a7d2d82c7ac166cbe8865b103774fc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:8:17",
+      "sequence": 6737,
+      "chapter_label": "JDG 8",
+      "verse_label": "17",
+      "locator": {
+        "book": "JDG",
+        "chapter": 8,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 8,
+          "verse": 17
+        }
+      ],
+      "en": "He broke down the tower of Penuel, and killed the men of the city.",
+      "ko": "브누엘 망대를 헐며 그 성읍 사람들을 죽이니라",
+      "source_text_hash": "62bb2740c98a1900ecd9436991611f7afc57ab822de8a14ffdbf9ea8984990bf",
+      "translation_text_hash": "77666a96a7e209478dd7700a3cfb43ad870508e115c561cde29b0842e77c16f1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "브누엘 망대를 헐며 그 성읍 사람들을 죽이니라"
+      ],
+      "raw_text_hashes": [
+        "77666a96a7e209478dd7700a3cfb43ad870508e115c561cde29b0842e77c16f1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:8:18",
+      "sequence": 6738,
+      "chapter_label": "JDG 8",
+      "verse_label": "18",
+      "locator": {
+        "book": "JDG",
+        "chapter": 8,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 8,
+          "verse": 18
+        }
+      ],
+      "en": "Then he said to Zebah and Zalmunna, “What kind of men were they whom you killed at Tabor?” They answered, “They were like you. They all resembled the children of a king.”",
+      "ko": "이에 세바와 살문나에게 묻되 너희가 다볼에서 죽인 자들은 어떠한 자이더뇨 대답하되 그들이 너와 같아서 모두 왕자 같더라",
+      "source_text_hash": "67bd0cd2c9c6b3c8eb53bd382f1125a03d78b94cebadb5e83c522c02827c8fc6",
+      "translation_text_hash": "508ffb791ccd73fa9e91f5738aa1efb7e896e30fce77400f7447d45d41d17335",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 세바와 살문나에게 묻되 너희가 다볼에서 죽인 자들은 어떠한 자이더뇨 대답하되 그들이 너와 같아서 모두 왕자 같더라"
+      ],
+      "raw_text_hashes": [
+        "508ffb791ccd73fa9e91f5738aa1efb7e896e30fce77400f7447d45d41d17335"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:8:19",
+      "sequence": 6739,
+      "chapter_label": "JDG 8",
+      "verse_label": "19",
+      "locator": {
+        "book": "JDG",
+        "chapter": 8,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 8,
+          "verse": 19
+        }
+      ],
+      "en": "He said, “They were my brothers, the sons of my mother. As the LORD lives, if you had saved them alive, I would not kill you.”",
+      "ko": "가로되 그들은 내 형제, 내 어머니의 아들이니라 내가 여호와의 사심으로 맹세하노니 너희가 만일 그들을 살렸더면 나도 너희를 죽이지 아니하였으리라 하고",
+      "source_text_hash": "542209de893e5e8508fc720639bdb541db09ab8735e7a677dd211620dc870d64",
+      "translation_text_hash": "42307e2aa3e339541ff1970267f4d31d4a365bdd1b2c9d666a7f7bd0edff879a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 그들은 내 형제, 내 어머니의 아들이니라 내가 여호와의 사심으로 맹세하노니 너희가 만일 그들을 살렸더면 나도 너희를 죽이지 아니하였으리라 하고"
+      ],
+      "raw_text_hashes": [
+        "42307e2aa3e339541ff1970267f4d31d4a365bdd1b2c9d666a7f7bd0edff879a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:8:20",
+      "sequence": 6740,
+      "chapter_label": "JDG 8",
+      "verse_label": "20",
+      "locator": {
+        "book": "JDG",
+        "chapter": 8,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 8,
+          "verse": 20
+        }
+      ],
+      "en": "He said to Jether his firstborn, “Get up and kill them!” But the youth didn’t draw his sword; for he was afraid, because he was yet a youth.",
+      "ko": "그 장자 여델에게 이르되 일어나 그들을 죽이라 하였으나 그 소년이 칼을 빼지 못하였으니 이는 아직 어려서 두려워 함이었더라",
+      "source_text_hash": "6c4b2c8d0a114d181a7e64ca1e25b7a215711f46b3d142b3d585b2774ef82133",
+      "translation_text_hash": "62aeb962289ba45b06fd257b24b5178765fbee6e3a4b546b8d046cd2780770d8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 장자 여델에게 이르되 일어나 그들을 죽이라 하였으나 그 소년이 칼을 빼지 못하였으니 이는 아직 어려서 두려워 함이었더라"
+      ],
+      "raw_text_hashes": [
+        "62aeb962289ba45b06fd257b24b5178765fbee6e3a4b546b8d046cd2780770d8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:8:21",
+      "sequence": 6741,
+      "chapter_label": "JDG 8",
+      "verse_label": "21",
+      "locator": {
+        "book": "JDG",
+        "chapter": 8,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 8,
+          "verse": 21
+        }
+      ],
+      "en": "Then Zebah and Zalmunna said, “You rise and fall on us; for as the man is, so is his strength.” Gideon arose, and killed Zebah and Zalmunna, and took the crescents that were on their camels’ necks.",
+      "ko": "세바와 살문나가 가로되 네가 일어나 우리를 치라 대저 사람이 어떠하면 그 힘도 그러하니라 기드온이 일어나서 세바와 살문나를 죽이고 그 약대 목에 꾸몄던 새 달 형상의 장식을 취하니라",
+      "source_text_hash": "de77caad19d3ef141a914cd6901e06968ca5b91c4f9fe191f3889375315c4690",
+      "translation_text_hash": "8e706ce181086e803e815282e338c65cea4aaeab01b6534e182f8472494592bd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "세바와 살문나가 가로되 네가 일어나 우리를 치라 대저 사람이 어떠하면 그 힘도 그러하니라 기드온이 일어나서 세바와 살문나를 죽이고 그 약대 목에 꾸몄던 새 달 형상의 장식을 취하니라"
+      ],
+      "raw_text_hashes": [
+        "8e706ce181086e803e815282e338c65cea4aaeab01b6534e182f8472494592bd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:8:22",
+      "sequence": 6742,
+      "chapter_label": "JDG 8",
+      "verse_label": "22",
+      "locator": {
+        "book": "JDG",
+        "chapter": 8,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 8,
+          "verse": 22
+        }
+      ],
+      "en": "Then the men of Israel said to Gideon, “Rule over us, both you, your son, and your son’s son also; for you have saved us out of the hand of Midian.”",
+      "ko": "때에 이스라엘 사람들이 기드온에게 이르되 당신이 우리를 미디안의 손에서 구원하셨으니 당신과 당신의 아들과 당신의 손자가 우리를 다스리소서",
+      "source_text_hash": "74b138068f56b37acfe93504fa7264ff590e028308d903182baa512cf835d4b2",
+      "translation_text_hash": "9217bf0d0fbacaba41aaa7fee7f8d3a8b24ad90332b1ff1744a13f658ffb049c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "때에 이스라엘 사람들이 기드온에게 이르되 당신이 우리를 미디안의 손에서 구원하셨으니 당신과 당신의 아들과 당신의 손자가 우리를 다스리소서"
+      ],
+      "raw_text_hashes": [
+        "9217bf0d0fbacaba41aaa7fee7f8d3a8b24ad90332b1ff1744a13f658ffb049c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:8:23",
+      "sequence": 6743,
+      "chapter_label": "JDG 8",
+      "verse_label": "23",
+      "locator": {
+        "book": "JDG",
+        "chapter": 8,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 8,
+          "verse": 23
+        }
+      ],
+      "en": "Gideon said to them, “I will not rule over you, neither shall my son rule over you. The LORD shall rule over you.”",
+      "ko": "기드온이 그들에게 이르되 내가 너희를 다스리지 아니하겠고 나의 아들도 너희를 다스리지 아니할 것이요 여호와께서 너희를 다스리시리라",
+      "source_text_hash": "784b127da32b29c4fa60c2c400720740c263fe2951eac0a7e86466a2b711553c",
+      "translation_text_hash": "8e244489fcab5baffc9f6a3647e0948c1db0e157abfa3d3a72521b0b7d0fa802",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "기드온이 그들에게 이르되 내가 너희를 다스리지 아니하겠고 나의 아들도 너희를 다스리지 아니할 것이요 여호와께서 너희를 다스리시리라"
+      ],
+      "raw_text_hashes": [
+        "8e244489fcab5baffc9f6a3647e0948c1db0e157abfa3d3a72521b0b7d0fa802"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:8:24",
+      "sequence": 6744,
+      "chapter_label": "JDG 8",
+      "verse_label": "24",
+      "locator": {
+        "book": "JDG",
+        "chapter": 8,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 8,
+          "verse": 24
+        }
+      ],
+      "en": "Gideon said to them, “I do have a request: that you would each give me the earrings of his plunder.” (For they had golden earrings, because they were Ishmaelites.)",
+      "ko": "기드온이 또 그들에게 이르되 내가 너희에게 한 일을 청구하노니 너희는 각기 탈취한 귀고리를 내게 줄찌니라 하니 그 대적은 이스마엘 사람이므로 금 귀고리가 있었음이라",
+      "source_text_hash": "5af394b44004b76323c0dd85421816fd520cb140e933b70dd487818692c2c223",
+      "translation_text_hash": "c2b6f805d1c690574531017bddbaaf2c51abea173c0b99d7bd50e506ff6d28d9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "기드온이 또 그들에게 이르되 내가 너희에게 한 일을 청구하노니 너희는 각기 탈취한 귀고리를 내게 줄찌니라 하니 그 대적은 이스마엘 사람이므로 금 귀고리가 있었음이라"
+      ],
+      "raw_text_hashes": [
+        "c2b6f805d1c690574531017bddbaaf2c51abea173c0b99d7bd50e506ff6d28d9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:8:25",
+      "sequence": 6745,
+      "chapter_label": "JDG 8",
+      "verse_label": "25",
+      "locator": {
+        "book": "JDG",
+        "chapter": 8,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 8,
+          "verse": 25
+        }
+      ],
+      "en": "They answered, “We will willingly give them.” They spread a garment, and every man threw the earrings of his plunder into it.",
+      "ko": "무리가 대답하되 우리가 즐거이 드리리이다 하고 겉옷을 펴고 각기 탈취한 귀고리를 그 가운데 던지니",
+      "source_text_hash": "00e47842f04eb19c07c637b3ef0525092b259c38bfebd49a929deeb0343d51ff",
+      "translation_text_hash": "d1f6e78220faa5eb63cc8099711244c05ac9ba0d2d4680fe6dbf551aa619295a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무리가 대답하되 우리가 즐거이 드리리이다 하고 겉옷을 펴고 각기 탈취한 귀고리를 그 가운데 던지니"
+      ],
+      "raw_text_hashes": [
+        "d1f6e78220faa5eb63cc8099711244c05ac9ba0d2d4680fe6dbf551aa619295a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:8:26",
+      "sequence": 6746,
+      "chapter_label": "JDG 8",
+      "verse_label": "26",
+      "locator": {
+        "book": "JDG",
+        "chapter": 8,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 8,
+          "verse": 26
+        }
+      ],
+      "en": "The weight of the golden earrings that he requested was one thousand and seven hundred shekels of gold, in addition to the crescents, and the pendants, and the purple clothing that was on the kings of Midian, and in addition to the chains that were about their camels’ necks.",
+      "ko": "기드온의 청한바 금 귀고리 중수가 금 일천 칠백 세겔이요 그 외에 또 새 달 형상의 장식과 패물과 미디안 왕들의 입었던 자색 의복과 그 약대 목에 둘렀던 사슬이 있었더라",
+      "source_text_hash": "0ed6bc004cb7725e5f22d79eeed0cf018a4a01693b342c1e26d4147bfafdabd6",
+      "translation_text_hash": "657fc8caddf9c70df2a351f3a90f4cf67513b85011ed9eb6e7c22e4701c15d7e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "기드온의 청한바 금 귀고리 중수가 금 일천 칠백 세겔이요 그 외에 또 새 달 형상의 장식과 패물과 미디안 왕들의 입었던 자색 의복과 그 약대 목에 둘렀던 사슬이 있었더라"
+      ],
+      "raw_text_hashes": [
+        "657fc8caddf9c70df2a351f3a90f4cf67513b85011ed9eb6e7c22e4701c15d7e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:8:27",
+      "sequence": 6747,
+      "chapter_label": "JDG 8",
+      "verse_label": "27",
+      "locator": {
+        "book": "JDG",
+        "chapter": 8,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 8,
+          "verse": 27
+        }
+      ],
+      "en": "Gideon made an ephod out of it, and put it in Ophrah, his city. Then all Israel played the prostitute with it there; and it became a snare to Gideon and to his house.",
+      "ko": "기드온이 그 금으로 에봇 하나를 만들어서 자기의 성읍 오브라에 두었더니 온 이스라엘이 그것을 음란하게 위하므로 그것이 기드온과 그 집에 올무가 되니라",
+      "source_text_hash": "3dec5882de5afb505d4bde68c906e4b63a346a0ded3523d032da99da2fd5c7e0",
+      "translation_text_hash": "10b4d59fef4e8de2e8a49387cb62a95ce7ef33db3e02aa459085d220505ae77c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "기드온이 그 금으로 에봇 하나를 만들어서 자기의 성읍 오브라에 두었더니 온 이스라엘이 그것을 음란하게 위하므로 그것이 기드온과 그 집에 올무가 되니라"
+      ],
+      "raw_text_hashes": [
+        "10b4d59fef4e8de2e8a49387cb62a95ce7ef33db3e02aa459085d220505ae77c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:8:28",
+      "sequence": 6748,
+      "chapter_label": "JDG 8",
+      "verse_label": "28",
+      "locator": {
+        "book": "JDG",
+        "chapter": 8,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 8,
+          "verse": 28
+        }
+      ],
+      "en": "So Midian was subdued before the children of Israel, and they lifted up their heads no more. The land had rest forty years in the days of Gideon.",
+      "ko": "미디안이 이스라엘 자손 앞에 복종하여 다시는 그 머리를 들지 못하였으므로 기드온의 사는날 동안 사십년에 그 땅이 태평하였더라",
+      "source_text_hash": "c3aa62f6dfead5d4d1d1ad7c0dc62e551f1408ed4adce2b736c7206929309dbc",
+      "translation_text_hash": "238af815b055109a7b918a84ed9ebcacd264ee7fbb071fc58384307ad32515ed",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "미디안이 이스라엘 자손 앞에 복종하여 다시는 그 머리를 들지 못하였으므로 기드온의 사는날 동안 사십년에 그 땅이 태평하였더라"
+      ],
+      "raw_text_hashes": [
+        "238af815b055109a7b918a84ed9ebcacd264ee7fbb071fc58384307ad32515ed"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:8:29",
+      "sequence": 6749,
+      "chapter_label": "JDG 8",
+      "verse_label": "29",
+      "locator": {
+        "book": "JDG",
+        "chapter": 8,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 8,
+          "verse": 29
+        }
+      ],
+      "en": "Jerubbaal the son of Joash went and lived in his own house.",
+      "ko": "요아스의 아들 여룹바알이 돌아가서 자기 집에 거하였는데",
+      "source_text_hash": "9ac0e5fc63d33eda09e719ca4787027aeaf57b7bfee8fbc203ad4eb5e7ad7488",
+      "translation_text_hash": "7c3c6071ce0a7a88e3eecaf09f9a8de3dde984987909de7e39fe6cfbd517310f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요아스의 아들 여룹바알이 돌아가서 자기 집에 거하였는데"
+      ],
+      "raw_text_hashes": [
+        "7c3c6071ce0a7a88e3eecaf09f9a8de3dde984987909de7e39fe6cfbd517310f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:8:30",
+      "sequence": 6750,
+      "chapter_label": "JDG 8",
+      "verse_label": "30",
+      "locator": {
+        "book": "JDG",
+        "chapter": 8,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 8,
+          "verse": 30
+        }
+      ],
+      "en": "Gideon had seventy sons conceived from his body, for he had many wives.",
+      "ko": "기드온이 아내가 많으므로 몸에서 낳은 아들이 칠십인이었고",
+      "source_text_hash": "a1ff5dbd0bb49c99b5b12b954c277b9b6e77a9d002cd8afc50dd84b7d86ade87",
+      "translation_text_hash": "1f3ad31b8226eeb49ec259d6bb27ec028df54114ec81599ba4e859dc30a5c497",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "기드온이 아내가 많으므로 몸에서 낳은 아들이 칠십인이었고"
+      ],
+      "raw_text_hashes": [
+        "1f3ad31b8226eeb49ec259d6bb27ec028df54114ec81599ba4e859dc30a5c497"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:8:31",
+      "sequence": 6751,
+      "chapter_label": "JDG 8",
+      "verse_label": "31",
+      "locator": {
+        "book": "JDG",
+        "chapter": 8,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 8,
+          "verse": 31
+        }
+      ],
+      "en": "His concubine who was in Shechem also bore him a son, and he named him Abimelech.",
+      "ko": "세겜에 있는 첩도 아들을 낳았으므로 그 이름을 아비멜렉이라 하였더라",
+      "source_text_hash": "2cbf77f409bbac5c18721994fa0f384f8abf7241414027d1c5402ca7c0140fdc",
+      "translation_text_hash": "f0f5dc922eea3d7b712ac2a795b2ea162a0509c98c6d2ef8f004f7ebf4356160",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "세겜에 있는 첩도 아들을 낳았으므로 그 이름을 아비멜렉이라 하였더라"
+      ],
+      "raw_text_hashes": [
+        "f0f5dc922eea3d7b712ac2a795b2ea162a0509c98c6d2ef8f004f7ebf4356160"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:8:32",
+      "sequence": 6752,
+      "chapter_label": "JDG 8",
+      "verse_label": "32",
+      "locator": {
+        "book": "JDG",
+        "chapter": 8,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 8,
+          "verse": 32
+        }
+      ],
+      "en": "Gideon the son of Joash died in a good old age, and was buried in the tomb of Joash his father, in Ophrah of the Abiezrites.",
+      "ko": "요아스의 아들 기드온이 나이 많아 죽으매 아비에셀 사람의 오브라에 있는 그의 아비 요아스의 묘실에 장사하였더라",
+      "source_text_hash": "5ab81fba19374c1907cb266a2cea374e8ce35e8d5b9d4c598992bdce9b78b265",
+      "translation_text_hash": "f87198df9d6aab8d08e9407fe03e28efd8a425530828dca8c1f235e8f3ba399e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요아스의 아들 기드온이 나이 많아 죽으매 아비에셀 사람의 오브라에 있는 그의 아비 요아스의 묘실에 장사하였더라"
+      ],
+      "raw_text_hashes": [
+        "f87198df9d6aab8d08e9407fe03e28efd8a425530828dca8c1f235e8f3ba399e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:8:33",
+      "sequence": 6753,
+      "chapter_label": "JDG 8",
+      "verse_label": "33",
+      "locator": {
+        "book": "JDG",
+        "chapter": 8,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 8,
+          "verse": 33
+        }
+      ],
+      "en": "As soon as Gideon was dead, the children of Israel turned again and played the prostitute following the Baals, and made Baal Berith their god.",
+      "ko": "기드온이 이미 죽으매 이스라엘 자손이 돌이켜 바알들을 음란하게 위하고 또 바알브릿을 자기들의 신으로 삼고",
+      "source_text_hash": "c4292cb55592e6ab6bfa257cebc898dc227ddbd8875f88263b4a9dc66ade96b6",
+      "translation_text_hash": "9682eacb1e13fd39b3afefa7663727e3cd40de6fbf21885c7e51d998c084f9d9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "기드온이 이미 죽으매 이스라엘 자손이 돌이켜 바알들을 음란하게 위하고 또 바알브릿을 자기들의 신으로 삼고"
+      ],
+      "raw_text_hashes": [
+        "9682eacb1e13fd39b3afefa7663727e3cd40de6fbf21885c7e51d998c084f9d9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:8:34",
+      "sequence": 6754,
+      "chapter_label": "JDG 8",
+      "verse_label": "34",
+      "locator": {
+        "book": "JDG",
+        "chapter": 8,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 8,
+          "verse": 34
+        }
+      ],
+      "en": "The children of Israel didn’t remember the LORD their God, who had delivered them out of the hand of all their enemies on every side;",
+      "ko": "사면 모든 대적의 손에서 자기들을 건져내신 여호와 자기들의 하나님을 기억지 아니하며",
+      "source_text_hash": "48c4cee23f5e77ff0e7b0feee7dcd2601183bd5b4e3d2384d1032dde0f4d58e0",
+      "translation_text_hash": "3b426461434e2ef70b5b493188a3a2063285339c6d56cf878104258af07b0981",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사면 모든 대적의 손에서 자기들을 건져내신 여호와 자기들의 하나님을 기억지 아니하며"
+      ],
+      "raw_text_hashes": [
+        "3b426461434e2ef70b5b493188a3a2063285339c6d56cf878104258af07b0981"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:8:35",
+      "sequence": 6755,
+      "chapter_label": "JDG 8",
+      "verse_label": "35",
+      "locator": {
+        "book": "JDG",
+        "chapter": 8,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 8,
+          "verse": 35
+        }
+      ],
+      "en": "neither did they show kindness to the house of Jerubbaal, that is, Gideon, according to all the goodness which he had shown to Israel.",
+      "ko": "또 여룹바알이라 하는 기드온의 이스라엘에게 베푼 모든 은혜를 따라서 그의 집을 후대치도 아니하였더라",
+      "source_text_hash": "cecf554858fcf4a4ccba1e801cfb6dc6e5470d97206c5f25b8b5b3e5b43ae6a2",
+      "translation_text_hash": "a4eedadbeed82d700cf7f1e9108ef349e9f27a199b99b12be8e983afe66b78fd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 여룹바알이라 하는 기드온의 이스라엘에게 베푼 모든 은혜를 따라서 그의 집을 후대치도 아니하였더라"
+      ],
+      "raw_text_hashes": [
+        "a4eedadbeed82d700cf7f1e9108ef349e9f27a199b99b12be8e983afe66b78fd"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,621 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:HEB:chapter:003",
+  "unit_ordinal": 1136,
+  "unit_label": "HEB 3",
+  "book_code": "HEB",
+  "chapter_number": 3,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:HEB:3:1",
+      "sequence": 29993,
+      "chapter_label": "HEB 3",
+      "verse_label": "1",
+      "locator": {
+        "book": "HEB",
+        "chapter": 3,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 3,
+          "verse": 1
+        }
+      ],
+      "en": "Therefore, holy brothers, partakers of a heavenly calling, consider the Apostle and High Priest of our confession: Jesus,",
+      "ko": "그러므로 함께 하늘의 부르심을 입은 거룩한 형제들아 우리의 믿는 도리의 사도시며 대제사장이신 예수를 깊이 생각하라",
+      "source_text_hash": "45fce925e1794e3e1527fa9248f057308a0038ebcab4ff8d3acb52e88ec43973",
+      "translation_text_hash": "ddde9a7c62a846174ba4beb7a3179113ba957c22cbe7e47fd52d2de7a07d87c5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 함께 하늘의 부르심을 입은 거룩한 형제들아 우리의 믿는 도리의 사도시며 대제사장이신 예수를 깊이 생각하라"
+      ],
+      "raw_text_hashes": [
+        "ddde9a7c62a846174ba4beb7a3179113ba957c22cbe7e47fd52d2de7a07d87c5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:3:2",
+      "sequence": 29994,
+      "chapter_label": "HEB 3",
+      "verse_label": "2",
+      "locator": {
+        "book": "HEB",
+        "chapter": 3,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 3,
+          "verse": 2
+        }
+      ],
+      "en": "who was faithful to him who appointed him, as also Moses was in all his house.",
+      "ko": "저가 자기를 세우신 이에게 충성하시기를 모세가 하나님의 온 집에서 한 것과 같으니",
+      "source_text_hash": "9770455d1b4afbe6a4627f41d77b2a4d6f736a5366a60e494d6759c6674d1bf1",
+      "translation_text_hash": "f53093f80d3abea4db9110853e53d8e1ac347003a5846ea2e16d38a55e3af893",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 자기를 세우신 이에게 충성하시기를 모세가 하나님의 온 집에서 한 것과 같으니"
+      ],
+      "raw_text_hashes": [
+        "f53093f80d3abea4db9110853e53d8e1ac347003a5846ea2e16d38a55e3af893"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:3:3",
+      "sequence": 29995,
+      "chapter_label": "HEB 3",
+      "verse_label": "3",
+      "locator": {
+        "book": "HEB",
+        "chapter": 3,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 3,
+          "verse": 3
+        }
+      ],
+      "en": "For he has been counted worthy of more glory than Moses, because he who built the house has more honor than the house.",
+      "ko": "저는 모세보다 더욱 영광을 받을만한 것이 마치 집 지은 자가 그 집보다 더욱 존귀함 같으니라",
+      "source_text_hash": "ff966129a78749c8594510f64f59ff193467fb9612451004067f494b4c9dbdc9",
+      "translation_text_hash": "669bea8eb043704f98a62ec5ed171e350c0f238b9999c846923f0145be271280",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저는 모세보다 더욱 영광을 받을만한 것이 마치 집 지은 자가 그 집보다 더욱 존귀함 같으니라"
+      ],
+      "raw_text_hashes": [
+        "669bea8eb043704f98a62ec5ed171e350c0f238b9999c846923f0145be271280"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:3:4",
+      "sequence": 29996,
+      "chapter_label": "HEB 3",
+      "verse_label": "4",
+      "locator": {
+        "book": "HEB",
+        "chapter": 3,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 3,
+          "verse": 4
+        }
+      ],
+      "en": "For every house is built by someone; but he who built all things is God.",
+      "ko": "집마다 지은 이가 있으니 만물을 지으신 이는 하나님이시라",
+      "source_text_hash": "729ee756a2e80bc0751838f31df0aeb8f4e941d1e9b5bcf4508784b4dfb8a84d",
+      "translation_text_hash": "cbdc2d6885032f9c01f1c23b37227ec058813f06b488c3684cad9e55480024a4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "집마다 지은 이가 있으니 만물을 지으신 이는 하나님이시라"
+      ],
+      "raw_text_hashes": [
+        "cbdc2d6885032f9c01f1c23b37227ec058813f06b488c3684cad9e55480024a4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:3:5",
+      "sequence": 29997,
+      "chapter_label": "HEB 3",
+      "verse_label": "5",
+      "locator": {
+        "book": "HEB",
+        "chapter": 3,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 3,
+          "verse": 5
+        }
+      ],
+      "en": "Moses indeed was faithful in all his house as a servant, for a testimony of those things which were afterward to be spoken,",
+      "ko": "또한 모세는 장래에 말할 것을 증거하기 위하여 하나님의 온집에서 사환으로 충성하였고",
+      "source_text_hash": "7992ae53db3371ac1c93c00c119f64466fd68dd05879d01e94264ceeaace7a09",
+      "translation_text_hash": "ba92cb2d34ec0b272ea4336f5105d6635abd94c82669ef4dff1e4f66aa122e8e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또한 모세는 장래에 말할 것을 증거하기 위하여 하나님의 온집에서 사환으로 충성하였고"
+      ],
+      "raw_text_hashes": [
+        "ba92cb2d34ec0b272ea4336f5105d6635abd94c82669ef4dff1e4f66aa122e8e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:3:6",
+      "sequence": 29998,
+      "chapter_label": "HEB 3",
+      "verse_label": "6",
+      "locator": {
+        "book": "HEB",
+        "chapter": 3,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 3,
+          "verse": 6
+        }
+      ],
+      "en": "but Christ is faithful as a Son over his house. We are his house, if we hold fast our confidence and the glorying of our hope firm to the end.",
+      "ko": "그리스도는 그의 집 맡은 아들로 충성하였으니 우리가 소망의 담대함과 자랑을 끝까지 견고히 잡으면 그의 집이라",
+      "source_text_hash": "fc3c67d396184a0e4c3d59fb4d05fae8d2f6a19f4b2bdf427899cf0b056d1a0a",
+      "translation_text_hash": "8b0dc5a29638b3f0b790cb0e031e77aed421c831e782118824e10e5bfa8ab9fa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그리스도는 그의 집 맡은 아들로 충성하였으니 우리가 소망의 담대함과 자랑을 끝까지 견고히 잡으면 그의 집이라"
+      ],
+      "raw_text_hashes": [
+        "8b0dc5a29638b3f0b790cb0e031e77aed421c831e782118824e10e5bfa8ab9fa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:3:7",
+      "sequence": 29999,
+      "chapter_label": "HEB 3",
+      "verse_label": "7",
+      "locator": {
+        "book": "HEB",
+        "chapter": 3,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 3,
+          "verse": 7
+        }
+      ],
+      "en": "Therefore, even as the Holy Spirit says, “Today if you will hear his voice,",
+      "ko": "그러므로 성령이 이르신 바와 같이 오늘날 너희가 그의 음성을 듣거든",
+      "source_text_hash": "5b8ebe422254a570ec48bba9b436fda79f1e32237e0026f8ac21110867d55421",
+      "translation_text_hash": "f4e3a422690f3c039db6ce103a40482b45a66a1ca6364ff406a21d97aadded62",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 성령이 이르신 바와 같이 오늘날 너희가 그의 음성을 듣거든"
+      ],
+      "raw_text_hashes": [
+        "f4e3a422690f3c039db6ce103a40482b45a66a1ca6364ff406a21d97aadded62"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:3:8",
+      "sequence": 30000,
+      "chapter_label": "HEB 3",
+      "verse_label": "8",
+      "locator": {
+        "book": "HEB",
+        "chapter": 3,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 3,
+          "verse": 8
+        }
+      ],
+      "en": "don’t harden your hearts as in the rebellion, in the day of the trial in the wilderness,",
+      "ko": "노하심을 격동하여 광야에서 시험하던 때와 같이 너희 마음을 강퍅케 하지 말라",
+      "source_text_hash": "f5374ce5fcb9ca117dae3ee7b5d51a2ee200383a537f6c5e1c77bce4f0d40363",
+      "translation_text_hash": "324c94f5556600af861316ee60d0f27b7b699c29175e33db12fb5bac65c12044",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "노하심을 격동하여 광야에서 시험하던 때와 같이 너희 마음을 강퍅케 하지 말라"
+      ],
+      "raw_text_hashes": [
+        "324c94f5556600af861316ee60d0f27b7b699c29175e33db12fb5bac65c12044"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:3:9",
+      "sequence": 30001,
+      "chapter_label": "HEB 3",
+      "verse_label": "9",
+      "locator": {
+        "book": "HEB",
+        "chapter": 3,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 3,
+          "verse": 9
+        }
+      ],
+      "en": "where your fathers tested me and tried me, and saw my deeds for forty years.",
+      "ko": "거기서 너희 열조가 나를 시험하여 증험하고 사십년 동안에 나의 행사를 보았느니라",
+      "source_text_hash": "16e9734e1c7683594f3c6ccd2134009b16fa5ceaf9b783d6a11cfe102bca6a0d",
+      "translation_text_hash": "dda689d13fcafa46fabfb47a8b73d00a0389fab8e95220426b05892618e80556",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거기서 너희 열조가 나를 시험하여 증험하고 사십년 동안에 나의 행사를 보았느니라"
+      ],
+      "raw_text_hashes": [
+        "dda689d13fcafa46fabfb47a8b73d00a0389fab8e95220426b05892618e80556"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:3:10",
+      "sequence": 30002,
+      "chapter_label": "HEB 3",
+      "verse_label": "10",
+      "locator": {
+        "book": "HEB",
+        "chapter": 3,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 3,
+          "verse": 10
+        }
+      ],
+      "en": "Therefore I was displeased with that generation, and said, ‘They always err in their heart, but they didn’t know my ways.’",
+      "ko": "그러므로 내가 이 세대를 노하여 가로되 저희가 항상 마음이 미혹되어 내 길을 알지 못하는도다 하였고",
+      "source_text_hash": "1b585ffa23fa5911af4cfdb48f2031cda0b148f2cfda26d97c89b26239641db0",
+      "translation_text_hash": "6e7d54c88fe52e4b703bcd54e8d90112da87ea2c78e78b6effb9e19cce95a1b4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 내가 이 세대를 노하여 가로되 저희가 항상 마음이 미혹되어 내 길을 알지 못하는도다 하였고"
+      ],
+      "raw_text_hashes": [
+        "6e7d54c88fe52e4b703bcd54e8d90112da87ea2c78e78b6effb9e19cce95a1b4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:3:11",
+      "sequence": 30003,
+      "chapter_label": "HEB 3",
+      "verse_label": "11",
+      "locator": {
+        "book": "HEB",
+        "chapter": 3,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 3,
+          "verse": 11
+        }
+      ],
+      "en": "As I swore in my wrath, ‘They will not enter into my rest.’”",
+      "ko": "내가 노하여 맹세한 바와 같이 저희는 내 안식에 들어오지 못하리라 하셨다 하였으니",
+      "source_text_hash": "e7ba6186f71de85ae1a42e6e24543e50a99a77451abd8ecff9a92b3087705727",
+      "translation_text_hash": "908fdadf0646f09db78e187dca992f22b11f8d13ddf341b61ff4de911de9545f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 노하여 맹세한 바와 같이 저희는 내 안식에 들어오지 못하리라 하셨다 하였으니"
+      ],
+      "raw_text_hashes": [
+        "908fdadf0646f09db78e187dca992f22b11f8d13ddf341b61ff4de911de9545f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:3:12",
+      "sequence": 30004,
+      "chapter_label": "HEB 3",
+      "verse_label": "12",
+      "locator": {
+        "book": "HEB",
+        "chapter": 3,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 3,
+          "verse": 12
+        }
+      ],
+      "en": "Beware, brothers, lest perhaps there might be in any one of you an evil heart of unbelief, in falling away from the living God;",
+      "ko": "형제들아 너희가 삼가 혹 너희 중에 누가 믿지 아니하는 악심을 품고 살아 계신 하나님에게서 떨어질까 염려할 것이요",
+      "source_text_hash": "73b8a32282d74cdabea718450263bb3008d41fa0001135b7172fad471f720389",
+      "translation_text_hash": "4c8cbe0e48dff3dd640a86fe1fdf3a059763ad64e587810330e8012b1c09d714",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "형제들아 너희가 삼가 혹 너희 중에 누가 믿지 아니하는 악심을 품고 살아 계신 하나님에게서 떨어질까 염려할 것이요"
+      ],
+      "raw_text_hashes": [
+        "4c8cbe0e48dff3dd640a86fe1fdf3a059763ad64e587810330e8012b1c09d714"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:3:13",
+      "sequence": 30005,
+      "chapter_label": "HEB 3",
+      "verse_label": "13",
+      "locator": {
+        "book": "HEB",
+        "chapter": 3,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 3,
+          "verse": 13
+        }
+      ],
+      "en": "but exhort one another day by day, so long as it is called “today”, lest any one of you be hardened by the deceitfulness of sin.",
+      "ko": "오직 오늘이라 일컫는 동안에 매일 피차 권면하여 너희 중에 누구든지 죄의 유혹으로 강퍅케 됨을 면하라",
+      "source_text_hash": "e67719523b3b8845a3595dcbabc2ceeb5fa303ba51cf1d03c2c07dcadd9b071b",
+      "translation_text_hash": "104938bf401e7aaf3f52eeaf4b77ae52da21643e18d18001da65e4a4ada432fe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 오늘이라 일컫는 동안에 매일 피차 권면하여 너희 중에 누구든지 죄의 유혹으로 강퍅케 됨을 면하라"
+      ],
+      "raw_text_hashes": [
+        "104938bf401e7aaf3f52eeaf4b77ae52da21643e18d18001da65e4a4ada432fe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:3:14",
+      "sequence": 30006,
+      "chapter_label": "HEB 3",
+      "verse_label": "14",
+      "locator": {
+        "book": "HEB",
+        "chapter": 3,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 3,
+          "verse": 14
+        }
+      ],
+      "en": "For we have become partakers of Christ, if we hold the beginning of our confidence firm to the end,",
+      "ko": "우리가 시작할 때에 확실한 것을 끝까지 견고히 잡으면 그리스도와 함께 참예한 자가 되리라",
+      "source_text_hash": "332c5f5740a9aecccfb401c168063b3894aadd33cb68a36d2a138df8154f7e68",
+      "translation_text_hash": "8f53c84d5a1f9adc6b199ff91a16740de50942f95e3446ce6f4796df75c1d33b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 시작할 때에 확실한 것을 끝까지 견고히 잡으면 그리스도와 함께 참예한 자가 되리라"
+      ],
+      "raw_text_hashes": [
+        "8f53c84d5a1f9adc6b199ff91a16740de50942f95e3446ce6f4796df75c1d33b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:3:15",
+      "sequence": 30007,
+      "chapter_label": "HEB 3",
+      "verse_label": "15",
+      "locator": {
+        "book": "HEB",
+        "chapter": 3,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 3,
+          "verse": 15
+        }
+      ],
+      "en": "while it is said, “Today if you will hear his voice, don’t harden your hearts, as in the rebellion.”",
+      "ko": "성경에 일렀으되 오늘날 너희가 그의 음성을 듣거든 노하심을 격동할 때와 같이 너희 마음을 강퍅케 하지 말라 하였으니",
+      "source_text_hash": "4dfef05231a822e1b9935f00b621a9ee87931e2aea3c587edf1a0c7ba6b7899f",
+      "translation_text_hash": "5913d6588da2a3dbc1973bdb339d0ac5c02116c1e5ce5c9c377bcd71c14ac7fc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "성경에 일렀으되 오늘날 너희가 그의 음성을 듣거든 노하심을 격동할 때와 같이 너희 마음을 강퍅케 하지 말라 하였으니"
+      ],
+      "raw_text_hashes": [
+        "5913d6588da2a3dbc1973bdb339d0ac5c02116c1e5ce5c9c377bcd71c14ac7fc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:3:16",
+      "sequence": 30008,
+      "chapter_label": "HEB 3",
+      "verse_label": "16",
+      "locator": {
+        "book": "HEB",
+        "chapter": 3,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 3,
+          "verse": 16
+        }
+      ],
+      "en": "For who, when they heard, rebelled? Wasn’t it all those who came out of Egypt led by Moses?",
+      "ko": "듣고 격노케 하던 자가 누구뇨 모세를 좇아 애굽에서 나온 모든 이가 아니냐",
+      "source_text_hash": "b843616bc59250195eb57679dddbd57a8a1bf8afc7111ac8afdfd99874d52c32",
+      "translation_text_hash": "974decd4abf5f60257050730d30881b9cf0f8bd53fafa2755615041ef6c2378a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "듣고 격노케 하던 자가 누구뇨 모세를 좇아 애굽에서 나온 모든 이가 아니냐"
+      ],
+      "raw_text_hashes": [
+        "974decd4abf5f60257050730d30881b9cf0f8bd53fafa2755615041ef6c2378a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:3:17",
+      "sequence": 30009,
+      "chapter_label": "HEB 3",
+      "verse_label": "17",
+      "locator": {
+        "book": "HEB",
+        "chapter": 3,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 3,
+          "verse": 17
+        }
+      ],
+      "en": "With whom was he displeased forty years? Wasn’t it with those who sinned, whose bodies fell in the wilderness?",
+      "ko": "또 하나님이 사십년 동안에 누구에게 노하셨느뇨 범죄하여 그 시체가 광야에 엎드러진 자에게가 아니냐",
+      "source_text_hash": "3d924a7e0f6cdba6b614700f0314cb9a101f26c2e925b63d38654319d40bf4b7",
+      "translation_text_hash": "d75025340bf77baedaed5c3a12710d2471c9cc83003fc3910bd51327e7271962",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 하나님이 사십년 동안에 누구에게 노하셨느뇨 범죄하여 그 시체가 광야에 엎드러진 자에게가 아니냐"
+      ],
+      "raw_text_hashes": [
+        "d75025340bf77baedaed5c3a12710d2471c9cc83003fc3910bd51327e7271962"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:3:18",
+      "sequence": 30010,
+      "chapter_label": "HEB 3",
+      "verse_label": "18",
+      "locator": {
+        "book": "HEB",
+        "chapter": 3,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 3,
+          "verse": 18
+        }
+      ],
+      "en": "To whom did he swear that they wouldn’t enter into his rest, but to those who were disobedient?",
+      "ko": "또 하나님이 누구에게 맹세하사 그의 안식에 들어오지 못하리라 하셨느뇨 곧 순종치 아니하던 자에게가 아니냐",
+      "source_text_hash": "e5e688dee27816d18f6d2193e740011269a215572290ef202a7c4585935b35e2",
+      "translation_text_hash": "55a47b1b0c105cd6cc473686dfdffd355af7d2fe7c28c8bdc22c84c188676fda",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 하나님이 누구에게 맹세하사 그의 안식에 들어오지 못하리라 하셨느뇨 곧 순종치 아니하던 자에게가 아니냐"
+      ],
+      "raw_text_hashes": [
+        "55a47b1b0c105cd6cc473686dfdffd355af7d2fe7c28c8bdc22c84c188676fda"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:3:19",
+      "sequence": 30011,
+      "chapter_label": "HEB 3",
+      "verse_label": "19",
+      "locator": {
+        "book": "HEB",
+        "chapter": 3,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 3,
+          "verse": 19
+        }
+      ],
+      "en": "We see that they weren’t able to enter in because of unbelief.",
+      "ko": "이로 보건대 저희가 믿지 아니하므로 능히 들어가지 못한 것이라",
+      "source_text_hash": "1ca23e00fe494834befea32ca64015a7884f1c18c1a0e8268efb40f7560fba8d",
+      "translation_text_hash": "4d6a71530a424364b6c9c22efbb068cf84aa2fc35ab321d418efb154c03603c7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이로 보건대 저희가 믿지 아니하므로 능히 들어가지 못한 것이라"
+      ],
+      "raw_text_hashes": [
+        "4d6a71530a424364b6c9c22efbb068cf84aa2fc35ab321d418efb154c03603c7"
+      ]
+    }
+  ]
+}

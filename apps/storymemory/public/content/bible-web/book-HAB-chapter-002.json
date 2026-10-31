@@ -1,0 +1,653 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:HAB:chapter:002",
+  "unit_ordinal": 905,
+  "unit_label": "HAB 2",
+  "book_code": "HAB",
+  "chapter_number": 2,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:HAB:2:1",
+      "sequence": 22750,
+      "chapter_label": "HAB 2",
+      "verse_label": "1",
+      "locator": {
+        "book": "HAB",
+        "chapter": 2,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "HAB",
+          "chapter": 2,
+          "verse": 1
+        }
+      ],
+      "en": "I will stand at my watch and set myself on the ramparts, and will look out to see what he will say to me, and what I will answer concerning my complaint.",
+      "ko": "내가 내 파수하는 곳에 서며 성루에 서리라 그가 내게 무엇이라 말씀하실는지 기다리고 바라보며 나의 질문에 대하여 어떻게 대답하실는지 보리라 그리하였더니",
+      "source_text_hash": "a48c2bfbae36f34209de6e3035f3f0f53bc633ac75e930be626985900b63cff9",
+      "translation_text_hash": "ad74b8031dd478ba711e2248b519c67cecd77027f45660cb5b1d1bfab1ce0081",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 내 파수하는 곳에 서며 성루에 서리라 그가 내게 무엇이라 말씀하실는지 기다리고 바라보며 나의 질문에 대하여 어떻게 대답하실는지 보리라 그리하였더니"
+      ],
+      "raw_text_hashes": [
+        "ad74b8031dd478ba711e2248b519c67cecd77027f45660cb5b1d1bfab1ce0081"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HAB:2:2",
+      "sequence": 22751,
+      "chapter_label": "HAB 2",
+      "verse_label": "2",
+      "locator": {
+        "book": "HAB",
+        "chapter": 2,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "HAB",
+          "chapter": 2,
+          "verse": 2
+        }
+      ],
+      "en": "The LORD answered me, “Write the vision, and make it plain on tablets, that he who runs may read it.",
+      "ko": "여호와께서 내게 대답하여 가라사대 너는 이 묵시를 기록하여 판에 명백히 새기되 달려 가면서도 읽을 수 있게 하라",
+      "source_text_hash": "ed44ad71b4340a9aec89b11329ece2f0f40aefb5e482acc2c6c568a6be4fe18c",
+      "translation_text_hash": "aa1cb6512fd91808e9688f4b0a15645ce1e7fa80e50bd3e4a0a5b17510647835",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 내게 대답하여 가라사대 너는 이 묵시를 기록하여 판에 명백히 새기되 달려 가면서도 읽을 수 있게 하라"
+      ],
+      "raw_text_hashes": [
+        "aa1cb6512fd91808e9688f4b0a15645ce1e7fa80e50bd3e4a0a5b17510647835"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HAB:2:3",
+      "sequence": 22752,
+      "chapter_label": "HAB 2",
+      "verse_label": "3",
+      "locator": {
+        "book": "HAB",
+        "chapter": 2,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "HAB",
+          "chapter": 2,
+          "verse": 3
+        }
+      ],
+      "en": "For the vision is yet for the appointed time, and it hurries toward the end, and won’t prove false. Though it takes time, wait for it, because it will surely come. It won’t delay.",
+      "ko": "이 묵시는 정한 때가 있나니 그 종말이 속히 이르겠고 결코 거짓되지 아니하리라 비록 더딜찌라도 기다리라 지체되지 않고 정녕 응하리라",
+      "source_text_hash": "356339e78e0fc4f36811d83b6b0b4fbd068ebddaf4afca38ff8ac9b902239121",
+      "translation_text_hash": "fd7b30638de3a2ece1ef03fe2f857e79cd2a33f33f7c9aedea99619f2e66cace",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 묵시는 정한 때가 있나니 그 종말이 속히 이르겠고 결코 거짓되지 아니하리라 비록 더딜찌라도 기다리라 지체되지 않고 정녕 응하리라"
+      ],
+      "raw_text_hashes": [
+        "fd7b30638de3a2ece1ef03fe2f857e79cd2a33f33f7c9aedea99619f2e66cace"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HAB:2:4",
+      "sequence": 22753,
+      "chapter_label": "HAB 2",
+      "verse_label": "4",
+      "locator": {
+        "book": "HAB",
+        "chapter": 2,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "HAB",
+          "chapter": 2,
+          "verse": 4
+        }
+      ],
+      "en": "Behold, his soul is puffed up. It is not upright in him, but the righteous will live by his faith.",
+      "ko": "보라 그의 마음은 교만하며 그의 속에서 정직하지 못하니라 그러나 의인은 그 믿음으로 말미암아 살리라",
+      "source_text_hash": "9af5c725eb806282def95c2de30e99bbb6c348546bd945f48eb43a9329048537",
+      "translation_text_hash": "93b8618a4a84e3710c53a43ec6d4344b9addd0aec3d426038ff1cd143654ba2a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보라 그의 마음은 교만하며 그의 속에서 정직하지 못하니라 그러나 의인은 그 믿음으로 말미암아 살리라"
+      ],
+      "raw_text_hashes": [
+        "93b8618a4a84e3710c53a43ec6d4344b9addd0aec3d426038ff1cd143654ba2a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HAB:2:5",
+      "sequence": 22754,
+      "chapter_label": "HAB 2",
+      "verse_label": "5",
+      "locator": {
+        "book": "HAB",
+        "chapter": 2,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "HAB",
+          "chapter": 2,
+          "verse": 5
+        }
+      ],
+      "en": "Yes, moreover, wine is treacherous: an arrogant man who doesn’t stay at home, who enlarges his desire as Sheol; he is like death and can’t be satisfied, but gathers to himself all nations and heaps to himself all peoples.",
+      "ko": "그는 술을 즐기며 궤휼하며 교만하여 가만히 있지 아니하고 그 욕심을 음부처럼 넓히며 또 그는 사망 같아서 족한줄을 모르고 자기에게로 만국을 모으며 만민을 모으나니",
+      "source_text_hash": "7b77f75e7407b602b12f34b1acf7499a0b48b4e3d76d7d47e2b938d80a3c645b",
+      "translation_text_hash": "770188949d15abb43aef32bde985f4f805f58a7292f3fe31e407cb9b34ea2931",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그는 술을 즐기며 궤휼하며 교만하여 가만히 있지 아니하고 그 욕심을 음부처럼 넓히며 또 그는 사망 같아서 족한줄을 모르고 자기에게로 만국을 모으며 만민을 모으나니"
+      ],
+      "raw_text_hashes": [
+        "770188949d15abb43aef32bde985f4f805f58a7292f3fe31e407cb9b34ea2931"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HAB:2:6",
+      "sequence": 22755,
+      "chapter_label": "HAB 2",
+      "verse_label": "6",
+      "locator": {
+        "book": "HAB",
+        "chapter": 2,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "HAB",
+          "chapter": 2,
+          "verse": 6
+        }
+      ],
+      "en": "Won’t all these take up a parable against him, and a taunting proverb against him, and say, ‘Woe to him who increases that which is not his, and who enriches himself by extortion! How long?’",
+      "ko": "그 무리가 다 속담으로 그를 평론하며 조롱하는 시로 그를 풍자하지 않겠느냐 곧 이르기를 화 있을찐저 자기 소유 아닌 것을 모으는 자여 언제까지 이르겠느냐 볼모잡은 것으로 무겁게 짐진 자여",
+      "source_text_hash": "58cc38d7fb3435ca6e46a96fa6f897de1d7e326e5377e9ac743c5c783f3446fd",
+      "translation_text_hash": "74784e361c9e39026723ac23ccb13932ef56874f1654c61378d45f8abcba0d76",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 무리가 다 속담으로 그를 평론하며 조롱하는 시로 그를 풍자하지 않겠느냐 곧 이르기를 화 있을찐저 자기 소유 아닌 것을 모으는 자여 언제까지 이르겠느냐 볼모잡은 것으로 무겁게 짐진 자여"
+      ],
+      "raw_text_hashes": [
+        "74784e361c9e39026723ac23ccb13932ef56874f1654c61378d45f8abcba0d76"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HAB:2:7",
+      "sequence": 22756,
+      "chapter_label": "HAB 2",
+      "verse_label": "7",
+      "locator": {
+        "book": "HAB",
+        "chapter": 2,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "HAB",
+          "chapter": 2,
+          "verse": 7
+        }
+      ],
+      "en": "Won’t your debtors rise up suddenly, and wake up those who make you tremble, and you will be their victim?",
+      "ko": "너를 물 자들이 홀연히 일어나지 않겠느냐 너를 괴롭게 할 자들이 깨지 않겠느냐 네가 그들에게 노략을 당하지 않겠느냐",
+      "source_text_hash": "e4b04c539b2d003936321bcc5e7878f5445bd2a50444b3df6084ef031c34ea9d",
+      "translation_text_hash": "ad5ff954b72f323b60ef9e9dbc93e9fa9d91dd9751172eda07c4019f5c85847f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너를 물 자들이 홀연히 일어나지 않겠느냐 너를 괴롭게 할 자들이 깨지 않겠느냐 네가 그들에게 노략을 당하지 않겠느냐"
+      ],
+      "raw_text_hashes": [
+        "ad5ff954b72f323b60ef9e9dbc93e9fa9d91dd9751172eda07c4019f5c85847f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HAB:2:8",
+      "sequence": 22757,
+      "chapter_label": "HAB 2",
+      "verse_label": "8",
+      "locator": {
+        "book": "HAB",
+        "chapter": 2,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "HAB",
+          "chapter": 2,
+          "verse": 8
+        }
+      ],
+      "en": "Because you have plundered many nations, all the remnant of the peoples will plunder you because of men’s blood, and for the violence done to the land, to the city and to all who dwell in it.",
+      "ko": "네가 여러 나라를 노략하였으므로 그 모든 민족의 남은 자가 너를 노략하리니 이는 네가 사람의 피를 흘렸음이요 또 땅에, 성읍에, 그 안의 모든 거민에게 강포를 행하였음이니라 하리라",
+      "source_text_hash": "ee8a706e5d0eab913e465389f3b8814e266bf6f33dc61271d2cc816808ea263c",
+      "translation_text_hash": "3bd85f2e72a93d6cc678bf7e7d9b74a1a9f205b2b4d5ae11d40d3d5b064a7737",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 여러 나라를 노략하였으므로 그 모든 민족의 남은 자가 너를 노략하리니 이는 네가 사람의 피를 흘렸음이요 또 땅에, 성읍에, 그 안의 모든 거민에게 강포를 행하였음이니라 하리라"
+      ],
+      "raw_text_hashes": [
+        "3bd85f2e72a93d6cc678bf7e7d9b74a1a9f205b2b4d5ae11d40d3d5b064a7737"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HAB:2:9",
+      "sequence": 22758,
+      "chapter_label": "HAB 2",
+      "verse_label": "9",
+      "locator": {
+        "book": "HAB",
+        "chapter": 2,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "HAB",
+          "chapter": 2,
+          "verse": 9
+        }
+      ],
+      "en": "Woe to him who gets an evil gain for his house, that he may set his nest on high, that he may be delivered from the hand of evil!",
+      "ko": "재앙을 피하기 위하여 높은데 깃들이려 하며 자기 집을 위하여 불의의 이를 취하는 자에게 화 있을찐저",
+      "source_text_hash": "29583b200e65965e2ba661abda97ebd7a4dc51b1df9bf9356969bc800886edb9",
+      "translation_text_hash": "d2e2a90c2eace2539a871078ed82974237079e953c67047cb2de459d465e17af",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "재앙을 피하기 위하여 높은데 깃들이려 하며 자기 집을 위하여 불의의 이를 취하는 자에게 화 있을찐저"
+      ],
+      "raw_text_hashes": [
+        "d2e2a90c2eace2539a871078ed82974237079e953c67047cb2de459d465e17af"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HAB:2:10",
+      "sequence": 22759,
+      "chapter_label": "HAB 2",
+      "verse_label": "10",
+      "locator": {
+        "book": "HAB",
+        "chapter": 2,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "HAB",
+          "chapter": 2,
+          "verse": 10
+        }
+      ],
+      "en": "You have devised shame to your house by cutting off many peoples, and have sinned against your soul.",
+      "ko": "네가 여러 민족을 멸한 것이 네 집에 욕을 부르며 너로 네 영혼에게 죄를 범하게 하는 것이 되었도다",
+      "source_text_hash": "b3239f6cb88ac108907775ecfb69b6b42084fa9715eb5d5f9095b42d5fdd7aac",
+      "translation_text_hash": "63cb90fe6f7bd023fb349aeae1a09185bd36bf2cb31d1c9a71c31e595078f714",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 여러 민족을 멸한 것이 네 집에 욕을 부르며 너로 네 영혼에게 죄를 범하게 하는 것이 되었도다"
+      ],
+      "raw_text_hashes": [
+        "63cb90fe6f7bd023fb349aeae1a09185bd36bf2cb31d1c9a71c31e595078f714"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HAB:2:11",
+      "sequence": 22760,
+      "chapter_label": "HAB 2",
+      "verse_label": "11",
+      "locator": {
+        "book": "HAB",
+        "chapter": 2,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "HAB",
+          "chapter": 2,
+          "verse": 11
+        }
+      ],
+      "en": "For the stone will cry out of the wall, and the beam out of the woodwork will answer it.",
+      "ko": "담에서 돌이 부르짖고 집에서 들보가 응답하리라",
+      "source_text_hash": "c0f73bef2dd6a7dbf68ea62ba08b14f9636b09ec510202d33fc369ddb648c388",
+      "translation_text_hash": "35c189aae31551de81c99643345a8af2b2d43d9977c80925406f1021905ea985",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "담에서 돌이 부르짖고 집에서 들보가 응답하리라"
+      ],
+      "raw_text_hashes": [
+        "35c189aae31551de81c99643345a8af2b2d43d9977c80925406f1021905ea985"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HAB:2:12",
+      "sequence": 22761,
+      "chapter_label": "HAB 2",
+      "verse_label": "12",
+      "locator": {
+        "book": "HAB",
+        "chapter": 2,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "HAB",
+          "chapter": 2,
+          "verse": 12
+        }
+      ],
+      "en": "Woe to him who builds a town with blood, and establishes a city by iniquity!",
+      "ko": "피로 읍을 건설하며 불의로 성을 건축하는 자에게 화 있을찐저",
+      "source_text_hash": "80d1c25f4af83884790235d96fd4941f6ad6795aac6ed42f232194401791e163",
+      "translation_text_hash": "b9ea2a4aee5e96d44a968c744f3464ea110904b1040d3f5ccfdfac6eee82c0f9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "피로 읍을 건설하며 불의로 성을 건축하는 자에게 화 있을찐저"
+      ],
+      "raw_text_hashes": [
+        "b9ea2a4aee5e96d44a968c744f3464ea110904b1040d3f5ccfdfac6eee82c0f9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HAB:2:13",
+      "sequence": 22762,
+      "chapter_label": "HAB 2",
+      "verse_label": "13",
+      "locator": {
+        "book": "HAB",
+        "chapter": 2,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "HAB",
+          "chapter": 2,
+          "verse": 13
+        }
+      ],
+      "en": "Behold, isn’t it from the LORD of Armies that the peoples labor for the fire, and the nations weary themselves for vanity?",
+      "ko": "민족들이 불 탈 것으로 수고하는 것과 열국이 헛된 일로 곤비하게 되는 것이 만군의 여호와께로서 말미암음이 아니냐",
+      "source_text_hash": "2b60e306938d2b4eaa32c2505de78931e91b5cfefcc2225b93c68ee7d8678a90",
+      "translation_text_hash": "89ee37269a74ab0154351d9291077505c8712b2174f4d798e3c60addbcc07c3c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "민족들이 불 탈 것으로 수고하는 것과 열국이 헛된 일로 곤비하게 되는 것이 만군의 여호와께로서 말미암음이 아니냐"
+      ],
+      "raw_text_hashes": [
+        "89ee37269a74ab0154351d9291077505c8712b2174f4d798e3c60addbcc07c3c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HAB:2:14",
+      "sequence": 22763,
+      "chapter_label": "HAB 2",
+      "verse_label": "14",
+      "locator": {
+        "book": "HAB",
+        "chapter": 2,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "HAB",
+          "chapter": 2,
+          "verse": 14
+        }
+      ],
+      "en": "For the earth will be filled with the knowledge of the LORD’s glory, as the waters cover the sea.",
+      "ko": "대저 물이 바다를 덮음 같이 여호와의 영광을 인정하는 것이 세상에 가득하리라",
+      "source_text_hash": "1623416abefd4cfa8c8f19bd4134ae9b8a0cdf5d95b32ecfd1ad1d0d5cc01706",
+      "translation_text_hash": "f07b1bca2c52a14c02d4c21dc928e00e994157373fa4915e0e279b8be3c063b2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대저 물이 바다를 덮음 같이 여호와의 영광을 인정하는 것이 세상에 가득하리라"
+      ],
+      "raw_text_hashes": [
+        "f07b1bca2c52a14c02d4c21dc928e00e994157373fa4915e0e279b8be3c063b2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HAB:2:15",
+      "sequence": 22764,
+      "chapter_label": "HAB 2",
+      "verse_label": "15",
+      "locator": {
+        "book": "HAB",
+        "chapter": 2,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "HAB",
+          "chapter": 2,
+          "verse": 15
+        }
+      ],
+      "en": "“Woe to him who gives his neighbor drink, pouring your inflaming wine until they are drunk, so that you may gaze at their naked bodies!",
+      "ko": "이웃에게 술을 마시우되 자기의 분노를 더하여 그로 취케 하고 그 하체를 드러내려 하는 자에게 화 있을찐저",
+      "source_text_hash": "9ce72fb1cae4e7e22e058b4b66b7b6cdf5c52172da1578e706e4dad2ebffc09d",
+      "translation_text_hash": "b1c46b36e62b31d6c6a27d6b66d66eed13e7d32ff09e0ffa8b52b2b87875c8f9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이웃에게 술을 마시우되 자기의 분노를 더하여 그로 취케 하고 그 하체를 드러내려 하는 자에게 화 있을찐저"
+      ],
+      "raw_text_hashes": [
+        "b1c46b36e62b31d6c6a27d6b66d66eed13e7d32ff09e0ffa8b52b2b87875c8f9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HAB:2:16",
+      "sequence": 22765,
+      "chapter_label": "HAB 2",
+      "verse_label": "16",
+      "locator": {
+        "book": "HAB",
+        "chapter": 2,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "HAB",
+          "chapter": 2,
+          "verse": 16
+        }
+      ],
+      "en": "You are filled with shame, and not glory. You will also drink and be exposed! The cup of the LORD’s right hand will come around to you, and disgrace will cover your glory.",
+      "ko": "네게 영광이 아니요 수치가 가득한즉 너도 마시고 너의 할례 아니한 것을 드러내라 여호와의 오른손의 잔이 네게로 돌아올 것이라 더러운 욕이 네 영광을 가리우리라",
+      "source_text_hash": "539cea20745aabbf069ac772c34d853d5ee8b1e51cc9d7decd8a6dd35959a13d",
+      "translation_text_hash": "a9340d97761e1b283baf1337e08581f873a05d7f6790abec0fa7e8a35d28f0fe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네게 영광이 아니요 수치가 가득한즉 너도 마시고 너의 할례 아니한 것을 드러내라 여호와의 오른손의 잔이 네게로 돌아올 것이라 더러운 욕이 네 영광을 가리우리라"
+      ],
+      "raw_text_hashes": [
+        "a9340d97761e1b283baf1337e08581f873a05d7f6790abec0fa7e8a35d28f0fe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HAB:2:17",
+      "sequence": 22766,
+      "chapter_label": "HAB 2",
+      "verse_label": "17",
+      "locator": {
+        "book": "HAB",
+        "chapter": 2,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "HAB",
+          "chapter": 2,
+          "verse": 17
+        }
+      ],
+      "en": "For the violence done to Lebanon will overwhelm you, and the destruction of the animals will terrify you, because of men’s blood and for the violence done to the land, to every city and to those who dwell in them.",
+      "ko": "대저 네가 레바논에 강포를 행한 것과 짐승을 두렵게 하여 잔해한 것 곧 사람의 피를 흘리며 땅과 성읍과 그 모든 거민에게 강포를 행한 것이 네게로 돌아오리라",
+      "source_text_hash": "dcf9ca8463e53f82c701da20b94209b925464ec9e0dbc7f82db58916c5c94955",
+      "translation_text_hash": "89e248535bd7fb3dff3a162151b96b8e8eb4b9342c25c8b6c39f2f4ba4492ede",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대저 네가 레바논에 강포를 행한 것과 짐승을 두렵게 하여 잔해한 것 곧 사람의 피를 흘리며 땅과 성읍과 그 모든 거민에게 강포를 행한 것이 네게로 돌아오리라"
+      ],
+      "raw_text_hashes": [
+        "89e248535bd7fb3dff3a162151b96b8e8eb4b9342c25c8b6c39f2f4ba4492ede"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HAB:2:18",
+      "sequence": 22767,
+      "chapter_label": "HAB 2",
+      "verse_label": "18",
+      "locator": {
+        "book": "HAB",
+        "chapter": 2,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "HAB",
+          "chapter": 2,
+          "verse": 18
+        }
+      ],
+      "en": "“What value does the engraved image have, that its maker has engraved it; the molten image, even the teacher of lies, that he who fashions its form trusts in it, to make mute idols?",
+      "ko": "새긴 우상은 그 새겨 만든 자에게 무엇이 유익하겠느냐 부어 만든 우상은 거짓 스승이라 만든 자가 이 말하지 못하는 우상을 의지하니 무엇이 유익하겠느냐",
+      "source_text_hash": "814bfee60f38eb981870952b0dc733cbddcb178bd221b3a3666a7f92f95ec01c",
+      "translation_text_hash": "4ad8da9dafdfb59eb676b92d7c5f313a3b7375ff1fe670f1744cb09238999b75",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "새긴 우상은 그 새겨 만든 자에게 무엇이 유익하겠느냐 부어 만든 우상은 거짓 스승이라 만든 자가 이 말하지 못하는 우상을 의지하니 무엇이 유익하겠느냐"
+      ],
+      "raw_text_hashes": [
+        "4ad8da9dafdfb59eb676b92d7c5f313a3b7375ff1fe670f1744cb09238999b75"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HAB:2:19",
+      "sequence": 22768,
+      "chapter_label": "HAB 2",
+      "verse_label": "19",
+      "locator": {
+        "book": "HAB",
+        "chapter": 2,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "HAB",
+          "chapter": 2,
+          "verse": 19
+        }
+      ],
+      "en": "Woe to him who says to the wood, ‘Awake!’ or to the mute stone, ‘Arise!’ Shall this teach? Behold, it is overlaid with gold and silver, and there is no breath at all within it.",
+      "ko": "나무더러 깨라 하며 말하지 못하는 돌더러 일어나라 하는 자에게 화 있을찐저 그것이 교훈을 베풀겠느냐 보라 이는 금과 은으로 입힌 것인즉 그 속에는 생기가 도무지 없느니라",
+      "source_text_hash": "ec6e7cbaf876afbef76b268c0d96a236eccf530c10077be3ab36bdaa9eb124fa",
+      "translation_text_hash": "e76b8f13759ca218d158e6d9ec55786849792fb828bbced725dc982d2c08d8fe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나무더러 깨라 하며 말하지 못하는 돌더러 일어나라 하는 자에게 화 있을찐저 그것이 교훈을 베풀겠느냐 보라 이는 금과 은으로 입힌 것인즉 그 속에는 생기가 도무지 없느니라"
+      ],
+      "raw_text_hashes": [
+        "e76b8f13759ca218d158e6d9ec55786849792fb828bbced725dc982d2c08d8fe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HAB:2:20",
+      "sequence": 22769,
+      "chapter_label": "HAB 2",
+      "verse_label": "20",
+      "locator": {
+        "book": "HAB",
+        "chapter": 2,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "HAB",
+          "chapter": 2,
+          "verse": 20
+        }
+      ],
+      "en": "But the LORD is in his holy temple. Let all the earth be silent before him!”",
+      "ko": "오직 여호와는 그 성전에 계시니 온 천하는 그 앞에서 잠잠할찌니라",
+      "source_text_hash": "15bab48f368ca0d9ad19e954883b298feb8227fe99dce69d93efd070e47f5c15",
+      "translation_text_hash": "61bfe4ca71bf9c8a11206edaec6ab23bdee2b4f34336af2c62b6fe074a697283",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 여호와는 그 성전에 계시니 온 천하는 그 앞에서 잠잠할찌니라"
+      ],
+      "raw_text_hashes": [
+        "61bfe4ca71bf9c8a11206edaec6ab23bdee2b4f34336af2c62b6fe074a697283"
+      ]
+    }
+  ]
+}

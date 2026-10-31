@@ -1,0 +1,109 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:133",
+  "unit_ordinal": 611,
+  "unit_label": "PSA 133",
+  "book_code": "PSA",
+  "chapter_number": 133,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:133:1",
+      "sequence": 16171,
+      "chapter_label": "PSA 133",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 133,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 133,
+          "verse": 1
+        }
+      ],
+      "en": "See how good and how pleasant it is for brothers to live together in unity!",
+      "ko": "형제가 연합하여 동거함이 어찌 그리 선하고 아름다운고",
+      "source_text_hash": "0f4946de5b4be46a2808d2a6bb6e0cdfbe3e58317a7923ac6e2d62a130a429f6",
+      "translation_text_hash": "cf52ce31026a910ffd3e09d745079a3b7e5161c824d5c0c6f418b810782d1870",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "형제가 연합하여 동거함이 어찌 그리 선하고 아름다운고"
+      ],
+      "raw_text_hashes": [
+        "cf52ce31026a910ffd3e09d745079a3b7e5161c824d5c0c6f418b810782d1870"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:133:2",
+      "sequence": 16172,
+      "chapter_label": "PSA 133",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 133,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 133,
+          "verse": 2
+        }
+      ],
+      "en": "It is like the precious oil on the head, that ran down on the beard, even Aaron’s beard, that came down on the edge of his robes,",
+      "ko": "머리에 있는 보배로운 기름이 수염 곧 아론의 수염에 흘러서 그 옷깃까지 내림 같고",
+      "source_text_hash": "54d455d4c1d1d2a7f1b0ea4fa9f274aea7e5f9d0aa3d86c3c6048a1b5a3f2cf9",
+      "translation_text_hash": "b1618c8ea5759dc59b5fd80cf473ebcfa45830cf0fc8c37426ac09fb98473c3e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "머리에 있는 보배로운 기름이 수염 곧 아론의 수염에 흘러서 그 옷깃까지 내림 같고"
+      ],
+      "raw_text_hashes": [
+        "b1618c8ea5759dc59b5fd80cf473ebcfa45830cf0fc8c37426ac09fb98473c3e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:133:3",
+      "sequence": 16173,
+      "chapter_label": "PSA 133",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 133,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 133,
+          "verse": 3
+        }
+      ],
+      "en": "like the dew of Hermon, that comes down on the hills of Zion; for there the LORD gives the blessing, even life forever more.",
+      "ko": "헐몬의 이슬이 시온의 산들에 내림 같도다 거기서 여호와께서 복을 명하셨나니 곧 영생이로다",
+      "source_text_hash": "93033f849f89c1e3016617c3ce0bbdc94dea63e3bc71d24cdae371b23726d05b",
+      "translation_text_hash": "986cdb38c8f735f05bf7537419ca105b64eeca887b734d338fc067b9a48dad1d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "헐몬의 이슬이 시온의 산들에 내림 같도다 거기서 여호와께서 복을 명하셨나니 곧 영생이로다"
+      ],
+      "raw_text_hashes": [
+        "986cdb38c8f735f05bf7537419ca105b64eeca887b734d338fc067b9a48dad1d"
+      ]
+    }
+  ]
+}

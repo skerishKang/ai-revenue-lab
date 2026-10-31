@@ -1,0 +1,1517 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:LEV:chapter:011",
+  "unit_ordinal": 101,
+  "unit_label": "LEV 11",
+  "book_code": "LEV",
+  "chapter_number": 11,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:LEV:11:1",
+      "sequence": 2999,
+      "chapter_label": "LEV 11",
+      "verse_label": "1",
+      "locator": {
+        "book": "LEV",
+        "chapter": 11,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 11,
+          "verse": 1
+        }
+      ],
+      "en": "The LORD spoke to Moses and to Aaron, saying to them,",
+      "ko": "여호와께서 모세와 아론에게 고하여 그들에게 이르시되",
+      "source_text_hash": "5f4f05ca81938cb25f248250c0de2b7520be9c7c0c62eb96dd476e4b7ead2abd",
+      "translation_text_hash": "60718733d1d39b4599fd9eb1a4b6c7cd3b0ddb3d6961ba7a334424fbbb9b9c13",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세와 아론에게 고하여 그들에게 이르시되"
+      ],
+      "raw_text_hashes": [
+        "60718733d1d39b4599fd9eb1a4b6c7cd3b0ddb3d6961ba7a334424fbbb9b9c13"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:11:2",
+      "sequence": 3000,
+      "chapter_label": "LEV 11",
+      "verse_label": "2",
+      "locator": {
+        "book": "LEV",
+        "chapter": 11,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 11,
+          "verse": 2
+        }
+      ],
+      "en": "“Speak to the children of Israel, saying, ‘These are the living things which you may eat among all the animals that are on the earth.",
+      "ko": "이스라엘 자손에게 고하여 이르라 육지 모든 짐승중 너희의 먹을만한 생물은 이러하니",
+      "source_text_hash": "856913e9cd4427c40c9a3f789d41f80c2cb2db58d3d576b7ead1fc364229798b",
+      "translation_text_hash": "adcbd7d808616696cb98260fe3eb83d44bef7ee172bf4218f412c5ed5454d776",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손에게 고하여 이르라 육지 모든 짐승중 너희의 먹을만한 생물은 이러하니"
+      ],
+      "raw_text_hashes": [
+        "adcbd7d808616696cb98260fe3eb83d44bef7ee172bf4218f412c5ed5454d776"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:11:3",
+      "sequence": 3001,
+      "chapter_label": "LEV 11",
+      "verse_label": "3",
+      "locator": {
+        "book": "LEV",
+        "chapter": 11,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 11,
+          "verse": 3
+        }
+      ],
+      "en": "Whatever parts the hoof, and is cloven-footed, and chews the cud among the animals, that you may eat.",
+      "ko": "짐승중 무릇 굽이 갈라져 쪽발이 되고 새김질하는 것은 너희가 먹되",
+      "source_text_hash": "3750cb53c7370830fb44e1537a9000d09dabd3f797b2389f4d64e573c5c4f0d3",
+      "translation_text_hash": "6e79e6de7d7094e4ac69c319035f164a8b187a1b9fb764ac5d6cc541d31ee173",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "짐승중 무릇 굽이 갈라져 쪽발이 되고 새김질하는 것은 너희가 먹되"
+      ],
+      "raw_text_hashes": [
+        "6e79e6de7d7094e4ac69c319035f164a8b187a1b9fb764ac5d6cc541d31ee173"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:11:4",
+      "sequence": 3002,
+      "chapter_label": "LEV 11",
+      "verse_label": "4",
+      "locator": {
+        "book": "LEV",
+        "chapter": 11,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 11,
+          "verse": 4
+        }
+      ],
+      "en": "“‘Nevertheless these you shall not eat of those that chew the cud, or of those who part the hoof: the camel, because it chews the cud but doesn’t have a parted hoof, is unclean to you.",
+      "ko": "새김질하는 것이나 굽이 갈라진 짐승 중에도 너희가 먹지 못할 것은 이러하니 약대는 새김질은 하되 굽이 갈라지지 아니하였으므로 너희에게 부정하고",
+      "source_text_hash": "be797fd7947d28afdd840d35e76abc31440b9fad6d97c23be4a3eb4f6429cef1",
+      "translation_text_hash": "3a2f0df5592fb0b889ab6243ca77fa9a0531bafffedc5d4ea17d2d46803228ed",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "새김질하는 것이나 굽이 갈라진 짐승 중에도 너희가 먹지 못할 것은 이러하니 약대는 새김질은 하되 굽이 갈라지지 아니하였으므로 너희에게 부정하고"
+      ],
+      "raw_text_hashes": [
+        "3a2f0df5592fb0b889ab6243ca77fa9a0531bafffedc5d4ea17d2d46803228ed"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:11:5",
+      "sequence": 3003,
+      "chapter_label": "LEV 11",
+      "verse_label": "5",
+      "locator": {
+        "book": "LEV",
+        "chapter": 11,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 11,
+          "verse": 5
+        }
+      ],
+      "en": "The hyrax, because it chews the cud but doesn’t have a parted hoof, is unclean to you.",
+      "ko": "사반도 새김질은 하되 굽이 갈라지지 아니하였으므로 너희에게 부정하고",
+      "source_text_hash": "e42764b4a254b25d060329940132d427c73e911c423fa590a04c6d1528159aef",
+      "translation_text_hash": "b7268dd1761d3f7bc028e7aca69eeb1cac251bb06e2eafbbc19d16f9df903cc9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사반도 새김질은 하되 굽이 갈라지지 아니하였으므로 너희에게 부정하고"
+      ],
+      "raw_text_hashes": [
+        "b7268dd1761d3f7bc028e7aca69eeb1cac251bb06e2eafbbc19d16f9df903cc9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:11:6",
+      "sequence": 3004,
+      "chapter_label": "LEV 11",
+      "verse_label": "6",
+      "locator": {
+        "book": "LEV",
+        "chapter": 11,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 11,
+          "verse": 6
+        }
+      ],
+      "en": "The hare, because it chews the cud but doesn’t have a parted hoof, is unclean to you.",
+      "ko": "토끼도 새김질은 하되 굽이 갈라지지 아니하였으므로 너희에게 부정하고",
+      "source_text_hash": "e0a8898f21032922effc21a11aacd01bf78422ae9eb2abc420d8e1863d7a26e3",
+      "translation_text_hash": "2c10f4416b59db3569a4c16fcd2b0eba9c1b5e6465d5737e4fd5964936f3773c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "토끼도 새김질은 하되 굽이 갈라지지 아니하였으므로 너희에게 부정하고"
+      ],
+      "raw_text_hashes": [
+        "2c10f4416b59db3569a4c16fcd2b0eba9c1b5e6465d5737e4fd5964936f3773c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:11:7",
+      "sequence": 3005,
+      "chapter_label": "LEV 11",
+      "verse_label": "7",
+      "locator": {
+        "book": "LEV",
+        "chapter": 11,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 11,
+          "verse": 7
+        }
+      ],
+      "en": "The pig, because it has a split hoof, and is cloven-footed, but doesn’t chew the cud, is unclean to you.",
+      "ko": "돼지는 굽이 갈라져 쪽발이로되 새김질을 못하므로 너희에게 부정하니",
+      "source_text_hash": "796b52f3566be524a59206f193079c3db4e828bc4527e02131c3823dfd54f890",
+      "translation_text_hash": "9dab9f5dc8e5cccfd02cf2618d5b4a72ac8bcdbe6742453b8970416fe6571eaa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "돼지는 굽이 갈라져 쪽발이로되 새김질을 못하므로 너희에게 부정하니"
+      ],
+      "raw_text_hashes": [
+        "9dab9f5dc8e5cccfd02cf2618d5b4a72ac8bcdbe6742453b8970416fe6571eaa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:11:8",
+      "sequence": 3006,
+      "chapter_label": "LEV 11",
+      "verse_label": "8",
+      "locator": {
+        "book": "LEV",
+        "chapter": 11,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 11,
+          "verse": 8
+        }
+      ],
+      "en": "You shall not eat their meat. You shall not touch their carcasses. They are unclean to you.",
+      "ko": "너희는 이 고기를 먹지 말고 그 주검도 만지지 말라 이것들은 너희에게 부정하니라",
+      "source_text_hash": "7abedcfc70ae64e222917a13430c351b62d035fb328d45fd590df63d70dc56d6",
+      "translation_text_hash": "26ceb192273c7ad45206bf29537468452c9dfac4f6a9cea3d1dfd9d76452367b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 이 고기를 먹지 말고 그 주검도 만지지 말라 이것들은 너희에게 부정하니라"
+      ],
+      "raw_text_hashes": [
+        "26ceb192273c7ad45206bf29537468452c9dfac4f6a9cea3d1dfd9d76452367b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:11:9",
+      "sequence": 3007,
+      "chapter_label": "LEV 11",
+      "verse_label": "9",
+      "locator": {
+        "book": "LEV",
+        "chapter": 11,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 11,
+          "verse": 9
+        }
+      ],
+      "en": "“‘You may eat of all these that are in the waters: whatever has fins and scales in the waters, in the seas, and in the rivers, that you may eat.",
+      "ko": "물에 있는 모든 것중 너희의 먹을만한 것은 이것이니 무릇 강과 바다와 다른 물에 있는 것 중에 지느러미와 비늘 있는 것은 너희가 먹되",
+      "source_text_hash": "e9a9219eb1d7318d693887ce28f765b854f5737c74e124f1da52f1ed2996165c",
+      "translation_text_hash": "da3c93279604094528c1ca08199c083807e1299ac673dd4cdaa7911e0ae5aadf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "물에 있는 모든 것중 너희의 먹을만한 것은 이것이니 무릇 강과 바다와 다른 물에 있는 것 중에 지느러미와 비늘 있는 것은 너희가 먹되"
+      ],
+      "raw_text_hashes": [
+        "da3c93279604094528c1ca08199c083807e1299ac673dd4cdaa7911e0ae5aadf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:11:10",
+      "sequence": 3008,
+      "chapter_label": "LEV 11",
+      "verse_label": "10",
+      "locator": {
+        "book": "LEV",
+        "chapter": 11,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 11,
+          "verse": 10
+        }
+      ],
+      "en": "All that don’t have fins and scales in the seas and rivers, all that move in the waters, and all the living creatures that are in the waters, they are an abomination to you,",
+      "ko": "무릇 물에서 동하는 것과 무릇 물에서 사는 것 곧 무릇 강과 바다에 있는 것으로서 지느러미와 비늘 없는 것은 너희에게 가증한 것이라",
+      "source_text_hash": "0655e6c03a51cd77d5f50dd667eae7993db1aa23ebd58bcf9d656366927716b6",
+      "translation_text_hash": "125641e4bf18b533212ee84f7a19fed92e56fcb4c9b252bbdf005b9097d2a520",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 물에서 동하는 것과 무릇 물에서 사는 것 곧 무릇 강과 바다에 있는 것으로서 지느러미와 비늘 없는 것은 너희에게 가증한 것이라"
+      ],
+      "raw_text_hashes": [
+        "125641e4bf18b533212ee84f7a19fed92e56fcb4c9b252bbdf005b9097d2a520"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:11:11",
+      "sequence": 3009,
+      "chapter_label": "LEV 11",
+      "verse_label": "11",
+      "locator": {
+        "book": "LEV",
+        "chapter": 11,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 11,
+          "verse": 11
+        }
+      ],
+      "en": "and you shall detest them. You shall not eat of their meat, and you shall detest their carcasses.",
+      "ko": "이들은 너희에게 가증한 것이니 너희는 그 고기를 먹지 말고 그 주검을 가증히 여기라",
+      "source_text_hash": "7ae3bb89f289bfaa20d1d80479b62ccacc838fc4a41bdba15b8cb8418832967e",
+      "translation_text_hash": "f83f98ab12905060904559ec78031c402ffc4d67fa2242f3167ba830f234bb0b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이들은 너희에게 가증한 것이니 너희는 그 고기를 먹지 말고 그 주검을 가증히 여기라"
+      ],
+      "raw_text_hashes": [
+        "f83f98ab12905060904559ec78031c402ffc4d67fa2242f3167ba830f234bb0b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:11:12",
+      "sequence": 3010,
+      "chapter_label": "LEV 11",
+      "verse_label": "12",
+      "locator": {
+        "book": "LEV",
+        "chapter": 11,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 11,
+          "verse": 12
+        }
+      ],
+      "en": "Whatever has no fins nor scales in the waters is an abomination to you.",
+      "ko": "수중 생물에 지느러미와 비늘 없는 것은 너희에게 가증하니라",
+      "source_text_hash": "4178e6ab1c1f0f673d38823eae2293118a826c95eb852c04a0597aba1f3eb5c9",
+      "translation_text_hash": "6d6d62732b1311282ee0c0966971e32aedd034cb653a2e2bef2f48de42253984",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "수중 생물에 지느러미와 비늘 없는 것은 너희에게 가증하니라"
+      ],
+      "raw_text_hashes": [
+        "6d6d62732b1311282ee0c0966971e32aedd034cb653a2e2bef2f48de42253984"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:11:13",
+      "sequence": 3011,
+      "chapter_label": "LEV 11",
+      "verse_label": "13",
+      "locator": {
+        "book": "LEV",
+        "chapter": 11,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 11,
+          "verse": 13
+        }
+      ],
+      "en": "“‘You shall detest these among the birds; they shall not be eaten because they are an abomination: the eagle, the vulture, the black vulture,",
+      "ko": "새 중에 너희가 가증히 여길 것은 이것이라 이것들이 가증한즉 먹지 말찌니 곧 독수리와 솔개와 어응과",
+      "source_text_hash": "f9f770c6363c001f70fd84aef2bfbd24bba9f34c5cfb7201bd3ab22d4f9c8438",
+      "translation_text_hash": "9fce1eca74845e2a09d29a228aba68657990984e3479f82404c75b7b321cd519",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "새 중에 너희가 가증히 여길 것은 이것이라 이것들이 가증한즉 먹지 말찌니 곧 독수리와 솔개와 어응과"
+      ],
+      "raw_text_hashes": [
+        "9fce1eca74845e2a09d29a228aba68657990984e3479f82404c75b7b321cd519"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:11:14",
+      "sequence": 3012,
+      "chapter_label": "LEV 11",
+      "verse_label": "14",
+      "locator": {
+        "book": "LEV",
+        "chapter": 11,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 11,
+          "verse": 14
+        }
+      ],
+      "en": "the red kite, any kind of black kite,",
+      "ko": "매와 매 종류와",
+      "source_text_hash": "1e3135bd2f9645908367da407c329afaf20b17270db577170bfae10e202b7c70",
+      "translation_text_hash": "e2ff24356b6581ddb22dc0d8588c1cb650750453a350be461a6d8204ff0e547a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "매와 매 종류와"
+      ],
+      "raw_text_hashes": [
+        "e2ff24356b6581ddb22dc0d8588c1cb650750453a350be461a6d8204ff0e547a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:11:15",
+      "sequence": 3013,
+      "chapter_label": "LEV 11",
+      "verse_label": "15",
+      "locator": {
+        "book": "LEV",
+        "chapter": 11,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 11,
+          "verse": 15
+        }
+      ],
+      "en": "any kind of raven,",
+      "ko": "까마귀 종류와",
+      "source_text_hash": "29a31108760780e4eafe31271e491dd5dd1814d094d9bd2e8366889a8a9ec7d8",
+      "translation_text_hash": "84650039264074cc2f7669ee878731dd99f38c3c7a6656a88df14a369ae3a79e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "까마귀 종류와"
+      ],
+      "raw_text_hashes": [
+        "84650039264074cc2f7669ee878731dd99f38c3c7a6656a88df14a369ae3a79e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:11:16",
+      "sequence": 3014,
+      "chapter_label": "LEV 11",
+      "verse_label": "16",
+      "locator": {
+        "book": "LEV",
+        "chapter": 11,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 11,
+          "verse": 16
+        }
+      ],
+      "en": "the horned owl, the screech owl, the gull, any kind of hawk,",
+      "ko": "타조와 다호마스와 갈매기와 새매 종류와",
+      "source_text_hash": "02c7aab88200bf316a674c2d2537c18ad1049622539394358dc04cec84f28c00",
+      "translation_text_hash": "c7fe75bf7430fa956b2bbaa4c65d60e61560905056a68cfd2ebe0170929d6c2d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "타조와 다호마스와 갈매기와 새매 종류와"
+      ],
+      "raw_text_hashes": [
+        "c7fe75bf7430fa956b2bbaa4c65d60e61560905056a68cfd2ebe0170929d6c2d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:11:17",
+      "sequence": 3015,
+      "chapter_label": "LEV 11",
+      "verse_label": "17",
+      "locator": {
+        "book": "LEV",
+        "chapter": 11,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 11,
+          "verse": 17
+        }
+      ],
+      "en": "the little owl, the cormorant, the great owl,",
+      "ko": "올빼미와 노자와 부엉이와",
+      "source_text_hash": "b720707e702e73c4cb92af3fc60ce46f75bf1160c2c15a4324720be7ce49998c",
+      "translation_text_hash": "4ddf70a0327286387d35a90f31f6a2499405ece026e94d0e218634ca8e224964",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "올빼미와 노자와 부엉이와"
+      ],
+      "raw_text_hashes": [
+        "4ddf70a0327286387d35a90f31f6a2499405ece026e94d0e218634ca8e224964"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:11:18",
+      "sequence": 3016,
+      "chapter_label": "LEV 11",
+      "verse_label": "18",
+      "locator": {
+        "book": "LEV",
+        "chapter": 11,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 11,
+          "verse": 18
+        }
+      ],
+      "en": "the white owl, the desert owl, the osprey,",
+      "ko": "따오기와 당아와 올응과",
+      "source_text_hash": "30c2e59ea544424722f02c2e4a5a2cac426ed3ed44fad2c546cd9cf7ebcdb4a7",
+      "translation_text_hash": "63ae8a19aa4d6d51a09a567fe985d1ae8af109b7e8f2b187ee6016ef019fdea4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "따오기와 당아와 올응과"
+      ],
+      "raw_text_hashes": [
+        "63ae8a19aa4d6d51a09a567fe985d1ae8af109b7e8f2b187ee6016ef019fdea4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:11:19",
+      "sequence": 3017,
+      "chapter_label": "LEV 11",
+      "verse_label": "19",
+      "locator": {
+        "book": "LEV",
+        "chapter": 11,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 11,
+          "verse": 19
+        }
+      ],
+      "en": "the stork, any kind of heron, the hoopoe, and the bat.",
+      "ko": "학과 황새 종류와 대승과 박쥐니라",
+      "source_text_hash": "2c7c7a8438d7e75f5b71fcf5de1ee99844285908a2f7b4232569f35a0456d77d",
+      "translation_text_hash": "a4ac5e4b362a725748a58df5f0b296234651d82601b54b046a327adcefa937b0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "학과 황새 종류와 대승과 박쥐니라"
+      ],
+      "raw_text_hashes": [
+        "a4ac5e4b362a725748a58df5f0b296234651d82601b54b046a327adcefa937b0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:11:20",
+      "sequence": 3018,
+      "chapter_label": "LEV 11",
+      "verse_label": "20",
+      "locator": {
+        "book": "LEV",
+        "chapter": 11,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 11,
+          "verse": 20
+        }
+      ],
+      "en": "“‘All flying insects that walk on all fours are an abomination to you.",
+      "ko": "날개가 있고 네 발로 기어 다니는 곤충은 너희에게 가증하되",
+      "source_text_hash": "13ca85b60b2a87ac5811a961238bfdca4a57d9356c96817c67651e43725ff7b1",
+      "translation_text_hash": "55033bf2c3175a1b6214a3a459eb3d2b025786dfe8c109c31bb637dea568429f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "날개가 있고 네 발로 기어 다니는 곤충은 너희에게 가증하되"
+      ],
+      "raw_text_hashes": [
+        "55033bf2c3175a1b6214a3a459eb3d2b025786dfe8c109c31bb637dea568429f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:11:21",
+      "sequence": 3019,
+      "chapter_label": "LEV 11",
+      "verse_label": "21",
+      "locator": {
+        "book": "LEV",
+        "chapter": 11,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 11,
+          "verse": 21
+        }
+      ],
+      "en": "Yet you may eat these: of all winged creeping things that go on all fours, which have long, jointed legs for hopping on the earth.",
+      "ko": "오직 날개가 있고 네 발로 기어다니는 모든 곤충 중에 그 발에 뛰는 다리가 있어서 땅에서 뛰는 것은 너희가 먹을찌니",
+      "source_text_hash": "340e10be9c438afb4725563197e6bf60abb0701470f217ce745d9d7c2a0119aa",
+      "translation_text_hash": "074b0b6f276a9728df4f2219706cb7fd51f293c3ce50659018173b39d510ae2d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 날개가 있고 네 발로 기어다니는 모든 곤충 중에 그 발에 뛰는 다리가 있어서 땅에서 뛰는 것은 너희가 먹을찌니"
+      ],
+      "raw_text_hashes": [
+        "074b0b6f276a9728df4f2219706cb7fd51f293c3ce50659018173b39d510ae2d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:11:22",
+      "sequence": 3020,
+      "chapter_label": "LEV 11",
+      "verse_label": "22",
+      "locator": {
+        "book": "LEV",
+        "chapter": 11,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 11,
+          "verse": 22
+        }
+      ],
+      "en": "Even of these you may eat: any kind of locust, any kind of katydid, any kind of cricket, and any kind of grasshopper.",
+      "ko": "곧 그중에 메뚜기 종류와 베짱이 종류와 귀뚜라미 종류와 팟종이 종류는 너희가 먹으려니와",
+      "source_text_hash": "816f22b10294bc55f30d0468f1c9078c258d7e44d4a50e64e8a3d7a3df92730c",
+      "translation_text_hash": "6cdc9e6219b083be706641a00073a5e6738233f3a73e2394b34fe6c33fdce654",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 그중에 메뚜기 종류와 베짱이 종류와 귀뚜라미 종류와 팟종이 종류는 너희가 먹으려니와"
+      ],
+      "raw_text_hashes": [
+        "6cdc9e6219b083be706641a00073a5e6738233f3a73e2394b34fe6c33fdce654"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:11:23",
+      "sequence": 3021,
+      "chapter_label": "LEV 11",
+      "verse_label": "23",
+      "locator": {
+        "book": "LEV",
+        "chapter": 11,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 11,
+          "verse": 23
+        }
+      ],
+      "en": "But all winged creeping things which have four feet are an abomination to you.",
+      "ko": "오직 날개가 있고 기어다니는 곤충은 다 너희에게 가증하니라",
+      "source_text_hash": "0b8ef64c5c45202148be63d33d30ccf5f04bd93c8667c57c8e694d00b38df9de",
+      "translation_text_hash": "55b61ceee8b24f66892ab8ab2a995e0f8498d729c26380861b3880d0701088ab",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 날개가 있고 기어다니는 곤충은 다 너희에게 가증하니라"
+      ],
+      "raw_text_hashes": [
+        "55b61ceee8b24f66892ab8ab2a995e0f8498d729c26380861b3880d0701088ab"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:11:24",
+      "sequence": 3022,
+      "chapter_label": "LEV 11",
+      "verse_label": "24",
+      "locator": {
+        "book": "LEV",
+        "chapter": 11,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 11,
+          "verse": 24
+        }
+      ],
+      "en": "“‘By these you will become unclean: whoever touches their carcass shall be unclean until the evening.",
+      "ko": "이런 유는 너희를 부정케 하나니 누구든지 이것들의 주검을 만지면 저녁까지 부정할 것이며",
+      "source_text_hash": "2beaef2cc40d5e059b207a9a484472c2a864b2cd039a957ee97b5acf0b419740",
+      "translation_text_hash": "feb206e56e68b46e416da3f6da68f9d6e38492537d6fe4d5c63a4511d05e28b8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이런 유는 너희를 부정케 하나니 누구든지 이것들의 주검을 만지면 저녁까지 부정할 것이며"
+      ],
+      "raw_text_hashes": [
+        "feb206e56e68b46e416da3f6da68f9d6e38492537d6fe4d5c63a4511d05e28b8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:11:25",
+      "sequence": 3023,
+      "chapter_label": "LEV 11",
+      "verse_label": "25",
+      "locator": {
+        "book": "LEV",
+        "chapter": 11,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 11,
+          "verse": 25
+        }
+      ],
+      "en": "Whoever carries any part of their carcass shall wash his clothes, and be unclean until the evening.",
+      "ko": "무릇 그 주검을 옮기는 자는 그 옷을 빨찌니 저녁까지 부정하리라",
+      "source_text_hash": "63d71042faf7c6ae66392c1d0390b0cde2498e8077927cab050ae1f0162579da",
+      "translation_text_hash": "9f4e7e5ab09966a390b4ef1a28516886404ead44888928e99c2655ae91b94c97",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 그 주검을 옮기는 자는 그 옷을 빨찌니 저녁까지 부정하리라"
+      ],
+      "raw_text_hashes": [
+        "9f4e7e5ab09966a390b4ef1a28516886404ead44888928e99c2655ae91b94c97"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:11:26",
+      "sequence": 3024,
+      "chapter_label": "LEV 11",
+      "verse_label": "26",
+      "locator": {
+        "book": "LEV",
+        "chapter": 11,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 11,
+          "verse": 26
+        }
+      ],
+      "en": "“‘Every animal which has a split hoof that isn’t completely divided, or doesn’t chew the cud, is unclean to you. Everyone who touches them shall be unclean.",
+      "ko": "무릇 굽이 갈라진 짐승 중에 쪽발이 아닌 것이나 새김질 아니하는 것의 주검은 다 네게 부정하니 만지는 자는 부정할 것이요",
+      "source_text_hash": "fd939bcbd37ac28dc10d9855960a76838f64116ff4fbc87df1198cd073898045",
+      "translation_text_hash": "efccac15c2764c18254bd4e61818b69a05bd48d1793c1a69dbb70a619588b105",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 굽이 갈라진 짐승 중에 쪽발이 아닌 것이나 새김질 아니하는 것의 주검은 다 네게 부정하니 만지는 자는 부정할 것이요"
+      ],
+      "raw_text_hashes": [
+        "efccac15c2764c18254bd4e61818b69a05bd48d1793c1a69dbb70a619588b105"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:11:27",
+      "sequence": 3025,
+      "chapter_label": "LEV 11",
+      "verse_label": "27",
+      "locator": {
+        "book": "LEV",
+        "chapter": 11,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 11,
+          "verse": 27
+        }
+      ],
+      "en": "Whatever goes on its paws, among all animals that go on all fours, they are unclean to you. Whoever touches their carcass shall be unclean until the evening.",
+      "ko": "네 발로 다니는 모든 짐승 중 발바닥으로 다니는 것은 다 네게 부정하니 그 주검을 만지는 자는 저녁까지 부정할 것이며",
+      "source_text_hash": "f9997bdc34e2f41683e0c2d61d15feea83593377813ba166dfe4f6675f8425f8",
+      "translation_text_hash": "e17462453799965b2cd1c4a6ce967c3c988f39989a94c904d5cd425679c68b1a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 발로 다니는 모든 짐승 중 발바닥으로 다니는 것은 다 네게 부정하니 그 주검을 만지는 자는 저녁까지 부정할 것이며"
+      ],
+      "raw_text_hashes": [
+        "e17462453799965b2cd1c4a6ce967c3c988f39989a94c904d5cd425679c68b1a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:11:28",
+      "sequence": 3026,
+      "chapter_label": "LEV 11",
+      "verse_label": "28",
+      "locator": {
+        "book": "LEV",
+        "chapter": 11,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 11,
+          "verse": 28
+        }
+      ],
+      "en": "He who carries their carcass shall wash his clothes, and be unclean until the evening. They are unclean to you.",
+      "ko": "그 주검을 옮기는 자는 그 옷을 빨찌니 저녁까지 부정하리라 그것들이 네게 부정하니라",
+      "source_text_hash": "e6d2a727d86e04f0202b0bd9e656cdc7214bc44ff3b9e0cb51aaaa4155ee1fc5",
+      "translation_text_hash": "76c024abea68e3a466a1a95ed0125f93d960794726397e10e34e0034c22dc484",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 주검을 옮기는 자는 그 옷을 빨찌니 저녁까지 부정하리라 그것들이 네게 부정하니라"
+      ],
+      "raw_text_hashes": [
+        "76c024abea68e3a466a1a95ed0125f93d960794726397e10e34e0034c22dc484"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:11:29",
+      "sequence": 3027,
+      "chapter_label": "LEV 11",
+      "verse_label": "29",
+      "locator": {
+        "book": "LEV",
+        "chapter": 11,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 11,
+          "verse": 29
+        }
+      ],
+      "en": "“‘These are they which are unclean to you among the creeping things that creep on the earth: the weasel, the rat, any kind of great lizard,",
+      "ko": "땅에 기는바 기는 것 중에 네게 부정한 것은 이러하니 곧 쪽제비와 쥐와 도마뱀 종류와",
+      "source_text_hash": "1b726283087e56410cd07a37d769d86bcd8847f047570b386244c89a60c80865",
+      "translation_text_hash": "c22f1efcbad396dba430b565a0e4cb97241e7a88375580bfa8a205d67dedd0d2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "땅에 기는바 기는 것 중에 네게 부정한 것은 이러하니 곧 쪽제비와 쥐와 도마뱀 종류와"
+      ],
+      "raw_text_hashes": [
+        "c22f1efcbad396dba430b565a0e4cb97241e7a88375580bfa8a205d67dedd0d2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:11:30",
+      "sequence": 3028,
+      "chapter_label": "LEV 11",
+      "verse_label": "30",
+      "locator": {
+        "book": "LEV",
+        "chapter": 11,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 11,
+          "verse": 30
+        }
+      ],
+      "en": "the gecko, and the monitor lizard, the wall lizard, the skink, and the chameleon.",
+      "ko": "합개와 육지 악어와 수궁과 사막 도마뱀과 칠면석척이라",
+      "source_text_hash": "cb3c73b26962d8a4f50258be2e45fd4693517e649017753cc65483fca76ca6fe",
+      "translation_text_hash": "d349b5216e81d94ebea31ab8c4165f104dfd80dadca095e00b01d46435b03a2b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "합개와 육지 악어와 수궁과 사막 도마뱀과 칠면석척이라"
+      ],
+      "raw_text_hashes": [
+        "d349b5216e81d94ebea31ab8c4165f104dfd80dadca095e00b01d46435b03a2b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:11:31",
+      "sequence": 3029,
+      "chapter_label": "LEV 11",
+      "verse_label": "31",
+      "locator": {
+        "book": "LEV",
+        "chapter": 11,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 11,
+          "verse": 31
+        }
+      ],
+      "en": "These are they which are unclean to you among all that creep. Whoever touches them when they are dead shall be unclean until the evening.",
+      "ko": "모든 기는 것 중 이것들은 네게 부정하니 무릇 그 주검을 만지는 자는 저녁까지 부정할 것이며",
+      "source_text_hash": "19dfdc542c5b6ee74cda5c822a95af6f1e82bab3ea0a99f84f40611eb6cd5144",
+      "translation_text_hash": "33978949187c317f4fe99d5eeb96afff46f8dbaa18837436233c4a5fc8000d0d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 기는 것 중 이것들은 네게 부정하니 무릇 그 주검을 만지는 자는 저녁까지 부정할 것이며"
+      ],
+      "raw_text_hashes": [
+        "33978949187c317f4fe99d5eeb96afff46f8dbaa18837436233c4a5fc8000d0d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:11:32",
+      "sequence": 3030,
+      "chapter_label": "LEV 11",
+      "verse_label": "32",
+      "locator": {
+        "book": "LEV",
+        "chapter": 11,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 11,
+          "verse": 32
+        }
+      ],
+      "en": "Anything they fall on when they are dead shall be unclean; whether it is any vessel of wood, or clothing, or skin, or sack, whatever vessel it is, with which any work is done, it must be put into water, and it shall be unclean until the evening. Then it will be clean.",
+      "ko": "이런 것 중 어떤 것의 주검이 목기에든지 의복에든지 가죽에든지 부대에든지 무론 무엇에 쓰는 그릇에든지 떨어지면 부정하여지리니 물에 담그라 저녁까지 부정하다가 정할 것이며",
+      "source_text_hash": "ad07774e21ad9dc60b6120cfdbc1fa80342c6260bf0e9ffd329190dedaf013cd",
+      "translation_text_hash": "18af3aef4969133a97140bbcca15dc676b1ad779609e490816a070de03552b4b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이런 것 중 어떤 것의 주검이 목기에든지 의복에든지 가죽에든지 부대에든지 무론 무엇에 쓰는 그릇에든지 떨어지면 부정하여지리니 물에 담그라 저녁까지 부정하다가 정할 것이며"
+      ],
+      "raw_text_hashes": [
+        "18af3aef4969133a97140bbcca15dc676b1ad779609e490816a070de03552b4b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:11:33",
+      "sequence": 3031,
+      "chapter_label": "LEV 11",
+      "verse_label": "33",
+      "locator": {
+        "book": "LEV",
+        "chapter": 11,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 11,
+          "verse": 33
+        }
+      ],
+      "en": "Every earthen vessel into which any of them falls and all that is in it shall be unclean. You shall break it.",
+      "ko": "그것 중 어떤 것이 어느 질그릇에 떨어지면 그 속에 있는 것이 다 부정하여지나니 너는 그 그릇을 깨뜨리라",
+      "source_text_hash": "68eab0c7894693cfd8ad1e1b4faf7eff87b2e793dbc08db5fc084436a097638d",
+      "translation_text_hash": "038c1de061c559af833a661a17374003630e1bc2a1524fa9891db30a09232835",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그것 중 어떤 것이 어느 질그릇에 떨어지면 그 속에 있는 것이 다 부정하여지나니 너는 그 그릇을 깨뜨리라"
+      ],
+      "raw_text_hashes": [
+        "038c1de061c559af833a661a17374003630e1bc2a1524fa9891db30a09232835"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:11:34",
+      "sequence": 3032,
+      "chapter_label": "LEV 11",
+      "verse_label": "34",
+      "locator": {
+        "book": "LEV",
+        "chapter": 11,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 11,
+          "verse": 34
+        }
+      ],
+      "en": "All food which may be eaten which is soaked in water shall be unclean. All drink that may be drunk in every such vessel shall be unclean.",
+      "ko": "먹을만한 축축한 식물이 거기 담겼으면 부정하여질 것이요 그같은 그릇의 마실만한 마실 것도 부정할 것이며",
+      "source_text_hash": "784f5eb161cf1a67c893e6868df144aa2c188138bfcc84e040d85b84053c149d",
+      "translation_text_hash": "6cb292ce54d4c930440282cc0b663041ed76e6679d7159095c96fe2c72580939",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "먹을만한 축축한 식물이 거기 담겼으면 부정하여질 것이요 그같은 그릇의 마실만한 마실 것도 부정할 것이며"
+      ],
+      "raw_text_hashes": [
+        "6cb292ce54d4c930440282cc0b663041ed76e6679d7159095c96fe2c72580939"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:11:35",
+      "sequence": 3033,
+      "chapter_label": "LEV 11",
+      "verse_label": "35",
+      "locator": {
+        "book": "LEV",
+        "chapter": 11,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 11,
+          "verse": 35
+        }
+      ],
+      "en": "Everything whereupon part of their carcass falls shall be unclean; whether oven, or range for pots, it shall be broken in pieces. They are unclean, and shall be unclean to you.",
+      "ko": "이런 것의 주검이 물건 위에 떨어지면 그것이 모두 부정하여지리니 화덕이든지 질탕관이든지 깨뜨려버리라 이것이 부정하여져서 너희에게 부정한 것이 되리라",
+      "source_text_hash": "1bd7803e1c38b227ec4f9686ceb49915326f7c504d5bd0aee69eead8b7f9b22e",
+      "translation_text_hash": "3d3fccf0d093d457862ed4490aec854bbc34d2e1b01fda23f90cd68f19ccd7d5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이런 것의 주검이 물건 위에 떨어지면 그것이 모두 부정하여지리니 화덕이든지 질탕관이든지 깨뜨려버리라 이것이 부정하여져서 너희에게 부정한 것이 되리라"
+      ],
+      "raw_text_hashes": [
+        "3d3fccf0d093d457862ed4490aec854bbc34d2e1b01fda23f90cd68f19ccd7d5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:11:36",
+      "sequence": 3034,
+      "chapter_label": "LEV 11",
+      "verse_label": "36",
+      "locator": {
+        "book": "LEV",
+        "chapter": 11,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 11,
+          "verse": 36
+        }
+      ],
+      "en": "Nevertheless a spring or a cistern in which water is gathered shall be clean, but that which touches their carcass shall be unclean.",
+      "ko": "샘물이나 방축물 웅덩이는 부정하여지지 아니하되 그 주검에 다닥치는 것만 부정하여질 것이요",
+      "source_text_hash": "d75eef7cae1b5c7fe544c7d24dce3e8bd0c2134b6612ca985c7e23ecca8fd24a",
+      "translation_text_hash": "615025d01abb509533020c2cb7cb38c8b8a3e8d80c83dd76edd2a1d97e600e4e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "샘물이나 방축물 웅덩이는 부정하여지지 아니하되 그 주검에 다닥치는 것만 부정하여질 것이요"
+      ],
+      "raw_text_hashes": [
+        "615025d01abb509533020c2cb7cb38c8b8a3e8d80c83dd76edd2a1d97e600e4e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:11:37",
+      "sequence": 3035,
+      "chapter_label": "LEV 11",
+      "verse_label": "37",
+      "locator": {
+        "book": "LEV",
+        "chapter": 11,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 11,
+          "verse": 37
+        }
+      ],
+      "en": "If part of their carcass falls on any sowing seed which is to be sown, it is clean.",
+      "ko": "이것들의 주검이 심을 종자에 떨어질찌라도 그것이 정하거니와",
+      "source_text_hash": "fe2b6f89a8854f8281392f761b22fde9a632489716b87e7bbed1260211dceb7f",
+      "translation_text_hash": "8702c8893050b2f0ee1c1fe938197d144364be1df4da0a32f7eb0b3c4304826a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이것들의 주검이 심을 종자에 떨어질찌라도 그것이 정하거니와"
+      ],
+      "raw_text_hashes": [
+        "8702c8893050b2f0ee1c1fe938197d144364be1df4da0a32f7eb0b3c4304826a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:11:38",
+      "sequence": 3036,
+      "chapter_label": "LEV 11",
+      "verse_label": "38",
+      "locator": {
+        "book": "LEV",
+        "chapter": 11,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 11,
+          "verse": 38
+        }
+      ],
+      "en": "But if water is put on the seed, and part of their carcass falls on it, it is unclean to you.",
+      "ko": "종자에 물을 더할 때에 그것이 그 위에 떨어지면 너희에게 부정하리라",
+      "source_text_hash": "06921ac015004e1c51825e3e5984f7fead041b18c0991e6ca4d9be1d187408f1",
+      "translation_text_hash": "e53034fa0d380ac5d73d73e047d18ca05d039016ca95589b885e5b9788a9566d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "종자에 물을 더할 때에 그것이 그 위에 떨어지면 너희에게 부정하리라"
+      ],
+      "raw_text_hashes": [
+        "e53034fa0d380ac5d73d73e047d18ca05d039016ca95589b885e5b9788a9566d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:11:39",
+      "sequence": 3037,
+      "chapter_label": "LEV 11",
+      "verse_label": "39",
+      "locator": {
+        "book": "LEV",
+        "chapter": 11,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 11,
+          "verse": 39
+        }
+      ],
+      "en": "“‘If any animal of which you may eat dies, he who touches its carcass shall be unclean until the evening.",
+      "ko": "너희의 먹을만한 짐승이 죽은 때에 그 사체를 만지는 자는 저녁까지 부정할 것이며",
+      "source_text_hash": "7a6f57cb7df68067c61971ed515e9bb405bc681290a179d52810457b8300b526",
+      "translation_text_hash": "f926a96737ae8ea41c9ba94c9f984a0209dd11cc6c692affa3e46969ad3b1cfa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희의 먹을만한 짐승이 죽은 때에 그 사체를 만지는 자는 저녁까지 부정할 것이며"
+      ],
+      "raw_text_hashes": [
+        "f926a96737ae8ea41c9ba94c9f984a0209dd11cc6c692affa3e46969ad3b1cfa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:11:40",
+      "sequence": 3038,
+      "chapter_label": "LEV 11",
+      "verse_label": "40",
+      "locator": {
+        "book": "LEV",
+        "chapter": 11,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 11,
+          "verse": 40
+        }
+      ],
+      "en": "He who eats of its carcass shall wash his clothes, and be unclean until the evening. He also who carries its carcass shall wash his clothes, and be unclean until the evening.",
+      "ko": "그것을 먹는 자는 그 옷을 빨 것이요 저녁까지 부정할 것이며 그 주검을 옮기는 자도 그 옷을 빨 것이요 저녁까지 부정하리라",
+      "source_text_hash": "231737f5f20aaa2cb4658d4aba0b0f97ff415269f17e2d75840369077f682038",
+      "translation_text_hash": "d4830c99adad7ee71b2ba298fbfaa1d1fd7ba6e89d59224dc45102d5866ad65d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그것을 먹는 자는 그 옷을 빨 것이요 저녁까지 부정할 것이며 그 주검을 옮기는 자도 그 옷을 빨 것이요 저녁까지 부정하리라"
+      ],
+      "raw_text_hashes": [
+        "d4830c99adad7ee71b2ba298fbfaa1d1fd7ba6e89d59224dc45102d5866ad65d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:11:41",
+      "sequence": 3039,
+      "chapter_label": "LEV 11",
+      "verse_label": "41",
+      "locator": {
+        "book": "LEV",
+        "chapter": 11,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 11,
+          "verse": 41
+        }
+      ],
+      "en": "“‘Every creeping thing that creeps on the earth is an abomination. It shall not be eaten.",
+      "ko": "땅에 기어 다니는 모든 기는 것은 가증한즉 먹지 못할찌니",
+      "source_text_hash": "bc504f3d63580b370852a3d5864de9e3d91eb4a62a3164d3c14dec675e33076c",
+      "translation_text_hash": "3e8419232903eaecab5886571e43a24102ce42a9b2d4b5f84e3d05c8af55d5c5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "땅에 기어 다니는 모든 기는 것은 가증한즉 먹지 못할찌니"
+      ],
+      "raw_text_hashes": [
+        "3e8419232903eaecab5886571e43a24102ce42a9b2d4b5f84e3d05c8af55d5c5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:11:42",
+      "sequence": 3040,
+      "chapter_label": "LEV 11",
+      "verse_label": "42",
+      "locator": {
+        "book": "LEV",
+        "chapter": 11,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 11,
+          "verse": 42
+        }
+      ],
+      "en": "Whatever goes on its belly, and whatever goes on all fours, or whatever has many feet, even all creeping things that creep on the earth, them you shall not eat; for they are an abomination.",
+      "ko": "곧 땅에 기어다니는 모든 기는 것 중에 배로 밀어 다니는 것이나 네 발로 걷는 것이나 여러 발을 가진 것이라 너희가 먹지 말찌니 이는 가증함이니라",
+      "source_text_hash": "afd40599448e72bbb029f0ae4b4969142cea9f3e074cc787e03052da8a57bb2e",
+      "translation_text_hash": "0350cb55eeba0fc623ebaf33f8c2532b47bd9baec6946743424d93ba34f59541",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 땅에 기어다니는 모든 기는 것 중에 배로 밀어 다니는 것이나 네 발로 걷는 것이나 여러 발을 가진 것이라 너희가 먹지 말찌니 이는 가증함이니라"
+      ],
+      "raw_text_hashes": [
+        "0350cb55eeba0fc623ebaf33f8c2532b47bd9baec6946743424d93ba34f59541"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:11:43",
+      "sequence": 3041,
+      "chapter_label": "LEV 11",
+      "verse_label": "43",
+      "locator": {
+        "book": "LEV",
+        "chapter": 11,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 11,
+          "verse": 43
+        }
+      ],
+      "en": "You shall not make yourselves abominable with any creeping thing that creeps. You shall not make yourselves unclean with them, that you should be defiled by them.",
+      "ko": "너희는 기는바 기어다니는 것을 인하여 자기로 가증하게 되게 말며 또한 그것을 인하여 스스로 더럽혀 부정하게 되게 말라",
+      "source_text_hash": "b1fab3556744b831866453d6ea4248aec4c3850644391b0be13373e1fd81c3b4",
+      "translation_text_hash": "fa047c258d0e8eb9860af8d01ed4a86f94093be7c2711f162f5ecec279a3b681",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 기는바 기어다니는 것을 인하여 자기로 가증하게 되게 말며 또한 그것을 인하여 스스로 더럽혀 부정하게 되게 말라"
+      ],
+      "raw_text_hashes": [
+        "fa047c258d0e8eb9860af8d01ed4a86f94093be7c2711f162f5ecec279a3b681"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:11:44",
+      "sequence": 3042,
+      "chapter_label": "LEV 11",
+      "verse_label": "44",
+      "locator": {
+        "book": "LEV",
+        "chapter": 11,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 11,
+          "verse": 44
+        }
+      ],
+      "en": "For I am the LORD your God. Sanctify yourselves therefore, and be holy; for I am holy. You shall not defile yourselves with any kind of creeping thing that moves on the earth.",
+      "ko": "나는 여호와 너희 하나님이라 내가 거룩하니 너희도 몸을 구별하여 거룩하게 하고 땅에 기는바 기어다니는 것으로 인하여 스스로 더럽히지 말라",
+      "source_text_hash": "09e0610743255cb4a3ec824e128572094de02612e5e2089c66434708435558ad",
+      "translation_text_hash": "2f95f5f33039ef03dfd52297d9cafaefda5c7ecdef35517c13510e7dc204939e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 여호와 너희 하나님이라 내가 거룩하니 너희도 몸을 구별하여 거룩하게 하고 땅에 기는바 기어다니는 것으로 인하여 스스로 더럽히지 말라"
+      ],
+      "raw_text_hashes": [
+        "2f95f5f33039ef03dfd52297d9cafaefda5c7ecdef35517c13510e7dc204939e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:11:45",
+      "sequence": 3043,
+      "chapter_label": "LEV 11",
+      "verse_label": "45",
+      "locator": {
+        "book": "LEV",
+        "chapter": 11,
+        "verse": 45
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 11,
+          "verse": 45
+        }
+      ],
+      "en": "For I am the LORD who brought you up out of the land of Egypt, to be your God. You shall therefore be holy, for I am holy.",
+      "ko": "나는 너희의 하나님이 되려고 너희를 애굽 땅에서 인도하여 낸 여호와라 내가 거룩하니 너희도 거룩할찌어다",
+      "source_text_hash": "bc57e44cc50bf8c05b9d1c932788300b18b85f12f3504858742ba301ffdf392a",
+      "translation_text_hash": "6e9ba3d4f61e8d5ede1d0c5df164d48ecd9970950b183eff77676182958f810f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 너희의 하나님이 되려고 너희를 애굽 땅에서 인도하여 낸 여호와라 내가 거룩하니 너희도 거룩할찌어다"
+      ],
+      "raw_text_hashes": [
+        "6e9ba3d4f61e8d5ede1d0c5df164d48ecd9970950b183eff77676182958f810f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:11:46",
+      "sequence": 3044,
+      "chapter_label": "LEV 11",
+      "verse_label": "46",
+      "locator": {
+        "book": "LEV",
+        "chapter": 11,
+        "verse": 46
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 11,
+          "verse": 46
+        }
+      ],
+      "en": "“‘This is the law of the animal, and of the bird, and of every living creature that moves in the waters, and of every creature that creeps on the earth,",
+      "ko": "이는 짐승과 새와 물에서 움직이는 모든 생물과 땅에 기는 모든 기어다니는 것에 대한 규례니",
+      "source_text_hash": "06e1349b7b5adbb9a9875362326028fd846fc3cf0496cc47fe1818546f9bb16a",
+      "translation_text_hash": "fcec6a63ca9c44d3fa05b8797892d54b07434b913cd37f61b9c5744b44b1a6c8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 짐승과 새와 물에서 움직이는 모든 생물과 땅에 기는 모든 기어다니는 것에 대한 규례니"
+      ],
+      "raw_text_hashes": [
+        "fcec6a63ca9c44d3fa05b8797892d54b07434b913cd37f61b9c5744b44b1a6c8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:11:47",
+      "sequence": 3045,
+      "chapter_label": "LEV 11",
+      "verse_label": "47",
+      "locator": {
+        "book": "LEV",
+        "chapter": 11,
+        "verse": 47
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 11,
+          "verse": 47
+        }
+      ],
+      "en": "to make a distinction between the unclean and the clean, and between the living thing that may be eaten and the living thing that may not be eaten.’”",
+      "ko": "부정하고 정한 것과 먹을 생물과 먹지 못할 생물을 분별한 것이니라",
+      "source_text_hash": "1a57142435d97ddb73af74fca77cf534ce925e2219738a4e68e2acd802ab0606",
+      "translation_text_hash": "3d26f54680f87b170ab94ce64402b141849926a0b6bb22277fa6257607df48cd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "부정하고 정한 것과 먹을 생물과 먹지 못할 생물을 분별한 것이니라"
+      ],
+      "raw_text_hashes": [
+        "3d26f54680f87b170ab94ce64402b141849926a0b6bb22277fa6257607df48cd"
+      ]
+    }
+  ]
+}

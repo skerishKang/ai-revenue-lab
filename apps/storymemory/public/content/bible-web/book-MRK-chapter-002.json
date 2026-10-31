@@ -1,0 +1,909 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:MRK:chapter:002",
+  "unit_ordinal": 959,
+  "unit_label": "MRK 2",
+  "book_code": "MRK",
+  "chapter_number": 2,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:MRK:2:1",
+      "sequence": 24262,
+      "chapter_label": "MRK 2",
+      "verse_label": "1",
+      "locator": {
+        "book": "MRK",
+        "chapter": 2,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 2,
+          "verse": 1
+        }
+      ],
+      "en": "When he entered again into Capernaum after some days, it was heard that he was at home.",
+      "ko": "수일 후에 예수께서 다시 가버나움에 들어가시니 집에 계신 소문이 들린지라",
+      "source_text_hash": "a806a6db08d50564cb6a11915fc6490c0abeaf63e8e00e1f16ef34b2d4d3fc41",
+      "translation_text_hash": "ccba7b414c756d73a9b8f7812828bc2f57d6068c5fe9bddf0ba5c30febe03a03",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "수일 후에 예수께서 다시 가버나움에 들어가시니 집에 계신 소문이 들린지라"
+      ],
+      "raw_text_hashes": [
+        "ccba7b414c756d73a9b8f7812828bc2f57d6068c5fe9bddf0ba5c30febe03a03"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:2:2",
+      "sequence": 24263,
+      "chapter_label": "MRK 2",
+      "verse_label": "2",
+      "locator": {
+        "book": "MRK",
+        "chapter": 2,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 2,
+          "verse": 2
+        }
+      ],
+      "en": "Immediately many were gathered together, so that there was no more room, not even around the door; and he spoke the word to them.",
+      "ko": "많은 사람이 모여서 문 앞에라도 용신할 수 없게 되었는데 예수께서 저희에게 도를 말씀하시더니",
+      "source_text_hash": "9afcb6b115ea071dbd0d633f560429c2ecb4817ab270659d5e38fd1f2f886b45",
+      "translation_text_hash": "b202e32759dbb32145a89e56b1f77a0f4625785132eae0514923f6f780d4fa6f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "많은 사람이 모여서 문 앞에라도 용신할 수 없게 되었는데 예수께서 저희에게 도를 말씀하시더니"
+      ],
+      "raw_text_hashes": [
+        "b202e32759dbb32145a89e56b1f77a0f4625785132eae0514923f6f780d4fa6f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:2:3",
+      "sequence": 24264,
+      "chapter_label": "MRK 2",
+      "verse_label": "3",
+      "locator": {
+        "book": "MRK",
+        "chapter": 2,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 2,
+          "verse": 3
+        }
+      ],
+      "en": "Four people came, carrying a paralytic to him.",
+      "ko": "사람들이 한 중풍병자를 네 사람에게 메워 가지고 예수께로 올쌔",
+      "source_text_hash": "c4126007598adc3f4bd66956bed1542a9e8db15e9593b21b2c483494d8b0ab3a",
+      "translation_text_hash": "36d17fbfca2e33ca7f9369ee9c94c3a7d74f4ee0e30c8a0bf1bc0db30be6bdb4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람들이 한 중풍병자를 네 사람에게 메워 가지고 예수께로 올쌔"
+      ],
+      "raw_text_hashes": [
+        "36d17fbfca2e33ca7f9369ee9c94c3a7d74f4ee0e30c8a0bf1bc0db30be6bdb4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:2:4",
+      "sequence": 24265,
+      "chapter_label": "MRK 2",
+      "verse_label": "4",
+      "locator": {
+        "book": "MRK",
+        "chapter": 2,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 2,
+          "verse": 4
+        }
+      ],
+      "en": "When they could not come near to him for the crowd, they removed the roof where he was. When they had broken it up, they let down the mat that the paralytic was lying on.",
+      "ko": "무리를 인하여 예수께 데려갈 수 없으므로 그 계신 곳의 지붕을 뜯어 구멍을 내고 중풍병자의 누운 상을 달아내리니",
+      "source_text_hash": "a9acf01d78db1b4a497053250038c6f98c29a61e6af215eac7be9e46c0cd0a05",
+      "translation_text_hash": "778041b8a4c19b2b8220da8d80ca02e53b2da1c71d87beb2064f68b58c3b2818",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무리를 인하여 예수께 데려갈 수 없으므로 그 계신 곳의 지붕을 뜯어 구멍을 내고 중풍병자의 누운 상을 달아내리니"
+      ],
+      "raw_text_hashes": [
+        "778041b8a4c19b2b8220da8d80ca02e53b2da1c71d87beb2064f68b58c3b2818"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:2:5",
+      "sequence": 24266,
+      "chapter_label": "MRK 2",
+      "verse_label": "5",
+      "locator": {
+        "book": "MRK",
+        "chapter": 2,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 2,
+          "verse": 5
+        }
+      ],
+      "en": "Jesus, seeing their faith, said to the paralytic, “Son, your sins are forgiven you.”",
+      "ko": "예수께서 저희의 믿음을 보시고 중풍병자에게 이르시되 소자야 네 죄 사함을 받았느니라 하시니",
+      "source_text_hash": "2f5fd6e2a47962f0d6dc9c876df3c5c30b52fc5a9873ef732acb947b0a8e8485",
+      "translation_text_hash": "2fd338d6d470248bf964344f0569408f3322eb8402e74cbea2f3295a1102a0c7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 저희의 믿음을 보시고 중풍병자에게 이르시되 소자야 네 죄 사함을 받았느니라 하시니"
+      ],
+      "raw_text_hashes": [
+        "2fd338d6d470248bf964344f0569408f3322eb8402e74cbea2f3295a1102a0c7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:2:6",
+      "sequence": 24267,
+      "chapter_label": "MRK 2",
+      "verse_label": "6",
+      "locator": {
+        "book": "MRK",
+        "chapter": 2,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 2,
+          "verse": 6
+        }
+      ],
+      "en": "But there were some of the scribes sitting there and reasoning in their hearts,",
+      "ko": "어떤 서기관들이 거기 앉아서 마음에 의논하기를",
+      "source_text_hash": "abbe220542d6f14dba90df4b32e179d6d1cf164f38f305a56a9131f559e455a9",
+      "translation_text_hash": "1364a1c280256f4b30b425fed82cdb6d5e8ee71419b80881a96ab6a0bf73d84e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어떤 서기관들이 거기 앉아서 마음에 의논하기를"
+      ],
+      "raw_text_hashes": [
+        "1364a1c280256f4b30b425fed82cdb6d5e8ee71419b80881a96ab6a0bf73d84e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:2:7",
+      "sequence": 24268,
+      "chapter_label": "MRK 2",
+      "verse_label": "7",
+      "locator": {
+        "book": "MRK",
+        "chapter": 2,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 2,
+          "verse": 7
+        }
+      ],
+      "en": "“Why does this man speak blasphemies like that? Who can forgive sins but God alone?”",
+      "ko": "이 사람이 어찌 이렇게 말하는가 참람하도다 오직 하나님 한 분 외에는 누가 능히 죄를 사하겠느냐",
+      "source_text_hash": "772b53b698fe0933e20249f72c930d4e66e90a9171ca93cba6479e9d5c4bd0a2",
+      "translation_text_hash": "99ec2073ffc802aa281e60b402412b9f7339ec28a5946550a8ce4975a0875b63",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 사람이 어찌 이렇게 말하는가 참람하도다 오직 하나님 한 분 외에는 누가 능히 죄를 사하겠느냐"
+      ],
+      "raw_text_hashes": [
+        "99ec2073ffc802aa281e60b402412b9f7339ec28a5946550a8ce4975a0875b63"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:2:8",
+      "sequence": 24269,
+      "chapter_label": "MRK 2",
+      "verse_label": "8",
+      "locator": {
+        "book": "MRK",
+        "chapter": 2,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 2,
+          "verse": 8
+        }
+      ],
+      "en": "Immediately Jesus, perceiving in his spirit that they so reasoned within themselves, said to them, “Why do you reason these things in your hearts?",
+      "ko": "저희가 속으로 이렇게 의논하는 줄을 예수께서 곧 중심에 아시고 이르시되 어찌하여 이것을 마음에 의논하느냐",
+      "source_text_hash": "14e3a22a06b20e07907631665021237267a92dddb4d7d770d39649c39b61efb6",
+      "translation_text_hash": "ee3acf4f60ea3682dce11e2504cb2e0d89f4f9e450479bbc145bb8ce63481f95",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 속으로 이렇게 의논하는 줄을 예수께서 곧 중심에 아시고 이르시되 어찌하여 이것을 마음에 의논하느냐"
+      ],
+      "raw_text_hashes": [
+        "ee3acf4f60ea3682dce11e2504cb2e0d89f4f9e450479bbc145bb8ce63481f95"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:2:9",
+      "sequence": 24270,
+      "chapter_label": "MRK 2",
+      "verse_label": "9",
+      "locator": {
+        "book": "MRK",
+        "chapter": 2,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 2,
+          "verse": 9
+        }
+      ],
+      "en": "Which is easier, to tell the paralytic, ‘Your sins are forgiven;’ or to say, ‘Arise, and take up your bed, and walk’?",
+      "ko": "중풍병자에게 네 죄 사함을 받았느니라 하는 말과 일어나 네 상을 가지고 걸어가라 하는 말이 어느 것이 쉽겠느냐",
+      "source_text_hash": "dcd8c45b177af4dcb3637dc5e4c516299b23e410150d4974e7a8c59858bc764a",
+      "translation_text_hash": "29c71a5b3053070e4eba17a2358e85c70505b688a578287a1294107b9bc349e9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "중풍병자에게 네 죄 사함을 받았느니라 하는 말과 일어나 네 상을 가지고 걸어가라 하는 말이 어느 것이 쉽겠느냐"
+      ],
+      "raw_text_hashes": [
+        "29c71a5b3053070e4eba17a2358e85c70505b688a578287a1294107b9bc349e9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:2:10",
+      "sequence": 24271,
+      "chapter_label": "MRK 2",
+      "verse_label": "10",
+      "locator": {
+        "book": "MRK",
+        "chapter": 2,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 2,
+          "verse": 10
+        }
+      ],
+      "en": "But that you may know that the Son of Man has authority on earth to forgive sins”—he said to the paralytic—",
+      "ko": "그러나 인자가 땅에서 죄를 사하는 권세가 있는 줄을 너희로 알게 하려하노라 하시고 중풍병자에게 말씀하시되",
+      "source_text_hash": "646bd5cb13adc72018d9518a584ece5438faea0449344423d29374f45735299e",
+      "translation_text_hash": "29049e042abfe67baadb134b1e1d88f22092f67b0f4a10deef9afcbad8c0a15e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 인자가 땅에서 죄를 사하는 권세가 있는 줄을 너희로 알게 하려하노라 하시고 중풍병자에게 말씀하시되"
+      ],
+      "raw_text_hashes": [
+        "29049e042abfe67baadb134b1e1d88f22092f67b0f4a10deef9afcbad8c0a15e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:2:11",
+      "sequence": 24272,
+      "chapter_label": "MRK 2",
+      "verse_label": "11",
+      "locator": {
+        "book": "MRK",
+        "chapter": 2,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 2,
+          "verse": 11
+        }
+      ],
+      "en": "“I tell you, arise, take up your mat, and go to your house.”",
+      "ko": "내가 네게 이르노니 일어나 네 상을 가지고 집으로 가라 하시니",
+      "source_text_hash": "cecef2bacca91233f37b639e8779b60dfb5192bf440d6440fb93d4c587fafa86",
+      "translation_text_hash": "d9d3710202a29ca04f40795a2c3f4ee0bdc4bd12e47c17e0fe23f2dbbbfefb62",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 네게 이르노니 일어나 네 상을 가지고 집으로 가라 하시니"
+      ],
+      "raw_text_hashes": [
+        "d9d3710202a29ca04f40795a2c3f4ee0bdc4bd12e47c17e0fe23f2dbbbfefb62"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:2:12",
+      "sequence": 24273,
+      "chapter_label": "MRK 2",
+      "verse_label": "12",
+      "locator": {
+        "book": "MRK",
+        "chapter": 2,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 2,
+          "verse": 12
+        }
+      ],
+      "en": "He arose, and immediately took up the mat and went out in front of them all, so that they were all amazed and glorified God, saying, “We never saw anything like this!”",
+      "ko": "그가 일어나 곧 상을 가지고 모든 사람 앞에서 나가거늘 저희가 다 놀라 영광을 하나님께 돌리며 가로되 우리가 이런 일을 도무지 보지 못하였다 하더라",
+      "source_text_hash": "e153c3fc69583afd651da8f54739d0d71d3c132ed616a24ade15e52aa74cb7f2",
+      "translation_text_hash": "51376f139de473c980bd695d7ce7b53c49d3f273c160279c31eff301404eb9b1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 일어나 곧 상을 가지고 모든 사람 앞에서 나가거늘 저희가 다 놀라 영광을 하나님께 돌리며 가로되 우리가 이런 일을 도무지 보지 못하였다 하더라"
+      ],
+      "raw_text_hashes": [
+        "51376f139de473c980bd695d7ce7b53c49d3f273c160279c31eff301404eb9b1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:2:13",
+      "sequence": 24274,
+      "chapter_label": "MRK 2",
+      "verse_label": "13",
+      "locator": {
+        "book": "MRK",
+        "chapter": 2,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 2,
+          "verse": 13
+        }
+      ],
+      "en": "He went out again by the seaside. All the multitude came to him, and he taught them.",
+      "ko": "예수께서 다시 바닷가에 나가시매 무리가 다 나아왔거늘 예수께서 저희를 가르치시니라",
+      "source_text_hash": "f22053ba3017fc0c9c661c92a6f7c6af0d10112b73ab484fd539e0a907623f9e",
+      "translation_text_hash": "61b80ba6e098f75ee7b0bb234b73d244548b77966bccc0625b8e81cbd01e21b9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 다시 바닷가에 나가시매 무리가 다 나아왔거늘 예수께서 저희를 가르치시니라"
+      ],
+      "raw_text_hashes": [
+        "61b80ba6e098f75ee7b0bb234b73d244548b77966bccc0625b8e81cbd01e21b9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:2:14",
+      "sequence": 24275,
+      "chapter_label": "MRK 2",
+      "verse_label": "14",
+      "locator": {
+        "book": "MRK",
+        "chapter": 2,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 2,
+          "verse": 14
+        }
+      ],
+      "en": "As he passed by, he saw Levi the son of Alphaeus sitting at the tax office. He said to him, “Follow me.”And he arose and followed him.",
+      "ko": "또 지나가시다가 알패오의 아들 레위가 세관에 앉아 있는 것을 보시고 저에게 이르시되 나를 좇으라 하시니 일어나 좇으니라",
+      "source_text_hash": "10777d4baa802a175a3184e661898a3c36ec0375f7b92dec008e45a3ebe9bc1f",
+      "translation_text_hash": "4e2525686dbbe9e6fea4afab782dfceff2dbdd113851503291072b44a56d243e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 지나가시다가 알패오의 아들 레위가 세관에 앉아 있는 것을 보시고 저에게 이르시되 나를 좇으라 하시니 일어나 좇으니라"
+      ],
+      "raw_text_hashes": [
+        "4e2525686dbbe9e6fea4afab782dfceff2dbdd113851503291072b44a56d243e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:2:15",
+      "sequence": 24276,
+      "chapter_label": "MRK 2",
+      "verse_label": "15",
+      "locator": {
+        "book": "MRK",
+        "chapter": 2,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 2,
+          "verse": 15
+        }
+      ],
+      "en": "He was reclining at the table in his house, and many tax collectors and sinners sat down with Jesus and his disciples, for there were many, and they followed him.",
+      "ko": "그의 집에 앉아 잡수실 때에 많은 세리와 죄인들이 예수와 그 제자들과 함께 앉았으니 이는 저희가 많이 있어서 예수를 좇음이러라",
+      "source_text_hash": "7ee0c847473e813b352a17b4c9a9b026b46c42190dc177bc83edebcde43461ea",
+      "translation_text_hash": "bc69046c5df040cc8ef9d7416a2f97c32e46a0df8b9d3151e879e15e5f52d1b3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그의 집에 앉아 잡수실 때에 많은 세리와 죄인들이 예수와 그 제자들과 함께 앉았으니 이는 저희가 많이 있어서 예수를 좇음이러라"
+      ],
+      "raw_text_hashes": [
+        "bc69046c5df040cc8ef9d7416a2f97c32e46a0df8b9d3151e879e15e5f52d1b3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:2:16",
+      "sequence": 24277,
+      "chapter_label": "MRK 2",
+      "verse_label": "16",
+      "locator": {
+        "book": "MRK",
+        "chapter": 2,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 2,
+          "verse": 16
+        }
+      ],
+      "en": "The scribes and the Pharisees, when they saw that he was eating with the sinners and tax collectors, said to his disciples, “Why is it that he eats and drinks with tax collectors and sinners?”",
+      "ko": "바리새인의 서기관들이 예수께서 죄인과 세리들과 함께 잡수시는 것을 보고 그 제자들에게 이르되 어찌하여 세리와 죄인들과 함께 먹는가",
+      "source_text_hash": "e55212381bdbd4d481e779ed0a03c42295fe6b862b753feb5222b5f97a579e63",
+      "translation_text_hash": "7614e6238388734fe86a4f26fcbf72a0af8e1312ec01ed15f2ed8bde88d6c1b7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바리새인의 서기관들이 예수께서 죄인과 세리들과 함께 잡수시는 것을 보고 그 제자들에게 이르되 어찌하여 세리와 죄인들과 함께 먹는가"
+      ],
+      "raw_text_hashes": [
+        "7614e6238388734fe86a4f26fcbf72a0af8e1312ec01ed15f2ed8bde88d6c1b7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:2:17",
+      "sequence": 24278,
+      "chapter_label": "MRK 2",
+      "verse_label": "17",
+      "locator": {
+        "book": "MRK",
+        "chapter": 2,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 2,
+          "verse": 17
+        }
+      ],
+      "en": "When Jesus heard it, he said to them, “Those who are healthy have no need for a physician, but those who are sick. I came not to call the righteous, but sinners to repentance.”",
+      "ko": "예수께서 들으시고 저희에게 이르시되 건강한 자에게는 의원이 쓸데 없고 병든 자에게라야 쓸데 있느니라 내가 의인을 부르러 온것이 아니요 죄인을 부르러 왔노라 하시니라",
+      "source_text_hash": "192659d130272f08069c98d878cb96db731c7c18b1ca14afb01b515551919b78",
+      "translation_text_hash": "9b2d7fb83c53ef623ccdb9a6f1dbf66870ab9bf41bb5b06864127d73274700eb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 들으시고 저희에게 이르시되 건강한 자에게는 의원이 쓸데 없고 병든 자에게라야 쓸데 있느니라 내가 의인을 부르러 온것이 아니요 죄인을 부르러 왔노라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "9b2d7fb83c53ef623ccdb9a6f1dbf66870ab9bf41bb5b06864127d73274700eb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:2:18",
+      "sequence": 24279,
+      "chapter_label": "MRK 2",
+      "verse_label": "18",
+      "locator": {
+        "book": "MRK",
+        "chapter": 2,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 2,
+          "verse": 18
+        }
+      ],
+      "en": "John’s disciples and the Pharisees were fasting, and they came and asked him, “Why do John’s disciples and the disciples of the Pharisees fast, but your disciples don’t fast?”",
+      "ko": "요한의 제자들과 바리새인들이 금식하고 있는지라 혹이 예수께 와서 말하되 요한의 제자들과 바리새인의 제자들은 금식하는데 어찌하여 당신의 제자들은 금식하지 아니하나이까",
+      "source_text_hash": "9257ea4613f38c1aecbde83c47f629c81c1c3d8887796db8d71d7ebd36537b12",
+      "translation_text_hash": "895ef48c049c732cdc746274e1e93231219e8c7f4e8266c312fe9f0efc7e9e2f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요한의 제자들과 바리새인들이 금식하고 있는지라 혹이 예수께 와서 말하되 요한의 제자들과 바리새인의 제자들은 금식하는데 어찌하여 당신의 제자들은 금식하지 아니하나이까"
+      ],
+      "raw_text_hashes": [
+        "895ef48c049c732cdc746274e1e93231219e8c7f4e8266c312fe9f0efc7e9e2f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:2:19",
+      "sequence": 24280,
+      "chapter_label": "MRK 2",
+      "verse_label": "19",
+      "locator": {
+        "book": "MRK",
+        "chapter": 2,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 2,
+          "verse": 19
+        }
+      ],
+      "en": "Jesus said to them, “Can the groomsmen fast while the bridegroom is with them? As long as they have the bridegroom with them, they can’t fast.",
+      "ko": "예수께서 저희에게 이르시되 혼인집 손님들이 신랑과 함께 있을 때에 금식할 수 있느냐 신랑과 함께 있을 동안에는 금식할 수 없나니",
+      "source_text_hash": "2ec0f962e1c0423ec4123351d6d271cef5e40dd678c952ad0a918d0fe5fd116e",
+      "translation_text_hash": "e8bf3261541fa50231bdead9b6d34c4f35ba8750439132167afe261330590ac0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 저희에게 이르시되 혼인집 손님들이 신랑과 함께 있을 때에 금식할 수 있느냐 신랑과 함께 있을 동안에는 금식할 수 없나니"
+      ],
+      "raw_text_hashes": [
+        "e8bf3261541fa50231bdead9b6d34c4f35ba8750439132167afe261330590ac0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:2:20",
+      "sequence": 24281,
+      "chapter_label": "MRK 2",
+      "verse_label": "20",
+      "locator": {
+        "book": "MRK",
+        "chapter": 2,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 2,
+          "verse": 20
+        }
+      ],
+      "en": "But the days will come when the bridegroom will be taken away from them, and then they will fast in that day.",
+      "ko": "그러나 신랑을 빼앗길 날이 이르리니 그 날에는 금식할 것이니라",
+      "source_text_hash": "abbad2c1a4f8d16bf9eca924203545c7cc40ef591e66e65a8ef767b843d99203",
+      "translation_text_hash": "33c8677bb3248552ed7083c7b429f1ca3cef811aba0940d4047cd8155c24f9e3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 신랑을 빼앗길 날이 이르리니 그 날에는 금식할 것이니라"
+      ],
+      "raw_text_hashes": [
+        "33c8677bb3248552ed7083c7b429f1ca3cef811aba0940d4047cd8155c24f9e3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:2:21",
+      "sequence": 24282,
+      "chapter_label": "MRK 2",
+      "verse_label": "21",
+      "locator": {
+        "book": "MRK",
+        "chapter": 2,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 2,
+          "verse": 21
+        }
+      ],
+      "en": "No one sews a piece of unshrunk cloth on an old garment, or else the patch shrinks and the new tears away from the old, and a worse hole is made.",
+      "ko": "생베 조각을 낡은 옷에 붙이는 자가 없나니 만일 그렇게 하면 기운 새것이 낡은 그것을 당기어 해어짐이 더하게 되느니라",
+      "source_text_hash": "17df2cb489ddc8d93c361f21837fa1a8c264ffcad8a2a9729d6f752117190558",
+      "translation_text_hash": "e34676195bd6823767febcb602809af87d79286253240fdfc4825d9324d7e413",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "생베 조각을 낡은 옷에 붙이는 자가 없나니 만일 그렇게 하면 기운 새것이 낡은 그것을 당기어 해어짐이 더하게 되느니라"
+      ],
+      "raw_text_hashes": [
+        "e34676195bd6823767febcb602809af87d79286253240fdfc4825d9324d7e413"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:2:22",
+      "sequence": 24283,
+      "chapter_label": "MRK 2",
+      "verse_label": "22",
+      "locator": {
+        "book": "MRK",
+        "chapter": 2,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 2,
+          "verse": 22
+        }
+      ],
+      "en": "No one puts new wine into old wineskins; or else the new wine will burst the skins, and the wine pours out, and the skins will be destroyed; but they put new wine into fresh wineskins.”",
+      "ko": "새 포도주를 낡은 가죽 부대에 넣는 자가 없나니 만일 그렇게 하면 새 포도주가 부대를 터뜨려 포도주와 부대를 버리게 되리라 오직 새 포도주는 새 부대에 넣느니라 하시니라",
+      "source_text_hash": "a9a79b2f2e323d6b93555e8b9e90a20bffa370f523552c20262ab326f318340a",
+      "translation_text_hash": "d5c34b2854041d76e5a19efcc60293a516481a7fd27d6fec9cfd52c3aa214f4b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "새 포도주를 낡은 가죽 부대에 넣는 자가 없나니 만일 그렇게 하면 새 포도주가 부대를 터뜨려 포도주와 부대를 버리게 되리라 오직 새 포도주는 새 부대에 넣느니라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "d5c34b2854041d76e5a19efcc60293a516481a7fd27d6fec9cfd52c3aa214f4b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:2:23",
+      "sequence": 24284,
+      "chapter_label": "MRK 2",
+      "verse_label": "23",
+      "locator": {
+        "book": "MRK",
+        "chapter": 2,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 2,
+          "verse": 23
+        }
+      ],
+      "en": "He was going on the Sabbath day through the grain fields; and his disciples began, as they went, to pluck the ears of grain.",
+      "ko": "안식일에 예수께서 밀밭 사이로 지나가실쌔 그 제자들이 길을 열며 이삭을 자르니",
+      "source_text_hash": "a4d004ba57690b1da1fdbf401f92e0ff6584390e3425a69f43160ab8d9488814",
+      "translation_text_hash": "952cac240223f2a10f29fd15933865ea83fedf55e0937dc2f4d57cf5e08d554d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "안식일에 예수께서 밀밭 사이로 지나가실쌔 그 제자들이 길을 열며 이삭을 자르니"
+      ],
+      "raw_text_hashes": [
+        "952cac240223f2a10f29fd15933865ea83fedf55e0937dc2f4d57cf5e08d554d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:2:24",
+      "sequence": 24285,
+      "chapter_label": "MRK 2",
+      "verse_label": "24",
+      "locator": {
+        "book": "MRK",
+        "chapter": 2,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 2,
+          "verse": 24
+        }
+      ],
+      "en": "The Pharisees said to him, “Behold, why do they do that which is not lawful on the Sabbath day?”",
+      "ko": "바리새인들이 예수께 말하되 보시오 저희가 어찌하여 안식일에 하지 못할 일을 하나이까",
+      "source_text_hash": "48c717dd9d5c91ab2792e19a3201748fc5bf8d2e719bf9c4cc03fab7b1255d49",
+      "translation_text_hash": "09f86cd61ba9b03d4098193fb04a3d1b97356a8d60d7cb5f024bcdb48472f104",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바리새인들이 예수께 말하되 보시오 저희가 어찌하여 안식일에 하지 못할 일을 하나이까"
+      ],
+      "raw_text_hashes": [
+        "09f86cd61ba9b03d4098193fb04a3d1b97356a8d60d7cb5f024bcdb48472f104"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:2:25",
+      "sequence": 24286,
+      "chapter_label": "MRK 2",
+      "verse_label": "25",
+      "locator": {
+        "book": "MRK",
+        "chapter": 2,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 2,
+          "verse": 25
+        }
+      ],
+      "en": "He said to them, “Did you never read what David did when he had need and was hungry—he, and those who were with him?",
+      "ko": "예수께서 가라사대 다윗이 자기와 및 함께한 자들이 핍절되어 시장할 때에 한 일을 읽지 못하였느냐",
+      "source_text_hash": "3c2a68aba64b26868ea1dcce136e357ee247d859a6b7859a87d19227583ab605",
+      "translation_text_hash": "4122aee0db5df9ead6f2c5188bd5d96c0c69dda4a4262366a0cc247aa5df4cb8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 가라사대 다윗이 자기와 및 함께한 자들이 핍절되어 시장할 때에 한 일을 읽지 못하였느냐"
+      ],
+      "raw_text_hashes": [
+        "4122aee0db5df9ead6f2c5188bd5d96c0c69dda4a4262366a0cc247aa5df4cb8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:2:26",
+      "sequence": 24287,
+      "chapter_label": "MRK 2",
+      "verse_label": "26",
+      "locator": {
+        "book": "MRK",
+        "chapter": 2,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 2,
+          "verse": 26
+        }
+      ],
+      "en": "How he entered into God’s house at the time of Abiathar the high priest, and ate the show bread, which is not lawful to eat except for the priests, and gave also to those who were with him?”",
+      "ko": "그가 아비아달 대제사장 때에 하나님의 전에 들어가서 제사장 외에는 먹지 못하는 진설병을 먹고 함께한 자들에게도 주지 아니하였느냐",
+      "source_text_hash": "d0fde326fc88ac7191e6856d938aceb3520bb1a3dec5be684ca0f4c93a27bd97",
+      "translation_text_hash": "a4cfc5cab3148d0880b0b286c3c9e464359857db699226a06be72301be09aab4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 아비아달 대제사장 때에 하나님의 전에 들어가서 제사장 외에는 먹지 못하는 진설병을 먹고 함께한 자들에게도 주지 아니하였느냐"
+      ],
+      "raw_text_hashes": [
+        "a4cfc5cab3148d0880b0b286c3c9e464359857db699226a06be72301be09aab4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:2:27",
+      "sequence": 24288,
+      "chapter_label": "MRK 2",
+      "verse_label": "27",
+      "locator": {
+        "book": "MRK",
+        "chapter": 2,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 2,
+          "verse": 27
+        }
+      ],
+      "en": "He said to them, “The Sabbath was made for man, not man for the Sabbath.",
+      "ko": "또 가라사대 안식일은 사람을 위하여 있는 것이요 사람이 안식일을 위하여 있는 것이 아니니",
+      "source_text_hash": "d79a7b0658452816dbd63195fbda9215c476617316456c00128e7a5f41e7db00",
+      "translation_text_hash": "a39a7d3cb131d1c9ebb7edbccbb6527032e1d2537d0e470ab07af40f3eb8e25c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 가라사대 안식일은 사람을 위하여 있는 것이요 사람이 안식일을 위하여 있는 것이 아니니"
+      ],
+      "raw_text_hashes": [
+        "a39a7d3cb131d1c9ebb7edbccbb6527032e1d2537d0e470ab07af40f3eb8e25c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:2:28",
+      "sequence": 24289,
+      "chapter_label": "MRK 2",
+      "verse_label": "28",
+      "locator": {
+        "book": "MRK",
+        "chapter": 2,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 2,
+          "verse": 28
+        }
+      ],
+      "en": "Therefore the Son of Man is lord even of the Sabbath.”",
+      "ko": "이러므로 인자는 안식일에도 주인이니라",
+      "source_text_hash": "ffdf39b545fd5bdcaf2bd287c8d1e8d9f08aa1dde2ca85c3fc555a1e8e332884",
+      "translation_text_hash": "5b5fd001c6c49958c27a797b358c001af30f7e9b9b46ae775209cce578528fd7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러므로 인자는 안식일에도 주인이니라"
+      ],
+      "raw_text_hashes": [
+        "5b5fd001c6c49958c27a797b358c001af30f7e9b9b46ae775209cce578528fd7"
+      ]
+    }
+  ]
+}

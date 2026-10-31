@@ -1,0 +1,1389 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:2SA:chapter:019",
+  "unit_ordinal": 286,
+  "unit_label": "2SA 19",
+  "book_code": "2SA",
+  "chapter_number": 19,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:2SA:19:1",
+      "sequence": 8513,
+      "chapter_label": "2SA 19",
+      "verse_label": "1",
+      "locator": {
+        "book": "2SA",
+        "chapter": 19,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 19,
+          "verse": 1
+        }
+      ],
+      "en": "Joab was told, “Behold, the king weeps and mourns for Absalom.”",
+      "ko": "혹이 요압에게 고하되 왕이 압살롬을 위하여 울며 슬퍼하시나이다 하니",
+      "source_text_hash": "24fb8325c78ba9b4ad922260d930ad5d8debc130f579af8099283995501a5174",
+      "translation_text_hash": "ffcf43127db374f508f3485e448e499b4c46d556ba934e7420940e9cb0e87ced",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "혹이 요압에게 고하되 왕이 압살롬을 위하여 울며 슬퍼하시나이다 하니"
+      ],
+      "raw_text_hashes": [
+        "ffcf43127db374f508f3485e448e499b4c46d556ba934e7420940e9cb0e87ced"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:19:2",
+      "sequence": 8514,
+      "chapter_label": "2SA 19",
+      "verse_label": "2",
+      "locator": {
+        "book": "2SA",
+        "chapter": 19,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 19,
+          "verse": 2
+        }
+      ],
+      "en": "The victory that day was turned into mourning among all the people, for the people heard it said that day, “The king grieves for his son.”",
+      "ko": "왕이 그 아들을 위하여 슬퍼한다 함이 그 날에 백성들에게 들리매 그 날의 이김이 모든 백성에게 슬픔이 된지라",
+      "source_text_hash": "43a0c16d0c44a0370c6de03198a2e40c29ecb43d3c496aa929ceffbd7dd37205",
+      "translation_text_hash": "59d3a015845391a31fc9f6f3439cab9c31cb77c5f6c1817f75ab6c93830ed397",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 그 아들을 위하여 슬퍼한다 함이 그 날에 백성들에게 들리매 그 날의 이김이 모든 백성에게 슬픔이 된지라"
+      ],
+      "raw_text_hashes": [
+        "59d3a015845391a31fc9f6f3439cab9c31cb77c5f6c1817f75ab6c93830ed397"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:19:3",
+      "sequence": 8515,
+      "chapter_label": "2SA 19",
+      "verse_label": "3",
+      "locator": {
+        "book": "2SA",
+        "chapter": 19,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 19,
+          "verse": 3
+        }
+      ],
+      "en": "The people sneaked into the city that day, as people who are ashamed steal away when they flee in battle.",
+      "ko": "그 날에 백성들이 싸움에 쫓겨 부끄러워 도망함 같이 가만히 성으로 들어가니라",
+      "source_text_hash": "cbaf7724310e4a7783584747e0df0e295f0a5c928995145a96775a894cbba07a",
+      "translation_text_hash": "31d081ef8729a59ea385e1be6824c3cb2d8211b5ba2aa08cebf03312e29af6a0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날에 백성들이 싸움에 쫓겨 부끄러워 도망함 같이 가만히 성으로 들어가니라"
+      ],
+      "raw_text_hashes": [
+        "31d081ef8729a59ea385e1be6824c3cb2d8211b5ba2aa08cebf03312e29af6a0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:19:4",
+      "sequence": 8516,
+      "chapter_label": "2SA 19",
+      "verse_label": "4",
+      "locator": {
+        "book": "2SA",
+        "chapter": 19,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 19,
+          "verse": 4
+        }
+      ],
+      "en": "The king covered his face, and the king cried with a loud voice, “My son Absalom, Absalom, my son, my son!”",
+      "ko": "왕이 얼굴을 가리우고 큰 소리로 부르되 내 아들 압살롬아 압살롬아 내 아들아 내 아들아 하니",
+      "source_text_hash": "989d1b9b282fa040f967d192a032abd26ca6645f063e8134cafcb4d6156c06d0",
+      "translation_text_hash": "80180dd6ea43411450784ff2b991cea3abfb65a06ce6ed9eef35f7ec598fa6aa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 얼굴을 가리우고 큰 소리로 부르되 내 아들 압살롬아 압살롬아 내 아들아 내 아들아 하니"
+      ],
+      "raw_text_hashes": [
+        "80180dd6ea43411450784ff2b991cea3abfb65a06ce6ed9eef35f7ec598fa6aa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:19:5",
+      "sequence": 8517,
+      "chapter_label": "2SA 19",
+      "verse_label": "5",
+      "locator": {
+        "book": "2SA",
+        "chapter": 19,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 19,
+          "verse": 5
+        }
+      ],
+      "en": "Joab came into the house to the king, and said, “Today you have shamed the faces of all your servants who today have saved your life, and the lives of your sons and of your daughters, and the lives of your wives, and the lives of your concubines;",
+      "ko": "요압이 집에 들어 가서 왕께 말씀하되 왕께서 오늘 왕의 생명과 왕의 자녀의 생명과 처첩들의 생명을 구원한 모든 신복의 얼굴을 부끄럽게 하시니",
+      "source_text_hash": "6dd8e33edadc5ff517e5f0ff6fe10b1a5c714fbf0e5a172730e4c89e248d82d2",
+      "translation_text_hash": "f8f72a15352ea602bcb6e37d0254933f4d768536e787865f47acc8adeefd2fae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요압이 집에 들어 가서 왕께 말씀하되 왕께서 오늘 왕의 생명과 왕의 자녀의 생명과 처첩들의 생명을 구원한 모든 신복의 얼굴을 부끄럽게 하시니"
+      ],
+      "raw_text_hashes": [
+        "f8f72a15352ea602bcb6e37d0254933f4d768536e787865f47acc8adeefd2fae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:19:6",
+      "sequence": 8518,
+      "chapter_label": "2SA 19",
+      "verse_label": "6",
+      "locator": {
+        "book": "2SA",
+        "chapter": 19,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 19,
+          "verse": 6
+        }
+      ],
+      "en": "in that you love those who hate you and hate those who love you. For you have declared today that princes and servants are nothing to you. For today I perceive that if Absalom had lived and we had all died today, then it would have pleased you well.",
+      "ko": "이는 왕께서 미워하는 자는 사랑하시며 사랑하는 자는 미워하시고 오늘 장관들과 신복들을 멸시하심을 나타내심이라 오늘 내가 깨달으니 만일 압살롬이 살고 오늘 우리가 다 죽었더면 왕이 마땅히 여기실뻔하였나이다",
+      "source_text_hash": "62cbca68848a978a7510e4e5f27eec07830195d1a97fcba6fe8c4cc5c2e74212",
+      "translation_text_hash": "833b6447af86f7f492a47b3908e3a3251b24e5b0acca74fc516afb576f2230ae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 왕께서 미워하는 자는 사랑하시며 사랑하는 자는 미워하시고 오늘 장관들과 신복들을 멸시하심을 나타내심이라 오늘 내가 깨달으니 만일 압살롬이 살고 오늘 우리가 다 죽었더면 왕이 마땅히 여기실뻔하였나이다"
+      ],
+      "raw_text_hashes": [
+        "833b6447af86f7f492a47b3908e3a3251b24e5b0acca74fc516afb576f2230ae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:19:7",
+      "sequence": 8519,
+      "chapter_label": "2SA 19",
+      "verse_label": "7",
+      "locator": {
+        "book": "2SA",
+        "chapter": 19,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 19,
+          "verse": 7
+        }
+      ],
+      "en": "Now therefore arise, go out and speak to comfort your servants; for I swear by the LORD, if you don’t go out, not a man will stay with you this night. That would be worse to you than all the evil that has happened to you from your youth until now.”",
+      "ko": "이제 곧 일어나 나가서 왕의 신복들의 마음을 위로하여 말씀하옵소서 내가 여호와를 가리켜 맹세하옵나니 왕이 만일 나가지 아니하시면 오늘 밤에 한 사람도 왕과 함께 머물지 아니할찌라 그리하면 그 화가 왕이 젊었을 때부터 지금까지 당하신 모든 화보다 더욱 심하리이다",
+      "source_text_hash": "3f764ce4726acaae7ad53c17dee76888986d1d2f32e135c33602d3189a462b16",
+      "translation_text_hash": "fb5dff498f6e7e1d923f2ea984a2ca8ea7ebedf09cb0be58ec94c3f132a45b06",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제 곧 일어나 나가서 왕의 신복들의 마음을 위로하여 말씀하옵소서 내가 여호와를 가리켜 맹세하옵나니 왕이 만일 나가지 아니하시면 오늘 밤에 한 사람도 왕과 함께 머물지 아니할찌라 그리하면 그 화가 왕이 젊었을 때부터 지금까지 당하신 모든 화보다 더욱 심하리이다"
+      ],
+      "raw_text_hashes": [
+        "fb5dff498f6e7e1d923f2ea984a2ca8ea7ebedf09cb0be58ec94c3f132a45b06"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:19:8",
+      "sequence": 8520,
+      "chapter_label": "2SA 19",
+      "verse_label": "8",
+      "locator": {
+        "book": "2SA",
+        "chapter": 19,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 19,
+          "verse": 8
+        }
+      ],
+      "en": "Then the king arose and sat in the gate. The people were all told, “Behold, the king is sitting in the gate.” All the people came before the king. Now Israel had fled every man to his tent.",
+      "ko": "왕이 일어나 성문에 앉으매 혹이 모든 백성에게 고하되 왕이 문에 앉아 계시다 하니 모든 백성이 왕의 앞으로 나아오니라 이스라엘은 이미 각기 장막으로 도망하였더라",
+      "source_text_hash": "035b44b79758ef5210b71dd15c73eef961ce01ad453ca68ed8881b070d42fe5d",
+      "translation_text_hash": "e1e7462d5a1dc011610ac8c56101b2cfcb35d2dca2e3e553cf194ddb3413649e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 일어나 성문에 앉으매 혹이 모든 백성에게 고하되 왕이 문에 앉아 계시다 하니 모든 백성이 왕의 앞으로 나아오니라 이스라엘은 이미 각기 장막으로 도망하였더라"
+      ],
+      "raw_text_hashes": [
+        "e1e7462d5a1dc011610ac8c56101b2cfcb35d2dca2e3e553cf194ddb3413649e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:19:9",
+      "sequence": 8521,
+      "chapter_label": "2SA 19",
+      "verse_label": "9",
+      "locator": {
+        "book": "2SA",
+        "chapter": 19,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 19,
+          "verse": 9
+        }
+      ],
+      "en": "All the people were at strife throughout all the tribes of Israel, saying, “The king delivered us out of the hand of our enemies, and he saved us out of the hand of the Philistines; and now he has fled out of the land from Absalom.",
+      "ko": "이스라엘 모든 지파 백성들이 변론하여 가로되 왕이 우리를 원수의 손에서 구원하여 내셨고 또 우리를 블레셋 사람의 손에서 구원하셨으나 이제 압살롬을 피하여 나라에서 나가셨고",
+      "source_text_hash": "ccc67af8611af3a8ea0f9192e731fb19b862ebb8459534baa99b6b3963c3e98c",
+      "translation_text_hash": "03943638d6c861668d50e681862434ab636438c6b5942f16d292d3ae8bc6b5e6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 모든 지파 백성들이 변론하여 가로되 왕이 우리를 원수의 손에서 구원하여 내셨고 또 우리를 블레셋 사람의 손에서 구원하셨으나 이제 압살롬을 피하여 나라에서 나가셨고"
+      ],
+      "raw_text_hashes": [
+        "03943638d6c861668d50e681862434ab636438c6b5942f16d292d3ae8bc6b5e6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:19:10",
+      "sequence": 8522,
+      "chapter_label": "2SA 19",
+      "verse_label": "10",
+      "locator": {
+        "book": "2SA",
+        "chapter": 19,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 19,
+          "verse": 10
+        }
+      ],
+      "en": "Absalom, whom we anointed over us, is dead in battle. Now therefore why don’t you speak a word of bringing the king back?”",
+      "ko": "우리가 기름을 부어 우리를 다스리게 한 압살롬은 싸움에 죽었거늘 이제 너희가 어찌하여 왕을 도로 모셔 올 일에 잠잠하고 있느냐 하니라",
+      "source_text_hash": "870ef85118f0d22ae6191c3ba16b9106160fa36e533abdf4e42404f73fafe577",
+      "translation_text_hash": "e5172ea78239a7340664b6c54a55e3c2eefd50cee2891a32ab0e07563bdef341",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 기름을 부어 우리를 다스리게 한 압살롬은 싸움에 죽었거늘 이제 너희가 어찌하여 왕을 도로 모셔 올 일에 잠잠하고 있느냐 하니라"
+      ],
+      "raw_text_hashes": [
+        "e5172ea78239a7340664b6c54a55e3c2eefd50cee2891a32ab0e07563bdef341"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:19:11",
+      "sequence": 8523,
+      "chapter_label": "2SA 19",
+      "verse_label": "11",
+      "locator": {
+        "book": "2SA",
+        "chapter": 19,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 19,
+          "verse": 11
+        }
+      ],
+      "en": "King David sent to Zadok and to Abiathar the priests, saying, “Speak to the elders of Judah, saying, ‘Why are you the last to bring the king back to his house, since the speech of all Israel has come to the king, to return him to his house?",
+      "ko": "다윗왕이 사독과 아비아달 두 제사장에게 기별하여 가로되 너희는 유다 장로들에게 고하여 이르기를 왕의 말씀이 온 이스라엘이 왕을 궁으로 도로 모셔 오자 하는 말이 왕께 들렸거늘 너희는 어찌하여 궁으로 모시는 일에 나중이 되느냐",
+      "source_text_hash": "5c0a17799c1801cb179a77f2e889ef7e429fbcc94f0b638137f2f1c76c6ef7c6",
+      "translation_text_hash": "77d2b2ad22bb9877e3099ab457d1552f7d3c60860f7bebf4d1504b26d72dd506",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗왕이 사독과 아비아달 두 제사장에게 기별하여 가로되 너희는 유다 장로들에게 고하여 이르기를 왕의 말씀이 온 이스라엘이 왕을 궁으로 도로 모셔 오자 하는 말이 왕께 들렸거늘 너희는 어찌하여 궁으로 모시는 일에 나중이 되느냐"
+      ],
+      "raw_text_hashes": [
+        "77d2b2ad22bb9877e3099ab457d1552f7d3c60860f7bebf4d1504b26d72dd506"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:19:12",
+      "sequence": 8524,
+      "chapter_label": "2SA 19",
+      "verse_label": "12",
+      "locator": {
+        "book": "2SA",
+        "chapter": 19,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 19,
+          "verse": 12
+        }
+      ],
+      "en": "You are my brothers. You are my bone and my flesh. Why then are you the last to bring back the king?’",
+      "ko": "너희는 내 형제요 내 골육이어늘 어찌하여 왕을 도로 모셔 오는 일에 나중이 되리요 하셨다 하고",
+      "source_text_hash": "fab45e8daa0b6183652385914cb3b4084bcf3e1bc1b824ce809b3ed27981c19a",
+      "translation_text_hash": "82e9554292d81fedfbe391f79d66aff271f5ff3bbecd4743311e30299b22eabc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 내 형제요 내 골육이어늘 어찌하여 왕을 도로 모셔 오는 일에 나중이 되리요 하셨다 하고"
+      ],
+      "raw_text_hashes": [
+        "82e9554292d81fedfbe391f79d66aff271f5ff3bbecd4743311e30299b22eabc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:19:13",
+      "sequence": 8525,
+      "chapter_label": "2SA 19",
+      "verse_label": "13",
+      "locator": {
+        "book": "2SA",
+        "chapter": 19,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 19,
+          "verse": 13
+        }
+      ],
+      "en": "Say to Amasa, ‘Aren’t you my bone and my flesh? God do so to me, and more also, if you aren’t captain of the army before me continually instead of Joab.’”",
+      "ko": "너희는 또 아마사에게 이르기를 너는 내 골육이 아니냐 네가 요압을 대신하여 항상 내 앞에서 군장이 되지 아니하면 하나님이 내게 벌 위에 벌을 내리시기를 바라노라 하셨다 하라 하여",
+      "source_text_hash": "41f12239a283d3c44a7b1a51b4cd4c319cb3626b28800d565ced3eb68efbfc3f",
+      "translation_text_hash": "4d15a5a17b91f97a6cdaba86e8da6e92b5352ecd94965aab085bf6693eb27534",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 또 아마사에게 이르기를 너는 내 골육이 아니냐 네가 요압을 대신하여 항상 내 앞에서 군장이 되지 아니하면 하나님이 내게 벌 위에 벌을 내리시기를 바라노라 하셨다 하라 하여"
+      ],
+      "raw_text_hashes": [
+        "4d15a5a17b91f97a6cdaba86e8da6e92b5352ecd94965aab085bf6693eb27534"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:19:14",
+      "sequence": 8526,
+      "chapter_label": "2SA 19",
+      "verse_label": "14",
+      "locator": {
+        "book": "2SA",
+        "chapter": 19,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 19,
+          "verse": 14
+        }
+      ],
+      "en": "He bowed the heart of all the men of Judah, even as one man, so that they sent to the king, saying, “Return, you and all your servants.”",
+      "ko": "모든 유다 사람들로 마음을 일제히 돌리게 하매 저희가 왕께 보내어 가로되 왕은 모든 신복으로 더불어 돌아오소서 한지라",
+      "source_text_hash": "d594a2bf118d772c2484fcfb3f5416ea8d90fd0aa98cf41679a946d2815d8e0a",
+      "translation_text_hash": "b2cf52ce491ed719184a254b40de2a161051e2734f3e7a817169f690e8a4ba14",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 유다 사람들로 마음을 일제히 돌리게 하매 저희가 왕께 보내어 가로되 왕은 모든 신복으로 더불어 돌아오소서 한지라"
+      ],
+      "raw_text_hashes": [
+        "b2cf52ce491ed719184a254b40de2a161051e2734f3e7a817169f690e8a4ba14"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:19:15",
+      "sequence": 8527,
+      "chapter_label": "2SA 19",
+      "verse_label": "15",
+      "locator": {
+        "book": "2SA",
+        "chapter": 19,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 19,
+          "verse": 15
+        }
+      ],
+      "en": "So the king returned, and came to the Jordan. Judah came to Gilgal, to go to meet the king, to bring the king over the Jordan.",
+      "ko": "왕이 돌아와 요단에 이르매 유다 족속이 왕을 맞아 요단을 건네려 하여 길갈로 오니라",
+      "source_text_hash": "8da80361230cb839c18078ac9f7738c85fe627dfeee4b74dc714c07b039ba6f8",
+      "translation_text_hash": "c23c311d85cc9ff8c0f17ea016daca8991d38a4ccc889c587acd4a78ac96ce0a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 돌아와 요단에 이르매 유다 족속이 왕을 맞아 요단을 건네려 하여 길갈로 오니라"
+      ],
+      "raw_text_hashes": [
+        "c23c311d85cc9ff8c0f17ea016daca8991d38a4ccc889c587acd4a78ac96ce0a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:19:16",
+      "sequence": 8528,
+      "chapter_label": "2SA 19",
+      "verse_label": "16",
+      "locator": {
+        "book": "2SA",
+        "chapter": 19,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 19,
+          "verse": 16
+        }
+      ],
+      "en": "Shimei the son of Gera, the Benjamite, who was of Bahurim, hurried and came down with the men of Judah to meet King David.",
+      "ko": "바후림에 있는 베냐민 사람 게라의 아들 시므이가 급히 유다 사람과 함께 다윗왕을 맞으려 내려올 때에",
+      "source_text_hash": "b422f1e38b9a3affcc405bd64179a57068eb0730c7e9443d80ad692668fa5f95",
+      "translation_text_hash": "5014075b33a83128874230d6b5e92fd77007c7079c9b4a6e688f3ec8a2d25cab",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바후림에 있는 베냐민 사람 게라의 아들 시므이가 급히 유다 사람과 함께 다윗왕을 맞으려 내려올 때에"
+      ],
+      "raw_text_hashes": [
+        "5014075b33a83128874230d6b5e92fd77007c7079c9b4a6e688f3ec8a2d25cab"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:19:17",
+      "sequence": 8529,
+      "chapter_label": "2SA 19",
+      "verse_label": "17",
+      "locator": {
+        "book": "2SA",
+        "chapter": 19,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 19,
+          "verse": 17
+        }
+      ],
+      "en": "There were a thousand men of Benjamin with him, and Ziba the servant of Saul’s house, and his fifteen sons and his twenty servants with him; and they went through the Jordan in the presence of the king.",
+      "ko": "베냐민 사람 일천명이 저와 함께하고 사울의 사환 시바도 그 아들 열 다섯과 종 스무명으로 더불어 저와 함께하여 요단강을 밟고 건너 왕의 앞으로 나아오니라",
+      "source_text_hash": "0149b6c630a257495691e24a917cf1aab5b27ceb7ff6ac691be5df2a15286822",
+      "translation_text_hash": "019a15666242e113dbbad439b38ee7af20197251fead09cd23770fa31d8db1a5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베냐민 사람 일천명이 저와 함께하고 사울의 사환 시바도 그 아들 열 다섯과 종 스무명으로 더불어 저와 함께하여 요단강을 밟고 건너 왕의 앞으로 나아오니라"
+      ],
+      "raw_text_hashes": [
+        "019a15666242e113dbbad439b38ee7af20197251fead09cd23770fa31d8db1a5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:19:18",
+      "sequence": 8530,
+      "chapter_label": "2SA 19",
+      "verse_label": "18",
+      "locator": {
+        "book": "2SA",
+        "chapter": 19,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 19,
+          "verse": 18
+        }
+      ],
+      "en": "A ferry boat went to bring over the king’s household, and to do what he thought good. Shimei the son of Gera fell down before the king when he had come over the Jordan.",
+      "ko": "왕의 가족을 건네려 하며 왕의 선히 여기는대로 쓰게 하려하여 나룻배가 건너가니 왕이 요단을 건너려 할 때에 게라의 아들 시므이가 왕의 앞에 엎드려",
+      "source_text_hash": "31ba71f310af27ef083e4bc7d2f1ad520589f5f906afec050317d8005e80f15a",
+      "translation_text_hash": "6a1710d3fbbfe5f2a87fe5211ded9a61dc0be78095313f311e724f4c818b4b10",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕의 가족을 건네려 하며 왕의 선히 여기는대로 쓰게 하려하여 나룻배가 건너가니 왕이 요단을 건너려 할 때에 게라의 아들 시므이가 왕의 앞에 엎드려"
+      ],
+      "raw_text_hashes": [
+        "6a1710d3fbbfe5f2a87fe5211ded9a61dc0be78095313f311e724f4c818b4b10"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:19:19",
+      "sequence": 8531,
+      "chapter_label": "2SA 19",
+      "verse_label": "19",
+      "locator": {
+        "book": "2SA",
+        "chapter": 19,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 19,
+          "verse": 19
+        }
+      ],
+      "en": "He said to the king, “Don’t let my lord impute iniquity to me, or remember that which your servant did perversely the day that my lord the king went out of Jerusalem, that the king should take it to his heart.",
+      "ko": "왕께 고하되 내 주여 원컨대 내게 죄 주지 마옵소서 내 주 왕께서 예루살렘에서 나오시던 날에 종의 패역한 일을 기억하지 마옵시며 마음에 두지 마옵소서",
+      "source_text_hash": "d455f91e20d044f88dd34c566f87d8ac450cd4a1af05f9976986e06f7a296375",
+      "translation_text_hash": "1db30bdb5cb039507005b507ee02c6fd1d4527d8dd39b773a2bf184350884e99",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕께 고하되 내 주여 원컨대 내게 죄 주지 마옵소서 내 주 왕께서 예루살렘에서 나오시던 날에 종의 패역한 일을 기억하지 마옵시며 마음에 두지 마옵소서"
+      ],
+      "raw_text_hashes": [
+        "1db30bdb5cb039507005b507ee02c6fd1d4527d8dd39b773a2bf184350884e99"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:19:20",
+      "sequence": 8532,
+      "chapter_label": "2SA 19",
+      "verse_label": "20",
+      "locator": {
+        "book": "2SA",
+        "chapter": 19,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 19,
+          "verse": 20
+        }
+      ],
+      "en": "For your servant knows that I have sinned. Therefore behold, I have come today as the first of all the house of Joseph to go down to meet my lord the king.”",
+      "ko": "왕의 종 내가 범죄한줄 아옵는고로 오늘 요셉의 온 족속 중 내가 먼저 내려와서 내 주 왕을 영접하나이다",
+      "source_text_hash": "691c3e26e89a27a8073ea9c942f312d823df7bfac28ddc70fe5e822707162bca",
+      "translation_text_hash": "969135062084b4d6155f3ba7a59b61efb086856ca3a390b67ce1de213fa206b6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕의 종 내가 범죄한줄 아옵는고로 오늘 요셉의 온 족속 중 내가 먼저 내려와서 내 주 왕을 영접하나이다"
+      ],
+      "raw_text_hashes": [
+        "969135062084b4d6155f3ba7a59b61efb086856ca3a390b67ce1de213fa206b6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:19:21",
+      "sequence": 8533,
+      "chapter_label": "2SA 19",
+      "verse_label": "21",
+      "locator": {
+        "book": "2SA",
+        "chapter": 19,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 19,
+          "verse": 21
+        }
+      ],
+      "en": "But Abishai the son of Zeruiah answered, “Shouldn’t Shimei be put to death for this, because he cursed the LORD’s anointed?”",
+      "ko": "스루야의 아들 아비새가 대답하여 가로되 시므이가 여호와의 기름 부으신 자를 저주하였으니 그로 인하여 죽어야 마땅치 아니하니이까",
+      "source_text_hash": "b65c2812e57db3dff898737ad48c9cc0b03cb0e89e7912bb85bfcfd8cb0e0bbb",
+      "translation_text_hash": "f3c86845c1fb88b291357cb0375fca7ffe039977ff5fcd4cfbf772fd11162801",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "스루야의 아들 아비새가 대답하여 가로되 시므이가 여호와의 기름 부으신 자를 저주하였으니 그로 인하여 죽어야 마땅치 아니하니이까"
+      ],
+      "raw_text_hashes": [
+        "f3c86845c1fb88b291357cb0375fca7ffe039977ff5fcd4cfbf772fd11162801"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:19:22",
+      "sequence": 8534,
+      "chapter_label": "2SA 19",
+      "verse_label": "22",
+      "locator": {
+        "book": "2SA",
+        "chapter": 19,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 19,
+          "verse": 22
+        }
+      ],
+      "en": "David said, “What have I to do with you, you sons of Zeruiah, that you should be adversaries to me today? Shall any man be put to death today in Israel? For don’t I know that I am king over Israel today?”",
+      "ko": "다윗이 가로되 스루야의 아들들아 내가 너희와 무슨 상관이 있기로 너희가 오늘 나의 대적이 되느냐 오늘 어찌하여 이스라엘 가운데서 사람을 죽이겠느냐 내가 오늘날 이스라엘의 왕이 된 것을 내가 알지 못하리요 하고",
+      "source_text_hash": "79f17cf28768a38f7859b8f70d80c97648b6ec974e0fb227f18801213300b93d",
+      "translation_text_hash": "c47433a95400dc73571da69938ddb855fc7bb1e432cc917b1a22c8b19426b859",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 가로되 스루야의 아들들아 내가 너희와 무슨 상관이 있기로 너희가 오늘 나의 대적이 되느냐 오늘 어찌하여 이스라엘 가운데서 사람을 죽이겠느냐 내가 오늘날 이스라엘의 왕이 된 것을 내가 알지 못하리요 하고"
+      ],
+      "raw_text_hashes": [
+        "c47433a95400dc73571da69938ddb855fc7bb1e432cc917b1a22c8b19426b859"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:19:23",
+      "sequence": 8535,
+      "chapter_label": "2SA 19",
+      "verse_label": "23",
+      "locator": {
+        "book": "2SA",
+        "chapter": 19,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 19,
+          "verse": 23
+        }
+      ],
+      "en": "The king said to Shimei, “You will not die.” The king swore to him.",
+      "ko": "시므이에게 이르되 네가 죽지 아니하리라 하고 저에게 맹세하니라",
+      "source_text_hash": "da0b17fbb54bb6634d1fc529066f4cbebcbad5b8d87fb9e2140ddfc6ac5af634",
+      "translation_text_hash": "628b7184b949ad81c1533611a7f8e4b2149713a9625b61474e444129372bfc51",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시므이에게 이르되 네가 죽지 아니하리라 하고 저에게 맹세하니라"
+      ],
+      "raw_text_hashes": [
+        "628b7184b949ad81c1533611a7f8e4b2149713a9625b61474e444129372bfc51"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:19:24",
+      "sequence": 8536,
+      "chapter_label": "2SA 19",
+      "verse_label": "24",
+      "locator": {
+        "book": "2SA",
+        "chapter": 19,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 19,
+          "verse": 24
+        }
+      ],
+      "en": "Mephibosheth the son of Saul came down to meet the king; and he had neither groomed his feet, nor trimmed his beard, nor washed his clothes, from the day the king departed until the day he came home in peace.",
+      "ko": "사울의 손자 므비보셋이 내려와서 왕을 맞으니 저는 왕의 떠난 날부터 평안히 돌아오는 날까지 그 발을 맵시 내지 아니하며 그 수염을 깎지 아니하며 옷을 빨지 아니하였더라",
+      "source_text_hash": "c92a0d4652960496036db4683b83627621fb07e3af1ce800f8c27bc433c1a7d6",
+      "translation_text_hash": "07663e24a36c0c0ec489a68b06deef5ce8d697d81cc86b9ec2328ac1ab4c8fa4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울의 손자 므비보셋이 내려와서 왕을 맞으니 저는 왕의 떠난 날부터 평안히 돌아오는 날까지 그 발을 맵시 내지 아니하며 그 수염을 깎지 아니하며 옷을 빨지 아니하였더라"
+      ],
+      "raw_text_hashes": [
+        "07663e24a36c0c0ec489a68b06deef5ce8d697d81cc86b9ec2328ac1ab4c8fa4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:19:25",
+      "sequence": 8537,
+      "chapter_label": "2SA 19",
+      "verse_label": "25",
+      "locator": {
+        "book": "2SA",
+        "chapter": 19,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 19,
+          "verse": 25
+        }
+      ],
+      "en": "When he had come to Jerusalem to meet the king, the king said to him, “Why didn’t you go with me, Mephibosheth?”",
+      "ko": "예루살렘에서 와서 왕을 맞을 때에 왕이 저에게 물어 가로되 므비보셋이여 네가 어찌하여 나와 함께 가지 아니하였더뇨",
+      "source_text_hash": "98d5bdbfa2c56591b3f965bc96d1989fa7c605caeb92373805c5b4e4741b8688",
+      "translation_text_hash": "875d9de01ef667ece9e33ec6122850757fec01d3f6bab0cbfd721df885e13e33",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예루살렘에서 와서 왕을 맞을 때에 왕이 저에게 물어 가로되 므비보셋이여 네가 어찌하여 나와 함께 가지 아니하였더뇨"
+      ],
+      "raw_text_hashes": [
+        "875d9de01ef667ece9e33ec6122850757fec01d3f6bab0cbfd721df885e13e33"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:19:26",
+      "sequence": 8538,
+      "chapter_label": "2SA 19",
+      "verse_label": "26",
+      "locator": {
+        "book": "2SA",
+        "chapter": 19,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 19,
+          "verse": 26
+        }
+      ],
+      "en": "He answered, “My lord, O king, my servant deceived me. For your servant said, ‘I will saddle a donkey for myself, that I may ride on it and go with the king,’ because your servant is lame.",
+      "ko": "대답하되 내 주 왕이여 왕의 종 나는 절뚝발이이므로 내 나귀에 안장을 지워 타고 왕과 함께 가려 하였더니 나의 종이 나를 속이고",
+      "source_text_hash": "25ad015ad1ad59693387e49a2bf30854f6876092e8ecb891b89b3d012149a86b",
+      "translation_text_hash": "829a4b7ce276cef82f2e121e889856890ed9437d206e20c4c25f184e55371cfc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대답하되 내 주 왕이여 왕의 종 나는 절뚝발이이므로 내 나귀에 안장을 지워 타고 왕과 함께 가려 하였더니 나의 종이 나를 속이고"
+      ],
+      "raw_text_hashes": [
+        "829a4b7ce276cef82f2e121e889856890ed9437d206e20c4c25f184e55371cfc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:19:27",
+      "sequence": 8539,
+      "chapter_label": "2SA 19",
+      "verse_label": "27",
+      "locator": {
+        "book": "2SA",
+        "chapter": 19,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 19,
+          "verse": 27
+        }
+      ],
+      "en": "He has slandered your servant to my lord the king, but my lord the king is as an angel of God. Therefore do what is good in your eyes.",
+      "ko": "종 나를 내 주 왕께 참소하였나이다 내 주 왕께서는 하나님의 사자와 같으시니 왕의 처분대로 하옵소서",
+      "source_text_hash": "5434d0dcf3ac6cb2602066ea487591470c7ed03dde43cbe5eed207aef4591a90",
+      "translation_text_hash": "1fe503433b52579a6067ce159e52510fc030e525b20fb33502a8a1bd6353d5b3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "종 나를 내 주 왕께 참소하였나이다 내 주 왕께서는 하나님의 사자와 같으시니 왕의 처분대로 하옵소서"
+      ],
+      "raw_text_hashes": [
+        "1fe503433b52579a6067ce159e52510fc030e525b20fb33502a8a1bd6353d5b3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:19:28",
+      "sequence": 8540,
+      "chapter_label": "2SA 19",
+      "verse_label": "28",
+      "locator": {
+        "book": "2SA",
+        "chapter": 19,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 19,
+          "verse": 28
+        }
+      ],
+      "en": "For all my father’s house were but dead men before my lord the king; yet you set your servant among those who ate at your own table. What right therefore have I yet that I should appeal any more to the king?”",
+      "ko": "내 아비의 온 집이 내 주 왕 앞에서는 다만 죽을 사람이 되지 아니하였었나이까 그러나 종을 왕의 상에서 음식 먹는 자 가운데 두셨사오니 내게 오히려 무슨 옳음이 있어서 다시 왕께 부르짖을 수 있사오리이까",
+      "source_text_hash": "78e1604739be6dcbfb3aa0d1f72a4751e530bce7a1db8a96c611eb00bbc19353",
+      "translation_text_hash": "5b0ee4221ef3056dcc4742b92a9e4afdd5a463bf945ce4ae75f805add06a4ff6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 아비의 온 집이 내 주 왕 앞에서는 다만 죽을 사람이 되지 아니하였었나이까 그러나 종을 왕의 상에서 음식 먹는 자 가운데 두셨사오니 내게 오히려 무슨 옳음이 있어서 다시 왕께 부르짖을 수 있사오리이까"
+      ],
+      "raw_text_hashes": [
+        "5b0ee4221ef3056dcc4742b92a9e4afdd5a463bf945ce4ae75f805add06a4ff6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:19:29",
+      "sequence": 8541,
+      "chapter_label": "2SA 19",
+      "verse_label": "29",
+      "locator": {
+        "book": "2SA",
+        "chapter": 19,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 19,
+          "verse": 29
+        }
+      ],
+      "en": "The king said to him, “Why do you speak any more of your matters? I say, you and Ziba divide the land.”",
+      "ko": "왕이 저에게 이르되 네가 어찌하여 또 네 일을 말하느냐 내가 이르노니 너는 시바와 밭을 나누라",
+      "source_text_hash": "54cff03cecdaedfe42143c467b9d04f88e1a09d96a2eefb1e5597c2a2b6bda35",
+      "translation_text_hash": "d01d82960e7c3e8ad41f2d4fdc7649679f4a93085f1da2cf8b285b8f5c4a7fdd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 저에게 이르되 네가 어찌하여 또 네 일을 말하느냐 내가 이르노니 너는 시바와 밭을 나누라"
+      ],
+      "raw_text_hashes": [
+        "d01d82960e7c3e8ad41f2d4fdc7649679f4a93085f1da2cf8b285b8f5c4a7fdd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:19:30",
+      "sequence": 8542,
+      "chapter_label": "2SA 19",
+      "verse_label": "30",
+      "locator": {
+        "book": "2SA",
+        "chapter": 19,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 19,
+          "verse": 30
+        }
+      ],
+      "en": "Mephibosheth said to the king, “Yes, let him take all, because my lord the king has come in peace to his own house.”",
+      "ko": "므비보셋이 왕께 고하되 내 주 왕께서 평안히 궁에 돌아오시게 되었으니 저로 그 전부를 차지하게 하옵소서 하니라",
+      "source_text_hash": "38cf52dcda33fc3ada47f062c1f5f513b79e60b907bd9eb7af3b7642e04fc910",
+      "translation_text_hash": "93048b0937f05c558433c44087bbf59bda417a68849c81042964bfbaa978642b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "므비보셋이 왕께 고하되 내 주 왕께서 평안히 궁에 돌아오시게 되었으니 저로 그 전부를 차지하게 하옵소서 하니라"
+      ],
+      "raw_text_hashes": [
+        "93048b0937f05c558433c44087bbf59bda417a68849c81042964bfbaa978642b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:19:31",
+      "sequence": 8543,
+      "chapter_label": "2SA 19",
+      "verse_label": "31",
+      "locator": {
+        "book": "2SA",
+        "chapter": 19,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 19,
+          "verse": 31
+        }
+      ],
+      "en": "Barzillai the Gileadite came down from Rogelim; and he went over the Jordan with the king to conduct him over the Jordan.",
+      "ko": "길르앗 사람 바르실래가 왕을 보내어 요단을 건네려고 로글림에서 내려와서 함께 요단에 이르니",
+      "source_text_hash": "77ee1a294d8a0c73f7748c609ba9cd2e9359994a254293e45dc0b97b435ace30",
+      "translation_text_hash": "e12eafd34ea9cb1b6cbb35cb5c4b8e44ffa6a57be0a1c9450fec10b31261d080",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "길르앗 사람 바르실래가 왕을 보내어 요단을 건네려고 로글림에서 내려와서 함께 요단에 이르니"
+      ],
+      "raw_text_hashes": [
+        "e12eafd34ea9cb1b6cbb35cb5c4b8e44ffa6a57be0a1c9450fec10b31261d080"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:19:32",
+      "sequence": 8544,
+      "chapter_label": "2SA 19",
+      "verse_label": "32",
+      "locator": {
+        "book": "2SA",
+        "chapter": 19,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 19,
+          "verse": 32
+        }
+      ],
+      "en": "Now Barzillai was a very aged man, even eighty years old. He had provided the king with sustenance while he stayed at Mahanaim, for he was a very great man.",
+      "ko": "바르실래는 매우 늙어 나이 팔십세라 저는 거부인고로 왕이 마하나임에 유할 때에 왕을 공궤하였더라",
+      "source_text_hash": "8fd23af75e4b9bf32dd828d60329b65bd3a68ed057dfb45661c86bae5abaaf84",
+      "translation_text_hash": "e14eadc5b329f65243a29ebaece7ba14bc02d10fd4c0192bcbfe502514843092",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바르실래는 매우 늙어 나이 팔십세라 저는 거부인고로 왕이 마하나임에 유할 때에 왕을 공궤하였더라"
+      ],
+      "raw_text_hashes": [
+        "e14eadc5b329f65243a29ebaece7ba14bc02d10fd4c0192bcbfe502514843092"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:19:33",
+      "sequence": 8545,
+      "chapter_label": "2SA 19",
+      "verse_label": "33",
+      "locator": {
+        "book": "2SA",
+        "chapter": 19,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 19,
+          "verse": 33
+        }
+      ],
+      "en": "The king said to Barzillai, “Come over with me, and I will sustain you with me in Jerusalem.”",
+      "ko": "왕이 바르실래에게 이르되 너는 나와 함께 건너가자 예루살렘에서 내가 너를 공궤하리라",
+      "source_text_hash": "20b79cb79c00624507a582b92f53168e0dc58721971ac60c193c4521e35bfc54",
+      "translation_text_hash": "750bfc59df591e512634ab08ee41f4fc9533b43b9b2137d64b2c087bcbbace77",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 바르실래에게 이르되 너는 나와 함께 건너가자 예루살렘에서 내가 너를 공궤하리라"
+      ],
+      "raw_text_hashes": [
+        "750bfc59df591e512634ab08ee41f4fc9533b43b9b2137d64b2c087bcbbace77"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:19:34",
+      "sequence": 8546,
+      "chapter_label": "2SA 19",
+      "verse_label": "34",
+      "locator": {
+        "book": "2SA",
+        "chapter": 19,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 19,
+          "verse": 34
+        }
+      ],
+      "en": "Barzillai said to the king, “How many are the days of the years of my life, that I should go up with the king to Jerusalem?",
+      "ko": "바르실래가 왕께 고하되 내 생명의 날이 얼마나 있삽관대 어찌 왕과 함께 예루살렘으로 올라가리이까",
+      "source_text_hash": "696ae909dc30eb47d919b76b3e5babe151bc8352bcd76f5015ce8076e205675e",
+      "translation_text_hash": "a79a4c726d4dab62699f2f9d2e3423435a0123e31f526309292c31b0d866ef4e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바르실래가 왕께 고하되 내 생명의 날이 얼마나 있삽관대 어찌 왕과 함께 예루살렘으로 올라가리이까"
+      ],
+      "raw_text_hashes": [
+        "a79a4c726d4dab62699f2f9d2e3423435a0123e31f526309292c31b0d866ef4e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:19:35",
+      "sequence": 8547,
+      "chapter_label": "2SA 19",
+      "verse_label": "35",
+      "locator": {
+        "book": "2SA",
+        "chapter": 19,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 19,
+          "verse": 35
+        }
+      ],
+      "en": "I am eighty years old, today. Can I discern between good and bad? Can your servant taste what I eat or what I drink? Can I hear the voice of singing men and singing women any more? Why then should your servant be a burden to my lord the king?",
+      "ko": "내 나이 이제 팔십세라 어떻게 좋고 흉한 것을 분간할 수 있사오며 음식의 맛을 알 수 있사오리이까 어떻게 다시 노래하는 남자나 여인의 소리를 알아 들을 수 있사오리이까 어찌하여 종이 내 주 왕께 오히려 누를 끼치리이까",
+      "source_text_hash": "5d1baeddb2b22bc3b7cd0cb1e11fc3e523ed3e4d9ddecf3cea76c1c3ed33b2b7",
+      "translation_text_hash": "5dfbefebf374f781066efeeb304ddb11f6964408150becf93def6257ce7990fd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 나이 이제 팔십세라 어떻게 좋고 흉한 것을 분간할 수 있사오며 음식의 맛을 알 수 있사오리이까 어떻게 다시 노래하는 남자나 여인의 소리를 알아 들을 수 있사오리이까 어찌하여 종이 내 주 왕께 오히려 누를 끼치리이까"
+      ],
+      "raw_text_hashes": [
+        "5dfbefebf374f781066efeeb304ddb11f6964408150becf93def6257ce7990fd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:19:36",
+      "sequence": 8548,
+      "chapter_label": "2SA 19",
+      "verse_label": "36",
+      "locator": {
+        "book": "2SA",
+        "chapter": 19,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 19,
+          "verse": 36
+        }
+      ],
+      "en": "Your servant will just go over the Jordan with the king. Why should the king repay me with such a reward?",
+      "ko": "종은 왕을 모시고 요단을 건너려는 것뿐이어늘 왕께서 어찌하여 이같은 상으로 내게 갚으려 하시나이까",
+      "source_text_hash": "e13975947afe8ce42bbfe1ccc654aaa4ca611d281535ff511c72a99fb3ec2cf9",
+      "translation_text_hash": "1de29a2bc58da319b830328aed13eab56f51edcc7764d7bf332c93aa535f9c0a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "종은 왕을 모시고 요단을 건너려는 것뿐이어늘 왕께서 어찌하여 이같은 상으로 내게 갚으려 하시나이까"
+      ],
+      "raw_text_hashes": [
+        "1de29a2bc58da319b830328aed13eab56f51edcc7764d7bf332c93aa535f9c0a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:19:37",
+      "sequence": 8549,
+      "chapter_label": "2SA 19",
+      "verse_label": "37",
+      "locator": {
+        "book": "2SA",
+        "chapter": 19,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 19,
+          "verse": 37
+        }
+      ],
+      "en": "Please let your servant turn back again, that I may die in my own city, by the grave of my father and my mother. But behold, your servant Chimham; let him go over with my lord the king; and do to him what shall seem good to you.”",
+      "ko": "청컨대 종을 돌려 보내옵소서 내가 내 본성 부모의 묘 곁에서 죽으려 하나이다 그러나 왕의 종 김함이 여기 있사오니 청컨대 저로 내 주 왕과 함께 건너가게 하옵시고 왕의 처분대로 저에게 베푸소서",
+      "source_text_hash": "4733e8cd3588c5d7874dbe9a59283ae89dff70c4ac0f4a77c3a692da285bc289",
+      "translation_text_hash": "64de47191ee12f9538f8b5e5c17395b02bd829504665ec2b36f0305dc4d10a62",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "청컨대 종을 돌려 보내옵소서 내가 내 본성 부모의 묘 곁에서 죽으려 하나이다 그러나 왕의 종 김함이 여기 있사오니 청컨대 저로 내 주 왕과 함께 건너가게 하옵시고 왕의 처분대로 저에게 베푸소서"
+      ],
+      "raw_text_hashes": [
+        "64de47191ee12f9538f8b5e5c17395b02bd829504665ec2b36f0305dc4d10a62"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:19:38",
+      "sequence": 8550,
+      "chapter_label": "2SA 19",
+      "verse_label": "38",
+      "locator": {
+        "book": "2SA",
+        "chapter": 19,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 19,
+          "verse": 38
+        }
+      ],
+      "en": "The king answered, “Chimham shall go over with me, and I will do to him that which shall seem good to you. Whatever you request of me, that I will do for you.”",
+      "ko": "왕이 대답하되 김함이 나와 함께 건너가리니 내가 너의 좋아하는대로 저에게 베풀겠고 또 네가 내게 구하는 것은 다 너를 위하여 시행하리라 하니라",
+      "source_text_hash": "260eaa5f4ebc52741d45701423a4960ac34ebaf5942a29990600b8db1bc006f5",
+      "translation_text_hash": "1168e2c36c6fe8dc72b0618009ee52cd1354680c3261303cec0933845e5c1607",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 대답하되 김함이 나와 함께 건너가리니 내가 너의 좋아하는대로 저에게 베풀겠고 또 네가 내게 구하는 것은 다 너를 위하여 시행하리라 하니라"
+      ],
+      "raw_text_hashes": [
+        "1168e2c36c6fe8dc72b0618009ee52cd1354680c3261303cec0933845e5c1607"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:19:39",
+      "sequence": 8551,
+      "chapter_label": "2SA 19",
+      "verse_label": "39",
+      "locator": {
+        "book": "2SA",
+        "chapter": 19,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 19,
+          "verse": 39
+        }
+      ],
+      "en": "All the people went over the Jordan, and the king went over. Then the king kissed Barzillai and blessed him; and he returned to his own place.",
+      "ko": "백성이 다 요단을 건너매 왕도 건너가서 바르실래의 입을 맞추고 위하여 복을 비니 저가 자기 곳으로 돌아가니라",
+      "source_text_hash": "6979d5ac2dcae843c31383dd8adc06bc5839880505fce2d3e7b51c11cb6b65af",
+      "translation_text_hash": "cf032ad1f3046a7db9c06c32ff53a69035dd145c834a378463cbf3ed76667a8d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "백성이 다 요단을 건너매 왕도 건너가서 바르실래의 입을 맞추고 위하여 복을 비니 저가 자기 곳으로 돌아가니라"
+      ],
+      "raw_text_hashes": [
+        "cf032ad1f3046a7db9c06c32ff53a69035dd145c834a378463cbf3ed76667a8d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:19:40",
+      "sequence": 8552,
+      "chapter_label": "2SA 19",
+      "verse_label": "40",
+      "locator": {
+        "book": "2SA",
+        "chapter": 19,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 19,
+          "verse": 40
+        }
+      ],
+      "en": "So the king went over to Gilgal, and Chimham went over with him. All the people of Judah brought the king over, and also half the people of Israel.",
+      "ko": "왕이 길갈로 건너오고 김함도 함께 건너오니 온 유다 백성과 이스라엘 백성의 절반이나 왕을 호행하니라",
+      "source_text_hash": "73504c3550b32089923879aced71eac7b1631aa5c0741048d3e1acfa8c74580a",
+      "translation_text_hash": "7e43bc6aaf3b2d325a57ff441495030679d2b44f7ff151c7344bac9571b2a489",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 길갈로 건너오고 김함도 함께 건너오니 온 유다 백성과 이스라엘 백성의 절반이나 왕을 호행하니라"
+      ],
+      "raw_text_hashes": [
+        "7e43bc6aaf3b2d325a57ff441495030679d2b44f7ff151c7344bac9571b2a489"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:19:41",
+      "sequence": 8553,
+      "chapter_label": "2SA 19",
+      "verse_label": "41",
+      "locator": {
+        "book": "2SA",
+        "chapter": 19,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 19,
+          "verse": 41
+        }
+      ],
+      "en": "Behold, all the men of Israel came to the king, and said to the king, “Why have our brothers the men of Judah stolen you away, and brought the king and his household, over the Jordan, and all David’s men with him?”",
+      "ko": "온 이스라엘 사람이 왕께 나아와서 고하되 우리 형제 유다 사람들이 어찌 왕을 도적하여 왕과 왕의 권속과 왕을 좇는 모든 사람을 인도하여 요단을 건네었나이까 하매",
+      "source_text_hash": "4c8c1b02fa815e83e8d3169b77fe651f4f99f76ad1d326bf394eb16944ce9ad9",
+      "translation_text_hash": "7b3027056ec8e426d4cc2be53e6ea16cedd9c97ed3cddca7c990a4d1f2ec9ea2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "온 이스라엘 사람이 왕께 나아와서 고하되 우리 형제 유다 사람들이 어찌 왕을 도적하여 왕과 왕의 권속과 왕을 좇는 모든 사람을 인도하여 요단을 건네었나이까 하매"
+      ],
+      "raw_text_hashes": [
+        "7b3027056ec8e426d4cc2be53e6ea16cedd9c97ed3cddca7c990a4d1f2ec9ea2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:19:42",
+      "sequence": 8554,
+      "chapter_label": "2SA 19",
+      "verse_label": "42",
+      "locator": {
+        "book": "2SA",
+        "chapter": 19,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 19,
+          "verse": 42
+        }
+      ],
+      "en": "All the men of Judah answered the men of Israel, “Because the king is a close relative to us. Why then are you angry about this matter? Have we eaten at all at the king’s cost? Or has he given us any gift?”",
+      "ko": "유다 모든 사람이 이스라엘 사람에게 대답하되 왕은 우리의 지친인 까닭이라 너희가 어찌 이 일에 대하여 분내느냐 우리가 왕의 물건을 조금이라도 먹었느냐 왕께서 우리에게 선물 주신 것이 있느냐",
+      "source_text_hash": "b2f305e1d4ec050162cf6fcbf3a0ba16352c69c93718a984baf9da17905c3710",
+      "translation_text_hash": "c7793de84c213886aaa6815b7910bb196ae9abd1cc18e413fbe7a9aa9220f98d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다 모든 사람이 이스라엘 사람에게 대답하되 왕은 우리의 지친인 까닭이라 너희가 어찌 이 일에 대하여 분내느냐 우리가 왕의 물건을 조금이라도 먹었느냐 왕께서 우리에게 선물 주신 것이 있느냐"
+      ],
+      "raw_text_hashes": [
+        "c7793de84c213886aaa6815b7910bb196ae9abd1cc18e413fbe7a9aa9220f98d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:19:43",
+      "sequence": 8555,
+      "chapter_label": "2SA 19",
+      "verse_label": "43",
+      "locator": {
+        "book": "2SA",
+        "chapter": 19,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 19,
+          "verse": 43
+        }
+      ],
+      "en": "The men of Israel answered the men of Judah, and said, “We have ten parts in the king, and we have also more claim to David than you. Why then did you despise us, that our advice should not be first had in bringing back our king?” The words of the men of Judah were fiercer than the words of the men of Israel.",
+      "ko": "이스라엘 사람이 유다 사람에게 대답하여 이르되 우리는 왕에 대하여 십분을 가졌으니 다윗에게 대하여 너희보다 더욱 관계가 있거늘 너희가 어찌 우리를 멸시하여 우리 왕을 모셔오는 일에 먼저 우리와 의논하지 아니하였느냐 하나 유다 사람의 말이 이스라엘 사람의 말보다 더 강경하였더라",
+      "source_text_hash": "8a8c79ed4928f2b496acb9b2b10c9cf7dc0d3561414cb1971aa503e238b031d9",
+      "translation_text_hash": "fa577d0413b551d7669b50455eab5f6fcc1676c8e5032594ae0a7ffc3b4d673a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 사람이 유다 사람에게 대답하여 이르되 우리는 왕에 대하여 십분을 가졌으니 다윗에게 대하여 너희보다 더욱 관계가 있거늘 너희가 어찌 우리를 멸시하여 우리 왕을 모셔오는 일에 먼저 우리와 의논하지 아니하였느냐 하나 유다 사람의 말이 이스라엘 사람의 말보다 더 강경하였더라"
+      ],
+      "raw_text_hashes": [
+        "fa577d0413b551d7669b50455eab5f6fcc1676c8e5032594ae0a7ffc3b4d673a"
+      ]
+    }
+  ]
+}

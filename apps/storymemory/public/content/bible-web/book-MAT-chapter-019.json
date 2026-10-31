@@ -1,0 +1,973 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:MAT:chapter:019",
+  "unit_ordinal": 948,
+  "unit_label": "MAT 19",
+  "book_code": "MAT",
+  "chapter_number": 19,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:MAT:19:1",
+      "sequence": 23764,
+      "chapter_label": "MAT 19",
+      "verse_label": "1",
+      "locator": {
+        "book": "MAT",
+        "chapter": 19,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 19,
+          "verse": 1
+        }
+      ],
+      "en": "When Jesus had finished these words, he departed from Galilee and came into the borders of Judea beyond the Jordan.",
+      "ko": "예수께서 이 말씀을 마치시고 갈릴리에서 떠나 요단강 건너 유대 지경에 이르시니",
+      "source_text_hash": "7877544cf236313172d41d2ca41e91220114a333f41a099d6d445793a64bedde",
+      "translation_text_hash": "6aec1ff16b417d472860709894bbf3c35f952b5cf9adc13b5ea4dae2090a52b5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 이 말씀을 마치시고 갈릴리에서 떠나 요단강 건너 유대 지경에 이르시니"
+      ],
+      "raw_text_hashes": [
+        "6aec1ff16b417d472860709894bbf3c35f952b5cf9adc13b5ea4dae2090a52b5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:19:2",
+      "sequence": 23765,
+      "chapter_label": "MAT 19",
+      "verse_label": "2",
+      "locator": {
+        "book": "MAT",
+        "chapter": 19,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 19,
+          "verse": 2
+        }
+      ],
+      "en": "Great multitudes followed him, and he healed them there.",
+      "ko": "큰 무리가 좇거늘 예수께서 거기서 저희 병을 고치시더라",
+      "source_text_hash": "db5a900266ed89e0194521e8f89a4b38bf56620caf71be2e85778767ce38d08a",
+      "translation_text_hash": "fbdfe1aef8b93c2f8b050066b88d95984007f658e9fffd86f6634c250a8ec87d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "큰 무리가 좇거늘 예수께서 거기서 저희 병을 고치시더라"
+      ],
+      "raw_text_hashes": [
+        "fbdfe1aef8b93c2f8b050066b88d95984007f658e9fffd86f6634c250a8ec87d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:19:3",
+      "sequence": 23766,
+      "chapter_label": "MAT 19",
+      "verse_label": "3",
+      "locator": {
+        "book": "MAT",
+        "chapter": 19,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 19,
+          "verse": 3
+        }
+      ],
+      "en": "Pharisees came to him, testing him and saying, “Is it lawful for a man to divorce his wife for any reason?”",
+      "ko": "바리새인들이 예수께 나아와 그를 시험하여 가로되 사람이 아무 연고를 물론하고 그 아내를 내어버리는 것이 옳으니이까",
+      "source_text_hash": "468b1c8b05ccb64f3582b1c1734a01b48e579f617a8df4f134081f42ab27a186",
+      "translation_text_hash": "5ec3e64651770352a7809d989e4e6055b18c2ae622b67fba781c17546498c1fb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바리새인들이 예수께 나아와 그를 시험하여 가로되 사람이 아무 연고를 물론하고 그 아내를 내어버리는 것이 옳으니이까"
+      ],
+      "raw_text_hashes": [
+        "5ec3e64651770352a7809d989e4e6055b18c2ae622b67fba781c17546498c1fb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:19:4",
+      "sequence": 23767,
+      "chapter_label": "MAT 19",
+      "verse_label": "4",
+      "locator": {
+        "book": "MAT",
+        "chapter": 19,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 19,
+          "verse": 4
+        }
+      ],
+      "en": "He answered, “Haven’t you read that he who made them from the beginning made them male and female,",
+      "ko": "예수께서 대답하여 가라사대 사람을 지으신 이가 본래 저희를 남자와 여자로 만드시고",
+      "source_text_hash": "1f8ff86b3a2d6b8c6b30bee5d78622985d03bc1b7050256168109791a4e4e651",
+      "translation_text_hash": "d933ade4f169114e8446aed43082dc63b0dbb55b320b77240496fa370b2c16bc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 대답하여 가라사대 사람을 지으신 이가 본래 저희를 남자와 여자로 만드시고"
+      ],
+      "raw_text_hashes": [
+        "d933ade4f169114e8446aed43082dc63b0dbb55b320b77240496fa370b2c16bc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:19:5",
+      "sequence": 23768,
+      "chapter_label": "MAT 19",
+      "verse_label": "5",
+      "locator": {
+        "book": "MAT",
+        "chapter": 19,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 19,
+          "verse": 5
+        }
+      ],
+      "en": "and said, ‘For this cause a man shall leave his father and mother, and shall be joined to his wife; and the two shall become one flesh’?",
+      "ko": "말씀하시기를 이러므로 사람이 그 부모를 떠나서 아내에게 합하여 그 둘이 한 몸이 될찌니라 하신 것을 읽지 못하였느냐",
+      "source_text_hash": "be0582d3cdf7160eeb4ba543ddf9daa01cbd275fcd8746dfade30a2dda14c9a4",
+      "translation_text_hash": "cef32f3dd92d864a448ca0c821d1054cf5b6299972e71da1fe8150e5b9637c51",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "말씀하시기를 이러므로 사람이 그 부모를 떠나서 아내에게 합하여 그 둘이 한 몸이 될찌니라 하신 것을 읽지 못하였느냐"
+      ],
+      "raw_text_hashes": [
+        "cef32f3dd92d864a448ca0c821d1054cf5b6299972e71da1fe8150e5b9637c51"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:19:6",
+      "sequence": 23769,
+      "chapter_label": "MAT 19",
+      "verse_label": "6",
+      "locator": {
+        "book": "MAT",
+        "chapter": 19,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 19,
+          "verse": 6
+        }
+      ],
+      "en": "So that they are no more two, but one flesh. What therefore God has joined together, don’t let man tear apart.”",
+      "ko": "이러한즉 이제 둘이 아니요 한 몸이니 그러므로 하나님이 짝지어 주신 것을 사람이 나누지 못할찌니라 하시니",
+      "source_text_hash": "e8eea686da4c0a4da011c25c8fb74672c256a35e1aa607622b3eb8574abf6ddf",
+      "translation_text_hash": "d3a8111b44966781f3a0e1217623956579a3cd7294921da2e584555b62397664",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러한즉 이제 둘이 아니요 한 몸이니 그러므로 하나님이 짝지어 주신 것을 사람이 나누지 못할찌니라 하시니"
+      ],
+      "raw_text_hashes": [
+        "d3a8111b44966781f3a0e1217623956579a3cd7294921da2e584555b62397664"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:19:7",
+      "sequence": 23770,
+      "chapter_label": "MAT 19",
+      "verse_label": "7",
+      "locator": {
+        "book": "MAT",
+        "chapter": 19,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 19,
+          "verse": 7
+        }
+      ],
+      "en": "They asked him, “Why then did Moses command us to give her a certificate of divorce and divorce her?”",
+      "ko": "여짜오되 그러하면 어찌하여 모세는 이혼 증서를 주어서 내어버리라 명하였나이까",
+      "source_text_hash": "77bdbe400ffe63c60111986258fa436dffc105ec3fa15c66ec337be621d8fd8d",
+      "translation_text_hash": "f1ac62689f7473a4d1ebfce5f283a6a140dce2d096a8f543133ac6e18435856e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여짜오되 그러하면 어찌하여 모세는 이혼 증서를 주어서 내어버리라 명하였나이까"
+      ],
+      "raw_text_hashes": [
+        "f1ac62689f7473a4d1ebfce5f283a6a140dce2d096a8f543133ac6e18435856e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:19:8",
+      "sequence": 23771,
+      "chapter_label": "MAT 19",
+      "verse_label": "8",
+      "locator": {
+        "book": "MAT",
+        "chapter": 19,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 19,
+          "verse": 8
+        }
+      ],
+      "en": "He said to them, “Moses, because of the hardness of your hearts, allowed you to divorce your wives, but from the beginning it has not been so.",
+      "ko": "예수께서 가라사대 모세가 너희 마음의 완악함을 인하여 아내 내어버림을 허락하였거니와 본래는 그렇지 아니하니라",
+      "source_text_hash": "01f48ec2e217a0898eed7a00b0da524e8a278d447821a3266712cb1a35709344",
+      "translation_text_hash": "a39a8e9a62e8ef4a9dff4bf26ecb8473e5f4d0479cd7948cbdfd6de974726972",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 가라사대 모세가 너희 마음의 완악함을 인하여 아내 내어버림을 허락하였거니와 본래는 그렇지 아니하니라"
+      ],
+      "raw_text_hashes": [
+        "a39a8e9a62e8ef4a9dff4bf26ecb8473e5f4d0479cd7948cbdfd6de974726972"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:19:9",
+      "sequence": 23772,
+      "chapter_label": "MAT 19",
+      "verse_label": "9",
+      "locator": {
+        "book": "MAT",
+        "chapter": 19,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 19,
+          "verse": 9
+        }
+      ],
+      "en": "I tell you that whoever divorces his wife, except for sexual immorality, and marries another, commits adultery; and he who marries her when she is divorced commits adultery.”",
+      "ko": "내가 너희에게 말하노니 누구든지 음행한 연고 외에 아내를 내어버리고 다른데 장가 드는 자는 간음함이니라",
+      "source_text_hash": "09a53e45686f17123f1d19327c5ea3094a907c545338bd307ac457178d75b0bc",
+      "translation_text_hash": "e3b51a83a0a3e7ee4377f4e46a795ec4ae25e50a3ebe4d7f910314f4b8c966ac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너희에게 말하노니 누구든지 음행한 연고 외에 아내를 내어버리고 다른데 장가 드는 자는 간음함이니라"
+      ],
+      "raw_text_hashes": [
+        "e3b51a83a0a3e7ee4377f4e46a795ec4ae25e50a3ebe4d7f910314f4b8c966ac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:19:10",
+      "sequence": 23773,
+      "chapter_label": "MAT 19",
+      "verse_label": "10",
+      "locator": {
+        "book": "MAT",
+        "chapter": 19,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 19,
+          "verse": 10
+        }
+      ],
+      "en": "His disciples said to him, “If this is the case of the man with his wife, it is not expedient to marry.”",
+      "ko": "제자들이 가로되 만일 사람이 아내에게 이같이 할찐대 장가 들지 않는 것이 좋삽나이다",
+      "source_text_hash": "e9e733b1cc1abed96ec333bb6ee287f2c22695f5e5e191bef19628ffe3537130",
+      "translation_text_hash": "29a1f2c504959c37911d5cccfadc7ba58db2fe8946c927ff600dd3c8ced28322",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제자들이 가로되 만일 사람이 아내에게 이같이 할찐대 장가 들지 않는 것이 좋삽나이다"
+      ],
+      "raw_text_hashes": [
+        "29a1f2c504959c37911d5cccfadc7ba58db2fe8946c927ff600dd3c8ced28322"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:19:11",
+      "sequence": 23774,
+      "chapter_label": "MAT 19",
+      "verse_label": "11",
+      "locator": {
+        "book": "MAT",
+        "chapter": 19,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 19,
+          "verse": 11
+        }
+      ],
+      "en": "But he said to them, “Not all men can receive this saying, but those to whom it is given.",
+      "ko": "예수께서 가라사대 사람마다 이 말을 받지 못하고 오직 타고난 자라야 할찌니라",
+      "source_text_hash": "72814ac538cb579943828e19f0cd7b26faf16e1771583467694bb5bd4d764361",
+      "translation_text_hash": "9f826f83cc5092fc8d295174d9106b0b94473f4e4422eef796931baab33f7f6e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 가라사대 사람마다 이 말을 받지 못하고 오직 타고난 자라야 할찌니라"
+      ],
+      "raw_text_hashes": [
+        "9f826f83cc5092fc8d295174d9106b0b94473f4e4422eef796931baab33f7f6e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:19:12",
+      "sequence": 23775,
+      "chapter_label": "MAT 19",
+      "verse_label": "12",
+      "locator": {
+        "book": "MAT",
+        "chapter": 19,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 19,
+          "verse": 12
+        }
+      ],
+      "en": "For there are eunuchs who were born that way from their mother’s womb, and there are eunuchs who were made eunuchs by men; and there are eunuchs who made themselves eunuchs for the Kingdom of Heaven’s sake. He who is able to receive it, let him receive it.”",
+      "ko": "어미의 태로부터 된 고자도 있고 사람이 만든 고자도 있고 천국을 위하여 스스로 된 고자도 있도다 이 말을 받을만한 자는 받을찌어다",
+      "source_text_hash": "fad694c33d70866b1e4ecd6be188e74939e021f9ce716a06b0191c26055f2c93",
+      "translation_text_hash": "07b9331528c937d149b29eef35081d5ae946bc16c445fc7cd99036d7aef9287d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어미의 태로부터 된 고자도 있고 사람이 만든 고자도 있고 천국을 위하여 스스로 된 고자도 있도다 이 말을 받을만한 자는 받을찌어다"
+      ],
+      "raw_text_hashes": [
+        "07b9331528c937d149b29eef35081d5ae946bc16c445fc7cd99036d7aef9287d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:19:13",
+      "sequence": 23776,
+      "chapter_label": "MAT 19",
+      "verse_label": "13",
+      "locator": {
+        "book": "MAT",
+        "chapter": 19,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 19,
+          "verse": 13
+        }
+      ],
+      "en": "Then little children were brought to him that he should lay his hands on them and pray; and the disciples rebuked them.",
+      "ko": "때에 사람들이 예수의 안수하고 기도하심을 바라고 어린 아이들을 데리고 오매 제자들이 꾸짖거늘",
+      "source_text_hash": "e45b1a9d023bd82ecee83235c192b4834f90914e24ff220339319b3783d58a03",
+      "translation_text_hash": "3e40435cf0561de1c048cbe8e5cea8403f9d11c08949d71f64a1a988edb9e435",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "때에 사람들이 예수의 안수하고 기도하심을 바라고 어린 아이들을 데리고 오매 제자들이 꾸짖거늘"
+      ],
+      "raw_text_hashes": [
+        "3e40435cf0561de1c048cbe8e5cea8403f9d11c08949d71f64a1a988edb9e435"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:19:14",
+      "sequence": 23777,
+      "chapter_label": "MAT 19",
+      "verse_label": "14",
+      "locator": {
+        "book": "MAT",
+        "chapter": 19,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 19,
+          "verse": 14
+        }
+      ],
+      "en": "But Jesus said, “Allow the little children, and don’t forbid them to come to me; for the Kingdom of Heaven belongs to ones like these.”",
+      "ko": "예수께서 가라사대 어린 아이들을 용납하고 내게 오는 것을 금하지 말라 천국이 이런 자의 것이니라 하시고",
+      "source_text_hash": "aeebc89eb14041fae9526f007d830ab1c7e040f45c7787527dd8883ff7822303",
+      "translation_text_hash": "bec9d511aa88c5e048cafa2f7d0d14abc0677c73c3f6395cc53fab828668b91f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 가라사대 어린 아이들을 용납하고 내게 오는 것을 금하지 말라 천국이 이런 자의 것이니라 하시고"
+      ],
+      "raw_text_hashes": [
+        "bec9d511aa88c5e048cafa2f7d0d14abc0677c73c3f6395cc53fab828668b91f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:19:15",
+      "sequence": 23778,
+      "chapter_label": "MAT 19",
+      "verse_label": "15",
+      "locator": {
+        "book": "MAT",
+        "chapter": 19,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 19,
+          "verse": 15
+        }
+      ],
+      "en": "He laid his hands on them, and departed from there.",
+      "ko": "저희 위에 안수하시고 거기서 떠나시니라",
+      "source_text_hash": "92c23b0a6d1708b0261848f69b8854137e4f6088cda7f56a8edd4595fa31619e",
+      "translation_text_hash": "7ededd9062bfb3caa40682ef59885fdef37a1fd02678a168ed030441f757d5a5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희 위에 안수하시고 거기서 떠나시니라"
+      ],
+      "raw_text_hashes": [
+        "7ededd9062bfb3caa40682ef59885fdef37a1fd02678a168ed030441f757d5a5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:19:16",
+      "sequence": 23779,
+      "chapter_label": "MAT 19",
+      "verse_label": "16",
+      "locator": {
+        "book": "MAT",
+        "chapter": 19,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 19,
+          "verse": 16
+        }
+      ],
+      "en": "Behold, one came to him and said, “Good teacher, what good thing shall I do, that I may have eternal life?”",
+      "ko": "어떤 사람이 주께 와서 가로되 선생님이여 내가 무슨 선한 일을 하여야 영생을 얻으리이까",
+      "source_text_hash": "8897f02f50bbf46064b70e058a8fac1766d08a55056c51c9ffbe6d5d4662bc19",
+      "translation_text_hash": "1ad87d723697daaf71ba75367ce67d69237084e78ac2a0377768b295c0b3bf02",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어떤 사람이 주께 와서 가로되 선생님이여 내가 무슨 선한 일을 하여야 영생을 얻으리이까"
+      ],
+      "raw_text_hashes": [
+        "1ad87d723697daaf71ba75367ce67d69237084e78ac2a0377768b295c0b3bf02"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:19:17",
+      "sequence": 23780,
+      "chapter_label": "MAT 19",
+      "verse_label": "17",
+      "locator": {
+        "book": "MAT",
+        "chapter": 19,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 19,
+          "verse": 17
+        }
+      ],
+      "en": "He said to him, “Why do you call me good?No one is good but one, that is, God. But if you want to enter into life, keep the commandments.”",
+      "ko": "예수께서 가라사대 어찌하여 선한 일을 내게 묻느냐 선한이는 오직 한 분이시니라 네가 생명에 들어 가려면 계명들을 지키라",
+      "source_text_hash": "fa0b58285fb4ae88d8da6f41f4ea797df86b584120de1963825b4aa7419460f9",
+      "translation_text_hash": "4b345182d8cb9248b30d9edb80072d3d938cd6396a3ec1b3d0d340bd944c5ec7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 가라사대 어찌하여 선한 일을 내게 묻느냐 선한이는 오직 한 분이시니라 네가 생명에 들어 가려면 계명들을 지키라"
+      ],
+      "raw_text_hashes": [
+        "4b345182d8cb9248b30d9edb80072d3d938cd6396a3ec1b3d0d340bd944c5ec7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:19:18",
+      "sequence": 23781,
+      "chapter_label": "MAT 19",
+      "verse_label": "18",
+      "locator": {
+        "book": "MAT",
+        "chapter": 19,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 19,
+          "verse": 18
+        }
+      ],
+      "en": "He said to him, “Which ones?” Jesus said, “‘You shall not murder.’ ‘You shall not commit adultery.’ ‘You shall not steal.’ ‘You shall not offer false testimony.’",
+      "ko": "가로되 어느 계명이오니이까 예수께서 가라사대 살인하지 말라, 간음하지 말라, 도적질하지 말라, 거짓증거하지 말라,",
+      "source_text_hash": "b51e194faf0fc369f0cddcee055549939077f79688083823841258512913c2f9",
+      "translation_text_hash": "bb84578a07287cbbb2e81b92f603f768ec95c409c475297d8e91f11ac33714c0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 어느 계명이오니이까 예수께서 가라사대 살인하지 말라, 간음하지 말라, 도적질하지 말라, 거짓증거하지 말라,"
+      ],
+      "raw_text_hashes": [
+        "bb84578a07287cbbb2e81b92f603f768ec95c409c475297d8e91f11ac33714c0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:19:19",
+      "sequence": 23782,
+      "chapter_label": "MAT 19",
+      "verse_label": "19",
+      "locator": {
+        "book": "MAT",
+        "chapter": 19,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 19,
+          "verse": 19
+        }
+      ],
+      "en": "‘Honor your father and your mother.’And, ‘You shall love your neighbor as yourself.’”",
+      "ko": "네 부모를 공경하라, 네 이웃을 네 몸과 같이 사랑하라 하신 것이니라",
+      "source_text_hash": "a04d8050515b7094612c3003fc5688c96a1d6d485262ac11435a12dc15e1c903",
+      "translation_text_hash": "5e28b54064b406cd8fe358fcdf5d2d8287ec1fcfb1867ff93323382a6287d0a0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 부모를 공경하라, 네 이웃을 네 몸과 같이 사랑하라 하신 것이니라"
+      ],
+      "raw_text_hashes": [
+        "5e28b54064b406cd8fe358fcdf5d2d8287ec1fcfb1867ff93323382a6287d0a0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:19:20",
+      "sequence": 23783,
+      "chapter_label": "MAT 19",
+      "verse_label": "20",
+      "locator": {
+        "book": "MAT",
+        "chapter": 19,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 19,
+          "verse": 20
+        }
+      ],
+      "en": "The young man said to him, “All these things I have observed from my youth. What do I still lack?”",
+      "ko": "그 청년이 가로되 이 모든 것을 내가 지키었사오니 아직도 무엇이 부족하니이까",
+      "source_text_hash": "9b55a84e7192204c6a1a0042b867e455a8af606a29ff4c8500a96f4a38986eab",
+      "translation_text_hash": "631e4701e18bbbba7ce687520fb9ca9e0f07711a232a1dbf9b91f56c1ee2cc60",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 청년이 가로되 이 모든 것을 내가 지키었사오니 아직도 무엇이 부족하니이까"
+      ],
+      "raw_text_hashes": [
+        "631e4701e18bbbba7ce687520fb9ca9e0f07711a232a1dbf9b91f56c1ee2cc60"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:19:21",
+      "sequence": 23784,
+      "chapter_label": "MAT 19",
+      "verse_label": "21",
+      "locator": {
+        "book": "MAT",
+        "chapter": 19,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 19,
+          "verse": 21
+        }
+      ],
+      "en": "Jesus said to him, “If you want to be perfect, go, sell what you have, and give to the poor, and you will have treasure in heaven; and come, follow me.”",
+      "ko": "예수께서 가라사대 네가 온전하고자 할찐대 가서 네 소유를 팔아 가난한 자들을 주라 그리하면 하늘에서 보화가 네게 있으리라 그리고 와서 나를 좇으라 하시니",
+      "source_text_hash": "270ff33c1fae01501e46aad21f2a7422a05f3a1c1a3bc8fd7e45d7ceaeb11931",
+      "translation_text_hash": "b7ac13e6527de9338a2d6800f035acfe5a961bf754a3fcd3de8b12ca6055ff79",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 가라사대 네가 온전하고자 할찐대 가서 네 소유를 팔아 가난한 자들을 주라 그리하면 하늘에서 보화가 네게 있으리라 그리고 와서 나를 좇으라 하시니"
+      ],
+      "raw_text_hashes": [
+        "b7ac13e6527de9338a2d6800f035acfe5a961bf754a3fcd3de8b12ca6055ff79"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:19:22",
+      "sequence": 23785,
+      "chapter_label": "MAT 19",
+      "verse_label": "22",
+      "locator": {
+        "book": "MAT",
+        "chapter": 19,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 19,
+          "verse": 22
+        }
+      ],
+      "en": "But when the young man heard this, he went away sad, for he was one who had great possessions.",
+      "ko": "그 청년이 재물이 많으므로 이 말씀을 듣고 근심하며 가니라",
+      "source_text_hash": "29cf22f2bbeceaec939bce1c04d03defac0e346d9394b3e4e514b105a0ca7e85",
+      "translation_text_hash": "8fd4926874b16dc4dc09dc1291185664d1d97d9ea7b7a293c6e829a754c75d05",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 청년이 재물이 많으므로 이 말씀을 듣고 근심하며 가니라"
+      ],
+      "raw_text_hashes": [
+        "8fd4926874b16dc4dc09dc1291185664d1d97d9ea7b7a293c6e829a754c75d05"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:19:23",
+      "sequence": 23786,
+      "chapter_label": "MAT 19",
+      "verse_label": "23",
+      "locator": {
+        "book": "MAT",
+        "chapter": 19,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 19,
+          "verse": 23
+        }
+      ],
+      "en": "Jesus said to his disciples, “Most certainly I say to you, a rich man will enter into the Kingdom of Heaven with difficulty.",
+      "ko": "예수께서 제자들에게 이르시되 내가 진실로 너희에게 이르노니 부자는 천국에 들어가기가 어려우니라",
+      "source_text_hash": "6b772edb880807f60323a24723736ceb04df6f866877258d3835b37f85099ac2",
+      "translation_text_hash": "3395c18ad5d10366519eaa3d8688bf3d124583d14f6830938df052fa4ae5aa45",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 제자들에게 이르시되 내가 진실로 너희에게 이르노니 부자는 천국에 들어가기가 어려우니라"
+      ],
+      "raw_text_hashes": [
+        "3395c18ad5d10366519eaa3d8688bf3d124583d14f6830938df052fa4ae5aa45"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:19:24",
+      "sequence": 23787,
+      "chapter_label": "MAT 19",
+      "verse_label": "24",
+      "locator": {
+        "book": "MAT",
+        "chapter": 19,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 19,
+          "verse": 24
+        }
+      ],
+      "en": "Again I tell you, it is easier for a camel to go through a needle’s eye than for a rich man to enter into God’s Kingdom.”",
+      "ko": "다시 너희에게 말하노니 약대가 바늘귀로 들어가는 것이 부자가 하나님의 나라에 들어가는 것보다 쉬우니라 하신대",
+      "source_text_hash": "c1be6870f39140b30e4755334fbdf749e35d478eae81e4120f5cfeab2895ae31",
+      "translation_text_hash": "06b8e828d0f924448a79615c70f94e0060f051f1ad419681085bc05e75b45f73",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다시 너희에게 말하노니 약대가 바늘귀로 들어가는 것이 부자가 하나님의 나라에 들어가는 것보다 쉬우니라 하신대"
+      ],
+      "raw_text_hashes": [
+        "06b8e828d0f924448a79615c70f94e0060f051f1ad419681085bc05e75b45f73"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:19:25",
+      "sequence": 23788,
+      "chapter_label": "MAT 19",
+      "verse_label": "25",
+      "locator": {
+        "book": "MAT",
+        "chapter": 19,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 19,
+          "verse": 25
+        }
+      ],
+      "en": "When the disciples heard it, they were exceedingly astonished, saying, “Who then can be saved?”",
+      "ko": "제자들이 듣고 심히 놀라 가로되 그런즉 누가 구원을 얻을 수 있으리이까",
+      "source_text_hash": "34782d39689f521f06b933f345cd6144768397e4dde4fa8cb7f542b7d4757dc5",
+      "translation_text_hash": "16f6cacba4413d5f4a0518ebfee49dcfd2781349b484387a612f07820b6016c4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제자들이 듣고 심히 놀라 가로되 그런즉 누가 구원을 얻을 수 있으리이까"
+      ],
+      "raw_text_hashes": [
+        "16f6cacba4413d5f4a0518ebfee49dcfd2781349b484387a612f07820b6016c4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:19:26",
+      "sequence": 23789,
+      "chapter_label": "MAT 19",
+      "verse_label": "26",
+      "locator": {
+        "book": "MAT",
+        "chapter": 19,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 19,
+          "verse": 26
+        }
+      ],
+      "en": "Looking at them, Jesus said, “With men this is impossible, but with God all things are possible.”",
+      "ko": "예수께서 저희를 보시며 가라사대 사람으로는 할 수 없으되 하나님으로서는 다 할 수 있느니라",
+      "source_text_hash": "e14701054410a4d2b787256e4ade6c8e0336761089d590d4298f6f90e2482d67",
+      "translation_text_hash": "8897794b462f0ab0e687b98b96cc6faf92f18449e1a7a3ccf339eae7fb4581cb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 저희를 보시며 가라사대 사람으로는 할 수 없으되 하나님으로서는 다 할 수 있느니라"
+      ],
+      "raw_text_hashes": [
+        "8897794b462f0ab0e687b98b96cc6faf92f18449e1a7a3ccf339eae7fb4581cb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:19:27",
+      "sequence": 23790,
+      "chapter_label": "MAT 19",
+      "verse_label": "27",
+      "locator": {
+        "book": "MAT",
+        "chapter": 19,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 19,
+          "verse": 27
+        }
+      ],
+      "en": "Then Peter answered, “Behold, we have left everything and followed you. What then will we have?”",
+      "ko": "이에 베드로가 대답하여 가로되 보소서 우리가 모든 것을 버리고 주를 좇았사오니 그런즉 우리가 무엇을 얻으리이까",
+      "source_text_hash": "b35803ec21bf8dd293d29a27d71e3a0dbba7f2b0122f922b5986590c40ce42b8",
+      "translation_text_hash": "d6b3af2dd323ff989807dac40efd8550d17f59ef5e2c1e26b6e0ee3f1289aef4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 베드로가 대답하여 가로되 보소서 우리가 모든 것을 버리고 주를 좇았사오니 그런즉 우리가 무엇을 얻으리이까"
+      ],
+      "raw_text_hashes": [
+        "d6b3af2dd323ff989807dac40efd8550d17f59ef5e2c1e26b6e0ee3f1289aef4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:19:28",
+      "sequence": 23791,
+      "chapter_label": "MAT 19",
+      "verse_label": "28",
+      "locator": {
+        "book": "MAT",
+        "chapter": 19,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 19,
+          "verse": 28
+        }
+      ],
+      "en": "Jesus said to them, “Most certainly I tell you that you who have followed me, in the regeneration when the Son of Man will sit on the throne of his glory, you also will sit on twelve thrones, judging the twelve tribes of Israel.",
+      "ko": "예수께서 가라사대 내가 진실로 너희에게 이르노니 세상이 새롭게 되어 인자가 자기 영광의 보좌에 앉을 때에 나를 좇는 너희도 열 두 보좌에 앉아 이스라엘 열 두 지파를 심판하리라",
+      "source_text_hash": "6a5706d140aca83e01128bdce1fb0bd5516761311dfc3eaf3b595a15ccdca107",
+      "translation_text_hash": "942e6e940c3f23895008cee70b6f7350b6525dccd6bb690271c5377303f0d344",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 가라사대 내가 진실로 너희에게 이르노니 세상이 새롭게 되어 인자가 자기 영광의 보좌에 앉을 때에 나를 좇는 너희도 열 두 보좌에 앉아 이스라엘 열 두 지파를 심판하리라"
+      ],
+      "raw_text_hashes": [
+        "942e6e940c3f23895008cee70b6f7350b6525dccd6bb690271c5377303f0d344"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:19:29",
+      "sequence": 23792,
+      "chapter_label": "MAT 19",
+      "verse_label": "29",
+      "locator": {
+        "book": "MAT",
+        "chapter": 19,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 19,
+          "verse": 29
+        }
+      ],
+      "en": "Everyone who has left houses, or brothers, or sisters, or father, or mother, or wife, or children, or lands, for my name’s sake, will receive one hundred times, and will inherit eternal life.",
+      "ko": "또 내 이름을 위하여 집이나 형제나 자매나 부모나 자식이나 전토를 버린 자마다 여러 배를 받고 또 영생을 상속하리라",
+      "source_text_hash": "1367f826fac46fe51ac3c424ded91e141c006dd9c2ed4b4da12dc2938b708fce",
+      "translation_text_hash": "4b04c411e668ccba3cdf2c725cdb0c5b0b56829de4051fcc015bb8f8da59cb1b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 내 이름을 위하여 집이나 형제나 자매나 부모나 자식이나 전토를 버린 자마다 여러 배를 받고 또 영생을 상속하리라"
+      ],
+      "raw_text_hashes": [
+        "4b04c411e668ccba3cdf2c725cdb0c5b0b56829de4051fcc015bb8f8da59cb1b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:19:30",
+      "sequence": 23793,
+      "chapter_label": "MAT 19",
+      "verse_label": "30",
+      "locator": {
+        "book": "MAT",
+        "chapter": 19,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 19,
+          "verse": 30
+        }
+      ],
+      "en": "But many will be last who are first, and first who are last.",
+      "ko": "그러나 먼저 된 자로서 나중 되고 나중 된 자로서 먼저 될 자가 많으니라",
+      "source_text_hash": "6b4090ebe71a45b377820bd0ef77d4eb9b96e3cbe85c391b4e654d3a1e7b9f6a",
+      "translation_text_hash": "c22aa7668650accdb9f170a58980164cb7a41d6dc599991eac18b7a55ef700cd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 먼저 된 자로서 나중 되고 나중 된 자로서 먼저 될 자가 많으니라"
+      ],
+      "raw_text_hashes": [
+        "c22aa7668650accdb9f170a58980164cb7a41d6dc599991eac18b7a55ef700cd"
+      ]
+    }
+  ]
+}

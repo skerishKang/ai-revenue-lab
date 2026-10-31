@@ -1,0 +1,1389 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:GEN:chapter:036",
+  "unit_ordinal": 36,
+  "unit_label": "GEN 36",
+  "book_code": "GEN",
+  "chapter_number": 36,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:GEN:36:1",
+      "sequence": 1042,
+      "chapter_label": "GEN 36",
+      "verse_label": "1",
+      "locator": {
+        "book": "GEN",
+        "chapter": 36,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 36,
+          "verse": 1
+        }
+      ],
+      "en": "Now this is the history of the generations of Esau (that is, Edom).",
+      "ko": "에서 곧 에돔의 대략이 이러하니라",
+      "source_text_hash": "232314ac1556bf9e8295bdc4dc6568b9e09bf7115586d65aba6a4adbe383e7c7",
+      "translation_text_hash": "7b2046f61cf217e11a4809a74f306c56b60c73deb71968b4ce281437d69a7de7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에서 곧 에돔의 대략이 이러하니라"
+      ],
+      "raw_text_hashes": [
+        "7b2046f61cf217e11a4809a74f306c56b60c73deb71968b4ce281437d69a7de7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:36:2",
+      "sequence": 1043,
+      "chapter_label": "GEN 36",
+      "verse_label": "2",
+      "locator": {
+        "book": "GEN",
+        "chapter": 36,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 36,
+          "verse": 2
+        }
+      ],
+      "en": "Esau took his wives from the daughters of Canaan: Adah the daughter of Elon, the Hittite; and Oholibamah the daughter of Anah, the daughter of Zibeon, the Hivite;",
+      "ko": "에서가 가나안 여인중 헷 족속중 엘론의 딸 아다와 히위 족속중 시브온의 딸 아나의 소생 오홀리바마를 자기 아내로 취하고",
+      "source_text_hash": "72a5c23dc4364b23e91a603d1c6c04f20440c02983da239f9bd6b0f213a2bc20",
+      "translation_text_hash": "0fe4e0f1983adf60ac2a4303f5efbebaebe7b0397abecbe800d19d6e5d1b1e67",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에서가 가나안 여인중 헷 족속중 엘론의 딸 아다와 히위 족속중 시브온의 딸 아나의 소생 오홀리바마를 자기 아내로 취하고"
+      ],
+      "raw_text_hashes": [
+        "0fe4e0f1983adf60ac2a4303f5efbebaebe7b0397abecbe800d19d6e5d1b1e67"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:36:3",
+      "sequence": 1044,
+      "chapter_label": "GEN 36",
+      "verse_label": "3",
+      "locator": {
+        "book": "GEN",
+        "chapter": 36,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 36,
+          "verse": 3
+        }
+      ],
+      "en": "and Basemath, Ishmael’s daughter, sister of Nebaioth.",
+      "ko": "또 이스마엘의 딸 느바욧의 누이 바스맛을 취하였더니",
+      "source_text_hash": "76f2c5a92577171991dcd0f09c07b79b1c9499a79cd19c1f925614613b5371ce",
+      "translation_text_hash": "b986e92b7f3c6ab3d69fa7a47df9750d36273f04000e939869312d6b32671291",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 이스마엘의 딸 느바욧의 누이 바스맛을 취하였더니"
+      ],
+      "raw_text_hashes": [
+        "b986e92b7f3c6ab3d69fa7a47df9750d36273f04000e939869312d6b32671291"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:36:4",
+      "sequence": 1045,
+      "chapter_label": "GEN 36",
+      "verse_label": "4",
+      "locator": {
+        "book": "GEN",
+        "chapter": 36,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 36,
+          "verse": 4
+        }
+      ],
+      "en": "Adah bore to Esau Eliphaz. Basemath bore Reuel.",
+      "ko": "아다는 엘리바스를 에서에게 낳았고 바스맛은 르우엘을 낳았고",
+      "source_text_hash": "530bafb755e3f1c8db89876b4494b605d7b9e9a187818b6abf427140b5d0f369",
+      "translation_text_hash": "37a5d488f559824abf647e618835e9b286d8846f766f8de20be792b577738395",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아다는 엘리바스를 에서에게 낳았고 바스맛은 르우엘을 낳았고"
+      ],
+      "raw_text_hashes": [
+        "37a5d488f559824abf647e618835e9b286d8846f766f8de20be792b577738395"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:36:5",
+      "sequence": 1046,
+      "chapter_label": "GEN 36",
+      "verse_label": "5",
+      "locator": {
+        "book": "GEN",
+        "chapter": 36,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 36,
+          "verse": 5
+        }
+      ],
+      "en": "Oholibamah bore Jeush, Jalam, and Korah. These are the sons of Esau, who were born to him in the land of Canaan.",
+      "ko": "오홀리바마는 여우스와 얄람과 고라를 낳았으니 이들은 에서의 아들이요 가나안 땅에서 그에게 낳은 자더라",
+      "source_text_hash": "561e4de34b485a829e99b4e38e6508c22f9859d8c35ba224c2ff9d6e092d906c",
+      "translation_text_hash": "70c8e341edd7114e3254a7ef3b43e5ced0a09c892d51ff15b5e70886378c74ae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오홀리바마는 여우스와 얄람과 고라를 낳았으니 이들은 에서의 아들이요 가나안 땅에서 그에게 낳은 자더라"
+      ],
+      "raw_text_hashes": [
+        "70c8e341edd7114e3254a7ef3b43e5ced0a09c892d51ff15b5e70886378c74ae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:36:6",
+      "sequence": 1047,
+      "chapter_label": "GEN 36",
+      "verse_label": "6",
+      "locator": {
+        "book": "GEN",
+        "chapter": 36,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 36,
+          "verse": 6
+        }
+      ],
+      "en": "Esau took his wives, his sons, his daughters, and all the members of his household, with his livestock, all his animals, and all his possessions, which he had gathered in the land of Canaan, and went into a land away from his brother Jacob.",
+      "ko": "에서가 자기 아내들과 자기 자녀들과 자기 집의 모든 사람과 자기의 가축과 자기 모든 짐승과 자기가 가나안 땅에서 얻은 모든 재물을 이끌고 그 동생 야곱을 떠나 타처로 갔으니",
+      "source_text_hash": "52226545ce6ef1424cf9717cd71b4706a149f54ac40da98b1ca0ab25ded47296",
+      "translation_text_hash": "717736e3d4aaeeefe2f9354c9759cb660345c75c1b02ec6c7f5c148bfab96064",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에서가 자기 아내들과 자기 자녀들과 자기 집의 모든 사람과 자기의 가축과 자기 모든 짐승과 자기가 가나안 땅에서 얻은 모든 재물을 이끌고 그 동생 야곱을 떠나 타처로 갔으니"
+      ],
+      "raw_text_hashes": [
+        "717736e3d4aaeeefe2f9354c9759cb660345c75c1b02ec6c7f5c148bfab96064"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:36:7",
+      "sequence": 1048,
+      "chapter_label": "GEN 36",
+      "verse_label": "7",
+      "locator": {
+        "book": "GEN",
+        "chapter": 36,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 36,
+          "verse": 7
+        }
+      ],
+      "en": "For their substance was too great for them to dwell together, and the land of their travels couldn’t bear them because of their livestock.",
+      "ko": "두 사람의 소유가 풍부하여 함께 거할 수 없음이러라 그들의 우거한 땅이 그들의 가축으로 인하여 그들을 용납할 수 없었더라",
+      "source_text_hash": "74dbb00d87e1770395f777cd7c0a0cad4d061d1a74887f329be967c9d3d6ad3e",
+      "translation_text_hash": "8842ac331c1830282b2ae5e6a506f07c009690b577b747d811cb75ae6594237b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "두 사람의 소유가 풍부하여 함께 거할 수 없음이러라 그들의 우거한 땅이 그들의 가축으로 인하여 그들을 용납할 수 없었더라"
+      ],
+      "raw_text_hashes": [
+        "8842ac331c1830282b2ae5e6a506f07c009690b577b747d811cb75ae6594237b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:36:8",
+      "sequence": 1049,
+      "chapter_label": "GEN 36",
+      "verse_label": "8",
+      "locator": {
+        "book": "GEN",
+        "chapter": 36,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 36,
+          "verse": 8
+        }
+      ],
+      "en": "Esau lived in the hill country of Seir. Esau is Edom.",
+      "ko": "이에 에서 곧 에돔이 세일산에 거하니라",
+      "source_text_hash": "f5e10293fe8126ac06cad36d384afd497975327989bf0397ca1e80b88a96b0d9",
+      "translation_text_hash": "ac5cecf25e16e3e7db566e044491b0ccf37cbec582caeac6ef03bc5f554245c8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 에서 곧 에돔이 세일산에 거하니라"
+      ],
+      "raw_text_hashes": [
+        "ac5cecf25e16e3e7db566e044491b0ccf37cbec582caeac6ef03bc5f554245c8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:36:9",
+      "sequence": 1050,
+      "chapter_label": "GEN 36",
+      "verse_label": "9",
+      "locator": {
+        "book": "GEN",
+        "chapter": 36,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 36,
+          "verse": 9
+        }
+      ],
+      "en": "This is the history of the generations of Esau the father of the Edomites in the hill country of Seir:",
+      "ko": "세일산에 거한 에돔 족속의 조상 에서의 대략이 이러하고",
+      "source_text_hash": "daed6b01ba3311bf6e43d80e07160468ca691f3ae4abcecb4a780e184851ca9a",
+      "translation_text_hash": "479c7cfead5da13025ed1b7c112ba5d3aeb95b581684b4332ec898bbaa62381d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "세일산에 거한 에돔 족속의 조상 에서의 대략이 이러하고"
+      ],
+      "raw_text_hashes": [
+        "479c7cfead5da13025ed1b7c112ba5d3aeb95b581684b4332ec898bbaa62381d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:36:10",
+      "sequence": 1051,
+      "chapter_label": "GEN 36",
+      "verse_label": "10",
+      "locator": {
+        "book": "GEN",
+        "chapter": 36,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 36,
+          "verse": 10
+        }
+      ],
+      "en": "these are the names of Esau’s sons: Eliphaz, the son of Adah, the wife of Esau; and Reuel, the son of Basemath, the wife of Esau.",
+      "ko": "그 자손의 이름은 이러하니라 에서의 아내 아다의 아들은 엘리바스요 에서의 아내 바스맛의 아들은 르우엘이며",
+      "source_text_hash": "0762b88e222a12f50f15beb9f46091508cec1adbe5b7672d9eb7ebfedf073c30",
+      "translation_text_hash": "5b9dc0bf269752c5c0f2b65f75931f7e9d0d6e5eddc20a24236db7217f2e8849",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 자손의 이름은 이러하니라 에서의 아내 아다의 아들은 엘리바스요 에서의 아내 바스맛의 아들은 르우엘이며"
+      ],
+      "raw_text_hashes": [
+        "5b9dc0bf269752c5c0f2b65f75931f7e9d0d6e5eddc20a24236db7217f2e8849"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:36:11",
+      "sequence": 1052,
+      "chapter_label": "GEN 36",
+      "verse_label": "11",
+      "locator": {
+        "book": "GEN",
+        "chapter": 36,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 36,
+          "verse": 11
+        }
+      ],
+      "en": "The sons of Eliphaz were Teman, Omar, Zepho, and Gatam, and Kenaz.",
+      "ko": "엘리바스의 아들들은 데만과 오말과 스보와 가담과 그나스요",
+      "source_text_hash": "285a64f7ec8245173c3dacb0f793340199bd4bce0546eaa1a76f1fa366a66de7",
+      "translation_text_hash": "755e6b9ed6bf71aec84ee5ef0ea53556871eafa7d255ec05c9fe320329390792",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "엘리바스의 아들들은 데만과 오말과 스보와 가담과 그나스요"
+      ],
+      "raw_text_hashes": [
+        "755e6b9ed6bf71aec84ee5ef0ea53556871eafa7d255ec05c9fe320329390792"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:36:12",
+      "sequence": 1053,
+      "chapter_label": "GEN 36",
+      "verse_label": "12",
+      "locator": {
+        "book": "GEN",
+        "chapter": 36,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 36,
+          "verse": 12
+        }
+      ],
+      "en": "Timna was concubine to Eliphaz, Esau’s son; and she bore to Eliphaz Amalek. These are the descendants of Adah, Esau’s wife.",
+      "ko": "에서의 아들 엘리바스의 첩 딤나는 아말렉을 엘리바스에게 낳았으니 이들은 에서의 아내 아다의 자손이며",
+      "source_text_hash": "0d79cfde67490597bb71d22a8b84d27e3e93182cac0bc5e59c53896a9c0182c7",
+      "translation_text_hash": "180b9a719bb2222b4f02f62a5591cd0672c3ed2531b7cb63d9c30de08afa84e6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에서의 아들 엘리바스의 첩 딤나는 아말렉을 엘리바스에게 낳았으니 이들은 에서의 아내 아다의 자손이며"
+      ],
+      "raw_text_hashes": [
+        "180b9a719bb2222b4f02f62a5591cd0672c3ed2531b7cb63d9c30de08afa84e6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:36:13",
+      "sequence": 1054,
+      "chapter_label": "GEN 36",
+      "verse_label": "13",
+      "locator": {
+        "book": "GEN",
+        "chapter": 36,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 36,
+          "verse": 13
+        }
+      ],
+      "en": "These are the sons of Reuel: Nahath, Zerah, Shammah, and Mizzah. These were the descendants of Basemath, Esau’s wife.",
+      "ko": "르우엘의 아들들은 나핫과 세라와 삼마와 미사니 이들은 에서의 아내 바스맛의 자손이며",
+      "source_text_hash": "0677e196b7eab4fccf5fc46c2ceef9b0bec890526ca9320d9f5f84ecb659c493",
+      "translation_text_hash": "1eae4e32d25ac2431d1111e7461fde078263395b7b1c22caec47f47b0784961f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "르우엘의 아들들은 나핫과 세라와 삼마와 미사니 이들은 에서의 아내 바스맛의 자손이며"
+      ],
+      "raw_text_hashes": [
+        "1eae4e32d25ac2431d1111e7461fde078263395b7b1c22caec47f47b0784961f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:36:14",
+      "sequence": 1055,
+      "chapter_label": "GEN 36",
+      "verse_label": "14",
+      "locator": {
+        "book": "GEN",
+        "chapter": 36,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 36,
+          "verse": 14
+        }
+      ],
+      "en": "These were the sons of Oholibamah, the daughter of Anah, the daughter of Zibeon, Esau’s wife: she bore to Esau Jeush, Jalam, and Korah.",
+      "ko": "시브온의 손녀 아나의 딸 에서의 아내 오홀리바마의 아들들은 이러하니 그가 여우스와 얄람과 고라를 에서에게 낳았더라",
+      "source_text_hash": "46a3cff34b2ed4848cd8fd684c6276004b67e98713e9cac647e7138934a3d501",
+      "translation_text_hash": "344e65516848673267be7392486ce873223bb761d01b2576da68b303353f2610",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시브온의 손녀 아나의 딸 에서의 아내 오홀리바마의 아들들은 이러하니 그가 여우스와 얄람과 고라를 에서에게 낳았더라"
+      ],
+      "raw_text_hashes": [
+        "344e65516848673267be7392486ce873223bb761d01b2576da68b303353f2610"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:36:15",
+      "sequence": 1056,
+      "chapter_label": "GEN 36",
+      "verse_label": "15",
+      "locator": {
+        "book": "GEN",
+        "chapter": 36,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 36,
+          "verse": 15
+        }
+      ],
+      "en": "These are the chiefs of the sons of Esau: the sons of Eliphaz the firstborn of Esau: chief Teman, chief Omar, chief Zepho, chief Kenaz,",
+      "ko": "에서 자손중 족장은 이러하니라 에서의 장자 엘리바스의 자손에는 데만 족장, 오말 족장, 스보 족장, 그나스 족장과",
+      "source_text_hash": "0a0c38b05a8c7e9f8f8800e0034c92f36a1d8063fffefd07de6b9b41009d1db5",
+      "translation_text_hash": "fe6a40c6d0e15c7de9d2c294465620c1cf8996bfab1c561aa447e5bf658cebc5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에서 자손중 족장은 이러하니라 에서의 장자 엘리바스의 자손에는 데만 족장, 오말 족장, 스보 족장, 그나스 족장과"
+      ],
+      "raw_text_hashes": [
+        "fe6a40c6d0e15c7de9d2c294465620c1cf8996bfab1c561aa447e5bf658cebc5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:36:16",
+      "sequence": 1057,
+      "chapter_label": "GEN 36",
+      "verse_label": "16",
+      "locator": {
+        "book": "GEN",
+        "chapter": 36,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 36,
+          "verse": 16
+        }
+      ],
+      "en": "chief Korah, chief Gatam, chief Amalek. These are the chiefs who came of Eliphaz in the land of Edom. These are the sons of Adah.",
+      "ko": "고라 족장, 가담 족장, 아말렉 족장이니 이들은 에돔 땅에 있는 엘리바스로 말미암아 나온 족장들이요 이들은 아다의 자손이며",
+      "source_text_hash": "fdfda651c231e399d4c1386f071ca325aa307fd6aea3a66302a0f5b5ae0cf2ca",
+      "translation_text_hash": "6584ffe6c7dc97573d3e598e7e47db54606094172d1f841c78f7c206238ef62f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "고라 족장, 가담 족장, 아말렉 족장이니 이들은 에돔 땅에 있는 엘리바스로 말미암아 나온 족장들이요 이들은 아다의 자손이며"
+      ],
+      "raw_text_hashes": [
+        "6584ffe6c7dc97573d3e598e7e47db54606094172d1f841c78f7c206238ef62f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:36:17",
+      "sequence": 1058,
+      "chapter_label": "GEN 36",
+      "verse_label": "17",
+      "locator": {
+        "book": "GEN",
+        "chapter": 36,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 36,
+          "verse": 17
+        }
+      ],
+      "en": "These are the sons of Reuel, Esau’s son: chief Nahath, chief Zerah, chief Shammah, chief Mizzah. These are the chiefs who came of Reuel in the land of Edom. These are the sons of Basemath, Esau’s wife.",
+      "ko": "에서의 아들 르우엘의 자손에는 나핫 족장, 세라 족장, 삼마 족장, 미사 족장이니 이들은 에돔 땅에 있는 르우엘로 말미암아 나온 족장들이요 이들은 에서의 아내 바스맛의 자손이며",
+      "source_text_hash": "40cb7e21b29b3ddfc9143796778f4386d84500b04e45d0d6bb016693cfa6a354",
+      "translation_text_hash": "2eb44ac0d7af3c41f1b8717290ed214a3dee6bab332e17c41258e166cb6b0d8f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에서의 아들 르우엘의 자손에는 나핫 족장, 세라 족장, 삼마 족장, 미사 족장이니 이들은 에돔 땅에 있는 르우엘로 말미암아 나온 족장들이요 이들은 에서의 아내 바스맛의 자손이며"
+      ],
+      "raw_text_hashes": [
+        "2eb44ac0d7af3c41f1b8717290ed214a3dee6bab332e17c41258e166cb6b0d8f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:36:18",
+      "sequence": 1059,
+      "chapter_label": "GEN 36",
+      "verse_label": "18",
+      "locator": {
+        "book": "GEN",
+        "chapter": 36,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 36,
+          "verse": 18
+        }
+      ],
+      "en": "These are the sons of Oholibamah, Esau’s wife: chief Jeush, chief Jalam, chief Korah. These are the chiefs who came of Oholibamah the daughter of Anah, Esau’s wife.",
+      "ko": "에서의 아내 오홀리바마의 아들들은 여우스 족장, 얄람 족장, 고라 족장이니 이들은 아나의 딸이요 에서의 아내인 오홀리바마로 말미암아 나온 족장들이라",
+      "source_text_hash": "444a3b5ddee513faefe1974a5a784109305dde667201a46dde979998f53f0b74",
+      "translation_text_hash": "0fdeec077ef7adce2b070794ca3765989e801c53c7d72ce41943a00a920d5448",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에서의 아내 오홀리바마의 아들들은 여우스 족장, 얄람 족장, 고라 족장이니 이들은 아나의 딸이요 에서의 아내인 오홀리바마로 말미암아 나온 족장들이라"
+      ],
+      "raw_text_hashes": [
+        "0fdeec077ef7adce2b070794ca3765989e801c53c7d72ce41943a00a920d5448"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:36:19",
+      "sequence": 1060,
+      "chapter_label": "GEN 36",
+      "verse_label": "19",
+      "locator": {
+        "book": "GEN",
+        "chapter": 36,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 36,
+          "verse": 19
+        }
+      ],
+      "en": "These are the sons of Esau (that is, Edom), and these are their chiefs.",
+      "ko": "에서 곧 에돔의 자손으로서 족장 된 자들이 이러하였더라",
+      "source_text_hash": "c8cb3788b572d7fbd9500d4c171b4ea0e5250a8254de477e2cd031af3841f9ad",
+      "translation_text_hash": "ee5a4bfb16ec1682b367d3ec81d7d03e4044a0ffe5164454c630dc94de9db684",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에서 곧 에돔의 자손으로서 족장 된 자들이 이러하였더라"
+      ],
+      "raw_text_hashes": [
+        "ee5a4bfb16ec1682b367d3ec81d7d03e4044a0ffe5164454c630dc94de9db684"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:36:20",
+      "sequence": 1061,
+      "chapter_label": "GEN 36",
+      "verse_label": "20",
+      "locator": {
+        "book": "GEN",
+        "chapter": 36,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 36,
+          "verse": 20
+        }
+      ],
+      "en": "These are the sons of Seir the Horite, the inhabitants of the land: Lotan, Shobal, Zibeon, Anah,",
+      "ko": "그 땅의 원거인 호리 족속 세일의 자손은 로단과 소발과 시브온과 아나와",
+      "source_text_hash": "f26c1af4b583c6ec61864db2c6295d64060b415d303ec05f71c6522abdede018",
+      "translation_text_hash": "78525bdcbc2ed5f8b996a892df9580b2132685b65a7564c5a9fac015c67d5e9b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 땅의 원거인 호리 족속 세일의 자손은 로단과 소발과 시브온과 아나와"
+      ],
+      "raw_text_hashes": [
+        "78525bdcbc2ed5f8b996a892df9580b2132685b65a7564c5a9fac015c67d5e9b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:36:21",
+      "sequence": 1062,
+      "chapter_label": "GEN 36",
+      "verse_label": "21",
+      "locator": {
+        "book": "GEN",
+        "chapter": 36,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 36,
+          "verse": 21
+        }
+      ],
+      "en": "Dishon, Ezer, and Dishan. These are the chiefs who came of the Horites, the children of Seir in the land of Edom.",
+      "ko": "디손과 에셀과 디산이니 이들은 에돔땅에 있는 세일의 자손중 호리 족속으로 말미암아 나온 족장들이요",
+      "source_text_hash": "9606b4881989e41094d1b16c0baddc6d10bb76d66d5be317c4ca48d6ea468b0a",
+      "translation_text_hash": "894fc7d3bdc25a10197430dbd36fc7d2253d9897fafb1451686858bc971775a9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "디손과 에셀과 디산이니 이들은 에돔땅에 있는 세일의 자손중 호리 족속으로 말미암아 나온 족장들이요"
+      ],
+      "raw_text_hashes": [
+        "894fc7d3bdc25a10197430dbd36fc7d2253d9897fafb1451686858bc971775a9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:36:22",
+      "sequence": 1063,
+      "chapter_label": "GEN 36",
+      "verse_label": "22",
+      "locator": {
+        "book": "GEN",
+        "chapter": 36,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 36,
+          "verse": 22
+        }
+      ],
+      "en": "The children of Lotan were Hori and Heman. Lotan’s sister was Timna.",
+      "ko": "로단의 자녀는 호리와 헤맘과 로단의 누이 딤나요",
+      "source_text_hash": "bef7b9687ba89b43df04d122a64e809ea950fd09870ffc792a190abdc9749c25",
+      "translation_text_hash": "5227e472f9e01e8990677cb3e3c64a589926ea509b175ffd1611ff08f79d6fb4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "로단의 자녀는 호리와 헤맘과 로단의 누이 딤나요"
+      ],
+      "raw_text_hashes": [
+        "5227e472f9e01e8990677cb3e3c64a589926ea509b175ffd1611ff08f79d6fb4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:36:23",
+      "sequence": 1064,
+      "chapter_label": "GEN 36",
+      "verse_label": "23",
+      "locator": {
+        "book": "GEN",
+        "chapter": 36,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 36,
+          "verse": 23
+        }
+      ],
+      "en": "These are the children of Shobal: Alvan, Manahath, Ebal, Shepho, and Onam.",
+      "ko": "소발의 자녀는 알완과 마나핫과 에발과 스보와 오남이요",
+      "source_text_hash": "38f800ad1b99e06178851510587a260e34c14a81dc00abeac5105e237663b270",
+      "translation_text_hash": "4f44a3b3824ff4f8bd5e29d002afc7627d8ccc3237fa9c84288f8df1fe6d9415",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "소발의 자녀는 알완과 마나핫과 에발과 스보와 오남이요"
+      ],
+      "raw_text_hashes": [
+        "4f44a3b3824ff4f8bd5e29d002afc7627d8ccc3237fa9c84288f8df1fe6d9415"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:36:24",
+      "sequence": 1065,
+      "chapter_label": "GEN 36",
+      "verse_label": "24",
+      "locator": {
+        "book": "GEN",
+        "chapter": 36,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 36,
+          "verse": 24
+        }
+      ],
+      "en": "These are the children of Zibeon: Aiah and Anah. This is Anah who found the hot springs in the wilderness, as he fed the donkeys of Zibeon his father.",
+      "ko": "시브온의 자녀는 아야와 아나며 이 아나는 그 아비 시브온의 나귀를 칠 때에 광야에서 온천을 발견하였고",
+      "source_text_hash": "7185c4fadaaac5b57ebe5c2d4a0f6e0cdf42590bbb67c67f0b4acfcdcdf02fef",
+      "translation_text_hash": "1a45ff7943f018044bdc9e9185c6e83610ce0a493b9b086418bc8618c502ed49",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시브온의 자녀는 아야와 아나며 이 아나는 그 아비 시브온의 나귀를 칠 때에 광야에서 온천을 발견하였고"
+      ],
+      "raw_text_hashes": [
+        "1a45ff7943f018044bdc9e9185c6e83610ce0a493b9b086418bc8618c502ed49"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:36:25",
+      "sequence": 1066,
+      "chapter_label": "GEN 36",
+      "verse_label": "25",
+      "locator": {
+        "book": "GEN",
+        "chapter": 36,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 36,
+          "verse": 25
+        }
+      ],
+      "en": "These are the children of Anah: Dishon and Oholibamah, the daughter of Anah.",
+      "ko": "아나의 자녀는 디손과 오홀리바마니 오홀리바마는 아나의 딸이며",
+      "source_text_hash": "032905ee3b3ac73e3cdc5c1c287ce7fd6cc20dc2eb8ddc0a0b0e45e1bf5cb54b",
+      "translation_text_hash": "800ec538f4f682f58b6dbc4d42595f4e61f9d56a2f7cb6b54a0ec3f62dac556b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아나의 자녀는 디손과 오홀리바마니 오홀리바마는 아나의 딸이며"
+      ],
+      "raw_text_hashes": [
+        "800ec538f4f682f58b6dbc4d42595f4e61f9d56a2f7cb6b54a0ec3f62dac556b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:36:26",
+      "sequence": 1067,
+      "chapter_label": "GEN 36",
+      "verse_label": "26",
+      "locator": {
+        "book": "GEN",
+        "chapter": 36,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 36,
+          "verse": 26
+        }
+      ],
+      "en": "These are the children of Dishon: Hemdan, Eshban, Ithran, and Cheran.",
+      "ko": "디손의 자녀는 헴단과 에스반과 이드란과 그란이요",
+      "source_text_hash": "2efe0a39190dbb0be17dacb4dd2d4852d2d25cb63e8104a908d1afde02f04087",
+      "translation_text_hash": "e97e70757fe81bc2d4580312015c070b37b95b75c2b199e334702dd4b1f01c90",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "디손의 자녀는 헴단과 에스반과 이드란과 그란이요"
+      ],
+      "raw_text_hashes": [
+        "e97e70757fe81bc2d4580312015c070b37b95b75c2b199e334702dd4b1f01c90"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:36:27",
+      "sequence": 1068,
+      "chapter_label": "GEN 36",
+      "verse_label": "27",
+      "locator": {
+        "book": "GEN",
+        "chapter": 36,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 36,
+          "verse": 27
+        }
+      ],
+      "en": "These are the children of Ezer: Bilhan, Zaavan, and Akan.",
+      "ko": "에셀의 자녀는 빌한과 사아완과 아간이요",
+      "source_text_hash": "7b1ce7dca4193b180fbfe9ec0ed51722d541341df6d51de2c847145cf97b3a19",
+      "translation_text_hash": "6dd5a3d17d334b07e5b19616230494cb4b81f8b0e5f7d97fc9aaaf36953936ef",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에셀의 자녀는 빌한과 사아완과 아간이요"
+      ],
+      "raw_text_hashes": [
+        "6dd5a3d17d334b07e5b19616230494cb4b81f8b0e5f7d97fc9aaaf36953936ef"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:36:28",
+      "sequence": 1069,
+      "chapter_label": "GEN 36",
+      "verse_label": "28",
+      "locator": {
+        "book": "GEN",
+        "chapter": 36,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 36,
+          "verse": 28
+        }
+      ],
+      "en": "These are the children of Dishan: Uz and Aran.",
+      "ko": "디산의 자녀는 우스와 아란이니",
+      "source_text_hash": "1638f35bb176a0447a3c9c365f3d0aac0f9bbf1065f21735896b49d86a81366e",
+      "translation_text_hash": "706e043d4fbd290f8542eaa4e2a767535a9a90fab0acba7d3b884518bd099db4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "디산의 자녀는 우스와 아란이니"
+      ],
+      "raw_text_hashes": [
+        "706e043d4fbd290f8542eaa4e2a767535a9a90fab0acba7d3b884518bd099db4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:36:29",
+      "sequence": 1070,
+      "chapter_label": "GEN 36",
+      "verse_label": "29",
+      "locator": {
+        "book": "GEN",
+        "chapter": 36,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 36,
+          "verse": 29
+        }
+      ],
+      "en": "These are the chiefs who came of the Horites: chief Lotan, chief Shobal, chief Zibeon, chief Anah,",
+      "ko": "호리 족속의 족장들은 곧 로단 족장, 소발 족장, 시브온 족장, 아나 족장,",
+      "source_text_hash": "ac1ab7bf091fbfa90eccafbbd0b0f2e782264b97ec5db0edb259017c9e949e01",
+      "translation_text_hash": "f9f1fa7ad6bde26b27600ba3aefb71fe1b8db76fd8b3f57d02d55648bc38070f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "호리 족속의 족장들은 곧 로단 족장, 소발 족장, 시브온 족장, 아나 족장,"
+      ],
+      "raw_text_hashes": [
+        "f9f1fa7ad6bde26b27600ba3aefb71fe1b8db76fd8b3f57d02d55648bc38070f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:36:30",
+      "sequence": 1071,
+      "chapter_label": "GEN 36",
+      "verse_label": "30",
+      "locator": {
+        "book": "GEN",
+        "chapter": 36,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 36,
+          "verse": 30
+        }
+      ],
+      "en": "chief Dishon, chief Ezer, and chief Dishan. These are the chiefs who came of the Horites, according to their chiefs in the land of Seir.",
+      "ko": "디손 족장, 에셀 족장, 디산 족장이라 이들은 그 구역을 따라 세일 땅에 있는 호리 족속으로 말미암아 나온 족장들이었더라",
+      "source_text_hash": "f069937a72fb6b93252af6b132b0d9574c8827c94b198118e0ccf786a9f34495",
+      "translation_text_hash": "24a132c13f54a0bb326c36148f36a26ca91aff55c3ffcef794ffc68c8349b625",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "디손 족장, 에셀 족장, 디산 족장이라 이들은 그 구역을 따라 세일 땅에 있는 호리 족속으로 말미암아 나온 족장들이었더라"
+      ],
+      "raw_text_hashes": [
+        "24a132c13f54a0bb326c36148f36a26ca91aff55c3ffcef794ffc68c8349b625"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:36:31",
+      "sequence": 1072,
+      "chapter_label": "GEN 36",
+      "verse_label": "31",
+      "locator": {
+        "book": "GEN",
+        "chapter": 36,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 36,
+          "verse": 31
+        }
+      ],
+      "en": "These are the kings who reigned in the land of Edom, before any king reigned over the children of Israel.",
+      "ko": "이스라엘 자손을 다스리는 왕이 있기 전에 에돔 땅을 다스리는 왕이 이러하니라",
+      "source_text_hash": "a518e0ad1105b123bb438596cf3fd068d3ae6647db2aa3a6dc29ea2b77e2bfdc",
+      "translation_text_hash": "908cac82b2f389c0e576622df1c1ec44d561a83ba1a0b119b51bf342aa545e1b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손을 다스리는 왕이 있기 전에 에돔 땅을 다스리는 왕이 이러하니라"
+      ],
+      "raw_text_hashes": [
+        "908cac82b2f389c0e576622df1c1ec44d561a83ba1a0b119b51bf342aa545e1b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:36:32",
+      "sequence": 1073,
+      "chapter_label": "GEN 36",
+      "verse_label": "32",
+      "locator": {
+        "book": "GEN",
+        "chapter": 36,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 36,
+          "verse": 32
+        }
+      ],
+      "en": "Bela, the son of Beor, reigned in Edom. The name of his city was Dinhabah.",
+      "ko": "브올의 아들 벨라가 에돔의 왕이 되었으니 그 도성의 이름은 딘하바며",
+      "source_text_hash": "40d927af65732614ba0affab624a7c98c1a4540b0ffb37d4d6f4e9320225f99a",
+      "translation_text_hash": "f4948500ca6213f640b9ac5b13fcfc4858cb902829e62a5adaa0f7fdc00bfa30",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "브올의 아들 벨라가 에돔의 왕이 되었으니 그 도성의 이름은 딘하바며"
+      ],
+      "raw_text_hashes": [
+        "f4948500ca6213f640b9ac5b13fcfc4858cb902829e62a5adaa0f7fdc00bfa30"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:36:33",
+      "sequence": 1074,
+      "chapter_label": "GEN 36",
+      "verse_label": "33",
+      "locator": {
+        "book": "GEN",
+        "chapter": 36,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 36,
+          "verse": 33
+        }
+      ],
+      "en": "Bela died, and Jobab, the son of Zerah of Bozrah, reigned in his place.",
+      "ko": "벨라가 죽고 보스라 사람 세라의 아들 요밥이 그를 대신하여 왕이 되고",
+      "source_text_hash": "1a95548abcc22c18a6c2d81a8c65aa9819ea5166c20c27a41904654374a16cc2",
+      "translation_text_hash": "202d1540deddcc4fcbac1373dd44d007b7aef9aa0be4b848a679e7b269200b66",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "벨라가 죽고 보스라 사람 세라의 아들 요밥이 그를 대신하여 왕이 되고"
+      ],
+      "raw_text_hashes": [
+        "202d1540deddcc4fcbac1373dd44d007b7aef9aa0be4b848a679e7b269200b66"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:36:34",
+      "sequence": 1075,
+      "chapter_label": "GEN 36",
+      "verse_label": "34",
+      "locator": {
+        "book": "GEN",
+        "chapter": 36,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 36,
+          "verse": 34
+        }
+      ],
+      "en": "Jobab died, and Husham of the land of the Temanites reigned in his place.",
+      "ko": "요밥이 죽고 데만 족속의 땅의 후삼이 그를 대신하여 왕이 되고",
+      "source_text_hash": "0f78f56f5063daf599ca2ca6d1b5a71cc33e4e008a7a60bd1f01fabf30dfe6b6",
+      "translation_text_hash": "99a5fc9d1317b4d4ddfebbaab2f8b0af24f232d44a3bb13014c9310192ef8680",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요밥이 죽고 데만 족속의 땅의 후삼이 그를 대신하여 왕이 되고"
+      ],
+      "raw_text_hashes": [
+        "99a5fc9d1317b4d4ddfebbaab2f8b0af24f232d44a3bb13014c9310192ef8680"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:36:35",
+      "sequence": 1076,
+      "chapter_label": "GEN 36",
+      "verse_label": "35",
+      "locator": {
+        "book": "GEN",
+        "chapter": 36,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 36,
+          "verse": 35
+        }
+      ],
+      "en": "Husham died, and Hadad, the son of Bedad, who struck Midian in the field of Moab, reigned in his place. The name of his city was Avith.",
+      "ko": "후삼이 죽고 브닷의 아들 곧 모압 들에서 미디안 족속을 친 하닷이 그를 대신하여 왕이 되니 그 도성 이름은 아윗이며",
+      "source_text_hash": "944829fbd7a34193a0bcb0a0ef5b13e9fd38ace1994bcb837295c1d2b6a9da94",
+      "translation_text_hash": "07d49efd8232f3676587c1914c87a94db00a552421a656183a54269e0bd442df",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "후삼이 죽고 브닷의 아들 곧 모압 들에서 미디안 족속을 친 하닷이 그를 대신하여 왕이 되니 그 도성 이름은 아윗이며"
+      ],
+      "raw_text_hashes": [
+        "07d49efd8232f3676587c1914c87a94db00a552421a656183a54269e0bd442df"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:36:36",
+      "sequence": 1077,
+      "chapter_label": "GEN 36",
+      "verse_label": "36",
+      "locator": {
+        "book": "GEN",
+        "chapter": 36,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 36,
+          "verse": 36
+        }
+      ],
+      "en": "Hadad died, and Samlah of Masrekah reigned in his place.",
+      "ko": "하닷이 죽고 마스레가의 삼라가 그를 대신하여 왕이 되고",
+      "source_text_hash": "ea48f5aa7038c292d1694e60c47951a60c72fe7cccdea0b26b5f7c8cee2fbeb5",
+      "translation_text_hash": "4411de3fd11362ed317ae320714090f1865c95cec7593079b87f62e22182166a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하닷이 죽고 마스레가의 삼라가 그를 대신하여 왕이 되고"
+      ],
+      "raw_text_hashes": [
+        "4411de3fd11362ed317ae320714090f1865c95cec7593079b87f62e22182166a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:36:37",
+      "sequence": 1078,
+      "chapter_label": "GEN 36",
+      "verse_label": "37",
+      "locator": {
+        "book": "GEN",
+        "chapter": 36,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 36,
+          "verse": 37
+        }
+      ],
+      "en": "Samlah died, and Shaul of Rehoboth by the river, reigned in his place.",
+      "ko": "삼라가 죽고 유브라데 하숫가 르호봇의 사울이 그를 대신하여 왕이 되고",
+      "source_text_hash": "c5c04fde86c4340450a3de824563c2ae92e2465dcb64283f4e7f09d9579ffa6c",
+      "translation_text_hash": "21af4d7cff5fafcc7a4980efaaf74a5232497310c0caf50656d59f116948e22e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "삼라가 죽고 유브라데 하숫가 르호봇의 사울이 그를 대신하여 왕이 되고"
+      ],
+      "raw_text_hashes": [
+        "21af4d7cff5fafcc7a4980efaaf74a5232497310c0caf50656d59f116948e22e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:36:38",
+      "sequence": 1079,
+      "chapter_label": "GEN 36",
+      "verse_label": "38",
+      "locator": {
+        "book": "GEN",
+        "chapter": 36,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 36,
+          "verse": 38
+        }
+      ],
+      "en": "Shaul died, and Baal Hanan the son of Achbor reigned in his place.",
+      "ko": "사울이 죽고 악볼의 아들 바알하난이 그를 대신하여 왕이 되고",
+      "source_text_hash": "93be91773986a15bf76bd4b87bbafaca5cc723b9ad20f274361132c945752984",
+      "translation_text_hash": "1c5a4f77b761f703e0ab46fb20e358634134846e9a79bdada0ab089698a2ef2b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울이 죽고 악볼의 아들 바알하난이 그를 대신하여 왕이 되고"
+      ],
+      "raw_text_hashes": [
+        "1c5a4f77b761f703e0ab46fb20e358634134846e9a79bdada0ab089698a2ef2b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:36:39",
+      "sequence": 1080,
+      "chapter_label": "GEN 36",
+      "verse_label": "39",
+      "locator": {
+        "book": "GEN",
+        "chapter": 36,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 36,
+          "verse": 39
+        }
+      ],
+      "en": "Baal Hanan the son of Achbor died, and Hadar reigned in his place. The name of his city was Pau. His wife’s name was Mehetabel, the daughter of Matred, the daughter of Mezahab.",
+      "ko": "악볼의 아들 바알하난이 죽고 하달이 그를 대신하여 왕이 되니 그 도성 이름은 바우며 그 처의 이름은 므헤다벨이니 마드렛의 딸이요 메사합의 손녀더라",
+      "source_text_hash": "8c8604e2c928f0b30319cd8dd63369d1c84d949ce66e356f2a0c783b41b38761",
+      "translation_text_hash": "10ca9668a23803f87b7c0bcbe0aa2b11ba364842f9ec91261d7a3b950de4e111",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "악볼의 아들 바알하난이 죽고 하달이 그를 대신하여 왕이 되니 그 도성 이름은 바우며 그 처의 이름은 므헤다벨이니 마드렛의 딸이요 메사합의 손녀더라"
+      ],
+      "raw_text_hashes": [
+        "10ca9668a23803f87b7c0bcbe0aa2b11ba364842f9ec91261d7a3b950de4e111"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:36:40",
+      "sequence": 1081,
+      "chapter_label": "GEN 36",
+      "verse_label": "40",
+      "locator": {
+        "book": "GEN",
+        "chapter": 36,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 36,
+          "verse": 40
+        }
+      ],
+      "en": "These are the names of the chiefs who came from Esau, according to their families, after their places, and by their names: chief Timna, chief Alvah, chief Jetheth,",
+      "ko": "에서에게서 나온 족장들의 이름은 그 종족과 거처와 이름대로 이러하니 딤나 족장, 알와 족장, 여뎃 족장,",
+      "source_text_hash": "c6745d9568612a5dc3864ba16f495e913e55e0384876a9a7326d0518e5d8003f",
+      "translation_text_hash": "fb18ee896f314c324d60da40b20db558d75613c9f5d0e0b74304b391ca34a800",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에서에게서 나온 족장들의 이름은 그 종족과 거처와 이름대로 이러하니 딤나 족장, 알와 족장, 여뎃 족장,"
+      ],
+      "raw_text_hashes": [
+        "fb18ee896f314c324d60da40b20db558d75613c9f5d0e0b74304b391ca34a800"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:36:41",
+      "sequence": 1082,
+      "chapter_label": "GEN 36",
+      "verse_label": "41",
+      "locator": {
+        "book": "GEN",
+        "chapter": 36,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 36,
+          "verse": 41
+        }
+      ],
+      "en": "chief Oholibamah, chief Elah, chief Pinon,",
+      "ko": "오홀리바마 족장, 엘라 족장, 비논 족장,",
+      "source_text_hash": "bd59db56ac65a7b66ee9c3c1a9ec5defcbaf696698aeab2cda2d053a94b7a935",
+      "translation_text_hash": "69ab6cdc477fddc58b9f9a27511e34ed60bdd4b363ca4740d74d7563bbc6503e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오홀리바마 족장, 엘라 족장, 비논 족장,"
+      ],
+      "raw_text_hashes": [
+        "69ab6cdc477fddc58b9f9a27511e34ed60bdd4b363ca4740d74d7563bbc6503e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:36:42",
+      "sequence": 1083,
+      "chapter_label": "GEN 36",
+      "verse_label": "42",
+      "locator": {
+        "book": "GEN",
+        "chapter": 36,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 36,
+          "verse": 42
+        }
+      ],
+      "en": "chief Kenaz, chief Teman, chief Mibzar,",
+      "ko": "그나스 족장, 데만 족장, 밉살 족장,",
+      "source_text_hash": "548975877bba1ea58763597df08ff5b5bad6ecda9e59f14115063963675cb97d",
+      "translation_text_hash": "b8323c24b324d673189e402d2f90b15bd7ff76d695eaa3690af06250904f49d4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그나스 족장, 데만 족장, 밉살 족장,"
+      ],
+      "raw_text_hashes": [
+        "b8323c24b324d673189e402d2f90b15bd7ff76d695eaa3690af06250904f49d4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:36:43",
+      "sequence": 1084,
+      "chapter_label": "GEN 36",
+      "verse_label": "43",
+      "locator": {
+        "book": "GEN",
+        "chapter": 36,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 36,
+          "verse": 43
+        }
+      ],
+      "en": "chief Magdiel, and chief Iram. These are the chiefs of Edom, according to their habitations in the land of their possession. This is Esau, the father of the Edomites.",
+      "ko": "막디엘 족장, 이람 족장이라 이들은 그 구역과 거처를 따른 에돔 족장들이며 에돔 족속의 조상은 에서더라",
+      "source_text_hash": "e00d019dd6b57b5184e4d4af6cd9672cdc3d5b6b7b19032eba9b62defd2de6c5",
+      "translation_text_hash": "28f37fe60a12656f4178ad8d9e13824aef4f860abda867018f30486da9bf2d2f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "막디엘 족장, 이람 족장이라 이들은 그 구역과 거처를 따른 에돔 족장들이며 에돔 족속의 조상은 에서더라"
+      ],
+      "raw_text_hashes": [
+        "28f37fe60a12656f4178ad8d9e13824aef4f860abda867018f30486da9bf2d2f"
+      ]
+    }
+  ]
+}

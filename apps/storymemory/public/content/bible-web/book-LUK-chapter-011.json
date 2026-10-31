@@ -1,0 +1,1741 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:LUK:chapter:011",
+  "unit_ordinal": 984,
+  "unit_label": "LUK 11",
+  "book_code": "LUK",
+  "chapter_number": 11,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:LUK:11:1",
+      "sequence": 25407,
+      "chapter_label": "LUK 11",
+      "verse_label": "1",
+      "locator": {
+        "book": "LUK",
+        "chapter": 11,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 11,
+          "verse": 1
+        }
+      ],
+      "en": "When he finished praying in a certain place, one of his disciples said to him, “Lord, teach us to pray, just as John also taught his disciples.”",
+      "ko": "예수께서 한 곳에서 기도하시고 마치시매 제자 중 하나가 여짜오되 주여 요한이 자기 제자들에게 기도를 가르친 것과 같이 우리에게도 가르쳐 주옵소서",
+      "source_text_hash": "efda09e8a845c9efe6be9b680b41378ad15a555dd59fdc42cd7985f67cbf4922",
+      "translation_text_hash": "1846d2f8d456681495ef785f537a02bde764fb911113b4decdfae3bd5147add2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 한 곳에서 기도하시고 마치시매 제자 중 하나가 여짜오되 주여 요한이 자기 제자들에게 기도를 가르친 것과 같이 우리에게도 가르쳐 주옵소서"
+      ],
+      "raw_text_hashes": [
+        "1846d2f8d456681495ef785f537a02bde764fb911113b4decdfae3bd5147add2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:11:2",
+      "sequence": 25408,
+      "chapter_label": "LUK 11",
+      "verse_label": "2",
+      "locator": {
+        "book": "LUK",
+        "chapter": 11,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 11,
+          "verse": 2
+        }
+      ],
+      "en": "He said to them, “When you pray, say,‘Our Father in heaven, may your name be kept holy. May your Kingdom come. May your will be done on earth, as it is in heaven.",
+      "ko": "예수께서 이르시되 너희는 기도할 때에 이렇게 하라 아버지여 이름이 거룩히 여김을 받으시오며 나라이 임하옵시며",
+      "source_text_hash": "67884b7c84de7f7cb6d1b525c132b88a7438e3c932c7a22f50df8bc753c87c45",
+      "translation_text_hash": "a86626f1ead88c2f84b77526060aa371984b6005b7dfb4b24bd049e5c041e2ae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 이르시되 너희는 기도할 때에 이렇게 하라 아버지여 이름이 거룩히 여김을 받으시오며 나라이 임하옵시며"
+      ],
+      "raw_text_hashes": [
+        "a86626f1ead88c2f84b77526060aa371984b6005b7dfb4b24bd049e5c041e2ae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:11:3",
+      "sequence": 25409,
+      "chapter_label": "LUK 11",
+      "verse_label": "3",
+      "locator": {
+        "book": "LUK",
+        "chapter": 11,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 11,
+          "verse": 3
+        }
+      ],
+      "en": "Give us day by day our daily bread.",
+      "ko": "우리에게 날마다 일용할 양식을 주옵시고",
+      "source_text_hash": "cb57ebaf0b3d75726bc7d19c6cf084283d3a2b83d584786330ea363da7fc760b",
+      "translation_text_hash": "a0c9992d1dfd9cd320ced6ea376aeb21d33b2e37c66f4e9e3ce0127189dcfd90",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리에게 날마다 일용할 양식을 주옵시고"
+      ],
+      "raw_text_hashes": [
+        "a0c9992d1dfd9cd320ced6ea376aeb21d33b2e37c66f4e9e3ce0127189dcfd90"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:11:4",
+      "sequence": 25410,
+      "chapter_label": "LUK 11",
+      "verse_label": "4",
+      "locator": {
+        "book": "LUK",
+        "chapter": 11,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 11,
+          "verse": 4
+        }
+      ],
+      "en": "Forgive us our sins,for we ourselves also forgive everyone who is indebted to us. Bring us not into temptation, but deliver us from the evil one.’”",
+      "ko": "우리가 우리에게 죄 지은 모든 사람을 용서하오니 우리 죄도 사하여 주옵시고 우리를 시험에 들게 하지 마옵소서 하라",
+      "source_text_hash": "b33cdb5a187a6b8c6ea5f11efd7ed0b2123401cfeb4a2da20cfaff87bff08714",
+      "translation_text_hash": "055f6f26bb53e506c29b37285892c91f929ef1e637086abafd26f179c39fd103",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 우리에게 죄 지은 모든 사람을 용서하오니 우리 죄도 사하여 주옵시고 우리를 시험에 들게 하지 마옵소서 하라"
+      ],
+      "raw_text_hashes": [
+        "055f6f26bb53e506c29b37285892c91f929ef1e637086abafd26f179c39fd103"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:11:5",
+      "sequence": 25411,
+      "chapter_label": "LUK 11",
+      "verse_label": "5",
+      "locator": {
+        "book": "LUK",
+        "chapter": 11,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 11,
+          "verse": 5
+        }
+      ],
+      "en": "He said to them, “Which of you, if you go to a friend at midnight and tell him, ‘Friend, lend me three loaves of bread,",
+      "ko": "또 이르시되 너희 중에 누가 벗이 있는데 밤중에 그에게 가서 말하기를 벗이여 떡 세 덩이를 내게 빌리라",
+      "source_text_hash": "f66d197afa30abb4b38f56dc8f666282edff703234e991201aa2643081bf168a",
+      "translation_text_hash": "8310bf8daad9ccb337a9ae96885ed10b63cd4c5dd5f6b885765a1cd728aab34e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 이르시되 너희 중에 누가 벗이 있는데 밤중에 그에게 가서 말하기를 벗이여 떡 세 덩이를 내게 빌리라"
+      ],
+      "raw_text_hashes": [
+        "8310bf8daad9ccb337a9ae96885ed10b63cd4c5dd5f6b885765a1cd728aab34e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:11:6",
+      "sequence": 25412,
+      "chapter_label": "LUK 11",
+      "verse_label": "6",
+      "locator": {
+        "book": "LUK",
+        "chapter": 11,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 11,
+          "verse": 6
+        }
+      ],
+      "en": "for a friend of mine has come to me from a journey, and I have nothing to set before him,’",
+      "ko": "내 벗이 여행 중에 내게 왔으나 내가 먹일 것이 없노라 하면",
+      "source_text_hash": "1405ef0edcc70cd8afadb3310a88392641c5d7389dfaf5718a5f171cf11aac21",
+      "translation_text_hash": "9e677155ed7c62fee11ac26a461cfe4cc31350caf1374b6396a2cc7df1de5a7f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 벗이 여행 중에 내게 왔으나 내가 먹일 것이 없노라 하면"
+      ],
+      "raw_text_hashes": [
+        "9e677155ed7c62fee11ac26a461cfe4cc31350caf1374b6396a2cc7df1de5a7f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:11:7",
+      "sequence": 25413,
+      "chapter_label": "LUK 11",
+      "verse_label": "7",
+      "locator": {
+        "book": "LUK",
+        "chapter": 11,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 11,
+          "verse": 7
+        }
+      ],
+      "en": "and he from within will answer and say, ‘Don’t bother me. The door is now shut, and my children are with me in bed. I can’t get up and give it to you’?",
+      "ko": "저가 안에서 대답하여 이르되 나를 괴롭게 하지 말라 문이 이미 닫혔고 아이들이 나와 함께 침소에 누웠으니 일어나 네게 줄 수가 없노라 하겠느냐",
+      "source_text_hash": "a9878d119fc13bce45d2696b729eeb0c35435391125215c17897828d5d9569f5",
+      "translation_text_hash": "4763cb8bbf223c1c2bad425e9a4360b985026ca9bd3b59b1c04b095c4faa28d8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 안에서 대답하여 이르되 나를 괴롭게 하지 말라 문이 이미 닫혔고 아이들이 나와 함께 침소에 누웠으니 일어나 네게 줄 수가 없노라 하겠느냐"
+      ],
+      "raw_text_hashes": [
+        "4763cb8bbf223c1c2bad425e9a4360b985026ca9bd3b59b1c04b095c4faa28d8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:11:8",
+      "sequence": 25414,
+      "chapter_label": "LUK 11",
+      "verse_label": "8",
+      "locator": {
+        "book": "LUK",
+        "chapter": 11,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 11,
+          "verse": 8
+        }
+      ],
+      "en": "I tell you, although he will not rise and give it to him because he is his friend, yet because of his persistence, he will get up and give him as many as he needs.",
+      "ko": "내가 너희에게 말하노니 비록 벗됨을 인하여서는 일어나 주지 아니할찌라도 그 강청함을 인하여 일어나 그 소용대로 주리라",
+      "source_text_hash": "97dc4bc03cd724fd7778c7c0b31468525f330aac864fede5e2e05d33192e01a2",
+      "translation_text_hash": "b6f5791c0f580d9d01362392929d60be1528a4c3c0d09a58165f0d2273054494",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너희에게 말하노니 비록 벗됨을 인하여서는 일어나 주지 아니할찌라도 그 강청함을 인하여 일어나 그 소용대로 주리라"
+      ],
+      "raw_text_hashes": [
+        "b6f5791c0f580d9d01362392929d60be1528a4c3c0d09a58165f0d2273054494"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:11:9",
+      "sequence": 25415,
+      "chapter_label": "LUK 11",
+      "verse_label": "9",
+      "locator": {
+        "book": "LUK",
+        "chapter": 11,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 11,
+          "verse": 9
+        }
+      ],
+      "en": "“I tell you, keep asking, and it will be given you. Keep seeking, and you will find. Keep knocking, and it will be opened to you.",
+      "ko": "내가 또 너희에게 이르노니 구하라 그러면 너희에게 주실 것이요 찾으라 그러면 찾을 것이요 문을 두드리라 그러면 너희에게 열릴 것이니",
+      "source_text_hash": "77ccd86dec5ae2cf7e431671738f4dc89725495ba1c7b7e2f0b616b38a778e5e",
+      "translation_text_hash": "872a10ab734e1d3a36b629c938336cc453bc3f49d18e4be6dc39361cdcbf70a1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 또 너희에게 이르노니 구하라 그러면 너희에게 주실 것이요 찾으라 그러면 찾을 것이요 문을 두드리라 그러면 너희에게 열릴 것이니"
+      ],
+      "raw_text_hashes": [
+        "872a10ab734e1d3a36b629c938336cc453bc3f49d18e4be6dc39361cdcbf70a1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:11:10",
+      "sequence": 25416,
+      "chapter_label": "LUK 11",
+      "verse_label": "10",
+      "locator": {
+        "book": "LUK",
+        "chapter": 11,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 11,
+          "verse": 10
+        }
+      ],
+      "en": "For everyone who asks receives. He who seeks finds. To him who knocks it will be opened.",
+      "ko": "구하는 이마다 받을 것이요 찾는 이가 찾을 것이요 두드리는 이에게 열릴 것이니라",
+      "source_text_hash": "0be2edaaa7bfc342a52cb9e0f35fdac0d4a33ad2c76c1ab4837a8a05a52b6bd9",
+      "translation_text_hash": "acfd2935c69d0cd4e3dbbb768adcc314666f02bb66c4389dd1e00f01f36a2a2f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "구하는 이마다 받을 것이요 찾는 이가 찾을 것이요 두드리는 이에게 열릴 것이니라"
+      ],
+      "raw_text_hashes": [
+        "acfd2935c69d0cd4e3dbbb768adcc314666f02bb66c4389dd1e00f01f36a2a2f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:11:11",
+      "sequence": 25417,
+      "chapter_label": "LUK 11",
+      "verse_label": "11",
+      "locator": {
+        "book": "LUK",
+        "chapter": 11,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 11,
+          "verse": 11
+        }
+      ],
+      "en": "“Which of you fathers, if your son asks for bread, will give him a stone? Or if he asks for a fish, he won’t give him a snake instead of a fish, will he?",
+      "ko": "너희 중에 아비된 자 누가 아들이 생선을 달라 하면 생선 대신에 뱀을 주며",
+      "source_text_hash": "ec5ca3b4d9f283fe376b3dba33df02119fa51d16fc7eb3e17bcdd159883cf289",
+      "translation_text_hash": "655533f16a5c8fe708f27668e6c7fb7b39703c92bee9368c5b0484bec74e0262",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 중에 아비된 자 누가 아들이 생선을 달라 하면 생선 대신에 뱀을 주며"
+      ],
+      "raw_text_hashes": [
+        "655533f16a5c8fe708f27668e6c7fb7b39703c92bee9368c5b0484bec74e0262"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:11:12",
+      "sequence": 25418,
+      "chapter_label": "LUK 11",
+      "verse_label": "12",
+      "locator": {
+        "book": "LUK",
+        "chapter": 11,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 11,
+          "verse": 12
+        }
+      ],
+      "en": "Or if he asks for an egg, he won’t give him a scorpion, will he?",
+      "ko": "알을 달라 하면 전갈을 주겠느냐",
+      "source_text_hash": "54fb887b325b4ddf415f0dbad243c851058d81dbf0d93a87c0f0679b1ebef9df",
+      "translation_text_hash": "a5b5aed7d75c5922abb8b84de97131901449b466db6dcbf7646a051ec5e91f50",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "알을 달라 하면 전갈을 주겠느냐"
+      ],
+      "raw_text_hashes": [
+        "a5b5aed7d75c5922abb8b84de97131901449b466db6dcbf7646a051ec5e91f50"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:11:13",
+      "sequence": 25419,
+      "chapter_label": "LUK 11",
+      "verse_label": "13",
+      "locator": {
+        "book": "LUK",
+        "chapter": 11,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 11,
+          "verse": 13
+        }
+      ],
+      "en": "If you then, being evil, know how to give good gifts to your children, how much more will your heavenly Father give the Holy Spirit to those who ask him?”",
+      "ko": "너희가 악할찌라도 좋은 것을 자식에게 줄줄 알거든 하물며 너희 천부께서 구하는 자에게 성령을 주시지 않겠느냐 하시니라",
+      "source_text_hash": "10c60e28cddd57129cd658400c23b6b30f754a43d437d7cde099e99d82098734",
+      "translation_text_hash": "2a87db9d56dfdaf820b8239af10ae5385cf2881100b36c23dd46b689063184ec",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 악할찌라도 좋은 것을 자식에게 줄줄 알거든 하물며 너희 천부께서 구하는 자에게 성령을 주시지 않겠느냐 하시니라"
+      ],
+      "raw_text_hashes": [
+        "2a87db9d56dfdaf820b8239af10ae5385cf2881100b36c23dd46b689063184ec"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:11:14",
+      "sequence": 25420,
+      "chapter_label": "LUK 11",
+      "verse_label": "14",
+      "locator": {
+        "book": "LUK",
+        "chapter": 11,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 11,
+          "verse": 14
+        }
+      ],
+      "en": "He was casting out a demon, and it was mute. When the demon had gone out, the mute man spoke; and the multitudes marveled.",
+      "ko": "예수께서 한 벙어리 귀신을 쫓아 내시니 귀신이 나가매 벙어리가 말하는지라 무리들이 기이히 여겼으나",
+      "source_text_hash": "c13796ec13c97ab16ec2163547a14670f7b8184954abe923e58973821b9a3998",
+      "translation_text_hash": "eb656a22822d485c8e6b9ba1a80e5477cd6224960ccdf363517728a17ea6b5be",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 한 벙어리 귀신을 쫓아 내시니 귀신이 나가매 벙어리가 말하는지라 무리들이 기이히 여겼으나"
+      ],
+      "raw_text_hashes": [
+        "eb656a22822d485c8e6b9ba1a80e5477cd6224960ccdf363517728a17ea6b5be"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:11:15",
+      "sequence": 25421,
+      "chapter_label": "LUK 11",
+      "verse_label": "15",
+      "locator": {
+        "book": "LUK",
+        "chapter": 11,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 11,
+          "verse": 15
+        }
+      ],
+      "en": "But some of them said, “He casts out demons by Beelzebul, the prince of the demons.”",
+      "ko": "그 중에 더러는 말하기를 저가 귀신의 왕 바알세불을 힘입어 귀신을 쫓아낸다 하고",
+      "source_text_hash": "03d26bd2dff0ea3d70f0eb94b36ff0560f0d37223750195e2de9b7a0a861fa9b",
+      "translation_text_hash": "330736e19d5b7a7853bd38e2e005b6400d6ccb853ac54e67971c7bfc0b4a50ee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 중에 더러는 말하기를 저가 귀신의 왕 바알세불을 힘입어 귀신을 쫓아낸다 하고"
+      ],
+      "raw_text_hashes": [
+        "330736e19d5b7a7853bd38e2e005b6400d6ccb853ac54e67971c7bfc0b4a50ee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:11:16",
+      "sequence": 25422,
+      "chapter_label": "LUK 11",
+      "verse_label": "16",
+      "locator": {
+        "book": "LUK",
+        "chapter": 11,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 11,
+          "verse": 16
+        }
+      ],
+      "en": "Others, testing him, sought from him a sign from heaven.",
+      "ko": "또 더러는 예수를 시험하여 하늘로서 오는 표적을 구하니",
+      "source_text_hash": "289796b0122dcf21007af42ac67479a06c7786af96e5330a23436298b3806957",
+      "translation_text_hash": "dd3287b92eee3d2afd72824f24dd436cf178b416f8bcb70feca37cbfe16452c6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 더러는 예수를 시험하여 하늘로서 오는 표적을 구하니"
+      ],
+      "raw_text_hashes": [
+        "dd3287b92eee3d2afd72824f24dd436cf178b416f8bcb70feca37cbfe16452c6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:11:17",
+      "sequence": 25423,
+      "chapter_label": "LUK 11",
+      "verse_label": "17",
+      "locator": {
+        "book": "LUK",
+        "chapter": 11,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 11,
+          "verse": 17
+        }
+      ],
+      "en": "But he, knowing their thoughts, said to them, “Every kingdom divided against itself is brought to desolation. A house divided against itself falls.",
+      "ko": "예수께서 저희 생각을 아시고 이르시되 스스로 분쟁하는 나라마다 황폐하여지며 스스로 분쟁하는 집은 무너지느니라",
+      "source_text_hash": "550d63e67c49b75adda5a06e1580d987d81a322b9c229dd71efd95febadbd859",
+      "translation_text_hash": "b37dc0efd515b6228999dc0d02114cd2c3cd5658c5461fdcd6a8b53f298e4eab",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 저희 생각을 아시고 이르시되 스스로 분쟁하는 나라마다 황폐하여지며 스스로 분쟁하는 집은 무너지느니라"
+      ],
+      "raw_text_hashes": [
+        "b37dc0efd515b6228999dc0d02114cd2c3cd5658c5461fdcd6a8b53f298e4eab"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:11:18",
+      "sequence": 25424,
+      "chapter_label": "LUK 11",
+      "verse_label": "18",
+      "locator": {
+        "book": "LUK",
+        "chapter": 11,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 11,
+          "verse": 18
+        }
+      ],
+      "en": "If Satan also is divided against himself, how will his kingdom stand? For you say that I cast out demons by Beelzebul.",
+      "ko": "너희 말이 내가 바알세불을 힘입어 귀신을 쫓아낸다 하니 만일 사단이 스스로 분쟁하면 저의 나라가 어떻게 서겠느냐",
+      "source_text_hash": "ecca524e7247df36f1dfa8d9a2a723f612a3c7012c1ff6f6c264f785fb7442f7",
+      "translation_text_hash": "8bbb3edb0c288b9ad79312a723c77fa0c7ba5b836f49dbbf78debe80aec96fd1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 말이 내가 바알세불을 힘입어 귀신을 쫓아낸다 하니 만일 사단이 스스로 분쟁하면 저의 나라가 어떻게 서겠느냐"
+      ],
+      "raw_text_hashes": [
+        "8bbb3edb0c288b9ad79312a723c77fa0c7ba5b836f49dbbf78debe80aec96fd1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:11:19",
+      "sequence": 25425,
+      "chapter_label": "LUK 11",
+      "verse_label": "19",
+      "locator": {
+        "book": "LUK",
+        "chapter": 11,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 11,
+          "verse": 19
+        }
+      ],
+      "en": "But if I cast out demons by Beelzebul, by whom do your children cast them out? Therefore they will be your judges.",
+      "ko": "내가 바알세불을 힘입어 귀신을 쫓아내면 너희 아들들은 누구를 힘입어 쫓아내느냐 그러므로 저희가 너희 재판관이 되리라",
+      "source_text_hash": "9e1cf891d56b274d05069a1befb800708ffb868a6aff75022e929965304919aa",
+      "translation_text_hash": "a1c78205459f7b73d85dfce62060a589c58403c0dd7ec95747ce69420c30496b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 바알세불을 힘입어 귀신을 쫓아내면 너희 아들들은 누구를 힘입어 쫓아내느냐 그러므로 저희가 너희 재판관이 되리라"
+      ],
+      "raw_text_hashes": [
+        "a1c78205459f7b73d85dfce62060a589c58403c0dd7ec95747ce69420c30496b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:11:20",
+      "sequence": 25426,
+      "chapter_label": "LUK 11",
+      "verse_label": "20",
+      "locator": {
+        "book": "LUK",
+        "chapter": 11,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 11,
+          "verse": 20
+        }
+      ],
+      "en": "But if I by God’s finger cast out demons, then God’s Kingdom has come to you.",
+      "ko": "그러나 내가 만일 하나님의 손을 힘입어 귀신을 쫓아내는 것이면 하나님의 나라가 이미 너희에게 임하였느니라",
+      "source_text_hash": "94df3f8544a05f102dd3057ffc6ca392806373c2a49d6ec74d86155c34af6c4a",
+      "translation_text_hash": "bf8da0e977148a4e258a258772227616d2e74fff5518371f73dc7ece7920e480",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 내가 만일 하나님의 손을 힘입어 귀신을 쫓아내는 것이면 하나님의 나라가 이미 너희에게 임하였느니라"
+      ],
+      "raw_text_hashes": [
+        "bf8da0e977148a4e258a258772227616d2e74fff5518371f73dc7ece7920e480"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:11:21",
+      "sequence": 25427,
+      "chapter_label": "LUK 11",
+      "verse_label": "21",
+      "locator": {
+        "book": "LUK",
+        "chapter": 11,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 11,
+          "verse": 21
+        }
+      ],
+      "en": "“When the strong man, fully armed, guards his own dwelling, his goods are safe.",
+      "ko": "강한 자가 무장을 하고 자기 집을 지킬 때에는 그 소유가 안전하되",
+      "source_text_hash": "9d4b306b6a174ee77ef588cf4702c8f6d73bcdff23306c488ed6ea56c1f63d84",
+      "translation_text_hash": "28dffff092834d2a2a52cee69c961624bb87365fbdea81450f9b0c67c960db62",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "강한 자가 무장을 하고 자기 집을 지킬 때에는 그 소유가 안전하되"
+      ],
+      "raw_text_hashes": [
+        "28dffff092834d2a2a52cee69c961624bb87365fbdea81450f9b0c67c960db62"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:11:22",
+      "sequence": 25428,
+      "chapter_label": "LUK 11",
+      "verse_label": "22",
+      "locator": {
+        "book": "LUK",
+        "chapter": 11,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 11,
+          "verse": 22
+        }
+      ],
+      "en": "But when someone stronger attacks him and overcomes him, he takes from him his whole armor in which he trusted, and divides his plunder.",
+      "ko": "더 강한 자가 와서 저를 이길 때에는 저의 믿던 무장을 빼앗고 저의 재물을 나누느니라",
+      "source_text_hash": "6153c520103edb79fad77cbf824dccb0a17c5d57879b5253c3a7cf1dd5a389f9",
+      "translation_text_hash": "051312739dfbaaccd3b0c20129db5df0c06429cc2eef562c4199883c7d6cf555",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "더 강한 자가 와서 저를 이길 때에는 저의 믿던 무장을 빼앗고 저의 재물을 나누느니라"
+      ],
+      "raw_text_hashes": [
+        "051312739dfbaaccd3b0c20129db5df0c06429cc2eef562c4199883c7d6cf555"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:11:23",
+      "sequence": 25429,
+      "chapter_label": "LUK 11",
+      "verse_label": "23",
+      "locator": {
+        "book": "LUK",
+        "chapter": 11,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 11,
+          "verse": 23
+        }
+      ],
+      "en": "“He who is not with me is against me. He who doesn’t gather with me scatters.",
+      "ko": "나와 함께 아니하는 자는 나를 반대하는 자요 나와 함께 모으지 아니하는 자는 헤치는 자니라",
+      "source_text_hash": "a230de0d086d45d03fd171bea687674586ecff7269bfdb2d001fe3c95f6c92f3",
+      "translation_text_hash": "1ab0aadaabba6633138ed269eb5d60bb0bbc58eedd91a88c5a39ca7d5bd459dd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나와 함께 아니하는 자는 나를 반대하는 자요 나와 함께 모으지 아니하는 자는 헤치는 자니라"
+      ],
+      "raw_text_hashes": [
+        "1ab0aadaabba6633138ed269eb5d60bb0bbc58eedd91a88c5a39ca7d5bd459dd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:11:24",
+      "sequence": 25430,
+      "chapter_label": "LUK 11",
+      "verse_label": "24",
+      "locator": {
+        "book": "LUK",
+        "chapter": 11,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 11,
+          "verse": 24
+        }
+      ],
+      "en": "The unclean spirit, when he has gone out of the man, passes through dry places, seeking rest; and finding none, he says, ‘I will turn back to my house from which I came out.’",
+      "ko": "더러운 귀신이 사람에게서 나갔을 때에 물 없는 곳으로 다니며 쉬기를 구하되 얻지 못하고 이에 가로되 내가 나온 내 집으로 돌아가리라 하고",
+      "source_text_hash": "ec9e5cf58738169ec5b7fd4e36eb2fca8f0558cb1852ea1f5353b9170434215b",
+      "translation_text_hash": "1124a0ac0dca411b22de6f0c73c9c4ef3d90e381e9c60b7f68125b2a8be073da",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "더러운 귀신이 사람에게서 나갔을 때에 물 없는 곳으로 다니며 쉬기를 구하되 얻지 못하고 이에 가로되 내가 나온 내 집으로 돌아가리라 하고"
+      ],
+      "raw_text_hashes": [
+        "1124a0ac0dca411b22de6f0c73c9c4ef3d90e381e9c60b7f68125b2a8be073da"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:11:25",
+      "sequence": 25431,
+      "chapter_label": "LUK 11",
+      "verse_label": "25",
+      "locator": {
+        "book": "LUK",
+        "chapter": 11,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 11,
+          "verse": 25
+        }
+      ],
+      "en": "When he returns, he finds it swept and put in order.",
+      "ko": "와 보니 그 집이 소제되고 수리되었거늘",
+      "source_text_hash": "1c6d911e4f9a936bdcef19273db735fd55b6df8fab9cd7aa4cdb2f881d618128",
+      "translation_text_hash": "3ab0ba21848d11004df42fa266ac0b856eb8fd6dbdf6ff86d2df10a03cf092e3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "와 보니 그 집이 소제되고 수리되었거늘"
+      ],
+      "raw_text_hashes": [
+        "3ab0ba21848d11004df42fa266ac0b856eb8fd6dbdf6ff86d2df10a03cf092e3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:11:26",
+      "sequence": 25432,
+      "chapter_label": "LUK 11",
+      "verse_label": "26",
+      "locator": {
+        "book": "LUK",
+        "chapter": 11,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 11,
+          "verse": 26
+        }
+      ],
+      "en": "Then he goes and takes seven other spirits more evil than himself, and they enter in and dwell there. The last state of that man becomes worse than the first.”",
+      "ko": "이에 가서 저보다 더 악한 귀신 일곱을 데리고 들어가서 거하니 그 사람의 나중 형편이 전보다 더 심하게 되느니라",
+      "source_text_hash": "740d9f28e60035cbb0be3edfc7cef42411a6b3e2b5f45d642d8c7e8c6dc5b63c",
+      "translation_text_hash": "d7547410301dc948433ba7d1fc7f8233a3efb893d39c9fd5724d3e800d6d6d96",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 가서 저보다 더 악한 귀신 일곱을 데리고 들어가서 거하니 그 사람의 나중 형편이 전보다 더 심하게 되느니라"
+      ],
+      "raw_text_hashes": [
+        "d7547410301dc948433ba7d1fc7f8233a3efb893d39c9fd5724d3e800d6d6d96"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:11:27",
+      "sequence": 25433,
+      "chapter_label": "LUK 11",
+      "verse_label": "27",
+      "locator": {
+        "book": "LUK",
+        "chapter": 11,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 11,
+          "verse": 27
+        }
+      ],
+      "en": "It came to pass, as he said these things, a certain woman out of the multitude lifted up her voice and said to him, “Blessed is the womb that bore you, and the breasts which nursed you!”",
+      "ko": "이 말씀 하실 때에 무리 중에서 한 여자가 음성을 높여 가로되 당신을 밴 태와 당신을 먹인 젖이 복이 있도소이다 하니",
+      "source_text_hash": "384ce94773e745041a312066030f434e5b93c93f919e8e29ce02818927619de6",
+      "translation_text_hash": "cb709b99e86d1e04437464a670a8a7976165e9131c0ad6d8e9b8873d76b9e165",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 말씀 하실 때에 무리 중에서 한 여자가 음성을 높여 가로되 당신을 밴 태와 당신을 먹인 젖이 복이 있도소이다 하니"
+      ],
+      "raw_text_hashes": [
+        "cb709b99e86d1e04437464a670a8a7976165e9131c0ad6d8e9b8873d76b9e165"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:11:28",
+      "sequence": 25434,
+      "chapter_label": "LUK 11",
+      "verse_label": "28",
+      "locator": {
+        "book": "LUK",
+        "chapter": 11,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 11,
+          "verse": 28
+        }
+      ],
+      "en": "But he said, “On the contrary, blessed are those who hear the word of God, and keep it.”",
+      "ko": "예수께서 가라사대 오히려 하나님의 말씀을 듣고 지키는 자가 복이 있느니라 하시니라",
+      "source_text_hash": "45c5451e5d062870c70e8c6a12b1a29ad1f301cbbe40e06f7ebcdfd6166f2215",
+      "translation_text_hash": "877f6b10f3981ad5baf013d00db404d543ffbf46e9bfc29856e60a3a2600e421",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 가라사대 오히려 하나님의 말씀을 듣고 지키는 자가 복이 있느니라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "877f6b10f3981ad5baf013d00db404d543ffbf46e9bfc29856e60a3a2600e421"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:11:29",
+      "sequence": 25435,
+      "chapter_label": "LUK 11",
+      "verse_label": "29",
+      "locator": {
+        "book": "LUK",
+        "chapter": 11,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 11,
+          "verse": 29
+        }
+      ],
+      "en": "When the multitudes were gathering together to him, he began to say, “This is an evil generation. It seeks after a sign. No sign will be given to it but the sign of Jonah the prophet.",
+      "ko": "무리가 모였을 때에 예수께서 말씀하시되 이 세대는 악한 세대라 표적을 구하되 요나의 표적 밖에는 보일 표적이 없나니",
+      "source_text_hash": "5c39aae9b4296900b16243d65662aab56906786fb103f8383715f28e266fa0f4",
+      "translation_text_hash": "073b26c8d1e18d19fc6e5e56e00d1db8c43a896b2e737ea33fa76189509cf619",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무리가 모였을 때에 예수께서 말씀하시되 이 세대는 악한 세대라 표적을 구하되 요나의 표적 밖에는 보일 표적이 없나니"
+      ],
+      "raw_text_hashes": [
+        "073b26c8d1e18d19fc6e5e56e00d1db8c43a896b2e737ea33fa76189509cf619"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:11:30",
+      "sequence": 25436,
+      "chapter_label": "LUK 11",
+      "verse_label": "30",
+      "locator": {
+        "book": "LUK",
+        "chapter": 11,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 11,
+          "verse": 30
+        }
+      ],
+      "en": "For even as Jonah became a sign to the Ninevites, so the Son of Man will also be to this generation.",
+      "ko": "요나가 니느웨 사람들에게 표적이 됨과 같이 인자도 이 세대에 그러하리라",
+      "source_text_hash": "eb8af1685eb0fcc77cd08207dcd825576409086be406bef94a0b5b20e671b351",
+      "translation_text_hash": "02bb92cdc4a8550e98b510d88787e151eabc9c2c3cac988431b81eaf8bf19362",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요나가 니느웨 사람들에게 표적이 됨과 같이 인자도 이 세대에 그러하리라"
+      ],
+      "raw_text_hashes": [
+        "02bb92cdc4a8550e98b510d88787e151eabc9c2c3cac988431b81eaf8bf19362"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:11:31",
+      "sequence": 25437,
+      "chapter_label": "LUK 11",
+      "verse_label": "31",
+      "locator": {
+        "book": "LUK",
+        "chapter": 11,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 11,
+          "verse": 31
+        }
+      ],
+      "en": "The Queen of the South will rise up in the judgment with the men of this generation and will condemn them, for she came from the ends of the earth to hear the wisdom of Solomon; and behold, one greater than Solomon is here.",
+      "ko": "심판 때에 남방 여왕이 일어나 이 세대 사람을 정죄하리니 이는 그가 솔로몬의 지혜로운 말을 들으려고 땅 끝에서 왔음이어니와 솔로몬보다 더 큰이가 여기 있으며",
+      "source_text_hash": "6ba9e2e9c085ed61a79521d373fd3d16ae39e53fec6013d733c1fd76b6a2e81e",
+      "translation_text_hash": "d7b246928022c56ae0b9a65093b3d58988650a44ca328a9b7c6397869bc48e93",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "심판 때에 남방 여왕이 일어나 이 세대 사람을 정죄하리니 이는 그가 솔로몬의 지혜로운 말을 들으려고 땅 끝에서 왔음이어니와 솔로몬보다 더 큰이가 여기 있으며"
+      ],
+      "raw_text_hashes": [
+        "d7b246928022c56ae0b9a65093b3d58988650a44ca328a9b7c6397869bc48e93"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:11:32",
+      "sequence": 25438,
+      "chapter_label": "LUK 11",
+      "verse_label": "32",
+      "locator": {
+        "book": "LUK",
+        "chapter": 11,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 11,
+          "verse": 32
+        }
+      ],
+      "en": "The men of Nineveh will stand up in the judgment with this generation, and will condemn it, for they repented at the preaching of Jonah; and behold, one greater than Jonah is here.",
+      "ko": "심판 때에 니느웨 사람들이 일어나 이 세대 사람을 정죄하리니 이는 그들이 요나의 전도를 듣고 회개하였음이어니와 요나보다 더 큰이가 여기 있느니라",
+      "source_text_hash": "de411772b17eef6d0853f5fc98c395c5e1486ee0386b5d05419b3fe2e99423b8",
+      "translation_text_hash": "08bd4d90f70f04df0f066be09116e803ea0a9efd2ba454cdb41472c0ebdd75b9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "심판 때에 니느웨 사람들이 일어나 이 세대 사람을 정죄하리니 이는 그들이 요나의 전도를 듣고 회개하였음이어니와 요나보다 더 큰이가 여기 있느니라"
+      ],
+      "raw_text_hashes": [
+        "08bd4d90f70f04df0f066be09116e803ea0a9efd2ba454cdb41472c0ebdd75b9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:11:33",
+      "sequence": 25439,
+      "chapter_label": "LUK 11",
+      "verse_label": "33",
+      "locator": {
+        "book": "LUK",
+        "chapter": 11,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 11,
+          "verse": 33
+        }
+      ],
+      "en": "“No one, when he has lit a lamp, puts it in a cellar or under a basket, but on a stand, that those who come in may see the light.",
+      "ko": "누구든지 등불을 켜서 움속에나 말 아래 두지 아니하고 등경 위에 두나니 이는 들어가는 자로 그 빛을 보게 하려 함이니라",
+      "source_text_hash": "b01cb5d6f281fc078fa330b5b119e5a814d62f56e3a17c3f789cda17e87bc24d",
+      "translation_text_hash": "0645ff290cf5777e281c4ae5f4ab423e67fa19014ff59ac75dcb949bcf3ca695",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누구든지 등불을 켜서 움속에나 말 아래 두지 아니하고 등경 위에 두나니 이는 들어가는 자로 그 빛을 보게 하려 함이니라"
+      ],
+      "raw_text_hashes": [
+        "0645ff290cf5777e281c4ae5f4ab423e67fa19014ff59ac75dcb949bcf3ca695"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:11:34",
+      "sequence": 25440,
+      "chapter_label": "LUK 11",
+      "verse_label": "34",
+      "locator": {
+        "book": "LUK",
+        "chapter": 11,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 11,
+          "verse": 34
+        }
+      ],
+      "en": "The lamp of the body is the eye. Therefore when your eye is good, your whole body is also full of light; but when it is evil, your body also is full of darkness.",
+      "ko": "네 몸의 등불은 눈이라 네 눈이 성하면 온 몸이 밝을 것이요 만일 나쁘면 네 몸도 어두우리라",
+      "source_text_hash": "9c5379aef81f7c9aeebfee6c39ed1db7041190474d85de87982284a56bdb9b8f",
+      "translation_text_hash": "efcab57639dc587f9da680a4fd8baf5de972c888b0ffea797ff5b020b6892bd9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 몸의 등불은 눈이라 네 눈이 성하면 온 몸이 밝을 것이요 만일 나쁘면 네 몸도 어두우리라"
+      ],
+      "raw_text_hashes": [
+        "efcab57639dc587f9da680a4fd8baf5de972c888b0ffea797ff5b020b6892bd9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:11:35",
+      "sequence": 25441,
+      "chapter_label": "LUK 11",
+      "verse_label": "35",
+      "locator": {
+        "book": "LUK",
+        "chapter": 11,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 11,
+          "verse": 35
+        }
+      ],
+      "en": "Therefore see whether the light that is in you isn’t darkness.",
+      "ko": "그러므로 네 속에 있는 빛이 어둡지 아니한가 보라",
+      "source_text_hash": "ab8c31f27c73cc2efbf877e9e817fa9dade7ce01ae94ff8f2e65edd9c4a8b049",
+      "translation_text_hash": "3ac370e24f4957d3edafc0029eee5d2625525072a715e2ee464643e6db7ba716",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 네 속에 있는 빛이 어둡지 아니한가 보라"
+      ],
+      "raw_text_hashes": [
+        "3ac370e24f4957d3edafc0029eee5d2625525072a715e2ee464643e6db7ba716"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:11:36",
+      "sequence": 25442,
+      "chapter_label": "LUK 11",
+      "verse_label": "36",
+      "locator": {
+        "book": "LUK",
+        "chapter": 11,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 11,
+          "verse": 36
+        }
+      ],
+      "en": "If therefore your whole body is full of light, having no part dark, it will be wholly full of light, as when the lamp with its bright shining gives you light.”",
+      "ko": "네 온 몸이 밝아 조금도 어두운데가 없으면 등불의 광선이 너를 비출 때와 같이 온전히 밝으리라 하시니라",
+      "source_text_hash": "b0af78a3727d9db97370c2fa9411963dfca53893f5d9ee0417223148a1278fa7",
+      "translation_text_hash": "ac92a6d75b8b72f788ea540f2734fab6757609df56ca12f9960105de5909df19",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 온 몸이 밝아 조금도 어두운데가 없으면 등불의 광선이 너를 비출 때와 같이 온전히 밝으리라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "ac92a6d75b8b72f788ea540f2734fab6757609df56ca12f9960105de5909df19"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:11:37",
+      "sequence": 25443,
+      "chapter_label": "LUK 11",
+      "verse_label": "37",
+      "locator": {
+        "book": "LUK",
+        "chapter": 11,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 11,
+          "verse": 37
+        }
+      ],
+      "en": "Now as he spoke, a certain Pharisee asked him to dine with him. He went in and sat at the table.",
+      "ko": "예수께서 말씀하실 때에 한 바리새인이 자기와 함께 점심 잡수시기를 청하므로 들어가 앉으셨더니",
+      "source_text_hash": "f2d53b29186bfcea195bc86033b6fe1fa20412ed190fd770ba32f89a80a4655a",
+      "translation_text_hash": "d478d8c2bac7f8f6d5ebbae81165df51cba1079a21afab4318e6df87d7f92d18",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 말씀하실 때에 한 바리새인이 자기와 함께 점심 잡수시기를 청하므로 들어가 앉으셨더니"
+      ],
+      "raw_text_hashes": [
+        "d478d8c2bac7f8f6d5ebbae81165df51cba1079a21afab4318e6df87d7f92d18"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:11:38",
+      "sequence": 25444,
+      "chapter_label": "LUK 11",
+      "verse_label": "38",
+      "locator": {
+        "book": "LUK",
+        "chapter": 11,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 11,
+          "verse": 38
+        }
+      ],
+      "en": "When the Pharisee saw it, he marveled that he had not first washed himself before dinner.",
+      "ko": "잡수시기 전에 손 씻지 아니하심을 이 바리새인이 보고 이상히 여기는지라",
+      "source_text_hash": "8542e7c6381737942d599fea6b5df408773b05092f205eb78d7e9381b5a22727",
+      "translation_text_hash": "48dbaad30bdc2e52d5cecb5308f754c1eb50df82e93152629f462b34b6940d93",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "잡수시기 전에 손 씻지 아니하심을 이 바리새인이 보고 이상히 여기는지라"
+      ],
+      "raw_text_hashes": [
+        "48dbaad30bdc2e52d5cecb5308f754c1eb50df82e93152629f462b34b6940d93"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:11:39",
+      "sequence": 25445,
+      "chapter_label": "LUK 11",
+      "verse_label": "39",
+      "locator": {
+        "book": "LUK",
+        "chapter": 11,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 11,
+          "verse": 39
+        }
+      ],
+      "en": "The Lord said to him, “Now you Pharisees cleanse the outside of the cup and of the platter, but your inward part is full of extortion and wickedness.",
+      "ko": "주께서 이르시되 너희 바리새인은 지금 잔과 대접의 겉은 깨끗이 하나 너희 속인즉 탐욕과 악독이 가득하도다",
+      "source_text_hash": "2b6ef5271efd500b42632a90f82d659dfa28f8a0c908db921eda812fb03b8d58",
+      "translation_text_hash": "a000cfa76ff04de841f1106707cdb224eb6fb591da254d3de353edd40efaf51b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 이르시되 너희 바리새인은 지금 잔과 대접의 겉은 깨끗이 하나 너희 속인즉 탐욕과 악독이 가득하도다"
+      ],
+      "raw_text_hashes": [
+        "a000cfa76ff04de841f1106707cdb224eb6fb591da254d3de353edd40efaf51b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:11:40",
+      "sequence": 25446,
+      "chapter_label": "LUK 11",
+      "verse_label": "40",
+      "locator": {
+        "book": "LUK",
+        "chapter": 11,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 11,
+          "verse": 40
+        }
+      ],
+      "en": "You foolish ones, didn’t he who made the outside make the inside also?",
+      "ko": "어리석은 자들아 밖을 만드신 이가 속도 만들지 아니하셨느냐",
+      "source_text_hash": "bf4875a7af5443d5278c9155352888c919281d4c4a812d303001f73b9877ffad",
+      "translation_text_hash": "03ebadcf0e60629f7ae4cb4a8dc2d714069dcb89b035617eb3f84ef9c035c38e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어리석은 자들아 밖을 만드신 이가 속도 만들지 아니하셨느냐"
+      ],
+      "raw_text_hashes": [
+        "03ebadcf0e60629f7ae4cb4a8dc2d714069dcb89b035617eb3f84ef9c035c38e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:11:41",
+      "sequence": 25447,
+      "chapter_label": "LUK 11",
+      "verse_label": "41",
+      "locator": {
+        "book": "LUK",
+        "chapter": 11,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 11,
+          "verse": 41
+        }
+      ],
+      "en": "But give for gifts to the needy those things which are within, and behold, all things will be clean to you.",
+      "ko": "오직 그 안에 있는 것으로 구제하라 그리하면 모든 것이 너희에게 깨끗하리라",
+      "source_text_hash": "e9d8af068b600b9aaa0e5faf6459b7d3d7c5f67bc2cd26439dc574e0cce5849e",
+      "translation_text_hash": "617e1514ce48ca399fd0761eb60a3ffc5e65120e38a80e97c593c53b0750db9b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 그 안에 있는 것으로 구제하라 그리하면 모든 것이 너희에게 깨끗하리라"
+      ],
+      "raw_text_hashes": [
+        "617e1514ce48ca399fd0761eb60a3ffc5e65120e38a80e97c593c53b0750db9b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:11:42",
+      "sequence": 25448,
+      "chapter_label": "LUK 11",
+      "verse_label": "42",
+      "locator": {
+        "book": "LUK",
+        "chapter": 11,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 11,
+          "verse": 42
+        }
+      ],
+      "en": "But woe to you Pharisees! For you tithe mint and rue and every herb, but you bypass justice and God’s love. You ought to have done these, and not to have left the other undone.",
+      "ko": "화 있을찐저 너희 바리새인이여 너희가 박하와 운향과 모든 채소의 십일조를 드리되 공의와 하나님께 대한 사랑은 버리는도다 그러나 이것도 행하고 저것도 버리지 아니하여야 할찌니라",
+      "source_text_hash": "e88458347ea13628159cd115202edea59e6ae0f4df7e705e0b5f29e27def1203",
+      "translation_text_hash": "b76c903ca07ba1cb2834ccf923a99538fe315bec93df5b9cde4cbac61afdb91f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "화 있을찐저 너희 바리새인이여 너희가 박하와 운향과 모든 채소의 십일조를 드리되 공의와 하나님께 대한 사랑은 버리는도다 그러나 이것도 행하고 저것도 버리지 아니하여야 할찌니라"
+      ],
+      "raw_text_hashes": [
+        "b76c903ca07ba1cb2834ccf923a99538fe315bec93df5b9cde4cbac61afdb91f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:11:43",
+      "sequence": 25449,
+      "chapter_label": "LUK 11",
+      "verse_label": "43",
+      "locator": {
+        "book": "LUK",
+        "chapter": 11,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 11,
+          "verse": 43
+        }
+      ],
+      "en": "Woe to you Pharisees! For you love the best seats in the synagogues and the greetings in the marketplaces.",
+      "ko": "화 있을찐저 너희 바리새인이여 너희가 회당의 높은 자리와 시장에서 문안 받는 것을 기뻐하는도다",
+      "source_text_hash": "6c524bde98e175dad1c84d93836a42adead51ef994642611c76ccf7723a69f19",
+      "translation_text_hash": "965f0ad16c257f137517cca2938339c6d5ab26f558a0f25b750bc52ff5d4ab2d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "화 있을찐저 너희 바리새인이여 너희가 회당의 높은 자리와 시장에서 문안 받는 것을 기뻐하는도다"
+      ],
+      "raw_text_hashes": [
+        "965f0ad16c257f137517cca2938339c6d5ab26f558a0f25b750bc52ff5d4ab2d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:11:44",
+      "sequence": 25450,
+      "chapter_label": "LUK 11",
+      "verse_label": "44",
+      "locator": {
+        "book": "LUK",
+        "chapter": 11,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 11,
+          "verse": 44
+        }
+      ],
+      "en": "Woe to you, scribes and Pharisees, hypocrites! For you are like hidden graves, and the men who walk over them don’t know it.”",
+      "ko": "화 있을찐저 너희여 너희는 평토장한 무덤 같아서 그 위를 밟는 사람이 알지 못하느니라",
+      "source_text_hash": "7498a028198811f990b68964382ae2c5eee5d3932908ae45bd9ede7f86c03b6a",
+      "translation_text_hash": "8b4b0b43725bc87432b43eed8287a50af665e88d76d0e40d4c60bdd6ef43865d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "화 있을찐저 너희여 너희는 평토장한 무덤 같아서 그 위를 밟는 사람이 알지 못하느니라"
+      ],
+      "raw_text_hashes": [
+        "8b4b0b43725bc87432b43eed8287a50af665e88d76d0e40d4c60bdd6ef43865d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:11:45",
+      "sequence": 25451,
+      "chapter_label": "LUK 11",
+      "verse_label": "45",
+      "locator": {
+        "book": "LUK",
+        "chapter": 11,
+        "verse": 45
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 11,
+          "verse": 45
+        }
+      ],
+      "en": "One of the lawyers answered him, “Teacher, in saying this you insult us also.”",
+      "ko": "한 율법사가 예수께 대답하여 가로되 선생님 이렇게 말씀하시니 우리까지 모욕하심이니이다",
+      "source_text_hash": "13dc948414574b2d5fbc91bb1ee18d655cf5abda9ae9284a46a5dc89a86e9ec0",
+      "translation_text_hash": "eb9d68d5d6014d599652f8409fda6d1148598e1b9f943f51c6d95672a434b235",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "한 율법사가 예수께 대답하여 가로되 선생님 이렇게 말씀하시니 우리까지 모욕하심이니이다"
+      ],
+      "raw_text_hashes": [
+        "eb9d68d5d6014d599652f8409fda6d1148598e1b9f943f51c6d95672a434b235"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:11:46",
+      "sequence": 25452,
+      "chapter_label": "LUK 11",
+      "verse_label": "46",
+      "locator": {
+        "book": "LUK",
+        "chapter": 11,
+        "verse": 46
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 11,
+          "verse": 46
+        }
+      ],
+      "en": "He said, “Woe to you lawyers also! For you load men with burdens that are difficult to carry, and you yourselves won’t even lift one finger to help carry those burdens.",
+      "ko": "가라사대 화 있을찐저 또 너희 율법사여 지기 어려운 짐을 사람에게 지우고 너희는 한 손가락도 이 짐에 대지 않는도다",
+      "source_text_hash": "d9eacb0eb4cc644ca16333c3fe395e8d8a3dc223d5e6b36590319286b9cb5f35",
+      "translation_text_hash": "61e84668b08ae921a2aafdad8612a5ce107da0b731f891d3f02bcd513677efa5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가라사대 화 있을찐저 또 너희 율법사여 지기 어려운 짐을 사람에게 지우고 너희는 한 손가락도 이 짐에 대지 않는도다"
+      ],
+      "raw_text_hashes": [
+        "61e84668b08ae921a2aafdad8612a5ce107da0b731f891d3f02bcd513677efa5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:11:47",
+      "sequence": 25453,
+      "chapter_label": "LUK 11",
+      "verse_label": "47",
+      "locator": {
+        "book": "LUK",
+        "chapter": 11,
+        "verse": 47
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 11,
+          "verse": 47
+        }
+      ],
+      "en": "Woe to you! For you build the tombs of the prophets, and your fathers killed them.",
+      "ko": "화 있을찐저 너희는 선지자들의 무덤을 쌓는도다 저희를 죽인 자도 너희 조상들이로다",
+      "source_text_hash": "b091e05ddb26942a638f57c365efdb0169d54ffd8f777b9884e0b1baf21655eb",
+      "translation_text_hash": "9e8e193d9c2b8f2317363861d210aaaacc6abc5ce8783a93c91361623b28bfea",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "화 있을찐저 너희는 선지자들의 무덤을 쌓는도다 저희를 죽인 자도 너희 조상들이로다"
+      ],
+      "raw_text_hashes": [
+        "9e8e193d9c2b8f2317363861d210aaaacc6abc5ce8783a93c91361623b28bfea"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:11:48",
+      "sequence": 25454,
+      "chapter_label": "LUK 11",
+      "verse_label": "48",
+      "locator": {
+        "book": "LUK",
+        "chapter": 11,
+        "verse": 48
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 11,
+          "verse": 48
+        }
+      ],
+      "en": "So you testify and consent to the works of your fathers. For they killed them, and you build their tombs.",
+      "ko": "이와 같이 저희는 죽이고 너희는 쌓으니 너희가 너희 조상의 행한 일에 증인이 되어 옳게 여기는도다",
+      "source_text_hash": "c6a3bcceb285a8630f07572a863117e16da25f2d74c572882ca7523574d42d0b",
+      "translation_text_hash": "8c9ba98c23aeaf846f9d153a72e5f805470b6d580bb3b4083097f9f808b6bd23",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이와 같이 저희는 죽이고 너희는 쌓으니 너희가 너희 조상의 행한 일에 증인이 되어 옳게 여기는도다"
+      ],
+      "raw_text_hashes": [
+        "8c9ba98c23aeaf846f9d153a72e5f805470b6d580bb3b4083097f9f808b6bd23"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:11:49",
+      "sequence": 25455,
+      "chapter_label": "LUK 11",
+      "verse_label": "49",
+      "locator": {
+        "book": "LUK",
+        "chapter": 11,
+        "verse": 49
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 11,
+          "verse": 49
+        }
+      ],
+      "en": "Therefore also the wisdom of God said, ‘I will send to them prophets and apostles; and some of them they will kill and persecute,",
+      "ko": "이러므로 하나님의 지혜가 일렀으되 내가 선지자와 사도들을 저희에게 보내리니 그 중에 더러는 죽이며 또 핍박하리라 하였으니",
+      "source_text_hash": "9521709bae3821f5997b48fc4103c05e04a653a724a4ba0ba267891700501096",
+      "translation_text_hash": "0edc3f6748350da502fb336cc8cf8668db8108d07528598032a2cb9787240e9c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러므로 하나님의 지혜가 일렀으되 내가 선지자와 사도들을 저희에게 보내리니 그 중에 더러는 죽이며 또 핍박하리라 하였으니"
+      ],
+      "raw_text_hashes": [
+        "0edc3f6748350da502fb336cc8cf8668db8108d07528598032a2cb9787240e9c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:11:50",
+      "sequence": 25456,
+      "chapter_label": "LUK 11",
+      "verse_label": "50",
+      "locator": {
+        "book": "LUK",
+        "chapter": 11,
+        "verse": 50
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 11,
+          "verse": 50
+        }
+      ],
+      "en": "that the blood of all the prophets, which was shed from the foundation of the world, may be required of this generation,",
+      "ko": "창세 이후로 흘린 모든 선지자의 피를 이 세대가 담당하되",
+      "source_text_hash": "162e6f011d69dbef3282efae27de594720afdd595a9dd23e9ee07d2f72aa5d9d",
+      "translation_text_hash": "26f58a74966a637f98ee3d2075437c5a0f7fd08d856e183f395509ffa2e4ea34",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "창세 이후로 흘린 모든 선지자의 피를 이 세대가 담당하되"
+      ],
+      "raw_text_hashes": [
+        "26f58a74966a637f98ee3d2075437c5a0f7fd08d856e183f395509ffa2e4ea34"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:11:51",
+      "sequence": 25457,
+      "chapter_label": "LUK 11",
+      "verse_label": "51",
+      "locator": {
+        "book": "LUK",
+        "chapter": 11,
+        "verse": 51
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 11,
+          "verse": 51
+        }
+      ],
+      "en": "from the blood of Abel to the blood of Zachariah, who perished between the altar and the sanctuary.’ Yes, I tell you, it will be required of this generation.",
+      "ko": "곧 아벨의 피로부터 제단과 성전 사이에서 죽임을 당한 사가랴의 피까지 하리라 내가 너희에게 이르노니 과연 이 세대가 담당하리라",
+      "source_text_hash": "c1334a3f4aaba1c1f65096923826cfed2e0a9e202b1e91d0987d9118cbedc0de",
+      "translation_text_hash": "238bc4a0aad830287abd30e8dcb63e1fe024538b709fa083868983c14475005d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 아벨의 피로부터 제단과 성전 사이에서 죽임을 당한 사가랴의 피까지 하리라 내가 너희에게 이르노니 과연 이 세대가 담당하리라"
+      ],
+      "raw_text_hashes": [
+        "238bc4a0aad830287abd30e8dcb63e1fe024538b709fa083868983c14475005d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:11:52",
+      "sequence": 25458,
+      "chapter_label": "LUK 11",
+      "verse_label": "52",
+      "locator": {
+        "book": "LUK",
+        "chapter": 11,
+        "verse": 52
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 11,
+          "verse": 52
+        }
+      ],
+      "en": "Woe to you lawyers! For you took away the key of knowledge. You didn’t enter in yourselves, and those who were entering in, you hindered.”",
+      "ko": "화 있을찐저 너희 율법사여 너희가 지식의 열쇠를 가져가고 너희도 들어가지 않고 또 들어가고자 하는 자도 막았느니라 하시니라",
+      "source_text_hash": "09651e100bf232d50d72b421ee4637e938b52e7c4bbb5ae08f1a2b0a72791845",
+      "translation_text_hash": "3a6a314ecbe8e2aff8ab8a093bc2b92520de3dba62c765c14cff63f5cd86a2c5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "화 있을찐저 너희 율법사여 너희가 지식의 열쇠를 가져가고 너희도 들어가지 않고 또 들어가고자 하는 자도 막았느니라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "3a6a314ecbe8e2aff8ab8a093bc2b92520de3dba62c765c14cff63f5cd86a2c5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:11:53",
+      "sequence": 25459,
+      "chapter_label": "LUK 11",
+      "verse_label": "53",
+      "locator": {
+        "book": "LUK",
+        "chapter": 11,
+        "verse": 53
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 11,
+          "verse": 53
+        }
+      ],
+      "en": "As he said these things to them, the scribes and the Pharisees began to be terribly angry, and to draw many things out of him,",
+      "ko": "거기서 나오실 때에 서기관과 바리새인들이 맹렬히 달라붙어 여러가지 일로 힐문하고",
+      "source_text_hash": "463f6572a40445d033548e79991f2c3b9feda6e6df22c77e6985ee223b271887",
+      "translation_text_hash": "8349bddfcdd81fb56f3f754ba13c8e7859788f53666f3264a98fa784fb9488f0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거기서 나오실 때에 서기관과 바리새인들이 맹렬히 달라붙어 여러가지 일로 힐문하고"
+      ],
+      "raw_text_hashes": [
+        "8349bddfcdd81fb56f3f754ba13c8e7859788f53666f3264a98fa784fb9488f0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:11:54",
+      "sequence": 25460,
+      "chapter_label": "LUK 11",
+      "verse_label": "54",
+      "locator": {
+        "book": "LUK",
+        "chapter": 11,
+        "verse": 54
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 11,
+          "verse": 54
+        }
+      ],
+      "en": "lying in wait for him, and seeking to catch him in something he might say, that they might accuse him.",
+      "ko": "그 입에서 나오는 것을 잡고자 하여 목을 지키더라",
+      "source_text_hash": "487fd6fa73c6c630a8af6c9d26f07a198e06d78431c5c55b53674a2a36a229b7",
+      "translation_text_hash": "ba753657379d0ff2a8117823585cfb4d466a38e56016fa30d33e77a28e408441",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 입에서 나오는 것을 잡고자 하여 목을 지키더라"
+      ],
+      "raw_text_hashes": [
+        "ba753657379d0ff2a8117823585cfb4d466a38e56016fa30d33e77a28e408441"
+      ]
+    }
+  ]
+}

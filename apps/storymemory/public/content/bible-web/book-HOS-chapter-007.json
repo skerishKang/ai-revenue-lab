@@ -1,0 +1,525 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:HOS:chapter:007",
+  "unit_ordinal": 869,
+  "unit_label": "HOS 7",
+  "book_code": "HOS",
+  "chapter_number": 7,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:HOS:7:1",
+      "sequence": 22180,
+      "chapter_label": "HOS 7",
+      "verse_label": "1",
+      "locator": {
+        "book": "HOS",
+        "chapter": 7,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 7,
+          "verse": 1
+        }
+      ],
+      "en": "When I would heal Israel, then the iniquity of Ephraim is uncovered, also the wickedness of Samaria; for they commit falsehood, and the thief enters in, and the gang of robbers ravages outside.",
+      "ko": "내가 이스라엘을 치료하려 할 때에 에브라임의 죄와 사마리아의 악이 드러나도다 저희는 궤사를 행하며 안으로 들어가 도적질하고 밖으로 떼 지어 노략질하며",
+      "source_text_hash": "8657932b8f9321a9831516df75b170b3a43264d8a9374a00d9210c990cb61384",
+      "translation_text_hash": "6cc83d600a45083ae5e465dcc8672391e2c18653a0e4334ff90b2c7c59d3b23b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 이스라엘을 치료하려 할 때에 에브라임의 죄와 사마리아의 악이 드러나도다 저희는 궤사를 행하며 안으로 들어가 도적질하고 밖으로 떼 지어 노략질하며"
+      ],
+      "raw_text_hashes": [
+        "6cc83d600a45083ae5e465dcc8672391e2c18653a0e4334ff90b2c7c59d3b23b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:7:2",
+      "sequence": 22181,
+      "chapter_label": "HOS 7",
+      "verse_label": "2",
+      "locator": {
+        "book": "HOS",
+        "chapter": 7,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 7,
+          "verse": 2
+        }
+      ],
+      "en": "They don’t consider in their hearts that I remember all their wickedness. Now their own deeds have engulfed them. They are before my face.",
+      "ko": "내가 그 여러 악을 기억하였음을 저희가 마음에 생각지 아니하거니와 이제 그 행위가 저희를 에워싸고 내 목전에 있도다",
+      "source_text_hash": "a8aa9dbc8d0258b5e35c451bb759abea8ed147ea857b03851592f395ba49b1bb",
+      "translation_text_hash": "9d7b8b7bae13a4a77be02c62b0b7e26c105d8b18e75b5d8eb15c5c78bf82d18a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 그 여러 악을 기억하였음을 저희가 마음에 생각지 아니하거니와 이제 그 행위가 저희를 에워싸고 내 목전에 있도다"
+      ],
+      "raw_text_hashes": [
+        "9d7b8b7bae13a4a77be02c62b0b7e26c105d8b18e75b5d8eb15c5c78bf82d18a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:7:3",
+      "sequence": 22182,
+      "chapter_label": "HOS 7",
+      "verse_label": "3",
+      "locator": {
+        "book": "HOS",
+        "chapter": 7,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 7,
+          "verse": 3
+        }
+      ],
+      "en": "They make the king glad with their wickedness, and the princes with their lies.",
+      "ko": "저희가 그 악으로 왕을, 그 거짓말로 방백들을 기쁘게 하도다",
+      "source_text_hash": "62462cf19f06cd6ea6a2db6ac0a34ea46c0534145217eea93ee77a312ecb857b",
+      "translation_text_hash": "82f38217eed69f7adabca1c68c0abe3fd8abb81da2d3dc6baef8e4cb8d7d5a3c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 그 악으로 왕을, 그 거짓말로 방백들을 기쁘게 하도다"
+      ],
+      "raw_text_hashes": [
+        "82f38217eed69f7adabca1c68c0abe3fd8abb81da2d3dc6baef8e4cb8d7d5a3c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:7:4",
+      "sequence": 22183,
+      "chapter_label": "HOS 7",
+      "verse_label": "4",
+      "locator": {
+        "book": "HOS",
+        "chapter": 7,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 7,
+          "verse": 4
+        }
+      ],
+      "en": "They are all adulterers. They are burning like an oven that the baker stops stirring, from the kneading of the dough, until it is leavened.",
+      "ko": "저희는 다 간음하는 자라 빵 만드는 자에게 달궈진 화덕과 같도다 저가 반죽을 뭉침으로 발교되기까지만 불 일으키기를 그칠뿐이니라",
+      "source_text_hash": "2bfe02d349c0326e9f2cbc4c25193b91ff8ccbfee8499cdbd9e98d442d85e15d",
+      "translation_text_hash": "cef6d8d3bde594aa678abfd32bc58add605edfc7e6453f9ccef69d121d54e9b2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희는 다 간음하는 자라 빵 만드는 자에게 달궈진 화덕과 같도다 저가 반죽을 뭉침으로 발교되기까지만 불 일으키기를 그칠뿐이니라"
+      ],
+      "raw_text_hashes": [
+        "cef6d8d3bde594aa678abfd32bc58add605edfc7e6453f9ccef69d121d54e9b2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:7:5",
+      "sequence": 22184,
+      "chapter_label": "HOS 7",
+      "verse_label": "5",
+      "locator": {
+        "book": "HOS",
+        "chapter": 7,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 7,
+          "verse": 5
+        }
+      ],
+      "en": "On the day of our king, the princes made themselves sick with the heat of wine. He joined his hand with mockers.",
+      "ko": "우리 왕의 날에 방백들이 술의 뜨거움을 인하여 병이 나며 왕은 오만한 자들로 더불어 악수하는도다",
+      "source_text_hash": "2b08c9160513a6c1e3d99afcd27643ec25d1ea7d5f06396d3db53b4b2bf45abf",
+      "translation_text_hash": "33c838cc81d348afba452ee227acc7b2e21cffb384bf6a9bbc7f43c5625ee7ec",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리 왕의 날에 방백들이 술의 뜨거움을 인하여 병이 나며 왕은 오만한 자들로 더불어 악수하는도다"
+      ],
+      "raw_text_hashes": [
+        "33c838cc81d348afba452ee227acc7b2e21cffb384bf6a9bbc7f43c5625ee7ec"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:7:6",
+      "sequence": 22185,
+      "chapter_label": "HOS 7",
+      "verse_label": "6",
+      "locator": {
+        "book": "HOS",
+        "chapter": 7,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 7,
+          "verse": 6
+        }
+      ],
+      "en": "For they have prepared their heart like an oven, while they lie in wait. Their anger smolders all night. In the morning it burns as a flaming fire.",
+      "ko": "저희는 엎드리어 기다릴 때에 그 마음을 화덕 같이 예비하니 마치 빵 만드는 자가 밤새도록 자고 아침에 피우는 불의 일어나는 것 같도다",
+      "source_text_hash": "a1d56a88d2c8d4c670d7c98288abbc1672f6d3c28b9933cd8b2239d6afbe06db",
+      "translation_text_hash": "fcebf5f9d7592ef4d8e22dff7c4c0e71c2e4f39ba68bda3738bf9d299206f1a9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희는 엎드리어 기다릴 때에 그 마음을 화덕 같이 예비하니 마치 빵 만드는 자가 밤새도록 자고 아침에 피우는 불의 일어나는 것 같도다"
+      ],
+      "raw_text_hashes": [
+        "fcebf5f9d7592ef4d8e22dff7c4c0e71c2e4f39ba68bda3738bf9d299206f1a9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:7:7",
+      "sequence": 22186,
+      "chapter_label": "HOS 7",
+      "verse_label": "7",
+      "locator": {
+        "book": "HOS",
+        "chapter": 7,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 7,
+          "verse": 7
+        }
+      ],
+      "en": "They are all hot as an oven, and devour their judges. All their kings have fallen. There is no one among them who calls to me.",
+      "ko": "저희가 다 화덕 같이 뜨거워져서 그 재판장들을 삼키며 그 왕들을 다 엎드러지게 하며 저희 중에는 내게 부르짖는 자가 하나도 없도다",
+      "source_text_hash": "87d60cca0205f9c6eadf4788b3676bae2dc0e8d2455ace8d2a57163ebc703b49",
+      "translation_text_hash": "a966a165190a9b7ac753ed72bd6836b125042da94d14434e41682165f309fe48",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 다 화덕 같이 뜨거워져서 그 재판장들을 삼키며 그 왕들을 다 엎드러지게 하며 저희 중에는 내게 부르짖는 자가 하나도 없도다"
+      ],
+      "raw_text_hashes": [
+        "a966a165190a9b7ac753ed72bd6836b125042da94d14434e41682165f309fe48"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:7:8",
+      "sequence": 22187,
+      "chapter_label": "HOS 7",
+      "verse_label": "8",
+      "locator": {
+        "book": "HOS",
+        "chapter": 7,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 7,
+          "verse": 8
+        }
+      ],
+      "en": "Ephraim mixes himself among the nations. Ephraim is a pancake not turned over.",
+      "ko": "에브라임이 열방에 혼잡되니 저는 곧 뒤집지 않은 전병이로다",
+      "source_text_hash": "b1e0d966e9066ccfa59e5ccccac1b0d5f8c4debf18ef3f821698f8d21e68c6ed",
+      "translation_text_hash": "66a15f8376b737673325b8a7f931a8c31fae76ce8e5eadb653c1d77da36873e9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에브라임이 열방에 혼잡되니 저는 곧 뒤집지 않은 전병이로다"
+      ],
+      "raw_text_hashes": [
+        "66a15f8376b737673325b8a7f931a8c31fae76ce8e5eadb653c1d77da36873e9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:7:9",
+      "sequence": 22188,
+      "chapter_label": "HOS 7",
+      "verse_label": "9",
+      "locator": {
+        "book": "HOS",
+        "chapter": 7,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 7,
+          "verse": 9
+        }
+      ],
+      "en": "Strangers have devoured his strength, and he doesn’t realize it. Indeed, gray hairs are here and there on him, and he doesn’t realize it.",
+      "ko": "저는 이방인에게 그 힘이 삼키웠으나 알지 못하고 백발이 얼룩얼룩할찌라도 깨닫지 못하는도다",
+      "source_text_hash": "9b10b61e121e4356283a2328f4a67a01c4cc94f4a40d7ec26e718a71bf258c1d",
+      "translation_text_hash": "579777dc6d3ef8ce13227afbcf3fbac48747144bd93d5e5d7e1d9359bdc33b4f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저는 이방인에게 그 힘이 삼키웠으나 알지 못하고 백발이 얼룩얼룩할찌라도 깨닫지 못하는도다"
+      ],
+      "raw_text_hashes": [
+        "579777dc6d3ef8ce13227afbcf3fbac48747144bd93d5e5d7e1d9359bdc33b4f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:7:10",
+      "sequence": 22189,
+      "chapter_label": "HOS 7",
+      "verse_label": "10",
+      "locator": {
+        "book": "HOS",
+        "chapter": 7,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 7,
+          "verse": 10
+        }
+      ],
+      "en": "The pride of Israel testifies to his face; yet they haven’t returned to the LORD their God, nor sought him, for all this.",
+      "ko": "이스라엘의 교만은 그 얼굴에 증거가 되나니 저희가 이 모든 일을 당하여도 그 하나님 여호와께로 돌아 오지 아니하며 구하지 아니하도다",
+      "source_text_hash": "dd7631fa76e7dca91180e9aa0d39ddf90036da880bb6a1df9e544443c6e3a963",
+      "translation_text_hash": "6355f4c1d48510ed8af19a79532eb50f49bafafd985e022d1dea137f8ce28490",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘의 교만은 그 얼굴에 증거가 되나니 저희가 이 모든 일을 당하여도 그 하나님 여호와께로 돌아 오지 아니하며 구하지 아니하도다"
+      ],
+      "raw_text_hashes": [
+        "6355f4c1d48510ed8af19a79532eb50f49bafafd985e022d1dea137f8ce28490"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:7:11",
+      "sequence": 22190,
+      "chapter_label": "HOS 7",
+      "verse_label": "11",
+      "locator": {
+        "book": "HOS",
+        "chapter": 7,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 7,
+          "verse": 11
+        }
+      ],
+      "en": "“Ephraim is like an easily deceived dove, without understanding. They call to Egypt. They go to Assyria.",
+      "ko": "에브라임은 어리석은 비둘기 같이 지혜가 없어서 애굽을 향하여 부르짖으며 앗수르로 가는도다",
+      "source_text_hash": "87b5fbb6e67453636107d699ba3ab4715ee4d78fa3b5c379a99d6e9ddd8dd30c",
+      "translation_text_hash": "b70c1ce40cecc83ebe4e416ce78e3fa4ad499ca62bc516fb272cee049c7404d1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에브라임은 어리석은 비둘기 같이 지혜가 없어서 애굽을 향하여 부르짖으며 앗수르로 가는도다"
+      ],
+      "raw_text_hashes": [
+        "b70c1ce40cecc83ebe4e416ce78e3fa4ad499ca62bc516fb272cee049c7404d1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:7:12",
+      "sequence": 22191,
+      "chapter_label": "HOS 7",
+      "verse_label": "12",
+      "locator": {
+        "book": "HOS",
+        "chapter": 7,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 7,
+          "verse": 12
+        }
+      ],
+      "en": "When they go, I will spread my net on them. I will bring them down like the birds of the sky. I will chastise them, as their congregation has heard.",
+      "ko": "저희가 갈 때에 내가 나의 그물을 그 위에 쳐서 공중의 새처럼 떨어뜨리고 전에 그 공회에 들려준대로 저희를 징계하리라",
+      "source_text_hash": "9af9e197f43429bcdf2c2fd5da4cc427449703f54baf50d62d4c9bc140556c37",
+      "translation_text_hash": "3e35c816761c1fb77f0c0839bcf78b7479be9c9673e29eed760512ce47bba837",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 갈 때에 내가 나의 그물을 그 위에 쳐서 공중의 새처럼 떨어뜨리고 전에 그 공회에 들려준대로 저희를 징계하리라"
+      ],
+      "raw_text_hashes": [
+        "3e35c816761c1fb77f0c0839bcf78b7479be9c9673e29eed760512ce47bba837"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:7:13",
+      "sequence": 22192,
+      "chapter_label": "HOS 7",
+      "verse_label": "13",
+      "locator": {
+        "book": "HOS",
+        "chapter": 7,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 7,
+          "verse": 13
+        }
+      ],
+      "en": "Woe to them! For they have wandered from me. Destruction to them! For they have trespassed against me. Though I would redeem them, yet they have spoken lies against me.",
+      "ko": "화 있을찐저 저희가 나를 떠나 그릇 갔음이니라 패망할찐저 저희가 내게 범죄하였음이니라 내가 저희를 구속하려 하나 저희가 나를 거스려 거짓을 말하고",
+      "source_text_hash": "ed937aa097dad0b25ad8d69864ceef6a9fa4f06028febc707de4193b8cb84326",
+      "translation_text_hash": "67fdf4d81968deb4224a7b125c286457f65a00a9a3e347d9a7f912db8a17d5fa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "화 있을찐저 저희가 나를 떠나 그릇 갔음이니라 패망할찐저 저희가 내게 범죄하였음이니라 내가 저희를 구속하려 하나 저희가 나를 거스려 거짓을 말하고"
+      ],
+      "raw_text_hashes": [
+        "67fdf4d81968deb4224a7b125c286457f65a00a9a3e347d9a7f912db8a17d5fa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:7:14",
+      "sequence": 22193,
+      "chapter_label": "HOS 7",
+      "verse_label": "14",
+      "locator": {
+        "book": "HOS",
+        "chapter": 7,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 7,
+          "verse": 14
+        }
+      ],
+      "en": "They haven’t cried to me with their heart, but they howl on their beds. They assemble themselves for grain and new wine. They turn away from me.",
+      "ko": "성심으로 나를 부르지 아니하였으며 오직 침상에서 슬피 부르짖으며 곡식과 새 포도주를 인하여 모이며 나를 거역하는도다",
+      "source_text_hash": "76e26a955fc33f776a80bcc8e2e1aa0c5f51db51e0e30f8ed266b615dc8ade74",
+      "translation_text_hash": "1db81acffa6dc5314fa1fc9763c22de172850502e09e88365c566c5209af8f4f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "성심으로 나를 부르지 아니하였으며 오직 침상에서 슬피 부르짖으며 곡식과 새 포도주를 인하여 모이며 나를 거역하는도다"
+      ],
+      "raw_text_hashes": [
+        "1db81acffa6dc5314fa1fc9763c22de172850502e09e88365c566c5209af8f4f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:7:15",
+      "sequence": 22194,
+      "chapter_label": "HOS 7",
+      "verse_label": "15",
+      "locator": {
+        "book": "HOS",
+        "chapter": 7,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 7,
+          "verse": 15
+        }
+      ],
+      "en": "Though I have taught and strengthened their arms, yet they plot evil against me.",
+      "ko": "내가 저희 팔을 연습시켜 강건케 하였으나 저희는 내게 대하여 악을 꾀하는도다",
+      "source_text_hash": "605b6df4270e73e463973d54e77db7bef94fbebeefcb8c736b265515fef3084b",
+      "translation_text_hash": "91f5f17c1c8e3e392298f490a42686d75b04136e30845e9f764cf05503e0cdd3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 저희 팔을 연습시켜 강건케 하였으나 저희는 내게 대하여 악을 꾀하는도다"
+      ],
+      "raw_text_hashes": [
+        "91f5f17c1c8e3e392298f490a42686d75b04136e30845e9f764cf05503e0cdd3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:7:16",
+      "sequence": 22195,
+      "chapter_label": "HOS 7",
+      "verse_label": "16",
+      "locator": {
+        "book": "HOS",
+        "chapter": 7,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 7,
+          "verse": 16
+        }
+      ],
+      "en": "They return, but not to the Most High. They are like a faulty bow. Their princes will fall by the sword for the rage of their tongue. This will be their derision in the land of Egypt.",
+      "ko": "저희가 돌아오나 높으신 자에게로 돌아오지 아니하니 속이는 활과 같으며 그 방백들은 그 혀의 거친 말로 인하여 칼에 엎드러지리니 이것이 애굽 땅에서 조롱거리가 되리라",
+      "source_text_hash": "81f7d4c1e10dba140ed9aab0d7d2111973eba0f2d0091dc080317392e76a82d9",
+      "translation_text_hash": "d1d25a7eb742b60f9694f004fb1dde3f67230afa2b48cb5dcbb99018118df5b3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 돌아오나 높으신 자에게로 돌아오지 아니하니 속이는 활과 같으며 그 방백들은 그 혀의 거친 말로 인하여 칼에 엎드러지리니 이것이 애굽 땅에서 조롱거리가 되리라"
+      ],
+      "raw_text_hashes": [
+        "d1d25a7eb742b60f9694f004fb1dde3f67230afa2b48cb5dcbb99018118df5b3"
+      ]
+    }
+  ]
+}

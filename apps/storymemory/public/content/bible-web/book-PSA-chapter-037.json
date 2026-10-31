@@ -1,0 +1,1293 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:037",
+  "unit_ordinal": 515,
+  "unit_label": "PSA 37",
+  "book_code": "PSA",
+  "chapter_number": 37,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:37:1",
+      "sequence": 14452,
+      "chapter_label": "PSA 37",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 37,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 37,
+          "verse": 1
+        }
+      ],
+      "en": "Don’t fret because of evildoers, neither be envious against those who work unrighteousness.",
+      "ko": "행악자를 인하여 불평하여 하지 말며 불의를 행하는 자를 투기하지 말지어다",
+      "source_text_hash": "6df13ed96b0b291ddb969f5b96ed135db414db8d030c105d671bcc6a0fa1f10e",
+      "translation_text_hash": "940cfc5395ccad18cee33916dd724f187d33fe8a0d60ca68fe4842d20ffed2d8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "행악자를 인하여 불평하여 하지 말며 불의를 행하는 자를 투기하지 말지어다"
+      ],
+      "raw_text_hashes": [
+        "940cfc5395ccad18cee33916dd724f187d33fe8a0d60ca68fe4842d20ffed2d8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:37:2",
+      "sequence": 14453,
+      "chapter_label": "PSA 37",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 37,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 37,
+          "verse": 2
+        }
+      ],
+      "en": "For they shall soon be cut down like the grass, and wither like the green herb.",
+      "ko": "저희는 풀과 같이 속히 베임을 볼 것이며 푸른 채소 같이 쇠잔할 것임이로다",
+      "source_text_hash": "25c8a9b650de6b066be9ae5761be176c50828f0832748ef95fba78bfe79fbb0a",
+      "translation_text_hash": "f5473e2c5a35c7afae83667e836f6a89e2babedcc5957047bcc70b1f83655c91",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희는 풀과 같이 속히 베임을 볼 것이며 푸른 채소 같이 쇠잔할 것임이로다"
+      ],
+      "raw_text_hashes": [
+        "f5473e2c5a35c7afae83667e836f6a89e2babedcc5957047bcc70b1f83655c91"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:37:3",
+      "sequence": 14454,
+      "chapter_label": "PSA 37",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 37,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 37,
+          "verse": 3
+        }
+      ],
+      "en": "Trust in the LORD, and do good. Dwell in the land, and enjoy safe pasture.",
+      "ko": "여호와를 의뢰하여 선을 행하라 땅에 거하여 그의 성실로 식물을 삼을지어다",
+      "source_text_hash": "3386ee7c8219be52dbd799491a20a691408939ad13e7cc28c661928b97c24162",
+      "translation_text_hash": "6fde3bb6dba88ab68168baba4050c83445f2cbb4fd15971a7c60ab4323e2399e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와를 의뢰하여 선을 행하라 땅에 거하여 그의 성실로 식물을 삼을지어다"
+      ],
+      "raw_text_hashes": [
+        "6fde3bb6dba88ab68168baba4050c83445f2cbb4fd15971a7c60ab4323e2399e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:37:4",
+      "sequence": 14455,
+      "chapter_label": "PSA 37",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 37,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 37,
+          "verse": 4
+        }
+      ],
+      "en": "Also delight yourself in the LORD, and he will give you the desires of your heart.",
+      "ko": "또 여호와를 기뻐하라 저가 네 마음의 소원을 이루어 주시리로다",
+      "source_text_hash": "d5427bd824ef9df00b88a4fb9d8009093f8994d8a71c5cf4f2b4afb7ecfed52b",
+      "translation_text_hash": "cfebe61d357db1077ec49c5cd53d395e72ec5d210171353de130db652b101a47",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 여호와를 기뻐하라 저가 네 마음의 소원을 이루어 주시리로다"
+      ],
+      "raw_text_hashes": [
+        "cfebe61d357db1077ec49c5cd53d395e72ec5d210171353de130db652b101a47"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:37:5",
+      "sequence": 14456,
+      "chapter_label": "PSA 37",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 37,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 37,
+          "verse": 5
+        }
+      ],
+      "en": "Commit your way to the LORD. Trust also in him, and he will do this:",
+      "ko": "너의 길을 여호와께 맡기라 저를 의지하면 저가 이루시고",
+      "source_text_hash": "fc2be29e46b15fd0960ddee5c825f00038af463c304abd0716b8d802174bb7d8",
+      "translation_text_hash": "822a7fe2c7fe20f1d0d8b18351dfdc988d67594c3d2dd5d104f71f62b7c23a69",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너의 길을 여호와께 맡기라 저를 의지하면 저가 이루시고"
+      ],
+      "raw_text_hashes": [
+        "822a7fe2c7fe20f1d0d8b18351dfdc988d67594c3d2dd5d104f71f62b7c23a69"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:37:6",
+      "sequence": 14457,
+      "chapter_label": "PSA 37",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 37,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 37,
+          "verse": 6
+        }
+      ],
+      "en": "he will make your righteousness shine out like light, and your justice as the noon day sun.",
+      "ko": "네 의를 빛같이 나타내시며 네 공의를 정오의 빛같이 하시리로다",
+      "source_text_hash": "59930a92d100b3e4e3d11e57f0ea3fe33d81d73efd58e596e006f6a2b317abd4",
+      "translation_text_hash": "1060b75262fb5ea4b6a5cf08d16280b234ada38d2ff1bef1bdf1eaea8022adcb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 의를 빛같이 나타내시며 네 공의를 정오의 빛같이 하시리로다"
+      ],
+      "raw_text_hashes": [
+        "1060b75262fb5ea4b6a5cf08d16280b234ada38d2ff1bef1bdf1eaea8022adcb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:37:7",
+      "sequence": 14458,
+      "chapter_label": "PSA 37",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 37,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 37,
+          "verse": 7
+        }
+      ],
+      "en": "Rest in the LORD, and wait patiently for him. Don’t fret because of him who prospers in his way, because of the man who makes wicked plots happen.",
+      "ko": "여호와 앞에 잠잠하고 참아 기다리라 자기 길이 형통하며 악한 꾀를 이루는 자를 인하여 불평하여 말지어다",
+      "source_text_hash": "c80d541775e77f25a0b18c96d4ca41295d205b357a0161c37d359109a1b507de",
+      "translation_text_hash": "e1d491a34534625d6990eef096e13af1a4b410b211715a12389bc2b268290502",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와 앞에 잠잠하고 참아 기다리라 자기 길이 형통하며 악한 꾀를 이루는 자를 인하여 불평하여 말지어다"
+      ],
+      "raw_text_hashes": [
+        "e1d491a34534625d6990eef096e13af1a4b410b211715a12389bc2b268290502"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:37:8",
+      "sequence": 14459,
+      "chapter_label": "PSA 37",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 37,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 37,
+          "verse": 8
+        }
+      ],
+      "en": "Cease from anger, and forsake wrath. Don’t fret; it leads only to evildoing.",
+      "ko": "분을 그치고 노를 버리라 불평하여 말라 행악에 치우칠 뿐이라",
+      "source_text_hash": "58106faf38a78f78795ec59dc64abb7dec2ba77a55d4ff2fd5a90543ab3b74c5",
+      "translation_text_hash": "2aeb265250cee21c41c467fe6b1900fac197b7d1df608d2133497246ca0cf6f3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "분을 그치고 노를 버리라 불평하여 말라 행악에 치우칠 뿐이라"
+      ],
+      "raw_text_hashes": [
+        "2aeb265250cee21c41c467fe6b1900fac197b7d1df608d2133497246ca0cf6f3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:37:9",
+      "sequence": 14460,
+      "chapter_label": "PSA 37",
+      "verse_label": "9",
+      "locator": {
+        "book": "PSA",
+        "chapter": 37,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 37,
+          "verse": 9
+        }
+      ],
+      "en": "For evildoers shall be cut off, but those who wait for the LORD shall inherit the land.",
+      "ko": "대저 행악하는 자는 끊어질 것이나 여호와를 기대하는 자는 땅을 차지하리로다",
+      "source_text_hash": "48189bd8fa83fcbbaec575f1f0822dc65c9ee6336351f7e54af93faa2617d34a",
+      "translation_text_hash": "740b71257f010fa8e448836a40240c4c24d9d524f8b89d017dfd9424e867c1e9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대저 행악하는 자는 끊어질 것이나 여호와를 기대하는 자는 땅을 차지하리로다"
+      ],
+      "raw_text_hashes": [
+        "740b71257f010fa8e448836a40240c4c24d9d524f8b89d017dfd9424e867c1e9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:37:10",
+      "sequence": 14461,
+      "chapter_label": "PSA 37",
+      "verse_label": "10",
+      "locator": {
+        "book": "PSA",
+        "chapter": 37,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 37,
+          "verse": 10
+        }
+      ],
+      "en": "For yet a little while, and the wicked will be no more. Yes, though you look for his place, he isn’t there.",
+      "ko": "잠시 후에 악인이 없어지리니 네가 그곳을 자세히 살필지라도 없으리로다",
+      "source_text_hash": "96ca82dd1a564b06e738c57ce6164dc6579e76696411be398dc2741df5474189",
+      "translation_text_hash": "d70c1f4dc16329bf296357f976752e351c539c61d82321b0ae5fdc65dfa09793",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "잠시 후에 악인이 없어지리니 네가 그곳을 자세히 살필지라도 없으리로다"
+      ],
+      "raw_text_hashes": [
+        "d70c1f4dc16329bf296357f976752e351c539c61d82321b0ae5fdc65dfa09793"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:37:11",
+      "sequence": 14462,
+      "chapter_label": "PSA 37",
+      "verse_label": "11",
+      "locator": {
+        "book": "PSA",
+        "chapter": 37,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 37,
+          "verse": 11
+        }
+      ],
+      "en": "But the humble shall inherit the land, and shall delight themselves in the abundance of peace.",
+      "ko": "오직 온유한 자는 땅을 차지하며 풍부한 화평으로 즐기리로다",
+      "source_text_hash": "28250fb6a6c22244648abef9fbeab364a4bb33838fdf055991247969cd19b746",
+      "translation_text_hash": "adeb25bee7551a6ee2d6bf0ee69bc151d7322424e2ec395e0675d75f40004996",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 온유한 자는 땅을 차지하며 풍부한 화평으로 즐기리로다"
+      ],
+      "raw_text_hashes": [
+        "adeb25bee7551a6ee2d6bf0ee69bc151d7322424e2ec395e0675d75f40004996"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:37:12",
+      "sequence": 14463,
+      "chapter_label": "PSA 37",
+      "verse_label": "12",
+      "locator": {
+        "book": "PSA",
+        "chapter": 37,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 37,
+          "verse": 12
+        }
+      ],
+      "en": "The wicked plots against the just, and gnashes at him with his teeth.",
+      "ko": "악인이 의인 치기를 꾀하고 향하여 그 이를 가는도다",
+      "source_text_hash": "37e59df0cec5000cb99c50fdacc3cef2ab41f29e662246148917a315e4e6e050",
+      "translation_text_hash": "c9e11e08407d9b080d563d092966b9bf7402c705e636dc5139bb61713278a69e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "악인이 의인 치기를 꾀하고 향하여 그 이를 가는도다"
+      ],
+      "raw_text_hashes": [
+        "c9e11e08407d9b080d563d092966b9bf7402c705e636dc5139bb61713278a69e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:37:13",
+      "sequence": 14464,
+      "chapter_label": "PSA 37",
+      "verse_label": "13",
+      "locator": {
+        "book": "PSA",
+        "chapter": 37,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 37,
+          "verse": 13
+        }
+      ],
+      "en": "The Lord will laugh at him, for he sees that his day is coming.",
+      "ko": "주께서 저를 웃으시리니 그 날의 이름을 보심이로다",
+      "source_text_hash": "06a727810ece01710654ec3c48cf8a719b98151396c6af6a558c13b834ec461d",
+      "translation_text_hash": "12e115f5db30bfb3fa867b8b4b7e5c4053fcc001a0fa43584649b05d9730150c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 저를 웃으시리니 그 날의 이름을 보심이로다"
+      ],
+      "raw_text_hashes": [
+        "12e115f5db30bfb3fa867b8b4b7e5c4053fcc001a0fa43584649b05d9730150c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:37:14",
+      "sequence": 14465,
+      "chapter_label": "PSA 37",
+      "verse_label": "14",
+      "locator": {
+        "book": "PSA",
+        "chapter": 37,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 37,
+          "verse": 14
+        }
+      ],
+      "en": "The wicked have drawn out the sword, and have bent their bow, to cast down the poor and needy, to kill those who are upright on the path.",
+      "ko": "악인이 칼을 빼고 활을 당기어 가난하고 궁핍한 자를 엎드러뜨리며 행위가 정직한 자를 죽이고자 하나",
+      "source_text_hash": "cfa475fa11e72abc778de8044decd84d12b97d0bd4f20a5a775c89768dfa095f",
+      "translation_text_hash": "ac598e7dc17bd84d2dd746d3fa987a3faae9626615cec997cd30085178dc9912",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "악인이 칼을 빼고 활을 당기어 가난하고 궁핍한 자를 엎드러뜨리며 행위가 정직한 자를 죽이고자 하나"
+      ],
+      "raw_text_hashes": [
+        "ac598e7dc17bd84d2dd746d3fa987a3faae9626615cec997cd30085178dc9912"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:37:15",
+      "sequence": 14466,
+      "chapter_label": "PSA 37",
+      "verse_label": "15",
+      "locator": {
+        "book": "PSA",
+        "chapter": 37,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 37,
+          "verse": 15
+        }
+      ],
+      "en": "Their sword shall enter into their own heart. Their bows shall be broken.",
+      "ko": "그 칼은 자기의 마음을 찌르고 그 활은 부러지리로다",
+      "source_text_hash": "5486ce13204a56af7701f40bbe394db1e153e29a811f7d8b072888d17e98722b",
+      "translation_text_hash": "f5843875d2c0fd318369cb0bcc65659dda6dc9d0e30a6742940e37e3bcb4bae3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 칼은 자기의 마음을 찌르고 그 활은 부러지리로다"
+      ],
+      "raw_text_hashes": [
+        "f5843875d2c0fd318369cb0bcc65659dda6dc9d0e30a6742940e37e3bcb4bae3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:37:16",
+      "sequence": 14467,
+      "chapter_label": "PSA 37",
+      "verse_label": "16",
+      "locator": {
+        "book": "PSA",
+        "chapter": 37,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 37,
+          "verse": 16
+        }
+      ],
+      "en": "Better is a little that the righteous has, than the abundance of many wicked.",
+      "ko": "의인의 적은 소유가 많은 악인의 풍부함보다 승하도다",
+      "source_text_hash": "cf85dc8602e3f27db451d14eeb6eac4ab1748bb5638d2744e8aa6434c9cc70df",
+      "translation_text_hash": "b99604d181622c298579861dbbb8f21c7314d36232e85cf8845d8ef6786066ad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "의인의 적은 소유가 많은 악인의 풍부함보다 승하도다"
+      ],
+      "raw_text_hashes": [
+        "b99604d181622c298579861dbbb8f21c7314d36232e85cf8845d8ef6786066ad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:37:17",
+      "sequence": 14468,
+      "chapter_label": "PSA 37",
+      "verse_label": "17",
+      "locator": {
+        "book": "PSA",
+        "chapter": 37,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 37,
+          "verse": 17
+        }
+      ],
+      "en": "For the arms of the wicked shall be broken, but the LORD upholds the righteous.",
+      "ko": "악인의 팔은 부러지나 의인은 여호와께서 붙드시는도다",
+      "source_text_hash": "6bef5c107fb188002b4d7bc9a55e44fb61cc674b555647cae1194746f25eb9db",
+      "translation_text_hash": "1724511e6253d48eb0c354c448ece77cd3d0ab7bef09b3f7f186d65527f1fd3c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "악인의 팔은 부러지나 의인은 여호와께서 붙드시는도다"
+      ],
+      "raw_text_hashes": [
+        "1724511e6253d48eb0c354c448ece77cd3d0ab7bef09b3f7f186d65527f1fd3c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:37:18",
+      "sequence": 14469,
+      "chapter_label": "PSA 37",
+      "verse_label": "18",
+      "locator": {
+        "book": "PSA",
+        "chapter": 37,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 37,
+          "verse": 18
+        }
+      ],
+      "en": "The LORD knows the days of the perfect. Their inheritance shall be forever.",
+      "ko": "여호와께서 완전한 자의 날을 아시니 저희 기업은 영원하리로다",
+      "source_text_hash": "e84242ebcd76a4d0d307f648643f5e03e1ab6ff8dd482991d39dfaaba6d5cfe2",
+      "translation_text_hash": "0cb65b34adc44c4abaebe16822d124af3da6726277c05748c2f64b81d19ab9e7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 완전한 자의 날을 아시니 저희 기업은 영원하리로다"
+      ],
+      "raw_text_hashes": [
+        "0cb65b34adc44c4abaebe16822d124af3da6726277c05748c2f64b81d19ab9e7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:37:19",
+      "sequence": 14470,
+      "chapter_label": "PSA 37",
+      "verse_label": "19",
+      "locator": {
+        "book": "PSA",
+        "chapter": 37,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 37,
+          "verse": 19
+        }
+      ],
+      "en": "They shall not be disappointed in the time of evil. In the days of famine they shall be satisfied.",
+      "ko": "저희는 환난 때에 부끄럽지 아니하며 기근의 날에도 풍족하려니와",
+      "source_text_hash": "4210c8a2a25ecf5d8db1a5eee11db6fb7d58c76593ad27aeff64faeb0b9277fd",
+      "translation_text_hash": "32f08d66081b9cfc401e4d746c9272d8cae2089b3ba83b9fd538570854f697fb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희는 환난 때에 부끄럽지 아니하며 기근의 날에도 풍족하려니와"
+      ],
+      "raw_text_hashes": [
+        "32f08d66081b9cfc401e4d746c9272d8cae2089b3ba83b9fd538570854f697fb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:37:20",
+      "sequence": 14471,
+      "chapter_label": "PSA 37",
+      "verse_label": "20",
+      "locator": {
+        "book": "PSA",
+        "chapter": 37,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 37,
+          "verse": 20
+        }
+      ],
+      "en": "But the wicked shall perish. The enemies of the LORD shall be like the beauty of the fields. They will vanish— vanish like smoke.",
+      "ko": "악인은 멸망하고 여호와의 원수는 어린 양의 기름 같이 타서 연기 되어 없어지리로다",
+      "source_text_hash": "a01e6d90720fc58aef6ab5c8955d32c01c5c97804c1443be0568257cba1ad6f0",
+      "translation_text_hash": "ea228a1ef571f08c9f5e7624160552dd870fffe3241286905c577aef8cbc04c8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "악인은 멸망하고 여호와의 원수는 어린 양의 기름 같이 타서 연기 되어 없어지리로다"
+      ],
+      "raw_text_hashes": [
+        "ea228a1ef571f08c9f5e7624160552dd870fffe3241286905c577aef8cbc04c8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:37:21",
+      "sequence": 14472,
+      "chapter_label": "PSA 37",
+      "verse_label": "21",
+      "locator": {
+        "book": "PSA",
+        "chapter": 37,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 37,
+          "verse": 21
+        }
+      ],
+      "en": "The wicked borrow, and don’t pay back, but the righteous give generously.",
+      "ko": "악인은 꾸고 갚지 아니하나 의인은 은혜를 베풀고 주는도다",
+      "source_text_hash": "03dea253b640fc43d020f830f1ed5dcc26c7edf5a044a0ae9232e6f0f6bc4d10",
+      "translation_text_hash": "ac6bb1cd59ffaeb4442428359b1ad52f134398a792f54cdd6c47977aa5973ad4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "악인은 꾸고 갚지 아니하나 의인은 은혜를 베풀고 주는도다"
+      ],
+      "raw_text_hashes": [
+        "ac6bb1cd59ffaeb4442428359b1ad52f134398a792f54cdd6c47977aa5973ad4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:37:22",
+      "sequence": 14473,
+      "chapter_label": "PSA 37",
+      "verse_label": "22",
+      "locator": {
+        "book": "PSA",
+        "chapter": 37,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 37,
+          "verse": 22
+        }
+      ],
+      "en": "For such as are blessed by him shall inherit the land. Those who are cursed by him shall be cut off.",
+      "ko": "주의 복을 받은 자는 땅을 차지하고 주의 저주를 받은 자는 끊어지리로다",
+      "source_text_hash": "f099fdd4c3fa75845076858f2bbd0b2a64396a09acd48baa2c550c4237b324bd",
+      "translation_text_hash": "e15c0d450cc8289bfb28b7535f1e0d5e437125a88bff4e79ec83fad6923503c9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 복을 받은 자는 땅을 차지하고 주의 저주를 받은 자는 끊어지리로다"
+      ],
+      "raw_text_hashes": [
+        "e15c0d450cc8289bfb28b7535f1e0d5e437125a88bff4e79ec83fad6923503c9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:37:23",
+      "sequence": 14474,
+      "chapter_label": "PSA 37",
+      "verse_label": "23",
+      "locator": {
+        "book": "PSA",
+        "chapter": 37,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 37,
+          "verse": 23
+        }
+      ],
+      "en": "A man’s steps are established by the LORD. He delights in his way.",
+      "ko": "여호와께서 사람의 걸음을 정하시고 그 길을 기뻐하시나니",
+      "source_text_hash": "b34afeb23f31f488ab5589650f7501e3ce60f2b4e4544f52cb9598d1e5f570f4",
+      "translation_text_hash": "6d5c031c78021a232d426822fdc6482c5936b3b4298f4d3fcb2a81d7ac75f037",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 사람의 걸음을 정하시고 그 길을 기뻐하시나니"
+      ],
+      "raw_text_hashes": [
+        "6d5c031c78021a232d426822fdc6482c5936b3b4298f4d3fcb2a81d7ac75f037"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:37:24",
+      "sequence": 14475,
+      "chapter_label": "PSA 37",
+      "verse_label": "24",
+      "locator": {
+        "book": "PSA",
+        "chapter": 37,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 37,
+          "verse": 24
+        }
+      ],
+      "en": "Though he stumble, he shall not fall, for the LORD holds him up with his hand.",
+      "ko": "저는 넘어지나 아주 엎드러지지 아니함은 여호와께서 손으로 붙드심이로다",
+      "source_text_hash": "8bafc2e3cf60e81f4e27eb2db9734c83ac94f290bb4b4aebce18cb0f75243f6d",
+      "translation_text_hash": "70d998fb6c18473c884e9de7deb4fe32489bdd3a59a80b5df79fb175d235a158",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저는 넘어지나 아주 엎드러지지 아니함은 여호와께서 손으로 붙드심이로다"
+      ],
+      "raw_text_hashes": [
+        "70d998fb6c18473c884e9de7deb4fe32489bdd3a59a80b5df79fb175d235a158"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:37:25",
+      "sequence": 14476,
+      "chapter_label": "PSA 37",
+      "verse_label": "25",
+      "locator": {
+        "book": "PSA",
+        "chapter": 37,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 37,
+          "verse": 25
+        }
+      ],
+      "en": "I have been young, and now am old, yet I have not seen the righteous forsaken, nor his children begging for bread.",
+      "ko": "내가 어려서부터 늙기까지 의인이 버림을 당하거나 그 자손이 걸식함을 보지 못하였도다",
+      "source_text_hash": "f06f308ade67ef133bbc324f4399efabb0ae87d2ba14aa99376c0c785d55b99a",
+      "translation_text_hash": "9b6825ae0f762c85bb0309d8d308b4fe6d3a815263a36b500d5dd9ad01571c0f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 어려서부터 늙기까지 의인이 버림을 당하거나 그 자손이 걸식함을 보지 못하였도다"
+      ],
+      "raw_text_hashes": [
+        "9b6825ae0f762c85bb0309d8d308b4fe6d3a815263a36b500d5dd9ad01571c0f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:37:26",
+      "sequence": 14477,
+      "chapter_label": "PSA 37",
+      "verse_label": "26",
+      "locator": {
+        "book": "PSA",
+        "chapter": 37,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 37,
+          "verse": 26
+        }
+      ],
+      "en": "All day long he deals graciously, and lends. His offspring is blessed.",
+      "ko": "저는 종일토록 은혜를 베풀고 꾸어주니 그 자손이 복을 받는도다",
+      "source_text_hash": "87b9d12980751b481eadecbff0753aae175995abb57f43c0617d82d95abecd3b",
+      "translation_text_hash": "3233dd5209e58cf5df7aa10b5b00256a6f32a9720027ec664322eda3f0fea221",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저는 종일토록 은혜를 베풀고 꾸어주니 그 자손이 복을 받는도다"
+      ],
+      "raw_text_hashes": [
+        "3233dd5209e58cf5df7aa10b5b00256a6f32a9720027ec664322eda3f0fea221"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:37:27",
+      "sequence": 14478,
+      "chapter_label": "PSA 37",
+      "verse_label": "27",
+      "locator": {
+        "book": "PSA",
+        "chapter": 37,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 37,
+          "verse": 27
+        }
+      ],
+      "en": "Depart from evil, and do good. Live securely forever.",
+      "ko": "악에서 떠나 선을 행하라 그리하면 영영히 거하리니",
+      "source_text_hash": "9ee00eb3ee23d77223b16f487ab7e2ea37e7c46624988a84debf0eaa4d2d03b6",
+      "translation_text_hash": "02e544faf1cd9271b9e623646a7f3d991b69d6b44af3800ad03427b2cfb3245d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "악에서 떠나 선을 행하라 그리하면 영영히 거하리니"
+      ],
+      "raw_text_hashes": [
+        "02e544faf1cd9271b9e623646a7f3d991b69d6b44af3800ad03427b2cfb3245d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:37:28",
+      "sequence": 14479,
+      "chapter_label": "PSA 37",
+      "verse_label": "28",
+      "locator": {
+        "book": "PSA",
+        "chapter": 37,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 37,
+          "verse": 28
+        }
+      ],
+      "en": "For the LORD loves justice, and doesn’t forsake his saints. They are preserved forever, but the children of the wicked shall be cut off.",
+      "ko": "여호와께서 공의를 사랑하시고 그 성도를 버리지 아니하심이로다 저희는 영영히 보호를 받으나 악인의 자손은 끊어지리로다",
+      "source_text_hash": "48d8f6491305362df8f0f07b6ea2b77409ec2a65d5b63250f6f7291df862962b",
+      "translation_text_hash": "d3c5e09a6af3b93b5416bb14d16abf76ca900529fb2fadbf5ef645cf1e7b3eae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 공의를 사랑하시고 그 성도를 버리지 아니하심이로다 저희는 영영히 보호를 받으나 악인의 자손은 끊어지리로다"
+      ],
+      "raw_text_hashes": [
+        "d3c5e09a6af3b93b5416bb14d16abf76ca900529fb2fadbf5ef645cf1e7b3eae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:37:29",
+      "sequence": 14480,
+      "chapter_label": "PSA 37",
+      "verse_label": "29",
+      "locator": {
+        "book": "PSA",
+        "chapter": 37,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 37,
+          "verse": 29
+        }
+      ],
+      "en": "The righteous shall inherit the land, and live in it forever.",
+      "ko": "의인이 땅을 차지함이여 거기 영영히 거하리로다",
+      "source_text_hash": "acd2bbff90b8e0c7afe752fb532dd4632c24acc21ca94c3dbd47ac7b8fc2d185",
+      "translation_text_hash": "10e1defedff962cc8d0db323070a85b6246538086ac80efed2786f578ebdeceb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "의인이 땅을 차지함이여 거기 영영히 거하리로다"
+      ],
+      "raw_text_hashes": [
+        "10e1defedff962cc8d0db323070a85b6246538086ac80efed2786f578ebdeceb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:37:30",
+      "sequence": 14481,
+      "chapter_label": "PSA 37",
+      "verse_label": "30",
+      "locator": {
+        "book": "PSA",
+        "chapter": 37,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 37,
+          "verse": 30
+        }
+      ],
+      "en": "The mouth of the righteous talks of wisdom. His tongue speaks justice.",
+      "ko": "의인의 입은 지혜를 말하고 그 혀는 공의를 이르며",
+      "source_text_hash": "7dfc4b55bde1883ed5530a682965a7935adb6d462e4b71192d86a2d51b13c548",
+      "translation_text_hash": "8c4039508c1ddfef7fc758c2a03e8999227448a3a2ae08aba85b594d5f363396",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "의인의 입은 지혜를 말하고 그 혀는 공의를 이르며"
+      ],
+      "raw_text_hashes": [
+        "8c4039508c1ddfef7fc758c2a03e8999227448a3a2ae08aba85b594d5f363396"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:37:31",
+      "sequence": 14482,
+      "chapter_label": "PSA 37",
+      "verse_label": "31",
+      "locator": {
+        "book": "PSA",
+        "chapter": 37,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 37,
+          "verse": 31
+        }
+      ],
+      "en": "The law of his God is in his heart. None of his steps shall slide.",
+      "ko": "그 마음에는 하나님의 법이 있으니 그 걸음에 실족함이 없으리로다",
+      "source_text_hash": "489c411a8d35b265b59bfd101378d82e44d8ff7183974e2738af8e21a12e5427",
+      "translation_text_hash": "3f4d00f6bd64049c5d6e02eaf84b7da966554309205b8036526b9975130a7472",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 마음에는 하나님의 법이 있으니 그 걸음에 실족함이 없으리로다"
+      ],
+      "raw_text_hashes": [
+        "3f4d00f6bd64049c5d6e02eaf84b7da966554309205b8036526b9975130a7472"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:37:32",
+      "sequence": 14483,
+      "chapter_label": "PSA 37",
+      "verse_label": "32",
+      "locator": {
+        "book": "PSA",
+        "chapter": 37,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 37,
+          "verse": 32
+        }
+      ],
+      "en": "The wicked watch the righteous, and seek to kill him.",
+      "ko": "악인이 의인을 엿보아 살해할 기회를 찾으나",
+      "source_text_hash": "b1f5f64392f0caaa00084aa3713d4b6f2163b0f912d0905ca0a2ce19d085a559",
+      "translation_text_hash": "17455ec6abeb174e55ade3e3c9a77e2fc5612e701cf4c6f2d17ef47fdee84260",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "악인이 의인을 엿보아 살해할 기회를 찾으나"
+      ],
+      "raw_text_hashes": [
+        "17455ec6abeb174e55ade3e3c9a77e2fc5612e701cf4c6f2d17ef47fdee84260"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:37:33",
+      "sequence": 14484,
+      "chapter_label": "PSA 37",
+      "verse_label": "33",
+      "locator": {
+        "book": "PSA",
+        "chapter": 37,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 37,
+          "verse": 33
+        }
+      ],
+      "en": "The LORD will not leave him in his hand, nor condemn him when he is judged.",
+      "ko": "여호와는 저를 그 손에 버려두지 아니하시고 재판 때에도 정죄치 아니하시리로다",
+      "source_text_hash": "07e111ca52c2a9d14492c4ed2f41b18dc50faf9367c93586ac545533d50085d7",
+      "translation_text_hash": "5ecffd714ebc8426dc13c015a3bb2501aba7666a323fb35ce58e1b96816c7f80",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와는 저를 그 손에 버려두지 아니하시고 재판 때에도 정죄치 아니하시리로다"
+      ],
+      "raw_text_hashes": [
+        "5ecffd714ebc8426dc13c015a3bb2501aba7666a323fb35ce58e1b96816c7f80"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:37:34",
+      "sequence": 14485,
+      "chapter_label": "PSA 37",
+      "verse_label": "34",
+      "locator": {
+        "book": "PSA",
+        "chapter": 37,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 37,
+          "verse": 34
+        }
+      ],
+      "en": "Wait for the LORD, and keep his way, and he will exalt you to inherit the land. When the wicked are cut off, you shall see it.",
+      "ko": "여호와를 바라고 그 도를 지키라 그리하면 너를 들어 땅을 차지하게 하실 것이라 악인이 끊어질 때에 네가 목도하리로다",
+      "source_text_hash": "ae9c03cac59f3f301215b8fd4ac8c990b75edf1b50af1c34648e7135de403be7",
+      "translation_text_hash": "bd574fe0b585835a6c29cf87fa34674e2f60ecc4c681551f753607b1a3d3135e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와를 바라고 그 도를 지키라 그리하면 너를 들어 땅을 차지하게 하실 것이라 악인이 끊어질 때에 네가 목도하리로다"
+      ],
+      "raw_text_hashes": [
+        "bd574fe0b585835a6c29cf87fa34674e2f60ecc4c681551f753607b1a3d3135e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:37:35",
+      "sequence": 14486,
+      "chapter_label": "PSA 37",
+      "verse_label": "35",
+      "locator": {
+        "book": "PSA",
+        "chapter": 37,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 37,
+          "verse": 35
+        }
+      ],
+      "en": "I have seen the wicked in great power, spreading himself like a green tree in its native soil.",
+      "ko": "내가 악인의 큰 세력을 본즉 그 본토에 선 푸른 나무의 무성함 같으나",
+      "source_text_hash": "b8af8aaffe39d89b2d8c204dc0b6fadf51c2ed1d9c0849797f103ae6d809bcd6",
+      "translation_text_hash": "6f53cd353b5bd4a851700b7eb8db58e7020b0cfdea236eb8ba6cd3aef946a003",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 악인의 큰 세력을 본즉 그 본토에 선 푸른 나무의 무성함 같으나"
+      ],
+      "raw_text_hashes": [
+        "6f53cd353b5bd4a851700b7eb8db58e7020b0cfdea236eb8ba6cd3aef946a003"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:37:36",
+      "sequence": 14487,
+      "chapter_label": "PSA 37",
+      "verse_label": "36",
+      "locator": {
+        "book": "PSA",
+        "chapter": 37,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 37,
+          "verse": 36
+        }
+      ],
+      "en": "But he passed away, and behold, he was not. Yes, I sought him, but he could not be found.",
+      "ko": "사람이 지날 때에 저가 없어졌으니 내가 찾아도 발견치 못하였도다",
+      "source_text_hash": "7d1086287a8e4a1e5b61bc12d2713c56853d40fdddaae005cd31ecfb0c3d19ea",
+      "translation_text_hash": "150f5a6dd4e928b5cf0843ae0ae6f366ad3e3abba2709fb27248bae40274ab24",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 지날 때에 저가 없어졌으니 내가 찾아도 발견치 못하였도다"
+      ],
+      "raw_text_hashes": [
+        "150f5a6dd4e928b5cf0843ae0ae6f366ad3e3abba2709fb27248bae40274ab24"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:37:37",
+      "sequence": 14488,
+      "chapter_label": "PSA 37",
+      "verse_label": "37",
+      "locator": {
+        "book": "PSA",
+        "chapter": 37,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 37,
+          "verse": 37
+        }
+      ],
+      "en": "Mark the perfect man, and see the upright, for there is a future for the man of peace.",
+      "ko": "완전한 사람을 살피고 정직한 자를 볼찌어다 화평한 자의 결국은 평안이로다",
+      "source_text_hash": "d259127a3ecdd786b5c5c705d7acd9973e21f76ea63258b2cbb7732d64464bfb",
+      "translation_text_hash": "9f533236344735ff792b9dde140cf9d4ccc3533b99421701204a9fdd73ac978e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "완전한 사람을 살피고 정직한 자를 볼찌어다 화평한 자의 결국은 평안이로다"
+      ],
+      "raw_text_hashes": [
+        "9f533236344735ff792b9dde140cf9d4ccc3533b99421701204a9fdd73ac978e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:37:38",
+      "sequence": 14489,
+      "chapter_label": "PSA 37",
+      "verse_label": "38",
+      "locator": {
+        "book": "PSA",
+        "chapter": 37,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 37,
+          "verse": 38
+        }
+      ],
+      "en": "As for transgressors, they shall be destroyed together. The future of the wicked shall be cut off.",
+      "ko": "범죄자들은 함께 멸망하리니 악인의 결국은 끊어질 것이나",
+      "source_text_hash": "9ce11427bea1b1752330e269c7c9b13dfdcf8c448c49ff01d4ca1d3bd5be3fa0",
+      "translation_text_hash": "edadc71d2aca977201821993870a69c7a281053ba06db29aceb0e530fec6e777",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "범죄자들은 함께 멸망하리니 악인의 결국은 끊어질 것이나"
+      ],
+      "raw_text_hashes": [
+        "edadc71d2aca977201821993870a69c7a281053ba06db29aceb0e530fec6e777"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:37:39",
+      "sequence": 14490,
+      "chapter_label": "PSA 37",
+      "verse_label": "39",
+      "locator": {
+        "book": "PSA",
+        "chapter": 37,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 37,
+          "verse": 39
+        }
+      ],
+      "en": "But the salvation of the righteous is from the LORD. He is their stronghold in the time of trouble.",
+      "ko": "의인의 구원은 여호와께 있으니 그는 환난 때에 저희 산성이시로다",
+      "source_text_hash": "8cce3a0b197897aa4bc797204ffb03e70c5da12894927e6da91b6d8e004eb259",
+      "translation_text_hash": "db4e2d68c23c966821a23716817ca4c219392ab2e5775b552e72d3bb46ecc001",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "의인의 구원은 여호와께 있으니 그는 환난 때에 저희 산성이시로다"
+      ],
+      "raw_text_hashes": [
+        "db4e2d68c23c966821a23716817ca4c219392ab2e5775b552e72d3bb46ecc001"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:37:40",
+      "sequence": 14491,
+      "chapter_label": "PSA 37",
+      "verse_label": "40",
+      "locator": {
+        "book": "PSA",
+        "chapter": 37,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 37,
+          "verse": 40
+        }
+      ],
+      "en": "The LORD helps them and rescues them. He rescues them from the wicked and saves them, because they have taken refuge in him.",
+      "ko": "여호와께서 저희를 도와 건지시되 악인에게서 건져 구원하심은 그를 의지한 연고로다",
+      "source_text_hash": "a16473dab7a28746e1351ac6e25c149be0a4040ff7234d9b10633874a5538c1d",
+      "translation_text_hash": "cbb0268bf1c34d4f57a0a91366b4a84193c3ea4c3ae994f4af69ce94ff1b7189",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 저희를 도와 건지시되 악인에게서 건져 구원하심은 그를 의지한 연고로다"
+      ],
+      "raw_text_hashes": [
+        "cbb0268bf1c34d4f57a0a91366b4a84193c3ea4c3ae994f4af69ce94ff1b7189"
+      ]
+    }
+  ]
+}

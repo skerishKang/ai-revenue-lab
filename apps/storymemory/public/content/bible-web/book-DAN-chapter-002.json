@@ -1,0 +1,1581 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:DAN:chapter:002",
+  "unit_ordinal": 852,
+  "unit_label": "DAN 2",
+  "book_code": "DAN",
+  "chapter_number": 2,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:DAN:2:1",
+      "sequence": 21760,
+      "chapter_label": "DAN 2",
+      "verse_label": "1",
+      "locator": {
+        "book": "DAN",
+        "chapter": 2,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 2,
+          "verse": 1
+        }
+      ],
+      "en": "In the second year of the reign of Nebuchadnezzar, Nebuchadnezzar dreamed dreams; and his spirit was troubled, and his sleep went from him.",
+      "ko": "느부갓네살이 위에 있은지 이년에 꿈을 꾸고 그로 인하여 마음이 번민하여 잠을 이루지 못한지라",
+      "source_text_hash": "ff0948e063d441c64bf3924a9378e384dcee6f1e9ae4291749db51f197e7d971",
+      "translation_text_hash": "9a64cdf0dd3c11fd315dca515c649d0dad93ced97ff6bef2ae6222a02a3ea9e9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "느부갓네살이 위에 있은지 이년에 꿈을 꾸고 그로 인하여 마음이 번민하여 잠을 이루지 못한지라"
+      ],
+      "raw_text_hashes": [
+        "9a64cdf0dd3c11fd315dca515c649d0dad93ced97ff6bef2ae6222a02a3ea9e9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:2:2",
+      "sequence": 21761,
+      "chapter_label": "DAN 2",
+      "verse_label": "2",
+      "locator": {
+        "book": "DAN",
+        "chapter": 2,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 2,
+          "verse": 2
+        }
+      ],
+      "en": "Then the king commanded that the magicians, the enchanters, the sorcerers, and the Chaldeans be called to tell the king his dreams. So they came in and stood before the king.",
+      "ko": "왕이 그 꿈을 자기에게 고하게 하려고 명하여 박수와 술객과 점장이와 갈대아 술사를 부르매 그들이 들어와서 왕의 앞에 선지라",
+      "source_text_hash": "29881b486bece9f1e7e227eb0734995fd1545d5d73a5e7b09774b42e9bc77dbd",
+      "translation_text_hash": "d1c0d35688f4a9999493b9b156ac1e648ef471bcf5a613f0a068dd834dfc48db",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 그 꿈을 자기에게 고하게 하려고 명하여 박수와 술객과 점장이와 갈대아 술사를 부르매 그들이 들어와서 왕의 앞에 선지라"
+      ],
+      "raw_text_hashes": [
+        "d1c0d35688f4a9999493b9b156ac1e648ef471bcf5a613f0a068dd834dfc48db"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:2:3",
+      "sequence": 21762,
+      "chapter_label": "DAN 2",
+      "verse_label": "3",
+      "locator": {
+        "book": "DAN",
+        "chapter": 2,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 2,
+          "verse": 3
+        }
+      ],
+      "en": "The king said to them, “I have dreamed a dream, and my spirit is troubled to know the dream.”",
+      "ko": "왕이 그들에게 이르되 내가 꿈을 꾸고 그 꿈을 알고자하여 마음이 번민하도다",
+      "source_text_hash": "6c6edcc9234b0c42e92bb58e62c0a45d3cb39856f9338475a7c8eee10227fc07",
+      "translation_text_hash": "6ca5b3a463d56912dbf899e19d3cc840f2c82f26b1d3f66f83f39e42e35f513b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 그들에게 이르되 내가 꿈을 꾸고 그 꿈을 알고자하여 마음이 번민하도다"
+      ],
+      "raw_text_hashes": [
+        "6ca5b3a463d56912dbf899e19d3cc840f2c82f26b1d3f66f83f39e42e35f513b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:2:4",
+      "sequence": 21763,
+      "chapter_label": "DAN 2",
+      "verse_label": "4",
+      "locator": {
+        "book": "DAN",
+        "chapter": 2,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 2,
+          "verse": 4
+        }
+      ],
+      "en": "Then the Chaldeans spoke to the king in the Syrian language, “O king, live forever! Tell your servants the dream, and we will show the interpretation.”",
+      "ko": "갈대아 술사들이 아람 방언으로 왕에게 말하되 왕이여 만세수를 하옵소서 왕은 그 꿈을 종들에게 이르시면 우리가 해석하여 드리겠나이다",
+      "source_text_hash": "45d6df5f52da21b742c845a9e1dd316534848136b25c2e3d6e7a77a95aaca06f",
+      "translation_text_hash": "d23ae69a97f1efdae57223ed55ef69d26bccb02158861cd4e57babf0db868d19",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "갈대아 술사들이 아람 방언으로 왕에게 말하되 왕이여 만세수를 하옵소서 왕은 그 꿈을 종들에게 이르시면 우리가 해석하여 드리겠나이다"
+      ],
+      "raw_text_hashes": [
+        "d23ae69a97f1efdae57223ed55ef69d26bccb02158861cd4e57babf0db868d19"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:2:5",
+      "sequence": 21764,
+      "chapter_label": "DAN 2",
+      "verse_label": "5",
+      "locator": {
+        "book": "DAN",
+        "chapter": 2,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 2,
+          "verse": 5
+        }
+      ],
+      "en": "The king answered the Chaldeans, “The thing has gone from me. If you don’t make known to me the dream and its interpretation, you will be cut in pieces, and your houses will be made a dunghill.",
+      "ko": "왕이 갈대아 술사에게 대답하여 가로되 내가 명령을 내렸나니 너희가 만일 꿈과 그 해석을 나로 알게 하지 아니하면 너희 몸을 쪼갤 것이며 너희 집으로 거름터를 삼을 것이요",
+      "source_text_hash": "aa5a992e7135f00bc52b592b7c15a1eee77303bbd4c789772ae1fecaa2f6dd31",
+      "translation_text_hash": "e7a93a934da2f80cd3c83962d89aabc7f1a58a196caff4b8b1a98f6dd31ad9d9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 갈대아 술사에게 대답하여 가로되 내가 명령을 내렸나니 너희가 만일 꿈과 그 해석을 나로 알게 하지 아니하면 너희 몸을 쪼갤 것이며 너희 집으로 거름터를 삼을 것이요"
+      ],
+      "raw_text_hashes": [
+        "e7a93a934da2f80cd3c83962d89aabc7f1a58a196caff4b8b1a98f6dd31ad9d9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:2:6",
+      "sequence": 21765,
+      "chapter_label": "DAN 2",
+      "verse_label": "6",
+      "locator": {
+        "book": "DAN",
+        "chapter": 2,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 2,
+          "verse": 6
+        }
+      ],
+      "en": "But if you show the dream and its interpretation, you will receive from me gifts, rewards, and great honor. Therefore show me the dream and its interpretation.”",
+      "ko": "너희가 만일 꿈과 그 해석을 보이면 너희가 선물과 상과 큰 영광을 내게서 얻으리라 그런즉 꿈과 그 해석을 내게 보이라",
+      "source_text_hash": "16f7152f5d03cab91ba35455c4bf448393cc4baa5bdc3ef888ac3c289afd24ad",
+      "translation_text_hash": "e561b0153c47735a9c501ac17a015147d2c9d43d310bec89fc1a6ca68d687cca",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 만일 꿈과 그 해석을 보이면 너희가 선물과 상과 큰 영광을 내게서 얻으리라 그런즉 꿈과 그 해석을 내게 보이라"
+      ],
+      "raw_text_hashes": [
+        "e561b0153c47735a9c501ac17a015147d2c9d43d310bec89fc1a6ca68d687cca"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:2:7",
+      "sequence": 21766,
+      "chapter_label": "DAN 2",
+      "verse_label": "7",
+      "locator": {
+        "book": "DAN",
+        "chapter": 2,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 2,
+          "verse": 7
+        }
+      ],
+      "en": "They answered the second time and said, “Let the king tell his servants the dream, and we will show the interpretation.”",
+      "ko": "그들이 다시 대답하여 가로되 청컨대 왕은 꿈을 종들에게 이르소서 그리하시면 우리가 해석하여 드리겠나이다",
+      "source_text_hash": "9606e6c1530554f72e75b95c1ad04a14012439ffe45f252f5c4347fda11a224c",
+      "translation_text_hash": "d423c82c648947fe48a37f02646089d65a605a4919b4a992456b9d957dbac69a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 다시 대답하여 가로되 청컨대 왕은 꿈을 종들에게 이르소서 그리하시면 우리가 해석하여 드리겠나이다"
+      ],
+      "raw_text_hashes": [
+        "d423c82c648947fe48a37f02646089d65a605a4919b4a992456b9d957dbac69a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:2:8",
+      "sequence": 21767,
+      "chapter_label": "DAN 2",
+      "verse_label": "8",
+      "locator": {
+        "book": "DAN",
+        "chapter": 2,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 2,
+          "verse": 8
+        }
+      ],
+      "en": "The king answered, “I know of a certainty that you are trying to gain time, because you see the thing has gone from me.",
+      "ko": "왕이 대답하여 가로되 내가 분명히 아노라 너희가 나의 명령이 내렸음을 보았으므로 시간을 천연하려 함이로다",
+      "source_text_hash": "afc0cc7a93d3bba8105effe1eb2f5418998109bbc6095c3c9013d511752b1f0a",
+      "translation_text_hash": "2c3d2b6e688f3fa71426c187b1d840aa83b84f01742d56e3e91542ed58b24a30",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 대답하여 가로되 내가 분명히 아노라 너희가 나의 명령이 내렸음을 보았으므로 시간을 천연하려 함이로다"
+      ],
+      "raw_text_hashes": [
+        "2c3d2b6e688f3fa71426c187b1d840aa83b84f01742d56e3e91542ed58b24a30"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:2:9",
+      "sequence": 21768,
+      "chapter_label": "DAN 2",
+      "verse_label": "9",
+      "locator": {
+        "book": "DAN",
+        "chapter": 2,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 2,
+          "verse": 9
+        }
+      ],
+      "en": "But if you don’t make known to me the dream, there is but one law for you; for you have prepared lying and corrupt words to speak before me, until the situation changes. Therefore tell me the dream, and I will know that you can show me its interpretation.”",
+      "ko": "너희가 만일 이 꿈을 나로 알게 하지 아니하면 너희를 처치할 법이 오직 하나이니 이는 너희가 거짓말과 망령된 말을 내 앞에서 꾸며 말하여 때가 변하기를 기다리려 함이니라 이제 그 꿈을 내게 알게 하라 그리하면 너희가 그 해석도 보일줄을 내가 알리라",
+      "source_text_hash": "1381961c29a5c055c702ee5b971a092b1262ab0f5bacb13753f28ceeb95c224c",
+      "translation_text_hash": "f99313c8643d2c7d2609ceb522039ddd67fbaf3a9e13cd9383586fa46b7a0ebb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 만일 이 꿈을 나로 알게 하지 아니하면 너희를 처치할 법이 오직 하나이니 이는 너희가 거짓말과 망령된 말을 내 앞에서 꾸며 말하여 때가 변하기를 기다리려 함이니라 이제 그 꿈을 내게 알게 하라 그리하면 너희가 그 해석도 보일줄을 내가 알리라"
+      ],
+      "raw_text_hashes": [
+        "f99313c8643d2c7d2609ceb522039ddd67fbaf3a9e13cd9383586fa46b7a0ebb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:2:10",
+      "sequence": 21769,
+      "chapter_label": "DAN 2",
+      "verse_label": "10",
+      "locator": {
+        "book": "DAN",
+        "chapter": 2,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 2,
+          "verse": 10
+        }
+      ],
+      "en": "The Chaldeans answered the king and said, “There is not a man on the earth who can show the king’s matter, because no king, lord, or ruler has asked such a thing of any magician, enchanter, or Chaldean.",
+      "ko": "갈대아 술사들이 왕 앞에 대답하여 가로되 세상에는 왕의 그 일을 보일 자가 하나도 없으므로 크고 권력 있는 왕이 이런 것으로 박수에게나 술객에게나 갈대아 술사에게 물은 자가 절대로 있지 아니하였나이다",
+      "source_text_hash": "6ebb47c12dd5856f6f53b8a49fd0bf982a1a7acd456c961145bd30e21b13d37e",
+      "translation_text_hash": "c328dd10c18171d981c45920b6f35ded8ad35b2810386a3c0c859926e0eaf287",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "갈대아 술사들이 왕 앞에 대답하여 가로되 세상에는 왕의 그 일을 보일 자가 하나도 없으므로 크고 권력 있는 왕이 이런 것으로 박수에게나 술객에게나 갈대아 술사에게 물은 자가 절대로 있지 아니하였나이다"
+      ],
+      "raw_text_hashes": [
+        "c328dd10c18171d981c45920b6f35ded8ad35b2810386a3c0c859926e0eaf287"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:2:11",
+      "sequence": 21770,
+      "chapter_label": "DAN 2",
+      "verse_label": "11",
+      "locator": {
+        "book": "DAN",
+        "chapter": 2,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 2,
+          "verse": 11
+        }
+      ],
+      "en": "It is a rare thing that the king requires, and there is no other who can show it before the king except the gods, whose dwelling is not with flesh.”",
+      "ko": "왕의 물으신 것은 희한한 일이라 육체와 함께 거하지 아니하는 신들 외에는 왕 앞에 그것을 보일 자가 없나이다 한지라",
+      "source_text_hash": "adbbf6fedb3a8e83ab853cfc8d220def7f315d54151c300ea90a7778655ca187",
+      "translation_text_hash": "23178aa2d42e78aa589e629df8d9462afa7c9e8cb74b98523718cb5717c7893f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕의 물으신 것은 희한한 일이라 육체와 함께 거하지 아니하는 신들 외에는 왕 앞에 그것을 보일 자가 없나이다 한지라"
+      ],
+      "raw_text_hashes": [
+        "23178aa2d42e78aa589e629df8d9462afa7c9e8cb74b98523718cb5717c7893f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:2:12",
+      "sequence": 21771,
+      "chapter_label": "DAN 2",
+      "verse_label": "12",
+      "locator": {
+        "book": "DAN",
+        "chapter": 2,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 2,
+          "verse": 12
+        }
+      ],
+      "en": "Because of this, the king was angry and very furious, and commanded that all the wise men of Babylon be destroyed.",
+      "ko": "왕이 이로 인하여 진노하고 통분하여 바벨론 모든 박사를 다 멸하라 명하니라",
+      "source_text_hash": "d9bafe0e05d21226e3d730b8b6a80005b514954614e48c6b1d6903c0b7e801a5",
+      "translation_text_hash": "285f205710eae22a5c76e94344dc913f3a182257599203c3d03cf1dcd8a61bd5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 이로 인하여 진노하고 통분하여 바벨론 모든 박사를 다 멸하라 명하니라"
+      ],
+      "raw_text_hashes": [
+        "285f205710eae22a5c76e94344dc913f3a182257599203c3d03cf1dcd8a61bd5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:2:13",
+      "sequence": 21772,
+      "chapter_label": "DAN 2",
+      "verse_label": "13",
+      "locator": {
+        "book": "DAN",
+        "chapter": 2,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 2,
+          "verse": 13
+        }
+      ],
+      "en": "So the decree went out, and the wise men were to be slain. They sought Daniel and his companions to be slain.",
+      "ko": "왕의 명령이 내리매 박사들은 죽게 되었고 다니엘과 그 동무도 죽이려고 찾았더라",
+      "source_text_hash": "54bf4b9cf007946ae00596d58e00debfd176d64a74b6938ffd04b6e77d4d0d9b",
+      "translation_text_hash": "ad9376b4556e52364c8a1ccead71f9c3c2b918e049a39867fef5e1ce0232eccf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕의 명령이 내리매 박사들은 죽게 되었고 다니엘과 그 동무도 죽이려고 찾았더라"
+      ],
+      "raw_text_hashes": [
+        "ad9376b4556e52364c8a1ccead71f9c3c2b918e049a39867fef5e1ce0232eccf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:2:14",
+      "sequence": 21773,
+      "chapter_label": "DAN 2",
+      "verse_label": "14",
+      "locator": {
+        "book": "DAN",
+        "chapter": 2,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 2,
+          "verse": 14
+        }
+      ],
+      "en": "Then Daniel returned answer with counsel and prudence to Arioch the captain of the king’s guard, who had gone out to kill the wise men of Babylon.",
+      "ko": "왕의 시위대 장관 아리옥이 바벨론 박사들을 죽이러 나가매 다니엘이 명철하고 슬기로운 말로",
+      "source_text_hash": "6eef9437011a49fede696010af1bf994e1439fd1e93c2d3e7f18e4351ad2e39e",
+      "translation_text_hash": "5ca2ece1e798fab3bb325a1f07f8a6acd883713a57f7ccef1431c7e92f65eabd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕의 시위대 장관 아리옥이 바벨론 박사들을 죽이러 나가매 다니엘이 명철하고 슬기로운 말로"
+      ],
+      "raw_text_hashes": [
+        "5ca2ece1e798fab3bb325a1f07f8a6acd883713a57f7ccef1431c7e92f65eabd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:2:15",
+      "sequence": 21774,
+      "chapter_label": "DAN 2",
+      "verse_label": "15",
+      "locator": {
+        "book": "DAN",
+        "chapter": 2,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 2,
+          "verse": 15
+        }
+      ],
+      "en": "He answered Arioch the king’s captain, “Why is the decree so urgent from the king?” Then Arioch made the thing known to Daniel.",
+      "ko": "왕의 장관 아리옥에게 물어 가로되 왕의 명령이 어찌 그리 급하뇨 아리옥이 그 일을 다니엘에게 고하매",
+      "source_text_hash": "d42b81c26ac1324ed0e2e40e7f1a74013d90341c978dccacea1ecd283e9e1ca6",
+      "translation_text_hash": "6a567259b24dbf98d82a9bfd07889683f12e1d5f991a507279b73c5f7cc8ca60",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕의 장관 아리옥에게 물어 가로되 왕의 명령이 어찌 그리 급하뇨 아리옥이 그 일을 다니엘에게 고하매"
+      ],
+      "raw_text_hashes": [
+        "6a567259b24dbf98d82a9bfd07889683f12e1d5f991a507279b73c5f7cc8ca60"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:2:16",
+      "sequence": 21775,
+      "chapter_label": "DAN 2",
+      "verse_label": "16",
+      "locator": {
+        "book": "DAN",
+        "chapter": 2,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 2,
+          "verse": 16
+        }
+      ],
+      "en": "Daniel went in, and desired of the king that he would appoint him a time, and he would show the king the interpretation.",
+      "ko": "다니엘이 들어가서 왕께 구하기를 기한하여 주시면 왕에게 그 해석을 보여 드리겠다 하니라",
+      "source_text_hash": "eba9f1e0136e8ae6ff56d9ccb1f497b2031f23155c8d06cab0dbc20f2928a49e",
+      "translation_text_hash": "665f1901cca5a5551b237fac5fa6cd5c769c6020c87e85dfd8149c8a0e8c6796",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다니엘이 들어가서 왕께 구하기를 기한하여 주시면 왕에게 그 해석을 보여 드리겠다 하니라"
+      ],
+      "raw_text_hashes": [
+        "665f1901cca5a5551b237fac5fa6cd5c769c6020c87e85dfd8149c8a0e8c6796"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:2:17",
+      "sequence": 21776,
+      "chapter_label": "DAN 2",
+      "verse_label": "17",
+      "locator": {
+        "book": "DAN",
+        "chapter": 2,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 2,
+          "verse": 17
+        }
+      ],
+      "en": "Then Daniel went to his house and made the thing known to Hananiah, Mishael, and Azariah, his companions:",
+      "ko": "이에 다니엘이 자기 집으로 돌아가서 그 동무 하나냐와 미사엘과 아사랴에게 그 일을 고하고",
+      "source_text_hash": "f70d2725636128076786ca36a7c56919536f4546fd998b6d6064a105f9ca3505",
+      "translation_text_hash": "e617067b05164e55da6795742d11922d223816c4ff5162635a3d7daa851743d8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 다니엘이 자기 집으로 돌아가서 그 동무 하나냐와 미사엘과 아사랴에게 그 일을 고하고"
+      ],
+      "raw_text_hashes": [
+        "e617067b05164e55da6795742d11922d223816c4ff5162635a3d7daa851743d8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:2:18",
+      "sequence": 21777,
+      "chapter_label": "DAN 2",
+      "verse_label": "18",
+      "locator": {
+        "book": "DAN",
+        "chapter": 2,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 2,
+          "verse": 18
+        }
+      ],
+      "en": "that they would desire mercies of the God of heaven concerning this secret, that Daniel and his companions would not perish with the rest of the wise men of Babylon.",
+      "ko": "하늘에 계신 하나님이 이 은밀한 일에 대하여 긍휼히 여기사 자기 다니엘과 동무들이 바벨론의 다른 박사와 함께 죽임을 당치 않게 하시기를 그들로 구하게 하니라",
+      "source_text_hash": "fadaca466c62b41fa84c517026c86990f429de02debfab5609c14fdcdc4e5a59",
+      "translation_text_hash": "70ec87c9003de707ccae55b32a4b8978f94b7647dabc52b5c3ec9b1afded2986",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하늘에 계신 하나님이 이 은밀한 일에 대하여 긍휼히 여기사 자기 다니엘과 동무들이 바벨론의 다른 박사와 함께 죽임을 당치 않게 하시기를 그들로 구하게 하니라"
+      ],
+      "raw_text_hashes": [
+        "70ec87c9003de707ccae55b32a4b8978f94b7647dabc52b5c3ec9b1afded2986"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:2:19",
+      "sequence": 21778,
+      "chapter_label": "DAN 2",
+      "verse_label": "19",
+      "locator": {
+        "book": "DAN",
+        "chapter": 2,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 2,
+          "verse": 19
+        }
+      ],
+      "en": "Then the secret was revealed to Daniel in a vision of the night. Then Daniel blessed the God of heaven.",
+      "ko": "이에 이 은밀한 것이 밤에 이상으로 다니엘에게 나타나 보이매 다니엘이 하늘에 계신 하나님을 찬송하니라",
+      "source_text_hash": "d4d3c0c34f018edcb45a8ce02ccd8ab331fb362b1a5e08c6d4d376ab89b6a079",
+      "translation_text_hash": "d2286db1935a447529b5f95e2bb359a4d0a3444edab1c28b34b5daa4f1bf78fc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 이 은밀한 것이 밤에 이상으로 다니엘에게 나타나 보이매 다니엘이 하늘에 계신 하나님을 찬송하니라"
+      ],
+      "raw_text_hashes": [
+        "d2286db1935a447529b5f95e2bb359a4d0a3444edab1c28b34b5daa4f1bf78fc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:2:20",
+      "sequence": 21779,
+      "chapter_label": "DAN 2",
+      "verse_label": "20",
+      "locator": {
+        "book": "DAN",
+        "chapter": 2,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 2,
+          "verse": 20
+        }
+      ],
+      "en": "Daniel answered, “Blessed be the name of God forever and ever; for wisdom and might are his.",
+      "ko": "다니엘이 말하여 가로되 영원 무궁히 하나님의 이름을 찬송할 것은 지혜와 권능이 그에게 있음이로다",
+      "source_text_hash": "143c2a7b4aa2ab340f231c87f89f295ab5c7d8c8bad6473718384ff7ec8b437a",
+      "translation_text_hash": "51d17c152d88f41d467120d0588e3917f6bb4706f079a7527f2c1854577f8c8b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다니엘이 말하여 가로되 영원 무궁히 하나님의 이름을 찬송할 것은 지혜와 권능이 그에게 있음이로다"
+      ],
+      "raw_text_hashes": [
+        "51d17c152d88f41d467120d0588e3917f6bb4706f079a7527f2c1854577f8c8b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:2:21",
+      "sequence": 21780,
+      "chapter_label": "DAN 2",
+      "verse_label": "21",
+      "locator": {
+        "book": "DAN",
+        "chapter": 2,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 2,
+          "verse": 21
+        }
+      ],
+      "en": "He changes the times and the seasons. He removes kings and sets up kings. He gives wisdom to the wise, and knowledge to those who have understanding.",
+      "ko": "그는 때와 기한을 변하시며 왕들을 폐하시고 왕들을 세우시며 지혜자에게 지혜를 주시고 지식자에게 총명을 주시는도다",
+      "source_text_hash": "c6431c04357d6888f1a4554ddc95dfa833793c4dd354b3371a7917741f2b34dc",
+      "translation_text_hash": "46d3cf578d22a3b5d0a9acc2752960785d6f3d3e65f6e9e3089296fcd16a980c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그는 때와 기한을 변하시며 왕들을 폐하시고 왕들을 세우시며 지혜자에게 지혜를 주시고 지식자에게 총명을 주시는도다"
+      ],
+      "raw_text_hashes": [
+        "46d3cf578d22a3b5d0a9acc2752960785d6f3d3e65f6e9e3089296fcd16a980c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:2:22",
+      "sequence": 21781,
+      "chapter_label": "DAN 2",
+      "verse_label": "22",
+      "locator": {
+        "book": "DAN",
+        "chapter": 2,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 2,
+          "verse": 22
+        }
+      ],
+      "en": "He reveals the deep and secret things. He knows what is in the darkness, and the light dwells with him.",
+      "ko": "그는 깊고 은밀한 일을 나타내시고 어두운데 있는 것을 아시며 또 빛이 그와 함께 있도다",
+      "source_text_hash": "79c6e6c0ccdc6ee1f6614596fab55668bb9cb8576939e49198d0a25afe790df8",
+      "translation_text_hash": "8df44cb81732f398ac4e43d2ae819e787f5ca95adbd299444d81f2e4cc405798",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그는 깊고 은밀한 일을 나타내시고 어두운데 있는 것을 아시며 또 빛이 그와 함께 있도다"
+      ],
+      "raw_text_hashes": [
+        "8df44cb81732f398ac4e43d2ae819e787f5ca95adbd299444d81f2e4cc405798"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:2:23",
+      "sequence": 21782,
+      "chapter_label": "DAN 2",
+      "verse_label": "23",
+      "locator": {
+        "book": "DAN",
+        "chapter": 2,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 2,
+          "verse": 23
+        }
+      ],
+      "en": "I thank you and praise you, O God of my fathers, who have given me wisdom and might, and have now made known to me what we desired of you; for you have made known to us the king’s matter.”",
+      "ko": "나의 열조의 하나님이여 주께서 이제 내게 지혜와 능력을 주시고 우리가 주께 구한바 일을 내게 알게 하셨사오니 내가 주께 감사하고 주를 찬양하나이다 곧 주께서 왕의 그 일을 내게 보이셨나이다 하니라",
+      "source_text_hash": "84b6ab4dc9c945a1277d3689f3e58122432fe1dde87367cf3e7634b133df7dd1",
+      "translation_text_hash": "3c82851a0f37f85e09e96baa86816ee2cabe8444ee45a2699dbb46261cad449a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 열조의 하나님이여 주께서 이제 내게 지혜와 능력을 주시고 우리가 주께 구한바 일을 내게 알게 하셨사오니 내가 주께 감사하고 주를 찬양하나이다 곧 주께서 왕의 그 일을 내게 보이셨나이다 하니라"
+      ],
+      "raw_text_hashes": [
+        "3c82851a0f37f85e09e96baa86816ee2cabe8444ee45a2699dbb46261cad449a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:2:24",
+      "sequence": 21783,
+      "chapter_label": "DAN 2",
+      "verse_label": "24",
+      "locator": {
+        "book": "DAN",
+        "chapter": 2,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 2,
+          "verse": 24
+        }
+      ],
+      "en": "Therefore Daniel went in to Arioch, whom the king had appointed to destroy the wise men of Babylon. He went and said this to him: “Don’t destroy the wise men of Babylon. Bring me in before the king, and I will show to the king the interpretation.”",
+      "ko": "이에 다니엘이 왕이 바벨론 박사들을 멸하라 명한 아리옥에게로 가서 이르매 그에게 이같이 이르되 바벨론 박사들을 멸하지 말고 나를 왕의 앞으로 인도하라 그리하면 내가 그 해석을 왕께 보여 드리리라",
+      "source_text_hash": "6327625809af3219065b590d5918d55d6b6419c36e751f259df1258c2468f388",
+      "translation_text_hash": "b595f51fa18d792ae269d093af817af1fa8629b6a78bc7d42e3e6e9d4782fc20",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 다니엘이 왕이 바벨론 박사들을 멸하라 명한 아리옥에게로 가서 이르매 그에게 이같이 이르되 바벨론 박사들을 멸하지 말고 나를 왕의 앞으로 인도하라 그리하면 내가 그 해석을 왕께 보여 드리리라"
+      ],
+      "raw_text_hashes": [
+        "b595f51fa18d792ae269d093af817af1fa8629b6a78bc7d42e3e6e9d4782fc20"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:2:25",
+      "sequence": 21784,
+      "chapter_label": "DAN 2",
+      "verse_label": "25",
+      "locator": {
+        "book": "DAN",
+        "chapter": 2,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 2,
+          "verse": 25
+        }
+      ],
+      "en": "Then Arioch brought in Daniel before the king in haste, and said this to him: “I have found a man of the children of the captivity of Judah who will make known to the king the interpretation.”",
+      "ko": "이에 아리옥이 다니엘을 데리고 급히 왕의 앞에 들어가서 고하되 내가 사로잡혀 온 유다 자손 중에서 한 사람을 얻었나이다 그가 그 해석을 왕께 아시게 하리이다",
+      "source_text_hash": "e2cc1cbe82c5efbf11d7bc2ba39ed54738aaae61e1f4cf1d9d0c996c6d5b8075",
+      "translation_text_hash": "02da9b6979f79978c3a2839d4a558f872d8595d6bf19fffca70ff1c279bd813f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 아리옥이 다니엘을 데리고 급히 왕의 앞에 들어가서 고하되 내가 사로잡혀 온 유다 자손 중에서 한 사람을 얻었나이다 그가 그 해석을 왕께 아시게 하리이다"
+      ],
+      "raw_text_hashes": [
+        "02da9b6979f79978c3a2839d4a558f872d8595d6bf19fffca70ff1c279bd813f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:2:26",
+      "sequence": 21785,
+      "chapter_label": "DAN 2",
+      "verse_label": "26",
+      "locator": {
+        "book": "DAN",
+        "chapter": 2,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 2,
+          "verse": 26
+        }
+      ],
+      "en": "The king answered Daniel, whose name was Belteshazzar, “Are you able to make known to me the dream which I have seen, and its interpretation?”",
+      "ko": "왕이 대답하여 벨드사살이라 이름한 다니엘에게 이르되 내가 얻은 꿈과 그 해석을 네가 능히 내게 알게 하겠느냐",
+      "source_text_hash": "60be74120e86c66537fe45e711a6ebb74e8fa087c2e8cb2cc699df6dcfaff0b9",
+      "translation_text_hash": "0ad99fa81d8e8b9c027b7afe4ab4aa4c21a0de2c70d63f5b32b8f6f79fc79606",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 대답하여 벨드사살이라 이름한 다니엘에게 이르되 내가 얻은 꿈과 그 해석을 네가 능히 내게 알게 하겠느냐"
+      ],
+      "raw_text_hashes": [
+        "0ad99fa81d8e8b9c027b7afe4ab4aa4c21a0de2c70d63f5b32b8f6f79fc79606"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:2:27",
+      "sequence": 21786,
+      "chapter_label": "DAN 2",
+      "verse_label": "27",
+      "locator": {
+        "book": "DAN",
+        "chapter": 2,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 2,
+          "verse": 27
+        }
+      ],
+      "en": "Daniel answered before the king, and said, “The secret which the king has demanded can’t be shown to the king by wise men, enchanters, magicians, or soothsayers;",
+      "ko": "다니엘이 왕 앞에 대답하여 가로되 왕의 물으신바 은밀한 것은 박사나 술객이나 박수나 점장이가 능히 왕께 보일 수 없으되",
+      "source_text_hash": "87e828744a68998467b0d7b9b5c884222fa95630182eca750102514a09d5dbb4",
+      "translation_text_hash": "ba461cbc4975dabd76944e188cf992bdc9513752787dcaf7c9b5e86b8a4ca2bd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다니엘이 왕 앞에 대답하여 가로되 왕의 물으신바 은밀한 것은 박사나 술객이나 박수나 점장이가 능히 왕께 보일 수 없으되"
+      ],
+      "raw_text_hashes": [
+        "ba461cbc4975dabd76944e188cf992bdc9513752787dcaf7c9b5e86b8a4ca2bd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:2:28",
+      "sequence": 21787,
+      "chapter_label": "DAN 2",
+      "verse_label": "28",
+      "locator": {
+        "book": "DAN",
+        "chapter": 2,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 2,
+          "verse": 28
+        }
+      ],
+      "en": "but there is a God in heaven who reveals secrets, and he has made known to King Nebuchadnezzar what will be in the latter days. Your dream and the visions of your head on your bed are these:",
+      "ko": "오직 은밀한 것을 나타내실 자는 하늘에 계신 하나님이시라 그가 느부갓네살왕에게 후일에 될 일을 알게 하셨나이다 왕의 꿈 곧 왕이 침상에서 뇌 속으로 받은 이상은 이러하니이다",
+      "source_text_hash": "c29e5edc81eeb77e30c67a6e2f62fec6b366c1aa5cbe04cdcdfacd7199081444",
+      "translation_text_hash": "661671e9a3be0d3533a22c42ce2c37877d1c68664eaabdd26375bed87ab2347f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 은밀한 것을 나타내실 자는 하늘에 계신 하나님이시라 그가 느부갓네살왕에게 후일에 될 일을 알게 하셨나이다 왕의 꿈 곧 왕이 침상에서 뇌 속으로 받은 이상은 이러하니이다"
+      ],
+      "raw_text_hashes": [
+        "661671e9a3be0d3533a22c42ce2c37877d1c68664eaabdd26375bed87ab2347f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:2:29",
+      "sequence": 21788,
+      "chapter_label": "DAN 2",
+      "verse_label": "29",
+      "locator": {
+        "book": "DAN",
+        "chapter": 2,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 2,
+          "verse": 29
+        }
+      ],
+      "en": "“As for you, O king, your thoughts came on your bed, what should happen hereafter; and he who reveals secrets has made known to you what will happen.",
+      "ko": "왕이여 왕이 침상에 나아가서 장래 일을 생각하실 때에 은밀한 것을 나타내시는 이가 장래 일을 왕에게 알게 하셨사오며",
+      "source_text_hash": "d2b56833972890000432dc14d0680061650963ca4186443966277f9981ebf755",
+      "translation_text_hash": "4e2ccbade3bdcb907699aa78f613fc8fe9e8be33676b395bff1e3f507a26c168",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이여 왕이 침상에 나아가서 장래 일을 생각하실 때에 은밀한 것을 나타내시는 이가 장래 일을 왕에게 알게 하셨사오며"
+      ],
+      "raw_text_hashes": [
+        "4e2ccbade3bdcb907699aa78f613fc8fe9e8be33676b395bff1e3f507a26c168"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:2:30",
+      "sequence": 21789,
+      "chapter_label": "DAN 2",
+      "verse_label": "30",
+      "locator": {
+        "book": "DAN",
+        "chapter": 2,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 2,
+          "verse": 30
+        }
+      ],
+      "en": "But as for me, this secret is not revealed to me for any wisdom that I have more than any living, but to the intent that the interpretation may be made known to the king, and that you may know the thoughts of your heart.",
+      "ko": "내게 이 은밀한 것을 나타내심은 내 지혜가 다른 인생보다 나은 것이 아니라 오직 그 해석을 왕에게 알려서 왕의 마음으로 생각하던 것을 왕으로 알게 하려 하심이니이다",
+      "source_text_hash": "f52a9f855e6cafdaebf103fddfe64b40f2241d5c18ec464a489639bbce63bce3",
+      "translation_text_hash": "87597c869b355d00ed89b79bc895ef33378f32a0aa6fe4fa6d9035d76453625d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내게 이 은밀한 것을 나타내심은 내 지혜가 다른 인생보다 나은 것이 아니라 오직 그 해석을 왕에게 알려서 왕의 마음으로 생각하던 것을 왕으로 알게 하려 하심이니이다"
+      ],
+      "raw_text_hashes": [
+        "87597c869b355d00ed89b79bc895ef33378f32a0aa6fe4fa6d9035d76453625d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:2:31",
+      "sequence": 21790,
+      "chapter_label": "DAN 2",
+      "verse_label": "31",
+      "locator": {
+        "book": "DAN",
+        "chapter": 2,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 2,
+          "verse": 31
+        }
+      ],
+      "en": "“You, O king, saw, and behold, a great image. This image, which was mighty, and whose brightness was excellent, stood before you; and its appearance was terrifying.",
+      "ko": "왕이여 왕이 한 큰 신상을 보셨나이다 그 신상이 왕의 앞에 섰는데 크고 광채가 특심하며 그 모양이 심히 두려우니",
+      "source_text_hash": "d18e8bdd3a540603e3fbc45120f49ba45064c359c213c9774b006e0b6d93f308",
+      "translation_text_hash": "e9398d2202f46171101d13fada448fd3ac3189961e8b3edccfad9c777bed7a25",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이여 왕이 한 큰 신상을 보셨나이다 그 신상이 왕의 앞에 섰는데 크고 광채가 특심하며 그 모양이 심히 두려우니"
+      ],
+      "raw_text_hashes": [
+        "e9398d2202f46171101d13fada448fd3ac3189961e8b3edccfad9c777bed7a25"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:2:32",
+      "sequence": 21791,
+      "chapter_label": "DAN 2",
+      "verse_label": "32",
+      "locator": {
+        "book": "DAN",
+        "chapter": 2,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 2,
+          "verse": 32
+        }
+      ],
+      "en": "As for this image, its head was of fine gold, its chest and its arms of silver, its belly and its thighs of bronze,",
+      "ko": "그 우상의 머리는 정금이요 가슴과 팔들은 은이요 배와 넓적다리는 놋이요",
+      "source_text_hash": "88da2467d29ac5c55db21957671c640bf6ef479678d51d08c9b2dc6f09f60c8f",
+      "translation_text_hash": "86201449f4f024cb9d7ed7c6d6b16bb6b59bcab94bcbc7bf9c534d1069a7cf29",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 우상의 머리는 정금이요 가슴과 팔들은 은이요 배와 넓적다리는 놋이요"
+      ],
+      "raw_text_hashes": [
+        "86201449f4f024cb9d7ed7c6d6b16bb6b59bcab94bcbc7bf9c534d1069a7cf29"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:2:33",
+      "sequence": 21792,
+      "chapter_label": "DAN 2",
+      "verse_label": "33",
+      "locator": {
+        "book": "DAN",
+        "chapter": 2,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 2,
+          "verse": 33
+        }
+      ],
+      "en": "its legs of iron, its feet part of iron and part of clay.",
+      "ko": "그 종아리는 철이요 그 발은 얼마는 철이요 얼마는 진흙이었나이다",
+      "source_text_hash": "9b6bf876f9ac03aa86cb4be95f0a076a6ac75e52f48892ef8804866f873f63b5",
+      "translation_text_hash": "9ca4e0ae2fdc173f2b4cbf637bd3b5cce24bfef5d92591303d216625cddfc8cc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 종아리는 철이요 그 발은 얼마는 철이요 얼마는 진흙이었나이다"
+      ],
+      "raw_text_hashes": [
+        "9ca4e0ae2fdc173f2b4cbf637bd3b5cce24bfef5d92591303d216625cddfc8cc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:2:34",
+      "sequence": 21793,
+      "chapter_label": "DAN 2",
+      "verse_label": "34",
+      "locator": {
+        "book": "DAN",
+        "chapter": 2,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 2,
+          "verse": 34
+        }
+      ],
+      "en": "You saw until a stone was cut out without hands, which struck the image on its feet that were of iron and clay, and broke them in pieces.",
+      "ko": "또 왕이 보신즉 사람의 손으로 하지 아니하고 뜨인 돌이 신상의 철과 진흙의 발을 쳐서 부숴뜨리매",
+      "source_text_hash": "bdd2c6d8f95af3771c4f3febeedbfa7cbab69c73b206c711c5bca806df875495",
+      "translation_text_hash": "a1e760a5010807f8c96c3fd5fdc96309414f64548b7988b2547910536dc361a4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 왕이 보신즉 사람의 손으로 하지 아니하고 뜨인 돌이 신상의 철과 진흙의 발을 쳐서 부숴뜨리매"
+      ],
+      "raw_text_hashes": [
+        "a1e760a5010807f8c96c3fd5fdc96309414f64548b7988b2547910536dc361a4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:2:35",
+      "sequence": 21794,
+      "chapter_label": "DAN 2",
+      "verse_label": "35",
+      "locator": {
+        "book": "DAN",
+        "chapter": 2,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 2,
+          "verse": 35
+        }
+      ],
+      "en": "Then the iron, the clay, the bronze, the silver, and the gold were broken in pieces together, and became like the chaff of the summer threshing floors. The wind carried them away, so that no place was found for them. The stone that struck the image became a great mountain and filled the whole earth.",
+      "ko": "때에 철과 진흙과 놋과 은과 금이 다 부숴져 여름 타작마당의 겨 같이 되어 바람에 불려 간곳이 없었고 우상을 친 돌은 태산을 이루어 온 세계에 가득하였었나이다",
+      "source_text_hash": "5b60bb4e69974cc80f77f0731bb691ccefb1d19694a195e8877e9ec9e473dc2a",
+      "translation_text_hash": "ceb485af48f8d0ad3783bf38ef714e4803588c6c7f93c87a2636a3f85622209d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "때에 철과 진흙과 놋과 은과 금이 다 부숴져 여름 타작마당의 겨 같이 되어 바람에 불려 간곳이 없었고 우상을 친 돌은 태산을 이루어 온 세계에 가득하였었나이다"
+      ],
+      "raw_text_hashes": [
+        "ceb485af48f8d0ad3783bf38ef714e4803588c6c7f93c87a2636a3f85622209d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:2:36",
+      "sequence": 21795,
+      "chapter_label": "DAN 2",
+      "verse_label": "36",
+      "locator": {
+        "book": "DAN",
+        "chapter": 2,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 2,
+          "verse": 36
+        }
+      ],
+      "en": "“This is the dream; and we will tell its interpretation before the king.",
+      "ko": "그 꿈이 이러한즉 내가 이제 그 해석을 왕 앞에 진술하리이다",
+      "source_text_hash": "26562ad45440ad9709401ded59872db03d35166aeac694777779f504d053adc3",
+      "translation_text_hash": "b0d38f5718f1aec305e62de1fb4877908e6f6af778810e52c53623a6d9fcbda9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 꿈이 이러한즉 내가 이제 그 해석을 왕 앞에 진술하리이다"
+      ],
+      "raw_text_hashes": [
+        "b0d38f5718f1aec305e62de1fb4877908e6f6af778810e52c53623a6d9fcbda9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:2:37",
+      "sequence": 21796,
+      "chapter_label": "DAN 2",
+      "verse_label": "37",
+      "locator": {
+        "book": "DAN",
+        "chapter": 2,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 2,
+          "verse": 37
+        }
+      ],
+      "en": "You, O king, are king of kings, to whom the God of heaven has given the kingdom, the power, the strength, and the glory.",
+      "ko": "왕이여 왕은 열왕의 왕이시라 하늘의 하나님이 나라와 권세와 능력과 영광을 왕에게 주셨고",
+      "source_text_hash": "b29ca7c2876ce0e9bd46e9c11153617d477d0d8b7eb4dd12ad73cd49e481c3d4",
+      "translation_text_hash": "59b4760d8bd536ccac8745c3886489a7a55bc690a0f5b2fc7b7f813f24a5b86a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이여 왕은 열왕의 왕이시라 하늘의 하나님이 나라와 권세와 능력과 영광을 왕에게 주셨고"
+      ],
+      "raw_text_hashes": [
+        "59b4760d8bd536ccac8745c3886489a7a55bc690a0f5b2fc7b7f813f24a5b86a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:2:38",
+      "sequence": 21797,
+      "chapter_label": "DAN 2",
+      "verse_label": "38",
+      "locator": {
+        "book": "DAN",
+        "chapter": 2,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 2,
+          "verse": 38
+        }
+      ],
+      "en": "Wherever the children of men dwell, he has given the animals of the field and the birds of the sky into your hand, and has made you rule over them all. You are the head of gold.",
+      "ko": "인생들과 들짐승과 공중의 새들, 어느곳에 있는 것을 무론하고 그것들을 왕의 손에 붙이사 다 다스리게 하셨으니 왕은 곧 그 금머리니이다",
+      "source_text_hash": "70baae9dc2dd822455ad65d1d771148647380a9b83d75629cffc8cc613b67198",
+      "translation_text_hash": "556b393b60b07673afead3e2f44da5c9fc17496a6701af56f2fbf052418794bc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "인생들과 들짐승과 공중의 새들, 어느곳에 있는 것을 무론하고 그것들을 왕의 손에 붙이사 다 다스리게 하셨으니 왕은 곧 그 금머리니이다"
+      ],
+      "raw_text_hashes": [
+        "556b393b60b07673afead3e2f44da5c9fc17496a6701af56f2fbf052418794bc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:2:39",
+      "sequence": 21798,
+      "chapter_label": "DAN 2",
+      "verse_label": "39",
+      "locator": {
+        "book": "DAN",
+        "chapter": 2,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 2,
+          "verse": 39
+        }
+      ],
+      "en": "“After you, another kingdom will arise that is inferior to you; and another third kingdom of bronze, which will rule over all the earth.",
+      "ko": "왕의 후에 왕만 못한 다른 나라가 일어날 것이요 세째로 또 놋 같은 나라가 일어나서 온 세계를 다스릴 것이며",
+      "source_text_hash": "ed4205bc0c26870291935717235a841fd5ac712a88b2eee67e47f248391a1d0e",
+      "translation_text_hash": "0eda7be209386c737abc50701296c04ce896ab88b360d0c5d27089843e5cc01c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕의 후에 왕만 못한 다른 나라가 일어날 것이요 세째로 또 놋 같은 나라가 일어나서 온 세계를 다스릴 것이며"
+      ],
+      "raw_text_hashes": [
+        "0eda7be209386c737abc50701296c04ce896ab88b360d0c5d27089843e5cc01c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:2:40",
+      "sequence": 21799,
+      "chapter_label": "DAN 2",
+      "verse_label": "40",
+      "locator": {
+        "book": "DAN",
+        "chapter": 2,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 2,
+          "verse": 40
+        }
+      ],
+      "en": "The fourth kingdom will be strong as iron, because iron breaks in pieces and subdues all things; and as iron that crushes all these, it will break in pieces and crush.",
+      "ko": "네째 나라는 강하기가 철 같으리니 철은 모든 물건을 부숴뜨리고 이기는 것이라 철이 모든 것을 부수는 것 같이 그 나라가 뭇 나라를 부숴뜨리고 빻을 것이며",
+      "source_text_hash": "555f9c97cd0151815e080a89d49f60d6249339de6abb3a5bd09c705cab313d84",
+      "translation_text_hash": "6b8a073fe11c6c1284f9d19dd2fa9044cabff25687cf6fcb6b7eff31eb3de4e1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네째 나라는 강하기가 철 같으리니 철은 모든 물건을 부숴뜨리고 이기는 것이라 철이 모든 것을 부수는 것 같이 그 나라가 뭇 나라를 부숴뜨리고 빻을 것이며"
+      ],
+      "raw_text_hashes": [
+        "6b8a073fe11c6c1284f9d19dd2fa9044cabff25687cf6fcb6b7eff31eb3de4e1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:2:41",
+      "sequence": 21800,
+      "chapter_label": "DAN 2",
+      "verse_label": "41",
+      "locator": {
+        "book": "DAN",
+        "chapter": 2,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 2,
+          "verse": 41
+        }
+      ],
+      "en": "Whereas you saw the feet and toes, part of potters’ clay and part of iron, it will be a divided kingdom; but there will be in it of the strength of the iron, because you saw the iron mixed with miry clay.",
+      "ko": "왕께서 그 발과 발가락이 얼마는 토기장이의 진흙이요 얼마는 철인 것을 보셨은즉 그 나라가 나누일 것이며 왕께서 철과 진흙이 섞인 것을 보셨은즉 그 나라가 철의 든든함이 있을 것이나",
+      "source_text_hash": "aa0f6264859fc744d839169903682e8f8cba303f40e138832c590aa8a741ad3e",
+      "translation_text_hash": "0aa8db789f173b648109ee650830464d4485f39623aa591935eb0ef3a86e6378",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕께서 그 발과 발가락이 얼마는 토기장이의 진흙이요 얼마는 철인 것을 보셨은즉 그 나라가 나누일 것이며 왕께서 철과 진흙이 섞인 것을 보셨은즉 그 나라가 철의 든든함이 있을 것이나"
+      ],
+      "raw_text_hashes": [
+        "0aa8db789f173b648109ee650830464d4485f39623aa591935eb0ef3a86e6378"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:2:42",
+      "sequence": 21801,
+      "chapter_label": "DAN 2",
+      "verse_label": "42",
+      "locator": {
+        "book": "DAN",
+        "chapter": 2,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 2,
+          "verse": 42
+        }
+      ],
+      "en": "As the toes of the feet were part of iron, and part of clay, so the kingdom will be partly strong and partly brittle.",
+      "ko": "그 발가락이 얼마는 철이요 얼마는 진흙인즉 그 나라가 얼마는 든든하고 얼마는 부숴질만할 것이며",
+      "source_text_hash": "a3591ca1faee2a46127bb8733349670388e2a9432a03e3ef04597c0ad1cea40a",
+      "translation_text_hash": "d7268a11462556173ad20d42bc64c8704a91f9bfde2584af9672abcb2d4bdd1d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 발가락이 얼마는 철이요 얼마는 진흙인즉 그 나라가 얼마는 든든하고 얼마는 부숴질만할 것이며"
+      ],
+      "raw_text_hashes": [
+        "d7268a11462556173ad20d42bc64c8704a91f9bfde2584af9672abcb2d4bdd1d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:2:43",
+      "sequence": 21802,
+      "chapter_label": "DAN 2",
+      "verse_label": "43",
+      "locator": {
+        "book": "DAN",
+        "chapter": 2,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 2,
+          "verse": 43
+        }
+      ],
+      "en": "Whereas you saw the iron mixed with miry clay, they will mingle themselves with the seed of men; but they won’t cling to one another, even as iron does not mix with clay.",
+      "ko": "왕께서 철과 진흙이 섞인 것을 보셨은즉 그들이 다른 인종과 서로 섞일 것이나 피차에 합하지 아니함이 철과 진흙이 합하지 않음과 같으리이다",
+      "source_text_hash": "c409de4b3d3ed481e0538fa9d89658b657b32ba572faed04dd0d744577e382f9",
+      "translation_text_hash": "f7a8bcaae34d15cb33480c8744730c5f85f967f9ecd4fae8e3c71d9a0832d263",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕께서 철과 진흙이 섞인 것을 보셨은즉 그들이 다른 인종과 서로 섞일 것이나 피차에 합하지 아니함이 철과 진흙이 합하지 않음과 같으리이다"
+      ],
+      "raw_text_hashes": [
+        "f7a8bcaae34d15cb33480c8744730c5f85f967f9ecd4fae8e3c71d9a0832d263"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:2:44",
+      "sequence": 21803,
+      "chapter_label": "DAN 2",
+      "verse_label": "44",
+      "locator": {
+        "book": "DAN",
+        "chapter": 2,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 2,
+          "verse": 44
+        }
+      ],
+      "en": "“In the days of those kings the God of heaven will set up a kingdom which will never be destroyed, nor will its sovereignty be left to another people; but it will break in pieces and consume all these kingdoms, and it will stand forever.",
+      "ko": "이 열왕의 때에 하늘의 하나님이 한 나라를 세우시리니 이것은 영원히 망하지도 아니할 것이요 그 국권이 다른 백성에게로 돌아가지도 아니할 것이요 도리어 이 모든 나라를 쳐서 멸하고 영원히 설 것이라",
+      "source_text_hash": "dfb4c5c8903bc01927259269ff0ce2f06ae55778d8bea89e601e5283a01de918",
+      "translation_text_hash": "3b34825a9d55cd8810dbfcc104a49a87ecbad52de9191b2d1274531d66eadbc3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 열왕의 때에 하늘의 하나님이 한 나라를 세우시리니 이것은 영원히 망하지도 아니할 것이요 그 국권이 다른 백성에게로 돌아가지도 아니할 것이요 도리어 이 모든 나라를 쳐서 멸하고 영원히 설 것이라"
+      ],
+      "raw_text_hashes": [
+        "3b34825a9d55cd8810dbfcc104a49a87ecbad52de9191b2d1274531d66eadbc3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:2:45",
+      "sequence": 21804,
+      "chapter_label": "DAN 2",
+      "verse_label": "45",
+      "locator": {
+        "book": "DAN",
+        "chapter": 2,
+        "verse": 45
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 2,
+          "verse": 45
+        }
+      ],
+      "en": "Because you saw that a stone was cut out of the mountain without hands, and that it broke in pieces the iron, the bronze, the clay, the silver, and the gold, the great God has made known to the king what will happen hereafter. The dream is certain, and its interpretation sure.”",
+      "ko": "왕이 사람의 손으로 아니하고 산에서 뜨인 돌이 철과 놋과 진흙과 은과 금을 부숴뜨린 것을 보신 것은 크신 하나님이 장래 일을 왕께 알게 하신 것이라 이 꿈이 참되고 이 해석이 확실하니이다",
+      "source_text_hash": "ed296b4b4948c6e910737a1fdb2bf55f0ae5f3956b02c91163f011f3eba415e9",
+      "translation_text_hash": "8ed6b5c6e80b70861e558919a3986370336fee15e6540a05843e310909f0c1ab",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 사람의 손으로 아니하고 산에서 뜨인 돌이 철과 놋과 진흙과 은과 금을 부숴뜨린 것을 보신 것은 크신 하나님이 장래 일을 왕께 알게 하신 것이라 이 꿈이 참되고 이 해석이 확실하니이다"
+      ],
+      "raw_text_hashes": [
+        "8ed6b5c6e80b70861e558919a3986370336fee15e6540a05843e310909f0c1ab"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:2:46",
+      "sequence": 21805,
+      "chapter_label": "DAN 2",
+      "verse_label": "46",
+      "locator": {
+        "book": "DAN",
+        "chapter": 2,
+        "verse": 46
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 2,
+          "verse": 46
+        }
+      ],
+      "en": "Then King Nebuchadnezzar fell on his face, worshiped Daniel, and commanded that they should offer an offering and sweet odors to him.",
+      "ko": "이에 느부갓네살왕이 엎드려 다니엘에게 절하고 명하여 예물과 향품을 그에게 드리게 하니라",
+      "source_text_hash": "865f984cb021ccaf4f864a66c905f8e7fe6d00f8408acd4a227fe5a7a4709805",
+      "translation_text_hash": "1e2af6d4b9b8f6a976f4dc8f6f148b85d8e04b01265e5de1c621a7db8c702bde",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 느부갓네살왕이 엎드려 다니엘에게 절하고 명하여 예물과 향품을 그에게 드리게 하니라"
+      ],
+      "raw_text_hashes": [
+        "1e2af6d4b9b8f6a976f4dc8f6f148b85d8e04b01265e5de1c621a7db8c702bde"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:2:47",
+      "sequence": 21806,
+      "chapter_label": "DAN 2",
+      "verse_label": "47",
+      "locator": {
+        "book": "DAN",
+        "chapter": 2,
+        "verse": 47
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 2,
+          "verse": 47
+        }
+      ],
+      "en": "The king answered to Daniel, and said, “Of a truth your God is the God of gods, and the Lord of kings, and a revealer of secrets, since you have been able to reveal this secret.”",
+      "ko": "왕이 대답하여 다니엘에게 이르되 너희 하나님은 참으로 모든 신의 신이시요 모든 왕의 주재시로다 네가 능히 이 은밀한 것을 나타내었으니 네 하나님은 또 은밀한 것을 나타내시는 자시로다",
+      "source_text_hash": "aac7112d761ad52ac72263b4c689d278b4ed41ca809e6bf3254305524c372a40",
+      "translation_text_hash": "695752509da837095aa072cea30375275afc23d2f352f81abf706740d54764d3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 대답하여 다니엘에게 이르되 너희 하나님은 참으로 모든 신의 신이시요 모든 왕의 주재시로다 네가 능히 이 은밀한 것을 나타내었으니 네 하나님은 또 은밀한 것을 나타내시는 자시로다"
+      ],
+      "raw_text_hashes": [
+        "695752509da837095aa072cea30375275afc23d2f352f81abf706740d54764d3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:2:48",
+      "sequence": 21807,
+      "chapter_label": "DAN 2",
+      "verse_label": "48",
+      "locator": {
+        "book": "DAN",
+        "chapter": 2,
+        "verse": 48
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 2,
+          "verse": 48
+        }
+      ],
+      "en": "Then the king made Daniel great and gave him many great gifts, and made him rule over the whole province of Babylon and to be chief governor over all the wise men of Babylon.",
+      "ko": "왕이 이에 다니엘을 높여 귀한 선물을 많이 주며 세워 바벨론 온 도를 다스리게 하며 또 바벨론 모든 박사의 어른을 삼았으며",
+      "source_text_hash": "5758767e946fd56c2b9947294d4154c5602961af8e25a13fb0511bd10918bf95",
+      "translation_text_hash": "3f012449340edbaae540c33d7526851544ccd1a37a1e0b69821a876a7839e96f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 이에 다니엘을 높여 귀한 선물을 많이 주며 세워 바벨론 온 도를 다스리게 하며 또 바벨론 모든 박사의 어른을 삼았으며"
+      ],
+      "raw_text_hashes": [
+        "3f012449340edbaae540c33d7526851544ccd1a37a1e0b69821a876a7839e96f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:2:49",
+      "sequence": 21808,
+      "chapter_label": "DAN 2",
+      "verse_label": "49",
+      "locator": {
+        "book": "DAN",
+        "chapter": 2,
+        "verse": 49
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 2,
+          "verse": 49
+        }
+      ],
+      "en": "Daniel requested of the king, and he appointed Shadrach, Meshach, and Abednego over the affairs of the province of Babylon, but Daniel was in the king’s gate.",
+      "ko": "왕이 또 다니엘의 청구대로 사드락과 메삭과 아벳느고를 세워 바벨론 도의 일을 다스리게 하였고 다니엘은 왕궁에 있었더라",
+      "source_text_hash": "c8c9eecd3b1c9a223d2a979345c352aef73ad3b2f19e17e451500fd523217499",
+      "translation_text_hash": "919108a515e5eccc19caaa2d2c2991dc80d9185b4598674a5cde14007d343e33",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 또 다니엘의 청구대로 사드락과 메삭과 아벳느고를 세워 바벨론 도의 일을 다스리게 하였고 다니엘은 왕궁에 있었더라"
+      ],
+      "raw_text_hashes": [
+        "919108a515e5eccc19caaa2d2c2991dc80d9185b4598674a5cde14007d343e33"
+      ]
+    }
+  ]
+}

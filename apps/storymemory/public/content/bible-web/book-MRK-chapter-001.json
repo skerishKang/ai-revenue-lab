@@ -1,0 +1,1453 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:MRK:chapter:001",
+  "unit_ordinal": 958,
+  "unit_label": "MRK 1",
+  "book_code": "MRK",
+  "chapter_number": 1,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:MRK:1:1",
+      "sequence": 24217,
+      "chapter_label": "MRK 1",
+      "verse_label": "1",
+      "locator": {
+        "book": "MRK",
+        "chapter": 1,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 1,
+          "verse": 1
+        }
+      ],
+      "en": "The beginning of the Good News of Jesus Christ, the Son of God.",
+      "ko": "하나님의 아들 예수 그리스도 복음의 시작이라",
+      "source_text_hash": "7e7188d4eb409cb7d81ed56ca1d4b4f18bc8db71ab296e521dc5f164687289c6",
+      "translation_text_hash": "039805664067816e35b102569e7acd5f09174afca670eb333571f7d3d0031d9c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님의 아들 예수 그리스도 복음의 시작이라"
+      ],
+      "raw_text_hashes": [
+        "039805664067816e35b102569e7acd5f09174afca670eb333571f7d3d0031d9c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:1:2",
+      "sequence": 24218,
+      "chapter_label": "MRK 1",
+      "verse_label": "2",
+      "locator": {
+        "book": "MRK",
+        "chapter": 1,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 1,
+          "verse": 2
+        }
+      ],
+      "en": "As it is written in the prophets, “Behold, I send my messenger before your face, who will prepare your way before you:",
+      "ko": "선지자 이사야의 글에 보라 내가 내 사자를 네 앞에 보내노니 저가 네 길을 예비하리라",
+      "source_text_hash": "d4199945c326ebddf20df56a70ffa938b99d31ec204ebe4282edd97b028ec119",
+      "translation_text_hash": "5c7ddccdcb026c364cd26763a236c883c015518cd277b54392eb432e83619952",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "선지자 이사야의 글에 보라 내가 내 사자를 네 앞에 보내노니 저가 네 길을 예비하리라"
+      ],
+      "raw_text_hashes": [
+        "5c7ddccdcb026c364cd26763a236c883c015518cd277b54392eb432e83619952"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:1:3",
+      "sequence": 24219,
+      "chapter_label": "MRK 1",
+      "verse_label": "3",
+      "locator": {
+        "book": "MRK",
+        "chapter": 1,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 1,
+          "verse": 3
+        }
+      ],
+      "en": "the voice of one crying in the wilderness, ‘Make ready the way of the Lord! Make his paths straight!’”",
+      "ko": "광야에 외치는 자의 소리가 있어 가로되 너희는 주의 길을 예비하라 그의 첩경을 평탄케 하라 기록된 것과 같이",
+      "source_text_hash": "2d8a42dce56e1e67e065513231f6cb8e2338fe0727ed12b1d0288c31d6ae49bf",
+      "translation_text_hash": "7c7ba933468ce73dc9dc80d79a956523dfead4b71e846ef2a4fba5e13fa4cbb2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "광야에 외치는 자의 소리가 있어 가로되 너희는 주의 길을 예비하라 그의 첩경을 평탄케 하라 기록된 것과 같이"
+      ],
+      "raw_text_hashes": [
+        "7c7ba933468ce73dc9dc80d79a956523dfead4b71e846ef2a4fba5e13fa4cbb2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:1:4",
+      "sequence": 24220,
+      "chapter_label": "MRK 1",
+      "verse_label": "4",
+      "locator": {
+        "book": "MRK",
+        "chapter": 1,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 1,
+          "verse": 4
+        }
+      ],
+      "en": "John came baptizing in the wilderness and preaching the baptism of repentance for forgiveness of sins.",
+      "ko": "세례 요한이 이르러 광야에서 죄 사함을 받게 하는 회개의 세례를 전파하니",
+      "source_text_hash": "1abee6ecb5656a009344091401d641043861e705537c3689f6c3206e09d1976f",
+      "translation_text_hash": "c361dad09d2953d1c324ba680ff3725f3332de70f6752d6fc50ee7af5b575fec",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "세례 요한이 이르러 광야에서 죄 사함을 받게 하는 회개의 세례를 전파하니"
+      ],
+      "raw_text_hashes": [
+        "c361dad09d2953d1c324ba680ff3725f3332de70f6752d6fc50ee7af5b575fec"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:1:5",
+      "sequence": 24221,
+      "chapter_label": "MRK 1",
+      "verse_label": "5",
+      "locator": {
+        "book": "MRK",
+        "chapter": 1,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 1,
+          "verse": 5
+        }
+      ],
+      "en": "All the country of Judea and all those of Jerusalem went out to him. They were baptized by him in the Jordan river, confessing their sins.",
+      "ko": "온 유대 지방과 예루살렘 사람이 다 나아가 자기 죄를 자복하고 요단강에서 그에게 세례를 받더라",
+      "source_text_hash": "387095e728b2ddfc6aa3702a5409fada92cdae56dc904164014733930e2c0ca0",
+      "translation_text_hash": "708670419c01361984925e9b82a8da75193ffa852b13674245a0775cbe1e9f0b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "온 유대 지방과 예루살렘 사람이 다 나아가 자기 죄를 자복하고 요단강에서 그에게 세례를 받더라"
+      ],
+      "raw_text_hashes": [
+        "708670419c01361984925e9b82a8da75193ffa852b13674245a0775cbe1e9f0b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:1:6",
+      "sequence": 24222,
+      "chapter_label": "MRK 1",
+      "verse_label": "6",
+      "locator": {
+        "book": "MRK",
+        "chapter": 1,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 1,
+          "verse": 6
+        }
+      ],
+      "en": "John was clothed with camel’s hair and a leather belt around his waist. He ate locusts and wild honey.",
+      "ko": "요한은 약대털을 입고 허리에 가죽띠를 띠고 메뚜기와 석청을 먹더라",
+      "source_text_hash": "3a31a1c80b23b4d08429cd25634c70d1eb901e4327f6ada8653d30b6ed3413ee",
+      "translation_text_hash": "db3dc1f520cd5e8be4471eb0b579b735c2e2e5cca0378e1c8474e09cc86d2cf5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요한은 약대털을 입고 허리에 가죽띠를 띠고 메뚜기와 석청을 먹더라"
+      ],
+      "raw_text_hashes": [
+        "db3dc1f520cd5e8be4471eb0b579b735c2e2e5cca0378e1c8474e09cc86d2cf5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:1:7",
+      "sequence": 24223,
+      "chapter_label": "MRK 1",
+      "verse_label": "7",
+      "locator": {
+        "book": "MRK",
+        "chapter": 1,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 1,
+          "verse": 7
+        }
+      ],
+      "en": "He preached, saying, “After me comes he who is mightier than I, the strap of whose sandals I am not worthy to stoop down and loosen.",
+      "ko": "그가 전파하여 가로되 나보다 능력 많으신 이가 내 뒤에 오시나니 나는 굽혀 그의 신들메를 풀기도 감당치 못하겠노라",
+      "source_text_hash": "17b2e69961f37cd3866f71d947f1b2d21a3859b64834d0cef4f1251f33a350c0",
+      "translation_text_hash": "001b3ba5770fd8b10bde5939037e363c32542eddcd830a5a972f692631fc0b79",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 전파하여 가로되 나보다 능력 많으신 이가 내 뒤에 오시나니 나는 굽혀 그의 신들메를 풀기도 감당치 못하겠노라"
+      ],
+      "raw_text_hashes": [
+        "001b3ba5770fd8b10bde5939037e363c32542eddcd830a5a972f692631fc0b79"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:1:8",
+      "sequence": 24224,
+      "chapter_label": "MRK 1",
+      "verse_label": "8",
+      "locator": {
+        "book": "MRK",
+        "chapter": 1,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 1,
+          "verse": 8
+        }
+      ],
+      "en": "I baptized you in water, but he will baptize you in the Holy Spirit.”",
+      "ko": "나는 너희에게 물로 세례를 주었거니와 그는 성령으로 너희에게 세례를 주시리라",
+      "source_text_hash": "33cc38f200d95047d40663e31e3140718a43de2e06191da04254e9293a585a7a",
+      "translation_text_hash": "272e7c96b4f4cbbd9013b8f07423f6c6959638c83a88b02a5d81eaa3852a6579",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 너희에게 물로 세례를 주었거니와 그는 성령으로 너희에게 세례를 주시리라"
+      ],
+      "raw_text_hashes": [
+        "272e7c96b4f4cbbd9013b8f07423f6c6959638c83a88b02a5d81eaa3852a6579"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:1:9",
+      "sequence": 24225,
+      "chapter_label": "MRK 1",
+      "verse_label": "9",
+      "locator": {
+        "book": "MRK",
+        "chapter": 1,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 1,
+          "verse": 9
+        }
+      ],
+      "en": "In those days, Jesus came from Nazareth of Galilee, and was baptized by John in the Jordan.",
+      "ko": "그 때에 예수께서 갈릴리 나사렛으로부터 와서 요단강에서 요한에게 세례를 받으시고",
+      "source_text_hash": "5b3a3f8530b6a94ed1cebf8b9e23374a5b1a5d8ad9fb812e745af2266d272643",
+      "translation_text_hash": "5764b99f5e4ef57d08f85b4fc749ecd9fd7cdfb4cdc227b9bd4ca69e01686d68",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 예수께서 갈릴리 나사렛으로부터 와서 요단강에서 요한에게 세례를 받으시고"
+      ],
+      "raw_text_hashes": [
+        "5764b99f5e4ef57d08f85b4fc749ecd9fd7cdfb4cdc227b9bd4ca69e01686d68"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:1:10",
+      "sequence": 24226,
+      "chapter_label": "MRK 1",
+      "verse_label": "10",
+      "locator": {
+        "book": "MRK",
+        "chapter": 1,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 1,
+          "verse": 10
+        }
+      ],
+      "en": "Immediately coming up from the water, he saw the heavens parting and the Spirit descending on him like a dove.",
+      "ko": "곧 물에서 올라 오실쌔 하늘이 갈라짐과 성령이 비둘기 같이 자기에게 내려오심을 보시더니",
+      "source_text_hash": "c3a12c6d143deab4ebf84c56af3765d74ae29b0fff4127182d6d9addf21e6892",
+      "translation_text_hash": "c60b0513874472780c2e386c885f85d02773f9495b7b5565691ea92dc133067d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 물에서 올라 오실쌔 하늘이 갈라짐과 성령이 비둘기 같이 자기에게 내려오심을 보시더니"
+      ],
+      "raw_text_hashes": [
+        "c60b0513874472780c2e386c885f85d02773f9495b7b5565691ea92dc133067d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:1:11",
+      "sequence": 24227,
+      "chapter_label": "MRK 1",
+      "verse_label": "11",
+      "locator": {
+        "book": "MRK",
+        "chapter": 1,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 1,
+          "verse": 11
+        }
+      ],
+      "en": "A voice came out of the sky, “You are my beloved Son, in whom I am well pleased.”",
+      "ko": "하늘로서 소리가 나기를 너는 내 사랑하는 아들이라 내가 너를 기뻐하노라 하시니라",
+      "source_text_hash": "5c422c23ced2eb32f37ae18f7154b6a67a8d240118b3f72ae85ba25c6a580c5f",
+      "translation_text_hash": "7e7ab6e5e01c9092be0f551007139606ecbe682a1d6273bd7bed9baaa220483f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하늘로서 소리가 나기를 너는 내 사랑하는 아들이라 내가 너를 기뻐하노라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "7e7ab6e5e01c9092be0f551007139606ecbe682a1d6273bd7bed9baaa220483f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:1:12",
+      "sequence": 24228,
+      "chapter_label": "MRK 1",
+      "verse_label": "12",
+      "locator": {
+        "book": "MRK",
+        "chapter": 1,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 1,
+          "verse": 12
+        }
+      ],
+      "en": "Immediately the Spirit drove him out into the wilderness.",
+      "ko": "성령이 곧 예수를 광야로 몰아내신지라",
+      "source_text_hash": "25d28fba787ecd5b0437314e2c4918f0fca838ee95f672a7c316883fe98564d6",
+      "translation_text_hash": "d17992d5b31c00481d0644ca2629af459ffc97855183670e233c6ca2225751dd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "성령이 곧 예수를 광야로 몰아내신지라"
+      ],
+      "raw_text_hashes": [
+        "d17992d5b31c00481d0644ca2629af459ffc97855183670e233c6ca2225751dd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:1:13",
+      "sequence": 24229,
+      "chapter_label": "MRK 1",
+      "verse_label": "13",
+      "locator": {
+        "book": "MRK",
+        "chapter": 1,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 1,
+          "verse": 13
+        }
+      ],
+      "en": "He was there in the wilderness forty days, tempted by Satan. He was with the wild animals; and the angels were serving him.",
+      "ko": "광야에서 사십 일을 계셔서 사단에게 시험을 받으시며 들짐승과 함께 계시니 천사들이 수종들더라",
+      "source_text_hash": "a1908b4cf60cf179998b7c950b9a9ee2c2576eedaaf3a0c7d79662d4253b6475",
+      "translation_text_hash": "67469ca7682dea206378e94e11a547bef062cbb3ea839f600f20bc2e08d9db64",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "광야에서 사십 일을 계셔서 사단에게 시험을 받으시며 들짐승과 함께 계시니 천사들이 수종들더라"
+      ],
+      "raw_text_hashes": [
+        "67469ca7682dea206378e94e11a547bef062cbb3ea839f600f20bc2e08d9db64"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:1:14",
+      "sequence": 24230,
+      "chapter_label": "MRK 1",
+      "verse_label": "14",
+      "locator": {
+        "book": "MRK",
+        "chapter": 1,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 1,
+          "verse": 14
+        }
+      ],
+      "en": "Now after John was taken into custody, Jesus came into Galilee, preaching the Good News of God’s Kingdom,",
+      "ko": "요한이 잡힌 후 예수께서 갈릴리에 오셔서 하나님의 복음을 전파하여",
+      "source_text_hash": "9b771d8925e98aed74f7d3349d02958c70e295144e37da7615cdc864f81030f2",
+      "translation_text_hash": "6c8c1225cbf53e6b737f8b1687002eabe26b8b39ae7d04add178f45163d98dcd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요한이 잡힌 후 예수께서 갈릴리에 오셔서 하나님의 복음을 전파하여"
+      ],
+      "raw_text_hashes": [
+        "6c8c1225cbf53e6b737f8b1687002eabe26b8b39ae7d04add178f45163d98dcd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:1:15",
+      "sequence": 24231,
+      "chapter_label": "MRK 1",
+      "verse_label": "15",
+      "locator": {
+        "book": "MRK",
+        "chapter": 1,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 1,
+          "verse": 15
+        }
+      ],
+      "en": "and saying, “The time is fulfilled, and God’s Kingdom is at hand! Repent, and believe in the Good News.”",
+      "ko": "가라사대 때가 찼고 하나님 나라가 가까왔으니 회개하고 복음을 믿으라 하시더라",
+      "source_text_hash": "4ce5e15eb7b9ef81af311ec3e63b4f3beabaabc5a096a85d3f96d8d384b43fc8",
+      "translation_text_hash": "0c8eff093c4e66fa6dd1f07f0236752e237e193a6187b70af046598c7165dff2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가라사대 때가 찼고 하나님 나라가 가까왔으니 회개하고 복음을 믿으라 하시더라"
+      ],
+      "raw_text_hashes": [
+        "0c8eff093c4e66fa6dd1f07f0236752e237e193a6187b70af046598c7165dff2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:1:16",
+      "sequence": 24232,
+      "chapter_label": "MRK 1",
+      "verse_label": "16",
+      "locator": {
+        "book": "MRK",
+        "chapter": 1,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 1,
+          "verse": 16
+        }
+      ],
+      "en": "Passing along by the sea of Galilee, he saw Simon and Andrew, the brother of Simon, casting a net into the sea, for they were fishermen.",
+      "ko": "갈릴리 해변으로 지나가시다가 시몬과 그 형제 안드레가 바다에 그물 던지는 것을 보시니 저희는 어부라",
+      "source_text_hash": "7ba7a46008f5c1a9f5c3c7eb6c08676e21dbfd7514b2acd6ae4fd79d9265f167",
+      "translation_text_hash": "b57baf5713344aace1ec0487c334de5da2145897ea47e6784db97c4163887731",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "갈릴리 해변으로 지나가시다가 시몬과 그 형제 안드레가 바다에 그물 던지는 것을 보시니 저희는 어부라"
+      ],
+      "raw_text_hashes": [
+        "b57baf5713344aace1ec0487c334de5da2145897ea47e6784db97c4163887731"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:1:17",
+      "sequence": 24233,
+      "chapter_label": "MRK 1",
+      "verse_label": "17",
+      "locator": {
+        "book": "MRK",
+        "chapter": 1,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 1,
+          "verse": 17
+        }
+      ],
+      "en": "Jesus said to them, “Come after me, and I will make you into fishers for men.”",
+      "ko": "예수께서 가라사대 나를 따라 오너라 내가 너희로 사람을 낚는 어부가 되게 하리라 하시니",
+      "source_text_hash": "3f42040b20acbd50d8baaefd1556e5806d057e17151be705d4c85bb71fca6d89",
+      "translation_text_hash": "5796374d29bb8eb1c97aed6a0a971b3787a0182158065bcf15e011d085d5cd70",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 가라사대 나를 따라 오너라 내가 너희로 사람을 낚는 어부가 되게 하리라 하시니"
+      ],
+      "raw_text_hashes": [
+        "5796374d29bb8eb1c97aed6a0a971b3787a0182158065bcf15e011d085d5cd70"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:1:18",
+      "sequence": 24234,
+      "chapter_label": "MRK 1",
+      "verse_label": "18",
+      "locator": {
+        "book": "MRK",
+        "chapter": 1,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 1,
+          "verse": 18
+        }
+      ],
+      "en": "Immediately they left their nets, and followed him.",
+      "ko": "곧 그물을 버려 두고 좇으니라",
+      "source_text_hash": "7a0199b118033a9ac42c300dbe849a4086ceeb83c151440a4ea077063cd8aa4f",
+      "translation_text_hash": "e3d42bd2f2ebd62b921dd7f7f7cc677f2d27dcc765d44a608074d25974fb5020",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 그물을 버려 두고 좇으니라"
+      ],
+      "raw_text_hashes": [
+        "e3d42bd2f2ebd62b921dd7f7f7cc677f2d27dcc765d44a608074d25974fb5020"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:1:19",
+      "sequence": 24235,
+      "chapter_label": "MRK 1",
+      "verse_label": "19",
+      "locator": {
+        "book": "MRK",
+        "chapter": 1,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 1,
+          "verse": 19
+        }
+      ],
+      "en": "Going on a little further from there, he saw James the son of Zebedee, and John his brother, who were also in the boat mending the nets.",
+      "ko": "조금 더 가시다가 세베대의 아들 야고보와 그 형제 요한을 보시니 저희도 배에 있어 그물을 깁는데",
+      "source_text_hash": "68b32d02e0a5f0adfd2969fc180f3002eac77e239a8d2b245738d956d64bf90b",
+      "translation_text_hash": "0b4b666d372ca16e35695e0ec77593b38b83b12e980f8a20cd0f41f1270bee9a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "조금 더 가시다가 세베대의 아들 야고보와 그 형제 요한을 보시니 저희도 배에 있어 그물을 깁는데"
+      ],
+      "raw_text_hashes": [
+        "0b4b666d372ca16e35695e0ec77593b38b83b12e980f8a20cd0f41f1270bee9a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:1:20",
+      "sequence": 24236,
+      "chapter_label": "MRK 1",
+      "verse_label": "20",
+      "locator": {
+        "book": "MRK",
+        "chapter": 1,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 1,
+          "verse": 20
+        }
+      ],
+      "en": "Immediately he called them, and they left their father, Zebedee, in the boat with the hired servants, and went after him.",
+      "ko": "곧 부르시니 그 아비 세베대를 삯군들과 함께 배에 버려두고 예수를 따라가니라",
+      "source_text_hash": "b65ec3c9abd2b8bd3078921b7aad8bf23ffa1e3dfa9e93b4572d7f453c7d0b78",
+      "translation_text_hash": "eecb671793f20ee8135e6639a2bfc2a55c3dfdb95d2ed21ba81137a20c14f316",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 부르시니 그 아비 세베대를 삯군들과 함께 배에 버려두고 예수를 따라가니라"
+      ],
+      "raw_text_hashes": [
+        "eecb671793f20ee8135e6639a2bfc2a55c3dfdb95d2ed21ba81137a20c14f316"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:1:21",
+      "sequence": 24237,
+      "chapter_label": "MRK 1",
+      "verse_label": "21",
+      "locator": {
+        "book": "MRK",
+        "chapter": 1,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 1,
+          "verse": 21
+        }
+      ],
+      "en": "They went into Capernaum, and immediately on the Sabbath day he entered into the synagogue and taught.",
+      "ko": "저희가 가버나움에 들어가니라 예수께서 곧 안식일에 회당에 들어가 가르치시매",
+      "source_text_hash": "c83441b6d5d75b8bb9bf50d31f63748ad9563a6b9d2958421ffae71c421595ea",
+      "translation_text_hash": "af4197b47da588ffb7724ee8c777e0a84a9a9a9ed20b623ed637e01388047df3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 가버나움에 들어가니라 예수께서 곧 안식일에 회당에 들어가 가르치시매"
+      ],
+      "raw_text_hashes": [
+        "af4197b47da588ffb7724ee8c777e0a84a9a9a9ed20b623ed637e01388047df3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:1:22",
+      "sequence": 24238,
+      "chapter_label": "MRK 1",
+      "verse_label": "22",
+      "locator": {
+        "book": "MRK",
+        "chapter": 1,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 1,
+          "verse": 22
+        }
+      ],
+      "en": "They were astonished at his teaching, for he taught them as having authority, and not as the scribes.",
+      "ko": "뭇사람이 그의 교훈에 놀라니 이는 그 가르치시는 것이 권세 있는 자와 같고 서기관들과 같지 아니함일러라",
+      "source_text_hash": "7a91e74df8b57cb47d3d62d5b11b8535537fdf53b56ae6b7887698fc05beabb4",
+      "translation_text_hash": "1a659580097e1d21216f279fcca1222c2d34bd2add1151360a31786b6b003e80",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "뭇사람이 그의 교훈에 놀라니 이는 그 가르치시는 것이 권세 있는 자와 같고 서기관들과 같지 아니함일러라"
+      ],
+      "raw_text_hashes": [
+        "1a659580097e1d21216f279fcca1222c2d34bd2add1151360a31786b6b003e80"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:1:23",
+      "sequence": 24239,
+      "chapter_label": "MRK 1",
+      "verse_label": "23",
+      "locator": {
+        "book": "MRK",
+        "chapter": 1,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 1,
+          "verse": 23
+        }
+      ],
+      "en": "Immediately there was in their synagogue a man with an unclean spirit, and he cried out,",
+      "ko": "마침 저희 회당에 더러운 귀신 들린 사람이 있어 소리질러 가로되",
+      "source_text_hash": "ded677df0ff92d6e5bcee0e1d5495f805a742ba85246288460b58e75c81217a1",
+      "translation_text_hash": "d997fe73c172110ceb347d6a52d3cc77de8f669264df4549fc5065865de6902b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마침 저희 회당에 더러운 귀신 들린 사람이 있어 소리질러 가로되"
+      ],
+      "raw_text_hashes": [
+        "d997fe73c172110ceb347d6a52d3cc77de8f669264df4549fc5065865de6902b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:1:24",
+      "sequence": 24240,
+      "chapter_label": "MRK 1",
+      "verse_label": "24",
+      "locator": {
+        "book": "MRK",
+        "chapter": 1,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 1,
+          "verse": 24
+        }
+      ],
+      "en": "saying, “Ha! What do we have to do with you, Jesus, you Nazarene? Have you come to destroy us? I know who you are: the Holy One of God!”",
+      "ko": "나사렛 예수여 우리가 당신과 무슨 상관이 있나이까 우리를 멸하러 왔나이까 나는 당신이 누구인줄 아노니 하나님의 거룩한 자니이다",
+      "source_text_hash": "2cec4ffe9e4f76c44833860c46ad01df4966fe48fa3a387ed0ff163187600ca3",
+      "translation_text_hash": "02fa80aa724da519f6207208476774f533178091fefaef5443f8a459044fb9cf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나사렛 예수여 우리가 당신과 무슨 상관이 있나이까 우리를 멸하러 왔나이까 나는 당신이 누구인줄 아노니 하나님의 거룩한 자니이다"
+      ],
+      "raw_text_hashes": [
+        "02fa80aa724da519f6207208476774f533178091fefaef5443f8a459044fb9cf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:1:25",
+      "sequence": 24241,
+      "chapter_label": "MRK 1",
+      "verse_label": "25",
+      "locator": {
+        "book": "MRK",
+        "chapter": 1,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 1,
+          "verse": 25
+        }
+      ],
+      "en": "Jesus rebuked him, saying, “Be quiet, and come out of him!”",
+      "ko": "예수께서 꾸짖어 가라사대 잠잠하고 그 사람에게서 나오라 하시니",
+      "source_text_hash": "6c8b937b5fbe92c9b5b96ff82fdfcaea9e7c8e193bceeada69d7d917a55a7b40",
+      "translation_text_hash": "b8dc4eaf83f115734267fea740f3d31d0ab49d02d6362cd44ac55e0d30b6fafe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 꾸짖어 가라사대 잠잠하고 그 사람에게서 나오라 하시니"
+      ],
+      "raw_text_hashes": [
+        "b8dc4eaf83f115734267fea740f3d31d0ab49d02d6362cd44ac55e0d30b6fafe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:1:26",
+      "sequence": 24242,
+      "chapter_label": "MRK 1",
+      "verse_label": "26",
+      "locator": {
+        "book": "MRK",
+        "chapter": 1,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 1,
+          "verse": 26
+        }
+      ],
+      "en": "The unclean spirit, convulsing him and crying with a loud voice, came out of him.",
+      "ko": "더러운 귀신이 그 사람으로 경련을 일으키게 하고 큰 소리를 지르며 나오는지라",
+      "source_text_hash": "45d5838c7438913bfb156233063263bffb40207bc259fb64e610b3b75e955629",
+      "translation_text_hash": "947d08958a0d3aae9da8ada062640e8ed0d4c8b7743e9411bdc0834ba3944448",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "더러운 귀신이 그 사람으로 경련을 일으키게 하고 큰 소리를 지르며 나오는지라"
+      ],
+      "raw_text_hashes": [
+        "947d08958a0d3aae9da8ada062640e8ed0d4c8b7743e9411bdc0834ba3944448"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:1:27",
+      "sequence": 24243,
+      "chapter_label": "MRK 1",
+      "verse_label": "27",
+      "locator": {
+        "book": "MRK",
+        "chapter": 1,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 1,
+          "verse": 27
+        }
+      ],
+      "en": "They were all amazed, so that they questioned among themselves, saying, “What is this? What can this new doctrine be? For with authority he commands even the unclean spirits, and they obey him!”",
+      "ko": "다 놀라 서로 물어 가로되 이는 어찜이뇨 권세 있는 새 교훈이로다 더러운 귀신들을 명한즉 순종하는도다 하더라",
+      "source_text_hash": "457f932d8f4f7729b1ac1b2c6915a645b6aad5efae2cbc7467787b1d8c54b8fa",
+      "translation_text_hash": "3ab3a716cade15428f760103b1cea0e87649076e70c9f48d1af75d2e5e131d8e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다 놀라 서로 물어 가로되 이는 어찜이뇨 권세 있는 새 교훈이로다 더러운 귀신들을 명한즉 순종하는도다 하더라"
+      ],
+      "raw_text_hashes": [
+        "3ab3a716cade15428f760103b1cea0e87649076e70c9f48d1af75d2e5e131d8e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:1:28",
+      "sequence": 24244,
+      "chapter_label": "MRK 1",
+      "verse_label": "28",
+      "locator": {
+        "book": "MRK",
+        "chapter": 1,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 1,
+          "verse": 28
+        }
+      ],
+      "en": "The report of him went out immediately into all the region of Galilee and its surrounding area.",
+      "ko": "예수의 소문이 곧 온 갈릴리 사방에 퍼지더라",
+      "source_text_hash": "ecc580bf8dcd387f272fdc97bcfe5c67c5f712f6cef56e4846f31e4880605c2b",
+      "translation_text_hash": "8945456707f8c1910b146827e8ca453569ca1b104dd2508082ea56fb2deb8f82",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수의 소문이 곧 온 갈릴리 사방에 퍼지더라"
+      ],
+      "raw_text_hashes": [
+        "8945456707f8c1910b146827e8ca453569ca1b104dd2508082ea56fb2deb8f82"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:1:29",
+      "sequence": 24245,
+      "chapter_label": "MRK 1",
+      "verse_label": "29",
+      "locator": {
+        "book": "MRK",
+        "chapter": 1,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 1,
+          "verse": 29
+        }
+      ],
+      "en": "Immediately, when they had come out of the synagogue, they came into the house of Simon and Andrew, with James and John.",
+      "ko": "회당에서 나와 곧 야고보와 요한과 함께 시몬과 안드레의 집에 들어가시니",
+      "source_text_hash": "643e543fefe43cdbb9454a4049186acd5c43f1e3c90007d9f86c3b5d628d6d5d",
+      "translation_text_hash": "eda67a695ac9482d53a07a1bc1e68f115d7b201953616425d463c1288a42ac8d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "회당에서 나와 곧 야고보와 요한과 함께 시몬과 안드레의 집에 들어가시니"
+      ],
+      "raw_text_hashes": [
+        "eda67a695ac9482d53a07a1bc1e68f115d7b201953616425d463c1288a42ac8d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:1:30",
+      "sequence": 24246,
+      "chapter_label": "MRK 1",
+      "verse_label": "30",
+      "locator": {
+        "book": "MRK",
+        "chapter": 1,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 1,
+          "verse": 30
+        }
+      ],
+      "en": "Now Simon’s wife’s mother lay sick with a fever, and immediately they told him about her.",
+      "ko": "시몬의 장모가 열병으로 누웠는지라 사람들이 곧 그의 일로 예수께 여짜온대",
+      "source_text_hash": "39a4f46516de5aac916efd893caf83c5af1d873e76f43bb2eeb3313c354ec29b",
+      "translation_text_hash": "6c8d3550761e60f019633ccc7f5b121617dc23f28da50db4b89ca08bf0e28a14",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시몬의 장모가 열병으로 누웠는지라 사람들이 곧 그의 일로 예수께 여짜온대"
+      ],
+      "raw_text_hashes": [
+        "6c8d3550761e60f019633ccc7f5b121617dc23f28da50db4b89ca08bf0e28a14"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:1:31",
+      "sequence": 24247,
+      "chapter_label": "MRK 1",
+      "verse_label": "31",
+      "locator": {
+        "book": "MRK",
+        "chapter": 1,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 1,
+          "verse": 31
+        }
+      ],
+      "en": "He came and took her by the hand and raised her up. The fever left her immediately, and she served them.",
+      "ko": "나아가사 그 손을 잡아 일으키시니 열병이 떠나고 여자가 저희에게 수종드니라",
+      "source_text_hash": "adbe2a61cc48b651c4bf6ce43330b753489a3c3ed2cd3dcdafa4b38d8c83f21b",
+      "translation_text_hash": "ee35cd9677b46a381e44b9c6fcddd6d4041c46478500e4051a9f6fdca9731ef1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나아가사 그 손을 잡아 일으키시니 열병이 떠나고 여자가 저희에게 수종드니라"
+      ],
+      "raw_text_hashes": [
+        "ee35cd9677b46a381e44b9c6fcddd6d4041c46478500e4051a9f6fdca9731ef1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:1:32",
+      "sequence": 24248,
+      "chapter_label": "MRK 1",
+      "verse_label": "32",
+      "locator": {
+        "book": "MRK",
+        "chapter": 1,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 1,
+          "verse": 32
+        }
+      ],
+      "en": "At evening, when the sun had set, they brought to him all who were sick and those who were possessed by demons.",
+      "ko": "저물어 해 질 때에 모든 병자와 귀신들린 자를 예수께 데려오니",
+      "source_text_hash": "ae6fc5f8dbc58a7efcd8ddaacf879303579618cc9950192fbbf0d696400eb576",
+      "translation_text_hash": "2d1ff88e00e6a3c6c3df0977fa6f2f53e76014f52878230bf3b93da078aa17eb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저물어 해 질 때에 모든 병자와 귀신들린 자를 예수께 데려오니"
+      ],
+      "raw_text_hashes": [
+        "2d1ff88e00e6a3c6c3df0977fa6f2f53e76014f52878230bf3b93da078aa17eb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:1:33",
+      "sequence": 24249,
+      "chapter_label": "MRK 1",
+      "verse_label": "33",
+      "locator": {
+        "book": "MRK",
+        "chapter": 1,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 1,
+          "verse": 33
+        }
+      ],
+      "en": "All the city was gathered together at the door.",
+      "ko": "온 동네가 문앞에 모였더라",
+      "source_text_hash": "7cf5db547e84774167399acc3ec9fbd53cea89aa5740e34b7b64bdd9ad912554",
+      "translation_text_hash": "4922acf23961443805ad4a9fb13aacab11514b95a4749f95b6fd43770b37ee5e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "온 동네가 문앞에 모였더라"
+      ],
+      "raw_text_hashes": [
+        "4922acf23961443805ad4a9fb13aacab11514b95a4749f95b6fd43770b37ee5e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:1:34",
+      "sequence": 24250,
+      "chapter_label": "MRK 1",
+      "verse_label": "34",
+      "locator": {
+        "book": "MRK",
+        "chapter": 1,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 1,
+          "verse": 34
+        }
+      ],
+      "en": "He healed many who were sick with various diseases and cast out many demons. He didn’t allow the demons to speak, because they knew him.",
+      "ko": "예수께서 각색 병든 많은 사람을 고치시며 많은 귀신을 내어 쫓으시되 귀신이 자기를 알므로 그 말하는 것을 허락지 아니하시니라",
+      "source_text_hash": "81a4c2c35dae7e8e6f2e03e9a7f031930b62f0008b99eacd6c8f1232b7ce008e",
+      "translation_text_hash": "48048b2aec0d219574252366a87449277bd3a6f12fa9536405c6e31d800c025d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 각색 병든 많은 사람을 고치시며 많은 귀신을 내어 쫓으시되 귀신이 자기를 알므로 그 말하는 것을 허락지 아니하시니라"
+      ],
+      "raw_text_hashes": [
+        "48048b2aec0d219574252366a87449277bd3a6f12fa9536405c6e31d800c025d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:1:35",
+      "sequence": 24251,
+      "chapter_label": "MRK 1",
+      "verse_label": "35",
+      "locator": {
+        "book": "MRK",
+        "chapter": 1,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 1,
+          "verse": 35
+        }
+      ],
+      "en": "Early in the morning, while it was still dark, he rose up and went out, and departed into a deserted place, and prayed there.",
+      "ko": "새벽 오히려 미명에 예수께서 일어나 나가 한적한 곳으로 가사 거기서 기도하시더니",
+      "source_text_hash": "7ff74959040a3f512f1c924693f746b502cb8b4dfecf4b2bf6240a22ce64a960",
+      "translation_text_hash": "1e9b69e3225e83597dfe70d693f183ea772095476ead73c7bd49a846b74d6957",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "새벽 오히려 미명에 예수께서 일어나 나가 한적한 곳으로 가사 거기서 기도하시더니"
+      ],
+      "raw_text_hashes": [
+        "1e9b69e3225e83597dfe70d693f183ea772095476ead73c7bd49a846b74d6957"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:1:36",
+      "sequence": 24252,
+      "chapter_label": "MRK 1",
+      "verse_label": "36",
+      "locator": {
+        "book": "MRK",
+        "chapter": 1,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 1,
+          "verse": 36
+        }
+      ],
+      "en": "Simon and those who were with him searched for him.",
+      "ko": "시몬과 및 그와 함께 있는 자들이 예수의 뒤를 따라가",
+      "source_text_hash": "f7b1b0f437ba84d9330823d771ec606ac25d7ae6aeaf81d376b903f8c2dd9df7",
+      "translation_text_hash": "e09c4f4289afeefe59a97803e40a6510911e14d05f289a0d45024cdf4fe58dec",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시몬과 및 그와 함께 있는 자들이 예수의 뒤를 따라가"
+      ],
+      "raw_text_hashes": [
+        "e09c4f4289afeefe59a97803e40a6510911e14d05f289a0d45024cdf4fe58dec"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:1:37",
+      "sequence": 24253,
+      "chapter_label": "MRK 1",
+      "verse_label": "37",
+      "locator": {
+        "book": "MRK",
+        "chapter": 1,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 1,
+          "verse": 37
+        }
+      ],
+      "en": "They found him and told him, “Everyone is looking for you.”",
+      "ko": "만나서 가로되 모든 사람이 주를 찾나이다",
+      "source_text_hash": "81111583954f2af99188196058d53ca41c5446eb9f4407cb6e1c5cbcecd40f95",
+      "translation_text_hash": "d5272f1a8225a31d0a240854978c0cf7126b540e13a7a012f2e5ffaddf30b443",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만나서 가로되 모든 사람이 주를 찾나이다"
+      ],
+      "raw_text_hashes": [
+        "d5272f1a8225a31d0a240854978c0cf7126b540e13a7a012f2e5ffaddf30b443"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:1:38",
+      "sequence": 24254,
+      "chapter_label": "MRK 1",
+      "verse_label": "38",
+      "locator": {
+        "book": "MRK",
+        "chapter": 1,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 1,
+          "verse": 38
+        }
+      ],
+      "en": "He said to them, “Let’s go elsewhere into the next towns, that I may preach there also, because I came out for this reason.”",
+      "ko": "이르시되 우리가 다른 가까운 마을들로 가자 거기서도 전도하리니 내가 이를 위하여 왔노라 하시고",
+      "source_text_hash": "487af50c4bcb184d90f41edc022da8c1d552f0ff5b5714456ed29f183fd5488c",
+      "translation_text_hash": "1d26c94a5b4ec99febffd0ff6c6571e2839c3fbe5623522b0e6f8d9c6324889a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이르시되 우리가 다른 가까운 마을들로 가자 거기서도 전도하리니 내가 이를 위하여 왔노라 하시고"
+      ],
+      "raw_text_hashes": [
+        "1d26c94a5b4ec99febffd0ff6c6571e2839c3fbe5623522b0e6f8d9c6324889a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:1:39",
+      "sequence": 24255,
+      "chapter_label": "MRK 1",
+      "verse_label": "39",
+      "locator": {
+        "book": "MRK",
+        "chapter": 1,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 1,
+          "verse": 39
+        }
+      ],
+      "en": "He went into their synagogues throughout all Galilee, preaching and casting out demons.",
+      "ko": "이에 온 갈릴리에 다니시며 저희 여러 회당에서 전도하시고 또 귀신들을 내어 쫓으시더라",
+      "source_text_hash": "1f89888027ce7cf6a1ba75942d17db3b4939558868fd258c9359beb35ba344ca",
+      "translation_text_hash": "ee9ae982c93ec02363aa0b1529abbbd9e2320f0cb3bd1bbae93344c9bee663fc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 온 갈릴리에 다니시며 저희 여러 회당에서 전도하시고 또 귀신들을 내어 쫓으시더라"
+      ],
+      "raw_text_hashes": [
+        "ee9ae982c93ec02363aa0b1529abbbd9e2320f0cb3bd1bbae93344c9bee663fc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:1:40",
+      "sequence": 24256,
+      "chapter_label": "MRK 1",
+      "verse_label": "40",
+      "locator": {
+        "book": "MRK",
+        "chapter": 1,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 1,
+          "verse": 40
+        }
+      ],
+      "en": "A leper came to him, begging him, kneeling down to him, and saying to him, “If you want to, you can make me clean.”",
+      "ko": "한 문둥병자가 예수께 와서 꿇어 엎드리어 간구하여 가로되 원하시면 저를 깨끗케 하실 수 있나이다",
+      "source_text_hash": "090de8e99308653bdcd90cde4cda481399191cc961f57c98bfbc2280b218777a",
+      "translation_text_hash": "a49fcb3d43432f991d37c8ab7494cbd872d9bd41a686bf5f8fc0d707f5f84326",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "한 문둥병자가 예수께 와서 꿇어 엎드리어 간구하여 가로되 원하시면 저를 깨끗케 하실 수 있나이다"
+      ],
+      "raw_text_hashes": [
+        "a49fcb3d43432f991d37c8ab7494cbd872d9bd41a686bf5f8fc0d707f5f84326"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:1:41",
+      "sequence": 24257,
+      "chapter_label": "MRK 1",
+      "verse_label": "41",
+      "locator": {
+        "book": "MRK",
+        "chapter": 1,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 1,
+          "verse": 41
+        }
+      ],
+      "en": "Being moved with compassion, he stretched out his hand, and touched him, and said to him, “I want to. Be made clean.”",
+      "ko": "예수께서 민망히 여기사 손을 내밀어 저에게 대시며 가라사대 내가 원하노니 깨끗함을 받으라 하신대",
+      "source_text_hash": "671e06e9149ec8aa1e881a6358ccad73496fe543583a5b6a2250cbf7d1557ce0",
+      "translation_text_hash": "4e01cc94adf23132105478eaea7591850e99fcba113cad5407329a9e29ac6f64",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 민망히 여기사 손을 내밀어 저에게 대시며 가라사대 내가 원하노니 깨끗함을 받으라 하신대"
+      ],
+      "raw_text_hashes": [
+        "4e01cc94adf23132105478eaea7591850e99fcba113cad5407329a9e29ac6f64"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:1:42",
+      "sequence": 24258,
+      "chapter_label": "MRK 1",
+      "verse_label": "42",
+      "locator": {
+        "book": "MRK",
+        "chapter": 1,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 1,
+          "verse": 42
+        }
+      ],
+      "en": "When he had said this, immediately the leprosy departed from him and he was made clean.",
+      "ko": "곧 문둥병이 그 사람에게서 떠나가고 깨끗하여진지라",
+      "source_text_hash": "08dc500026cadc0386704e55e925aa2bcaa7749979bb74e27ca7d4520012cefc",
+      "translation_text_hash": "73d2dff639aecac698e15582514245cd073b32c232d833eceb758e835e788e85",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 문둥병이 그 사람에게서 떠나가고 깨끗하여진지라"
+      ],
+      "raw_text_hashes": [
+        "73d2dff639aecac698e15582514245cd073b32c232d833eceb758e835e788e85"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:1:43",
+      "sequence": 24259,
+      "chapter_label": "MRK 1",
+      "verse_label": "43",
+      "locator": {
+        "book": "MRK",
+        "chapter": 1,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 1,
+          "verse": 43
+        }
+      ],
+      "en": "He strictly warned him and immediately sent him out,",
+      "ko": "엄히 경계하사 곧 보내시며",
+      "source_text_hash": "9e8368a0ab9b080d64631ed30369acd6e8ced8b329ee92a7e71e7f72327f4440",
+      "translation_text_hash": "38e8d6de71d4eb3f3a912607550c49009992457ff8fbbf51f6137ac3be0fbb13",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "엄히 경계하사 곧 보내시며"
+      ],
+      "raw_text_hashes": [
+        "38e8d6de71d4eb3f3a912607550c49009992457ff8fbbf51f6137ac3be0fbb13"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:1:44",
+      "sequence": 24260,
+      "chapter_label": "MRK 1",
+      "verse_label": "44",
+      "locator": {
+        "book": "MRK",
+        "chapter": 1,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 1,
+          "verse": 44
+        }
+      ],
+      "en": "and said to him, “See that you say nothing to anybody, but go show yourself to the priest and offer for your cleansing the things which Moses commanded, for a testimony to them.”",
+      "ko": "가라사대 삼가 아무에게 아무 말도 하지 말고 가서 네 몸을 제사장에게 보이고 네 깨끗케 됨을 인하여 모세의 명한 것을 드려 저희에게 증거하라 하셨더니",
+      "source_text_hash": "5b2085ee9c8e50aaab2df16539a28e06aad14083f88ebabd497d9f2e8027b4a3",
+      "translation_text_hash": "697c3b160ae1ddba9bb68a44bf703177f3a7dba33b5618f923d7bc1ffebe6d4b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가라사대 삼가 아무에게 아무 말도 하지 말고 가서 네 몸을 제사장에게 보이고 네 깨끗케 됨을 인하여 모세의 명한 것을 드려 저희에게 증거하라 하셨더니"
+      ],
+      "raw_text_hashes": [
+        "697c3b160ae1ddba9bb68a44bf703177f3a7dba33b5618f923d7bc1ffebe6d4b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:1:45",
+      "sequence": 24261,
+      "chapter_label": "MRK 1",
+      "verse_label": "45",
+      "locator": {
+        "book": "MRK",
+        "chapter": 1,
+        "verse": 45
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 1,
+          "verse": 45
+        }
+      ],
+      "en": "But he went out, and began to proclaim it much, and to spread about the matter, so that Jesus could no more openly enter into a city, but was outside in desert places. People came to him from everywhere.",
+      "ko": "그러나 그 사람이 나가서 이 일을 많이 전파하여 널리 퍼지게 하니 그러므로 예수께서 다시는 드러나게 동네에 들어가지 못하시고 오직 바깥 한적한 곳에 계셨으나 사방에서 그에게로 나아오더라",
+      "source_text_hash": "ba39280254223fec461f77789b342526b8d1520e8dcbdfbf9ef7afb27d729fa0",
+      "translation_text_hash": "140c2019381bc789a432c5798c27a6de29381082ffa40213b961ccec51e382db",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 그 사람이 나가서 이 일을 많이 전파하여 널리 퍼지게 하니 그러므로 예수께서 다시는 드러나게 동네에 들어가지 못하시고 오직 바깥 한적한 곳에 계셨으나 사방에서 그에게로 나아오더라"
+      ],
+      "raw_text_hashes": [
+        "140c2019381bc789a432c5798c27a6de29381082ffa40213b961ccec51e382db"
+      ]
+    }
+  ]
+}

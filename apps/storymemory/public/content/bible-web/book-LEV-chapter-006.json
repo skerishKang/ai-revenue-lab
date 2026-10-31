@@ -1,0 +1,973 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:LEV:chapter:006",
+  "unit_ordinal": 96,
+  "unit_label": "LEV 6",
+  "book_code": "LEV",
+  "chapter_number": 6,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:LEV:6:1",
+      "sequence": 2851,
+      "chapter_label": "LEV 6",
+      "verse_label": "1",
+      "locator": {
+        "book": "LEV",
+        "chapter": 6,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 6,
+          "verse": 1
+        }
+      ],
+      "en": "The LORD spoke to Moses, saying,",
+      "ko": "여호와께서 모세에게 일러 가라사대",
+      "source_text_hash": "28219e5da0d26514843495c6edb280f326aa0ccffb0d2bb642d0e1b0f4478ca1",
+      "translation_text_hash": "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:6:2",
+      "sequence": 2852,
+      "chapter_label": "LEV 6",
+      "verse_label": "2",
+      "locator": {
+        "book": "LEV",
+        "chapter": 6,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 6,
+          "verse": 2
+        }
+      ],
+      "en": "“If anyone sins, and commits a trespass against the LORD, and deals falsely with his neighbor in a matter of deposit, or of bargain, or of robbery, or has oppressed his neighbor,",
+      "ko": "누구든지 여호와께 신실치 못하여 범죄하되 곧 남의 물건을 맡거나 전당 잡거나 강도질 하거나 늑봉하고도 사실을 부인하거나",
+      "source_text_hash": "b52ba3b8055b8e188f2a52502198fc89a621b3d33ea41df490dffe30dc0fb17c",
+      "translation_text_hash": "adcbcf0624140fc698aa9a6d56fa03997945f6b6782d753a92f8dc95049ea4f9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누구든지 여호와께 신실치 못하여 범죄하되 곧 남의 물건을 맡거나 전당 잡거나 강도질 하거나 늑봉하고도 사실을 부인하거나"
+      ],
+      "raw_text_hashes": [
+        "adcbcf0624140fc698aa9a6d56fa03997945f6b6782d753a92f8dc95049ea4f9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:6:3",
+      "sequence": 2853,
+      "chapter_label": "LEV 6",
+      "verse_label": "3",
+      "locator": {
+        "book": "LEV",
+        "chapter": 6,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 6,
+          "verse": 3
+        }
+      ],
+      "en": "or has found that which was lost, and lied about it, and swearing to a lie—in any of these things that a man sins in his actions—",
+      "ko": "남의 잃은 물건을 얻고도 사실을 부인하여 거짓 맹세하는 등 사람이 이 모든 일 중에 하나라도 행하여 범죄하면",
+      "source_text_hash": "52f69918604240b81b349a1129a703c88a83cf0e85b63c00ab668bdda2a9fc0c",
+      "translation_text_hash": "c3dc191298217a3f0c40b3656a5052b774aa26ee9d8fcff9fd33dc3f8e7406fd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "남의 잃은 물건을 얻고도 사실을 부인하여 거짓 맹세하는 등 사람이 이 모든 일 중에 하나라도 행하여 범죄하면"
+      ],
+      "raw_text_hashes": [
+        "c3dc191298217a3f0c40b3656a5052b774aa26ee9d8fcff9fd33dc3f8e7406fd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:6:4",
+      "sequence": 2854,
+      "chapter_label": "LEV 6",
+      "verse_label": "4",
+      "locator": {
+        "book": "LEV",
+        "chapter": 6,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 6,
+          "verse": 4
+        }
+      ],
+      "en": "then it shall be, if he has sinned, and is guilty, he shall restore that which he took by robbery, or the thing which he has gotten by oppression, or the deposit which was committed to him, or the lost thing which he found,",
+      "ko": "이는 죄를 범하였고 죄가 있는 자니 그 빼앗은 것이나 늑봉한 것이나 맡은 것이나 얻은 유실물이나",
+      "source_text_hash": "a0eb975c40d125804acfc4a58de3e3b9e48a477a0fa518c69312afd810b38e5b",
+      "translation_text_hash": "0d9a07ef34700aee05fad596aa7f79c3abb8f278d380359f250aecb42f7e869c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 죄를 범하였고 죄가 있는 자니 그 빼앗은 것이나 늑봉한 것이나 맡은 것이나 얻은 유실물이나"
+      ],
+      "raw_text_hashes": [
+        "0d9a07ef34700aee05fad596aa7f79c3abb8f278d380359f250aecb42f7e869c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:6:5",
+      "sequence": 2855,
+      "chapter_label": "LEV 6",
+      "verse_label": "5",
+      "locator": {
+        "book": "LEV",
+        "chapter": 6,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 6,
+          "verse": 5
+        }
+      ],
+      "en": "or any thing about which he has sworn falsely: he shall restore it in full, and shall add a fifth part more to it. He shall return it to him to whom it belongs in the day of his being found guilty.",
+      "ko": "무릇 그 거짓 맹세한 물건을 돌려 보내되 곧 그 본물에 오분 일을 더하여 돌려 보낼 것이니 그 죄가 드러나는 날에 그 임자에게 줄 것이요",
+      "source_text_hash": "1a61f1f6aa57478f4019c3a9a49ad613f7d127736086360005a39ecad406bfb2",
+      "translation_text_hash": "9fadf69f9e4f4d93b0f4de736beb99ece8e88ccc163b59bcc09c1c1a7076d8d1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 그 거짓 맹세한 물건을 돌려 보내되 곧 그 본물에 오분 일을 더하여 돌려 보낼 것이니 그 죄가 드러나는 날에 그 임자에게 줄 것이요"
+      ],
+      "raw_text_hashes": [
+        "9fadf69f9e4f4d93b0f4de736beb99ece8e88ccc163b59bcc09c1c1a7076d8d1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:6:6",
+      "sequence": 2856,
+      "chapter_label": "LEV 6",
+      "verse_label": "6",
+      "locator": {
+        "book": "LEV",
+        "chapter": 6,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 6,
+          "verse": 6
+        }
+      ],
+      "en": "He shall bring his trespass offering to the LORD: a ram without defect from the flock, according to your estimation, for a trespass offering, to the priest.",
+      "ko": "그는 또 그 속건제를 여호와께 가져 올찌니 곧 너의 지정한 가치대로 떼 중 흠 없는 수양을 속건 제물을 위하여 제사장에게로 끌어 올 것이요",
+      "source_text_hash": "36ed4ba373a384849b884db172e7a96c04718a1de55c100c4d728ac06ecf7029",
+      "translation_text_hash": "f0d1eed2b3042c8597377f5efeeb249949c3f3ff7bc374ab8e95b031c5a06da0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그는 또 그 속건제를 여호와께 가져 올찌니 곧 너의 지정한 가치대로 떼 중 흠 없는 수양을 속건 제물을 위하여 제사장에게로 끌어 올 것이요"
+      ],
+      "raw_text_hashes": [
+        "f0d1eed2b3042c8597377f5efeeb249949c3f3ff7bc374ab8e95b031c5a06da0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:6:7",
+      "sequence": 2857,
+      "chapter_label": "LEV 6",
+      "verse_label": "7",
+      "locator": {
+        "book": "LEV",
+        "chapter": 6,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 6,
+          "verse": 7
+        }
+      ],
+      "en": "The priest shall make atonement for him before the LORD, and he will be forgiven concerning whatever he does to become guilty.”",
+      "ko": "제사장은 여호와 앞에서 그를 위하여 속죄한즉 그는 무슨 허물이든지 사함을 얻으리라",
+      "source_text_hash": "238233f603e916e680edfb53fff7922dcbf659a941d0fedc4f739cb8008a244d",
+      "translation_text_hash": "46387461c052f7b23d19deb580fff1446e94e2ab286a8490b1091891188d08f4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장은 여호와 앞에서 그를 위하여 속죄한즉 그는 무슨 허물이든지 사함을 얻으리라"
+      ],
+      "raw_text_hashes": [
+        "46387461c052f7b23d19deb580fff1446e94e2ab286a8490b1091891188d08f4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:6:8",
+      "sequence": 2858,
+      "chapter_label": "LEV 6",
+      "verse_label": "8",
+      "locator": {
+        "book": "LEV",
+        "chapter": 6,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 6,
+          "verse": 8
+        }
+      ],
+      "en": "The LORD spoke to Moses, saying,",
+      "ko": "여호와께서 모세에게 일러 가라사대",
+      "source_text_hash": "28219e5da0d26514843495c6edb280f326aa0ccffb0d2bb642d0e1b0f4478ca1",
+      "translation_text_hash": "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:6:9",
+      "sequence": 2859,
+      "chapter_label": "LEV 6",
+      "verse_label": "9",
+      "locator": {
+        "book": "LEV",
+        "chapter": 6,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 6,
+          "verse": 9
+        }
+      ],
+      "en": "“Command Aaron and his sons, saying, ‘This is the law of the burnt offering: the burnt offering shall be on the hearth on the altar all night until the morning; and the fire of the altar shall be kept burning on it.",
+      "ko": "아론과 그 자손에게 명하여 이르라 번제의 규례는 이러하니라 번제물은 단윗 석쇠 위에 아침까지 두고 단의 불로 그 위에서 꺼지지않게 할 것이요",
+      "source_text_hash": "466967defea4a914208b482bb6770a03c402467fc1d0e0abf1f6325283fbe709",
+      "translation_text_hash": "6a337bbe5f8a7c8b78580b2470a8a68fd8df5391758ef94e45dafdaeae371856",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아론과 그 자손에게 명하여 이르라 번제의 규례는 이러하니라 번제물은 단윗 석쇠 위에 아침까지 두고 단의 불로 그 위에서 꺼지지않게 할 것이요"
+      ],
+      "raw_text_hashes": [
+        "6a337bbe5f8a7c8b78580b2470a8a68fd8df5391758ef94e45dafdaeae371856"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:6:10",
+      "sequence": 2860,
+      "chapter_label": "LEV 6",
+      "verse_label": "10",
+      "locator": {
+        "book": "LEV",
+        "chapter": 6,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 6,
+          "verse": 10
+        }
+      ],
+      "en": "The priest shall put on his linen garment, and he shall put on his linen trousers upon his body; and he shall remove the ashes from where the fire has consumed the burnt offering on the altar, and he shall put them beside the altar.",
+      "ko": "제사장은 세마포 긴 옷을 입고 세마포 고의로 하체를 가리우고 단 위에서 탄 번제의 재를 가져다가 단 곁에 두고",
+      "source_text_hash": "d6846c9319c0447d2a20d66226b460ac6cd60885011f288428c18269835617f8",
+      "translation_text_hash": "7fb0aa4fc9db5de9bc5d36a73e34cedcfaa93ebd43da477d1bb7e6ad1c924bc8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장은 세마포 긴 옷을 입고 세마포 고의로 하체를 가리우고 단 위에서 탄 번제의 재를 가져다가 단 곁에 두고"
+      ],
+      "raw_text_hashes": [
+        "7fb0aa4fc9db5de9bc5d36a73e34cedcfaa93ebd43da477d1bb7e6ad1c924bc8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:6:11",
+      "sequence": 2861,
+      "chapter_label": "LEV 6",
+      "verse_label": "11",
+      "locator": {
+        "book": "LEV",
+        "chapter": 6,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 6,
+          "verse": 11
+        }
+      ],
+      "en": "He shall take off his garments, and put on other garments, and carry the ashes outside the camp to a clean place.",
+      "ko": "그 옷을 벗고 다른 옷을 입고 그 재를 진 바깥 정결한 곳으로 가져 갈 것이요",
+      "source_text_hash": "444ca893083b3e4de761d85bc45420ad6c42b1084369dc48182c496729b0cf25",
+      "translation_text_hash": "053b346c35265c73ccbe0b61770befb6082e31532cf4a99d31c07dc8799d38ea",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 옷을 벗고 다른 옷을 입고 그 재를 진 바깥 정결한 곳으로 가져 갈 것이요"
+      ],
+      "raw_text_hashes": [
+        "053b346c35265c73ccbe0b61770befb6082e31532cf4a99d31c07dc8799d38ea"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:6:12",
+      "sequence": 2862,
+      "chapter_label": "LEV 6",
+      "verse_label": "12",
+      "locator": {
+        "book": "LEV",
+        "chapter": 6,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 6,
+          "verse": 12
+        }
+      ],
+      "en": "The fire on the altar shall be kept burning on it, it shall not go out; and the priest shall burn wood on it every morning. He shall lay the burnt offering in order upon it, and shall burn on it the fat of the peace offerings.",
+      "ko": "단 위에 불은 항상 피워 꺼지지 않게 할찌니 제사장은 아침마다 나무를 그 위에 태우고 번제물을 그 위에 벌여 놓고 화목제의 기름을 그 위에 사를찌며",
+      "source_text_hash": "9ad62b1f82432af497da85b2fe23fe2a99f248c39ee8a32616f4142cdc1115f8",
+      "translation_text_hash": "5afda2d041b1714ee7145f034634e5f6c1f112a06088b2f75d31d56e169afcab",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "단 위에 불은 항상 피워 꺼지지 않게 할찌니 제사장은 아침마다 나무를 그 위에 태우고 번제물을 그 위에 벌여 놓고 화목제의 기름을 그 위에 사를찌며"
+      ],
+      "raw_text_hashes": [
+        "5afda2d041b1714ee7145f034634e5f6c1f112a06088b2f75d31d56e169afcab"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:6:13",
+      "sequence": 2863,
+      "chapter_label": "LEV 6",
+      "verse_label": "13",
+      "locator": {
+        "book": "LEV",
+        "chapter": 6,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 6,
+          "verse": 13
+        }
+      ],
+      "en": "Fire shall be kept burning on the altar continually; it shall not go out.",
+      "ko": "불은 끊이지 않고 단 위에 피워 꺼지지 않게 할찌니라",
+      "source_text_hash": "cd588873eb0aa7b509ec619c4c276daacd8edc57d350524f497d80aa438b5298",
+      "translation_text_hash": "f1bd9ed27fa5e9fca4c5f49167160a4974d2d83934c7f489a8dc3d8331abd91a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "불은 끊이지 않고 단 위에 피워 꺼지지 않게 할찌니라"
+      ],
+      "raw_text_hashes": [
+        "f1bd9ed27fa5e9fca4c5f49167160a4974d2d83934c7f489a8dc3d8331abd91a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:6:14",
+      "sequence": 2864,
+      "chapter_label": "LEV 6",
+      "verse_label": "14",
+      "locator": {
+        "book": "LEV",
+        "chapter": 6,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 6,
+          "verse": 14
+        }
+      ],
+      "en": "“‘This is the law of the meal offering: the sons of Aaron shall offer it before the LORD, before the altar.",
+      "ko": "소제의 규례는 이러하니라 아론의 자손은 그것을 단 앞 여호와 앞에 드리되",
+      "source_text_hash": "19b36dfdfbfa479f180e768db2719bf330d68734ed5fc3da4ade09797ce9b501",
+      "translation_text_hash": "1932fe3a92e140a745d96b7013b57190bac6015f2ebb2122ee12b92ae1c4a9a5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "소제의 규례는 이러하니라 아론의 자손은 그것을 단 앞 여호와 앞에 드리되"
+      ],
+      "raw_text_hashes": [
+        "1932fe3a92e140a745d96b7013b57190bac6015f2ebb2122ee12b92ae1c4a9a5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:6:15",
+      "sequence": 2865,
+      "chapter_label": "LEV 6",
+      "verse_label": "15",
+      "locator": {
+        "book": "LEV",
+        "chapter": 6,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 6,
+          "verse": 15
+        }
+      ],
+      "en": "He shall take from there his handful of the fine flour of the meal offering, and of its oil, and all the frankincense which is on the meal offering, and shall burn it on the altar for a pleasant aroma, as its memorial portion, to the LORD.",
+      "ko": "그 소제의 고운 기름 가루 한 움큼과 소제물 위의 유향을 다 취하여 기념물로 단 위에 불살라 여호와 앞에 향기로운 냄새가 되게 하고",
+      "source_text_hash": "a02ae6a51e6f718180c6596e611ebcf4c660d9afc3933f9198ed9d85db18616c",
+      "translation_text_hash": "d7b1136185993bbf4e83a3d3f863b39c75e44611d5c334b89141a2eadc4307d5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 소제의 고운 기름 가루 한 움큼과 소제물 위의 유향을 다 취하여 기념물로 단 위에 불살라 여호와 앞에 향기로운 냄새가 되게 하고"
+      ],
+      "raw_text_hashes": [
+        "d7b1136185993bbf4e83a3d3f863b39c75e44611d5c334b89141a2eadc4307d5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:6:16",
+      "sequence": 2866,
+      "chapter_label": "LEV 6",
+      "verse_label": "16",
+      "locator": {
+        "book": "LEV",
+        "chapter": 6,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 6,
+          "verse": 16
+        }
+      ],
+      "en": "That which is left of it Aaron and his sons shall eat. It shall be eaten without yeast in a holy place. They shall eat it in the court of the Tent of Meeting.",
+      "ko": "그 나머지는 아론과 그 자손이 먹되 누룩을 넣지 말고 거룩한 곳 회막 뜰에서 먹을찌니라",
+      "source_text_hash": "ce97a7cd91f9aa4f28541cf7469be78016a27b248a8f9f96da01c16600459e81",
+      "translation_text_hash": "e1382bbc28e894c1c1da5eac483976df4046b4452e6fe5c45f3fc578c7dc4949",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 나머지는 아론과 그 자손이 먹되 누룩을 넣지 말고 거룩한 곳 회막 뜰에서 먹을찌니라"
+      ],
+      "raw_text_hashes": [
+        "e1382bbc28e894c1c1da5eac483976df4046b4452e6fe5c45f3fc578c7dc4949"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:6:17",
+      "sequence": 2867,
+      "chapter_label": "LEV 6",
+      "verse_label": "17",
+      "locator": {
+        "book": "LEV",
+        "chapter": 6,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 6,
+          "verse": 17
+        }
+      ],
+      "en": "It shall not be baked with yeast. I have given it as their portion of my offerings made by fire. It is most holy, as are the sin offering and the trespass offering.",
+      "ko": "그것에 누룩을 넣어 굽지 말라 이는 나의 화제 중에서 내가 그들에게 주어 그 소득이 되게 하는 것이라 속죄제와 속건제 같이 지극히 거룩한즉",
+      "source_text_hash": "3a6a2e15c1cbff4e152a6f6551bb0169c3e377361689acd5867e8bbe33f8b176",
+      "translation_text_hash": "03911cd083dbfbe6ea803a28fe46853bd0841ec5b434caa95698e07370f81565",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그것에 누룩을 넣어 굽지 말라 이는 나의 화제 중에서 내가 그들에게 주어 그 소득이 되게 하는 것이라 속죄제와 속건제 같이 지극히 거룩한즉"
+      ],
+      "raw_text_hashes": [
+        "03911cd083dbfbe6ea803a28fe46853bd0841ec5b434caa95698e07370f81565"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:6:18",
+      "sequence": 2868,
+      "chapter_label": "LEV 6",
+      "verse_label": "18",
+      "locator": {
+        "book": "LEV",
+        "chapter": 6,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 6,
+          "verse": 18
+        }
+      ],
+      "en": "Every male among the children of Aaron shall eat of it, as their portion forever throughout your generations, from the offerings of the LORD made by fire. Whoever touches them shall be holy.’”",
+      "ko": "무릇 아론 자손의 남자는 이를 먹을찌니 이는 여호와의 화제 중에서 그들의 대대로 영원한 소득이 됨이라 이를 만지는 자마다 거룩하리라",
+      "source_text_hash": "8d3e1089e5fc51749e8ef4c57e9b1b4052128aac92b73b41e7ba225755dd86b1",
+      "translation_text_hash": "d95c49ac0bfcd0b3ee57c1ff0d7031f61fbc75897720f9d119090690d7a8d34b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 아론 자손의 남자는 이를 먹을찌니 이는 여호와의 화제 중에서 그들의 대대로 영원한 소득이 됨이라 이를 만지는 자마다 거룩하리라"
+      ],
+      "raw_text_hashes": [
+        "d95c49ac0bfcd0b3ee57c1ff0d7031f61fbc75897720f9d119090690d7a8d34b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:6:19",
+      "sequence": 2869,
+      "chapter_label": "LEV 6",
+      "verse_label": "19",
+      "locator": {
+        "book": "LEV",
+        "chapter": 6,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 6,
+          "verse": 19
+        }
+      ],
+      "en": "The LORD spoke to Moses, saying,",
+      "ko": "여호와께서 모세에게 일러 가라사대",
+      "source_text_hash": "28219e5da0d26514843495c6edb280f326aa0ccffb0d2bb642d0e1b0f4478ca1",
+      "translation_text_hash": "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:6:20",
+      "sequence": 2870,
+      "chapter_label": "LEV 6",
+      "verse_label": "20",
+      "locator": {
+        "book": "LEV",
+        "chapter": 6,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 6,
+          "verse": 20
+        }
+      ],
+      "en": "“This is the offering of Aaron and of his sons, which they shall offer to the LORD in the day when he is anointed: one tenth of an ephah of fine flour for a meal offering perpetually, half of it in the morning, and half of it in the evening.",
+      "ko": "아론과 그 자손이 기름 부음을 받는 날에 여호와께 드릴 예물은 이러하니라 고운 가루 에바 십분 일을 항상 드리는 소제물로 삼아 그 절반은 아침에, 절반은 저녁에 드리되",
+      "source_text_hash": "37dd2c3b62c575ee23b19c6f8f9ad7540d13fccc4701def75a97145816a1f0c2",
+      "translation_text_hash": "c8d32a5660f8b5ba0afd500f23315d8cdec29edb1105e0faa4366747c4162a68",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아론과 그 자손이 기름 부음을 받는 날에 여호와께 드릴 예물은 이러하니라 고운 가루 에바 십분 일을 항상 드리는 소제물로 삼아 그 절반은 아침에, 절반은 저녁에 드리되"
+      ],
+      "raw_text_hashes": [
+        "c8d32a5660f8b5ba0afd500f23315d8cdec29edb1105e0faa4366747c4162a68"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:6:21",
+      "sequence": 2871,
+      "chapter_label": "LEV 6",
+      "verse_label": "21",
+      "locator": {
+        "book": "LEV",
+        "chapter": 6,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 6,
+          "verse": 21
+        }
+      ],
+      "en": "It shall be made with oil in a griddle. When it is soaked, you shall bring it in. You shall offer the meal offering in baked pieces for a pleasant aroma to the LORD.",
+      "ko": "그것을 기름으로 반죽하여 번철에 굽고 기름에 적시어다가 썰어서 소제로 여호와께 드려 향기로운 냄새가 되게 하라",
+      "source_text_hash": "e41daf12b55716e43a56ac1999ebce113320e7df9981b363afe12f3b1dfd7dc3",
+      "translation_text_hash": "3cb2d3605b666711611dfe63f3c0609f3b3b30489f5e50e1a1121d32c23cb69b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그것을 기름으로 반죽하여 번철에 굽고 기름에 적시어다가 썰어서 소제로 여호와께 드려 향기로운 냄새가 되게 하라"
+      ],
+      "raw_text_hashes": [
+        "3cb2d3605b666711611dfe63f3c0609f3b3b30489f5e50e1a1121d32c23cb69b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:6:22",
+      "sequence": 2872,
+      "chapter_label": "LEV 6",
+      "verse_label": "22",
+      "locator": {
+        "book": "LEV",
+        "chapter": 6,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 6,
+          "verse": 22
+        }
+      ],
+      "en": "The anointed priest that will be in his place from among his sons shall offer it. By a statute forever, it shall be wholly burned to the LORD.",
+      "ko": "이 소제는 아론의 자손 중 기름 부음을 받고 그를 이어 제사장 된 자가 드릴 것이요 영원한 규례로 여호와께 온전히 불사를 것이니",
+      "source_text_hash": "fe8e2c35154f8d5d0a5211719bb4b1c6c64ae94b1d0b6a22b554d68986e17fa7",
+      "translation_text_hash": "1d36ac525d6d814a25207cf9261143a575269218ed398af28da8d60cab980cf3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 소제는 아론의 자손 중 기름 부음을 받고 그를 이어 제사장 된 자가 드릴 것이요 영원한 규례로 여호와께 온전히 불사를 것이니"
+      ],
+      "raw_text_hashes": [
+        "1d36ac525d6d814a25207cf9261143a575269218ed398af28da8d60cab980cf3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:6:23",
+      "sequence": 2873,
+      "chapter_label": "LEV 6",
+      "verse_label": "23",
+      "locator": {
+        "book": "LEV",
+        "chapter": 6,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 6,
+          "verse": 23
+        }
+      ],
+      "en": "Every meal offering of a priest shall be wholly burned. It shall not be eaten.”",
+      "ko": "무릇 제사장의 소제물은 온전히 불사르고 먹지 말찌니라",
+      "source_text_hash": "98ec4c63a442f3fc1b1f4022c6f5d2f08b7dc002837050661bcf5a0ad085ad04",
+      "translation_text_hash": "43006b674816bf0a40a19231487103e6ea39cf73d8d23e2c76c0e14c5ab64b34",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 제사장의 소제물은 온전히 불사르고 먹지 말찌니라"
+      ],
+      "raw_text_hashes": [
+        "43006b674816bf0a40a19231487103e6ea39cf73d8d23e2c76c0e14c5ab64b34"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:6:24",
+      "sequence": 2874,
+      "chapter_label": "LEV 6",
+      "verse_label": "24",
+      "locator": {
+        "book": "LEV",
+        "chapter": 6,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 6,
+          "verse": 24
+        }
+      ],
+      "en": "The LORD spoke to Moses, saying,",
+      "ko": "여호와께서 모세에게 일러 가라사대",
+      "source_text_hash": "28219e5da0d26514843495c6edb280f326aa0ccffb0d2bb642d0e1b0f4478ca1",
+      "translation_text_hash": "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:6:25",
+      "sequence": 2875,
+      "chapter_label": "LEV 6",
+      "verse_label": "25",
+      "locator": {
+        "book": "LEV",
+        "chapter": 6,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 6,
+          "verse": 25
+        }
+      ],
+      "en": "“Speak to Aaron and to his sons, saying, ‘This is the law of the sin offering: in the place where the burnt offering is killed, the sin offering shall be killed before the LORD. It is most holy.",
+      "ko": "아론과 그 아들들에게 고하여 이르라 속죄제의 규례는 이러하니라 속죄제 희생은 지극히 거룩하니 여호와 앞 번제 희생을 잡는 곳에서 그 속죄제 희생을 잡을 것이요",
+      "source_text_hash": "388708f08d84a68fedacb142d1dc721fc3a8becf2cbda765d720ddfaa6e253b2",
+      "translation_text_hash": "d91b4d6ba6afc9f3430a622358706614fdac26d2f3c15b8f3b9ad770f2bc1d7d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아론과 그 아들들에게 고하여 이르라 속죄제의 규례는 이러하니라 속죄제 희생은 지극히 거룩하니 여호와 앞 번제 희생을 잡는 곳에서 그 속죄제 희생을 잡을 것이요"
+      ],
+      "raw_text_hashes": [
+        "d91b4d6ba6afc9f3430a622358706614fdac26d2f3c15b8f3b9ad770f2bc1d7d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:6:26",
+      "sequence": 2876,
+      "chapter_label": "LEV 6",
+      "verse_label": "26",
+      "locator": {
+        "book": "LEV",
+        "chapter": 6,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 6,
+          "verse": 26
+        }
+      ],
+      "en": "The priest who offers it for sin shall eat it. It shall be eaten in a holy place, in the court of the Tent of Meeting.",
+      "ko": "죄를 위하여 제사드리는 제사장이 그것을 먹되 곧 회막 뜰 거룩한 곳에서 먹을 것이며",
+      "source_text_hash": "6ac4c757ffa5f7d802ded198e3ea2ac9ebc4037eb31360912159588e5effa2ad",
+      "translation_text_hash": "7c8971254104c0c85f923ff62b7fc88739eeda54e1be87323c7e09d6eabdda93",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "죄를 위하여 제사드리는 제사장이 그것을 먹되 곧 회막 뜰 거룩한 곳에서 먹을 것이며"
+      ],
+      "raw_text_hashes": [
+        "7c8971254104c0c85f923ff62b7fc88739eeda54e1be87323c7e09d6eabdda93"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:6:27",
+      "sequence": 2877,
+      "chapter_label": "LEV 6",
+      "verse_label": "27",
+      "locator": {
+        "book": "LEV",
+        "chapter": 6,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 6,
+          "verse": 27
+        }
+      ],
+      "en": "Whatever shall touch its flesh shall be holy. When there is any of its blood sprinkled on a garment, you shall wash that on which it was sprinkled in a holy place.",
+      "ko": "무릇 그 고기에 접촉하는 자는 거룩할 것이며 그 피가 어떤 옷에든지 묻었으면 묻은 그것을 거룩한 곳에서 빨 것이요",
+      "source_text_hash": "19c7cd028811ae44fc01ea10d6a283d3105c2479abe25f427b344803755f05f4",
+      "translation_text_hash": "f8ad34d3f8f0d6855781cee0041243ad1feb29faf2ab4d2a0c1027799eb80276",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 그 고기에 접촉하는 자는 거룩할 것이며 그 피가 어떤 옷에든지 묻었으면 묻은 그것을 거룩한 곳에서 빨 것이요"
+      ],
+      "raw_text_hashes": [
+        "f8ad34d3f8f0d6855781cee0041243ad1feb29faf2ab4d2a0c1027799eb80276"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:6:28",
+      "sequence": 2878,
+      "chapter_label": "LEV 6",
+      "verse_label": "28",
+      "locator": {
+        "book": "LEV",
+        "chapter": 6,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 6,
+          "verse": 28
+        }
+      ],
+      "en": "But the earthen vessel in which it is boiled shall be broken; and if it is boiled in a bronze vessel, it shall be scoured, and rinsed in water.",
+      "ko": "그 고기를 토기에 삶았으면 그 그릇을 깨뜨릴 것이요 유기에 삶았으면 그 그릇을 닦고 물에 씻을 것이며",
+      "source_text_hash": "5cc54b608a0d7e5f3ac654eeff2601285848f6f04aa0600a95725dce8e7fcd37",
+      "translation_text_hash": "215b3d5a10e99978f107fcda475c47d250ebc23f6718ba22378da6e9dbbd1f8f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 고기를 토기에 삶았으면 그 그릇을 깨뜨릴 것이요 유기에 삶았으면 그 그릇을 닦고 물에 씻을 것이며"
+      ],
+      "raw_text_hashes": [
+        "215b3d5a10e99978f107fcda475c47d250ebc23f6718ba22378da6e9dbbd1f8f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:6:29",
+      "sequence": 2879,
+      "chapter_label": "LEV 6",
+      "verse_label": "29",
+      "locator": {
+        "book": "LEV",
+        "chapter": 6,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 6,
+          "verse": 29
+        }
+      ],
+      "en": "Every male among the priests shall eat of it. It is most holy.",
+      "ko": "그 고기는 지극히 거룩하니 제사장의 남자마다 먹을 것이니라",
+      "source_text_hash": "a2e6bf83cca9097d7b28cbd0f2df37e59e4e2e1e871950785e39e1f40e8b1270",
+      "translation_text_hash": "a09cc1ab790e2d56984eed4b73d8ad88383aae96b83eb2a9eca5db993c9448a6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 고기는 지극히 거룩하니 제사장의 남자마다 먹을 것이니라"
+      ],
+      "raw_text_hashes": [
+        "a09cc1ab790e2d56984eed4b73d8ad88383aae96b83eb2a9eca5db993c9448a6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:6:30",
+      "sequence": 2880,
+      "chapter_label": "LEV 6",
+      "verse_label": "30",
+      "locator": {
+        "book": "LEV",
+        "chapter": 6,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 6,
+          "verse": 30
+        }
+      ],
+      "en": "No sin offering, of which any of the blood is brought into the Tent of Meeting to make atonement in the Holy Place, shall be eaten. It shall be burned with fire.",
+      "ko": "그러나 피를 가지고 회막에 들어가 성소에서 속하게 한 속죄제 희생의 고기는 먹지 못할찌니 불사를찌니라",
+      "source_text_hash": "59f595707338b6801d406cdec9cf521fd36205cc32d097176bc89d2f184c3483",
+      "translation_text_hash": "d66d0bea1d6d066d21cdd065d404aae48c56a5d5da448282440860bd4847132d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 피를 가지고 회막에 들어가 성소에서 속하게 한 속죄제 희생의 고기는 먹지 못할찌니 불사를찌니라"
+      ],
+      "raw_text_hashes": [
+        "d66d0bea1d6d066d21cdd065d404aae48c56a5d5da448282440860bd4847132d"
+      ]
+    }
+  ]
+}

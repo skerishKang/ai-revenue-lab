@@ -1,0 +1,717 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:033",
+  "unit_ordinal": 511,
+  "unit_label": "PSA 33",
+  "book_code": "PSA",
+  "chapter_number": 33,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:33:1",
+      "sequence": 14368,
+      "chapter_label": "PSA 33",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 33,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 33,
+          "verse": 1
+        }
+      ],
+      "en": "Rejoice in the LORD, you righteous! Praise is fitting for the upright.",
+      "ko": "너희 의인들아 여호와를 즐거워하라 찬송은 정직한 자의 마땅히 할바로다",
+      "source_text_hash": "af0673fa86956a334fcb55526039d8359e146ab12b76e3ac1b33423d7ddada70",
+      "translation_text_hash": "f214a9d42780ee68659b80e82173b8fe987119c3ee7c80eebb6f6302b0bb3712",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 의인들아 여호와를 즐거워하라 찬송은 정직한 자의 마땅히 할바로다"
+      ],
+      "raw_text_hashes": [
+        "f214a9d42780ee68659b80e82173b8fe987119c3ee7c80eebb6f6302b0bb3712"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:33:2",
+      "sequence": 14369,
+      "chapter_label": "PSA 33",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 33,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 33,
+          "verse": 2
+        }
+      ],
+      "en": "Give thanks to the LORD with the lyre. Sing praises to him with the harp of ten strings.",
+      "ko": "수금으로 여호와께 감사하고 열 줄 비파로 찬송할찌어다",
+      "source_text_hash": "af4596beaf9facf7c0c6f6a5c4aae84a852a8f12c04e6823698ea520fc0f78c7",
+      "translation_text_hash": "a6d6c64bad8104a5721b87257ed2e2a6ab2f8eeba0cb7cbe5786804d7e05263e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "수금으로 여호와께 감사하고 열 줄 비파로 찬송할찌어다"
+      ],
+      "raw_text_hashes": [
+        "a6d6c64bad8104a5721b87257ed2e2a6ab2f8eeba0cb7cbe5786804d7e05263e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:33:3",
+      "sequence": 14370,
+      "chapter_label": "PSA 33",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 33,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 33,
+          "verse": 3
+        }
+      ],
+      "en": "Sing to him a new song. Play skillfully with a shout of joy!",
+      "ko": "새 노래로 그를 노래하며 즐거운 소리로 공교히 연주할찌어다",
+      "source_text_hash": "5e72e183894bfcd497df2895628300d7a86afc0cd4f93380c71c70939149987a",
+      "translation_text_hash": "47e65e7798919c8b36f589f366276596161fc4ad8fc2af6ff2732062512291f9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "새 노래로 그를 노래하며 즐거운 소리로 공교히 연주할찌어다"
+      ],
+      "raw_text_hashes": [
+        "47e65e7798919c8b36f589f366276596161fc4ad8fc2af6ff2732062512291f9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:33:4",
+      "sequence": 14371,
+      "chapter_label": "PSA 33",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 33,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 33,
+          "verse": 4
+        }
+      ],
+      "en": "For the LORD’s word is right. All his work is done in faithfulness.",
+      "ko": "여호와의 말씀은 정직하며 그 행사는 다 진실하시도다",
+      "source_text_hash": "5a9cec27d00a4937ace05309b840bee9720391179787ba09edcfdc9ea06d94cd",
+      "translation_text_hash": "dc1a2cb31d59020d6ad951ad96ce4c0f9f4614fb7505ba1b92b1ff71137918a6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 말씀은 정직하며 그 행사는 다 진실하시도다"
+      ],
+      "raw_text_hashes": [
+        "dc1a2cb31d59020d6ad951ad96ce4c0f9f4614fb7505ba1b92b1ff71137918a6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:33:5",
+      "sequence": 14372,
+      "chapter_label": "PSA 33",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 33,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 33,
+          "verse": 5
+        }
+      ],
+      "en": "He loves righteousness and justice. The earth is full of the loving kindness of the LORD.",
+      "ko": "저는 정의와 공의를 사랑하심이여 세상에 여호와의 인자하심이 충만하도다",
+      "source_text_hash": "bd19c1f615551bd2648c09955a5a821a96d27799523e9302ea886c42af6ab183",
+      "translation_text_hash": "3a40b2cfe75813798c62e9b00e322bf8a76d1e6049ab18b828986ec407554443",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저는 정의와 공의를 사랑하심이여 세상에 여호와의 인자하심이 충만하도다"
+      ],
+      "raw_text_hashes": [
+        "3a40b2cfe75813798c62e9b00e322bf8a76d1e6049ab18b828986ec407554443"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:33:6",
+      "sequence": 14373,
+      "chapter_label": "PSA 33",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 33,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 33,
+          "verse": 6
+        }
+      ],
+      "en": "By the LORD’s word, the heavens were made: all their army by the breath of his mouth.",
+      "ko": "여호와의 말씀으로 하늘이 지음이 되었으며 그 만상이 그 입 기운으로 이루었도다",
+      "source_text_hash": "6bbb91b5bd733b205ca43df41b712ba44a7464a627c3dc04a39e8566c19eb25d",
+      "translation_text_hash": "5d050733eacd3c26aaa70d3fce33087e19fd367dc9419f289d76b04a05f13680",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 말씀으로 하늘이 지음이 되었으며 그 만상이 그 입 기운으로 이루었도다"
+      ],
+      "raw_text_hashes": [
+        "5d050733eacd3c26aaa70d3fce33087e19fd367dc9419f289d76b04a05f13680"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:33:7",
+      "sequence": 14374,
+      "chapter_label": "PSA 33",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 33,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 33,
+          "verse": 7
+        }
+      ],
+      "en": "He gathers the waters of the sea together as a heap. He lays up the deeps in storehouses.",
+      "ko": "저가 바닷물을 모아 무더기 같이 쌓으시며 깊은 물을 곳간에 두시도다",
+      "source_text_hash": "2505b034dc507898fc7c6d26373a745828db976da3a82a4d997234368e8864ba",
+      "translation_text_hash": "5cccd426e2b71a53ec3b4cd302f21dbf7ced430da6fc80011635658e8c37db88",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 바닷물을 모아 무더기 같이 쌓으시며 깊은 물을 곳간에 두시도다"
+      ],
+      "raw_text_hashes": [
+        "5cccd426e2b71a53ec3b4cd302f21dbf7ced430da6fc80011635658e8c37db88"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:33:8",
+      "sequence": 14375,
+      "chapter_label": "PSA 33",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 33,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 33,
+          "verse": 8
+        }
+      ],
+      "en": "Let all the earth fear the LORD. Let all the inhabitants of the world stand in awe of him.",
+      "ko": "온 땅은 여호와를 두려워하며 세계의 모든 거민은 그를 경외할찌어다",
+      "source_text_hash": "96cbefa6b12722c0ceaca96eb1c582d5cbb04b2a53953a0effbb93dbdd8f80e4",
+      "translation_text_hash": "bc4c07193f1a44eda00ce7488c4096ebd968da96b732e2fe7c66bb60901cbefc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "온 땅은 여호와를 두려워하며 세계의 모든 거민은 그를 경외할찌어다"
+      ],
+      "raw_text_hashes": [
+        "bc4c07193f1a44eda00ce7488c4096ebd968da96b732e2fe7c66bb60901cbefc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:33:9",
+      "sequence": 14376,
+      "chapter_label": "PSA 33",
+      "verse_label": "9",
+      "locator": {
+        "book": "PSA",
+        "chapter": 33,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 33,
+          "verse": 9
+        }
+      ],
+      "en": "For he spoke, and it was done. He commanded, and it stood firm.",
+      "ko": "저가 말씀하시매 이루었으며 명하시매 견고히 섰도다",
+      "source_text_hash": "8b0a43534180747331888d1e6193edbd30c7f18dfb7da7dcbca0dae0fc97026e",
+      "translation_text_hash": "e07eb745457639d56005a4a9ff3d5672d0b1a9943646d99db7b78d63d2525f73",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 말씀하시매 이루었으며 명하시매 견고히 섰도다"
+      ],
+      "raw_text_hashes": [
+        "e07eb745457639d56005a4a9ff3d5672d0b1a9943646d99db7b78d63d2525f73"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:33:10",
+      "sequence": 14377,
+      "chapter_label": "PSA 33",
+      "verse_label": "10",
+      "locator": {
+        "book": "PSA",
+        "chapter": 33,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 33,
+          "verse": 10
+        }
+      ],
+      "en": "The LORD brings the counsel of the nations to nothing. He makes the thoughts of the peoples to be of no effect.",
+      "ko": "여호와께서 열방의 도모를 폐하시며 민족들의 사상을 무효케 하시도다",
+      "source_text_hash": "d6c64ed1cf394d86b1b22a2fe8a60d80563292406dc8ba951fee13349f86d71b",
+      "translation_text_hash": "4165d1a0b96098655ff41cdfc559d65625bd6164cd71f5517a5bf926b87a5e48",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 열방의 도모를 폐하시며 민족들의 사상을 무효케 하시도다"
+      ],
+      "raw_text_hashes": [
+        "4165d1a0b96098655ff41cdfc559d65625bd6164cd71f5517a5bf926b87a5e48"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:33:11",
+      "sequence": 14378,
+      "chapter_label": "PSA 33",
+      "verse_label": "11",
+      "locator": {
+        "book": "PSA",
+        "chapter": 33,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 33,
+          "verse": 11
+        }
+      ],
+      "en": "The counsel of the LORD stands fast forever, the thoughts of his heart to all generations.",
+      "ko": "여호와의 도모는 영영히 서고 그 심사는 대대에 이르리로다",
+      "source_text_hash": "7faaf268dee0f3f5cc57eaee521c6d41b8ef31ba25b963fe58222f2b828b98f4",
+      "translation_text_hash": "796ca257336ce69a00b4d5540ff59ae7f6cd785949d31ec3211114d3a7defe7e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 도모는 영영히 서고 그 심사는 대대에 이르리로다"
+      ],
+      "raw_text_hashes": [
+        "796ca257336ce69a00b4d5540ff59ae7f6cd785949d31ec3211114d3a7defe7e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:33:12",
+      "sequence": 14379,
+      "chapter_label": "PSA 33",
+      "verse_label": "12",
+      "locator": {
+        "book": "PSA",
+        "chapter": 33,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 33,
+          "verse": 12
+        }
+      ],
+      "en": "Blessed is the nation whose God is the LORD, the people whom he has chosen for his own inheritance.",
+      "ko": "여호와로 자기 하나님을 삼은 나라 곧 하나님의 기업으로 빼신바 된 백성은 복이 있도다",
+      "source_text_hash": "ce8fc7544b74861efd516fd919ce9b788ddb244d55e18267c356de2fb2a5698f",
+      "translation_text_hash": "96ceef2114592482044c2af9861b7c04700428c1dd9a45cfdf88a3131dc00353",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와로 자기 하나님을 삼은 나라 곧 하나님의 기업으로 빼신바 된 백성은 복이 있도다"
+      ],
+      "raw_text_hashes": [
+        "96ceef2114592482044c2af9861b7c04700428c1dd9a45cfdf88a3131dc00353"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:33:13",
+      "sequence": 14380,
+      "chapter_label": "PSA 33",
+      "verse_label": "13",
+      "locator": {
+        "book": "PSA",
+        "chapter": 33,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 33,
+          "verse": 13
+        }
+      ],
+      "en": "The LORD looks from heaven. He sees all the sons of men.",
+      "ko": "여호와께서 하늘에서 감찰하사 모든 인생을 보심이여",
+      "source_text_hash": "bfb4fef6b696ba566fc54f5b9d4849892d79d292ae10847f21e37c6ae6274e4e",
+      "translation_text_hash": "cbd99774e110b2edb1432c8c7cdd9605858a66cd53737fa7d255173d9f9567c3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 하늘에서 감찰하사 모든 인생을 보심이여"
+      ],
+      "raw_text_hashes": [
+        "cbd99774e110b2edb1432c8c7cdd9605858a66cd53737fa7d255173d9f9567c3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:33:14",
+      "sequence": 14381,
+      "chapter_label": "PSA 33",
+      "verse_label": "14",
+      "locator": {
+        "book": "PSA",
+        "chapter": 33,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 33,
+          "verse": 14
+        }
+      ],
+      "en": "From the place of his habitation he looks out on all the inhabitants of the earth,",
+      "ko": "곧 그 거하신 곳에서 세상의 모든 거민을 하감하시도다",
+      "source_text_hash": "8ac9b4ab53cd4bb2d4a891854c3fc7df2bf16835c081eea6e2b15bb2857a6d99",
+      "translation_text_hash": "87f402b1022d924075e74b404d11bd088a19d92b9a92c173ab6fe58837b6b762",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 그 거하신 곳에서 세상의 모든 거민을 하감하시도다"
+      ],
+      "raw_text_hashes": [
+        "87f402b1022d924075e74b404d11bd088a19d92b9a92c173ab6fe58837b6b762"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:33:15",
+      "sequence": 14382,
+      "chapter_label": "PSA 33",
+      "verse_label": "15",
+      "locator": {
+        "book": "PSA",
+        "chapter": 33,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 33,
+          "verse": 15
+        }
+      ],
+      "en": "he who fashions all of their hearts; and he considers all of their works.",
+      "ko": "저는 일반의 마음을 지으시며 저희 모든 행사를 감찰하시는 자로다",
+      "source_text_hash": "90adbc6b3afa3a571da5355112d853dce3ee53071378a271793705ab2797633c",
+      "translation_text_hash": "6771cc62ab64b6bb54b9be371f791a336404f678f52e4c725ba1e72152806aad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저는 일반의 마음을 지으시며 저희 모든 행사를 감찰하시는 자로다"
+      ],
+      "raw_text_hashes": [
+        "6771cc62ab64b6bb54b9be371f791a336404f678f52e4c725ba1e72152806aad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:33:16",
+      "sequence": 14383,
+      "chapter_label": "PSA 33",
+      "verse_label": "16",
+      "locator": {
+        "book": "PSA",
+        "chapter": 33,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 33,
+          "verse": 16
+        }
+      ],
+      "en": "There is no king saved by the multitude of an army. A mighty man is not delivered by great strength.",
+      "ko": "많은 군대로 구원 얻은 왕이 없으며 용사가 힘이 커도 스스로 구하지 못하는도다",
+      "source_text_hash": "58cb46bce7d58463e421d2c6a145f87a16a6d0aa798c36ec84cf83dcbd5b7b70",
+      "translation_text_hash": "b885d85fcef5e18c01c3fa389726f9eec4887a03f67b0c331ce474e0c95d0dca",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "많은 군대로 구원 얻은 왕이 없으며 용사가 힘이 커도 스스로 구하지 못하는도다"
+      ],
+      "raw_text_hashes": [
+        "b885d85fcef5e18c01c3fa389726f9eec4887a03f67b0c331ce474e0c95d0dca"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:33:17",
+      "sequence": 14384,
+      "chapter_label": "PSA 33",
+      "verse_label": "17",
+      "locator": {
+        "book": "PSA",
+        "chapter": 33,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 33,
+          "verse": 17
+        }
+      ],
+      "en": "A horse is a vain thing for safety, neither does he deliver any by his great power.",
+      "ko": "구원함에 말은 헛 것임이여 그 큰 힘으로 구하지 못하는도다",
+      "source_text_hash": "e1a4f7012593cb7f5d55edbce63b5aeaf70b830491a6465ba6fff222376bfcc6",
+      "translation_text_hash": "bf9c3c3557f34e4977a4ee7b0838cbc6770ec1904bc9a6fc83ce038ce4e32200",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "구원함에 말은 헛 것임이여 그 큰 힘으로 구하지 못하는도다"
+      ],
+      "raw_text_hashes": [
+        "bf9c3c3557f34e4977a4ee7b0838cbc6770ec1904bc9a6fc83ce038ce4e32200"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:33:18",
+      "sequence": 14385,
+      "chapter_label": "PSA 33",
+      "verse_label": "18",
+      "locator": {
+        "book": "PSA",
+        "chapter": 33,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 33,
+          "verse": 18
+        }
+      ],
+      "en": "Behold, the LORD’s eye is on those who fear him, on those who hope in his loving kindness,",
+      "ko": "여호와는 그 경외하는 자 곧 그 인자하심을 바라는 자를 살피사",
+      "source_text_hash": "1181c2dabe2c7977284de520892ba441f5bb7a5d5ef732e4f533068b4d0eea83",
+      "translation_text_hash": "18c203fbc732477abe90606d3df897d0f12d48b5a20c63ddee36c4da7f6218f1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와는 그 경외하는 자 곧 그 인자하심을 바라는 자를 살피사"
+      ],
+      "raw_text_hashes": [
+        "18c203fbc732477abe90606d3df897d0f12d48b5a20c63ddee36c4da7f6218f1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:33:19",
+      "sequence": 14386,
+      "chapter_label": "PSA 33",
+      "verse_label": "19",
+      "locator": {
+        "book": "PSA",
+        "chapter": 33,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 33,
+          "verse": 19
+        }
+      ],
+      "en": "to deliver their soul from death, to keep them alive in famine.",
+      "ko": "저희 영혼을 사망에서 건지시며 저희를 기근시에 살게 하시는도다",
+      "source_text_hash": "ffe16df63ca0b1f3144b87face01971dda683c2ddc4ec5d3addda3c912e9a3f1",
+      "translation_text_hash": "7274838c4833cabbe53499bf5c1506913b99509aa2844e7b1c09bba188e7d2be",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희 영혼을 사망에서 건지시며 저희를 기근시에 살게 하시는도다"
+      ],
+      "raw_text_hashes": [
+        "7274838c4833cabbe53499bf5c1506913b99509aa2844e7b1c09bba188e7d2be"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:33:20",
+      "sequence": 14387,
+      "chapter_label": "PSA 33",
+      "verse_label": "20",
+      "locator": {
+        "book": "PSA",
+        "chapter": 33,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 33,
+          "verse": 20
+        }
+      ],
+      "en": "Our soul has waited for the LORD. He is our help and our shield.",
+      "ko": "우리 영혼이 여호와를 바람이여 저는 우리의 도움과 방패시로다",
+      "source_text_hash": "79a564a0761a0abd5ee27e2e2e25d4af130cb3f78c0074dd8628322e7bec86b6",
+      "translation_text_hash": "bc831dfc4550426bd9eb295896f41d6794bc6c0c0c3acc683551108826c392a5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리 영혼이 여호와를 바람이여 저는 우리의 도움과 방패시로다"
+      ],
+      "raw_text_hashes": [
+        "bc831dfc4550426bd9eb295896f41d6794bc6c0c0c3acc683551108826c392a5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:33:21",
+      "sequence": 14388,
+      "chapter_label": "PSA 33",
+      "verse_label": "21",
+      "locator": {
+        "book": "PSA",
+        "chapter": 33,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 33,
+          "verse": 21
+        }
+      ],
+      "en": "For our heart rejoices in him, because we have trusted in his holy name.",
+      "ko": "우리 마음이 저를 즐거워함이여 우리가 그 성호를 의지한 연고로다",
+      "source_text_hash": "a0b9dec712203a3ff747cc83d18325657f5e9cc02b706214ec3218520a875f6c",
+      "translation_text_hash": "391725b0d7933772471b7665900cbb76d8890f0431b8eac56ae1692aa5637d9e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리 마음이 저를 즐거워함이여 우리가 그 성호를 의지한 연고로다"
+      ],
+      "raw_text_hashes": [
+        "391725b0d7933772471b7665900cbb76d8890f0431b8eac56ae1692aa5637d9e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:33:22",
+      "sequence": 14389,
+      "chapter_label": "PSA 33",
+      "verse_label": "22",
+      "locator": {
+        "book": "PSA",
+        "chapter": 33,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 33,
+          "verse": 22
+        }
+      ],
+      "en": "Let your loving kindness be on us, LORD, since we have hoped in you.",
+      "ko": "여호와여 우리가 주께 바라는 대로 주의 인자하심을 우리에게 베푸소서",
+      "source_text_hash": "0db2463bb8bd7cedbcaab99a3fdc62b4f84e1ee01f42e0ebb1e3122367252e39",
+      "translation_text_hash": "5747ab7ba98159166e6b48afb652d93aea27fc2fb7cfe562181d7933039824a2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 우리가 주께 바라는 대로 주의 인자하심을 우리에게 베푸소서"
+      ],
+      "raw_text_hashes": [
+        "5747ab7ba98159166e6b48afb652d93aea27fc2fb7cfe562181d7933039824a2"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,205 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ISA:chapter:020",
+  "unit_ordinal": 699,
+  "unit_label": "ISA 20",
+  "book_code": "ISA",
+  "chapter_number": 20,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ISA:20:1",
+      "sequence": 18031,
+      "chapter_label": "ISA 20",
+      "verse_label": "1",
+      "locator": {
+        "book": "ISA",
+        "chapter": 20,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 20,
+          "verse": 1
+        }
+      ],
+      "en": "In the year that Tartan came to Ashdod, when Sargon the king of Assyria sent him, and he fought against Ashdod and took it;",
+      "ko": "앗수르 왕 사르곤이 군대장관을 아스돗으로 보내매 그가 와서 아스돗을 쳐서 취하던 해",
+      "source_text_hash": "fb0315000ca6d9eefb40123dc751fa401da85b8eb377a609ba3bc1ac65f39000",
+      "translation_text_hash": "578178714acfb5007234c4a93ea0864aeba8b0122159c326f8aec7b55118703e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "앗수르 왕 사르곤이 군대장관을 아스돗으로 보내매 그가 와서 아스돗을 쳐서 취하던 해"
+      ],
+      "raw_text_hashes": [
+        "578178714acfb5007234c4a93ea0864aeba8b0122159c326f8aec7b55118703e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:20:2",
+      "sequence": 18032,
+      "chapter_label": "ISA 20",
+      "verse_label": "2",
+      "locator": {
+        "book": "ISA",
+        "chapter": 20,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 20,
+          "verse": 2
+        }
+      ],
+      "en": "at that time the LORD spoke by Isaiah the son of Amoz, saying, “Go, and loosen the sackcloth from off your waist, and take your sandals from off your feet.” He did so, walking naked and barefoot.",
+      "ko": "곧 그 때에 여호와께서 아모스의 아들 이사야에게 일러 가라사대 갈찌어다 네 허리에서 베를 끄르고 네 발에서 신을 벗을찌니라 하시매 그가 그대로 하여 벗은 몸과 벗은 발로 행하니라",
+      "source_text_hash": "aa829625ea7b2d0315a222230603fc761a4cb5d6bb4f2dc4ca14565898eba18f",
+      "translation_text_hash": "6293d587345c110ff3eb82871600b6bd23d982a220434a23c02d4ebb7305b24d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 그 때에 여호와께서 아모스의 아들 이사야에게 일러 가라사대 갈찌어다 네 허리에서 베를 끄르고 네 발에서 신을 벗을찌니라 하시매 그가 그대로 하여 벗은 몸과 벗은 발로 행하니라"
+      ],
+      "raw_text_hashes": [
+        "6293d587345c110ff3eb82871600b6bd23d982a220434a23c02d4ebb7305b24d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:20:3",
+      "sequence": 18033,
+      "chapter_label": "ISA 20",
+      "verse_label": "3",
+      "locator": {
+        "book": "ISA",
+        "chapter": 20,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 20,
+          "verse": 3
+        }
+      ],
+      "en": "The LORD said, “As my servant Isaiah has walked naked and barefoot three years for a sign and a wonder concerning Egypt and concerning Ethiopia,",
+      "ko": "여호와께서 가라사대 나의 종 이사야가 삼년 동안 벗은 몸과 벗은 발로 행하여 애굽과 구스에 대하여 예표와 기적이 되게 되었느니라",
+      "source_text_hash": "5c700c3644456a770d9d0cff7ad318eda66229ef6c2d555ec4aa386adf2e5a55",
+      "translation_text_hash": "c512698462c8d955b105e0f8b7737e03bc40736d96c5a5b32ffda66f46fd5222",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 가라사대 나의 종 이사야가 삼년 동안 벗은 몸과 벗은 발로 행하여 애굽과 구스에 대하여 예표와 기적이 되게 되었느니라"
+      ],
+      "raw_text_hashes": [
+        "c512698462c8d955b105e0f8b7737e03bc40736d96c5a5b32ffda66f46fd5222"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:20:4",
+      "sequence": 18034,
+      "chapter_label": "ISA 20",
+      "verse_label": "4",
+      "locator": {
+        "book": "ISA",
+        "chapter": 20,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 20,
+          "verse": 4
+        }
+      ],
+      "en": "so the king of Assyria will lead away the captives of Egypt and the exiles of Ethiopia, young and old, naked and barefoot, and with buttocks uncovered, to the shame of Egypt.",
+      "ko": "이와 같이 애굽의 포로와 구스의 사로잡힌 자가 앗수르 왕에게 끌려 갈 때에 젊은 자나 늙은 자가 다 벗은 몸, 벗은 발로 볼기까지 드러내어 애굽의 수치를 뵈이리니",
+      "source_text_hash": "66452bc6d3e8ed7b11bd7884f51d81780e6f23ede24df20f5dea89da5b22e473",
+      "translation_text_hash": "5877f34fa27618c1b5a265df61797aac92cfb716a64a06ad47928350112ed077",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이와 같이 애굽의 포로와 구스의 사로잡힌 자가 앗수르 왕에게 끌려 갈 때에 젊은 자나 늙은 자가 다 벗은 몸, 벗은 발로 볼기까지 드러내어 애굽의 수치를 뵈이리니"
+      ],
+      "raw_text_hashes": [
+        "5877f34fa27618c1b5a265df61797aac92cfb716a64a06ad47928350112ed077"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:20:5",
+      "sequence": 18035,
+      "chapter_label": "ISA 20",
+      "verse_label": "5",
+      "locator": {
+        "book": "ISA",
+        "chapter": 20,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 20,
+          "verse": 5
+        }
+      ],
+      "en": "They will be dismayed and confounded, because of Ethiopia their expectation, and of Egypt their glory.",
+      "ko": "그들이 그 바라던 구스와 자랑하던 애굽을 인하여 놀라고 부끄러워할 것이라",
+      "source_text_hash": "9cd01edf0c57b9d34ba39ee367232c66ab0ef8222fc68177fcc5be98915734c8",
+      "translation_text_hash": "2b49c5404a1abf886a597c573fde7258aa728caa12c38b21ccdb2a23151813d1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 그 바라던 구스와 자랑하던 애굽을 인하여 놀라고 부끄러워할 것이라"
+      ],
+      "raw_text_hashes": [
+        "2b49c5404a1abf886a597c573fde7258aa728caa12c38b21ccdb2a23151813d1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:20:6",
+      "sequence": 18036,
+      "chapter_label": "ISA 20",
+      "verse_label": "6",
+      "locator": {
+        "book": "ISA",
+        "chapter": 20,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 20,
+          "verse": 6
+        }
+      ],
+      "en": "The inhabitants of this coast land will say in that day, ‘Behold, this is our expectation, where we fled for help to be delivered from the king of Assyria. And we, how will we escape?’”",
+      "ko": "그 날에 이 해변 거민이 말하기를 우리가 믿던 나라 곧 우리가 앗수르 왕에게서 벗어나기를 바라고 달려가서 도움을 구하던 나라가 이같이 되었은즉 우리가 어찌 능히 피하리요 하리라",
+      "source_text_hash": "ee271e715f321e3bb58ae86396b7aa03daeb140993f13aa79a3267d2c8399dec",
+      "translation_text_hash": "74ecf28db9712cd46991979ac535c885be69bee13623d64c64541edbd5b8b2a3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날에 이 해변 거민이 말하기를 우리가 믿던 나라 곧 우리가 앗수르 왕에게서 벗어나기를 바라고 달려가서 도움을 구하던 나라가 이같이 되었은즉 우리가 어찌 능히 피하리요 하리라"
+      ],
+      "raw_text_hashes": [
+        "74ecf28db9712cd46991979ac535c885be69bee13623d64c64541edbd5b8b2a3"
+      ]
+    }
+  ]
+}

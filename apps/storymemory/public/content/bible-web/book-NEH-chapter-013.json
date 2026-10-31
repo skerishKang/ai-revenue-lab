@@ -1,0 +1,1005 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:NEH:chapter:013",
+  "unit_ordinal": 426,
+  "unit_label": "NEH 13",
+  "book_code": "NEH",
+  "chapter_number": 13,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:NEH:13:1",
+      "sequence": 12673,
+      "chapter_label": "NEH 13",
+      "verse_label": "1",
+      "locator": {
+        "book": "NEH",
+        "chapter": 13,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 13,
+          "verse": 1
+        }
+      ],
+      "en": "On that day they read in the book of Moses in the hearing of the people; and it was found written in it that an Ammonite and a Moabite should not enter into the assembly of God forever,",
+      "ko": "그 날에 모세의 책을 낭독하여 백성에게 들렸는데 그 책에 기록하기를 암몬 사람과 모압 사람은 영영히 하나님의 회에 들어오지 못하리니",
+      "source_text_hash": "aaa278bbf0dbad0152af8a771b7d6737ee3d6aea5b608277776742fbb501b4cb",
+      "translation_text_hash": "2ff0ed588262675de3214e27977fe783f70bd71d575dac77523fb7af0d6e8812",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날에 모세의 책을 낭독하여 백성에게 들렸는데 그 책에 기록하기를 암몬 사람과 모압 사람은 영영히 하나님의 회에 들어오지 못하리니"
+      ],
+      "raw_text_hashes": [
+        "2ff0ed588262675de3214e27977fe783f70bd71d575dac77523fb7af0d6e8812"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:13:2",
+      "sequence": 12674,
+      "chapter_label": "NEH 13",
+      "verse_label": "2",
+      "locator": {
+        "book": "NEH",
+        "chapter": 13,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 13,
+          "verse": 2
+        }
+      ],
+      "en": "because they didn’t meet the children of Israel with bread and with water, but hired Balaam against them to curse them; however, our God turned the curse into a blessing.",
+      "ko": "이는 저희가 양식과 물로 이스라엘 자손을 영접지 아니하고 도리어 발람에게 뇌물을 주어 저주하게 하였음이라 그러나 우리 하나님이 그 저주를 돌이켜 복이 되게 하셨다 하였는지라",
+      "source_text_hash": "7544a7fa35327416be9bf85333a4f25b6a22a90ff148322d0be27c45cb139267",
+      "translation_text_hash": "cb408723378df86c6b07eb266f482d0330637d9fb809b632b3cf94c65371f1dc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 저희가 양식과 물로 이스라엘 자손을 영접지 아니하고 도리어 발람에게 뇌물을 주어 저주하게 하였음이라 그러나 우리 하나님이 그 저주를 돌이켜 복이 되게 하셨다 하였는지라"
+      ],
+      "raw_text_hashes": [
+        "cb408723378df86c6b07eb266f482d0330637d9fb809b632b3cf94c65371f1dc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:13:3",
+      "sequence": 12675,
+      "chapter_label": "NEH 13",
+      "verse_label": "3",
+      "locator": {
+        "book": "NEH",
+        "chapter": 13,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 13,
+          "verse": 3
+        }
+      ],
+      "en": "It came to pass, when they had heard the law, that they separated all the mixed multitude from Israel.",
+      "ko": "백성이 이 율법을 듣고 곧 섞인 무리를 이스라엘 가운데서 몰수히 분리케 하였느니라",
+      "source_text_hash": "1283446df1cd895d739166317f37aeae4fc87e3df516054b2c07e88acd267e4b",
+      "translation_text_hash": "b37ea083236edf6c2660aff895feff49430e02cc8e2a0af0fe39e050c3746f29",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "백성이 이 율법을 듣고 곧 섞인 무리를 이스라엘 가운데서 몰수히 분리케 하였느니라"
+      ],
+      "raw_text_hashes": [
+        "b37ea083236edf6c2660aff895feff49430e02cc8e2a0af0fe39e050c3746f29"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:13:4",
+      "sequence": 12676,
+      "chapter_label": "NEH 13",
+      "verse_label": "4",
+      "locator": {
+        "book": "NEH",
+        "chapter": 13,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 13,
+          "verse": 4
+        }
+      ],
+      "en": "Now before this, Eliashib the priest, who was appointed over the rooms of the house of our God, being allied to Tobiah,",
+      "ko": "이전에 우리 하나님의 전 골방을 맡은 제사장 엘리아십이 도비야와 연락이 있었으므로",
+      "source_text_hash": "75238f9d669725a130b051fd965289a109cac8f14cda18734cf5217ed631b8ef",
+      "translation_text_hash": "d95ef40af75801201482f48b1ac9e05c94bbdb3fd88fc7b01244b9afd3c367fc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이전에 우리 하나님의 전 골방을 맡은 제사장 엘리아십이 도비야와 연락이 있었으므로"
+      ],
+      "raw_text_hashes": [
+        "d95ef40af75801201482f48b1ac9e05c94bbdb3fd88fc7b01244b9afd3c367fc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:13:5",
+      "sequence": 12677,
+      "chapter_label": "NEH 13",
+      "verse_label": "5",
+      "locator": {
+        "book": "NEH",
+        "chapter": 13,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 13,
+          "verse": 5
+        }
+      ],
+      "en": "had prepared for him a great room, where previously they laid the meal offerings, the frankincense, the vessels, and the tithes of the grain, the new wine, and the oil, which were given by commandment to the Levites, the singers, and the gatekeepers; and the wave offerings for the priests.",
+      "ko": "도비야를 위하여 한 큰 방을 갖추었으니 그 방은 원래 소제물과 유향과 기명과 또 레위 사람들과 노래하는 자들과 문지기들에게 십일조로 주는 곡물과 새 포도주와 기름과 또 제사장들에게 주는 거제물을 두는 곳이라",
+      "source_text_hash": "0e091227d22ade775fb306e6ca7bec1f2c45dbe397339ad522957b3ed73ee25f",
+      "translation_text_hash": "97eec54b968d450571e988f8b8ae207bf0c225f36893a1101b1c43ca650a852e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "도비야를 위하여 한 큰 방을 갖추었으니 그 방은 원래 소제물과 유향과 기명과 또 레위 사람들과 노래하는 자들과 문지기들에게 십일조로 주는 곡물과 새 포도주와 기름과 또 제사장들에게 주는 거제물을 두는 곳이라"
+      ],
+      "raw_text_hashes": [
+        "97eec54b968d450571e988f8b8ae207bf0c225f36893a1101b1c43ca650a852e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:13:6",
+      "sequence": 12678,
+      "chapter_label": "NEH 13",
+      "verse_label": "6",
+      "locator": {
+        "book": "NEH",
+        "chapter": 13,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 13,
+          "verse": 6
+        }
+      ],
+      "en": "But in all this, I was not at Jerusalem; for in the thirty-second year of Artaxerxes king of Babylon I went to the king; and after some days I asked leave of the king,",
+      "ko": "그 때에는 내가 예루살렘에 있지 아니하였었느니라 바벨론 왕 아닥사스다 삼십 이년에 내가 왕에게 나아갔다가 며칠 후에 왕에게 말미를 청하고",
+      "source_text_hash": "bf377b2737c74f34a4c9838c949f229c23b5258276eead695bf2cf3eb94dd49a",
+      "translation_text_hash": "3780424b90020ecbd6ea7121eb821f30e10315fa56ac9ed9fe7532ffe5a3848f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에는 내가 예루살렘에 있지 아니하였었느니라 바벨론 왕 아닥사스다 삼십 이년에 내가 왕에게 나아갔다가 며칠 후에 왕에게 말미를 청하고"
+      ],
+      "raw_text_hashes": [
+        "3780424b90020ecbd6ea7121eb821f30e10315fa56ac9ed9fe7532ffe5a3848f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:13:7",
+      "sequence": 12679,
+      "chapter_label": "NEH 13",
+      "verse_label": "7",
+      "locator": {
+        "book": "NEH",
+        "chapter": 13,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 13,
+          "verse": 7
+        }
+      ],
+      "en": "and I came to Jerusalem, and understood the evil that Eliashib had done for Tobiah, in preparing him a room in the courts of God’s house.",
+      "ko": "예루살렘에 이르러서야 엘리아십이 도비야를 위하여 하나님의 전 뜰에 방을 갖춘 악한 일을 안지라",
+      "source_text_hash": "1a0f957bf2ad2f1e6dd4bdc6af47df07c796fcfdf54e2e442499c1cd3357d7a4",
+      "translation_text_hash": "20cde622a8f0732470ed2fd196f568fd08a27325967cc56138e1e88894e251db",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예루살렘에 이르러서야 엘리아십이 도비야를 위하여 하나님의 전 뜰에 방을 갖춘 악한 일을 안지라"
+      ],
+      "raw_text_hashes": [
+        "20cde622a8f0732470ed2fd196f568fd08a27325967cc56138e1e88894e251db"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:13:8",
+      "sequence": 12680,
+      "chapter_label": "NEH 13",
+      "verse_label": "8",
+      "locator": {
+        "book": "NEH",
+        "chapter": 13,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 13,
+          "verse": 8
+        }
+      ],
+      "en": "It grieved me severely. Therefore I threw all Tobiah’s household stuff out of the room.",
+      "ko": "내가 심히 근심하여 도비야의 세간을 그 방 밖으로 다 내어 던지고",
+      "source_text_hash": "91874a4c65534db14282c3163aebfd5251d903ccdc9ab1711567bccc91720e60",
+      "translation_text_hash": "5a56108952d30f058581ebcfd755ca6193ca6497c55dd6d586eb4cb489a75258",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 심히 근심하여 도비야의 세간을 그 방 밖으로 다 내어 던지고"
+      ],
+      "raw_text_hashes": [
+        "5a56108952d30f058581ebcfd755ca6193ca6497c55dd6d586eb4cb489a75258"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:13:9",
+      "sequence": 12681,
+      "chapter_label": "NEH 13",
+      "verse_label": "9",
+      "locator": {
+        "book": "NEH",
+        "chapter": 13,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 13,
+          "verse": 9
+        }
+      ],
+      "en": "Then I commanded, and they cleansed the rooms. I brought into them the vessels of God’s house, with the meal offerings and the frankincense again.",
+      "ko": "명하여 그 방을 정결케 하고 하나님의 전의 기명과 소제물과 유향을 다시 그리로 들여 놓았느니라",
+      "source_text_hash": "251c571bc3a13d4d7dfd0af6b9fa1d50c91510991545290e028d73f006cfc66c",
+      "translation_text_hash": "b6db5ef7df0172ae01c81f00da41ba1b275d3dbbb2a291ce6d397445ee6f1163",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "명하여 그 방을 정결케 하고 하나님의 전의 기명과 소제물과 유향을 다시 그리로 들여 놓았느니라"
+      ],
+      "raw_text_hashes": [
+        "b6db5ef7df0172ae01c81f00da41ba1b275d3dbbb2a291ce6d397445ee6f1163"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:13:10",
+      "sequence": 12682,
+      "chapter_label": "NEH 13",
+      "verse_label": "10",
+      "locator": {
+        "book": "NEH",
+        "chapter": 13,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 13,
+          "verse": 10
+        }
+      ],
+      "en": "I perceived that the portions of the Levites had not been given them, so that the Levites and the singers, who did the work, had each fled to his field.",
+      "ko": "내가 또 알아 본즉 레위 사람들의 받을 것을 주지 아니 하였으므로 그 직무를 행하는 레위 사람들과 노래하는 자들이 각각 그 전리로 도망하였기로",
+      "source_text_hash": "36d6e085e823a8696f2d5071c521d71bb2467ae4b1fb4065efa2eaf1bc01d00b",
+      "translation_text_hash": "e3232692f27318463d2de5404cb63a6946e9369f31afba226cb4ef8ccf90f0c3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 또 알아 본즉 레위 사람들의 받을 것을 주지 아니 하였으므로 그 직무를 행하는 레위 사람들과 노래하는 자들이 각각 그 전리로 도망하였기로"
+      ],
+      "raw_text_hashes": [
+        "e3232692f27318463d2de5404cb63a6946e9369f31afba226cb4ef8ccf90f0c3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:13:11",
+      "sequence": 12683,
+      "chapter_label": "NEH 13",
+      "verse_label": "11",
+      "locator": {
+        "book": "NEH",
+        "chapter": 13,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 13,
+          "verse": 11
+        }
+      ],
+      "en": "Then I contended with the rulers, and said, “Why is God’s house forsaken?” I gathered them together, and set them in their place.",
+      "ko": "내가 모든 민장을 꾸짖어 이르기를 하나님의 전이 어찌하여 버린바 되었느냐 하고 곧 레위 사람을 불러 모아 다시 그 처소에 세웠더니",
+      "source_text_hash": "a6e3d41ef9035924872acfbd98cb6ee554989a0331d645dc13d50ce29fd59afa",
+      "translation_text_hash": "f140d2fc21a002a749042c4f2c89c42bd48b599e3c885a568d7b2e8b3b1143be",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 모든 민장을 꾸짖어 이르기를 하나님의 전이 어찌하여 버린바 되었느냐 하고 곧 레위 사람을 불러 모아 다시 그 처소에 세웠더니"
+      ],
+      "raw_text_hashes": [
+        "f140d2fc21a002a749042c4f2c89c42bd48b599e3c885a568d7b2e8b3b1143be"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:13:12",
+      "sequence": 12684,
+      "chapter_label": "NEH 13",
+      "verse_label": "12",
+      "locator": {
+        "book": "NEH",
+        "chapter": 13,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 13,
+          "verse": 12
+        }
+      ],
+      "en": "Then all Judah brought the tithe of the grain, the new wine, and the oil to the treasuries.",
+      "ko": "이에 온 유다가 곡식과 새 포도주와 기름의 십일조를 가져다가 곳간에 들이므로",
+      "source_text_hash": "01ee2b61d4272c659300792be4b5ef0f35cef8b789cc701dae2c4c7718d8207e",
+      "translation_text_hash": "e30e2d6636168cd9298c43f5663df5cea75c4567f498f070f382ae5d236a1273",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 온 유다가 곡식과 새 포도주와 기름의 십일조를 가져다가 곳간에 들이므로"
+      ],
+      "raw_text_hashes": [
+        "e30e2d6636168cd9298c43f5663df5cea75c4567f498f070f382ae5d236a1273"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:13:13",
+      "sequence": 12685,
+      "chapter_label": "NEH 13",
+      "verse_label": "13",
+      "locator": {
+        "book": "NEH",
+        "chapter": 13,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 13,
+          "verse": 13
+        }
+      ],
+      "en": "I made treasurers over the treasuries, Shelemiah the priest, and Zadok the scribe, and of the Levites, Pedaiah: and next to them was Hanan the son of Zaccur, the son of Mattaniah; for they were counted faithful, and their business was to distribute to their brothers.",
+      "ko": "내가 제사장 셀레먀와 서기관 사독과 레위 사람 브다야로 고지기를 삼고 맛다냐의 손자 삭굴의 아들 하난으로 버금을 삼았나니 이는 저희가 충직한 자로 인정됨이라 그 직분은 형제들에게 분배하는 일이었느니라",
+      "source_text_hash": "dd4c64475f58ad1edcf2946db52751cc475ed8ad649197a7f98d717adcb5d32d",
+      "translation_text_hash": "2afac857c7f04b715da9117dc5aefa78ca18c58c61df9e718f34343d39152eda",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 제사장 셀레먀와 서기관 사독과 레위 사람 브다야로 고지기를 삼고 맛다냐의 손자 삭굴의 아들 하난으로 버금을 삼았나니 이는 저희가 충직한 자로 인정됨이라 그 직분은 형제들에게 분배하는 일이었느니라"
+      ],
+      "raw_text_hashes": [
+        "2afac857c7f04b715da9117dc5aefa78ca18c58c61df9e718f34343d39152eda"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:13:14",
+      "sequence": 12686,
+      "chapter_label": "NEH 13",
+      "verse_label": "14",
+      "locator": {
+        "book": "NEH",
+        "chapter": 13,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 13,
+          "verse": 14
+        }
+      ],
+      "en": "Remember me, my God, concerning this, and don’t wipe out my good deeds that I have done for the house of my God, and for its observances.",
+      "ko": "내 하나님이여 이 일을 인하여 나를 기억하옵소서 내 하나님의 전과 그 모든 직무를 위하여 나의 행한 선한 일을 도말하지 마옵소서",
+      "source_text_hash": "0035de9761f8270d272fc3237a3e2c90b287f88a08793702e010916312208f56",
+      "translation_text_hash": "e4bbe0784f6c24304bad50ab61da7f417b7b1b7b6325a766377cdb7180f693d7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 하나님이여 이 일을 인하여 나를 기억하옵소서 내 하나님의 전과 그 모든 직무를 위하여 나의 행한 선한 일을 도말하지 마옵소서"
+      ],
+      "raw_text_hashes": [
+        "e4bbe0784f6c24304bad50ab61da7f417b7b1b7b6325a766377cdb7180f693d7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:13:15",
+      "sequence": 12687,
+      "chapter_label": "NEH 13",
+      "verse_label": "15",
+      "locator": {
+        "book": "NEH",
+        "chapter": 13,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 13,
+          "verse": 15
+        }
+      ],
+      "en": "In those days I saw some men treading wine presses on the Sabbath in Judah, bringing in sheaves, and loading donkeys with wine, grapes, figs, and all kinds of burdens which they brought into Jerusalem on the Sabbath day; and I testified against them in the day in which they sold food.",
+      "ko": "그 때에 내가 본즉 유다에서 어떤 사람이 안식일에 술틀을 밟고 곡식단을 나귀에 실어 운반하며 포도주와 포도와 무화과와 여러가지 짐을 지고 안식일에 예루살렘에 들어와서 식물을 팔기로 그 날에 내가 경계하였고",
+      "source_text_hash": "3602dc6e6784b477c7f5b33d6a1f2d691b6f1eb1a0cb1c09bf2b755f9daec0f1",
+      "translation_text_hash": "9437333ce54909fa38287e424ed604b3dc85a73c324279a5cc406f99631be74c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 내가 본즉 유다에서 어떤 사람이 안식일에 술틀을 밟고 곡식단을 나귀에 실어 운반하며 포도주와 포도와 무화과와 여러가지 짐을 지고 안식일에 예루살렘에 들어와서 식물을 팔기로 그 날에 내가 경계하였고"
+      ],
+      "raw_text_hashes": [
+        "9437333ce54909fa38287e424ed604b3dc85a73c324279a5cc406f99631be74c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:13:16",
+      "sequence": 12688,
+      "chapter_label": "NEH 13",
+      "verse_label": "16",
+      "locator": {
+        "book": "NEH",
+        "chapter": 13,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 13,
+          "verse": 16
+        }
+      ],
+      "en": "Some men of Tyre also lived there, who brought in fish and all kinds of wares, and sold on the Sabbath to the children of Judah, and in Jerusalem.",
+      "ko": "또 두로 사람이 예루살렘에 거하며 물고기와 각양 물건을 가져다가 안식일에 유다 자손에게 예루살렘에서도 팔기로",
+      "source_text_hash": "9c9604dccb90a607454361d35160e404457edabd456e8c6dfb33be79884d3b7f",
+      "translation_text_hash": "5ee0dcf2d76a43a2ec7f132225dc902a256bf03d3257b0c1c5943b077c49ea33",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 두로 사람이 예루살렘에 거하며 물고기와 각양 물건을 가져다가 안식일에 유다 자손에게 예루살렘에서도 팔기로"
+      ],
+      "raw_text_hashes": [
+        "5ee0dcf2d76a43a2ec7f132225dc902a256bf03d3257b0c1c5943b077c49ea33"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:13:17",
+      "sequence": 12689,
+      "chapter_label": "NEH 13",
+      "verse_label": "17",
+      "locator": {
+        "book": "NEH",
+        "chapter": 13,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 13,
+          "verse": 17
+        }
+      ],
+      "en": "Then I contended with the nobles of Judah, and said to them, “What evil thing is this that you do, and profane the Sabbath day?",
+      "ko": "내가 유다 모든 귀인을 꾸짖어 이르기를 너희가 어찌 이 악을 행하여 안식일을 범하느냐",
+      "source_text_hash": "c5f1e24e5edafd25d1832e43af05509bf71ded4f117ab4a697eb2221fcf7322f",
+      "translation_text_hash": "96c6b70945c5ef2022194755e3ceb98e77fe06ff0378e3041917d04c520cc56d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 유다 모든 귀인을 꾸짖어 이르기를 너희가 어찌 이 악을 행하여 안식일을 범하느냐"
+      ],
+      "raw_text_hashes": [
+        "96c6b70945c5ef2022194755e3ceb98e77fe06ff0378e3041917d04c520cc56d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:13:18",
+      "sequence": 12690,
+      "chapter_label": "NEH 13",
+      "verse_label": "18",
+      "locator": {
+        "book": "NEH",
+        "chapter": 13,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 13,
+          "verse": 18
+        }
+      ],
+      "en": "Didn’t your fathers do this, and didn’t our God bring all this evil on us and on this city? Yet you bring more wrath on Israel by profaning the Sabbath.”",
+      "ko": "너희 열조가 이같이 행하지 아니 하였느냐 그러므로 우리 하나님이 이 모든 재앙으로 우리와 이 성읍에 내리신 것이 아니냐 이제 너희가 오히려 안식일을 범하여 진노가 이스라엘에게 임함이 더욱 심하게 하는도다 하고",
+      "source_text_hash": "93f9f4c0dba206e4cfd82704919ff5729d16992bc816f874c1473c9b00ea989b",
+      "translation_text_hash": "65fbacd42d707dfda3fbb1a576e32e20716b6568a367cdd2751771d0d1f501c3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 열조가 이같이 행하지 아니 하였느냐 그러므로 우리 하나님이 이 모든 재앙으로 우리와 이 성읍에 내리신 것이 아니냐 이제 너희가 오히려 안식일을 범하여 진노가 이스라엘에게 임함이 더욱 심하게 하는도다 하고"
+      ],
+      "raw_text_hashes": [
+        "65fbacd42d707dfda3fbb1a576e32e20716b6568a367cdd2751771d0d1f501c3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:13:19",
+      "sequence": 12691,
+      "chapter_label": "NEH 13",
+      "verse_label": "19",
+      "locator": {
+        "book": "NEH",
+        "chapter": 13,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 13,
+          "verse": 19
+        }
+      ],
+      "en": "It came to pass that when the gates of Jerusalem began to be dark before the Sabbath, I commanded that the doors should be shut, and commanded that they should not be opened until after the Sabbath. I set some of my servants over the gates, so that no burden should be brought in on the Sabbath day.",
+      "ko": "안식일 전 예루살렘 성문이 어두워 갈 때에 내가 명하여 성문을 닫고 안식일이 지나기 전에는 열지 말라 하고 내 종자 두어 사람을 성문마다 세워서 안식일에 아무 짐도 들어 오지 못하게 하매",
+      "source_text_hash": "a6dfbc9d25484e7fd4e0621750309463d8b47c5ad30bd199c320eae3090669e0",
+      "translation_text_hash": "9e8d691eb32bcb8b89797c955ce2d29ace896dea241e672d4231b0cf11b2ef1f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "안식일 전 예루살렘 성문이 어두워 갈 때에 내가 명하여 성문을 닫고 안식일이 지나기 전에는 열지 말라 하고 내 종자 두어 사람을 성문마다 세워서 안식일에 아무 짐도 들어 오지 못하게 하매"
+      ],
+      "raw_text_hashes": [
+        "9e8d691eb32bcb8b89797c955ce2d29ace896dea241e672d4231b0cf11b2ef1f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:13:20",
+      "sequence": 12692,
+      "chapter_label": "NEH 13",
+      "verse_label": "20",
+      "locator": {
+        "book": "NEH",
+        "chapter": 13,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 13,
+          "verse": 20
+        }
+      ],
+      "en": "So the merchants and sellers of all kinds of wares camped outside of Jerusalem once or twice.",
+      "ko": "장사들과 각양 물건 파는 자들이 한두번 예루살렘성 밖에서 자므로",
+      "source_text_hash": "9eab527fa399a6d74e391dcc00c9986cd8912c46b2e7b19ffb9746e4455e6e16",
+      "translation_text_hash": "ec2fe958e38d0d9ea6dd20ff65609ae8cb5ba7123e4517da0a93cb8e8fe7359b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "장사들과 각양 물건 파는 자들이 한두번 예루살렘성 밖에서 자므로"
+      ],
+      "raw_text_hashes": [
+        "ec2fe958e38d0d9ea6dd20ff65609ae8cb5ba7123e4517da0a93cb8e8fe7359b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:13:21",
+      "sequence": 12693,
+      "chapter_label": "NEH 13",
+      "verse_label": "21",
+      "locator": {
+        "book": "NEH",
+        "chapter": 13,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 13,
+          "verse": 21
+        }
+      ],
+      "en": "Then I testified against them, and said to them, “Why do you stay around the wall? If you do so again, I will lay hands on you.” From that time on, they didn’t come on the Sabbath.",
+      "ko": "내가 경계하여 이르기를 너희가 어찌하여 성 밑에서 자느냐 다시 이같이 하면 내가 잡으리라 하였더니 그 후부터는 안식일에 저희가 다시 오지 아니하였느니라",
+      "source_text_hash": "31b4b6de1f4f89b71a2d9615165216896807b3fec41bc432af109519ba0e502e",
+      "translation_text_hash": "dccc9875eb3f1237b459e3c6e595e6e7589d20c2bb25b75cfdfadcc3bf8907e7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 경계하여 이르기를 너희가 어찌하여 성 밑에서 자느냐 다시 이같이 하면 내가 잡으리라 하였더니 그 후부터는 안식일에 저희가 다시 오지 아니하였느니라"
+      ],
+      "raw_text_hashes": [
+        "dccc9875eb3f1237b459e3c6e595e6e7589d20c2bb25b75cfdfadcc3bf8907e7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:13:22",
+      "sequence": 12694,
+      "chapter_label": "NEH 13",
+      "verse_label": "22",
+      "locator": {
+        "book": "NEH",
+        "chapter": 13,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 13,
+          "verse": 22
+        }
+      ],
+      "en": "I commanded the Levites that they should purify themselves, and that they should come and keep the gates, to sanctify the Sabbath day. Remember me for this also, my God, and spare me according to the greatness of your loving kindness.",
+      "ko": "내가 또 레위 사람들을 명하여 몸을 정결케 하고 와서 성문을 지켜서 안식일로 거룩하게 하라 하였느니라 나의 하나님이여 나를 위하여 이 일도 기억하옵시고 주의 큰 은혜대로 나를 아끼시옵소서",
+      "source_text_hash": "03076be6a215f54ded439b50a3e9cfdc56ec96e37ca1068ca8a4b853f39ef600",
+      "translation_text_hash": "6bc90e16289e6a706d3c70ccd56e25d0af99c041a1f38361a3697bd8e8711a95",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 또 레위 사람들을 명하여 몸을 정결케 하고 와서 성문을 지켜서 안식일로 거룩하게 하라 하였느니라 나의 하나님이여 나를 위하여 이 일도 기억하옵시고 주의 큰 은혜대로 나를 아끼시옵소서"
+      ],
+      "raw_text_hashes": [
+        "6bc90e16289e6a706d3c70ccd56e25d0af99c041a1f38361a3697bd8e8711a95"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:13:23",
+      "sequence": 12695,
+      "chapter_label": "NEH 13",
+      "verse_label": "23",
+      "locator": {
+        "book": "NEH",
+        "chapter": 13,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 13,
+          "verse": 23
+        }
+      ],
+      "en": "In those days I also saw the Jews who had married women of Ashdod, of Ammon, and of Moab;",
+      "ko": "그때에 내가 또 본즉 유다 사람이 아스돗과 암몬과 모압 여인을 취하여 아내를 삼았는데",
+      "source_text_hash": "4bf0d72451741cc7662fd09dcad7b3780efa8356ea9fc49829ac7399285d4bca",
+      "translation_text_hash": "ec4115740272be4dad2d9f2ae04efc26315517f7ae48093e052cd85e9581bde9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그때에 내가 또 본즉 유다 사람이 아스돗과 암몬과 모압 여인을 취하여 아내를 삼았는데"
+      ],
+      "raw_text_hashes": [
+        "ec4115740272be4dad2d9f2ae04efc26315517f7ae48093e052cd85e9581bde9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:13:24",
+      "sequence": 12696,
+      "chapter_label": "NEH 13",
+      "verse_label": "24",
+      "locator": {
+        "book": "NEH",
+        "chapter": 13,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 13,
+          "verse": 24
+        }
+      ],
+      "en": "and their children spoke half in the speech of Ashdod, and could not speak in the Jews’ language, but according to the language of each people.",
+      "ko": "그 자녀가 아스돗 방언을 절반쯤은 하여도 유다 방언은 못하니 그 하는 말이 각 족속의 방언이므로",
+      "source_text_hash": "eb44ee6adbdd4c7771894765806bbfd72f8e5ebff229b5597eae1cde5659ebf2",
+      "translation_text_hash": "b93e8eca1e3c586e607ebea345b875fd870e576647aaa7eb88578983a0641734",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 자녀가 아스돗 방언을 절반쯤은 하여도 유다 방언은 못하니 그 하는 말이 각 족속의 방언이므로"
+      ],
+      "raw_text_hashes": [
+        "b93e8eca1e3c586e607ebea345b875fd870e576647aaa7eb88578983a0641734"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:13:25",
+      "sequence": 12697,
+      "chapter_label": "NEH 13",
+      "verse_label": "25",
+      "locator": {
+        "book": "NEH",
+        "chapter": 13,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 13,
+          "verse": 25
+        }
+      ],
+      "en": "I contended with them, cursed them, struck certain of them, plucked off their hair, and made them swear by God, “You shall not give your daughters to their sons, nor take their daughters for your sons, or for yourselves.",
+      "ko": "내가 책망하고 저주하며 두어 사람을 때리고 그 머리 털을 뽑고 이르되 너희는 너희 딸들로 저희 아들들에게 주지 말고 너희 아들들이나 너희를 위하여 저희 딸을 데려오지 않겠다고 하나님을 가리켜 맹세하라 하고",
+      "source_text_hash": "f8b44da6d161a2ba5eb1ff969defede142ed7bb2b71efb027441da0b64531b72",
+      "translation_text_hash": "6e71d0c43e679bdc7cb1afe46397af91378e7e572408f66cc82638a7863d0bbb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 책망하고 저주하며 두어 사람을 때리고 그 머리 털을 뽑고 이르되 너희는 너희 딸들로 저희 아들들에게 주지 말고 너희 아들들이나 너희를 위하여 저희 딸을 데려오지 않겠다고 하나님을 가리켜 맹세하라 하고"
+      ],
+      "raw_text_hashes": [
+        "6e71d0c43e679bdc7cb1afe46397af91378e7e572408f66cc82638a7863d0bbb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:13:26",
+      "sequence": 12698,
+      "chapter_label": "NEH 13",
+      "verse_label": "26",
+      "locator": {
+        "book": "NEH",
+        "chapter": 13,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 13,
+          "verse": 26
+        }
+      ],
+      "en": "Didn’t Solomon king of Israel sin by these things? Yet among many nations there was no king like him, and he was loved by his God, and God made him king over all Israel. Nevertheless foreign women caused even him to sin.",
+      "ko": "또 이르기를 옛적에 이스라엘 왕 솔로몬이 이 일로 범죄하지 아니하였느냐 저는 열국 중에 비길 왕이 없이 하나님의 사랑을 입은 자라 하나님이 저로 왕을 삼아 온 이스라엘을 다스리게 하셨으나 이방 여인이 저로 범죄케 하였나니",
+      "source_text_hash": "b2c7c83a81bd41916808e22c03e5bb89c3fcf99e074a08929eb541c0514ec6cf",
+      "translation_text_hash": "734c43f2b112bd24476d4813d038dc3162b897830e3fc2b75680bedad8234ffe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 이르기를 옛적에 이스라엘 왕 솔로몬이 이 일로 범죄하지 아니하였느냐 저는 열국 중에 비길 왕이 없이 하나님의 사랑을 입은 자라 하나님이 저로 왕을 삼아 온 이스라엘을 다스리게 하셨으나 이방 여인이 저로 범죄케 하였나니"
+      ],
+      "raw_text_hashes": [
+        "734c43f2b112bd24476d4813d038dc3162b897830e3fc2b75680bedad8234ffe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:13:27",
+      "sequence": 12699,
+      "chapter_label": "NEH 13",
+      "verse_label": "27",
+      "locator": {
+        "book": "NEH",
+        "chapter": 13,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 13,
+          "verse": 27
+        }
+      ],
+      "en": "Shall we then listen to you to do all this great evil, to trespass against our God in marrying foreign women?”",
+      "ko": "너희가 이방 여인을 취하여 크게 악을 행하여 우리 하나님께 범죄하는 것을 우리가 어찌 용납하겠느냐",
+      "source_text_hash": "822f4c9455d4fd647430a2a68f2a9c177be86b956c7a271cad485cc662b2781c",
+      "translation_text_hash": "e5d415ebad77e5ee4276d439b8a289a075a5cd56547014be520378089ac15193",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 이방 여인을 취하여 크게 악을 행하여 우리 하나님께 범죄하는 것을 우리가 어찌 용납하겠느냐"
+      ],
+      "raw_text_hashes": [
+        "e5d415ebad77e5ee4276d439b8a289a075a5cd56547014be520378089ac15193"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:13:28",
+      "sequence": 12700,
+      "chapter_label": "NEH 13",
+      "verse_label": "28",
+      "locator": {
+        "book": "NEH",
+        "chapter": 13,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 13,
+          "verse": 28
+        }
+      ],
+      "en": "One of the sons of Joiada, the son of Eliashib the high priest, was son-in-law to Sanballat the Horonite; therefore I chased him from me.",
+      "ko": "대제사장 엘리아십의 손자 요야다의 아들 하나가 호론 사람 산발랏의 사위가 되었으므로 내가 쫓아내어 나를 떠나게 하였느니라",
+      "source_text_hash": "847f572dd11c6b4b652b2568bf63cc7373a7816ee511982168e3866fcaa4cf4a",
+      "translation_text_hash": "d81e52c41ee477e58c2ba5b5aca88717c09bf21cc588e2bc4619aa9fa09608db",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대제사장 엘리아십의 손자 요야다의 아들 하나가 호론 사람 산발랏의 사위가 되었으므로 내가 쫓아내어 나를 떠나게 하였느니라"
+      ],
+      "raw_text_hashes": [
+        "d81e52c41ee477e58c2ba5b5aca88717c09bf21cc588e2bc4619aa9fa09608db"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:13:29",
+      "sequence": 12701,
+      "chapter_label": "NEH 13",
+      "verse_label": "29",
+      "locator": {
+        "book": "NEH",
+        "chapter": 13,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 13,
+          "verse": 29
+        }
+      ],
+      "en": "Remember them, my God, because they have defiled the priesthood and the covenant of the priesthood and of the Levites.",
+      "ko": "내 하나님이여 저희가 제사장의 직분을 더럽히고 제사장의 직분과 레위 사람에 대한 언약을 어기었사오니 저희를 기억하옵소서",
+      "source_text_hash": "0e060c74612c4028840721728864af7d68a0c699b1b13032984a7e60ee4228c9",
+      "translation_text_hash": "25e1b2588b05d425a5698555799aeb8fbdda60557d33f1d3341df24c25f7753d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 하나님이여 저희가 제사장의 직분을 더럽히고 제사장의 직분과 레위 사람에 대한 언약을 어기었사오니 저희를 기억하옵소서"
+      ],
+      "raw_text_hashes": [
+        "25e1b2588b05d425a5698555799aeb8fbdda60557d33f1d3341df24c25f7753d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:13:30",
+      "sequence": 12702,
+      "chapter_label": "NEH 13",
+      "verse_label": "30",
+      "locator": {
+        "book": "NEH",
+        "chapter": 13,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 13,
+          "verse": 30
+        }
+      ],
+      "en": "Thus I cleansed them from all foreigners and appointed duties for the priests and for the Levites, everyone in his work;",
+      "ko": "내가 이와 같이 저희로 이방 사람을 떠나게 하여 깨끗하게 하고 또 제사장과 레위 사람의 반열을 세워 각각 그 일을 맡게 하고",
+      "source_text_hash": "4f9f152130af074cb11565c7fa70de84605bea86817ddd33286e987d14427476",
+      "translation_text_hash": "c331c45e2018a2b6a5262801edd6bf1f31df2af31affe5f9eef8510ad15363a5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 이와 같이 저희로 이방 사람을 떠나게 하여 깨끗하게 하고 또 제사장과 레위 사람의 반열을 세워 각각 그 일을 맡게 하고"
+      ],
+      "raw_text_hashes": [
+        "c331c45e2018a2b6a5262801edd6bf1f31df2af31affe5f9eef8510ad15363a5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:13:31",
+      "sequence": 12703,
+      "chapter_label": "NEH 13",
+      "verse_label": "31",
+      "locator": {
+        "book": "NEH",
+        "chapter": 13,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 13,
+          "verse": 31
+        }
+      ],
+      "en": "and for the wood offering, at appointed times, and for the first fruits. Remember me, my God, for good.",
+      "ko": "또 정한 기한에 나무와 처음 익은 것을 드리게 하였사오니 내 하나님이여 나를 기억하사 복을 주옵소서",
+      "source_text_hash": "e752cdc1582d2de6470c26a5e637cc7a799fc7bf36a0a3a52d930af6a70771c6",
+      "translation_text_hash": "46f73cd29ec3771ccfb6b71cd327d4f21daf271fc8f10077c7935274755ee65d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 정한 기한에 나무와 처음 익은 것을 드리게 하였사오니 내 하나님이여 나를 기억하사 복을 주옵소서"
+      ],
+      "raw_text_hashes": [
+        "46f73cd29ec3771ccfb6b71cd327d4f21daf271fc8f10077c7935274755ee65d"
+      ]
+    }
+  ]
+}

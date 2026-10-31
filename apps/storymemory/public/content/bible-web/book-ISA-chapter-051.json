@@ -1,0 +1,749 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ISA:chapter:051",
+  "unit_ordinal": 730,
+  "unit_label": "ISA 51",
+  "book_code": "ISA",
+  "chapter_number": 51,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ISA:51:1",
+      "sequence": 18675,
+      "chapter_label": "ISA 51",
+      "verse_label": "1",
+      "locator": {
+        "book": "ISA",
+        "chapter": 51,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 51,
+          "verse": 1
+        }
+      ],
+      "en": "“Listen to me, you who follow after righteousness, you who seek the LORD. Look to the rock you were cut from, and to the quarry you were dug from.",
+      "ko": "의를 좇으며 여호와를 찾아 구하는 너희는 나를 들을찌어다 너희를 떠낸 반석과 너희를 파낸 우묵한 구덩이를 생각하여 보라",
+      "source_text_hash": "b82641293e1d5138c903e2bb0d8f6c6765aeffa239232a9257c37f3bee04c1b2",
+      "translation_text_hash": "9440fea4009c92be0abf5f7b8c25b2f4a1a33acec6a19b8b6368de0e2ce4dfa8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "의를 좇으며 여호와를 찾아 구하는 너희는 나를 들을찌어다 너희를 떠낸 반석과 너희를 파낸 우묵한 구덩이를 생각하여 보라"
+      ],
+      "raw_text_hashes": [
+        "9440fea4009c92be0abf5f7b8c25b2f4a1a33acec6a19b8b6368de0e2ce4dfa8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:51:2",
+      "sequence": 18676,
+      "chapter_label": "ISA 51",
+      "verse_label": "2",
+      "locator": {
+        "book": "ISA",
+        "chapter": 51,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 51,
+          "verse": 2
+        }
+      ],
+      "en": "Look to Abraham your father, and to Sarah who bore you; for when he was but one I called him, I blessed him, and made him many.",
+      "ko": "너희 조상 아브라함과 너희를 생산한 사라를 생각하여 보라 아브라함이 혈혈단신으로 있을 때에 내가 부르고 그에게 복을 주어 창성케 하였느니라",
+      "source_text_hash": "4f98782e9bcd5e8ea228f39f62d0ef9bfb6773804217e910af10017ec96c2534",
+      "translation_text_hash": "9e8fdfcd98cc1ea97f34197da565897728e1f87e831c6d092927cb53697e7031",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 조상 아브라함과 너희를 생산한 사라를 생각하여 보라 아브라함이 혈혈단신으로 있을 때에 내가 부르고 그에게 복을 주어 창성케 하였느니라"
+      ],
+      "raw_text_hashes": [
+        "9e8fdfcd98cc1ea97f34197da565897728e1f87e831c6d092927cb53697e7031"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:51:3",
+      "sequence": 18677,
+      "chapter_label": "ISA 51",
+      "verse_label": "3",
+      "locator": {
+        "book": "ISA",
+        "chapter": 51,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 51,
+          "verse": 3
+        }
+      ],
+      "en": "For the LORD has comforted Zion. He has comforted all her waste places, and has made her wilderness like Eden, and her desert like the garden of the LORD. Joy and gladness will be found in them, thanksgiving, and the voice of melody.",
+      "ko": "대저 나 여호와가 시온을 위로하되 그 모든 황폐한 곳을 위로하여 그 광야로 에덴 같고 그 사막으로 여호와의 동산 같게 하였나니 그 가운데 기뻐함과 즐거워함과 감사함과 창화하는 소리가 있으리라",
+      "source_text_hash": "461637299eafe6e044c600f5153f471ec4b7c09cea8475cb35a5ad749a959cb2",
+      "translation_text_hash": "d2a0d1536331e80f58f15313d334b958c5bf93291ca9deef5a4581e9a89254d2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대저 나 여호와가 시온을 위로하되 그 모든 황폐한 곳을 위로하여 그 광야로 에덴 같고 그 사막으로 여호와의 동산 같게 하였나니 그 가운데 기뻐함과 즐거워함과 감사함과 창화하는 소리가 있으리라"
+      ],
+      "raw_text_hashes": [
+        "d2a0d1536331e80f58f15313d334b958c5bf93291ca9deef5a4581e9a89254d2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:51:4",
+      "sequence": 18678,
+      "chapter_label": "ISA 51",
+      "verse_label": "4",
+      "locator": {
+        "book": "ISA",
+        "chapter": 51,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 51,
+          "verse": 4
+        }
+      ],
+      "en": "“Listen to me, my people; and hear me, my nation, for a law will go out from me, and I will establish my justice for a light to the peoples.",
+      "ko": "내 백성이여 내게 주의하라 내 나라여 내게 귀를 기울이라 이는 율법이 내게서부터 발할 것임이라 내가 내 공의를 만민의 빛으로 세우리라",
+      "source_text_hash": "7cd2f10eb75b02da90cb9448e7a3514e569c98c8afe52f333b8bc11782bcba11",
+      "translation_text_hash": "143b241b0d0fbd67dd1b3785d06a1884f3cb0c3181a6eeb9cd907795a8f0865e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 백성이여 내게 주의하라 내 나라여 내게 귀를 기울이라 이는 율법이 내게서부터 발할 것임이라 내가 내 공의를 만민의 빛으로 세우리라"
+      ],
+      "raw_text_hashes": [
+        "143b241b0d0fbd67dd1b3785d06a1884f3cb0c3181a6eeb9cd907795a8f0865e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:51:5",
+      "sequence": 18679,
+      "chapter_label": "ISA 51",
+      "verse_label": "5",
+      "locator": {
+        "book": "ISA",
+        "chapter": 51,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 51,
+          "verse": 5
+        }
+      ],
+      "en": "My righteousness is near. My salvation has gone out, and my arms will judge the peoples. The islands will wait for me, and they will trust my arm.",
+      "ko": "내 의가 가깝고 내 구원이 나갔은즉 내 팔이 만민을 심판하리니 섬들이 나를 앙망하여 내 팔에 의지하리라",
+      "source_text_hash": "e8c496f2a9340d1e21f8e0dc0d55ac0f258b237bf0d316d77d97220df6d2c903",
+      "translation_text_hash": "ea99181612c89b1f218694c4f58e3be4f4abe5dad535fab51a374ea3f5abaee3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 의가 가깝고 내 구원이 나갔은즉 내 팔이 만민을 심판하리니 섬들이 나를 앙망하여 내 팔에 의지하리라"
+      ],
+      "raw_text_hashes": [
+        "ea99181612c89b1f218694c4f58e3be4f4abe5dad535fab51a374ea3f5abaee3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:51:6",
+      "sequence": 18680,
+      "chapter_label": "ISA 51",
+      "verse_label": "6",
+      "locator": {
+        "book": "ISA",
+        "chapter": 51,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 51,
+          "verse": 6
+        }
+      ],
+      "en": "Lift up your eyes to the heavens, and look at the earth beneath; for the heavens will vanish away like smoke, and the earth will wear out like a garment. Its inhabitants will die in the same way, but my salvation will be forever, and my righteousness will not be abolished.",
+      "ko": "너희는 하늘로 눈을 들며 그 아래의 땅을 살피라 하늘이 연기 같이 사라지고 땅이 옷 같이 해어지며 거기 거한 자들이 하루살이 같이 죽으려니와 나의 구원은 영원히 있고 나의 의는 폐하여지지 아니하리라",
+      "source_text_hash": "6faa73e5330f94c1bb1a8989e86704bcedbc0b7b1e8fa9b3e195c47643c2d524",
+      "translation_text_hash": "d792b88d1300d815963512d196fb74d347dcae6ebdb80e47b1fbfc9ecc7b7d81",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 하늘로 눈을 들며 그 아래의 땅을 살피라 하늘이 연기 같이 사라지고 땅이 옷 같이 해어지며 거기 거한 자들이 하루살이 같이 죽으려니와 나의 구원은 영원히 있고 나의 의는 폐하여지지 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "d792b88d1300d815963512d196fb74d347dcae6ebdb80e47b1fbfc9ecc7b7d81"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:51:7",
+      "sequence": 18681,
+      "chapter_label": "ISA 51",
+      "verse_label": "7",
+      "locator": {
+        "book": "ISA",
+        "chapter": 51,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 51,
+          "verse": 7
+        }
+      ],
+      "en": "“Listen to me, you who know righteousness, the people in whose heart is my law. Don’t fear the reproach of men, and don’t be dismayed at their insults.",
+      "ko": "의를 아는 자들아, 마음에 내 율법이 있는 백성들아, 너희는 나를 듣고 사람의 훼방을 두려워 말라 사람의 비방에 놀라지 말라",
+      "source_text_hash": "55aa07fabecac1cf3fcbd0f470ec17c676aef3868e30d9d0a0f74e6e26ec0ed4",
+      "translation_text_hash": "14c5730d3ee32dde2cd5fc3d2702092de6aebe9c211a6506f73291ce58fd826c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "의를 아는 자들아, 마음에 내 율법이 있는 백성들아, 너희는 나를 듣고 사람의 훼방을 두려워 말라 사람의 비방에 놀라지 말라"
+      ],
+      "raw_text_hashes": [
+        "14c5730d3ee32dde2cd5fc3d2702092de6aebe9c211a6506f73291ce58fd826c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:51:8",
+      "sequence": 18682,
+      "chapter_label": "ISA 51",
+      "verse_label": "8",
+      "locator": {
+        "book": "ISA",
+        "chapter": 51,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 51,
+          "verse": 8
+        }
+      ],
+      "en": "For the moth will eat them up like a garment, and the worm will eat them like wool; but my righteousness will be forever, and my salvation to all generations.”",
+      "ko": "그들은 옷 같이 좀에게 먹힐 것이며 그들은 양털 같이 벌레에게 먹힐 것이로되 나의 의는 영원히 있겠고 나의 구원은 세세에 미치리라",
+      "source_text_hash": "5bba8ae9fdb59c2a292f0ddc5656411bff330ab2583c4a238af0b36347327b17",
+      "translation_text_hash": "bbead5f818acdb86cb445de10ecaad60883bdcc23948e521caf1f57d0496852e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들은 옷 같이 좀에게 먹힐 것이며 그들은 양털 같이 벌레에게 먹힐 것이로되 나의 의는 영원히 있겠고 나의 구원은 세세에 미치리라"
+      ],
+      "raw_text_hashes": [
+        "bbead5f818acdb86cb445de10ecaad60883bdcc23948e521caf1f57d0496852e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:51:9",
+      "sequence": 18683,
+      "chapter_label": "ISA 51",
+      "verse_label": "9",
+      "locator": {
+        "book": "ISA",
+        "chapter": 51,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 51,
+          "verse": 9
+        }
+      ],
+      "en": "Awake, awake, put on strength, arm of the LORD! Awake, as in the days of old, the generations of ancient times. Isn’t it you who cut Rahab in pieces, who pierced the monster?",
+      "ko": "여호와의 팔이여 깨소서 깨소서 능력을 베푸소서 옛날 옛시대에 깨신것 같이 하소서 라합을 저미시고 용을 찌르신이가 어찌 주가 아니시며",
+      "source_text_hash": "49859adb782bb582062b389a6b0727b3cfb250e039cb80405fd8fbedb9bdc139",
+      "translation_text_hash": "6b59a264b0e53599ac54a85dd2d17545236cac57c98a889c3ee16783e2dfded0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 팔이여 깨소서 깨소서 능력을 베푸소서 옛날 옛시대에 깨신것 같이 하소서 라합을 저미시고 용을 찌르신이가 어찌 주가 아니시며"
+      ],
+      "raw_text_hashes": [
+        "6b59a264b0e53599ac54a85dd2d17545236cac57c98a889c3ee16783e2dfded0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:51:10",
+      "sequence": 18684,
+      "chapter_label": "ISA 51",
+      "verse_label": "10",
+      "locator": {
+        "book": "ISA",
+        "chapter": 51,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 51,
+          "verse": 10
+        }
+      ],
+      "en": "Isn’t it you who dried up the sea, the waters of the great deep; who made the depths of the sea a way for the redeemed to pass over?",
+      "ko": "바다를, 넓고 깊은 물을 말리시고 바다 깊은 곳에 길을 내어 구속 얻은 자들로 건너게 하신이가 어찌 주가 아니시니이까",
+      "source_text_hash": "48e0f6594598af95dc8b846807d7f1f2bb7f929324ba12b3505c19cb73655079",
+      "translation_text_hash": "32e14b03e8f73a35184d49aa535ec84d5388126490da41ff3a038cda8e8a205e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바다를, 넓고 깊은 물을 말리시고 바다 깊은 곳에 길을 내어 구속 얻은 자들로 건너게 하신이가 어찌 주가 아니시니이까"
+      ],
+      "raw_text_hashes": [
+        "32e14b03e8f73a35184d49aa535ec84d5388126490da41ff3a038cda8e8a205e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:51:11",
+      "sequence": 18685,
+      "chapter_label": "ISA 51",
+      "verse_label": "11",
+      "locator": {
+        "book": "ISA",
+        "chapter": 51,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 51,
+          "verse": 11
+        }
+      ],
+      "en": "Those ransomed by the LORD will return, and come with singing to Zion. Everlasting joy shall be on their heads. They will obtain gladness and joy. Sorrow and sighing shall flee away.",
+      "ko": "여호와께 구속된 자들이 돌아와서 노래하며 시온으로 들어와서 그 머리 위에 영영한 기쁨을 쓰고 즐거움과 기쁨을 얻으리니 슬픔과 탄식이 달아나리이다",
+      "source_text_hash": "105ef3acdf5a6e4f1ba4786893db4d8079ef41bf45e279c35dd07d5ff0664e3f",
+      "translation_text_hash": "a1df0e5f635f4747ca95f9b31357dbdebf5080589b04627f8bcfb6e45fbe9b13",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께 구속된 자들이 돌아와서 노래하며 시온으로 들어와서 그 머리 위에 영영한 기쁨을 쓰고 즐거움과 기쁨을 얻으리니 슬픔과 탄식이 달아나리이다"
+      ],
+      "raw_text_hashes": [
+        "a1df0e5f635f4747ca95f9b31357dbdebf5080589b04627f8bcfb6e45fbe9b13"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:51:12",
+      "sequence": 18686,
+      "chapter_label": "ISA 51",
+      "verse_label": "12",
+      "locator": {
+        "book": "ISA",
+        "chapter": 51,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 51,
+          "verse": 12
+        }
+      ],
+      "en": "“I, even I, am he who comforts you. Who are you, that you are afraid of man who shall die, and of the son of man who will be made as grass?",
+      "ko": "가라사대 너희를 위로하는 자는 나여늘 나여늘 너는 어떠한 자이기에 죽을 사람을 두려워하며 풀같이 될 인자를 두려워하느냐",
+      "source_text_hash": "69188c2582777d2cca2de087f2a2e3a64db57a424f9d9b7d02d6ffbff97c309d",
+      "translation_text_hash": "b9817710de1d79454e9f3439daa78a5f978352c00ad526e1f7752ae59f1852e2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가라사대 너희를 위로하는 자는 나여늘 나여늘 너는 어떠한 자이기에 죽을 사람을 두려워하며 풀같이 될 인자를 두려워하느냐"
+      ],
+      "raw_text_hashes": [
+        "b9817710de1d79454e9f3439daa78a5f978352c00ad526e1f7752ae59f1852e2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:51:13",
+      "sequence": 18687,
+      "chapter_label": "ISA 51",
+      "verse_label": "13",
+      "locator": {
+        "book": "ISA",
+        "chapter": 51,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 51,
+          "verse": 13
+        }
+      ],
+      "en": "Have you forgotten the LORD your Maker, who stretched out the heavens, and laid the foundations of the earth? Do you live in fear continually all day because of the fury of the oppressor, when he prepares to destroy? Where is the fury of the oppressor?",
+      "ko": "하늘을 펴고 땅의 기초를 정하고 너를 지은 자 여호와를 어찌하여 잊어버렸느냐 너를 멸하려고 예비하는 저 학대자의 분노를 어찌하여 항상 종일 두려워하느냐 학대자의 분노가 어디 있느냐",
+      "source_text_hash": "804e2fc5f5c770af1d3ae5fff5af2cc50ae5a6d99b0e6377f917ad84a2dc561f",
+      "translation_text_hash": "0dacd586e2989c3c2cde6d827ee65d7b7d7b43350d79605aed0134fe8e183f5b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하늘을 펴고 땅의 기초를 정하고 너를 지은 자 여호와를 어찌하여 잊어버렸느냐 너를 멸하려고 예비하는 저 학대자의 분노를 어찌하여 항상 종일 두려워하느냐 학대자의 분노가 어디 있느냐"
+      ],
+      "raw_text_hashes": [
+        "0dacd586e2989c3c2cde6d827ee65d7b7d7b43350d79605aed0134fe8e183f5b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:51:14",
+      "sequence": 18688,
+      "chapter_label": "ISA 51",
+      "verse_label": "14",
+      "locator": {
+        "book": "ISA",
+        "chapter": 51,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 51,
+          "verse": 14
+        }
+      ],
+      "en": "The captive exile will speedily be freed. He will not die and go down into the pit. His bread won’t fail.",
+      "ko": "결박된 포로가 속히 놓일 것이니 죽지도 아니할 것이요 구덩이로 내려가지도 아니할 것이며 그 양식이 핍절하지도 아니하리라",
+      "source_text_hash": "b17cfbcc496b1d077d25e1bce4c719b25ec6366b9fc41b3da8b9818d71148341",
+      "translation_text_hash": "3d2ebbd4a1ddb5390138bbde8109d926a23fdd6cb6aba394792b12e46579a8e1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "결박된 포로가 속히 놓일 것이니 죽지도 아니할 것이요 구덩이로 내려가지도 아니할 것이며 그 양식이 핍절하지도 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "3d2ebbd4a1ddb5390138bbde8109d926a23fdd6cb6aba394792b12e46579a8e1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:51:15",
+      "sequence": 18689,
+      "chapter_label": "ISA 51",
+      "verse_label": "15",
+      "locator": {
+        "book": "ISA",
+        "chapter": 51,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 51,
+          "verse": 15
+        }
+      ],
+      "en": "For I am the LORD your God, who stirs up the sea so that its waves roar. the LORD of Armies is his name.",
+      "ko": "나는 네 하나님 여호와라 바다를 저어서 그 물결로 흉용케 하는 자니 내 이름은 만군의 여호와니라",
+      "source_text_hash": "87d1b1f5c06df449de344be72a9daf54125d44cb2ccfd765fd55955428d62c44",
+      "translation_text_hash": "e0f7a0ce5f3bfa6d9fb76b4130b3f067734e88c394217a3113dba74fa42b867d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 네 하나님 여호와라 바다를 저어서 그 물결로 흉용케 하는 자니 내 이름은 만군의 여호와니라"
+      ],
+      "raw_text_hashes": [
+        "e0f7a0ce5f3bfa6d9fb76b4130b3f067734e88c394217a3113dba74fa42b867d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:51:16",
+      "sequence": 18690,
+      "chapter_label": "ISA 51",
+      "verse_label": "16",
+      "locator": {
+        "book": "ISA",
+        "chapter": 51,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 51,
+          "verse": 16
+        }
+      ],
+      "en": "I have put my words in your mouth and have covered you in the shadow of my hand, that I may plant the heavens, and lay the foundations of the earth, and tell Zion, ‘You are my people.’”",
+      "ko": "내가 내 말을 네 입에 두고 내 손 그늘로 너를 덮었나니 이는 내가 하늘을 펴며 땅의 기초를 정하며 시온에게 이르기를 너는 내 백성이라 하려 하였음이니라",
+      "source_text_hash": "fd3afa41547853e19acba858fc390016c20cb976ede76b43ec84db49e1559111",
+      "translation_text_hash": "462a2fec33c523be8c1624c9c49f54a15101ce71298c2004c6bd18937c65520a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 내 말을 네 입에 두고 내 손 그늘로 너를 덮었나니 이는 내가 하늘을 펴며 땅의 기초를 정하며 시온에게 이르기를 너는 내 백성이라 하려 하였음이니라"
+      ],
+      "raw_text_hashes": [
+        "462a2fec33c523be8c1624c9c49f54a15101ce71298c2004c6bd18937c65520a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:51:17",
+      "sequence": 18691,
+      "chapter_label": "ISA 51",
+      "verse_label": "17",
+      "locator": {
+        "book": "ISA",
+        "chapter": 51,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 51,
+          "verse": 17
+        }
+      ],
+      "en": "Awake, awake! Stand up, Jerusalem, you who have drunk from the LORD’s hand the cup of his wrath. You have drunken the bowl of the cup of staggering, and drained it.",
+      "ko": "여호와의 손에서 그 분노의 잔을 마신 예루살렘이여 깰찌어다 깰찌어다 일어설찌어다 네가 이미 비틀걸음 치게 하는 큰 잔을 마셔 다하였도다",
+      "source_text_hash": "b85e835c5f72359481f5b52af84516db5c654aef55014b57e8a245a4d1f31b84",
+      "translation_text_hash": "5b1b003d73d5ffded32208195e475bf41895723d730179b09d411d23c0b1343e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 손에서 그 분노의 잔을 마신 예루살렘이여 깰찌어다 깰찌어다 일어설찌어다 네가 이미 비틀걸음 치게 하는 큰 잔을 마셔 다하였도다"
+      ],
+      "raw_text_hashes": [
+        "5b1b003d73d5ffded32208195e475bf41895723d730179b09d411d23c0b1343e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:51:18",
+      "sequence": 18692,
+      "chapter_label": "ISA 51",
+      "verse_label": "18",
+      "locator": {
+        "book": "ISA",
+        "chapter": 51,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 51,
+          "verse": 18
+        }
+      ],
+      "en": "There is no one to guide her among all the sons to whom she has given birth; and there is no one who takes her by the hand among all the sons whom she has brought up.",
+      "ko": "네가 낳은 모든 아들 중에 너를 인도할 자가 없고 너의 양육한 모든 아들 중에 그 손으로 너를 이끌 자도 없도다",
+      "source_text_hash": "e6cc4cfbfef824a9bac80d7f81c44555a118242744acaa1f05f85236164f48c9",
+      "translation_text_hash": "d6bfea9d81666565608759c1a6a401dbce376928f32d4e2313152fd43a5fa8f3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 낳은 모든 아들 중에 너를 인도할 자가 없고 너의 양육한 모든 아들 중에 그 손으로 너를 이끌 자도 없도다"
+      ],
+      "raw_text_hashes": [
+        "d6bfea9d81666565608759c1a6a401dbce376928f32d4e2313152fd43a5fa8f3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:51:19",
+      "sequence": 18693,
+      "chapter_label": "ISA 51",
+      "verse_label": "19",
+      "locator": {
+        "book": "ISA",
+        "chapter": 51,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 51,
+          "verse": 19
+        }
+      ],
+      "en": "These two things have happened to you— who will grieve with you?— desolation and destruction, and famine and the sword. How can I comfort you?",
+      "ko": "이 두가지 일이 네게 당하였으니 누가 너를 위하여 슬퍼하랴 곧 황폐와 멸망이요 기근과 칼이라 내가 어떻게 너를 위로하랴",
+      "source_text_hash": "3f7aa5824aff62273ea5a9b4f5e4938c2176b512a7df69f9a583a4a1bba50010",
+      "translation_text_hash": "2223ad9b5b204ade8b2d46e9f2d0ce9e7ead667f05839be8f76c341b1ad74462",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 두가지 일이 네게 당하였으니 누가 너를 위하여 슬퍼하랴 곧 황폐와 멸망이요 기근과 칼이라 내가 어떻게 너를 위로하랴"
+      ],
+      "raw_text_hashes": [
+        "2223ad9b5b204ade8b2d46e9f2d0ce9e7ead667f05839be8f76c341b1ad74462"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:51:20",
+      "sequence": 18694,
+      "chapter_label": "ISA 51",
+      "verse_label": "20",
+      "locator": {
+        "book": "ISA",
+        "chapter": 51,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 51,
+          "verse": 20
+        }
+      ],
+      "en": "Your sons have fainted. They lie at the head of all the streets, like an antelope in a net. They are full of the LORD’s wrath, the rebuke of your God.",
+      "ko": "네 아들들이 곤비하여 그물에 걸린 영양 같이 온 거리 모퉁이에 누웠으니 그들에게 여호와의 분노와 네 하나님의 견책이 가득하였도다",
+      "source_text_hash": "bb232bf41bfb84ec2c21e3041c1cb7227939994e773d657eff172097ed94b7e5",
+      "translation_text_hash": "9b94b74d2f560a66e4d0c014c96adf5fe652848ec085ec5c081ae649563287f3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 아들들이 곤비하여 그물에 걸린 영양 같이 온 거리 모퉁이에 누웠으니 그들에게 여호와의 분노와 네 하나님의 견책이 가득하였도다"
+      ],
+      "raw_text_hashes": [
+        "9b94b74d2f560a66e4d0c014c96adf5fe652848ec085ec5c081ae649563287f3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:51:21",
+      "sequence": 18695,
+      "chapter_label": "ISA 51",
+      "verse_label": "21",
+      "locator": {
+        "book": "ISA",
+        "chapter": 51,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 51,
+          "verse": 21
+        }
+      ],
+      "en": "Therefore now hear this, you afflicted, and drunken, but not with wine:",
+      "ko": "그러므로 너 곤고하며 포도주가 아니라도 취한 자여 이 말을 들으라",
+      "source_text_hash": "8f22c7c5550df01a58e97ee9b458080f07818643934dad043f3bd326db3d4af0",
+      "translation_text_hash": "849480734cd8930ff0caa1893cda49d690546cdc3094eeb16ef4b3f967b7df9b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 너 곤고하며 포도주가 아니라도 취한 자여 이 말을 들으라"
+      ],
+      "raw_text_hashes": [
+        "849480734cd8930ff0caa1893cda49d690546cdc3094eeb16ef4b3f967b7df9b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:51:22",
+      "sequence": 18696,
+      "chapter_label": "ISA 51",
+      "verse_label": "22",
+      "locator": {
+        "book": "ISA",
+        "chapter": 51,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 51,
+          "verse": 22
+        }
+      ],
+      "en": "Your Lord GOD, your God who pleads the cause of his people, says, “Behold, I have taken out of your hand the cup of staggering, even the bowl of the cup of my wrath. You will not drink it any more.",
+      "ko": "네 주 여호와, 그 백성을 신원하시는 네 하나님이 이같이 말씀하시되 보라 내가 비틀걸음 치게 하는 잔 곧 나의 분노의 큰 잔을 네 손에서 거두어서 너로 다시는 마시지 않게 하고",
+      "source_text_hash": "bf961ddd7aea9ba214408b4bd87e69f0678829645ac1a934e7317d1d92973d5d",
+      "translation_text_hash": "2a07bea926518046f5461cbb93914cd5f48ba9dbe481947ad5b369995983ca68",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 주 여호와, 그 백성을 신원하시는 네 하나님이 이같이 말씀하시되 보라 내가 비틀걸음 치게 하는 잔 곧 나의 분노의 큰 잔을 네 손에서 거두어서 너로 다시는 마시지 않게 하고"
+      ],
+      "raw_text_hashes": [
+        "2a07bea926518046f5461cbb93914cd5f48ba9dbe481947ad5b369995983ca68"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:51:23",
+      "sequence": 18697,
+      "chapter_label": "ISA 51",
+      "verse_label": "23",
+      "locator": {
+        "book": "ISA",
+        "chapter": 51,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 51,
+          "verse": 23
+        }
+      ],
+      "en": "I will put it into the hand of those who afflict you, who have said to your soul, ‘Bow down, that we may walk over you;’ and you have laid your back as the ground, like a street to those who walk over.”",
+      "ko": "그 잔을 너를 곤고케 하던 자들의 손에 두리라 그들은 일찌기 네게 이르기를 엎드리라 우리가 넘어가리라 하던 자들이라 너를 넘어가려는 그들의 앞에 네가 네 허리를 펴서 땅 같게, 거리 같게 하였느니라 하시니라",
+      "source_text_hash": "fb27c2a67e94cb101cf5fff56bdad4f83f710775a2e95d113af040738d0a0420",
+      "translation_text_hash": "208eb6ffad0aa689bbd478b2ef515a49603fabc7319b56943d4067e10e76c371",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 잔을 너를 곤고케 하던 자들의 손에 두리라 그들은 일찌기 네게 이르기를 엎드리라 우리가 넘어가리라 하던 자들이라 너를 넘어가려는 그들의 앞에 네가 네 허리를 펴서 땅 같게, 거리 같게 하였느니라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "208eb6ffad0aa689bbd478b2ef515a49603fabc7319b56943d4067e10e76c371"
+      ]
+    }
+  ]
+}

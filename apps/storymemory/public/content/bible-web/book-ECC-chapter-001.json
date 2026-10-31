@@ -1,0 +1,589 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ECC:chapter:001",
+  "unit_ordinal": 660,
+  "unit_label": "ECC 1",
+  "book_code": "ECC",
+  "chapter_number": 1,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ECC:1:1",
+      "sequence": 17317,
+      "chapter_label": "ECC 1",
+      "verse_label": "1",
+      "locator": {
+        "book": "ECC",
+        "chapter": 1,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 1,
+          "verse": 1
+        }
+      ],
+      "en": "The words of the Preacher, the son of David, king in Jerusalem:",
+      "ko": "다윗의 아들 예루살렘 왕 전도자의 말씀이라",
+      "source_text_hash": "2a208b7fff47b75ded42645bc40627d8ee830a543adcaea801f34a8ab15844c1",
+      "translation_text_hash": "a32d609743611069173b51f7271f4f966e3b266a6d1486cd6774ae6dd41b5a57",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗의 아들 예루살렘 왕 전도자의 말씀이라"
+      ],
+      "raw_text_hashes": [
+        "a32d609743611069173b51f7271f4f966e3b266a6d1486cd6774ae6dd41b5a57"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:1:2",
+      "sequence": 17318,
+      "chapter_label": "ECC 1",
+      "verse_label": "2",
+      "locator": {
+        "book": "ECC",
+        "chapter": 1,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 1,
+          "verse": 2
+        }
+      ],
+      "en": "“Vanity of vanities,” says the Preacher; “Vanity of vanities, all is vanity.”",
+      "ko": "전도자가 가로되 헛되고 헛되며 헛되고 헛되니 모든 것이 헛되도다",
+      "source_text_hash": "4d97d40f7b302d23d14c604505b206ef61f5bea7f04e71c57f0de5a8edd985f9",
+      "translation_text_hash": "42b823bbb47ef920b1803835bc436b4c6ce6f8d55c5455ae3139ac9d7174e3ee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "전도자가 가로되 헛되고 헛되며 헛되고 헛되니 모든 것이 헛되도다"
+      ],
+      "raw_text_hashes": [
+        "42b823bbb47ef920b1803835bc436b4c6ce6f8d55c5455ae3139ac9d7174e3ee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:1:3",
+      "sequence": 17319,
+      "chapter_label": "ECC 1",
+      "verse_label": "3",
+      "locator": {
+        "book": "ECC",
+        "chapter": 1,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 1,
+          "verse": 3
+        }
+      ],
+      "en": "What does man gain from all his labor in which he labors under the sun?",
+      "ko": "사람이 해 아래서 수고하는 모든 수고가 자기에게 무엇이 유익한고",
+      "source_text_hash": "2c4d426444ea55b9420ac740d4a6751cf02567c3848241b62cfd73ff01c893f8",
+      "translation_text_hash": "72a2f070fd131ae77f5fbc7c2daa7bad671cb20408e18be5ee34ef30830e9835",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 해 아래서 수고하는 모든 수고가 자기에게 무엇이 유익한고"
+      ],
+      "raw_text_hashes": [
+        "72a2f070fd131ae77f5fbc7c2daa7bad671cb20408e18be5ee34ef30830e9835"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:1:4",
+      "sequence": 17320,
+      "chapter_label": "ECC 1",
+      "verse_label": "4",
+      "locator": {
+        "book": "ECC",
+        "chapter": 1,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 1,
+          "verse": 4
+        }
+      ],
+      "en": "One generation goes, and another generation comes; but the earth remains forever.",
+      "ko": "한 세대는 가고 한 세대는 오되 땅은 영원히 있도다",
+      "source_text_hash": "227da0c167e0e25655b12f05c3af04aec6185459004b415217f86d0a48fb2815",
+      "translation_text_hash": "49dc26007467d8c0bd9885319457a00b993064eec05eb17f50c42f338e17d310",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "한 세대는 가고 한 세대는 오되 땅은 영원히 있도다"
+      ],
+      "raw_text_hashes": [
+        "49dc26007467d8c0bd9885319457a00b993064eec05eb17f50c42f338e17d310"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:1:5",
+      "sequence": 17321,
+      "chapter_label": "ECC 1",
+      "verse_label": "5",
+      "locator": {
+        "book": "ECC",
+        "chapter": 1,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 1,
+          "verse": 5
+        }
+      ],
+      "en": "The sun also rises, and the sun goes down, and hurries to its place where it rises.",
+      "ko": "해는 떴다가 지며 그 떴던 곳으로 빨리 돌아가고",
+      "source_text_hash": "d0213331618e56862e35410834bd541714ecc163f549f7ff29091834d1dbb24c",
+      "translation_text_hash": "081be6b3f14520bac43d3c8db23d39c4bc7b48be70397996a4e5f98083c4651c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "해는 떴다가 지며 그 떴던 곳으로 빨리 돌아가고"
+      ],
+      "raw_text_hashes": [
+        "081be6b3f14520bac43d3c8db23d39c4bc7b48be70397996a4e5f98083c4651c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:1:6",
+      "sequence": 17322,
+      "chapter_label": "ECC 1",
+      "verse_label": "6",
+      "locator": {
+        "book": "ECC",
+        "chapter": 1,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 1,
+          "verse": 6
+        }
+      ],
+      "en": "The wind goes toward the south, and turns around to the north. It turns around continually as it goes, and the wind returns again to its courses.",
+      "ko": "바람은 남으로 불다가 북으로 돌이키며 이리 돌며 저리 돌아 불던 곳으로 돌아가고",
+      "source_text_hash": "2126b7b21bc5368192dc45e885ae79efaa563ea01bfea716ec8bae48ad5738f8",
+      "translation_text_hash": "c1409075dd86de86d2736db1104333fb0ec491259b48720a8651fb425d8c9432",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바람은 남으로 불다가 북으로 돌이키며 이리 돌며 저리 돌아 불던 곳으로 돌아가고"
+      ],
+      "raw_text_hashes": [
+        "c1409075dd86de86d2736db1104333fb0ec491259b48720a8651fb425d8c9432"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:1:7",
+      "sequence": 17323,
+      "chapter_label": "ECC 1",
+      "verse_label": "7",
+      "locator": {
+        "book": "ECC",
+        "chapter": 1,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 1,
+          "verse": 7
+        }
+      ],
+      "en": "All the rivers run into the sea, yet the sea is not full. To the place where the rivers flow, there they flow again.",
+      "ko": "모든 강물은 다 바다로 흐르되 바다를 채우지 못하며 어느 곳으로 흐르든지 그리로 연하여 흐르느니라",
+      "source_text_hash": "cc2299d588181dc7f9440324871d0a53eed2dc4905b8b1f3834323c3c816b777",
+      "translation_text_hash": "97606080a8390afc155841a7218637aaaf3d91620f2a2a3b2660468f6b802c4a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 강물은 다 바다로 흐르되 바다를 채우지 못하며 어느 곳으로 흐르든지 그리로 연하여 흐르느니라"
+      ],
+      "raw_text_hashes": [
+        "97606080a8390afc155841a7218637aaaf3d91620f2a2a3b2660468f6b802c4a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:1:8",
+      "sequence": 17324,
+      "chapter_label": "ECC 1",
+      "verse_label": "8",
+      "locator": {
+        "book": "ECC",
+        "chapter": 1,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 1,
+          "verse": 8
+        }
+      ],
+      "en": "All things are full of weariness beyond uttering. The eye is not satisfied with seeing, nor the ear filled with hearing.",
+      "ko": "만물의 피곤함을 사람이 말로 다 할 수 없나니 눈은 보아도 족함이 없고 귀는 들어도 차지 아니하는도다",
+      "source_text_hash": "eecb618823bfa7cc701df378477e648064b9a14502b1982ff1035f0ecc5da642",
+      "translation_text_hash": "295e61e0a5524805e9a31569765afb737f46c64a2c02383830802ef30914917a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만물의 피곤함을 사람이 말로 다 할 수 없나니 눈은 보아도 족함이 없고 귀는 들어도 차지 아니하는도다"
+      ],
+      "raw_text_hashes": [
+        "295e61e0a5524805e9a31569765afb737f46c64a2c02383830802ef30914917a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:1:9",
+      "sequence": 17325,
+      "chapter_label": "ECC 1",
+      "verse_label": "9",
+      "locator": {
+        "book": "ECC",
+        "chapter": 1,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 1,
+          "verse": 9
+        }
+      ],
+      "en": "That which has been is that which shall be, and that which has been done is that which shall be done; and there is no new thing under the sun.",
+      "ko": "이미 있던 것이 후에 다시 있겠고 이미 한 일을 후에 다시 할찌라 해 아래는 새 것이 없나니",
+      "source_text_hash": "601e37d33e7e54dedd976d256d97168b5427dae6c040a8d88fde02bbda17ee98",
+      "translation_text_hash": "8be03053e77333613e0927c265768da8a6dfec6140a362df540bcab28a55ee6c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이미 있던 것이 후에 다시 있겠고 이미 한 일을 후에 다시 할찌라 해 아래는 새 것이 없나니"
+      ],
+      "raw_text_hashes": [
+        "8be03053e77333613e0927c265768da8a6dfec6140a362df540bcab28a55ee6c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:1:10",
+      "sequence": 17326,
+      "chapter_label": "ECC 1",
+      "verse_label": "10",
+      "locator": {
+        "book": "ECC",
+        "chapter": 1,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 1,
+          "verse": 10
+        }
+      ],
+      "en": "Is there a thing of which it may be said, “Behold, this is new”? It has been long ago, in the ages which were before us.",
+      "ko": "무엇을 가리켜 이르기를 보라 이것이 새 것이라 할 것이 있으랴 우리 오래 전 세대에도 이미 있었느니라",
+      "source_text_hash": "d1e8b4628db12aaa6e9041af1100388be28f4c512a08a0cf606105a45c260d4a",
+      "translation_text_hash": "39b451f4def7277dae57bc5bc4c5a73a9910aba32769605e7749509e7e98ee82",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무엇을 가리켜 이르기를 보라 이것이 새 것이라 할 것이 있으랴 우리 오래 전 세대에도 이미 있었느니라"
+      ],
+      "raw_text_hashes": [
+        "39b451f4def7277dae57bc5bc4c5a73a9910aba32769605e7749509e7e98ee82"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:1:11",
+      "sequence": 17327,
+      "chapter_label": "ECC 1",
+      "verse_label": "11",
+      "locator": {
+        "book": "ECC",
+        "chapter": 1,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 1,
+          "verse": 11
+        }
+      ],
+      "en": "There is no memory of the former; neither shall there be any memory of the latter that are to come, among those that shall come after.",
+      "ko": "이전 세대를 기억함이 없으니 장래 세대도 그 후 세대가 기억함이 없으리라",
+      "source_text_hash": "2beec1591f591071ff93459b7e061410387f322087674167a6b788a3b1cba8ed",
+      "translation_text_hash": "aca478698c228e48e4062c6908d4021e81d1f460400f51e035cee8a5aaeb61a7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이전 세대를 기억함이 없으니 장래 세대도 그 후 세대가 기억함이 없으리라"
+      ],
+      "raw_text_hashes": [
+        "aca478698c228e48e4062c6908d4021e81d1f460400f51e035cee8a5aaeb61a7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:1:12",
+      "sequence": 17328,
+      "chapter_label": "ECC 1",
+      "verse_label": "12",
+      "locator": {
+        "book": "ECC",
+        "chapter": 1,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 1,
+          "verse": 12
+        }
+      ],
+      "en": "I, the Preacher, was king over Israel in Jerusalem.",
+      "ko": "나 전도자는 예루살렘에서 이스라엘 왕이 되어",
+      "source_text_hash": "5be611f4c61111c9dcfab0c7412103765367e811eb79ab7b25175c0570f2af1e",
+      "translation_text_hash": "8e55cd788d34364d75a56de4576225b54b3b69d2471900f059e47d9c905a7c43",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 전도자는 예루살렘에서 이스라엘 왕이 되어"
+      ],
+      "raw_text_hashes": [
+        "8e55cd788d34364d75a56de4576225b54b3b69d2471900f059e47d9c905a7c43"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:1:13",
+      "sequence": 17329,
+      "chapter_label": "ECC 1",
+      "verse_label": "13",
+      "locator": {
+        "book": "ECC",
+        "chapter": 1,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 1,
+          "verse": 13
+        }
+      ],
+      "en": "I applied my heart to seek and to search out by wisdom concerning all that is done under the sky. It is a heavy burden that God has given to the sons of men to be afflicted with.",
+      "ko": "마음을 다하며 지혜를 써서 하늘 아래서 행하는 모든 일을 궁구하며 살핀즉 이는 괴로운 것이니 하나님이 인생들에게 주사 수고하게 하신 것이라",
+      "source_text_hash": "78de119eb5e8e653c78a53493e43f3238093437ecc0a948742a75a32b4f34e0c",
+      "translation_text_hash": "31ec74357bbb5e6438be0404abab3dbd98b2c5fc56392b44e43b6c03433fc9c7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마음을 다하며 지혜를 써서 하늘 아래서 행하는 모든 일을 궁구하며 살핀즉 이는 괴로운 것이니 하나님이 인생들에게 주사 수고하게 하신 것이라"
+      ],
+      "raw_text_hashes": [
+        "31ec74357bbb5e6438be0404abab3dbd98b2c5fc56392b44e43b6c03433fc9c7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:1:14",
+      "sequence": 17330,
+      "chapter_label": "ECC 1",
+      "verse_label": "14",
+      "locator": {
+        "book": "ECC",
+        "chapter": 1,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 1,
+          "verse": 14
+        }
+      ],
+      "en": "I have seen all the works that are done under the sun; and behold, all is vanity and a chasing after wind.",
+      "ko": "내가 해 아래서 행하는 모든 일을 본즉 다 헛되어 바람을 잡으려는 것이로다",
+      "source_text_hash": "82736b0b0179377c8e65a1ed2acd3194e7286b9fc164bad082321934bc69949a",
+      "translation_text_hash": "855069f4617c77eabe03196fbf89dbb7183f122dfd5419d27622e53329f15425",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 해 아래서 행하는 모든 일을 본즉 다 헛되어 바람을 잡으려는 것이로다"
+      ],
+      "raw_text_hashes": [
+        "855069f4617c77eabe03196fbf89dbb7183f122dfd5419d27622e53329f15425"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:1:15",
+      "sequence": 17331,
+      "chapter_label": "ECC 1",
+      "verse_label": "15",
+      "locator": {
+        "book": "ECC",
+        "chapter": 1,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 1,
+          "verse": 15
+        }
+      ],
+      "en": "That which is crooked can’t be made straight; and that which is lacking can’t be counted.",
+      "ko": "구부러진 것을 곧게 할 수 없고 이지러진 것을 셀 수 없도다",
+      "source_text_hash": "4df5739e1773c7d783da72f8c4afce3ebef0d01a79090682ff64570be5948db0",
+      "translation_text_hash": "735a1406f8a8ae062eca13c5081c00352cc2f0ef25dc1bb7ef982aa7db836646",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "구부러진 것을 곧게 할 수 없고 이지러진 것을 셀 수 없도다"
+      ],
+      "raw_text_hashes": [
+        "735a1406f8a8ae062eca13c5081c00352cc2f0ef25dc1bb7ef982aa7db836646"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:1:16",
+      "sequence": 17332,
+      "chapter_label": "ECC 1",
+      "verse_label": "16",
+      "locator": {
+        "book": "ECC",
+        "chapter": 1,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 1,
+          "verse": 16
+        }
+      ],
+      "en": "I said to myself, “Behold, I have obtained for myself great wisdom above all who were before me in Jerusalem. Yes, my heart has had great experience of wisdom and knowledge.”",
+      "ko": "내가 마음 가운데 말하여 이르기를 내가 큰 지혜를 많이 얻었으므로 나보다 먼저 예루살렘에 있던 자보다 낫다 하였나니 곧 내 마음이 지혜와 지식을 많이 만나 보았음이로다",
+      "source_text_hash": "040402ab4459f00b8a570417b24b73382a6abd86fdbedaa9283041236990758b",
+      "translation_text_hash": "21d4d7b4ea9f2f1b228a5f415703f7349230c09b1e2f78c3664f4e810f42e839",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 마음 가운데 말하여 이르기를 내가 큰 지혜를 많이 얻었으므로 나보다 먼저 예루살렘에 있던 자보다 낫다 하였나니 곧 내 마음이 지혜와 지식을 많이 만나 보았음이로다"
+      ],
+      "raw_text_hashes": [
+        "21d4d7b4ea9f2f1b228a5f415703f7349230c09b1e2f78c3664f4e810f42e839"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:1:17",
+      "sequence": 17333,
+      "chapter_label": "ECC 1",
+      "verse_label": "17",
+      "locator": {
+        "book": "ECC",
+        "chapter": 1,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 1,
+          "verse": 17
+        }
+      ],
+      "en": "I applied my heart to know wisdom, and to know madness and folly. I perceived that this also was a chasing after wind.",
+      "ko": "내가 다시 지혜를 알고자 하며 미친 것과 미련한 것을 알고자 하여 마음을 썼으나 이것도 바람을 잡으려는 것인줄을 깨달았도다",
+      "source_text_hash": "191691604521611363685234a19e718e4b6bec5c86e8c99fb1a837335fc39721",
+      "translation_text_hash": "6768e9cd1b5a4235d77e74e36c7e40e883d84f14c3d003ad207b1a57f4c513e9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 다시 지혜를 알고자 하며 미친 것과 미련한 것을 알고자 하여 마음을 썼으나 이것도 바람을 잡으려는 것인줄을 깨달았도다"
+      ],
+      "raw_text_hashes": [
+        "6768e9cd1b5a4235d77e74e36c7e40e883d84f14c3d003ad207b1a57f4c513e9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:1:18",
+      "sequence": 17334,
+      "chapter_label": "ECC 1",
+      "verse_label": "18",
+      "locator": {
+        "book": "ECC",
+        "chapter": 1,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 1,
+          "verse": 18
+        }
+      ],
+      "en": "For in much wisdom is much grief; and he who increases knowledge increases sorrow.",
+      "ko": "지혜가 많으면 번뇌도 많으니 지식을 더하는 자는 근심을 더하느니라",
+      "source_text_hash": "68bdc57f74d10c3ee2a9f38cd2dd48de028807ebdea870d64a19f1d526fc6ec6",
+      "translation_text_hash": "ad7234df22973a5140444c187dee8701fdae6bc66e038a5a52418b1be32bb5a8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "지혜가 많으면 번뇌도 많으니 지식을 더하는 자는 근심을 더하느니라"
+      ],
+      "raw_text_hashes": [
+        "ad7234df22973a5140444c187dee8701fdae6bc66e038a5a52418b1be32bb5a8"
+      ]
+    }
+  ]
+}

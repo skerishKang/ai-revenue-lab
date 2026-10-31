@@ -1,0 +1,1133 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PRO:chapter:023",
+  "unit_ordinal": 651,
+  "unit_label": "PRO 23",
+  "book_code": "PRO",
+  "chapter_number": 23,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PRO:23:1",
+      "sequence": 17046,
+      "chapter_label": "PRO 23",
+      "verse_label": "1",
+      "locator": {
+        "book": "PRO",
+        "chapter": 23,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 23,
+          "verse": 1
+        }
+      ],
+      "en": "When you sit to eat with a ruler, consider diligently what is before you;",
+      "ko": "네가 관원과 함께 앉아 음식을 먹게 되거든 삼가 네 앞에 있는 자가 누구인지 생각하며",
+      "source_text_hash": "6eb03980d1c3722c3d3135741f16a0b1de774d121886504b07afab788d26b1e3",
+      "translation_text_hash": "e80adf6b5493b825bbd4070e669513f3942b76e15ab26fea297aa24d0ae5d659",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 관원과 함께 앉아 음식을 먹게 되거든 삼가 네 앞에 있는 자가 누구인지 생각하며"
+      ],
+      "raw_text_hashes": [
+        "e80adf6b5493b825bbd4070e669513f3942b76e15ab26fea297aa24d0ae5d659"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:23:2",
+      "sequence": 17047,
+      "chapter_label": "PRO 23",
+      "verse_label": "2",
+      "locator": {
+        "book": "PRO",
+        "chapter": 23,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 23,
+          "verse": 2
+        }
+      ],
+      "en": "put a knife to your throat if you are a man given to appetite.",
+      "ko": "네가 만일 탐식자여든 네 목에 칼을 둘 것이니라",
+      "source_text_hash": "4c6242087c58e04584e9d0b1a35beb273b6c68c0c7ddd78d69372123c303f6dd",
+      "translation_text_hash": "da2d31caa0d2b9388605ffb13f1224abe91aed8c4b493ed3b413ce01a849c148",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 만일 탐식자여든 네 목에 칼을 둘 것이니라"
+      ],
+      "raw_text_hashes": [
+        "da2d31caa0d2b9388605ffb13f1224abe91aed8c4b493ed3b413ce01a849c148"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:23:3",
+      "sequence": 17048,
+      "chapter_label": "PRO 23",
+      "verse_label": "3",
+      "locator": {
+        "book": "PRO",
+        "chapter": 23,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 23,
+          "verse": 3
+        }
+      ],
+      "en": "Don’t be desirous of his dainties, since they are deceitful food.",
+      "ko": "그 진찬을 탐하지 말라 그것은 간사하게 베푼 식물이니라",
+      "source_text_hash": "3fbe126830d4e3f8d2b5d1e1961e8583003acca1b6a275603ec7042e779566b9",
+      "translation_text_hash": "e43909cacfc6af378e1c1347ba0fad93ff0f8d4cafa2295c997a413c45691582",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 진찬을 탐하지 말라 그것은 간사하게 베푼 식물이니라"
+      ],
+      "raw_text_hashes": [
+        "e43909cacfc6af378e1c1347ba0fad93ff0f8d4cafa2295c997a413c45691582"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:23:4",
+      "sequence": 17049,
+      "chapter_label": "PRO 23",
+      "verse_label": "4",
+      "locator": {
+        "book": "PRO",
+        "chapter": 23,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 23,
+          "verse": 4
+        }
+      ],
+      "en": "Don’t weary yourself to be rich. In your wisdom, show restraint.",
+      "ko": "부자 되기에 애쓰지 말고 네 사사로운 지혜를 버릴찌어다",
+      "source_text_hash": "7a6052ad9e7da0207e88bdeefb0732ed59872b18f41457e1827d71cea4e96e40",
+      "translation_text_hash": "d621680225b8cee267b1ecb1865be91a472b09334e7b2b0f25158973791c57b7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "부자 되기에 애쓰지 말고 네 사사로운 지혜를 버릴찌어다"
+      ],
+      "raw_text_hashes": [
+        "d621680225b8cee267b1ecb1865be91a472b09334e7b2b0f25158973791c57b7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:23:5",
+      "sequence": 17050,
+      "chapter_label": "PRO 23",
+      "verse_label": "5",
+      "locator": {
+        "book": "PRO",
+        "chapter": 23,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 23,
+          "verse": 5
+        }
+      ],
+      "en": "Why do you set your eyes on that which is not? For it certainly sprouts wings like an eagle and flies in the sky.",
+      "ko": "네가 어찌 허무한 것에 주목하겠느냐 정녕히 재물은 날개를 내어 하늘에 나는 독수리처럼 날아가리라",
+      "source_text_hash": "0f2e40768564af25a94f82413f84c038250a6b4293d522cb2adfd31a8f8d7711",
+      "translation_text_hash": "e61d24208df4adb105cf27250aba51a40fdbbb68dbe9192450c0597c29890c7f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 어찌 허무한 것에 주목하겠느냐 정녕히 재물은 날개를 내어 하늘에 나는 독수리처럼 날아가리라"
+      ],
+      "raw_text_hashes": [
+        "e61d24208df4adb105cf27250aba51a40fdbbb68dbe9192450c0597c29890c7f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:23:6",
+      "sequence": 17051,
+      "chapter_label": "PRO 23",
+      "verse_label": "6",
+      "locator": {
+        "book": "PRO",
+        "chapter": 23,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 23,
+          "verse": 6
+        }
+      ],
+      "en": "Don’t eat the food of him who has a stingy eye, and don’t crave his delicacies,",
+      "ko": "악한 눈이 있는 자의 음식을 먹지 말며 그 진찬을 탐하지 말찌어다",
+      "source_text_hash": "85e1d3adeb43f111ec13d85d5d8e1b2681c209de57dcb2fc976c3d393375fab7",
+      "translation_text_hash": "923a63c3190a34fbfd585184da1688f183f7945fa244088f21f371e7248be758",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "악한 눈이 있는 자의 음식을 먹지 말며 그 진찬을 탐하지 말찌어다"
+      ],
+      "raw_text_hashes": [
+        "923a63c3190a34fbfd585184da1688f183f7945fa244088f21f371e7248be758"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:23:7",
+      "sequence": 17052,
+      "chapter_label": "PRO 23",
+      "verse_label": "7",
+      "locator": {
+        "book": "PRO",
+        "chapter": 23,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 23,
+          "verse": 7
+        }
+      ],
+      "en": "for as he thinks about the cost, so he is. “Eat and drink!” he says to you, but his heart is not with you.",
+      "ko": "대저 그 마음의 생각이 어떠하면 그 위인도 그러한즉 그가 너더러 먹고 마시라 할지라도 그 마음은 너와 함께하지 아니함이라",
+      "source_text_hash": "96e3fa183bcafafc56dce25b4007d09e9b3d6b62ae0b93b7c9bf5bbd59a52c9f",
+      "translation_text_hash": "188bf55eca2c81533c657730a540f0adc0d33e48a1eb039c52c7f0bba963e1d8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대저 그 마음의 생각이 어떠하면 그 위인도 그러한즉 그가 너더러 먹고 마시라 할지라도 그 마음은 너와 함께하지 아니함이라"
+      ],
+      "raw_text_hashes": [
+        "188bf55eca2c81533c657730a540f0adc0d33e48a1eb039c52c7f0bba963e1d8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:23:8",
+      "sequence": 17053,
+      "chapter_label": "PRO 23",
+      "verse_label": "8",
+      "locator": {
+        "book": "PRO",
+        "chapter": 23,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 23,
+          "verse": 8
+        }
+      ],
+      "en": "You will vomit up the morsel which you have eaten and waste your pleasant words.",
+      "ko": "네가 조금 먹은 것도 토하겠고 네 아름다운 말도 헛된데로 돌아가리라",
+      "source_text_hash": "0d7c052c411e723b7d0287ff9ba2b08e2c8cbfa7a6378bfd7b1c28fcc8d5ed62",
+      "translation_text_hash": "a26935f299bc7fbddf431ff3548c33c8fdd489d4f7a0752cbb32a7d9267f8406",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 조금 먹은 것도 토하겠고 네 아름다운 말도 헛된데로 돌아가리라"
+      ],
+      "raw_text_hashes": [
+        "a26935f299bc7fbddf431ff3548c33c8fdd489d4f7a0752cbb32a7d9267f8406"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:23:9",
+      "sequence": 17054,
+      "chapter_label": "PRO 23",
+      "verse_label": "9",
+      "locator": {
+        "book": "PRO",
+        "chapter": 23,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 23,
+          "verse": 9
+        }
+      ],
+      "en": "Don’t speak in the ears of a fool, for he will despise the wisdom of your words.",
+      "ko": "미련한 자의 귀에 말하지 말지니 이는 그가 네 지혜로운 말을 업신여길 것임이니라",
+      "source_text_hash": "ec61f313ac5e8fc610dd32057984a59076e74a8eee10c35b49bd3aac9ccd2098",
+      "translation_text_hash": "84f90838d700cb87365e2015dee067be7472ea2404799fc4470c67597906396d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "미련한 자의 귀에 말하지 말지니 이는 그가 네 지혜로운 말을 업신여길 것임이니라"
+      ],
+      "raw_text_hashes": [
+        "84f90838d700cb87365e2015dee067be7472ea2404799fc4470c67597906396d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:23:10",
+      "sequence": 17055,
+      "chapter_label": "PRO 23",
+      "verse_label": "10",
+      "locator": {
+        "book": "PRO",
+        "chapter": 23,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 23,
+          "verse": 10
+        }
+      ],
+      "en": "Don’t move the ancient boundary stone. Don’t encroach on the fields of the fatherless,",
+      "ko": "옛 지계석을 옮기지 말며 외로운 자식의 밭을 침범하지 말지어다",
+      "source_text_hash": "f85695a7c3b6a384598fa74714586830891a5f462d01d8ed70507c14d03a04bf",
+      "translation_text_hash": "133223d19181ead7897358c042ad5ff0d4dae6daa3dc89650db6194a88f7b9a5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "옛 지계석을 옮기지 말며 외로운 자식의 밭을 침범하지 말지어다"
+      ],
+      "raw_text_hashes": [
+        "133223d19181ead7897358c042ad5ff0d4dae6daa3dc89650db6194a88f7b9a5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:23:11",
+      "sequence": 17056,
+      "chapter_label": "PRO 23",
+      "verse_label": "11",
+      "locator": {
+        "book": "PRO",
+        "chapter": 23,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 23,
+          "verse": 11
+        }
+      ],
+      "en": "for their Defender is strong. He will plead their case against you.",
+      "ko": "대저 그들의 구속자는 강하시니 너를 대적하사 그 원을 펴시리라",
+      "source_text_hash": "d0e695e70c4cd9cc043e3eba8a2db102ecc3adb99ed5b5b41184da7830537045",
+      "translation_text_hash": "8eefc6766ab8a6dc40fc8c9ce878616625ebfa1e21a9ef7f06fe8ffb13f34e84",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대저 그들의 구속자는 강하시니 너를 대적하사 그 원을 펴시리라"
+      ],
+      "raw_text_hashes": [
+        "8eefc6766ab8a6dc40fc8c9ce878616625ebfa1e21a9ef7f06fe8ffb13f34e84"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:23:12",
+      "sequence": 17057,
+      "chapter_label": "PRO 23",
+      "verse_label": "12",
+      "locator": {
+        "book": "PRO",
+        "chapter": 23,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 23,
+          "verse": 12
+        }
+      ],
+      "en": "Apply your heart to instruction, and your ears to the words of knowledge.",
+      "ko": "훈계에 착심하며 지식의 말씀에 귀를 기울이라",
+      "source_text_hash": "ed2ea7376939d3bd90508a7f1e9f25800ddd647b4cd8529d7ecf9782fa3897c4",
+      "translation_text_hash": "b6ec326f9ff2e5da5f76615ea3d1d6eaf532a05e3420741c7190d556fd641c7f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "훈계에 착심하며 지식의 말씀에 귀를 기울이라"
+      ],
+      "raw_text_hashes": [
+        "b6ec326f9ff2e5da5f76615ea3d1d6eaf532a05e3420741c7190d556fd641c7f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:23:13",
+      "sequence": 17058,
+      "chapter_label": "PRO 23",
+      "verse_label": "13",
+      "locator": {
+        "book": "PRO",
+        "chapter": 23,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 23,
+          "verse": 13
+        }
+      ],
+      "en": "Don’t withhold correction from a child. If you punish him with the rod, he will not die.",
+      "ko": "아이를 훈계하지 아니치 말라 채찍으로 그를 때릴지라도 죽지 아니하리라",
+      "source_text_hash": "94c43d3b0b7f023672c899e989e03f53476cb8271da3247706dab3a2cd67c189",
+      "translation_text_hash": "0a03a1145565b345c9f0c3997b6b9578a97c9cc8b013b1fb3d7c1000c4cdf8f1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아이를 훈계하지 아니치 말라 채찍으로 그를 때릴지라도 죽지 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "0a03a1145565b345c9f0c3997b6b9578a97c9cc8b013b1fb3d7c1000c4cdf8f1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:23:14",
+      "sequence": 17059,
+      "chapter_label": "PRO 23",
+      "verse_label": "14",
+      "locator": {
+        "book": "PRO",
+        "chapter": 23,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 23,
+          "verse": 14
+        }
+      ],
+      "en": "Punish him with the rod, and save his soul from Sheol.",
+      "ko": "그를 채찍으로 때리면 그 영혼을 음부에서 구원하리라",
+      "source_text_hash": "4c6825de9c37cdc870493b3ac8cd44c28e178232213233f4fcbce400fb26a9a9",
+      "translation_text_hash": "b82c6b5cdad165e68f3c612303332649d6f6369ff8b38fc1d3af228443fcb300",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그를 채찍으로 때리면 그 영혼을 음부에서 구원하리라"
+      ],
+      "raw_text_hashes": [
+        "b82c6b5cdad165e68f3c612303332649d6f6369ff8b38fc1d3af228443fcb300"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:23:15",
+      "sequence": 17060,
+      "chapter_label": "PRO 23",
+      "verse_label": "15",
+      "locator": {
+        "book": "PRO",
+        "chapter": 23,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 23,
+          "verse": 15
+        }
+      ],
+      "en": "My son, if your heart is wise, then my heart will be glad, even mine.",
+      "ko": "내 아들아 만일 네 마음이 지혜로우면 나 곧 내 마음이 즐겁겠고",
+      "source_text_hash": "3e5f0bd6af07e689b99f35873bca93374e572f1ac01f52cb53fac0c6e022176c",
+      "translation_text_hash": "741acbd49335882abd6e0c87f311fd3c652fe66fd8532f0aa6efbe5a91fafdad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 아들아 만일 네 마음이 지혜로우면 나 곧 내 마음이 즐겁겠고"
+      ],
+      "raw_text_hashes": [
+        "741acbd49335882abd6e0c87f311fd3c652fe66fd8532f0aa6efbe5a91fafdad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:23:16",
+      "sequence": 17061,
+      "chapter_label": "PRO 23",
+      "verse_label": "16",
+      "locator": {
+        "book": "PRO",
+        "chapter": 23,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 23,
+          "verse": 16
+        }
+      ],
+      "en": "Yes, my heart will rejoice when your lips speak what is right.",
+      "ko": "만일 네 입술이 정직을 말하면 내 속이 유쾌하리라",
+      "source_text_hash": "e4c11e6c7cec62e40aad659ed3e891ed6538bf0a575b3300713401372fd91923",
+      "translation_text_hash": "d07eb7652681e8023040c18a17b04895e7cfba96c47a9d0d81272ccf1a5ed5ab",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 네 입술이 정직을 말하면 내 속이 유쾌하리라"
+      ],
+      "raw_text_hashes": [
+        "d07eb7652681e8023040c18a17b04895e7cfba96c47a9d0d81272ccf1a5ed5ab"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:23:17",
+      "sequence": 17062,
+      "chapter_label": "PRO 23",
+      "verse_label": "17",
+      "locator": {
+        "book": "PRO",
+        "chapter": 23,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 23,
+          "verse": 17
+        }
+      ],
+      "en": "Don’t let your heart envy sinners, but rather fear the LORD all day long.",
+      "ko": "네 마음으로 죄인의 형통을 부러워하지 말고 항상 여호와를 경외하라",
+      "source_text_hash": "7a90e9dce8e53782b533fe97e7a278b9a9671253f14372c45e9bf28ab3421106",
+      "translation_text_hash": "1d1e03dd0e8edf66a93b410587aa1d74b4ef7bf78b2248a722a7ea546b888c8c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 마음으로 죄인의 형통을 부러워하지 말고 항상 여호와를 경외하라"
+      ],
+      "raw_text_hashes": [
+        "1d1e03dd0e8edf66a93b410587aa1d74b4ef7bf78b2248a722a7ea546b888c8c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:23:18",
+      "sequence": 17063,
+      "chapter_label": "PRO 23",
+      "verse_label": "18",
+      "locator": {
+        "book": "PRO",
+        "chapter": 23,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 23,
+          "verse": 18
+        }
+      ],
+      "en": "Indeed surely there is a future hope, and your hope will not be cut off.",
+      "ko": "정녕히 네 장래가 있겠고 네 소망이 끊어지지 아니하리라",
+      "source_text_hash": "1566dd5bc9e80f269acc80f17505656b17a948315d8c4bc7886b39ec3ba7708b",
+      "translation_text_hash": "4f88616f2fc829ab928d427a5125aa669a21ee386c1ba70e66a37e74e4782666",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "정녕히 네 장래가 있겠고 네 소망이 끊어지지 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "4f88616f2fc829ab928d427a5125aa669a21ee386c1ba70e66a37e74e4782666"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:23:19",
+      "sequence": 17064,
+      "chapter_label": "PRO 23",
+      "verse_label": "19",
+      "locator": {
+        "book": "PRO",
+        "chapter": 23,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 23,
+          "verse": 19
+        }
+      ],
+      "en": "Listen, my son, and be wise, and keep your heart on the right path!",
+      "ko": "내 아들아 너는 듣고 지혜를 얻어 네 마음을 정로로 인도할지니라",
+      "source_text_hash": "0539c3136da7cb27c01b79d492fe282696f222df59a71804724aa7bfd584e55a",
+      "translation_text_hash": "2e938e9084efb84d7f53181fc4229b869b4ce0a6decf34036da1eaa1d4b95cf6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 아들아 너는 듣고 지혜를 얻어 네 마음을 정로로 인도할지니라"
+      ],
+      "raw_text_hashes": [
+        "2e938e9084efb84d7f53181fc4229b869b4ce0a6decf34036da1eaa1d4b95cf6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:23:20",
+      "sequence": 17065,
+      "chapter_label": "PRO 23",
+      "verse_label": "20",
+      "locator": {
+        "book": "PRO",
+        "chapter": 23,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 23,
+          "verse": 20
+        }
+      ],
+      "en": "Don’t be among ones drinking too much wine, or those who gorge themselves on meat;",
+      "ko": "술을 즐겨하는 자와 고기를 탐하는 자로 더불어 사귀지 말라",
+      "source_text_hash": "0db019e5f38295f44280b5b9a16cba62d6be508809fc474cd3bf4bbc458587df",
+      "translation_text_hash": "e1b40c05f7f541cc8850470bc002ca0633bb3dcdb0a07588c04f237cdb57f4c7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "술을 즐겨하는 자와 고기를 탐하는 자로 더불어 사귀지 말라"
+      ],
+      "raw_text_hashes": [
+        "e1b40c05f7f541cc8850470bc002ca0633bb3dcdb0a07588c04f237cdb57f4c7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:23:21",
+      "sequence": 17066,
+      "chapter_label": "PRO 23",
+      "verse_label": "21",
+      "locator": {
+        "book": "PRO",
+        "chapter": 23,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 23,
+          "verse": 21
+        }
+      ],
+      "en": "for the drunkard and the glutton shall become poor; and drowsiness clothes them in rags.",
+      "ko": "술 취하고 탐식하는 자는 가난하여질 것이요 잠 자기를 즐겨하는 자는 해어진 옷을 입을 것임이니라",
+      "source_text_hash": "c7ad5ea8f4f7e3b4f0cd36deca5e442f18e1650abb62f70e9b0ffcb61839688c",
+      "translation_text_hash": "7416fdefbe74f847ac807054abec10540cf299e6b84c2e8e08ea34e6a04f7681",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "술 취하고 탐식하는 자는 가난하여질 것이요 잠 자기를 즐겨하는 자는 해어진 옷을 입을 것임이니라"
+      ],
+      "raw_text_hashes": [
+        "7416fdefbe74f847ac807054abec10540cf299e6b84c2e8e08ea34e6a04f7681"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:23:22",
+      "sequence": 17067,
+      "chapter_label": "PRO 23",
+      "verse_label": "22",
+      "locator": {
+        "book": "PRO",
+        "chapter": 23,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 23,
+          "verse": 22
+        }
+      ],
+      "en": "Listen to your father who gave you life, and don’t despise your mother when she is old.",
+      "ko": "너 낳은 아비에게 청종하고 네 늙은 어미를 경히 여기지 말지니라",
+      "source_text_hash": "3af40aab1ac53940118268b024152d328c4f35372d9f807fd03c89422b36a152",
+      "translation_text_hash": "2ffb95121ced72dec0fa0c596a32476e787132fbc3f0838b9d0a1c94f3d04ec3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너 낳은 아비에게 청종하고 네 늙은 어미를 경히 여기지 말지니라"
+      ],
+      "raw_text_hashes": [
+        "2ffb95121ced72dec0fa0c596a32476e787132fbc3f0838b9d0a1c94f3d04ec3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:23:23",
+      "sequence": 17068,
+      "chapter_label": "PRO 23",
+      "verse_label": "23",
+      "locator": {
+        "book": "PRO",
+        "chapter": 23,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 23,
+          "verse": 23
+        }
+      ],
+      "en": "Buy the truth, and don’t sell it. Get wisdom, discipline, and understanding.",
+      "ko": "진리를 사고서 팔지 말며 지혜와 훈계와 명철도 그리할지니라",
+      "source_text_hash": "971ea7cd6797682b370cdd542aac9b683f775366244f062fc3823752fdc9ec2b",
+      "translation_text_hash": "0dfde46998b75e158c193553ebe9d4d3bd9b925799e8bfdfea110e18657581d5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "진리를 사고서 팔지 말며 지혜와 훈계와 명철도 그리할지니라"
+      ],
+      "raw_text_hashes": [
+        "0dfde46998b75e158c193553ebe9d4d3bd9b925799e8bfdfea110e18657581d5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:23:24",
+      "sequence": 17069,
+      "chapter_label": "PRO 23",
+      "verse_label": "24",
+      "locator": {
+        "book": "PRO",
+        "chapter": 23,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 23,
+          "verse": 24
+        }
+      ],
+      "en": "The father of the righteous has great joy. Whoever fathers a wise child delights in him.",
+      "ko": "의인의 아비는 크게 즐거울 것이요 지혜로운 자식을 낳은 자는 그를 인하여 즐거울 것이니라",
+      "source_text_hash": "d35b07091665fdab6b78e549afc90e9b6ca51584315b8c042931af07363a1402",
+      "translation_text_hash": "fff6b31214f2f234012f038f2bbf5465b79acf765d1a9b0b052a8b4d90dbf23b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "의인의 아비는 크게 즐거울 것이요 지혜로운 자식을 낳은 자는 그를 인하여 즐거울 것이니라"
+      ],
+      "raw_text_hashes": [
+        "fff6b31214f2f234012f038f2bbf5465b79acf765d1a9b0b052a8b4d90dbf23b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:23:25",
+      "sequence": 17070,
+      "chapter_label": "PRO 23",
+      "verse_label": "25",
+      "locator": {
+        "book": "PRO",
+        "chapter": 23,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 23,
+          "verse": 25
+        }
+      ],
+      "en": "Let your father and your mother be glad! Let her who bore you rejoice!",
+      "ko": "네 부모를 즐겁게 하며 너 낳은 어미를 기쁘게 하라",
+      "source_text_hash": "607442aa6cde342badc493a744739268d2e47c395df5695aa68cec6be8eecf50",
+      "translation_text_hash": "63355eebecfbeacb1e84e79b7d9b23688afc87dcd0788f97dc6796808392ff34",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 부모를 즐겁게 하며 너 낳은 어미를 기쁘게 하라"
+      ],
+      "raw_text_hashes": [
+        "63355eebecfbeacb1e84e79b7d9b23688afc87dcd0788f97dc6796808392ff34"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:23:26",
+      "sequence": 17071,
+      "chapter_label": "PRO 23",
+      "verse_label": "26",
+      "locator": {
+        "book": "PRO",
+        "chapter": 23,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 23,
+          "verse": 26
+        }
+      ],
+      "en": "My son, give me your heart; and let your eyes keep in my ways.",
+      "ko": "내 아들아 네 마음을 내게 주며 네 눈으로 내 길을 즐거워할지어다",
+      "source_text_hash": "0c9374d3f9b86ef8ff602eb9b2de8352859e2bd3f45defba772ec61e875d3c49",
+      "translation_text_hash": "c9c1f1622126ab1ee3a093f4afd3fd811193fec51715eb577181e1c04d461e75",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 아들아 네 마음을 내게 주며 네 눈으로 내 길을 즐거워할지어다"
+      ],
+      "raw_text_hashes": [
+        "c9c1f1622126ab1ee3a093f4afd3fd811193fec51715eb577181e1c04d461e75"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:23:27",
+      "sequence": 17072,
+      "chapter_label": "PRO 23",
+      "verse_label": "27",
+      "locator": {
+        "book": "PRO",
+        "chapter": 23,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 23,
+          "verse": 27
+        }
+      ],
+      "en": "For a prostitute is a deep pit; and a wayward wife is a narrow well.",
+      "ko": "대저 음녀는 깊은 구렁이요 이방 여인은 좁은 함정이라",
+      "source_text_hash": "ec57c6bf1ce198b8438c9ec8ef2862d7f42c318afdcc72fbadcfacf1fbc6fe9f",
+      "translation_text_hash": "7e6b5fedbeff4438abd8c4d63ea8d9551f325cf74744e8264738c1180158f03f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대저 음녀는 깊은 구렁이요 이방 여인은 좁은 함정이라"
+      ],
+      "raw_text_hashes": [
+        "7e6b5fedbeff4438abd8c4d63ea8d9551f325cf74744e8264738c1180158f03f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:23:28",
+      "sequence": 17073,
+      "chapter_label": "PRO 23",
+      "verse_label": "28",
+      "locator": {
+        "book": "PRO",
+        "chapter": 23,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 23,
+          "verse": 28
+        }
+      ],
+      "en": "Yes, she lies in wait like a robber, and increases the unfaithful among men.",
+      "ko": "그는 강도 같이 매복하며 인간에 궤사한 자가 많아지게 하느니라",
+      "source_text_hash": "375d797720b07bddf196e60126dceb40984f12b526c57dde044a84da972005e0",
+      "translation_text_hash": "bf6b709807f558cdbbd927c4aa7d5a543b8ac0862c47f44e1167cc3a5dc69145",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그는 강도 같이 매복하며 인간에 궤사한 자가 많아지게 하느니라"
+      ],
+      "raw_text_hashes": [
+        "bf6b709807f558cdbbd927c4aa7d5a543b8ac0862c47f44e1167cc3a5dc69145"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:23:29",
+      "sequence": 17074,
+      "chapter_label": "PRO 23",
+      "verse_label": "29",
+      "locator": {
+        "book": "PRO",
+        "chapter": 23,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 23,
+          "verse": 29
+        }
+      ],
+      "en": "Who has woe? Who has sorrow? Who has strife? Who has complaints? Who has needless bruises? Who has bloodshot eyes?",
+      "ko": "재앙이 뉘게 있느뇨 근심이 뉘게 있느뇨 분쟁이 뉘게 있느뇨 원망이 뉘게 있느뇨 까닭 없는 창상이 뉘게 있느뇨 붉은 눈이 뉘게 있느뇨",
+      "source_text_hash": "ac90d9c392f75080ac66c5d5071fa4520e3c83394d3725d9842fae844a904bff",
+      "translation_text_hash": "08858110f26aac4fa9aeae8271acd8f355862536d412c33e79a7dcd32a85a881",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "재앙이 뉘게 있느뇨 근심이 뉘게 있느뇨 분쟁이 뉘게 있느뇨 원망이 뉘게 있느뇨 까닭 없는 창상이 뉘게 있느뇨 붉은 눈이 뉘게 있느뇨"
+      ],
+      "raw_text_hashes": [
+        "08858110f26aac4fa9aeae8271acd8f355862536d412c33e79a7dcd32a85a881"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:23:30",
+      "sequence": 17075,
+      "chapter_label": "PRO 23",
+      "verse_label": "30",
+      "locator": {
+        "book": "PRO",
+        "chapter": 23,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 23,
+          "verse": 30
+        }
+      ],
+      "en": "Those who stay long at the wine; those who go to seek out mixed wine.",
+      "ko": "술에 잠긴 자에게 있고 혼합한 술을 구하러 다니는 자에게 있느니라",
+      "source_text_hash": "c430c9887dd1d5db8299b45035d1b9fd0156dd5415db2af68355565364d7f9e2",
+      "translation_text_hash": "29053cb70e4d52832cee2f0e9a9d9a9cb2556e5137d7e2524d854be9fd5ca768",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "술에 잠긴 자에게 있고 혼합한 술을 구하러 다니는 자에게 있느니라"
+      ],
+      "raw_text_hashes": [
+        "29053cb70e4d52832cee2f0e9a9d9a9cb2556e5137d7e2524d854be9fd5ca768"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:23:31",
+      "sequence": 17076,
+      "chapter_label": "PRO 23",
+      "verse_label": "31",
+      "locator": {
+        "book": "PRO",
+        "chapter": 23,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 23,
+          "verse": 31
+        }
+      ],
+      "en": "Don’t look at the wine when it is red, when it sparkles in the cup, when it goes down smoothly.",
+      "ko": "포도주는 붉고 잔에서 번쩍이며 순하게 내려가나니 너는 그것을 보지도 말지어다",
+      "source_text_hash": "723b835da905a26a4bc8138b9344d59e571b9d35f2d1e46a77b09385bd60ab9f",
+      "translation_text_hash": "f8b6816d404f3a9f6a68bb7ec5b970889aadc7fe8d9905f0d52f57721a84b3b7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "포도주는 붉고 잔에서 번쩍이며 순하게 내려가나니 너는 그것을 보지도 말지어다"
+      ],
+      "raw_text_hashes": [
+        "f8b6816d404f3a9f6a68bb7ec5b970889aadc7fe8d9905f0d52f57721a84b3b7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:23:32",
+      "sequence": 17077,
+      "chapter_label": "PRO 23",
+      "verse_label": "32",
+      "locator": {
+        "book": "PRO",
+        "chapter": 23,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 23,
+          "verse": 32
+        }
+      ],
+      "en": "In the end, it bites like a snake, and poisons like a viper.",
+      "ko": "이것이 마침내 뱀 같이 물 것이요 독사 같이 쏠 것이며",
+      "source_text_hash": "b14cf080362eb76751dedade3e1028b30aa8194482a4c9e28f48bdd930d4f39d",
+      "translation_text_hash": "9c2915932e0c5e04cc30d55fc84b381a9676a8c6d3a845352480f419638167f8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이것이 마침내 뱀 같이 물 것이요 독사 같이 쏠 것이며"
+      ],
+      "raw_text_hashes": [
+        "9c2915932e0c5e04cc30d55fc84b381a9676a8c6d3a845352480f419638167f8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:23:33",
+      "sequence": 17078,
+      "chapter_label": "PRO 23",
+      "verse_label": "33",
+      "locator": {
+        "book": "PRO",
+        "chapter": 23,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 23,
+          "verse": 33
+        }
+      ],
+      "en": "Your eyes will see strange things, and your mind will imagine confusing things.",
+      "ko": "또 네 눈에는 괴이한 것이 보일 것이요 네 마음은 망령된 것을 발할 것이며",
+      "source_text_hash": "2f2744e226b64b26f55aa07737da8ebd2b79bde958826dbac9ab31768dc68e50",
+      "translation_text_hash": "aae4ff03da7319911895cea75a567cb8a3d2f0f5dd9f0d7cfe784e32e6bd6e51",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 네 눈에는 괴이한 것이 보일 것이요 네 마음은 망령된 것을 발할 것이며"
+      ],
+      "raw_text_hashes": [
+        "aae4ff03da7319911895cea75a567cb8a3d2f0f5dd9f0d7cfe784e32e6bd6e51"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:23:34",
+      "sequence": 17079,
+      "chapter_label": "PRO 23",
+      "verse_label": "34",
+      "locator": {
+        "book": "PRO",
+        "chapter": 23,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 23,
+          "verse": 34
+        }
+      ],
+      "en": "Yes, you will be as he who lies down in the middle of the sea, or as he who lies on top of the rigging:",
+      "ko": "너는 바다 가운데 누운 자 같을 것이요 돛대 위에 누운 자 같을 것이며",
+      "source_text_hash": "a825e5e5345aeb977779d3dc3ed02f3033e05105f4a7620a21864e598d89cf90",
+      "translation_text_hash": "a7a1c3104bddae750c789518b20688030146d5e714c3d48080e0c938a60c5b26",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 바다 가운데 누운 자 같을 것이요 돛대 위에 누운 자 같을 것이며"
+      ],
+      "raw_text_hashes": [
+        "a7a1c3104bddae750c789518b20688030146d5e714c3d48080e0c938a60c5b26"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:23:35",
+      "sequence": 17080,
+      "chapter_label": "PRO 23",
+      "verse_label": "35",
+      "locator": {
+        "book": "PRO",
+        "chapter": 23,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 23,
+          "verse": 35
+        }
+      ],
+      "en": "“They hit me, and I was not hurt! They beat me, and I don’t feel it! When will I wake up? I can do it again. I will look for more.”",
+      "ko": "네가 스스로 말하기를 사람이 나를 때려도 나는 아프지 아니하고 나를 상하게 하여도 내게 감각이 없도다 내가 언제나 깰까 다시 술을 찾겠다 하리라",
+      "source_text_hash": "6ced712e271dbddc232fb7f8e2e801f33cddeb6c562f927f0c394b28fc77c2b0",
+      "translation_text_hash": "4a6872ab657be09a4ef7dc88b64107b7a1d65f4ce52b5ce10ff8b814120a4edd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 스스로 말하기를 사람이 나를 때려도 나는 아프지 아니하고 나를 상하게 하여도 내게 감각이 없도다 내가 언제나 깰까 다시 술을 찾겠다 하리라"
+      ],
+      "raw_text_hashes": [
+        "4a6872ab657be09a4ef7dc88b64107b7a1d65f4ce52b5ce10ff8b814120a4edd"
+      ]
+    }
+  ]
+}

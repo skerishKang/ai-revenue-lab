@@ -1,0 +1,1005 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:GEN:chapter:034",
+  "unit_ordinal": 34,
+  "unit_label": "GEN 34",
+  "book_code": "GEN",
+  "chapter_number": 34,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:GEN:34:1",
+      "sequence": 982,
+      "chapter_label": "GEN 34",
+      "verse_label": "1",
+      "locator": {
+        "book": "GEN",
+        "chapter": 34,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 34,
+          "verse": 1
+        }
+      ],
+      "en": "Dinah, the daughter of Leah, whom she bore to Jacob, went out to see the daughters of the land.",
+      "ko": "레아가 야곱에게 낳은 딸 디나가 그 땅 여자를 보러 나갔더니",
+      "source_text_hash": "1ea2c0f1405d8f9391b9e8140668d1f3cdded5fa29137742a425fb00771a987a",
+      "translation_text_hash": "9f8733c0dd58cdfbdb46ecd25ad547400659961166b06b1e4d75298ecd7e867f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "레아가 야곱에게 낳은 딸 디나가 그 땅 여자를 보러 나갔더니"
+      ],
+      "raw_text_hashes": [
+        "9f8733c0dd58cdfbdb46ecd25ad547400659961166b06b1e4d75298ecd7e867f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:34:2",
+      "sequence": 983,
+      "chapter_label": "GEN 34",
+      "verse_label": "2",
+      "locator": {
+        "book": "GEN",
+        "chapter": 34,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 34,
+          "verse": 2
+        }
+      ],
+      "en": "Shechem the son of Hamor the Hivite, the prince of the land, saw her. He took her, lay with her, and humbled her.",
+      "ko": "히위 족속중 하몰의 아들 그 땅 추장 세겜이 그를 보고 끌어들여 강간하여 욕되게 하고",
+      "source_text_hash": "de749a5df3df3e0b31d85a0324cf63b4f2438832d12c1397b67ab59d29629468",
+      "translation_text_hash": "e0ed3a8aabe405c6cc526cf110cad3fc3ff32c1a08765aff33a8a23ef18dc335",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "히위 족속중 하몰의 아들 그 땅 추장 세겜이 그를 보고 끌어들여 강간하여 욕되게 하고"
+      ],
+      "raw_text_hashes": [
+        "e0ed3a8aabe405c6cc526cf110cad3fc3ff32c1a08765aff33a8a23ef18dc335"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:34:3",
+      "sequence": 984,
+      "chapter_label": "GEN 34",
+      "verse_label": "3",
+      "locator": {
+        "book": "GEN",
+        "chapter": 34,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 34,
+          "verse": 3
+        }
+      ],
+      "en": "His soul joined to Dinah, the daughter of Jacob, and he loved the young lady, and spoke kindly to the young lady.",
+      "ko": "그 마음이 깊이 야곱의 딸 디나에게 연련하며 그 소녀를 사랑하여 그의 마음을 말로 위로하고",
+      "source_text_hash": "2ea5b5b44796bdd9fc64b2c8ca93d1dd886eb5d9c77aa7a44aeb3dc89e63d4c0",
+      "translation_text_hash": "aea0c7acc978aeb71567fa0dc11150a31e0f1b5cdac8ed193a6e15997ea5c1b4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 마음이 깊이 야곱의 딸 디나에게 연련하며 그 소녀를 사랑하여 그의 마음을 말로 위로하고"
+      ],
+      "raw_text_hashes": [
+        "aea0c7acc978aeb71567fa0dc11150a31e0f1b5cdac8ed193a6e15997ea5c1b4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:34:4",
+      "sequence": 985,
+      "chapter_label": "GEN 34",
+      "verse_label": "4",
+      "locator": {
+        "book": "GEN",
+        "chapter": 34,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 34,
+          "verse": 4
+        }
+      ],
+      "en": "Shechem spoke to his father, Hamor, saying, “Get me this young lady as a wife.”",
+      "ko": "그 아비 하몰에게 청하여 가로되 이 소녀를 내 아내로 얻게 하여 주소서 하였더라",
+      "source_text_hash": "8e7a26ef8dc4c14c597034efb81decd0d8ae59120dad11c62b582d051d916962",
+      "translation_text_hash": "38935bdab91d75725e64e951cd45efb01d705b9233bbe39e4e1217eebc8d3204",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 아비 하몰에게 청하여 가로되 이 소녀를 내 아내로 얻게 하여 주소서 하였더라"
+      ],
+      "raw_text_hashes": [
+        "38935bdab91d75725e64e951cd45efb01d705b9233bbe39e4e1217eebc8d3204"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:34:5",
+      "sequence": 986,
+      "chapter_label": "GEN 34",
+      "verse_label": "5",
+      "locator": {
+        "book": "GEN",
+        "chapter": 34,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 34,
+          "verse": 5
+        }
+      ],
+      "en": "Now Jacob heard that he had defiled Dinah, his daughter; and his sons were with his livestock in the field. Jacob held his peace until they came.",
+      "ko": "야곱이 그 딸 디나를 그가 더럽혔다 함을 들었으나 자기 아들들이 들에서 목축하므로 그들의 돌아 오기까지 잠잠하였고",
+      "source_text_hash": "f3729e32388ebf397cb42d59a0cbd147cc5d91a5b23d2a0964a6894daecd0bcd",
+      "translation_text_hash": "f816dff80ab7f980de7da1f4cbc7a50ed08ba9a8e1d8db444a5f9843dd24e9b7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야곱이 그 딸 디나를 그가 더럽혔다 함을 들었으나 자기 아들들이 들에서 목축하므로 그들의 돌아 오기까지 잠잠하였고"
+      ],
+      "raw_text_hashes": [
+        "f816dff80ab7f980de7da1f4cbc7a50ed08ba9a8e1d8db444a5f9843dd24e9b7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:34:6",
+      "sequence": 987,
+      "chapter_label": "GEN 34",
+      "verse_label": "6",
+      "locator": {
+        "book": "GEN",
+        "chapter": 34,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 34,
+          "verse": 6
+        }
+      ],
+      "en": "Hamor the father of Shechem went out to Jacob to talk with him.",
+      "ko": "세겜의 아비 하몰은 야곱에게 말하러 왔으며",
+      "source_text_hash": "ba6f19d8bd89c522f6c044e19c342a51da996b09ab74b6f4a242aeed346d8a47",
+      "translation_text_hash": "fc2f8ba5c997395838d96be6fe6a4e5d95c7eae61543e1faed944498cc97f543",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "세겜의 아비 하몰은 야곱에게 말하러 왔으며"
+      ],
+      "raw_text_hashes": [
+        "fc2f8ba5c997395838d96be6fe6a4e5d95c7eae61543e1faed944498cc97f543"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:34:7",
+      "sequence": 988,
+      "chapter_label": "GEN 34",
+      "verse_label": "7",
+      "locator": {
+        "book": "GEN",
+        "chapter": 34,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 34,
+          "verse": 7
+        }
+      ],
+      "en": "The sons of Jacob came in from the field when they heard it. The men were grieved, and they were very angry, because he had done folly in Israel in lying with Jacob’s daughter, a thing that ought not to be done.",
+      "ko": "야곱의 아들들은 들에서 이를 듣고 돌아와서 사람 사람이 근심하고 심히 노하였으니 이는 세겜이 야곱의 딸을 강간하여 이스라엘에게 부끄러운 일 곧 행치 못할 일을 행하였음이더라",
+      "source_text_hash": "a90f7877bbda9370974f3c18bca88aff213886aeb0eab07c4afbc2d42cd6540c",
+      "translation_text_hash": "36bc2d1f891fc796a517cd8cc711828433f6d3488c9ea5e1d521d0abba30762f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야곱의 아들들은 들에서 이를 듣고 돌아와서 사람 사람이 근심하고 심히 노하였으니 이는 세겜이 야곱의 딸을 강간하여 이스라엘에게 부끄러운 일 곧 행치 못할 일을 행하였음이더라"
+      ],
+      "raw_text_hashes": [
+        "36bc2d1f891fc796a517cd8cc711828433f6d3488c9ea5e1d521d0abba30762f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:34:8",
+      "sequence": 989,
+      "chapter_label": "GEN 34",
+      "verse_label": "8",
+      "locator": {
+        "book": "GEN",
+        "chapter": 34,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 34,
+          "verse": 8
+        }
+      ],
+      "en": "Hamor talked with them, saying, “The soul of my son, Shechem, longs for your daughter. Please give her to him as a wife.",
+      "ko": "하몰이 그들에게 이르되 내 아들 세겜이 마음으로 너희 딸을 연련하여하니 원컨대 그를 세겜에게 주어 아내를 삼게 하라",
+      "source_text_hash": "44334cc7e7f4f1090f7806d1f2c57e4c750518344604abe02a4afbce2ead5c81",
+      "translation_text_hash": "7134b4352d6cba4c748017ed8767e2e12b3c05f1ad24e4958fcf0d9470b03b66",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하몰이 그들에게 이르되 내 아들 세겜이 마음으로 너희 딸을 연련하여하니 원컨대 그를 세겜에게 주어 아내를 삼게 하라"
+      ],
+      "raw_text_hashes": [
+        "7134b4352d6cba4c748017ed8767e2e12b3c05f1ad24e4958fcf0d9470b03b66"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:34:9",
+      "sequence": 990,
+      "chapter_label": "GEN 34",
+      "verse_label": "9",
+      "locator": {
+        "book": "GEN",
+        "chapter": 34,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 34,
+          "verse": 9
+        }
+      ],
+      "en": "Make marriages with us. Give your daughters to us, and take our daughters for yourselves.",
+      "ko": "너희가 우리와 통혼하여 너희 딸을 우리에게 주며 우리 딸을 너희가 취하고",
+      "source_text_hash": "aa6d6484740dedffdd985b7eac5d5cdec8b22b2eacddb39a7b1048f060406aae",
+      "translation_text_hash": "5fda4594021a82a2dbf831be7d00a12d191de34e96201bc39e0fa4ba07d66ab5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 우리와 통혼하여 너희 딸을 우리에게 주며 우리 딸을 너희가 취하고"
+      ],
+      "raw_text_hashes": [
+        "5fda4594021a82a2dbf831be7d00a12d191de34e96201bc39e0fa4ba07d66ab5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:34:10",
+      "sequence": 991,
+      "chapter_label": "GEN 34",
+      "verse_label": "10",
+      "locator": {
+        "book": "GEN",
+        "chapter": 34,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 34,
+          "verse": 10
+        }
+      ],
+      "en": "You shall dwell with us, and the land will be before you. Live and trade in it, and get possessions in it.”",
+      "ko": "너희가 우리와 함께 거하되 땅이 너희 앞에 있으니 여기 머물러 매매하며 여기서 기업을 얻으라 하고",
+      "source_text_hash": "86a3ee6b97058197a5ba3087c33f515fe2cb8f6b11d86ef9c0331653152cdd9a",
+      "translation_text_hash": "3897e83522783957246f6b53fbf34985036eaacb7304feebb48ecf35c813c836",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 우리와 함께 거하되 땅이 너희 앞에 있으니 여기 머물러 매매하며 여기서 기업을 얻으라 하고"
+      ],
+      "raw_text_hashes": [
+        "3897e83522783957246f6b53fbf34985036eaacb7304feebb48ecf35c813c836"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:34:11",
+      "sequence": 992,
+      "chapter_label": "GEN 34",
+      "verse_label": "11",
+      "locator": {
+        "book": "GEN",
+        "chapter": 34,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 34,
+          "verse": 11
+        }
+      ],
+      "en": "Shechem said to her father and to her brothers, “Let me find favor in your eyes, and whatever you will tell me I will give.",
+      "ko": "세겜도 디나의 아비와 남형들에게 이르되 나로 너희에게 은혜를 입게 하라 너희가 내게 청구하는 것은 내가 수응하리니",
+      "source_text_hash": "09505aab25a8da0180309715017e6e6d24ca6411c627d4c616143cb99c164e0c",
+      "translation_text_hash": "b91438bb522af91167276e8fcaa7d126a0aa4a30dfb494442b0c0506958b5ab7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "세겜도 디나의 아비와 남형들에게 이르되 나로 너희에게 은혜를 입게 하라 너희가 내게 청구하는 것은 내가 수응하리니"
+      ],
+      "raw_text_hashes": [
+        "b91438bb522af91167276e8fcaa7d126a0aa4a30dfb494442b0c0506958b5ab7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:34:12",
+      "sequence": 993,
+      "chapter_label": "GEN 34",
+      "verse_label": "12",
+      "locator": {
+        "book": "GEN",
+        "chapter": 34,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 34,
+          "verse": 12
+        }
+      ],
+      "en": "Ask me a great amount for a dowry, and I will give whatever you ask of me, but give me the young lady as a wife.”",
+      "ko": "이 소녀만 내게 주어 아내가 되게 하라 아무리 큰 빙물과 예물을 청구할찌라도 너희가 내게 말한대로 수응하리라",
+      "source_text_hash": "ddacdbd2f15a0aa113fabbae74af1a9b89f5e2e91040af9c6751cafa90f1ea2a",
+      "translation_text_hash": "9dd4fc9e07f94c8c4fd797b67fac8fa1ec974ec6c8da3b24c64351530be6ff23",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 소녀만 내게 주어 아내가 되게 하라 아무리 큰 빙물과 예물을 청구할찌라도 너희가 내게 말한대로 수응하리라"
+      ],
+      "raw_text_hashes": [
+        "9dd4fc9e07f94c8c4fd797b67fac8fa1ec974ec6c8da3b24c64351530be6ff23"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:34:13",
+      "sequence": 994,
+      "chapter_label": "GEN 34",
+      "verse_label": "13",
+      "locator": {
+        "book": "GEN",
+        "chapter": 34,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 34,
+          "verse": 13
+        }
+      ],
+      "en": "The sons of Jacob answered Shechem and Hamor his father with deceit when they spoke, because he had defiled Dinah their sister,",
+      "ko": "야곱의 아들들이 세겜과 그 아비 하몰에게 속여 대답하였으니 이는 세겜이 그 누이 디나를 더럽혔음이라",
+      "source_text_hash": "6d429e967f432fa84fe31278be8a7d81735560554aa6c933a4bc47a5f84c6ce7",
+      "translation_text_hash": "0686501d3ebc22a7d0f311e9a709d9772016770d53f8191b4933fc4ef51acd66",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야곱의 아들들이 세겜과 그 아비 하몰에게 속여 대답하였으니 이는 세겜이 그 누이 디나를 더럽혔음이라"
+      ],
+      "raw_text_hashes": [
+        "0686501d3ebc22a7d0f311e9a709d9772016770d53f8191b4933fc4ef51acd66"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:34:14",
+      "sequence": 995,
+      "chapter_label": "GEN 34",
+      "verse_label": "14",
+      "locator": {
+        "book": "GEN",
+        "chapter": 34,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 34,
+          "verse": 14
+        }
+      ],
+      "en": "and said to them, “We can’t do this thing, to give our sister to one who is uncircumcised; for that is a reproach to us.",
+      "ko": "야곱의 아들들이 그들에게 말하되 우리는 그리하지 못하겠노라 할례 받지 아니한 사람에게 우리 누이를 줄 수 없노니 이는 우리의 수욕이 됨이니라",
+      "source_text_hash": "86bc11edc81680276e865955533bdb77df9cbc46bf1208f6f421556f841facfb",
+      "translation_text_hash": "b7ecd45b9f6ce7d92d6cc42901acbf1fb5f480068e722eecb607179fcf20552d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야곱의 아들들이 그들에게 말하되 우리는 그리하지 못하겠노라 할례 받지 아니한 사람에게 우리 누이를 줄 수 없노니 이는 우리의 수욕이 됨이니라"
+      ],
+      "raw_text_hashes": [
+        "b7ecd45b9f6ce7d92d6cc42901acbf1fb5f480068e722eecb607179fcf20552d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:34:15",
+      "sequence": 996,
+      "chapter_label": "GEN 34",
+      "verse_label": "15",
+      "locator": {
+        "book": "GEN",
+        "chapter": 34,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 34,
+          "verse": 15
+        }
+      ],
+      "en": "Only on this condition will we consent to you. If you will be as we are, that every male of you be circumcised,",
+      "ko": "그런즉 이같이 하면 너희에게 허락하리라 만일 너희 중 남자가 다 할례를 받고 우리 같이 되면",
+      "source_text_hash": "14750928e90ce4081def69b62551be899df55622f5455001bb43726422ea6cb6",
+      "translation_text_hash": "71fb249524cbfdaf367f5f4975f33880691f3dcb1c50a958fc6bdac5b1a74388",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 이같이 하면 너희에게 허락하리라 만일 너희 중 남자가 다 할례를 받고 우리 같이 되면"
+      ],
+      "raw_text_hashes": [
+        "71fb249524cbfdaf367f5f4975f33880691f3dcb1c50a958fc6bdac5b1a74388"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:34:16",
+      "sequence": 997,
+      "chapter_label": "GEN 34",
+      "verse_label": "16",
+      "locator": {
+        "book": "GEN",
+        "chapter": 34,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 34,
+          "verse": 16
+        }
+      ],
+      "en": "then will we give our daughters to you; and we will take your daughters to us, and we will dwell with you, and we will become one people.",
+      "ko": "우리 딸을 너희에게 주며 너희 딸을 우리가 취하며 너희와 함께 거하여 한 민족이 되려니와",
+      "source_text_hash": "a830d567562bab3983994b32a4449d7d8c3de9fd39e8b10502abeed4211dba8c",
+      "translation_text_hash": "39a6e5e000f72df2b526c1b52e88f96d2952745dc0d5d1e84f37b2fd8affe0ac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리 딸을 너희에게 주며 너희 딸을 우리가 취하며 너희와 함께 거하여 한 민족이 되려니와"
+      ],
+      "raw_text_hashes": [
+        "39a6e5e000f72df2b526c1b52e88f96d2952745dc0d5d1e84f37b2fd8affe0ac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:34:17",
+      "sequence": 998,
+      "chapter_label": "GEN 34",
+      "verse_label": "17",
+      "locator": {
+        "book": "GEN",
+        "chapter": 34,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 34,
+          "verse": 17
+        }
+      ],
+      "en": "But if you will not listen to us and be circumcised, then we will take our sister, and we will be gone.”",
+      "ko": "너희가 만일 우리를 듣지 아니하고 할례를 받지 아니하면 우리는 곧 우리 딸을 데리고 가리라",
+      "source_text_hash": "e62ffaebad9111a69adb659438362b4471749b9023f42ad87c938c8ab33ee7b9",
+      "translation_text_hash": "66e3087402b887e261cc42c4d526465d151f707f7faa4d9cada569eb26045d42",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 만일 우리를 듣지 아니하고 할례를 받지 아니하면 우리는 곧 우리 딸을 데리고 가리라"
+      ],
+      "raw_text_hashes": [
+        "66e3087402b887e261cc42c4d526465d151f707f7faa4d9cada569eb26045d42"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:34:18",
+      "sequence": 999,
+      "chapter_label": "GEN 34",
+      "verse_label": "18",
+      "locator": {
+        "book": "GEN",
+        "chapter": 34,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 34,
+          "verse": 18
+        }
+      ],
+      "en": "Their words pleased Hamor and Shechem, Hamor’s son.",
+      "ko": "그들의 말을 하몰과 그 아들 세겜이 좋게 여기므로",
+      "source_text_hash": "06e363ffaf44d1da445e4bb9e310cdda328c47dd9c330cb253acfef62133a4c3",
+      "translation_text_hash": "bc2d01a38ea838740507fffa989cf8757b7e81dd09cfc640e29337b7fde248ad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들의 말을 하몰과 그 아들 세겜이 좋게 여기므로"
+      ],
+      "raw_text_hashes": [
+        "bc2d01a38ea838740507fffa989cf8757b7e81dd09cfc640e29337b7fde248ad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:34:19",
+      "sequence": 1000,
+      "chapter_label": "GEN 34",
+      "verse_label": "19",
+      "locator": {
+        "book": "GEN",
+        "chapter": 34,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 34,
+          "verse": 19
+        }
+      ],
+      "en": "The young man didn’t wait to do this thing, because he had delight in Jacob’s daughter, and he was honored above all the house of his father.",
+      "ko": "이 소년이 그 일 행하기를 지체치 아니하였으니 그가 야곱의 딸을 사랑함이며 그는 그 아비 집에 가장 존귀함일러라",
+      "source_text_hash": "00cd196f4fed253d1753eb2870a147b49d9d1f1ef3dc0e70af0bb4071cb130d4",
+      "translation_text_hash": "cc9bde563a73291c8afe8f4e410d57da8379497de0e4df2ef0971ea0915d7b26",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 소년이 그 일 행하기를 지체치 아니하였으니 그가 야곱의 딸을 사랑함이며 그는 그 아비 집에 가장 존귀함일러라"
+      ],
+      "raw_text_hashes": [
+        "cc9bde563a73291c8afe8f4e410d57da8379497de0e4df2ef0971ea0915d7b26"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:34:20",
+      "sequence": 1001,
+      "chapter_label": "GEN 34",
+      "verse_label": "20",
+      "locator": {
+        "book": "GEN",
+        "chapter": 34,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 34,
+          "verse": 20
+        }
+      ],
+      "en": "Hamor and Shechem, his son, came to the gate of their city, and talked with the men of their city, saying,",
+      "ko": "하몰과 그 아들 세겜이 성문에 이르러 그 고을 사람에게 말하여 가로되",
+      "source_text_hash": "04b584e8c601767737df5d1c57ac4580c45b352330c3873ea954a0389d261e02",
+      "translation_text_hash": "842a16c0a6f3f5bfa8be86197227060fd21b925a0e78268a01e2f37c9408009c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하몰과 그 아들 세겜이 성문에 이르러 그 고을 사람에게 말하여 가로되"
+      ],
+      "raw_text_hashes": [
+        "842a16c0a6f3f5bfa8be86197227060fd21b925a0e78268a01e2f37c9408009c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:34:21",
+      "sequence": 1002,
+      "chapter_label": "GEN 34",
+      "verse_label": "21",
+      "locator": {
+        "book": "GEN",
+        "chapter": 34,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 34,
+          "verse": 21
+        }
+      ],
+      "en": "“These men are peaceful with us. Therefore let them live in the land and trade in it. For behold, the land is large enough for them. Let’s take their daughters to us for wives, and let’s give them our daughters.",
+      "ko": "이 사람들은 우리와 친목하고 이 땅은 넓어 그들을 용납할만하니 그들로 여기서 거주하며 매매하게 하고 우리가 그들의 딸들을 아내로 취하고 우리 딸들도 그들에게 주자",
+      "source_text_hash": "d73c47c6a32511b050f7b6dfeb4b2b972fd304f086df1b121120f4cd72ed781d",
+      "translation_text_hash": "facfd7066f3d2a817470ec43bcf0fd7efba1f38742b55347f274d9c28fe14710",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 사람들은 우리와 친목하고 이 땅은 넓어 그들을 용납할만하니 그들로 여기서 거주하며 매매하게 하고 우리가 그들의 딸들을 아내로 취하고 우리 딸들도 그들에게 주자"
+      ],
+      "raw_text_hashes": [
+        "facfd7066f3d2a817470ec43bcf0fd7efba1f38742b55347f274d9c28fe14710"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:34:22",
+      "sequence": 1003,
+      "chapter_label": "GEN 34",
+      "verse_label": "22",
+      "locator": {
+        "book": "GEN",
+        "chapter": 34,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 34,
+          "verse": 22
+        }
+      ],
+      "en": "Only on this condition will the men consent to us to live with us, to become one people, if every male among us is circumcised, as they are circumcised.",
+      "ko": "그러나 우리 중에 모든 남자가 그들의 할례를 받음 같이 할례를 받아야 그 사람들이 우리와 함께 거하여 한 민족 되기를 허락할 것이라",
+      "source_text_hash": "f316b594176e0acdc9b15594f35dfad7a156d11a339594a1016739bc8bc557ef",
+      "translation_text_hash": "784cb5ce479fa257d4e91b7d4770df69caf563b0e9203ba4590032313098320b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 우리 중에 모든 남자가 그들의 할례를 받음 같이 할례를 받아야 그 사람들이 우리와 함께 거하여 한 민족 되기를 허락할 것이라"
+      ],
+      "raw_text_hashes": [
+        "784cb5ce479fa257d4e91b7d4770df69caf563b0e9203ba4590032313098320b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:34:23",
+      "sequence": 1004,
+      "chapter_label": "GEN 34",
+      "verse_label": "23",
+      "locator": {
+        "book": "GEN",
+        "chapter": 34,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 34,
+          "verse": 23
+        }
+      ],
+      "en": "Won’t their livestock and their possessions and all their animals be ours? Only let’s give our consent to them, and they will dwell with us.”",
+      "ko": "그리하면 그들의 생축과 재산과 그 모든 짐승이 우리의 소유가 되지 않겠느냐 다만 그 말대로 하자 그리하면 그들이 우리와 함께 거하리라",
+      "source_text_hash": "61f0e3a164b7c1f513ed763badbeb0f0e980b91862230e1b133e513b2aaa1c54",
+      "translation_text_hash": "949e61b5aed89e0d346dddf6cdaf59876a737f5abcf7c58fa1a09179abf055ad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그리하면 그들의 생축과 재산과 그 모든 짐승이 우리의 소유가 되지 않겠느냐 다만 그 말대로 하자 그리하면 그들이 우리와 함께 거하리라"
+      ],
+      "raw_text_hashes": [
+        "949e61b5aed89e0d346dddf6cdaf59876a737f5abcf7c58fa1a09179abf055ad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:34:24",
+      "sequence": 1005,
+      "chapter_label": "GEN 34",
+      "verse_label": "24",
+      "locator": {
+        "book": "GEN",
+        "chapter": 34,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 34,
+          "verse": 24
+        }
+      ],
+      "en": "All who went out of the gate of his city listened to Hamor, and to Shechem his son; and every male was circumcised, all who went out of the gate of his city.",
+      "ko": "성문으로 출입하는 모든 자가 하몰과 그 아들 세겜의 말을 듣고 성문으로 출입하는 그 모든 남자가 할례를 받으니라",
+      "source_text_hash": "224590858195bbbd4263fa89a7ef0c6259e7b9f09ba32f63b2182e8fcd748275",
+      "translation_text_hash": "c48830b8c7f1d29144fa1cc478ebd35033ab25d05d78ab6df59cd974c95d1528",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "성문으로 출입하는 모든 자가 하몰과 그 아들 세겜의 말을 듣고 성문으로 출입하는 그 모든 남자가 할례를 받으니라"
+      ],
+      "raw_text_hashes": [
+        "c48830b8c7f1d29144fa1cc478ebd35033ab25d05d78ab6df59cd974c95d1528"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:34:25",
+      "sequence": 1006,
+      "chapter_label": "GEN 34",
+      "verse_label": "25",
+      "locator": {
+        "book": "GEN",
+        "chapter": 34,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 34,
+          "verse": 25
+        }
+      ],
+      "en": "On the third day, when they were sore, two of Jacob’s sons, Simeon and Levi, Dinah’s brothers, each took his sword, came upon the unsuspecting city, and killed all the males.",
+      "ko": "제 삼일에 미쳐 그들이 고통할 때에 야곱의 두 아들 디나의 오라비 시므온과 레위가 각기 칼을 가지고 가서 부지중에 성을 엄습하여 그 모든 남자를 죽이고",
+      "source_text_hash": "9452f1caffd7006d4b073ffdedeb85b42b7f03b386d9d81ae2a42e3a4ff8a70d",
+      "translation_text_hash": "fd4079442a9904af6dbc8a5119bdb21b92b3a360106bd9d36b1c947324c37632",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제 삼일에 미쳐 그들이 고통할 때에 야곱의 두 아들 디나의 오라비 시므온과 레위가 각기 칼을 가지고 가서 부지중에 성을 엄습하여 그 모든 남자를 죽이고"
+      ],
+      "raw_text_hashes": [
+        "fd4079442a9904af6dbc8a5119bdb21b92b3a360106bd9d36b1c947324c37632"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:34:26",
+      "sequence": 1007,
+      "chapter_label": "GEN 34",
+      "verse_label": "26",
+      "locator": {
+        "book": "GEN",
+        "chapter": 34,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 34,
+          "verse": 26
+        }
+      ],
+      "en": "They killed Hamor and Shechem, his son, with the edge of the sword, and took Dinah out of Shechem’s house, and went away.",
+      "ko": "칼로 하몰과 그 아들 세겜을 죽이고 디나를 세겜의 집에서 데려 오고",
+      "source_text_hash": "2128756419c10af36e3d03048cab86c2ca38ec6c983c6d299ba32cd4bed54603",
+      "translation_text_hash": "c1cbd4fb4372347d4d4adca156e0ceae2160adbc4356dec920cecc3bc0c5ff17",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "칼로 하몰과 그 아들 세겜을 죽이고 디나를 세겜의 집에서 데려 오고"
+      ],
+      "raw_text_hashes": [
+        "c1cbd4fb4372347d4d4adca156e0ceae2160adbc4356dec920cecc3bc0c5ff17"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:34:27",
+      "sequence": 1008,
+      "chapter_label": "GEN 34",
+      "verse_label": "27",
+      "locator": {
+        "book": "GEN",
+        "chapter": 34,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 34,
+          "verse": 27
+        }
+      ],
+      "en": "Jacob’s sons came on the dead, and plundered the city, because they had defiled their sister.",
+      "ko": "야곱의 여러 아들이 그 시체 있는 성으로 가서 노략하였으니 이는 그들이 그 누이를 더럽힌 연고라",
+      "source_text_hash": "7b22f29eb62e725145a0c1ae6da2d8209287435149ee357f43430cea6090f1ac",
+      "translation_text_hash": "5455ff7d9baef59619b5fb07701f3d352376c5220024bef0fba376e8566e255b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야곱의 여러 아들이 그 시체 있는 성으로 가서 노략하였으니 이는 그들이 그 누이를 더럽힌 연고라"
+      ],
+      "raw_text_hashes": [
+        "5455ff7d9baef59619b5fb07701f3d352376c5220024bef0fba376e8566e255b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:34:28",
+      "sequence": 1009,
+      "chapter_label": "GEN 34",
+      "verse_label": "28",
+      "locator": {
+        "book": "GEN",
+        "chapter": 34,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 34,
+          "verse": 28
+        }
+      ],
+      "en": "They took their flocks, their herds, their donkeys, that which was in the city, that which was in the field,",
+      "ko": "그들이 양과 소와 나귀와 그 성에 있는 것과 들에 있는 것과",
+      "source_text_hash": "91a5967249e7c72cd0ebeba07f37fa6a303f25c176487ef06352e883dcb343c8",
+      "translation_text_hash": "3c702b2cda67cdb0bb1003d2dc60b15f559cf126d8c4c4be123dcc979352c43f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 양과 소와 나귀와 그 성에 있는 것과 들에 있는 것과"
+      ],
+      "raw_text_hashes": [
+        "3c702b2cda67cdb0bb1003d2dc60b15f559cf126d8c4c4be123dcc979352c43f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:34:29",
+      "sequence": 1010,
+      "chapter_label": "GEN 34",
+      "verse_label": "29",
+      "locator": {
+        "book": "GEN",
+        "chapter": 34,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 34,
+          "verse": 29
+        }
+      ],
+      "en": "and all their wealth. They took captive all their little ones and their wives, and took as plunder everything that was in the house.",
+      "ko": "그 모든 재물을 빼앗으며 그 자녀와 아내들을 사로잡고 집속의 물건을 다 노략한지라",
+      "source_text_hash": "702d9b4da7d0fe61c64c7bd8f65f75d6c920b2bc109dc462a3ac92feca21fe99",
+      "translation_text_hash": "00fa3a8131849ea858bba99a3345c134a7ef0c0e80781745ca107ec67fd53fe0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 모든 재물을 빼앗으며 그 자녀와 아내들을 사로잡고 집속의 물건을 다 노략한지라"
+      ],
+      "raw_text_hashes": [
+        "00fa3a8131849ea858bba99a3345c134a7ef0c0e80781745ca107ec67fd53fe0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:34:30",
+      "sequence": 1011,
+      "chapter_label": "GEN 34",
+      "verse_label": "30",
+      "locator": {
+        "book": "GEN",
+        "chapter": 34,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 34,
+          "verse": 30
+        }
+      ],
+      "en": "Jacob said to Simeon and Levi, “You have troubled me, to make me odious to the inhabitants of the land, among the Canaanites and the Perizzites. I am few in number. They will gather themselves together against me and strike me, and I will be destroyed, I and my house.”",
+      "ko": "야곱이 시므온과 레위에게 이르되 너희가 내게 화를 끼쳐 나로 이 땅 사람 곧 가나안 족속과 브리스 족속에게 냄새를 내게 하였도다 나는 수가 적은즉 그들이 모여 나를 치고 나를 죽이리니 그리하면 나와 내 집이 멸망하리라",
+      "source_text_hash": "70f59afbf696e1c94d590cfa8c0d07bad967c284a6714fd91f0d07570ebbeed2",
+      "translation_text_hash": "495b56b5e04e3c489d40d3a6a50c0acf41d15192b3f74861a6ebd2bfec9f0f00",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야곱이 시므온과 레위에게 이르되 너희가 내게 화를 끼쳐 나로 이 땅 사람 곧 가나안 족속과 브리스 족속에게 냄새를 내게 하였도다 나는 수가 적은즉 그들이 모여 나를 치고 나를 죽이리니 그리하면 나와 내 집이 멸망하리라"
+      ],
+      "raw_text_hashes": [
+        "495b56b5e04e3c489d40d3a6a50c0acf41d15192b3f74861a6ebd2bfec9f0f00"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:34:31",
+      "sequence": 1012,
+      "chapter_label": "GEN 34",
+      "verse_label": "31",
+      "locator": {
+        "book": "GEN",
+        "chapter": 34,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 34,
+          "verse": 31
+        }
+      ],
+      "en": "They said, “Should he deal with our sister as with a prostitute?”",
+      "ko": "그들이 가로되 그가 우리 누이를 창녀같이 대우함이 가하니이까",
+      "source_text_hash": "2fc6e5ffc1d3a5d50768dd7e3daf1fc50338d017153dca8135ab7b363deffd8b",
+      "translation_text_hash": "30971865247d07ad5e5efe1876572f71b4904a4550d22bc3b3451b319910057c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 가로되 그가 우리 누이를 창녀같이 대우함이 가하니이까"
+      ],
+      "raw_text_hashes": [
+        "30971865247d07ad5e5efe1876572f71b4904a4550d22bc3b3451b319910057c"
+      ]
+    }
+  ]
+}

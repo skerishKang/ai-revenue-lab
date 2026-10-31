@@ -1,0 +1,109 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EST:chapter:010",
+  "unit_ordinal": 436,
+  "unit_label": "EST 10",
+  "book_code": "EST",
+  "chapter_number": 10,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EST:10:1",
+      "sequence": 12868,
+      "chapter_label": "EST 10",
+      "verse_label": "1",
+      "locator": {
+        "book": "EST",
+        "chapter": 10,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 10,
+          "verse": 1
+        }
+      ],
+      "en": "King Ahasuerus laid a tribute on the land and on the islands of the sea.",
+      "ko": "아하수에로왕이 그 본토와 바다 섬들로 공을 바치게 하였더라",
+      "source_text_hash": "96349b7b51d217c04cf5e72518448095f0bd77910213edb43b2964a3715480b8",
+      "translation_text_hash": "6dd5a3baebc7879737b721ea347e1450bd095c9027584abb09e35c7f4fa76732",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아하수에로왕이 그 본토와 바다 섬들로 공을 바치게 하였더라"
+      ],
+      "raw_text_hashes": [
+        "6dd5a3baebc7879737b721ea347e1450bd095c9027584abb09e35c7f4fa76732"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:10:2",
+      "sequence": 12869,
+      "chapter_label": "EST 10",
+      "verse_label": "2",
+      "locator": {
+        "book": "EST",
+        "chapter": 10,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 10,
+          "verse": 2
+        }
+      ],
+      "en": "Aren’t all the acts of his power and of his might, and the full account of the greatness of Mordecai, to which the king advanced him, written in the book of the chronicles of the kings of Media and Persia?",
+      "ko": "왕의 능력의 모든 행적과 모르드개를 높여 존귀케 한 사적이 메대와 바사 열왕의 일기에 기록되지 아니하였느냐",
+      "source_text_hash": "cf5df8cf628bd24b196e5f99fdd53158f1c0359b4101f0315ba957bc7d454dc0",
+      "translation_text_hash": "674f301441a1f2596de39618cd2b2d300ca7cd26458666c71add8a5baa236b21",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕의 능력의 모든 행적과 모르드개를 높여 존귀케 한 사적이 메대와 바사 열왕의 일기에 기록되지 아니하였느냐"
+      ],
+      "raw_text_hashes": [
+        "674f301441a1f2596de39618cd2b2d300ca7cd26458666c71add8a5baa236b21"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:10:3",
+      "sequence": 12870,
+      "chapter_label": "EST 10",
+      "verse_label": "3",
+      "locator": {
+        "book": "EST",
+        "chapter": 10,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 10,
+          "verse": 3
+        }
+      ],
+      "en": "For Mordecai the Jew was next to King Ahasuerus, and great among the Jews and accepted by the multitude of his brothers, seeking the good of his people and speaking peace to all his descendants.",
+      "ko": "유다인 모르드개가 아하수에로왕의 다음이 되고 유다인 중에 존대하여 그 허다한 형제에게 굄을 받고 그 백성의 이익을 도모하며 그 모든 종족을 안위하였더라",
+      "source_text_hash": "dca38dd8aa5b640ed8e59d795f103b82e791c29bcd4cc97889ab82a665913c23",
+      "translation_text_hash": "ba88b8e9de820e6ce5cfb5bb8cbfcf8685d867e2af4ac2b9bc97ecdbdb35597e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다인 모르드개가 아하수에로왕의 다음이 되고 유다인 중에 존대하여 그 허다한 형제에게 굄을 받고 그 백성의 이익을 도모하며 그 모든 종족을 안위하였더라"
+      ],
+      "raw_text_hashes": [
+        "ba88b8e9de820e6ce5cfb5bb8cbfcf8685d867e2af4ac2b9bc97ecdbdb35597e"
+      ]
+    }
+  ]
+}

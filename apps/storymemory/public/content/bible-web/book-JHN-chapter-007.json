@@ -1,0 +1,1709 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JHN:chapter:007",
+  "unit_ordinal": 1004,
+  "unit_label": "JHN 7",
+  "book_code": "JHN",
+  "chapter_number": 7,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JHN:7:1",
+      "sequence": 26329,
+      "chapter_label": "JHN 7",
+      "verse_label": "1",
+      "locator": {
+        "book": "JHN",
+        "chapter": 7,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 7,
+          "verse": 1
+        }
+      ],
+      "en": "After these things, Jesus was walking in Galilee, for he wouldn’t walk in Judea, because the Jews sought to kill him.",
+      "ko": "이 후에 예수께서 갈릴리에서 다니시고 유대에서 다니려 아니하심은 유대인들이 죽이려 함이러라",
+      "source_text_hash": "a2dbb12493d3e9b94243e638ada9e70f630aaa2bffd234055d735b014b47c1db",
+      "translation_text_hash": "69de44ecfe1a3c4b87e4afb3bfc13abac67e0f838b769231916ab8a79d8884c6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 후에 예수께서 갈릴리에서 다니시고 유대에서 다니려 아니하심은 유대인들이 죽이려 함이러라"
+      ],
+      "raw_text_hashes": [
+        "69de44ecfe1a3c4b87e4afb3bfc13abac67e0f838b769231916ab8a79d8884c6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:7:2",
+      "sequence": 26330,
+      "chapter_label": "JHN 7",
+      "verse_label": "2",
+      "locator": {
+        "book": "JHN",
+        "chapter": 7,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 7,
+          "verse": 2
+        }
+      ],
+      "en": "Now the feast of the Jews, the Feast of Booths, was at hand.",
+      "ko": "유대인의 명절인 초막절이 가까운지라",
+      "source_text_hash": "ad3f5506a19283134be6639ef25c71b8f482c9682746fc9b07e71fff0338d716",
+      "translation_text_hash": "bf5111f7e7ac5db5d8c0bf61d6752ae8adb673cd3b148e3ab3c6f0b8a7c0973c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유대인의 명절인 초막절이 가까운지라"
+      ],
+      "raw_text_hashes": [
+        "bf5111f7e7ac5db5d8c0bf61d6752ae8adb673cd3b148e3ab3c6f0b8a7c0973c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:7:3",
+      "sequence": 26331,
+      "chapter_label": "JHN 7",
+      "verse_label": "3",
+      "locator": {
+        "book": "JHN",
+        "chapter": 7,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 7,
+          "verse": 3
+        }
+      ],
+      "en": "His brothers therefore said to him, “Depart from here and go into Judea, that your disciples also may see your works which you do.",
+      "ko": "그 형제들이 예수께 이르되 당신의 행하는 일을 제자들도 보게 여기를 떠나 유대로 가소서",
+      "source_text_hash": "42320a908e4e3ddd452835b10f03d894c0970694f30d1d3329bb87406fd34537",
+      "translation_text_hash": "d143347ce5019286de6ce19be4d9c0bd5124b0cf8f3d43a595894ac4f44c42ff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 형제들이 예수께 이르되 당신의 행하는 일을 제자들도 보게 여기를 떠나 유대로 가소서"
+      ],
+      "raw_text_hashes": [
+        "d143347ce5019286de6ce19be4d9c0bd5124b0cf8f3d43a595894ac4f44c42ff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:7:4",
+      "sequence": 26332,
+      "chapter_label": "JHN 7",
+      "verse_label": "4",
+      "locator": {
+        "book": "JHN",
+        "chapter": 7,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 7,
+          "verse": 4
+        }
+      ],
+      "en": "For no one does anything in secret while he seeks to be known openly. If you do these things, reveal yourself to the world.”",
+      "ko": "스스로 나타나기를 구하면서 묻혀서 일하는 사람이 없나니 이 일을 행하려 하거든 자신을 세상에 나타내소서 하니",
+      "source_text_hash": "43d2046bb6a0943bde27e561a59f51c2f6ed405a946a41c82133f122d9150aff",
+      "translation_text_hash": "1ad537a76533ab15249cee1d4542f085ff75a03f97487d48e2413312a4914a3c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "스스로 나타나기를 구하면서 묻혀서 일하는 사람이 없나니 이 일을 행하려 하거든 자신을 세상에 나타내소서 하니"
+      ],
+      "raw_text_hashes": [
+        "1ad537a76533ab15249cee1d4542f085ff75a03f97487d48e2413312a4914a3c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:7:5",
+      "sequence": 26333,
+      "chapter_label": "JHN 7",
+      "verse_label": "5",
+      "locator": {
+        "book": "JHN",
+        "chapter": 7,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 7,
+          "verse": 5
+        }
+      ],
+      "en": "For even his brothers didn’t believe in him.",
+      "ko": "이는 그 형제들이라도 예수를 믿지 아니함이러라",
+      "source_text_hash": "940b3bc1e3890f435787b9ff28cd151b2add11e58b07898373b2fa6a5e398d5a",
+      "translation_text_hash": "0c9dbc5d754e9d39d8f5ec3656acebbd8c097d538a8bdfc389cc3ba2ed84c949",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 그 형제들이라도 예수를 믿지 아니함이러라"
+      ],
+      "raw_text_hashes": [
+        "0c9dbc5d754e9d39d8f5ec3656acebbd8c097d538a8bdfc389cc3ba2ed84c949"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:7:6",
+      "sequence": 26334,
+      "chapter_label": "JHN 7",
+      "verse_label": "6",
+      "locator": {
+        "book": "JHN",
+        "chapter": 7,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 7,
+          "verse": 6
+        }
+      ],
+      "en": "Jesus therefore said to them, “My time has not yet come, but your time is always ready.",
+      "ko": "예수께서 가라사대 내 때는 아직 이르지 아니하였거니와 너희 때는 늘 준비되어 있느니라",
+      "source_text_hash": "0daa74ab234bb3622f9506cc68cd39e2de24aea208273e52c5c00847296f69d6",
+      "translation_text_hash": "7e59a5359780a3eb4b5a18b7034d28368e5138f59542ddee9461d399d8344485",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 가라사대 내 때는 아직 이르지 아니하였거니와 너희 때는 늘 준비되어 있느니라"
+      ],
+      "raw_text_hashes": [
+        "7e59a5359780a3eb4b5a18b7034d28368e5138f59542ddee9461d399d8344485"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:7:7",
+      "sequence": 26335,
+      "chapter_label": "JHN 7",
+      "verse_label": "7",
+      "locator": {
+        "book": "JHN",
+        "chapter": 7,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 7,
+          "verse": 7
+        }
+      ],
+      "en": "The world can’t hate you, but it hates me, because I testify about it, that its works are evil.",
+      "ko": "세상이 너희를 미워하지 못하되 나를 미워하나니 이는 내가 세상의 행사를 악하다 증거함이라",
+      "source_text_hash": "6a41549ad202ef963c49c6edcbe5a88bbcbc9013eaf8492443f7df4b9f0fe43d",
+      "translation_text_hash": "bf32ce340ca7ddc4f8e1411ac9fc9831190da49530ef36b76e9513ef391bdcd4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "세상이 너희를 미워하지 못하되 나를 미워하나니 이는 내가 세상의 행사를 악하다 증거함이라"
+      ],
+      "raw_text_hashes": [
+        "bf32ce340ca7ddc4f8e1411ac9fc9831190da49530ef36b76e9513ef391bdcd4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:7:8",
+      "sequence": 26336,
+      "chapter_label": "JHN 7",
+      "verse_label": "8",
+      "locator": {
+        "book": "JHN",
+        "chapter": 7,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 7,
+          "verse": 8
+        }
+      ],
+      "en": "You go up to the feast. I am not yet going up to this feast, because my time is not yet fulfilled.”",
+      "ko": "너희는 명절에 올라가라 나는 내 때가 아직 차지 못하였으니 이 명절에 아직 올라가지 아니하노라",
+      "source_text_hash": "0da26c8bab46fb4b453b5a79941cf2d7802383fc20e1439409f5b31c138749db",
+      "translation_text_hash": "bb96133b2c5db6b307d197247923e259fce39aa60ab81ab4751f2946c4ab7355",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 명절에 올라가라 나는 내 때가 아직 차지 못하였으니 이 명절에 아직 올라가지 아니하노라"
+      ],
+      "raw_text_hashes": [
+        "bb96133b2c5db6b307d197247923e259fce39aa60ab81ab4751f2946c4ab7355"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:7:9",
+      "sequence": 26337,
+      "chapter_label": "JHN 7",
+      "verse_label": "9",
+      "locator": {
+        "book": "JHN",
+        "chapter": 7,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 7,
+          "verse": 9
+        }
+      ],
+      "en": "Having said these things to them, he stayed in Galilee.",
+      "ko": "이 말씀을 하시고 갈릴리에 머물러 계시니라",
+      "source_text_hash": "bf84405d0810c011a960f24e44b6ebcf8835fb5cd7e6c166dd45c45ccd79f837",
+      "translation_text_hash": "554209ab92acc6591c4cb46156ca6e7797a7dbc37c311965472ebb90a19e6475",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 말씀을 하시고 갈릴리에 머물러 계시니라"
+      ],
+      "raw_text_hashes": [
+        "554209ab92acc6591c4cb46156ca6e7797a7dbc37c311965472ebb90a19e6475"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:7:10",
+      "sequence": 26338,
+      "chapter_label": "JHN 7",
+      "verse_label": "10",
+      "locator": {
+        "book": "JHN",
+        "chapter": 7,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 7,
+          "verse": 10
+        }
+      ],
+      "en": "But when his brothers had gone up to the feast, then he also went up, not publicly, but as it were in secret.",
+      "ko": "그 형제들이 명절에 올라간 후 자기도 올라가시되 나타내지 않고 비밀히 하시니라",
+      "source_text_hash": "e70847e0d1db827e6794aa95858d14f4db5b8399208f838239043ce0f48983d3",
+      "translation_text_hash": "26068bdfda4dffe8a47ea851be102c30e48f1e339de62374a895cd73ffddd029",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 형제들이 명절에 올라간 후 자기도 올라가시되 나타내지 않고 비밀히 하시니라"
+      ],
+      "raw_text_hashes": [
+        "26068bdfda4dffe8a47ea851be102c30e48f1e339de62374a895cd73ffddd029"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:7:11",
+      "sequence": 26339,
+      "chapter_label": "JHN 7",
+      "verse_label": "11",
+      "locator": {
+        "book": "JHN",
+        "chapter": 7,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 7,
+          "verse": 11
+        }
+      ],
+      "en": "The Jews therefore sought him at the feast, and said, “Where is he?”",
+      "ko": "명절 중에 유대인들이 예수를 찾으면서 그가 어디 있느냐 하고",
+      "source_text_hash": "37c705c1a433f89be3f53a930812f82b0b30229b267fd80874f571a0b4549f51",
+      "translation_text_hash": "01a9c049ab07ebe7fe384adce9541aa5aed30c73cc438c79cf235b5e8eab07c7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "명절 중에 유대인들이 예수를 찾으면서 그가 어디 있느냐 하고"
+      ],
+      "raw_text_hashes": [
+        "01a9c049ab07ebe7fe384adce9541aa5aed30c73cc438c79cf235b5e8eab07c7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:7:12",
+      "sequence": 26340,
+      "chapter_label": "JHN 7",
+      "verse_label": "12",
+      "locator": {
+        "book": "JHN",
+        "chapter": 7,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 7,
+          "verse": 12
+        }
+      ],
+      "en": "There was much murmuring among the multitudes concerning him. Some said, “He is a good man.” Others said, “Not so, but he leads the multitude astray.”",
+      "ko": "예수께 대하여 무리 중에서 수군거림이 많아 혹은 좋은 사람이라 하며 혹은 아니라 무리를 미혹하게 한다 하나",
+      "source_text_hash": "a913429d57e67225e8a01e23fb7ac128c3ecd1ffab948f8d11b0a397966522f1",
+      "translation_text_hash": "b44fb33a392c2941fe8b428a739582bb062f86c7a2e6f6583203c1cef756fcff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께 대하여 무리 중에서 수군거림이 많아 혹은 좋은 사람이라 하며 혹은 아니라 무리를 미혹하게 한다 하나"
+      ],
+      "raw_text_hashes": [
+        "b44fb33a392c2941fe8b428a739582bb062f86c7a2e6f6583203c1cef756fcff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:7:13",
+      "sequence": 26341,
+      "chapter_label": "JHN 7",
+      "verse_label": "13",
+      "locator": {
+        "book": "JHN",
+        "chapter": 7,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 7,
+          "verse": 13
+        }
+      ],
+      "en": "Yet no one spoke openly of him for fear of the Jews.",
+      "ko": "그러나 유대인들을 두려워하므로 드러나게 그를 말하는 자가 없더라",
+      "source_text_hash": "363411f2341603132eae3300f69b1792e9bfbbbfcc19597fc25d87776a52b860",
+      "translation_text_hash": "c7eb2954ddf470f0a559171232f2ba2dbb71420e153e32d5512930296ef3cd57",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 유대인들을 두려워하므로 드러나게 그를 말하는 자가 없더라"
+      ],
+      "raw_text_hashes": [
+        "c7eb2954ddf470f0a559171232f2ba2dbb71420e153e32d5512930296ef3cd57"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:7:14",
+      "sequence": 26342,
+      "chapter_label": "JHN 7",
+      "verse_label": "14",
+      "locator": {
+        "book": "JHN",
+        "chapter": 7,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 7,
+          "verse": 14
+        }
+      ],
+      "en": "But when it was now the middle of the feast, Jesus went up into the temple and taught.",
+      "ko": "이미 명절의 중간이 되어 예수께서 성전에 올라가사 가르치시니",
+      "source_text_hash": "9f9f020b4a591278d29b7c66dbc62735444cd3e621ea4ef0891511e7aab89f1a",
+      "translation_text_hash": "8f927a8a76a42b8f4acb691ececf187f70594ef1921ccd140f2dcc493e8eb0fd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이미 명절의 중간이 되어 예수께서 성전에 올라가사 가르치시니"
+      ],
+      "raw_text_hashes": [
+        "8f927a8a76a42b8f4acb691ececf187f70594ef1921ccd140f2dcc493e8eb0fd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:7:15",
+      "sequence": 26343,
+      "chapter_label": "JHN 7",
+      "verse_label": "15",
+      "locator": {
+        "book": "JHN",
+        "chapter": 7,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 7,
+          "verse": 15
+        }
+      ],
+      "en": "The Jews therefore marveled, saying, “How does this man know letters, having never been educated?”",
+      "ko": "유대인들이 기이히 여겨 가로되 이 사람은 배우지 아니하였거늘 어떻게 글을 아느냐 하니",
+      "source_text_hash": "b0cf38b1366ed810676764966b55dc3a68e280f004078298194e1252dc88100d",
+      "translation_text_hash": "79a1a755012438065c96830f23d376b2b6a58b8e386f1474f28df5619f824b7e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유대인들이 기이히 여겨 가로되 이 사람은 배우지 아니하였거늘 어떻게 글을 아느냐 하니"
+      ],
+      "raw_text_hashes": [
+        "79a1a755012438065c96830f23d376b2b6a58b8e386f1474f28df5619f824b7e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:7:16",
+      "sequence": 26344,
+      "chapter_label": "JHN 7",
+      "verse_label": "16",
+      "locator": {
+        "book": "JHN",
+        "chapter": 7,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 7,
+          "verse": 16
+        }
+      ],
+      "en": "Jesus therefore answered them, “My teaching is not mine, but his who sent me.",
+      "ko": "예수께서 대답하여 가라사대 내 교훈은 내 것이 아니요 나를 보내신 이의 것이니라",
+      "source_text_hash": "bd8890c16e4d3b61456187a6f01b9dd56e2b93d0d4cca64a9a66c5ba595f26c4",
+      "translation_text_hash": "a34c210b4f6bb7f77c4a0cf4e47cac5f4a91f15d8bad670d1f5d54fd2a97c467",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 대답하여 가라사대 내 교훈은 내 것이 아니요 나를 보내신 이의 것이니라"
+      ],
+      "raw_text_hashes": [
+        "a34c210b4f6bb7f77c4a0cf4e47cac5f4a91f15d8bad670d1f5d54fd2a97c467"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:7:17",
+      "sequence": 26345,
+      "chapter_label": "JHN 7",
+      "verse_label": "17",
+      "locator": {
+        "book": "JHN",
+        "chapter": 7,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 7,
+          "verse": 17
+        }
+      ],
+      "en": "If anyone desires to do his will, he will know about the teaching, whether it is from God or if I am speaking from myself.",
+      "ko": "사람이 하나님의 뜻을 행하려 하면 이 교훈이 하나님께로서 왔는지 내가 스스로 말함인지 알리라",
+      "source_text_hash": "4b4a89146464021ace16d91d0782d568f1411bad30133a77c866afb5e01d9fb5",
+      "translation_text_hash": "d578e1d345706298d42c9cc908db271627735f070d14fee5bdc7f51d1e5c1d31",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 하나님의 뜻을 행하려 하면 이 교훈이 하나님께로서 왔는지 내가 스스로 말함인지 알리라"
+      ],
+      "raw_text_hashes": [
+        "d578e1d345706298d42c9cc908db271627735f070d14fee5bdc7f51d1e5c1d31"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:7:18",
+      "sequence": 26346,
+      "chapter_label": "JHN 7",
+      "verse_label": "18",
+      "locator": {
+        "book": "JHN",
+        "chapter": 7,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 7,
+          "verse": 18
+        }
+      ],
+      "en": "He who speaks from himself seeks his own glory, but he who seeks the glory of him who sent him is true, and no unrighteousness is in him.",
+      "ko": "스스로 말하는 자는 자기 영광만 구하되 보내신 이의 영광을 구하는 자는 참되니 그 속에 불의가 없느니라",
+      "source_text_hash": "e4359dfd207f389c3b5023746180726d5e15ce3e6bd4c597b586b8d99b74fa4a",
+      "translation_text_hash": "d12395d5adee4d7b23951a02759ffd0bdc1d456525ceba61e298e5d3b804d032",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "스스로 말하는 자는 자기 영광만 구하되 보내신 이의 영광을 구하는 자는 참되니 그 속에 불의가 없느니라"
+      ],
+      "raw_text_hashes": [
+        "d12395d5adee4d7b23951a02759ffd0bdc1d456525ceba61e298e5d3b804d032"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:7:19",
+      "sequence": 26347,
+      "chapter_label": "JHN 7",
+      "verse_label": "19",
+      "locator": {
+        "book": "JHN",
+        "chapter": 7,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 7,
+          "verse": 19
+        }
+      ],
+      "en": "Didn’t Moses give you the law, and yet none of you keeps the law? Why do you seek to kill me?”",
+      "ko": "모세가 너희에게 율법을 주지 아니하였느냐 너희 중에 율법을 지키는 자가 없도다 너희가 어찌하여 나를 죽이려 하느냐",
+      "source_text_hash": "e00716facab7bcc3b5c462f4abea9e4d6bae36df9a563cd16e06b55c71959e7b",
+      "translation_text_hash": "f92b05b463fd0aab3c0275bd7e13881595b90885acaeaceeab8b852c4ccd15f7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 너희에게 율법을 주지 아니하였느냐 너희 중에 율법을 지키는 자가 없도다 너희가 어찌하여 나를 죽이려 하느냐"
+      ],
+      "raw_text_hashes": [
+        "f92b05b463fd0aab3c0275bd7e13881595b90885acaeaceeab8b852c4ccd15f7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:7:20",
+      "sequence": 26348,
+      "chapter_label": "JHN 7",
+      "verse_label": "20",
+      "locator": {
+        "book": "JHN",
+        "chapter": 7,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 7,
+          "verse": 20
+        }
+      ],
+      "en": "The multitude answered, “You have a demon! Who seeks to kill you?”",
+      "ko": "무리가 대답하되 당신은 귀신이 들렸도다 누가 당신을 죽이려 하나이까",
+      "source_text_hash": "5a24e58afdd6965d9f3c44875c67d853f5c142939a5c0b2a35be2fe8c60c5d24",
+      "translation_text_hash": "55c3263d369062056208a7a9f29759c7e1a7d5c336cd3943ac3e977433481a42",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무리가 대답하되 당신은 귀신이 들렸도다 누가 당신을 죽이려 하나이까"
+      ],
+      "raw_text_hashes": [
+        "55c3263d369062056208a7a9f29759c7e1a7d5c336cd3943ac3e977433481a42"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:7:21",
+      "sequence": 26349,
+      "chapter_label": "JHN 7",
+      "verse_label": "21",
+      "locator": {
+        "book": "JHN",
+        "chapter": 7,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 7,
+          "verse": 21
+        }
+      ],
+      "en": "Jesus answered them, “I did one work and you all marvel because of it.",
+      "ko": "예수께서 대답하여 가라사대 내가 한 가지 일을 행하매 너희가 다 이를 인하여 괴이히 여기는도다",
+      "source_text_hash": "89aaf1bbff6cf9614dc2073b2a16b7ce8e1a0890298f604b518792bb21bc1f10",
+      "translation_text_hash": "793f96007e5e7fb60f657029d74319894944275ad2d24dc8f924d42cf52f12c4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 대답하여 가라사대 내가 한 가지 일을 행하매 너희가 다 이를 인하여 괴이히 여기는도다"
+      ],
+      "raw_text_hashes": [
+        "793f96007e5e7fb60f657029d74319894944275ad2d24dc8f924d42cf52f12c4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:7:22",
+      "sequence": 26350,
+      "chapter_label": "JHN 7",
+      "verse_label": "22",
+      "locator": {
+        "book": "JHN",
+        "chapter": 7,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 7,
+          "verse": 22
+        }
+      ],
+      "en": "Moses has given you circumcision (not that it is of Moses, but of the fathers), and on the Sabbath you circumcise a boy.",
+      "ko": "모세가 너희에게 할례를 주었으니 (그러나 할례는 모세에게서 난 것이 아니요 조상들에게서 난 것이라) 그러므로 너희가 안식일에도 사람에게 할례를 주느니라",
+      "source_text_hash": "d10a21c26b22f7fc88ee0ebb877ae8f973cb2e2132d7fa88575a8f0f308d7d34",
+      "translation_text_hash": "655cd8abecd212b62e456533266e2268e55f6ce4a56f8d6d3dc108937d7b4bc0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 너희에게 할례를 주었으니 (그러나 할례는 모세에게서 난 것이 아니요 조상들에게서 난 것이라) 그러므로 너희가 안식일에도 사람에게 할례를 주느니라"
+      ],
+      "raw_text_hashes": [
+        "655cd8abecd212b62e456533266e2268e55f6ce4a56f8d6d3dc108937d7b4bc0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:7:23",
+      "sequence": 26351,
+      "chapter_label": "JHN 7",
+      "verse_label": "23",
+      "locator": {
+        "book": "JHN",
+        "chapter": 7,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 7,
+          "verse": 23
+        }
+      ],
+      "en": "If a boy receives circumcision on the Sabbath, that the law of Moses may not be broken, are you angry with me because I made a man completely healthy on the Sabbath?",
+      "ko": "모세의 율법을 폐하지 아니하려고 사람이 안식일에도 할례를 받는 일이 있거든 내가 안식일에 사람의 전신을 건전케 한 것으로 너희가 나를 노여워하느냐",
+      "source_text_hash": "4840a85473f78e897e9c35bcc661bcb3c63ec21f6c5714c6532cdef98a6ab94a",
+      "translation_text_hash": "8068c1f4022da0424e8eaa4c60773e44e4a0aaecd631a3186244d9d890d16319",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세의 율법을 폐하지 아니하려고 사람이 안식일에도 할례를 받는 일이 있거든 내가 안식일에 사람의 전신을 건전케 한 것으로 너희가 나를 노여워하느냐"
+      ],
+      "raw_text_hashes": [
+        "8068c1f4022da0424e8eaa4c60773e44e4a0aaecd631a3186244d9d890d16319"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:7:24",
+      "sequence": 26352,
+      "chapter_label": "JHN 7",
+      "verse_label": "24",
+      "locator": {
+        "book": "JHN",
+        "chapter": 7,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 7,
+          "verse": 24
+        }
+      ],
+      "en": "Don’t judge according to appearance, but judge righteous judgment.”",
+      "ko": "외모로 판단하지 말고 공의의 판단으로 판단하라 하시니라",
+      "source_text_hash": "592ea6368fc4e58736cea7c7aab2e6a588ef8f9215a7f13ae66ccb29268e03a9",
+      "translation_text_hash": "0c37b9361b05b363fb4d48286bc098ef3d2d0503b640edf014441893e7799c76",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "외모로 판단하지 말고 공의의 판단으로 판단하라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "0c37b9361b05b363fb4d48286bc098ef3d2d0503b640edf014441893e7799c76"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:7:25",
+      "sequence": 26353,
+      "chapter_label": "JHN 7",
+      "verse_label": "25",
+      "locator": {
+        "book": "JHN",
+        "chapter": 7,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 7,
+          "verse": 25
+        }
+      ],
+      "en": "Therefore some of them of Jerusalem said, “Isn’t this he whom they seek to kill?",
+      "ko": "예루살렘 사람 중에서 혹이 말하되 이는 저희가 죽이고자 하는 그 사람이 아니냐",
+      "source_text_hash": "66dcc65b94e27f162dfcd1ca7369a347b12616b620c9ca5905d055d6b91facc6",
+      "translation_text_hash": "4c0e35ad96fd155225c88f078e5f5f6dcd911827ab7fb7f3f886495ded6942de",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예루살렘 사람 중에서 혹이 말하되 이는 저희가 죽이고자 하는 그 사람이 아니냐"
+      ],
+      "raw_text_hashes": [
+        "4c0e35ad96fd155225c88f078e5f5f6dcd911827ab7fb7f3f886495ded6942de"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:7:26",
+      "sequence": 26354,
+      "chapter_label": "JHN 7",
+      "verse_label": "26",
+      "locator": {
+        "book": "JHN",
+        "chapter": 7,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 7,
+          "verse": 26
+        }
+      ],
+      "en": "Behold, he speaks openly, and they say nothing to him. Can it be that the rulers indeed know that this is truly the Christ?",
+      "ko": "보라 드러나게 말하되 저희가 아무 말도 아니하는도다 당국자들은 이 사람을 참으로 그리스도인줄 알았는가",
+      "source_text_hash": "6eb815467c9dab597ea8d65c9b32c62983fda213d5634a1ef10deffeb76a3ada",
+      "translation_text_hash": "b8fde80f92843b292e9df6d3599f7586bf2eb6105897e2dcbf258ff3f2365cb6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보라 드러나게 말하되 저희가 아무 말도 아니하는도다 당국자들은 이 사람을 참으로 그리스도인줄 알았는가"
+      ],
+      "raw_text_hashes": [
+        "b8fde80f92843b292e9df6d3599f7586bf2eb6105897e2dcbf258ff3f2365cb6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:7:27",
+      "sequence": 26355,
+      "chapter_label": "JHN 7",
+      "verse_label": "27",
+      "locator": {
+        "book": "JHN",
+        "chapter": 7,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 7,
+          "verse": 27
+        }
+      ],
+      "en": "However, we know where this man comes from, but when the Christ comes, no one will know where he comes from.”",
+      "ko": "그러나 우리는 이 사람이 어디서 왔는지 아노라 그리스도께서 오실 때에는 어디서 오시는지 아는 자가 없으리라 하는지라",
+      "source_text_hash": "2c370dfb71feacd2d28019b99f4d84571b96a128a2ae4dc5048f2f860dc25617",
+      "translation_text_hash": "b0958b98e973151e19bf53524377677b5f8ac86cd734034d6fb67e46ef6c9bd0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 우리는 이 사람이 어디서 왔는지 아노라 그리스도께서 오실 때에는 어디서 오시는지 아는 자가 없으리라 하는지라"
+      ],
+      "raw_text_hashes": [
+        "b0958b98e973151e19bf53524377677b5f8ac86cd734034d6fb67e46ef6c9bd0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:7:28",
+      "sequence": 26356,
+      "chapter_label": "JHN 7",
+      "verse_label": "28",
+      "locator": {
+        "book": "JHN",
+        "chapter": 7,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 7,
+          "verse": 28
+        }
+      ],
+      "en": "Jesus therefore cried out in the temple, teaching and saying, “You both know me, and know where I am from. I have not come of myself, but he who sent me is true, whom you don’t know.",
+      "ko": "예수께서 성전에서 가르치시며 외쳐 가라사대 너희가 나를 알고 내가 어디서 온 것도 알거니와 내가 스스로 온 것이 아니로라 나를 보내신 이는 참이시니 너희는 그를 알지 못하나",
+      "source_text_hash": "3f141663c5fabd12b83bed55216606761642be8af6da877e7788092fc17011c9",
+      "translation_text_hash": "47519de4050fd2f517e709be04703937717876d0e5a4b12553145d88e3270a01",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 성전에서 가르치시며 외쳐 가라사대 너희가 나를 알고 내가 어디서 온 것도 알거니와 내가 스스로 온 것이 아니로라 나를 보내신 이는 참이시니 너희는 그를 알지 못하나"
+      ],
+      "raw_text_hashes": [
+        "47519de4050fd2f517e709be04703937717876d0e5a4b12553145d88e3270a01"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:7:29",
+      "sequence": 26357,
+      "chapter_label": "JHN 7",
+      "verse_label": "29",
+      "locator": {
+        "book": "JHN",
+        "chapter": 7,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 7,
+          "verse": 29
+        }
+      ],
+      "en": "I know him, because I am from him, and he sent me.”",
+      "ko": "나는 아노니 이는 내가 그에게서 났고 그가 나를 보내셨음이니라 하신대",
+      "source_text_hash": "abdde6e51109ba8f28620b3935d07bb05bfd2302b67ec1c09e1d4cd7cbab6b7a",
+      "translation_text_hash": "88329959e175643d0f3252850cd80b1be6f0c7c6b200eb48d58bf3c7c4619f4f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 아노니 이는 내가 그에게서 났고 그가 나를 보내셨음이니라 하신대"
+      ],
+      "raw_text_hashes": [
+        "88329959e175643d0f3252850cd80b1be6f0c7c6b200eb48d58bf3c7c4619f4f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:7:30",
+      "sequence": 26358,
+      "chapter_label": "JHN 7",
+      "verse_label": "30",
+      "locator": {
+        "book": "JHN",
+        "chapter": 7,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 7,
+          "verse": 30
+        }
+      ],
+      "en": "They sought therefore to take him; but no one laid a hand on him, because his hour had not yet come.",
+      "ko": "저희가 예수를 잡고자 하나 손을 대는 자가 없으니 이는 그의 때가 아직 이르지 아니하였음이러라",
+      "source_text_hash": "75849d87521fda93b77902d8e9e7d1c91c5173b0fe39afe9c8122eaaadacddf3",
+      "translation_text_hash": "9dec8260c3351b63390344abf5046f0d8b416c286d00757c3f1fc56969f86a7e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 예수를 잡고자 하나 손을 대는 자가 없으니 이는 그의 때가 아직 이르지 아니하였음이러라"
+      ],
+      "raw_text_hashes": [
+        "9dec8260c3351b63390344abf5046f0d8b416c286d00757c3f1fc56969f86a7e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:7:31",
+      "sequence": 26359,
+      "chapter_label": "JHN 7",
+      "verse_label": "31",
+      "locator": {
+        "book": "JHN",
+        "chapter": 7,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 7,
+          "verse": 31
+        }
+      ],
+      "en": "But of the multitude, many believed in him. They said, “When the Christ comes, he won’t do more signs than those which this man has done, will he?”",
+      "ko": "무리 중에 많은 사람이 예수를 믿고 말하되 그리스도께서 오실찌라도 그 행하실 표적이 이 사람의 행한 것보다 더 많으랴 하니",
+      "source_text_hash": "3f5b31a4fd70fe379a1228dc4cc9271bbe2c76c20bf7e632de96fd06752dede9",
+      "translation_text_hash": "94b165522de804c4bebc857e6653a5f5e504b21ac892c4cba51d6edc436d146d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무리 중에 많은 사람이 예수를 믿고 말하되 그리스도께서 오실찌라도 그 행하실 표적이 이 사람의 행한 것보다 더 많으랴 하니"
+      ],
+      "raw_text_hashes": [
+        "94b165522de804c4bebc857e6653a5f5e504b21ac892c4cba51d6edc436d146d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:7:32",
+      "sequence": 26360,
+      "chapter_label": "JHN 7",
+      "verse_label": "32",
+      "locator": {
+        "book": "JHN",
+        "chapter": 7,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 7,
+          "verse": 32
+        }
+      ],
+      "en": "The Pharisees heard the multitude murmuring these things concerning him, and the chief priests and the Pharisees sent officers to arrest him.",
+      "ko": "예수께 대하여 무리의 수군거리는 것이 바리새인들에게 들린지라 대제사장들과 바리새인들이 그를 잡으려고 하속들을 보내니",
+      "source_text_hash": "370ef77424eb3ecfe0caf3d70ae90c08509ef8e1a4d2b94590f797d417d7039f",
+      "translation_text_hash": "51861192692c4cd9ab2c2c174d271f51e20c632447cca716a9fd18f7077af173",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께 대하여 무리의 수군거리는 것이 바리새인들에게 들린지라 대제사장들과 바리새인들이 그를 잡으려고 하속들을 보내니"
+      ],
+      "raw_text_hashes": [
+        "51861192692c4cd9ab2c2c174d271f51e20c632447cca716a9fd18f7077af173"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:7:33",
+      "sequence": 26361,
+      "chapter_label": "JHN 7",
+      "verse_label": "33",
+      "locator": {
+        "book": "JHN",
+        "chapter": 7,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 7,
+          "verse": 33
+        }
+      ],
+      "en": "Then Jesus said, “I will be with you a little while longer, then I go to him who sent me.",
+      "ko": "예수께서 이르시되 내가 너희와 함께 조금 더 있다가 나를 보내신 이에게로 돌아가겠노라",
+      "source_text_hash": "9a39076541c502978e36c398025eab13b2265bdf2079335aba97b7ac49c80819",
+      "translation_text_hash": "f6b5de53528d4c128c634575a9d9d2b6f26072c416d31113af09d4a2724f628f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 이르시되 내가 너희와 함께 조금 더 있다가 나를 보내신 이에게로 돌아가겠노라"
+      ],
+      "raw_text_hashes": [
+        "f6b5de53528d4c128c634575a9d9d2b6f26072c416d31113af09d4a2724f628f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:7:34",
+      "sequence": 26362,
+      "chapter_label": "JHN 7",
+      "verse_label": "34",
+      "locator": {
+        "book": "JHN",
+        "chapter": 7,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 7,
+          "verse": 34
+        }
+      ],
+      "en": "You will seek me and won’t find me. You can’t come where I am.”",
+      "ko": "너희가 나를 찾아도 만나지 못할 터이요 나 있는 곳에 오지도 못하리라 하신대",
+      "source_text_hash": "dca98dcac27b3dd6ba1b690992ab58bf6a5191bbf9a3d47bec2d7784a4bb1a14",
+      "translation_text_hash": "daf596a4a01d854fbef9b1c4c78a092916c8260273a8901867ac8b7afb0b668b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 나를 찾아도 만나지 못할 터이요 나 있는 곳에 오지도 못하리라 하신대"
+      ],
+      "raw_text_hashes": [
+        "daf596a4a01d854fbef9b1c4c78a092916c8260273a8901867ac8b7afb0b668b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:7:35",
+      "sequence": 26363,
+      "chapter_label": "JHN 7",
+      "verse_label": "35",
+      "locator": {
+        "book": "JHN",
+        "chapter": 7,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 7,
+          "verse": 35
+        }
+      ],
+      "en": "The Jews therefore said among themselves, “Where will this man go that we won’t find him? Will he go to the Dispersion among the Greeks and teach the Greeks?",
+      "ko": "이에 유대인들이 서로 묻되 이 사람이 어디로 가기에 우리가 저를 만나지 못하리요 헬라인 중에 흩어져 사는 자들에게로 가서 헬라인을 가르칠터인가",
+      "source_text_hash": "add3514242511b67e621fc2d1bc513aee38e198d599941b62b7b5ecdcdcf7875",
+      "translation_text_hash": "6002c52d7a4f3927f98ec8069a376251b26d6a28985b7e71fbfa03cf685d3295",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 유대인들이 서로 묻되 이 사람이 어디로 가기에 우리가 저를 만나지 못하리요 헬라인 중에 흩어져 사는 자들에게로 가서 헬라인을 가르칠터인가"
+      ],
+      "raw_text_hashes": [
+        "6002c52d7a4f3927f98ec8069a376251b26d6a28985b7e71fbfa03cf685d3295"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:7:36",
+      "sequence": 26364,
+      "chapter_label": "JHN 7",
+      "verse_label": "36",
+      "locator": {
+        "book": "JHN",
+        "chapter": 7,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 7,
+          "verse": 36
+        }
+      ],
+      "en": "What is this word that he said, ‘You will seek me, and won’t find me;’and ‘Where I am, you can’t come’?”",
+      "ko": "나를 찾아도 만나지 못할터이요 나 있는 곳에 오지도 못하리라 한 이 말이 무슨 말이냐 하니라",
+      "source_text_hash": "0670e8c7ecec78490510725115b4258915218b722cf12de6d00dc81ff378a30d",
+      "translation_text_hash": "1ec6889eb0ec24ad688ecf9b137e24e619fe395476f54aaa28c8bef18781fa26",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나를 찾아도 만나지 못할터이요 나 있는 곳에 오지도 못하리라 한 이 말이 무슨 말이냐 하니라"
+      ],
+      "raw_text_hashes": [
+        "1ec6889eb0ec24ad688ecf9b137e24e619fe395476f54aaa28c8bef18781fa26"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:7:37",
+      "sequence": 26365,
+      "chapter_label": "JHN 7",
+      "verse_label": "37",
+      "locator": {
+        "book": "JHN",
+        "chapter": 7,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 7,
+          "verse": 37
+        }
+      ],
+      "en": "Now on the last and greatest day of the feast, Jesus stood and cried out, “If anyone is thirsty, let him come to me and drink!",
+      "ko": "명절 끝날 곧 큰날에 예수께서 서서 외쳐 가라사대 누구든지 목마르거든 내게로 와서 마시라",
+      "source_text_hash": "2a729423bba52280a15ce5280fce798a69d6384df7b3d60e5b53e576bb67bbd9",
+      "translation_text_hash": "3fd99fa9c1bcb8057ff68a48922960c7317faeaa9b204da3765b4723a3cbc109",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "명절 끝날 곧 큰날에 예수께서 서서 외쳐 가라사대 누구든지 목마르거든 내게로 와서 마시라"
+      ],
+      "raw_text_hashes": [
+        "3fd99fa9c1bcb8057ff68a48922960c7317faeaa9b204da3765b4723a3cbc109"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:7:38",
+      "sequence": 26366,
+      "chapter_label": "JHN 7",
+      "verse_label": "38",
+      "locator": {
+        "book": "JHN",
+        "chapter": 7,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 7,
+          "verse": 38
+        }
+      ],
+      "en": "He who believes in me, as the Scripture has said, from within him will flow rivers of living water.”",
+      "ko": "나를 믿는 자는 성경에 이름과 같이 그 배에서 생수의 강이 흘러나리라 하시니",
+      "source_text_hash": "f12a580a7d13f7c6bd910b10a71102c070afc07e9236c42fc00f32f668a7f319",
+      "translation_text_hash": "a840289ba9f37712be3d9991b14837e90373d021aa9e979370cad7fc2895ab1d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나를 믿는 자는 성경에 이름과 같이 그 배에서 생수의 강이 흘러나리라 하시니"
+      ],
+      "raw_text_hashes": [
+        "a840289ba9f37712be3d9991b14837e90373d021aa9e979370cad7fc2895ab1d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:7:39",
+      "sequence": 26367,
+      "chapter_label": "JHN 7",
+      "verse_label": "39",
+      "locator": {
+        "book": "JHN",
+        "chapter": 7,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 7,
+          "verse": 39
+        }
+      ],
+      "en": "But he said this about the Spirit, which those believing in him were to receive. For the Holy Spirit was not yet given, because Jesus wasn’t yet glorified.",
+      "ko": "이는 그를 믿는 자의 받을 성령을 가리켜 말씀하신 것이라 (예수께서 아직 영광을 받지 못하신 고로 성령이 아직 저희에게 계시지 아니하시더라)",
+      "source_text_hash": "0932ba6985cea070557644c9d4eb39520a4a3b26368ad801bdbf95532e96cfd2",
+      "translation_text_hash": "670f81cc7c698567d760536163224db781b19445f7ad2987ef00409fb596124c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 그를 믿는 자의 받을 성령을 가리켜 말씀하신 것이라 (예수께서 아직 영광을 받지 못하신 고로 성령이 아직 저희에게 계시지 아니하시더라)"
+      ],
+      "raw_text_hashes": [
+        "670f81cc7c698567d760536163224db781b19445f7ad2987ef00409fb596124c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:7:40",
+      "sequence": 26368,
+      "chapter_label": "JHN 7",
+      "verse_label": "40",
+      "locator": {
+        "book": "JHN",
+        "chapter": 7,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 7,
+          "verse": 40
+        }
+      ],
+      "en": "Many of the multitude therefore, when they heard these words, said, “This is truly the prophet.”",
+      "ko": "이 말씀을 들은 무리 중에서 혹은 이가 참으로 그 선지자라 하며",
+      "source_text_hash": "f727aa709ca6f66242a510a9ef978b871f0875e119b14fcc09210c92bc04b340",
+      "translation_text_hash": "4b0796f025e777cbfe38228dc925270a5b3b2d8ac61d25647a51c7aecd33e702",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 말씀을 들은 무리 중에서 혹은 이가 참으로 그 선지자라 하며"
+      ],
+      "raw_text_hashes": [
+        "4b0796f025e777cbfe38228dc925270a5b3b2d8ac61d25647a51c7aecd33e702"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:7:41",
+      "sequence": 26369,
+      "chapter_label": "JHN 7",
+      "verse_label": "41",
+      "locator": {
+        "book": "JHN",
+        "chapter": 7,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 7,
+          "verse": 41
+        }
+      ],
+      "en": "Others said, “This is the Christ.” But some said, “What, does the Christ come out of Galilee?",
+      "ko": "혹은 그리스도라 하며 어떤이들은 그리스도가 어찌 갈릴리에서 나오겠느냐",
+      "source_text_hash": "aa235b47f0a9c0c7394409c8c2a22e7df4bbb770ba916904d276b8da9d1bed9e",
+      "translation_text_hash": "30a39aa23a511f63b7588cb35f103cabd8ea08cee3a24a86c4135921dde2d564",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "혹은 그리스도라 하며 어떤이들은 그리스도가 어찌 갈릴리에서 나오겠느냐"
+      ],
+      "raw_text_hashes": [
+        "30a39aa23a511f63b7588cb35f103cabd8ea08cee3a24a86c4135921dde2d564"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:7:42",
+      "sequence": 26370,
+      "chapter_label": "JHN 7",
+      "verse_label": "42",
+      "locator": {
+        "book": "JHN",
+        "chapter": 7,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 7,
+          "verse": 42
+        }
+      ],
+      "en": "Hasn’t the Scripture said that the Christ comes of the offspring of David, and from Bethlehem, the village where David was?”",
+      "ko": "성경에 이르기를 그리스도는 다윗의 씨로 또 다윗의 살던 촌 베들레헴에서 나오리라 하지 아니하였느냐 하며",
+      "source_text_hash": "e225bbcd169d6c8110be534b0971edb869128e93485456382947afe45e28eed1",
+      "translation_text_hash": "3cec56ed6db9e44eedb055a215877a840d78ab0fe0426cc4c2cc4b000b0e7fda",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "성경에 이르기를 그리스도는 다윗의 씨로 또 다윗의 살던 촌 베들레헴에서 나오리라 하지 아니하였느냐 하며"
+      ],
+      "raw_text_hashes": [
+        "3cec56ed6db9e44eedb055a215877a840d78ab0fe0426cc4c2cc4b000b0e7fda"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:7:43",
+      "sequence": 26371,
+      "chapter_label": "JHN 7",
+      "verse_label": "43",
+      "locator": {
+        "book": "JHN",
+        "chapter": 7,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 7,
+          "verse": 43
+        }
+      ],
+      "en": "So a division arose in the multitude because of him.",
+      "ko": "예수를 인하여 무리 중에서 쟁론이 되니",
+      "source_text_hash": "38125d3878716cfbbad50e9c77215416cc637221b52a479e347bbb6582dd908f",
+      "translation_text_hash": "bd1fe507b4bcb226ab05daa22a26bd31a59ad27dfad19f50ce643fcd4dff4dfa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수를 인하여 무리 중에서 쟁론이 되니"
+      ],
+      "raw_text_hashes": [
+        "bd1fe507b4bcb226ab05daa22a26bd31a59ad27dfad19f50ce643fcd4dff4dfa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:7:44",
+      "sequence": 26372,
+      "chapter_label": "JHN 7",
+      "verse_label": "44",
+      "locator": {
+        "book": "JHN",
+        "chapter": 7,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 7,
+          "verse": 44
+        }
+      ],
+      "en": "Some of them would have arrested him, but no one laid hands on him.",
+      "ko": "그 중에는 그를 잡고자 하는 자들도 있으나 손을 대는 자가 없었더라",
+      "source_text_hash": "c5ab5e62087c5acf3b58064551274001d5a45183c9a03d5ea60de8529f3c7120",
+      "translation_text_hash": "109f7b326719fba733bc64cfbe9fd1c910097baa2e02d042ff570863d7611fcc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 중에는 그를 잡고자 하는 자들도 있으나 손을 대는 자가 없었더라"
+      ],
+      "raw_text_hashes": [
+        "109f7b326719fba733bc64cfbe9fd1c910097baa2e02d042ff570863d7611fcc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:7:45",
+      "sequence": 26373,
+      "chapter_label": "JHN 7",
+      "verse_label": "45",
+      "locator": {
+        "book": "JHN",
+        "chapter": 7,
+        "verse": 45
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 7,
+          "verse": 45
+        }
+      ],
+      "en": "The officers therefore came to the chief priests and Pharisees; and they said to them, “Why didn’t you bring him?”",
+      "ko": "하속들이 대제사장들과 바리새인들에게로 오니 저희가 묻되 어찌하여 잡아오지 아니하였느냐",
+      "source_text_hash": "7a7ea9d9fc9a7a857da116f802c9e0f91f8ae2970e3b96f131d7fe4526efe84f",
+      "translation_text_hash": "537dc178e75de08247aaec5c79acc73cfe7c2d89275f27b459e355825330f9b8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하속들이 대제사장들과 바리새인들에게로 오니 저희가 묻되 어찌하여 잡아오지 아니하였느냐"
+      ],
+      "raw_text_hashes": [
+        "537dc178e75de08247aaec5c79acc73cfe7c2d89275f27b459e355825330f9b8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:7:46",
+      "sequence": 26374,
+      "chapter_label": "JHN 7",
+      "verse_label": "46",
+      "locator": {
+        "book": "JHN",
+        "chapter": 7,
+        "verse": 46
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 7,
+          "verse": 46
+        }
+      ],
+      "en": "The officers answered, “No man ever spoke like this man!”",
+      "ko": "하속들이 대답하되 그 사람의 말하는 것처럼 말한 사람은 이때까지 없었나이다 하니",
+      "source_text_hash": "1b1a52296de93457786ce262b9e39e4eecc32c4d78d8cbe97d8ce8c473fbe228",
+      "translation_text_hash": "cbbca87ef9f19291c18027d4e98efdd9058239a8aae0286674e8c4a23dadd5cd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하속들이 대답하되 그 사람의 말하는 것처럼 말한 사람은 이때까지 없었나이다 하니"
+      ],
+      "raw_text_hashes": [
+        "cbbca87ef9f19291c18027d4e98efdd9058239a8aae0286674e8c4a23dadd5cd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:7:47",
+      "sequence": 26375,
+      "chapter_label": "JHN 7",
+      "verse_label": "47",
+      "locator": {
+        "book": "JHN",
+        "chapter": 7,
+        "verse": 47
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 7,
+          "verse": 47
+        }
+      ],
+      "en": "The Pharisees therefore answered them, “You aren’t also led astray, are you?",
+      "ko": "바리새인들이 대답하되 너희도 미혹되었느냐",
+      "source_text_hash": "3b32cf57980f1aed5f188f3048f3f83eed10331ea45a4e141f3f0b58d1c04228",
+      "translation_text_hash": "183bd7df453219ccd97df8d0bda37c0bfa05fd24c54a99e7bccac370eb394d79",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바리새인들이 대답하되 너희도 미혹되었느냐"
+      ],
+      "raw_text_hashes": [
+        "183bd7df453219ccd97df8d0bda37c0bfa05fd24c54a99e7bccac370eb394d79"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:7:48",
+      "sequence": 26376,
+      "chapter_label": "JHN 7",
+      "verse_label": "48",
+      "locator": {
+        "book": "JHN",
+        "chapter": 7,
+        "verse": 48
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 7,
+          "verse": 48
+        }
+      ],
+      "en": "Have any of the rulers or any of the Pharisees believed in him?",
+      "ko": "당국자들이나 바리새인 중에 그를 믿는 이가 있느냐",
+      "source_text_hash": "af9b8e4a58021e48803f67a8198c283f7b29d0f9bf52d5725fe5d56608dae427",
+      "translation_text_hash": "c926f8bb529f50f6ce2156c528bb059464ac0c9bf1f72e221ba39a18b584804e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "당국자들이나 바리새인 중에 그를 믿는 이가 있느냐"
+      ],
+      "raw_text_hashes": [
+        "c926f8bb529f50f6ce2156c528bb059464ac0c9bf1f72e221ba39a18b584804e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:7:49",
+      "sequence": 26377,
+      "chapter_label": "JHN 7",
+      "verse_label": "49",
+      "locator": {
+        "book": "JHN",
+        "chapter": 7,
+        "verse": 49
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 7,
+          "verse": 49
+        }
+      ],
+      "en": "But this multitude that doesn’t know the law is cursed.”",
+      "ko": "율법을 알지 못하는 이 무리는 저주를 받은 자로다",
+      "source_text_hash": "e9d5bac5c5b6c6d528e60e0eb41c0eae9c37e837c412250e0475ac2ba74a7a1a",
+      "translation_text_hash": "1ae87ee14de8bf39b885e00bb2a7172864844e364bcfa393a6e18fb2be21e632",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "율법을 알지 못하는 이 무리는 저주를 받은 자로다"
+      ],
+      "raw_text_hashes": [
+        "1ae87ee14de8bf39b885e00bb2a7172864844e364bcfa393a6e18fb2be21e632"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:7:50",
+      "sequence": 26378,
+      "chapter_label": "JHN 7",
+      "verse_label": "50",
+      "locator": {
+        "book": "JHN",
+        "chapter": 7,
+        "verse": 50
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 7,
+          "verse": 50
+        }
+      ],
+      "en": "Nicodemus (he who came to him by night, being one of them) said to them,",
+      "ko": "그 중에 한 사람 곧 전에 예수께 왔던 니고데모가 저희에게 말하되",
+      "source_text_hash": "aff6b2f33aa17c8dad815b73f432490002365da07221caef35af6f7221b38c33",
+      "translation_text_hash": "5645ccb8659cc2b0a7791c2606ca95e19af1ad1fa3f125f55e6e0e1cdda3b491",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 중에 한 사람 곧 전에 예수께 왔던 니고데모가 저희에게 말하되"
+      ],
+      "raw_text_hashes": [
+        "5645ccb8659cc2b0a7791c2606ca95e19af1ad1fa3f125f55e6e0e1cdda3b491"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:7:51",
+      "sequence": 26379,
+      "chapter_label": "JHN 7",
+      "verse_label": "51",
+      "locator": {
+        "book": "JHN",
+        "chapter": 7,
+        "verse": 51
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 7,
+          "verse": 51
+        }
+      ],
+      "en": "“Does our law judge a man unless it first hears from him personally and knows what he does?”",
+      "ko": "우리 율법은 사람의 말을 듣고 그 행한 것을 알기 전에 판결하느냐",
+      "source_text_hash": "b2cb27e9b0868002f6eb3ca55041c26f52168ce1a81b4ae3c421682dba3fb701",
+      "translation_text_hash": "efcaf8f5ed8f7f6732410bdd33f90bb93275fb1f887369dd5aee312fc5cc30b6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리 율법은 사람의 말을 듣고 그 행한 것을 알기 전에 판결하느냐"
+      ],
+      "raw_text_hashes": [
+        "efcaf8f5ed8f7f6732410bdd33f90bb93275fb1f887369dd5aee312fc5cc30b6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:7:52",
+      "sequence": 26380,
+      "chapter_label": "JHN 7",
+      "verse_label": "52",
+      "locator": {
+        "book": "JHN",
+        "chapter": 7,
+        "verse": 52
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 7,
+          "verse": 52
+        }
+      ],
+      "en": "They answered him, “Are you also from Galilee? Search and see that no prophet has arisen out of Galilee.”",
+      "ko": "저희가 대답하여 가로되 너도 갈릴리에서 왔느냐 상고하여 보라 갈릴리에서는 선지자가 나지 못하느니라 하였더라",
+      "source_text_hash": "157b3fddc4daff19848ae837a575bff4f7cdd1386ca7f9ff65eab6b1ba8eacae",
+      "translation_text_hash": "74625f0e46beecdb3e395612296213d3f56bfd8d1b5896f15e2d1d57235bf62b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 대답하여 가로되 너도 갈릴리에서 왔느냐 상고하여 보라 갈릴리에서는 선지자가 나지 못하느니라 하였더라"
+      ],
+      "raw_text_hashes": [
+        "74625f0e46beecdb3e395612296213d3f56bfd8d1b5896f15e2d1d57235bf62b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:7:53",
+      "sequence": 26381,
+      "chapter_label": "JHN 7",
+      "verse_label": "53",
+      "locator": {
+        "book": "JHN",
+        "chapter": 7,
+        "verse": 53
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 7,
+          "verse": 53
+        }
+      ],
+      "en": "Everyone went to his own house,",
+      "ko": "[다 각각 집으로 돌아가고",
+      "source_text_hash": "353783df1fe8fece1aa12467a5a53434e31c75c8b2b7f5af9ce128000e22d26e",
+      "translation_text_hash": "e15fce8d6ae3fb444eb0be33955315fb04008430647a1006eecfe7e0587b6898",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "[다 각각 집으로 돌아가고"
+      ],
+      "raw_text_hashes": [
+        "e15fce8d6ae3fb444eb0be33955315fb04008430647a1006eecfe7e0587b6898"
+      ]
+    }
+  ]
+}

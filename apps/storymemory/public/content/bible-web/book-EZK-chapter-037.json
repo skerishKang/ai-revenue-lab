@@ -1,0 +1,909 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EZK:chapter:037",
+  "unit_ordinal": 839,
+  "unit_label": "EZK 37",
+  "book_code": "EZK",
+  "chapter_number": 37,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EZK:37:1",
+      "sequence": 21399,
+      "chapter_label": "EZK 37",
+      "verse_label": "1",
+      "locator": {
+        "book": "EZK",
+        "chapter": 37,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 37,
+          "verse": 1
+        }
+      ],
+      "en": "The LORD’s hand was on me, and he brought me out in the LORD’s Spirit, and set me down in the middle of the valley; and it was full of bones.",
+      "ko": "여호와께서 권능으로 내게 임하시고 그 신으로 나를 데리고 가서 골짜기 가운데 두셨는데 거기 뼈가 가득하더라",
+      "source_text_hash": "640c0c0004cf81813f9912b2924615fc45cd585a2a4313b667ac946c4f1459c7",
+      "translation_text_hash": "75900b5a2d655d30c6865edaa19b542d11f471b982644b2552362e14ca7dc371",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 권능으로 내게 임하시고 그 신으로 나를 데리고 가서 골짜기 가운데 두셨는데 거기 뼈가 가득하더라"
+      ],
+      "raw_text_hashes": [
+        "75900b5a2d655d30c6865edaa19b542d11f471b982644b2552362e14ca7dc371"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:37:2",
+      "sequence": 21400,
+      "chapter_label": "EZK 37",
+      "verse_label": "2",
+      "locator": {
+        "book": "EZK",
+        "chapter": 37,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 37,
+          "verse": 2
+        }
+      ],
+      "en": "He caused me to pass by them all around; and behold, there were very many in the open valley, and behold, they were very dry.",
+      "ko": "나를 그 뼈 사방으로 지나게 하시기로 본즉 그 골짜기 지면에 뼈가 심히 많고 아주 말랐더라",
+      "source_text_hash": "b950fd4bf77fd64de66378b8e14c57fc1ce3214412486dfb4d0270943f43ad8c",
+      "translation_text_hash": "29f02644ccaa36ed21ad7dbb6c9f04032dc58dba1f1e457146bb26816f615c17",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나를 그 뼈 사방으로 지나게 하시기로 본즉 그 골짜기 지면에 뼈가 심히 많고 아주 말랐더라"
+      ],
+      "raw_text_hashes": [
+        "29f02644ccaa36ed21ad7dbb6c9f04032dc58dba1f1e457146bb26816f615c17"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:37:3",
+      "sequence": 21401,
+      "chapter_label": "EZK 37",
+      "verse_label": "3",
+      "locator": {
+        "book": "EZK",
+        "chapter": 37,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 37,
+          "verse": 3
+        }
+      ],
+      "en": "He said to me, “Son of man, can these bones live?” I answered, “Lord GOD, you know.”",
+      "ko": "그가 내게 이르시되 인자야 이 뼈들이 능히 살겠느냐 하시기로 내가 대답하되 주 여호와여 주께서 아시나이다",
+      "source_text_hash": "727d4c847e547ef42271753fb7ba8d27549bb40312aacc9471ff5b415d1f0223",
+      "translation_text_hash": "6addd5dcfb7a222c06a96cc0b4cc78e3cc95e474ce9bc933cd835a62599a7e3b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 내게 이르시되 인자야 이 뼈들이 능히 살겠느냐 하시기로 내가 대답하되 주 여호와여 주께서 아시나이다"
+      ],
+      "raw_text_hashes": [
+        "6addd5dcfb7a222c06a96cc0b4cc78e3cc95e474ce9bc933cd835a62599a7e3b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:37:4",
+      "sequence": 21402,
+      "chapter_label": "EZK 37",
+      "verse_label": "4",
+      "locator": {
+        "book": "EZK",
+        "chapter": 37,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 37,
+          "verse": 4
+        }
+      ],
+      "en": "Again he said to me, “Prophesy over these bones, and tell them, ‘You dry bones, hear the LORD’s word.",
+      "ko": "또 내게 이르시되 너는 이 모든 뼈에게 대언하여 이르기를 너희 마른 뼈들아 여호와의 말씀을 들을찌어다",
+      "source_text_hash": "eff30eed6399b155f41362143cb7f41a946778700ddc33f4dd8128065c03c40f",
+      "translation_text_hash": "02fc80e631987da9811e47b5057354936a15b7d374d040ab0bdd43df08c88898",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 내게 이르시되 너는 이 모든 뼈에게 대언하여 이르기를 너희 마른 뼈들아 여호와의 말씀을 들을찌어다"
+      ],
+      "raw_text_hashes": [
+        "02fc80e631987da9811e47b5057354936a15b7d374d040ab0bdd43df08c88898"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:37:5",
+      "sequence": 21403,
+      "chapter_label": "EZK 37",
+      "verse_label": "5",
+      "locator": {
+        "book": "EZK",
+        "chapter": 37,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 37,
+          "verse": 5
+        }
+      ],
+      "en": "The Lord GOD says to these bones: “Behold, I will cause breath to enter into you, and you will live.",
+      "ko": "주 여호와께서 이 뼈들에게 말씀하시기를 내가 생기로 너희에게 들어가게 하리니 너희가 살리라",
+      "source_text_hash": "0f726db94adc99f632bbdca1d107c0dad784555cbf97820ff828603ee96775e5",
+      "translation_text_hash": "fa6553851045216b2803714055e1b097ee76e4eae99168084df596304db88aaa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주 여호와께서 이 뼈들에게 말씀하시기를 내가 생기로 너희에게 들어가게 하리니 너희가 살리라"
+      ],
+      "raw_text_hashes": [
+        "fa6553851045216b2803714055e1b097ee76e4eae99168084df596304db88aaa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:37:6",
+      "sequence": 21404,
+      "chapter_label": "EZK 37",
+      "verse_label": "6",
+      "locator": {
+        "book": "EZK",
+        "chapter": 37,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 37,
+          "verse": 6
+        }
+      ],
+      "en": "I will lay sinews on you, and will bring up flesh on you, and cover you with skin, and put breath in you, and you will live. Then you will know that I am the LORD.”’”",
+      "ko": "너희 위에 힘줄을 두고 살을 입히고 가죽으로 덮고 너희 속에 생기를 두리니 너희가 살리라 또 나를 여호와인줄 알리라 하셨다 하라",
+      "source_text_hash": "462c5f3efc482a24a837aa22b5a3a086365b484d5d8a4d4b141550906c4fe0dc",
+      "translation_text_hash": "a8fe832865189cd23079e2ec40f8c8f8539ea298181547836ece014fb88c8c02",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 위에 힘줄을 두고 살을 입히고 가죽으로 덮고 너희 속에 생기를 두리니 너희가 살리라 또 나를 여호와인줄 알리라 하셨다 하라"
+      ],
+      "raw_text_hashes": [
+        "a8fe832865189cd23079e2ec40f8c8f8539ea298181547836ece014fb88c8c02"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:37:7",
+      "sequence": 21405,
+      "chapter_label": "EZK 37",
+      "verse_label": "7",
+      "locator": {
+        "book": "EZK",
+        "chapter": 37,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 37,
+          "verse": 7
+        }
+      ],
+      "en": "So I prophesied as I was commanded. As I prophesied, there was a noise, and behold, there was an earthquake. Then the bones came together, bone to its bone.",
+      "ko": "이에 내가 명을 좇아 대언하니 대언할 때에 소리가 나고 움직이더니 이 뼈, 저 뼈가 들어 맞아서 뼈들이 서로 연락하더라",
+      "source_text_hash": "881852e91ef3418d7d1ad96043b48432166965eb864edf81d8d0f0f37a15e4dd",
+      "translation_text_hash": "70af6b84e92726f90dc514c27f3d7c7076b37f40abda006141e768ea42be3ef2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 내가 명을 좇아 대언하니 대언할 때에 소리가 나고 움직이더니 이 뼈, 저 뼈가 들어 맞아서 뼈들이 서로 연락하더라"
+      ],
+      "raw_text_hashes": [
+        "70af6b84e92726f90dc514c27f3d7c7076b37f40abda006141e768ea42be3ef2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:37:8",
+      "sequence": 21406,
+      "chapter_label": "EZK 37",
+      "verse_label": "8",
+      "locator": {
+        "book": "EZK",
+        "chapter": 37,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 37,
+          "verse": 8
+        }
+      ],
+      "en": "I saw, and, behold, there were sinews on them, and flesh came up, and skin covered them above; but there was no breath in them.",
+      "ko": "내가 또 보니 그 뼈에 힘줄이 생기고 살이 오르며 그 위에 가죽이 덮이나 그 속에 생기는 없더라",
+      "source_text_hash": "d577072ab86851cd1768314819e977be3166e7125fffb1a1dbff2db80a84422a",
+      "translation_text_hash": "643bf0236459835c66246b8b02a848809eb88d43d60b9f0cbdd8b2c5cfb1c413",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 또 보니 그 뼈에 힘줄이 생기고 살이 오르며 그 위에 가죽이 덮이나 그 속에 생기는 없더라"
+      ],
+      "raw_text_hashes": [
+        "643bf0236459835c66246b8b02a848809eb88d43d60b9f0cbdd8b2c5cfb1c413"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:37:9",
+      "sequence": 21407,
+      "chapter_label": "EZK 37",
+      "verse_label": "9",
+      "locator": {
+        "book": "EZK",
+        "chapter": 37,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 37,
+          "verse": 9
+        }
+      ],
+      "en": "Then he said to me, “Prophesy to the wind, prophesy, son of man, and tell the wind, ‘The Lord GOD says: “Come from the four winds, breath, and breathe on these slain, that they may live.”’”",
+      "ko": "또 내게 이르시되 인자야 너는 생기를 향하여 대언하라 생기에게 대언하여 이르기를 주 여호와의 말씀에 생기야 사방에서부터 와서 이 사망을 당한 자에게 불어서 살게 하라 하셨다 하라",
+      "source_text_hash": "889e8de200f8f07e64f04a9345659237b28d96f78bf43affca9f99ab37377b90",
+      "translation_text_hash": "4fadb42179c732ffb2cd1597000d2618f84ab533e3a9fb7ebb3e97668897921b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 내게 이르시되 인자야 너는 생기를 향하여 대언하라 생기에게 대언하여 이르기를 주 여호와의 말씀에 생기야 사방에서부터 와서 이 사망을 당한 자에게 불어서 살게 하라 하셨다 하라"
+      ],
+      "raw_text_hashes": [
+        "4fadb42179c732ffb2cd1597000d2618f84ab533e3a9fb7ebb3e97668897921b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:37:10",
+      "sequence": 21408,
+      "chapter_label": "EZK 37",
+      "verse_label": "10",
+      "locator": {
+        "book": "EZK",
+        "chapter": 37,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 37,
+          "verse": 10
+        }
+      ],
+      "en": "So I prophesied as he commanded me, and the breath came into them, and they lived, and stood up on their feet, an exceedingly great army.",
+      "ko": "이에 내가 그 명대로 대언하였더니 생기가 그들에게 들어가매 그들이 곧 살아 일어나서 서는데 극히 큰 군대더라",
+      "source_text_hash": "6610cab09c7b28869bb2bf445ccbfc66eace079db5a576d271fd3cc8bc9e96a4",
+      "translation_text_hash": "4313ed8d66675cd41337b08384b48b7fb3a8ee2667cfa8e60f0816752b30ae01",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 내가 그 명대로 대언하였더니 생기가 그들에게 들어가매 그들이 곧 살아 일어나서 서는데 극히 큰 군대더라"
+      ],
+      "raw_text_hashes": [
+        "4313ed8d66675cd41337b08384b48b7fb3a8ee2667cfa8e60f0816752b30ae01"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:37:11",
+      "sequence": 21409,
+      "chapter_label": "EZK 37",
+      "verse_label": "11",
+      "locator": {
+        "book": "EZK",
+        "chapter": 37,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 37,
+          "verse": 11
+        }
+      ],
+      "en": "Then he said to me, “Son of man, these bones are the whole house of Israel. Behold, they say, ‘Our bones are dried up, and our hope is lost. We are completely cut off.’",
+      "ko": "또 내게 이르시되 인자야 이 뼈들은 이스라엘 온 족속이라 그들이 이르기를 우리의 뼈들이 말랐고 우리의 소망이 없어졌으니 우리는 다 멸절되었다 하느니라",
+      "source_text_hash": "fec323ff441c2dc7936d90895cb5de54392c95b95706bf96cebd176a7a45e3f6",
+      "translation_text_hash": "9570ca63e1266ede57f8fbc18e81c1adcbd635039282047bc86b49e7ee457850",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 내게 이르시되 인자야 이 뼈들은 이스라엘 온 족속이라 그들이 이르기를 우리의 뼈들이 말랐고 우리의 소망이 없어졌으니 우리는 다 멸절되었다 하느니라"
+      ],
+      "raw_text_hashes": [
+        "9570ca63e1266ede57f8fbc18e81c1adcbd635039282047bc86b49e7ee457850"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:37:12",
+      "sequence": 21410,
+      "chapter_label": "EZK 37",
+      "verse_label": "12",
+      "locator": {
+        "book": "EZK",
+        "chapter": 37,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 37,
+          "verse": 12
+        }
+      ],
+      "en": "Therefore prophesy, and tell them, ‘The Lord GOD says: “Behold, I will open your graves, and cause you to come up out of your graves, my people; and I will bring you into the land of Israel.",
+      "ko": "그러므로 너는 대언하여 그들에게 이르기를 주 여호와의 말씀에 내 백성들아 내가 너희 무덤을 열고 너희로 거기서 나오게하고 이스라엘 땅으로 들어가게 하리라",
+      "source_text_hash": "bca826677243b7db6a73572191ff7649298e9c5a9c2a1ba1f4cff652b98c0134",
+      "translation_text_hash": "a1f81e49daa5bf880f74414078c8adbc461739f571518fb770378df3e8c92742",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 너는 대언하여 그들에게 이르기를 주 여호와의 말씀에 내 백성들아 내가 너희 무덤을 열고 너희로 거기서 나오게하고 이스라엘 땅으로 들어가게 하리라"
+      ],
+      "raw_text_hashes": [
+        "a1f81e49daa5bf880f74414078c8adbc461739f571518fb770378df3e8c92742"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:37:13",
+      "sequence": 21411,
+      "chapter_label": "EZK 37",
+      "verse_label": "13",
+      "locator": {
+        "book": "EZK",
+        "chapter": 37,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 37,
+          "verse": 13
+        }
+      ],
+      "en": "You will know that I am the LORD, when I have opened your graves and caused you to come up out of your graves, my people.",
+      "ko": "내 백성들아 내가 너희 무덤을 열고 너희로 거기서 나오게 한즉 너희가 나를 여호와인줄 알리라",
+      "source_text_hash": "990f6ae6159e457d68a50bb120ce69123448dce98677c6e8fbdbc97e11395f12",
+      "translation_text_hash": "61642c8ec1de2d56f115b87db78e6420993f7779a27323c9cfdccdf46cb60d60",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 백성들아 내가 너희 무덤을 열고 너희로 거기서 나오게 한즉 너희가 나를 여호와인줄 알리라"
+      ],
+      "raw_text_hashes": [
+        "61642c8ec1de2d56f115b87db78e6420993f7779a27323c9cfdccdf46cb60d60"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:37:14",
+      "sequence": 21412,
+      "chapter_label": "EZK 37",
+      "verse_label": "14",
+      "locator": {
+        "book": "EZK",
+        "chapter": 37,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 37,
+          "verse": 14
+        }
+      ],
+      "en": "I will put my Spirit in you, and you will live. Then I will place you in your own land; and you will know that I, the LORD, have spoken it and performed it,” says the LORD.’”",
+      "ko": "내가 또 내 신을 너희 속에 두어 너희로 살게 하고 내가 또 너희를 너희 고토에 거하게 하리니 나 여호와가 이 일을 말하고 이룬 줄을 너희가 알리라 나 여호와의 말이니라 하셨다 하라",
+      "source_text_hash": "82982d79158687e7383c7921672cd508537860cbad46816d699747b55a1d68b8",
+      "translation_text_hash": "0b37ed75511d2845f43ebf8822feece3ae4a465564eb3b28c8347c50cc325b5b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 또 내 신을 너희 속에 두어 너희로 살게 하고 내가 또 너희를 너희 고토에 거하게 하리니 나 여호와가 이 일을 말하고 이룬 줄을 너희가 알리라 나 여호와의 말이니라 하셨다 하라"
+      ],
+      "raw_text_hashes": [
+        "0b37ed75511d2845f43ebf8822feece3ae4a465564eb3b28c8347c50cc325b5b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:37:15",
+      "sequence": 21413,
+      "chapter_label": "EZK 37",
+      "verse_label": "15",
+      "locator": {
+        "book": "EZK",
+        "chapter": 37,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 37,
+          "verse": 15
+        }
+      ],
+      "en": "The LORD’s word came again to me, saying,",
+      "ko": "여호와의 말씀이 또 내게 임하여 가라사대",
+      "source_text_hash": "53317430a9b7a9fdbe9156a35ae512112bae6b6f909738ce12aa74f8e4a71377",
+      "translation_text_hash": "d80f64c74466735890f0e38292da375b0a0ec48e42ba77cef849f80e52a6bc56",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 말씀이 또 내게 임하여 가라사대"
+      ],
+      "raw_text_hashes": [
+        "d80f64c74466735890f0e38292da375b0a0ec48e42ba77cef849f80e52a6bc56"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:37:16",
+      "sequence": 21414,
+      "chapter_label": "EZK 37",
+      "verse_label": "16",
+      "locator": {
+        "book": "EZK",
+        "chapter": 37,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 37,
+          "verse": 16
+        }
+      ],
+      "en": "“You, son of man, take one stick and write on it, ‘For Judah, and for the children of Israel his companions.’ Then take another stick, and write on it, ‘For Joseph, the stick of Ephraim, and for all the house of Israel his companions.’",
+      "ko": "인자야 너는 막대기 하나를 취하여 그 위에 유다와 그 짝 이스라엘 자손이라 쓰고 또 다른 막대기 하나를 취하여 그 위에 에브라임의 막대기 곧 요셉과 그 짝 이스라엘 온 족속이라 쓰고",
+      "source_text_hash": "fc8b42a6a59a952d817249c8142b14908c5cba1d801f85dfcf139870622ccb1b",
+      "translation_text_hash": "89ab8858b25d8d9f7db6626fbcc93468be6987f005337f753d66af069daf7692",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "인자야 너는 막대기 하나를 취하여 그 위에 유다와 그 짝 이스라엘 자손이라 쓰고 또 다른 막대기 하나를 취하여 그 위에 에브라임의 막대기 곧 요셉과 그 짝 이스라엘 온 족속이라 쓰고"
+      ],
+      "raw_text_hashes": [
+        "89ab8858b25d8d9f7db6626fbcc93468be6987f005337f753d66af069daf7692"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:37:17",
+      "sequence": 21415,
+      "chapter_label": "EZK 37",
+      "verse_label": "17",
+      "locator": {
+        "book": "EZK",
+        "chapter": 37,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 37,
+          "verse": 17
+        }
+      ],
+      "en": "Then join them for yourself to one another into one stick, that they may become one in your hand.",
+      "ko": "그 막대기들을 서로 연합하여 하나가 되게 하라 네 손에서 둘이 하나가 되리라",
+      "source_text_hash": "1b92633e9db631bdcd76b68794578b96833ab90bff104da6fa04f5c893b96fa7",
+      "translation_text_hash": "a19a51d2f32eea27978699a3896ec3c2326a6807797352334ca1d45dac4ede57",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 막대기들을 서로 연합하여 하나가 되게 하라 네 손에서 둘이 하나가 되리라"
+      ],
+      "raw_text_hashes": [
+        "a19a51d2f32eea27978699a3896ec3c2326a6807797352334ca1d45dac4ede57"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:37:18",
+      "sequence": 21416,
+      "chapter_label": "EZK 37",
+      "verse_label": "18",
+      "locator": {
+        "book": "EZK",
+        "chapter": 37,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 37,
+          "verse": 18
+        }
+      ],
+      "en": "“When the children of your people speak to you, saying, ‘Won’t you show us what you mean by these?’",
+      "ko": "네 민족이 네게 말하여 이르기를 이것이 무슨 뜻인지 우리에게 고하지 아니하겠느냐 하거든",
+      "source_text_hash": "1c2d995e925599b50a16093d634b53b29d1b9e79aafeb922e8e6939d1af3d461",
+      "translation_text_hash": "cf0323c2b8109ad37bcb8c5432d1fc14bf00baf99c5ec7fb4b4fa54a27aafd51",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 민족이 네게 말하여 이르기를 이것이 무슨 뜻인지 우리에게 고하지 아니하겠느냐 하거든"
+      ],
+      "raw_text_hashes": [
+        "cf0323c2b8109ad37bcb8c5432d1fc14bf00baf99c5ec7fb4b4fa54a27aafd51"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:37:19",
+      "sequence": 21417,
+      "chapter_label": "EZK 37",
+      "verse_label": "19",
+      "locator": {
+        "book": "EZK",
+        "chapter": 37,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 37,
+          "verse": 19
+        }
+      ],
+      "en": "tell them, ‘The Lord GOD says: “Behold, I will take the stick of Joseph, which is in the hand of Ephraim, and the tribes of Israel his companions; and I will put them with it, with the stick of Judah, and make them one stick, and they will be one in my hand.",
+      "ko": "너는 곧 이르기를 주 여호와의 말씀에 내가 에브라임의 손에 있는바 요셉과 그 짝 이스라엘 지파들의 막대기를 취하여 유다의 막대기에 붙여서 한 막대기가 되게 한즉 내 손에서 하나가 되리라 하셨다 하고",
+      "source_text_hash": "3dfb1a10d96640aac9ee68b17448e8f54d932e0cd0d01716e821cbd615e5c402",
+      "translation_text_hash": "fc4055839d7f1eb562e7451e7330d0057918d51333a4f4f159396744eefebb94",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 곧 이르기를 주 여호와의 말씀에 내가 에브라임의 손에 있는바 요셉과 그 짝 이스라엘 지파들의 막대기를 취하여 유다의 막대기에 붙여서 한 막대기가 되게 한즉 내 손에서 하나가 되리라 하셨다 하고"
+      ],
+      "raw_text_hashes": [
+        "fc4055839d7f1eb562e7451e7330d0057918d51333a4f4f159396744eefebb94"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:37:20",
+      "sequence": 21418,
+      "chapter_label": "EZK 37",
+      "verse_label": "20",
+      "locator": {
+        "book": "EZK",
+        "chapter": 37,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 37,
+          "verse": 20
+        }
+      ],
+      "en": "The sticks on which you write will be in your hand before their eyes.”’",
+      "ko": "너는 그 글 쓴 막대기들을 무리의 목전에서 손에 잡고",
+      "source_text_hash": "58e08244d0231232ee909ec92f77490e6c64d31dd6e52bd63743f1efd2e2d399",
+      "translation_text_hash": "5d1b83d995cf7ae79fc842d99920b03387790640bdc9f94e5ccdf2fc240ad3ee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 그 글 쓴 막대기들을 무리의 목전에서 손에 잡고"
+      ],
+      "raw_text_hashes": [
+        "5d1b83d995cf7ae79fc842d99920b03387790640bdc9f94e5ccdf2fc240ad3ee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:37:21",
+      "sequence": 21419,
+      "chapter_label": "EZK 37",
+      "verse_label": "21",
+      "locator": {
+        "book": "EZK",
+        "chapter": 37,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 37,
+          "verse": 21
+        }
+      ],
+      "en": "Say to them, ‘The Lord GOD says: “Behold, I will take the children of Israel from among the nations where they have gone, and will gather them on every side, and bring them into their own land.",
+      "ko": "그들에게 이르기를 주 여호와의 말씀에 내가 이스라엘 자손을 그 간바 열국에서 취하며 그 사면에서 모아서 그 고토로 돌아가게 하고",
+      "source_text_hash": "9802e7814f03267dbff0a441cf0b93053b6317821cb553cba879bd17de11ba72",
+      "translation_text_hash": "44003cc46320b65bb43cade3220691e2b3515f88e28df5c285adc22226c7be4a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들에게 이르기를 주 여호와의 말씀에 내가 이스라엘 자손을 그 간바 열국에서 취하며 그 사면에서 모아서 그 고토로 돌아가게 하고"
+      ],
+      "raw_text_hashes": [
+        "44003cc46320b65bb43cade3220691e2b3515f88e28df5c285adc22226c7be4a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:37:22",
+      "sequence": 21420,
+      "chapter_label": "EZK 37",
+      "verse_label": "22",
+      "locator": {
+        "book": "EZK",
+        "chapter": 37,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 37,
+          "verse": 22
+        }
+      ],
+      "en": "I will make them one nation in the land, on the mountains of Israel. One king will be king to them all. They will no longer be two nations. They won’t be divided into two kingdoms any more at all.",
+      "ko": "그 땅 이스라엘 모든 산에서 그들로 한 나라를 이루어서 한 임금이 모두 다스리게 하리니 그들이 다시는 두 민족이 되지 아니하며 두 나라로 나누이지 아니할찌라",
+      "source_text_hash": "d7d4b7074012def0d4dc92b553b7109941bad5884610976484c9f25a2b61ea82",
+      "translation_text_hash": "bf46066ed0fc9c1d115d5171c7677856465272b2cbefb9746ef6b405734a75a3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 땅 이스라엘 모든 산에서 그들로 한 나라를 이루어서 한 임금이 모두 다스리게 하리니 그들이 다시는 두 민족이 되지 아니하며 두 나라로 나누이지 아니할찌라"
+      ],
+      "raw_text_hashes": [
+        "bf46066ed0fc9c1d115d5171c7677856465272b2cbefb9746ef6b405734a75a3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:37:23",
+      "sequence": 21421,
+      "chapter_label": "EZK 37",
+      "verse_label": "23",
+      "locator": {
+        "book": "EZK",
+        "chapter": 37,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 37,
+          "verse": 23
+        }
+      ],
+      "en": "They won’t defile themselves any more with their idols, nor with their detestable things, nor with any of their transgressions; but I will save them out of all their dwelling places in which they have sinned, and will cleanse them. So they will be my people, and I will be their God.",
+      "ko": "그들이 그 우상들과 가증한 물건과 그 모든 죄악으로 스스로 더럽히지 아니하리라 내가 그들을 그 범죄한 모든 처소에서 구원하여 정결케 한즉 그들은 내 백성이 되고 나는 그들의 하나님이 되리라",
+      "source_text_hash": "54a80a7efaeeb9f04be461db58fb5363d755f5b635227bab81bad520d9412c60",
+      "translation_text_hash": "d123ae15ace806286e863611870d96846680abef9e1850e77bc529bd366b36ae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 그 우상들과 가증한 물건과 그 모든 죄악으로 스스로 더럽히지 아니하리라 내가 그들을 그 범죄한 모든 처소에서 구원하여 정결케 한즉 그들은 내 백성이 되고 나는 그들의 하나님이 되리라"
+      ],
+      "raw_text_hashes": [
+        "d123ae15ace806286e863611870d96846680abef9e1850e77bc529bd366b36ae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:37:24",
+      "sequence": 21422,
+      "chapter_label": "EZK 37",
+      "verse_label": "24",
+      "locator": {
+        "book": "EZK",
+        "chapter": 37,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 37,
+          "verse": 24
+        }
+      ],
+      "en": "“‘“My servant David will be king over them. They all will have one shepherd. They will also walk in my ordinances and observe my statutes, and do them.",
+      "ko": "내 종 다윗이 그들의 왕이 되리니 그들에게 다 한 목자가 있을 것이라 그들이 내 규례를 준행하고 내 율례를 지켜 행하며",
+      "source_text_hash": "2697be3fa1b6fc94551d6cb7beaa4b2a4d0fc8a69fcfed3490c81dfbb2b0dca6",
+      "translation_text_hash": "463c77f25e91fc8bffbc5e55e5156ad1633f495470ab8d26f4cf24a5acb84efe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 종 다윗이 그들의 왕이 되리니 그들에게 다 한 목자가 있을 것이라 그들이 내 규례를 준행하고 내 율례를 지켜 행하며"
+      ],
+      "raw_text_hashes": [
+        "463c77f25e91fc8bffbc5e55e5156ad1633f495470ab8d26f4cf24a5acb84efe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:37:25",
+      "sequence": 21423,
+      "chapter_label": "EZK 37",
+      "verse_label": "25",
+      "locator": {
+        "book": "EZK",
+        "chapter": 37,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 37,
+          "verse": 25
+        }
+      ],
+      "en": "They will dwell in the land that I have given to Jacob my servant, in which your fathers lived. They will dwell therein, they, and their children, and their children’s children, forever. David my servant will be their prince forever.",
+      "ko": "내가 내 종 야곱에게 준 땅 곧 그 열조가 거하던 땅에 그들이 거하되 그들과 그 자자 손손이 영원히 거기 거할 것이요 내 종 다윗이 영원히 그 왕이 되리라",
+      "source_text_hash": "e1e2e0a100041ac5cdd7bb8ed03f14d6dbf48e7eb8633a17e85f0b204f8da18c",
+      "translation_text_hash": "2936cd6b1ea5dcb37554ae0d284a47eacfd616f1a325460fdfcc6689f47a4e65",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 내 종 야곱에게 준 땅 곧 그 열조가 거하던 땅에 그들이 거하되 그들과 그 자자 손손이 영원히 거기 거할 것이요 내 종 다윗이 영원히 그 왕이 되리라"
+      ],
+      "raw_text_hashes": [
+        "2936cd6b1ea5dcb37554ae0d284a47eacfd616f1a325460fdfcc6689f47a4e65"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:37:26",
+      "sequence": 21424,
+      "chapter_label": "EZK 37",
+      "verse_label": "26",
+      "locator": {
+        "book": "EZK",
+        "chapter": 37,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 37,
+          "verse": 26
+        }
+      ],
+      "en": "Moreover I will make a covenant of peace with them. It will be an everlasting covenant with them. I will place them, multiply them, and will set my sanctuary among them forever more.",
+      "ko": "내가 그들과 화평의 언약을 세워서 영원한 언약이 되게 하고 또 그들을 견고하고 번성케 하며 내 성소를 그 가운데 세워서 영원히 이르게 하리니",
+      "source_text_hash": "330e8c382ed859f037a93052085a17def55df0bb093395bdfcca121cf5149906",
+      "translation_text_hash": "677a864aab5ad778fe030217afd7f02549abccddcfcaeb28ace021c8beb3e206",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 그들과 화평의 언약을 세워서 영원한 언약이 되게 하고 또 그들을 견고하고 번성케 하며 내 성소를 그 가운데 세워서 영원히 이르게 하리니"
+      ],
+      "raw_text_hashes": [
+        "677a864aab5ad778fe030217afd7f02549abccddcfcaeb28ace021c8beb3e206"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:37:27",
+      "sequence": 21425,
+      "chapter_label": "EZK 37",
+      "verse_label": "27",
+      "locator": {
+        "book": "EZK",
+        "chapter": 37,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 37,
+          "verse": 27
+        }
+      ],
+      "en": "My tent also will be with them. I will be their God, and they will be my people.",
+      "ko": "내 처소가 그들의 가운데 있을 것이며 나는 그들의 하나님이 되고 그들은 내 백성이 되리라",
+      "source_text_hash": "5f0bbebd262b80543c08f768e8cdece28f2e081c216cb72dc0b95a8ee4375397",
+      "translation_text_hash": "de554b4507ec4a5275c6aaa47d27dbfd59d5fd9b2ad5c78eb85c9a6b426f2f37",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 처소가 그들의 가운데 있을 것이며 나는 그들의 하나님이 되고 그들은 내 백성이 되리라"
+      ],
+      "raw_text_hashes": [
+        "de554b4507ec4a5275c6aaa47d27dbfd59d5fd9b2ad5c78eb85c9a6b426f2f37"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:37:28",
+      "sequence": 21426,
+      "chapter_label": "EZK 37",
+      "verse_label": "28",
+      "locator": {
+        "book": "EZK",
+        "chapter": 37,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 37,
+          "verse": 28
+        }
+      ],
+      "en": "The nations will know that I am the LORD who sanctifies Israel, when my sanctuary is among them forever more.”’”",
+      "ko": "내 성소가 영원토록 그들의 가운데 있으리니 열국이 나를 이스라엘을 거룩케 하는 여호와인줄 알리라 하셨다 하라",
+      "source_text_hash": "0934d7f838b94e51440df2b8d769dd6b90b4a6a1632ff64ba0fdc4580f65a6d1",
+      "translation_text_hash": "cecc6b939463863d2cc10020a57514fe05c31e672cc9dccde689217be2c2e996",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 성소가 영원토록 그들의 가운데 있으리니 열국이 나를 이스라엘을 거룩케 하는 여호와인줄 알리라 하셨다 하라"
+      ],
+      "raw_text_hashes": [
+        "cecc6b939463863d2cc10020a57514fe05c31e672cc9dccde689217be2c2e996"
+      ]
+    }
+  ]
+}

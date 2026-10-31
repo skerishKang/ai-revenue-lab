@@ -1,0 +1,1485 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:MAT:chapter:022",
+  "unit_ordinal": 951,
+  "unit_label": "MAT 22",
+  "book_code": "MAT",
+  "chapter_number": 22,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:MAT:22:1",
+      "sequence": 23874,
+      "chapter_label": "MAT 22",
+      "verse_label": "1",
+      "locator": {
+        "book": "MAT",
+        "chapter": 22,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 22,
+          "verse": 1
+        }
+      ],
+      "en": "Jesus answered and spoke to them again in parables, saying,",
+      "ko": "예수께서 다시 비유로 대답하여 가라사대",
+      "source_text_hash": "7f23a2d80e3d6741198922840dbec2f7e754872b1caaceff4c87e2f8ca9181df",
+      "translation_text_hash": "44d98f935124e14819c39bd85c65bda9f106dcb9860af57be662b98d9009f1fb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 다시 비유로 대답하여 가라사대"
+      ],
+      "raw_text_hashes": [
+        "44d98f935124e14819c39bd85c65bda9f106dcb9860af57be662b98d9009f1fb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:22:2",
+      "sequence": 23875,
+      "chapter_label": "MAT 22",
+      "verse_label": "2",
+      "locator": {
+        "book": "MAT",
+        "chapter": 22,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 22,
+          "verse": 2
+        }
+      ],
+      "en": "“The Kingdom of Heaven is like a certain king, who made a wedding feast for his son,",
+      "ko": "천국은 마치 자기 아들을 위하여 혼인 잔치를 베푼 어떤 임금과 같으니",
+      "source_text_hash": "c7c9477f4512b924a61294c5dedc3494c7a4ad27b043490f8e42fff115b773bb",
+      "translation_text_hash": "1abb7a488f0577e5a6f4eff91cc021912ca6eccd895cbe01a64a62aa7289908e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "천국은 마치 자기 아들을 위하여 혼인 잔치를 베푼 어떤 임금과 같으니"
+      ],
+      "raw_text_hashes": [
+        "1abb7a488f0577e5a6f4eff91cc021912ca6eccd895cbe01a64a62aa7289908e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:22:3",
+      "sequence": 23876,
+      "chapter_label": "MAT 22",
+      "verse_label": "3",
+      "locator": {
+        "book": "MAT",
+        "chapter": 22,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 22,
+          "verse": 3
+        }
+      ],
+      "en": "and sent out his servants to call those who were invited to the wedding feast, but they would not come.",
+      "ko": "그 종들을 보내어 그 청한 사람들을 혼인 잔치에 오라 하였더니 오기를 싫어하거늘",
+      "source_text_hash": "75fba8900a21a631f11f1b5a675428a74418b00407fbf59bde96f8a37f688642",
+      "translation_text_hash": "c91ea7fec4c8954bb066ba7b72cc96df3817875d846499aa0af1430b25f6f0f8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 종들을 보내어 그 청한 사람들을 혼인 잔치에 오라 하였더니 오기를 싫어하거늘"
+      ],
+      "raw_text_hashes": [
+        "c91ea7fec4c8954bb066ba7b72cc96df3817875d846499aa0af1430b25f6f0f8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:22:4",
+      "sequence": 23877,
+      "chapter_label": "MAT 22",
+      "verse_label": "4",
+      "locator": {
+        "book": "MAT",
+        "chapter": 22,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 22,
+          "verse": 4
+        }
+      ],
+      "en": "Again he sent out other servants, saying, ‘Tell those who are invited, “Behold, I have prepared my dinner. My cattle and my fatlings are killed, and all things are ready. Come to the wedding feast!”’",
+      "ko": "다시 다른 종들을 보내며 가로되 청한 사람들에게 이르기를 내가 오찬을 준비하되 나의 소와 살진 짐승을 잡고 모든 것을 갖추었으니 혼인 잔치에 오소서 하라 하였더니",
+      "source_text_hash": "3f407049a0f2319604250d1ea4e2ebecc7a91f27200500161b70f6a735b42d96",
+      "translation_text_hash": "82a7ccebd09aaae4000be89b21a3f7a435b90211c2e891182622a973efb118e7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다시 다른 종들을 보내며 가로되 청한 사람들에게 이르기를 내가 오찬을 준비하되 나의 소와 살진 짐승을 잡고 모든 것을 갖추었으니 혼인 잔치에 오소서 하라 하였더니"
+      ],
+      "raw_text_hashes": [
+        "82a7ccebd09aaae4000be89b21a3f7a435b90211c2e891182622a973efb118e7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:22:5",
+      "sequence": 23878,
+      "chapter_label": "MAT 22",
+      "verse_label": "5",
+      "locator": {
+        "book": "MAT",
+        "chapter": 22,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 22,
+          "verse": 5
+        }
+      ],
+      "en": "But they made light of it, and went their ways, one to his own farm, another to his merchandise;",
+      "ko": "저희가 돌아 보지도 않고 하나는 자기 밭으로, 하나는 자기 상업차로 가고",
+      "source_text_hash": "8b5ad9d5fe0e599e4357c181b223d9d5203044fbdd681492257f511b009c1aae",
+      "translation_text_hash": "5cc6ad16dea191d28d9df37d20a7623c87baf406487d677068784d9dfdc26802",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 돌아 보지도 않고 하나는 자기 밭으로, 하나는 자기 상업차로 가고"
+      ],
+      "raw_text_hashes": [
+        "5cc6ad16dea191d28d9df37d20a7623c87baf406487d677068784d9dfdc26802"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:22:6",
+      "sequence": 23879,
+      "chapter_label": "MAT 22",
+      "verse_label": "6",
+      "locator": {
+        "book": "MAT",
+        "chapter": 22,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 22,
+          "verse": 6
+        }
+      ],
+      "en": "and the rest grabbed his servants, treated them shamefully, and killed them.",
+      "ko": "그 남은 자들은 종들을 잡아 능욕하고 죽이니",
+      "source_text_hash": "b9baaba2628a483560c1dfd333d0f6474d437fed5fd0951758002805bfbbf145",
+      "translation_text_hash": "8569241479442f35f36cc7f6264d92414e0aaa5b58a8e58d5f0b448307e48f5c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 남은 자들은 종들을 잡아 능욕하고 죽이니"
+      ],
+      "raw_text_hashes": [
+        "8569241479442f35f36cc7f6264d92414e0aaa5b58a8e58d5f0b448307e48f5c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:22:7",
+      "sequence": 23880,
+      "chapter_label": "MAT 22",
+      "verse_label": "7",
+      "locator": {
+        "book": "MAT",
+        "chapter": 22,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 22,
+          "verse": 7
+        }
+      ],
+      "en": "When the king heard that, he was angry, and sent his armies, destroyed those murderers, and burned their city.",
+      "ko": "임금이 노하여 군대를 보내어 그 살인한 자들을 진멸하고 그 동네를 불사르고",
+      "source_text_hash": "5f6baf576988a97d80c38b2d62960b6a9bd108acedde1eb96f146bdf355f0386",
+      "translation_text_hash": "a157ee3aff0be46143d641c8ae9a4fe95523c1bdbaf56eda92aaf4b3885708c5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "임금이 노하여 군대를 보내어 그 살인한 자들을 진멸하고 그 동네를 불사르고"
+      ],
+      "raw_text_hashes": [
+        "a157ee3aff0be46143d641c8ae9a4fe95523c1bdbaf56eda92aaf4b3885708c5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:22:8",
+      "sequence": 23881,
+      "chapter_label": "MAT 22",
+      "verse_label": "8",
+      "locator": {
+        "book": "MAT",
+        "chapter": 22,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 22,
+          "verse": 8
+        }
+      ],
+      "en": "“Then he said to his servants, ‘The wedding is ready, but those who were invited weren’t worthy.",
+      "ko": "이에 종들에게 이르되 혼인 잔치는 예비되었으나 청한 사람들은 합당치 아니하니",
+      "source_text_hash": "a54227721ebc83be58a306b70411c1ff211cae9e1f3c7095fa674fcba984280c",
+      "translation_text_hash": "1a2caa4685a1ec7b3355baafb4b8fa34ddaa709959d20ae3b31909173fda45db",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 종들에게 이르되 혼인 잔치는 예비되었으나 청한 사람들은 합당치 아니하니"
+      ],
+      "raw_text_hashes": [
+        "1a2caa4685a1ec7b3355baafb4b8fa34ddaa709959d20ae3b31909173fda45db"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:22:9",
+      "sequence": 23882,
+      "chapter_label": "MAT 22",
+      "verse_label": "9",
+      "locator": {
+        "book": "MAT",
+        "chapter": 22,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 22,
+          "verse": 9
+        }
+      ],
+      "en": "Go therefore to the intersections of the highways, and as many as you may find, invite to the wedding feast.’",
+      "ko": "사거리 길에 가서 사람을 만나는대로 혼인 잔치에 청하여 오너라 한대",
+      "source_text_hash": "7ab1563ad3829936ee4eb789ec9fbd05156826bf624501b8342dbeed432b6c79",
+      "translation_text_hash": "11e62c26c904e1ec3ee33323813971370a3e09b7379018c92c8f793c40cdfbf1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사거리 길에 가서 사람을 만나는대로 혼인 잔치에 청하여 오너라 한대"
+      ],
+      "raw_text_hashes": [
+        "11e62c26c904e1ec3ee33323813971370a3e09b7379018c92c8f793c40cdfbf1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:22:10",
+      "sequence": 23883,
+      "chapter_label": "MAT 22",
+      "verse_label": "10",
+      "locator": {
+        "book": "MAT",
+        "chapter": 22,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 22,
+          "verse": 10
+        }
+      ],
+      "en": "Those servants went out into the highways and gathered together as many as they found, both bad and good. The wedding was filled with guests.",
+      "ko": "종들이 길에 나가 악한 자나 선한 자나 만나는 대로 모두 데려오니 혼인자리에 손이 가득한지라",
+      "source_text_hash": "c3352b86d743ee472d6c077338e2ee35bce9f912a79a450cce931f64ce1cbb14",
+      "translation_text_hash": "c0543deee29c8dcb30d90b4a19075e2ac71892ecf5b46a3adf37db68cf657ea2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "종들이 길에 나가 악한 자나 선한 자나 만나는 대로 모두 데려오니 혼인자리에 손이 가득한지라"
+      ],
+      "raw_text_hashes": [
+        "c0543deee29c8dcb30d90b4a19075e2ac71892ecf5b46a3adf37db68cf657ea2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:22:11",
+      "sequence": 23884,
+      "chapter_label": "MAT 22",
+      "verse_label": "11",
+      "locator": {
+        "book": "MAT",
+        "chapter": 22,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 22,
+          "verse": 11
+        }
+      ],
+      "en": "“But when the king came in to see the guests, he saw there a man who didn’t have on wedding clothing,",
+      "ko": "임금이 손을 보러 들어올쌔 거기서 예복을 입지 않은 한 사람을 보고",
+      "source_text_hash": "c523f3fdf022254ca68107c948a5b773dc8a155a9e94723147a2c49c3a013c9f",
+      "translation_text_hash": "09242b778eab835e565bb635f3050e881d88c968f11fcb1649d9a1a6fe5a4725",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "임금이 손을 보러 들어올쌔 거기서 예복을 입지 않은 한 사람을 보고"
+      ],
+      "raw_text_hashes": [
+        "09242b778eab835e565bb635f3050e881d88c968f11fcb1649d9a1a6fe5a4725"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:22:12",
+      "sequence": 23885,
+      "chapter_label": "MAT 22",
+      "verse_label": "12",
+      "locator": {
+        "book": "MAT",
+        "chapter": 22,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 22,
+          "verse": 12
+        }
+      ],
+      "en": "and he said to him, ‘Friend, how did you come in here not wearing wedding clothing?’ He was speechless.",
+      "ko": "가로되 친구여 어찌하여 예복을 입지 않고 여기 들어왔느냐 하니 저가 유구무언이어늘",
+      "source_text_hash": "e5460171913f94b450604b1bc2724e36d1bcf74aeca9e8de4a98ee98f6f78b42",
+      "translation_text_hash": "7ed310c810789931e75d65a7c911538e988bed16b125b6a10cc33f2d762c31ce",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 친구여 어찌하여 예복을 입지 않고 여기 들어왔느냐 하니 저가 유구무언이어늘"
+      ],
+      "raw_text_hashes": [
+        "7ed310c810789931e75d65a7c911538e988bed16b125b6a10cc33f2d762c31ce"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:22:13",
+      "sequence": 23886,
+      "chapter_label": "MAT 22",
+      "verse_label": "13",
+      "locator": {
+        "book": "MAT",
+        "chapter": 22,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 22,
+          "verse": 13
+        }
+      ],
+      "en": "Then the king said to the servants, ‘Bind him hand and foot, take him away, and throw him into the outer darkness. That is where the weeping and grinding of teeth will be.’",
+      "ko": "임금이 사환들에게 말하되 그 수족을 결박하여 바깥 어두움에 내어 던지라 거기서 슬피 울며 이를 갊이 있으리라 하니라",
+      "source_text_hash": "8f7b43bc29ae11702ac663c6b322df67990c2b5bb21613738296c4566c2d3620",
+      "translation_text_hash": "4ec08510e00f93c1d67deb973321ebd9c2c0ae31729cbe9cc7d44e7f66ef2afc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "임금이 사환들에게 말하되 그 수족을 결박하여 바깥 어두움에 내어 던지라 거기서 슬피 울며 이를 갊이 있으리라 하니라"
+      ],
+      "raw_text_hashes": [
+        "4ec08510e00f93c1d67deb973321ebd9c2c0ae31729cbe9cc7d44e7f66ef2afc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:22:14",
+      "sequence": 23887,
+      "chapter_label": "MAT 22",
+      "verse_label": "14",
+      "locator": {
+        "book": "MAT",
+        "chapter": 22,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 22,
+          "verse": 14
+        }
+      ],
+      "en": "For many are called, but few chosen.”",
+      "ko": "청함을 받은 자는 많되 택함을 입은 자는 적으니라",
+      "source_text_hash": "209e50bf9f91d2a963b7b26dc21a90eaafbde7224cd37c168c1af1c99273de93",
+      "translation_text_hash": "350da3d13b8760e88a79743e2eb7539dfb54884500f9f1bac5bdf84c5f6016d6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "청함을 받은 자는 많되 택함을 입은 자는 적으니라"
+      ],
+      "raw_text_hashes": [
+        "350da3d13b8760e88a79743e2eb7539dfb54884500f9f1bac5bdf84c5f6016d6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:22:15",
+      "sequence": 23888,
+      "chapter_label": "MAT 22",
+      "verse_label": "15",
+      "locator": {
+        "book": "MAT",
+        "chapter": 22,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 22,
+          "verse": 15
+        }
+      ],
+      "en": "Then the Pharisees went and took counsel how they might entrap him in his talk.",
+      "ko": "이에 바리새인들이 가서 어떻게 하여 예수로 말의 올무에 걸리게 할까 상론하고",
+      "source_text_hash": "b7d3e2614f7afcff13c5b3de8bc972425bfe3d2c2158684de2b42b435fca41a9",
+      "translation_text_hash": "b2f8f26ba7d76382d2301a08a0eac3ec533345076d6bc4204a8d2709dfee5cb1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 바리새인들이 가서 어떻게 하여 예수로 말의 올무에 걸리게 할까 상론하고"
+      ],
+      "raw_text_hashes": [
+        "b2f8f26ba7d76382d2301a08a0eac3ec533345076d6bc4204a8d2709dfee5cb1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:22:16",
+      "sequence": 23889,
+      "chapter_label": "MAT 22",
+      "verse_label": "16",
+      "locator": {
+        "book": "MAT",
+        "chapter": 22,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 22,
+          "verse": 16
+        }
+      ],
+      "en": "They sent their disciples to him, along with the Herodians, saying, “Teacher, we know that you are honest, and teach the way of God in truth, no matter whom you teach; for you aren’t partial to anyone.",
+      "ko": "자기 제자들을 헤롯 당원들과 함께 예수께 보내어 말하되 선생님이여 우리가 아노니 당신은 참되시고 참으로써 하나님의 도를 가르치시며 아무라도 꺼리는 일이 없으시니 이는 사람을 외모로 보지 아니하심이니이다",
+      "source_text_hash": "ae5cdd79baa11ca9d3bb6f72f2e0f9e4dca338422820531c5e65ae6f21575282",
+      "translation_text_hash": "d1a63feebfe9188e3c62c8e32ea1582f736b48c576c2cb850999067756c8f112",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자기 제자들을 헤롯 당원들과 함께 예수께 보내어 말하되 선생님이여 우리가 아노니 당신은 참되시고 참으로써 하나님의 도를 가르치시며 아무라도 꺼리는 일이 없으시니 이는 사람을 외모로 보지 아니하심이니이다"
+      ],
+      "raw_text_hashes": [
+        "d1a63feebfe9188e3c62c8e32ea1582f736b48c576c2cb850999067756c8f112"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:22:17",
+      "sequence": 23890,
+      "chapter_label": "MAT 22",
+      "verse_label": "17",
+      "locator": {
+        "book": "MAT",
+        "chapter": 22,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 22,
+          "verse": 17
+        }
+      ],
+      "en": "Tell us therefore, what do you think? Is it lawful to pay taxes to Caesar, or not?”",
+      "ko": "그러면 당신의 생각에는 어떠한지 우리에게 이르소서 가이사에게 세를 바치는 것이 가하니이까 불가하니이까 한대",
+      "source_text_hash": "d1f8d3f806a5f50281229046088e13a2b3890abf0490e4d7b70eeec34567cc3f",
+      "translation_text_hash": "b46cff6dc06d272673860c146c111fed668e0ec0e40fbe188e9eb827d653c630",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러면 당신의 생각에는 어떠한지 우리에게 이르소서 가이사에게 세를 바치는 것이 가하니이까 불가하니이까 한대"
+      ],
+      "raw_text_hashes": [
+        "b46cff6dc06d272673860c146c111fed668e0ec0e40fbe188e9eb827d653c630"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:22:18",
+      "sequence": 23891,
+      "chapter_label": "MAT 22",
+      "verse_label": "18",
+      "locator": {
+        "book": "MAT",
+        "chapter": 22,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 22,
+          "verse": 18
+        }
+      ],
+      "en": "But Jesus perceived their wickedness, and said, “Why do you test me, you hypocrites?",
+      "ko": "예수께서 저희의 악함을 아시고 가라사대 외식하는 자들아 어찌하여 나를 시험하느냐",
+      "source_text_hash": "1309f3950d4120472f8c5d3a532056a16be0255ba02101cfbd66daa215f5811e",
+      "translation_text_hash": "df83847461feba1fc81ee8ea072474675582509c541b2c30ef6761d82dbfa4ac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 저희의 악함을 아시고 가라사대 외식하는 자들아 어찌하여 나를 시험하느냐"
+      ],
+      "raw_text_hashes": [
+        "df83847461feba1fc81ee8ea072474675582509c541b2c30ef6761d82dbfa4ac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:22:19",
+      "sequence": 23892,
+      "chapter_label": "MAT 22",
+      "verse_label": "19",
+      "locator": {
+        "book": "MAT",
+        "chapter": 22,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 22,
+          "verse": 19
+        }
+      ],
+      "en": "Show me the tax money.”They brought to him a denarius.",
+      "ko": "셋돈을 내게 보이라 하시니 데나리온 하나를 가져왔거늘",
+      "source_text_hash": "7e8264aebe96246bdd7445e69f60963bbca049dd6d8e61bb49587b8c0d995dcc",
+      "translation_text_hash": "3275289d13558ad939af6272a345a9bca51efb56069afe9d6983e544b7ce8c94",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "셋돈을 내게 보이라 하시니 데나리온 하나를 가져왔거늘"
+      ],
+      "raw_text_hashes": [
+        "3275289d13558ad939af6272a345a9bca51efb56069afe9d6983e544b7ce8c94"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:22:20",
+      "sequence": 23893,
+      "chapter_label": "MAT 22",
+      "verse_label": "20",
+      "locator": {
+        "book": "MAT",
+        "chapter": 22,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 22,
+          "verse": 20
+        }
+      ],
+      "en": "He asked them, “Whose is this image and inscription?”",
+      "ko": "예수께서 말씀하시되 이 형상과 이 글이 뉘 것이냐",
+      "source_text_hash": "563b641bc03984f015884db4b211ae07a9dad16e7521b5ff02ab150650050ad3",
+      "translation_text_hash": "4ea37b1c8397e91302ee8d7aba2726e220a39c35ef991dbbc909cc20d4664a50",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 말씀하시되 이 형상과 이 글이 뉘 것이냐"
+      ],
+      "raw_text_hashes": [
+        "4ea37b1c8397e91302ee8d7aba2726e220a39c35ef991dbbc909cc20d4664a50"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:22:21",
+      "sequence": 23894,
+      "chapter_label": "MAT 22",
+      "verse_label": "21",
+      "locator": {
+        "book": "MAT",
+        "chapter": 22,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 22,
+          "verse": 21
+        }
+      ],
+      "en": "They said to him, “Caesar’s.” Then he said to them, “Give therefore to Caesar the things that are Caesar’s, and to God the things that are God’s.”",
+      "ko": "가로되 가이사의 것이니이다 이에 가라사대 그런즉 가이사의 것은 가이사에게, 하나님의 것은 하나님께 바치라 하시니",
+      "source_text_hash": "3b768dc84432c7820c739a10194bb015d75fa0588ef5cea454e2de87f01e1967",
+      "translation_text_hash": "ef90646b6bf3551a4b760bcb55e63bf739840145b92f1c6b2f6db283f24811c6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 가이사의 것이니이다 이에 가라사대 그런즉 가이사의 것은 가이사에게, 하나님의 것은 하나님께 바치라 하시니"
+      ],
+      "raw_text_hashes": [
+        "ef90646b6bf3551a4b760bcb55e63bf739840145b92f1c6b2f6db283f24811c6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:22:22",
+      "sequence": 23895,
+      "chapter_label": "MAT 22",
+      "verse_label": "22",
+      "locator": {
+        "book": "MAT",
+        "chapter": 22,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 22,
+          "verse": 22
+        }
+      ],
+      "en": "When they heard it, they marveled, and left him and went away.",
+      "ko": "저희가 이 말씀을 듣고 기이히 여겨 예수를 떠나가니라",
+      "source_text_hash": "97d16729bcc4cbe0ffb113fc3d9a51880dc5c9dfb39855cc2599a873de006e11",
+      "translation_text_hash": "92ad73aacaea66446d8dbdd98c4970a5d14bf5526466eeb7a2c345ca15d24d72",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 이 말씀을 듣고 기이히 여겨 예수를 떠나가니라"
+      ],
+      "raw_text_hashes": [
+        "92ad73aacaea66446d8dbdd98c4970a5d14bf5526466eeb7a2c345ca15d24d72"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:22:23",
+      "sequence": 23896,
+      "chapter_label": "MAT 22",
+      "verse_label": "23",
+      "locator": {
+        "book": "MAT",
+        "chapter": 22,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 22,
+          "verse": 23
+        }
+      ],
+      "en": "On that day Sadducees (those who say that there is no resurrection) came to him. They asked him,",
+      "ko": "부활이 없다 하는 사두개인들이 그 날에 예수께 와서 물어 가로되",
+      "source_text_hash": "a462c8f43324cdf0fce3c95af32de5d3440ce4186e746f2904b745106cc7bf5b",
+      "translation_text_hash": "0aa3db610c134981c12e5f78008a55b0f4250841bf3d1aa46ad5bd79d69d38f5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "부활이 없다 하는 사두개인들이 그 날에 예수께 와서 물어 가로되"
+      ],
+      "raw_text_hashes": [
+        "0aa3db610c134981c12e5f78008a55b0f4250841bf3d1aa46ad5bd79d69d38f5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:22:24",
+      "sequence": 23897,
+      "chapter_label": "MAT 22",
+      "verse_label": "24",
+      "locator": {
+        "book": "MAT",
+        "chapter": 22,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 22,
+          "verse": 24
+        }
+      ],
+      "en": "saying, “Teacher, Moses said, ‘If a man dies, having no children, his brother shall marry his wife and raise up offspring for his brother.’",
+      "ko": "선생님이여 모세가 일렀으되 사람이 만일 자식이 없이 죽으면 그 동생이 그 아내에게 장가들어 형을 위하여 후사를 세울찌니라 하였나이다",
+      "source_text_hash": "4a66ac6b7fbc1cf0ff4626645b16f57ebf83b4164cb17f2139f0ed61d26d0572",
+      "translation_text_hash": "b26402b586bc1fcf6799fc16311e1def13308dc5e6e8342b9c0e958046b78a93",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "선생님이여 모세가 일렀으되 사람이 만일 자식이 없이 죽으면 그 동생이 그 아내에게 장가들어 형을 위하여 후사를 세울찌니라 하였나이다"
+      ],
+      "raw_text_hashes": [
+        "b26402b586bc1fcf6799fc16311e1def13308dc5e6e8342b9c0e958046b78a93"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:22:25",
+      "sequence": 23898,
+      "chapter_label": "MAT 22",
+      "verse_label": "25",
+      "locator": {
+        "book": "MAT",
+        "chapter": 22,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 22,
+          "verse": 25
+        }
+      ],
+      "en": "Now there were with us seven brothers. The first married and died, and having no offspring left his wife to his brother.",
+      "ko": "우리 중에 칠 형제가 있었는데 맏이 장가 들었다가 죽어 후사가 없으므로 그의 아내를 그 동생에게 끼쳐두고",
+      "source_text_hash": "b533c8dc390242ec0144bbe2ff6c66f09e584d63ae8693cc0c9d0e4e996fecef",
+      "translation_text_hash": "f8643ed860062d9184fed5d393197a6e84c2d7eb99a194cf56290bceb10a3702",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리 중에 칠 형제가 있었는데 맏이 장가 들었다가 죽어 후사가 없으므로 그의 아내를 그 동생에게 끼쳐두고"
+      ],
+      "raw_text_hashes": [
+        "f8643ed860062d9184fed5d393197a6e84c2d7eb99a194cf56290bceb10a3702"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:22:26",
+      "sequence": 23899,
+      "chapter_label": "MAT 22",
+      "verse_label": "26",
+      "locator": {
+        "book": "MAT",
+        "chapter": 22,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 22,
+          "verse": 26
+        }
+      ],
+      "en": "In the same way, the second also, and the third, to the seventh.",
+      "ko": "그 둘째와 세째로 일곱째까지 그렇게 하다가",
+      "source_text_hash": "3498ce6a0b1cafe8f6f62793805d612517ccf813cb8ce2267063401db749ee7f",
+      "translation_text_hash": "7c8ce19394a068eb73c9816f64de14910a5016f5a0413eb9c3e98b46cdfa9f91",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 둘째와 세째로 일곱째까지 그렇게 하다가"
+      ],
+      "raw_text_hashes": [
+        "7c8ce19394a068eb73c9816f64de14910a5016f5a0413eb9c3e98b46cdfa9f91"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:22:27",
+      "sequence": 23900,
+      "chapter_label": "MAT 22",
+      "verse_label": "27",
+      "locator": {
+        "book": "MAT",
+        "chapter": 22,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 22,
+          "verse": 27
+        }
+      ],
+      "en": "After them all, the woman died.",
+      "ko": "최후에 그 여자도 죽었나이다",
+      "source_text_hash": "92f57a6b9052f901a686ad3d53f5c1afe0427a891687dda07eea5c2c2e6b64df",
+      "translation_text_hash": "528001341ec146982783d57f280c8effa89b8c353f63944b010b8947b073ab3d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "최후에 그 여자도 죽었나이다"
+      ],
+      "raw_text_hashes": [
+        "528001341ec146982783d57f280c8effa89b8c353f63944b010b8947b073ab3d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:22:28",
+      "sequence": 23901,
+      "chapter_label": "MAT 22",
+      "verse_label": "28",
+      "locator": {
+        "book": "MAT",
+        "chapter": 22,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 22,
+          "verse": 28
+        }
+      ],
+      "en": "In the resurrection therefore, whose wife will she be of the seven? For they all had her.”",
+      "ko": "그런즉 저희가 다 그를 취하였으니 부활 때에 일곱 중에 뉘 아내가 되리이까",
+      "source_text_hash": "484fc6e9e9020b1e74e9a1419b0be75a50bdd48988b789b295d77e5842689e93",
+      "translation_text_hash": "05c8b1973f9e9c9490ed502e16d688706421a632abeabf5b2980c5f5bb96a14c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 저희가 다 그를 취하였으니 부활 때에 일곱 중에 뉘 아내가 되리이까"
+      ],
+      "raw_text_hashes": [
+        "05c8b1973f9e9c9490ed502e16d688706421a632abeabf5b2980c5f5bb96a14c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:22:29",
+      "sequence": 23902,
+      "chapter_label": "MAT 22",
+      "verse_label": "29",
+      "locator": {
+        "book": "MAT",
+        "chapter": 22,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 22,
+          "verse": 29
+        }
+      ],
+      "en": "But Jesus answered them, “You are mistaken, not knowing the Scriptures, nor the power of God.",
+      "ko": "예수께서 대답하여 가라사대 너희가 성경도, 하나님의 능력도 알지 못하는고로 오해하였도다",
+      "source_text_hash": "2fcdcc85d2bbb6ae80453edb69ed6b7a28de5b96b7ae4cd2fde238960d20c52a",
+      "translation_text_hash": "72673c5d3a167587ce99c7f8ce1461d4e98419a49108c8de189d96f2992e162d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 대답하여 가라사대 너희가 성경도, 하나님의 능력도 알지 못하는고로 오해하였도다"
+      ],
+      "raw_text_hashes": [
+        "72673c5d3a167587ce99c7f8ce1461d4e98419a49108c8de189d96f2992e162d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:22:30",
+      "sequence": 23903,
+      "chapter_label": "MAT 22",
+      "verse_label": "30",
+      "locator": {
+        "book": "MAT",
+        "chapter": 22,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 22,
+          "verse": 30
+        }
+      ],
+      "en": "For in the resurrection they neither marry nor are given in marriage, but are like God’s angels in heaven.",
+      "ko": "부활 때에는 장가도 아니가고 시집도 아니가고 하늘에 있는 천사들과 같으니라",
+      "source_text_hash": "2af2d834b21667d5630607ce023a4e9e1d59fa493fb68864c33566920d3cc996",
+      "translation_text_hash": "a8fcf01984e31eca328222f3a2d79e5cc041543c1d2d539b04437200bac85e4c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "부활 때에는 장가도 아니가고 시집도 아니가고 하늘에 있는 천사들과 같으니라"
+      ],
+      "raw_text_hashes": [
+        "a8fcf01984e31eca328222f3a2d79e5cc041543c1d2d539b04437200bac85e4c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:22:31",
+      "sequence": 23904,
+      "chapter_label": "MAT 22",
+      "verse_label": "31",
+      "locator": {
+        "book": "MAT",
+        "chapter": 22,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 22,
+          "verse": 31
+        }
+      ],
+      "en": "But concerning the resurrection of the dead, haven’t you read that which was spoken to you by God, saying,",
+      "ko": "죽은 자의 부활을 의논할찐대 하나님이 너희에게 말씀하신바",
+      "source_text_hash": "fee57acf4556412e5752fc8410556225b03ada2d385280851183180e93ca4a6d",
+      "translation_text_hash": "03ce6e5b30ee8cb332de5a8c4bfad917218d6f890d5433032cac532145bf4bc1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "죽은 자의 부활을 의논할찐대 하나님이 너희에게 말씀하신바"
+      ],
+      "raw_text_hashes": [
+        "03ce6e5b30ee8cb332de5a8c4bfad917218d6f890d5433032cac532145bf4bc1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:22:32",
+      "sequence": 23905,
+      "chapter_label": "MAT 22",
+      "verse_label": "32",
+      "locator": {
+        "book": "MAT",
+        "chapter": 22,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 22,
+          "verse": 32
+        }
+      ],
+      "en": "‘I am the God of Abraham, and the God of Isaac, and the God of Jacob’?God is not the God of the dead, but of the living.”",
+      "ko": "나는 아브라함의 하나님이요 이삭의 하나님이요 야곱의 하나님이로라 하신 것을 읽어 보지 못하였느냐 하나님은 죽은 자의 하나님이 아니요 산 자의 하나님이시니라 하시니",
+      "source_text_hash": "54f352a61a9406ffdff5658e9a11af3fda47ce8b4322293a5309406dd46ce1ed",
+      "translation_text_hash": "8da3909790b12c6b1ff3d9d22492af8e04c27be96cbd846568da9af2974d3256",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 아브라함의 하나님이요 이삭의 하나님이요 야곱의 하나님이로라 하신 것을 읽어 보지 못하였느냐 하나님은 죽은 자의 하나님이 아니요 산 자의 하나님이시니라 하시니"
+      ],
+      "raw_text_hashes": [
+        "8da3909790b12c6b1ff3d9d22492af8e04c27be96cbd846568da9af2974d3256"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:22:33",
+      "sequence": 23906,
+      "chapter_label": "MAT 22",
+      "verse_label": "33",
+      "locator": {
+        "book": "MAT",
+        "chapter": 22,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 22,
+          "verse": 33
+        }
+      ],
+      "en": "When the multitudes heard it, they were astonished at his teaching.",
+      "ko": "무리가 듣고 그의 가르치심에 놀라더라",
+      "source_text_hash": "cafb2f7a965e729feaf8d8c7b4546e417dce5b0d0b796adb8226fe35856806ff",
+      "translation_text_hash": "deafd72f7ba47f0c3d502abd366f0e4d3dd01cbab67613b485f47e303e671e58",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무리가 듣고 그의 가르치심에 놀라더라"
+      ],
+      "raw_text_hashes": [
+        "deafd72f7ba47f0c3d502abd366f0e4d3dd01cbab67613b485f47e303e671e58"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:22:34",
+      "sequence": 23907,
+      "chapter_label": "MAT 22",
+      "verse_label": "34",
+      "locator": {
+        "book": "MAT",
+        "chapter": 22,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 22,
+          "verse": 34
+        }
+      ],
+      "en": "But the Pharisees, when they heard that he had silenced the Sadducees, gathered themselves together.",
+      "ko": "예수께서 사두개인들로 대답할 수 없게 하셨다 함을 바리새인들이 듣고 모였는데",
+      "source_text_hash": "b4380fcc0c51a65ef4483c4ff348863f4c4daec18d8e7522d1cea4c6dc872bfa",
+      "translation_text_hash": "9c40e12ea6c0edae015340ae074835d21c5805fae9d393b0eed00346d6e4496c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 사두개인들로 대답할 수 없게 하셨다 함을 바리새인들이 듣고 모였는데"
+      ],
+      "raw_text_hashes": [
+        "9c40e12ea6c0edae015340ae074835d21c5805fae9d393b0eed00346d6e4496c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:22:35",
+      "sequence": 23908,
+      "chapter_label": "MAT 22",
+      "verse_label": "35",
+      "locator": {
+        "book": "MAT",
+        "chapter": 22,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 22,
+          "verse": 35
+        }
+      ],
+      "en": "One of them, a lawyer, asked him a question, testing him.",
+      "ko": "그 중에 한 율법사가 예수를 시험하여 묻되",
+      "source_text_hash": "919322bc59146f4d480483de18c0bd1c71bc2f66b7016d30b02fd87e3079df7d",
+      "translation_text_hash": "4c0314bce0048f39874d940e5bc29c6a6fc1ed36d366b33d95e9b1471d2cae08",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 중에 한 율법사가 예수를 시험하여 묻되"
+      ],
+      "raw_text_hashes": [
+        "4c0314bce0048f39874d940e5bc29c6a6fc1ed36d366b33d95e9b1471d2cae08"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:22:36",
+      "sequence": 23909,
+      "chapter_label": "MAT 22",
+      "verse_label": "36",
+      "locator": {
+        "book": "MAT",
+        "chapter": 22,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 22,
+          "verse": 36
+        }
+      ],
+      "en": "“Teacher, which is the greatest commandment in the law?”",
+      "ko": "선생님이여 율법 중에 어느 계명이 크니이까",
+      "source_text_hash": "a93370c3904d8f67d4206e2ac94cd0d6b22c537e5593e5fc7443e9a7a621ce5c",
+      "translation_text_hash": "386642529d7372e486b524ba9c43c17874c4a2b43a183e90f3369da24e881541",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "선생님이여 율법 중에 어느 계명이 크니이까"
+      ],
+      "raw_text_hashes": [
+        "386642529d7372e486b524ba9c43c17874c4a2b43a183e90f3369da24e881541"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:22:37",
+      "sequence": 23910,
+      "chapter_label": "MAT 22",
+      "verse_label": "37",
+      "locator": {
+        "book": "MAT",
+        "chapter": 22,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 22,
+          "verse": 37
+        }
+      ],
+      "en": "Jesus said to him, “‘You shall love the Lord your God with all your heart, with all your soul, and with all your mind.’",
+      "ko": "예수께서 가라사대 네 마음을 다하고 목숨을 다하고 뜻을 다하여 주 너의 하나님을 사랑하라 하셨으니",
+      "source_text_hash": "2c4f872bea87840ca2945f96225cb9e9ec15907362e6dc2c887b52ff42ea0513",
+      "translation_text_hash": "08066c167fbcf58f72858785ffc0cddd3cf7789f004bd7618418a37a010200c4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 가라사대 네 마음을 다하고 목숨을 다하고 뜻을 다하여 주 너의 하나님을 사랑하라 하셨으니"
+      ],
+      "raw_text_hashes": [
+        "08066c167fbcf58f72858785ffc0cddd3cf7789f004bd7618418a37a010200c4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:22:38",
+      "sequence": 23911,
+      "chapter_label": "MAT 22",
+      "verse_label": "38",
+      "locator": {
+        "book": "MAT",
+        "chapter": 22,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 22,
+          "verse": 38
+        }
+      ],
+      "en": "This is the first and great commandment.",
+      "ko": "이것이 크고 첫째 되는 계명이요",
+      "source_text_hash": "05d4224cc92ec5101ca53bd1a72ef01d72c69bf3d7565bce5629730252325862",
+      "translation_text_hash": "bc948b925b663b2bb4d02d2831e732e8d28953c23abed1597e25b95cdb712173",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이것이 크고 첫째 되는 계명이요"
+      ],
+      "raw_text_hashes": [
+        "bc948b925b663b2bb4d02d2831e732e8d28953c23abed1597e25b95cdb712173"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:22:39",
+      "sequence": 23912,
+      "chapter_label": "MAT 22",
+      "verse_label": "39",
+      "locator": {
+        "book": "MAT",
+        "chapter": 22,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 22,
+          "verse": 39
+        }
+      ],
+      "en": "A second likewise is this, ‘You shall love your neighbor as yourself.’",
+      "ko": "둘째는 그와 같으니 네 이웃을 네 몸과 같이 사랑하라 하셨으니",
+      "source_text_hash": "fe47e3c96c98bad4ba66d548b333a2052b1ad3313a6bb2724b48ff1e7440d29f",
+      "translation_text_hash": "48c9f677b4b7872844caf4e5724fa341629b6f2b46ef662abf5a5dbd935178a8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "둘째는 그와 같으니 네 이웃을 네 몸과 같이 사랑하라 하셨으니"
+      ],
+      "raw_text_hashes": [
+        "48c9f677b4b7872844caf4e5724fa341629b6f2b46ef662abf5a5dbd935178a8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:22:40",
+      "sequence": 23913,
+      "chapter_label": "MAT 22",
+      "verse_label": "40",
+      "locator": {
+        "book": "MAT",
+        "chapter": 22,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 22,
+          "verse": 40
+        }
+      ],
+      "en": "The whole law and the prophets depend on these two commandments.”",
+      "ko": "이 두 계명이 온 율법과 선지자의 강령이니라",
+      "source_text_hash": "f74ad8ddab00a94a9b5fb7a4246d578801ca7a30ca5fd5b1752e7f35845d2102",
+      "translation_text_hash": "88470dc2fda692a0f7f9e1f8ce9214d899ed00ffbb65dd9a42f9b57f1427529a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 두 계명이 온 율법과 선지자의 강령이니라"
+      ],
+      "raw_text_hashes": [
+        "88470dc2fda692a0f7f9e1f8ce9214d899ed00ffbb65dd9a42f9b57f1427529a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:22:41",
+      "sequence": 23914,
+      "chapter_label": "MAT 22",
+      "verse_label": "41",
+      "locator": {
+        "book": "MAT",
+        "chapter": 22,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 22,
+          "verse": 41
+        }
+      ],
+      "en": "Now while the Pharisees were gathered together, Jesus asked them a question,",
+      "ko": "바리새인들이 모였을 때에 예수께서 그들에게 물으시되",
+      "source_text_hash": "1aa4027f000aafb7978adc2428f20af9e0acbcb3f80a1d6c84f1699494db8a04",
+      "translation_text_hash": "f6f7b6f47da4fcbe51b7fb9832c268a5a35ad23de7d8b933fc43dfa723b7fa4c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바리새인들이 모였을 때에 예수께서 그들에게 물으시되"
+      ],
+      "raw_text_hashes": [
+        "f6f7b6f47da4fcbe51b7fb9832c268a5a35ad23de7d8b933fc43dfa723b7fa4c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:22:42",
+      "sequence": 23915,
+      "chapter_label": "MAT 22",
+      "verse_label": "42",
+      "locator": {
+        "book": "MAT",
+        "chapter": 22,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 22,
+          "verse": 42
+        }
+      ],
+      "en": "saying, “What do you think of the Christ? Whose son is he?” They said to him, “Of David.”",
+      "ko": "너희는 그리스도에 대하여 어떻게 생각하느냐 뉘 자손이냐 대답하되 다윗의 자손이니이다",
+      "source_text_hash": "da1adf695449b1a5a0e1993ecfde3328be5e65ab8c5b1807375bb17a15543f0a",
+      "translation_text_hash": "99ea916df6a226c754777274fe87cdab18730db6300f57b01298227e117f956a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 그리스도에 대하여 어떻게 생각하느냐 뉘 자손이냐 대답하되 다윗의 자손이니이다"
+      ],
+      "raw_text_hashes": [
+        "99ea916df6a226c754777274fe87cdab18730db6300f57b01298227e117f956a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:22:43",
+      "sequence": 23916,
+      "chapter_label": "MAT 22",
+      "verse_label": "43",
+      "locator": {
+        "book": "MAT",
+        "chapter": 22,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 22,
+          "verse": 43
+        }
+      ],
+      "en": "He said to them, “How then does David in the Spirit call him Lord, saying,",
+      "ko": "가라사대 그러면 다윗이 성령에 감동하여 어찌 그리스도를 주라 칭하여 말하되",
+      "source_text_hash": "9c2a0161d9fca225dc5a3bbe4dbbb7984f58cd5f179b081e1659c061b278448e",
+      "translation_text_hash": "21b876abfbdaeee0277d7614e2f738b804c48af44b73c9648c6fd7e3b065b800",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가라사대 그러면 다윗이 성령에 감동하여 어찌 그리스도를 주라 칭하여 말하되"
+      ],
+      "raw_text_hashes": [
+        "21b876abfbdaeee0277d7614e2f738b804c48af44b73c9648c6fd7e3b065b800"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:22:44",
+      "sequence": 23917,
+      "chapter_label": "MAT 22",
+      "verse_label": "44",
+      "locator": {
+        "book": "MAT",
+        "chapter": 22,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 22,
+          "verse": 44
+        }
+      ],
+      "en": "‘The Lord said to my Lord,sit on my right hand, until I make your enemies a footstool for your feet’?",
+      "ko": "주께서 내 주께 이르시되 내가 네 원수를 네 발 아래 둘 때까지 내 우편에 앉았으라 하셨도다 하였느냐",
+      "source_text_hash": "4b7ae1b8a54e04137d16e0d9f0ef01fc3dd66d70e580cb8ced8382b3d2681309",
+      "translation_text_hash": "eeb78463a7b02e856b726b0f06783d4e2ffed7ad93a8d9c3e998a21eca1c531b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 내 주께 이르시되 내가 네 원수를 네 발 아래 둘 때까지 내 우편에 앉았으라 하셨도다 하였느냐"
+      ],
+      "raw_text_hashes": [
+        "eeb78463a7b02e856b726b0f06783d4e2ffed7ad93a8d9c3e998a21eca1c531b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:22:45",
+      "sequence": 23918,
+      "chapter_label": "MAT 22",
+      "verse_label": "45",
+      "locator": {
+        "book": "MAT",
+        "chapter": 22,
+        "verse": 45
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 22,
+          "verse": 45
+        }
+      ],
+      "en": "“If then David calls him Lord, how is he his son?”",
+      "ko": "다윗이 그리스도를 주라 칭하였은즉 어찌 그의 자손이 되겠느냐 하시니",
+      "source_text_hash": "76e83e6faf390436617295a2a4f31b2fac4aa0c2befcc159df9437530ba25b63",
+      "translation_text_hash": "e5affa855d82bbf082f8037d2c0a51c40354418b7998fd21e403b6240374381c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 그리스도를 주라 칭하였은즉 어찌 그의 자손이 되겠느냐 하시니"
+      ],
+      "raw_text_hashes": [
+        "e5affa855d82bbf082f8037d2c0a51c40354418b7998fd21e403b6240374381c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:22:46",
+      "sequence": 23919,
+      "chapter_label": "MAT 22",
+      "verse_label": "46",
+      "locator": {
+        "book": "MAT",
+        "chapter": 22,
+        "verse": 46
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 22,
+          "verse": 46
+        }
+      ],
+      "en": "No one was able to answer him a word, neither did any man dare ask him any more questions from that day forward.",
+      "ko": "한 말도 능히 대답하는 자가 없고 그 날부터 감히 그에게 묻는 자도 없더라",
+      "source_text_hash": "020a3a7fc1365c362865b7d5124115ee3ca60094c8c0fe282664fdf5941ef76a",
+      "translation_text_hash": "621ab04dc4d080d654a5f1c833222b7d6441767559e035722ba393407f9b0c2f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "한 말도 능히 대답하는 자가 없고 그 날부터 감히 그에게 묻는 자도 없더라"
+      ],
+      "raw_text_hashes": [
+        "621ab04dc4d080d654a5f1c833222b7d6441767559e035722ba393407f9b0c2f"
+      ]
+    }
+  ]
+}

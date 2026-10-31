@@ -1,0 +1,1069 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1KI:chapter:012",
+  "unit_ordinal": 303,
+  "unit_label": "1KI 12",
+  "book_code": "1KI",
+  "chapter_number": 12,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1KI:12:1",
+      "sequence": 9153,
+      "chapter_label": "1KI 12",
+      "verse_label": "1",
+      "locator": {
+        "book": "1KI",
+        "chapter": 12,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 12,
+          "verse": 1
+        }
+      ],
+      "en": "Rehoboam went to Shechem, for all Israel had come to Shechem to make him king.",
+      "ko": "르호보암이 세겜으로 갔으니 이는 온 이스라엘이 저로 왕을 삼고자 하여 세겜에 이르렀음이더라",
+      "source_text_hash": "dd738e6494d9c6c87cbd8fc0f49200f100cbd825d3646c8ae01258c277a820e0",
+      "translation_text_hash": "ea9d433fc4ccd20db1783c0c2ffbe53247d06b8bcf09c6ab3fd66b64654d3a0a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "르호보암이 세겜으로 갔으니 이는 온 이스라엘이 저로 왕을 삼고자 하여 세겜에 이르렀음이더라"
+      ],
+      "raw_text_hashes": [
+        "ea9d433fc4ccd20db1783c0c2ffbe53247d06b8bcf09c6ab3fd66b64654d3a0a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:12:2",
+      "sequence": 9154,
+      "chapter_label": "1KI 12",
+      "verse_label": "2",
+      "locator": {
+        "book": "1KI",
+        "chapter": 12,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 12,
+          "verse": 2
+        }
+      ],
+      "en": "When Jeroboam the son of Nebat heard of it (for he was yet in Egypt, where he had fled from the presence of King Solomon, and Jeroboam lived in Egypt;",
+      "ko": "느밧의 아들 여로보암이 전에 솔로몬왕의 얼굴을 피하여 애굽으로 도망하여 있었더니 이제 그 소문을 듣고 오히려 애굽에 있는 중에",
+      "source_text_hash": "0f143aa927ca4ca393e4fbc1c4510283dd4e9c1f85e6871cfd16a76f93085a15",
+      "translation_text_hash": "f99dc830d76c3222d2550846f4b6bb3f7c31ecdae49a4ab8a2ac584356f432fb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "느밧의 아들 여로보암이 전에 솔로몬왕의 얼굴을 피하여 애굽으로 도망하여 있었더니 이제 그 소문을 듣고 오히려 애굽에 있는 중에"
+      ],
+      "raw_text_hashes": [
+        "f99dc830d76c3222d2550846f4b6bb3f7c31ecdae49a4ab8a2ac584356f432fb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:12:3",
+      "sequence": 9155,
+      "chapter_label": "1KI 12",
+      "verse_label": "3",
+      "locator": {
+        "book": "1KI",
+        "chapter": 12,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 12,
+          "verse": 3
+        }
+      ],
+      "en": "and they sent and called him), Jeroboam and all the assembly of Israel came, and spoke to Rehoboam, saying,",
+      "ko": "무리가 보내어 저를 불렀더라 여로보암과 이스라엘의 온 회중이 와서 르호보암에게 고하여 가로되",
+      "source_text_hash": "73959887d11fabfa6db7f9deef6b30e2d06d35489b423060ad8d77aab0c4d29b",
+      "translation_text_hash": "6349c64350263c1abaf1d11499afff7f5bf37c308a7d487de693fd138b7ae5e5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무리가 보내어 저를 불렀더라 여로보암과 이스라엘의 온 회중이 와서 르호보암에게 고하여 가로되"
+      ],
+      "raw_text_hashes": [
+        "6349c64350263c1abaf1d11499afff7f5bf37c308a7d487de693fd138b7ae5e5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:12:4",
+      "sequence": 9156,
+      "chapter_label": "1KI 12",
+      "verse_label": "4",
+      "locator": {
+        "book": "1KI",
+        "chapter": 12,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 12,
+          "verse": 4
+        }
+      ],
+      "en": "“Your father made our yoke difficult. Now therefore make the hard service of your father, and his heavy yoke which he put on us, lighter, and we will serve you.”",
+      "ko": "왕의 부친이 우리의 멍에를 무겁게 하였으나 왕은 이제 왕의 부친이 우리에게 시킨 고역과 메운 무거운 멍에를 가볍게 하소서 그리하시면 우리가 왕을 섬기겠나이다",
+      "source_text_hash": "8409a52c5c44812a03f5e6df8eb757edb9a4e80c43edea87a779da68ec94e458",
+      "translation_text_hash": "a10b362ae174ad4b1e7e5de6ef0eec15ce3e68959d06c0c782e6665ec50f11cd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕의 부친이 우리의 멍에를 무겁게 하였으나 왕은 이제 왕의 부친이 우리에게 시킨 고역과 메운 무거운 멍에를 가볍게 하소서 그리하시면 우리가 왕을 섬기겠나이다"
+      ],
+      "raw_text_hashes": [
+        "a10b362ae174ad4b1e7e5de6ef0eec15ce3e68959d06c0c782e6665ec50f11cd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:12:5",
+      "sequence": 9157,
+      "chapter_label": "1KI 12",
+      "verse_label": "5",
+      "locator": {
+        "book": "1KI",
+        "chapter": 12,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 12,
+          "verse": 5
+        }
+      ],
+      "en": "He said to them, “Depart for three days, then come back to me.” So the people departed.",
+      "ko": "르호보암이 대답하되 갔다가 삼일 후에 다시 내게로 오라 하매 백성이 가니라",
+      "source_text_hash": "133bfcd98bfd76f473c86d1b57471b727dad0ce8ceb2c9e8602aebc86cfe5887",
+      "translation_text_hash": "f2660eeb2f5a4a623b47594cc0d9abf3a847aaf9fad1fe173745a4968fb67dff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "르호보암이 대답하되 갔다가 삼일 후에 다시 내게로 오라 하매 백성이 가니라"
+      ],
+      "raw_text_hashes": [
+        "f2660eeb2f5a4a623b47594cc0d9abf3a847aaf9fad1fe173745a4968fb67dff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:12:6",
+      "sequence": 9158,
+      "chapter_label": "1KI 12",
+      "verse_label": "6",
+      "locator": {
+        "book": "1KI",
+        "chapter": 12,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 12,
+          "verse": 6
+        }
+      ],
+      "en": "King Rehoboam took counsel with the old men who had stood before Solomon his father while he yet lived, saying, “What counsel do you give me to answer these people?”",
+      "ko": "르호보암왕이 그 부친 솔로몬의 생전에 그 앞에 모셨던 노인들과 의논하여 가로되 너희는 어떻게 교도하여 이 백성에게 대답하게 하겠느뇨",
+      "source_text_hash": "6986d13da00ccc81ba69ce93715b07e7e1e1587829e1cea1aaf7ad8100709ff9",
+      "translation_text_hash": "c587b2760ec5334f4db876dd7c877e617ec186ab768b17beec6487ed8e89e421",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "르호보암왕이 그 부친 솔로몬의 생전에 그 앞에 모셨던 노인들과 의논하여 가로되 너희는 어떻게 교도하여 이 백성에게 대답하게 하겠느뇨"
+      ],
+      "raw_text_hashes": [
+        "c587b2760ec5334f4db876dd7c877e617ec186ab768b17beec6487ed8e89e421"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:12:7",
+      "sequence": 9159,
+      "chapter_label": "1KI 12",
+      "verse_label": "7",
+      "locator": {
+        "book": "1KI",
+        "chapter": 12,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 12,
+          "verse": 7
+        }
+      ],
+      "en": "They replied, “If you will be a servant to this people today, and will serve them, and answer them with good words, then they will be your servants forever.”",
+      "ko": "대답하여 가로되 왕이 만일 오늘날 이 백성의 종이 되어 저희를 섬기고 좋은 말로 대답하여 이르시면 저희가 영영히 왕의 종이 되리이다 하나",
+      "source_text_hash": "c9282020cba30a6c1d99e24d3a6509911ae148b90931bbb6ef51f8c63063f497",
+      "translation_text_hash": "d367461d051f78379c0d28b7678670f5675a7f52c90a6b7273f4981c3884b759",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대답하여 가로되 왕이 만일 오늘날 이 백성의 종이 되어 저희를 섬기고 좋은 말로 대답하여 이르시면 저희가 영영히 왕의 종이 되리이다 하나"
+      ],
+      "raw_text_hashes": [
+        "d367461d051f78379c0d28b7678670f5675a7f52c90a6b7273f4981c3884b759"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:12:8",
+      "sequence": 9160,
+      "chapter_label": "1KI 12",
+      "verse_label": "8",
+      "locator": {
+        "book": "1KI",
+        "chapter": 12,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 12,
+          "verse": 8
+        }
+      ],
+      "en": "But he abandoned the counsel of the old men which they had given him, and took counsel with the young men who had grown up with him, who stood before him.",
+      "ko": "왕이 노인의 교도하는 것을 버리고 그 앞에 모셔 있는 자기와 함께 자라난 소년들과 의논하여",
+      "source_text_hash": "4713d348fddb2daf650130fdbdcf0445f04d944c3a67594e35e8fa6228530ba4",
+      "translation_text_hash": "7e86e81b2abafde8b27df171f1556729e74e68ba8eea3ac0de475ca1c96697fe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 노인의 교도하는 것을 버리고 그 앞에 모셔 있는 자기와 함께 자라난 소년들과 의논하여"
+      ],
+      "raw_text_hashes": [
+        "7e86e81b2abafde8b27df171f1556729e74e68ba8eea3ac0de475ca1c96697fe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:12:9",
+      "sequence": 9161,
+      "chapter_label": "1KI 12",
+      "verse_label": "9",
+      "locator": {
+        "book": "1KI",
+        "chapter": 12,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 12,
+          "verse": 9
+        }
+      ],
+      "en": "He said to them, “What counsel do you give, that we may answer these people who have spoken to me, saying, ‘Make the yoke that your father put on us lighter’?”",
+      "ko": "가로되 너희는 어떻게 교도하여 이 백성에게 대답하게 하겠느뇨 백성이 내게 말하기를 왕의 부친이 우리에게 메운 멍에를 가볍게 하라 하였느니라",
+      "source_text_hash": "5ffe9a4e051a01393f740087bc005d0bfaa9874010c63919502f9e6afb960a9c",
+      "translation_text_hash": "c8006aab1bf024fbcc174f217e3f3024fb9e31b13dee7de42c68ecdfce8cd974",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 너희는 어떻게 교도하여 이 백성에게 대답하게 하겠느뇨 백성이 내게 말하기를 왕의 부친이 우리에게 메운 멍에를 가볍게 하라 하였느니라"
+      ],
+      "raw_text_hashes": [
+        "c8006aab1bf024fbcc174f217e3f3024fb9e31b13dee7de42c68ecdfce8cd974"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:12:10",
+      "sequence": 9162,
+      "chapter_label": "1KI 12",
+      "verse_label": "10",
+      "locator": {
+        "book": "1KI",
+        "chapter": 12,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 12,
+          "verse": 10
+        }
+      ],
+      "en": "The young men who had grown up with him said to him, “Tell these people who spoke to you, saying, ‘Your father made our yoke heavy, but make it lighter to us’—tell them, ‘My little finger is thicker than my father’s waist.",
+      "ko": "함께 자라난 소년들이 왕께 고하여 가로되 이 백성들이 왕께 고하기를 왕의 부친이 우리의 멍에를 무겁게 하였으나 왕은 우리를 위하여 가볍게 하라 하였은즉 왕은 대답하기를 나의 새끼손가락이 내 부친의 허리보다 굵으니",
+      "source_text_hash": "45bbe26bcccd2680934b4d60a02a44c732284f426db68fc020e71c57cbc39dfe",
+      "translation_text_hash": "d786d31b9764084665a77171c0839203575ab76be83e4add55780b18bb21a5c6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "함께 자라난 소년들이 왕께 고하여 가로되 이 백성들이 왕께 고하기를 왕의 부친이 우리의 멍에를 무겁게 하였으나 왕은 우리를 위하여 가볍게 하라 하였은즉 왕은 대답하기를 나의 새끼손가락이 내 부친의 허리보다 굵으니"
+      ],
+      "raw_text_hashes": [
+        "d786d31b9764084665a77171c0839203575ab76be83e4add55780b18bb21a5c6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:12:11",
+      "sequence": 9163,
+      "chapter_label": "1KI 12",
+      "verse_label": "11",
+      "locator": {
+        "book": "1KI",
+        "chapter": 12,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 12,
+          "verse": 11
+        }
+      ],
+      "en": "Now my father burdened you with a heavy yoke, but I will add to your yoke. My father chastised you with whips, but I will chastise you with scorpions.’”",
+      "ko": "내 부친이 너희로 무거운 멍에를 메게 하였으나 이제 나는 너희의 멍에를 더욱 무겁게 할찌라 내 부친은 채찍으로 너희를 징치하였으나 나는 전갈로 너희를 징치하리라 하소서",
+      "source_text_hash": "e4b1904f87f1ef41720b4f9f3e5ea915474a24c1d2392260da15f38386c314ea",
+      "translation_text_hash": "a1e8e4ccf5586286bed86ac20ba7516eddc083697dc9b8760e9e95839503b4ba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 부친이 너희로 무거운 멍에를 메게 하였으나 이제 나는 너희의 멍에를 더욱 무겁게 할찌라 내 부친은 채찍으로 너희를 징치하였으나 나는 전갈로 너희를 징치하리라 하소서"
+      ],
+      "raw_text_hashes": [
+        "a1e8e4ccf5586286bed86ac20ba7516eddc083697dc9b8760e9e95839503b4ba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:12:12",
+      "sequence": 9164,
+      "chapter_label": "1KI 12",
+      "verse_label": "12",
+      "locator": {
+        "book": "1KI",
+        "chapter": 12,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 12,
+          "verse": 12
+        }
+      ],
+      "en": "So Jeroboam and all the people came to Rehoboam the third day, as the king asked, saying, “Come to me again the third day.”",
+      "ko": "삼일만에 여로보암과 모든 백성이 르호보암에게 나아왔으니 이는 왕이 명하여 이르기를 삼일만에 내게로 다시 오라 하였음이라",
+      "source_text_hash": "49072a207dc4995401fa2b4317cbe5c0f19f49385893e25f83f60e496cf035e3",
+      "translation_text_hash": "ee82b8f02b389d9116395ed3b947bc4b63984dabc6b66c13ba80ca33ce2bee75",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "삼일만에 여로보암과 모든 백성이 르호보암에게 나아왔으니 이는 왕이 명하여 이르기를 삼일만에 내게로 다시 오라 하였음이라"
+      ],
+      "raw_text_hashes": [
+        "ee82b8f02b389d9116395ed3b947bc4b63984dabc6b66c13ba80ca33ce2bee75"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:12:13",
+      "sequence": 9165,
+      "chapter_label": "1KI 12",
+      "verse_label": "13",
+      "locator": {
+        "book": "1KI",
+        "chapter": 12,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 12,
+          "verse": 13
+        }
+      ],
+      "en": "The king answered the people roughly, and abandoned the counsel of the old men which they had given him,",
+      "ko": "왕이 포학한 말로 백성에게 대답할쌔 노인의 교도를 버리고",
+      "source_text_hash": "cdf8521a4e3f7fd0d19984f66de8bcdb2fb398c28aea8c439457874252d2992c",
+      "translation_text_hash": "259ab9649e64198cb7ab7a4a917875727f4c2fc3f09a922553fd9ad9e23806dd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 포학한 말로 백성에게 대답할쌔 노인의 교도를 버리고"
+      ],
+      "raw_text_hashes": [
+        "259ab9649e64198cb7ab7a4a917875727f4c2fc3f09a922553fd9ad9e23806dd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:12:14",
+      "sequence": 9166,
+      "chapter_label": "1KI 12",
+      "verse_label": "14",
+      "locator": {
+        "book": "1KI",
+        "chapter": 12,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 12,
+          "verse": 14
+        }
+      ],
+      "en": "and spoke to them according to the counsel of the young men, saying, “My father made your yoke heavy, but I will add to your yoke. My father chastised you with whips, but I will chastise you with scorpions.”",
+      "ko": "소년의 가르침을 좇아 저희에게 고하여 가로되 내 부친은 너희의 멍에를 무겁게 하였으나 나는 너희의 멍에를 더욱 무겁게 할찌라 내 부친은 채찍으로 너희를 징치하였으나 나는 전갈로 너희를 징치하리라 하니라",
+      "source_text_hash": "05e2f56c2b7fadcab52d1a903bb163f13a8a45d8a9f3bca00a0395bc25c8d1fd",
+      "translation_text_hash": "1b944d27ee0b1ff8adb0188cc9067a75928a49a04a4852030712cba7c51e23d1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "소년의 가르침을 좇아 저희에게 고하여 가로되 내 부친은 너희의 멍에를 무겁게 하였으나 나는 너희의 멍에를 더욱 무겁게 할찌라 내 부친은 채찍으로 너희를 징치하였으나 나는 전갈로 너희를 징치하리라 하니라"
+      ],
+      "raw_text_hashes": [
+        "1b944d27ee0b1ff8adb0188cc9067a75928a49a04a4852030712cba7c51e23d1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:12:15",
+      "sequence": 9167,
+      "chapter_label": "1KI 12",
+      "verse_label": "15",
+      "locator": {
+        "book": "1KI",
+        "chapter": 12,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 12,
+          "verse": 15
+        }
+      ],
+      "en": "So the king didn’t listen to the people; for it was a thing brought about from the LORD, that he might establish his word, which the LORD spoke by Ahijah the Shilonite to Jeroboam the son of Nebat.",
+      "ko": "왕이 이같이 백성의 말을 듣지 아니하였으니 이 일은 여호와께로 말미암아 난 것이라 여호와께서 전에 실로 사람 아히야로 느밧의 아들 여로보암에게 고한 말씀을 응하게 하심이더라",
+      "source_text_hash": "434c64893f328ad91cbd9b7e712b190c7bb6dcad6b66d490a7b263dc9ec1bcf5",
+      "translation_text_hash": "b0708b149eb9caabd191ad0b291b6a9e2e5c9205db0e78600e0e2ee1e7acad81",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 이같이 백성의 말을 듣지 아니하였으니 이 일은 여호와께로 말미암아 난 것이라 여호와께서 전에 실로 사람 아히야로 느밧의 아들 여로보암에게 고한 말씀을 응하게 하심이더라"
+      ],
+      "raw_text_hashes": [
+        "b0708b149eb9caabd191ad0b291b6a9e2e5c9205db0e78600e0e2ee1e7acad81"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:12:16",
+      "sequence": 9168,
+      "chapter_label": "1KI 12",
+      "verse_label": "16",
+      "locator": {
+        "book": "1KI",
+        "chapter": 12,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 12,
+          "verse": 16
+        }
+      ],
+      "en": "When all Israel saw that the king didn’t listen to them, the people answered the king, saying, “What portion have we in David? We don’t have an inheritance in the son of Jesse. To your tents, Israel! Now see to your own house, David.” So Israel departed to their tents.",
+      "ko": "온 이스라엘이 자기들의 말을 왕이 듣지 아니함을 보고 왕에게 대답하여 가로되 우리가 다윗과 무슨 관계가 있느뇨 이새의 아들에게서 업이 없도다 이스라엘아 너희의 장막으로 돌아가라 다윗이여 이제 너는 네 집이나 돌아보라 하고 이스라엘이 그 장막으로 돌아가니라",
+      "source_text_hash": "5a6d250d53840ce9ac212ef53f66d4e6aae593afc98c28464244250c9484eeef",
+      "translation_text_hash": "eab3e649cc7d66051f916db6e1ee9d09bd44dc11312be7e76be83b20f4eae482",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "온 이스라엘이 자기들의 말을 왕이 듣지 아니함을 보고 왕에게 대답하여 가로되 우리가 다윗과 무슨 관계가 있느뇨 이새의 아들에게서 업이 없도다 이스라엘아 너희의 장막으로 돌아가라 다윗이여 이제 너는 네 집이나 돌아보라 하고 이스라엘이 그 장막으로 돌아가니라"
+      ],
+      "raw_text_hashes": [
+        "eab3e649cc7d66051f916db6e1ee9d09bd44dc11312be7e76be83b20f4eae482"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:12:17",
+      "sequence": 9169,
+      "chapter_label": "1KI 12",
+      "verse_label": "17",
+      "locator": {
+        "book": "1KI",
+        "chapter": 12,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 12,
+          "verse": 17
+        }
+      ],
+      "en": "But as for the children of Israel who lived in the cities of Judah, Rehoboam reigned over them.",
+      "ko": "그러나 유다 성읍들에 사는 이스라엘 자손에게는 르호보암이 그 왕이 되었더라",
+      "source_text_hash": "48687cca363246c7bf594a764ed1f179f5d0e0882b6f37932a331651717b175c",
+      "translation_text_hash": "bd493f4198f3958a0e2b78de5cd33f14ddce2d9f8c071ff836bed161319628b9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 유다 성읍들에 사는 이스라엘 자손에게는 르호보암이 그 왕이 되었더라"
+      ],
+      "raw_text_hashes": [
+        "bd493f4198f3958a0e2b78de5cd33f14ddce2d9f8c071ff836bed161319628b9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:12:18",
+      "sequence": 9170,
+      "chapter_label": "1KI 12",
+      "verse_label": "18",
+      "locator": {
+        "book": "1KI",
+        "chapter": 12,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 12,
+          "verse": 18
+        }
+      ],
+      "en": "Then King Rehoboam sent Adoram, who was over the men subject to forced labor; and all Israel stoned him to death with stones. King Rehoboam hurried to get himself up to his chariot, to flee to Jerusalem.",
+      "ko": "르호보암왕이 역군의 감독 아도니람을 보내었더니 온 이스라엘이 저를 돌로 쳐 죽인지라 르호보암왕이 급히 수레에 올라 예루살렘으로 도망하였더라",
+      "source_text_hash": "d16efdf9ed6aafc8315629db7e282b86765f607d27bc26af82b2dd4988fa143b",
+      "translation_text_hash": "d9a1ca3e184b93279b0b261838a52768e074c3f02ea7a6908652c133e5f3c7c0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "르호보암왕이 역군의 감독 아도니람을 보내었더니 온 이스라엘이 저를 돌로 쳐 죽인지라 르호보암왕이 급히 수레에 올라 예루살렘으로 도망하였더라"
+      ],
+      "raw_text_hashes": [
+        "d9a1ca3e184b93279b0b261838a52768e074c3f02ea7a6908652c133e5f3c7c0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:12:19",
+      "sequence": 9171,
+      "chapter_label": "1KI 12",
+      "verse_label": "19",
+      "locator": {
+        "book": "1KI",
+        "chapter": 12,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 12,
+          "verse": 19
+        }
+      ],
+      "en": "So Israel rebelled against David’s house to this day.",
+      "ko": "이에 이스라엘이 다윗의 집을 배반하여 오늘날까지 이르렀더라",
+      "source_text_hash": "18280932f929d1d5ac95383ccda768c75425bb9500b1c2dabd1cd4210f916eea",
+      "translation_text_hash": "007d68229618bd73a738bb30af45564900bcb8f6030af0f5dac49a0c6ad52381",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 이스라엘이 다윗의 집을 배반하여 오늘날까지 이르렀더라"
+      ],
+      "raw_text_hashes": [
+        "007d68229618bd73a738bb30af45564900bcb8f6030af0f5dac49a0c6ad52381"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:12:20",
+      "sequence": 9172,
+      "chapter_label": "1KI 12",
+      "verse_label": "20",
+      "locator": {
+        "book": "1KI",
+        "chapter": 12,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 12,
+          "verse": 20
+        }
+      ],
+      "en": "When all Israel heard that Jeroboam had returned, they sent and called him to the congregation, and made him king over all Israel. There was no one who followed David’s house, except for the tribe of Judah only.",
+      "ko": "온 이스라엘이 여로보암의 돌아왔다 함을 듣고 보내어 저를 공회로 청하여다가 온 이스라엘의 왕을 삼았으니 유다 지파 외에는 다윗의 집을 좇는 자가 없으니라",
+      "source_text_hash": "05053026959e3ff2d4b4f586ed451d5cedd3f5ca25cd563374294ee4997b2853",
+      "translation_text_hash": "130b418813cc6f1705146804624c0e9f7b162f596ba80a169447ba6d68a9d5a7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "온 이스라엘이 여로보암의 돌아왔다 함을 듣고 보내어 저를 공회로 청하여다가 온 이스라엘의 왕을 삼았으니 유다 지파 외에는 다윗의 집을 좇는 자가 없으니라"
+      ],
+      "raw_text_hashes": [
+        "130b418813cc6f1705146804624c0e9f7b162f596ba80a169447ba6d68a9d5a7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:12:21",
+      "sequence": 9173,
+      "chapter_label": "1KI 12",
+      "verse_label": "21",
+      "locator": {
+        "book": "1KI",
+        "chapter": 12,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 12,
+          "verse": 21
+        }
+      ],
+      "en": "When Rehoboam had come to Jerusalem, he assembled all the house of Judah and the tribe of Benjamin, a hundred and eighty thousand chosen men who were warriors, to fight against the house of Israel, to bring the kingdom again to Rehoboam the son of Solomon.",
+      "ko": "르호보암이 예루살렘에 이르러 유다 온 족속과 베냐민 지파를 모으니 택한 용사가 십 팔만이라 이스라엘 족속과 싸워 나라를 회복하여 솔로몬의 아들 르호보암에게 돌리려 하더니",
+      "source_text_hash": "018398c34b460dbc025f7d4f757d8d8b58ad8fed4ece3b4774d04dd7cdcebcd1",
+      "translation_text_hash": "0340d3f60f282f2f23f64c1e51d3d38fb9c44149c61243a3818ee3156a346791",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "르호보암이 예루살렘에 이르러 유다 온 족속과 베냐민 지파를 모으니 택한 용사가 십 팔만이라 이스라엘 족속과 싸워 나라를 회복하여 솔로몬의 아들 르호보암에게 돌리려 하더니"
+      ],
+      "raw_text_hashes": [
+        "0340d3f60f282f2f23f64c1e51d3d38fb9c44149c61243a3818ee3156a346791"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:12:22",
+      "sequence": 9174,
+      "chapter_label": "1KI 12",
+      "verse_label": "22",
+      "locator": {
+        "book": "1KI",
+        "chapter": 12,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 12,
+          "verse": 22
+        }
+      ],
+      "en": "But the word of God came to Shemaiah the man of God, saying,",
+      "ko": "하나님의 말씀이 하나님의 사람 스마야에게 임하여 가라사대",
+      "source_text_hash": "33f337dbe12033089b76a46d94195fe05ee15f760171648b27c60ce2555032cc",
+      "translation_text_hash": "005849d652f8618065113ce6c7e14798f70df56ae85336d4e4a661ff6a02171e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님의 말씀이 하나님의 사람 스마야에게 임하여 가라사대"
+      ],
+      "raw_text_hashes": [
+        "005849d652f8618065113ce6c7e14798f70df56ae85336d4e4a661ff6a02171e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:12:23",
+      "sequence": 9175,
+      "chapter_label": "1KI 12",
+      "verse_label": "23",
+      "locator": {
+        "book": "1KI",
+        "chapter": 12,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 12,
+          "verse": 23
+        }
+      ],
+      "en": "“Speak to Rehoboam the son of Solomon, king of Judah, and to all the house of Judah and Benjamin, and to the rest of the people, saying,",
+      "ko": "솔로몬의 아들 유다 왕 르호보암과 유다와 베냐민 온 족속과 또 그 남은 백성에게 고하여 이르기를",
+      "source_text_hash": "1dd36c7878e61afea25c99ccc49b52f3aefabeff20eb5f942febbf8947ce685f",
+      "translation_text_hash": "3bae740bfc5eac4bf4b0112900ba707b7017c08b89972163c7039f593ea6a8df",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "솔로몬의 아들 유다 왕 르호보암과 유다와 베냐민 온 족속과 또 그 남은 백성에게 고하여 이르기를"
+      ],
+      "raw_text_hashes": [
+        "3bae740bfc5eac4bf4b0112900ba707b7017c08b89972163c7039f593ea6a8df"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:12:24",
+      "sequence": 9176,
+      "chapter_label": "1KI 12",
+      "verse_label": "24",
+      "locator": {
+        "book": "1KI",
+        "chapter": 12,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 12,
+          "verse": 24
+        }
+      ],
+      "en": "‘The LORD says, “You shall not go up or fight against your brothers, the children of Israel. Everyone return to his house; for this thing is from me.”’” So they listened to the LORD’s word, and returned and went their way, according to the LORD’s word.",
+      "ko": "여호와의 말씀이 너희는 올라가지 말라 너희 형제 이스라엘 자손과 싸우지 말고 각기 집으로 돌아가라 이 일이 내게로 말미암아 난 것이라 하셨다 하라 하신지라 저희가 여호와의 말씀을 듣고 그 말씀을 좇아 돌아갔더라",
+      "source_text_hash": "26d79402b4dc785f741a119dccf6111d3f2462a8c6e7982805533e0eb0792a01",
+      "translation_text_hash": "f1a407d29cbdea361946d25af4e1a57e8542963bb9f49a653ce629fc71933576",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 말씀이 너희는 올라가지 말라 너희 형제 이스라엘 자손과 싸우지 말고 각기 집으로 돌아가라 이 일이 내게로 말미암아 난 것이라 하셨다 하라 하신지라 저희가 여호와의 말씀을 듣고 그 말씀을 좇아 돌아갔더라"
+      ],
+      "raw_text_hashes": [
+        "f1a407d29cbdea361946d25af4e1a57e8542963bb9f49a653ce629fc71933576"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:12:25",
+      "sequence": 9177,
+      "chapter_label": "1KI 12",
+      "verse_label": "25",
+      "locator": {
+        "book": "1KI",
+        "chapter": 12,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 12,
+          "verse": 25
+        }
+      ],
+      "en": "Then Jeroboam built Shechem in the hill country of Ephraim, and lived in it; and he went out from there and built Penuel.",
+      "ko": "여로보암이 에브라임 산지에 세겜을 건축하고 거기서 살며 또 거기서 나가서 부느엘을 건축하고",
+      "source_text_hash": "f2caaf277577d53cd17868e95c8e30005309cfb940773ec612bee24dad8c3264",
+      "translation_text_hash": "49c83733579550c80e478139bed3976632caa57e73da7ea47888a141e38b538d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여로보암이 에브라임 산지에 세겜을 건축하고 거기서 살며 또 거기서 나가서 부느엘을 건축하고"
+      ],
+      "raw_text_hashes": [
+        "49c83733579550c80e478139bed3976632caa57e73da7ea47888a141e38b538d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:12:26",
+      "sequence": 9178,
+      "chapter_label": "1KI 12",
+      "verse_label": "26",
+      "locator": {
+        "book": "1KI",
+        "chapter": 12,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 12,
+          "verse": 26
+        }
+      ],
+      "en": "Jeroboam said in his heart, “Now the kingdom will return to David’s house.",
+      "ko": "그 마음에 스스로 이르기를 나라가 이제 다윗의 집으로 돌아가리로다",
+      "source_text_hash": "1a82cb6fec4c5d6750f21439f0e0b7f9034599974c2b3b470ad774332e626820",
+      "translation_text_hash": "b87aef9cb9c12f9a63b038bea973a61cd3b43789d59f5bfb13bbdbf8fe8a960f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 마음에 스스로 이르기를 나라가 이제 다윗의 집으로 돌아가리로다"
+      ],
+      "raw_text_hashes": [
+        "b87aef9cb9c12f9a63b038bea973a61cd3b43789d59f5bfb13bbdbf8fe8a960f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:12:27",
+      "sequence": 9179,
+      "chapter_label": "1KI 12",
+      "verse_label": "27",
+      "locator": {
+        "book": "1KI",
+        "chapter": 12,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 12,
+          "verse": 27
+        }
+      ],
+      "en": "If this people goes up to offer sacrifices in the LORD’s house at Jerusalem, then the heart of this people will turn again to their lord, even to Rehoboam king of Judah; and they will kill me, and return to Rehoboam king of Judah.”",
+      "ko": "만일 이 백성이 예루살렘에 있는 여호와의 전에 제사를 드리고자 하여 올라가면 이 백성의 마음이 유다 왕 된 그 주 르호보암에게로 돌아가서 나를 죽이고 유다 왕 르호보암에게로 돌아가리로다 하고",
+      "source_text_hash": "8cf5b804a9c8f06ab482ed4f66b5a039c19910a8bc2885267236bb014f6e16cd",
+      "translation_text_hash": "1e50bc596aa5e96fce41b33588dc38cfe23c79fa421f77b0fe6b505176fced36",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 이 백성이 예루살렘에 있는 여호와의 전에 제사를 드리고자 하여 올라가면 이 백성의 마음이 유다 왕 된 그 주 르호보암에게로 돌아가서 나를 죽이고 유다 왕 르호보암에게로 돌아가리로다 하고"
+      ],
+      "raw_text_hashes": [
+        "1e50bc596aa5e96fce41b33588dc38cfe23c79fa421f77b0fe6b505176fced36"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:12:28",
+      "sequence": 9180,
+      "chapter_label": "1KI 12",
+      "verse_label": "28",
+      "locator": {
+        "book": "1KI",
+        "chapter": 12,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 12,
+          "verse": 28
+        }
+      ],
+      "en": "So the king took counsel, and made two calves of gold; and he said to them, “It is too much for you to go up to Jerusalem. Look and behold your gods, Israel, which brought you up out of the land of Egypt!”",
+      "ko": "이에 계획하고 두 금송아지를 만들고 무리에게 말하기를 너희가 다시는 예루살렘에 올라갈 것이 없도다 이스라엘아 이는 너희를 애굽 땅에서 인도하여 올린 너희 신이라 하고",
+      "source_text_hash": "f8de29eee91eafda8261d44dbab343a509ca640e8b57157ff1edc412908880da",
+      "translation_text_hash": "c5cc813d3aa55bf43437e13b3cbc890a19691fb45df5cbe3b59294626e1d8a88",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 계획하고 두 금송아지를 만들고 무리에게 말하기를 너희가 다시는 예루살렘에 올라갈 것이 없도다 이스라엘아 이는 너희를 애굽 땅에서 인도하여 올린 너희 신이라 하고"
+      ],
+      "raw_text_hashes": [
+        "c5cc813d3aa55bf43437e13b3cbc890a19691fb45df5cbe3b59294626e1d8a88"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:12:29",
+      "sequence": 9181,
+      "chapter_label": "1KI 12",
+      "verse_label": "29",
+      "locator": {
+        "book": "1KI",
+        "chapter": 12,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 12,
+          "verse": 29
+        }
+      ],
+      "en": "He set the one in Bethel, and the other he put in Dan.",
+      "ko": "하나는 벧엘에 두고 하나는 단에 둔지라",
+      "source_text_hash": "f28f0a795224a27e3fe0e854bb1185a1ac6a1239ff259f04dfe4c16a697d64ae",
+      "translation_text_hash": "4f939f269a86406c46c97a297207324ac5c7b2b67a1e989821c3aa60e3bd85fb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나는 벧엘에 두고 하나는 단에 둔지라"
+      ],
+      "raw_text_hashes": [
+        "4f939f269a86406c46c97a297207324ac5c7b2b67a1e989821c3aa60e3bd85fb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:12:30",
+      "sequence": 9182,
+      "chapter_label": "1KI 12",
+      "verse_label": "30",
+      "locator": {
+        "book": "1KI",
+        "chapter": 12,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 12,
+          "verse": 30
+        }
+      ],
+      "en": "This thing became a sin, for the people went even as far as Dan to worship before the one there.",
+      "ko": "이 일이 죄가 되었으니 이는 백성들이 단까지 가서 그 하나에게 숭배함이더라",
+      "source_text_hash": "299ace2e71fe2dcaeef7a10b01eb3987d0339d961a63669a9fddaa45ba225cf2",
+      "translation_text_hash": "de89d62ecad67efb18fea3af392c0d766580d0bd7f46606035e34d080525b7ce",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 일이 죄가 되었으니 이는 백성들이 단까지 가서 그 하나에게 숭배함이더라"
+      ],
+      "raw_text_hashes": [
+        "de89d62ecad67efb18fea3af392c0d766580d0bd7f46606035e34d080525b7ce"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:12:31",
+      "sequence": 9183,
+      "chapter_label": "1KI 12",
+      "verse_label": "31",
+      "locator": {
+        "book": "1KI",
+        "chapter": 12,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 12,
+          "verse": 31
+        }
+      ],
+      "en": "He made houses of high places, and made priests from among all the people, who were not of the sons of Levi.",
+      "ko": "저가 또 산당들을 짓고 레위 자손 아닌 보통 백성으로 제사장을 삼고",
+      "source_text_hash": "ccb68f2aa9da9395d6de100e41c48f3ffb3f61f57d0934bd91b6dce161516bce",
+      "translation_text_hash": "428ed9f7d2bd1ba61592ed218834554b7185fe1a81d9a319d91c51a17f24742e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 또 산당들을 짓고 레위 자손 아닌 보통 백성으로 제사장을 삼고"
+      ],
+      "raw_text_hashes": [
+        "428ed9f7d2bd1ba61592ed218834554b7185fe1a81d9a319d91c51a17f24742e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:12:32",
+      "sequence": 9184,
+      "chapter_label": "1KI 12",
+      "verse_label": "32",
+      "locator": {
+        "book": "1KI",
+        "chapter": 12,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 12,
+          "verse": 32
+        }
+      ],
+      "en": "Jeroboam ordained a feast in the eighth month, on the fifteenth day of the month, like the feast that is in Judah, and he went up to the altar. He did so in Bethel, sacrificing to the calves that he had made, and he placed in Bethel the priests of the high places that he had made.",
+      "ko": "팔월 곧 그 달 십 오일로 절기를 정하여 유다의 절기와 비슷하게 하고 단에 올라가되 벧엘에서 그와 같이 행하여 그 만든 송아지에게 제사를 드렸으며 그 지은 산당의 제사장은 벧엘에서 세웠더라",
+      "source_text_hash": "96fbe5e9258c7e4c787890d08f69949658b0bd6f0ce299c8323fe5a884371746",
+      "translation_text_hash": "d1a1e677ae2183b9fb3718d15e27bb5ea3ebbc6ef1c8e57d19c794a16acbde04",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "팔월 곧 그 달 십 오일로 절기를 정하여 유다의 절기와 비슷하게 하고 단에 올라가되 벧엘에서 그와 같이 행하여 그 만든 송아지에게 제사를 드렸으며 그 지은 산당의 제사장은 벧엘에서 세웠더라"
+      ],
+      "raw_text_hashes": [
+        "d1a1e677ae2183b9fb3718d15e27bb5ea3ebbc6ef1c8e57d19c794a16acbde04"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:12:33",
+      "sequence": 9185,
+      "chapter_label": "1KI 12",
+      "verse_label": "33",
+      "locator": {
+        "book": "1KI",
+        "chapter": 12,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 12,
+          "verse": 33
+        }
+      ],
+      "en": "He went up to the altar which he had made in Bethel on the fifteenth day in the eighth month, even in the month which he had devised of his own heart; and he ordained a feast for the children of Israel, and went up to the altar to burn incense.",
+      "ko": "저가 자기 마음대로 정한 달 곧 팔월 십오일로 이스라엘 자손을 위하여 절기로 정하고 벧엘에 쌓은 단에 올라가서 분향하였더라",
+      "source_text_hash": "959dfa902f16a270126116c7537df6a974b073cb0958a0de7af100f9cdaf100a",
+      "translation_text_hash": "0ef07934a81fd8f1110bf8a79cc0b67f5f3e99f63a55b083129cdd0b0d07064b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 자기 마음대로 정한 달 곧 팔월 십오일로 이스라엘 자손을 위하여 절기로 정하고 벧엘에 쌓은 단에 올라가서 분향하였더라"
+      ],
+      "raw_text_hashes": [
+        "0ef07934a81fd8f1110bf8a79cc0b67f5f3e99f63a55b083129cdd0b0d07064b"
+      ]
+    }
+  ]
+}

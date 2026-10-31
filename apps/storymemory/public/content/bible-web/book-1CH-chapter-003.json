@@ -1,0 +1,781 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1CH:chapter:003",
+  "unit_ordinal": 341,
+  "unit_label": "1CH 3",
+  "book_code": "1CH",
+  "chapter_number": 3,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1CH:3:1",
+      "sequence": 10363,
+      "chapter_label": "1CH 3",
+      "verse_label": "1",
+      "locator": {
+        "book": "1CH",
+        "chapter": 3,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 3,
+          "verse": 1
+        }
+      ],
+      "en": "Now these were the sons of David, who were born to him in Hebron: the firstborn, Amnon, of Ahinoam the Jezreelitess; the second, Daniel, of Abigail the Carmelitess;",
+      "ko": "다윗이 헤브론에서 낳은 아들들이 이러하니 맏아들은 압논이라 이스르엘 여인 아히노암의 소생이요 둘째는 다니엘이라 갈멜 여인 아비가일의 소생이요",
+      "source_text_hash": "7394e119f2b189cfa1909eaa74d8c61f40cd529ad3535c9ec4513757697a09d7",
+      "translation_text_hash": "0b5432dec4df5ba58569a3e2dbaaf72ccd50181110589dee948c96e5cda31d4f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 헤브론에서 낳은 아들들이 이러하니 맏아들은 압논이라 이스르엘 여인 아히노암의 소생이요 둘째는 다니엘이라 갈멜 여인 아비가일의 소생이요"
+      ],
+      "raw_text_hashes": [
+        "0b5432dec4df5ba58569a3e2dbaaf72ccd50181110589dee948c96e5cda31d4f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:3:2",
+      "sequence": 10364,
+      "chapter_label": "1CH 3",
+      "verse_label": "2",
+      "locator": {
+        "book": "1CH",
+        "chapter": 3,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 3,
+          "verse": 2
+        }
+      ],
+      "en": "the third, Absalom the son of Maacah the daughter of Talmai king of Geshur; the fourth, Adonijah the son of Haggith;",
+      "ko": "세째는 압살롬이라 그술 왕 달매의 딸 마아가의 아들이요 네째는 아도니야라 학깃의 아들이요",
+      "source_text_hash": "5a8c85a1afc9aa1784efc54c8a913cba63b37e64d2abdcf124594b00e7cd8ca8",
+      "translation_text_hash": "05180778231895c81caf48ed9964cf5555c6f462954b1475b7ba1625ed8efcf9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "세째는 압살롬이라 그술 왕 달매의 딸 마아가의 아들이요 네째는 아도니야라 학깃의 아들이요"
+      ],
+      "raw_text_hashes": [
+        "05180778231895c81caf48ed9964cf5555c6f462954b1475b7ba1625ed8efcf9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:3:3",
+      "sequence": 10365,
+      "chapter_label": "1CH 3",
+      "verse_label": "3",
+      "locator": {
+        "book": "1CH",
+        "chapter": 3,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 3,
+          "verse": 3
+        }
+      ],
+      "en": "the fifth, Shephatiah of Abital; the sixth, Ithream by Eglah his wife:",
+      "ko": "다섯째는 스바댜라 아비달의 소생이요 여섯째는 이드르암이라 다윗의 아내 에글라의 소생이니",
+      "source_text_hash": "0a95bfeb6567e9521d7d57ea3d046de3b8aa2ac931264dc24cbfca94d35e8da4",
+      "translation_text_hash": "1e1c0753a8e5d1a3ea4946b691488270f0d69dfaa5f12f89365fddf818fb19ff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다섯째는 스바댜라 아비달의 소생이요 여섯째는 이드르암이라 다윗의 아내 에글라의 소생이니"
+      ],
+      "raw_text_hashes": [
+        "1e1c0753a8e5d1a3ea4946b691488270f0d69dfaa5f12f89365fddf818fb19ff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:3:4",
+      "sequence": 10366,
+      "chapter_label": "1CH 3",
+      "verse_label": "4",
+      "locator": {
+        "book": "1CH",
+        "chapter": 3,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 3,
+          "verse": 4
+        }
+      ],
+      "en": "six were born to him in Hebron; and he reigned there seven years and six months. He reigned thirty-three years in Jerusalem;",
+      "ko": "이 여섯은 다윗이 헤브론에서 낳은 자라 다윗이 거기서 칠년 육개월을 치리하였고 또 예루살렘에서 삼십 삼년을 치리하였으며",
+      "source_text_hash": "da75d7ab35a4680f8cde3e80b584c9d9d1b7cbc0a2e365f7e7e74f1fdb61c045",
+      "translation_text_hash": "550a7d9f578ac2ab978be6f10e1e8c086c78e4af85ae1555d6c3602c8b8d2f50",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 여섯은 다윗이 헤브론에서 낳은 자라 다윗이 거기서 칠년 육개월을 치리하였고 또 예루살렘에서 삼십 삼년을 치리하였으며"
+      ],
+      "raw_text_hashes": [
+        "550a7d9f578ac2ab978be6f10e1e8c086c78e4af85ae1555d6c3602c8b8d2f50"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:3:5",
+      "sequence": 10367,
+      "chapter_label": "1CH 3",
+      "verse_label": "5",
+      "locator": {
+        "book": "1CH",
+        "chapter": 3,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 3,
+          "verse": 5
+        }
+      ],
+      "en": "and these were born to him in Jerusalem: Shimea, Shobab, Nathan, and Solomon, four, by Bathshua the daughter of Ammiel;",
+      "ko": "예루살렘에서 낳은 아들들은 이러하니 시므아와 소밥과 나단과 솔로몬 네 사람은 다 암미엘의 딸 밧수아의 소생이요",
+      "source_text_hash": "b12ae580ff0ed3756a3370c2e4c75697eefa4f092201b83e7de1c528cad2a5de",
+      "translation_text_hash": "2dd6bae8d39e5688415b1a23e5cdcc76cddac9da39bddb0711d40857e74c0b0b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예루살렘에서 낳은 아들들은 이러하니 시므아와 소밥과 나단과 솔로몬 네 사람은 다 암미엘의 딸 밧수아의 소생이요"
+      ],
+      "raw_text_hashes": [
+        "2dd6bae8d39e5688415b1a23e5cdcc76cddac9da39bddb0711d40857e74c0b0b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:3:6",
+      "sequence": 10368,
+      "chapter_label": "1CH 3",
+      "verse_label": "6",
+      "locator": {
+        "book": "1CH",
+        "chapter": 3,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 3,
+          "verse": 6
+        }
+      ],
+      "en": "and Ibhar, Elishama, Eliphelet,",
+      "ko": "또 입할과 엘리사마와 엘리벨렛과",
+      "source_text_hash": "fd93b2d312c9e69af3341a353d03bbb926b8cb8d187796428845b96713e6f4eb",
+      "translation_text_hash": "28ca2a64d3f57eb1fa739fb2aa1e1d904fe21da2734185502bd7788485eb9983",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 입할과 엘리사마와 엘리벨렛과"
+      ],
+      "raw_text_hashes": [
+        "28ca2a64d3f57eb1fa739fb2aa1e1d904fe21da2734185502bd7788485eb9983"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:3:7",
+      "sequence": 10369,
+      "chapter_label": "1CH 3",
+      "verse_label": "7",
+      "locator": {
+        "book": "1CH",
+        "chapter": 3,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 3,
+          "verse": 7
+        }
+      ],
+      "en": "Nogah, Nepheg, Japhia,",
+      "ko": "노가와 네벡과 야비야와",
+      "source_text_hash": "e9ac398dcecfe4387768cc34ab8967720990c850ac896eeabb04b24b9f397560",
+      "translation_text_hash": "d02c752ccbff90fc11abb021eff433b16cec578d175d8424bc41895dbc0b68b4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "노가와 네벡과 야비야와"
+      ],
+      "raw_text_hashes": [
+        "d02c752ccbff90fc11abb021eff433b16cec578d175d8424bc41895dbc0b68b4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:3:8",
+      "sequence": 10370,
+      "chapter_label": "1CH 3",
+      "verse_label": "8",
+      "locator": {
+        "book": "1CH",
+        "chapter": 3,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 3,
+          "verse": 8
+        }
+      ],
+      "en": "Elishama, Eliada, and Eliphelet, nine.",
+      "ko": "엘리사마와 엘랴다와 엘리벨렛 아홉 사람은",
+      "source_text_hash": "a1b9e0371640a4409db68f9adc5b2b80b65faf81eed53833fb5691ba5c5cf861",
+      "translation_text_hash": "cefa968961f23a8391e98fe3a3a6d4f622346f8c82cb929fceac62f21cb47cd6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "엘리사마와 엘랴다와 엘리벨렛 아홉 사람은"
+      ],
+      "raw_text_hashes": [
+        "cefa968961f23a8391e98fe3a3a6d4f622346f8c82cb929fceac62f21cb47cd6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:3:9",
+      "sequence": 10371,
+      "chapter_label": "1CH 3",
+      "verse_label": "9",
+      "locator": {
+        "book": "1CH",
+        "chapter": 3,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 3,
+          "verse": 9
+        }
+      ],
+      "en": "All these were the sons of David, in addition to the sons of the concubines; and Tamar was their sister.",
+      "ko": "다 다윗의 아들이요 저희의 누이는 다말이며 이 외에 또 첩의 아들이 있었더라",
+      "source_text_hash": "5d34f84ea4f4853120322234a51368dcf055e60cbed3b2fc8f487370ef906d8a",
+      "translation_text_hash": "2f7186066ecd6c6b49eb7774b2571a0144d4e778e3acb3ed9956be38fe5fb176",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다 다윗의 아들이요 저희의 누이는 다말이며 이 외에 또 첩의 아들이 있었더라"
+      ],
+      "raw_text_hashes": [
+        "2f7186066ecd6c6b49eb7774b2571a0144d4e778e3acb3ed9956be38fe5fb176"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:3:10",
+      "sequence": 10372,
+      "chapter_label": "1CH 3",
+      "verse_label": "10",
+      "locator": {
+        "book": "1CH",
+        "chapter": 3,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 3,
+          "verse": 10
+        }
+      ],
+      "en": "Solomon’s son was Rehoboam, Abijah his son, Asa his son, Jehoshaphat his son,",
+      "ko": "솔로몬의 아들은 르호보암이요 그 아들은 아비야요 그 아들은 아사요 그 아들은 여호사밧이요",
+      "source_text_hash": "6640196de5837fc98bb4c30844c1b0d252d27ea146169889fd6849b05abb5e01",
+      "translation_text_hash": "73551d574c237f90c45630a342104cac347d5eaf87b504e927fa43e1cd88036e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "솔로몬의 아들은 르호보암이요 그 아들은 아비야요 그 아들은 아사요 그 아들은 여호사밧이요"
+      ],
+      "raw_text_hashes": [
+        "73551d574c237f90c45630a342104cac347d5eaf87b504e927fa43e1cd88036e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:3:11",
+      "sequence": 10373,
+      "chapter_label": "1CH 3",
+      "verse_label": "11",
+      "locator": {
+        "book": "1CH",
+        "chapter": 3,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 3,
+          "verse": 11
+        }
+      ],
+      "en": "Joram his son, Ahaziah his son, Joash his son,",
+      "ko": "그 아들은 요람이요 그 아들은 아하시야요 그 아들은 요아스요",
+      "source_text_hash": "8efa73318b87e7e11fb2c88d530163588975d0721f49e9da03da8b00c61989d2",
+      "translation_text_hash": "5e07f0eb86af5218b2ded1303fb662a5e8e37e06e2dda6e7a97150a8c7cf9cd6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 아들은 요람이요 그 아들은 아하시야요 그 아들은 요아스요"
+      ],
+      "raw_text_hashes": [
+        "5e07f0eb86af5218b2ded1303fb662a5e8e37e06e2dda6e7a97150a8c7cf9cd6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:3:12",
+      "sequence": 10374,
+      "chapter_label": "1CH 3",
+      "verse_label": "12",
+      "locator": {
+        "book": "1CH",
+        "chapter": 3,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 3,
+          "verse": 12
+        }
+      ],
+      "en": "Amaziah his son, Azariah his son, Jotham his son,",
+      "ko": "그 아들은 아마샤요 그 아들은 아사랴요 그 아들은 요담이요",
+      "source_text_hash": "519c054d6426a3091a4dfcc37f33331ee27594f888afd9da692dcd02ee23a61e",
+      "translation_text_hash": "548b4a039a1a4c27c1c8b5d7cec24d07b53dd6cc07b6ecfa11d8d69b2c695f49",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 아들은 아마샤요 그 아들은 아사랴요 그 아들은 요담이요"
+      ],
+      "raw_text_hashes": [
+        "548b4a039a1a4c27c1c8b5d7cec24d07b53dd6cc07b6ecfa11d8d69b2c695f49"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:3:13",
+      "sequence": 10375,
+      "chapter_label": "1CH 3",
+      "verse_label": "13",
+      "locator": {
+        "book": "1CH",
+        "chapter": 3,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 3,
+          "verse": 13
+        }
+      ],
+      "en": "Ahaz his son, Hezekiah his son, Manasseh his son,",
+      "ko": "그 아들은 아하스요 그 아들은 히스기야요 그 아들은 므낫세요",
+      "source_text_hash": "13afb7f112b30f9fb33da4fc7792c8c90643904dce1bc23fe378081da8b9d9a7",
+      "translation_text_hash": "975b6bf9423a2d43d13077605124f2171c957a12caa1f02b847545eaeee0e5ca",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 아들은 아하스요 그 아들은 히스기야요 그 아들은 므낫세요"
+      ],
+      "raw_text_hashes": [
+        "975b6bf9423a2d43d13077605124f2171c957a12caa1f02b847545eaeee0e5ca"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:3:14",
+      "sequence": 10376,
+      "chapter_label": "1CH 3",
+      "verse_label": "14",
+      "locator": {
+        "book": "1CH",
+        "chapter": 3,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 3,
+          "verse": 14
+        }
+      ],
+      "en": "Amon his son, and Josiah his son.",
+      "ko": "그 아들은 아몬이요 그 아들은 요시야며",
+      "source_text_hash": "20db5d63efe22c2754cd3cdc1a580bfe10bed3e17c84cd0d1a361bd06d5a83f4",
+      "translation_text_hash": "e7d8c06f12b1043c159ab48818ebb63c4047bd0c7e8e34fde36d1f0fcb0847d7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 아들은 아몬이요 그 아들은 요시야며"
+      ],
+      "raw_text_hashes": [
+        "e7d8c06f12b1043c159ab48818ebb63c4047bd0c7e8e34fde36d1f0fcb0847d7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:3:15",
+      "sequence": 10377,
+      "chapter_label": "1CH 3",
+      "verse_label": "15",
+      "locator": {
+        "book": "1CH",
+        "chapter": 3,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 3,
+          "verse": 15
+        }
+      ],
+      "en": "The sons of Josiah: the firstborn Johanan, the second Jehoiakim, the third Zedekiah, and the fourth Shallum.",
+      "ko": "요시야의 아들들은 맏아들 요하난과 둘째 여호야김과 세째 시드기야와 네째 살룸이요",
+      "source_text_hash": "2dd27675caab2a0b49eb37c18507fc83b6a3abb3d0016644cefb11590ac8b0a3",
+      "translation_text_hash": "ae8c2a971b6d8586039c4a4a507b646e553a127a2d4c59c732030524e12cc592",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요시야의 아들들은 맏아들 요하난과 둘째 여호야김과 세째 시드기야와 네째 살룸이요"
+      ],
+      "raw_text_hashes": [
+        "ae8c2a971b6d8586039c4a4a507b646e553a127a2d4c59c732030524e12cc592"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:3:16",
+      "sequence": 10378,
+      "chapter_label": "1CH 3",
+      "verse_label": "16",
+      "locator": {
+        "book": "1CH",
+        "chapter": 3,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 3,
+          "verse": 16
+        }
+      ],
+      "en": "The sons of Jehoiakim: Jeconiah his son, and Zedekiah his son.",
+      "ko": "여호야김의 아들들은 그 아들 여고냐, 그 아들 시드기야요",
+      "source_text_hash": "2303baf017e825ecccaafc69d7f8de59c420611acd69fb1a87e60e29796ad5d3",
+      "translation_text_hash": "b6e7b7ddb8dfd6ffb8252c9b45c71b72eadc9e22c2f0915aa6ba7e70e832acaf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호야김의 아들들은 그 아들 여고냐, 그 아들 시드기야요"
+      ],
+      "raw_text_hashes": [
+        "b6e7b7ddb8dfd6ffb8252c9b45c71b72eadc9e22c2f0915aa6ba7e70e832acaf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:3:17",
+      "sequence": 10379,
+      "chapter_label": "1CH 3",
+      "verse_label": "17",
+      "locator": {
+        "book": "1CH",
+        "chapter": 3,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 3,
+          "verse": 17
+        }
+      ],
+      "en": "The sons of Jeconiah, the captive: Shealtiel his son,",
+      "ko": "사로잡혀 간 여고냐의 아들들은 그 아들 스알디엘과",
+      "source_text_hash": "1ffd8a3447a4deb2bd78c84a734f85591b414d36ee61778f59da61e6d4087067",
+      "translation_text_hash": "a03e1f866e4a2d85004337259219c6f23e58431e480d5b660989ce61e160d9e3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사로잡혀 간 여고냐의 아들들은 그 아들 스알디엘과"
+      ],
+      "raw_text_hashes": [
+        "a03e1f866e4a2d85004337259219c6f23e58431e480d5b660989ce61e160d9e3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:3:18",
+      "sequence": 10380,
+      "chapter_label": "1CH 3",
+      "verse_label": "18",
+      "locator": {
+        "book": "1CH",
+        "chapter": 3,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 3,
+          "verse": 18
+        }
+      ],
+      "en": "Malchiram, Pedaiah, Shenazzar, Jekamiah, Hoshama, and Nedabiah.",
+      "ko": "말기람과 브다야와 세낫살과 여가먀와 호사마와 느다뱌요",
+      "source_text_hash": "201288d0d7ef297e1f6f7d56a8d09efbaee712a20cc297618404ac260011d9df",
+      "translation_text_hash": "dedf797317f7b492b1fb725e59bfda30f64977c3bd601d261a79f7bd963cd72e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "말기람과 브다야와 세낫살과 여가먀와 호사마와 느다뱌요"
+      ],
+      "raw_text_hashes": [
+        "dedf797317f7b492b1fb725e59bfda30f64977c3bd601d261a79f7bd963cd72e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:3:19",
+      "sequence": 10381,
+      "chapter_label": "1CH 3",
+      "verse_label": "19",
+      "locator": {
+        "book": "1CH",
+        "chapter": 3,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 3,
+          "verse": 19
+        }
+      ],
+      "en": "The sons of Pedaiah: Zerubbabel and Shimei. The sons of Zerubbabel: Meshullam and Hananiah; and Shelomith was their sister;",
+      "ko": "브다야의 아들들은 스룹바벨과 시므이요 스룹바벨의 아들은 므술람과 하나냐와 그 매제 슬로밋과",
+      "source_text_hash": "96ae14e9428301af46ad93aec1d4a652350bf3fdba018bc008ba57c282a40cee",
+      "translation_text_hash": "4549ba1ee9fd05f782431fa67b053c4a76ccc814fc293662d3b7fcb6439eee93",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "브다야의 아들들은 스룹바벨과 시므이요 스룹바벨의 아들은 므술람과 하나냐와 그 매제 슬로밋과"
+      ],
+      "raw_text_hashes": [
+        "4549ba1ee9fd05f782431fa67b053c4a76ccc814fc293662d3b7fcb6439eee93"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:3:20",
+      "sequence": 10382,
+      "chapter_label": "1CH 3",
+      "verse_label": "20",
+      "locator": {
+        "book": "1CH",
+        "chapter": 3,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 3,
+          "verse": 20
+        }
+      ],
+      "en": "and Hashubah, Ohel, Berechiah, Hasadiah, and Jushab Hesed, five.",
+      "ko": "또 하수바와 오헬과 베레갸와 하사댜와 유삽헤셋 다섯 사람이요",
+      "source_text_hash": "26299d07e043567dfa667d1fc87a4052c6d81e4490c0b2a733ef9b55abb4bf9d",
+      "translation_text_hash": "74ee76bd317799fe63494dcd322cc8daf75e1ecb960b001ac26f8e59e452f934",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 하수바와 오헬과 베레갸와 하사댜와 유삽헤셋 다섯 사람이요"
+      ],
+      "raw_text_hashes": [
+        "74ee76bd317799fe63494dcd322cc8daf75e1ecb960b001ac26f8e59e452f934"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:3:21",
+      "sequence": 10383,
+      "chapter_label": "1CH 3",
+      "verse_label": "21",
+      "locator": {
+        "book": "1CH",
+        "chapter": 3,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 3,
+          "verse": 21
+        }
+      ],
+      "en": "The sons of Hananiah: Pelatiah and Jeshaiah; the sons of Rephaiah, the sons of Arnan, the sons of Obadiah, the sons of Shecaniah.",
+      "ko": "하나냐의 아들은 블라댜와 여사야요 또 르바야의 아들 아르난의 아들들, 오바댜의 아들들, 스가냐의 아들들이니",
+      "source_text_hash": "5b99870c36487c21528baa5b78916e4b1926dc7ef922fa1b409da41a0e30dfa2",
+      "translation_text_hash": "f38c02799a5c2163b64c4c56d56981ae0014322650e32b6450e336a594a40f67",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나냐의 아들은 블라댜와 여사야요 또 르바야의 아들 아르난의 아들들, 오바댜의 아들들, 스가냐의 아들들이니"
+      ],
+      "raw_text_hashes": [
+        "f38c02799a5c2163b64c4c56d56981ae0014322650e32b6450e336a594a40f67"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:3:22",
+      "sequence": 10384,
+      "chapter_label": "1CH 3",
+      "verse_label": "22",
+      "locator": {
+        "book": "1CH",
+        "chapter": 3,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 3,
+          "verse": 22
+        }
+      ],
+      "en": "The son of Shecaniah: Shemaiah. The sons of Shemaiah: Hattush, Igal, Bariah, Neariah, and Shaphat, six.",
+      "ko": "스가냐의 아들은 스마야요 스마야의 아들들은 핫두스와 이갈과 바리야와 느아랴와 사밧 여섯 사람이요",
+      "source_text_hash": "9a4fd25b4c67cd60b06b26a0c967f42d69fe12e9c4fefff69f9915c7fdce4634",
+      "translation_text_hash": "ffa9e82f2bd1344afa77778bc74fa6cfdf13bf2d96b35996915855f3b8a53b19",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "스가냐의 아들은 스마야요 스마야의 아들들은 핫두스와 이갈과 바리야와 느아랴와 사밧 여섯 사람이요"
+      ],
+      "raw_text_hashes": [
+        "ffa9e82f2bd1344afa77778bc74fa6cfdf13bf2d96b35996915855f3b8a53b19"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:3:23",
+      "sequence": 10385,
+      "chapter_label": "1CH 3",
+      "verse_label": "23",
+      "locator": {
+        "book": "1CH",
+        "chapter": 3,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 3,
+          "verse": 23
+        }
+      ],
+      "en": "The sons of Neariah: Elioenai, Hizkiah, and Azrikam, three.",
+      "ko": "느아랴의 아들은 에료에내와 히스기야와 아스리감 세 사람이요",
+      "source_text_hash": "e0d97d1927f90f9102e932eb181dc2b41443445e0f7cac2fc36b58ac918bee92",
+      "translation_text_hash": "1caa7fd9eb0a7ba1907d2edeb7c4222a7cf12649ad97a2380c58d835fd8b20b7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "느아랴의 아들은 에료에내와 히스기야와 아스리감 세 사람이요"
+      ],
+      "raw_text_hashes": [
+        "1caa7fd9eb0a7ba1907d2edeb7c4222a7cf12649ad97a2380c58d835fd8b20b7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:3:24",
+      "sequence": 10386,
+      "chapter_label": "1CH 3",
+      "verse_label": "24",
+      "locator": {
+        "book": "1CH",
+        "chapter": 3,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 3,
+          "verse": 24
+        }
+      ],
+      "en": "The sons of Elioenai: Hodaviah, Eliashib, Pelaiah, Akkub, Johanan, Delaiah, and Anani, seven.",
+      "ko": "에료에내의 아들들은 호다위야와 엘리아십과 블라야와 악굽과 요하난과 들라야와 아나니 일곱 사람이더라",
+      "source_text_hash": "1bb6bede4d134defc25c513ba8fd29f0f8720a9f4e4e3869751622db83f1414d",
+      "translation_text_hash": "ebf5fa3b4fb5926e748742449f1a8be195fe266e9a45ca6543753b0496eb1abd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에료에내의 아들들은 호다위야와 엘리아십과 블라야와 악굽과 요하난과 들라야와 아나니 일곱 사람이더라"
+      ],
+      "raw_text_hashes": [
+        "ebf5fa3b4fb5926e748742449f1a8be195fe266e9a45ca6543753b0496eb1abd"
+      ]
+    }
+  ]
+}

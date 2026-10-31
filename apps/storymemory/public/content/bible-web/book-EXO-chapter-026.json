@@ -1,0 +1,1197 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EXO:chapter:026",
+  "unit_ordinal": 76,
+  "unit_label": "EXO 26",
+  "book_code": "EXO",
+  "chapter_number": 26,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EXO:26:1",
+      "sequence": 2237,
+      "chapter_label": "EXO 26",
+      "verse_label": "1",
+      "locator": {
+        "book": "EXO",
+        "chapter": 26,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 26,
+          "verse": 1
+        }
+      ],
+      "en": "“Moreover you shall make the tabernacle with ten curtains of fine twined linen, and blue, and purple, and scarlet, with cherubim. You shall make them with the work of a skillful workman.",
+      "ko": "너는 성막을 만들되 앙장 열 폭을 가늘게 꼰 베실과 청색 자색 홍색실로 그룹을 공교히 수 놓아 만들찌니",
+      "source_text_hash": "5d98262a3720440a301877ec8ab0f5987993dd36f92a2fab83001deda9c6f1b4",
+      "translation_text_hash": "03bc4cd859c23b4cdc2a032abfb8a24c856d9a8d49a696902d82d89092ff6db0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 성막을 만들되 앙장 열 폭을 가늘게 꼰 베실과 청색 자색 홍색실로 그룹을 공교히 수 놓아 만들찌니"
+      ],
+      "raw_text_hashes": [
+        "03bc4cd859c23b4cdc2a032abfb8a24c856d9a8d49a696902d82d89092ff6db0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:26:2",
+      "sequence": 2238,
+      "chapter_label": "EXO 26",
+      "verse_label": "2",
+      "locator": {
+        "book": "EXO",
+        "chapter": 26,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 26,
+          "verse": 2
+        }
+      ],
+      "en": "The length of each curtain shall be twenty-eight cubits, and the width of each curtain four cubits: all the curtains shall have one measure.",
+      "ko": "매 폭의 장은 이십 팔 규빗, 광은 사 규빗으로 각 폭의 장단을 같게 하고",
+      "source_text_hash": "6177872a7d07b697a0b513c7f410baf4e14382e719f53f0b2017b2a4a0639b87",
+      "translation_text_hash": "5b16f74f2f2c42170c557d7f9a225a05abd0a8a67f5d477dbdb26412d99f691f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "매 폭의 장은 이십 팔 규빗, 광은 사 규빗으로 각 폭의 장단을 같게 하고"
+      ],
+      "raw_text_hashes": [
+        "5b16f74f2f2c42170c557d7f9a225a05abd0a8a67f5d477dbdb26412d99f691f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:26:3",
+      "sequence": 2239,
+      "chapter_label": "EXO 26",
+      "verse_label": "3",
+      "locator": {
+        "book": "EXO",
+        "chapter": 26,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 26,
+          "verse": 3
+        }
+      ],
+      "en": "Five curtains shall be coupled together to one another, and the other five curtains shall be coupled to one another.",
+      "ko": "그 앙장 다섯 폭을 서로 연하며 다른 다섯 폭도 서로 연하고",
+      "source_text_hash": "dbe1542a6adf02b7ddbf8f8a1cec8f17fe30b067cf592b39db6609c37a4d6887",
+      "translation_text_hash": "73dbb3449dc67dd1f31631fa4f2ed030272f58edb6745cdf7f382d75cbc3121a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 앙장 다섯 폭을 서로 연하며 다른 다섯 폭도 서로 연하고"
+      ],
+      "raw_text_hashes": [
+        "73dbb3449dc67dd1f31631fa4f2ed030272f58edb6745cdf7f382d75cbc3121a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:26:4",
+      "sequence": 2240,
+      "chapter_label": "EXO 26",
+      "verse_label": "4",
+      "locator": {
+        "book": "EXO",
+        "chapter": 26,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 26,
+          "verse": 4
+        }
+      ],
+      "en": "You shall make loops of blue on the edge of the one curtain from the edge in the coupling, and you shall do likewise on the edge of the curtain that is outermost in the second coupling.",
+      "ko": "그 앙장의 연락할 말폭 가에 청색 고를 만들며 다른 연락할 말폭 가에도 그와 같이 하고",
+      "source_text_hash": "6414b607b6f168f9d3f7459ecd2939b78cbb41e616d96e9d375cf56ec2f92a21",
+      "translation_text_hash": "71bec8795ca2f2a34c59d379af76bcda0e8014d617e9a2f4abff7f8214754052",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 앙장의 연락할 말폭 가에 청색 고를 만들며 다른 연락할 말폭 가에도 그와 같이 하고"
+      ],
+      "raw_text_hashes": [
+        "71bec8795ca2f2a34c59d379af76bcda0e8014d617e9a2f4abff7f8214754052"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:26:5",
+      "sequence": 2241,
+      "chapter_label": "EXO 26",
+      "verse_label": "5",
+      "locator": {
+        "book": "EXO",
+        "chapter": 26,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 26,
+          "verse": 5
+        }
+      ],
+      "en": "You shall make fifty loops in the one curtain, and you shall make fifty loops in the edge of the curtain that is in the second coupling. The loops shall be opposite one another.",
+      "ko": "앙장 말폭 가에 고 오십을 달며 다른 앙장 말폭 가에도 고 오십을 달고 그 고들을 서로 대하게 하고",
+      "source_text_hash": "371267c6e6a25e0cd6c65e0466d038d2374148a9ddc8da8150227cae6964bc5a",
+      "translation_text_hash": "e0179659a13878b03f6a1a16949bfb375ac37c7c9ccdb2ea3e63f95e8be50a90",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "앙장 말폭 가에 고 오십을 달며 다른 앙장 말폭 가에도 고 오십을 달고 그 고들을 서로 대하게 하고"
+      ],
+      "raw_text_hashes": [
+        "e0179659a13878b03f6a1a16949bfb375ac37c7c9ccdb2ea3e63f95e8be50a90"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:26:6",
+      "sequence": 2242,
+      "chapter_label": "EXO 26",
+      "verse_label": "6",
+      "locator": {
+        "book": "EXO",
+        "chapter": 26,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 26,
+          "verse": 6
+        }
+      ],
+      "en": "You shall make fifty clasps of gold, and couple the curtains to one another with the clasps. The tabernacle shall be a unit.",
+      "ko": "금 갈고리 오십을 만들고 그 갈고리로 앙장을 연합하여 한 성막을 이룰찌며",
+      "source_text_hash": "665ecb064e3f325b05b61cb21f74841c45de62200fa141fd3fa576092e6aa487",
+      "translation_text_hash": "cd670bd748757258945379ed470911eb4e22e81b19c64255edbbca5337d77fed",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "금 갈고리 오십을 만들고 그 갈고리로 앙장을 연합하여 한 성막을 이룰찌며"
+      ],
+      "raw_text_hashes": [
+        "cd670bd748757258945379ed470911eb4e22e81b19c64255edbbca5337d77fed"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:26:7",
+      "sequence": 2243,
+      "chapter_label": "EXO 26",
+      "verse_label": "7",
+      "locator": {
+        "book": "EXO",
+        "chapter": 26,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 26,
+          "verse": 7
+        }
+      ],
+      "en": "“You shall make curtains of goats’ hair for a covering over the tabernacle. You shall make eleven curtains.",
+      "ko": "그 성막을 덮는 막 곧 앙장을 염소털로 만들되 열 한폭을 만들찌며",
+      "source_text_hash": "c7cb6894e34bdb0a98af14d0940a59ad4052d3d784b077f5480545377412cbbe",
+      "translation_text_hash": "684587865106153304119f4e4ba78d8f17b5440afa8ed710c04115754e2b8a9f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 성막을 덮는 막 곧 앙장을 염소털로 만들되 열 한폭을 만들찌며"
+      ],
+      "raw_text_hashes": [
+        "684587865106153304119f4e4ba78d8f17b5440afa8ed710c04115754e2b8a9f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:26:8",
+      "sequence": 2244,
+      "chapter_label": "EXO 26",
+      "verse_label": "8",
+      "locator": {
+        "book": "EXO",
+        "chapter": 26,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 26,
+          "verse": 8
+        }
+      ],
+      "en": "The length of each curtain shall be thirty cubits, and the width of each curtain four cubits: the eleven curtains shall have one measure.",
+      "ko": "각 폭의 장은 삼십 규빗, 광은 사 규빗으로 열 한폭의 장단을 같게 하고",
+      "source_text_hash": "c31448b131c740e3599e0e25095d94980a8a9ae9de1eee8f151f2f97f136dc45",
+      "translation_text_hash": "9ea26bdd81bc11e55f05294047df13406166dba7e5b502ffde629cacb8b1b3c6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "각 폭의 장은 삼십 규빗, 광은 사 규빗으로 열 한폭의 장단을 같게 하고"
+      ],
+      "raw_text_hashes": [
+        "9ea26bdd81bc11e55f05294047df13406166dba7e5b502ffde629cacb8b1b3c6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:26:9",
+      "sequence": 2245,
+      "chapter_label": "EXO 26",
+      "verse_label": "9",
+      "locator": {
+        "book": "EXO",
+        "chapter": 26,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 26,
+          "verse": 9
+        }
+      ],
+      "en": "You shall couple five curtains by themselves, and six curtains by themselves, and shall double over the sixth curtain in the forefront of the tent.",
+      "ko": "그 앙장 다섯 폭을 서로 연하며 또 여섯 폭을 서로 연하고 그 여섯째 폭 절반은 성막 전면에 접어 드리우고",
+      "source_text_hash": "ac7d4a39d89d05955bd74db98d2729d3447427cbfa6c0b983df0c23ce86ae1bc",
+      "translation_text_hash": "772f60daf47251ffd246e72c2cf579a6f8852c5ba305b5ef948eb8cf92555488",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 앙장 다섯 폭을 서로 연하며 또 여섯 폭을 서로 연하고 그 여섯째 폭 절반은 성막 전면에 접어 드리우고"
+      ],
+      "raw_text_hashes": [
+        "772f60daf47251ffd246e72c2cf579a6f8852c5ba305b5ef948eb8cf92555488"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:26:10",
+      "sequence": 2246,
+      "chapter_label": "EXO 26",
+      "verse_label": "10",
+      "locator": {
+        "book": "EXO",
+        "chapter": 26,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 26,
+          "verse": 10
+        }
+      ],
+      "en": "You shall make fifty loops on the edge of the one curtain that is outermost in the coupling, and fifty loops on the edge of the curtain which is outermost in the second coupling.",
+      "ko": "앙장을 연락할 말폭 가에 고 오십을 달며 다른 연락할 말폭 가에도 고 오십을 달고",
+      "source_text_hash": "6208035b78f1158311cd9e9a023da286fc128bc21f62de35181c4525701d9280",
+      "translation_text_hash": "bde990d434704871e16b4fbfbe5cee0a437cfa8c01929aa61f9ca24f8bd51dc7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "앙장을 연락할 말폭 가에 고 오십을 달며 다른 연락할 말폭 가에도 고 오십을 달고"
+      ],
+      "raw_text_hashes": [
+        "bde990d434704871e16b4fbfbe5cee0a437cfa8c01929aa61f9ca24f8bd51dc7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:26:11",
+      "sequence": 2247,
+      "chapter_label": "EXO 26",
+      "verse_label": "11",
+      "locator": {
+        "book": "EXO",
+        "chapter": 26,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 26,
+          "verse": 11
+        }
+      ],
+      "en": "You shall make fifty clasps of bronze, and put the clasps into the loops, and couple the tent together, that it may be one.",
+      "ko": "놋 갈고리 오십을 만들고 그 갈고리로 그 고를 꿰어 연합하여 한 막이 되게 하고",
+      "source_text_hash": "cb7aed0cfe4699e914fb834fcdd2a824de7ecc89d151266c46f67b6832445537",
+      "translation_text_hash": "646f341478c3e8fbd96ad8ee2b9ccea0a10f617bd015048dd46dd34980501f49",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "놋 갈고리 오십을 만들고 그 갈고리로 그 고를 꿰어 연합하여 한 막이 되게 하고"
+      ],
+      "raw_text_hashes": [
+        "646f341478c3e8fbd96ad8ee2b9ccea0a10f617bd015048dd46dd34980501f49"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:26:12",
+      "sequence": 2248,
+      "chapter_label": "EXO 26",
+      "verse_label": "12",
+      "locator": {
+        "book": "EXO",
+        "chapter": 26,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 26,
+          "verse": 12
+        }
+      ],
+      "en": "The overhanging part that remains of the curtains of the tent—the half curtain that remains—shall hang over the back of the tabernacle.",
+      "ko": "그 막 곧 앙장의 나머지 그 반 폭은 성막 뒤에 드리우고",
+      "source_text_hash": "8f765326f0a4f4cf7db4c20874080612f8263d8df3a9937ca64707c9d69d327b",
+      "translation_text_hash": "9a6fa753f49f767b1fa74606f1cd538be98682c454822ee0e972ab254786a43e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 막 곧 앙장의 나머지 그 반 폭은 성막 뒤에 드리우고"
+      ],
+      "raw_text_hashes": [
+        "9a6fa753f49f767b1fa74606f1cd538be98682c454822ee0e972ab254786a43e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:26:13",
+      "sequence": 2249,
+      "chapter_label": "EXO 26",
+      "verse_label": "13",
+      "locator": {
+        "book": "EXO",
+        "chapter": 26,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 26,
+          "verse": 13
+        }
+      ],
+      "en": "The cubit on the one side and the cubit on the other side, of that which remains in the length of the curtains of the tent, shall hang over the sides of the tabernacle on this side and on that side, to cover it.",
+      "ko": "막 곧 앙장의 길이의 남은 것은 이편에 한 규빗, 저편에 한 규빗씩 성막 좌우 양편에 덮어 드리우고",
+      "source_text_hash": "b140394d29517e018ed3d0a7d99da87bd6202557b1fab26f38d5829b8a039333",
+      "translation_text_hash": "2bf8191c5af01a5ca4048e2ad0157001525df80c26dd43dc59d642be3515ebe1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "막 곧 앙장의 길이의 남은 것은 이편에 한 규빗, 저편에 한 규빗씩 성막 좌우 양편에 덮어 드리우고"
+      ],
+      "raw_text_hashes": [
+        "2bf8191c5af01a5ca4048e2ad0157001525df80c26dd43dc59d642be3515ebe1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:26:14",
+      "sequence": 2250,
+      "chapter_label": "EXO 26",
+      "verse_label": "14",
+      "locator": {
+        "book": "EXO",
+        "chapter": 26,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 26,
+          "verse": 14
+        }
+      ],
+      "en": "You shall make a covering for the tent of rams’ skins dyed red, and a covering of sea cow hides above.",
+      "ko": "붉은 물 들인 수양의 가죽으로 막의 덮개를 만들고 해달의 가죽으로 그 웃덮개를 만들찌니라",
+      "source_text_hash": "09f916879224671b18c8dfc53b7f6e9377090f8854dc384a46e5bf93517335e6",
+      "translation_text_hash": "d05bf4ba32900512e14f2cd8792d80007a308c5347fc829ccdbecbe818fa34cd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "붉은 물 들인 수양의 가죽으로 막의 덮개를 만들고 해달의 가죽으로 그 웃덮개를 만들찌니라"
+      ],
+      "raw_text_hashes": [
+        "d05bf4ba32900512e14f2cd8792d80007a308c5347fc829ccdbecbe818fa34cd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:26:15",
+      "sequence": 2251,
+      "chapter_label": "EXO 26",
+      "verse_label": "15",
+      "locator": {
+        "book": "EXO",
+        "chapter": 26,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 26,
+          "verse": 15
+        }
+      ],
+      "en": "“You shall make the boards for the tabernacle of acacia wood, standing upright.",
+      "ko": "너는 조각목으로 성막을 위하여 널판을 만들어 세우되",
+      "source_text_hash": "eaeffb70913339f92419141df66fd2ad5282974b8011bad4d6aab589f209f184",
+      "translation_text_hash": "7a9bf21e916bc944543107eb9220694ed01f13e9299b45b71c9315e2eee28c59",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 조각목으로 성막을 위하여 널판을 만들어 세우되"
+      ],
+      "raw_text_hashes": [
+        "7a9bf21e916bc944543107eb9220694ed01f13e9299b45b71c9315e2eee28c59"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:26:16",
+      "sequence": 2252,
+      "chapter_label": "EXO 26",
+      "verse_label": "16",
+      "locator": {
+        "book": "EXO",
+        "chapter": 26,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 26,
+          "verse": 16
+        }
+      ],
+      "en": "Ten cubits shall be the length of a board, and one and a half cubits the width of each board.",
+      "ko": "각 판의 장은 십 규빗, 광은 일 규빗 반으로 하고",
+      "source_text_hash": "514c6b8fe71238fafabf0618e5b7e2b3c5fc3e592c25dd915be2a3e743a8b14a",
+      "translation_text_hash": "c992b52da96eb11ceec87190edbf667060fec0a71c94f5cff8e7c89e0540153d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "각 판의 장은 십 규빗, 광은 일 규빗 반으로 하고"
+      ],
+      "raw_text_hashes": [
+        "c992b52da96eb11ceec87190edbf667060fec0a71c94f5cff8e7c89e0540153d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:26:17",
+      "sequence": 2253,
+      "chapter_label": "EXO 26",
+      "verse_label": "17",
+      "locator": {
+        "book": "EXO",
+        "chapter": 26,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 26,
+          "verse": 17
+        }
+      ],
+      "en": "There shall be two tenons in each board, joined to one another: thus you shall make for all the boards of the tabernacle.",
+      "ko": "각 판에 두 촉씩 내어 서로 연하게 하되 너는 성막 널판을 다 그와 같이 하라",
+      "source_text_hash": "207c83c30679041ddaac983208e0cacd8fe4cc5b6b756e0ff29a326333072693",
+      "translation_text_hash": "b3f8551e80299a8d5384172c9f873687b01a3bfe97acb996d04051ef04834415",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "각 판에 두 촉씩 내어 서로 연하게 하되 너는 성막 널판을 다 그와 같이 하라"
+      ],
+      "raw_text_hashes": [
+        "b3f8551e80299a8d5384172c9f873687b01a3bfe97acb996d04051ef04834415"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:26:18",
+      "sequence": 2254,
+      "chapter_label": "EXO 26",
+      "verse_label": "18",
+      "locator": {
+        "book": "EXO",
+        "chapter": 26,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 26,
+          "verse": 18
+        }
+      ],
+      "en": "You shall make twenty boards for the tabernacle, for the south side southward.",
+      "ko": "너는 성막을 위하여 널판을 만들되 남편을 위하여 널판 스물을 만들고",
+      "source_text_hash": "7370934448ab6359092c8536ba671bbf95f2fc1895ef06bfe88bad0042376146",
+      "translation_text_hash": "11534ceb041cf9239e8c521f54016170d2f78ff00267ef69df6d272eb5fffa88",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 성막을 위하여 널판을 만들되 남편을 위하여 널판 스물을 만들고"
+      ],
+      "raw_text_hashes": [
+        "11534ceb041cf9239e8c521f54016170d2f78ff00267ef69df6d272eb5fffa88"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:26:19",
+      "sequence": 2255,
+      "chapter_label": "EXO 26",
+      "verse_label": "19",
+      "locator": {
+        "book": "EXO",
+        "chapter": 26,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 26,
+          "verse": 19
+        }
+      ],
+      "en": "You shall make forty sockets of silver under the twenty boards; two sockets under one board for its two tenons, and two sockets under another board for its two tenons.",
+      "ko": "스무 널판 아래 은받침 마흔을 만들찌니 이 널판 아래에도 그 두 촉을 위하여 두 받침을 만들고 저 널판 아래에도 그 두 촉을 위하여 두 받침을 만들찌며",
+      "source_text_hash": "27091505262582b298ed435d917e66e05871e84d1008700b2f2471f82bddba9a",
+      "translation_text_hash": "09636d6288cf4ea0202d1b416fedfa286edc7a2c49d45c389d0dc9d831e359cb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "스무 널판 아래 은받침 마흔을 만들찌니 이 널판 아래에도 그 두 촉을 위하여 두 받침을 만들고 저 널판 아래에도 그 두 촉을 위하여 두 받침을 만들찌며"
+      ],
+      "raw_text_hashes": [
+        "09636d6288cf4ea0202d1b416fedfa286edc7a2c49d45c389d0dc9d831e359cb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:26:20",
+      "sequence": 2256,
+      "chapter_label": "EXO 26",
+      "verse_label": "20",
+      "locator": {
+        "book": "EXO",
+        "chapter": 26,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 26,
+          "verse": 20
+        }
+      ],
+      "en": "For the second side of the tabernacle, on the north side, twenty boards,",
+      "ko": "성막 다른 편 곧 그 북편을 위하여도 널판 스물로 하고",
+      "source_text_hash": "310c07298df136de52efd73db9b5941575efae9550a17b567f622a6dbba30418",
+      "translation_text_hash": "772402380c90c99e4527f89dcd113f3df6567a2ca559965b50061c4256cabc0c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "성막 다른 편 곧 그 북편을 위하여도 널판 스물로 하고"
+      ],
+      "raw_text_hashes": [
+        "772402380c90c99e4527f89dcd113f3df6567a2ca559965b50061c4256cabc0c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:26:21",
+      "sequence": 2257,
+      "chapter_label": "EXO 26",
+      "verse_label": "21",
+      "locator": {
+        "book": "EXO",
+        "chapter": 26,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 26,
+          "verse": 21
+        }
+      ],
+      "en": "and their forty sockets of silver; two sockets under one board, and two sockets under another board.",
+      "ko": "은받침 마흔을 이 널판 아래에도 두 받침, 저 널판 아래에도 두 받침으로 하며",
+      "source_text_hash": "6359addecf095040fe50f99106f908e91d935ec36cd040003c15fc3a4adae549",
+      "translation_text_hash": "00e1bdf4ef459048698ae334397dba107186207fd19cec5c982abcacb63cc837",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "은받침 마흔을 이 널판 아래에도 두 받침, 저 널판 아래에도 두 받침으로 하며"
+      ],
+      "raw_text_hashes": [
+        "00e1bdf4ef459048698ae334397dba107186207fd19cec5c982abcacb63cc837"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:26:22",
+      "sequence": 2258,
+      "chapter_label": "EXO 26",
+      "verse_label": "22",
+      "locator": {
+        "book": "EXO",
+        "chapter": 26,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 26,
+          "verse": 22
+        }
+      ],
+      "en": "For the far side of the tabernacle westward you shall make six boards.",
+      "ko": "성막 뒤 곧 그 서편을 위하여는 널판 여섯을 만들고",
+      "source_text_hash": "2912715a311f5c0ac9617b0d42491b09720558421afc8e9e3ba8f45c78d2c006",
+      "translation_text_hash": "ddd30b2bf546b2df97f45d54102cc34fa35075f91f64dc7502d82a1eaf5672ed",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "성막 뒤 곧 그 서편을 위하여는 널판 여섯을 만들고"
+      ],
+      "raw_text_hashes": [
+        "ddd30b2bf546b2df97f45d54102cc34fa35075f91f64dc7502d82a1eaf5672ed"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:26:23",
+      "sequence": 2259,
+      "chapter_label": "EXO 26",
+      "verse_label": "23",
+      "locator": {
+        "book": "EXO",
+        "chapter": 26,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 26,
+          "verse": 23
+        }
+      ],
+      "en": "You shall make two boards for the corners of the tabernacle in the far side.",
+      "ko": "성막 뒤 두 모퉁이 편을 위하여는 널판 둘을 만들되",
+      "source_text_hash": "45998ea606a8794b2dea85abd68ee98b78f4e905d346c74455821fb395643c72",
+      "translation_text_hash": "8a5db89b7d63d7294ea84f538c0e8383fda3a73bebebf59a00e8c990c7c09f43",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "성막 뒤 두 모퉁이 편을 위하여는 널판 둘을 만들되"
+      ],
+      "raw_text_hashes": [
+        "8a5db89b7d63d7294ea84f538c0e8383fda3a73bebebf59a00e8c990c7c09f43"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:26:24",
+      "sequence": 2260,
+      "chapter_label": "EXO 26",
+      "verse_label": "24",
+      "locator": {
+        "book": "EXO",
+        "chapter": 26,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 26,
+          "verse": 24
+        }
+      ],
+      "en": "They shall be double beneath, and in the same way they shall be whole to its top to one ring: thus shall it be for them both; they shall be for the two corners.",
+      "ko": "아래에서부터 위까지 각기 두겹 두께로하여 윗고리에 이르게 하고 두 모퉁이 편을 다 그리하며",
+      "source_text_hash": "0307351487b43d902f75de0796b7c0f0265ec8252e0c8a4c619531233df79894",
+      "translation_text_hash": "5e50b446910c4e1de81c4beb687a2b1c4f130e52ee8bc904b725ea24479a90e9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아래에서부터 위까지 각기 두겹 두께로하여 윗고리에 이르게 하고 두 모퉁이 편을 다 그리하며"
+      ],
+      "raw_text_hashes": [
+        "5e50b446910c4e1de81c4beb687a2b1c4f130e52ee8bc904b725ea24479a90e9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:26:25",
+      "sequence": 2261,
+      "chapter_label": "EXO 26",
+      "verse_label": "25",
+      "locator": {
+        "book": "EXO",
+        "chapter": 26,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 26,
+          "verse": 25
+        }
+      ],
+      "en": "There shall be eight boards, and their sockets of silver, sixteen sockets; two sockets under one board, and two sockets under another board.",
+      "ko": "그 여덟 널판에는 은받침이 열 여섯이니 이 판 아래에도 두 받침이요 저 판 아래에도 두 받침이니라",
+      "source_text_hash": "085e1422331abecba78f9c190451e44f9470e43cf6815596a8ae8d6195dbcefc",
+      "translation_text_hash": "20c4587e5f605a1450fb5cd62c4ea6a486cf838384e1316ec0f1f79effce1f2e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 여덟 널판에는 은받침이 열 여섯이니 이 판 아래에도 두 받침이요 저 판 아래에도 두 받침이니라"
+      ],
+      "raw_text_hashes": [
+        "20c4587e5f605a1450fb5cd62c4ea6a486cf838384e1316ec0f1f79effce1f2e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:26:26",
+      "sequence": 2262,
+      "chapter_label": "EXO 26",
+      "verse_label": "26",
+      "locator": {
+        "book": "EXO",
+        "chapter": 26,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 26,
+          "verse": 26
+        }
+      ],
+      "en": "“You shall make bars of acacia wood: five for the boards of the one side of the tabernacle,",
+      "ko": "너는 조각목으로 띠를 만들찌니 성막 이편 널판을 위하여 다섯이요",
+      "source_text_hash": "5e36898b9392455688c3a8bfd8a44e23008bb190acf331fe135f4313c2463516",
+      "translation_text_hash": "b9902ffe371d7bf3312e1346e921381d9ebd79e34745eae8c7b8bc2735488e0d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 조각목으로 띠를 만들찌니 성막 이편 널판을 위하여 다섯이요"
+      ],
+      "raw_text_hashes": [
+        "b9902ffe371d7bf3312e1346e921381d9ebd79e34745eae8c7b8bc2735488e0d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:26:27",
+      "sequence": 2263,
+      "chapter_label": "EXO 26",
+      "verse_label": "27",
+      "locator": {
+        "book": "EXO",
+        "chapter": 26,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 26,
+          "verse": 27
+        }
+      ],
+      "en": "and five bars for the boards of the other side of the tabernacle, and five bars for the boards of the side of the tabernacle, for the far side westward.",
+      "ko": "성막 저편 널판을 위하여 다섯이요 성막 뒤 곧 서편 널판을 위하여 다섯이며",
+      "source_text_hash": "24c347c7ba66a6d979cc10a93f0ea1d2f2fb15c2a0b253cbe303091648d69792",
+      "translation_text_hash": "01ec12677a6431c49ef8da0a63f372b847d24be38717ad617de2e392bcbe806f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "성막 저편 널판을 위하여 다섯이요 성막 뒤 곧 서편 널판을 위하여 다섯이며"
+      ],
+      "raw_text_hashes": [
+        "01ec12677a6431c49ef8da0a63f372b847d24be38717ad617de2e392bcbe806f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:26:28",
+      "sequence": 2264,
+      "chapter_label": "EXO 26",
+      "verse_label": "28",
+      "locator": {
+        "book": "EXO",
+        "chapter": 26,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 26,
+          "verse": 28
+        }
+      ],
+      "en": "The middle bar in the middle of the boards shall pass through from end to end.",
+      "ko": "널판 가운데 있는 중간 띠는 이 끝에서 저 끝에 미치게 하고",
+      "source_text_hash": "6b432c0cc8c06833117b93aa8f5f450165d0dabb784bd7cef15c7443b4c03d9c",
+      "translation_text_hash": "68f4c7fa6d547671684ef2b29183c9abaa5b791a7ac3c054a6840eddfda30e34",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "널판 가운데 있는 중간 띠는 이 끝에서 저 끝에 미치게 하고"
+      ],
+      "raw_text_hashes": [
+        "68f4c7fa6d547671684ef2b29183c9abaa5b791a7ac3c054a6840eddfda30e34"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:26:29",
+      "sequence": 2265,
+      "chapter_label": "EXO 26",
+      "verse_label": "29",
+      "locator": {
+        "book": "EXO",
+        "chapter": 26,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 26,
+          "verse": 29
+        }
+      ],
+      "en": "You shall overlay the boards with gold, and make their rings of gold for places for the bars. You shall overlay the bars with gold.",
+      "ko": "그 널판들을 금으로 싸고 그 널판들의 띠를 꿸 금고리를 만들고 그 띠를 금으로 싸라",
+      "source_text_hash": "cd807cbc3e4c8c488607752eb32ee9575a738455991d6c09cee97082aeabbbad",
+      "translation_text_hash": "c3c687bf2012a048bef89ea92e956cb72312eb57baf88efd50b4b824ccb7e8a7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 널판들을 금으로 싸고 그 널판들의 띠를 꿸 금고리를 만들고 그 띠를 금으로 싸라"
+      ],
+      "raw_text_hashes": [
+        "c3c687bf2012a048bef89ea92e956cb72312eb57baf88efd50b4b824ccb7e8a7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:26:30",
+      "sequence": 2266,
+      "chapter_label": "EXO 26",
+      "verse_label": "30",
+      "locator": {
+        "book": "EXO",
+        "chapter": 26,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 26,
+          "verse": 30
+        }
+      ],
+      "en": "You shall set up the tabernacle according to the way that it was shown to you on the mountain.",
+      "ko": "너는 산에서 보인 식양대로 성막을 세울찌니라",
+      "source_text_hash": "611c58e50a9ff907f8e2af60e1c22c07e6297e01dd4ae7a019d691c03ebc4eb8",
+      "translation_text_hash": "f32e95feb919509b542008d7f8647a34ccbe8d3fd62dc034f85de0f2add9021d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 산에서 보인 식양대로 성막을 세울찌니라"
+      ],
+      "raw_text_hashes": [
+        "f32e95feb919509b542008d7f8647a34ccbe8d3fd62dc034f85de0f2add9021d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:26:31",
+      "sequence": 2267,
+      "chapter_label": "EXO 26",
+      "verse_label": "31",
+      "locator": {
+        "book": "EXO",
+        "chapter": 26,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 26,
+          "verse": 31
+        }
+      ],
+      "en": "“You shall make a veil of blue, and purple, and scarlet, and fine twined linen, with cherubim. It shall be the work of a skillful workman.",
+      "ko": "너는 청색 자색 홍색실과 가늘게 꼰 베실로 짜서 장을 만들고 그 위에 그룹들을 공교히 수 놓아서",
+      "source_text_hash": "89b0b03942bd88643197f3c34320b024e501c11a5d6a2656f43b4dde1e21981f",
+      "translation_text_hash": "face3d52434a6f36f7aa6671acf6d04808f8dd1361e88f6447b0fb06302e19eb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 청색 자색 홍색실과 가늘게 꼰 베실로 짜서 장을 만들고 그 위에 그룹들을 공교히 수 놓아서"
+      ],
+      "raw_text_hashes": [
+        "face3d52434a6f36f7aa6671acf6d04808f8dd1361e88f6447b0fb06302e19eb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:26:32",
+      "sequence": 2268,
+      "chapter_label": "EXO 26",
+      "verse_label": "32",
+      "locator": {
+        "book": "EXO",
+        "chapter": 26,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 26,
+          "verse": 32
+        }
+      ],
+      "en": "You shall hang it on four pillars of acacia overlaid with gold; their hooks shall be of gold, on four sockets of silver.",
+      "ko": "금 갈고리로 네 기둥 위에 드리우되 그 네 기둥을 조각목으로 만들고 금으로 싸서 네 은받침 위에 둘찌며",
+      "source_text_hash": "9778a9a0ae121e31a2a4eec045fb40d550fe1526fb3eebf35f256438be083983",
+      "translation_text_hash": "d2c158974b70d09abce98efce6c3b9378201cfa271085c314b920d098aee4b79",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "금 갈고리로 네 기둥 위에 드리우되 그 네 기둥을 조각목으로 만들고 금으로 싸서 네 은받침 위에 둘찌며"
+      ],
+      "raw_text_hashes": [
+        "d2c158974b70d09abce98efce6c3b9378201cfa271085c314b920d098aee4b79"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:26:33",
+      "sequence": 2269,
+      "chapter_label": "EXO 26",
+      "verse_label": "33",
+      "locator": {
+        "book": "EXO",
+        "chapter": 26,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 26,
+          "verse": 33
+        }
+      ],
+      "en": "You shall hang up the veil under the clasps, and shall bring the ark of the covenant in there within the veil. The veil shall separate the holy place from the most holy for you.",
+      "ko": "그 장을 갈고리 아래 드리운 후에 증거궤를 그 장안에 들여 놓으라 그 장이 너희를 위하여 성소와 지성소를 구별하리라",
+      "source_text_hash": "53102b333e85c32b360b548ce7548194f59ee5d2a4db88f22087f0eb101e28e5",
+      "translation_text_hash": "a15a107db3a919e70a1fab9b88c76413b942d3463e531053d2a0098f97b3b6fe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 장을 갈고리 아래 드리운 후에 증거궤를 그 장안에 들여 놓으라 그 장이 너희를 위하여 성소와 지성소를 구별하리라"
+      ],
+      "raw_text_hashes": [
+        "a15a107db3a919e70a1fab9b88c76413b942d3463e531053d2a0098f97b3b6fe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:26:34",
+      "sequence": 2270,
+      "chapter_label": "EXO 26",
+      "verse_label": "34",
+      "locator": {
+        "book": "EXO",
+        "chapter": 26,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 26,
+          "verse": 34
+        }
+      ],
+      "en": "You shall put the mercy seat on the ark of the covenant in the most holy place.",
+      "ko": "너는 지성소에 있는 증거궤 위에 속죄소를 두고",
+      "source_text_hash": "80956942cb252939a09e8cffd9aa8ca26aa9d164f09c5cb2551f5d5b9ad7ecd0",
+      "translation_text_hash": "51a56244fbc639f3ac99eaef32bcb537a10a095371cd12308273caaa4e734060",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 지성소에 있는 증거궤 위에 속죄소를 두고"
+      ],
+      "raw_text_hashes": [
+        "51a56244fbc639f3ac99eaef32bcb537a10a095371cd12308273caaa4e734060"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:26:35",
+      "sequence": 2271,
+      "chapter_label": "EXO 26",
+      "verse_label": "35",
+      "locator": {
+        "book": "EXO",
+        "chapter": 26,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 26,
+          "verse": 35
+        }
+      ],
+      "en": "You shall set the table outside the veil, and the lamp stand opposite the table on the side of the tabernacle toward the south. You shall put the table on the north side.",
+      "ko": "그 장 바깥 북편에 상을 놓고 남편에 등대를 놓아 상과 대하게 할찌며",
+      "source_text_hash": "e3d5188344c2afdfb88dc4ccde6952a499be48c401783ee75aca4baf6afc4e39",
+      "translation_text_hash": "7d84ce74a217495b213ed6769b595312711a5e90934e3cce74a1280f3ce424e0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 장 바깥 북편에 상을 놓고 남편에 등대를 놓아 상과 대하게 할찌며"
+      ],
+      "raw_text_hashes": [
+        "7d84ce74a217495b213ed6769b595312711a5e90934e3cce74a1280f3ce424e0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:26:36",
+      "sequence": 2272,
+      "chapter_label": "EXO 26",
+      "verse_label": "36",
+      "locator": {
+        "book": "EXO",
+        "chapter": 26,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 26,
+          "verse": 36
+        }
+      ],
+      "en": "“You shall make a screen for the door of the Tent, of blue, and purple, and scarlet, and fine twined linen, the work of the embroiderer.",
+      "ko": "청색 자색 홍색실과 가늘게 꼰 베실로 수 놓아 짜서 성막 문을 위하여 장을 만들고",
+      "source_text_hash": "a6fcddc55bb6f381f185d412e57f7b380fc28a85da7da1a213dcb1eb62e9bd32",
+      "translation_text_hash": "0574c7bc44ab258b1b33604677111b9ba61bec52782f841d05bba2053e9b6f9e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "청색 자색 홍색실과 가늘게 꼰 베실로 수 놓아 짜서 성막 문을 위하여 장을 만들고"
+      ],
+      "raw_text_hashes": [
+        "0574c7bc44ab258b1b33604677111b9ba61bec52782f841d05bba2053e9b6f9e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:26:37",
+      "sequence": 2273,
+      "chapter_label": "EXO 26",
+      "verse_label": "37",
+      "locator": {
+        "book": "EXO",
+        "chapter": 26,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 26,
+          "verse": 37
+        }
+      ],
+      "en": "You shall make for the screen five pillars of acacia, and overlay them with gold. Their hooks shall be of gold. You shall cast five sockets of bronze for them.",
+      "ko": "그 문장을 위하여 기둥 다섯을 조각목으로 만들어 금으로 싸고 그 갈고리도 금으로 만들찌며 또 그 기둥을 위하여 받침 다섯을 놋으로 부어 만들찌니라",
+      "source_text_hash": "06776472b18871f3c51037242566576250735548332a3de7843ae18a3c56f476",
+      "translation_text_hash": "c2d6439970077b540a53a63d616aefb0f6e12237d891aab1624107aa10276f5c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 문장을 위하여 기둥 다섯을 조각목으로 만들어 금으로 싸고 그 갈고리도 금으로 만들찌며 또 그 기둥을 위하여 받침 다섯을 놋으로 부어 만들찌니라"
+      ],
+      "raw_text_hashes": [
+        "c2d6439970077b540a53a63d616aefb0f6e12237d891aab1624107aa10276f5c"
+      ]
+    }
+  ]
+}

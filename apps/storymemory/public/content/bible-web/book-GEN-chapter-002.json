@@ -1,0 +1,813 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:GEN:chapter:002",
+  "unit_ordinal": 2,
+  "unit_label": "GEN 2",
+  "book_code": "GEN",
+  "chapter_number": 2,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:GEN:2:1",
+      "sequence": 32,
+      "chapter_label": "GEN 2",
+      "verse_label": "1",
+      "locator": {
+        "book": "GEN",
+        "chapter": 2,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 2,
+          "verse": 1
+        }
+      ],
+      "en": "The heavens, the earth, and all their vast array were finished.",
+      "ko": "천지와 만물이 다 이루니라",
+      "source_text_hash": "330f180463cd57bd975c94e49422f39735f3d7d288582cbaca9e3007c9ebc720",
+      "translation_text_hash": "795fea98d9572a518f6ba6650c125744344b5ecbd12f0f3eb939b9f71ff0b4a6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "천지와 만물이 다 이루니라"
+      ],
+      "raw_text_hashes": [
+        "795fea98d9572a518f6ba6650c125744344b5ecbd12f0f3eb939b9f71ff0b4a6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:2:2",
+      "sequence": 33,
+      "chapter_label": "GEN 2",
+      "verse_label": "2",
+      "locator": {
+        "book": "GEN",
+        "chapter": 2,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 2,
+          "verse": 2
+        }
+      ],
+      "en": "On the seventh day God finished his work which he had done; and he rested on the seventh day from all his work which he had done.",
+      "ko": "하나님의 지으시던 일이 일곱째 날이 이를 때에 마치니 그 지으시던 일이 다하므로 일곱째 날에 안식하시니라",
+      "source_text_hash": "afc084d0deefba85d60eeb586e0c2fbbb74ab2197f4f4bd1e93e6fba2cdb30eb",
+      "translation_text_hash": "5a4abd760cf1afe27c63b65e397e5be954b13f29071cd55307a5f63add341972",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님의 지으시던 일이 일곱째 날이 이를 때에 마치니 그 지으시던 일이 다하므로 일곱째 날에 안식하시니라"
+      ],
+      "raw_text_hashes": [
+        "5a4abd760cf1afe27c63b65e397e5be954b13f29071cd55307a5f63add341972"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:2:3",
+      "sequence": 34,
+      "chapter_label": "GEN 2",
+      "verse_label": "3",
+      "locator": {
+        "book": "GEN",
+        "chapter": 2,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 2,
+          "verse": 3
+        }
+      ],
+      "en": "God blessed the seventh day, and made it holy, because he rested in it from all his work of creation which he had done.",
+      "ko": "하나님이 일곱째 날을 복 주사 거룩하게 하셨으니 이는 하나님이 그 창조하시며 만드시던 모든 일을 마치시고 이 날에 안식하셨음이더라",
+      "source_text_hash": "31038d30699c1e598bbfae2df6a800e7736998f7f4f51f2fd69d43571ead23f4",
+      "translation_text_hash": "3b18d0ae958ed1e06ff354d5248491b5261b51120c23be4967887684c9e010cd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 일곱째 날을 복 주사 거룩하게 하셨으니 이는 하나님이 그 창조하시며 만드시던 모든 일을 마치시고 이 날에 안식하셨음이더라"
+      ],
+      "raw_text_hashes": [
+        "3b18d0ae958ed1e06ff354d5248491b5261b51120c23be4967887684c9e010cd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:2:4",
+      "sequence": 35,
+      "chapter_label": "GEN 2",
+      "verse_label": "4",
+      "locator": {
+        "book": "GEN",
+        "chapter": 2,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 2,
+          "verse": 4
+        }
+      ],
+      "en": "This is the history of the generations of the heavens and of the earth when they were created, in the day that the LORD God made the earth and the heavens.",
+      "ko": "여호와 하나님이 천지를 창조하신 때에 천지의 창조된 대략이 이러하니라",
+      "source_text_hash": "15f2656804d160f6019ff9a7b16a535e9f3ac4535fd4c923a5bf16c0f5f6fd27",
+      "translation_text_hash": "bdc31cdf957e61a7815fb08937a5893c19592f97642e486875df49eceac695ae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와 하나님이 천지를 창조하신 때에 천지의 창조된 대략이 이러하니라"
+      ],
+      "raw_text_hashes": [
+        "bdc31cdf957e61a7815fb08937a5893c19592f97642e486875df49eceac695ae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:2:5",
+      "sequence": 36,
+      "chapter_label": "GEN 2",
+      "verse_label": "5",
+      "locator": {
+        "book": "GEN",
+        "chapter": 2,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 2,
+          "verse": 5
+        }
+      ],
+      "en": "No plant of the field was yet on the earth, and no herb of the field had yet sprung up; for the LORD God had not caused it to rain on the earth. There was not a man to till the ground,",
+      "ko": "여호와 하나님이 땅에 비를 내리지 아니하셨고 경작할 사람도 없었으므로 들에는 초목이 아직 없었고 밭에는 채소가 나지 아니하였으며",
+      "source_text_hash": "8e9a4099c34b13e74a328ca9ab84142b4465c188948b2c5bf7bf6b10715801b2",
+      "translation_text_hash": "b967ac44878fec82fca70998e8f9824e0f94f31e26f8dddb33cf3112439d5044",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와 하나님이 땅에 비를 내리지 아니하셨고 경작할 사람도 없었으므로 들에는 초목이 아직 없었고 밭에는 채소가 나지 아니하였으며"
+      ],
+      "raw_text_hashes": [
+        "b967ac44878fec82fca70998e8f9824e0f94f31e26f8dddb33cf3112439d5044"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:2:6",
+      "sequence": 37,
+      "chapter_label": "GEN 2",
+      "verse_label": "6",
+      "locator": {
+        "book": "GEN",
+        "chapter": 2,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 2,
+          "verse": 6
+        }
+      ],
+      "en": "but a mist went up from the earth, and watered the whole surface of the ground.",
+      "ko": "안개만 땅에서 올라와 온 지면을 적셨더라",
+      "source_text_hash": "359098581d7c8d82a3a4203dca575fa1c27f412472f7cc37817c3a4dc4be9f1b",
+      "translation_text_hash": "6f7a8ff9eded15539809e01ab92455b8223529d27566ac52a3f7d118d36635ee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "안개만 땅에서 올라와 온 지면을 적셨더라"
+      ],
+      "raw_text_hashes": [
+        "6f7a8ff9eded15539809e01ab92455b8223529d27566ac52a3f7d118d36635ee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:2:7",
+      "sequence": 38,
+      "chapter_label": "GEN 2",
+      "verse_label": "7",
+      "locator": {
+        "book": "GEN",
+        "chapter": 2,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 2,
+          "verse": 7
+        }
+      ],
+      "en": "The LORD God formed man from the dust of the ground, and breathed into his nostrils the breath of life; and man became a living soul.",
+      "ko": "여호와 하나님이 흙으로 사람을 지으시고 생기를 그 코에 불어 넣으시니 사람이 생령이 된지라",
+      "source_text_hash": "0e36a52d337d92bf3b417b341fe91bac7721017098ed2baabf826bc24790f3f3",
+      "translation_text_hash": "c42eb18d74f80dfcda13a068ffeba340e8781ed528e29bb9eddb09137cdee6fe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와 하나님이 흙으로 사람을 지으시고 생기를 그 코에 불어 넣으시니 사람이 생령이 된지라"
+      ],
+      "raw_text_hashes": [
+        "c42eb18d74f80dfcda13a068ffeba340e8781ed528e29bb9eddb09137cdee6fe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:2:8",
+      "sequence": 39,
+      "chapter_label": "GEN 2",
+      "verse_label": "8",
+      "locator": {
+        "book": "GEN",
+        "chapter": 2,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 2,
+          "verse": 8
+        }
+      ],
+      "en": "The LORD God planted a garden eastward, in Eden, and there he put the man whom he had formed.",
+      "ko": "여호와 하나님이 동방의 에덴에 동산을 창설하시고 그 지으신 사람을 거기 두시고",
+      "source_text_hash": "077aeed05bd125b9901ac332128db7ec6954369767bfdbfcad103eacc3573a5f",
+      "translation_text_hash": "41cd2d585c89dbc4362988cb3e72ceef16d0c8ac97819f8d312e7618cada944b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와 하나님이 동방의 에덴에 동산을 창설하시고 그 지으신 사람을 거기 두시고"
+      ],
+      "raw_text_hashes": [
+        "41cd2d585c89dbc4362988cb3e72ceef16d0c8ac97819f8d312e7618cada944b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:2:9",
+      "sequence": 40,
+      "chapter_label": "GEN 2",
+      "verse_label": "9",
+      "locator": {
+        "book": "GEN",
+        "chapter": 2,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 2,
+          "verse": 9
+        }
+      ],
+      "en": "Out of the ground the LORD God made every tree to grow that is pleasant to the sight, and good for food, including the tree of life in the middle of the garden and the tree of the knowledge of good and evil.",
+      "ko": "여호와 하나님이 그 땅에서 보기에 아름답고 먹기에 좋은 나무가 나게 하시니 동산 가운데에는 생명나무와 선악을 알게하는 나무도 있더라",
+      "source_text_hash": "4553c2d086995f2e7acb18640aeaadab06b276a928bc2e5398cbf93240eb9d2f",
+      "translation_text_hash": "95ef884c7d240670188266c0e13de99e2e6c292262d47eba293711327a602289",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와 하나님이 그 땅에서 보기에 아름답고 먹기에 좋은 나무가 나게 하시니 동산 가운데에는 생명나무와 선악을 알게하는 나무도 있더라"
+      ],
+      "raw_text_hashes": [
+        "95ef884c7d240670188266c0e13de99e2e6c292262d47eba293711327a602289"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:2:10",
+      "sequence": 41,
+      "chapter_label": "GEN 2",
+      "verse_label": "10",
+      "locator": {
+        "book": "GEN",
+        "chapter": 2,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 2,
+          "verse": 10
+        }
+      ],
+      "en": "A river went out of Eden to water the garden; and from there it was parted, and became the source of four rivers.",
+      "ko": "강이 에덴에서 발원하여 동산을 적시고 거기서부터 갈라져 네 근원이 되었으니",
+      "source_text_hash": "506d9075bf02332732eda1b328e5798549051a7af14d88b40ea156b2ff517ad5",
+      "translation_text_hash": "ca1b0840acd0b2c2e1eba9d8d9ecab4b2783b906c838fbd68cbc34aa45df7bfe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "강이 에덴에서 발원하여 동산을 적시고 거기서부터 갈라져 네 근원이 되었으니"
+      ],
+      "raw_text_hashes": [
+        "ca1b0840acd0b2c2e1eba9d8d9ecab4b2783b906c838fbd68cbc34aa45df7bfe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:2:11",
+      "sequence": 42,
+      "chapter_label": "GEN 2",
+      "verse_label": "11",
+      "locator": {
+        "book": "GEN",
+        "chapter": 2,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 2,
+          "verse": 11
+        }
+      ],
+      "en": "The name of the first is Pishon: it flows through the whole land of Havilah, where there is gold;",
+      "ko": "첫째의 이름은 비손이라 금이 있는 하윌라 온 땅에 둘렸으며",
+      "source_text_hash": "bd4270f38cd9d2a8673afb85371e968aeb36f364b1a3ca8825120dea5499f44f",
+      "translation_text_hash": "c99aa7c4d5e0e73d1a7523ff3257f0aeee20953b5e76b504d85a0284378c4281",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "첫째의 이름은 비손이라 금이 있는 하윌라 온 땅에 둘렸으며"
+      ],
+      "raw_text_hashes": [
+        "c99aa7c4d5e0e73d1a7523ff3257f0aeee20953b5e76b504d85a0284378c4281"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:2:12",
+      "sequence": 43,
+      "chapter_label": "GEN 2",
+      "verse_label": "12",
+      "locator": {
+        "book": "GEN",
+        "chapter": 2,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 2,
+          "verse": 12
+        }
+      ],
+      "en": "and the gold of that land is good. Bdellium and onyx stone are also there.",
+      "ko": "그 땅의 금은 정금이요 그곳에는 베델리엄과 호마노도 있으며",
+      "source_text_hash": "dfdc7cd40c8153a26643a9ba67b314b6e9230b9515927ea2212c7fb8e6a34e9d",
+      "translation_text_hash": "8973c78a0bd0f5d12c8023565d4531960c1e2d5a148c66c4890e916838f8e6c2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 땅의 금은 정금이요 그곳에는 베델리엄과 호마노도 있으며"
+      ],
+      "raw_text_hashes": [
+        "8973c78a0bd0f5d12c8023565d4531960c1e2d5a148c66c4890e916838f8e6c2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:2:13",
+      "sequence": 44,
+      "chapter_label": "GEN 2",
+      "verse_label": "13",
+      "locator": {
+        "book": "GEN",
+        "chapter": 2,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 2,
+          "verse": 13
+        }
+      ],
+      "en": "The name of the second river is Gihon. It is the same river that flows through the whole land of Cush.",
+      "ko": "둘째 강의 이름은 기혼이라 구스 온 땅에 둘렸고",
+      "source_text_hash": "9ffada61434cc5908d734ba703f5fd0d99acd62b9953b9e980eed1c11883dea6",
+      "translation_text_hash": "948361466af05ff55170fd48de405b8e782474fdcc32bc6a8f7bdaa969378a6f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "둘째 강의 이름은 기혼이라 구스 온 땅에 둘렸고"
+      ],
+      "raw_text_hashes": [
+        "948361466af05ff55170fd48de405b8e782474fdcc32bc6a8f7bdaa969378a6f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:2:14",
+      "sequence": 45,
+      "chapter_label": "GEN 2",
+      "verse_label": "14",
+      "locator": {
+        "book": "GEN",
+        "chapter": 2,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 2,
+          "verse": 14
+        }
+      ],
+      "en": "The name of the third river is Hiddekel. This is the one which flows in front of Assyria. The fourth river is the Euphrates.",
+      "ko": "세째 강의 이름은 힛데겔이라 앗수르 동편으로 흐르며 네째 강은 유브라데더라",
+      "source_text_hash": "b0934233fbf53b09241f19b496f75341c47091775b502e388221851de9133e20",
+      "translation_text_hash": "4b0f7fb57889afd4ef0d230f186f06eb4049dfba218278cb5098797b2c6959a6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "세째 강의 이름은 힛데겔이라 앗수르 동편으로 흐르며 네째 강은 유브라데더라"
+      ],
+      "raw_text_hashes": [
+        "4b0f7fb57889afd4ef0d230f186f06eb4049dfba218278cb5098797b2c6959a6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:2:15",
+      "sequence": 46,
+      "chapter_label": "GEN 2",
+      "verse_label": "15",
+      "locator": {
+        "book": "GEN",
+        "chapter": 2,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 2,
+          "verse": 15
+        }
+      ],
+      "en": "The LORD God took the man, and put him into the garden of Eden to cultivate and keep it.",
+      "ko": "여호와 하나님이 그 사람을 이끌어 에덴 동산에 두사 그것을 다스리며 지키게 하시고",
+      "source_text_hash": "f1c930b68a56ae01a7408b8538fe8ced6e0531ff74075805cd3669764872b108",
+      "translation_text_hash": "9dd3e591d8097c052968ccef06192e42c44d5b7f3d86711b90323d8a4e34b0cf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와 하나님이 그 사람을 이끌어 에덴 동산에 두사 그것을 다스리며 지키게 하시고"
+      ],
+      "raw_text_hashes": [
+        "9dd3e591d8097c052968ccef06192e42c44d5b7f3d86711b90323d8a4e34b0cf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:2:16",
+      "sequence": 47,
+      "chapter_label": "GEN 2",
+      "verse_label": "16",
+      "locator": {
+        "book": "GEN",
+        "chapter": 2,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 2,
+          "verse": 16
+        }
+      ],
+      "en": "The LORD God commanded the man, saying, “You may freely eat of every tree of the garden;",
+      "ko": "여호와 하나님이 그 사람에게 명하여 가라사대 동산 각종 나무의 실과는 네가 임의로 먹되",
+      "source_text_hash": "ac8997844046784e8d9850cb8a6922ce3a5a8cf7a82af60cb0397460584a451d",
+      "translation_text_hash": "4f62a6f84542dbb854af16e0883f7a36cae483117d7901b9de964506c7d4e8da",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와 하나님이 그 사람에게 명하여 가라사대 동산 각종 나무의 실과는 네가 임의로 먹되"
+      ],
+      "raw_text_hashes": [
+        "4f62a6f84542dbb854af16e0883f7a36cae483117d7901b9de964506c7d4e8da"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:2:17",
+      "sequence": 48,
+      "chapter_label": "GEN 2",
+      "verse_label": "17",
+      "locator": {
+        "book": "GEN",
+        "chapter": 2,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 2,
+          "verse": 17
+        }
+      ],
+      "en": "but you shall not eat of the tree of the knowledge of good and evil; for in the day that you eat of it, you will surely die.”",
+      "ko": "선악을 알게하는 나무의 실과는 먹지 말라 네가 먹는 날에는 정녕 죽으리라 하시니라",
+      "source_text_hash": "163fc261f8839cb244bcfd0d2ac3b52f8242fbd59e6e224b7acb27297d30d36f",
+      "translation_text_hash": "bf570c7645cd909cad7ab140db88bbd0d5a548918a1d1df10bbf2313eeaa56e4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "선악을 알게하는 나무의 실과는 먹지 말라 네가 먹는 날에는 정녕 죽으리라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "bf570c7645cd909cad7ab140db88bbd0d5a548918a1d1df10bbf2313eeaa56e4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:2:18",
+      "sequence": 49,
+      "chapter_label": "GEN 2",
+      "verse_label": "18",
+      "locator": {
+        "book": "GEN",
+        "chapter": 2,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 2,
+          "verse": 18
+        }
+      ],
+      "en": "The LORD God said, “It is not good for the man to be alone. I will make him a helper comparable to him.”",
+      "ko": "여호와 하나님이 가라사대 사람의 독처하는 것이 좋지 못하니 내가 그를 위하여 돕는 배필을 지으리라 하시니라",
+      "source_text_hash": "aff23374396def460389045d86ea4363994bebcf18e7cf09a5531b82a1e5cb5b",
+      "translation_text_hash": "145dba86b4329933294f3b1ce8c75c04c671cc9449fb0f5318c0a2cf90ec3c7c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와 하나님이 가라사대 사람의 독처하는 것이 좋지 못하니 내가 그를 위하여 돕는 배필을 지으리라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "145dba86b4329933294f3b1ce8c75c04c671cc9449fb0f5318c0a2cf90ec3c7c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:2:19",
+      "sequence": 50,
+      "chapter_label": "GEN 2",
+      "verse_label": "19",
+      "locator": {
+        "book": "GEN",
+        "chapter": 2,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 2,
+          "verse": 19
+        }
+      ],
+      "en": "Out of the ground the LORD God formed every animal of the field, and every bird of the sky, and brought them to the man to see what he would call them. Whatever the man called every living creature became its name.",
+      "ko": "여호와 하나님이 흙으로 각종 들짐승과 공중의 각종 새를 지으시고 아담이 어떻게 이름을 짓나 보시려고 그것들을 그에게로 이끌어 이르시니 아담이 각 생물을 일컫는 바가 곧 그 이름이라",
+      "source_text_hash": "9099542003926bae02012e39b53d0f4d3d04511c17697e46a113fe6f316bb043",
+      "translation_text_hash": "68e310b0d8741626b7b87b1146ea5c16951b643db37e9320e33981a2f2b2f77c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와 하나님이 흙으로 각종 들짐승과 공중의 각종 새를 지으시고 아담이 어떻게 이름을 짓나 보시려고 그것들을 그에게로 이끌어 이르시니 아담이 각 생물을 일컫는 바가 곧 그 이름이라"
+      ],
+      "raw_text_hashes": [
+        "68e310b0d8741626b7b87b1146ea5c16951b643db37e9320e33981a2f2b2f77c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:2:20",
+      "sequence": 51,
+      "chapter_label": "GEN 2",
+      "verse_label": "20",
+      "locator": {
+        "book": "GEN",
+        "chapter": 2,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 2,
+          "verse": 20
+        }
+      ],
+      "en": "The man gave names to all livestock, and to the birds of the sky, and to every animal of the field; but for man there was not found a helper comparable to him.",
+      "ko": "아담이 모든 육축과 공중의 새와 들의 모든 짐승에게 이름을 주니라 아담이 돕는 배필이 없으므로",
+      "source_text_hash": "8893b4a3492ce111192d93f07445d2a6f2cf88c5bfd30128970390cce48726b7",
+      "translation_text_hash": "28676f78e914ba23501cdf3e317c2e3a62103af57a3f6163523d72b890a7b313",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아담이 모든 육축과 공중의 새와 들의 모든 짐승에게 이름을 주니라 아담이 돕는 배필이 없으므로"
+      ],
+      "raw_text_hashes": [
+        "28676f78e914ba23501cdf3e317c2e3a62103af57a3f6163523d72b890a7b313"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:2:21",
+      "sequence": 52,
+      "chapter_label": "GEN 2",
+      "verse_label": "21",
+      "locator": {
+        "book": "GEN",
+        "chapter": 2,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 2,
+          "verse": 21
+        }
+      ],
+      "en": "The LORD God caused the man to fall into a deep sleep. As the man slept, he took one of his ribs, and closed up the flesh in its place.",
+      "ko": "여호와 하나님이 아담을 깊이 잠들게 하시니 잠들매 그가 그 갈빗대 하나를 취하고 살로 대신 채우시고",
+      "source_text_hash": "53a980ae45da715e19b5e7406c0774e41505a47dc00823407d2e76cff0819bba",
+      "translation_text_hash": "7585a79d25e12021d25285c77bf76a2d41bcf1b5804f25b5a3da655254960b29",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와 하나님이 아담을 깊이 잠들게 하시니 잠들매 그가 그 갈빗대 하나를 취하고 살로 대신 채우시고"
+      ],
+      "raw_text_hashes": [
+        "7585a79d25e12021d25285c77bf76a2d41bcf1b5804f25b5a3da655254960b29"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:2:22",
+      "sequence": 53,
+      "chapter_label": "GEN 2",
+      "verse_label": "22",
+      "locator": {
+        "book": "GEN",
+        "chapter": 2,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 2,
+          "verse": 22
+        }
+      ],
+      "en": "The LORD God made a woman from the rib which he had taken from the man, and brought her to the man.",
+      "ko": "여호와 하나님이 아담에게서 취하신 그 갈빗대로 여자를 만드시고 그를 아담에게로 이끌어 오시니",
+      "source_text_hash": "9c19872f33b7bbd8ee12e3e868084374b99521dfab3de98fb57aa37ecf514fe9",
+      "translation_text_hash": "67a1b7b98f1173e24aa30888855abdda690ff5c4d510556d13924e4493a47700",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와 하나님이 아담에게서 취하신 그 갈빗대로 여자를 만드시고 그를 아담에게로 이끌어 오시니"
+      ],
+      "raw_text_hashes": [
+        "67a1b7b98f1173e24aa30888855abdda690ff5c4d510556d13924e4493a47700"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:2:23",
+      "sequence": 54,
+      "chapter_label": "GEN 2",
+      "verse_label": "23",
+      "locator": {
+        "book": "GEN",
+        "chapter": 2,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 2,
+          "verse": 23
+        }
+      ],
+      "en": "The man said, “This is now bone of my bones, and flesh of my flesh. She will be called ‘woman,’ because she was taken out of Man.”",
+      "ko": "아담이 가로되 이는 내 뼈 중의 뼈요 살 중의 살이라 이것을 남자에게서 취하였은즉 여자라 칭하리라 하니라",
+      "source_text_hash": "80fb3284499fcee741c5bb7be670c4a4928167d599b2bf661dd5bc4f69cf1f04",
+      "translation_text_hash": "b215d30bbb9d99742944b240528fd1d1bea851605c854e75a1156b1dbf6b2f5a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아담이 가로되 이는 내 뼈 중의 뼈요 살 중의 살이라 이것을 남자에게서 취하였은즉 여자라 칭하리라 하니라"
+      ],
+      "raw_text_hashes": [
+        "b215d30bbb9d99742944b240528fd1d1bea851605c854e75a1156b1dbf6b2f5a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:2:24",
+      "sequence": 55,
+      "chapter_label": "GEN 2",
+      "verse_label": "24",
+      "locator": {
+        "book": "GEN",
+        "chapter": 2,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 2,
+          "verse": 24
+        }
+      ],
+      "en": "Therefore a man will leave his father and his mother, and will join with his wife, and they will be one flesh.",
+      "ko": "이러므로 남자가 부모를 떠나 그 아내와 연합하여 둘이 한 몸을 이룰찌로다",
+      "source_text_hash": "8a17863225d8a7d609aa42dbf853c33844126022bcca60346b755a530325eda2",
+      "translation_text_hash": "dbc0c0da4205a4b8f14b792f7c501f97fa5be63d6db75d3468ad17bc738a9a0b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러므로 남자가 부모를 떠나 그 아내와 연합하여 둘이 한 몸을 이룰찌로다"
+      ],
+      "raw_text_hashes": [
+        "dbc0c0da4205a4b8f14b792f7c501f97fa5be63d6db75d3468ad17bc738a9a0b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:2:25",
+      "sequence": 56,
+      "chapter_label": "GEN 2",
+      "verse_label": "25",
+      "locator": {
+        "book": "GEN",
+        "chapter": 2,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 2,
+          "verse": 25
+        }
+      ],
+      "en": "The man and his wife were both naked, and they were not ashamed.",
+      "ko": "아담과 그 아내 두 사람이 벌거벗었으나 부끄러워 아니하니라",
+      "source_text_hash": "b7ad270e05f5cf4d5f9d927b413123725fb19ab29f3315906dd55b6029d6fea7",
+      "translation_text_hash": "4ff7224c9c3f426f637773e47223955f5974f208b657f778d99b67f6340075e7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아담과 그 아내 두 사람이 벌거벗었으나 부끄러워 아니하니라"
+      ],
+      "raw_text_hashes": [
+        "4ff7224c9c3f426f637773e47223955f5974f208b657f778d99b67f6340075e7"
+      ]
+    }
+  ]
+}

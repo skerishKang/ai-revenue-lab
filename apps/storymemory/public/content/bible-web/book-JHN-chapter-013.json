@@ -1,0 +1,1229 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JHN:chapter:013",
+  "unit_ordinal": 1010,
+  "unit_label": "JHN 13",
+  "book_code": "JHN",
+  "chapter_number": 13,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JHN:13:1",
+      "sequence": 26631,
+      "chapter_label": "JHN 13",
+      "verse_label": "1",
+      "locator": {
+        "book": "JHN",
+        "chapter": 13,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 13,
+          "verse": 1
+        }
+      ],
+      "en": "Now before the feast of the Passover, Jesus, knowing that his time had come that he would depart from this world to the Father, having loved his own who were in the world, he loved them to the end.",
+      "ko": "유월절 전에 예수께서 자기가 세상을 떠나 아버지께로 돌아가실 때가 이른줄 아시고 세상에 있는 자기 사람들을 사랑하시되 끝까지 사랑하시니라",
+      "source_text_hash": "365ca5dec6ca52d6bcf7e08b865960e671e3f1c3a1721fff6ff8e9fee62c5496",
+      "translation_text_hash": "118891ca584eab2fe4f6de83dc42f289a83d0c5d689a4ba8c81b477c0a999bf2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유월절 전에 예수께서 자기가 세상을 떠나 아버지께로 돌아가실 때가 이른줄 아시고 세상에 있는 자기 사람들을 사랑하시되 끝까지 사랑하시니라"
+      ],
+      "raw_text_hashes": [
+        "118891ca584eab2fe4f6de83dc42f289a83d0c5d689a4ba8c81b477c0a999bf2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:13:2",
+      "sequence": 26632,
+      "chapter_label": "JHN 13",
+      "verse_label": "2",
+      "locator": {
+        "book": "JHN",
+        "chapter": 13,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 13,
+          "verse": 2
+        }
+      ],
+      "en": "During supper, the devil having already put into the heart of Judas Iscariot, Simon’s son, to betray him,",
+      "ko": "마귀가 벌써 시몬의 아들 가룟 유다의 마음에 예수를 팔려는 생각을 넣었더니",
+      "source_text_hash": "ad4630df10e1e62ddaa6aa6455a3afd4c191501d6d1b4596dded17716e0ea35d",
+      "translation_text_hash": "63d0fbee3025bebc83fd9e55995e72dd2b3af1583ccd7dc3720d209467bd7a3d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마귀가 벌써 시몬의 아들 가룟 유다의 마음에 예수를 팔려는 생각을 넣었더니"
+      ],
+      "raw_text_hashes": [
+        "63d0fbee3025bebc83fd9e55995e72dd2b3af1583ccd7dc3720d209467bd7a3d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:13:3",
+      "sequence": 26633,
+      "chapter_label": "JHN 13",
+      "verse_label": "3",
+      "locator": {
+        "book": "JHN",
+        "chapter": 13,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 13,
+          "verse": 3
+        }
+      ],
+      "en": "Jesus, knowing that the Father had given all things into his hands, and that he came from God and was going to God,",
+      "ko": "저녁 먹는 중 예수는 아버지께서 모든 것을 자기 손에 맡기신 것과 또 자기가 하나님께로부터 오셨다가 하나님께로 돌아가실 것을 아시고",
+      "source_text_hash": "1f5202e22f247a0dc9cd94ce17bcafc7d83d9789628b4dfcc52b2984b8ef0907",
+      "translation_text_hash": "7f01b3776fb9a0dc3e2a78d93c31a4a146ff0e147fed6f92dd82062dd4e94c97",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저녁 먹는 중 예수는 아버지께서 모든 것을 자기 손에 맡기신 것과 또 자기가 하나님께로부터 오셨다가 하나님께로 돌아가실 것을 아시고"
+      ],
+      "raw_text_hashes": [
+        "7f01b3776fb9a0dc3e2a78d93c31a4a146ff0e147fed6f92dd82062dd4e94c97"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:13:4",
+      "sequence": 26634,
+      "chapter_label": "JHN 13",
+      "verse_label": "4",
+      "locator": {
+        "book": "JHN",
+        "chapter": 13,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 13,
+          "verse": 4
+        }
+      ],
+      "en": "arose from supper, and laid aside his outer garments. He took a towel and wrapped a towel around his waist.",
+      "ko": "저녁 잡수시던 자리에서 일어나 겉옷을 벗고 수건을 가져다가 허리에 두르시고",
+      "source_text_hash": "d624898243795d6d3a1af696d96605ae0d8c0ccf1f37e714aa82b712ef1bcc9f",
+      "translation_text_hash": "f3602923b576cb98eebe454c0c8565a60730b7390d5ec23becaf814b5c4c4fb3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저녁 잡수시던 자리에서 일어나 겉옷을 벗고 수건을 가져다가 허리에 두르시고"
+      ],
+      "raw_text_hashes": [
+        "f3602923b576cb98eebe454c0c8565a60730b7390d5ec23becaf814b5c4c4fb3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:13:5",
+      "sequence": 26635,
+      "chapter_label": "JHN 13",
+      "verse_label": "5",
+      "locator": {
+        "book": "JHN",
+        "chapter": 13,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 13,
+          "verse": 5
+        }
+      ],
+      "en": "Then he poured water into the basin, and began to wash the disciples’ feet and to wipe them with the towel that was wrapped around him.",
+      "ko": "이에 대야에 물을 담아 제자들의 발을 씻기시고 그 두르신 수건으로 씻기기를 시작하여",
+      "source_text_hash": "4787ffe1532d7a8da01b02602e1575e67b525c0bc2304847cec0c8cc3055a8bf",
+      "translation_text_hash": "3b73d158c59964b3f41d6a064049444223f9abd15dd6be6c65c8aa64384087b1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 대야에 물을 담아 제자들의 발을 씻기시고 그 두르신 수건으로 씻기기를 시작하여"
+      ],
+      "raw_text_hashes": [
+        "3b73d158c59964b3f41d6a064049444223f9abd15dd6be6c65c8aa64384087b1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:13:6",
+      "sequence": 26636,
+      "chapter_label": "JHN 13",
+      "verse_label": "6",
+      "locator": {
+        "book": "JHN",
+        "chapter": 13,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 13,
+          "verse": 6
+        }
+      ],
+      "en": "Then he came to Simon Peter. He said to him, “Lord, do you wash my feet?”",
+      "ko": "시몬 베드로에게 이르시니 가로되 주여 주께서 내 발을 씻기시나이까",
+      "source_text_hash": "ebbca3602b5dfd3fd2b3d98b945d4aa17e8866304008d4bfab56dd2f21c873d9",
+      "translation_text_hash": "04899fe99b6bc48cc1d1b2aebd2c47c9e83dca7e3c139433b421d7554868bbff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시몬 베드로에게 이르시니 가로되 주여 주께서 내 발을 씻기시나이까"
+      ],
+      "raw_text_hashes": [
+        "04899fe99b6bc48cc1d1b2aebd2c47c9e83dca7e3c139433b421d7554868bbff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:13:7",
+      "sequence": 26637,
+      "chapter_label": "JHN 13",
+      "verse_label": "7",
+      "locator": {
+        "book": "JHN",
+        "chapter": 13,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 13,
+          "verse": 7
+        }
+      ],
+      "en": "Jesus answered him, “You don’t know what I am doing now, but you will understand later.”",
+      "ko": "예수께서 대답하여 가라사대 나의 하는 것을 네가 이제는 알지 못하나 이 후에는 알리라",
+      "source_text_hash": "f48bf7a521e302d3c15ea5bd948f8484f06ab5502ac48d0f0645e1c3a06c3a59",
+      "translation_text_hash": "1d2c920e39a1327c2b5cee591d611b41c841758395205cbbf53afa5e9c96d260",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 대답하여 가라사대 나의 하는 것을 네가 이제는 알지 못하나 이 후에는 알리라"
+      ],
+      "raw_text_hashes": [
+        "1d2c920e39a1327c2b5cee591d611b41c841758395205cbbf53afa5e9c96d260"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:13:8",
+      "sequence": 26638,
+      "chapter_label": "JHN 13",
+      "verse_label": "8",
+      "locator": {
+        "book": "JHN",
+        "chapter": 13,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 13,
+          "verse": 8
+        }
+      ],
+      "en": "Peter said to him, “You will never wash my feet!” Jesus answered him, “If I don’t wash you, you have no part with me.”",
+      "ko": "베드로가 가로되 내 발을 절대로 씻기지 못하시리이다 예수께서 대답하시되 내가 너를 씻기지 아니하면 네가 나와 상관이 없느니라",
+      "source_text_hash": "10c88b9d3e61b9c79301acbb030743b1ce20f5bbb5067916df9ecdfde537dda6",
+      "translation_text_hash": "1149ae6da4e39bd08908d7d8edbf1c683bf02eb9805ab1e1a5c9ccb5258c5619",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베드로가 가로되 내 발을 절대로 씻기지 못하시리이다 예수께서 대답하시되 내가 너를 씻기지 아니하면 네가 나와 상관이 없느니라"
+      ],
+      "raw_text_hashes": [
+        "1149ae6da4e39bd08908d7d8edbf1c683bf02eb9805ab1e1a5c9ccb5258c5619"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:13:9",
+      "sequence": 26639,
+      "chapter_label": "JHN 13",
+      "verse_label": "9",
+      "locator": {
+        "book": "JHN",
+        "chapter": 13,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 13,
+          "verse": 9
+        }
+      ],
+      "en": "Simon Peter said to him, “Lord, not my feet only, but also my hands and my head!”",
+      "ko": "시몬 베드로가 가로되 주여 내 발 뿐아니라 손과 머리도 씻겨 주옵소서",
+      "source_text_hash": "22c7ff7fbd73de0b0ffabaf464ae135d07866b3578dbe0cb322101f5036e7f04",
+      "translation_text_hash": "8ad863521328f38b8fec5da372733ed24258a04ee07bbbd6057a65f85d7e382a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시몬 베드로가 가로되 주여 내 발 뿐아니라 손과 머리도 씻겨 주옵소서"
+      ],
+      "raw_text_hashes": [
+        "8ad863521328f38b8fec5da372733ed24258a04ee07bbbd6057a65f85d7e382a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:13:10",
+      "sequence": 26640,
+      "chapter_label": "JHN 13",
+      "verse_label": "10",
+      "locator": {
+        "book": "JHN",
+        "chapter": 13,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 13,
+          "verse": 10
+        }
+      ],
+      "en": "Jesus said to him, “Someone who has bathed only needs to have his feet washed, but is completely clean. You are clean, but not all of you.”",
+      "ko": "예수께서 가라사대 이미 목욕한 자는 발 밖에 씻을 필요가 없느니라 온 몸이 깨끗하니라 너희가 깨끗하나 다는 아니니라 하시니",
+      "source_text_hash": "69f086dd3f3408002fc114d28eac9ad53fb59302b017963fc7e79cdbafe694bd",
+      "translation_text_hash": "51b6768a4d6b7b923f699630e9f058ba8762df83adbba3ee21211a565929e0a8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 가라사대 이미 목욕한 자는 발 밖에 씻을 필요가 없느니라 온 몸이 깨끗하니라 너희가 깨끗하나 다는 아니니라 하시니"
+      ],
+      "raw_text_hashes": [
+        "51b6768a4d6b7b923f699630e9f058ba8762df83adbba3ee21211a565929e0a8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:13:11",
+      "sequence": 26641,
+      "chapter_label": "JHN 13",
+      "verse_label": "11",
+      "locator": {
+        "book": "JHN",
+        "chapter": 13,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 13,
+          "verse": 11
+        }
+      ],
+      "en": "For he knew him who would betray him; therefore he said, “You are not all clean.”",
+      "ko": "이는 자기를 팔 자가 누구인지 아심이라 그러므로 다는 깨끗지 아니하다 하시니라",
+      "source_text_hash": "5c284cfc482375e3030f19420ccf2a1a7ea9c77796785b8004efcded1bbaff90",
+      "translation_text_hash": "4826b6243f2e8ee370b6c0aab40b6b3708f17ea4df6cb5d709d0a9559e6037fe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 자기를 팔 자가 누구인지 아심이라 그러므로 다는 깨끗지 아니하다 하시니라"
+      ],
+      "raw_text_hashes": [
+        "4826b6243f2e8ee370b6c0aab40b6b3708f17ea4df6cb5d709d0a9559e6037fe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:13:12",
+      "sequence": 26642,
+      "chapter_label": "JHN 13",
+      "verse_label": "12",
+      "locator": {
+        "book": "JHN",
+        "chapter": 13,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 13,
+          "verse": 12
+        }
+      ],
+      "en": "So when he had washed their feet, put his outer garment back on, and sat down again, he said to them, “Do you know what I have done to you?",
+      "ko": "저희 발을 씻기신 후에 옷을 입으시고 다시 앉아 저희에게 이르시되 내가 너희에게 행한 것을 너희가 아느냐",
+      "source_text_hash": "935afa2f07455a227b3e5b7a2870b9775b6b1bf9f27a6b224f6b5d831768f75d",
+      "translation_text_hash": "6a54f91ff66305411217fb335675987bf0c3a94a7f11a23d95946a1dcdd2b97a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희 발을 씻기신 후에 옷을 입으시고 다시 앉아 저희에게 이르시되 내가 너희에게 행한 것을 너희가 아느냐"
+      ],
+      "raw_text_hashes": [
+        "6a54f91ff66305411217fb335675987bf0c3a94a7f11a23d95946a1dcdd2b97a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:13:13",
+      "sequence": 26643,
+      "chapter_label": "JHN 13",
+      "verse_label": "13",
+      "locator": {
+        "book": "JHN",
+        "chapter": 13,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 13,
+          "verse": 13
+        }
+      ],
+      "en": "You call me, ‘Teacher’ and ‘Lord.’ You say so correctly, for so I am.",
+      "ko": "너희가 나를 선생이라 또는 주라 하니 너희 말이 옳도다 내가 그러하다",
+      "source_text_hash": "bb673bdad37877bfdc9ef95f17d4012716996e32201be407a68802b8b93fef8c",
+      "translation_text_hash": "eefbc786457f4c189dba456c2a839ff7ea2f994f8c50a719409d25f74255557f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 나를 선생이라 또는 주라 하니 너희 말이 옳도다 내가 그러하다"
+      ],
+      "raw_text_hashes": [
+        "eefbc786457f4c189dba456c2a839ff7ea2f994f8c50a719409d25f74255557f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:13:14",
+      "sequence": 26644,
+      "chapter_label": "JHN 13",
+      "verse_label": "14",
+      "locator": {
+        "book": "JHN",
+        "chapter": 13,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 13,
+          "verse": 14
+        }
+      ],
+      "en": "If I then, the Lord and the Teacher, have washed your feet, you also ought to wash one another’s feet.",
+      "ko": "내가 주와 또는 선생이 되어 너희 발을 씻겼으니 너희도 서로 발을 씻기는 것이 옳으니라",
+      "source_text_hash": "a3ee075da6f7d61d44c69cd181f5571bd2920805362a043cab9efbecffa289e2",
+      "translation_text_hash": "13792145bc374f8b23a4a41a80bca23dd061475203ccb1670aac547c9e2e03b4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 주와 또는 선생이 되어 너희 발을 씻겼으니 너희도 서로 발을 씻기는 것이 옳으니라"
+      ],
+      "raw_text_hashes": [
+        "13792145bc374f8b23a4a41a80bca23dd061475203ccb1670aac547c9e2e03b4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:13:15",
+      "sequence": 26645,
+      "chapter_label": "JHN 13",
+      "verse_label": "15",
+      "locator": {
+        "book": "JHN",
+        "chapter": 13,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 13,
+          "verse": 15
+        }
+      ],
+      "en": "For I have given you an example, that you should also do as I have done to you.",
+      "ko": "내가 너희에게 행한것 같이 너희도 행하게 하려하여 본을 보였노라",
+      "source_text_hash": "8839d26d73e5b7580baf45523e259b47591998056e665892a0c44f8b649d3d44",
+      "translation_text_hash": "0820a52231de5394a2dc6a7f40f5bbb3fff7c34e4f234d70d0f5ce8c1702f78e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너희에게 행한것 같이 너희도 행하게 하려하여 본을 보였노라"
+      ],
+      "raw_text_hashes": [
+        "0820a52231de5394a2dc6a7f40f5bbb3fff7c34e4f234d70d0f5ce8c1702f78e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:13:16",
+      "sequence": 26646,
+      "chapter_label": "JHN 13",
+      "verse_label": "16",
+      "locator": {
+        "book": "JHN",
+        "chapter": 13,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 13,
+          "verse": 16
+        }
+      ],
+      "en": "Most certainly I tell you, a servant is not greater than his lord, neither is one who is sent greater than he who sent him.",
+      "ko": "내가 진실로 진실로 너희에게 이르노니 종이 상전보다 크지 못하고 보냄을 받은 자가 보낸 자보다 크지 못하니",
+      "source_text_hash": "df1906c45e4fbc1b46b1bb15bc7139f77bba524fb12b7f2fe40888f3b8bcb69c",
+      "translation_text_hash": "26da84fbaaf1a51cc9fd89ddc7bdc2854f831cbab32ec223299f8d4062f9d0cb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 진실로 진실로 너희에게 이르노니 종이 상전보다 크지 못하고 보냄을 받은 자가 보낸 자보다 크지 못하니"
+      ],
+      "raw_text_hashes": [
+        "26da84fbaaf1a51cc9fd89ddc7bdc2854f831cbab32ec223299f8d4062f9d0cb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:13:17",
+      "sequence": 26647,
+      "chapter_label": "JHN 13",
+      "verse_label": "17",
+      "locator": {
+        "book": "JHN",
+        "chapter": 13,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 13,
+          "verse": 17
+        }
+      ],
+      "en": "If you know these things, blessed are you if you do them.",
+      "ko": "너희가 이것을 알고 행하면 복이 있으리라",
+      "source_text_hash": "31b81442dd4d0c41e0c09b3207543d6ed1266a70dd8bc2aaa84f48a7420cb246",
+      "translation_text_hash": "a61c4ef908851ab7e6f3fb8d07ab65c5eaa00edbafe43949830c8d0e8b798ba1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 이것을 알고 행하면 복이 있으리라"
+      ],
+      "raw_text_hashes": [
+        "a61c4ef908851ab7e6f3fb8d07ab65c5eaa00edbafe43949830c8d0e8b798ba1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:13:18",
+      "sequence": 26648,
+      "chapter_label": "JHN 13",
+      "verse_label": "18",
+      "locator": {
+        "book": "JHN",
+        "chapter": 13,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 13,
+          "verse": 18
+        }
+      ],
+      "en": "I don’t speak concerning all of you. I know whom I have chosen; but that the Scripture may be fulfilled, ‘He who eats bread with me has lifted up his heel against me.’",
+      "ko": "내가 너희를 다 가리켜 말하는 것이 아니라 내가 나의 택한 자들이 누구인지 앎이라 그러나 내 떡을 먹는 자가 내게 발꿈치를 들었다 한 성경을 응하게 하려는 것이니라",
+      "source_text_hash": "06438d0e509bc44cd1b3d361efa8b93567aac6d68b0667eb36321ba034f5b0d6",
+      "translation_text_hash": "ee185af9e943076e8f47753343c821a899e930809adaaa4d58faf14386db91b8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너희를 다 가리켜 말하는 것이 아니라 내가 나의 택한 자들이 누구인지 앎이라 그러나 내 떡을 먹는 자가 내게 발꿈치를 들었다 한 성경을 응하게 하려는 것이니라"
+      ],
+      "raw_text_hashes": [
+        "ee185af9e943076e8f47753343c821a899e930809adaaa4d58faf14386db91b8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:13:19",
+      "sequence": 26649,
+      "chapter_label": "JHN 13",
+      "verse_label": "19",
+      "locator": {
+        "book": "JHN",
+        "chapter": 13,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 13,
+          "verse": 19
+        }
+      ],
+      "en": "From now on, I tell you before it happens, that when it happens, you may believe that I am he.",
+      "ko": "지금부터 일이 이루기 전에 미리 너희에게 이름은 일이 이룰 때에 내가 그인줄 너희로 믿게 하려 함이로라",
+      "source_text_hash": "3de64d10ce82a57ef740856acc8b70696f1af779e4baaad5343e856c6d1c2aea",
+      "translation_text_hash": "08ded45f44386fc6ea55ac08c2cc04e71cb4d22c7feab16a9e8a7c55902bd132",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "지금부터 일이 이루기 전에 미리 너희에게 이름은 일이 이룰 때에 내가 그인줄 너희로 믿게 하려 함이로라"
+      ],
+      "raw_text_hashes": [
+        "08ded45f44386fc6ea55ac08c2cc04e71cb4d22c7feab16a9e8a7c55902bd132"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:13:20",
+      "sequence": 26650,
+      "chapter_label": "JHN 13",
+      "verse_label": "20",
+      "locator": {
+        "book": "JHN",
+        "chapter": 13,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 13,
+          "verse": 20
+        }
+      ],
+      "en": "Most certainly I tell you, he who receives whomever I send, receives me; and he who receives me, receives him who sent me.”",
+      "ko": "내가 진실로 진실로 너희에게 이르노니 나의 보낸 자를 영접하는 자는 나를 영접하는 것이요 나를 영접하는 자는 나를 보내신 이를 영접하는 것이니라",
+      "source_text_hash": "015e63684c89fd902a5a708f39bbed001dcbb6ed64c6a0193d15ccddfe8f5f3a",
+      "translation_text_hash": "18ee5d9a0162b79a3a5be9d0804dcccc7af1f20d2e9776bde310837df11221f5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 진실로 진실로 너희에게 이르노니 나의 보낸 자를 영접하는 자는 나를 영접하는 것이요 나를 영접하는 자는 나를 보내신 이를 영접하는 것이니라"
+      ],
+      "raw_text_hashes": [
+        "18ee5d9a0162b79a3a5be9d0804dcccc7af1f20d2e9776bde310837df11221f5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:13:21",
+      "sequence": 26651,
+      "chapter_label": "JHN 13",
+      "verse_label": "21",
+      "locator": {
+        "book": "JHN",
+        "chapter": 13,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 13,
+          "verse": 21
+        }
+      ],
+      "en": "When Jesus had said this, he was troubled in spirit, and testified, “Most certainly I tell you that one of you will betray me.”",
+      "ko": "예수께서 이 말씀을 하시고 심령에 민망하여 증거하여 가라사대 내가 진실로 진실로 너희에게 이르노니 너희 중 하나가 나를 팔리라 하시니",
+      "source_text_hash": "26bd0f5fc0892acc7e6c03c6bc3a279af013fd04ac7e527a4152f46306e2bfcb",
+      "translation_text_hash": "3af98c19195b582b0d7c047d4d757cfaa6244fc9951aab354aba7017848eee20",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 이 말씀을 하시고 심령에 민망하여 증거하여 가라사대 내가 진실로 진실로 너희에게 이르노니 너희 중 하나가 나를 팔리라 하시니"
+      ],
+      "raw_text_hashes": [
+        "3af98c19195b582b0d7c047d4d757cfaa6244fc9951aab354aba7017848eee20"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:13:22",
+      "sequence": 26652,
+      "chapter_label": "JHN 13",
+      "verse_label": "22",
+      "locator": {
+        "book": "JHN",
+        "chapter": 13,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 13,
+          "verse": 22
+        }
+      ],
+      "en": "The disciples looked at one another, perplexed about whom he spoke.",
+      "ko": "제자들이 서로 보며 뉘게 대하여 말씀하시는지 의심하더라",
+      "source_text_hash": "7711cbf51f579de2a9854cc8d334036e987e7694f992770362b3b5264e84383c",
+      "translation_text_hash": "ce4477e70bb223c553419e58d899bb01d94f210d545b0e157fb75e4115715dc1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제자들이 서로 보며 뉘게 대하여 말씀하시는지 의심하더라"
+      ],
+      "raw_text_hashes": [
+        "ce4477e70bb223c553419e58d899bb01d94f210d545b0e157fb75e4115715dc1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:13:23",
+      "sequence": 26653,
+      "chapter_label": "JHN 13",
+      "verse_label": "23",
+      "locator": {
+        "book": "JHN",
+        "chapter": 13,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 13,
+          "verse": 23
+        }
+      ],
+      "en": "One of his disciples, whom Jesus loved, was at the table, leaning against Jesus’ chest.",
+      "ko": "예수의 제자 중 하나 곧 그의 사랑하시는 자가 예수의 품에 의지하여 누웠는지라",
+      "source_text_hash": "e3aabe2c95b7ed37488e5f4e3af78d6b50927ba50f3b0ae827b9d32117285b3f",
+      "translation_text_hash": "40b884a7ab49956ffea366154a4eca51fa0b46047a4e2f975f8427946e9b877d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수의 제자 중 하나 곧 그의 사랑하시는 자가 예수의 품에 의지하여 누웠는지라"
+      ],
+      "raw_text_hashes": [
+        "40b884a7ab49956ffea366154a4eca51fa0b46047a4e2f975f8427946e9b877d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:13:24",
+      "sequence": 26654,
+      "chapter_label": "JHN 13",
+      "verse_label": "24",
+      "locator": {
+        "book": "JHN",
+        "chapter": 13,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 13,
+          "verse": 24
+        }
+      ],
+      "en": "Simon Peter therefore beckoned to him, and said to him, “Tell us who it is of whom he speaks.”",
+      "ko": "시몬 베드로가 머릿짓을 하여 말하되 말씀하신 자가 누구인지 말하라 한대",
+      "source_text_hash": "2b91a6982adab4d5b46317506a863f07e8c398ceb1ec83b19776ef074c43010c",
+      "translation_text_hash": "a6425157094825d32e99b2b15ed60c911edc32fb5ddcbd56061d22b3382d2ca5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시몬 베드로가 머릿짓을 하여 말하되 말씀하신 자가 누구인지 말하라 한대"
+      ],
+      "raw_text_hashes": [
+        "a6425157094825d32e99b2b15ed60c911edc32fb5ddcbd56061d22b3382d2ca5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:13:25",
+      "sequence": 26655,
+      "chapter_label": "JHN 13",
+      "verse_label": "25",
+      "locator": {
+        "book": "JHN",
+        "chapter": 13,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 13,
+          "verse": 25
+        }
+      ],
+      "en": "He, leaning back, as he was, on Jesus’ chest, asked him, “Lord, who is it?”",
+      "ko": "그가 예수의 가슴에 그대로 의지하여 말하되 주여 누구오니이까",
+      "source_text_hash": "ea4232bd61941b3766d787a7fd95905ad1b8e566f598e482fb030c17066e06f1",
+      "translation_text_hash": "251e74f7a02bc8999ffebb224fc45e1ac6e5885f5a8a31138a73bd1681e6c4bf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 예수의 가슴에 그대로 의지하여 말하되 주여 누구오니이까"
+      ],
+      "raw_text_hashes": [
+        "251e74f7a02bc8999ffebb224fc45e1ac6e5885f5a8a31138a73bd1681e6c4bf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:13:26",
+      "sequence": 26656,
+      "chapter_label": "JHN 13",
+      "verse_label": "26",
+      "locator": {
+        "book": "JHN",
+        "chapter": 13,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 13,
+          "verse": 26
+        }
+      ],
+      "en": "Jesus therefore answered, “It is he to whom I will give this piece of bread when I have dipped it.”So when he had dipped the piece of bread, he gave it to Judas, the son of Simon Iscariot.",
+      "ko": "예수께서 대답하시되 내가 한 조각을 찍어다가 주는 자가 그니라 하시고 곧 한 조각을 찍으셔다가 가룟 시몬의 아들 유다를 주시니",
+      "source_text_hash": "1698611424bb61fa784f2614f9722f7798e2e1ca5157530045a4f94986490faf",
+      "translation_text_hash": "6d360d795faa5ff7a0b342ee207709033a50ad996aea0f627dca3d3fe2d7b13f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 대답하시되 내가 한 조각을 찍어다가 주는 자가 그니라 하시고 곧 한 조각을 찍으셔다가 가룟 시몬의 아들 유다를 주시니"
+      ],
+      "raw_text_hashes": [
+        "6d360d795faa5ff7a0b342ee207709033a50ad996aea0f627dca3d3fe2d7b13f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:13:27",
+      "sequence": 26657,
+      "chapter_label": "JHN 13",
+      "verse_label": "27",
+      "locator": {
+        "book": "JHN",
+        "chapter": 13,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 13,
+          "verse": 27
+        }
+      ],
+      "en": "After the piece of bread, then Satan entered into him. Then Jesus said to him, “What you do, do quickly.”",
+      "ko": "조각을 받은 후 곧 사단이 그 속에 들어간지라 이에 예수께서 유다에게 이르시되 네 하는 일을 속히 하라 하시니",
+      "source_text_hash": "6a5316b6aa2d7917467b91340c50d838b8ce45fe7942ef073f1f1ed99f23a091",
+      "translation_text_hash": "3c5e585a69aeb81edc103a3ee612cec28276f4814a3194569006761047fabef1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "조각을 받은 후 곧 사단이 그 속에 들어간지라 이에 예수께서 유다에게 이르시되 네 하는 일을 속히 하라 하시니"
+      ],
+      "raw_text_hashes": [
+        "3c5e585a69aeb81edc103a3ee612cec28276f4814a3194569006761047fabef1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:13:28",
+      "sequence": 26658,
+      "chapter_label": "JHN 13",
+      "verse_label": "28",
+      "locator": {
+        "book": "JHN",
+        "chapter": 13,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 13,
+          "verse": 28
+        }
+      ],
+      "en": "Now nobody at the table knew why he said this to him.",
+      "ko": "이 말씀을 무슨 뜻으로 하셨는지 그 앉은 자 중에 아는 이가 없고",
+      "source_text_hash": "d42c7193659b373f911d72ecbc88f3fc58f2d5ebfc99b761c25d1de6239cc918",
+      "translation_text_hash": "a35a0e6ea630201772e43740d37752e769b012f2e8140ea0efb7966640d14dc3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 말씀을 무슨 뜻으로 하셨는지 그 앉은 자 중에 아는 이가 없고"
+      ],
+      "raw_text_hashes": [
+        "a35a0e6ea630201772e43740d37752e769b012f2e8140ea0efb7966640d14dc3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:13:29",
+      "sequence": 26659,
+      "chapter_label": "JHN 13",
+      "verse_label": "29",
+      "locator": {
+        "book": "JHN",
+        "chapter": 13,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 13,
+          "verse": 29
+        }
+      ],
+      "en": "For some thought, because Judas had the money box, that Jesus said to him, “Buy what things we need for the feast,” or that he should give something to the poor.",
+      "ko": "어떤이들은 유다가 돈 궤를 맡았으므로 명절에 우리의 쓸 물건을 사라 하시는지 혹 가난한 자들에게 무엇을 주라 하시는 줄로 생각하더라",
+      "source_text_hash": "2e896115e0bfcd0a6e612f9201396522830a13cd3793c249fbca53bba0cde414",
+      "translation_text_hash": "ff6e319738faba3f92f6ad2f9e37514ad16d3959b437f8ccc739907bb5b21134",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어떤이들은 유다가 돈 궤를 맡았으므로 명절에 우리의 쓸 물건을 사라 하시는지 혹 가난한 자들에게 무엇을 주라 하시는 줄로 생각하더라"
+      ],
+      "raw_text_hashes": [
+        "ff6e319738faba3f92f6ad2f9e37514ad16d3959b437f8ccc739907bb5b21134"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:13:30",
+      "sequence": 26660,
+      "chapter_label": "JHN 13",
+      "verse_label": "30",
+      "locator": {
+        "book": "JHN",
+        "chapter": 13,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 13,
+          "verse": 30
+        }
+      ],
+      "en": "Therefore having received that morsel, he went out immediately. It was night.",
+      "ko": "유다가 그 조각을 받고 곧 나가니 밤이러라",
+      "source_text_hash": "c8e77d0546a0b829836bd3f6bf73f05a0feeb4c78fc74f185790993c23ccfbbc",
+      "translation_text_hash": "c14476be13d6f7bc4766fd03377ac5c092873358cb25421891aed564f465e041",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다가 그 조각을 받고 곧 나가니 밤이러라"
+      ],
+      "raw_text_hashes": [
+        "c14476be13d6f7bc4766fd03377ac5c092873358cb25421891aed564f465e041"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:13:31",
+      "sequence": 26661,
+      "chapter_label": "JHN 13",
+      "verse_label": "31",
+      "locator": {
+        "book": "JHN",
+        "chapter": 13,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 13,
+          "verse": 31
+        }
+      ],
+      "en": "When he had gone out, Jesus said, “Now the Son of Man has been glorified, and God has been glorified in him.",
+      "ko": "저가 나간 후에 예수께서 가라사대 지금 인자가 영광을 얻었고 하나님도 인자를 인하여 영광을 얻으셨도다",
+      "source_text_hash": "4ebae45df8b3e948c2ac9bae6df84112887f0a6de0fcf163b6c1b651e21d735f",
+      "translation_text_hash": "9f8054bde961e145d8b934799b3acff3b97c72924cdf835c29e84573c8f856f4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 나간 후에 예수께서 가라사대 지금 인자가 영광을 얻었고 하나님도 인자를 인하여 영광을 얻으셨도다"
+      ],
+      "raw_text_hashes": [
+        "9f8054bde961e145d8b934799b3acff3b97c72924cdf835c29e84573c8f856f4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:13:32",
+      "sequence": 26662,
+      "chapter_label": "JHN 13",
+      "verse_label": "32",
+      "locator": {
+        "book": "JHN",
+        "chapter": 13,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 13,
+          "verse": 32
+        }
+      ],
+      "en": "If God has been glorified in him, God will also glorify him in himself, and he will glorify him immediately.",
+      "ko": "만일 하나님이 저로 인하여 영광을 얻으셨으면 하나님도 자기로 인하여 저에게 영광을 주시리니 곧 주시리라",
+      "source_text_hash": "72c21af434a2f36bd75b8fc403c963e61c92187901f8bb467793694116aa2649",
+      "translation_text_hash": "74c117056324ed5859702038dae609c1166915afb7fc5ac50eb97291f65855f0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 하나님이 저로 인하여 영광을 얻으셨으면 하나님도 자기로 인하여 저에게 영광을 주시리니 곧 주시리라"
+      ],
+      "raw_text_hashes": [
+        "74c117056324ed5859702038dae609c1166915afb7fc5ac50eb97291f65855f0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:13:33",
+      "sequence": 26663,
+      "chapter_label": "JHN 13",
+      "verse_label": "33",
+      "locator": {
+        "book": "JHN",
+        "chapter": 13,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 13,
+          "verse": 33
+        }
+      ],
+      "en": "Little children, I will be with you a little while longer. You will seek me, and as I said to the Jews, ‘Where I am going, you can’t come,’ so now I tell you.",
+      "ko": "소자들아 내가 아직 잠시 너희와 함께 있겠노라 너희가 나를 찾을터이나 그러나 일찍 내가 유대인들에게 너희는 나의 가는 곳에 올 수 없다고 말한 것과 같이 지금 너희에게도 이르노라",
+      "source_text_hash": "e8dde3046b87dd47fda15a99263003207a65b4a806ed3228dfa22fdb53347634",
+      "translation_text_hash": "09cf9aa62a6116af4c62548f752d83c65a904e9eddbd4619a54078962235e0bb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "소자들아 내가 아직 잠시 너희와 함께 있겠노라 너희가 나를 찾을터이나 그러나 일찍 내가 유대인들에게 너희는 나의 가는 곳에 올 수 없다고 말한 것과 같이 지금 너희에게도 이르노라"
+      ],
+      "raw_text_hashes": [
+        "09cf9aa62a6116af4c62548f752d83c65a904e9eddbd4619a54078962235e0bb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:13:34",
+      "sequence": 26664,
+      "chapter_label": "JHN 13",
+      "verse_label": "34",
+      "locator": {
+        "book": "JHN",
+        "chapter": 13,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 13,
+          "verse": 34
+        }
+      ],
+      "en": "A new commandment I give to you, that you love one another. Just as I have loved you, you also love one another.",
+      "ko": "새 계명을 너희에게 주노니 서로 사랑하라 내가 너희를 사랑한것 같이 너희도 서로 사랑하라",
+      "source_text_hash": "ecb8c757586e5dafb721997839ab08e930f2b816e749147723eed2fbd012137c",
+      "translation_text_hash": "da5620c2043b0cced35764a4d32abdb6599f1b78bc8ce22246864589efb90417",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "새 계명을 너희에게 주노니 서로 사랑하라 내가 너희를 사랑한것 같이 너희도 서로 사랑하라"
+      ],
+      "raw_text_hashes": [
+        "da5620c2043b0cced35764a4d32abdb6599f1b78bc8ce22246864589efb90417"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:13:35",
+      "sequence": 26665,
+      "chapter_label": "JHN 13",
+      "verse_label": "35",
+      "locator": {
+        "book": "JHN",
+        "chapter": 13,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 13,
+          "verse": 35
+        }
+      ],
+      "en": "By this everyone will know that you are my disciples, if you have love for one another.”",
+      "ko": "너희가 서로 사랑하면 이로써 모든 사람이 너희가 내 제자인줄 알리라",
+      "source_text_hash": "b3dc3f3362ea9782d037733baa7bc137a3ca24d27838e7941e57e6280654cd21",
+      "translation_text_hash": "51292b0ded2dec7cf5840ee678c2098cd18d1c9e9b8ab8e5989c8dd75118accb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 서로 사랑하면 이로써 모든 사람이 너희가 내 제자인줄 알리라"
+      ],
+      "raw_text_hashes": [
+        "51292b0ded2dec7cf5840ee678c2098cd18d1c9e9b8ab8e5989c8dd75118accb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:13:36",
+      "sequence": 26666,
+      "chapter_label": "JHN 13",
+      "verse_label": "36",
+      "locator": {
+        "book": "JHN",
+        "chapter": 13,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 13,
+          "verse": 36
+        }
+      ],
+      "en": "Simon Peter said to him, “Lord, where are you going?” Jesus answered, “Where I am going, you can’t follow now, but you will follow afterwards.”",
+      "ko": "시몬 베드로가 가로되 주여 어디로 가시나이까 예수께서 대답하시되 나의 가는 곳에 네가 지금은 따라 올 수 없으나 후에는 따라 오리라",
+      "source_text_hash": "7aa1e873cab46d4c29913ba5a2b3f09b2b1e56cc5ee5dedadda9351dad0edbcc",
+      "translation_text_hash": "e5bd50331d53926503d22c9b7a2808b1aca04af84b416d9bd9967c9d975b6cdb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시몬 베드로가 가로되 주여 어디로 가시나이까 예수께서 대답하시되 나의 가는 곳에 네가 지금은 따라 올 수 없으나 후에는 따라 오리라"
+      ],
+      "raw_text_hashes": [
+        "e5bd50331d53926503d22c9b7a2808b1aca04af84b416d9bd9967c9d975b6cdb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:13:37",
+      "sequence": 26667,
+      "chapter_label": "JHN 13",
+      "verse_label": "37",
+      "locator": {
+        "book": "JHN",
+        "chapter": 13,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 13,
+          "verse": 37
+        }
+      ],
+      "en": "Peter said to him, “Lord, why can’t I follow you now? I will lay down my life for you.”",
+      "ko": "베드로가 가로되 주여 내가 지금은 어찌하여 따를 수 없나이까 주를 위하여 내 목숨을 버리겠나이다",
+      "source_text_hash": "4305a109f3560fa83ad1a002cd4ec44a114386f3759394228238faab0b09b312",
+      "translation_text_hash": "828b0cf1c48fa82e5b62b0a956dfd329163584d8d2b43e1efe85c0d4feffecbe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베드로가 가로되 주여 내가 지금은 어찌하여 따를 수 없나이까 주를 위하여 내 목숨을 버리겠나이다"
+      ],
+      "raw_text_hashes": [
+        "828b0cf1c48fa82e5b62b0a956dfd329163584d8d2b43e1efe85c0d4feffecbe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:13:38",
+      "sequence": 26668,
+      "chapter_label": "JHN 13",
+      "verse_label": "38",
+      "locator": {
+        "book": "JHN",
+        "chapter": 13,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 13,
+          "verse": 38
+        }
+      ],
+      "en": "Jesus answered him, “Will you lay down your life for me? Most certainly I tell you, the rooster won’t crow until you have denied me three times.",
+      "ko": "예수께서 대답하시되 네가 나를 위하여 네 목숨을 버리겠느냐 내가 진실로 진실로 네게 이르노니 닭 울기 전에 네가 세번 나를 부인하리라",
+      "source_text_hash": "0e063aa63163745ed8950998debb86a8c6b29bb639f618bab079df199ecd5b59",
+      "translation_text_hash": "6a858e99b083728eb9ff59a6d66085ae387d62d69235c6b10ee5866205448a91",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 대답하시되 네가 나를 위하여 네 목숨을 버리겠느냐 내가 진실로 진실로 네게 이르노니 닭 울기 전에 네가 세번 나를 부인하리라"
+      ],
+      "raw_text_hashes": [
+        "6a858e99b083728eb9ff59a6d66085ae387d62d69235c6b10ee5866205448a91"
+      ]
+    }
+  ]
+}

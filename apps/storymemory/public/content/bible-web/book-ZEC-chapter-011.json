@@ -1,0 +1,557 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ZEC:chapter:011",
+  "unit_ordinal": 922,
+  "unit_label": "ZEC 11",
+  "book_code": "ZEC",
+  "chapter_number": 11,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ZEC:11:1",
+      "sequence": 23030,
+      "chapter_label": "ZEC 11",
+      "verse_label": "1",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 11,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 11,
+          "verse": 1
+        }
+      ],
+      "en": "Open your doors, Lebanon, that the fire may devour your cedars.",
+      "ko": "레바논아 네 문을 열고 불이 네 백향목을 사르게 하라",
+      "source_text_hash": "2b108db1dca82e7c1830a5e8321e8e4026e212596836f55df20f31cfea30a98b",
+      "translation_text_hash": "22c53a128ab4247bd8361712ce6f3b53db9e48a9caad024e0609a0434b56ac90",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "레바논아 네 문을 열고 불이 네 백향목을 사르게 하라"
+      ],
+      "raw_text_hashes": [
+        "22c53a128ab4247bd8361712ce6f3b53db9e48a9caad024e0609a0434b56ac90"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:11:2",
+      "sequence": 23031,
+      "chapter_label": "ZEC 11",
+      "verse_label": "2",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 11,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 11,
+          "verse": 2
+        }
+      ],
+      "en": "Wail, cypress tree, for the cedar has fallen, because the stately ones are destroyed. Wail, you oaks of Bashan, for the strong forest has come down.",
+      "ko": "너 잣나무여 곡할찌어다 백향목이 넘어졌고 아름다운 나무가 훼멸되었도다 바산의 상수리나무여 곡할찌어다 무성한 삼림이 엎드러졌도다",
+      "source_text_hash": "65ccdbc2a66dfe794a07babd343834c1a4f254537e132d19d8ecc997b5bf38ee",
+      "translation_text_hash": "2a5a0f7f93f10379644f1d766c78bd75b25e657bbfb14aabff760e5f78fd2548",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너 잣나무여 곡할찌어다 백향목이 넘어졌고 아름다운 나무가 훼멸되었도다 바산의 상수리나무여 곡할찌어다 무성한 삼림이 엎드러졌도다"
+      ],
+      "raw_text_hashes": [
+        "2a5a0f7f93f10379644f1d766c78bd75b25e657bbfb14aabff760e5f78fd2548"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:11:3",
+      "sequence": 23032,
+      "chapter_label": "ZEC 11",
+      "verse_label": "3",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 11,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 11,
+          "verse": 3
+        }
+      ],
+      "en": "A voice of the wailing of the shepherds! For their glory is destroyed—a voice of the roaring of young lions! For the pride of the Jordan is ruined.",
+      "ko": "목자의 곡하는 소리가 남이여 그 영화로운 것이 훼멸되었음이로다 어린 사자의 부르짖는 소리가 남이여 이는 요단의 자랑이 황무하였음이로다",
+      "source_text_hash": "d541393b7781e8e2aead8da9cb30b079a3b3fd0b9bf127301e21b16eb8983c03",
+      "translation_text_hash": "700921618bb024d5c763705f023b8e79298c56e7dd0d07c85f363604d49e52d2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "목자의 곡하는 소리가 남이여 그 영화로운 것이 훼멸되었음이로다 어린 사자의 부르짖는 소리가 남이여 이는 요단의 자랑이 황무하였음이로다"
+      ],
+      "raw_text_hashes": [
+        "700921618bb024d5c763705f023b8e79298c56e7dd0d07c85f363604d49e52d2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:11:4",
+      "sequence": 23033,
+      "chapter_label": "ZEC 11",
+      "verse_label": "4",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 11,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 11,
+          "verse": 4
+        }
+      ],
+      "en": "The LORD my God says: “Feed the flock of slaughter.",
+      "ko": "여호와 나의 하나님이 가라사대 너는 잡힐 양떼를 먹이라",
+      "source_text_hash": "87861aabeebd8d57bdc035fac1e59d5a866f3c679237628834ac46a4f4ba876b",
+      "translation_text_hash": "4361c6c3d7106c3e7b41f6da3c6b2ccb1eba88dd2f51beb08e5c0d8cc7d65659",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와 나의 하나님이 가라사대 너는 잡힐 양떼를 먹이라"
+      ],
+      "raw_text_hashes": [
+        "4361c6c3d7106c3e7b41f6da3c6b2ccb1eba88dd2f51beb08e5c0d8cc7d65659"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:11:5",
+      "sequence": 23034,
+      "chapter_label": "ZEC 11",
+      "verse_label": "5",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 11,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 11,
+          "verse": 5
+        }
+      ],
+      "en": "Their buyers slaughter them and go unpunished. Those who sell them say, ‘Blessed be the LORD, for I am rich;’ and their own shepherds don’t pity them.",
+      "ko": "산 자들은 그들을 잡아도 죄가 없다 하고 판 자들은 말하기를 내가 부요케 되었은즉 여호와께 찬송하리라 하고 그 목자들은 그들을 불쌍히 여기지 아니하는도다",
+      "source_text_hash": "3b2a00513a4bac6e5bf2f470aae6702fb5eb8c5a80f9aab4354a317ae720c2cf",
+      "translation_text_hash": "e740902222d4ae2d20ecc42e337b8d2bff7561dfb1e241a7cf72a071e7c3f462",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "산 자들은 그들을 잡아도 죄가 없다 하고 판 자들은 말하기를 내가 부요케 되었은즉 여호와께 찬송하리라 하고 그 목자들은 그들을 불쌍히 여기지 아니하는도다"
+      ],
+      "raw_text_hashes": [
+        "e740902222d4ae2d20ecc42e337b8d2bff7561dfb1e241a7cf72a071e7c3f462"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:11:6",
+      "sequence": 23035,
+      "chapter_label": "ZEC 11",
+      "verse_label": "6",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 11,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 11,
+          "verse": 6
+        }
+      ],
+      "en": "For I will no more pity the inhabitants of the land,” says the LORD; “but, behold, I will deliver every one of the men into his neighbor’s hand and into the hand of his king. They will strike the land, and out of their hand I will not deliver them.”",
+      "ko": "여호와가 말하노라 내가 다시는 이 땅 거민을 불쌍히 여기지 아니하고 그 사람을 각각 그 이웃의 손과 임금의 손에 붙이리니 그들이 이 땅을 칠찌라도 내가 그 손에서 건져내지 아니하리라 하시기로",
+      "source_text_hash": "1cd0352b950cbac35438267cfb073c24ae3ab0d8fd2d8585d588255b2f10fadd",
+      "translation_text_hash": "c9f92a6524835756bd91b5f95fd52a45115830f1e151e8e3514b661d9a8d34c4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와가 말하노라 내가 다시는 이 땅 거민을 불쌍히 여기지 아니하고 그 사람을 각각 그 이웃의 손과 임금의 손에 붙이리니 그들이 이 땅을 칠찌라도 내가 그 손에서 건져내지 아니하리라 하시기로"
+      ],
+      "raw_text_hashes": [
+        "c9f92a6524835756bd91b5f95fd52a45115830f1e151e8e3514b661d9a8d34c4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:11:7",
+      "sequence": 23036,
+      "chapter_label": "ZEC 11",
+      "verse_label": "7",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 11,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 11,
+          "verse": 7
+        }
+      ],
+      "en": "So I fed the flock to be slaughtered, especially the oppressed of the flock. I took for myself two staffs. The one I called “Favor” and the other I called “Union”, and I fed the flock.",
+      "ko": "내가 이 잡힐 양떼를 먹이니 참으로 가련한 양이라 내가 이에 막대기 둘을 취하여 하나는 은총이라 하며 하나는 연락이라 하고 양떼를 먹일쌔",
+      "source_text_hash": "cca10a1e25fc9c910958058726dedce3345c8936e5076fcf1afe5e73d05281a2",
+      "translation_text_hash": "1c1b92f010e4fdb2e4bdff9b79c999c56d63724220c26aec3359728738a8f2c9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 이 잡힐 양떼를 먹이니 참으로 가련한 양이라 내가 이에 막대기 둘을 취하여 하나는 은총이라 하며 하나는 연락이라 하고 양떼를 먹일쌔"
+      ],
+      "raw_text_hashes": [
+        "1c1b92f010e4fdb2e4bdff9b79c999c56d63724220c26aec3359728738a8f2c9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:11:8",
+      "sequence": 23037,
+      "chapter_label": "ZEC 11",
+      "verse_label": "8",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 11,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 11,
+          "verse": 8
+        }
+      ],
+      "en": "I cut off the three shepherds in one month; for my soul was weary of them, and their soul also loathed me.",
+      "ko": "한달 동안에 내가 그 세 목자를 끊었으니 이는 내 마음에 그들을 싫어하였고 그들의 마음에도 나를 미워하였음이라",
+      "source_text_hash": "17cde88b1199a5f15f9e62585292007fe1e667ae219c50ff53cbf28816f6c327",
+      "translation_text_hash": "e0760848cf9e4d4b0948bdad207c6b592e278d1691dadb01ca5ce1692773c1cf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "한달 동안에 내가 그 세 목자를 끊었으니 이는 내 마음에 그들을 싫어하였고 그들의 마음에도 나를 미워하였음이라"
+      ],
+      "raw_text_hashes": [
+        "e0760848cf9e4d4b0948bdad207c6b592e278d1691dadb01ca5ce1692773c1cf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:11:9",
+      "sequence": 23038,
+      "chapter_label": "ZEC 11",
+      "verse_label": "9",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 11,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 11,
+          "verse": 9
+        }
+      ],
+      "en": "Then I said, “I will not feed you. That which dies, let it die; and that which is to be cut off, let it be cut off; and let those who are left eat each other’s flesh.”",
+      "ko": "내가 가로되 내가 너희를 먹이지 아니하고 죽는 자는 죽는대로, 망할 자는 망할대로, 그 나머지는 피차 살을 먹는대로 두리라 하고",
+      "source_text_hash": "ef74bfe6c46aa14a04c4ef56bec3160299faee582f2b00f56a2233a5dc534be3",
+      "translation_text_hash": "fb44557c6022a21cfb14320fdaf22858b572c12da7b6604029256fc3b18bb039",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 가로되 내가 너희를 먹이지 아니하고 죽는 자는 죽는대로, 망할 자는 망할대로, 그 나머지는 피차 살을 먹는대로 두리라 하고"
+      ],
+      "raw_text_hashes": [
+        "fb44557c6022a21cfb14320fdaf22858b572c12da7b6604029256fc3b18bb039"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:11:10",
+      "sequence": 23039,
+      "chapter_label": "ZEC 11",
+      "verse_label": "10",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 11,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 11,
+          "verse": 10
+        }
+      ],
+      "en": "I took my staff Favor and cut it apart, that I might break my covenant that I had made with all the peoples.",
+      "ko": "이에 은총이라 하는 막대기를 취하여 잘랐으니 이는 모든 백성과 세운 언약을 폐하려 하였음이라",
+      "source_text_hash": "6269e64a644ef6b740966d9d9edc18e5450563fd495d581e2bb27d33b5819ad3",
+      "translation_text_hash": "bf42541fe7fbc97253767375a3aca0bd388480289d65adf28f99cbd5d2565a64",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 은총이라 하는 막대기를 취하여 잘랐으니 이는 모든 백성과 세운 언약을 폐하려 하였음이라"
+      ],
+      "raw_text_hashes": [
+        "bf42541fe7fbc97253767375a3aca0bd388480289d65adf28f99cbd5d2565a64"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:11:11",
+      "sequence": 23040,
+      "chapter_label": "ZEC 11",
+      "verse_label": "11",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 11,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 11,
+          "verse": 11
+        }
+      ],
+      "en": "It was broken in that day; and thus the poor of the flock that listened to me knew that it was the LORD’s word.",
+      "ko": "당일에 곧 폐하매 내게 청종하던 가련한 양들은 이것이 여호와의 말씀이었던줄 안지라",
+      "source_text_hash": "1ba145ba5456ea2cd9bda5e9ed23731f5f799930b740b10a2d377700ca862314",
+      "translation_text_hash": "b3fdef7fb3ba9835e962a1943fb754b49ef577d2d51f38b48b6624662914dd85",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "당일에 곧 폐하매 내게 청종하던 가련한 양들은 이것이 여호와의 말씀이었던줄 안지라"
+      ],
+      "raw_text_hashes": [
+        "b3fdef7fb3ba9835e962a1943fb754b49ef577d2d51f38b48b6624662914dd85"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:11:12",
+      "sequence": 23041,
+      "chapter_label": "ZEC 11",
+      "verse_label": "12",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 11,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 11,
+          "verse": 12
+        }
+      ],
+      "en": "I said to them, “If you think it best, give me my wages; and if not, keep them.” So they weighed for my wages thirty pieces of silver.",
+      "ko": "내가 그들에게 이르되 너희가 좋게 여기거든 내 고가를 내게 주고 그렇지 아니하거든 말라 그들이 곧 은 삼십을 달아서 내 고가를 삼은지라",
+      "source_text_hash": "f7d8d4d8e802798a378d42587f2674b863f9679c5f769941874eeb6d6e1e679b",
+      "translation_text_hash": "855ec4ede90a30f06c81a143a7c0f79013920f814cc250ddfdb29a6186bc7070",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 그들에게 이르되 너희가 좋게 여기거든 내 고가를 내게 주고 그렇지 아니하거든 말라 그들이 곧 은 삼십을 달아서 내 고가를 삼은지라"
+      ],
+      "raw_text_hashes": [
+        "855ec4ede90a30f06c81a143a7c0f79013920f814cc250ddfdb29a6186bc7070"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:11:13",
+      "sequence": 23042,
+      "chapter_label": "ZEC 11",
+      "verse_label": "13",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 11,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 11,
+          "verse": 13
+        }
+      ],
+      "en": "The LORD said to me, “Throw it to the potter—the handsome price that I was valued at by them!” I took the thirty pieces of silver and threw them to the potter in the LORD’s house.",
+      "ko": "여호와께서 내게 이르시되 그들이 나를 헤아린바 그 준가를 토기장이에게 던지라 하시기로 내가 곧 그 은 삼십을 여호와의 전에서 토기장이에게 던지고",
+      "source_text_hash": "4a703b21a5a7c6aad7f4c13b734213b742c92c7903cc52a4153e9245f35b0161",
+      "translation_text_hash": "29cbc779b42055b3908eec0f3c84f60e314002b33269e8e090f06ca6d44740ea",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 내게 이르시되 그들이 나를 헤아린바 그 준가를 토기장이에게 던지라 하시기로 내가 곧 그 은 삼십을 여호와의 전에서 토기장이에게 던지고"
+      ],
+      "raw_text_hashes": [
+        "29cbc779b42055b3908eec0f3c84f60e314002b33269e8e090f06ca6d44740ea"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:11:14",
+      "sequence": 23043,
+      "chapter_label": "ZEC 11",
+      "verse_label": "14",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 11,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 11,
+          "verse": 14
+        }
+      ],
+      "en": "Then I cut apart my other staff, Union, that I might break the brotherhood between Judah and Israel.",
+      "ko": "내가 또 연락이라 하는 둘째 막대기를 잘랐으니 이는 유다와 이스라엘 형제의 의를 끊으려 함이었느니라",
+      "source_text_hash": "1e3ec1615f674b0dd909f4783cbd8ed03c804ab1766c96c0e33ef48264da1ec4",
+      "translation_text_hash": "56a3810ab9d2ea1ec17ecd908177ddb176d735eacbd1aa8166b3715a0de74944",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 또 연락이라 하는 둘째 막대기를 잘랐으니 이는 유다와 이스라엘 형제의 의를 끊으려 함이었느니라"
+      ],
+      "raw_text_hashes": [
+        "56a3810ab9d2ea1ec17ecd908177ddb176d735eacbd1aa8166b3715a0de74944"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:11:15",
+      "sequence": 23044,
+      "chapter_label": "ZEC 11",
+      "verse_label": "15",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 11,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 11,
+          "verse": 15
+        }
+      ],
+      "en": "The LORD said to me, “Take for yourself yet again the equipment of a foolish shepherd.",
+      "ko": "여호와께서 내게 이르시되 너는 또 우매한 목자의 기구들을 취할찌니라",
+      "source_text_hash": "9680343d321ae8ae9757c90e9e22eb350a9ff16e83f01fd9e0ac89998b370732",
+      "translation_text_hash": "bea8c10f08692759642f709dc602294d71a5a3e989465e7fd0c95410e5adc2e6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 내게 이르시되 너는 또 우매한 목자의 기구들을 취할찌니라"
+      ],
+      "raw_text_hashes": [
+        "bea8c10f08692759642f709dc602294d71a5a3e989465e7fd0c95410e5adc2e6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:11:16",
+      "sequence": 23045,
+      "chapter_label": "ZEC 11",
+      "verse_label": "16",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 11,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 11,
+          "verse": 16
+        }
+      ],
+      "en": "For, behold, I will raise up a shepherd in the land who will not visit those who are cut off, neither will seek those who are scattered, nor heal that which is broken, nor feed that which is sound; but he will eat the meat of the fat sheep, and will tear their hoofs in pieces.",
+      "ko": "보라 내가 한 목자를 이 땅에 일으키리니 그가 없어진 자를 마음에 두지 아니하며 흩어진 자를 찾지 아니하며 상한 자를 고치지 아니하며 강건한 자를 먹이지 아니하고 오히려 살찐 자의 고기를 먹으며 또 그 굽을 찢으리라",
+      "source_text_hash": "bc404d472b7e6b255e0d3f9c2e4b4b6b1c26992cf87bda7d91a7b71d3a8a8ec4",
+      "translation_text_hash": "f9d2392829f2a23e4ca6ca9b1d0759ee4e2c7d0b3dedc2a7707b0b1aff7693da",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보라 내가 한 목자를 이 땅에 일으키리니 그가 없어진 자를 마음에 두지 아니하며 흩어진 자를 찾지 아니하며 상한 자를 고치지 아니하며 강건한 자를 먹이지 아니하고 오히려 살찐 자의 고기를 먹으며 또 그 굽을 찢으리라"
+      ],
+      "raw_text_hashes": [
+        "f9d2392829f2a23e4ca6ca9b1d0759ee4e2c7d0b3dedc2a7707b0b1aff7693da"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:11:17",
+      "sequence": 23046,
+      "chapter_label": "ZEC 11",
+      "verse_label": "17",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 11,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 11,
+          "verse": 17
+        }
+      ],
+      "en": "Woe to the worthless shepherd who leaves the flock! The sword will strike his arm and his right eye. His arm will be completely withered, and his right eye will be totally blinded!”",
+      "ko": "화 있을찐저 양떼를 버린 못된 목자여 칼이 그 팔에, 우편 눈에 임하리니 그 팔이 아주 마르고 그 우편 눈이 아주 어두우리라",
+      "source_text_hash": "d2f9578f26de55b83cb856a2e03090ed4ed7208fc80f069e189ca90210e1ceae",
+      "translation_text_hash": "d45e5faaf5aa19f20373d55f38365ad599b971e516806d96b0e5b2cbe2d37a84",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "화 있을찐저 양떼를 버린 못된 목자여 칼이 그 팔에, 우편 눈에 임하리니 그 팔이 아주 마르고 그 우편 눈이 아주 어두우리라"
+      ],
+      "raw_text_hashes": [
+        "d45e5faaf5aa19f20373d55f38365ad599b971e516806d96b0e5b2cbe2d37a84"
+      ]
+    }
+  ]
+}

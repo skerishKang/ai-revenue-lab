@@ -1,0 +1,941 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:DEU:chapter:029",
+  "unit_ordinal": 182,
+  "unit_label": "DEU 29",
+  "book_code": "DEU",
+  "chapter_number": 29,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:DEU:29:1",
+      "sequence": 5681,
+      "chapter_label": "DEU 29",
+      "verse_label": "1",
+      "locator": {
+        "book": "DEU",
+        "chapter": 29,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 29,
+          "verse": 1
+        }
+      ],
+      "en": "These are the words of the covenant which the LORD commanded Moses to make with the children of Israel in the land of Moab, in addition to the covenant which he made with them in Horeb.",
+      "ko": "호렙에서 이스라엘 자손과 세우신 언약 외에 여호와께서 모세에게 명하사 모압땅에서 또 그들과 세우신 언약의 말씀이 이러하니라",
+      "source_text_hash": "6081cf803e5fe3a589dbc531e1a45f6a0660f04d1cfaac6b4060dbec158f0c89",
+      "translation_text_hash": "1dc56ed4db2be281317f7b83a4bbc96b01d98e30a0a947eff9f5529a08b5142e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "호렙에서 이스라엘 자손과 세우신 언약 외에 여호와께서 모세에게 명하사 모압땅에서 또 그들과 세우신 언약의 말씀이 이러하니라"
+      ],
+      "raw_text_hashes": [
+        "1dc56ed4db2be281317f7b83a4bbc96b01d98e30a0a947eff9f5529a08b5142e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:29:2",
+      "sequence": 5682,
+      "chapter_label": "DEU 29",
+      "verse_label": "2",
+      "locator": {
+        "book": "DEU",
+        "chapter": 29,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 29,
+          "verse": 2
+        }
+      ],
+      "en": "Moses called to all Israel, and said to them: Your eyes have seen all that the LORD did in the land of Egypt to Pharaoh, and to all his servants, and to all his land;",
+      "ko": "모세가 온 이스라엘을 소집하고 그들에게 이르되 여호와께서 애굽 땅에서 너희 목전에 바로와 그 모든 신하와 그 온 땅에 행하신 모든 일을 너희가 보았나니",
+      "source_text_hash": "a77ab1b9ca8384d3fd567a405b43828607037f74c7165605d48c1cf14d8afa30",
+      "translation_text_hash": "c9e5f1b3d34a5c10314dd85ef057cdeb6b609a4f74b2fd86a7e2c1c82fac2e69",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 온 이스라엘을 소집하고 그들에게 이르되 여호와께서 애굽 땅에서 너희 목전에 바로와 그 모든 신하와 그 온 땅에 행하신 모든 일을 너희가 보았나니"
+      ],
+      "raw_text_hashes": [
+        "c9e5f1b3d34a5c10314dd85ef057cdeb6b609a4f74b2fd86a7e2c1c82fac2e69"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:29:3",
+      "sequence": 5683,
+      "chapter_label": "DEU 29",
+      "verse_label": "3",
+      "locator": {
+        "book": "DEU",
+        "chapter": 29,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 29,
+          "verse": 3
+        }
+      ],
+      "en": "the great trials which your eyes saw, the signs, and those great wonders.",
+      "ko": "곧 그 큰 시험과 이적과 큰 기사를 네가 목도하였느니라",
+      "source_text_hash": "3d21da259fed95736c46e0d55d9fd0ed434c99265b03b91d6fbaa1acae7dea48",
+      "translation_text_hash": "3b1c053d66b0d43fd8d8db569501d34ac1955b34310f1a3bb08607f10c1a995c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 그 큰 시험과 이적과 큰 기사를 네가 목도하였느니라"
+      ],
+      "raw_text_hashes": [
+        "3b1c053d66b0d43fd8d8db569501d34ac1955b34310f1a3bb08607f10c1a995c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:29:4",
+      "sequence": 5684,
+      "chapter_label": "DEU 29",
+      "verse_label": "4",
+      "locator": {
+        "book": "DEU",
+        "chapter": 29,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 29,
+          "verse": 4
+        }
+      ],
+      "en": "But the LORD has not given you a heart to know, eyes to see, and ears to hear, to this day.",
+      "ko": "그러나 깨닫는 마음과 보는 눈과 듣는 귀는 오늘날까지 여호와께서 너희에게 주지 아니하셨느니라",
+      "source_text_hash": "a9fd0188a5b7b0ac215e04170cf0aa9c03a6b27d8033e5eb78ef8222c948d555",
+      "translation_text_hash": "b5172510fd7a2b0a8931296b72d84460ab9fcdf50496c837acc944ba0ef2ceba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 깨닫는 마음과 보는 눈과 듣는 귀는 오늘날까지 여호와께서 너희에게 주지 아니하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "b5172510fd7a2b0a8931296b72d84460ab9fcdf50496c837acc944ba0ef2ceba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:29:5",
+      "sequence": 5685,
+      "chapter_label": "DEU 29",
+      "verse_label": "5",
+      "locator": {
+        "book": "DEU",
+        "chapter": 29,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 29,
+          "verse": 5
+        }
+      ],
+      "en": "I have led you forty years in the wilderness. Your clothes have not grown old on you, and your sandals have not grown old on your feet.",
+      "ko": "주께서 사십년 동안 너희를 인도하여 광야를 통행케 하셨거니와 너희 몸의 옷이 낡지 아니하였고 너희 발의 신이 해어지지 아니하였으며",
+      "source_text_hash": "78b9862f6c81d311b482925bc3c2d95ea41ba47cd939571864295edce774ec32",
+      "translation_text_hash": "86ca91aa0e43a7d64089cf9a18160f1950f143a27c6e179bda19dc8a9c785d14",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 사십년 동안 너희를 인도하여 광야를 통행케 하셨거니와 너희 몸의 옷이 낡지 아니하였고 너희 발의 신이 해어지지 아니하였으며"
+      ],
+      "raw_text_hashes": [
+        "86ca91aa0e43a7d64089cf9a18160f1950f143a27c6e179bda19dc8a9c785d14"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:29:6",
+      "sequence": 5686,
+      "chapter_label": "DEU 29",
+      "verse_label": "6",
+      "locator": {
+        "book": "DEU",
+        "chapter": 29,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 29,
+          "verse": 6
+        }
+      ],
+      "en": "You have not eaten bread, neither have you drunk wine or strong drink, that you may know that I am the LORD your God.",
+      "ko": "너희로 떡도 먹지 못하며 포도주나 독주를 마시지 못하게 하셨음은 주는 너희 하나님 여호와이신 줄을 알게 하려 하심이니라",
+      "source_text_hash": "8e0383f005d515dcf87c630c4ea9f45f133e05aecaa8ea1947a51cec421b98c8",
+      "translation_text_hash": "ae1f5ee7260dc21439cade6769241f5bf55705a1dc8bdac27794b801fa7d0286",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희로 떡도 먹지 못하며 포도주나 독주를 마시지 못하게 하셨음은 주는 너희 하나님 여호와이신 줄을 알게 하려 하심이니라"
+      ],
+      "raw_text_hashes": [
+        "ae1f5ee7260dc21439cade6769241f5bf55705a1dc8bdac27794b801fa7d0286"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:29:7",
+      "sequence": 5687,
+      "chapter_label": "DEU 29",
+      "verse_label": "7",
+      "locator": {
+        "book": "DEU",
+        "chapter": 29,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 29,
+          "verse": 7
+        }
+      ],
+      "en": "When you came to this place, Sihon the king of Heshbon and Og the king of Bashan came out against us to battle, and we struck them.",
+      "ko": "너희가 이곳에 올 때에 헤스본 왕 시혼과 바산 왕 옥이 우리와 싸우러 나왔으므로 우리가 그들을 치고",
+      "source_text_hash": "d9169382fa19bc8efc6bce9b82105ebe6cc957bfe0a7f71946b08eeb4c6b2834",
+      "translation_text_hash": "436475f8be9b4c489deceb4d73ecf500a7028c897d5cd6a9000742bd36fed2e2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 이곳에 올 때에 헤스본 왕 시혼과 바산 왕 옥이 우리와 싸우러 나왔으므로 우리가 그들을 치고"
+      ],
+      "raw_text_hashes": [
+        "436475f8be9b4c489deceb4d73ecf500a7028c897d5cd6a9000742bd36fed2e2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:29:8",
+      "sequence": 5688,
+      "chapter_label": "DEU 29",
+      "verse_label": "8",
+      "locator": {
+        "book": "DEU",
+        "chapter": 29,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 29,
+          "verse": 8
+        }
+      ],
+      "en": "We took their land, and gave it for an inheritance to the Reubenites, and to the Gadites, and to the half-tribe of the Manassites.",
+      "ko": "그 땅을 취하여 르우벤과 갓과 므낫세 반 지파에게 기업으로 주었나니",
+      "source_text_hash": "84983d811212f346e9634633ba86857a221af93889651393c44d184ccabd0b6d",
+      "translation_text_hash": "1eb3cda94447bb45b3c5c5ec5e03b8601a6c60915c4d13a8eb4c56a1b8323c43",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 땅을 취하여 르우벤과 갓과 므낫세 반 지파에게 기업으로 주었나니"
+      ],
+      "raw_text_hashes": [
+        "1eb3cda94447bb45b3c5c5ec5e03b8601a6c60915c4d13a8eb4c56a1b8323c43"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:29:9",
+      "sequence": 5689,
+      "chapter_label": "DEU 29",
+      "verse_label": "9",
+      "locator": {
+        "book": "DEU",
+        "chapter": 29,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 29,
+          "verse": 9
+        }
+      ],
+      "en": "Therefore keep the words of this covenant and do them, that you may prosper in all that you do.",
+      "ko": "그런즉 너희는 이 언약의 말씀을 지켜 행하라 그리하면 너희의 하는 모든 일이 형통하리라",
+      "source_text_hash": "ab2ae50adf6dd4e9115b290ea575d44466bce8dcc0135f63cb5412f11be58cbf",
+      "translation_text_hash": "7b7bba15dfb093a2bbb939ad18e884e91b7f8a91f4fef12abf05f70a9e30756a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 너희는 이 언약의 말씀을 지켜 행하라 그리하면 너희의 하는 모든 일이 형통하리라"
+      ],
+      "raw_text_hashes": [
+        "7b7bba15dfb093a2bbb939ad18e884e91b7f8a91f4fef12abf05f70a9e30756a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:29:10",
+      "sequence": 5690,
+      "chapter_label": "DEU 29",
+      "verse_label": "10",
+      "locator": {
+        "book": "DEU",
+        "chapter": 29,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 29,
+          "verse": 10
+        }
+      ],
+      "en": "All of you stand today in the presence of the LORD your God: your heads, your tribes, your elders, and your officers, even all the men of Israel,",
+      "ko": "오늘날 너희 곧 너희 두령과 너희 지파와 너희 장로들과 너희 유사와 이스라엘 모든 남자와",
+      "source_text_hash": "68f013dedc55d2b3d8165e0f5027586e83e0f1f150fc1c3b4e8ed53c3e557e2a",
+      "translation_text_hash": "3a78134b9a3c5632ae81cd222873194b910886e2e3af377de99d6e1398652b9c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오늘날 너희 곧 너희 두령과 너희 지파와 너희 장로들과 너희 유사와 이스라엘 모든 남자와"
+      ],
+      "raw_text_hashes": [
+        "3a78134b9a3c5632ae81cd222873194b910886e2e3af377de99d6e1398652b9c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:29:11",
+      "sequence": 5691,
+      "chapter_label": "DEU 29",
+      "verse_label": "11",
+      "locator": {
+        "book": "DEU",
+        "chapter": 29,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 29,
+          "verse": 11
+        }
+      ],
+      "en": "your little ones, your wives, and the foreigners who are in the middle of your camps, from the one who cuts your wood to the one who draws your water,",
+      "ko": "너희 유아들과 너희 아내와 및 네 진중에 있는 객과 무릇 너를 위하여 나무를 패는 자로부터 물 긷는 자까지 다 너희 하나님 여호와 앞에 선 것은",
+      "source_text_hash": "9e430a3427d78b6d770f5f5e25dcb1ba9c763a9cf51100f6498638769a4cd7eb",
+      "translation_text_hash": "d39a717cedce3f04a1d187a2991ce3e88c79e247a4af2d5deb727059a3a2dbe0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 유아들과 너희 아내와 및 네 진중에 있는 객과 무릇 너를 위하여 나무를 패는 자로부터 물 긷는 자까지 다 너희 하나님 여호와 앞에 선 것은"
+      ],
+      "raw_text_hashes": [
+        "d39a717cedce3f04a1d187a2991ce3e88c79e247a4af2d5deb727059a3a2dbe0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:29:12",
+      "sequence": 5692,
+      "chapter_label": "DEU 29",
+      "verse_label": "12",
+      "locator": {
+        "book": "DEU",
+        "chapter": 29,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 29,
+          "verse": 12
+        }
+      ],
+      "en": "that you may enter into the covenant of the LORD your God, and into his oath, which the LORD your God makes with you today,",
+      "ko": "너의 하나님 여호와의 언약에 참예하며 또 너의 하나님 여호와께서 오늘날 네게 향하여 하시는 맹세에 참예하여",
+      "source_text_hash": "080b12948eef9410fdb1287880549928a1a35a3a8183439ebfa8620ee39022a1",
+      "translation_text_hash": "cc860022c081b414c227162759f36bc34eeafee4bc0e3992aa4cf7adedce0fd1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너의 하나님 여호와의 언약에 참예하며 또 너의 하나님 여호와께서 오늘날 네게 향하여 하시는 맹세에 참예하여"
+      ],
+      "raw_text_hashes": [
+        "cc860022c081b414c227162759f36bc34eeafee4bc0e3992aa4cf7adedce0fd1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:29:13",
+      "sequence": 5693,
+      "chapter_label": "DEU 29",
+      "verse_label": "13",
+      "locator": {
+        "book": "DEU",
+        "chapter": 29,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 29,
+          "verse": 13
+        }
+      ],
+      "en": "that he may establish you today as his people, and that he may be your God, as he spoke to you and as he swore to your fathers, to Abraham, to Isaac, and to Jacob.",
+      "ko": "여호와께서 이왕에 네게 말씀하신 대로 또 네 열조 아브라함과 이삭과 야곱에게 맹세하신 대로 오늘날 너를 세워 자기 백성을 삼으시고 자기는 친히 네 하나님이 되시려 함이니라",
+      "source_text_hash": "1946ccc88aa1ec8e5e08dd0f6aba584df4b87b13a3bc6e699f1aa8c9291aec0c",
+      "translation_text_hash": "dd82145bdb5bd709822a201bac45e6f1befc0161e89540ec458fb2b877504104",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 이왕에 네게 말씀하신 대로 또 네 열조 아브라함과 이삭과 야곱에게 맹세하신 대로 오늘날 너를 세워 자기 백성을 삼으시고 자기는 친히 네 하나님이 되시려 함이니라"
+      ],
+      "raw_text_hashes": [
+        "dd82145bdb5bd709822a201bac45e6f1befc0161e89540ec458fb2b877504104"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:29:14",
+      "sequence": 5694,
+      "chapter_label": "DEU 29",
+      "verse_label": "14",
+      "locator": {
+        "book": "DEU",
+        "chapter": 29,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 29,
+          "verse": 14
+        }
+      ],
+      "en": "Neither do I make this covenant and this oath with you only,",
+      "ko": "내가 이 언약과 맹세를 너희에게만 세우는 것이 아니라",
+      "source_text_hash": "dfceb9f6c0a9e64a6bf66420d8a9a7a92eb77b266bc6448c452970b437a09322",
+      "translation_text_hash": "3e4f493434294d7d9f837b586df34e632ea486dc1cdb7ad9f44fd315dd95acd3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 이 언약과 맹세를 너희에게만 세우는 것이 아니라"
+      ],
+      "raw_text_hashes": [
+        "3e4f493434294d7d9f837b586df34e632ea486dc1cdb7ad9f44fd315dd95acd3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:29:15",
+      "sequence": 5695,
+      "chapter_label": "DEU 29",
+      "verse_label": "15",
+      "locator": {
+        "book": "DEU",
+        "chapter": 29,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 29,
+          "verse": 15
+        }
+      ],
+      "en": "but with those who stand here with us today before the LORD our God, and also with those who are not here with us today",
+      "ko": "오늘날 우리 하나님 여호와 앞에서 우리와 함께 여기 선 자와 오늘날 우리와 함께 여기 있지 아니한 자에게까지니",
+      "source_text_hash": "2ffda8135c7af0e80511676346a11e4b27efb6fc183548e41cdc56c16ce7d2d3",
+      "translation_text_hash": "a862756890394b7eac53e23de53a6f418ca2168cce47641ac362a08323258fdc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오늘날 우리 하나님 여호와 앞에서 우리와 함께 여기 선 자와 오늘날 우리와 함께 여기 있지 아니한 자에게까지니"
+      ],
+      "raw_text_hashes": [
+        "a862756890394b7eac53e23de53a6f418ca2168cce47641ac362a08323258fdc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:29:16",
+      "sequence": 5696,
+      "chapter_label": "DEU 29",
+      "verse_label": "16",
+      "locator": {
+        "book": "DEU",
+        "chapter": 29,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 29,
+          "verse": 16
+        }
+      ],
+      "en": "(for you know how we lived in the land of Egypt, and how we came through the middle of the nations through which you passed;",
+      "ko": "(우리가 애굽 땅에 어떻게 거하였었는지, 너희가 여러 나라를 어떻게 통과하여 왔었는지 너희가 알며",
+      "source_text_hash": "5efe38a1b232125cab5e88a5a5581be20215ccefeb2fda0679b0869e988fd0cb",
+      "translation_text_hash": "dfbd324878d83a14e97da5a9b71517ca7878f64dd9689bdd634acf8ec2261e5c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "(우리가 애굽 땅에 어떻게 거하였었는지, 너희가 여러 나라를 어떻게 통과하여 왔었는지 너희가 알며"
+      ],
+      "raw_text_hashes": [
+        "dfbd324878d83a14e97da5a9b71517ca7878f64dd9689bdd634acf8ec2261e5c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:29:17",
+      "sequence": 5697,
+      "chapter_label": "DEU 29",
+      "verse_label": "17",
+      "locator": {
+        "book": "DEU",
+        "chapter": 29,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 29,
+          "verse": 17
+        }
+      ],
+      "en": "and you have seen their abominations and their idols of wood, stone, silver, and gold, which were among them);",
+      "ko": "너희가 또 그들 중에 있는 가증한 것과 목석과 은금의 우상을 보았느니라)",
+      "source_text_hash": "6f9ace8125e01ebfce74fdcbefdcccc3c7218b4c108df1f9d2f60105a2638393",
+      "translation_text_hash": "f4b7fdf0263bc40eb1a95386305a9c5a09c9e9ec81cb780fb64581589b8a90ea",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 또 그들 중에 있는 가증한 것과 목석과 은금의 우상을 보았느니라)"
+      ],
+      "raw_text_hashes": [
+        "f4b7fdf0263bc40eb1a95386305a9c5a09c9e9ec81cb780fb64581589b8a90ea"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:29:18",
+      "sequence": 5698,
+      "chapter_label": "DEU 29",
+      "verse_label": "18",
+      "locator": {
+        "book": "DEU",
+        "chapter": 29,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 29,
+          "verse": 18
+        }
+      ],
+      "en": "lest there should be among you man, woman, family, or tribe whose heart turns away today from the LORD our God, to go to serve the gods of those nations; lest there should be among you a root that produces bitter poison;",
+      "ko": "너희 중에 남자나 여자나 가족이나 지파나 오늘날 그 마음이 우리 하나님 여호와를 떠나서 그 모든 민족의 신들에게 가서 섬길까 염려하며 독초와 쑥의 뿌리가 너희 중에 생겨서",
+      "source_text_hash": "dc2aa7f2e576d265aea2996bdbf257404a59843100b2cd30d5b0a3d3092370c8",
+      "translation_text_hash": "9e94f97267c11f318cd704a9156790f0e717ef16f0222ea51cce0608e17e2e23",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 중에 남자나 여자나 가족이나 지파나 오늘날 그 마음이 우리 하나님 여호와를 떠나서 그 모든 민족의 신들에게 가서 섬길까 염려하며 독초와 쑥의 뿌리가 너희 중에 생겨서"
+      ],
+      "raw_text_hashes": [
+        "9e94f97267c11f318cd704a9156790f0e717ef16f0222ea51cce0608e17e2e23"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:29:19",
+      "sequence": 5699,
+      "chapter_label": "DEU 29",
+      "verse_label": "19",
+      "locator": {
+        "book": "DEU",
+        "chapter": 29,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 29,
+          "verse": 19
+        }
+      ],
+      "en": "and it happen, when he hears the words of this curse, that he bless himself in his heart, saying, “I shall have peace, though I walk in the stubbornness of my heart,” to destroy the moist with the dry.",
+      "ko": "이 저주의 말을 듣고도 심중에 스스로 위로하여 이르기를 내가 내 마음을 강퍅케 하여 젖은 것과 마른 것을 멸할찌라도 평안하리라 할까 염려함이라",
+      "source_text_hash": "e9b2989e364bbfcfe088cd3f0bedf63e47b6a5ca20006a10d8723d5d5fed3e6e",
+      "translation_text_hash": "f5927cef10a4a52e306a78541711cf438f74e46bbd7c82a7e9b46b998e9291ce",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 저주의 말을 듣고도 심중에 스스로 위로하여 이르기를 내가 내 마음을 강퍅케 하여 젖은 것과 마른 것을 멸할찌라도 평안하리라 할까 염려함이라"
+      ],
+      "raw_text_hashes": [
+        "f5927cef10a4a52e306a78541711cf438f74e46bbd7c82a7e9b46b998e9291ce"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:29:20",
+      "sequence": 5700,
+      "chapter_label": "DEU 29",
+      "verse_label": "20",
+      "locator": {
+        "book": "DEU",
+        "chapter": 29,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 29,
+          "verse": 20
+        }
+      ],
+      "en": "The LORD will not pardon him, but then the LORD’s anger and his jealousy will smoke against that man, and all the curse that is written in this book will fall on him, and the LORD will blot out his name from under the sky.",
+      "ko": "여호와는 이런 자를 사하지 않으실 뿐아니라 여호와의 분노와 질투의 불로 그의 위에 붓게 하시며 또 이 책에 기록된 모든 저주로 그에게 더하실 것이라 여호와께서 필경은 그의 이름을 천하에서 도말하시되",
+      "source_text_hash": "04f74695f82bd1ee4b2ecb99150d118e71d708dc99061be75bf1f018935505a1",
+      "translation_text_hash": "8d15f0dfc2d00e5592de5ba922a6523a26687816b2890ff955479d229923fae9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와는 이런 자를 사하지 않으실 뿐아니라 여호와의 분노와 질투의 불로 그의 위에 붓게 하시며 또 이 책에 기록된 모든 저주로 그에게 더하실 것이라 여호와께서 필경은 그의 이름을 천하에서 도말하시되"
+      ],
+      "raw_text_hashes": [
+        "8d15f0dfc2d00e5592de5ba922a6523a26687816b2890ff955479d229923fae9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:29:21",
+      "sequence": 5701,
+      "chapter_label": "DEU 29",
+      "verse_label": "21",
+      "locator": {
+        "book": "DEU",
+        "chapter": 29,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 29,
+          "verse": 21
+        }
+      ],
+      "en": "The LORD will set him apart for evil out of all the tribes of Israel, according to all the curses of the covenant written in this book of the law.",
+      "ko": "여호와께서 곧 이스라엘 모든 지파 중에서 그를 구별하시고 이 율법책에 기록된 언약의 모든 저주대로 그에게 화를 더하시리라",
+      "source_text_hash": "2c6a8a7d1ab086bf7d1ca3db00cdcf74f64655b4c036f1ce9e6108b00e536b3b",
+      "translation_text_hash": "c8aa0be12601f86809ccdcc048a683d411627fff7460d0a61411b11d02325a1c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 곧 이스라엘 모든 지파 중에서 그를 구별하시고 이 율법책에 기록된 언약의 모든 저주대로 그에게 화를 더하시리라"
+      ],
+      "raw_text_hashes": [
+        "c8aa0be12601f86809ccdcc048a683d411627fff7460d0a61411b11d02325a1c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:29:22",
+      "sequence": 5702,
+      "chapter_label": "DEU 29",
+      "verse_label": "22",
+      "locator": {
+        "book": "DEU",
+        "chapter": 29,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 29,
+          "verse": 22
+        }
+      ],
+      "en": "The generation to come—your children who will rise up after you, and the foreigner who will come from a far land—will say, when they see the plagues of that land, and the sicknesses with which the LORD has made it sick,",
+      "ko": "너희 뒤에 일어나는 너희 자손과 원방에서 오는 객이 그 땅의 재앙과 여호와께서 그 땅에 유행시키시는 질병을 보며",
+      "source_text_hash": "4419121695f8e7071d53606baff2684d0e5dec17b02ea0fb522b4a8060f0f28c",
+      "translation_text_hash": "b969c4787106712537d698c5f894bc1e10ee4ec1ec48bac24179791f210107fe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 뒤에 일어나는 너희 자손과 원방에서 오는 객이 그 땅의 재앙과 여호와께서 그 땅에 유행시키시는 질병을 보며"
+      ],
+      "raw_text_hashes": [
+        "b969c4787106712537d698c5f894bc1e10ee4ec1ec48bac24179791f210107fe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:29:23",
+      "sequence": 5703,
+      "chapter_label": "DEU 29",
+      "verse_label": "23",
+      "locator": {
+        "book": "DEU",
+        "chapter": 29,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 29,
+          "verse": 23
+        }
+      ],
+      "en": "that all of its land is sulfur, salt, and burning, that it is not sown, doesn’t produce, nor does any grass grow in it, like the overthrow of Sodom, Gomorrah, Admah, and Zeboiim, which the LORD overthrew in his anger, and in his wrath.",
+      "ko": "그 온 땅이 유황이 되며 소금이 되며 또 불에 타서 심지도 못하며 결실함도 없으며 거기 아무 풀도 나지 아니함이 옛적에 여호와께서 진노와 분한으로 훼멸하신 소돔과 고모라와 아드마와 스보임의 무너짐과 같음을 보고 말할 것이요",
+      "source_text_hash": "9d4e037f5fa1e1e8bc7a1539fc7789ace10723840bd6e890312a21308b4d4458",
+      "translation_text_hash": "e6c23efc372b98031d54b460031a5a614a952e0129afcfe098cfd39aa6f5c168",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 온 땅이 유황이 되며 소금이 되며 또 불에 타서 심지도 못하며 결실함도 없으며 거기 아무 풀도 나지 아니함이 옛적에 여호와께서 진노와 분한으로 훼멸하신 소돔과 고모라와 아드마와 스보임의 무너짐과 같음을 보고 말할 것이요"
+      ],
+      "raw_text_hashes": [
+        "e6c23efc372b98031d54b460031a5a614a952e0129afcfe098cfd39aa6f5c168"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:29:24",
+      "sequence": 5704,
+      "chapter_label": "DEU 29",
+      "verse_label": "24",
+      "locator": {
+        "book": "DEU",
+        "chapter": 29,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 29,
+          "verse": 24
+        }
+      ],
+      "en": "Even all the nations will say, “Why has the LORD done this to this land? What does the heat of this great anger mean?”",
+      "ko": "열방 사람들도 말하기를 여호와께서 어찌하여 이 땅에 이같이 행하셨느뇨 이같이 크고 열렬하게 노하심은 무슨 뜻이뇨 하면",
+      "source_text_hash": "3343270c9d6e7f1df357817f26a56d888a6dcf721ce4be22655ae6ca94c55f5c",
+      "translation_text_hash": "17eea820aea0a19ee78e1a7a31e9b65ec9c60005777030c97f085ad834448f98",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "열방 사람들도 말하기를 여호와께서 어찌하여 이 땅에 이같이 행하셨느뇨 이같이 크고 열렬하게 노하심은 무슨 뜻이뇨 하면"
+      ],
+      "raw_text_hashes": [
+        "17eea820aea0a19ee78e1a7a31e9b65ec9c60005777030c97f085ad834448f98"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:29:25",
+      "sequence": 5705,
+      "chapter_label": "DEU 29",
+      "verse_label": "25",
+      "locator": {
+        "book": "DEU",
+        "chapter": 29,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 29,
+          "verse": 25
+        }
+      ],
+      "en": "Then men will say, “Because they abandoned the covenant of the LORD, the God of their fathers, which he made with them when he brought them out of the land of Egypt,",
+      "ko": "그 때에 사람이 대답하기를 그 무리가 자기의 조상의 하나님 여호와께서 그 조상을 애굽에서 인도하여 내실 때에 더불어 세우신 언약을 버리고",
+      "source_text_hash": "600cbd59b7813a50578469ecfcbae660b813adc55e16d858c544bcf4327aa015",
+      "translation_text_hash": "fd30f4f51070f50911f197f784bd92b757e429cb90d5336828e4843f27eedc70",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 사람이 대답하기를 그 무리가 자기의 조상의 하나님 여호와께서 그 조상을 애굽에서 인도하여 내실 때에 더불어 세우신 언약을 버리고"
+      ],
+      "raw_text_hashes": [
+        "fd30f4f51070f50911f197f784bd92b757e429cb90d5336828e4843f27eedc70"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:29:26",
+      "sequence": 5706,
+      "chapter_label": "DEU 29",
+      "verse_label": "26",
+      "locator": {
+        "book": "DEU",
+        "chapter": 29,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 29,
+          "verse": 26
+        }
+      ],
+      "en": "and went and served other gods and worshiped them, gods that they didn’t know and that he had not given to them.",
+      "ko": "가서 자기들이 알지도 못하고 여호와께서 그들에게 주시지도 아니한 다른 신들을 섬겨 그에게 절한 까닭이라",
+      "source_text_hash": "c4446ff4bdb2b70d79d84e2e1874dd6060f3f69d30c2263c2e220e653f514a8d",
+      "translation_text_hash": "980699022473866714a84c9cc4e2291f5401d2a4aacd4b4b6b8cb89ad7eb9a16",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가서 자기들이 알지도 못하고 여호와께서 그들에게 주시지도 아니한 다른 신들을 섬겨 그에게 절한 까닭이라"
+      ],
+      "raw_text_hashes": [
+        "980699022473866714a84c9cc4e2291f5401d2a4aacd4b4b6b8cb89ad7eb9a16"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:29:27",
+      "sequence": 5707,
+      "chapter_label": "DEU 29",
+      "verse_label": "27",
+      "locator": {
+        "book": "DEU",
+        "chapter": 29,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 29,
+          "verse": 27
+        }
+      ],
+      "en": "Therefore the LORD’s anger burned against this land, to bring on it all the curses that are written in this book.",
+      "ko": "이러므로 여호와께서 이 땅을 향하여 진노하사 이 책에 기록된 모든 저주대로 재앙을 내리시고",
+      "source_text_hash": "86cef38cc16f3e3f22e8f9e43a19b8e3e407eefcd4a7a6c729433bc02b4975b7",
+      "translation_text_hash": "e07d89b66e4094cd1389c2ef0342bad66dc0d438f93b9c21096396333ab24288",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러므로 여호와께서 이 땅을 향하여 진노하사 이 책에 기록된 모든 저주대로 재앙을 내리시고"
+      ],
+      "raw_text_hashes": [
+        "e07d89b66e4094cd1389c2ef0342bad66dc0d438f93b9c21096396333ab24288"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:29:28",
+      "sequence": 5708,
+      "chapter_label": "DEU 29",
+      "verse_label": "28",
+      "locator": {
+        "book": "DEU",
+        "chapter": 29,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 29,
+          "verse": 28
+        }
+      ],
+      "en": "The LORD rooted them out of their land in anger, in wrath, and in great indignation, and thrust them into another land, as it is today.”",
+      "ko": "여호와께서 또 진노와 분한과 크게 통한하심으로 그들을 이 땅에서 뽑아내사 다른 나라에 던져보내심이 오늘날과 같다 하리라",
+      "source_text_hash": "1b8bf4634a2304c011aeb43c5d8cafda26654ad450cf0b6257ccd5b99b48032d",
+      "translation_text_hash": "52f4ee1692258c9f95990e00dfc41b113dfae1b416f4617ece798dec41a2cd2a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 또 진노와 분한과 크게 통한하심으로 그들을 이 땅에서 뽑아내사 다른 나라에 던져보내심이 오늘날과 같다 하리라"
+      ],
+      "raw_text_hashes": [
+        "52f4ee1692258c9f95990e00dfc41b113dfae1b416f4617ece798dec41a2cd2a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:29:29",
+      "sequence": 5709,
+      "chapter_label": "DEU 29",
+      "verse_label": "29",
+      "locator": {
+        "book": "DEU",
+        "chapter": 29,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 29,
+          "verse": 29
+        }
+      ],
+      "en": "The secret things belong to the LORD our God; but the things that are revealed belong to us and to our children forever, that we may do all the words of this law.",
+      "ko": "오묘한 일은 우리 하나님 여호와께 속하였거니와 나타난 일은 영구히 우리와 우리 자손에게 속하였나니 이는 우리로 이 율법의 모든 말씀을 행하게 하심이니라",
+      "source_text_hash": "a95108c5689ed0b0b7c7300a92a5c44e5b5e969039f777990dce50c3f4aace1f",
+      "translation_text_hash": "217cc988364198a33983ddc1e83a4bde6a32d904e2cbecd5e053d48fd6d96834",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오묘한 일은 우리 하나님 여호와께 속하였거니와 나타난 일은 영구히 우리와 우리 자손에게 속하였나니 이는 우리로 이 율법의 모든 말씀을 행하게 하심이니라"
+      ],
+      "raw_text_hashes": [
+        "217cc988364198a33983ddc1e83a4bde6a32d904e2cbecd5e053d48fd6d96834"
+      ]
+    }
+  ]
+}

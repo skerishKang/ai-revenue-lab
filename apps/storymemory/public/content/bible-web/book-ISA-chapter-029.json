@@ -1,0 +1,781 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ISA:chapter:029",
+  "unit_ordinal": 708,
+  "unit_label": "ISA 29",
+  "book_code": "ISA",
+  "chapter_number": 29,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ISA:29:1",
+      "sequence": 18195,
+      "chapter_label": "ISA 29",
+      "verse_label": "1",
+      "locator": {
+        "book": "ISA",
+        "chapter": 29,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 29,
+          "verse": 1
+        }
+      ],
+      "en": "Woe to Ariel! Ariel, the city where David encamped! Add year to year; let the feasts come around;",
+      "ko": "슬프다 아리엘이여 아리엘이여 다윗의 진 친 성읍이여 년부년 절기가 돌아오려니와",
+      "source_text_hash": "5dd08dd4277d1298023f396d4cbbb25bb30203b34aa25a6e3f610701b9305c12",
+      "translation_text_hash": "95dab325238072ff977698c8c375f7071e066566f944cf142bb39c36a2a8080e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "슬프다 아리엘이여 아리엘이여 다윗의 진 친 성읍이여 년부년 절기가 돌아오려니와"
+      ],
+      "raw_text_hashes": [
+        "95dab325238072ff977698c8c375f7071e066566f944cf142bb39c36a2a8080e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:29:2",
+      "sequence": 18196,
+      "chapter_label": "ISA 29",
+      "verse_label": "2",
+      "locator": {
+        "book": "ISA",
+        "chapter": 29,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 29,
+          "verse": 2
+        }
+      ],
+      "en": "then I will distress Ariel, and there will be mourning and lamentation. She shall be to me as an altar hearth.",
+      "ko": "내가 필경 너 아리엘을 괴롭게 하리니 네가 슬퍼하고 애곡하며 내게 아리엘과 같이 되리라",
+      "source_text_hash": "40a502dd1ea42bdd07deb42be095237cecae6615564c6254ca9774f44c67306b",
+      "translation_text_hash": "e7cad0a31e1f28907d5f81c66c52e6ee7f8f37f95d6a25cf2a94a236be6b67d8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 필경 너 아리엘을 괴롭게 하리니 네가 슬퍼하고 애곡하며 내게 아리엘과 같이 되리라"
+      ],
+      "raw_text_hashes": [
+        "e7cad0a31e1f28907d5f81c66c52e6ee7f8f37f95d6a25cf2a94a236be6b67d8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:29:3",
+      "sequence": 18197,
+      "chapter_label": "ISA 29",
+      "verse_label": "3",
+      "locator": {
+        "book": "ISA",
+        "chapter": 29,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 29,
+          "verse": 3
+        }
+      ],
+      "en": "I will encamp against you all around you, and will lay siege against you with posted troops. I will raise siege works against you.",
+      "ko": "내가 너를 사면으로 둘러 진을 치며 군대로 너를 에우며 대를 쌓아 너를 치리니",
+      "source_text_hash": "795a06819278b5ec36be1b2fd3d747f3bdf0a122d64f624afff02998ec9b1805",
+      "translation_text_hash": "699b83f88cdb4e7076f50e2ddf9ee0f2f0fe5d04723be08d2e1c074c387b81ed",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너를 사면으로 둘러 진을 치며 군대로 너를 에우며 대를 쌓아 너를 치리니"
+      ],
+      "raw_text_hashes": [
+        "699b83f88cdb4e7076f50e2ddf9ee0f2f0fe5d04723be08d2e1c074c387b81ed"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:29:4",
+      "sequence": 18198,
+      "chapter_label": "ISA 29",
+      "verse_label": "4",
+      "locator": {
+        "book": "ISA",
+        "chapter": 29,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 29,
+          "verse": 4
+        }
+      ],
+      "en": "You will be brought down, and will speak out of the ground. Your speech will mumble out of the dust. Your voice will be as of one who has a familiar spirit, out of the ground, and your speech will whisper out of the dust.",
+      "ko": "네가 낮아져서 땅에서 말하며 네 말소리가 나직히 티끌에서 날 것이라 네 목소리가 신접한 자의 목소리 같이 땅에서 나며 네 말소리가 티끌에서 지껄거리리라",
+      "source_text_hash": "ce08e9f335507e56bda24ba297043fc0ea88f380a99ce91d5b50528d48939662",
+      "translation_text_hash": "2ec7eb597fb4ff87a365e4c677d522174f5292392bcbde28a44b6d698bc11989",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 낮아져서 땅에서 말하며 네 말소리가 나직히 티끌에서 날 것이라 네 목소리가 신접한 자의 목소리 같이 땅에서 나며 네 말소리가 티끌에서 지껄거리리라"
+      ],
+      "raw_text_hashes": [
+        "2ec7eb597fb4ff87a365e4c677d522174f5292392bcbde28a44b6d698bc11989"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:29:5",
+      "sequence": 18199,
+      "chapter_label": "ISA 29",
+      "verse_label": "5",
+      "locator": {
+        "book": "ISA",
+        "chapter": 29,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 29,
+          "verse": 5
+        }
+      ],
+      "en": "But the multitude of your foes will be like fine dust, and the multitude of the ruthless ones like chaff that blows away. Yes, it will be in an instant, suddenly.",
+      "ko": "그럴지라도 네 대적의 무리는 세미한 티끌 같겠고 강포한 자의 무리는 불려 가는 겨 같으리니 그 일이 경각간에 갑자기 이룰 것이라",
+      "source_text_hash": "b566330561311b7aee42237179836ac609c272494ce2fd6c6f8de9a22f6c92eb",
+      "translation_text_hash": "f758e27b0871d865d91881f590bdd469152b8c0b7a571bb703c2f1e72b3206fd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그럴지라도 네 대적의 무리는 세미한 티끌 같겠고 강포한 자의 무리는 불려 가는 겨 같으리니 그 일이 경각간에 갑자기 이룰 것이라"
+      ],
+      "raw_text_hashes": [
+        "f758e27b0871d865d91881f590bdd469152b8c0b7a571bb703c2f1e72b3206fd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:29:6",
+      "sequence": 18200,
+      "chapter_label": "ISA 29",
+      "verse_label": "6",
+      "locator": {
+        "book": "ISA",
+        "chapter": 29,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 29,
+          "verse": 6
+        }
+      ],
+      "en": "She will be visited by the LORD of Armies with thunder, with earthquake, with great noise, with whirlwind and storm, and with the flame of a devouring fire.",
+      "ko": "만군의 여호와께서 벽력과 지진과 큰 소리와 회리바람과 폭풍과 맹렬한 불꽃으로 그들을 징벌하실 것인즉",
+      "source_text_hash": "3aac762606dd9d2f47aa7a746982f90389e008603975d64d6e4a5c20f4a4dd31",
+      "translation_text_hash": "df32ce57b8d90166a0f1afde6339908a651b33929c54d0d261bef2ac45a07c39",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만군의 여호와께서 벽력과 지진과 큰 소리와 회리바람과 폭풍과 맹렬한 불꽃으로 그들을 징벌하실 것인즉"
+      ],
+      "raw_text_hashes": [
+        "df32ce57b8d90166a0f1afde6339908a651b33929c54d0d261bef2ac45a07c39"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:29:7",
+      "sequence": 18201,
+      "chapter_label": "ISA 29",
+      "verse_label": "7",
+      "locator": {
+        "book": "ISA",
+        "chapter": 29,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 29,
+          "verse": 7
+        }
+      ],
+      "en": "The multitude of all the nations that fight against Ariel, even all who fight against her and her stronghold, and who distress her, will be like a dream, a vision of the night.",
+      "ko": "아리엘을 치는 열방의 무리 곧 아리엘과 그 보장을 쳐서 곤고케 하는 모든 자는 꿈 같이, 밤의 환상 같이 되리니",
+      "source_text_hash": "363d9ed463ee07ec9e8d16f5eb83aab4ed14dc17871aafe771fe3cf4c843780f",
+      "translation_text_hash": "5aa047631d5af5817ec004dc08a99b9190624b43bc890ff5d77d1deeb847f0c8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아리엘을 치는 열방의 무리 곧 아리엘과 그 보장을 쳐서 곤고케 하는 모든 자는 꿈 같이, 밤의 환상 같이 되리니"
+      ],
+      "raw_text_hashes": [
+        "5aa047631d5af5817ec004dc08a99b9190624b43bc890ff5d77d1deeb847f0c8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:29:8",
+      "sequence": 18202,
+      "chapter_label": "ISA 29",
+      "verse_label": "8",
+      "locator": {
+        "book": "ISA",
+        "chapter": 29,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 29,
+          "verse": 8
+        }
+      ],
+      "en": "It will be like when a hungry man dreams, and behold, he eats; but he awakes, and his hunger isn’t satisfied; or like when a thirsty man dreams, and behold, he drinks; but he awakes, and behold, he is faint, and he is still thirsty. The multitude of all the nations that fight against Mount Zion will be like that.",
+      "ko": "주린 자가 꿈에 먹었을지라도 깨면 그 속은 여전히 비고 목마른 자가 꿈에 마셨을지라도 깨면 곤비하며 그 속에 갈증이 있는 것같이 시온산을 치는 열방의 무리가 그와 같으리라",
+      "source_text_hash": "5b287d1c80ea4a2d5ad4bb48d123fac9fdd89297a099df69fbeeaa9a1960674d",
+      "translation_text_hash": "cc4783828aba4e698c0c25d182f2ccf9b8807c45942d95c3bb65d4bd7c78c2f7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주린 자가 꿈에 먹었을지라도 깨면 그 속은 여전히 비고 목마른 자가 꿈에 마셨을지라도 깨면 곤비하며 그 속에 갈증이 있는 것같이 시온산을 치는 열방의 무리가 그와 같으리라"
+      ],
+      "raw_text_hashes": [
+        "cc4783828aba4e698c0c25d182f2ccf9b8807c45942d95c3bb65d4bd7c78c2f7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:29:9",
+      "sequence": 18203,
+      "chapter_label": "ISA 29",
+      "verse_label": "9",
+      "locator": {
+        "book": "ISA",
+        "chapter": 29,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 29,
+          "verse": 9
+        }
+      ],
+      "en": "Pause and wonder! Blind yourselves and be blind! They are drunken, but not with wine; they stagger, but not with strong drink.",
+      "ko": "너희는 놀라고 놀라라 너희는 소경이 되고 소경이 되라 그들의 취함이 포도주로 인함이 아니며 그들의 비틀거림이 독주로 인함이 아니라",
+      "source_text_hash": "2e891d30612c57d2da696186aa4f0cd48a3b54bc38c6941951dc4fc134d4beb6",
+      "translation_text_hash": "d57990d2a47b9ebfaee704584fe6ed4b88f5dd2d0f6d9de891909bbeea990f5f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 놀라고 놀라라 너희는 소경이 되고 소경이 되라 그들의 취함이 포도주로 인함이 아니며 그들의 비틀거림이 독주로 인함이 아니라"
+      ],
+      "raw_text_hashes": [
+        "d57990d2a47b9ebfaee704584fe6ed4b88f5dd2d0f6d9de891909bbeea990f5f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:29:10",
+      "sequence": 18204,
+      "chapter_label": "ISA 29",
+      "verse_label": "10",
+      "locator": {
+        "book": "ISA",
+        "chapter": 29,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 29,
+          "verse": 10
+        }
+      ],
+      "en": "For the LORD has poured out on you a spirit of deep sleep, and has closed your eyes, the prophets; and he has covered your heads, the seers.",
+      "ko": "대저 여호와께서 깊이 잠들게 하는 신을 너희에게 부어주사 너희의 눈을 감기셨음이니 눈은 선지자요 너희 머리를 덮으셨음이니 머리는 선견자라",
+      "source_text_hash": "5b4106471ee8e0f522c6f73b2f364f462adf38a38b0c4f19d25b5df9bd845af9",
+      "translation_text_hash": "38254c101ac0003b14c4d169fa2f15b9d57676df655b293a38f09df0e43df570",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대저 여호와께서 깊이 잠들게 하는 신을 너희에게 부어주사 너희의 눈을 감기셨음이니 눈은 선지자요 너희 머리를 덮으셨음이니 머리는 선견자라"
+      ],
+      "raw_text_hashes": [
+        "38254c101ac0003b14c4d169fa2f15b9d57676df655b293a38f09df0e43df570"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:29:11",
+      "sequence": 18205,
+      "chapter_label": "ISA 29",
+      "verse_label": "11",
+      "locator": {
+        "book": "ISA",
+        "chapter": 29,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 29,
+          "verse": 11
+        }
+      ],
+      "en": "All vision has become to you like the words of a book that is sealed, which men deliver to one who is educated, saying, “Read this, please;” and he says, “I can’t, for it is sealed;”",
+      "ko": "그러므로 모든 묵시가 너희에게는 마치 봉한 책의 말이라 그것을 유식한 자에게 주며 이르기를 그대에게 청하노니 이를 읽으라 하면 대답하기를 봉하였으니 못하겠노라 할 것이요",
+      "source_text_hash": "d0fa24ac9b72a077e66511c5c06b9ac84815a224bcbb175c5e62f0466a976820",
+      "translation_text_hash": "7999b2bbca96c4ccf3481561dfd890a78337b05488ad9aefcc7f3d66240e220a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 모든 묵시가 너희에게는 마치 봉한 책의 말이라 그것을 유식한 자에게 주며 이르기를 그대에게 청하노니 이를 읽으라 하면 대답하기를 봉하였으니 못하겠노라 할 것이요"
+      ],
+      "raw_text_hashes": [
+        "7999b2bbca96c4ccf3481561dfd890a78337b05488ad9aefcc7f3d66240e220a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:29:12",
+      "sequence": 18206,
+      "chapter_label": "ISA 29",
+      "verse_label": "12",
+      "locator": {
+        "book": "ISA",
+        "chapter": 29,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 29,
+          "verse": 12
+        }
+      ],
+      "en": "and the book is delivered to one who is not educated, saying, “Read this, please;” and he says, “I can’t read.”",
+      "ko": "또 무식한 자에게 주며 이르기를 그대에게 청하노니 이를 읽으라 하면 대답하기를 나는 무식하다 할 것이니라",
+      "source_text_hash": "f70fa647559297e8d12af12f0e7c9ace827a1e9982e5e25eb30eaf0894188415",
+      "translation_text_hash": "2379adce1ef2724af4d6f450923c42b4be8526481253d4f718c5d148c00c768d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 무식한 자에게 주며 이르기를 그대에게 청하노니 이를 읽으라 하면 대답하기를 나는 무식하다 할 것이니라"
+      ],
+      "raw_text_hashes": [
+        "2379adce1ef2724af4d6f450923c42b4be8526481253d4f718c5d148c00c768d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:29:13",
+      "sequence": 18207,
+      "chapter_label": "ISA 29",
+      "verse_label": "13",
+      "locator": {
+        "book": "ISA",
+        "chapter": 29,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 29,
+          "verse": 13
+        }
+      ],
+      "en": "The Lord said, “Because this people draws near with their mouth and honors me with their lips, but they have removed their heart far from me, and their fear of me is a commandment of men which has been taught;",
+      "ko": "주께서 가라사대 이 백성이 입으로는 나를 가까이하며 입술로는 나를 존경하나 그 마음은 내게서 멀리 떠났나니 그들이 나를 경외함은 사람의 계명으로 가르침을 받았을 뿐이라",
+      "source_text_hash": "4b6242e515eb3423e22ae953ad5bc4e30b666b8be6d98b03ea67a8d99b60e1ac",
+      "translation_text_hash": "cc6dc98af1496d6892420fd3fa1af044e8ca59f94734eacbdffcf2869e642284",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 가라사대 이 백성이 입으로는 나를 가까이하며 입술로는 나를 존경하나 그 마음은 내게서 멀리 떠났나니 그들이 나를 경외함은 사람의 계명으로 가르침을 받았을 뿐이라"
+      ],
+      "raw_text_hashes": [
+        "cc6dc98af1496d6892420fd3fa1af044e8ca59f94734eacbdffcf2869e642284"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:29:14",
+      "sequence": 18208,
+      "chapter_label": "ISA 29",
+      "verse_label": "14",
+      "locator": {
+        "book": "ISA",
+        "chapter": 29,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 29,
+          "verse": 14
+        }
+      ],
+      "en": "therefore, behold, I will proceed to do a marvelous work among this people, even a marvelous work and a wonder; and the wisdom of their wise men will perish, and the understanding of their prudent men will be hidden.”",
+      "ko": "그러므로 내가 이 백성 중에 기이한 일 곧 기이하고 가장 기이한 일을 다시 행하리니 그들 중의 지혜자의 지혜가 없어지고 명철자의 총명이 가리워지리라",
+      "source_text_hash": "051f105bfb882b48268b557d2e3b12362c7f6fac354698de51c67beb99bda424",
+      "translation_text_hash": "f58417044e25fd3fd737bb705b39f8f7917379526b86ef71847146e1bdfe65c6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 내가 이 백성 중에 기이한 일 곧 기이하고 가장 기이한 일을 다시 행하리니 그들 중의 지혜자의 지혜가 없어지고 명철자의 총명이 가리워지리라"
+      ],
+      "raw_text_hashes": [
+        "f58417044e25fd3fd737bb705b39f8f7917379526b86ef71847146e1bdfe65c6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:29:15",
+      "sequence": 18209,
+      "chapter_label": "ISA 29",
+      "verse_label": "15",
+      "locator": {
+        "book": "ISA",
+        "chapter": 29,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 29,
+          "verse": 15
+        }
+      ],
+      "en": "Woe to those who deeply hide their counsel from the LORD, and whose deeds are in the dark, and who say, “Who sees us?” and “Who knows us?”",
+      "ko": "화 있을찐저 자기의 도모를 여호와께 깊이 숨기려하는 자여 그 일을 어두운데서 행하며 이르기를 누가 우리를 보랴 누가 우리를 알랴 하니",
+      "source_text_hash": "d565b6c88d42fe7bdc28680d55096942d736cada02cc97b8f327da5d729ed7a1",
+      "translation_text_hash": "2f729901755562bcc8abf38cc61f452f165d9d485289f887627905fe16eeaceb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "화 있을찐저 자기의 도모를 여호와께 깊이 숨기려하는 자여 그 일을 어두운데서 행하며 이르기를 누가 우리를 보랴 누가 우리를 알랴 하니"
+      ],
+      "raw_text_hashes": [
+        "2f729901755562bcc8abf38cc61f452f165d9d485289f887627905fe16eeaceb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:29:16",
+      "sequence": 18210,
+      "chapter_label": "ISA 29",
+      "verse_label": "16",
+      "locator": {
+        "book": "ISA",
+        "chapter": 29,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 29,
+          "verse": 16
+        }
+      ],
+      "en": "You turn things upside down! Should the potter be thought to be like clay, that the thing made should say about him who made it, “He didn’t make me;” or the thing formed say of him who formed it, “He has no understanding”?",
+      "ko": "너희의 패리함이 심하도다 토기장이를 어찌 진흙 같이 여기겠느냐 지음을 받은 물건이 어찌 자기를 지은 자에 대하여 이르기를 그가 나를 짓지 아니하였다 하겠으며 빚음을 받은 물건이 자기를 빚은 자에 대하여 이르기를 그가 총명이 없다 하겠느냐",
+      "source_text_hash": "0d9db45ce2279c7252a2adf1d777eac982fa3e5a22934f9f8dc8b67a94b4c4af",
+      "translation_text_hash": "992ab5f48fb47c7649cf0eb263100ee40b8678bcab9d290ff9db80198bec9df4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희의 패리함이 심하도다 토기장이를 어찌 진흙 같이 여기겠느냐 지음을 받은 물건이 어찌 자기를 지은 자에 대하여 이르기를 그가 나를 짓지 아니하였다 하겠으며 빚음을 받은 물건이 자기를 빚은 자에 대하여 이르기를 그가 총명이 없다 하겠느냐"
+      ],
+      "raw_text_hashes": [
+        "992ab5f48fb47c7649cf0eb263100ee40b8678bcab9d290ff9db80198bec9df4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:29:17",
+      "sequence": 18211,
+      "chapter_label": "ISA 29",
+      "verse_label": "17",
+      "locator": {
+        "book": "ISA",
+        "chapter": 29,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 29,
+          "verse": 17
+        }
+      ],
+      "en": "Isn’t it yet a very little while, and Lebanon will be turned into a fruitful field, and the fruitful field will be regarded as a forest?",
+      "ko": "미구에 레바논이 기름진 밭으로 변하지 않겠으며 기름진 밭이 삼림으로 여김이 되지 않겠느냐",
+      "source_text_hash": "ba86dab78991b25214aa0e704c1943e97cbb906c29bab7fe00badce66ce0a3ec",
+      "translation_text_hash": "6f4377c5f31b63a591a7b3dbed4ba045b5055bcc48dd1e2e206b17621d5fe93a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "미구에 레바논이 기름진 밭으로 변하지 않겠으며 기름진 밭이 삼림으로 여김이 되지 않겠느냐"
+      ],
+      "raw_text_hashes": [
+        "6f4377c5f31b63a591a7b3dbed4ba045b5055bcc48dd1e2e206b17621d5fe93a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:29:18",
+      "sequence": 18212,
+      "chapter_label": "ISA 29",
+      "verse_label": "18",
+      "locator": {
+        "book": "ISA",
+        "chapter": 29,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 29,
+          "verse": 18
+        }
+      ],
+      "en": "In that day, the deaf will hear the words of the book, and the eyes of the blind will see out of obscurity and out of darkness.",
+      "ko": "그 날에 귀머거리가 책의 말을 들을 것이며 어둡고 캄캄한데서 소경의 눈이 볼 것이며",
+      "source_text_hash": "b5257c68d79c023a7fce5e768bf156dfee5455407669ae2050a26648f53e9436",
+      "translation_text_hash": "34f6945da9b5e5bd0b12b54b0469c23e8711e3f60c50ed6f883f7fff8b0583a9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날에 귀머거리가 책의 말을 들을 것이며 어둡고 캄캄한데서 소경의 눈이 볼 것이며"
+      ],
+      "raw_text_hashes": [
+        "34f6945da9b5e5bd0b12b54b0469c23e8711e3f60c50ed6f883f7fff8b0583a9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:29:19",
+      "sequence": 18213,
+      "chapter_label": "ISA 29",
+      "verse_label": "19",
+      "locator": {
+        "book": "ISA",
+        "chapter": 29,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 29,
+          "verse": 19
+        }
+      ],
+      "en": "The humble also will increase their joy in the LORD, and the poor among men will rejoice in the Holy One of Israel.",
+      "ko": "겸손한 자가 여호와를 인하여 기쁨이 더하겠고 사람 중 빈핍한 자가 이스라엘의 거룩하신 자를 인하여 즐거워하리니",
+      "source_text_hash": "ec3080caac4641917187fd54792218ee1f9d42c2e0fffdbb25725963d6241fee",
+      "translation_text_hash": "afdce9d977b5b7937b4d1f0e67cdc4b51f7e1d280068ac196ca72bdf1cc87bac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "겸손한 자가 여호와를 인하여 기쁨이 더하겠고 사람 중 빈핍한 자가 이스라엘의 거룩하신 자를 인하여 즐거워하리니"
+      ],
+      "raw_text_hashes": [
+        "afdce9d977b5b7937b4d1f0e67cdc4b51f7e1d280068ac196ca72bdf1cc87bac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:29:20",
+      "sequence": 18214,
+      "chapter_label": "ISA 29",
+      "verse_label": "20",
+      "locator": {
+        "book": "ISA",
+        "chapter": 29,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 29,
+          "verse": 20
+        }
+      ],
+      "en": "For the ruthless is brought to nothing, and the scoffer ceases, and all those who are alert to do evil are cut off—",
+      "ko": "이는 강포한 자가 소멸되었으며 경만한 자가 그쳤으며 죄악의 기회를 엿보던 자가 다 끊어졌음이라",
+      "source_text_hash": "5ce92cf2e2c9fdff3b45e1a3b0fb1ee5f73806bec02eb985d47135e089e00735",
+      "translation_text_hash": "2ea74cf1c9d744ebb47cc967b0a5cd01c782c4669288fe52a860d463f2602c13",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 강포한 자가 소멸되었으며 경만한 자가 그쳤으며 죄악의 기회를 엿보던 자가 다 끊어졌음이라"
+      ],
+      "raw_text_hashes": [
+        "2ea74cf1c9d744ebb47cc967b0a5cd01c782c4669288fe52a860d463f2602c13"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:29:21",
+      "sequence": 18215,
+      "chapter_label": "ISA 29",
+      "verse_label": "21",
+      "locator": {
+        "book": "ISA",
+        "chapter": 29,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 29,
+          "verse": 21
+        }
+      ],
+      "en": "who cause a person to be indicted by a word, and lay a snare for one who reproves in the gate, and who deprive the innocent of justice with false testimony.",
+      "ko": "그들은 송사에 사람에게 죄를 입히며 성문에서 판단하는 자를 올무로 잡듯하며 헛된 일로 의인을 억울케 하느니라",
+      "source_text_hash": "63b14469af5eb136d6bd597c5fa5ceb9100cc60cc112b3e6e6915de077886f45",
+      "translation_text_hash": "1489e3767a008ae51f40f2187fa310fe301ff7224c841c2292bf2f4e39223515",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들은 송사에 사람에게 죄를 입히며 성문에서 판단하는 자를 올무로 잡듯하며 헛된 일로 의인을 억울케 하느니라"
+      ],
+      "raw_text_hashes": [
+        "1489e3767a008ae51f40f2187fa310fe301ff7224c841c2292bf2f4e39223515"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:29:22",
+      "sequence": 18216,
+      "chapter_label": "ISA 29",
+      "verse_label": "22",
+      "locator": {
+        "book": "ISA",
+        "chapter": 29,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 29,
+          "verse": 22
+        }
+      ],
+      "en": "Therefore the LORD, who redeemed Abraham, says concerning the house of Jacob: “Jacob shall no longer be ashamed, neither shall his face grow pale.",
+      "ko": "그러므로 아브라함을 구속하신 여호와께서 야곱 족속에 대하여 말씀하시되 야곱이 이제부터는 부끄러워 아니하겠고 그 얼굴이 이제부터는 실색하지 아니할 것이며",
+      "source_text_hash": "61d1170ade030ea417ea62a35f6344280776606167fd6d1009b5a51f5b641734",
+      "translation_text_hash": "80765a4f85a086bb76cd111f51e2b554c892ea27e53fb41ac14f01e4c9127ba1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 아브라함을 구속하신 여호와께서 야곱 족속에 대하여 말씀하시되 야곱이 이제부터는 부끄러워 아니하겠고 그 얼굴이 이제부터는 실색하지 아니할 것이며"
+      ],
+      "raw_text_hashes": [
+        "80765a4f85a086bb76cd111f51e2b554c892ea27e53fb41ac14f01e4c9127ba1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:29:23",
+      "sequence": 18217,
+      "chapter_label": "ISA 29",
+      "verse_label": "23",
+      "locator": {
+        "book": "ISA",
+        "chapter": 29,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 29,
+          "verse": 23
+        }
+      ],
+      "en": "But when he sees his children, the work of my hands, in the middle of him, they will sanctify my name. Yes, they will sanctify the Holy One of Jacob, and will stand in awe of the God of Israel.",
+      "ko": "그 자손은 나의 손으로 그 가운데서 행한 것을 볼 때에 내 이름을 거룩하다 하며 야곱의 거룩한 자를 거룩하다 하며 이스라엘의 하나님을 경외할 것이며",
+      "source_text_hash": "9b52bcfc2ad51581f6d9bd37bfe35d51225c5e5d5010d17041c8df8f027210a9",
+      "translation_text_hash": "648ad0e95f63f480251f963a7aaf293bde4e4118d8e5fec922fd4525f6c9e2a2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 자손은 나의 손으로 그 가운데서 행한 것을 볼 때에 내 이름을 거룩하다 하며 야곱의 거룩한 자를 거룩하다 하며 이스라엘의 하나님을 경외할 것이며"
+      ],
+      "raw_text_hashes": [
+        "648ad0e95f63f480251f963a7aaf293bde4e4118d8e5fec922fd4525f6c9e2a2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:29:24",
+      "sequence": 18218,
+      "chapter_label": "ISA 29",
+      "verse_label": "24",
+      "locator": {
+        "book": "ISA",
+        "chapter": 29,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 29,
+          "verse": 24
+        }
+      ],
+      "en": "They also who err in spirit will come to understanding, and those who grumble will receive instruction.”",
+      "ko": "마음이 혼미하던 자도 총명하게 되며 원망하던 자도 교훈을 받으리라 하셨느니라",
+      "source_text_hash": "c58969b256fd31bc9da1c7ed18e626dcb23cc1a32cf668ae1c98dda3edc8a91b",
+      "translation_text_hash": "8fcdf8b456d4e273fa22083e3bf41a61da6f88ce3e6ddabbef906f814ea94093",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마음이 혼미하던 자도 총명하게 되며 원망하던 자도 교훈을 받으리라 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "8fcdf8b456d4e273fa22083e3bf41a61da6f88ce3e6ddabbef906f814ea94093"
+      ]
+    }
+  ]
+}

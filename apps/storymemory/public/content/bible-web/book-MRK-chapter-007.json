@@ -1,0 +1,1197 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:MRK:chapter:007",
+  "unit_ordinal": 964,
+  "unit_label": "MRK 7",
+  "book_code": "MRK",
+  "chapter_number": 7,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:MRK:7:1",
+      "sequence": 24465,
+      "chapter_label": "MRK 7",
+      "verse_label": "1",
+      "locator": {
+        "book": "MRK",
+        "chapter": 7,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 7,
+          "verse": 1
+        }
+      ],
+      "en": "Then the Pharisees and some of the scribes gathered together to him, having come from Jerusalem.",
+      "ko": "바리새인들과 또 서기관 중 몇이 예루살렘에서 와서 예수께 모였다가",
+      "source_text_hash": "ad556f6b045bde7b38daa5d1f570940084690634a8aa0fde30dadd9bd786bb82",
+      "translation_text_hash": "42223e485877e6f477e2c56753a66dffe041bb1518db505ff9bdd3c69bbd5d7a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바리새인들과 또 서기관 중 몇이 예루살렘에서 와서 예수께 모였다가"
+      ],
+      "raw_text_hashes": [
+        "42223e485877e6f477e2c56753a66dffe041bb1518db505ff9bdd3c69bbd5d7a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:7:2",
+      "sequence": 24466,
+      "chapter_label": "MRK 7",
+      "verse_label": "2",
+      "locator": {
+        "book": "MRK",
+        "chapter": 7,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 7,
+          "verse": 2
+        }
+      ],
+      "en": "Now when they saw some of his disciples eating bread with defiled, that is unwashed, hands, they found fault.",
+      "ko": "그의 제자 중 몇 사람의 부정한 손 곧 씻지 아니한 손으로 떡 먹는 것을 보았더라",
+      "source_text_hash": "8a685ecd085d1fc3186eeddf0224d35ea39e0209a65df1ef57f77dcae74666fc",
+      "translation_text_hash": "c5e03a29f342fa823f7226291b57046626d1e8ea7187f8e86dddb15aff9a1765",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그의 제자 중 몇 사람의 부정한 손 곧 씻지 아니한 손으로 떡 먹는 것을 보았더라"
+      ],
+      "raw_text_hashes": [
+        "c5e03a29f342fa823f7226291b57046626d1e8ea7187f8e86dddb15aff9a1765"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:7:3",
+      "sequence": 24467,
+      "chapter_label": "MRK 7",
+      "verse_label": "3",
+      "locator": {
+        "book": "MRK",
+        "chapter": 7,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 7,
+          "verse": 3
+        }
+      ],
+      "en": "(For the Pharisees and all the Jews don’t eat unless they wash their hands and forearms, holding to the tradition of the elders.",
+      "ko": "(바리새인들과 모든 유대인들이 장로들의 유전을 지키어 손을 부지런히 씻지 않으면 먹지 아니하며",
+      "source_text_hash": "ae1c7ce05215f57055c0eff3449b813a7911934302f1fb1e308708d99c36718c",
+      "translation_text_hash": "15c3f6bcd554455b96ec91a07b3d958fbd678be09a81ec312637c278cd1122a2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "(바리새인들과 모든 유대인들이 장로들의 유전을 지키어 손을 부지런히 씻지 않으면 먹지 아니하며"
+      ],
+      "raw_text_hashes": [
+        "15c3f6bcd554455b96ec91a07b3d958fbd678be09a81ec312637c278cd1122a2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:7:4",
+      "sequence": 24468,
+      "chapter_label": "MRK 7",
+      "verse_label": "4",
+      "locator": {
+        "book": "MRK",
+        "chapter": 7,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 7,
+          "verse": 4
+        }
+      ],
+      "en": "They don’t eat when they come from the marketplace unless they bathe themselves, and there are many other things which they have received to hold to: washings of cups, pitchers, bronze vessels, and couches.)",
+      "ko": "또 시장에서 돌아 와서는 물을 뿌리지 않으면 먹지 아니하며 그 외에도 여러가지를 지키어 오는 것이 있으니 잔과 주발과 놋그릇을 씻음이러라)",
+      "source_text_hash": "94d1f2e9e441a0b1bce637482b72b08081b51c0fecf4893b431bae016a1f3d75",
+      "translation_text_hash": "0bf23f4823f34412e2824814ed6e9e4e48be74a584eef8d1f0f25c2f09adf404",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 시장에서 돌아 와서는 물을 뿌리지 않으면 먹지 아니하며 그 외에도 여러가지를 지키어 오는 것이 있으니 잔과 주발과 놋그릇을 씻음이러라)"
+      ],
+      "raw_text_hashes": [
+        "0bf23f4823f34412e2824814ed6e9e4e48be74a584eef8d1f0f25c2f09adf404"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:7:5",
+      "sequence": 24469,
+      "chapter_label": "MRK 7",
+      "verse_label": "5",
+      "locator": {
+        "book": "MRK",
+        "chapter": 7,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 7,
+          "verse": 5
+        }
+      ],
+      "en": "The Pharisees and the scribes asked him, “Why don’t your disciples walk according to the tradition of the elders, but eat their bread with unwashed hands?”",
+      "ko": "이에 바리새인들과 서기관들이 예수께 묻되 어찌하여 당신의 제자들은 장로들의 유전을 준행치 아니하고 부정한 손으로 떡을 먹나이까",
+      "source_text_hash": "bf0ea8fb6df295a91c5e7b508c1da2fe0eb8a1a746f957096faedacda198fd71",
+      "translation_text_hash": "f0af00fe0dc81b8b0cc7246d62b1f0f1d7f7e65abd0aff7615cf164f95478150",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 바리새인들과 서기관들이 예수께 묻되 어찌하여 당신의 제자들은 장로들의 유전을 준행치 아니하고 부정한 손으로 떡을 먹나이까"
+      ],
+      "raw_text_hashes": [
+        "f0af00fe0dc81b8b0cc7246d62b1f0f1d7f7e65abd0aff7615cf164f95478150"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:7:6",
+      "sequence": 24470,
+      "chapter_label": "MRK 7",
+      "verse_label": "6",
+      "locator": {
+        "book": "MRK",
+        "chapter": 7,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 7,
+          "verse": 6
+        }
+      ],
+      "en": "He answered them, “Well did Isaiah prophesy of you hypocrites, as it is written,‘This people honors me with their lips, but their heart is far from me.",
+      "ko": "가라사대 이사야가 너희 외식하는 자에 대하여 잘 예언하였도다 기록하였으되 이 백성이 입술로는 나를 존경하되 마음은 내게서 멀도다",
+      "source_text_hash": "67e828b80d9dd3c6b8519c8dda69f092ae1bd418bcf21204ed118d47c8dfef05",
+      "translation_text_hash": "dade8314565b25a4d096d7ad91529894d2c6306f85dff64f330e61d9ac95ea01",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가라사대 이사야가 너희 외식하는 자에 대하여 잘 예언하였도다 기록하였으되 이 백성이 입술로는 나를 존경하되 마음은 내게서 멀도다"
+      ],
+      "raw_text_hashes": [
+        "dade8314565b25a4d096d7ad91529894d2c6306f85dff64f330e61d9ac95ea01"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:7:7",
+      "sequence": 24471,
+      "chapter_label": "MRK 7",
+      "verse_label": "7",
+      "locator": {
+        "book": "MRK",
+        "chapter": 7,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 7,
+          "verse": 7
+        }
+      ],
+      "en": "They worship me in vain,teaching as doctrines the commandments of men.’",
+      "ko": "사람의 계명으로 교훈을 삼아 가르치니 나를 헛되이 경배하는도다 하였느니라",
+      "source_text_hash": "e170c63a19cf48ea503f08dacc2fd531de8351fde4335b8e7337b69fc7fc6b14",
+      "translation_text_hash": "6eb1d52ed963bae0bd407eb76cb656faddeced7bd3e0271c1343bf446ac6813e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람의 계명으로 교훈을 삼아 가르치니 나를 헛되이 경배하는도다 하였느니라"
+      ],
+      "raw_text_hashes": [
+        "6eb1d52ed963bae0bd407eb76cb656faddeced7bd3e0271c1343bf446ac6813e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:7:8",
+      "sequence": 24472,
+      "chapter_label": "MRK 7",
+      "verse_label": "8",
+      "locator": {
+        "book": "MRK",
+        "chapter": 7,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 7,
+          "verse": 8
+        }
+      ],
+      "en": "“For you set aside the commandment of God, and hold tightly to the tradition of men—the washing of pitchers and cups, and you do many other such things.”",
+      "ko": "너희가 하나님의 계명은 버리고 사람의 유전을 지키느니라",
+      "source_text_hash": "548fd16262ebd26fc77d1ccf1b8d4327b348d701c45b63eac0467d0b695b7b76",
+      "translation_text_hash": "d83546d65cde8147991797854b5906415aaf51ccdb38aea39379b8abfacaf346",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 하나님의 계명은 버리고 사람의 유전을 지키느니라"
+      ],
+      "raw_text_hashes": [
+        "d83546d65cde8147991797854b5906415aaf51ccdb38aea39379b8abfacaf346"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:7:9",
+      "sequence": 24473,
+      "chapter_label": "MRK 7",
+      "verse_label": "9",
+      "locator": {
+        "book": "MRK",
+        "chapter": 7,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 7,
+          "verse": 9
+        }
+      ],
+      "en": "He said to them, “Full well do you reject the commandment of God, that you may keep your tradition.",
+      "ko": "또 가라사대 너희가 너희 유전을 지키려고 하나님의 계명을 잘 저버리는도다",
+      "source_text_hash": "31d08442380e0017b3d5084c476eb498c5564ebe7b6f90e55b53d7ca8b4cbdfb",
+      "translation_text_hash": "423215a7f0265394bcea35a83fdf393931ae3ecfc0caf36cf4c20209d3aa915b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 가라사대 너희가 너희 유전을 지키려고 하나님의 계명을 잘 저버리는도다"
+      ],
+      "raw_text_hashes": [
+        "423215a7f0265394bcea35a83fdf393931ae3ecfc0caf36cf4c20209d3aa915b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:7:10",
+      "sequence": 24474,
+      "chapter_label": "MRK 7",
+      "verse_label": "10",
+      "locator": {
+        "book": "MRK",
+        "chapter": 7,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 7,
+          "verse": 10
+        }
+      ],
+      "en": "For Moses said, ‘Honor your father and your mother;’and, ‘He who speaks evil of father or mother, let him be put to death.’",
+      "ko": "모세는 네 부모를 공경하라 하고 또 아비나 어미를 훼방하는 자는 반드시 죽으리라 하였거늘",
+      "source_text_hash": "e26316929c349a85041333aed02cc03978464b3b73cf189854339824ea1a2239",
+      "translation_text_hash": "5be1f32ba374e759ccbe980e93e39c3032d017f147bef506a136e72ff3b39e5f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세는 네 부모를 공경하라 하고 또 아비나 어미를 훼방하는 자는 반드시 죽으리라 하였거늘"
+      ],
+      "raw_text_hashes": [
+        "5be1f32ba374e759ccbe980e93e39c3032d017f147bef506a136e72ff3b39e5f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:7:11",
+      "sequence": 24475,
+      "chapter_label": "MRK 7",
+      "verse_label": "11",
+      "locator": {
+        "book": "MRK",
+        "chapter": 7,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 7,
+          "verse": 11
+        }
+      ],
+      "en": "But you say, ‘If a man tells his father or his mother, “Whatever profit you might have received from me is Corban,”’”that is to say, given to God,",
+      "ko": "너희는 가로되 사람이 아비에게나 어미에게나 말하기를 내가 드려 유익하게 할 것이 고르반 곧 하나님께 드림이 되었다고 하기만 하면 그만이라 하고",
+      "source_text_hash": "943129f8f6c3ee4ff863f8db306529649241a9377d75b986cf92dca95ec85bed",
+      "translation_text_hash": "bbc7ce0f0048afa568e1e5d349a920cee115ca9b41eb44c555ea0f33586a4835",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 가로되 사람이 아비에게나 어미에게나 말하기를 내가 드려 유익하게 할 것이 고르반 곧 하나님께 드림이 되었다고 하기만 하면 그만이라 하고"
+      ],
+      "raw_text_hashes": [
+        "bbc7ce0f0048afa568e1e5d349a920cee115ca9b41eb44c555ea0f33586a4835"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:7:12",
+      "sequence": 24476,
+      "chapter_label": "MRK 7",
+      "verse_label": "12",
+      "locator": {
+        "book": "MRK",
+        "chapter": 7,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 7,
+          "verse": 12
+        }
+      ],
+      "en": "“then you no longer allow him to do anything for his father or his mother,",
+      "ko": "제 아비나 어미에게 다시 아무 것이라도 하여 드리기를 허하지 아니하여",
+      "source_text_hash": "b7a116e6bebac25725f4eaa061c7a651fab6a5febf578b6b70d7028de9b68181",
+      "translation_text_hash": "b08e6b9360e57a6e54af3743c152136c32bb756ffb0f21e1cca2aeeccd4892cc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제 아비나 어미에게 다시 아무 것이라도 하여 드리기를 허하지 아니하여"
+      ],
+      "raw_text_hashes": [
+        "b08e6b9360e57a6e54af3743c152136c32bb756ffb0f21e1cca2aeeccd4892cc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:7:13",
+      "sequence": 24477,
+      "chapter_label": "MRK 7",
+      "verse_label": "13",
+      "locator": {
+        "book": "MRK",
+        "chapter": 7,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 7,
+          "verse": 13
+        }
+      ],
+      "en": "making void the word of God by your tradition which you have handed down. You do many things like this.”",
+      "ko": "너희의 전한 유전으로 하나님의 말씀을 폐하며 또 이같은 일을 많이 행하느니라 하시고",
+      "source_text_hash": "029459e770829100d7cab60558c308fa10f4a7c28de199e8c1c35c1f06befab9",
+      "translation_text_hash": "a2b571a9c768bb04e4d25877eba7fa1cdd34f60e2fcc1916e40bf2ea5479f53f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희의 전한 유전으로 하나님의 말씀을 폐하며 또 이같은 일을 많이 행하느니라 하시고"
+      ],
+      "raw_text_hashes": [
+        "a2b571a9c768bb04e4d25877eba7fa1cdd34f60e2fcc1916e40bf2ea5479f53f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:7:14",
+      "sequence": 24478,
+      "chapter_label": "MRK 7",
+      "verse_label": "14",
+      "locator": {
+        "book": "MRK",
+        "chapter": 7,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 7,
+          "verse": 14
+        }
+      ],
+      "en": "He called all the multitude to himself and said to them, “Hear me, all of you, and understand.",
+      "ko": "무리를 다시 불러 이르시되 너희는 다 내 말을 듣고 깨달으라",
+      "source_text_hash": "7568f13ce666658b440e60aab52fd6d79253e8c70ffbd6b1bf063e3badb6f6ec",
+      "translation_text_hash": "698c31c15ae1de97dbb4d7b771c021fe1d49f14e0fe158f5ab5338ad96142a74",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무리를 다시 불러 이르시되 너희는 다 내 말을 듣고 깨달으라"
+      ],
+      "raw_text_hashes": [
+        "698c31c15ae1de97dbb4d7b771c021fe1d49f14e0fe158f5ab5338ad96142a74"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:7:15",
+      "sequence": 24479,
+      "chapter_label": "MRK 7",
+      "verse_label": "15",
+      "locator": {
+        "book": "MRK",
+        "chapter": 7,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 7,
+          "verse": 15
+        }
+      ],
+      "en": "There is nothing from outside of the man that going into him can defile him; but the things which proceed out of the man are those that defile the man.",
+      "ko": "무엇이든지 밖에서 사람에게로 들어가는 것은 능히 사람을 더럽게 하지 못하되",
+      "source_text_hash": "489eaa2cce4b0154704b528e3b73b8d2eefd0cd0804abe157c9492870aad3841",
+      "translation_text_hash": "8fa144cf4794102e9069e62c801bac1c9720590ad5bcfa34be17844390cd45c2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무엇이든지 밖에서 사람에게로 들어가는 것은 능히 사람을 더럽게 하지 못하되"
+      ],
+      "raw_text_hashes": [
+        "8fa144cf4794102e9069e62c801bac1c9720590ad5bcfa34be17844390cd45c2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:7:16",
+      "sequence": 24480,
+      "chapter_label": "MRK 7",
+      "verse_label": "16",
+      "locator": {
+        "book": "MRK",
+        "chapter": 7,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 7,
+          "verse": 16
+        }
+      ],
+      "en": "If anyone has ears to hear, let him hear!”",
+      "ko": "사람 안에서 나오는 것이 사람을 더럽게 하는 것이니라 하시고",
+      "source_text_hash": "cda249ba3ed7c39a0dbf75fd22cb84ef59ff29d33b87e8e75cf0c4264d8ee361",
+      "translation_text_hash": "5f9ee2b15bca93ccbd1ee43ee6dd64a60ca13775cb529347069c3a0131f8f36f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람 안에서 나오는 것이 사람을 더럽게 하는 것이니라 하시고"
+      ],
+      "raw_text_hashes": [
+        "5f9ee2b15bca93ccbd1ee43ee6dd64a60ca13775cb529347069c3a0131f8f36f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:7:17",
+      "sequence": 24481,
+      "chapter_label": "MRK 7",
+      "verse_label": "17",
+      "locator": {
+        "book": "MRK",
+        "chapter": 7,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 7,
+          "verse": 17
+        }
+      ],
+      "en": "When he had entered into a house away from the multitude, his disciples asked him about the parable.",
+      "ko": "무리를 떠나 집으로 들어가시니 제자들이 그 비유를 묻자온대",
+      "source_text_hash": "1a03a2f6273e3f05cabb369232e421cdf9d02b0adbee3a1cf32ef8eeddff5395",
+      "translation_text_hash": "d9c6f4b1829402be83b7ed0c6cd2b1841ef69cab297d5a2c3d57c5e30b3c4549",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무리를 떠나 집으로 들어가시니 제자들이 그 비유를 묻자온대"
+      ],
+      "raw_text_hashes": [
+        "d9c6f4b1829402be83b7ed0c6cd2b1841ef69cab297d5a2c3d57c5e30b3c4549"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:7:18",
+      "sequence": 24482,
+      "chapter_label": "MRK 7",
+      "verse_label": "18",
+      "locator": {
+        "book": "MRK",
+        "chapter": 7,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 7,
+          "verse": 18
+        }
+      ],
+      "en": "He said to them, “Are you also without understanding? Don’t you perceive that whatever goes into the man from outside can’t defile him,",
+      "ko": "예수께서 이르시되 너희도 이렇게 깨달음이 없느냐 무엇이든지 밖에서 들어가는 것이 능히 사람을 더럽게 하지 못함을 알지 못하느냐",
+      "source_text_hash": "11d5d676560a660f6f2a941ddf0608ba32f96d517166eace2ec2cac6ba72542c",
+      "translation_text_hash": "6dff6b408b5e1591e18a51f296809a316e6d72abbdb7d31ccbbe81fa1ba6f83f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 이르시되 너희도 이렇게 깨달음이 없느냐 무엇이든지 밖에서 들어가는 것이 능히 사람을 더럽게 하지 못함을 알지 못하느냐"
+      ],
+      "raw_text_hashes": [
+        "6dff6b408b5e1591e18a51f296809a316e6d72abbdb7d31ccbbe81fa1ba6f83f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:7:19",
+      "sequence": 24483,
+      "chapter_label": "MRK 7",
+      "verse_label": "19",
+      "locator": {
+        "book": "MRK",
+        "chapter": 7,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 7,
+          "verse": 19
+        }
+      ],
+      "en": "because it doesn’t go into his heart, but into his stomach, then into the latrine, making all foods clean?”",
+      "ko": "이는 마음에 들어가지 아니하고 배에 들어가 뒤로 나감이니라 하심으로 모든 식물을 깨끗하다 하셨느니라",
+      "source_text_hash": "b95f7b9c9424fc868de3787072adb4aa46f2f345e78029043dc6165a1e9b5e49",
+      "translation_text_hash": "8fd5140439683f4bc4137e8dadab48f3705166a62ac47b92000d01f8b18fe4db",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 마음에 들어가지 아니하고 배에 들어가 뒤로 나감이니라 하심으로 모든 식물을 깨끗하다 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "8fd5140439683f4bc4137e8dadab48f3705166a62ac47b92000d01f8b18fe4db"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:7:20",
+      "sequence": 24484,
+      "chapter_label": "MRK 7",
+      "verse_label": "20",
+      "locator": {
+        "book": "MRK",
+        "chapter": 7,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 7,
+          "verse": 20
+        }
+      ],
+      "en": "He said, “That which proceeds out of the man, that defiles the man.",
+      "ko": "또 가라사대 사람에게서 나오는 그것이 사람을 더럽게 하느니라",
+      "source_text_hash": "9756668f88c82987390605f5d322da6b5c4b12d8e483e7d6e9826b476f49444d",
+      "translation_text_hash": "8fe680dbb8ddf3bf8228dce569d6db53f2c5d420f217bb89a2f8683b6c221ffa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 가라사대 사람에게서 나오는 그것이 사람을 더럽게 하느니라"
+      ],
+      "raw_text_hashes": [
+        "8fe680dbb8ddf3bf8228dce569d6db53f2c5d420f217bb89a2f8683b6c221ffa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:7:21",
+      "sequence": 24485,
+      "chapter_label": "MRK 7",
+      "verse_label": "21",
+      "locator": {
+        "book": "MRK",
+        "chapter": 7,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 7,
+          "verse": 21
+        }
+      ],
+      "en": "For from within, out of the hearts of men, proceed evil thoughts, adulteries, sexual sins, murders, thefts,",
+      "ko": "속에서 곧 사람의 마음에서 나오는 것은 악한 생각 곧 음란과 도적질과 살인과",
+      "source_text_hash": "599804bfabf269d22da6622bb63e9b6d3f8c7dc434cc45c1960c397b98c93079",
+      "translation_text_hash": "03a42110edfc81e53335a31bf1dc706f42bfa45d0b47852bd3a0e15068d3e808",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "속에서 곧 사람의 마음에서 나오는 것은 악한 생각 곧 음란과 도적질과 살인과"
+      ],
+      "raw_text_hashes": [
+        "03a42110edfc81e53335a31bf1dc706f42bfa45d0b47852bd3a0e15068d3e808"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:7:22",
+      "sequence": 24486,
+      "chapter_label": "MRK 7",
+      "verse_label": "22",
+      "locator": {
+        "book": "MRK",
+        "chapter": 7,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 7,
+          "verse": 22
+        }
+      ],
+      "en": "covetings, wickedness, deceit, lustful desires, an evil eye, blasphemy, pride, and foolishness.",
+      "ko": "간음과 탐욕과 악독과 속임과 음탕과 흘기는 눈과 훼방과 교만과 광패니",
+      "source_text_hash": "52d894a06ef870ec30368a22dd369bd4746b43906ad8f5670618039195973080",
+      "translation_text_hash": "f10763e9483fe365f66d3feb05458fd2041f3b7de9e7f308b07eccaeb908fa34",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "간음과 탐욕과 악독과 속임과 음탕과 흘기는 눈과 훼방과 교만과 광패니"
+      ],
+      "raw_text_hashes": [
+        "f10763e9483fe365f66d3feb05458fd2041f3b7de9e7f308b07eccaeb908fa34"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:7:23",
+      "sequence": 24487,
+      "chapter_label": "MRK 7",
+      "verse_label": "23",
+      "locator": {
+        "book": "MRK",
+        "chapter": 7,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 7,
+          "verse": 23
+        }
+      ],
+      "en": "All these evil things come from within and defile the man.”",
+      "ko": "이 모든 악한 것이 다 속에서 나와서 사람을 더럽게 하느니라",
+      "source_text_hash": "df4e9fbb5f77d1892871caf89158c1d8eb018cb3009955e94ca175e1da8b5ff2",
+      "translation_text_hash": "919046f575b75e0062da3943996d5aabc4cca991af945d17bf91cfaac6a4f6e2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 모든 악한 것이 다 속에서 나와서 사람을 더럽게 하느니라"
+      ],
+      "raw_text_hashes": [
+        "919046f575b75e0062da3943996d5aabc4cca991af945d17bf91cfaac6a4f6e2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:7:24",
+      "sequence": 24488,
+      "chapter_label": "MRK 7",
+      "verse_label": "24",
+      "locator": {
+        "book": "MRK",
+        "chapter": 7,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 7,
+          "verse": 24
+        }
+      ],
+      "en": "From there he arose and went away into the borders of Tyre and Sidon. He entered into a house and didn’t want anyone to know it, but he couldn’t escape notice.",
+      "ko": "예수께서 일어나사 거기를 떠나 두로 지경으로 가서 한 집에 들어가 아무도 모르게 하시려하나 숨길 수 없더라",
+      "source_text_hash": "7d017b9a89bb9646c691b18057f119f8aabad0101a0a59de3713fe9b26953ac3",
+      "translation_text_hash": "33d84a05d6f3a0c493b7f310965558c9902960c0190609f09fdc5eb3aa2e0398",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 일어나사 거기를 떠나 두로 지경으로 가서 한 집에 들어가 아무도 모르게 하시려하나 숨길 수 없더라"
+      ],
+      "raw_text_hashes": [
+        "33d84a05d6f3a0c493b7f310965558c9902960c0190609f09fdc5eb3aa2e0398"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:7:25",
+      "sequence": 24489,
+      "chapter_label": "MRK 7",
+      "verse_label": "25",
+      "locator": {
+        "book": "MRK",
+        "chapter": 7,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 7,
+          "verse": 25
+        }
+      ],
+      "en": "For a woman whose little daughter had an unclean spirit, having heard of him, came and fell down at his feet.",
+      "ko": "이에 더러운 귀신 들린 어린 딸을 둔 한 여자가 예수의 소문을 듣고 곧 와서 그 발 아래 엎드리니",
+      "source_text_hash": "62f636f28adf16b4c82384746aa882d4e0547aedc56e2c6da5d0b59bd3b73827",
+      "translation_text_hash": "2370b3a3b6f53b340894667038254d45ac09137073a776e939f4959941fcf54c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 더러운 귀신 들린 어린 딸을 둔 한 여자가 예수의 소문을 듣고 곧 와서 그 발 아래 엎드리니"
+      ],
+      "raw_text_hashes": [
+        "2370b3a3b6f53b340894667038254d45ac09137073a776e939f4959941fcf54c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:7:26",
+      "sequence": 24490,
+      "chapter_label": "MRK 7",
+      "verse_label": "26",
+      "locator": {
+        "book": "MRK",
+        "chapter": 7,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 7,
+          "verse": 26
+        }
+      ],
+      "en": "Now the woman was a Greek, a Syrophoenician by race. She begged him that he would cast the demon out of her daughter.",
+      "ko": "그 여자는 헬라인이요 수로보니게 족속이라 자기 딸에게서 귀신 쫓아 주시기를 간구하거늘",
+      "source_text_hash": "fcc217b653f06c1732532b07520a1d35cf40f8f3e0ac30cba92b4d4e23a4cdba",
+      "translation_text_hash": "2b94d464b1c2ee9da074c051fb6b542d9f15aeafd809ee8aa3395333efe5a0a5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 여자는 헬라인이요 수로보니게 족속이라 자기 딸에게서 귀신 쫓아 주시기를 간구하거늘"
+      ],
+      "raw_text_hashes": [
+        "2b94d464b1c2ee9da074c051fb6b542d9f15aeafd809ee8aa3395333efe5a0a5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:7:27",
+      "sequence": 24491,
+      "chapter_label": "MRK 7",
+      "verse_label": "27",
+      "locator": {
+        "book": "MRK",
+        "chapter": 7,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 7,
+          "verse": 27
+        }
+      ],
+      "en": "But Jesus said to her, “Let the children be filled first, for it is not appropriate to take the children’s bread and throw it to the dogs.”",
+      "ko": "예수께서 이르시되 자녀로 먼저 배불리 먹게 할찌니 자녀의 떡을 취하여 개들에게 던짐이 마땅치 아니하니라",
+      "source_text_hash": "12629465e1343596e7d7b3ba7a2e358fec732de546523d1e7b723ef7d8a7bc6b",
+      "translation_text_hash": "5e8b9da4fd9c55529ed53be622b2b0a9c40b4323a71742950cfeac950aafd0b2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 이르시되 자녀로 먼저 배불리 먹게 할찌니 자녀의 떡을 취하여 개들에게 던짐이 마땅치 아니하니라"
+      ],
+      "raw_text_hashes": [
+        "5e8b9da4fd9c55529ed53be622b2b0a9c40b4323a71742950cfeac950aafd0b2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:7:28",
+      "sequence": 24492,
+      "chapter_label": "MRK 7",
+      "verse_label": "28",
+      "locator": {
+        "book": "MRK",
+        "chapter": 7,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 7,
+          "verse": 28
+        }
+      ],
+      "en": "But she answered him, “Yes, Lord. Yet even the dogs under the table eat the children’s crumbs.”",
+      "ko": "여자가 대답하여 가로되 주여 옳소이다마는 상 아래 개들도 아이들의 먹던 부스러기를 먹나이다",
+      "source_text_hash": "ab94d9ca60cb8ee1e8788874e57a9fee19a7482f653dc10db71c683b4a22a811",
+      "translation_text_hash": "b38c4f3aa4d9b56361cab3abe6e3eb828e1bf9254bca0c75acd4066592cd7072",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여자가 대답하여 가로되 주여 옳소이다마는 상 아래 개들도 아이들의 먹던 부스러기를 먹나이다"
+      ],
+      "raw_text_hashes": [
+        "b38c4f3aa4d9b56361cab3abe6e3eb828e1bf9254bca0c75acd4066592cd7072"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:7:29",
+      "sequence": 24493,
+      "chapter_label": "MRK 7",
+      "verse_label": "29",
+      "locator": {
+        "book": "MRK",
+        "chapter": 7,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 7,
+          "verse": 29
+        }
+      ],
+      "en": "He said to her, “For this saying, go your way. The demon has gone out of your daughter.”",
+      "ko": "예수께서 가라사대 이 말을 하였으니 돌아가라 귀신이 네 딸에게서 나갔느니라 하시매",
+      "source_text_hash": "2327ad6f150e8a7ff5d6c0ab1cc4598db8f723dc44ae29c2eebcd58b78b22ab9",
+      "translation_text_hash": "0b2d3ac6978cdd572d5ff551103fc2823b368e10ec96bc2a249b553af12ec977",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 가라사대 이 말을 하였으니 돌아가라 귀신이 네 딸에게서 나갔느니라 하시매"
+      ],
+      "raw_text_hashes": [
+        "0b2d3ac6978cdd572d5ff551103fc2823b368e10ec96bc2a249b553af12ec977"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:7:30",
+      "sequence": 24494,
+      "chapter_label": "MRK 7",
+      "verse_label": "30",
+      "locator": {
+        "book": "MRK",
+        "chapter": 7,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 7,
+          "verse": 30
+        }
+      ],
+      "en": "She went away to her house, and found the child having been laid on the bed, with the demon gone out.",
+      "ko": "여자가 집에 돌아가 본즉 아이가 침상에 누웠고 귀신이 나갔더라",
+      "source_text_hash": "82e3bf8e0ceac1455dbf961a2afbce4abe2ec068cf6c41ac19a8b57c42af694c",
+      "translation_text_hash": "19b0456ab7a0d143393b1514650bc54771b90769ef95efab6d4b7bbd1688823c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여자가 집에 돌아가 본즉 아이가 침상에 누웠고 귀신이 나갔더라"
+      ],
+      "raw_text_hashes": [
+        "19b0456ab7a0d143393b1514650bc54771b90769ef95efab6d4b7bbd1688823c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:7:31",
+      "sequence": 24495,
+      "chapter_label": "MRK 7",
+      "verse_label": "31",
+      "locator": {
+        "book": "MRK",
+        "chapter": 7,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 7,
+          "verse": 31
+        }
+      ],
+      "en": "Again he departed from the borders of Tyre and Sidon, and came to the sea of Galilee through the middle of the region of Decapolis.",
+      "ko": "예수께서 다시 두로 지경에서 나와 시돈을 지나고 데가볼리 지경을 통과하여 갈릴리 호수에 이르시매",
+      "source_text_hash": "388590ee9486151f97cb25091cf4306bfef41cb24613fbb01756d59713c497a7",
+      "translation_text_hash": "5f7509f873843a65fb6b7c2a6e8175ed622d13de44b307fe272f22ad4788aafe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 다시 두로 지경에서 나와 시돈을 지나고 데가볼리 지경을 통과하여 갈릴리 호수에 이르시매"
+      ],
+      "raw_text_hashes": [
+        "5f7509f873843a65fb6b7c2a6e8175ed622d13de44b307fe272f22ad4788aafe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:7:32",
+      "sequence": 24496,
+      "chapter_label": "MRK 7",
+      "verse_label": "32",
+      "locator": {
+        "book": "MRK",
+        "chapter": 7,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 7,
+          "verse": 32
+        }
+      ],
+      "en": "They brought to him one who was deaf and had an impediment in his speech. They begged him to lay his hand on him.",
+      "ko": "사람들이 귀먹고 어눌한 자를 데리고 예수께 나아와 안수하여 주시기를 간구하거늘",
+      "source_text_hash": "9256c44e6c7fa86a0b75aa0c6320439b94d105aff4f3a6034fa9316c1ed0e658",
+      "translation_text_hash": "90437e0c2ae6b75e79131afa0ec309bc1e7f04a7e5fa003c5c58603f313b4528",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람들이 귀먹고 어눌한 자를 데리고 예수께 나아와 안수하여 주시기를 간구하거늘"
+      ],
+      "raw_text_hashes": [
+        "90437e0c2ae6b75e79131afa0ec309bc1e7f04a7e5fa003c5c58603f313b4528"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:7:33",
+      "sequence": 24497,
+      "chapter_label": "MRK 7",
+      "verse_label": "33",
+      "locator": {
+        "book": "MRK",
+        "chapter": 7,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 7,
+          "verse": 33
+        }
+      ],
+      "en": "He took him aside from the multitude privately and put his fingers into his ears; and he spat and touched his tongue.",
+      "ko": "예수께서 그 사람을 따로 데리고 무리를 떠나사 손가락을 그의 양 귀에 넣고 침 뱉아 그의 혀에 손을 대시며",
+      "source_text_hash": "2fbf21747537db9ab003d84697654d0a7a3409934f4827f20c64965dd80770b4",
+      "translation_text_hash": "3d4eb7b65a1fbb76509a2afaec2f434318e89b347d5127a7dca514f43df7b849",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 그 사람을 따로 데리고 무리를 떠나사 손가락을 그의 양 귀에 넣고 침 뱉아 그의 혀에 손을 대시며"
+      ],
+      "raw_text_hashes": [
+        "3d4eb7b65a1fbb76509a2afaec2f434318e89b347d5127a7dca514f43df7b849"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:7:34",
+      "sequence": 24498,
+      "chapter_label": "MRK 7",
+      "verse_label": "34",
+      "locator": {
+        "book": "MRK",
+        "chapter": 7,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 7,
+          "verse": 34
+        }
+      ],
+      "en": "Looking up to heaven, he sighed, and said to him, “Ephphatha!” that is, “Be opened!”",
+      "ko": "하늘을 우러러 탄식하시며 그에게 이르시되 에바다 하시니 이는 열리라는 뜻이라",
+      "source_text_hash": "57143c3d18af3803fd9ac94329d942fc7111b1066d84a7907502b94ade6188a9",
+      "translation_text_hash": "9e103b528925a6a8a1f22239bcf6539ba3442a44078e04c5dac7bf592383bcdf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하늘을 우러러 탄식하시며 그에게 이르시되 에바다 하시니 이는 열리라는 뜻이라"
+      ],
+      "raw_text_hashes": [
+        "9e103b528925a6a8a1f22239bcf6539ba3442a44078e04c5dac7bf592383bcdf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:7:35",
+      "sequence": 24499,
+      "chapter_label": "MRK 7",
+      "verse_label": "35",
+      "locator": {
+        "book": "MRK",
+        "chapter": 7,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 7,
+          "verse": 35
+        }
+      ],
+      "en": "Immediately his ears were opened, and the impediment of his tongue was released, and he spoke clearly.",
+      "ko": "그의 귀가 열리고 혀의 맺힌 것이 곧 풀려 말이 분명하더라",
+      "source_text_hash": "5348657046917da15649cdd92eacb522344e67918b10e67379ed19b8a950af1c",
+      "translation_text_hash": "9f0df6f3f0f377d67d7920c74a6ec46100df8379f6ce4ad9b69a715b05436ea2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그의 귀가 열리고 혀의 맺힌 것이 곧 풀려 말이 분명하더라"
+      ],
+      "raw_text_hashes": [
+        "9f0df6f3f0f377d67d7920c74a6ec46100df8379f6ce4ad9b69a715b05436ea2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:7:36",
+      "sequence": 24500,
+      "chapter_label": "MRK 7",
+      "verse_label": "36",
+      "locator": {
+        "book": "MRK",
+        "chapter": 7,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 7,
+          "verse": 36
+        }
+      ],
+      "en": "He commanded them that they should tell no one, but the more he commanded them, so much the more widely they proclaimed it.",
+      "ko": "예수께서 저희에게 경계하사 아무에게라도 이르지 말라 하시되 경계하실수록 저희가 더욱 널리 전파하니",
+      "source_text_hash": "a25d40b11fa49a8a766ca82369f57249b724618120b73339ae6ac3b1f39f9969",
+      "translation_text_hash": "92becd29d5ae0eba13d9a36e12d4866ff7d9b0e4802fcac5159845aeab73eb64",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 저희에게 경계하사 아무에게라도 이르지 말라 하시되 경계하실수록 저희가 더욱 널리 전파하니"
+      ],
+      "raw_text_hashes": [
+        "92becd29d5ae0eba13d9a36e12d4866ff7d9b0e4802fcac5159845aeab73eb64"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:7:37",
+      "sequence": 24501,
+      "chapter_label": "MRK 7",
+      "verse_label": "37",
+      "locator": {
+        "book": "MRK",
+        "chapter": 7,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 7,
+          "verse": 37
+        }
+      ],
+      "en": "They were astonished beyond measure, saying, “He has done all things well. He makes even the deaf hear and the mute speak!”",
+      "ko": "사람들이 심히 놀라 가로되 그가 다 잘하였도다 귀머거리도 듣게 하고 벙어리도 말하게 한다 하니라",
+      "source_text_hash": "4232478e207f7f62dd88c5ab4098893b60b9ac45d00fa6550a0cec4a20659c57",
+      "translation_text_hash": "becd8419b5486a74c4e61f508a3bf5d0b98a1233670f03fcf83298c44db8b2dd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람들이 심히 놀라 가로되 그가 다 잘하였도다 귀머거리도 듣게 하고 벙어리도 말하게 한다 하니라"
+      ],
+      "raw_text_hashes": [
+        "becd8419b5486a74c4e61f508a3bf5d0b98a1233670f03fcf83298c44db8b2dd"
+      ]
+    }
+  ]
+}

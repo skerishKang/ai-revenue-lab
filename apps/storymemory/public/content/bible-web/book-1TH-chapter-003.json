@@ -1,0 +1,429 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1TH:chapter:003",
+  "unit_ordinal": 1114,
+  "unit_label": "1TH 3",
+  "book_code": "1TH",
+  "chapter_number": 3,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1TH:3:1",
+      "sequence": 29588,
+      "chapter_label": "1TH 3",
+      "verse_label": "1",
+      "locator": {
+        "book": "1TH",
+        "chapter": 3,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1TH",
+          "chapter": 3,
+          "verse": 1
+        }
+      ],
+      "en": "Therefore when we couldn’t stand it any longer, we thought it good to be left behind at Athens alone,",
+      "ko": "이러므로 우리가 참다 못하여 우리만 아덴에 머물기를 좋게 여겨",
+      "source_text_hash": "9f9cde8643a0c2b24821c57eb0117a298daea2102e309021c8d508f2406434d6",
+      "translation_text_hash": "81c0708d16a086a1b5b0fe47f91321cbc6d4c6e6b9f3808adeb8408e71a73776",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러므로 우리가 참다 못하여 우리만 아덴에 머물기를 좋게 여겨"
+      ],
+      "raw_text_hashes": [
+        "81c0708d16a086a1b5b0fe47f91321cbc6d4c6e6b9f3808adeb8408e71a73776"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TH:3:2",
+      "sequence": 29589,
+      "chapter_label": "1TH 3",
+      "verse_label": "2",
+      "locator": {
+        "book": "1TH",
+        "chapter": 3,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1TH",
+          "chapter": 3,
+          "verse": 2
+        }
+      ],
+      "en": "and sent Timothy, our brother and God’s servant in the Good News of Christ, to establish you and to comfort you concerning your faith,",
+      "ko": "우리 형제 곧 그리스도 복음의 하나님의 일군인 디모데를 보내노니 이는 너희를 굳게 하고 너희 믿음에 대하여 위로함으로",
+      "source_text_hash": "af244ced252d680f7a33b3c5dac3fedffedbc956ec5e233d521649e01c551f79",
+      "translation_text_hash": "8f59277e6916b36920ab8c2aa3e86d46df0a84b060020874fa49f0b5794b2301",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리 형제 곧 그리스도 복음의 하나님의 일군인 디모데를 보내노니 이는 너희를 굳게 하고 너희 믿음에 대하여 위로함으로"
+      ],
+      "raw_text_hashes": [
+        "8f59277e6916b36920ab8c2aa3e86d46df0a84b060020874fa49f0b5794b2301"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TH:3:3",
+      "sequence": 29590,
+      "chapter_label": "1TH 3",
+      "verse_label": "3",
+      "locator": {
+        "book": "1TH",
+        "chapter": 3,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1TH",
+          "chapter": 3,
+          "verse": 3
+        }
+      ],
+      "en": "that no one would be moved by these afflictions. For you know that we are appointed to this task.",
+      "ko": "누구든지 이 여러 환난 중에 요동치 않게 하려 함이라 우리로 이것을 당하게 세우신 줄을 너희가 친히 알리라",
+      "source_text_hash": "55e636fde3a1e65858c5ee8aba4c0b3b26ff80023cb6190d29d1edc8d534043a",
+      "translation_text_hash": "09480b68fecfbc223a72d9984a61b06e5c945d3b98d2549d99f97179ec18a17d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누구든지 이 여러 환난 중에 요동치 않게 하려 함이라 우리로 이것을 당하게 세우신 줄을 너희가 친히 알리라"
+      ],
+      "raw_text_hashes": [
+        "09480b68fecfbc223a72d9984a61b06e5c945d3b98d2549d99f97179ec18a17d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TH:3:4",
+      "sequence": 29591,
+      "chapter_label": "1TH 3",
+      "verse_label": "4",
+      "locator": {
+        "book": "1TH",
+        "chapter": 3,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1TH",
+          "chapter": 3,
+          "verse": 4
+        }
+      ],
+      "en": "For most certainly, when we were with you, we told you beforehand that we are to suffer affliction, even as it happened, and you know.",
+      "ko": "우리가 너희와 함께 있을 때에 장차 받을 환난을 너희에게 미리 말하였더니 과연 그렇게 된 것을 너희가 아느니라",
+      "source_text_hash": "1409eba72bd4912aea228dfa1c896dfd7e051d4c5abcad269ce5e207a0ee70cd",
+      "translation_text_hash": "0e57e47e5043dd4dfa538bc7f5c8de4c2a900ece513d7d9dde82eea47248e850",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 너희와 함께 있을 때에 장차 받을 환난을 너희에게 미리 말하였더니 과연 그렇게 된 것을 너희가 아느니라"
+      ],
+      "raw_text_hashes": [
+        "0e57e47e5043dd4dfa538bc7f5c8de4c2a900ece513d7d9dde82eea47248e850"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TH:3:5",
+      "sequence": 29592,
+      "chapter_label": "1TH 3",
+      "verse_label": "5",
+      "locator": {
+        "book": "1TH",
+        "chapter": 3,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1TH",
+          "chapter": 3,
+          "verse": 5
+        }
+      ],
+      "en": "For this cause I also, when I couldn’t stand it any longer, sent that I might know your faith, for fear that by any means the tempter had tempted you, and our labor would have been in vain.",
+      "ko": "이러므로 나도 참다 못하여 너희 믿음을 알기 위하여 보내었노니 이는 혹 시험하는 자가 너희를 시험하여 우리 수고를 헛되게 할까 함일러니",
+      "source_text_hash": "101f134cb94e1a93c1ecd944401cf8ecad7794e252d723f7a21103ef6b35c445",
+      "translation_text_hash": "664f934a67a017eaf3a45180e82fd0581f51327e675f0554d05bd8db2da6a577",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러므로 나도 참다 못하여 너희 믿음을 알기 위하여 보내었노니 이는 혹 시험하는 자가 너희를 시험하여 우리 수고를 헛되게 할까 함일러니"
+      ],
+      "raw_text_hashes": [
+        "664f934a67a017eaf3a45180e82fd0581f51327e675f0554d05bd8db2da6a577"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TH:3:6",
+      "sequence": 29593,
+      "chapter_label": "1TH 3",
+      "verse_label": "6",
+      "locator": {
+        "book": "1TH",
+        "chapter": 3,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1TH",
+          "chapter": 3,
+          "verse": 6
+        }
+      ],
+      "en": "But Timothy has just now come to us from you, and brought us glad news of your faith and love, and that you have good memories of us always, longing to see us, even as we also long to see you.",
+      "ko": "지금은 디모데가 너희에게로부터 와서 너희 믿음과 사랑의 기쁜 소식을 우리에게 전하고 또 너희가 항상 우리를 잘 생각하여 우리가 너희를 간절히 보고자 함과 같이 너희도 우리를 간절히 보고자 한다 하니",
+      "source_text_hash": "e7957d36e50329e778273052d1d15af97f17738eeafaf032891ad1a5e6d09c94",
+      "translation_text_hash": "718e432c77866d82e2082e8ddd5e11f42413ad26972203392cc0ea6cd60f7de9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "지금은 디모데가 너희에게로부터 와서 너희 믿음과 사랑의 기쁜 소식을 우리에게 전하고 또 너희가 항상 우리를 잘 생각하여 우리가 너희를 간절히 보고자 함과 같이 너희도 우리를 간절히 보고자 한다 하니"
+      ],
+      "raw_text_hashes": [
+        "718e432c77866d82e2082e8ddd5e11f42413ad26972203392cc0ea6cd60f7de9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TH:3:7",
+      "sequence": 29594,
+      "chapter_label": "1TH 3",
+      "verse_label": "7",
+      "locator": {
+        "book": "1TH",
+        "chapter": 3,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1TH",
+          "chapter": 3,
+          "verse": 7
+        }
+      ],
+      "en": "For this cause, brothers, we were comforted over you in all our distress and affliction through your faith.",
+      "ko": "이러므로 형제들아 우리가 모든 궁핍과 환난 가운데서 너희 믿음으로 말미암아 너희에게 위로를 받았노라",
+      "source_text_hash": "1d85a8e7262fab94f19b429f1b90ed182eb39cd990f02c4f3948511942b6dbcc",
+      "translation_text_hash": "f9552a12a813928ce5490068485b85b55207704ce4a5dc839669ee13876afe50",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러므로 형제들아 우리가 모든 궁핍과 환난 가운데서 너희 믿음으로 말미암아 너희에게 위로를 받았노라"
+      ],
+      "raw_text_hashes": [
+        "f9552a12a813928ce5490068485b85b55207704ce4a5dc839669ee13876afe50"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TH:3:8",
+      "sequence": 29595,
+      "chapter_label": "1TH 3",
+      "verse_label": "8",
+      "locator": {
+        "book": "1TH",
+        "chapter": 3,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1TH",
+          "chapter": 3,
+          "verse": 8
+        }
+      ],
+      "en": "For now we live, if you stand fast in the Lord.",
+      "ko": "그러므로 너희가 주 안에 굳게 선즉 우리가 이제는 살리라",
+      "source_text_hash": "7a81497f76a353f04aaa227270aafafa31db9befd0b1986bb41917176cdde834",
+      "translation_text_hash": "fabab5e02d6dceef6256087f34a62d7029ed837caa5ca95e6c3d2279d759e8a3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 너희가 주 안에 굳게 선즉 우리가 이제는 살리라"
+      ],
+      "raw_text_hashes": [
+        "fabab5e02d6dceef6256087f34a62d7029ed837caa5ca95e6c3d2279d759e8a3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TH:3:9",
+      "sequence": 29596,
+      "chapter_label": "1TH 3",
+      "verse_label": "9",
+      "locator": {
+        "book": "1TH",
+        "chapter": 3,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1TH",
+          "chapter": 3,
+          "verse": 9
+        }
+      ],
+      "en": "For what thanksgiving can we give again to God for you, for all the joy with which we rejoice for your sakes before our God,",
+      "ko": "우리가 우리 하나님 앞에서 너희를 인하여 모든 기쁨으로 기뻐하니 너희를 위하여 능히 어떠한 감사함으로 하나님께 보답할꼬",
+      "source_text_hash": "d87accc0af6762018b5f1a1cf7198f6a6d1af8f30505145b9225964213a1bbe3",
+      "translation_text_hash": "2441fb5bd5a0d13e78f2253b90d354f9e064bc7415f8db00bb6b08419488009a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 우리 하나님 앞에서 너희를 인하여 모든 기쁨으로 기뻐하니 너희를 위하여 능히 어떠한 감사함으로 하나님께 보답할꼬"
+      ],
+      "raw_text_hashes": [
+        "2441fb5bd5a0d13e78f2253b90d354f9e064bc7415f8db00bb6b08419488009a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TH:3:10",
+      "sequence": 29597,
+      "chapter_label": "1TH 3",
+      "verse_label": "10",
+      "locator": {
+        "book": "1TH",
+        "chapter": 3,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1TH",
+          "chapter": 3,
+          "verse": 10
+        }
+      ],
+      "en": "night and day praying exceedingly that we may see your face and may perfect that which is lacking in your faith?",
+      "ko": "주야로 심히 간구함은 너희 얼굴을 보고 너희 믿음의 부족함을 온전케 하려 함이라",
+      "source_text_hash": "ba17e397ce6131ff17d6c326b0dff46598f4936b6ee01a279b9806d1d68976da",
+      "translation_text_hash": "6e6f67bb51536920ba8abbf77193d87531fc1ed8a0b4c7c3e3bb51c89212c206",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주야로 심히 간구함은 너희 얼굴을 보고 너희 믿음의 부족함을 온전케 하려 함이라"
+      ],
+      "raw_text_hashes": [
+        "6e6f67bb51536920ba8abbf77193d87531fc1ed8a0b4c7c3e3bb51c89212c206"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TH:3:11",
+      "sequence": 29598,
+      "chapter_label": "1TH 3",
+      "verse_label": "11",
+      "locator": {
+        "book": "1TH",
+        "chapter": 3,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "1TH",
+          "chapter": 3,
+          "verse": 11
+        }
+      ],
+      "en": "Now may our God and Father himself, and our Lord Jesus Christ, direct our way to you.",
+      "ko": "하나님 우리 아버지와 우리 주 예수는 우리 길을 너희에게로 직행하게 하옵시며",
+      "source_text_hash": "e0fc538ca5e9e0fd84149a85742012f142b13a0fa383352cdc38882fb85210f9",
+      "translation_text_hash": "7ff02d5476ab6ff2a2568dd477d5c8c6266222866e8d6c9ce4593a8feaa25617",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님 우리 아버지와 우리 주 예수는 우리 길을 너희에게로 직행하게 하옵시며"
+      ],
+      "raw_text_hashes": [
+        "7ff02d5476ab6ff2a2568dd477d5c8c6266222866e8d6c9ce4593a8feaa25617"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TH:3:12",
+      "sequence": 29599,
+      "chapter_label": "1TH 3",
+      "verse_label": "12",
+      "locator": {
+        "book": "1TH",
+        "chapter": 3,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "1TH",
+          "chapter": 3,
+          "verse": 12
+        }
+      ],
+      "en": "May the Lord make you to increase and abound in love toward one another and toward all men, even as we also do toward you,",
+      "ko": "또 주께서 우리가 너희를 사랑함과 같이 너희도 피차간과 모든 사람에 대한 사랑이 더욱 많아 넘치게 하사",
+      "source_text_hash": "b9ed6747b80849f1439e78463dbf2e0d31615b018b7506013690d01cd5f04936",
+      "translation_text_hash": "d16709782d89b5b0371c92d4d67209fc26de12de0591268ddfebbcdb87bbb84e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 주께서 우리가 너희를 사랑함과 같이 너희도 피차간과 모든 사람에 대한 사랑이 더욱 많아 넘치게 하사"
+      ],
+      "raw_text_hashes": [
+        "d16709782d89b5b0371c92d4d67209fc26de12de0591268ddfebbcdb87bbb84e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TH:3:13",
+      "sequence": 29600,
+      "chapter_label": "1TH 3",
+      "verse_label": "13",
+      "locator": {
+        "book": "1TH",
+        "chapter": 3,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "1TH",
+          "chapter": 3,
+          "verse": 13
+        }
+      ],
+      "en": "to the end he may establish your hearts blameless in holiness before our God and Father at the coming of our Lord Jesus with all his saints.",
+      "ko": "너희 마음을 굳게 하시고 우리 주 예수께서 그의 모든 성도와 함께 강림하실 때에 하나님 우리 아버지 앞에서 거룩함에 흠이 없게 하시기를 원하노라",
+      "source_text_hash": "bd10348c7b087bd9d6932886b93487d76816326b747ef74a261adfbd93dba1d6",
+      "translation_text_hash": "0f249ddd2a39a94828b8acf98c45c5ab7b7d3e0cf758459304e25a5ec8564a55",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 마음을 굳게 하시고 우리 주 예수께서 그의 모든 성도와 함께 강림하실 때에 하나님 우리 아버지 앞에서 거룩함에 흠이 없게 하시기를 원하노라"
+      ],
+      "raw_text_hashes": [
+        "0f249ddd2a39a94828b8acf98c45c5ab7b7d3e0cf758459304e25a5ec8564a55"
+      ]
+    }
+  ]
+}

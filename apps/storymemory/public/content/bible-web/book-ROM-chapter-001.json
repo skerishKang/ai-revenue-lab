@@ -1,0 +1,1037 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ROM:chapter:001",
+  "unit_ordinal": 1047,
+  "unit_label": "ROM 1",
+  "book_code": "ROM",
+  "chapter_number": 1,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ROM:1:1",
+      "sequence": 27928,
+      "chapter_label": "ROM 1",
+      "verse_label": "1",
+      "locator": {
+        "book": "ROM",
+        "chapter": 1,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 1,
+          "verse": 1
+        }
+      ],
+      "en": "Paul, a servant of Jesus Christ, called to be an apostle, set apart for the Good News of God,",
+      "ko": "예수 그리스도의 종 바울은 사도로 부르심을 받아 하나님의 복음을 위하여 택정함을 입었으니",
+      "source_text_hash": "8eefdb3fc5df7da6019380c9aa3d0d9655da604ade2912aaad8e5d4adbea986f",
+      "translation_text_hash": "cc051e3ff40acf01040fc2b4b26c8fe12f6af0349200ed0b3379429a284161d7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수 그리스도의 종 바울은 사도로 부르심을 받아 하나님의 복음을 위하여 택정함을 입었으니"
+      ],
+      "raw_text_hashes": [
+        "cc051e3ff40acf01040fc2b4b26c8fe12f6af0349200ed0b3379429a284161d7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:1:2",
+      "sequence": 27929,
+      "chapter_label": "ROM 1",
+      "verse_label": "2",
+      "locator": {
+        "book": "ROM",
+        "chapter": 1,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 1,
+          "verse": 2
+        }
+      ],
+      "en": "which he promised before through his prophets in the holy Scriptures,",
+      "ko": "이 복음은 하나님이 선지자들로 말미암아 그의 아들에 관하여 성경에 미리 약속하신 것이라",
+      "source_text_hash": "9a8a6f9479c26be2d3835d1f0a789f3aef9645bd54fc4fa93051ca7e0ada24e7",
+      "translation_text_hash": "978818f9c58537b48c154ecaa7d4cef7037064c83c5bae496c103261059a2272",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 복음은 하나님이 선지자들로 말미암아 그의 아들에 관하여 성경에 미리 약속하신 것이라"
+      ],
+      "raw_text_hashes": [
+        "978818f9c58537b48c154ecaa7d4cef7037064c83c5bae496c103261059a2272"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:1:3",
+      "sequence": 27930,
+      "chapter_label": "ROM 1",
+      "verse_label": "3",
+      "locator": {
+        "book": "ROM",
+        "chapter": 1,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 1,
+          "verse": 3
+        }
+      ],
+      "en": "concerning his Son, who was born of the offspring of David according to the flesh,",
+      "ko": "이 아들로 말하면 육신으로는 다윗의 혈통에서 나셨고",
+      "source_text_hash": "bfbcbb69f031696a8af667d1b4346b680eaac4869d471ea0002acda1224d7d18",
+      "translation_text_hash": "a2eb6b2c48151b0cf205c4e92435f0eaf6f55bc9d2f11cf7a31f84a344cb9af4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 아들로 말하면 육신으로는 다윗의 혈통에서 나셨고"
+      ],
+      "raw_text_hashes": [
+        "a2eb6b2c48151b0cf205c4e92435f0eaf6f55bc9d2f11cf7a31f84a344cb9af4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:1:4",
+      "sequence": 27931,
+      "chapter_label": "ROM 1",
+      "verse_label": "4",
+      "locator": {
+        "book": "ROM",
+        "chapter": 1,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 1,
+          "verse": 4
+        }
+      ],
+      "en": "who was declared to be the Son of God with power according to the Spirit of holiness, by the resurrection from the dead, Jesus Christ our Lord,",
+      "ko": "성결의 영으로는 죽은 가운데서 부활하여 능력으로 하나님의 아들로 인정되셨으니 곧 우리 주 예수 그리스도시니라",
+      "source_text_hash": "e49d9a84c8f73b2c953cb2296970229d2e035cfee3fc0843286d690c2f10e498",
+      "translation_text_hash": "3f0b9e34f3f9d226f441a3e75eabbc2306545237130c0558020d6f5f724a559e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "성결의 영으로는 죽은 가운데서 부활하여 능력으로 하나님의 아들로 인정되셨으니 곧 우리 주 예수 그리스도시니라"
+      ],
+      "raw_text_hashes": [
+        "3f0b9e34f3f9d226f441a3e75eabbc2306545237130c0558020d6f5f724a559e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:1:5",
+      "sequence": 27932,
+      "chapter_label": "ROM 1",
+      "verse_label": "5",
+      "locator": {
+        "book": "ROM",
+        "chapter": 1,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 1,
+          "verse": 5
+        }
+      ],
+      "en": "through whom we received grace and apostleship for obedience of faith among all the nations for his name’s sake;",
+      "ko": "그로 말미암아 우리가 은혜와 사도의 직분을 받아 그 이름을 위하여 모든 이방인 중에서 믿어 순종케 하나니",
+      "source_text_hash": "1063465aaf0f25ec45327645a5f579b7b7ddec023942050af2dc68044712d40a",
+      "translation_text_hash": "64298fe4f9f0a1e4d7ed5fdcf53905ce1201e6fce250a99f32a0ae4109eaabde",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그로 말미암아 우리가 은혜와 사도의 직분을 받아 그 이름을 위하여 모든 이방인 중에서 믿어 순종케 하나니"
+      ],
+      "raw_text_hashes": [
+        "64298fe4f9f0a1e4d7ed5fdcf53905ce1201e6fce250a99f32a0ae4109eaabde"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:1:6",
+      "sequence": 27933,
+      "chapter_label": "ROM 1",
+      "verse_label": "6",
+      "locator": {
+        "book": "ROM",
+        "chapter": 1,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 1,
+          "verse": 6
+        }
+      ],
+      "en": "among whom you are also called to belong to Jesus Christ;",
+      "ko": "너희도 그들 중에 있어 예수 그리스도의 것으로 부르심을 입은 자니라",
+      "source_text_hash": "e007ea190711f4413dba593c488b07b8caba35d74cabd6fb64c91023049552c6",
+      "translation_text_hash": "9fac23bba399f7ecf557c09823e670fb3674ecaecaaa90b4afb7cea2924b43de",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희도 그들 중에 있어 예수 그리스도의 것으로 부르심을 입은 자니라"
+      ],
+      "raw_text_hashes": [
+        "9fac23bba399f7ecf557c09823e670fb3674ecaecaaa90b4afb7cea2924b43de"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:1:7",
+      "sequence": 27934,
+      "chapter_label": "ROM 1",
+      "verse_label": "7",
+      "locator": {
+        "book": "ROM",
+        "chapter": 1,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 1,
+          "verse": 7
+        }
+      ],
+      "en": "to all who are in Rome, beloved of God, called to be saints: Grace to you and peace from God our Father and the Lord Jesus Christ.",
+      "ko": "로마에 있어 하나님의 사랑하심을 입고 성도로 부르심을 입은 모든 자에게 하나님 우리 아버지와 주 예수 그리스도로 좇아 은혜와 평강이 있기를 원하노라",
+      "source_text_hash": "12eb6bcb10c09d6779082ea01fd4740e00c666b7351869bbe4805450260ec818",
+      "translation_text_hash": "9a2b170f98576506623cfb81ff4bf19a295ee37694d1d9fef5b12b9473b5f701",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "로마에 있어 하나님의 사랑하심을 입고 성도로 부르심을 입은 모든 자에게 하나님 우리 아버지와 주 예수 그리스도로 좇아 은혜와 평강이 있기를 원하노라"
+      ],
+      "raw_text_hashes": [
+        "9a2b170f98576506623cfb81ff4bf19a295ee37694d1d9fef5b12b9473b5f701"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:1:8",
+      "sequence": 27935,
+      "chapter_label": "ROM 1",
+      "verse_label": "8",
+      "locator": {
+        "book": "ROM",
+        "chapter": 1,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 1,
+          "verse": 8
+        }
+      ],
+      "en": "First, I thank my God through Jesus Christ for all of you, that your faith is proclaimed throughout the whole world.",
+      "ko": "첫째는 내가 예수 그리스도로 말미암아 너희 모든 사람을 인하여 내 하나님께 감사함은 너희 믿음이 온 세상에 전파됨이로다",
+      "source_text_hash": "7e652dfed5efd3d7f2d726a46836983c366f24456bc2a2ec3853881b6db06876",
+      "translation_text_hash": "b9b7e5e531a969483f0f11ac2e731f797f24e018e20759e7747741d58ea5551e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "첫째는 내가 예수 그리스도로 말미암아 너희 모든 사람을 인하여 내 하나님께 감사함은 너희 믿음이 온 세상에 전파됨이로다"
+      ],
+      "raw_text_hashes": [
+        "b9b7e5e531a969483f0f11ac2e731f797f24e018e20759e7747741d58ea5551e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:1:9",
+      "sequence": 27936,
+      "chapter_label": "ROM 1",
+      "verse_label": "9",
+      "locator": {
+        "book": "ROM",
+        "chapter": 1,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 1,
+          "verse": 9
+        }
+      ],
+      "en": "For God is my witness, whom I serve in my spirit in the Good News of his Son, how unceasingly I make mention of you always in my prayers,",
+      "ko": "내가 그의 아들의 복음 안에서 내 심령으로 섬기는 하나님이 나의 증인이 되시거니와 항상 내 기도에 쉬지 않고 너희를 말하며",
+      "source_text_hash": "f9be17966ddcbddadfca8e0cbf4b1b8efb12ffd97716018ce124ab717b37fb9c",
+      "translation_text_hash": "2dcfd192ba5a750215ee33835454297818cd3b410490c2e8a967acd510e32fac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 그의 아들의 복음 안에서 내 심령으로 섬기는 하나님이 나의 증인이 되시거니와 항상 내 기도에 쉬지 않고 너희를 말하며"
+      ],
+      "raw_text_hashes": [
+        "2dcfd192ba5a750215ee33835454297818cd3b410490c2e8a967acd510e32fac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:1:10",
+      "sequence": 27937,
+      "chapter_label": "ROM 1",
+      "verse_label": "10",
+      "locator": {
+        "book": "ROM",
+        "chapter": 1,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 1,
+          "verse": 10
+        }
+      ],
+      "en": "requesting, if by any means now at last I may be prospered by the will of God to come to you.",
+      "ko": "어떠하든지 이제 하나님의 뜻 안에서 너희에게로 나아갈 좋은 길 얻기를 구하노라",
+      "source_text_hash": "6f38d4f86e6209e793ca790898458919b90c87b7037572cd5d0e83b526f0385a",
+      "translation_text_hash": "3cc84ed4fdaf5cb5e12f3a15632c14fd0f5e7452bf2dce384c27a4c98d9a9d56",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어떠하든지 이제 하나님의 뜻 안에서 너희에게로 나아갈 좋은 길 얻기를 구하노라"
+      ],
+      "raw_text_hashes": [
+        "3cc84ed4fdaf5cb5e12f3a15632c14fd0f5e7452bf2dce384c27a4c98d9a9d56"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:1:11",
+      "sequence": 27938,
+      "chapter_label": "ROM 1",
+      "verse_label": "11",
+      "locator": {
+        "book": "ROM",
+        "chapter": 1,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 1,
+          "verse": 11
+        }
+      ],
+      "en": "For I long to see you, that I may impart to you some spiritual gift, to the end that you may be established;",
+      "ko": "내가 너희 보기를 심히 원하는 것은 무슨 신령한 은사를 너희에게 나눠 주어 너희를 견고케 하려함이니",
+      "source_text_hash": "4548b3ecf5c059b17cb8d490c3f9c7b8b4ce603779fb2b6052227c96f3768bd2",
+      "translation_text_hash": "4d63454505bc656961489f73a3012d2bde73cf7690af245225400aefb1077417",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너희 보기를 심히 원하는 것은 무슨 신령한 은사를 너희에게 나눠 주어 너희를 견고케 하려함이니"
+      ],
+      "raw_text_hashes": [
+        "4d63454505bc656961489f73a3012d2bde73cf7690af245225400aefb1077417"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:1:12",
+      "sequence": 27939,
+      "chapter_label": "ROM 1",
+      "verse_label": "12",
+      "locator": {
+        "book": "ROM",
+        "chapter": 1,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 1,
+          "verse": 12
+        }
+      ],
+      "en": "that is, that I with you may be encouraged in you, each of us by the other’s faith, both yours and mine.",
+      "ko": "이는 곧 내가 너희 가운데서 너희와 나의 믿음을 인하여 피차 안위함을 얻으려 함이라",
+      "source_text_hash": "a73f3db25c8ecd999e511f314f92d3c41a189f6b7c0ef40872611b2eb6aa06fb",
+      "translation_text_hash": "5ebe4875fa7f62fadc8d93127be74990d4951066fd0d5d424fcc33494b8bc213",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 곧 내가 너희 가운데서 너희와 나의 믿음을 인하여 피차 안위함을 얻으려 함이라"
+      ],
+      "raw_text_hashes": [
+        "5ebe4875fa7f62fadc8d93127be74990d4951066fd0d5d424fcc33494b8bc213"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:1:13",
+      "sequence": 27940,
+      "chapter_label": "ROM 1",
+      "verse_label": "13",
+      "locator": {
+        "book": "ROM",
+        "chapter": 1,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 1,
+          "verse": 13
+        }
+      ],
+      "en": "Now I don’t desire to have you unaware, brothers, that I often planned to come to you (and was hindered so far), that I might have some fruit among you also, even as among the rest of the Gentiles.",
+      "ko": "형제들아 내가 여러 번 너희에게 가고자 한것을 너희가 모르기를 원치 아니하노니 이는 너희 중에서도 다른 이방인 중에서와 같이 열매를 맺게 하려 함이로되 지금까지 길이 막혔도다",
+      "source_text_hash": "66c6ead885a151e3eec2ac1f88a43ce4fee1332a616e7bdc848fcfc14b7a208c",
+      "translation_text_hash": "2e1b8bea161050effc6b04dd2c21c6e28c568d5f3fd6213762b4e8c90e581985",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "형제들아 내가 여러 번 너희에게 가고자 한것을 너희가 모르기를 원치 아니하노니 이는 너희 중에서도 다른 이방인 중에서와 같이 열매를 맺게 하려 함이로되 지금까지 길이 막혔도다"
+      ],
+      "raw_text_hashes": [
+        "2e1b8bea161050effc6b04dd2c21c6e28c568d5f3fd6213762b4e8c90e581985"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:1:14",
+      "sequence": 27941,
+      "chapter_label": "ROM 1",
+      "verse_label": "14",
+      "locator": {
+        "book": "ROM",
+        "chapter": 1,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 1,
+          "verse": 14
+        }
+      ],
+      "en": "I am debtor both to Greeks and to foreigners, both to the wise and to the foolish.",
+      "ko": "헬라인이나 야만이나 지혜 있는 자나 어리석은 자에게 다 내가 빚진 자라",
+      "source_text_hash": "9bcf0de1190e89148f3393512f2f43b5383c0b4a140c9e8b5d407dce852a09d3",
+      "translation_text_hash": "7ff67ad66bdeb24192a0ce531ebe63da9a07c7e767580d3cdf5eab3b214bc441",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "헬라인이나 야만이나 지혜 있는 자나 어리석은 자에게 다 내가 빚진 자라"
+      ],
+      "raw_text_hashes": [
+        "7ff67ad66bdeb24192a0ce531ebe63da9a07c7e767580d3cdf5eab3b214bc441"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:1:15",
+      "sequence": 27942,
+      "chapter_label": "ROM 1",
+      "verse_label": "15",
+      "locator": {
+        "book": "ROM",
+        "chapter": 1,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 1,
+          "verse": 15
+        }
+      ],
+      "en": "So as much as is in me, I am eager to preach the Good News to you also who are in Rome.",
+      "ko": "그러므로 나는 할 수 있는대로 로마에 있는 너희에게도 복음 전하기를 원하노라",
+      "source_text_hash": "3b2b4f646e3b33254d80ce15e41c1577aaed9f1b90fc370b9cb09c8f750148d2",
+      "translation_text_hash": "e15e497204fb1e13dab4eb7376888584ef33cefad193a4c65ec5b9eb970b668a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 나는 할 수 있는대로 로마에 있는 너희에게도 복음 전하기를 원하노라"
+      ],
+      "raw_text_hashes": [
+        "e15e497204fb1e13dab4eb7376888584ef33cefad193a4c65ec5b9eb970b668a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:1:16",
+      "sequence": 27943,
+      "chapter_label": "ROM 1",
+      "verse_label": "16",
+      "locator": {
+        "book": "ROM",
+        "chapter": 1,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 1,
+          "verse": 16
+        }
+      ],
+      "en": "For I am not ashamed of the Good News of Christ, because it is the power of God for salvation for everyone who believes, for the Jew first, and also for the Greek.",
+      "ko": "내가 복음을 부끄러워하지 아니하노니 이 복음은 모든 믿는 자에게 구원을 주시는 하나님의 능력이 됨이라 첫째는 유대인에게요 또한 헬라인에게로다",
+      "source_text_hash": "fb09fbc8f4228f16314e31cf062d37d7586ed8f879650a950b97e1dd14ae560c",
+      "translation_text_hash": "b3640e6a271cbe537f68c893e028737446f6f380309d0c4ba36ee3349e0b4586",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 복음을 부끄러워하지 아니하노니 이 복음은 모든 믿는 자에게 구원을 주시는 하나님의 능력이 됨이라 첫째는 유대인에게요 또한 헬라인에게로다"
+      ],
+      "raw_text_hashes": [
+        "b3640e6a271cbe537f68c893e028737446f6f380309d0c4ba36ee3349e0b4586"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:1:17",
+      "sequence": 27944,
+      "chapter_label": "ROM 1",
+      "verse_label": "17",
+      "locator": {
+        "book": "ROM",
+        "chapter": 1,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 1,
+          "verse": 17
+        }
+      ],
+      "en": "For in it is revealed God’s righteousness from faith to faith. As it is written, “But the righteous shall live by faith.”",
+      "ko": "복음에는 하나님의 의가 나타나서 믿음으로 믿음에 이르게 하나니 기록된바 오직 의인은 믿음으로 말미암아 살리라 함과 같으니라",
+      "source_text_hash": "5534654bf7e244faf0fafde0a35f5a111e4a7d1dc402af77d753ac551e539a8d",
+      "translation_text_hash": "1a0e9246b55e62bc45f17b7a131b48efeb4d9bc9a298fa3f93e517c93cc149eb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "복음에는 하나님의 의가 나타나서 믿음으로 믿음에 이르게 하나니 기록된바 오직 의인은 믿음으로 말미암아 살리라 함과 같으니라"
+      ],
+      "raw_text_hashes": [
+        "1a0e9246b55e62bc45f17b7a131b48efeb4d9bc9a298fa3f93e517c93cc149eb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:1:18",
+      "sequence": 27945,
+      "chapter_label": "ROM 1",
+      "verse_label": "18",
+      "locator": {
+        "book": "ROM",
+        "chapter": 1,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 1,
+          "verse": 18
+        }
+      ],
+      "en": "For the wrath of God is revealed from heaven against all ungodliness and unrighteousness of men who suppress the truth in unrighteousness,",
+      "ko": "하나님의 진노가 불의로 진리를 막는 사람들의 모든 경건치 않음과 불의에 대하여 하늘로 좇아 나타나나니",
+      "source_text_hash": "944a06f558fdf45e932ab5e7873bd3b160c215cfd1fe6f6932448f63de614317",
+      "translation_text_hash": "8a1e99ee9a0e89da30043ae142b87b91b8d7014f86a75e5c2240b4d10b144021",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님의 진노가 불의로 진리를 막는 사람들의 모든 경건치 않음과 불의에 대하여 하늘로 좇아 나타나나니"
+      ],
+      "raw_text_hashes": [
+        "8a1e99ee9a0e89da30043ae142b87b91b8d7014f86a75e5c2240b4d10b144021"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:1:19",
+      "sequence": 27946,
+      "chapter_label": "ROM 1",
+      "verse_label": "19",
+      "locator": {
+        "book": "ROM",
+        "chapter": 1,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 1,
+          "verse": 19
+        }
+      ],
+      "en": "because that which is known of God is revealed in them, for God revealed it to them.",
+      "ko": "이는 하나님을 알만한 것이 저희 속에 보임이라 하나님께서 이를 저희에게 보이셨느니라",
+      "source_text_hash": "aab03ee85920f6d8bc8475512d22c967b0c9adce301e9cb6d52d2df07f5da78e",
+      "translation_text_hash": "2fc2254f49f8b511a5635561d812590f9eec541f49fdea293f1e3434e8d073b6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 하나님을 알만한 것이 저희 속에 보임이라 하나님께서 이를 저희에게 보이셨느니라"
+      ],
+      "raw_text_hashes": [
+        "2fc2254f49f8b511a5635561d812590f9eec541f49fdea293f1e3434e8d073b6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:1:20",
+      "sequence": 27947,
+      "chapter_label": "ROM 1",
+      "verse_label": "20",
+      "locator": {
+        "book": "ROM",
+        "chapter": 1,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 1,
+          "verse": 20
+        }
+      ],
+      "en": "For the invisible things of him since the creation of the world are clearly seen, being perceived through the things that are made, even his everlasting power and divinity, that they may be without excuse.",
+      "ko": "창세로부터 그의 보이지 아니하는 것들 곧 그의 영원하신 능력과 신성이 그 만드신 만물에 분명히 보여 알게 되나니 그러므로 저희가 핑계치 못할찌니라",
+      "source_text_hash": "6399a28dfea98bdbce0a3adefc2ee9bafa00b5ad181586993095a41bd7e87405",
+      "translation_text_hash": "93ad81cf7ebb56486044674da8fd3bb272e2522ba1353c2343af4833e77f67b1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "창세로부터 그의 보이지 아니하는 것들 곧 그의 영원하신 능력과 신성이 그 만드신 만물에 분명히 보여 알게 되나니 그러므로 저희가 핑계치 못할찌니라"
+      ],
+      "raw_text_hashes": [
+        "93ad81cf7ebb56486044674da8fd3bb272e2522ba1353c2343af4833e77f67b1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:1:21",
+      "sequence": 27948,
+      "chapter_label": "ROM 1",
+      "verse_label": "21",
+      "locator": {
+        "book": "ROM",
+        "chapter": 1,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 1,
+          "verse": 21
+        }
+      ],
+      "en": "Because knowing God, they didn’t glorify him as God, and didn’t give thanks, but became vain in their reasoning, and their senseless heart was darkened.",
+      "ko": "하나님을 알되 하나님으로 영화롭게도 아니하며 감사치도 아니하고 오히려 그 생각이 허망하여지며 미련한 마음이 어두워졌나니",
+      "source_text_hash": "323ec7fea3f7c21376d419e4a046e92af52d1247d5e4319347e4c20f5b56a725",
+      "translation_text_hash": "a26d0da177f65e6ba877f6e9e86f331f81ab61ed837f775b315a97f0cb0d80fe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님을 알되 하나님으로 영화롭게도 아니하며 감사치도 아니하고 오히려 그 생각이 허망하여지며 미련한 마음이 어두워졌나니"
+      ],
+      "raw_text_hashes": [
+        "a26d0da177f65e6ba877f6e9e86f331f81ab61ed837f775b315a97f0cb0d80fe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:1:22",
+      "sequence": 27949,
+      "chapter_label": "ROM 1",
+      "verse_label": "22",
+      "locator": {
+        "book": "ROM",
+        "chapter": 1,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 1,
+          "verse": 22
+        }
+      ],
+      "en": "Professing themselves to be wise, they became fools,",
+      "ko": "스스로 지혜 있다 하나 우준하게 되어",
+      "source_text_hash": "3f1b2d4ab3a9435562419561571d7774ef3781ced9a75a8775750c1ccd5911dc",
+      "translation_text_hash": "f2f61ee417493501d72087c2e41e98aa229fc4f0c9cc498e7d1fd84da9ac616a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "스스로 지혜 있다 하나 우준하게 되어"
+      ],
+      "raw_text_hashes": [
+        "f2f61ee417493501d72087c2e41e98aa229fc4f0c9cc498e7d1fd84da9ac616a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:1:23",
+      "sequence": 27950,
+      "chapter_label": "ROM 1",
+      "verse_label": "23",
+      "locator": {
+        "book": "ROM",
+        "chapter": 1,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 1,
+          "verse": 23
+        }
+      ],
+      "en": "and traded the glory of the incorruptible God for the likeness of an image of corruptible man, and of birds, four-footed animals, and creeping things.",
+      "ko": "썩어지지 아니하는 하나님의 영광을 썩어질 사람과 금수와 버러지 형상의 우상으로 바꾸었느니라",
+      "source_text_hash": "8928a7fcb405a87c1bc1a8db4d06903d9ce8d34958f4a3005b776559d77a382b",
+      "translation_text_hash": "d925a607e663a58885e7d1bf7057e6772a3d055acdd5ec0d201de23b821c1e54",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "썩어지지 아니하는 하나님의 영광을 썩어질 사람과 금수와 버러지 형상의 우상으로 바꾸었느니라"
+      ],
+      "raw_text_hashes": [
+        "d925a607e663a58885e7d1bf7057e6772a3d055acdd5ec0d201de23b821c1e54"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:1:24",
+      "sequence": 27951,
+      "chapter_label": "ROM 1",
+      "verse_label": "24",
+      "locator": {
+        "book": "ROM",
+        "chapter": 1,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 1,
+          "verse": 24
+        }
+      ],
+      "en": "Therefore God also gave them up in the lusts of their hearts to uncleanness, that their bodies should be dishonored among themselves;",
+      "ko": "그러므로 하나님께서 저희를 마음의 정욕대로 더러움에 내어 버려두사 저희 몸을 서로 욕되게 하셨으니",
+      "source_text_hash": "5b2d78bc4cda52e8e236ab743b570a73f8bb94d07430a84ca96c281b7845cfe2",
+      "translation_text_hash": "807016d19b586606bffea6413dcae1bba97238d26855da5b4232c0f135c3338b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 하나님께서 저희를 마음의 정욕대로 더러움에 내어 버려두사 저희 몸을 서로 욕되게 하셨으니"
+      ],
+      "raw_text_hashes": [
+        "807016d19b586606bffea6413dcae1bba97238d26855da5b4232c0f135c3338b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:1:25",
+      "sequence": 27952,
+      "chapter_label": "ROM 1",
+      "verse_label": "25",
+      "locator": {
+        "book": "ROM",
+        "chapter": 1,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 1,
+          "verse": 25
+        }
+      ],
+      "en": "who exchanged the truth of God for a lie, and worshiped and served the creature rather than the Creator, who is blessed forever. Amen.",
+      "ko": "이는 저희가 하나님의 진리를 거짓 것으로 바꾸어 피조물을 조물주보다 더 경배하고 섬김이라 주는 곧 영원히 찬송할 이시로다 아멘",
+      "source_text_hash": "95c7fd327a81dce6558cd3750eb91428ab232181696d47790a4230d9a53f5c7f",
+      "translation_text_hash": "68014a84ce0a9d2f0b835dbbdd4b0a393b413c31e3d4b178774de5fd2738bbec",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 저희가 하나님의 진리를 거짓 것으로 바꾸어 피조물을 조물주보다 더 경배하고 섬김이라 주는 곧 영원히 찬송할 이시로다 아멘"
+      ],
+      "raw_text_hashes": [
+        "68014a84ce0a9d2f0b835dbbdd4b0a393b413c31e3d4b178774de5fd2738bbec"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:1:26",
+      "sequence": 27953,
+      "chapter_label": "ROM 1",
+      "verse_label": "26",
+      "locator": {
+        "book": "ROM",
+        "chapter": 1,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 1,
+          "verse": 26
+        }
+      ],
+      "en": "For this reason, God gave them up to vile passions. For their women changed the natural function into that which is against nature.",
+      "ko": "이를 인하여 하나님께서 저희를 부끄러운 욕심에 내어 버려 두셨으니 곧 저희 여인들도 순리대로 쓸 것을 바꾸어 역리로 쓰며",
+      "source_text_hash": "9234de04f05411417555b98c4f4a1332459eafe39efa393bd8362cc0cf15dc79",
+      "translation_text_hash": "6f28e0d8b1e68a6c2b6c5756550373981953e47a55d01835eadfbe02e0879761",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이를 인하여 하나님께서 저희를 부끄러운 욕심에 내어 버려 두셨으니 곧 저희 여인들도 순리대로 쓸 것을 바꾸어 역리로 쓰며"
+      ],
+      "raw_text_hashes": [
+        "6f28e0d8b1e68a6c2b6c5756550373981953e47a55d01835eadfbe02e0879761"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:1:27",
+      "sequence": 27954,
+      "chapter_label": "ROM 1",
+      "verse_label": "27",
+      "locator": {
+        "book": "ROM",
+        "chapter": 1,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 1,
+          "verse": 27
+        }
+      ],
+      "en": "Likewise also the men, leaving the natural function of the woman, burned in their lust toward one another, men doing what is inappropriate with men, and receiving in themselves the due penalty of their error.",
+      "ko": "이와 같이 남자들도 순리대로 여인 쓰기를 버리고 서로 향하여 음욕이 불 일듯 하매 남자가 남자로 더불어 부끄러운 일을 행하여 저희의 그릇됨에 상당한 보응을 그 자신에 받았느니라",
+      "source_text_hash": "48be111a0eb87023dedd8e957c32d25877a658fcf48661565e20ee198aeba2ba",
+      "translation_text_hash": "efa19419dd73bfe22436cf83dfca8b8827b5ed20637e9f456745567d2f29e6b1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이와 같이 남자들도 순리대로 여인 쓰기를 버리고 서로 향하여 음욕이 불 일듯 하매 남자가 남자로 더불어 부끄러운 일을 행하여 저희의 그릇됨에 상당한 보응을 그 자신에 받았느니라"
+      ],
+      "raw_text_hashes": [
+        "efa19419dd73bfe22436cf83dfca8b8827b5ed20637e9f456745567d2f29e6b1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:1:28",
+      "sequence": 27955,
+      "chapter_label": "ROM 1",
+      "verse_label": "28",
+      "locator": {
+        "book": "ROM",
+        "chapter": 1,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 1,
+          "verse": 28
+        }
+      ],
+      "en": "Even as they refused to have God in their knowledge, God gave them up to a reprobate mind, to do those things which are not fitting;",
+      "ko": "또한 저희가 마음에 하나님 두기를 싫어하매 하나님께서 저희를 그 상실한 마음대로 내어 버려두사 합당치 못한 일을 하게 하셨으니",
+      "source_text_hash": "bfa607e7cf053791f50f5bc553b41f9fe1aeb1cbc72bd7c2c416ec233c659e01",
+      "translation_text_hash": "fefdedb0f2f18fa1d6013260d7364d1edfa7f961ecdd2ceef7f8490f53d60b18",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또한 저희가 마음에 하나님 두기를 싫어하매 하나님께서 저희를 그 상실한 마음대로 내어 버려두사 합당치 못한 일을 하게 하셨으니"
+      ],
+      "raw_text_hashes": [
+        "fefdedb0f2f18fa1d6013260d7364d1edfa7f961ecdd2ceef7f8490f53d60b18"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:1:29",
+      "sequence": 27956,
+      "chapter_label": "ROM 1",
+      "verse_label": "29",
+      "locator": {
+        "book": "ROM",
+        "chapter": 1,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 1,
+          "verse": 29
+        }
+      ],
+      "en": "being filled with all unrighteousness, sexual immorality, wickedness, covetousness, malice; full of envy, murder, strife, deceit, evil habits, secret slanderers,",
+      "ko": "곧 모든 불의, 추악, 탐욕, 악의가 가득한 자요 시기, 살인, 분쟁, 사기, 악독이 가득한 자요 수군수군하는 자요",
+      "source_text_hash": "0d92d3d746b46e24a04c3e6a494841449a4ab32c25c27f583d84cdba6168c206",
+      "translation_text_hash": "af3739dc06beaa75692dc0ec76fdd57619bc577623084c50f9778b8f33bf3e68",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 모든 불의, 추악, 탐욕, 악의가 가득한 자요 시기, 살인, 분쟁, 사기, 악독이 가득한 자요 수군수군하는 자요"
+      ],
+      "raw_text_hashes": [
+        "af3739dc06beaa75692dc0ec76fdd57619bc577623084c50f9778b8f33bf3e68"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:1:30",
+      "sequence": 27957,
+      "chapter_label": "ROM 1",
+      "verse_label": "30",
+      "locator": {
+        "book": "ROM",
+        "chapter": 1,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 1,
+          "verse": 30
+        }
+      ],
+      "en": "backbiters, hateful to God, insolent, arrogant, boastful, inventors of evil things, disobedient to parents,",
+      "ko": "비방하는 자요 하나님의 미워하시는 자요 능욕하는 자요 교만한 자요 자랑하는 자요 악을 도모하는 자요 부모를 거역하는 자요",
+      "source_text_hash": "8be78797b538d117ce8d51fad37b0c1998f361051cd946d9fba47a20e169f132",
+      "translation_text_hash": "72a462790310fef94ff018010f1ad45f25d4d806085a11621a9394484c95f846",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "비방하는 자요 하나님의 미워하시는 자요 능욕하는 자요 교만한 자요 자랑하는 자요 악을 도모하는 자요 부모를 거역하는 자요"
+      ],
+      "raw_text_hashes": [
+        "72a462790310fef94ff018010f1ad45f25d4d806085a11621a9394484c95f846"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:1:31",
+      "sequence": 27958,
+      "chapter_label": "ROM 1",
+      "verse_label": "31",
+      "locator": {
+        "book": "ROM",
+        "chapter": 1,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 1,
+          "verse": 31
+        }
+      ],
+      "en": "without understanding, covenant breakers, without natural affection, unforgiving, unmerciful;",
+      "ko": "우매한 자요 배약하는 자요 무정한 자요 무자비한 자라",
+      "source_text_hash": "48eaffea6d357e714c321b9f89335c1719bc14dfafd2b75d7d7eacd77af8d56f",
+      "translation_text_hash": "022664891bba94b0f7290c954e19d6f303013849a5a81224b05a837e912e3bdd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우매한 자요 배약하는 자요 무정한 자요 무자비한 자라"
+      ],
+      "raw_text_hashes": [
+        "022664891bba94b0f7290c954e19d6f303013849a5a81224b05a837e912e3bdd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:1:32",
+      "sequence": 27959,
+      "chapter_label": "ROM 1",
+      "verse_label": "32",
+      "locator": {
+        "book": "ROM",
+        "chapter": 1,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 1,
+          "verse": 32
+        }
+      ],
+      "en": "who, knowing the ordinance of God, that those who practice such things are worthy of death, not only do the same, but also approve of those who practice them.",
+      "ko": "저희가 이같은 일을 행하는 자는 사형에 해당하다고 하나님의 정하심을 알고도 자기들만 행할 뿐 아니라 또한 그 일을 행하는 자를 옳다 하느니라",
+      "source_text_hash": "aaf5608cd11dd5cb34aa93066ed6bea45200864272aeba5e5c14722788b41a36",
+      "translation_text_hash": "aaf59e0075fbdfafc18eb480b42092782d703e3d6ea3b52042940d9832b284a5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 이같은 일을 행하는 자는 사형에 해당하다고 하나님의 정하심을 알고도 자기들만 행할 뿐 아니라 또한 그 일을 행하는 자를 옳다 하느니라"
+      ],
+      "raw_text_hashes": [
+        "aaf59e0075fbdfafc18eb480b42092782d703e3d6ea3b52042940d9832b284a5"
+      ]
+    }
+  ]
+}

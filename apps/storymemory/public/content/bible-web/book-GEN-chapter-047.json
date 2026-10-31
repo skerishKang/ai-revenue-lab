@@ -1,0 +1,1005 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:GEN:chapter:047",
+  "unit_ordinal": 47,
+  "unit_label": "GEN 47",
+  "book_code": "GEN",
+  "chapter_number": 47,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:GEN:47:1",
+      "sequence": 1422,
+      "chapter_label": "GEN 47",
+      "verse_label": "1",
+      "locator": {
+        "book": "GEN",
+        "chapter": 47,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 47,
+          "verse": 1
+        }
+      ],
+      "en": "Then Joseph went in and told Pharaoh, and said, “My father and my brothers, with their flocks, their herds, and all that they own, have come out of the land of Canaan; and behold, they are in the land of Goshen.”",
+      "ko": "요셉이 바로에게 가서 고하여 가로되 나의 아비와 형들과 그들의 양과 소와 모든 소유가 가나안 땅에서 와서 고센 땅에 있나이다 하고",
+      "source_text_hash": "4a17432f3144efbbfec0249142653657d49e66130345ac5739779c0e39cab337",
+      "translation_text_hash": "aa9e554e4f9f2805e43af2e77fe816743b9434cb590155c510fa24e40386d1ee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요셉이 바로에게 가서 고하여 가로되 나의 아비와 형들과 그들의 양과 소와 모든 소유가 가나안 땅에서 와서 고센 땅에 있나이다 하고"
+      ],
+      "raw_text_hashes": [
+        "aa9e554e4f9f2805e43af2e77fe816743b9434cb590155c510fa24e40386d1ee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:47:2",
+      "sequence": 1423,
+      "chapter_label": "GEN 47",
+      "verse_label": "2",
+      "locator": {
+        "book": "GEN",
+        "chapter": 47,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 47,
+          "verse": 2
+        }
+      ],
+      "en": "From among his brothers he took five men, and presented them to Pharaoh.",
+      "ko": "형들중 오인을 택하여 바로에게 보이니",
+      "source_text_hash": "61286c8133a67d6276b2cb7312c935c5f390ec0c345adf8a618e9bce43735f12",
+      "translation_text_hash": "2149adec8cc983ec3096edaf214c516387452a55dd895aabb668894141307f2e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "형들중 오인을 택하여 바로에게 보이니"
+      ],
+      "raw_text_hashes": [
+        "2149adec8cc983ec3096edaf214c516387452a55dd895aabb668894141307f2e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:47:3",
+      "sequence": 1424,
+      "chapter_label": "GEN 47",
+      "verse_label": "3",
+      "locator": {
+        "book": "GEN",
+        "chapter": 47,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 47,
+          "verse": 3
+        }
+      ],
+      "en": "Pharaoh said to his brothers, “What is your occupation?” They said to Pharaoh, “Your servants are shepherds, both we, and our fathers.”",
+      "ko": "바로가 요셉의 형들에게 묻되 너희 생업이 무엇이냐 그들이 바로에게 대답하되 종들은 목자이온데 우리와 선조가 다 그러하니이다 하고",
+      "source_text_hash": "5cb3782427aca3f7031e89d6d475bae39545bb6e5818bdb6e512bfd56d0edf75",
+      "translation_text_hash": "19998d8a93b4262b83533b32e6f1fabb1e8be0a82f8ce614cd0b6095f43f3766",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바로가 요셉의 형들에게 묻되 너희 생업이 무엇이냐 그들이 바로에게 대답하되 종들은 목자이온데 우리와 선조가 다 그러하니이다 하고"
+      ],
+      "raw_text_hashes": [
+        "19998d8a93b4262b83533b32e6f1fabb1e8be0a82f8ce614cd0b6095f43f3766"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:47:4",
+      "sequence": 1425,
+      "chapter_label": "GEN 47",
+      "verse_label": "4",
+      "locator": {
+        "book": "GEN",
+        "chapter": 47,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 47,
+          "verse": 4
+        }
+      ],
+      "en": "They also said to Pharaoh, “We have come to live as foreigners in the land, for there is no pasture for your servants’ flocks. For the famine is severe in the land of Canaan. Now therefore, please let your servants dwell in the land of Goshen.”",
+      "ko": "그들이 또 바로에게 고하되 가나안 땅에 기근이 심하여 종들의 떼를 칠 곳이 없기로 종들이 이곳에 우거하러 왔사오니 청컨대 종들로 고센 땅에 거하게 하소서",
+      "source_text_hash": "18899c7175a204e9a018659053a13ebd88a55da7c5113343f6e6f5c727eb5438",
+      "translation_text_hash": "3f366ac3de7114b7243c2803d2cd2401afb1bdeec36833a5c7241036215bffa2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 또 바로에게 고하되 가나안 땅에 기근이 심하여 종들의 떼를 칠 곳이 없기로 종들이 이곳에 우거하러 왔사오니 청컨대 종들로 고센 땅에 거하게 하소서"
+      ],
+      "raw_text_hashes": [
+        "3f366ac3de7114b7243c2803d2cd2401afb1bdeec36833a5c7241036215bffa2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:47:5",
+      "sequence": 1426,
+      "chapter_label": "GEN 47",
+      "verse_label": "5",
+      "locator": {
+        "book": "GEN",
+        "chapter": 47,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 47,
+          "verse": 5
+        }
+      ],
+      "en": "Pharaoh spoke to Joseph, saying, “Your father and your brothers have come to you.",
+      "ko": "바로가 요셉에게 일러 가로되 네 아비와 형들이 네게 왔은즉",
+      "source_text_hash": "abdaa993b3cb00ce331391440149fcc112681dcf31e714b62de238e25cb6b151",
+      "translation_text_hash": "92d58cafbab7760a23d3df619ffca471c595d9297b8cf6ca0eacc65e86838747",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바로가 요셉에게 일러 가로되 네 아비와 형들이 네게 왔은즉"
+      ],
+      "raw_text_hashes": [
+        "92d58cafbab7760a23d3df619ffca471c595d9297b8cf6ca0eacc65e86838747"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:47:6",
+      "sequence": 1427,
+      "chapter_label": "GEN 47",
+      "verse_label": "6",
+      "locator": {
+        "book": "GEN",
+        "chapter": 47,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 47,
+          "verse": 6
+        }
+      ],
+      "en": "The land of Egypt is before you. Make your father and your brothers dwell in the best of the land. Let them dwell in the land of Goshen. If you know any able men among them, then put them in charge of my livestock.”",
+      "ko": "애굽 땅이 네 앞에 있으니 땅의 좋은 곳에 네 아비와 형들로 거하게 하되 고센 땅에 그들로 거하게 하고 그들 중에 능한 자가 있는 줄을 알거든 그들로 나의 짐승을 주관하게 하라",
+      "source_text_hash": "8590f613df75e4e92fdd30f9086ca555e4f157d4abc4914a6e11559728ad6f7f",
+      "translation_text_hash": "4b9924ae2ff6fce4eaa5d97909ff6d40931b4d316b21acfc92a5278d7915a5f7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "애굽 땅이 네 앞에 있으니 땅의 좋은 곳에 네 아비와 형들로 거하게 하되 고센 땅에 그들로 거하게 하고 그들 중에 능한 자가 있는 줄을 알거든 그들로 나의 짐승을 주관하게 하라"
+      ],
+      "raw_text_hashes": [
+        "4b9924ae2ff6fce4eaa5d97909ff6d40931b4d316b21acfc92a5278d7915a5f7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:47:7",
+      "sequence": 1428,
+      "chapter_label": "GEN 47",
+      "verse_label": "7",
+      "locator": {
+        "book": "GEN",
+        "chapter": 47,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 47,
+          "verse": 7
+        }
+      ],
+      "en": "Joseph brought in Jacob, his father, and set him before Pharaoh; and Jacob blessed Pharaoh.",
+      "ko": "요셉이 자기 아비 야곱을 인도하여 바로 앞에 서게 하니 야곱이 바로에게 축복하매",
+      "source_text_hash": "743d350dd00e542097bf14922da1014f7ac7e3f2187791c211f307f29a19e110",
+      "translation_text_hash": "2d71dda5d57e348188034df5c353cc359df4acf1439d7291c2c39e6b1b184296",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요셉이 자기 아비 야곱을 인도하여 바로 앞에 서게 하니 야곱이 바로에게 축복하매"
+      ],
+      "raw_text_hashes": [
+        "2d71dda5d57e348188034df5c353cc359df4acf1439d7291c2c39e6b1b184296"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:47:8",
+      "sequence": 1429,
+      "chapter_label": "GEN 47",
+      "verse_label": "8",
+      "locator": {
+        "book": "GEN",
+        "chapter": 47,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 47,
+          "verse": 8
+        }
+      ],
+      "en": "Pharaoh said to Jacob, “How old are you?”",
+      "ko": "바로가 야곱에게 묻되 네 연세가 얼마뇨",
+      "source_text_hash": "b409786860bc9ec82594acca5aaf22de9915e6e93a3bfaf634be6963f9285332",
+      "translation_text_hash": "8e0991212ec7da9ea2b920a1d3b9b30b7ccfe6b0c09354e782334b53c2c5228e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바로가 야곱에게 묻되 네 연세가 얼마뇨"
+      ],
+      "raw_text_hashes": [
+        "8e0991212ec7da9ea2b920a1d3b9b30b7ccfe6b0c09354e782334b53c2c5228e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:47:9",
+      "sequence": 1430,
+      "chapter_label": "GEN 47",
+      "verse_label": "9",
+      "locator": {
+        "book": "GEN",
+        "chapter": 47,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 47,
+          "verse": 9
+        }
+      ],
+      "en": "Jacob said to Pharaoh, “The years of my pilgrimage are one hundred thirty years. The days of the years of my life have been few and evil. They have not attained to the days of the years of the life of my fathers in the days of their pilgrimage.”",
+      "ko": "야곱이 바로에게 고하되 내 나그네 길의 세월이 일백 삼십년이니이다 나의 연세가 얼마 못되니 우리 조상의 나그네 길의 세월에 미치지 못하나 험악한 세월을 보내었나이다 하고",
+      "source_text_hash": "aff20bcd087f440e535fb817e6d97fc268938b490aed26f86d2885c248f4ff0e",
+      "translation_text_hash": "8df24d53522dce26d3183566ce6cf10c18bf70014c4e831f0755957946817f0a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야곱이 바로에게 고하되 내 나그네 길의 세월이 일백 삼십년이니이다 나의 연세가 얼마 못되니 우리 조상의 나그네 길의 세월에 미치지 못하나 험악한 세월을 보내었나이다 하고"
+      ],
+      "raw_text_hashes": [
+        "8df24d53522dce26d3183566ce6cf10c18bf70014c4e831f0755957946817f0a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:47:10",
+      "sequence": 1431,
+      "chapter_label": "GEN 47",
+      "verse_label": "10",
+      "locator": {
+        "book": "GEN",
+        "chapter": 47,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 47,
+          "verse": 10
+        }
+      ],
+      "en": "Jacob blessed Pharaoh, and went out from the presence of Pharaoh.",
+      "ko": "야곱이 바로에게 축복하고 그 앞에서 나오니라",
+      "source_text_hash": "a069663200df6ee7cff914574cda21d0f378cafbf87e29daf363d8558f31ca26",
+      "translation_text_hash": "6e874cfdf2f3bafd7baf70d0cccc00d8309dc1dc08c06358a4eb1617ed4f09be",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야곱이 바로에게 축복하고 그 앞에서 나오니라"
+      ],
+      "raw_text_hashes": [
+        "6e874cfdf2f3bafd7baf70d0cccc00d8309dc1dc08c06358a4eb1617ed4f09be"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:47:11",
+      "sequence": 1432,
+      "chapter_label": "GEN 47",
+      "verse_label": "11",
+      "locator": {
+        "book": "GEN",
+        "chapter": 47,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 47,
+          "verse": 11
+        }
+      ],
+      "en": "Joseph placed his father and his brothers, and gave them a possession in the land of Egypt, in the best of the land, in the land of Rameses, as Pharaoh had commanded.",
+      "ko": "요셉이 바로의 명대로 그 아비와 형들에게 거할 곳을 주되 애굽의 좋은 땅 라암세스를 그들에게 주어 기업을 삼게 하고",
+      "source_text_hash": "fbe0d5bab8475f10e5724a5a432c353d46b4e42d0407b76007ddc895c31ac57a",
+      "translation_text_hash": "bc3c0177422a7838e1dad9798ee8010d2e56baf63fc630ddf8c659cdc3118b1d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요셉이 바로의 명대로 그 아비와 형들에게 거할 곳을 주되 애굽의 좋은 땅 라암세스를 그들에게 주어 기업을 삼게 하고"
+      ],
+      "raw_text_hashes": [
+        "bc3c0177422a7838e1dad9798ee8010d2e56baf63fc630ddf8c659cdc3118b1d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:47:12",
+      "sequence": 1433,
+      "chapter_label": "GEN 47",
+      "verse_label": "12",
+      "locator": {
+        "book": "GEN",
+        "chapter": 47,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 47,
+          "verse": 12
+        }
+      ],
+      "en": "Joseph provided his father, his brothers, and all of his father’s household with bread, according to the sizes of their families.",
+      "ko": "또 그 아비와 형들과 아비의 온 집에 그 식구를 따라 식물을 주어 공궤하였더라",
+      "source_text_hash": "22d92b831a64d0306bee792c8a7b76b114becf8da2a00ca2e372049a59310a27",
+      "translation_text_hash": "ed2ac92a872034172f95c9ee6de4e4facc5ead8459172ca74e20d727f24ddf2e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 그 아비와 형들과 아비의 온 집에 그 식구를 따라 식물을 주어 공궤하였더라"
+      ],
+      "raw_text_hashes": [
+        "ed2ac92a872034172f95c9ee6de4e4facc5ead8459172ca74e20d727f24ddf2e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:47:13",
+      "sequence": 1434,
+      "chapter_label": "GEN 47",
+      "verse_label": "13",
+      "locator": {
+        "book": "GEN",
+        "chapter": 47,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 47,
+          "verse": 13
+        }
+      ],
+      "en": "There was no bread in all the land; for the famine was very severe, so that the land of Egypt and the land of Canaan fainted by reason of the famine.",
+      "ko": "기근이 더욱 심하여 사방에 식물이 없고 애굽 땅과 가나안 땅이 기근으로 쇠약하니",
+      "source_text_hash": "e8c076947c0ba6ebff27828e5b64c83bf4cb32bf23fc42846a7f874407637830",
+      "translation_text_hash": "8d8a55ac239cdc42e3567d2d94207b6b368a747ad72d92811b45dc01b5e9f980",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "기근이 더욱 심하여 사방에 식물이 없고 애굽 땅과 가나안 땅이 기근으로 쇠약하니"
+      ],
+      "raw_text_hashes": [
+        "8d8a55ac239cdc42e3567d2d94207b6b368a747ad72d92811b45dc01b5e9f980"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:47:14",
+      "sequence": 1435,
+      "chapter_label": "GEN 47",
+      "verse_label": "14",
+      "locator": {
+        "book": "GEN",
+        "chapter": 47,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 47,
+          "verse": 14
+        }
+      ],
+      "en": "Joseph gathered up all the money that was found in the land of Egypt, and in the land of Canaan, for the grain which they bought: and Joseph brought the money into Pharaoh’s house.",
+      "ko": "요셉이 곡식을 팔아 애굽 땅과 가나안 땅에 있는 돈을 몰수히 거두고 그 돈을 바로의 궁으로 가져오니",
+      "source_text_hash": "6d43cd48dcc809f09c5dcacfc3eeceb247cf31ad36347bd189a3419b58f96167",
+      "translation_text_hash": "2c3f5bb028642211a49511bd944c8ad4dd0cf57079d4a645eb9405bd1a69e3b4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요셉이 곡식을 팔아 애굽 땅과 가나안 땅에 있는 돈을 몰수히 거두고 그 돈을 바로의 궁으로 가져오니"
+      ],
+      "raw_text_hashes": [
+        "2c3f5bb028642211a49511bd944c8ad4dd0cf57079d4a645eb9405bd1a69e3b4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:47:15",
+      "sequence": 1436,
+      "chapter_label": "GEN 47",
+      "verse_label": "15",
+      "locator": {
+        "book": "GEN",
+        "chapter": 47,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 47,
+          "verse": 15
+        }
+      ],
+      "en": "When the money was all spent in the land of Egypt, and in the land of Canaan, all the Egyptians came to Joseph, and said, “Give us bread, for why should we die in your presence? For our money fails.”",
+      "ko": "애굽 땅과 가나안 땅에 돈이 진한지라 애굽 백성이 다 요셉에게 와서 가로되 돈이 진하였사오니 우리에게 식물을 주소서 어찌 주 앞에서 죽으리이까",
+      "source_text_hash": "a6e988853ecd90c8dfa676b3358e420217c1a25bf8cfc19c7ddcd623369a35a4",
+      "translation_text_hash": "0be1aa9da2e45f8b0c5119cb54fbb9b35cf2b731e56b952fc2788599b3759ebe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "애굽 땅과 가나안 땅에 돈이 진한지라 애굽 백성이 다 요셉에게 와서 가로되 돈이 진하였사오니 우리에게 식물을 주소서 어찌 주 앞에서 죽으리이까"
+      ],
+      "raw_text_hashes": [
+        "0be1aa9da2e45f8b0c5119cb54fbb9b35cf2b731e56b952fc2788599b3759ebe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:47:16",
+      "sequence": 1437,
+      "chapter_label": "GEN 47",
+      "verse_label": "16",
+      "locator": {
+        "book": "GEN",
+        "chapter": 47,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 47,
+          "verse": 16
+        }
+      ],
+      "en": "Joseph said, “Give me your livestock; and I will give you food for your livestock, if your money is gone.”",
+      "ko": "요셉이 가로되 너희의 짐승을 내라 돈이 진하였은즉 내가 너희의 짐승과 바꾸어 주리라",
+      "source_text_hash": "836731c967822e844bcceae0f179cf265a57f8283c12d3f709a45f7049ecebc6",
+      "translation_text_hash": "30f085a354ca21090b1bd85412bc2250ff039a2a6109598ce9d8e30f4702edaf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요셉이 가로되 너희의 짐승을 내라 돈이 진하였은즉 내가 너희의 짐승과 바꾸어 주리라"
+      ],
+      "raw_text_hashes": [
+        "30f085a354ca21090b1bd85412bc2250ff039a2a6109598ce9d8e30f4702edaf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:47:17",
+      "sequence": 1438,
+      "chapter_label": "GEN 47",
+      "verse_label": "17",
+      "locator": {
+        "book": "GEN",
+        "chapter": 47,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 47,
+          "verse": 17
+        }
+      ],
+      "en": "They brought their livestock to Joseph, and Joseph gave them bread in exchange for the horses, and for the flocks, and for the herds, and for the donkeys: and he fed them with bread in exchange for all their livestock for that year.",
+      "ko": "그들이 그 짐승을 요셉에게 끌어 오는지라 요셉이 그 말과 양떼와 소떼와 나귀를 받고 그들에게 식물을 주되 곧 그 모든 짐승과 바꾸어서 그 해 동안에 식물로 그들을 기르니라",
+      "source_text_hash": "9510d086fadf17e251963ccd194123840be555f663ccf468189445a859a80062",
+      "translation_text_hash": "f0989719147907998f151f99d60d789491242bd0e81b721dd850b49c410d9f59",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 그 짐승을 요셉에게 끌어 오는지라 요셉이 그 말과 양떼와 소떼와 나귀를 받고 그들에게 식물을 주되 곧 그 모든 짐승과 바꾸어서 그 해 동안에 식물로 그들을 기르니라"
+      ],
+      "raw_text_hashes": [
+        "f0989719147907998f151f99d60d789491242bd0e81b721dd850b49c410d9f59"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:47:18",
+      "sequence": 1439,
+      "chapter_label": "GEN 47",
+      "verse_label": "18",
+      "locator": {
+        "book": "GEN",
+        "chapter": 47,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 47,
+          "verse": 18
+        }
+      ],
+      "en": "When that year was ended, they came to him the second year, and said to him, “We will not hide from my lord how our money is all spent, and the herds of livestock are my lord’s. There is nothing left in the sight of my lord, but our bodies, and our lands.",
+      "ko": "그 해가 다하고 새 해가 되매 무리가 요셉에게 와서 그에게 고하되 우리가 주께 숨기지 아니하나이다 우리의 돈이 다하였고 우리의 짐승 떼가 주께로 돌아 갔사오니 주께 낼 것이 아무 것도 남지 아니하고 우리의 몸과 전지뿐이라",
+      "source_text_hash": "0ee09b242bb50e8189c962e124b1269f2b2fb63b4a547903bf9a309da12b45bf",
+      "translation_text_hash": "74cf13f42e6c1bf67e6f2af05d378bdefe498c92be6566fa9e52b09647c304e6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 해가 다하고 새 해가 되매 무리가 요셉에게 와서 그에게 고하되 우리가 주께 숨기지 아니하나이다 우리의 돈이 다하였고 우리의 짐승 떼가 주께로 돌아 갔사오니 주께 낼 것이 아무 것도 남지 아니하고 우리의 몸과 전지뿐이라"
+      ],
+      "raw_text_hashes": [
+        "74cf13f42e6c1bf67e6f2af05d378bdefe498c92be6566fa9e52b09647c304e6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:47:19",
+      "sequence": 1440,
+      "chapter_label": "GEN 47",
+      "verse_label": "19",
+      "locator": {
+        "book": "GEN",
+        "chapter": 47,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 47,
+          "verse": 19
+        }
+      ],
+      "en": "Why should we die before your eyes, both we and our land? Buy us and our land for bread, and we and our land will be servants to Pharaoh. Give us seed, that we may live, and not die, and that the land won’t be desolate.”",
+      "ko": "우리가 어찌 우리의 전지와 함께 주의 목전에 죽으리이까 우리 몸과 우리 토지를 식물로 사소서 우리가 토지와 함께 바로의 종이 되리니 우리에게 종자를 주시면 우리가 살고 죽지 아니하고 전지도 황폐치 아니하리이다",
+      "source_text_hash": "8a088ed5d0647a5f4ea97a6c8ac70babf0a0503d04f5518acec0dcbd2ad368a7",
+      "translation_text_hash": "84581de1933a5c18612f71998d52e263456bdd09d0420402b5d2223947f382ab",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 어찌 우리의 전지와 함께 주의 목전에 죽으리이까 우리 몸과 우리 토지를 식물로 사소서 우리가 토지와 함께 바로의 종이 되리니 우리에게 종자를 주시면 우리가 살고 죽지 아니하고 전지도 황폐치 아니하리이다"
+      ],
+      "raw_text_hashes": [
+        "84581de1933a5c18612f71998d52e263456bdd09d0420402b5d2223947f382ab"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:47:20",
+      "sequence": 1441,
+      "chapter_label": "GEN 47",
+      "verse_label": "20",
+      "locator": {
+        "book": "GEN",
+        "chapter": 47,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 47,
+          "verse": 20
+        }
+      ],
+      "en": "So Joseph bought all the land of Egypt for Pharaoh, for every man of the Egyptians sold his field, because the famine was severe on them, and the land became Pharaoh’s.",
+      "ko": "그러므로 요셉이 애굽 전지를 다 사서 바로에게 드리니 애굽 사람이 기근에 몰려서 각기 전지를 팖이라 땅이 바로의 소유가 되니라",
+      "source_text_hash": "2a3e67e471caee4dcae10ef12af14da4ea57ac7fc0de9bfcb6d649363813541f",
+      "translation_text_hash": "29926c57c65ebd778dcefb3375ca5c06ab0e89a6f8d1afdba0e5e2d74fe1cc2d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 요셉이 애굽 전지를 다 사서 바로에게 드리니 애굽 사람이 기근에 몰려서 각기 전지를 팖이라 땅이 바로의 소유가 되니라"
+      ],
+      "raw_text_hashes": [
+        "29926c57c65ebd778dcefb3375ca5c06ab0e89a6f8d1afdba0e5e2d74fe1cc2d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:47:21",
+      "sequence": 1442,
+      "chapter_label": "GEN 47",
+      "verse_label": "21",
+      "locator": {
+        "book": "GEN",
+        "chapter": 47,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 47,
+          "verse": 21
+        }
+      ],
+      "en": "As for the people, he moved them to the cities from one end of the border of Egypt even to the other end of it.",
+      "ko": "요셉이 애굽 이 끝에서 저 끝까지의 백성을 성읍들에 옮겼으나",
+      "source_text_hash": "d6600873e824a81be3867ba30b8d0705310d33b5b73287deec9c1accfa0a64d0",
+      "translation_text_hash": "bc0d8626c31d29fc2696357b863bec23b0683eeb0c48c2554a0d1857829f36d2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요셉이 애굽 이 끝에서 저 끝까지의 백성을 성읍들에 옮겼으나"
+      ],
+      "raw_text_hashes": [
+        "bc0d8626c31d29fc2696357b863bec23b0683eeb0c48c2554a0d1857829f36d2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:47:22",
+      "sequence": 1443,
+      "chapter_label": "GEN 47",
+      "verse_label": "22",
+      "locator": {
+        "book": "GEN",
+        "chapter": 47,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 47,
+          "verse": 22
+        }
+      ],
+      "en": "Only he didn’t buy the land of the priests, for the priests had a portion from Pharaoh, and ate their portion which Pharaoh gave them. That is why they didn’t sell their land.",
+      "ko": "제사장의 전지는 사지 아니하였으니 제사장은 바로에게서 녹을 받음이라 바로의 주는 녹을 먹으므로 그 전지를 팔지 않음이었더라",
+      "source_text_hash": "1a02493002fb3b136c3aafb5f3262cdbf9fd1b255f97c43449528bf93f2badfd",
+      "translation_text_hash": "82a90225607d3e4d7d61298af9623f8a0264740754291dc2dad169511818deea",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장의 전지는 사지 아니하였으니 제사장은 바로에게서 녹을 받음이라 바로의 주는 녹을 먹으므로 그 전지를 팔지 않음이었더라"
+      ],
+      "raw_text_hashes": [
+        "82a90225607d3e4d7d61298af9623f8a0264740754291dc2dad169511818deea"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:47:23",
+      "sequence": 1444,
+      "chapter_label": "GEN 47",
+      "verse_label": "23",
+      "locator": {
+        "book": "GEN",
+        "chapter": 47,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 47,
+          "verse": 23
+        }
+      ],
+      "en": "Then Joseph said to the people, “Behold, I have bought you and your land today for Pharaoh. Behold, here is seed for you, and you shall sow the land.",
+      "ko": "요셉이 백성에게 이르되 오늘날 내가 바로를 위하여 너희 몸과 너희 전지를 샀노라 여기 종자가 있으니 너희는 그 땅에 뿌리라",
+      "source_text_hash": "14cb9065f70ad0e405de51637d35fa5eb1fafd4a1a1a272e6a070857e1bc4d41",
+      "translation_text_hash": "8c73c760087bcb813240129e6cc30a9cd39c9d892b46db7142fa761a568cbc32",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요셉이 백성에게 이르되 오늘날 내가 바로를 위하여 너희 몸과 너희 전지를 샀노라 여기 종자가 있으니 너희는 그 땅에 뿌리라"
+      ],
+      "raw_text_hashes": [
+        "8c73c760087bcb813240129e6cc30a9cd39c9d892b46db7142fa761a568cbc32"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:47:24",
+      "sequence": 1445,
+      "chapter_label": "GEN 47",
+      "verse_label": "24",
+      "locator": {
+        "book": "GEN",
+        "chapter": 47,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 47,
+          "verse": 24
+        }
+      ],
+      "en": "It will happen at the harvests, that you shall give a fifth to Pharaoh, and four parts will be your own, for seed of the field, for your food, for them of your households, and for food for your little ones.”",
+      "ko": "추수의 오분 일을 바로에게 상납하고 사분은 너희가 취하여 전지의 종자도 삼고 너희의 양식도 삼고 너희 집 사람과 어린 아이의 양식도 삼으라",
+      "source_text_hash": "ed39c28fd84545b495d9fdd4bbab7e4c0befc64397cd1b72f6b137675f132f7e",
+      "translation_text_hash": "5ec5cb2949cf95dcc1227f9c2a133052aa08db9022c6a6e5c973474da3017139",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "추수의 오분 일을 바로에게 상납하고 사분은 너희가 취하여 전지의 종자도 삼고 너희의 양식도 삼고 너희 집 사람과 어린 아이의 양식도 삼으라"
+      ],
+      "raw_text_hashes": [
+        "5ec5cb2949cf95dcc1227f9c2a133052aa08db9022c6a6e5c973474da3017139"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:47:25",
+      "sequence": 1446,
+      "chapter_label": "GEN 47",
+      "verse_label": "25",
+      "locator": {
+        "book": "GEN",
+        "chapter": 47,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 47,
+          "verse": 25
+        }
+      ],
+      "en": "They said, “You have saved our lives! Let us find favor in the sight of my lord, and we will be Pharaoh’s servants.”",
+      "ko": "그들이 가로되 주께서 우리를 살리셨사오니 우리가 주께 은혜를 입고 바로의 종이 되겠나이다",
+      "source_text_hash": "c01659d22078a44e8dd722f0902ab62c992471aa061893d0ac10cb9fe6f3714e",
+      "translation_text_hash": "e2762cdf596bb02221c6f45034278534cafd596b90a8f61da32b4198d9dbf571",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 가로되 주께서 우리를 살리셨사오니 우리가 주께 은혜를 입고 바로의 종이 되겠나이다"
+      ],
+      "raw_text_hashes": [
+        "e2762cdf596bb02221c6f45034278534cafd596b90a8f61da32b4198d9dbf571"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:47:26",
+      "sequence": 1447,
+      "chapter_label": "GEN 47",
+      "verse_label": "26",
+      "locator": {
+        "book": "GEN",
+        "chapter": 47,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 47,
+          "verse": 26
+        }
+      ],
+      "en": "Joseph made it a statute concerning the land of Egypt to this day, that Pharaoh should have the fifth. Only the land of the priests alone didn’t become Pharaoh’s.",
+      "ko": "요셉이 애굽 토지법을 세우매 그 오분 일이 바로에게 상납되나 제사장의 토지는 바로의 소유가 되지 아니하여 오늘까지 이르니라",
+      "source_text_hash": "672b7684b926b1e1592eafd6a038c0f3a6a37380aa8b1dea56e5d5029e6e09c5",
+      "translation_text_hash": "c763940fdfa0b24ed1b5bbdaf0a8efb8cd7530d95a2e72d677b70312f1c83257",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요셉이 애굽 토지법을 세우매 그 오분 일이 바로에게 상납되나 제사장의 토지는 바로의 소유가 되지 아니하여 오늘까지 이르니라"
+      ],
+      "raw_text_hashes": [
+        "c763940fdfa0b24ed1b5bbdaf0a8efb8cd7530d95a2e72d677b70312f1c83257"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:47:27",
+      "sequence": 1448,
+      "chapter_label": "GEN 47",
+      "verse_label": "27",
+      "locator": {
+        "book": "GEN",
+        "chapter": 47,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 47,
+          "verse": 27
+        }
+      ],
+      "en": "Israel lived in the land of Egypt, in the land of Goshen; and they got themselves possessions therein, and were fruitful, and multiplied exceedingly.",
+      "ko": "이스라엘 족속이 애굽 고센 땅에 거하며 거기서 산업을 얻고 생육하며 번성하였더라",
+      "source_text_hash": "4c01c35d66c034a3dc31f085cbdeaac431e0217e39ece53f1eb9d0ba88be9869",
+      "translation_text_hash": "59bb0946429e7d9cb50e7fa1d4667d64a2a5c1c41dc510b58d98fd3e8e2c376c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 족속이 애굽 고센 땅에 거하며 거기서 산업을 얻고 생육하며 번성하였더라"
+      ],
+      "raw_text_hashes": [
+        "59bb0946429e7d9cb50e7fa1d4667d64a2a5c1c41dc510b58d98fd3e8e2c376c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:47:28",
+      "sequence": 1449,
+      "chapter_label": "GEN 47",
+      "verse_label": "28",
+      "locator": {
+        "book": "GEN",
+        "chapter": 47,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 47,
+          "verse": 28
+        }
+      ],
+      "en": "Jacob lived in the land of Egypt seventeen years. So the days of Jacob, the years of his life, were one hundred forty-seven years.",
+      "ko": "야곱이 애굽 땅에 십 칠년을 거하였으니 그의 수가 일백 사십 칠세라",
+      "source_text_hash": "89a3c12dd944f538e6b807f4beef3454a4cdd20e6e405f06385fdd525738c43c",
+      "translation_text_hash": "e9e3bebc1275090e1b9189d847ebc8928e23ce8b52d5a6490b0b598a9d0a9080",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야곱이 애굽 땅에 십 칠년을 거하였으니 그의 수가 일백 사십 칠세라"
+      ],
+      "raw_text_hashes": [
+        "e9e3bebc1275090e1b9189d847ebc8928e23ce8b52d5a6490b0b598a9d0a9080"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:47:29",
+      "sequence": 1450,
+      "chapter_label": "GEN 47",
+      "verse_label": "29",
+      "locator": {
+        "book": "GEN",
+        "chapter": 47,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 47,
+          "verse": 29
+        }
+      ],
+      "en": "The time came near that Israel must die, and he called his son Joseph, and said to him, “If now I have found favor in your sight, please put your hand under my thigh, and deal kindly and truly with me. Please don’t bury me in Egypt,",
+      "ko": "이스라엘의 죽을 기한이 가까우매 그가 그 아들 요셉을 불러 그에게 이르되 이제 내가 네게 은혜를 입었거든 청하노니 네 손을 내 환도뼈 아래 넣어서 나를 인애와 성심으로 대접하여 애굽에 장사하지 않기를 맹세하고",
+      "source_text_hash": "bee17fc75117aab7d4ef9cb838369afd38e7537e22416433ec45a4c7fa5bae92",
+      "translation_text_hash": "2ffdd4953d594a5e1da91594fd51156b890492ca354100ea0cd7f3845be98892",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘의 죽을 기한이 가까우매 그가 그 아들 요셉을 불러 그에게 이르되 이제 내가 네게 은혜를 입었거든 청하노니 네 손을 내 환도뼈 아래 넣어서 나를 인애와 성심으로 대접하여 애굽에 장사하지 않기를 맹세하고"
+      ],
+      "raw_text_hashes": [
+        "2ffdd4953d594a5e1da91594fd51156b890492ca354100ea0cd7f3845be98892"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:47:30",
+      "sequence": 1451,
+      "chapter_label": "GEN 47",
+      "verse_label": "30",
+      "locator": {
+        "book": "GEN",
+        "chapter": 47,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 47,
+          "verse": 30
+        }
+      ],
+      "en": "but when I sleep with my fathers, you shall carry me out of Egypt, and bury me in their burying place.” Joseph said, “I will do as you have said.”",
+      "ko": "내가 조상들과 함께 눕거든 너는 나를 애굽에서 메어다가 선영에 장사하라 요셉이 가로되 내가 아버지의 말씀대로 행하리이다",
+      "source_text_hash": "fa6497eb41178260d10d7d1bc84661dd1ca1ae84d338e627797098e3e200bb98",
+      "translation_text_hash": "72d23c910371c4ae42a0ddc6ccd7b41096f13bcef6e24ff3af829e6f3873502f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 조상들과 함께 눕거든 너는 나를 애굽에서 메어다가 선영에 장사하라 요셉이 가로되 내가 아버지의 말씀대로 행하리이다"
+      ],
+      "raw_text_hashes": [
+        "72d23c910371c4ae42a0ddc6ccd7b41096f13bcef6e24ff3af829e6f3873502f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:47:31",
+      "sequence": 1452,
+      "chapter_label": "GEN 47",
+      "verse_label": "31",
+      "locator": {
+        "book": "GEN",
+        "chapter": 47,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 47,
+          "verse": 31
+        }
+      ],
+      "en": "Israel said, “Swear to me,” and he swore to him. Then Israel bowed himself on the bed’s head.",
+      "ko": "야곱이 또 가로되 내게 맹세하라 맹세하니 이스라엘이 침상 머리에서 경배하니라",
+      "source_text_hash": "e724a9c2dc8b97b5feccc4e614778df9df1906e7d4f797390876f2379fa1e7d4",
+      "translation_text_hash": "d5643c004ecc004c0c73ebbab099364dbbd6a036d6e9896ac18f117cd7761bb5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야곱이 또 가로되 내게 맹세하라 맹세하니 이스라엘이 침상 머리에서 경배하니라"
+      ],
+      "raw_text_hashes": [
+        "d5643c004ecc004c0c73ebbab099364dbbd6a036d6e9896ac18f117cd7761bb5"
+      ]
+    }
+  ]
+}

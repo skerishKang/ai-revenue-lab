@@ -1,0 +1,941 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ROM:chapter:002",
+  "unit_ordinal": 1048,
+  "unit_label": "ROM 2",
+  "book_code": "ROM",
+  "chapter_number": 2,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ROM:2:1",
+      "sequence": 27960,
+      "chapter_label": "ROM 2",
+      "verse_label": "1",
+      "locator": {
+        "book": "ROM",
+        "chapter": 2,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 2,
+          "verse": 1
+        }
+      ],
+      "en": "Therefore you are without excuse, O man, whoever you are who judge. For in that which you judge another, you condemn yourself. For you who judge practice the same things.",
+      "ko": "그러므로 남을 판단하는 사람아 무론 누구든지 네가 핑계치 못할 것은 남을 판단하는 것으로 네가 너를 정죄함이니 판단하는 네가 같은 일을 행함이니라",
+      "source_text_hash": "01c31b90a829c1e50f1276737915f4b855e48e61aa4c941c68a6242259ff2294",
+      "translation_text_hash": "d8ab006440f471ef61e8b1b1ff412b3908be4df03238a535ff25b83b462e0fe3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 남을 판단하는 사람아 무론 누구든지 네가 핑계치 못할 것은 남을 판단하는 것으로 네가 너를 정죄함이니 판단하는 네가 같은 일을 행함이니라"
+      ],
+      "raw_text_hashes": [
+        "d8ab006440f471ef61e8b1b1ff412b3908be4df03238a535ff25b83b462e0fe3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:2:2",
+      "sequence": 27961,
+      "chapter_label": "ROM 2",
+      "verse_label": "2",
+      "locator": {
+        "book": "ROM",
+        "chapter": 2,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 2,
+          "verse": 2
+        }
+      ],
+      "en": "We know that the judgment of God is according to truth against those who practice such things.",
+      "ko": "이런 일을 행하는 자에게 하나님의 판단이 진리대로 되는줄 우리가 아노라",
+      "source_text_hash": "102d83cfc30c34edb6fb3b1edaf80bdcdda174de9f1752a6b41f6c718b2131c8",
+      "translation_text_hash": "c011368d0ed24c545921dc942f184bd291fdf715f8ad6dfa64394b987d8486a9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이런 일을 행하는 자에게 하나님의 판단이 진리대로 되는줄 우리가 아노라"
+      ],
+      "raw_text_hashes": [
+        "c011368d0ed24c545921dc942f184bd291fdf715f8ad6dfa64394b987d8486a9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:2:3",
+      "sequence": 27962,
+      "chapter_label": "ROM 2",
+      "verse_label": "3",
+      "locator": {
+        "book": "ROM",
+        "chapter": 2,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 2,
+          "verse": 3
+        }
+      ],
+      "en": "Do you think this, O man who judges those who practice such things, and do the same, that you will escape the judgment of God?",
+      "ko": "이런 일을 행하는 자를 판단하고도 같은 일을 행하는 사람아 네가 하나님의 판단을 피할 줄로 생각하느냐",
+      "source_text_hash": "668364cc9207bcd8676585f46eb6f3a6829005932178f7d7db9cd5ddcac3497b",
+      "translation_text_hash": "3adc3132d7c5ffd41715c1e1d64090d19034579b50f76ffcd4def4e138abb874",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이런 일을 행하는 자를 판단하고도 같은 일을 행하는 사람아 네가 하나님의 판단을 피할 줄로 생각하느냐"
+      ],
+      "raw_text_hashes": [
+        "3adc3132d7c5ffd41715c1e1d64090d19034579b50f76ffcd4def4e138abb874"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:2:4",
+      "sequence": 27963,
+      "chapter_label": "ROM 2",
+      "verse_label": "4",
+      "locator": {
+        "book": "ROM",
+        "chapter": 2,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 2,
+          "verse": 4
+        }
+      ],
+      "en": "Or do you despise the riches of his goodness, forbearance, and patience, not knowing that the goodness of God leads you to repentance?",
+      "ko": "혹 네가 하나님의 인자하심이 너를 인도하여 회개케 하심을 알지 못하여 그의 인자하심과 용납하심과 길이 참으심의 풍성함을 멸시하느뇨",
+      "source_text_hash": "3939e6b50eac45fe6e8154686f466a212f9b61ae0d2add83fd0d13fa6d2cb04e",
+      "translation_text_hash": "c80898bd80b705a226e89753e04eef246f20036110e8413af348668a13c84310",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "혹 네가 하나님의 인자하심이 너를 인도하여 회개케 하심을 알지 못하여 그의 인자하심과 용납하심과 길이 참으심의 풍성함을 멸시하느뇨"
+      ],
+      "raw_text_hashes": [
+        "c80898bd80b705a226e89753e04eef246f20036110e8413af348668a13c84310"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:2:5",
+      "sequence": 27964,
+      "chapter_label": "ROM 2",
+      "verse_label": "5",
+      "locator": {
+        "book": "ROM",
+        "chapter": 2,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 2,
+          "verse": 5
+        }
+      ],
+      "en": "But according to your hardness and unrepentant heart you are treasuring up for yourself wrath in the day of wrath, revelation, and of the righteous judgment of God,",
+      "ko": "다만 네 고집과 회개치 아니한 마음을 따라 진노의 날 곧 하나님의 의로우신 판단이 나타나는 그 날에 임할 진노를 네게 쌓는도다",
+      "source_text_hash": "3a24f407ce9530c5d15e852e0d45b204f8280a4023905b9bdef24218e4ab5cdf",
+      "translation_text_hash": "3c65a4d49d3bc7a330610f28ec497558d7c2f62febbf511ba862d2cdf0de3242",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다만 네 고집과 회개치 아니한 마음을 따라 진노의 날 곧 하나님의 의로우신 판단이 나타나는 그 날에 임할 진노를 네게 쌓는도다"
+      ],
+      "raw_text_hashes": [
+        "3c65a4d49d3bc7a330610f28ec497558d7c2f62febbf511ba862d2cdf0de3242"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:2:6",
+      "sequence": 27965,
+      "chapter_label": "ROM 2",
+      "verse_label": "6",
+      "locator": {
+        "book": "ROM",
+        "chapter": 2,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 2,
+          "verse": 6
+        }
+      ],
+      "en": "who “will pay back to everyone according to their works:”",
+      "ko": "하나님께서 각 사람에게 그 행한대로 보응하시되",
+      "source_text_hash": "49cc8729e4cca87b015deccc26ab1e91cd7fde6e78959438aa3b0ee87776a3b4",
+      "translation_text_hash": "58534b55a629d5bea37b6d5e93bc16ebbfee0fc1a4b16b3ffec4e6d8c695dfca",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님께서 각 사람에게 그 행한대로 보응하시되"
+      ],
+      "raw_text_hashes": [
+        "58534b55a629d5bea37b6d5e93bc16ebbfee0fc1a4b16b3ffec4e6d8c695dfca"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:2:7",
+      "sequence": 27966,
+      "chapter_label": "ROM 2",
+      "verse_label": "7",
+      "locator": {
+        "book": "ROM",
+        "chapter": 2,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 2,
+          "verse": 7
+        }
+      ],
+      "en": "to those who by perseverance in well-doing seek for glory, honor, and incorruptibility, eternal life;",
+      "ko": "참고 선을 행하여 영광과 존귀와 썩지 아니함을 구하는 자에게는 영생으로 하시고",
+      "source_text_hash": "4d66a9f973c6a7a7c594de6de9e4a56d1a0b65800afe7718c35b9d9e97fe2667",
+      "translation_text_hash": "eb16c80f6ed08808d851998a54b810357783ff40a08fb12d8dca1ae9a984e6ee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "참고 선을 행하여 영광과 존귀와 썩지 아니함을 구하는 자에게는 영생으로 하시고"
+      ],
+      "raw_text_hashes": [
+        "eb16c80f6ed08808d851998a54b810357783ff40a08fb12d8dca1ae9a984e6ee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:2:8",
+      "sequence": 27967,
+      "chapter_label": "ROM 2",
+      "verse_label": "8",
+      "locator": {
+        "book": "ROM",
+        "chapter": 2,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 2,
+          "verse": 8
+        }
+      ],
+      "en": "but to those who are self-seeking and don’t obey the truth, but obey unrighteousness, will be wrath, indignation,",
+      "ko": "오직 당을 지어 진리를 좇지 아니하고 불의를 좇는 자에게는 노와 분으로 하시리라",
+      "source_text_hash": "47ac709c29af7a57d9d8e5f38f89eb7b811ab41f7f8dd46350b60f66f82c8210",
+      "translation_text_hash": "81cedb98627994b40fee17dbe0e33a6bbb02a36192631f577622217bd8d3bf8e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 당을 지어 진리를 좇지 아니하고 불의를 좇는 자에게는 노와 분으로 하시리라"
+      ],
+      "raw_text_hashes": [
+        "81cedb98627994b40fee17dbe0e33a6bbb02a36192631f577622217bd8d3bf8e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:2:9",
+      "sequence": 27968,
+      "chapter_label": "ROM 2",
+      "verse_label": "9",
+      "locator": {
+        "book": "ROM",
+        "chapter": 2,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 2,
+          "verse": 9
+        }
+      ],
+      "en": "oppression, and anguish on every soul of man who does evil, to the Jew first, and also to the Greek.",
+      "ko": "악을 행하는 각 사람의 영에게 환난과 곤고가 있으리니 첫째는 유대인에게요 또한 헬라인에게며",
+      "source_text_hash": "f830e32236e76f313f92ca206bc082c7085fbc71f3c9e91e47fdf97ee6904a0b",
+      "translation_text_hash": "fa8bd9d1eab5b763df79ef3d3bdea8b9bb1d6ecb48a6fb63b7aa96ea8a1704ff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "악을 행하는 각 사람의 영에게 환난과 곤고가 있으리니 첫째는 유대인에게요 또한 헬라인에게며"
+      ],
+      "raw_text_hashes": [
+        "fa8bd9d1eab5b763df79ef3d3bdea8b9bb1d6ecb48a6fb63b7aa96ea8a1704ff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:2:10",
+      "sequence": 27969,
+      "chapter_label": "ROM 2",
+      "verse_label": "10",
+      "locator": {
+        "book": "ROM",
+        "chapter": 2,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 2,
+          "verse": 10
+        }
+      ],
+      "en": "But glory, honor, and peace go to every man who does good, to the Jew first, and also to the Greek.",
+      "ko": "선을 행하는 각 사람에게는 영광과 존귀와 평강이 있으리니 첫째는 유대인에게요 또한 헬라인에게라",
+      "source_text_hash": "85d27f09f270e8d51b1fc1593b996a075923933b1e1acb584542d49d62cbe9b9",
+      "translation_text_hash": "2cde8a1943a2a151dea13a38ee151c799caa7f526281226f1c61626b7ba506d0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "선을 행하는 각 사람에게는 영광과 존귀와 평강이 있으리니 첫째는 유대인에게요 또한 헬라인에게라"
+      ],
+      "raw_text_hashes": [
+        "2cde8a1943a2a151dea13a38ee151c799caa7f526281226f1c61626b7ba506d0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:2:11",
+      "sequence": 27970,
+      "chapter_label": "ROM 2",
+      "verse_label": "11",
+      "locator": {
+        "book": "ROM",
+        "chapter": 2,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 2,
+          "verse": 11
+        }
+      ],
+      "en": "For there is no partiality with God.",
+      "ko": "이는 하나님께서 외모로 사람을 취하지 아니하심이니라",
+      "source_text_hash": "586b4c58a289a6b978f2cfd292eec3eefc761c6b9ad6e41eed2cf91f20bfaaf8",
+      "translation_text_hash": "cf8d14ed319f9004ad0eb2cbf8429cbd35826db22703ed3db2fb8eb70621f28c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 하나님께서 외모로 사람을 취하지 아니하심이니라"
+      ],
+      "raw_text_hashes": [
+        "cf8d14ed319f9004ad0eb2cbf8429cbd35826db22703ed3db2fb8eb70621f28c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:2:12",
+      "sequence": 27971,
+      "chapter_label": "ROM 2",
+      "verse_label": "12",
+      "locator": {
+        "book": "ROM",
+        "chapter": 2,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 2,
+          "verse": 12
+        }
+      ],
+      "en": "For as many as have sinned without the law will also perish without the law. As many as have sinned under the law will be judged by the law.",
+      "ko": "무릇 율법 없이 범죄한 자는 또한 율법 없이 망하고 무릇 율법이 있고 범죄한 자는 율법으로 말미암아 심판을 받으리라",
+      "source_text_hash": "4f1abcf42a92fe21bbe2a3a4c04e7180e015610df88ccc74fec697bd6ec16116",
+      "translation_text_hash": "576626986ac2aadcabf954cea5fd9eace694df6c5e4c6803d918197d68a6e801",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 율법 없이 범죄한 자는 또한 율법 없이 망하고 무릇 율법이 있고 범죄한 자는 율법으로 말미암아 심판을 받으리라"
+      ],
+      "raw_text_hashes": [
+        "576626986ac2aadcabf954cea5fd9eace694df6c5e4c6803d918197d68a6e801"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:2:13",
+      "sequence": 27972,
+      "chapter_label": "ROM 2",
+      "verse_label": "13",
+      "locator": {
+        "book": "ROM",
+        "chapter": 2,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 2,
+          "verse": 13
+        }
+      ],
+      "en": "For it isn’t the hearers of the law who are righteous before God, but the doers of the law will be justified",
+      "ko": "하나님 앞에서는 율법을 듣는 자가 의인이 아니요 오직 율법을 행하는 자라야 의롭다 하심을 얻으리니",
+      "source_text_hash": "0daed4825ada81d323eb0f91e5a6b21b9102de82e67ddb9fcf45facfe3577a88",
+      "translation_text_hash": "fc0cbf40ea0c7ee7177b80bc0fad1eec161458b100d80f782e07b6d13dedab03",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님 앞에서는 율법을 듣는 자가 의인이 아니요 오직 율법을 행하는 자라야 의롭다 하심을 얻으리니"
+      ],
+      "raw_text_hashes": [
+        "fc0cbf40ea0c7ee7177b80bc0fad1eec161458b100d80f782e07b6d13dedab03"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:2:14",
+      "sequence": 27973,
+      "chapter_label": "ROM 2",
+      "verse_label": "14",
+      "locator": {
+        "book": "ROM",
+        "chapter": 2,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 2,
+          "verse": 14
+        }
+      ],
+      "en": "(for when Gentiles who don’t have the law do by nature the things of the law, these, not having the law, are a law to themselves,",
+      "ko": "(율법 없는 이방인이 본성으로 율법의 일을 행할 때는 이 사람은 율법이 없어도 자기가 자기에게 율법이 되나니",
+      "source_text_hash": "e2ebbe57aa20cc194bf5ffc4984b3d40d51c706758a6bbd91840f084efc8435e",
+      "translation_text_hash": "9564070b2a421eb7d76f5d2d9a677ef473ce73905eca5befb3a85393abaff833",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "(율법 없는 이방인이 본성으로 율법의 일을 행할 때는 이 사람은 율법이 없어도 자기가 자기에게 율법이 되나니"
+      ],
+      "raw_text_hashes": [
+        "9564070b2a421eb7d76f5d2d9a677ef473ce73905eca5befb3a85393abaff833"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:2:15",
+      "sequence": 27974,
+      "chapter_label": "ROM 2",
+      "verse_label": "15",
+      "locator": {
+        "book": "ROM",
+        "chapter": 2,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 2,
+          "verse": 15
+        }
+      ],
+      "en": "in that they show the work of the law written in their hearts, their conscience testifying with them, and their thoughts among themselves accusing or else excusing them)",
+      "ko": "이런 이들은 그 양심이 증거가 되어 그 생각들이 서로 혹은 송사하며 혹은 변명하여 그 마음에 새긴 율법의 행위를 나타내느니라)",
+      "source_text_hash": "5902e0c42b19530f58e78fa2c34488f315ac0eb3afd8a2b54acaf8807074fa84",
+      "translation_text_hash": "54673e7fd499c1b5a9b2823262c9811be33e96293766ac9711badd205c340448",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이런 이들은 그 양심이 증거가 되어 그 생각들이 서로 혹은 송사하며 혹은 변명하여 그 마음에 새긴 율법의 행위를 나타내느니라)"
+      ],
+      "raw_text_hashes": [
+        "54673e7fd499c1b5a9b2823262c9811be33e96293766ac9711badd205c340448"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:2:16",
+      "sequence": 27975,
+      "chapter_label": "ROM 2",
+      "verse_label": "16",
+      "locator": {
+        "book": "ROM",
+        "chapter": 2,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 2,
+          "verse": 16
+        }
+      ],
+      "en": "in the day when God will judge the secrets of men, according to my Good News, by Jesus Christ.",
+      "ko": "곧 내 복음에 이른 바와 같이 하나님이 예수 그리스도로 말미암아 사람들의 은밀한 것을 심판하시는 그날이라",
+      "source_text_hash": "7ab3d4507b9a6700f9178bc6cac2237f2a79f832126cf6f853aed60844ac45c5",
+      "translation_text_hash": "eb0fd8da6b8bc87e900471521cb42759a0c4de3d3652973eba0f5df2c3f0017d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 내 복음에 이른 바와 같이 하나님이 예수 그리스도로 말미암아 사람들의 은밀한 것을 심판하시는 그날이라"
+      ],
+      "raw_text_hashes": [
+        "eb0fd8da6b8bc87e900471521cb42759a0c4de3d3652973eba0f5df2c3f0017d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:2:17",
+      "sequence": 27976,
+      "chapter_label": "ROM 2",
+      "verse_label": "17",
+      "locator": {
+        "book": "ROM",
+        "chapter": 2,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 2,
+          "verse": 17
+        }
+      ],
+      "en": "Indeed you bear the name of a Jew, rest on the law, glory in God,",
+      "ko": "유대인이라 칭하는 네가 율법을 의지하며 하나님을 자랑하며",
+      "source_text_hash": "d6692dbf09f4c9f0bcc187bd1f73735f63e3f4c2a0e1e487a96a200310462896",
+      "translation_text_hash": "2bde47c9566b15178776346da05666ab2049fecaf6018091425d6808ec9fc281",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유대인이라 칭하는 네가 율법을 의지하며 하나님을 자랑하며"
+      ],
+      "raw_text_hashes": [
+        "2bde47c9566b15178776346da05666ab2049fecaf6018091425d6808ec9fc281"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:2:18",
+      "sequence": 27977,
+      "chapter_label": "ROM 2",
+      "verse_label": "18",
+      "locator": {
+        "book": "ROM",
+        "chapter": 2,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 2,
+          "verse": 18
+        }
+      ],
+      "en": "know his will, and approve the things that are excellent, being instructed out of the law,",
+      "ko": "율법의 교훈을 받아 하나님의 뜻을 알고 지극히 선한 것을 좋게 여기며",
+      "source_text_hash": "e745e5ced4ac7d8a6f564b93fefefe45695b21542e4014bd330c6658a5a9e13e",
+      "translation_text_hash": "0014732c574ba8faf3e796bb45c75f751ed2971f0637173068d16f0cad1209cb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "율법의 교훈을 받아 하나님의 뜻을 알고 지극히 선한 것을 좋게 여기며"
+      ],
+      "raw_text_hashes": [
+        "0014732c574ba8faf3e796bb45c75f751ed2971f0637173068d16f0cad1209cb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:2:19",
+      "sequence": 27978,
+      "chapter_label": "ROM 2",
+      "verse_label": "19",
+      "locator": {
+        "book": "ROM",
+        "chapter": 2,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 2,
+          "verse": 19
+        }
+      ],
+      "en": "and are confident that you yourself are a guide of the blind, a light to those who are in darkness,",
+      "ko": "네가 율법에 있는 지식과 진리의 규모를 가진 자로서 소경의 길을 인도하는 자요 어두움에 있는 자의 빛이요",
+      "source_text_hash": "c86f1560ea4e695a51be780abe9891fc0ed6770b068af9532e75f901d8b17c64",
+      "translation_text_hash": "919e39d7a569732600617e1841e3f60c9a4dac151f32a0dd7c8f410d99dccf44",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 율법에 있는 지식과 진리의 규모를 가진 자로서 소경의 길을 인도하는 자요 어두움에 있는 자의 빛이요"
+      ],
+      "raw_text_hashes": [
+        "919e39d7a569732600617e1841e3f60c9a4dac151f32a0dd7c8f410d99dccf44"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:2:20",
+      "sequence": 27979,
+      "chapter_label": "ROM 2",
+      "verse_label": "20",
+      "locator": {
+        "book": "ROM",
+        "chapter": 2,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 2,
+          "verse": 20
+        }
+      ],
+      "en": "a corrector of the foolish, a teacher of babies, having in the law the form of knowledge and of the truth.",
+      "ko": "어리석은 자의 훈도요 어린 아이의 선생이라고 스스로 믿으니",
+      "source_text_hash": "512d2ba2ad5f4ec75c7005434101f2c467da78f2a95d491a0cebdafdddbdd791",
+      "translation_text_hash": "87f5eb80114c0a785dcdd76574511ac28583b0d00504e13251911d84430728f8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어리석은 자의 훈도요 어린 아이의 선생이라고 스스로 믿으니"
+      ],
+      "raw_text_hashes": [
+        "87f5eb80114c0a785dcdd76574511ac28583b0d00504e13251911d84430728f8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:2:21",
+      "sequence": 27980,
+      "chapter_label": "ROM 2",
+      "verse_label": "21",
+      "locator": {
+        "book": "ROM",
+        "chapter": 2,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 2,
+          "verse": 21
+        }
+      ],
+      "en": "You therefore who teach another, don’t you teach yourself? You who preach that a man shouldn’t steal, do you steal?",
+      "ko": "그러면 다른 사람을 가르치는 네가 네 자신을 가르치지 아니하느냐 도적질 말라 반포하는 네가 도적질 하느냐",
+      "source_text_hash": "faf2ef3bb243985e002554c93d670869f9294772a09cd1a7894b706f9d436e12",
+      "translation_text_hash": "d276f4fd82a71439f2233ce5fab50fec22d6ebab8bc05e6048b2ef0cabcac59e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러면 다른 사람을 가르치는 네가 네 자신을 가르치지 아니하느냐 도적질 말라 반포하는 네가 도적질 하느냐"
+      ],
+      "raw_text_hashes": [
+        "d276f4fd82a71439f2233ce5fab50fec22d6ebab8bc05e6048b2ef0cabcac59e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:2:22",
+      "sequence": 27981,
+      "chapter_label": "ROM 2",
+      "verse_label": "22",
+      "locator": {
+        "book": "ROM",
+        "chapter": 2,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 2,
+          "verse": 22
+        }
+      ],
+      "en": "You who say a man shouldn’t commit adultery, do you commit adultery? You who abhor idols, do you rob temples?",
+      "ko": "간음하지 말라 말하는 네가 간음하느냐 우상을 가증히 여기는 네가 신사 물건을 도적질 하느냐",
+      "source_text_hash": "e7b4ea6246274c6154cd91c127431985fd445f665c7091175a0b1e9f00f38c71",
+      "translation_text_hash": "915e9f82ac411fd3517cea6b78e97d2bdff7255444d0571094e99c968ec152d0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "간음하지 말라 말하는 네가 간음하느냐 우상을 가증히 여기는 네가 신사 물건을 도적질 하느냐"
+      ],
+      "raw_text_hashes": [
+        "915e9f82ac411fd3517cea6b78e97d2bdff7255444d0571094e99c968ec152d0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:2:23",
+      "sequence": 27982,
+      "chapter_label": "ROM 2",
+      "verse_label": "23",
+      "locator": {
+        "book": "ROM",
+        "chapter": 2,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 2,
+          "verse": 23
+        }
+      ],
+      "en": "You who glory in the law, do you dishonor God by disobeying the law?",
+      "ko": "율법을 자랑하는 네가 율법을 범함으로 하나님을 욕되게 하느냐",
+      "source_text_hash": "e91611487ff0c4796538d9098b1f85c6bb9a146c99d4c411a1e876e605835a46",
+      "translation_text_hash": "7a11eb0c1a163b468d6eae5a3f27dcc909c9e106e95e59db2f0c776317a80bc2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "율법을 자랑하는 네가 율법을 범함으로 하나님을 욕되게 하느냐"
+      ],
+      "raw_text_hashes": [
+        "7a11eb0c1a163b468d6eae5a3f27dcc909c9e106e95e59db2f0c776317a80bc2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:2:24",
+      "sequence": 27983,
+      "chapter_label": "ROM 2",
+      "verse_label": "24",
+      "locator": {
+        "book": "ROM",
+        "chapter": 2,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 2,
+          "verse": 24
+        }
+      ],
+      "en": "For “the name of God is blasphemed among the Gentiles because of you,” just as it is written.",
+      "ko": "기록된 바와 같이 하나님의 이름이 너희로 인하여 이방인 중에서 모독을 받는도다",
+      "source_text_hash": "468cbed886fda9539b0a90de0a65283f7e15f36247016c65999bbaef5f1a98d9",
+      "translation_text_hash": "9124827eb25f5d4484206c444edd3dd84055c82eb113bd35d7cca18520e587ee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "기록된 바와 같이 하나님의 이름이 너희로 인하여 이방인 중에서 모독을 받는도다"
+      ],
+      "raw_text_hashes": [
+        "9124827eb25f5d4484206c444edd3dd84055c82eb113bd35d7cca18520e587ee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:2:25",
+      "sequence": 27984,
+      "chapter_label": "ROM 2",
+      "verse_label": "25",
+      "locator": {
+        "book": "ROM",
+        "chapter": 2,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 2,
+          "verse": 25
+        }
+      ],
+      "en": "For circumcision indeed profits, if you are a doer of the law, but if you are a transgressor of the law, your circumcision has become uncircumcision.",
+      "ko": "네가 율법을 행한즉 할례가 유익하나 만일 율법을 범한즉 네 할례가 무할례가 되었느니라",
+      "source_text_hash": "aa265fee32ab687692ba160fc5ad7399ed63b479824afd13e73930b2d3ab7e90",
+      "translation_text_hash": "26599b27935bbc89620b50f21da7b9a6bf2d95128287c8340378283f45141469",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 율법을 행한즉 할례가 유익하나 만일 율법을 범한즉 네 할례가 무할례가 되었느니라"
+      ],
+      "raw_text_hashes": [
+        "26599b27935bbc89620b50f21da7b9a6bf2d95128287c8340378283f45141469"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:2:26",
+      "sequence": 27985,
+      "chapter_label": "ROM 2",
+      "verse_label": "26",
+      "locator": {
+        "book": "ROM",
+        "chapter": 2,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 2,
+          "verse": 26
+        }
+      ],
+      "en": "If therefore the uncircumcised keep the ordinances of the law, won’t his uncircumcision be accounted as circumcision?",
+      "ko": "그런즉 무할례자가 율법의 제도를 지키면 그 무할례를 할례와 같이 여길것이 아니냐",
+      "source_text_hash": "76095b0eb07c60fc9a96e28072ab6672e67308b7d7259ded31fe2a538f977104",
+      "translation_text_hash": "8f3698413e2ec90e5165f8b0f620dd746b50f24df4da634d1e67f2a9bc64701b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 무할례자가 율법의 제도를 지키면 그 무할례를 할례와 같이 여길것이 아니냐"
+      ],
+      "raw_text_hashes": [
+        "8f3698413e2ec90e5165f8b0f620dd746b50f24df4da634d1e67f2a9bc64701b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:2:27",
+      "sequence": 27986,
+      "chapter_label": "ROM 2",
+      "verse_label": "27",
+      "locator": {
+        "book": "ROM",
+        "chapter": 2,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 2,
+          "verse": 27
+        }
+      ],
+      "en": "Won’t those who are physically uncircumcised, but fulfill the law, judge you, who with the letter and circumcision are a transgressor of the law?",
+      "ko": "또한 본래 무할례자가 율법을 온전히 지키면 의문과 할례를 가지고 율법을 범하는 너를 판단치 아니하겠느냐",
+      "source_text_hash": "520562b14d323d75e9ec04ddfe25b68eba754a37542bf98055677d8f53448c5c",
+      "translation_text_hash": "3617fa6ad1ac497f4f66d568ecbe522a0c9544dba682419ffd750eb4013733e1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또한 본래 무할례자가 율법을 온전히 지키면 의문과 할례를 가지고 율법을 범하는 너를 판단치 아니하겠느냐"
+      ],
+      "raw_text_hashes": [
+        "3617fa6ad1ac497f4f66d568ecbe522a0c9544dba682419ffd750eb4013733e1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:2:28",
+      "sequence": 27987,
+      "chapter_label": "ROM 2",
+      "verse_label": "28",
+      "locator": {
+        "book": "ROM",
+        "chapter": 2,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 2,
+          "verse": 28
+        }
+      ],
+      "en": "For he is not a Jew who is one outwardly, neither is that circumcision which is outward in the flesh;",
+      "ko": "대저 표면적 유대인이 유대인이 아니요 표면적 육신의 할례가 할례가 아니라",
+      "source_text_hash": "a0a2a40d6b3c1ad5e00c95855199585383a517d5fff1f8594b08a21620b1b3b3",
+      "translation_text_hash": "9d5024cef1a8a7001a295468baad6af469f0bf7edd1b2c4350fbc84c89a17f6e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대저 표면적 유대인이 유대인이 아니요 표면적 육신의 할례가 할례가 아니라"
+      ],
+      "raw_text_hashes": [
+        "9d5024cef1a8a7001a295468baad6af469f0bf7edd1b2c4350fbc84c89a17f6e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:2:29",
+      "sequence": 27988,
+      "chapter_label": "ROM 2",
+      "verse_label": "29",
+      "locator": {
+        "book": "ROM",
+        "chapter": 2,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 2,
+          "verse": 29
+        }
+      ],
+      "en": "but he is a Jew who is one inwardly, and circumcision is that of the heart, in the spirit, not in the letter; whose praise is not from men, but from God.",
+      "ko": "오직 이면적 유대인이 유대인이며 할례는 마음에 할찌니 신령에 있고 의문에 있지 아니한 것이라 그 칭찬이 사람에게서가 아니요 다만 하나님에게서니라",
+      "source_text_hash": "7c857f6aa2466acb7f37b61bb5c0979f6fcf5fe1017d2e5097f6df3aa5ebec33",
+      "translation_text_hash": "2432bb703c149fa27a97ec74f6940447e589253daa487f7936a61e7aeeb58d07",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 이면적 유대인이 유대인이며 할례는 마음에 할찌니 신령에 있고 의문에 있지 아니한 것이라 그 칭찬이 사람에게서가 아니요 다만 하나님에게서니라"
+      ],
+      "raw_text_hashes": [
+        "2432bb703c149fa27a97ec74f6940447e589253daa487f7936a61e7aeeb58d07"
+      ]
+    }
+  ]
+}

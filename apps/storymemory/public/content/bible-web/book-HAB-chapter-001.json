@@ -1,0 +1,557 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:HAB:chapter:001",
+  "unit_ordinal": 904,
+  "unit_label": "HAB 1",
+  "book_code": "HAB",
+  "chapter_number": 1,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:HAB:1:1",
+      "sequence": 22733,
+      "chapter_label": "HAB 1",
+      "verse_label": "1",
+      "locator": {
+        "book": "HAB",
+        "chapter": 1,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "HAB",
+          "chapter": 1,
+          "verse": 1
+        }
+      ],
+      "en": "The revelation which Habakkuk the prophet saw.",
+      "ko": "선지자 하박국의 묵시로 받은 경고라",
+      "source_text_hash": "4145a85e95bbbdd77ccc04e0394a00af1851e1253dc10398f014bfeeac38cb34",
+      "translation_text_hash": "d70b6cf353d9c4b03b7c313877f8a438e3799575ca1d154502bc62079c33e8b8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "선지자 하박국의 묵시로 받은 경고라"
+      ],
+      "raw_text_hashes": [
+        "d70b6cf353d9c4b03b7c313877f8a438e3799575ca1d154502bc62079c33e8b8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HAB:1:2",
+      "sequence": 22734,
+      "chapter_label": "HAB 1",
+      "verse_label": "2",
+      "locator": {
+        "book": "HAB",
+        "chapter": 1,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "HAB",
+          "chapter": 1,
+          "verse": 2
+        }
+      ],
+      "en": "LORD, how long will I cry, and you will not hear? I cry out to you “Violence!” and will you not save?",
+      "ko": "여호와여 내가 부르짖어도 주께서 듣지 아니하시니 어느 때까지리이까 내가 강포를 인하여 외쳐도 주께서 구원치 아니하시나이다",
+      "source_text_hash": "bc2739eff5649f25210544bff3a7e28f77835c588a0c471969734f1195bdfc5c",
+      "translation_text_hash": "3fb7743dedc2ae045977bc32f5a6c798580711e5d19bcbac46def97c4fa1ade9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 내가 부르짖어도 주께서 듣지 아니하시니 어느 때까지리이까 내가 강포를 인하여 외쳐도 주께서 구원치 아니하시나이다"
+      ],
+      "raw_text_hashes": [
+        "3fb7743dedc2ae045977bc32f5a6c798580711e5d19bcbac46def97c4fa1ade9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HAB:1:3",
+      "sequence": 22735,
+      "chapter_label": "HAB 1",
+      "verse_label": "3",
+      "locator": {
+        "book": "HAB",
+        "chapter": 1,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "HAB",
+          "chapter": 1,
+          "verse": 3
+        }
+      ],
+      "en": "Why do you show me iniquity, and look at perversity? For destruction and violence are before me. There is strife, and contention rises up.",
+      "ko": "어찌하여 나로 간악을 보게 하시며 패역을 목도하게 하시나이까 대저 겁탈과 강포가 내 앞에 있고 변론과 분쟁이 일어났나이다",
+      "source_text_hash": "074d1c22f02091dfbc6ec7d2a58af0c9c6f17d114175b07bae6b0ce3a1d716bf",
+      "translation_text_hash": "18cd33320d56105264c6865525fdc6f9beaa9060167a234bff4a63edc8f149a5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어찌하여 나로 간악을 보게 하시며 패역을 목도하게 하시나이까 대저 겁탈과 강포가 내 앞에 있고 변론과 분쟁이 일어났나이다"
+      ],
+      "raw_text_hashes": [
+        "18cd33320d56105264c6865525fdc6f9beaa9060167a234bff4a63edc8f149a5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HAB:1:4",
+      "sequence": 22736,
+      "chapter_label": "HAB 1",
+      "verse_label": "4",
+      "locator": {
+        "book": "HAB",
+        "chapter": 1,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "HAB",
+          "chapter": 1,
+          "verse": 4
+        }
+      ],
+      "en": "Therefore the law is paralyzed, and justice never prevails; for the wicked surround the righteous; therefore justice comes out perverted.",
+      "ko": "이러므로 율법이 해이하고 공의가 아주 시행되지 못하오니 이는 악인이 의인을 에워쌌으므로 공의가 굽게 행함이니이다",
+      "source_text_hash": "5c41e087e20cf3e3b0b738586bfc36c05b631745e3c9e8b775a10d2bceb0bd82",
+      "translation_text_hash": "950fdbed9284757f8ed8007cf1e43bc5c56b44e15ca004d0483c261cf7dac576",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러므로 율법이 해이하고 공의가 아주 시행되지 못하오니 이는 악인이 의인을 에워쌌으므로 공의가 굽게 행함이니이다"
+      ],
+      "raw_text_hashes": [
+        "950fdbed9284757f8ed8007cf1e43bc5c56b44e15ca004d0483c261cf7dac576"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HAB:1:5",
+      "sequence": 22737,
+      "chapter_label": "HAB 1",
+      "verse_label": "5",
+      "locator": {
+        "book": "HAB",
+        "chapter": 1,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "HAB",
+          "chapter": 1,
+          "verse": 5
+        }
+      ],
+      "en": "“Look among the nations, watch, and wonder marvelously; for I am working a work in your days which you will not believe though it is told you.",
+      "ko": "여호와께서 가라사대 너희는 열국을 보고 또 보고 놀라고 또 놀랄찌어다 너희 생전에 내가 한 일을 행할 것이라 혹이 너희에게 고할찌라도 너희가 믿지 아니하리라",
+      "source_text_hash": "e7853d7cc07756a28f3e90f076a7af18f535f3a07044c2dda0ed579c98868ac6",
+      "translation_text_hash": "d7bc8e97d5bbee399a5ed9b0ea707982799753d3295082594afd1ec5bb4f4350",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 가라사대 너희는 열국을 보고 또 보고 놀라고 또 놀랄찌어다 너희 생전에 내가 한 일을 행할 것이라 혹이 너희에게 고할찌라도 너희가 믿지 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "d7bc8e97d5bbee399a5ed9b0ea707982799753d3295082594afd1ec5bb4f4350"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HAB:1:6",
+      "sequence": 22738,
+      "chapter_label": "HAB 1",
+      "verse_label": "6",
+      "locator": {
+        "book": "HAB",
+        "chapter": 1,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "HAB",
+          "chapter": 1,
+          "verse": 6
+        }
+      ],
+      "en": "For, behold, I am raising up the Chaldeans, that bitter and hasty nation who march through the width of the earth, to possess dwelling places that are not theirs.",
+      "ko": "보라 내가 사납고 성급한 백성 곧 땅의 넓은 곳으로 다니며 자기의 소유 아닌 거할 곳들을 점령하는 갈대아 사람을 일으켰나니",
+      "source_text_hash": "32daa11c58fd150da7c21d7f18c19255ac8f3db7e25a9a40179f7265ef992b01",
+      "translation_text_hash": "ef46037edba07829f29f3bb18f878290b36cfcfac0114b9f25a0d830ab5317ca",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보라 내가 사납고 성급한 백성 곧 땅의 넓은 곳으로 다니며 자기의 소유 아닌 거할 곳들을 점령하는 갈대아 사람을 일으켰나니"
+      ],
+      "raw_text_hashes": [
+        "ef46037edba07829f29f3bb18f878290b36cfcfac0114b9f25a0d830ab5317ca"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HAB:1:7",
+      "sequence": 22739,
+      "chapter_label": "HAB 1",
+      "verse_label": "7",
+      "locator": {
+        "book": "HAB",
+        "chapter": 1,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "HAB",
+          "chapter": 1,
+          "verse": 7
+        }
+      ],
+      "en": "They are feared and dreaded. Their judgment and their dignity proceed from themselves.",
+      "ko": "그들은 두렵고 무서우며 심판과 위령이 자기로 말미암으며",
+      "source_text_hash": "9148bf89ca6893cfa76cbc358ba291ba476c90da23199b20ab3d05b8a94ac182",
+      "translation_text_hash": "30d34185e1d1407f39b3c66c10db398df2f341748939d1e596d4ab68c7f6f83c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들은 두렵고 무서우며 심판과 위령이 자기로 말미암으며"
+      ],
+      "raw_text_hashes": [
+        "30d34185e1d1407f39b3c66c10db398df2f341748939d1e596d4ab68c7f6f83c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HAB:1:8",
+      "sequence": 22740,
+      "chapter_label": "HAB 1",
+      "verse_label": "8",
+      "locator": {
+        "book": "HAB",
+        "chapter": 1,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "HAB",
+          "chapter": 1,
+          "verse": 8
+        }
+      ],
+      "en": "Their horses also are swifter than leopards, and are more fierce than the evening wolves. Their horsemen press proudly on. Yes, their horsemen come from afar. They fly as an eagle that hurries to devour.",
+      "ko": "그 말은 표범보다 빠르고 저녁 이리보다 사나우며 그 기병은 원방에서부터 빨리 달려오는 기병이라 마치 식물을 움키려하는 독수리의 날음과 같으니라",
+      "source_text_hash": "3bafe01d6c490bd91852b8b82090d512b2a27ee8e152999da469989dcfa7e1ae",
+      "translation_text_hash": "859c5d075b7bd37908a6b11c78987d04a253871de87d4a31851b6c190494bc69",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 말은 표범보다 빠르고 저녁 이리보다 사나우며 그 기병은 원방에서부터 빨리 달려오는 기병이라 마치 식물을 움키려하는 독수리의 날음과 같으니라"
+      ],
+      "raw_text_hashes": [
+        "859c5d075b7bd37908a6b11c78987d04a253871de87d4a31851b6c190494bc69"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HAB:1:9",
+      "sequence": 22741,
+      "chapter_label": "HAB 1",
+      "verse_label": "9",
+      "locator": {
+        "book": "HAB",
+        "chapter": 1,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "HAB",
+          "chapter": 1,
+          "verse": 9
+        }
+      ],
+      "en": "All of them come for violence. Their hordes face forward. They gather prisoners like sand.",
+      "ko": "그들은 다 강포를 행하러 오는데 앞을 향하여 나아가며 사람을 사로잡아 모으기를 모래 같이 많이 할 것이요",
+      "source_text_hash": "c8ff626fb66ba17693f5127dd315de42ef1990890ba80a8e1513bb37501edc06",
+      "translation_text_hash": "2b7dbe64c5d006372cceee76b433e709c8a589683fbf48436ae3bde768f8ed74",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들은 다 강포를 행하러 오는데 앞을 향하여 나아가며 사람을 사로잡아 모으기를 모래 같이 많이 할 것이요"
+      ],
+      "raw_text_hashes": [
+        "2b7dbe64c5d006372cceee76b433e709c8a589683fbf48436ae3bde768f8ed74"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HAB:1:10",
+      "sequence": 22742,
+      "chapter_label": "HAB 1",
+      "verse_label": "10",
+      "locator": {
+        "book": "HAB",
+        "chapter": 1,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "HAB",
+          "chapter": 1,
+          "verse": 10
+        }
+      ],
+      "en": "Yes, they scoff at kings, and princes are a derision to them. They laugh at every stronghold, for they build up an earthen ramp and take it.",
+      "ko": "열왕을 멸시하며 방백을 치소하며 모든 견고한 성을 비웃고 흉벽을 쌓아 그것을 취할 것이라",
+      "source_text_hash": "f700bd8c7878fd509d2f20f6af6f12fe3b952aafc9d6df77547739b35e7d662d",
+      "translation_text_hash": "66ec3a613e796573bdcf90394b01c1351257a0a53a6a9c318e6e02240677e1dc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "열왕을 멸시하며 방백을 치소하며 모든 견고한 성을 비웃고 흉벽을 쌓아 그것을 취할 것이라"
+      ],
+      "raw_text_hashes": [
+        "66ec3a613e796573bdcf90394b01c1351257a0a53a6a9c318e6e02240677e1dc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HAB:1:11",
+      "sequence": 22743,
+      "chapter_label": "HAB 1",
+      "verse_label": "11",
+      "locator": {
+        "book": "HAB",
+        "chapter": 1,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "HAB",
+          "chapter": 1,
+          "verse": 11
+        }
+      ],
+      "en": "Then they sweep by like the wind and go on. They are indeed guilty, whose strength is their god.”",
+      "ko": "그들은 그 힘으로 자기 신을 삼는 자라 이에 바람 같이 급히 몰아 지나치게 행하여 득죄하리라",
+      "source_text_hash": "4b4803f42cea31df38127b31fe9f6c5090bee2f75d891e7789a8b555680f24dd",
+      "translation_text_hash": "e66d939b192b74f252867a66b8a9361b3c8e19435882f25486a6e8195345e7b7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들은 그 힘으로 자기 신을 삼는 자라 이에 바람 같이 급히 몰아 지나치게 행하여 득죄하리라"
+      ],
+      "raw_text_hashes": [
+        "e66d939b192b74f252867a66b8a9361b3c8e19435882f25486a6e8195345e7b7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HAB:1:12",
+      "sequence": 22744,
+      "chapter_label": "HAB 1",
+      "verse_label": "12",
+      "locator": {
+        "book": "HAB",
+        "chapter": 1,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "HAB",
+          "chapter": 1,
+          "verse": 12
+        }
+      ],
+      "en": "Aren’t you from everlasting, LORD my God, my Holy One? We will not die. LORD, you have appointed them for judgment. You, Rock, have established him to punish.",
+      "ko": "선지가 가로되 여호와 나의 하나님, 나의 거룩한 자시여 주께서는 만세 전부터 계시지 아니하시니이까 우리가 사망에 이르지 아니하리이다 여호와여 주께서 심판하기 위하여 그를 두셨나이다 반석이시여 주께서 경계하기 위하여 그를 세우셨나이다",
+      "source_text_hash": "f16ad96a0c6d90f4b4a7bdaa96c28474148e0c1cc1a7574ab401375e51f2f67b",
+      "translation_text_hash": "e7348aeb061842a1c95cd98595f7701bc2ab0e2962c22251a2032f63bdc4e7ef",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "선지가 가로되 여호와 나의 하나님, 나의 거룩한 자시여 주께서는 만세 전부터 계시지 아니하시니이까 우리가 사망에 이르지 아니하리이다 여호와여 주께서 심판하기 위하여 그를 두셨나이다 반석이시여 주께서 경계하기 위하여 그를 세우셨나이다"
+      ],
+      "raw_text_hashes": [
+        "e7348aeb061842a1c95cd98595f7701bc2ab0e2962c22251a2032f63bdc4e7ef"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HAB:1:13",
+      "sequence": 22745,
+      "chapter_label": "HAB 1",
+      "verse_label": "13",
+      "locator": {
+        "book": "HAB",
+        "chapter": 1,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "HAB",
+          "chapter": 1,
+          "verse": 13
+        }
+      ],
+      "en": "You who have purer eyes than to see evil, and who cannot look on perversity, why do you tolerate those who deal treacherously and keep silent when the wicked swallows up the man who is more righteous than he,",
+      "ko": "주께서는 눈이 정결하시므로 악을 참아 보지 못하시며 패역을 참아 보지 못하시거늘 어찌하여 궤휼한 자들을 방관하시며 악인이 자기보다 의로운 사람을 삼키되 잠잠하시나이까",
+      "source_text_hash": "203a004d97943600dee8078631431a4d1e1988f7656f84ed0f3648903816badf",
+      "translation_text_hash": "f3ac249670f29fe7c050735d07322ccdd1359551be6868ddeec130980063f709",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서는 눈이 정결하시므로 악을 참아 보지 못하시며 패역을 참아 보지 못하시거늘 어찌하여 궤휼한 자들을 방관하시며 악인이 자기보다 의로운 사람을 삼키되 잠잠하시나이까"
+      ],
+      "raw_text_hashes": [
+        "f3ac249670f29fe7c050735d07322ccdd1359551be6868ddeec130980063f709"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HAB:1:14",
+      "sequence": 22746,
+      "chapter_label": "HAB 1",
+      "verse_label": "14",
+      "locator": {
+        "book": "HAB",
+        "chapter": 1,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "HAB",
+          "chapter": 1,
+          "verse": 14
+        }
+      ],
+      "en": "and make men like the fish of the sea, like the creeping things that have no ruler over them?",
+      "ko": "주께서 어찌하여 사람으로 바다의 어족 같게 하시며 주권자 없는 곤충 같게 하시나이까",
+      "source_text_hash": "397775fa4edf440884e9a5553f062330ae5648c6a8641517a9f3f306601d1d29",
+      "translation_text_hash": "6741119e811b10e6c703c465781b957f02fd57594be633f43e12aa77051d7163",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 어찌하여 사람으로 바다의 어족 같게 하시며 주권자 없는 곤충 같게 하시나이까"
+      ],
+      "raw_text_hashes": [
+        "6741119e811b10e6c703c465781b957f02fd57594be633f43e12aa77051d7163"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HAB:1:15",
+      "sequence": 22747,
+      "chapter_label": "HAB 1",
+      "verse_label": "15",
+      "locator": {
+        "book": "HAB",
+        "chapter": 1,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "HAB",
+          "chapter": 1,
+          "verse": 15
+        }
+      ],
+      "en": "He takes up all of them with the hook. He catches them in his net and gathers them in his dragnet. Therefore he rejoices and is glad.",
+      "ko": "그가 낚시로 모두 취하며 그물로 잡으며 초망으로 모으고 인하여 기뻐하고 즐거워하여",
+      "source_text_hash": "4790f08e0cc33553a44c0a9aceb286a0d1db8701fbcfb06e4a5448a8283589ab",
+      "translation_text_hash": "410b2bbbcfec84ba0fa6a26c0bd3e4325a3c562dd380d0466ff5c836416b740c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 낚시로 모두 취하며 그물로 잡으며 초망으로 모으고 인하여 기뻐하고 즐거워하여"
+      ],
+      "raw_text_hashes": [
+        "410b2bbbcfec84ba0fa6a26c0bd3e4325a3c562dd380d0466ff5c836416b740c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HAB:1:16",
+      "sequence": 22748,
+      "chapter_label": "HAB 1",
+      "verse_label": "16",
+      "locator": {
+        "book": "HAB",
+        "chapter": 1,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "HAB",
+          "chapter": 1,
+          "verse": 16
+        }
+      ],
+      "en": "Therefore he sacrifices to his net and burns incense to his dragnet, because by them his life is luxurious and his food is good.",
+      "ko": "그물에 제사하며 초망 앞에 분향하오니 이는 그것을 힘입어 소득이 풍부하고 식물이 풍성케 됨이니이다",
+      "source_text_hash": "52fd9aa57c377edeab67867e3cddf7fa56d372af3e201ca9eb4bd831ad1e270f",
+      "translation_text_hash": "ddafcf229cc57dace37693c4eea120f3bc1df0ffdf18b993842e668b650ace60",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그물에 제사하며 초망 앞에 분향하오니 이는 그것을 힘입어 소득이 풍부하고 식물이 풍성케 됨이니이다"
+      ],
+      "raw_text_hashes": [
+        "ddafcf229cc57dace37693c4eea120f3bc1df0ffdf18b993842e668b650ace60"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HAB:1:17",
+      "sequence": 22749,
+      "chapter_label": "HAB 1",
+      "verse_label": "17",
+      "locator": {
+        "book": "HAB",
+        "chapter": 1,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "HAB",
+          "chapter": 1,
+          "verse": 17
+        }
+      ],
+      "en": "Will he therefore continually empty his net, and kill the nations without mercy?",
+      "ko": "그가 그물을 떨고는 연하여 늘 열국을 살륙함이 옳으니이까",
+      "source_text_hash": "b33c52f59c464e214b4044707d4402b06ed45b02c8299be0a57cce768bcf2feb",
+      "translation_text_hash": "6cb8b32d2bf33655a5b1980fb5497c7a36175856a8d6165a723ac45a7a1a2603",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 그물을 떨고는 연하여 늘 열국을 살륙함이 옳으니이까"
+      ],
+      "raw_text_hashes": [
+        "6cb8b32d2bf33655a5b1980fb5497c7a36175856a8d6165a723ac45a7a1a2603"
+      ]
+    }
+  ]
+}

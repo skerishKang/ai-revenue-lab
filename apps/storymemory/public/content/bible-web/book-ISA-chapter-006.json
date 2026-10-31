@@ -1,0 +1,429 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ISA:chapter:006",
+  "unit_ordinal": 685,
+  "unit_label": "ISA 6",
+  "book_code": "ISA",
+  "chapter_number": 6,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ISA:6:1",
+      "sequence": 17771,
+      "chapter_label": "ISA 6",
+      "verse_label": "1",
+      "locator": {
+        "book": "ISA",
+        "chapter": 6,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 6,
+          "verse": 1
+        }
+      ],
+      "en": "In the year that King Uzziah died, I saw the Lord sitting on a throne, high and lifted up; and his train filled the temple.",
+      "ko": "웃시야왕의 죽던 해에 내가 본즉 주께서 높이 들린 보좌에 앉으셨는데 그 옷자락은 성전에 가득하였고",
+      "source_text_hash": "a9f03ac8a54e353f29eb517f9fe9d5c2d84debc051e3343c16d78b221d9abaaa",
+      "translation_text_hash": "f262845593311383d4fd7a4123fac6ee1a652b2b1da35384584eb76a8d080edb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "웃시야왕의 죽던 해에 내가 본즉 주께서 높이 들린 보좌에 앉으셨는데 그 옷자락은 성전에 가득하였고"
+      ],
+      "raw_text_hashes": [
+        "f262845593311383d4fd7a4123fac6ee1a652b2b1da35384584eb76a8d080edb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:6:2",
+      "sequence": 17772,
+      "chapter_label": "ISA 6",
+      "verse_label": "2",
+      "locator": {
+        "book": "ISA",
+        "chapter": 6,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 6,
+          "verse": 2
+        }
+      ],
+      "en": "Above him stood the seraphim. Each one had six wings. With two he covered his face. With two he covered his feet. With two he flew.",
+      "ko": "스랍들은 모셔 섰는데 각기 여섯 날개가 있어 그 둘로는 그 얼굴을 가리었고 그 둘로는 그 발을 가리었고 그 둘로는 날며",
+      "source_text_hash": "1dc38a8b34ae05e9ee56fe184305a8de30a49ef490112e5b2edd0d167b68867f",
+      "translation_text_hash": "cfc3ad10907b584f5948910af4abfb468ac5616ca6def42aa476da78032ace14",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "스랍들은 모셔 섰는데 각기 여섯 날개가 있어 그 둘로는 그 얼굴을 가리었고 그 둘로는 그 발을 가리었고 그 둘로는 날며"
+      ],
+      "raw_text_hashes": [
+        "cfc3ad10907b584f5948910af4abfb468ac5616ca6def42aa476da78032ace14"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:6:3",
+      "sequence": 17773,
+      "chapter_label": "ISA 6",
+      "verse_label": "3",
+      "locator": {
+        "book": "ISA",
+        "chapter": 6,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 6,
+          "verse": 3
+        }
+      ],
+      "en": "One called to another, and said, “Holy, holy, holy, is the LORD of Armies! The whole earth is full of his glory!”",
+      "ko": "서로 창화하여 가로되 거룩하다 거룩하다 거룩하다 만군의 여호와여 그 영광이 온 땅에 충만하도다",
+      "source_text_hash": "229f67ca17224b5a001bee14cf0772a3e9ddc7c6e7e5db2260dc8b5543fb4a46",
+      "translation_text_hash": "f5a1995fd01b0efd091978a36a95c65c6035164d87d543536f486ca1e81bb8d1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "서로 창화하여 가로되 거룩하다 거룩하다 거룩하다 만군의 여호와여 그 영광이 온 땅에 충만하도다"
+      ],
+      "raw_text_hashes": [
+        "f5a1995fd01b0efd091978a36a95c65c6035164d87d543536f486ca1e81bb8d1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:6:4",
+      "sequence": 17774,
+      "chapter_label": "ISA 6",
+      "verse_label": "4",
+      "locator": {
+        "book": "ISA",
+        "chapter": 6,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 6,
+          "verse": 4
+        }
+      ],
+      "en": "The foundations of the thresholds shook at the voice of him who called, and the house was filled with smoke.",
+      "ko": "이 같이 창화하는 자의 소리로 인하여 문지방의 터가 요동하며 집에 연기가 충만한지라",
+      "source_text_hash": "d47a26fd6f7716aec2d42c8496394e9674e0c4b9753cbe5b5e618ed045ae83ce",
+      "translation_text_hash": "a4a646141186a1cbe15a17c960f71bd3bd106380c0826fa55ebc38e547176b6c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 같이 창화하는 자의 소리로 인하여 문지방의 터가 요동하며 집에 연기가 충만한지라"
+      ],
+      "raw_text_hashes": [
+        "a4a646141186a1cbe15a17c960f71bd3bd106380c0826fa55ebc38e547176b6c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:6:5",
+      "sequence": 17775,
+      "chapter_label": "ISA 6",
+      "verse_label": "5",
+      "locator": {
+        "book": "ISA",
+        "chapter": 6,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 6,
+          "verse": 5
+        }
+      ],
+      "en": "Then I said, “Woe is me! For I am undone, because I am a man of unclean lips and I live among a people of unclean lips, for my eyes have seen the King, the LORD of Armies!”",
+      "ko": "그 때에 내가 말하되 화로다 나여 망하게 되었도다 나는 입술이 부정한 사람이요 입술이 부정한 백성 중에 거하면서 만군의 여호와이신 왕을 뵈었음이로다",
+      "source_text_hash": "109e6c0693ee7a47b4bebc01a99623007f27ed17e1ca49f05152e55e2e0eda44",
+      "translation_text_hash": "22459744be582b91d12739c8083e3b253409907295a28bbb18706cfd9fd42c54",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 내가 말하되 화로다 나여 망하게 되었도다 나는 입술이 부정한 사람이요 입술이 부정한 백성 중에 거하면서 만군의 여호와이신 왕을 뵈었음이로다"
+      ],
+      "raw_text_hashes": [
+        "22459744be582b91d12739c8083e3b253409907295a28bbb18706cfd9fd42c54"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:6:6",
+      "sequence": 17776,
+      "chapter_label": "ISA 6",
+      "verse_label": "6",
+      "locator": {
+        "book": "ISA",
+        "chapter": 6,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 6,
+          "verse": 6
+        }
+      ],
+      "en": "Then one of the seraphim flew to me, having a live coal in his hand, which he had taken with the tongs from off the altar.",
+      "ko": "때에 그 스랍의 하나가 화저로 단에서 취한바 핀 숯을 손에 가지고 내게로 날아와서",
+      "source_text_hash": "a13c5327fd83c8f5898e7ba7d495a7b9af4c67286ee4464a22e3d592c6513d77",
+      "translation_text_hash": "dd63aebd324b271b4c3d01bfa8a7578d0d9726593b4d00b98883c4c1b53999f2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "때에 그 스랍의 하나가 화저로 단에서 취한바 핀 숯을 손에 가지고 내게로 날아와서"
+      ],
+      "raw_text_hashes": [
+        "dd63aebd324b271b4c3d01bfa8a7578d0d9726593b4d00b98883c4c1b53999f2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:6:7",
+      "sequence": 17777,
+      "chapter_label": "ISA 6",
+      "verse_label": "7",
+      "locator": {
+        "book": "ISA",
+        "chapter": 6,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 6,
+          "verse": 7
+        }
+      ],
+      "en": "He touched my mouth with it, and said, “Behold, this has touched your lips; and your iniquity is taken away, and your sin forgiven.”",
+      "ko": "그것을 내 입에 대며 가로되 보라 이것이 네 입에 닿았으니 네 악이 제하여졌고 네 죄가 사하여졌느니라 하더라",
+      "source_text_hash": "746423d474633b3df6c723870ad78e3af67c20023290d155657b561912021b00",
+      "translation_text_hash": "378e92b25ed6bab8f062d5754141715de6d58c13e60b6ace5e05f62ac78f27ad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그것을 내 입에 대며 가로되 보라 이것이 네 입에 닿았으니 네 악이 제하여졌고 네 죄가 사하여졌느니라 하더라"
+      ],
+      "raw_text_hashes": [
+        "378e92b25ed6bab8f062d5754141715de6d58c13e60b6ace5e05f62ac78f27ad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:6:8",
+      "sequence": 17778,
+      "chapter_label": "ISA 6",
+      "verse_label": "8",
+      "locator": {
+        "book": "ISA",
+        "chapter": 6,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 6,
+          "verse": 8
+        }
+      ],
+      "en": "I heard the Lord’s voice, saying, “Whom shall I send, and who will go for us?” Then I said, “Here I am. Send me!”",
+      "ko": "내가 또 주의 목소리를 들은즉 이르시되 내가 누구를 보내며 누가 우리를 위하여 갈꼬 그 때에 내가 가로되 내가 여기 있나이다 나를 보내소서",
+      "source_text_hash": "9c78c40eed29a9edd0028f8e495f4e83ed1f6751e09f24d384928f66627e38c9",
+      "translation_text_hash": "800d98632bcc2f09f8bebcf5867fc4ee6f8c645c7465777695e2601babe95326",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 또 주의 목소리를 들은즉 이르시되 내가 누구를 보내며 누가 우리를 위하여 갈꼬 그 때에 내가 가로되 내가 여기 있나이다 나를 보내소서"
+      ],
+      "raw_text_hashes": [
+        "800d98632bcc2f09f8bebcf5867fc4ee6f8c645c7465777695e2601babe95326"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:6:9",
+      "sequence": 17779,
+      "chapter_label": "ISA 6",
+      "verse_label": "9",
+      "locator": {
+        "book": "ISA",
+        "chapter": 6,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 6,
+          "verse": 9
+        }
+      ],
+      "en": "He said, “Go, and tell this people, ‘You hear indeed, but don’t understand. You see indeed, but don’t perceive.’",
+      "ko": "여호와께서 가라사대 가서 이 백성에게 이르기를 너희가 듣기는 들어도 깨닫지 못할 것이요 보기는 보아도 알지 못하리라 하여",
+      "source_text_hash": "19476e77edbea26ce29de58e655b7f3a730b25099893dbf54a351d164a7ece94",
+      "translation_text_hash": "192c4b1e4a58da9f3f4ea791e85f541f77a8a09373eed00f828b10b895129486",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 가라사대 가서 이 백성에게 이르기를 너희가 듣기는 들어도 깨닫지 못할 것이요 보기는 보아도 알지 못하리라 하여"
+      ],
+      "raw_text_hashes": [
+        "192c4b1e4a58da9f3f4ea791e85f541f77a8a09373eed00f828b10b895129486"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:6:10",
+      "sequence": 17780,
+      "chapter_label": "ISA 6",
+      "verse_label": "10",
+      "locator": {
+        "book": "ISA",
+        "chapter": 6,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 6,
+          "verse": 10
+        }
+      ],
+      "en": "Make the heart of this people fat. Make their ears heavy, and shut their eyes; lest they see with their eyes, hear with their ears, understand with their heart, and turn again, and be healed.”",
+      "ko": "이 백성의 마음으로 둔하게 하며 그 귀가 막히고 눈이 감기게 하라 염려컨대 그들이 눈으로 보고 귀로 듣고 마음으로 깨닫고 다시 돌아와서 고침을 받을까 하노라",
+      "source_text_hash": "50f7e8e60c5e203f5e18e0eba0f167f01975833343d5fabd9d74425104f10c0d",
+      "translation_text_hash": "eda2007c759e17056efb2a70d58c7233ebdd6921b4148eed70104c6e7fb6aaa6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 백성의 마음으로 둔하게 하며 그 귀가 막히고 눈이 감기게 하라 염려컨대 그들이 눈으로 보고 귀로 듣고 마음으로 깨닫고 다시 돌아와서 고침을 받을까 하노라"
+      ],
+      "raw_text_hashes": [
+        "eda2007c759e17056efb2a70d58c7233ebdd6921b4148eed70104c6e7fb6aaa6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:6:11",
+      "sequence": 17781,
+      "chapter_label": "ISA 6",
+      "verse_label": "11",
+      "locator": {
+        "book": "ISA",
+        "chapter": 6,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 6,
+          "verse": 11
+        }
+      ],
+      "en": "Then I said, “Lord, how long?” He answered, “Until cities are waste without inhabitant, houses without man, the land becomes utterly waste,",
+      "ko": "내가 가로되 주여 어느 때까지니이까 대답하시되 성읍들은 황폐하여 거민이 없으며 가옥들에는 사람이 없고 이 토지가 전폐하게 되며",
+      "source_text_hash": "f31a52b722ec2076bc608e7d74fc632916511a75032ba67dc9962c6757ef5280",
+      "translation_text_hash": "2e7dff11d8834c85a06d63f59506f9c069a291a10c95e5c812fba4f14fa7c8ad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 가로되 주여 어느 때까지니이까 대답하시되 성읍들은 황폐하여 거민이 없으며 가옥들에는 사람이 없고 이 토지가 전폐하게 되며"
+      ],
+      "raw_text_hashes": [
+        "2e7dff11d8834c85a06d63f59506f9c069a291a10c95e5c812fba4f14fa7c8ad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:6:12",
+      "sequence": 17782,
+      "chapter_label": "ISA 6",
+      "verse_label": "12",
+      "locator": {
+        "book": "ISA",
+        "chapter": 6,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 6,
+          "verse": 12
+        }
+      ],
+      "en": "and the LORD has removed men far away, and the forsaken places are many within the land.",
+      "ko": "사람들이 여호와께 멀리 옮기워서 이 땅 가운데 폐한 곳이 많을 때까지니라",
+      "source_text_hash": "33182776559fea9889e34997a83e68bea2e3950cd08800628e17ca9a9478a311",
+      "translation_text_hash": "13fc9cf4ce398dfcc0a121259c57bc54b9813f736b23c721d33e848935529163",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람들이 여호와께 멀리 옮기워서 이 땅 가운데 폐한 곳이 많을 때까지니라"
+      ],
+      "raw_text_hashes": [
+        "13fc9cf4ce398dfcc0a121259c57bc54b9813f736b23c721d33e848935529163"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:6:13",
+      "sequence": 17783,
+      "chapter_label": "ISA 6",
+      "verse_label": "13",
+      "locator": {
+        "book": "ISA",
+        "chapter": 6,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 6,
+          "verse": 13
+        }
+      ],
+      "en": "If there is a tenth left in it, that also will in turn be consumed, as a terebinth, and as an oak whose stump remains when they are cut down, so the holy seed is its stump.”",
+      "ko": "그 중에 십분의 일이 오히려 남아 있을찌라도 이것도 삼키운바 될 것이나 밤나무, 상수리나무가 베임을 당하여도 그 그루터기는 남아 있는 것 같이 거룩한 씨가 이 땅의 그루터기니라",
+      "source_text_hash": "3188312ee0fe3ec77dfca909d380974817459f5eba224cc1ce81b3859117e6ec",
+      "translation_text_hash": "adbdc9d70b944f1181725715e6688bfd38a5e3818eba6737913045519f4dc52a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 중에 십분의 일이 오히려 남아 있을찌라도 이것도 삼키운바 될 것이나 밤나무, 상수리나무가 베임을 당하여도 그 그루터기는 남아 있는 것 같이 거룩한 씨가 이 땅의 그루터기니라"
+      ],
+      "raw_text_hashes": [
+        "adbdc9d70b944f1181725715e6688bfd38a5e3818eba6737913045519f4dc52a"
+      ]
+    }
+  ]
+}

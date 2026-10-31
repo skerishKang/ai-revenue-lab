@@ -1,0 +1,397 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ISA:chapter:062",
+  "unit_ordinal": 741,
+  "unit_label": "ISA 62",
+  "book_code": "ISA",
+  "chapter_number": 62,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ISA:62:1",
+      "sequence": 18856,
+      "chapter_label": "ISA 62",
+      "verse_label": "1",
+      "locator": {
+        "book": "ISA",
+        "chapter": 62,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 62,
+          "verse": 1
+        }
+      ],
+      "en": "For Zion’s sake I will not hold my peace, and for Jerusalem’s sake I will not rest, until her righteousness shines out like the dawn, and her salvation like a burning lamp.",
+      "ko": "나는 시온의 공의가 빛 같이, 예루살렘의 구원이 횃불 같이 나타나도록 시온을 위하여 잠잠하지 아니하며 예루살렘을 위하여 쉬지 아니할 것인즉",
+      "source_text_hash": "87f27e1b2937c42f79b5b0409da1678bab792a5bf0f21a69ecd387a2970c3b79",
+      "translation_text_hash": "a46ca1041a3809a20902732b0bee4110caf14da39103525371f35fd2e5242c0a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 시온의 공의가 빛 같이, 예루살렘의 구원이 횃불 같이 나타나도록 시온을 위하여 잠잠하지 아니하며 예루살렘을 위하여 쉬지 아니할 것인즉"
+      ],
+      "raw_text_hashes": [
+        "a46ca1041a3809a20902732b0bee4110caf14da39103525371f35fd2e5242c0a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:62:2",
+      "sequence": 18857,
+      "chapter_label": "ISA 62",
+      "verse_label": "2",
+      "locator": {
+        "book": "ISA",
+        "chapter": 62,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 62,
+          "verse": 2
+        }
+      ],
+      "en": "The nations will see your righteousness, and all kings your glory. You will be called by a new name, which the LORD’s mouth will name.",
+      "ko": "열방이 네 공의를, 열왕이 다 네 영광을 볼 것이요 너는 여호와의 입으로 정하실 새 이름으로 일컬음이 될 것이며",
+      "source_text_hash": "33f4e0cd9e086a7f45e95123cdc488b94b78d223862f00aa3702ea6a8a6e25bf",
+      "translation_text_hash": "3f7b78aed2dfe231a5dc23d8bb9be8008fc468f17dc2312f037e98db5e6e364f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "열방이 네 공의를, 열왕이 다 네 영광을 볼 것이요 너는 여호와의 입으로 정하실 새 이름으로 일컬음이 될 것이며"
+      ],
+      "raw_text_hashes": [
+        "3f7b78aed2dfe231a5dc23d8bb9be8008fc468f17dc2312f037e98db5e6e364f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:62:3",
+      "sequence": 18858,
+      "chapter_label": "ISA 62",
+      "verse_label": "3",
+      "locator": {
+        "book": "ISA",
+        "chapter": 62,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 62,
+          "verse": 3
+        }
+      ],
+      "en": "You will also be a crown of beauty in the LORD’s hand, and a royal diadem in your God’s hand.",
+      "ko": "너는 또 여호와의 손의 아름다운 면류관, 네 하나님의 손의 왕관이 될 것이라",
+      "source_text_hash": "bdf059f4d8831ec0481af76bcf716a81ce04db04d84308950c90fa10a45bd2b4",
+      "translation_text_hash": "745032c17c908b096c01a30aef2f00e44202a5b2d3ac3d0558df5996e85c66d0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 또 여호와의 손의 아름다운 면류관, 네 하나님의 손의 왕관이 될 것이라"
+      ],
+      "raw_text_hashes": [
+        "745032c17c908b096c01a30aef2f00e44202a5b2d3ac3d0558df5996e85c66d0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:62:4",
+      "sequence": 18859,
+      "chapter_label": "ISA 62",
+      "verse_label": "4",
+      "locator": {
+        "book": "ISA",
+        "chapter": 62,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 62,
+          "verse": 4
+        }
+      ],
+      "en": "You will not be called Forsaken any more, nor will your land be called Desolate any more; but you will be called Hephzibah, and your land Beulah; for the LORD delights in you, and your land will be married.",
+      "ko": "다시는 너를 버리운 자라 칭하지 아니하며 다시는 네 땅을 황무지라 칭하지 아니하고 오직 너를 헵시바라 하며 네 땅을 쁄라라 하리니 이는 여호와께서 너를 기뻐하실 것이며 네 땅이 결혼한바가 될 것임이라",
+      "source_text_hash": "8fb07ee5e31e4e7ff78b01419958ce8ef6692af8a6e152f9c7d7fb0af57d7c6b",
+      "translation_text_hash": "640f9bbfa9a6fec73493a5cbfb0b48c27be1c81cf2c12fab4e10605edf538703",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다시는 너를 버리운 자라 칭하지 아니하며 다시는 네 땅을 황무지라 칭하지 아니하고 오직 너를 헵시바라 하며 네 땅을 쁄라라 하리니 이는 여호와께서 너를 기뻐하실 것이며 네 땅이 결혼한바가 될 것임이라"
+      ],
+      "raw_text_hashes": [
+        "640f9bbfa9a6fec73493a5cbfb0b48c27be1c81cf2c12fab4e10605edf538703"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:62:5",
+      "sequence": 18860,
+      "chapter_label": "ISA 62",
+      "verse_label": "5",
+      "locator": {
+        "book": "ISA",
+        "chapter": 62,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 62,
+          "verse": 5
+        }
+      ],
+      "en": "For as a young man marries a virgin, so your sons will marry you. As a bridegroom rejoices over his bride, so your God will rejoice over you.",
+      "ko": "마치 청년이 처녀와 결혼함 같이 네 아들들이 너를 취하겠고 신랑이 신부를 기뻐함 같이 네 하나님이 너를 기뻐하시리라",
+      "source_text_hash": "2b867cc44e9871ef2e4614b1e51ab1c9d08baf116bcbe26b1d73c4331ab24594",
+      "translation_text_hash": "e4fa6b0f670f9aa9ed35f3f183ccd265ea231cb714f6d8c8c69cfb321aa5dc5b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마치 청년이 처녀와 결혼함 같이 네 아들들이 너를 취하겠고 신랑이 신부를 기뻐함 같이 네 하나님이 너를 기뻐하시리라"
+      ],
+      "raw_text_hashes": [
+        "e4fa6b0f670f9aa9ed35f3f183ccd265ea231cb714f6d8c8c69cfb321aa5dc5b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:62:6",
+      "sequence": 18861,
+      "chapter_label": "ISA 62",
+      "verse_label": "6",
+      "locator": {
+        "book": "ISA",
+        "chapter": 62,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 62,
+          "verse": 6
+        }
+      ],
+      "en": "I have set watchmen on your walls, Jerusalem. They will never be silent day nor night. You who call on the LORD, take no rest,",
+      "ko": "예루살렘이여 내가 너의 성벽 위에 파숫군을 세우고 그들로 종일 종야에 잠잠치 않게 하였느니라 너희 여호와로 기억하시게 하는 자들아 너희는 쉬지 말며",
+      "source_text_hash": "3b3cef2e5d9d48081bdf295353fe6eeb42c8390bd6b5a549c733f8dc6df20e9e",
+      "translation_text_hash": "a9a9682eea3a149e3f25144d0c6552ecb0b907e8c1a5b175e80deee17bf04b08",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예루살렘이여 내가 너의 성벽 위에 파숫군을 세우고 그들로 종일 종야에 잠잠치 않게 하였느니라 너희 여호와로 기억하시게 하는 자들아 너희는 쉬지 말며"
+      ],
+      "raw_text_hashes": [
+        "a9a9682eea3a149e3f25144d0c6552ecb0b907e8c1a5b175e80deee17bf04b08"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:62:7",
+      "sequence": 18862,
+      "chapter_label": "ISA 62",
+      "verse_label": "7",
+      "locator": {
+        "book": "ISA",
+        "chapter": 62,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 62,
+          "verse": 7
+        }
+      ],
+      "en": "and give him no rest until he establishes, and until he makes Jerusalem a praise on the earth.",
+      "ko": "또 여호와께서 예루살렘을 세워 세상에서 찬송을 받게 하시기까지 그로 쉬지 못하시게 하라",
+      "source_text_hash": "0414b3912a37629c266706959df7e25ce57c30e3009d8ddce8b8c2f849cdd83a",
+      "translation_text_hash": "4a2de78657739c7edf25425c8d725acf7defaadcee0fd10cf61414b9275041c0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 여호와께서 예루살렘을 세워 세상에서 찬송을 받게 하시기까지 그로 쉬지 못하시게 하라"
+      ],
+      "raw_text_hashes": [
+        "4a2de78657739c7edf25425c8d725acf7defaadcee0fd10cf61414b9275041c0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:62:8",
+      "sequence": 18863,
+      "chapter_label": "ISA 62",
+      "verse_label": "8",
+      "locator": {
+        "book": "ISA",
+        "chapter": 62,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 62,
+          "verse": 8
+        }
+      ],
+      "en": "The LORD has sworn by his right hand, and by the arm of his strength, “Surely I will no more give your grain to be food for your enemies, and foreigners will not drink your new wine, for which you have labored,",
+      "ko": "여호와께서 그 오른손, 그 능력의 팔로 맹세하시되 내가 다시는 네 곡식을 네 원수들에게 식물로 주지 아니하겠고 너의 수고하여 얻은 포도주를 이방인으로 마시지 않게 할 것인즉",
+      "source_text_hash": "1f3ccc82ceb389f2dbafa96a9409e92fa67395caae9c0bbe2aa8e40f9f7cc611",
+      "translation_text_hash": "8abd2d1d5a9a03a2974202ae35ca1aebb41fe37d66d1201808b4f8cfdc903e44",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 그 오른손, 그 능력의 팔로 맹세하시되 내가 다시는 네 곡식을 네 원수들에게 식물로 주지 아니하겠고 너의 수고하여 얻은 포도주를 이방인으로 마시지 않게 할 것인즉"
+      ],
+      "raw_text_hashes": [
+        "8abd2d1d5a9a03a2974202ae35ca1aebb41fe37d66d1201808b4f8cfdc903e44"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:62:9",
+      "sequence": 18864,
+      "chapter_label": "ISA 62",
+      "verse_label": "9",
+      "locator": {
+        "book": "ISA",
+        "chapter": 62,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 62,
+          "verse": 9
+        }
+      ],
+      "en": "but those who have harvested it will eat it, and praise the LORD. Those who have gathered it will drink it in the courts of my sanctuary.”",
+      "ko": "오직 추수한 자가 그것을 먹고 나 여호와를 찬송할 것이요 거둔 자가 그것을 나의 성소 뜰에서 마시리라 하셨느니라",
+      "source_text_hash": "b069f13e46cace62bb020575c2768c1fbcf5600f3a9b2800c45bb8ddba14e964",
+      "translation_text_hash": "34d340b1da5f15a34b347c3105bb2c3961bf34a19126a3fa0f6a4a8cacc752d1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 추수한 자가 그것을 먹고 나 여호와를 찬송할 것이요 거둔 자가 그것을 나의 성소 뜰에서 마시리라 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "34d340b1da5f15a34b347c3105bb2c3961bf34a19126a3fa0f6a4a8cacc752d1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:62:10",
+      "sequence": 18865,
+      "chapter_label": "ISA 62",
+      "verse_label": "10",
+      "locator": {
+        "book": "ISA",
+        "chapter": 62,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 62,
+          "verse": 10
+        }
+      ],
+      "en": "Go through, go through the gates! Prepare the way of the people! Build up, build up the highway! Gather out the stones! Lift up a banner for the peoples.",
+      "ko": "성문으로 나아가라 나아가라 백성의 길을 예비하라 대로를 수축하고 수축하라 돌을 제하라 만민을 위하여 기를 들라",
+      "source_text_hash": "7162e92bbec2dd47f0ac40b89d5035b7df03576d65e1040e4448cd25cde7e8a9",
+      "translation_text_hash": "b465cee39308c02112e67f28b4a53131d06f3e39bcef73f72a0c23dd03cf5ade",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "성문으로 나아가라 나아가라 백성의 길을 예비하라 대로를 수축하고 수축하라 돌을 제하라 만민을 위하여 기를 들라"
+      ],
+      "raw_text_hashes": [
+        "b465cee39308c02112e67f28b4a53131d06f3e39bcef73f72a0c23dd03cf5ade"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:62:11",
+      "sequence": 18866,
+      "chapter_label": "ISA 62",
+      "verse_label": "11",
+      "locator": {
+        "book": "ISA",
+        "chapter": 62,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 62,
+          "verse": 11
+        }
+      ],
+      "en": "Behold, the LORD has proclaimed to the end of the earth: “Say to the daughter of Zion, ‘Behold, your salvation comes! Behold, his reward is with him, and his recompense before him!’”",
+      "ko": "여호와께서 땅 끝까지 반포하시되 너희는 딸 시온에게 이르라 보라 네 구원이 임하느니라 보라 상급이 그에게 있고 보응이 그 앞에 있느니라 하셨느니라",
+      "source_text_hash": "bfb86d86ea402a8404f86090010f803bf7022008024352787035ad2a4b5f9d47",
+      "translation_text_hash": "47a9dc66eace002153c9144b46f2797221dc3f100806f83f270653fa071688aa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 땅 끝까지 반포하시되 너희는 딸 시온에게 이르라 보라 네 구원이 임하느니라 보라 상급이 그에게 있고 보응이 그 앞에 있느니라 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "47a9dc66eace002153c9144b46f2797221dc3f100806f83f270653fa071688aa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:62:12",
+      "sequence": 18867,
+      "chapter_label": "ISA 62",
+      "verse_label": "12",
+      "locator": {
+        "book": "ISA",
+        "chapter": 62,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 62,
+          "verse": 12
+        }
+      ],
+      "en": "They will call them “The Holy People, The LORD’s Redeemed”. You will be called “Sought Out, A City Not Forsaken”.",
+      "ko": "사람들이 너를 일컬어 거룩한 백성이라 여호와의 구속하신 자라 하겠고 또 너를 일컬어 찾은바 된 자요 버리지 아니한 성읍이라 하리라",
+      "source_text_hash": "803572b9b1a4cccf90704405beed275d39de99e3660bee8246bea3bb4c54eacd",
+      "translation_text_hash": "8bb23b9bb06653a15980fff9e7f7404837bb643a47b0344547cb3222999d59c5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람들이 너를 일컬어 거룩한 백성이라 여호와의 구속하신 자라 하겠고 또 너를 일컬어 찾은바 된 자요 버리지 아니한 성읍이라 하리라"
+      ],
+      "raw_text_hashes": [
+        "8bb23b9bb06653a15980fff9e7f7404837bb643a47b0344547cb3222999d59c5"
+      ]
+    }
+  ]
+}

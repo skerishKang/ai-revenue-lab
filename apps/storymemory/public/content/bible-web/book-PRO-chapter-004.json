@@ -1,0 +1,877 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PRO:chapter:004",
+  "unit_ordinal": 632,
+  "unit_label": "PRO 4",
+  "book_code": "PRO",
+  "chapter_number": 4,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PRO:4:1",
+      "sequence": 16492,
+      "chapter_label": "PRO 4",
+      "verse_label": "1",
+      "locator": {
+        "book": "PRO",
+        "chapter": 4,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 4,
+          "verse": 1
+        }
+      ],
+      "en": "Listen, sons, to a father’s instruction. Pay attention and know understanding;",
+      "ko": "아들들아 아비의 훈계를 들으며 명철을 얻기에 주의하라",
+      "source_text_hash": "6a89791343b7a812959dbf5aeb2a8d2dc5ce45391d86f4284b8278d292960d39",
+      "translation_text_hash": "5a6b1a0baa53d5f12c590bb1c5f5cb0142f93e0dbc594ce0a5cd6febad7f396f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아들들아 아비의 훈계를 들으며 명철을 얻기에 주의하라"
+      ],
+      "raw_text_hashes": [
+        "5a6b1a0baa53d5f12c590bb1c5f5cb0142f93e0dbc594ce0a5cd6febad7f396f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:4:2",
+      "sequence": 16493,
+      "chapter_label": "PRO 4",
+      "verse_label": "2",
+      "locator": {
+        "book": "PRO",
+        "chapter": 4,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 4,
+          "verse": 2
+        }
+      ],
+      "en": "for I give you sound learning. Don’t forsake my law.",
+      "ko": "내가 선한 도리를 너희에게 전하노니 내 법을 떠나지 말라",
+      "source_text_hash": "c85a41c6f36ff4dd6eb63de70cc294e54b14f7c7be6b4a3a584a851e9a1cb887",
+      "translation_text_hash": "a799dbf52fcdd67cb5ccb8928ea474c3ede627a1169e0722d6f0d59564d66d26",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 선한 도리를 너희에게 전하노니 내 법을 떠나지 말라"
+      ],
+      "raw_text_hashes": [
+        "a799dbf52fcdd67cb5ccb8928ea474c3ede627a1169e0722d6f0d59564d66d26"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:4:3",
+      "sequence": 16494,
+      "chapter_label": "PRO 4",
+      "verse_label": "3",
+      "locator": {
+        "book": "PRO",
+        "chapter": 4,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 4,
+          "verse": 3
+        }
+      ],
+      "en": "For I was a son to my father, tender and an only child in the sight of my mother.",
+      "ko": "나도 내 아버지에게 아들이었었으며 내 어머니 보기에 유약한 외아들이었었노라",
+      "source_text_hash": "e37ca93f9c247a1045054e3e23446f6c8b648d967bf9a89d2bff123481629546",
+      "translation_text_hash": "89cb3bad6351024d6742d6fe75074eb2c63533ea22e45d0a832cdb10f57c787a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나도 내 아버지에게 아들이었었으며 내 어머니 보기에 유약한 외아들이었었노라"
+      ],
+      "raw_text_hashes": [
+        "89cb3bad6351024d6742d6fe75074eb2c63533ea22e45d0a832cdb10f57c787a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:4:4",
+      "sequence": 16495,
+      "chapter_label": "PRO 4",
+      "verse_label": "4",
+      "locator": {
+        "book": "PRO",
+        "chapter": 4,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 4,
+          "verse": 4
+        }
+      ],
+      "en": "He taught me, and said to me: “Let your heart retain my words. Keep my commandments, and live.",
+      "ko": "아버지가 내게 가르쳐 이르기를 내 말을 네 마음에 두라 내 명령을 지키라 그리하면 살리라",
+      "source_text_hash": "0f2f84e798da30eb8d05e55eaf847d3e2ebbfa8aedc1cb3cbf2e4ef177802b08",
+      "translation_text_hash": "2946b92c5a9df82632de073d5fb9db7fa72f4a657798c167f62a6a61a80d170e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아버지가 내게 가르쳐 이르기를 내 말을 네 마음에 두라 내 명령을 지키라 그리하면 살리라"
+      ],
+      "raw_text_hashes": [
+        "2946b92c5a9df82632de073d5fb9db7fa72f4a657798c167f62a6a61a80d170e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:4:5",
+      "sequence": 16496,
+      "chapter_label": "PRO 4",
+      "verse_label": "5",
+      "locator": {
+        "book": "PRO",
+        "chapter": 4,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 4,
+          "verse": 5
+        }
+      ],
+      "en": "Get wisdom. Get understanding. Don’t forget, and don’t deviate from the words of my mouth.",
+      "ko": "지혜를 얻으며 명철을 얻으라 내 입의 말을 잊지 말며 어기지 말라",
+      "source_text_hash": "2321a8bc5db08987b4016ca1a87da618fc11f81d2a0021772533bcb5e19c9311",
+      "translation_text_hash": "a653962e7cf0fcfeb39eabdd974095deb34a05ce5730508d2b0ade00aa518b68",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "지혜를 얻으며 명철을 얻으라 내 입의 말을 잊지 말며 어기지 말라"
+      ],
+      "raw_text_hashes": [
+        "a653962e7cf0fcfeb39eabdd974095deb34a05ce5730508d2b0ade00aa518b68"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:4:6",
+      "sequence": 16497,
+      "chapter_label": "PRO 4",
+      "verse_label": "6",
+      "locator": {
+        "book": "PRO",
+        "chapter": 4,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 4,
+          "verse": 6
+        }
+      ],
+      "en": "Don’t forsake her, and she will preserve you. Love her, and she will keep you.",
+      "ko": "지혜를 버리지 말라 그가 너를 보호하리라 그를 사랑하라 그가 너를 지키리라",
+      "source_text_hash": "d3e913cd22c1ee337307a56d7ac59fb8145c10943955c27888eeab1470fafeae",
+      "translation_text_hash": "667dff6bdbb95f1141711590862cd686bfc93b9cc8286f6bfa7f76001364d3b6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "지혜를 버리지 말라 그가 너를 보호하리라 그를 사랑하라 그가 너를 지키리라"
+      ],
+      "raw_text_hashes": [
+        "667dff6bdbb95f1141711590862cd686bfc93b9cc8286f6bfa7f76001364d3b6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:4:7",
+      "sequence": 16498,
+      "chapter_label": "PRO 4",
+      "verse_label": "7",
+      "locator": {
+        "book": "PRO",
+        "chapter": 4,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 4,
+          "verse": 7
+        }
+      ],
+      "en": "Wisdom is supreme. Get wisdom. Yes, though it costs all your possessions, get understanding.",
+      "ko": "지혜가 제일이니 지혜를 얻으라 무릇 너의 얻은 것을 가져 명철을 얻을찌니라",
+      "source_text_hash": "48337ea5487ea0504f279dc05b808e068707b00fe14721c994f680862c50984d",
+      "translation_text_hash": "eb5b8ff79682978f3f98ab54c119e6654d36c76cf51eff144ff25ac7d8e81468",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "지혜가 제일이니 지혜를 얻으라 무릇 너의 얻은 것을 가져 명철을 얻을찌니라"
+      ],
+      "raw_text_hashes": [
+        "eb5b8ff79682978f3f98ab54c119e6654d36c76cf51eff144ff25ac7d8e81468"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:4:8",
+      "sequence": 16499,
+      "chapter_label": "PRO 4",
+      "verse_label": "8",
+      "locator": {
+        "book": "PRO",
+        "chapter": 4,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 4,
+          "verse": 8
+        }
+      ],
+      "en": "Esteem her, and she will exalt you. She will bring you to honor when you embrace her.",
+      "ko": "그를 높이라 그리하면 그가 너를 높이 들리라 만일 그를 품으면 그가 너를 영화롭게 하리라",
+      "source_text_hash": "1fa0cf5e3089dfc3734faaf2f67f00ded4a5ffa9c71c12392f88fc9548086fae",
+      "translation_text_hash": "6791017fd4e6aad8e52218bb6549cfc76e7182c4f6b209433e0ad980c650cc60",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그를 높이라 그리하면 그가 너를 높이 들리라 만일 그를 품으면 그가 너를 영화롭게 하리라"
+      ],
+      "raw_text_hashes": [
+        "6791017fd4e6aad8e52218bb6549cfc76e7182c4f6b209433e0ad980c650cc60"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:4:9",
+      "sequence": 16500,
+      "chapter_label": "PRO 4",
+      "verse_label": "9",
+      "locator": {
+        "book": "PRO",
+        "chapter": 4,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 4,
+          "verse": 9
+        }
+      ],
+      "en": "She will give to your head a garland of grace. She will deliver a crown of splendor to you.”",
+      "ko": "그가 아름다운 관을 네 머리에 두겠고 영화로운 면류관을 네게 주리라 하였느니라",
+      "source_text_hash": "b709846324a790ed1e00da2515900d1404d529f9cfff3a3a9076bf6396829837",
+      "translation_text_hash": "ed1b137fc7b8bcb4d826707f588d251ab2a4cc351ea64fe6b840968668c61a06",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 아름다운 관을 네 머리에 두겠고 영화로운 면류관을 네게 주리라 하였느니라"
+      ],
+      "raw_text_hashes": [
+        "ed1b137fc7b8bcb4d826707f588d251ab2a4cc351ea64fe6b840968668c61a06"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:4:10",
+      "sequence": 16501,
+      "chapter_label": "PRO 4",
+      "verse_label": "10",
+      "locator": {
+        "book": "PRO",
+        "chapter": 4,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 4,
+          "verse": 10
+        }
+      ],
+      "en": "Listen, my son, and receive my sayings. The years of your life will be many.",
+      "ko": "내 아들아 들으라 내 말을 받으라 그리하면 네 생명의 해가 길리라",
+      "source_text_hash": "9ad17907ed7505b83d6a4c18bd0240bc0643820474e2c4f74579312a0f2e0c98",
+      "translation_text_hash": "22f5748776c7028c65cdef75ac187bc4d78b044754cbf8c7a669eb25886f38ca",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 아들아 들으라 내 말을 받으라 그리하면 네 생명의 해가 길리라"
+      ],
+      "raw_text_hashes": [
+        "22f5748776c7028c65cdef75ac187bc4d78b044754cbf8c7a669eb25886f38ca"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:4:11",
+      "sequence": 16502,
+      "chapter_label": "PRO 4",
+      "verse_label": "11",
+      "locator": {
+        "book": "PRO",
+        "chapter": 4,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 4,
+          "verse": 11
+        }
+      ],
+      "en": "I have taught you in the way of wisdom. I have led you in straight paths.",
+      "ko": "내가 지혜로운 길로 네게 가르쳤으며 정직한 첩경으로 너를 인도하였은즉",
+      "source_text_hash": "f746bb59e09f3f9c3dea29b5fcb761d87dfef551a5c30d77b63e4d0146baf1c1",
+      "translation_text_hash": "078a30c06249a95991769ad8468ced739ec649403e97c0637f822fa2dbf49263",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 지혜로운 길로 네게 가르쳤으며 정직한 첩경으로 너를 인도하였은즉"
+      ],
+      "raw_text_hashes": [
+        "078a30c06249a95991769ad8468ced739ec649403e97c0637f822fa2dbf49263"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:4:12",
+      "sequence": 16503,
+      "chapter_label": "PRO 4",
+      "verse_label": "12",
+      "locator": {
+        "book": "PRO",
+        "chapter": 4,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 4,
+          "verse": 12
+        }
+      ],
+      "en": "When you go, your steps will not be hampered. When you run, you will not stumble.",
+      "ko": "다닐 때에 네 걸음이 곤란하지 아니하겠고 달려갈 때에 실족하지 아니하리라",
+      "source_text_hash": "68e3e2d43ae8fa5ed7307ffe91196c3c44d3ba621196211260dc861b1bdc8d66",
+      "translation_text_hash": "b3ba79f30c2c2e8395d7fda2a0323e75dc6ddd9da000b5416bba8e57a0ebf814",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다닐 때에 네 걸음이 곤란하지 아니하겠고 달려갈 때에 실족하지 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "b3ba79f30c2c2e8395d7fda2a0323e75dc6ddd9da000b5416bba8e57a0ebf814"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:4:13",
+      "sequence": 16504,
+      "chapter_label": "PRO 4",
+      "verse_label": "13",
+      "locator": {
+        "book": "PRO",
+        "chapter": 4,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 4,
+          "verse": 13
+        }
+      ],
+      "en": "Take firm hold of instruction. Don’t let her go. Keep her, for she is your life.",
+      "ko": "훈계를 굳게 잡아 놓치지 말고 지키라 이것이 네 생명이니라",
+      "source_text_hash": "46d2e21198a9d31634704e2fd5357d43a6570dd93582a6cb3af37b0bc49dba97",
+      "translation_text_hash": "0dc2fe4ab0a1d1ab199e0e0e24183da131a1e00fd46fa14067215a79ff4f1825",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "훈계를 굳게 잡아 놓치지 말고 지키라 이것이 네 생명이니라"
+      ],
+      "raw_text_hashes": [
+        "0dc2fe4ab0a1d1ab199e0e0e24183da131a1e00fd46fa14067215a79ff4f1825"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:4:14",
+      "sequence": 16505,
+      "chapter_label": "PRO 4",
+      "verse_label": "14",
+      "locator": {
+        "book": "PRO",
+        "chapter": 4,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 4,
+          "verse": 14
+        }
+      ],
+      "en": "Don’t enter into the path of the wicked. Don’t walk in the way of evil men.",
+      "ko": "사특한 자의 첩경에 들어가지 말며 악인의 길로 다니지 말찌어다",
+      "source_text_hash": "d86d6eb357142e9370ce49dbfe66101ceed947240d6bdf52f68b5b15993457ab",
+      "translation_text_hash": "6efac43e2db6e814e5e30b4315e6b8a229af93e2c3e18ac358e0e7b57194c86a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사특한 자의 첩경에 들어가지 말며 악인의 길로 다니지 말찌어다"
+      ],
+      "raw_text_hashes": [
+        "6efac43e2db6e814e5e30b4315e6b8a229af93e2c3e18ac358e0e7b57194c86a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:4:15",
+      "sequence": 16506,
+      "chapter_label": "PRO 4",
+      "verse_label": "15",
+      "locator": {
+        "book": "PRO",
+        "chapter": 4,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 4,
+          "verse": 15
+        }
+      ],
+      "en": "Avoid it, and don’t pass by it. Turn from it, and pass on.",
+      "ko": "그 길을 피하고 지나가지 말며 돌이켜 떠나갈찌어다",
+      "source_text_hash": "392096eabf4af503bd19fbbe641bb675196ffcd731aee5f81b34734f71e356d7",
+      "translation_text_hash": "d137e3727fe52114108c4c08f311e044c918ef066d73863a20fcd383861a21b5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 길을 피하고 지나가지 말며 돌이켜 떠나갈찌어다"
+      ],
+      "raw_text_hashes": [
+        "d137e3727fe52114108c4c08f311e044c918ef066d73863a20fcd383861a21b5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:4:16",
+      "sequence": 16507,
+      "chapter_label": "PRO 4",
+      "verse_label": "16",
+      "locator": {
+        "book": "PRO",
+        "chapter": 4,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 4,
+          "verse": 16
+        }
+      ],
+      "en": "For they don’t sleep unless they do evil. Their sleep is taken away, unless they make someone fall.",
+      "ko": "그들은 악을 행하지 못하면 자지 못하며 사람을 넘어뜨리지 못하면 잠이 오지 아니하며",
+      "source_text_hash": "2a7983310cbc756bd833a1e9bb919cc00bef2ea52823426e533d9fbb2a7aa3c2",
+      "translation_text_hash": "0c0f6bc7ad904a31a7175752ba257951a0de260351d89ceffb80f453eceb7877",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들은 악을 행하지 못하면 자지 못하며 사람을 넘어뜨리지 못하면 잠이 오지 아니하며"
+      ],
+      "raw_text_hashes": [
+        "0c0f6bc7ad904a31a7175752ba257951a0de260351d89ceffb80f453eceb7877"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:4:17",
+      "sequence": 16508,
+      "chapter_label": "PRO 4",
+      "verse_label": "17",
+      "locator": {
+        "book": "PRO",
+        "chapter": 4,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 4,
+          "verse": 17
+        }
+      ],
+      "en": "For they eat the bread of wickedness and drink the wine of violence.",
+      "ko": "불의의 떡을 먹으며 강포의 술을 마심이니라",
+      "source_text_hash": "a470d2890b46bb7c05b1ff867b3597c6c1637af68556b0dfda71e45f0cb19fa7",
+      "translation_text_hash": "c6cc994b76bc78676951b7792d066077ffa5fe0fc6b1a84ffce53884286f1da3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "불의의 떡을 먹으며 강포의 술을 마심이니라"
+      ],
+      "raw_text_hashes": [
+        "c6cc994b76bc78676951b7792d066077ffa5fe0fc6b1a84ffce53884286f1da3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:4:18",
+      "sequence": 16509,
+      "chapter_label": "PRO 4",
+      "verse_label": "18",
+      "locator": {
+        "book": "PRO",
+        "chapter": 4,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 4,
+          "verse": 18
+        }
+      ],
+      "en": "But the path of the righteous is like the dawning light that shines more and more until the perfect day.",
+      "ko": "의인의 길은 돋는 햇볕 같아서 점점 빛나서 원만한 광명에 이르거니와",
+      "source_text_hash": "255c300ab9c8d8636910c98a0fc95d3d581863c90d231e61fdb7de2735702e28",
+      "translation_text_hash": "7f29f39e548ce80cf75b23400401bc0fce77d5bc74e4eeb09ab8ee98733ceb00",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "의인의 길은 돋는 햇볕 같아서 점점 빛나서 원만한 광명에 이르거니와"
+      ],
+      "raw_text_hashes": [
+        "7f29f39e548ce80cf75b23400401bc0fce77d5bc74e4eeb09ab8ee98733ceb00"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:4:19",
+      "sequence": 16510,
+      "chapter_label": "PRO 4",
+      "verse_label": "19",
+      "locator": {
+        "book": "PRO",
+        "chapter": 4,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 4,
+          "verse": 19
+        }
+      ],
+      "en": "The way of the wicked is like darkness. They don’t know what they stumble over.",
+      "ko": "악인의 길은 어둠 같아서 그가 거쳐 넘어져도 그것이 무엇인지 깨닫지 못하느니라",
+      "source_text_hash": "2329816520d2e95350a5f455f608f2aa37e810f80af88d4ff08c2d2c805cd1ee",
+      "translation_text_hash": "11bccfd6d65652795bbf7dea190efdcfea58ce5dae75847f4759cbf453df3022",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "악인의 길은 어둠 같아서 그가 거쳐 넘어져도 그것이 무엇인지 깨닫지 못하느니라"
+      ],
+      "raw_text_hashes": [
+        "11bccfd6d65652795bbf7dea190efdcfea58ce5dae75847f4759cbf453df3022"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:4:20",
+      "sequence": 16511,
+      "chapter_label": "PRO 4",
+      "verse_label": "20",
+      "locator": {
+        "book": "PRO",
+        "chapter": 4,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 4,
+          "verse": 20
+        }
+      ],
+      "en": "My son, attend to my words. Turn your ear to my sayings.",
+      "ko": "내 아들아 내 말에 주의하며 나의 이르는 것에 네 귀를 기울이라",
+      "source_text_hash": "734cc7d62d00d9c7c1bd70847e9a9e5fae6d4dd9d0c1f0e20f694fb06c184144",
+      "translation_text_hash": "85d5f81db4bbdca1c968545b9cded0e72f25135346175b5f9b58a15ee0d8ffdc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 아들아 내 말에 주의하며 나의 이르는 것에 네 귀를 기울이라"
+      ],
+      "raw_text_hashes": [
+        "85d5f81db4bbdca1c968545b9cded0e72f25135346175b5f9b58a15ee0d8ffdc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:4:21",
+      "sequence": 16512,
+      "chapter_label": "PRO 4",
+      "verse_label": "21",
+      "locator": {
+        "book": "PRO",
+        "chapter": 4,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 4,
+          "verse": 21
+        }
+      ],
+      "en": "Let them not depart from your eyes. Keep them in the center of your heart.",
+      "ko": "그것을 네 눈에서 떠나게 말며 네 마음 속에 지키라",
+      "source_text_hash": "24786ce2af95411408a27fd2545acfad001008fbec67f6c0da38c4e58dd6945d",
+      "translation_text_hash": "bb30b98905cee701aca18da22bc0441be5738e25d322f3d77d8675b0593c3a6e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그것을 네 눈에서 떠나게 말며 네 마음 속에 지키라"
+      ],
+      "raw_text_hashes": [
+        "bb30b98905cee701aca18da22bc0441be5738e25d322f3d77d8675b0593c3a6e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:4:22",
+      "sequence": 16513,
+      "chapter_label": "PRO 4",
+      "verse_label": "22",
+      "locator": {
+        "book": "PRO",
+        "chapter": 4,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 4,
+          "verse": 22
+        }
+      ],
+      "en": "For they are life to those who find them, and health to their whole body.",
+      "ko": "그것은 얻는 자에게 생명이 되며 그 온 육체의 건강이 됨이니라",
+      "source_text_hash": "313e05a428fda48470feeb7e0709fac060509d7ac2dc2166eda11d885abb4c1d",
+      "translation_text_hash": "89e7632560ea01740b6447116492ad6dc4fceb8f6ffa9e1c419f4bf1e063ed14",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그것은 얻는 자에게 생명이 되며 그 온 육체의 건강이 됨이니라"
+      ],
+      "raw_text_hashes": [
+        "89e7632560ea01740b6447116492ad6dc4fceb8f6ffa9e1c419f4bf1e063ed14"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:4:23",
+      "sequence": 16514,
+      "chapter_label": "PRO 4",
+      "verse_label": "23",
+      "locator": {
+        "book": "PRO",
+        "chapter": 4,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 4,
+          "verse": 23
+        }
+      ],
+      "en": "Keep your heart with all diligence, for out of it is the wellspring of life.",
+      "ko": "무릇 지킬만한 것보다 더욱 네 마음을 지키라 생명의 근원이 이에서 남이니라",
+      "source_text_hash": "86b5b0dfe8929b61daa0fde45a5406ec0697c93660d3a8c932a40487d5c6c51f",
+      "translation_text_hash": "1590907c2b6cbc3f8ecd1dd66ddfb1564b0ab850bcede60c07d374481640a783",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 지킬만한 것보다 더욱 네 마음을 지키라 생명의 근원이 이에서 남이니라"
+      ],
+      "raw_text_hashes": [
+        "1590907c2b6cbc3f8ecd1dd66ddfb1564b0ab850bcede60c07d374481640a783"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:4:24",
+      "sequence": 16515,
+      "chapter_label": "PRO 4",
+      "verse_label": "24",
+      "locator": {
+        "book": "PRO",
+        "chapter": 4,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 4,
+          "verse": 24
+        }
+      ],
+      "en": "Put away from yourself a perverse mouth. Put corrupt lips far from you.",
+      "ko": "궤휼을 네 입에서 버리며 사곡을 네 입술에서 멀리하라",
+      "source_text_hash": "0812b4bb082bff5743ccdf57ff36dc6c7d1df5843187e9cbd0d03cb2a2b578bd",
+      "translation_text_hash": "070c88873d06dfe7cb90567efc8e38444a94a200be26882debf6195686c4d6f9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "궤휼을 네 입에서 버리며 사곡을 네 입술에서 멀리하라"
+      ],
+      "raw_text_hashes": [
+        "070c88873d06dfe7cb90567efc8e38444a94a200be26882debf6195686c4d6f9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:4:25",
+      "sequence": 16516,
+      "chapter_label": "PRO 4",
+      "verse_label": "25",
+      "locator": {
+        "book": "PRO",
+        "chapter": 4,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 4,
+          "verse": 25
+        }
+      ],
+      "en": "Let your eyes look straight ahead. Fix your gaze directly before you.",
+      "ko": "네 눈은 바로 보며 네 눈꺼풀은 네 앞을 곧게 살펴",
+      "source_text_hash": "6a626ad159c8e8f41afe79debe1a7d93d530036969f4650c3d790617ce9e2c9a",
+      "translation_text_hash": "7c02f83751fde8dd784983fc19b4336e3f6dc27c4179a4e3226480fed8e428a0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 눈은 바로 보며 네 눈꺼풀은 네 앞을 곧게 살펴"
+      ],
+      "raw_text_hashes": [
+        "7c02f83751fde8dd784983fc19b4336e3f6dc27c4179a4e3226480fed8e428a0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:4:26",
+      "sequence": 16517,
+      "chapter_label": "PRO 4",
+      "verse_label": "26",
+      "locator": {
+        "book": "PRO",
+        "chapter": 4,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 4,
+          "verse": 26
+        }
+      ],
+      "en": "Make the path of your feet level. Let all of your ways be established.",
+      "ko": "네 발의 행할 첩경을 평탄케 하며 네 모든 길을 든든히 하라",
+      "source_text_hash": "1867c03c4a365d2af146520bbb94365cc7d838884b2d4b1794315d17eb9dc3a9",
+      "translation_text_hash": "d29de53a47218b6d1e765af34ee5658f5f3b8a2104139d1545291a7bd3cbfd64",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 발의 행할 첩경을 평탄케 하며 네 모든 길을 든든히 하라"
+      ],
+      "raw_text_hashes": [
+        "d29de53a47218b6d1e765af34ee5658f5f3b8a2104139d1545291a7bd3cbfd64"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:4:27",
+      "sequence": 16518,
+      "chapter_label": "PRO 4",
+      "verse_label": "27",
+      "locator": {
+        "book": "PRO",
+        "chapter": 4,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 4,
+          "verse": 27
+        }
+      ],
+      "en": "Don’t turn to the right hand nor to the left. Remove your foot from evil.",
+      "ko": "우편으로나 좌편으로나 치우치지 말고 네 발을 악에서 떠나게 하라",
+      "source_text_hash": "a697faafca188da29d3650e8982de054d70aa63c41469d639547f02981b2cc8c",
+      "translation_text_hash": "329f92de751718ddb78b116917ae4cca7f6c4177a74dfd90eabb93e39d5a36d3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우편으로나 좌편으로나 치우치지 말고 네 발을 악에서 떠나게 하라"
+      ],
+      "raw_text_hashes": [
+        "329f92de751718ddb78b116917ae4cca7f6c4177a74dfd90eabb93e39d5a36d3"
+      ]
+    }
+  ]
+}

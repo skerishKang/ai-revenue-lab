@@ -1,0 +1,749 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:NEH:chapter:004",
+  "unit_ordinal": 417,
+  "unit_label": "NEH 4",
+  "book_code": "NEH",
+  "chapter_number": 4,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:NEH:4:1",
+      "sequence": 12361,
+      "chapter_label": "NEH 4",
+      "verse_label": "1",
+      "locator": {
+        "book": "NEH",
+        "chapter": 4,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 4,
+          "verse": 1
+        }
+      ],
+      "en": "But when Sanballat heard that we were building the wall, he was angry, and was very indignant, and mocked the Jews.",
+      "ko": "산발랏이 우리가 성을 건축한다 함을 듣고 크게 분노하여 유다 사람을 비웃으며",
+      "source_text_hash": "45a57ea81030cfb79f5068af0792d19b88248e21f79092279253c9c8ae62aae7",
+      "translation_text_hash": "8c52ddfc5e4ca084806f6cc636d8aa0a4d6109845be3fdb11065889c8b576a74",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "산발랏이 우리가 성을 건축한다 함을 듣고 크게 분노하여 유다 사람을 비웃으며"
+      ],
+      "raw_text_hashes": [
+        "8c52ddfc5e4ca084806f6cc636d8aa0a4d6109845be3fdb11065889c8b576a74"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:4:2",
+      "sequence": 12362,
+      "chapter_label": "NEH 4",
+      "verse_label": "2",
+      "locator": {
+        "book": "NEH",
+        "chapter": 4,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 4,
+          "verse": 2
+        }
+      ],
+      "en": "He spoke before his brothers and the army of Samaria, and said, “What are these feeble Jews doing? Will they fortify themselves? Will they sacrifice? Will they finish in a day? Will they revive the stones out of the heaps of rubbish, since they are burned?”",
+      "ko": "자기 형제들과 사마리아 군대 앞에서 말하여 가로되 이 미약한 유다 사람들의 하는 일이 무엇인가, 스스로 견고케 하려는가, 제사를 드리려는가, 하루에 필역하려는가, 소화된 돌을 흙 무더기에서 다시 일으키려는가 하고",
+      "source_text_hash": "7658722999e6994f3791c15deb5cd4ab7285a4452f8ba3456850b7176f0741a8",
+      "translation_text_hash": "642298d4783825214906062d935a47ef9d6992a8e1d98b9b747035fb9fc83fbd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자기 형제들과 사마리아 군대 앞에서 말하여 가로되 이 미약한 유다 사람들의 하는 일이 무엇인가, 스스로 견고케 하려는가, 제사를 드리려는가, 하루에 필역하려는가, 소화된 돌을 흙 무더기에서 다시 일으키려는가 하고"
+      ],
+      "raw_text_hashes": [
+        "642298d4783825214906062d935a47ef9d6992a8e1d98b9b747035fb9fc83fbd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:4:3",
+      "sequence": 12363,
+      "chapter_label": "NEH 4",
+      "verse_label": "3",
+      "locator": {
+        "book": "NEH",
+        "chapter": 4,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 4,
+          "verse": 3
+        }
+      ],
+      "en": "Now Tobiah the Ammonite was by him, and he said, “What they are building, if a fox climbed up it, he would break down their stone wall.”",
+      "ko": "암몬 사람 도비야는 곁에 섰다가 가로되 저들의 건축하는 성벽은 여우가 올라가도 곧 무너지리라 하더라",
+      "source_text_hash": "474fa76712b0b23a20faa39d394e075a9cca0ef72b0c5ad26dc233ee4c68e4e8",
+      "translation_text_hash": "ee2a34ae4d4068343695344762c421069a39b3040e201d62e2e74fb2a1dd205f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "암몬 사람 도비야는 곁에 섰다가 가로되 저들의 건축하는 성벽은 여우가 올라가도 곧 무너지리라 하더라"
+      ],
+      "raw_text_hashes": [
+        "ee2a34ae4d4068343695344762c421069a39b3040e201d62e2e74fb2a1dd205f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:4:4",
+      "sequence": 12364,
+      "chapter_label": "NEH 4",
+      "verse_label": "4",
+      "locator": {
+        "book": "NEH",
+        "chapter": 4,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 4,
+          "verse": 4
+        }
+      ],
+      "en": "“Hear, our God, for we are despised. Turn back their reproach on their own head. Give them up for a plunder in a land of captivity.",
+      "ko": "우리 하나님이여 들으시옵소서 우리가 업신여김을 당하나이다 원컨대 저희의 욕하는 것으로 자기의 머리에 돌리사 노략거리가 되어 이방에 사로잡히게 하시고",
+      "source_text_hash": "b6cca87ef8ff9336f3c3f8cedd6093764fc02c158f17e5f7b0ada65fc2bbd085",
+      "translation_text_hash": "9c7be46279cd93099148a51fd3b93718f0e256afb98b234b9ff68ab6c68a679a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리 하나님이여 들으시옵소서 우리가 업신여김을 당하나이다 원컨대 저희의 욕하는 것으로 자기의 머리에 돌리사 노략거리가 되어 이방에 사로잡히게 하시고"
+      ],
+      "raw_text_hashes": [
+        "9c7be46279cd93099148a51fd3b93718f0e256afb98b234b9ff68ab6c68a679a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:4:5",
+      "sequence": 12365,
+      "chapter_label": "NEH 4",
+      "verse_label": "5",
+      "locator": {
+        "book": "NEH",
+        "chapter": 4,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 4,
+          "verse": 5
+        }
+      ],
+      "en": "Don’t cover their iniquity. Don’t let their sin be blotted out from before you; for they have insulted the builders.”",
+      "ko": "주의 앞에서 그 악을 덮어 두지 마옵시며 그 죄를 도말하지 마옵소서 저희가 건축하는 자 앞에서 주의 노를 격동하였음이니이다 하고",
+      "source_text_hash": "3f58430c5903e927579beea7d8589bdf117715d4916c2a3bc8432bb7adbdc711",
+      "translation_text_hash": "5c923051ab80d8562cb08773cb9a438de82c1cdcf374554a8a99f2d267e9eb81",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 앞에서 그 악을 덮어 두지 마옵시며 그 죄를 도말하지 마옵소서 저희가 건축하는 자 앞에서 주의 노를 격동하였음이니이다 하고"
+      ],
+      "raw_text_hashes": [
+        "5c923051ab80d8562cb08773cb9a438de82c1cdcf374554a8a99f2d267e9eb81"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:4:6",
+      "sequence": 12366,
+      "chapter_label": "NEH 4",
+      "verse_label": "6",
+      "locator": {
+        "book": "NEH",
+        "chapter": 4,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 4,
+          "verse": 6
+        }
+      ],
+      "en": "So we built the wall; and all the wall was joined together to half its height, for the people had a mind to work.",
+      "ko": "이에 우리가 성을 건축하여 전부가 연락되고 고가 절반에 미쳤으니 이는 백성이 마음들여 역사하였음이니라",
+      "source_text_hash": "7c921d8cb9e93d42de181f76953e81b0dfd2a6604597a569105250790836809f",
+      "translation_text_hash": "1137a9a1c845395c9fd2ab63950b77134483fc8a3144c6e0981d5d8d4bd9d818",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 우리가 성을 건축하여 전부가 연락되고 고가 절반에 미쳤으니 이는 백성이 마음들여 역사하였음이니라"
+      ],
+      "raw_text_hashes": [
+        "1137a9a1c845395c9fd2ab63950b77134483fc8a3144c6e0981d5d8d4bd9d818"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:4:7",
+      "sequence": 12367,
+      "chapter_label": "NEH 4",
+      "verse_label": "7",
+      "locator": {
+        "book": "NEH",
+        "chapter": 4,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 4,
+          "verse": 7
+        }
+      ],
+      "en": "But when Sanballat, Tobiah, the Arabians, the Ammonites, and the Ashdodites heard that the repairing of the walls of Jerusalem went forward, and that the breaches began to be filled, they were very angry;",
+      "ko": "산발랏과 도비야와 아라비아 사람들과 암몬 사람들과 아스돗 사람들이 예루살렘 성이 중수되어 그 퇴락한 곳이 수보되어 간다 함을 듣고 심히 분하여",
+      "source_text_hash": "64ef5b383276bcfe7dd4ffdca243ffc992445b36448904fb116cb5a564414054",
+      "translation_text_hash": "5a11ad58d961273f4c6b7ab987845d1af1f0a7c902f77fce5f9072665e8c2a2a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "산발랏과 도비야와 아라비아 사람들과 암몬 사람들과 아스돗 사람들이 예루살렘 성이 중수되어 그 퇴락한 곳이 수보되어 간다 함을 듣고 심히 분하여"
+      ],
+      "raw_text_hashes": [
+        "5a11ad58d961273f4c6b7ab987845d1af1f0a7c902f77fce5f9072665e8c2a2a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:4:8",
+      "sequence": 12368,
+      "chapter_label": "NEH 4",
+      "verse_label": "8",
+      "locator": {
+        "book": "NEH",
+        "chapter": 4,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 4,
+          "verse": 8
+        }
+      ],
+      "en": "and they all conspired together to come and fight against Jerusalem, and to cause confusion among us.",
+      "ko": "다 함께 꾀하기를 예루살렘으로 가서 쳐서 요란하게 하자 하기로",
+      "source_text_hash": "f945881059c2fa5e06759a0bbef510cc414678e550ed9fb0e7419ffee2266c1d",
+      "translation_text_hash": "bc3fdeb765ab37106d1599c6427c16cbe2fd433213536fc08aa36677ed0d6897",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다 함께 꾀하기를 예루살렘으로 가서 쳐서 요란하게 하자 하기로"
+      ],
+      "raw_text_hashes": [
+        "bc3fdeb765ab37106d1599c6427c16cbe2fd433213536fc08aa36677ed0d6897"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:4:9",
+      "sequence": 12369,
+      "chapter_label": "NEH 4",
+      "verse_label": "9",
+      "locator": {
+        "book": "NEH",
+        "chapter": 4,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 4,
+          "verse": 9
+        }
+      ],
+      "en": "But we made our prayer to our God, and set a watch against them day and night because of them.",
+      "ko": "우리가 우리 하나님께 기도하며 저희를 인하여 파숫군을 두어 주야로 방비하는데",
+      "source_text_hash": "eeadff13e14967170026fe7e38a9ac91ed2f6fc5d45afd7ab1523e4aa9511572",
+      "translation_text_hash": "fe5aa595b7d17b635104a77e1d894ded9accb1d504bb2a124e02e9a2bf155c20",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 우리 하나님께 기도하며 저희를 인하여 파숫군을 두어 주야로 방비하는데"
+      ],
+      "raw_text_hashes": [
+        "fe5aa595b7d17b635104a77e1d894ded9accb1d504bb2a124e02e9a2bf155c20"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:4:10",
+      "sequence": 12370,
+      "chapter_label": "NEH 4",
+      "verse_label": "10",
+      "locator": {
+        "book": "NEH",
+        "chapter": 4,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 4,
+          "verse": 10
+        }
+      ],
+      "en": "Judah said, “The strength of the bearers of burdens is fading and there is much rubble, so that we are not able to build the wall.”",
+      "ko": "유다 사람들은 이르기를 흙 무더기가 아직도 많거늘 담부하는 자의 힘이 쇠하였으니 우리가 성을 건축하지 못하리라 하고",
+      "source_text_hash": "5e21abda26add36339ea0f8188d70ae299f75f4c1690d65fddb3b0311cdba063",
+      "translation_text_hash": "e5718c85e6afa61ff960de0f9e6f4921ed6b0b9952a0b9182958ebe52765c412",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다 사람들은 이르기를 흙 무더기가 아직도 많거늘 담부하는 자의 힘이 쇠하였으니 우리가 성을 건축하지 못하리라 하고"
+      ],
+      "raw_text_hashes": [
+        "e5718c85e6afa61ff960de0f9e6f4921ed6b0b9952a0b9182958ebe52765c412"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:4:11",
+      "sequence": 12371,
+      "chapter_label": "NEH 4",
+      "verse_label": "11",
+      "locator": {
+        "book": "NEH",
+        "chapter": 4,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 4,
+          "verse": 11
+        }
+      ],
+      "en": "Our adversaries said, “They will not know or see, until we come in among them and kill them, and cause the work to cease.”",
+      "ko": "우리의 대적은 이르기를 저희가 알지 못하고 보지 못하는 사이에 우리가 저희 중에 달려 들어가서 살륙하여 역사를 그치게 하리라 하고",
+      "source_text_hash": "ef5dc3f81307e9ae0679835a94461087efa02b953752b1ee8046b95c88d3590e",
+      "translation_text_hash": "f07a27e6b26afef4722ad1ffe985289fcaa9e952645116c88adeb94e70f786e0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리의 대적은 이르기를 저희가 알지 못하고 보지 못하는 사이에 우리가 저희 중에 달려 들어가서 살륙하여 역사를 그치게 하리라 하고"
+      ],
+      "raw_text_hashes": [
+        "f07a27e6b26afef4722ad1ffe985289fcaa9e952645116c88adeb94e70f786e0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:4:12",
+      "sequence": 12372,
+      "chapter_label": "NEH 4",
+      "verse_label": "12",
+      "locator": {
+        "book": "NEH",
+        "chapter": 4,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 4,
+          "verse": 12
+        }
+      ],
+      "en": "When the Jews who lived by them came, they said to us ten times from all places, “Wherever you turn, they will attack us.”",
+      "ko": "그 대적의 근처에 거하는 유다 사람들도 그 각처에서 와서 열 번이나 우리에게 고하기를 너희가 우리에게로 와야 하리라 하기로",
+      "source_text_hash": "e45871cf41222583ff61ddb6917fba48cb9beeedcbc7657d1e65648e285fd329",
+      "translation_text_hash": "4bf4950bd6262c42e9e495c7a6c878bd75e515a5eae22c9658dacc1dbb5fa6e7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 대적의 근처에 거하는 유다 사람들도 그 각처에서 와서 열 번이나 우리에게 고하기를 너희가 우리에게로 와야 하리라 하기로"
+      ],
+      "raw_text_hashes": [
+        "4bf4950bd6262c42e9e495c7a6c878bd75e515a5eae22c9658dacc1dbb5fa6e7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:4:13",
+      "sequence": 12373,
+      "chapter_label": "NEH 4",
+      "verse_label": "13",
+      "locator": {
+        "book": "NEH",
+        "chapter": 4,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 4,
+          "verse": 13
+        }
+      ],
+      "en": "Therefore I set guards in the lowest parts of the space behind the wall, in the open places. I set the people by family groups with their swords, their spears, and their bows.",
+      "ko": "내가 성 뒤 낮고 넓은 곳에 백성으로 그 종족을 따라 칼과 창과 활을 가지고 서게 하고",
+      "source_text_hash": "fc350f6f6148150b54e1adf314d36daad1041dfed4b7e629f9c068618eeaa687",
+      "translation_text_hash": "7bc30a20ef442d154fed3516a133e207195825e31c48bb3d3d5360979ad937ad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 성 뒤 낮고 넓은 곳에 백성으로 그 종족을 따라 칼과 창과 활을 가지고 서게 하고"
+      ],
+      "raw_text_hashes": [
+        "7bc30a20ef442d154fed3516a133e207195825e31c48bb3d3d5360979ad937ad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:4:14",
+      "sequence": 12374,
+      "chapter_label": "NEH 4",
+      "verse_label": "14",
+      "locator": {
+        "book": "NEH",
+        "chapter": 4,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 4,
+          "verse": 14
+        }
+      ],
+      "en": "I looked, and rose up, and said to the nobles, to the rulers, and to the rest of the people, “Don’t be afraid of them! Remember the Lord, who is great and awesome, and fight for your brothers, your sons, your daughters, your wives, and your houses.”",
+      "ko": "내가 돌아본 후에 일어나서 귀인들과 민장과 남은 백성에게 고하기를 너희는 저희를 두려워 말고 지극히 크시고 두려우신 주를 기억하고 너희 형제와 자녀와 아내와 집을 위하여 싸우라 하였었느니라",
+      "source_text_hash": "b29429932965c114fa3c6cc33e5471397ba42da79a3b1a6fbd5e45bac33b4ee9",
+      "translation_text_hash": "65bf26ea4510e641125d9b773b8beeca0c02d09d9598f958bf59f71dfd9b959b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 돌아본 후에 일어나서 귀인들과 민장과 남은 백성에게 고하기를 너희는 저희를 두려워 말고 지극히 크시고 두려우신 주를 기억하고 너희 형제와 자녀와 아내와 집을 위하여 싸우라 하였었느니라"
+      ],
+      "raw_text_hashes": [
+        "65bf26ea4510e641125d9b773b8beeca0c02d09d9598f958bf59f71dfd9b959b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:4:15",
+      "sequence": 12375,
+      "chapter_label": "NEH 4",
+      "verse_label": "15",
+      "locator": {
+        "book": "NEH",
+        "chapter": 4,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 4,
+          "verse": 15
+        }
+      ],
+      "en": "When our enemies heard that it was known to us, and God had brought their counsel to nothing, all of us returned to the wall, everyone to his work.",
+      "ko": "우리의 대적이 자기의 뜻을 우리가 알았다 함을 들으니라 하나님이 저희의 꾀를 폐하셨으므로 우리가 다 성에 돌아와서 각각 역사하였는데",
+      "source_text_hash": "0af79efa29245cc01dc39f518a0d19ea2749836cc2e612299e29b72d01b29638",
+      "translation_text_hash": "cbdeca14a5c14875b2666e190d80ea348254601b995c8a74bbdfa64a0a9b7e72",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리의 대적이 자기의 뜻을 우리가 알았다 함을 들으니라 하나님이 저희의 꾀를 폐하셨으므로 우리가 다 성에 돌아와서 각각 역사하였는데"
+      ],
+      "raw_text_hashes": [
+        "cbdeca14a5c14875b2666e190d80ea348254601b995c8a74bbdfa64a0a9b7e72"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:4:16",
+      "sequence": 12376,
+      "chapter_label": "NEH 4",
+      "verse_label": "16",
+      "locator": {
+        "book": "NEH",
+        "chapter": 4,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 4,
+          "verse": 16
+        }
+      ],
+      "en": "From that time forth, half of my servants did the work, and half of them held the spears, the shields, the bows, and the coats of mail; and the rulers were behind all the house of Judah.",
+      "ko": "그 때로부터 내 종자의 절반은 역사하고 절반은 갑옷을 입고 창과 방패와 활을 가졌고 민장은 유다 온 족속의 뒤에 있었으며",
+      "source_text_hash": "19f4e833e095f3e4332eb89c30c7d9f11817b3519ed40be0d52ba68f6e09a60f",
+      "translation_text_hash": "cd6aca7ea19fc9afdf5f82e69330a003f1d7b0498ecc7b82516d60950d879b2b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때로부터 내 종자의 절반은 역사하고 절반은 갑옷을 입고 창과 방패와 활을 가졌고 민장은 유다 온 족속의 뒤에 있었으며"
+      ],
+      "raw_text_hashes": [
+        "cd6aca7ea19fc9afdf5f82e69330a003f1d7b0498ecc7b82516d60950d879b2b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:4:17",
+      "sequence": 12377,
+      "chapter_label": "NEH 4",
+      "verse_label": "17",
+      "locator": {
+        "book": "NEH",
+        "chapter": 4,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 4,
+          "verse": 17
+        }
+      ],
+      "en": "Those who built the wall, and those who bore burdens loaded themselves; everyone with one of his hands did the work, and with the other held his weapon.",
+      "ko": "성을 건축하는 자와 담부하는 자는 다 각각 한 손으로 일을 하며 한 손에는 병기를 잡았는데",
+      "source_text_hash": "aa4d8d989fafd6bbcb383b6521cadd6ec4e787aa03cd224541f68123744fe083",
+      "translation_text_hash": "54011fc734694ffdbbe952b7982752a5fde9e4e8525347badf65298149493513",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "성을 건축하는 자와 담부하는 자는 다 각각 한 손으로 일을 하며 한 손에는 병기를 잡았는데"
+      ],
+      "raw_text_hashes": [
+        "54011fc734694ffdbbe952b7982752a5fde9e4e8525347badf65298149493513"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:4:18",
+      "sequence": 12378,
+      "chapter_label": "NEH 4",
+      "verse_label": "18",
+      "locator": {
+        "book": "NEH",
+        "chapter": 4,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 4,
+          "verse": 18
+        }
+      ],
+      "en": "Among the builders, everyone wore his sword at his side, and so built. He who sounded the trumpet was by me.",
+      "ko": "건축하는 자는 각각 칼을 차고 건축하며 나팔 부는 자는 내 곁에 섰었느니라",
+      "source_text_hash": "09bba8b842331777e24b34ffd2587d5a074c387db76286046b729b440274b4c1",
+      "translation_text_hash": "67dd81037eda5937a449777efe3fdefe4a706955ded661239099831f8ed635dc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "건축하는 자는 각각 칼을 차고 건축하며 나팔 부는 자는 내 곁에 섰었느니라"
+      ],
+      "raw_text_hashes": [
+        "67dd81037eda5937a449777efe3fdefe4a706955ded661239099831f8ed635dc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:4:19",
+      "sequence": 12379,
+      "chapter_label": "NEH 4",
+      "verse_label": "19",
+      "locator": {
+        "book": "NEH",
+        "chapter": 4,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 4,
+          "verse": 19
+        }
+      ],
+      "en": "I said to the nobles, and to the rulers and to the rest of the people, “The work is great and widely spread out, and we are separated on the wall, far from one another.",
+      "ko": "내가 귀인들과 민장들과 남은 백성에게 이르기를 이 역사는 크고 넓으므로 우리가 성에서 나뉘어 상거가 먼즉",
+      "source_text_hash": "9451155a872d617b906db63f4584411885318ed7a302644653e99734cebcb858",
+      "translation_text_hash": "f655481d3fef2cf6d154120e5877782ff7f60a708e730d339011139d12fdfa1f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 귀인들과 민장들과 남은 백성에게 이르기를 이 역사는 크고 넓으므로 우리가 성에서 나뉘어 상거가 먼즉"
+      ],
+      "raw_text_hashes": [
+        "f655481d3fef2cf6d154120e5877782ff7f60a708e730d339011139d12fdfa1f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:4:20",
+      "sequence": 12380,
+      "chapter_label": "NEH 4",
+      "verse_label": "20",
+      "locator": {
+        "book": "NEH",
+        "chapter": 4,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 4,
+          "verse": 20
+        }
+      ],
+      "en": "Wherever you hear the sound of the trumpet, rally there to us. Our God will fight for us.”",
+      "ko": "너희가 무론 어디서든지 나팔 소리를 듣거든 그리로 모여서 우리에게로 나아오라 우리 하나님이 우리를 위하여 싸우시리라 하였느니라",
+      "source_text_hash": "d939bf1bd643f139522d7f3209f30d90eae958c9bd6cae0b8c9ffc72a0988077",
+      "translation_text_hash": "9282c9ed668bd5b599dfd6e3db4ffb02d89cd827560caa3e6f420b495d11d4c1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 무론 어디서든지 나팔 소리를 듣거든 그리로 모여서 우리에게로 나아오라 우리 하나님이 우리를 위하여 싸우시리라 하였느니라"
+      ],
+      "raw_text_hashes": [
+        "9282c9ed668bd5b599dfd6e3db4ffb02d89cd827560caa3e6f420b495d11d4c1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:4:21",
+      "sequence": 12381,
+      "chapter_label": "NEH 4",
+      "verse_label": "21",
+      "locator": {
+        "book": "NEH",
+        "chapter": 4,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 4,
+          "verse": 21
+        }
+      ],
+      "en": "So we did the work. Half of the people held the spears from the rising of the morning until the stars appeared.",
+      "ko": "우리가 이같이 역사하는데 무리의 절반은 동틀 때부터 별이 나기까지 창을 잡았었으며",
+      "source_text_hash": "c8e5782c342cd91161b8f90d55795113df16dec348a8743ffd7a7fdaf5c0330f",
+      "translation_text_hash": "90107ce5a25a75bead54c4d63e436691bc1b73366bee060f763202c29ac74242",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 이같이 역사하는데 무리의 절반은 동틀 때부터 별이 나기까지 창을 잡았었으며"
+      ],
+      "raw_text_hashes": [
+        "90107ce5a25a75bead54c4d63e436691bc1b73366bee060f763202c29ac74242"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:4:22",
+      "sequence": 12382,
+      "chapter_label": "NEH 4",
+      "verse_label": "22",
+      "locator": {
+        "book": "NEH",
+        "chapter": 4,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 4,
+          "verse": 22
+        }
+      ],
+      "en": "Likewise at the same time I said to the people, “Let everyone with his servant lodge within Jerusalem, that in the night they may be a guard to us, and may labor in the day.”",
+      "ko": "그 때에 내가 또 백성에게 고하기를 사람마다 그 종자와 함께 예루살렘 안에서 잘찌니 밤에는 우리를 위하여 파수하겠고 낮에는 역사하리라 하고",
+      "source_text_hash": "1495d4a604830b8d87d93acf897d5802028ee45ca93490e30498f046e44b20b4",
+      "translation_text_hash": "795a725fac44811ee2480d248cfaa24d99985984f0430cf734a12b9ab9fc6cbe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 내가 또 백성에게 고하기를 사람마다 그 종자와 함께 예루살렘 안에서 잘찌니 밤에는 우리를 위하여 파수하겠고 낮에는 역사하리라 하고"
+      ],
+      "raw_text_hashes": [
+        "795a725fac44811ee2480d248cfaa24d99985984f0430cf734a12b9ab9fc6cbe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:4:23",
+      "sequence": 12383,
+      "chapter_label": "NEH 4",
+      "verse_label": "23",
+      "locator": {
+        "book": "NEH",
+        "chapter": 4,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 4,
+          "verse": 23
+        }
+      ],
+      "en": "So neither I, nor my brothers, nor my servants, nor the men of the guard who followed me took off our clothes. Everyone took his weapon to the water.",
+      "ko": "내나 내 형제들이나 종자들이나 나를 좇아 파수하는 사람들이나 다 그 옷을 벗지 아니하였으며 물을 길으러 갈 때에도 기계를 잡았었느니라",
+      "source_text_hash": "d703506fe4b8a5e99789761ffd4978fbd7a35e1d69c00e8d470c9e80fc0430b4",
+      "translation_text_hash": "a4d31adf5803d0cdf668a441230ddbe404a2f6c64f1805efaeaee5221252bbd6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내나 내 형제들이나 종자들이나 나를 좇아 파수하는 사람들이나 다 그 옷을 벗지 아니하였으며 물을 길으러 갈 때에도 기계를 잡았었느니라"
+      ],
+      "raw_text_hashes": [
+        "a4d31adf5803d0cdf668a441230ddbe404a2f6c64f1805efaeaee5221252bbd6"
+      ]
+    }
+  ]
+}

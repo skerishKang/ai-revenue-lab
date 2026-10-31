@@ -1,0 +1,1613 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:018",
+  "unit_ordinal": 496,
+  "unit_label": "PSA 18",
+  "book_code": "PSA",
+  "chapter_number": 18,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:18:1",
+      "sequence": 14120,
+      "chapter_label": "PSA 18",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 18,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 18,
+          "verse": 1
+        }
+      ],
+      "en": "I love you, LORD, my strength.",
+      "ko": "나의 힘이 되신 여호와여 내가 주를 사랑하나이다",
+      "source_text_hash": "2e9aeefd552f301c25fe1e2bc5746699c376d0e7c2eb63f1181a1257aee5df48",
+      "translation_text_hash": "99d34c8f2ad6a9524890a3f44cbae3590b447fd20f3d078866e3bedc641a7576",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 힘이 되신 여호와여 내가 주를 사랑하나이다"
+      ],
+      "raw_text_hashes": [
+        "99d34c8f2ad6a9524890a3f44cbae3590b447fd20f3d078866e3bedc641a7576"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:18:2",
+      "sequence": 14121,
+      "chapter_label": "PSA 18",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 18,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 18,
+          "verse": 2
+        }
+      ],
+      "en": "The LORD is my rock, my fortress, and my deliverer; my God, my rock, in whom I take refuge; my shield, and the horn of my salvation, my high tower.",
+      "ko": "여호와는 나의 반석이시요 나의 요새시요 나를 건지시는 자시요 나의 하나님이시요 나의 피할 바위시요 나의 방패시요 나의 구원의 뿔이시요 나의 산성이시로다",
+      "source_text_hash": "8c12b4f47cb05b0dd3bd9a448bdcf2e82f92d71e1c8b9dbe20b20cf112b7d561",
+      "translation_text_hash": "4b5c13b0cdb1766185e2e1e525b28aa87a40424ae89c7b5a378c07430f6abf03",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와는 나의 반석이시요 나의 요새시요 나를 건지시는 자시요 나의 하나님이시요 나의 피할 바위시요 나의 방패시요 나의 구원의 뿔이시요 나의 산성이시로다"
+      ],
+      "raw_text_hashes": [
+        "4b5c13b0cdb1766185e2e1e525b28aa87a40424ae89c7b5a378c07430f6abf03"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:18:3",
+      "sequence": 14122,
+      "chapter_label": "PSA 18",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 18,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 18,
+          "verse": 3
+        }
+      ],
+      "en": "I call on the LORD, who is worthy to be praised; and I am saved from my enemies.",
+      "ko": "내가 찬송 받으실 여호와께 아뢰리니 내 원수들에게서 구원을 얻으리로다",
+      "source_text_hash": "76a676b6516397f5b7734e31fe6fbf9674927b8273c27b2f4fbad4d0640fc1fc",
+      "translation_text_hash": "974173e4412df9d7b824e3f1161eaf497ca9caf2f489c76aa9981c91b868b200",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 찬송 받으실 여호와께 아뢰리니 내 원수들에게서 구원을 얻으리로다"
+      ],
+      "raw_text_hashes": [
+        "974173e4412df9d7b824e3f1161eaf497ca9caf2f489c76aa9981c91b868b200"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:18:4",
+      "sequence": 14123,
+      "chapter_label": "PSA 18",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 18,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 18,
+          "verse": 4
+        }
+      ],
+      "en": "The cords of death surrounded me. The floods of ungodliness made me afraid.",
+      "ko": "사망의 줄이 나를 얽고 불의의 창수가 나를 두렵게 하였으며",
+      "source_text_hash": "77d5e02d6066348564d6c3120364328f48238605b93de85861352a31944a1131",
+      "translation_text_hash": "ccc6e11d022c52f4314af78949747823628d06f5a1ec6ea2ca9fab4f61d9849c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사망의 줄이 나를 얽고 불의의 창수가 나를 두렵게 하였으며"
+      ],
+      "raw_text_hashes": [
+        "ccc6e11d022c52f4314af78949747823628d06f5a1ec6ea2ca9fab4f61d9849c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:18:5",
+      "sequence": 14124,
+      "chapter_label": "PSA 18",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 18,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 18,
+          "verse": 5
+        }
+      ],
+      "en": "The cords of Sheol were around me. The snares of death came on me.",
+      "ko": "음부의 줄이 나를 두르고 사망의 올무가 내게 이르렀도다",
+      "source_text_hash": "15a3b9af9cbb62d0b917c52e6bd69b29ce8fcdb5884750df16da2e1f49780bfa",
+      "translation_text_hash": "437f816d8f35cc0e24dcda3624714c52e7fa09699e7feac4d970b488c3b453f9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "음부의 줄이 나를 두르고 사망의 올무가 내게 이르렀도다"
+      ],
+      "raw_text_hashes": [
+        "437f816d8f35cc0e24dcda3624714c52e7fa09699e7feac4d970b488c3b453f9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:18:6",
+      "sequence": 14125,
+      "chapter_label": "PSA 18",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 18,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 18,
+          "verse": 6
+        }
+      ],
+      "en": "In my distress I called on the LORD, and cried to my God. He heard my voice out of his temple. My cry before him came into his ears.",
+      "ko": "내가 환난에서 여호와께 아뢰며 나의 하나님께 부르짖었더니 저가 그 전에서 내 소리를 들으심이여 그 앞에서 나의 부르짖음이 그 귀에 들렸도다",
+      "source_text_hash": "3f12d79829a57b6321050eca5dfa5f0bebe61c47546d47e07da61f67d0e79e73",
+      "translation_text_hash": "390282c881a4e1ed8f71470733d7d7493fc8edddf6230f7ca2bd3647671a1e60",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 환난에서 여호와께 아뢰며 나의 하나님께 부르짖었더니 저가 그 전에서 내 소리를 들으심이여 그 앞에서 나의 부르짖음이 그 귀에 들렸도다"
+      ],
+      "raw_text_hashes": [
+        "390282c881a4e1ed8f71470733d7d7493fc8edddf6230f7ca2bd3647671a1e60"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:18:7",
+      "sequence": 14126,
+      "chapter_label": "PSA 18",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 18,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 18,
+          "verse": 7
+        }
+      ],
+      "en": "Then the earth shook and trembled. The foundations also of the mountains quaked and were shaken, because he was angry.",
+      "ko": "이에 땅이 진동하고 산의 터도 요동하였으니 그의 진노를 인함이로다",
+      "source_text_hash": "c3c80a8b6cfdcc7aa39e8e9e009f53b3c0bd87290ed98d3cdcfc313fa76f3d6a",
+      "translation_text_hash": "3853724a63dc16aad1b1f9812abb3d78cf337c37d1fadc8ed09059a97352b544",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 땅이 진동하고 산의 터도 요동하였으니 그의 진노를 인함이로다"
+      ],
+      "raw_text_hashes": [
+        "3853724a63dc16aad1b1f9812abb3d78cf337c37d1fadc8ed09059a97352b544"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:18:8",
+      "sequence": 14127,
+      "chapter_label": "PSA 18",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 18,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 18,
+          "verse": 8
+        }
+      ],
+      "en": "Smoke went out of his nostrils. Consuming fire came out of his mouth. Coals were kindled by it.",
+      "ko": "그 코에서 연기가 오르고 입에서 불이 나와 사름이여 그 불에 숯이 피었도다",
+      "source_text_hash": "709b3e4fc081fb1a452a1fd35b4cd3873c9ecee2dadc447f046e1da74bcab28a",
+      "translation_text_hash": "68fe7c7eecae60db2a3cea6e792612487b989df5a65bf1239a825613a71ed961",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 코에서 연기가 오르고 입에서 불이 나와 사름이여 그 불에 숯이 피었도다"
+      ],
+      "raw_text_hashes": [
+        "68fe7c7eecae60db2a3cea6e792612487b989df5a65bf1239a825613a71ed961"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:18:9",
+      "sequence": 14128,
+      "chapter_label": "PSA 18",
+      "verse_label": "9",
+      "locator": {
+        "book": "PSA",
+        "chapter": 18,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 18,
+          "verse": 9
+        }
+      ],
+      "en": "He bowed the heavens also, and came down. Thick darkness was under his feet.",
+      "ko": "저가 또 하늘을 드리우시고 강림하시니 그 발 아래는 어둑캄캄하도다",
+      "source_text_hash": "59f7321884c38b5d6ebf3a4ee6c5b32dc62bb18df469d83e25cc8b185a6631ce",
+      "translation_text_hash": "d247176dfff04002779e4e91269ca4fd7d4a7a6bc2aa0e3869854e0e72c38d1d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 또 하늘을 드리우시고 강림하시니 그 발 아래는 어둑캄캄하도다"
+      ],
+      "raw_text_hashes": [
+        "d247176dfff04002779e4e91269ca4fd7d4a7a6bc2aa0e3869854e0e72c38d1d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:18:10",
+      "sequence": 14129,
+      "chapter_label": "PSA 18",
+      "verse_label": "10",
+      "locator": {
+        "book": "PSA",
+        "chapter": 18,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 18,
+          "verse": 10
+        }
+      ],
+      "en": "He rode on a cherub, and flew. Yes, he soared on the wings of the wind.",
+      "ko": "그룹을 타고 날으심이여 바람 날개로 높이 뜨셨도다",
+      "source_text_hash": "e929e9db6f7a63e9d09a7edb0eb4eb500d8a164250cae3101891a9876ef50182",
+      "translation_text_hash": "1e3a6b3a6b9b1d3b1cfaf59318ede797363e6dba4624774214d2009139bef5e5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그룹을 타고 날으심이여 바람 날개로 높이 뜨셨도다"
+      ],
+      "raw_text_hashes": [
+        "1e3a6b3a6b9b1d3b1cfaf59318ede797363e6dba4624774214d2009139bef5e5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:18:11",
+      "sequence": 14130,
+      "chapter_label": "PSA 18",
+      "verse_label": "11",
+      "locator": {
+        "book": "PSA",
+        "chapter": 18,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 18,
+          "verse": 11
+        }
+      ],
+      "en": "He made darkness his hiding place, his pavilion around him, darkness of waters, thick clouds of the skies.",
+      "ko": "저가 흑암으로 그 숨는 곳을 삼으사 장막 같이 자기를 두르게 하심이여 곧 물의 흑암과 공중의 빽빽한 구름으로 그리하시도다",
+      "source_text_hash": "4805ae3d44ccd0feaf83eff7f453622735747a48151128f547a8b708dbb51730",
+      "translation_text_hash": "e507bc9988482ce2f9747d8261e3a1617e18bca7db2985bcf8e0580e94eb434e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 흑암으로 그 숨는 곳을 삼으사 장막 같이 자기를 두르게 하심이여 곧 물의 흑암과 공중의 빽빽한 구름으로 그리하시도다"
+      ],
+      "raw_text_hashes": [
+        "e507bc9988482ce2f9747d8261e3a1617e18bca7db2985bcf8e0580e94eb434e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:18:12",
+      "sequence": 14131,
+      "chapter_label": "PSA 18",
+      "verse_label": "12",
+      "locator": {
+        "book": "PSA",
+        "chapter": 18,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 18,
+          "verse": 12
+        }
+      ],
+      "en": "At the brightness before him his thick clouds passed, hailstones and coals of fire.",
+      "ko": "그 앞에 광채로 인하여 빽빽한 구름이 지나며 우박과 숯불이 내리도다",
+      "source_text_hash": "55585c5d41025e1824a2c93e832ddefccfae5727710b1063156aa04c17a16544",
+      "translation_text_hash": "b9738a4074b97326794997a726e529e2faaa7d15b341dfdda640e5c00f629b47",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 앞에 광채로 인하여 빽빽한 구름이 지나며 우박과 숯불이 내리도다"
+      ],
+      "raw_text_hashes": [
+        "b9738a4074b97326794997a726e529e2faaa7d15b341dfdda640e5c00f629b47"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:18:13",
+      "sequence": 14132,
+      "chapter_label": "PSA 18",
+      "verse_label": "13",
+      "locator": {
+        "book": "PSA",
+        "chapter": 18,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 18,
+          "verse": 13
+        }
+      ],
+      "en": "The LORD also thundered in the sky. The Most High uttered his voice: hailstones and coals of fire.",
+      "ko": "여호와께서 하늘에서 뇌성을 발하시고 지존하신 자가 음성을 내시며 우박과 숯불이 내리도다",
+      "source_text_hash": "fe33e9e576871a10da7a3f7f1e5e42af6bead4c46476308c7a250de7361b2800",
+      "translation_text_hash": "87652041db2024651f6148ac26dc4d43848b04138bc0ed4dfd2e529505dc0824",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 하늘에서 뇌성을 발하시고 지존하신 자가 음성을 내시며 우박과 숯불이 내리도다"
+      ],
+      "raw_text_hashes": [
+        "87652041db2024651f6148ac26dc4d43848b04138bc0ed4dfd2e529505dc0824"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:18:14",
+      "sequence": 14133,
+      "chapter_label": "PSA 18",
+      "verse_label": "14",
+      "locator": {
+        "book": "PSA",
+        "chapter": 18,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 18,
+          "verse": 14
+        }
+      ],
+      "en": "He sent out his arrows, and scattered them. He routed them with great lightning bolts.",
+      "ko": "그 살을 날려 저희를 흩으심이여 많은 번개로 파하셨도다",
+      "source_text_hash": "0d66207da078bc91c73acc17551ab2e15b9680a3965eb69a991f60fa8d15aa36",
+      "translation_text_hash": "f974289933a5e5878ff26f0ebe6578f4f93b402f1f89e22b56a6de1e717a89d2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 살을 날려 저희를 흩으심이여 많은 번개로 파하셨도다"
+      ],
+      "raw_text_hashes": [
+        "f974289933a5e5878ff26f0ebe6578f4f93b402f1f89e22b56a6de1e717a89d2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:18:15",
+      "sequence": 14134,
+      "chapter_label": "PSA 18",
+      "verse_label": "15",
+      "locator": {
+        "book": "PSA",
+        "chapter": 18,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 18,
+          "verse": 15
+        }
+      ],
+      "en": "Then the channels of waters appeared. The foundations of the world were laid bare at your rebuke, LORD, at the blast of the breath of your nostrils.",
+      "ko": "이럴 때에 여호와의 꾸지람과 콧김을 인하여 물밑이 드러나고 세상의 터가 나타났도다",
+      "source_text_hash": "760a2c6ae4c255b32042861eb824427ea0ea84221c4c0f2c110474f2b8693439",
+      "translation_text_hash": "f0b3ccd0cd82dcf8648f75aecefa8430ebcfc9a2ca3066a304cf5e5647328c68",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이럴 때에 여호와의 꾸지람과 콧김을 인하여 물밑이 드러나고 세상의 터가 나타났도다"
+      ],
+      "raw_text_hashes": [
+        "f0b3ccd0cd82dcf8648f75aecefa8430ebcfc9a2ca3066a304cf5e5647328c68"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:18:16",
+      "sequence": 14135,
+      "chapter_label": "PSA 18",
+      "verse_label": "16",
+      "locator": {
+        "book": "PSA",
+        "chapter": 18,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 18,
+          "verse": 16
+        }
+      ],
+      "en": "He sent from on high. He took me. He drew me out of many waters.",
+      "ko": "저가 위에서 보내사 나를 취하심이여 많은 물에서 나를 건져 내셨도다",
+      "source_text_hash": "6191a39b4f2e020a3a145062827fd724b02ddb62ad9d53fedeb17ee9e2963dc4",
+      "translation_text_hash": "d83c7d4f4d497ba27a0e99ec9db2be7084b1b7243a34b2d3cf78fb6857e8f961",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 위에서 보내사 나를 취하심이여 많은 물에서 나를 건져 내셨도다"
+      ],
+      "raw_text_hashes": [
+        "d83c7d4f4d497ba27a0e99ec9db2be7084b1b7243a34b2d3cf78fb6857e8f961"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:18:17",
+      "sequence": 14136,
+      "chapter_label": "PSA 18",
+      "verse_label": "17",
+      "locator": {
+        "book": "PSA",
+        "chapter": 18,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 18,
+          "verse": 17
+        }
+      ],
+      "en": "He delivered me from my strong enemy, from those who hated me; for they were too mighty for me.",
+      "ko": "나를 강한 원수와 미워하는 자에게서 건지셨음이여 저희는 나보다 힘센 연고로다",
+      "source_text_hash": "dc284366500286d3920810d54122ecb3cff4e4786176d4c1e29621651eea5791",
+      "translation_text_hash": "318f4bd637e30c5014c63ddc9dac676ad463b37548a605e791cf9c2566b7817f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나를 강한 원수와 미워하는 자에게서 건지셨음이여 저희는 나보다 힘센 연고로다"
+      ],
+      "raw_text_hashes": [
+        "318f4bd637e30c5014c63ddc9dac676ad463b37548a605e791cf9c2566b7817f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:18:18",
+      "sequence": 14137,
+      "chapter_label": "PSA 18",
+      "verse_label": "18",
+      "locator": {
+        "book": "PSA",
+        "chapter": 18,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 18,
+          "verse": 18
+        }
+      ],
+      "en": "They came on me in the day of my calamity, but the LORD was my support.",
+      "ko": "저희가 나의 재앙의 날에 내게 이르렀으나 여호와께서 나의 의지가 되셨도다",
+      "source_text_hash": "836be204127daf774b164cb91ebea8bf79d3593a39e618735a3112a1c59b402f",
+      "translation_text_hash": "c8649ab736673d2d54aeca92e95b5f7edcbd1929fcebce650772ef85425bc3bf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 나의 재앙의 날에 내게 이르렀으나 여호와께서 나의 의지가 되셨도다"
+      ],
+      "raw_text_hashes": [
+        "c8649ab736673d2d54aeca92e95b5f7edcbd1929fcebce650772ef85425bc3bf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:18:19",
+      "sequence": 14138,
+      "chapter_label": "PSA 18",
+      "verse_label": "19",
+      "locator": {
+        "book": "PSA",
+        "chapter": 18,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 18,
+          "verse": 19
+        }
+      ],
+      "en": "He brought me out also into a large place. He delivered me, because he delighted in me.",
+      "ko": "나를 또 넓은 곳으로 인도하시고 나를 기뻐하심으로 구원하셨도다",
+      "source_text_hash": "1589a9f960c50a49ff0742f3e2cc8fbac0753bb9870d26382e23e9fda646ed6f",
+      "translation_text_hash": "cecd80e48c7556d6a366c150830c54e68bf3c3ec68158862f24ded8dba28150c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나를 또 넓은 곳으로 인도하시고 나를 기뻐하심으로 구원하셨도다"
+      ],
+      "raw_text_hashes": [
+        "cecd80e48c7556d6a366c150830c54e68bf3c3ec68158862f24ded8dba28150c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:18:20",
+      "sequence": 14139,
+      "chapter_label": "PSA 18",
+      "verse_label": "20",
+      "locator": {
+        "book": "PSA",
+        "chapter": 18,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 18,
+          "verse": 20
+        }
+      ],
+      "en": "The LORD has rewarded me according to my righteousness. According to the cleanness of my hands, he has recompensed me.",
+      "ko": "여호와께서 내 의를 따라 상 주시며 내 손의 깨끗함을 좇아 갚으셨으니",
+      "source_text_hash": "5fd1d9de398e0e243e0e3c6f3f062aaa3b5b5dff512854b600d8f89fcb9b08b1",
+      "translation_text_hash": "b07383d7a91ae4bfe561b3a190715db4177dce06c35bebbe661399134b1cb911",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 내 의를 따라 상 주시며 내 손의 깨끗함을 좇아 갚으셨으니"
+      ],
+      "raw_text_hashes": [
+        "b07383d7a91ae4bfe561b3a190715db4177dce06c35bebbe661399134b1cb911"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:18:21",
+      "sequence": 14140,
+      "chapter_label": "PSA 18",
+      "verse_label": "21",
+      "locator": {
+        "book": "PSA",
+        "chapter": 18,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 18,
+          "verse": 21
+        }
+      ],
+      "en": "For I have kept the ways of the LORD, and have not wickedly departed from my God.",
+      "ko": "이는 내가 여호와의 도를 지키고 악하게 내 하나님을 떠나지 아니하였으며",
+      "source_text_hash": "b3c20422393b9a390fb3a0c11db65291ef61bab9693f7e940055fb3cfaa1c419",
+      "translation_text_hash": "d1f5b929de8ac65c2f480b0e3d6a8191828fe4e4fa54eec8b1312a100463b42e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 내가 여호와의 도를 지키고 악하게 내 하나님을 떠나지 아니하였으며"
+      ],
+      "raw_text_hashes": [
+        "d1f5b929de8ac65c2f480b0e3d6a8191828fe4e4fa54eec8b1312a100463b42e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:18:22",
+      "sequence": 14141,
+      "chapter_label": "PSA 18",
+      "verse_label": "22",
+      "locator": {
+        "book": "PSA",
+        "chapter": 18,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 18,
+          "verse": 22
+        }
+      ],
+      "en": "For all his ordinances were before me. I didn’t put away his statutes from me.",
+      "ko": "그 모든 규례가 내 앞에 있고 내게서 그 율례를 버리지 아니하였음이로다",
+      "source_text_hash": "77257ba0460b9d8ff686509d9331fba7bdefa7b91f7d4b53de7af66577e37755",
+      "translation_text_hash": "38e02c8cabcc7cc24bcbfedaca20320a885da5d26a29d468b4b512df2c74ddb4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 모든 규례가 내 앞에 있고 내게서 그 율례를 버리지 아니하였음이로다"
+      ],
+      "raw_text_hashes": [
+        "38e02c8cabcc7cc24bcbfedaca20320a885da5d26a29d468b4b512df2c74ddb4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:18:23",
+      "sequence": 14142,
+      "chapter_label": "PSA 18",
+      "verse_label": "23",
+      "locator": {
+        "book": "PSA",
+        "chapter": 18,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 18,
+          "verse": 23
+        }
+      ],
+      "en": "I was also blameless with him. I kept myself from my iniquity.",
+      "ko": "내가 또한 그 앞에 완전하여 나의 죄악에서 스스로 지켰나니",
+      "source_text_hash": "e8173676eb9b9d125e182f9fafee98eb26d5b9623788ab0563868da93bae2304",
+      "translation_text_hash": "494490070a4023190ddd728d3da242a089c6d3e31d5412d437c0b3499171bef3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 또한 그 앞에 완전하여 나의 죄악에서 스스로 지켰나니"
+      ],
+      "raw_text_hashes": [
+        "494490070a4023190ddd728d3da242a089c6d3e31d5412d437c0b3499171bef3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:18:24",
+      "sequence": 14143,
+      "chapter_label": "PSA 18",
+      "verse_label": "24",
+      "locator": {
+        "book": "PSA",
+        "chapter": 18,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 18,
+          "verse": 24
+        }
+      ],
+      "en": "Therefore the LORD has rewarded me according to my righteousness, according to the cleanness of my hands in his eyesight.",
+      "ko": "그러므로 여호와께서 내 의를 따라 갚으시되 그 목전에 내 손의 깨끗한대로 내게 갚으셨도다",
+      "source_text_hash": "1deb423fdcc3455204b6ce664da26de9c3e3e93a0c4a9cdc86e3efd1b3dbad42",
+      "translation_text_hash": "d2a5d641796ffbd8d0b615c8052ba98a84cad92d5998fb654e41ea40a9addebe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 여호와께서 내 의를 따라 갚으시되 그 목전에 내 손의 깨끗한대로 내게 갚으셨도다"
+      ],
+      "raw_text_hashes": [
+        "d2a5d641796ffbd8d0b615c8052ba98a84cad92d5998fb654e41ea40a9addebe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:18:25",
+      "sequence": 14144,
+      "chapter_label": "PSA 18",
+      "verse_label": "25",
+      "locator": {
+        "book": "PSA",
+        "chapter": 18,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 18,
+          "verse": 25
+        }
+      ],
+      "en": "With the merciful you will show yourself merciful. With the perfect man, you will show yourself perfect.",
+      "ko": "자비한 자에게는 주의 자비하심을 나타내시며 완전한 자에게는 주의 완전하심을 보이시며",
+      "source_text_hash": "8ee899247c5a1b9657e5c94b04b0c28e1e3040a911561bc00cc4fd55fbb0a299",
+      "translation_text_hash": "afbfceee38e4b5c516b1052938a7bf5572ba21b406208981d6ddb608ff3b1f36",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자비한 자에게는 주의 자비하심을 나타내시며 완전한 자에게는 주의 완전하심을 보이시며"
+      ],
+      "raw_text_hashes": [
+        "afbfceee38e4b5c516b1052938a7bf5572ba21b406208981d6ddb608ff3b1f36"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:18:26",
+      "sequence": 14145,
+      "chapter_label": "PSA 18",
+      "verse_label": "26",
+      "locator": {
+        "book": "PSA",
+        "chapter": 18,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 18,
+          "verse": 26
+        }
+      ],
+      "en": "With the pure, you will show yourself pure. With the crooked you will show yourself shrewd.",
+      "ko": "깨끗한 자에게는 주의 깨끗하심을 보이시며 사특한 자에게는 주의 거스리심을 보이시리니",
+      "source_text_hash": "c40824335e7ea0395e91cf7d8267630fde6689a2574a34b99223437237660468",
+      "translation_text_hash": "88ebbb53076ca8b3b4ab8ce71e4ba629ad4f404fb4bd3d585b4880c2e35bf078",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "깨끗한 자에게는 주의 깨끗하심을 보이시며 사특한 자에게는 주의 거스리심을 보이시리니"
+      ],
+      "raw_text_hashes": [
+        "88ebbb53076ca8b3b4ab8ce71e4ba629ad4f404fb4bd3d585b4880c2e35bf078"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:18:27",
+      "sequence": 14146,
+      "chapter_label": "PSA 18",
+      "verse_label": "27",
+      "locator": {
+        "book": "PSA",
+        "chapter": 18,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 18,
+          "verse": 27
+        }
+      ],
+      "en": "For you will save the afflicted people, but the arrogant eyes you will bring down.",
+      "ko": "주께서 곤고한 백성은 구원하시고 교만한 눈은 낮추시리이다",
+      "source_text_hash": "c14932ace5c490c26494647ace9aadb51aefab07dfaf25dbd2d1fe6183f5c39b",
+      "translation_text_hash": "ed0589d39ee0e1850e3a1909a364da58e67d88c032f1b74bb575ad7e517fa18c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 곤고한 백성은 구원하시고 교만한 눈은 낮추시리이다"
+      ],
+      "raw_text_hashes": [
+        "ed0589d39ee0e1850e3a1909a364da58e67d88c032f1b74bb575ad7e517fa18c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:18:28",
+      "sequence": 14147,
+      "chapter_label": "PSA 18",
+      "verse_label": "28",
+      "locator": {
+        "book": "PSA",
+        "chapter": 18,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 18,
+          "verse": 28
+        }
+      ],
+      "en": "For you will light my lamp, LORD. My God will light up my darkness.",
+      "ko": "주께서 나의 등불을 켜심이여 여호와 내 하나님이 내 흑암을 밝히시리이다",
+      "source_text_hash": "b08545e7c3c302dab1cac9d01b0eb5fb4df3f29833df5b104ad1a53ae4d02d06",
+      "translation_text_hash": "c311dde54cb3e0f6ca2ab5aaf876068fe39d839c27d5951a4f5c10e172ae9089",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 나의 등불을 켜심이여 여호와 내 하나님이 내 흑암을 밝히시리이다"
+      ],
+      "raw_text_hashes": [
+        "c311dde54cb3e0f6ca2ab5aaf876068fe39d839c27d5951a4f5c10e172ae9089"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:18:29",
+      "sequence": 14148,
+      "chapter_label": "PSA 18",
+      "verse_label": "29",
+      "locator": {
+        "book": "PSA",
+        "chapter": 18,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 18,
+          "verse": 29
+        }
+      ],
+      "en": "For by you, I advance through a troop. By my God, I leap over a wall.",
+      "ko": "내가 주를 의뢰하고 적군에 달리며 내 하나님을 의지하고 담을 뛰어 넘나이다",
+      "source_text_hash": "e46afaa7eb2dd9d3b7e223430491e670d867b6b2b34e15755da2abbc42f47ddf",
+      "translation_text_hash": "b810242a838e25beecb01f3557ea2b00abc74356c8bff4ceee19ce368333b830",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 주를 의뢰하고 적군에 달리며 내 하나님을 의지하고 담을 뛰어 넘나이다"
+      ],
+      "raw_text_hashes": [
+        "b810242a838e25beecb01f3557ea2b00abc74356c8bff4ceee19ce368333b830"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:18:30",
+      "sequence": 14149,
+      "chapter_label": "PSA 18",
+      "verse_label": "30",
+      "locator": {
+        "book": "PSA",
+        "chapter": 18,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 18,
+          "verse": 30
+        }
+      ],
+      "en": "As for God, his way is perfect. The LORD’s word is tried. He is a shield to all those who take refuge in him.",
+      "ko": "하나님의 도는 완전하고 여호와의 말씀은 정미하니 저는 자기에게 피하는 모든 자의 방패시로다",
+      "source_text_hash": "892469b2f5e0b824e34a3ebb62da0676e93d676255b476db77ecdf8d51241470",
+      "translation_text_hash": "820b7955020e6076237e10197ae94ab0630900e7a8b650e4fed60558d0b41516",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님의 도는 완전하고 여호와의 말씀은 정미하니 저는 자기에게 피하는 모든 자의 방패시로다"
+      ],
+      "raw_text_hashes": [
+        "820b7955020e6076237e10197ae94ab0630900e7a8b650e4fed60558d0b41516"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:18:31",
+      "sequence": 14150,
+      "chapter_label": "PSA 18",
+      "verse_label": "31",
+      "locator": {
+        "book": "PSA",
+        "chapter": 18,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 18,
+          "verse": 31
+        }
+      ],
+      "en": "For who is God, except the LORD? Who is a rock, besides our God,",
+      "ko": "여호와 외에 누가 하나님이며 우리 하나님 외에 누가 반석이뇨",
+      "source_text_hash": "b1be9e48e40502523f7f817b10d56afd73eaa19590d5bc56c53a896ec055f782",
+      "translation_text_hash": "b2b8c5a8312d664dd7bd0af6049bc284ad9fc80468b184765a78542ee77da31a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와 외에 누가 하나님이며 우리 하나님 외에 누가 반석이뇨"
+      ],
+      "raw_text_hashes": [
+        "b2b8c5a8312d664dd7bd0af6049bc284ad9fc80468b184765a78542ee77da31a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:18:32",
+      "sequence": 14151,
+      "chapter_label": "PSA 18",
+      "verse_label": "32",
+      "locator": {
+        "book": "PSA",
+        "chapter": 18,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 18,
+          "verse": 32
+        }
+      ],
+      "en": "the God who arms me with strength, and makes my way perfect?",
+      "ko": "이 하나님이 힘으로 내게 띠 띠우시며 내 길을 완전케 하시며",
+      "source_text_hash": "951c97b8643150cade6cea6bbfe2114e74058673559f730657bf5db0d9593eeb",
+      "translation_text_hash": "3f66870e9788175e34cd3b6aaeb46d4de04318afad7bfb0a17d4f71eec32218a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 하나님이 힘으로 내게 띠 띠우시며 내 길을 완전케 하시며"
+      ],
+      "raw_text_hashes": [
+        "3f66870e9788175e34cd3b6aaeb46d4de04318afad7bfb0a17d4f71eec32218a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:18:33",
+      "sequence": 14152,
+      "chapter_label": "PSA 18",
+      "verse_label": "33",
+      "locator": {
+        "book": "PSA",
+        "chapter": 18,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 18,
+          "verse": 33
+        }
+      ],
+      "en": "He makes my feet like deer’s feet, and sets me on my high places.",
+      "ko": "나의 발로 암사슴 발 같게 하시며 나를 나의 높은 곳에 세우시며",
+      "source_text_hash": "5c06a825c1182fb5ee91b64e141b9e3d5dfe7493f84f655f1062ceea91d4f5ef",
+      "translation_text_hash": "3e598c685dd63559bcf352b716f20520bd75a7444df4b2f5b58a86e03099dca4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 발로 암사슴 발 같게 하시며 나를 나의 높은 곳에 세우시며"
+      ],
+      "raw_text_hashes": [
+        "3e598c685dd63559bcf352b716f20520bd75a7444df4b2f5b58a86e03099dca4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:18:34",
+      "sequence": 14153,
+      "chapter_label": "PSA 18",
+      "verse_label": "34",
+      "locator": {
+        "book": "PSA",
+        "chapter": 18,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 18,
+          "verse": 34
+        }
+      ],
+      "en": "He teaches my hands to war, so that my arms bend a bow of bronze.",
+      "ko": "내 손을 가르쳐 싸우게 하시니 내 팔이 놋 활을 당기도다",
+      "source_text_hash": "d3bdea9803bee0aec7e800fea4e91ddd7d8a1bb5afa1717c155f8982a9fa61a8",
+      "translation_text_hash": "50de44af9033b3ee39affeb41dad6fd32a2e9872f107181e413dd117ec01ea22",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 손을 가르쳐 싸우게 하시니 내 팔이 놋 활을 당기도다"
+      ],
+      "raw_text_hashes": [
+        "50de44af9033b3ee39affeb41dad6fd32a2e9872f107181e413dd117ec01ea22"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:18:35",
+      "sequence": 14154,
+      "chapter_label": "PSA 18",
+      "verse_label": "35",
+      "locator": {
+        "book": "PSA",
+        "chapter": 18,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 18,
+          "verse": 35
+        }
+      ],
+      "en": "You have also given me the shield of your salvation. Your right hand sustains me. Your gentleness has made me great.",
+      "ko": "주께서 또 주의 구원하는 방패를 내게 주시며 주의 오른손이 나를 붙들고 주의 온유함이 나를 크게 하셨나이다",
+      "source_text_hash": "545d1a61f59256608ae2f1f7e6f1dabbb6d02ab071a6eaa13fb8abd55aec5b0f",
+      "translation_text_hash": "5d8c6e2be5b9789a5a8c3b22f14b1853fdadc3ecdebc51b63aae2c24881f40c2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 또 주의 구원하는 방패를 내게 주시며 주의 오른손이 나를 붙들고 주의 온유함이 나를 크게 하셨나이다"
+      ],
+      "raw_text_hashes": [
+        "5d8c6e2be5b9789a5a8c3b22f14b1853fdadc3ecdebc51b63aae2c24881f40c2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:18:36",
+      "sequence": 14155,
+      "chapter_label": "PSA 18",
+      "verse_label": "36",
+      "locator": {
+        "book": "PSA",
+        "chapter": 18,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 18,
+          "verse": 36
+        }
+      ],
+      "en": "You have enlarged my steps under me, My feet have not slipped.",
+      "ko": "내 걸음을 넓게 하셨고 나로 실족지 않게 하셨나이다",
+      "source_text_hash": "b54cadc25b5671992c83867d05e0550768f98a60f6c5d141334ad753093210d0",
+      "translation_text_hash": "c0bf26d7ef1d2dbc5dab3ea4c9e226a5c48e3542cce026a6f4fd7bbb9bfcd210",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 걸음을 넓게 하셨고 나로 실족지 않게 하셨나이다"
+      ],
+      "raw_text_hashes": [
+        "c0bf26d7ef1d2dbc5dab3ea4c9e226a5c48e3542cce026a6f4fd7bbb9bfcd210"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:18:37",
+      "sequence": 14156,
+      "chapter_label": "PSA 18",
+      "verse_label": "37",
+      "locator": {
+        "book": "PSA",
+        "chapter": 18,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 18,
+          "verse": 37
+        }
+      ],
+      "en": "I will pursue my enemies, and overtake them. I won’t turn away until they are consumed.",
+      "ko": "내가 내 원수를 따라 미치리니 저희가 망하기 전에는 돌이키지 아니하리이다",
+      "source_text_hash": "8efd073b6f8312c7745291d3267f89350864122c389c94dd6acaeb8e6e3c354e",
+      "translation_text_hash": "9b886106813122fe9b51166ab58b6f8c4d626ec2b3645e0c00117be507e5eb9e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 내 원수를 따라 미치리니 저희가 망하기 전에는 돌이키지 아니하리이다"
+      ],
+      "raw_text_hashes": [
+        "9b886106813122fe9b51166ab58b6f8c4d626ec2b3645e0c00117be507e5eb9e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:18:38",
+      "sequence": 14157,
+      "chapter_label": "PSA 18",
+      "verse_label": "38",
+      "locator": {
+        "book": "PSA",
+        "chapter": 18,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 18,
+          "verse": 38
+        }
+      ],
+      "en": "I will strike them through, so that they will not be able to rise. They shall fall under my feet.",
+      "ko": "내가 저희를 쳐서 능히 일어나지 못하게 하리니 저희가 내 발 아래 엎드러지리이다",
+      "source_text_hash": "147202c92606d2cb8026f70f0a6fefe48936d1742c73a3944b7d07200ddf3941",
+      "translation_text_hash": "597c6c1753a17db7f5e04bdf32012d9225c153d269c9fa175cd347491cce69ef",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 저희를 쳐서 능히 일어나지 못하게 하리니 저희가 내 발 아래 엎드러지리이다"
+      ],
+      "raw_text_hashes": [
+        "597c6c1753a17db7f5e04bdf32012d9225c153d269c9fa175cd347491cce69ef"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:18:39",
+      "sequence": 14158,
+      "chapter_label": "PSA 18",
+      "verse_label": "39",
+      "locator": {
+        "book": "PSA",
+        "chapter": 18,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 18,
+          "verse": 39
+        }
+      ],
+      "en": "For you have armed me with strength to the battle. You have subdued under me those who rose up against me.",
+      "ko": "대저 주께서 나로 전쟁케 하려고 능력으로 내게 띠 띠우사 일어나 나를 치는 자로 내게 굴복케 하셨나이다",
+      "source_text_hash": "81d9b6b5be59afa0e9e5e7caae3d25ac9466782213eeed8786d482a7dd390895",
+      "translation_text_hash": "ef719c84b32b51576d0e73072f3bab77801cf68c11b50594174b648723f5b3ea",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대저 주께서 나로 전쟁케 하려고 능력으로 내게 띠 띠우사 일어나 나를 치는 자로 내게 굴복케 하셨나이다"
+      ],
+      "raw_text_hashes": [
+        "ef719c84b32b51576d0e73072f3bab77801cf68c11b50594174b648723f5b3ea"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:18:40",
+      "sequence": 14159,
+      "chapter_label": "PSA 18",
+      "verse_label": "40",
+      "locator": {
+        "book": "PSA",
+        "chapter": 18,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 18,
+          "verse": 40
+        }
+      ],
+      "en": "You have also made my enemies turn their backs to me, that I might cut off those who hate me.",
+      "ko": "주께서 또 내 원수들로 등을 내게로 향하게 하시고 나로 나를 미워하는 자를 끊어버리게 하셨나이다",
+      "source_text_hash": "4e16a6efc75d344577532a61025ddcb9a8dfc9cb0e834e44866cc50f0d1a3d23",
+      "translation_text_hash": "62e889669cf0c07da8366a8b430c059d64d1efdd89093ab64b9a1544daf28a1b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 또 내 원수들로 등을 내게로 향하게 하시고 나로 나를 미워하는 자를 끊어버리게 하셨나이다"
+      ],
+      "raw_text_hashes": [
+        "62e889669cf0c07da8366a8b430c059d64d1efdd89093ab64b9a1544daf28a1b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:18:41",
+      "sequence": 14160,
+      "chapter_label": "PSA 18",
+      "verse_label": "41",
+      "locator": {
+        "book": "PSA",
+        "chapter": 18,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 18,
+          "verse": 41
+        }
+      ],
+      "en": "They cried, but there was no one to save; even to the LORD, but he didn’t answer them.",
+      "ko": "저희가 부르짖으나 구원할 자가 없었고 여호와께 부르짖어도 대답지 아니하셨나이다",
+      "source_text_hash": "d6ea9908e471e83344a7b26989e00536f142293aa9125fe0d7c46e5aceb54168",
+      "translation_text_hash": "3b0b6c11d8e7dc711c41c1dc059bb74864862e5fbd6cc41aad9da4538dbaf701",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 부르짖으나 구원할 자가 없었고 여호와께 부르짖어도 대답지 아니하셨나이다"
+      ],
+      "raw_text_hashes": [
+        "3b0b6c11d8e7dc711c41c1dc059bb74864862e5fbd6cc41aad9da4538dbaf701"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:18:42",
+      "sequence": 14161,
+      "chapter_label": "PSA 18",
+      "verse_label": "42",
+      "locator": {
+        "book": "PSA",
+        "chapter": 18,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 18,
+          "verse": 42
+        }
+      ],
+      "en": "Then I beat them small as the dust before the wind. I cast them out as the mire of the streets.",
+      "ko": "내가 저희를 바람 앞에 티끌 같이 부숴뜨리고 거리의 진흙 같이 쏟아 버렸나이다",
+      "source_text_hash": "d39b98052cc24b204eb38a808519fab5288cc0beb0ed23addfc3e354ccfa2c60",
+      "translation_text_hash": "5157fe238cc912b1dc40057cac47a16525fe3f1891803d129f0cbff59abcad25",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 저희를 바람 앞에 티끌 같이 부숴뜨리고 거리의 진흙 같이 쏟아 버렸나이다"
+      ],
+      "raw_text_hashes": [
+        "5157fe238cc912b1dc40057cac47a16525fe3f1891803d129f0cbff59abcad25"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:18:43",
+      "sequence": 14162,
+      "chapter_label": "PSA 18",
+      "verse_label": "43",
+      "locator": {
+        "book": "PSA",
+        "chapter": 18,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 18,
+          "verse": 43
+        }
+      ],
+      "en": "You have delivered me from the strivings of the people. You have made me the head of the nations. A people whom I have not known shall serve me.",
+      "ko": "주께서 나를 백성의 다툼에서 건지시고 열방의 으뜸을 삼으셨으니 내가 알지 못하는 백성이 나를 섬기리이다",
+      "source_text_hash": "35b77ae70d4bb3c82c3b0c9c4f8a10b79155ebe408a4861e0ef299d4160e5198",
+      "translation_text_hash": "b91881e47fbd186bcd82492ff4af7d4ba376bcd19a17e3679ce22823afca3d1d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 나를 백성의 다툼에서 건지시고 열방의 으뜸을 삼으셨으니 내가 알지 못하는 백성이 나를 섬기리이다"
+      ],
+      "raw_text_hashes": [
+        "b91881e47fbd186bcd82492ff4af7d4ba376bcd19a17e3679ce22823afca3d1d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:18:44",
+      "sequence": 14163,
+      "chapter_label": "PSA 18",
+      "verse_label": "44",
+      "locator": {
+        "book": "PSA",
+        "chapter": 18,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 18,
+          "verse": 44
+        }
+      ],
+      "en": "As soon as they hear of me they shall obey me. The foreigners shall submit themselves to me.",
+      "ko": "저희가 내 풍성을 들은 즉시로 내게 순복함이여 이방인들이 내게 복종하리로다",
+      "source_text_hash": "35ac564cb2b0ee0e4cb9059b511a8ef9cbd2bdb8414eaf66077926e86547d0f0",
+      "translation_text_hash": "a116d3291d6d98e99754f08098dd77f8d5b007c4d7a7721bb4b378c5e4897b99",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 내 풍성을 들은 즉시로 내게 순복함이여 이방인들이 내게 복종하리로다"
+      ],
+      "raw_text_hashes": [
+        "a116d3291d6d98e99754f08098dd77f8d5b007c4d7a7721bb4b378c5e4897b99"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:18:45",
+      "sequence": 14164,
+      "chapter_label": "PSA 18",
+      "verse_label": "45",
+      "locator": {
+        "book": "PSA",
+        "chapter": 18,
+        "verse": 45
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 18,
+          "verse": 45
+        }
+      ],
+      "en": "The foreigners shall fade away, and shall come trembling out of their strongholds.",
+      "ko": "이방인들이 쇠미하여 그 견고한 곳에서 떨며 나오리로다",
+      "source_text_hash": "5de396474d5cf109c95eb9098658b28a74c363f8352ab4a088347c0394da78d2",
+      "translation_text_hash": "41b245852e76cb1fd4dede4066465f18758ae3f85ef598daf552b5f940556e4b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이방인들이 쇠미하여 그 견고한 곳에서 떨며 나오리로다"
+      ],
+      "raw_text_hashes": [
+        "41b245852e76cb1fd4dede4066465f18758ae3f85ef598daf552b5f940556e4b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:18:46",
+      "sequence": 14165,
+      "chapter_label": "PSA 18",
+      "verse_label": "46",
+      "locator": {
+        "book": "PSA",
+        "chapter": 18,
+        "verse": 46
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 18,
+          "verse": 46
+        }
+      ],
+      "en": "The LORD lives! Blessed be my rock. Exalted be the God of my salvation,",
+      "ko": "여호와는 생존하시니 나의 반석을 찬송하며 내 구원의 하나님을 높일찌로다",
+      "source_text_hash": "de15f16940602a62cb40edc51ecd7fa0c9d5b54c336d87dbd0361339123ed3d8",
+      "translation_text_hash": "fd702ffb2b64cf085472aa0b6924bd3f439005d1cde7a84e16edc15238211046",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와는 생존하시니 나의 반석을 찬송하며 내 구원의 하나님을 높일찌로다"
+      ],
+      "raw_text_hashes": [
+        "fd702ffb2b64cf085472aa0b6924bd3f439005d1cde7a84e16edc15238211046"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:18:47",
+      "sequence": 14166,
+      "chapter_label": "PSA 18",
+      "verse_label": "47",
+      "locator": {
+        "book": "PSA",
+        "chapter": 18,
+        "verse": 47
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 18,
+          "verse": 47
+        }
+      ],
+      "en": "even the God who executes vengeance for me, and subdues peoples under me.",
+      "ko": "이 하나님이 나를 위하여 보수하시고 민족들로 내게 복종케 하시도다",
+      "source_text_hash": "a82eebd06c3d00d0e72c52d99f649a86778a3358fd557add789680b820f7ed46",
+      "translation_text_hash": "4d41fdba5ead4d3543aae6b401a372eca75fa8e5663d02e6cd98cc29f37a2cf4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 하나님이 나를 위하여 보수하시고 민족들로 내게 복종케 하시도다"
+      ],
+      "raw_text_hashes": [
+        "4d41fdba5ead4d3543aae6b401a372eca75fa8e5663d02e6cd98cc29f37a2cf4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:18:48",
+      "sequence": 14167,
+      "chapter_label": "PSA 18",
+      "verse_label": "48",
+      "locator": {
+        "book": "PSA",
+        "chapter": 18,
+        "verse": 48
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 18,
+          "verse": 48
+        }
+      ],
+      "en": "He rescues me from my enemies. Yes, you lift me up above those who rise up against me. You deliver me from the violent man.",
+      "ko": "주께서 나를 내 원수들에게서 구조하시니 주께서 실로 나를 대적하는 자의 위에 나를 드시고 나를 강포한 자에게서 건지시나이다",
+      "source_text_hash": "ad63a96f1c34259b8a8450d3faab8b58e9387f7d8b5fc8e79b4fdecd8fdad798",
+      "translation_text_hash": "9777c124d81de8443054be72f63c82c26891e6d54fc6d0d03b9f6f8165fa923c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 나를 내 원수들에게서 구조하시니 주께서 실로 나를 대적하는 자의 위에 나를 드시고 나를 강포한 자에게서 건지시나이다"
+      ],
+      "raw_text_hashes": [
+        "9777c124d81de8443054be72f63c82c26891e6d54fc6d0d03b9f6f8165fa923c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:18:49",
+      "sequence": 14168,
+      "chapter_label": "PSA 18",
+      "verse_label": "49",
+      "locator": {
+        "book": "PSA",
+        "chapter": 18,
+        "verse": 49
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 18,
+          "verse": 49
+        }
+      ],
+      "en": "Therefore I will give thanks to you, LORD, among the nations, and will sing praises to your name.",
+      "ko": "여호와여 이러므로 내가 열방 중에서 주께 감사하며 주의 이름을 찬송하리이다",
+      "source_text_hash": "9e84fb743fa230349146f2f839e6f983c5ca4d43786754c7bf3b8e0a6c11c844",
+      "translation_text_hash": "8627edc1e68430d91505376fca4228249b3194666f80c39dc5ceefca2ede226c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 이러므로 내가 열방 중에서 주께 감사하며 주의 이름을 찬송하리이다"
+      ],
+      "raw_text_hashes": [
+        "8627edc1e68430d91505376fca4228249b3194666f80c39dc5ceefca2ede226c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:18:50",
+      "sequence": 14169,
+      "chapter_label": "PSA 18",
+      "verse_label": "50",
+      "locator": {
+        "book": "PSA",
+        "chapter": 18,
+        "verse": 50
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 18,
+          "verse": 50
+        }
+      ],
+      "en": "He gives great deliverance to his king, and shows loving kindness to his anointed, to David and to his offspring, forever more.",
+      "ko": "여호와께서 그 왕에게 큰 구원을 주시며 기름 부음 받은 자에게 인자를 베푸심이여 영영토록 다윗과 그 후손에게로다",
+      "source_text_hash": "bd08d4f27f0fac1471a685dbb81c58b98db963d688a96776a55b27b032a78600",
+      "translation_text_hash": "56a3f544c678654f3d449cbe78170693f9c5d0ec9548fceccf0988e720b9b914",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 그 왕에게 큰 구원을 주시며 기름 부음 받은 자에게 인자를 베푸심이여 영영토록 다윗과 그 후손에게로다"
+      ],
+      "raw_text_hashes": [
+        "56a3f544c678654f3d449cbe78170693f9c5d0ec9548fceccf0988e720b9b914"
+      ]
+    }
+  ]
+}

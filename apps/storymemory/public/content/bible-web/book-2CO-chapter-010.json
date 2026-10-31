@@ -1,0 +1,589 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:2CO:chapter:010",
+  "unit_ordinal": 1088,
+  "unit_label": "2CO 10",
+  "book_code": "2CO",
+  "chapter_number": 10,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:2CO:10:1",
+      "sequence": 28969,
+      "chapter_label": "2CO 10",
+      "verse_label": "1",
+      "locator": {
+        "book": "2CO",
+        "chapter": 10,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 10,
+          "verse": 1
+        }
+      ],
+      "en": "Now I Paul, myself, entreat you by the humility and gentleness of Christ, I who in your presence am lowly among you, but being absent am bold toward you.",
+      "ko": "너희를 대하여 대면하면 겸비하고 떠나 있으면 담대한 나 바울은 이제 그리스도의 온유와 관용으로 친히 너희를 권하고",
+      "source_text_hash": "2658d2f23bf9ec4fd62d030d56c209729ee9062b411b537b57e8f11c2b937b30",
+      "translation_text_hash": "17f877ba6aeb87179a882308087d0f1b224cc7d4f124b7f7e7f44868d1af3e3d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희를 대하여 대면하면 겸비하고 떠나 있으면 담대한 나 바울은 이제 그리스도의 온유와 관용으로 친히 너희를 권하고"
+      ],
+      "raw_text_hashes": [
+        "17f877ba6aeb87179a882308087d0f1b224cc7d4f124b7f7e7f44868d1af3e3d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:10:2",
+      "sequence": 28970,
+      "chapter_label": "2CO 10",
+      "verse_label": "2",
+      "locator": {
+        "book": "2CO",
+        "chapter": 10,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 10,
+          "verse": 2
+        }
+      ],
+      "en": "Yes, I beg you that I may not, when present, show courage with the confidence with which I intend to be bold against some, who consider us to be walking according to the flesh.",
+      "ko": "또한 우리를 육체대로 행하는 자로 여기는 자들을 대하여 내가 담대히 대하려는것 같이 너희와 함께 있을 때에 나로 하여금 이 담대한 태도로 대하지 않게 하기를 구하노라",
+      "source_text_hash": "1fa456fe9fd12687b2cebeb87be5f673c8a6f5fd749b0d8511908ba2535eb403",
+      "translation_text_hash": "c73625af298726a59b4610c966caa98218fd8e015eecfe013abccc5eff8c9d91",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또한 우리를 육체대로 행하는 자로 여기는 자들을 대하여 내가 담대히 대하려는것 같이 너희와 함께 있을 때에 나로 하여금 이 담대한 태도로 대하지 않게 하기를 구하노라"
+      ],
+      "raw_text_hashes": [
+        "c73625af298726a59b4610c966caa98218fd8e015eecfe013abccc5eff8c9d91"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:10:3",
+      "sequence": 28971,
+      "chapter_label": "2CO 10",
+      "verse_label": "3",
+      "locator": {
+        "book": "2CO",
+        "chapter": 10,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 10,
+          "verse": 3
+        }
+      ],
+      "en": "For though we walk in the flesh, we don’t wage war according to the flesh;",
+      "ko": "우리가 육체에 있어 행하나 육체대로 싸우지 아니하노니",
+      "source_text_hash": "08f70238136a5249f4c23134179595d6839bf704bbd436e76c87dbd192f24917",
+      "translation_text_hash": "680f0544be6672a50b2445756de342a6586cecba488efdd8e3bf7c5458f78428",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 육체에 있어 행하나 육체대로 싸우지 아니하노니"
+      ],
+      "raw_text_hashes": [
+        "680f0544be6672a50b2445756de342a6586cecba488efdd8e3bf7c5458f78428"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:10:4",
+      "sequence": 28972,
+      "chapter_label": "2CO 10",
+      "verse_label": "4",
+      "locator": {
+        "book": "2CO",
+        "chapter": 10,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 10,
+          "verse": 4
+        }
+      ],
+      "en": "for the weapons of our warfare are not of the flesh, but mighty before God to the throwing down of strongholds,",
+      "ko": "우리의 싸우는 병기는 육체에 속한 것이 아니요 오직 하나님 앞에서 견고한 진을 파하는 강력이라",
+      "source_text_hash": "63a062283a83cb7b8ebbf963845f7d3073f4f17bf36fc3cf06722bcdc389f1fb",
+      "translation_text_hash": "711d8a42151097ff1fa5f1356c32a4cf4900972476be6996b35928835501eeb4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리의 싸우는 병기는 육체에 속한 것이 아니요 오직 하나님 앞에서 견고한 진을 파하는 강력이라"
+      ],
+      "raw_text_hashes": [
+        "711d8a42151097ff1fa5f1356c32a4cf4900972476be6996b35928835501eeb4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:10:5",
+      "sequence": 28973,
+      "chapter_label": "2CO 10",
+      "verse_label": "5",
+      "locator": {
+        "book": "2CO",
+        "chapter": 10,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 10,
+          "verse": 5
+        }
+      ],
+      "en": "throwing down imaginations and every high thing that is exalted against the knowledge of God and bringing every thought into captivity to the obedience of Christ,",
+      "ko": "모든 이론을 파하며 하나님 아는 것을 대적하여 높아진 것을 다 파하고 모든 생각을 사로잡아 그리스도에게 복종케 하니",
+      "source_text_hash": "b4c647c3445664693e90ed8bb9c1108780c7330131e216a7360b0041f9d6f6f2",
+      "translation_text_hash": "1206a893b13458c1d767a14c1cac952fee8192bdc0ce39f7d6c2c1861bc5c827",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 이론을 파하며 하나님 아는 것을 대적하여 높아진 것을 다 파하고 모든 생각을 사로잡아 그리스도에게 복종케 하니"
+      ],
+      "raw_text_hashes": [
+        "1206a893b13458c1d767a14c1cac952fee8192bdc0ce39f7d6c2c1861bc5c827"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:10:6",
+      "sequence": 28974,
+      "chapter_label": "2CO 10",
+      "verse_label": "6",
+      "locator": {
+        "book": "2CO",
+        "chapter": 10,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 10,
+          "verse": 6
+        }
+      ],
+      "en": "and being in readiness to avenge all disobedience when your obedience is made full.",
+      "ko": "너희의 복종이 온전히 될 때에 모든 복종치 않는 것을 벌하려고 예비하는 중에 있노라",
+      "source_text_hash": "ac9603555d056a29b2da951b3eec805d8206d598b3e260eede939ea20c39846e",
+      "translation_text_hash": "8ae7eb70d1730e9712df161d1b8c4986965d3243515890867ebf51df227fbc15",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희의 복종이 온전히 될 때에 모든 복종치 않는 것을 벌하려고 예비하는 중에 있노라"
+      ],
+      "raw_text_hashes": [
+        "8ae7eb70d1730e9712df161d1b8c4986965d3243515890867ebf51df227fbc15"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:10:7",
+      "sequence": 28975,
+      "chapter_label": "2CO 10",
+      "verse_label": "7",
+      "locator": {
+        "book": "2CO",
+        "chapter": 10,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 10,
+          "verse": 7
+        }
+      ],
+      "en": "Do you look at things only as they appear in front of your face? If anyone trusts in himself that he is Christ’s, let him consider this again with himself, that even as he is Christ’s, so we also are Christ’s.",
+      "ko": "너희는 외모만 보는도다 만일 사람이 자기가 그리스도에게 속한 줄을 믿을찐대 자기가 그리스도에게 속한 것 같이 우리도 그러한 줄을 자기 속으로 다시 생각할 것이라",
+      "source_text_hash": "d08d6af22fe0e54ae2705b98b30d4c009122f2963074102c721bf48ff54fadd7",
+      "translation_text_hash": "925b1b7fdb7930c51cdf394b4cdc46558838f120f4af7a8a6b7e3516a20457c7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 외모만 보는도다 만일 사람이 자기가 그리스도에게 속한 줄을 믿을찐대 자기가 그리스도에게 속한 것 같이 우리도 그러한 줄을 자기 속으로 다시 생각할 것이라"
+      ],
+      "raw_text_hashes": [
+        "925b1b7fdb7930c51cdf394b4cdc46558838f120f4af7a8a6b7e3516a20457c7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:10:8",
+      "sequence": 28976,
+      "chapter_label": "2CO 10",
+      "verse_label": "8",
+      "locator": {
+        "book": "2CO",
+        "chapter": 10,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 10,
+          "verse": 8
+        }
+      ],
+      "en": "For even if I boast somewhat abundantly concerning our authority, which the Lord gave for building you up and not for casting you down, I will not be ashamed,",
+      "ko": "주께서 주신 권세는 너희를 파하려고 하신 것이 아니요 세우려고 하신 것이니 내가 이에 대하여 지나치게 자랑하여도 부끄럽지 아니하리라",
+      "source_text_hash": "6fb91d50b9648bed6e2e8089a468222117e63b4815abac81e7490c10c02dbfa7",
+      "translation_text_hash": "c29b28c0b438ad8705d63dc99d2d3db07d59a9ee97e4b61ea1316b69fd7f2dd5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 주신 권세는 너희를 파하려고 하신 것이 아니요 세우려고 하신 것이니 내가 이에 대하여 지나치게 자랑하여도 부끄럽지 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "c29b28c0b438ad8705d63dc99d2d3db07d59a9ee97e4b61ea1316b69fd7f2dd5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:10:9",
+      "sequence": 28977,
+      "chapter_label": "2CO 10",
+      "verse_label": "9",
+      "locator": {
+        "book": "2CO",
+        "chapter": 10,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 10,
+          "verse": 9
+        }
+      ],
+      "en": "that I may not seem as if I desire to terrify you by my letters.",
+      "ko": "이는 내가 편지들로 너희를 놀라게 하려는 것 같이 생각지 않게 함이니",
+      "source_text_hash": "897e4528159f3d9aea3007b8a60a49f1eb3d1fe8718c5570618ebe40a5af7981",
+      "translation_text_hash": "213ef8589579b018626254f951653d276898fc53959daa6cc00efa3daa2210ad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 내가 편지들로 너희를 놀라게 하려는 것 같이 생각지 않게 함이니"
+      ],
+      "raw_text_hashes": [
+        "213ef8589579b018626254f951653d276898fc53959daa6cc00efa3daa2210ad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:10:10",
+      "sequence": 28978,
+      "chapter_label": "2CO 10",
+      "verse_label": "10",
+      "locator": {
+        "book": "2CO",
+        "chapter": 10,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 10,
+          "verse": 10
+        }
+      ],
+      "en": "For, “His letters”, they say, “are weighty and strong, but his bodily presence is weak, and his speech is despised.”",
+      "ko": "저희 말이 그 편지들은 중하고 힘이 있으나 그 몸으로 대할 때는 약하고 말이 시원치 않다 하니",
+      "source_text_hash": "462bca80d845069dccc1e57b112482060d636ead548d3d3e00c61374d10e15d2",
+      "translation_text_hash": "80dc035f795c089f902bf0985ce03c6e9aef1972b6faaf005fe5eeb1c699fb6c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희 말이 그 편지들은 중하고 힘이 있으나 그 몸으로 대할 때는 약하고 말이 시원치 않다 하니"
+      ],
+      "raw_text_hashes": [
+        "80dc035f795c089f902bf0985ce03c6e9aef1972b6faaf005fe5eeb1c699fb6c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:10:11",
+      "sequence": 28979,
+      "chapter_label": "2CO 10",
+      "verse_label": "11",
+      "locator": {
+        "book": "2CO",
+        "chapter": 10,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 10,
+          "verse": 11
+        }
+      ],
+      "en": "Let such a person consider this, that what we are in word by letters when we are absent, such are we also in deed when we are present.",
+      "ko": "이런 사람은 우리가 떠나 있을 때에 편지들로 말하는 자가 어떠한 자이면 함께 있을 때에 행하는 자도 그와 같은 자인줄 알라",
+      "source_text_hash": "e005c793e58aebc38941f6f9bd6bac7e14384be861ce778a764c0d68a7de08e9",
+      "translation_text_hash": "ee7e22821881887769f31309c32e33f23660f7619b480dc449d2828f14ace51c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이런 사람은 우리가 떠나 있을 때에 편지들로 말하는 자가 어떠한 자이면 함께 있을 때에 행하는 자도 그와 같은 자인줄 알라"
+      ],
+      "raw_text_hashes": [
+        "ee7e22821881887769f31309c32e33f23660f7619b480dc449d2828f14ace51c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:10:12",
+      "sequence": 28980,
+      "chapter_label": "2CO 10",
+      "verse_label": "12",
+      "locator": {
+        "book": "2CO",
+        "chapter": 10,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 10,
+          "verse": 12
+        }
+      ],
+      "en": "For we are not bold to number or compare ourselves with some of those who commend themselves. But they themselves, measuring themselves by themselves, and comparing themselves with themselves, are without understanding.",
+      "ko": "우리가 어떤 자기를 칭찬하는 자로 더불어 감히 짝하며 비교할 수 없노라 그러나 저희가 자기로서 자기를 헤아리고 자기로서 자기를 비교하니 지혜가 없도다",
+      "source_text_hash": "2b08cf5d21da3c45eccf43bde3fbfbc5da507be8e706c293c751696918be5a62",
+      "translation_text_hash": "298c2a21b0b5039dc75fb4535636778c52a13d4e4aba857f8fd31b72187207e8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 어떤 자기를 칭찬하는 자로 더불어 감히 짝하며 비교할 수 없노라 그러나 저희가 자기로서 자기를 헤아리고 자기로서 자기를 비교하니 지혜가 없도다"
+      ],
+      "raw_text_hashes": [
+        "298c2a21b0b5039dc75fb4535636778c52a13d4e4aba857f8fd31b72187207e8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:10:13",
+      "sequence": 28981,
+      "chapter_label": "2CO 10",
+      "verse_label": "13",
+      "locator": {
+        "book": "2CO",
+        "chapter": 10,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 10,
+          "verse": 13
+        }
+      ],
+      "en": "But we will not boast beyond proper limits, but within the boundaries with which God appointed to us, which reach even to you.",
+      "ko": "그러나 우리는 분량 밖의 자랑을 하지않고 오직 하나님이 우리에게 분량으로 나눠 주신 그 분량의 한계를 따라 하노니 곧 너희에게까지 이른 것이라",
+      "source_text_hash": "ca14e1729d5940e96f68d3ca432f59b3c947833e1120ccbac59cdb51c226eb75",
+      "translation_text_hash": "75600518981fa1e3b4f427dbb1fbb6bb1f1bd8f07b52c346b45b49dd9f926e66",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 우리는 분량 밖의 자랑을 하지않고 오직 하나님이 우리에게 분량으로 나눠 주신 그 분량의 한계를 따라 하노니 곧 너희에게까지 이른 것이라"
+      ],
+      "raw_text_hashes": [
+        "75600518981fa1e3b4f427dbb1fbb6bb1f1bd8f07b52c346b45b49dd9f926e66"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:10:14",
+      "sequence": 28982,
+      "chapter_label": "2CO 10",
+      "verse_label": "14",
+      "locator": {
+        "book": "2CO",
+        "chapter": 10,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 10,
+          "verse": 14
+        }
+      ],
+      "en": "For we don’t stretch ourselves too much, as though we didn’t reach to you. For we came even as far as to you with the Good News of Christ,",
+      "ko": "우리가 너희에게 미치지 못할 자로서 스스로 지나쳐 나아간 것이 아니요 그리스도의 복음으로 너희에게까지 이른 것이라",
+      "source_text_hash": "6a5cc71dd1be050507f7d89879206171d306d0c78525e114e21b1207d320431d",
+      "translation_text_hash": "378c37ccf8243f591c8a096db53cb59af77ada1bb7d1b125513ae3f146378baa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 너희에게 미치지 못할 자로서 스스로 지나쳐 나아간 것이 아니요 그리스도의 복음으로 너희에게까지 이른 것이라"
+      ],
+      "raw_text_hashes": [
+        "378c37ccf8243f591c8a096db53cb59af77ada1bb7d1b125513ae3f146378baa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:10:15",
+      "sequence": 28983,
+      "chapter_label": "2CO 10",
+      "verse_label": "15",
+      "locator": {
+        "book": "2CO",
+        "chapter": 10,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 10,
+          "verse": 15
+        }
+      ],
+      "en": "not boasting beyond proper limits in other men’s labors, but having hope that as your faith grows, we will be abundantly enlarged by you in our sphere of influence,",
+      "ko": "우리는 남의 수고를 가지고 분량 밖에 자랑하는 것이 아니라 오직 너희 믿음이 더할수록 우리의 한계를 따라 너희 가운데서 더욱 위대하여지기를 바라노라",
+      "source_text_hash": "6b6d3b340fb9cceacbe1186246a8c23a5af1b2b1be2fcd61f860ca0b3821cfb5",
+      "translation_text_hash": "6f20d56a8fbbe0fa004c04b5ff7c95cbf6230cadb1f246b95d3aef478d790154",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리는 남의 수고를 가지고 분량 밖에 자랑하는 것이 아니라 오직 너희 믿음이 더할수록 우리의 한계를 따라 너희 가운데서 더욱 위대하여지기를 바라노라"
+      ],
+      "raw_text_hashes": [
+        "6f20d56a8fbbe0fa004c04b5ff7c95cbf6230cadb1f246b95d3aef478d790154"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:10:16",
+      "sequence": 28984,
+      "chapter_label": "2CO 10",
+      "verse_label": "16",
+      "locator": {
+        "book": "2CO",
+        "chapter": 10,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 10,
+          "verse": 16
+        }
+      ],
+      "en": "so as to preach the Good News even to the parts beyond you, not to boast in what someone else has already done.",
+      "ko": "이는 남의 한계 안에 예비한 것으로 자랑하지 아니하고 너희 지경을 넘어 복음을 전하려 함이라",
+      "source_text_hash": "b0969d4c00111857c764a1e268317e079b27a1f89bf0887b09fe3cbb12aec356",
+      "translation_text_hash": "c2a3ec760909686825ff2ee8d343235d4a189ef2941a235b29ca359028b9ea78",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 남의 한계 안에 예비한 것으로 자랑하지 아니하고 너희 지경을 넘어 복음을 전하려 함이라"
+      ],
+      "raw_text_hashes": [
+        "c2a3ec760909686825ff2ee8d343235d4a189ef2941a235b29ca359028b9ea78"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:10:17",
+      "sequence": 28985,
+      "chapter_label": "2CO 10",
+      "verse_label": "17",
+      "locator": {
+        "book": "2CO",
+        "chapter": 10,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 10,
+          "verse": 17
+        }
+      ],
+      "en": "But “he who boasts, let him boast in the Lord.”",
+      "ko": "자랑하는 자는 주 안에서 자랑할찌니라",
+      "source_text_hash": "beb3d050bf0ed1815288c1900c712d34c7b4e53db644320b43f068a6f041cdfd",
+      "translation_text_hash": "811fb4d904a4b34148f2b487ea508c4b5a7a5959406929e019e33b2e94bc081d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자랑하는 자는 주 안에서 자랑할찌니라"
+      ],
+      "raw_text_hashes": [
+        "811fb4d904a4b34148f2b487ea508c4b5a7a5959406929e019e33b2e94bc081d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:10:18",
+      "sequence": 28986,
+      "chapter_label": "2CO 10",
+      "verse_label": "18",
+      "locator": {
+        "book": "2CO",
+        "chapter": 10,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 10,
+          "verse": 18
+        }
+      ],
+      "en": "For it isn’t he who commends himself who is approved, but whom the Lord commends.",
+      "ko": "옳다 인정함을 받는 자는 자기를 칭찬하는 자가 아니요 오직 주께서 칭찬하시는 자니라",
+      "source_text_hash": "afaaf886dca92e03c35546073be9f0c98e6bce6aef9681a93fc3ba2c6d5d084e",
+      "translation_text_hash": "107c5ddfa091f2633dc4d7ddd3a7a056b14264cc11e7504fc0392da46a5748d3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "옳다 인정함을 받는 자는 자기를 칭찬하는 자가 아니요 오직 주께서 칭찬하시는 자니라"
+      ],
+      "raw_text_hashes": [
+        "107c5ddfa091f2633dc4d7ddd3a7a056b14264cc11e7504fc0392da46a5748d3"
+      ]
+    }
+  ]
+}

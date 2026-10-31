@@ -1,0 +1,397 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:062",
+  "unit_ordinal": 540,
+  "unit_label": "PSA 62",
+  "book_code": "PSA",
+  "chapter_number": 62,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:62:1",
+      "sequence": 14829,
+      "chapter_label": "PSA 62",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 62,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 62,
+          "verse": 1
+        }
+      ],
+      "en": "My soul rests in God alone. My salvation is from him.",
+      "ko": "나의 영혼이 잠잠히 하나님만 바람이여 나의 구원이 그에게서 나는도다",
+      "source_text_hash": "2755e34748cf338a9bfc3ef7219f80dd2d97cbcd7fe7458f14359535e5668772",
+      "translation_text_hash": "71a1a5ef56b268dab05f7605b04f957536569188d52f29a8cbc3d2b7bded4687",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 영혼이 잠잠히 하나님만 바람이여 나의 구원이 그에게서 나는도다"
+      ],
+      "raw_text_hashes": [
+        "71a1a5ef56b268dab05f7605b04f957536569188d52f29a8cbc3d2b7bded4687"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:62:2",
+      "sequence": 14830,
+      "chapter_label": "PSA 62",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 62,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 62,
+          "verse": 2
+        }
+      ],
+      "en": "He alone is my rock, my salvation, and my fortress. I will never be greatly shaken.",
+      "ko": "오직 저만 나의 반석이시요 나의 구원이시요 나의 산성이시니 내가 크게 요동치 아니하리로다",
+      "source_text_hash": "ef39885a5a85e0b7e833a0825bd91c90026900e857dec9e5cc17f2a00ff6c042",
+      "translation_text_hash": "093ddea6ff7f8eafa4834ae599abefc02d52b69633526486008b18fe71414b7e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 저만 나의 반석이시요 나의 구원이시요 나의 산성이시니 내가 크게 요동치 아니하리로다"
+      ],
+      "raw_text_hashes": [
+        "093ddea6ff7f8eafa4834ae599abefc02d52b69633526486008b18fe71414b7e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:62:3",
+      "sequence": 14831,
+      "chapter_label": "PSA 62",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 62,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 62,
+          "verse": 3
+        }
+      ],
+      "en": "How long will you assault a man? Would all of you throw him down, like a leaning wall, like a tottering fence?",
+      "ko": "넘어지는 담과 흔들리는 울타리 같은 사람을 죽이려고 너희가 일제히 박격하기를 언제까지 하려느냐",
+      "source_text_hash": "a3699f44454bdd63993fc916606d004b0bb9691aad081ea6fa05eb38dab6a58c",
+      "translation_text_hash": "a6353c4a563aa3e3f1c55d4dbe8ec3c707f9bae180afdbf5ff8463c6ede87dfe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "넘어지는 담과 흔들리는 울타리 같은 사람을 죽이려고 너희가 일제히 박격하기를 언제까지 하려느냐"
+      ],
+      "raw_text_hashes": [
+        "a6353c4a563aa3e3f1c55d4dbe8ec3c707f9bae180afdbf5ff8463c6ede87dfe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:62:4",
+      "sequence": 14832,
+      "chapter_label": "PSA 62",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 62,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 62,
+          "verse": 4
+        }
+      ],
+      "en": "They fully intend to throw him down from his lofty place. They delight in lies. They bless with their mouth, but they curse inwardly. Selah.",
+      "ko": "저희가 그를 그 높은 위에서 떨어뜨리기만 꾀하고 거짓을 즐겨하니 입으로는 축복이요 속으로는 저주로다(셀라)",
+      "source_text_hash": "9fc3031f13fc0f9100898c773e7145d705993ad2153ea04af44aee47caaa092c",
+      "translation_text_hash": "7bd3552dfdabaa2c7933cab4ce308c31fd9f829a4c29510a59bf0f13a05d1c54",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 그를 그 높은 위에서 떨어뜨리기만 꾀하고 거짓을 즐겨하니 입으로는 축복이요 속으로는 저주로다(셀라)"
+      ],
+      "raw_text_hashes": [
+        "7bd3552dfdabaa2c7933cab4ce308c31fd9f829a4c29510a59bf0f13a05d1c54"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:62:5",
+      "sequence": 14833,
+      "chapter_label": "PSA 62",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 62,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 62,
+          "verse": 5
+        }
+      ],
+      "en": "My soul, wait in silence for God alone, for my expectation is from him.",
+      "ko": "나의 영혼아 잠잠히 하나님만 바라라 대저 나의 소망이 저로 좇아 나는도다",
+      "source_text_hash": "a1e70266f7995fd3a5d5200df98b1a8099322723850e1332640c68728d7863bc",
+      "translation_text_hash": "7d51f98f42d5c3a08472db203c49f18f748bc8892adbfbc652f08897c9d1dee9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 영혼아 잠잠히 하나님만 바라라 대저 나의 소망이 저로 좇아 나는도다"
+      ],
+      "raw_text_hashes": [
+        "7d51f98f42d5c3a08472db203c49f18f748bc8892adbfbc652f08897c9d1dee9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:62:6",
+      "sequence": 14834,
+      "chapter_label": "PSA 62",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 62,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 62,
+          "verse": 6
+        }
+      ],
+      "en": "He alone is my rock and my salvation, my fortress. I will not be shaken.",
+      "ko": "오직 저만 나의 반석이시요 나의 구원이시요 나의 산성이시니 내가 요동치 아니하리로다",
+      "source_text_hash": "8cbe5c1c203c3f5de4d0c7f9857d7de8704a2ee10e1dccc2e20a2e63430f73ca",
+      "translation_text_hash": "f7eefbf6b1362904001d6b3be6e4cdf60877df7d2b514398a886dd37cdc8e791",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 저만 나의 반석이시요 나의 구원이시요 나의 산성이시니 내가 요동치 아니하리로다"
+      ],
+      "raw_text_hashes": [
+        "f7eefbf6b1362904001d6b3be6e4cdf60877df7d2b514398a886dd37cdc8e791"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:62:7",
+      "sequence": 14835,
+      "chapter_label": "PSA 62",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 62,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 62,
+          "verse": 7
+        }
+      ],
+      "en": "My salvation and my honor is with God. The rock of my strength, and my refuge, is in God.",
+      "ko": "나의 구원과 영광이 하나님께 있음이여 내 힘의 반석과 피난처도 하나님께 있도다",
+      "source_text_hash": "67f8c4317390f355368e6a2fc4bfe3ee939bb370368edfd3ed0e20eaa9f661e1",
+      "translation_text_hash": "ba6eeaa48b97d4c6af7e13ee69ca8e471a6a07ea72aebcc6ee4ba00925776e6d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 구원과 영광이 하나님께 있음이여 내 힘의 반석과 피난처도 하나님께 있도다"
+      ],
+      "raw_text_hashes": [
+        "ba6eeaa48b97d4c6af7e13ee69ca8e471a6a07ea72aebcc6ee4ba00925776e6d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:62:8",
+      "sequence": 14836,
+      "chapter_label": "PSA 62",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 62,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 62,
+          "verse": 8
+        }
+      ],
+      "en": "Trust in him at all times, you people. Pour out your heart before him. God is a refuge for us. Selah.",
+      "ko": "백성들아 시시로 저를 의지하고 그 앞에 마음을 토하라 하나님은 우리의 피난처시로다(셀라)",
+      "source_text_hash": "056d564390f8cd2684ac2d0d129a2cf40511cb313b28044a435fe4ce059a8cb6",
+      "translation_text_hash": "14cf85ee7e20769b5d47570d1af84383da790638d76615f2f425ad8588bd27bb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "백성들아 시시로 저를 의지하고 그 앞에 마음을 토하라 하나님은 우리의 피난처시로다(셀라)"
+      ],
+      "raw_text_hashes": [
+        "14cf85ee7e20769b5d47570d1af84383da790638d76615f2f425ad8588bd27bb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:62:9",
+      "sequence": 14837,
+      "chapter_label": "PSA 62",
+      "verse_label": "9",
+      "locator": {
+        "book": "PSA",
+        "chapter": 62,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 62,
+          "verse": 9
+        }
+      ],
+      "en": "Surely men of low degree are just a breath, and men of high degree are a lie. In the balances they will go up. They are together lighter than a breath.",
+      "ko": "진실로 천한 자도 헛되고 높은 자도 거짓되니 저울에 달면 들려 입김보다 경하리로다",
+      "source_text_hash": "b61d0d04752e3f20397818b09c6b63e91d7b750394b684071d857720705fea83",
+      "translation_text_hash": "5faaf35fc3dda71aad5b3d3676bde0ac0f76fc39540b5c65304e5eb070536979",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "진실로 천한 자도 헛되고 높은 자도 거짓되니 저울에 달면 들려 입김보다 경하리로다"
+      ],
+      "raw_text_hashes": [
+        "5faaf35fc3dda71aad5b3d3676bde0ac0f76fc39540b5c65304e5eb070536979"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:62:10",
+      "sequence": 14838,
+      "chapter_label": "PSA 62",
+      "verse_label": "10",
+      "locator": {
+        "book": "PSA",
+        "chapter": 62,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 62,
+          "verse": 10
+        }
+      ],
+      "en": "Don’t trust in oppression. Don’t become vain in robbery. If riches increase, don’t set your heart on them.",
+      "ko": "포학을 의지하지 말며 탈취한 것으로 허망하여지지 말며 재물이 늘어도 거기 치심치 말찌어다",
+      "source_text_hash": "a71348e9997c226b73a7a2918e9ecbaf90851a2a344862956d8c283552e756ea",
+      "translation_text_hash": "7fad09eafbf81a265ac4c4d4d3c8e157dcb376dc6836ae70b69112162799c75b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "포학을 의지하지 말며 탈취한 것으로 허망하여지지 말며 재물이 늘어도 거기 치심치 말찌어다"
+      ],
+      "raw_text_hashes": [
+        "7fad09eafbf81a265ac4c4d4d3c8e157dcb376dc6836ae70b69112162799c75b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:62:11",
+      "sequence": 14839,
+      "chapter_label": "PSA 62",
+      "verse_label": "11",
+      "locator": {
+        "book": "PSA",
+        "chapter": 62,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 62,
+          "verse": 11
+        }
+      ],
+      "en": "God has spoken once; twice I have heard this, that power belongs to God.",
+      "ko": "하나님이 한두번 하신 말씀을 내가 들었나니 권능은 하나님께 속하였다 하셨도다",
+      "source_text_hash": "66a58c55f9b7425d9af852f37b42de439dad9814a0dea962c97ee883e3e82ce9",
+      "translation_text_hash": "2a31dddb4b9507c04c10f62b16ad61d03fcf7691dba3c5ac6442ec805ab82976",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 한두번 하신 말씀을 내가 들었나니 권능은 하나님께 속하였다 하셨도다"
+      ],
+      "raw_text_hashes": [
+        "2a31dddb4b9507c04c10f62b16ad61d03fcf7691dba3c5ac6442ec805ab82976"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:62:12",
+      "sequence": 14840,
+      "chapter_label": "PSA 62",
+      "verse_label": "12",
+      "locator": {
+        "book": "PSA",
+        "chapter": 62,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 62,
+          "verse": 12
+        }
+      ],
+      "en": "Also to you, Lord, belongs loving kindness, for you reward every man according to his work.",
+      "ko": "주여 인자함도 주께 속하였사오니 주께서 각 사람이 행한 대로 갚으심이니이다",
+      "source_text_hash": "850ba29a2f2a7fda0765fae11723e0b8f1d96b107dad7916e79d04916f5dabb3",
+      "translation_text_hash": "2f3fcbbc2bd1c71ba8991beb0628278ec952ade1f63320a876f0e9b9d3ab6405",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주여 인자함도 주께 속하였사오니 주께서 각 사람이 행한 대로 갚으심이니이다"
+      ],
+      "raw_text_hashes": [
+        "2f3fcbbc2bd1c71ba8991beb0628278ec952ade1f63320a876f0e9b9d3ab6405"
+      ]
+    }
+  ]
+}

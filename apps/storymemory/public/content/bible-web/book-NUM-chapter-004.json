@@ -1,0 +1,1581 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:NUM:chapter:004",
+  "unit_ordinal": 121,
+  "unit_label": "NUM 4",
+  "book_code": "NUM",
+  "chapter_number": 4,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:NUM:4:1",
+      "sequence": 3745,
+      "chapter_label": "NUM 4",
+      "verse_label": "1",
+      "locator": {
+        "book": "NUM",
+        "chapter": 4,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 4,
+          "verse": 1
+        }
+      ],
+      "en": "The LORD spoke to Moses and to Aaron, saying,",
+      "ko": "여호와께서 또 모세와 아론에게 일러 가라사대",
+      "source_text_hash": "e6c7cd4c60d1b58d8caa7e02e4352f1d925cf188a6f005f934b711230470272a",
+      "translation_text_hash": "744b8e355bb045aaf83a9dabbc44be113ca91c05f8c7d84d91f67ae3d124bfc1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 또 모세와 아론에게 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "744b8e355bb045aaf83a9dabbc44be113ca91c05f8c7d84d91f67ae3d124bfc1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:4:2",
+      "sequence": 3746,
+      "chapter_label": "NUM 4",
+      "verse_label": "2",
+      "locator": {
+        "book": "NUM",
+        "chapter": 4,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 4,
+          "verse": 2
+        }
+      ],
+      "en": "“Take a census of the sons of Kohath from among the sons of Levi, by their families, by their fathers’ houses,",
+      "ko": "레위 자손 중에서 고핫 자손을 그들의 가족과 종족을 따라 총계할찌니",
+      "source_text_hash": "3b6a2c0cecb867576cfad509d82c4cab23bee9c54155fbfa52499a415100eda6",
+      "translation_text_hash": "75c660dc9610f01b86a8e72139d5c81d608d3b6f66548cf224f870a19f7bee75",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "레위 자손 중에서 고핫 자손을 그들의 가족과 종족을 따라 총계할찌니"
+      ],
+      "raw_text_hashes": [
+        "75c660dc9610f01b86a8e72139d5c81d608d3b6f66548cf224f870a19f7bee75"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:4:3",
+      "sequence": 3747,
+      "chapter_label": "NUM 4",
+      "verse_label": "3",
+      "locator": {
+        "book": "NUM",
+        "chapter": 4,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 4,
+          "verse": 3
+        }
+      ],
+      "en": "from thirty years old and upward even until fifty years old, all who enter into the service to do the work in the Tent of Meeting.",
+      "ko": "곧 삼십세 이상으로 오십세까지 회막의 일을 하기 위하여 그 역사에 참가할만한 모든 자를 계수하라",
+      "source_text_hash": "3ab1cb2f4b3814e8f090f49d83bbe135dc643d5a101574e72d8175687c12edaa",
+      "translation_text_hash": "5abdbb61bb91935f4e280a9ba7c3282cf83c9ed2bac765d11cd504ca44b4452e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 삼십세 이상으로 오십세까지 회막의 일을 하기 위하여 그 역사에 참가할만한 모든 자를 계수하라"
+      ],
+      "raw_text_hashes": [
+        "5abdbb61bb91935f4e280a9ba7c3282cf83c9ed2bac765d11cd504ca44b4452e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:4:4",
+      "sequence": 3748,
+      "chapter_label": "NUM 4",
+      "verse_label": "4",
+      "locator": {
+        "book": "NUM",
+        "chapter": 4,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 4,
+          "verse": 4
+        }
+      ],
+      "en": "“This is the service of the sons of Kohath in the Tent of Meeting, regarding the most holy things.",
+      "ko": "고핫 자손이 회막 안 지성물에 대하여 할 일은 이러하니라",
+      "source_text_hash": "ad65db29a2adb0b9d59879ddc318d36add3be76bae647f3b8ba9ef8533110db6",
+      "translation_text_hash": "5e0bda81e76c3593f3b3a060b58193449782b4f927a1b6a66ef97e6278505c87",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "고핫 자손이 회막 안 지성물에 대하여 할 일은 이러하니라"
+      ],
+      "raw_text_hashes": [
+        "5e0bda81e76c3593f3b3a060b58193449782b4f927a1b6a66ef97e6278505c87"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:4:5",
+      "sequence": 3749,
+      "chapter_label": "NUM 4",
+      "verse_label": "5",
+      "locator": {
+        "book": "NUM",
+        "chapter": 4,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 4,
+          "verse": 5
+        }
+      ],
+      "en": "When the camp moves forward, Aaron shall go in with his sons; and they shall take down the veil of the screen, cover the ark of the Testimony with it,",
+      "ko": "행진할 때에 아론과 그 아들들이 들어가서 간 막는 장을 걷어 증거궤를 덮고",
+      "source_text_hash": "5eb57ac1426e5f459831ddba5119b821998bd956dc6a6ce26fb1e1004538ce28",
+      "translation_text_hash": "b06fbd20e988c46398a71764b22ed7f801db62e9aa6a79fd16d5af95a7f36e02",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "행진할 때에 아론과 그 아들들이 들어가서 간 막는 장을 걷어 증거궤를 덮고"
+      ],
+      "raw_text_hashes": [
+        "b06fbd20e988c46398a71764b22ed7f801db62e9aa6a79fd16d5af95a7f36e02"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:4:6",
+      "sequence": 3750,
+      "chapter_label": "NUM 4",
+      "verse_label": "6",
+      "locator": {
+        "book": "NUM",
+        "chapter": 4,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 4,
+          "verse": 6
+        }
+      ],
+      "en": "put a covering of sealskin on it, spread a blue cloth over it, and put in its poles.",
+      "ko": "그 위에 해달의 가죽으로 덮고 그 위에 순청색 보자기를 덮은 후에 그 채를 꿰고",
+      "source_text_hash": "e9b417075195ba93c8a3290b457c82d5723cf16790f6024fe6bd7b331e92efb3",
+      "translation_text_hash": "717f49716877aa32424a9bd0df1a280c209c721a39bfcb9857dd4912870353f5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 위에 해달의 가죽으로 덮고 그 위에 순청색 보자기를 덮은 후에 그 채를 꿰고"
+      ],
+      "raw_text_hashes": [
+        "717f49716877aa32424a9bd0df1a280c209c721a39bfcb9857dd4912870353f5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:4:7",
+      "sequence": 3751,
+      "chapter_label": "NUM 4",
+      "verse_label": "7",
+      "locator": {
+        "book": "NUM",
+        "chapter": 4,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 4,
+          "verse": 7
+        }
+      ],
+      "en": "“On the table of show bread they shall spread a blue cloth, and put on it the dishes, the spoons, the bowls, and the cups with which to pour out; and the continual bread shall be on it.",
+      "ko": "또 진설병의 상에 청색 보자기를 펴고 대접들과 숟가락들과 주발들과 붓는 잔들을 그 위에 두고 또 항상 진설하는 떡을 그 위에 두고",
+      "source_text_hash": "9c9d700a15b1b3144f18727c62fab64beb94d7cfe58d7b7b8de25735c4574903",
+      "translation_text_hash": "22fb4ec66162be9b3fed1ec198dbd94d7103d5a70a36d1c9699ab166cbf01452",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 진설병의 상에 청색 보자기를 펴고 대접들과 숟가락들과 주발들과 붓는 잔들을 그 위에 두고 또 항상 진설하는 떡을 그 위에 두고"
+      ],
+      "raw_text_hashes": [
+        "22fb4ec66162be9b3fed1ec198dbd94d7103d5a70a36d1c9699ab166cbf01452"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:4:8",
+      "sequence": 3752,
+      "chapter_label": "NUM 4",
+      "verse_label": "8",
+      "locator": {
+        "book": "NUM",
+        "chapter": 4,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 4,
+          "verse": 8
+        }
+      ],
+      "en": "They shall spread on them a scarlet cloth, and cover it with a covering of sealskin, and shall put in its poles.",
+      "ko": "홍색 보자기를 그 위에 펴고 그것을 해달의 가죽 덮개로 덮은 후에 그 채를 꿰고",
+      "source_text_hash": "9b6b28aacce3d150d6059019ae6dbf112510dfbf84e90e23e3d03e1c7b8c972d",
+      "translation_text_hash": "eab92d41031ff577692dacf95f666dff1a16b94a2f608220c8143b2fcbf960ee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "홍색 보자기를 그 위에 펴고 그것을 해달의 가죽 덮개로 덮은 후에 그 채를 꿰고"
+      ],
+      "raw_text_hashes": [
+        "eab92d41031ff577692dacf95f666dff1a16b94a2f608220c8143b2fcbf960ee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:4:9",
+      "sequence": 3753,
+      "chapter_label": "NUM 4",
+      "verse_label": "9",
+      "locator": {
+        "book": "NUM",
+        "chapter": 4,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 4,
+          "verse": 9
+        }
+      ],
+      "en": "“They shall take a blue cloth and cover the lamp stand of the light, its lamps, its snuffers, its snuff dishes, and all its oil vessels, with which they minister to it.",
+      "ko": "또 청색 보자기를 취하여 등대와 그 등잔들과 그 불집게들과 불똥 그릇들과 그 쓰는바 모든 기름 그릇을 덮고",
+      "source_text_hash": "ab8188bf63b450610d64a4f3506f16efc12c5196109aff9cc794a1e5111ff0ea",
+      "translation_text_hash": "8ccf23700394d2de60f56f8e8bfd26901a4918a6f324109c6219c131d2ef9b28",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 청색 보자기를 취하여 등대와 그 등잔들과 그 불집게들과 불똥 그릇들과 그 쓰는바 모든 기름 그릇을 덮고"
+      ],
+      "raw_text_hashes": [
+        "8ccf23700394d2de60f56f8e8bfd26901a4918a6f324109c6219c131d2ef9b28"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:4:10",
+      "sequence": 3754,
+      "chapter_label": "NUM 4",
+      "verse_label": "10",
+      "locator": {
+        "book": "NUM",
+        "chapter": 4,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 4,
+          "verse": 10
+        }
+      ],
+      "en": "They shall put it and all its vessels within a covering of sealskin, and shall put it on the frame.",
+      "ko": "등대와 그 모든 기구를 해달의 가죽 덮개 안에 넣어 메는 틀 위에 두고",
+      "source_text_hash": "6cf75d5916f0476d2362c38ba44ddbc600ebc7f55b9daaf7178ca6502231e63a",
+      "translation_text_hash": "8ad234e8ca8a89f984ec02b6b0e031fb04c3eea0db3a4d8b67e7487daddfd09c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "등대와 그 모든 기구를 해달의 가죽 덮개 안에 넣어 메는 틀 위에 두고"
+      ],
+      "raw_text_hashes": [
+        "8ad234e8ca8a89f984ec02b6b0e031fb04c3eea0db3a4d8b67e7487daddfd09c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:4:11",
+      "sequence": 3755,
+      "chapter_label": "NUM 4",
+      "verse_label": "11",
+      "locator": {
+        "book": "NUM",
+        "chapter": 4,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 4,
+          "verse": 11
+        }
+      ],
+      "en": "“On the golden altar they shall spread a blue cloth, and cover it with a covering of sealskin, and shall put in its poles.",
+      "ko": "또 금단 위에 청색 보자기를 펴고 해달의 가죽 덮개로 덮고 그 채를 꿰고",
+      "source_text_hash": "9585afa6a0ae3cc34c491ada0e007f35df044a63b592cb6fbd14f6d66ca701f3",
+      "translation_text_hash": "39aa44cf8eb4f54255da491ad2c4923c6e445a4f80f7014fd5f0060c9fa2393f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 금단 위에 청색 보자기를 펴고 해달의 가죽 덮개로 덮고 그 채를 꿰고"
+      ],
+      "raw_text_hashes": [
+        "39aa44cf8eb4f54255da491ad2c4923c6e445a4f80f7014fd5f0060c9fa2393f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:4:12",
+      "sequence": 3756,
+      "chapter_label": "NUM 4",
+      "verse_label": "12",
+      "locator": {
+        "book": "NUM",
+        "chapter": 4,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 4,
+          "verse": 12
+        }
+      ],
+      "en": "“They shall take all the vessels of ministry with which they minister in the sanctuary, and put them in a blue cloth, cover them with a covering of sealskin, and shall put them on the frame.",
+      "ko": "또 성소에서 봉사하는데 쓰는 모든 기명을 취하여 청색 보자기에 싸서 해달의 가죽 덮개로 덮어 메는 틀 위에 두고",
+      "source_text_hash": "d4d45c53fff4a3cd81e2507778b968e055332954a39f1e4e794f02804f0d4eee",
+      "translation_text_hash": "0c7b1a26661b1029a322e69595be0b135ca59d7aa6d7c569f5e83d86bb1bd80f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 성소에서 봉사하는데 쓰는 모든 기명을 취하여 청색 보자기에 싸서 해달의 가죽 덮개로 덮어 메는 틀 위에 두고"
+      ],
+      "raw_text_hashes": [
+        "0c7b1a26661b1029a322e69595be0b135ca59d7aa6d7c569f5e83d86bb1bd80f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:4:13",
+      "sequence": 3757,
+      "chapter_label": "NUM 4",
+      "verse_label": "13",
+      "locator": {
+        "book": "NUM",
+        "chapter": 4,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 4,
+          "verse": 13
+        }
+      ],
+      "en": "“They shall take away the ashes from the altar, and spread a purple cloth on it.",
+      "ko": "또 단의 재를 버리고 그 단 위에 자색 보자기를 펴고",
+      "source_text_hash": "90ecda12e1a5722dcf28ca46ef2de47d12da76c5197795351fd11a629352dacb",
+      "translation_text_hash": "847f0cc26f1c92f7d6232bcbda45ef569ba0f479fe6fd66072c67077c9bf4250",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 단의 재를 버리고 그 단 위에 자색 보자기를 펴고"
+      ],
+      "raw_text_hashes": [
+        "847f0cc26f1c92f7d6232bcbda45ef569ba0f479fe6fd66072c67077c9bf4250"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:4:14",
+      "sequence": 3758,
+      "chapter_label": "NUM 4",
+      "verse_label": "14",
+      "locator": {
+        "book": "NUM",
+        "chapter": 4,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 4,
+          "verse": 14
+        }
+      ],
+      "en": "They shall put on it all its vessels with which they minister about it, the fire pans, the meat hooks, the shovels, and the basins—all the vessels of the altar; and they shall spread on it a covering of sealskin, and put in its poles.",
+      "ko": "봉사하는데 쓰는 모든 기구 곧 불 옮기는 그릇들과 고기 갈고리들과 부삽들과 대야들과 단의 모든 기구를 두고 해달의 가죽 덮개를 그 위에 덮고 그 채를 꿸 것이며",
+      "source_text_hash": "738a887b905e57f34be547f46416d5eaae64d5d1e6c0ff6c77f5c4b6b56a171a",
+      "translation_text_hash": "3fa4aff2bfaa35f062978eb3ac330c5b308378ad44bceeec9d181eed2bfb2ced",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "봉사하는데 쓰는 모든 기구 곧 불 옮기는 그릇들과 고기 갈고리들과 부삽들과 대야들과 단의 모든 기구를 두고 해달의 가죽 덮개를 그 위에 덮고 그 채를 꿸 것이며"
+      ],
+      "raw_text_hashes": [
+        "3fa4aff2bfaa35f062978eb3ac330c5b308378ad44bceeec9d181eed2bfb2ced"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:4:15",
+      "sequence": 3759,
+      "chapter_label": "NUM 4",
+      "verse_label": "15",
+      "locator": {
+        "book": "NUM",
+        "chapter": 4,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 4,
+          "verse": 15
+        }
+      ],
+      "en": "“When Aaron and his sons have finished covering the sanctuary and all the furniture of the sanctuary, as the camp moves forward; after that, the sons of Kohath shall come to carry it; but they shall not touch the sanctuary, lest they die. The sons of Kohath shall carry these things belonging to the Tent of Meeting.",
+      "ko": "행진할 때에 아론과 그 아들들이 성소와 성소의 모든 기구 덮기를 필하거든 고핫 자손이 와서 멜 것이니라 그러나 성물은 만지지 말찌니 죽을까 하노라 회막 물건 중에서 이것들은 고핫 자손이 멜 것이며",
+      "source_text_hash": "1ccd90e29527b094a305f88a7a4a27e54538e426c53ba4366472ddb6aaa10239",
+      "translation_text_hash": "db31f4ff0f430bc148e603855017bc11722c7db05d5be9bb07021d0542c0923b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "행진할 때에 아론과 그 아들들이 성소와 성소의 모든 기구 덮기를 필하거든 고핫 자손이 와서 멜 것이니라 그러나 성물은 만지지 말찌니 죽을까 하노라 회막 물건 중에서 이것들은 고핫 자손이 멜 것이며"
+      ],
+      "raw_text_hashes": [
+        "db31f4ff0f430bc148e603855017bc11722c7db05d5be9bb07021d0542c0923b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:4:16",
+      "sequence": 3760,
+      "chapter_label": "NUM 4",
+      "verse_label": "16",
+      "locator": {
+        "book": "NUM",
+        "chapter": 4,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 4,
+          "verse": 16
+        }
+      ],
+      "en": "“The duty of Eleazar the son of Aaron the priest shall be the oil for the light, the sweet incense, the continual meal offering, and the anointing oil, the requirements of all the tabernacle, and of all that is in it, the sanctuary, and its furnishings.”",
+      "ko": "제사장 아론의 아들 엘르아살의 맡을 것은 등유와 분향할 향품과 항상 드리는 소제물과 관유며 또 장막의 전체와 그 중에 있는 모든 것과 성소와 그 모든 기구니라",
+      "source_text_hash": "4400880e0c8bde4d01091ae3a4c8ec959a85082fe93168a470a480d4ab22d6ae",
+      "translation_text_hash": "e1e446b65640f7927836026b75a52535530ca7c3030dc4610a1e899363312bdd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장 아론의 아들 엘르아살의 맡을 것은 등유와 분향할 향품과 항상 드리는 소제물과 관유며 또 장막의 전체와 그 중에 있는 모든 것과 성소와 그 모든 기구니라"
+      ],
+      "raw_text_hashes": [
+        "e1e446b65640f7927836026b75a52535530ca7c3030dc4610a1e899363312bdd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:4:17",
+      "sequence": 3761,
+      "chapter_label": "NUM 4",
+      "verse_label": "17",
+      "locator": {
+        "book": "NUM",
+        "chapter": 4,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 4,
+          "verse": 17
+        }
+      ],
+      "en": "The LORD spoke to Moses and to Aaron, saying,",
+      "ko": "여호와께서 또 모세와 아론에게 일러 가라사대",
+      "source_text_hash": "e6c7cd4c60d1b58d8caa7e02e4352f1d925cf188a6f005f934b711230470272a",
+      "translation_text_hash": "744b8e355bb045aaf83a9dabbc44be113ca91c05f8c7d84d91f67ae3d124bfc1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 또 모세와 아론에게 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "744b8e355bb045aaf83a9dabbc44be113ca91c05f8c7d84d91f67ae3d124bfc1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:4:18",
+      "sequence": 3762,
+      "chapter_label": "NUM 4",
+      "verse_label": "18",
+      "locator": {
+        "book": "NUM",
+        "chapter": 4,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 4,
+          "verse": 18
+        }
+      ],
+      "en": "“Don’t cut off the tribe of the families of the Kohathites from among the Levites;",
+      "ko": "너희는 고핫 족속의 지파를 레위인 중에서 끊어지게 말찌니",
+      "source_text_hash": "8d926a31d5002074dd3fb2c37c3956ed8aaf5f1d12dbb7ad8fec418661a772a6",
+      "translation_text_hash": "07106fdbcc9a68c89751d5f233eaefa43d600bc20a652a4d824a3b1f80b19556",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 고핫 족속의 지파를 레위인 중에서 끊어지게 말찌니"
+      ],
+      "raw_text_hashes": [
+        "07106fdbcc9a68c89751d5f233eaefa43d600bc20a652a4d824a3b1f80b19556"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:4:19",
+      "sequence": 3763,
+      "chapter_label": "NUM 4",
+      "verse_label": "19",
+      "locator": {
+        "book": "NUM",
+        "chapter": 4,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 4,
+          "verse": 19
+        }
+      ],
+      "en": "but do this to them, that they may live, and not die, when they approach the most holy things: Aaron and his sons shall go in and appoint everyone to his service and to his burden;",
+      "ko": "그들이 지성물에 접근할 때에 그 생명을 보존하고 죽지 않게 하기 위하여 너희는 이같이 하여 아론과 그 아들들이 들어가서 각 사람에게 그 할 일과 그 멜 것을 지휘할찌니라",
+      "source_text_hash": "7c108abef784e4dc568110284467839a743d0ac9d6d725d891a628913825dd6c",
+      "translation_text_hash": "09efc073f6fc85111a32495c319b2c9d2dfd4c7df5c4dffb8380a5a3c93ffbfb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 지성물에 접근할 때에 그 생명을 보존하고 죽지 않게 하기 위하여 너희는 이같이 하여 아론과 그 아들들이 들어가서 각 사람에게 그 할 일과 그 멜 것을 지휘할찌니라"
+      ],
+      "raw_text_hashes": [
+        "09efc073f6fc85111a32495c319b2c9d2dfd4c7df5c4dffb8380a5a3c93ffbfb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:4:20",
+      "sequence": 3764,
+      "chapter_label": "NUM 4",
+      "verse_label": "20",
+      "locator": {
+        "book": "NUM",
+        "chapter": 4,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 4,
+          "verse": 20
+        }
+      ],
+      "en": "but they shall not go in to see the sanctuary even for a moment, lest they die.”",
+      "ko": "그들은 잠시라도 들어가서 성소를 보지 말 것은 죽을까 함이니라",
+      "source_text_hash": "91f8507a48cd4597d9dc81c7866bd37d66e8072fb8c940dab00de169cf518368",
+      "translation_text_hash": "4a2946cb78cf73220895a9622255fa16eafbfe7483548c74592ff61134d9c247",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들은 잠시라도 들어가서 성소를 보지 말 것은 죽을까 함이니라"
+      ],
+      "raw_text_hashes": [
+        "4a2946cb78cf73220895a9622255fa16eafbfe7483548c74592ff61134d9c247"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:4:21",
+      "sequence": 3765,
+      "chapter_label": "NUM 4",
+      "verse_label": "21",
+      "locator": {
+        "book": "NUM",
+        "chapter": 4,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 4,
+          "verse": 21
+        }
+      ],
+      "en": "The LORD spoke to Moses, saying,",
+      "ko": "여호와께서 또 모세에게 일러 가라사대",
+      "source_text_hash": "28219e5da0d26514843495c6edb280f326aa0ccffb0d2bb642d0e1b0f4478ca1",
+      "translation_text_hash": "6fce10c5891051be4b55b9e2e719c4053fd55e8a3bff58acabc65699508c88a6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 또 모세에게 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "6fce10c5891051be4b55b9e2e719c4053fd55e8a3bff58acabc65699508c88a6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:4:22",
+      "sequence": 3766,
+      "chapter_label": "NUM 4",
+      "verse_label": "22",
+      "locator": {
+        "book": "NUM",
+        "chapter": 4,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 4,
+          "verse": 22
+        }
+      ],
+      "en": "“Take a census of the sons of Gershon also, by their fathers’ houses, by their families;",
+      "ko": "게르손 자손도 그 종족과 가족을 따라 총계하되",
+      "source_text_hash": "393b8de00a1b46f66863c6191c26c486696af7028c5031b6e6a3d06c08b933d8",
+      "translation_text_hash": "b01e51b2b58e81c3e906fe878085199c7a3bcf3446a8821c42ac2d75349caa92",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "게르손 자손도 그 종족과 가족을 따라 총계하되"
+      ],
+      "raw_text_hashes": [
+        "b01e51b2b58e81c3e906fe878085199c7a3bcf3446a8821c42ac2d75349caa92"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:4:23",
+      "sequence": 3767,
+      "chapter_label": "NUM 4",
+      "verse_label": "23",
+      "locator": {
+        "book": "NUM",
+        "chapter": 4,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 4,
+          "verse": 23
+        }
+      ],
+      "en": "you shall count them from thirty years old and upward until fifty years old: all who enter in to wait on the service, to do the work in the Tent of Meeting.",
+      "ko": "삼십세 이상으로 오십세까지 회막 봉사에 입참하여 일할만한 모든 자를 계수하라",
+      "source_text_hash": "eaa0f7abf6eae5a494ae2ddab087957a4fbd971031faf730dfd431e488e29c0d",
+      "translation_text_hash": "b863ffec51570dcd52c6c42d7b4280ec593afa008455b0e98e924745951ba4e5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "삼십세 이상으로 오십세까지 회막 봉사에 입참하여 일할만한 모든 자를 계수하라"
+      ],
+      "raw_text_hashes": [
+        "b863ffec51570dcd52c6c42d7b4280ec593afa008455b0e98e924745951ba4e5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:4:24",
+      "sequence": 3768,
+      "chapter_label": "NUM 4",
+      "verse_label": "24",
+      "locator": {
+        "book": "NUM",
+        "chapter": 4,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 4,
+          "verse": 24
+        }
+      ],
+      "en": "“This is the service of the families of the Gershonites, in serving and in bearing burdens:",
+      "ko": "게르손 가족의 할 일과 멜 것은 이러하니",
+      "source_text_hash": "d381dd6989462f6e566f08b0dfb89956dd1b07eee9d665387b1afa6fee676aff",
+      "translation_text_hash": "9aff9ef55f6c63fe002903a3c2e7c27381407d5d323da6d788cb939bdc6501d6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "게르손 가족의 할 일과 멜 것은 이러하니"
+      ],
+      "raw_text_hashes": [
+        "9aff9ef55f6c63fe002903a3c2e7c27381407d5d323da6d788cb939bdc6501d6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:4:25",
+      "sequence": 3769,
+      "chapter_label": "NUM 4",
+      "verse_label": "25",
+      "locator": {
+        "book": "NUM",
+        "chapter": 4,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 4,
+          "verse": 25
+        }
+      ],
+      "en": "they shall carry the curtains of the tabernacle and the Tent of Meeting, its covering, the covering of sealskin that is on it, the screen for the door of the Tent of Meeting,",
+      "ko": "곧 그들을 성막의 앙장들과 회막과 그 덮개와 그 위의 해달의 가죽 덮개와 회막 문장을 메이며",
+      "source_text_hash": "39ea98d658f001289897ca7ada1166b8b0fc4ff1dd1bcd44337ea352636b9855",
+      "translation_text_hash": "9137a59236dd2f945d4a475c416e9e3544c9ff1692c96501eaf16a077ebef1b4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 그들을 성막의 앙장들과 회막과 그 덮개와 그 위의 해달의 가죽 덮개와 회막 문장을 메이며"
+      ],
+      "raw_text_hashes": [
+        "9137a59236dd2f945d4a475c416e9e3544c9ff1692c96501eaf16a077ebef1b4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:4:26",
+      "sequence": 3770,
+      "chapter_label": "NUM 4",
+      "verse_label": "26",
+      "locator": {
+        "book": "NUM",
+        "chapter": 4,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 4,
+          "verse": 26
+        }
+      ],
+      "en": "the hangings of the court, the screen for the door of the gate of the court which is by the tabernacle and around the altar, their cords, and all the instruments of their service, and whatever shall be done with them. They shall serve in there.",
+      "ko": "뜰의 휘장과 및 성막과 단 사면에 있는 뜰의 문장과 그 줄들과 그것에 사용하는 모든 기구를 메이며 이 모든 것을 어떻게 맡아 처리할 것이라",
+      "source_text_hash": "01b8d2b841d66a2a7073cc0e5812c1b4c4cf895e5adca108a5428169074920ac",
+      "translation_text_hash": "37a0ad97e0fa177f1c8d30fe0b1c3a78e29b3fef6b79aeee8aa021dd8f5ec19d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "뜰의 휘장과 및 성막과 단 사면에 있는 뜰의 문장과 그 줄들과 그것에 사용하는 모든 기구를 메이며 이 모든 것을 어떻게 맡아 처리할 것이라"
+      ],
+      "raw_text_hashes": [
+        "37a0ad97e0fa177f1c8d30fe0b1c3a78e29b3fef6b79aeee8aa021dd8f5ec19d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:4:27",
+      "sequence": 3771,
+      "chapter_label": "NUM 4",
+      "verse_label": "27",
+      "locator": {
+        "book": "NUM",
+        "chapter": 4,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 4,
+          "verse": 27
+        }
+      ],
+      "en": "At the commandment of Aaron and his sons shall be all the service of the sons of the Gershonites, in all their burden and in all their service; and you shall appoint their duty to them in all their responsibilities.",
+      "ko": "게르손 자손은 그 모든 일 곧 멜 것과 처리할 것에 아론과 그 아들들의 명대로 할 것이니 너희는 그들의 멜 짐을 그들에게 맡길 것이니라",
+      "source_text_hash": "31300091995d3a9ad2658e52878ddd680106eb6f28cad1341bd346cbd725d663",
+      "translation_text_hash": "c8abbec1d62d4014daea5260aa472d2cb66b4a21464b3df8b4ae808c9ce51afb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "게르손 자손은 그 모든 일 곧 멜 것과 처리할 것에 아론과 그 아들들의 명대로 할 것이니 너희는 그들의 멜 짐을 그들에게 맡길 것이니라"
+      ],
+      "raw_text_hashes": [
+        "c8abbec1d62d4014daea5260aa472d2cb66b4a21464b3df8b4ae808c9ce51afb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:4:28",
+      "sequence": 3772,
+      "chapter_label": "NUM 4",
+      "verse_label": "28",
+      "locator": {
+        "book": "NUM",
+        "chapter": 4,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 4,
+          "verse": 28
+        }
+      ],
+      "en": "This is the service of the families of the sons of the Gershonites in the Tent of Meeting. Their duty shall be under the hand of Ithamar the son of Aaron the priest.",
+      "ko": "게르손 자손의 가족들이 회막에서 할 일이 이러하며 그들의 직무는 제사장 아론의 아들 이다말이 감독할찌니라",
+      "source_text_hash": "ccc2c8f04969284fb79627a846ece6d707c50ef4b43eb534d64848a797e6855e",
+      "translation_text_hash": "c0975f6ff63ba21d2c787aac9bf58389c90f9f696475c2e52eed553e3ba4084e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "게르손 자손의 가족들이 회막에서 할 일이 이러하며 그들의 직무는 제사장 아론의 아들 이다말이 감독할찌니라"
+      ],
+      "raw_text_hashes": [
+        "c0975f6ff63ba21d2c787aac9bf58389c90f9f696475c2e52eed553e3ba4084e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:4:29",
+      "sequence": 3773,
+      "chapter_label": "NUM 4",
+      "verse_label": "29",
+      "locator": {
+        "book": "NUM",
+        "chapter": 4,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 4,
+          "verse": 29
+        }
+      ],
+      "en": "“As for the sons of Merari, you shall count them by their families, by their fathers’ houses;",
+      "ko": "너는 므라리 자손도 그 가족과 종족을 따라 계수하되",
+      "source_text_hash": "6df5896865133d927fd7b069d8ff3c36446d9642a72debf4ea467db46e8a705e",
+      "translation_text_hash": "966cc3474f78ebb8e2e382fbc0122888e6b394a92b50a9068f9ece0e67950f22",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 므라리 자손도 그 가족과 종족을 따라 계수하되"
+      ],
+      "raw_text_hashes": [
+        "966cc3474f78ebb8e2e382fbc0122888e6b394a92b50a9068f9ece0e67950f22"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:4:30",
+      "sequence": 3774,
+      "chapter_label": "NUM 4",
+      "verse_label": "30",
+      "locator": {
+        "book": "NUM",
+        "chapter": 4,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 4,
+          "verse": 30
+        }
+      ],
+      "en": "you shall count them from thirty years old and upward even to fifty years old—everyone who enters on the service, to do the work of the Tent of Meeting.",
+      "ko": "삼십세 이상으로 오십세까지 회막 봉사에 입참하여 일할만한 모든 자를 계수하라",
+      "source_text_hash": "b23e471332b7cb26848eee8a3cdce01ba9237f8297b00c6fa626bb4271c3be8a",
+      "translation_text_hash": "b863ffec51570dcd52c6c42d7b4280ec593afa008455b0e98e924745951ba4e5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "삼십세 이상으로 오십세까지 회막 봉사에 입참하여 일할만한 모든 자를 계수하라"
+      ],
+      "raw_text_hashes": [
+        "b863ffec51570dcd52c6c42d7b4280ec593afa008455b0e98e924745951ba4e5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:4:31",
+      "sequence": 3775,
+      "chapter_label": "NUM 4",
+      "verse_label": "31",
+      "locator": {
+        "book": "NUM",
+        "chapter": 4,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 4,
+          "verse": 31
+        }
+      ],
+      "en": "This is the duty of their burden, according to all their service in the Tent of Meeting: the tabernacle’s boards, its bars, its pillars, its sockets,",
+      "ko": "그들이 직무를 따라 회막에서 할 모든 일 곧 그 멜 것이 이러하니 곧 장막의 널판들과 그 띠들과 그 기둥들과 그 받침들과",
+      "source_text_hash": "c74484ce9e0b203575620a4e0ca26b7af56ed44c7c82e3c13dcf1cadbb39644b",
+      "translation_text_hash": "41ec86a41cec202873164826c37ae388412fea5486cfd0c846c4ffe874dafc0b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 직무를 따라 회막에서 할 모든 일 곧 그 멜 것이 이러하니 곧 장막의 널판들과 그 띠들과 그 기둥들과 그 받침들과"
+      ],
+      "raw_text_hashes": [
+        "41ec86a41cec202873164826c37ae388412fea5486cfd0c846c4ffe874dafc0b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:4:32",
+      "sequence": 3776,
+      "chapter_label": "NUM 4",
+      "verse_label": "32",
+      "locator": {
+        "book": "NUM",
+        "chapter": 4,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 4,
+          "verse": 32
+        }
+      ],
+      "en": "the pillars of the court around it, their sockets, their pins, their cords, with all their instruments, and with all their service. You shall appoint the instruments of the duty of their burden to them by name.",
+      "ko": "뜰 사면 기둥들과 그 받침들과 그 말뚝들과 그 줄들과 그 모든 기구들과 무릇 그것에 쓰는 것이라 너희는 그들의 맡아 멜 모든 기구의 명목을 지정하라",
+      "source_text_hash": "a9681c394315c65a273bad9d17ec6475f9f8ac4e5f42b6eb04b0c0812665a169",
+      "translation_text_hash": "0006be9870b5b8eccee01f0c01fbb2fd2fddebc933fb6b0a35ff55044b13884b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "뜰 사면 기둥들과 그 받침들과 그 말뚝들과 그 줄들과 그 모든 기구들과 무릇 그것에 쓰는 것이라 너희는 그들의 맡아 멜 모든 기구의 명목을 지정하라"
+      ],
+      "raw_text_hashes": [
+        "0006be9870b5b8eccee01f0c01fbb2fd2fddebc933fb6b0a35ff55044b13884b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:4:33",
+      "sequence": 3777,
+      "chapter_label": "NUM 4",
+      "verse_label": "33",
+      "locator": {
+        "book": "NUM",
+        "chapter": 4,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 4,
+          "verse": 33
+        }
+      ],
+      "en": "This is the service of the families of the sons of Merari, according to all their service in the Tent of Meeting, under the hand of Ithamar the son of Aaron the priest.”",
+      "ko": "이는 제사장 아론의 아들 이다말의 수하에 있을 므라리 자손의 가족들이 그 모든 사무대로 회막에서 행할 일이니라",
+      "source_text_hash": "9fc90f6870c73e1cef03f1774ecdc4ec2bc8da6bd614cb38b8fd115f73221998",
+      "translation_text_hash": "4400205a2dc38ed6c1b1ad693589cfffb5d1453d229f4ba1f63806a21cf767c9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 제사장 아론의 아들 이다말의 수하에 있을 므라리 자손의 가족들이 그 모든 사무대로 회막에서 행할 일이니라"
+      ],
+      "raw_text_hashes": [
+        "4400205a2dc38ed6c1b1ad693589cfffb5d1453d229f4ba1f63806a21cf767c9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:4:34",
+      "sequence": 3778,
+      "chapter_label": "NUM 4",
+      "verse_label": "34",
+      "locator": {
+        "book": "NUM",
+        "chapter": 4,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 4,
+          "verse": 34
+        }
+      ],
+      "en": "Moses and Aaron and the princes of the congregation counted the sons of the Kohathites by their families, and by their fathers’ houses,",
+      "ko": "모세와 아론과 회중의 족장들이 고핫 자손들을 그 가족과 종족대로 계수하니",
+      "source_text_hash": "ecfccb6380e9289f8045d152482761e77a54d96a59457fb1417048d781fc443c",
+      "translation_text_hash": "764671cdce924d47ab464d92cacffb82cb1b6db7e1fad1af23bde7c1c3e35de1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세와 아론과 회중의 족장들이 고핫 자손들을 그 가족과 종족대로 계수하니"
+      ],
+      "raw_text_hashes": [
+        "764671cdce924d47ab464d92cacffb82cb1b6db7e1fad1af23bde7c1c3e35de1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:4:35",
+      "sequence": 3779,
+      "chapter_label": "NUM 4",
+      "verse_label": "35",
+      "locator": {
+        "book": "NUM",
+        "chapter": 4,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 4,
+          "verse": 35
+        }
+      ],
+      "en": "from thirty years old and upward even to fifty years old, everyone who entered into the service for work in the Tent of Meeting.",
+      "ko": "삼십세 이상으로 오십세까지 회막 봉사에 입참하여 일할만한 모든 자",
+      "source_text_hash": "ac268d7321802871a0c30af2704d4cac8eabe4268cf1314d4325c5db956e0087",
+      "translation_text_hash": "0ed1a74208b54b6b62667ebdb4b51c16f6925bd589cc74c56e3325ebd79c9f7a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "삼십세 이상으로 오십세까지 회막 봉사에 입참하여 일할만한 모든 자"
+      ],
+      "raw_text_hashes": [
+        "0ed1a74208b54b6b62667ebdb4b51c16f6925bd589cc74c56e3325ebd79c9f7a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:4:36",
+      "sequence": 3780,
+      "chapter_label": "NUM 4",
+      "verse_label": "36",
+      "locator": {
+        "book": "NUM",
+        "chapter": 4,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 4,
+          "verse": 36
+        }
+      ],
+      "en": "Those who were counted of them by their families were two thousand seven hundred fifty.",
+      "ko": "곧 그 가족대로 계수함을 입은 자가 이천 칠백 오십이니",
+      "source_text_hash": "6c4d2b5f5768a6707d3bac339dbad817b323f79f17a6f9eba278b215135978c3",
+      "translation_text_hash": "5e738f0274b1f068c0425c157fda14c7c7735c72378eaed8374cc7e74ba63bdd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 그 가족대로 계수함을 입은 자가 이천 칠백 오십이니"
+      ],
+      "raw_text_hashes": [
+        "5e738f0274b1f068c0425c157fda14c7c7735c72378eaed8374cc7e74ba63bdd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:4:37",
+      "sequence": 3781,
+      "chapter_label": "NUM 4",
+      "verse_label": "37",
+      "locator": {
+        "book": "NUM",
+        "chapter": 4,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 4,
+          "verse": 37
+        }
+      ],
+      "en": "These are those who were counted of the families of the Kohathites, all who served in the Tent of Meeting, whom Moses and Aaron counted according to the commandment of the LORD by Moses.",
+      "ko": "이는 모세와 아론이 여호와께서 모세로 명하신대로 회막에서 종사하는 고핫인의 모든 가족 중 계수한 자니라",
+      "source_text_hash": "5f9170d06e9c5a79c60c27e4c0dfdeab865ba500d10c982d7c462c5478f3f2db",
+      "translation_text_hash": "00a13504c709626babfa89c940fdaacf5cd68cd2692ee05a50163a5205eadbd4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 모세와 아론이 여호와께서 모세로 명하신대로 회막에서 종사하는 고핫인의 모든 가족 중 계수한 자니라"
+      ],
+      "raw_text_hashes": [
+        "00a13504c709626babfa89c940fdaacf5cd68cd2692ee05a50163a5205eadbd4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:4:38",
+      "sequence": 3782,
+      "chapter_label": "NUM 4",
+      "verse_label": "38",
+      "locator": {
+        "book": "NUM",
+        "chapter": 4,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 4,
+          "verse": 38
+        }
+      ],
+      "en": "Those who were counted of the sons of Gershon, by their families, and by their fathers’ houses,",
+      "ko": "게르손 자손의 그 가족과 종족을 따라 계수함을 입은 자는",
+      "source_text_hash": "7404dfa15ccfdbfa773c92951ce69d64c7c436bc565fbda06882ae5b2ca0f184",
+      "translation_text_hash": "2d5bfd9fd0b2dc03244468c6b5502e3a4acfbed65c5ef0e4ff0c86f2e9c6a18b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "게르손 자손의 그 가족과 종족을 따라 계수함을 입은 자는"
+      ],
+      "raw_text_hashes": [
+        "2d5bfd9fd0b2dc03244468c6b5502e3a4acfbed65c5ef0e4ff0c86f2e9c6a18b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:4:39",
+      "sequence": 3783,
+      "chapter_label": "NUM 4",
+      "verse_label": "39",
+      "locator": {
+        "book": "NUM",
+        "chapter": 4,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 4,
+          "verse": 39
+        }
+      ],
+      "en": "from thirty years old and upward even to fifty years old—everyone who entered into the service for work in the Tent of Meeting,",
+      "ko": "삼십세 이상으로 오십세까지 회막 봉사에 입참하여 일할만한 모든 자라",
+      "source_text_hash": "0a0801d61bcd1ad3d6c76ad95105d702e07b2d847f558b411797ceadc13df7c1",
+      "translation_text_hash": "c75e2d4410a6fe7db546e868544da00c38b75025eeb9c74473fca571b41dc7db",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "삼십세 이상으로 오십세까지 회막 봉사에 입참하여 일할만한 모든 자라"
+      ],
+      "raw_text_hashes": [
+        "c75e2d4410a6fe7db546e868544da00c38b75025eeb9c74473fca571b41dc7db"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:4:40",
+      "sequence": 3784,
+      "chapter_label": "NUM 4",
+      "verse_label": "40",
+      "locator": {
+        "book": "NUM",
+        "chapter": 4,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 4,
+          "verse": 40
+        }
+      ],
+      "en": "even those who were counted of them, by their families, by their fathers’ houses, were two thousand six hundred thirty.",
+      "ko": "그 가족과 종족을 따라 계수함을 입은 자가 이천 육백 삼십명이니",
+      "source_text_hash": "04c6b21a862afb4a32fc7fc9ed23a5bf1e9fd87a83789c76f31fdb60a52b1b48",
+      "translation_text_hash": "a1a65b83ed2cbbcf3497d11b2975751324e4887824e75f7c4ad17983e25d6e93",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 가족과 종족을 따라 계수함을 입은 자가 이천 육백 삼십명이니"
+      ],
+      "raw_text_hashes": [
+        "a1a65b83ed2cbbcf3497d11b2975751324e4887824e75f7c4ad17983e25d6e93"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:4:41",
+      "sequence": 3785,
+      "chapter_label": "NUM 4",
+      "verse_label": "41",
+      "locator": {
+        "book": "NUM",
+        "chapter": 4,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 4,
+          "verse": 41
+        }
+      ],
+      "en": "These are those who were counted of the families of the sons of Gershon, all who served in the Tent of Meeting, whom Moses and Aaron counted according to the commandment of the LORD.",
+      "ko": "이는 모세와 아론이 여호와의 명대로 회막에서 종사하는 게르손 자손의 모든 가족 중 계수한 자니라",
+      "source_text_hash": "3abaa40301b8d315347f5ab787681a8fda8a6c5a15b4e494887c4414d9d2dc94",
+      "translation_text_hash": "ff0d4963c7f2d756af242a421297c1c8879f7043839cdfd8de89fc84e7f9e254",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 모세와 아론이 여호와의 명대로 회막에서 종사하는 게르손 자손의 모든 가족 중 계수한 자니라"
+      ],
+      "raw_text_hashes": [
+        "ff0d4963c7f2d756af242a421297c1c8879f7043839cdfd8de89fc84e7f9e254"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:4:42",
+      "sequence": 3786,
+      "chapter_label": "NUM 4",
+      "verse_label": "42",
+      "locator": {
+        "book": "NUM",
+        "chapter": 4,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 4,
+          "verse": 42
+        }
+      ],
+      "en": "Those who were counted of the families of the sons of Merari, by their families, by their fathers’ houses,",
+      "ko": "므라리 자손의 가족 중 그 가족과 종족을 따라 계수함을 입은 자는",
+      "source_text_hash": "292a204b556f193bfafe1414746e6b0472861ff0633e6d8263d23e5fad1fc4ce",
+      "translation_text_hash": "ed37a1641461f21076509b6d99c206f5d11099cd234aabba9e3066a607d34be1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "므라리 자손의 가족 중 그 가족과 종족을 따라 계수함을 입은 자는"
+      ],
+      "raw_text_hashes": [
+        "ed37a1641461f21076509b6d99c206f5d11099cd234aabba9e3066a607d34be1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:4:43",
+      "sequence": 3787,
+      "chapter_label": "NUM 4",
+      "verse_label": "43",
+      "locator": {
+        "book": "NUM",
+        "chapter": 4,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 4,
+          "verse": 43
+        }
+      ],
+      "en": "from thirty years old and upward even to fifty years old—everyone who entered into the service for work in the Tent of Meeting,",
+      "ko": "삼십세 이상으로 오십세까지 회막 봉사에 입참하여 일할만한 모든 자라",
+      "source_text_hash": "0a0801d61bcd1ad3d6c76ad95105d702e07b2d847f558b411797ceadc13df7c1",
+      "translation_text_hash": "c75e2d4410a6fe7db546e868544da00c38b75025eeb9c74473fca571b41dc7db",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "삼십세 이상으로 오십세까지 회막 봉사에 입참하여 일할만한 모든 자라"
+      ],
+      "raw_text_hashes": [
+        "c75e2d4410a6fe7db546e868544da00c38b75025eeb9c74473fca571b41dc7db"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:4:44",
+      "sequence": 3788,
+      "chapter_label": "NUM 4",
+      "verse_label": "44",
+      "locator": {
+        "book": "NUM",
+        "chapter": 4,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 4,
+          "verse": 44
+        }
+      ],
+      "en": "even those who were counted of them by their families, were three thousand two hundred.",
+      "ko": "그 가족을 따라 계수함을 입은 자가 삼천 이백명이니",
+      "source_text_hash": "4a5104a50502538705fc89830541f65efefefc13b7491678b6162701ca2dcf4f",
+      "translation_text_hash": "e3f887dc2d7762a739b53d1bb2a3f670c52726d21d6f58f86fb8ff94aa86f03d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 가족을 따라 계수함을 입은 자가 삼천 이백명이니"
+      ],
+      "raw_text_hashes": [
+        "e3f887dc2d7762a739b53d1bb2a3f670c52726d21d6f58f86fb8ff94aa86f03d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:4:45",
+      "sequence": 3789,
+      "chapter_label": "NUM 4",
+      "verse_label": "45",
+      "locator": {
+        "book": "NUM",
+        "chapter": 4,
+        "verse": 45
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 4,
+          "verse": 45
+        }
+      ],
+      "en": "These are those who were counted of the families of the sons of Merari, whom Moses and Aaron counted according to the commandment of the LORD by Moses.",
+      "ko": "이는 모세와 아론이 여호와께서 모세로 명하신대로 므라리 자손들의 가족 중 계수한 자니라",
+      "source_text_hash": "17e03ffe22f566dfe96591dab2bc21f3e164e1c0117736587631b6d2f9c113f0",
+      "translation_text_hash": "60bf7e3651c4c963e94db6fd91fa7c6d5516400df4bc365fe922ec30c5fef967",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 모세와 아론이 여호와께서 모세로 명하신대로 므라리 자손들의 가족 중 계수한 자니라"
+      ],
+      "raw_text_hashes": [
+        "60bf7e3651c4c963e94db6fd91fa7c6d5516400df4bc365fe922ec30c5fef967"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:4:46",
+      "sequence": 3790,
+      "chapter_label": "NUM 4",
+      "verse_label": "46",
+      "locator": {
+        "book": "NUM",
+        "chapter": 4,
+        "verse": 46
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 4,
+          "verse": 46
+        }
+      ],
+      "en": "All those who were counted of the Levites whom Moses and Aaron and the princes of Israel counted, by their families and by their fathers’ houses,",
+      "ko": "모세와 아론과 이스라엘 족장들이 레위인을 그 가족과 종족대로 다 계수하니",
+      "source_text_hash": "cfe675d934e62793aeca138e1208d235cebd2ba758496d9fe1a1e2fd98079971",
+      "translation_text_hash": "bff433f7fffca24270fb1c7381724a2ea6ea3dedd11ec67166322a7dac868522",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세와 아론과 이스라엘 족장들이 레위인을 그 가족과 종족대로 다 계수하니"
+      ],
+      "raw_text_hashes": [
+        "bff433f7fffca24270fb1c7381724a2ea6ea3dedd11ec67166322a7dac868522"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:4:47",
+      "sequence": 3791,
+      "chapter_label": "NUM 4",
+      "verse_label": "47",
+      "locator": {
+        "book": "NUM",
+        "chapter": 4,
+        "verse": 47
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 4,
+          "verse": 47
+        }
+      ],
+      "en": "from thirty years old and upward even to fifty years old, everyone who entered in to do the work of service and the work of bearing burdens in the Tent of Meeting,",
+      "ko": "삼십세 이상으로 오십세까지 회막 봉사와 메는 일에 입참하여 일할만한 모든 자",
+      "source_text_hash": "f90bfc1a2d3b96a543ffa1861d404abfce7e809d2b0e1954240d0d382302011c",
+      "translation_text_hash": "9ed67c65e913d70711a19eb9d2b52d654fedcea44ba9dc0212ea62c7acaefb31",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "삼십세 이상으로 오십세까지 회막 봉사와 메는 일에 입참하여 일할만한 모든 자"
+      ],
+      "raw_text_hashes": [
+        "9ed67c65e913d70711a19eb9d2b52d654fedcea44ba9dc0212ea62c7acaefb31"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:4:48",
+      "sequence": 3792,
+      "chapter_label": "NUM 4",
+      "verse_label": "48",
+      "locator": {
+        "book": "NUM",
+        "chapter": 4,
+        "verse": 48
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 4,
+          "verse": 48
+        }
+      ],
+      "en": "even those who were counted of them, were eight thousand five hundred eighty.",
+      "ko": "곧 그 계수함을 입은 자가 팔천 오백 팔십명이라",
+      "source_text_hash": "4b4503b4bd519e9f589690b29033c6acd3e87ccb643e560f9eff44e621899dd3",
+      "translation_text_hash": "0ac0d45f18b10c3b9778402010d97221e4bba3d41402c90444fc150b3c9cc30e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 그 계수함을 입은 자가 팔천 오백 팔십명이라"
+      ],
+      "raw_text_hashes": [
+        "0ac0d45f18b10c3b9778402010d97221e4bba3d41402c90444fc150b3c9cc30e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:4:49",
+      "sequence": 3793,
+      "chapter_label": "NUM 4",
+      "verse_label": "49",
+      "locator": {
+        "book": "NUM",
+        "chapter": 4,
+        "verse": 49
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 4,
+          "verse": 49
+        }
+      ],
+      "en": "According to the commandment of the LORD they were counted by Moses, everyone according to his service and according to his burden. Thus they were counted by him, as the LORD commanded Moses.",
+      "ko": "그들이 그 할 일과 멜 일을 따라 모세에게 계수함을 입었으되 여호와께서 모세에게 명하신대로 그들이 계수함을 입었더라",
+      "source_text_hash": "aafeb495b0449865b6e603cb802887b9cf18fe02554e520687e6677b21c7c45b",
+      "translation_text_hash": "6c88b10ffd4576f8a4ea01ac01c39822812263eea8f405a26d9ae273bb641269",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 그 할 일과 멜 일을 따라 모세에게 계수함을 입었으되 여호와께서 모세에게 명하신대로 그들이 계수함을 입었더라"
+      ],
+      "raw_text_hashes": [
+        "6c88b10ffd4576f8a4ea01ac01c39822812263eea8f405a26d9ae273bb641269"
+      ]
+    }
+  ]
+}

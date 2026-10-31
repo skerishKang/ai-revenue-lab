@@ -1,0 +1,973 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PHP:chapter:002",
+  "unit_ordinal": 1105,
+  "unit_label": "PHP 2",
+  "book_code": "PHP",
+  "chapter_number": 2,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PHP:2:1",
+      "sequence": 29389,
+      "chapter_label": "PHP 2",
+      "verse_label": "1",
+      "locator": {
+        "book": "PHP",
+        "chapter": 2,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PHP",
+          "chapter": 2,
+          "verse": 1
+        }
+      ],
+      "en": "If therefore there is any exhortation in Christ, if any consolation of love, if any fellowship of the Spirit, if any tender mercies and compassion,",
+      "ko": "그러므로 그리스도 안에 무슨 권면이나 사랑에 무슨 위로나 성령의 무슨 교제나 긍휼이나 자비가 있거든",
+      "source_text_hash": "140776877b4435511085996e4a3ae5dcff9fcea92e3ee8c2c9101bdf50f7a7f7",
+      "translation_text_hash": "021aec932a45ede4fa37cf2ed1de00b2086d70e629666c49234ac1b40fed3a51",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 그리스도 안에 무슨 권면이나 사랑에 무슨 위로나 성령의 무슨 교제나 긍휼이나 자비가 있거든"
+      ],
+      "raw_text_hashes": [
+        "021aec932a45ede4fa37cf2ed1de00b2086d70e629666c49234ac1b40fed3a51"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PHP:2:2",
+      "sequence": 29390,
+      "chapter_label": "PHP 2",
+      "verse_label": "2",
+      "locator": {
+        "book": "PHP",
+        "chapter": 2,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PHP",
+          "chapter": 2,
+          "verse": 2
+        }
+      ],
+      "en": "make my joy full by being like-minded, having the same love, being of one accord, of one mind;",
+      "ko": "마음을 같이 하여 같은 사랑을 가지고 뜻을 합하며 한 마음을 품어",
+      "source_text_hash": "bf979e0954d43fd19ed85730d0f5e1b050379cb693a82d356ba76fed621d78e4",
+      "translation_text_hash": "8146686fc7aec5f80d53e3e6456f5ff01b8e71a6e3e33425181dbb680fcde6f9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마음을 같이 하여 같은 사랑을 가지고 뜻을 합하며 한 마음을 품어"
+      ],
+      "raw_text_hashes": [
+        "8146686fc7aec5f80d53e3e6456f5ff01b8e71a6e3e33425181dbb680fcde6f9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PHP:2:3",
+      "sequence": 29391,
+      "chapter_label": "PHP 2",
+      "verse_label": "3",
+      "locator": {
+        "book": "PHP",
+        "chapter": 2,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PHP",
+          "chapter": 2,
+          "verse": 3
+        }
+      ],
+      "en": "doing nothing through rivalry or through conceit, but in humility, each counting others better than himself;",
+      "ko": "아무 일에든지 다툼이나 허영으로 하지 말고 오직 겸손한 마음으로 각각 자기보다 남을 낫게 여기고",
+      "source_text_hash": "f44c97ec54dcf57f145f0efeee363b7ffc1ac3f3283a794c40c699c4ea41cd72",
+      "translation_text_hash": "3caa4d6b7934dce7b23317b0323b9f101fbf8bbf221a8fb244713f8dfab5d552",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아무 일에든지 다툼이나 허영으로 하지 말고 오직 겸손한 마음으로 각각 자기보다 남을 낫게 여기고"
+      ],
+      "raw_text_hashes": [
+        "3caa4d6b7934dce7b23317b0323b9f101fbf8bbf221a8fb244713f8dfab5d552"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PHP:2:4",
+      "sequence": 29392,
+      "chapter_label": "PHP 2",
+      "verse_label": "4",
+      "locator": {
+        "book": "PHP",
+        "chapter": 2,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PHP",
+          "chapter": 2,
+          "verse": 4
+        }
+      ],
+      "en": "each of you not just looking to his own things, but each of you also to the things of others.",
+      "ko": "각각 자기 일을 돌아볼 뿐더러 또한 각각 다른 사람들의 일을 돌아보아 나의 기쁨을 충만케 하라",
+      "source_text_hash": "aec2dec102c31561d25916f981ac3e70f094a22569660349913853da53d6fb81",
+      "translation_text_hash": "5df1638d4cdbd10905b374adff31141ab9671ac0dca2d7cfee2ead9d68f92244",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "각각 자기 일을 돌아볼 뿐더러 또한 각각 다른 사람들의 일을 돌아보아 나의 기쁨을 충만케 하라"
+      ],
+      "raw_text_hashes": [
+        "5df1638d4cdbd10905b374adff31141ab9671ac0dca2d7cfee2ead9d68f92244"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PHP:2:5",
+      "sequence": 29393,
+      "chapter_label": "PHP 2",
+      "verse_label": "5",
+      "locator": {
+        "book": "PHP",
+        "chapter": 2,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PHP",
+          "chapter": 2,
+          "verse": 5
+        }
+      ],
+      "en": "Have this in your mind, which was also in Christ Jesus,",
+      "ko": "너희 안에 이 마음을 품으라 곧 그리스도 예수의 마음이니",
+      "source_text_hash": "5d8fe1008780639ddd1a1f03f1115599278795e3a9f8483371ce08a99a1253f1",
+      "translation_text_hash": "1eb915ac236c6763a6aea722a5fe10a46ec9844fdd0e2bcf5e29f1d1d5d0b985",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 안에 이 마음을 품으라 곧 그리스도 예수의 마음이니"
+      ],
+      "raw_text_hashes": [
+        "1eb915ac236c6763a6aea722a5fe10a46ec9844fdd0e2bcf5e29f1d1d5d0b985"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PHP:2:6",
+      "sequence": 29394,
+      "chapter_label": "PHP 2",
+      "verse_label": "6",
+      "locator": {
+        "book": "PHP",
+        "chapter": 2,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PHP",
+          "chapter": 2,
+          "verse": 6
+        }
+      ],
+      "en": "who, existing in the form of God, didn’t consider equality with God a thing to be grasped,",
+      "ko": "그는 근본 하나님의 본체시나 하나님과 동등됨을 취할 것으로 여기지 아니하시고",
+      "source_text_hash": "6695131c67616b73fa94094a0c60f68d42c7d8cd3fc2f2e757e57339b2419244",
+      "translation_text_hash": "a757462e27b851d83e6f38522fe77fa0cae4ce72207458f9311898033f09c305",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그는 근본 하나님의 본체시나 하나님과 동등됨을 취할 것으로 여기지 아니하시고"
+      ],
+      "raw_text_hashes": [
+        "a757462e27b851d83e6f38522fe77fa0cae4ce72207458f9311898033f09c305"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PHP:2:7",
+      "sequence": 29395,
+      "chapter_label": "PHP 2",
+      "verse_label": "7",
+      "locator": {
+        "book": "PHP",
+        "chapter": 2,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PHP",
+          "chapter": 2,
+          "verse": 7
+        }
+      ],
+      "en": "but emptied himself, taking the form of a servant, being made in the likeness of men.",
+      "ko": "오히려 자기를 비어 종의 형체를 가져 사람들과 같이 되었고",
+      "source_text_hash": "5b50a06d8913292404bb5820aea322d3b66de8911f62729191fe71363e347c72",
+      "translation_text_hash": "2aba0ff69aa5a06e4e6ce380414d8a1bf7674db25ab5b6dfd517f696a1a61eb7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오히려 자기를 비어 종의 형체를 가져 사람들과 같이 되었고"
+      ],
+      "raw_text_hashes": [
+        "2aba0ff69aa5a06e4e6ce380414d8a1bf7674db25ab5b6dfd517f696a1a61eb7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PHP:2:8",
+      "sequence": 29396,
+      "chapter_label": "PHP 2",
+      "verse_label": "8",
+      "locator": {
+        "book": "PHP",
+        "chapter": 2,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PHP",
+          "chapter": 2,
+          "verse": 8
+        }
+      ],
+      "en": "And being found in human form, he humbled himself, becoming obedient to the point of death, yes, the death of the cross.",
+      "ko": "사람의 모양으로 나타나셨으매 자기를 낮추시고 죽기까지 복종하셨으니 곧 십자가에 죽으심이라",
+      "source_text_hash": "191ebae3fb2d59f01bf5a988ab2ab0db4a4708142005ffa08a5533898ef9037d",
+      "translation_text_hash": "a867b87510cb73e86d3fea946b7cdb1f84f659e06629fbc80eaaecc22e0e2d5e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람의 모양으로 나타나셨으매 자기를 낮추시고 죽기까지 복종하셨으니 곧 십자가에 죽으심이라"
+      ],
+      "raw_text_hashes": [
+        "a867b87510cb73e86d3fea946b7cdb1f84f659e06629fbc80eaaecc22e0e2d5e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PHP:2:9",
+      "sequence": 29397,
+      "chapter_label": "PHP 2",
+      "verse_label": "9",
+      "locator": {
+        "book": "PHP",
+        "chapter": 2,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PHP",
+          "chapter": 2,
+          "verse": 9
+        }
+      ],
+      "en": "Therefore God also highly exalted him, and gave to him the name which is above every name,",
+      "ko": "이러므로 하나님이 그를 지극히 높여 모든 이름 위에 뛰어난 이름을 주사",
+      "source_text_hash": "f210806481dc0c5874a5698ed0e2ffd44a0dcc4100b68af456542fb3f59a85e0",
+      "translation_text_hash": "034495cca4868dd57cfef8224d46b70705829dd2198f051c9239d4fe37dc586d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러므로 하나님이 그를 지극히 높여 모든 이름 위에 뛰어난 이름을 주사"
+      ],
+      "raw_text_hashes": [
+        "034495cca4868dd57cfef8224d46b70705829dd2198f051c9239d4fe37dc586d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PHP:2:10",
+      "sequence": 29398,
+      "chapter_label": "PHP 2",
+      "verse_label": "10",
+      "locator": {
+        "book": "PHP",
+        "chapter": 2,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PHP",
+          "chapter": 2,
+          "verse": 10
+        }
+      ],
+      "en": "that at the name of Jesus every knee should bow, of those in heaven, those on earth, and those under the earth,",
+      "ko": "하늘에 있는 자들과 땅에 있는 자들과 땅 아래 있는 자들로 모든 무릎을 예수의 이름에 꿇게 하시고",
+      "source_text_hash": "4182a8db8ff8eac8b6e1a491edc86c3a703504c50f77a37813b4fe5f57e83cf6",
+      "translation_text_hash": "28fc8d66745ebe8a1ccaf7c52dd7fd63a5b64a6beb948021f09c81758763ed20",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하늘에 있는 자들과 땅에 있는 자들과 땅 아래 있는 자들로 모든 무릎을 예수의 이름에 꿇게 하시고"
+      ],
+      "raw_text_hashes": [
+        "28fc8d66745ebe8a1ccaf7c52dd7fd63a5b64a6beb948021f09c81758763ed20"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PHP:2:11",
+      "sequence": 29399,
+      "chapter_label": "PHP 2",
+      "verse_label": "11",
+      "locator": {
+        "book": "PHP",
+        "chapter": 2,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PHP",
+          "chapter": 2,
+          "verse": 11
+        }
+      ],
+      "en": "and that every tongue should confess that Jesus Christ is Lord, to the glory of God the Father.",
+      "ko": "모든 입으로 예수 그리스도를 주라 시인하여 하나님 아버지께 영광을 돌리게 하셨느니라",
+      "source_text_hash": "a41e40280eb242bda4b2f4f30d5ceab27375ce0c4c260666c4b93b6da10eca90",
+      "translation_text_hash": "44b072a6b63ebdb7433a271160b1c3c8ebfd08cf56872ca745fd414560447cb5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 입으로 예수 그리스도를 주라 시인하여 하나님 아버지께 영광을 돌리게 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "44b072a6b63ebdb7433a271160b1c3c8ebfd08cf56872ca745fd414560447cb5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PHP:2:12",
+      "sequence": 29400,
+      "chapter_label": "PHP 2",
+      "verse_label": "12",
+      "locator": {
+        "book": "PHP",
+        "chapter": 2,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "PHP",
+          "chapter": 2,
+          "verse": 12
+        }
+      ],
+      "en": "So then, my beloved, even as you have always obeyed, not only in my presence, but now much more in my absence, work out your own salvation with fear and trembling.",
+      "ko": "그러므로 나의 사랑하는 자들아 너희가 나 있을 때 뿐아니라 더욱 지금 나 없을 때에도 항상 복종하여 두렵고 떨림으로 너희 구원을 이루라",
+      "source_text_hash": "5a959a3cf2093a9335f49a542b562e4640b99fb903a7b568e1ec48ed8bc0f6e2",
+      "translation_text_hash": "6995fd944ece09e27d25b86116112a449a9eaefe178976e9015cb252572c12bd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 나의 사랑하는 자들아 너희가 나 있을 때 뿐아니라 더욱 지금 나 없을 때에도 항상 복종하여 두렵고 떨림으로 너희 구원을 이루라"
+      ],
+      "raw_text_hashes": [
+        "6995fd944ece09e27d25b86116112a449a9eaefe178976e9015cb252572c12bd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PHP:2:13",
+      "sequence": 29401,
+      "chapter_label": "PHP 2",
+      "verse_label": "13",
+      "locator": {
+        "book": "PHP",
+        "chapter": 2,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "PHP",
+          "chapter": 2,
+          "verse": 13
+        }
+      ],
+      "en": "For it is God who works in you both to will and to work for his good pleasure.",
+      "ko": "너희 안에서 행하시는 이는 하나님이시니 자기의 기쁘신 뜻을 위하여 너희로 소원을 두고 행하게 하시나니",
+      "source_text_hash": "4239891c71c5546ba81d124f22eb3e607524731dba72d150021539b07e4aa0f6",
+      "translation_text_hash": "9485604cbc5f51c214718ed7c843c1b639d9128916de799c3c61c724f8f25a02",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 안에서 행하시는 이는 하나님이시니 자기의 기쁘신 뜻을 위하여 너희로 소원을 두고 행하게 하시나니"
+      ],
+      "raw_text_hashes": [
+        "9485604cbc5f51c214718ed7c843c1b639d9128916de799c3c61c724f8f25a02"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PHP:2:14",
+      "sequence": 29402,
+      "chapter_label": "PHP 2",
+      "verse_label": "14",
+      "locator": {
+        "book": "PHP",
+        "chapter": 2,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "PHP",
+          "chapter": 2,
+          "verse": 14
+        }
+      ],
+      "en": "Do all things without complaining and arguing,",
+      "ko": "모든 일을 원망과 시비가 없이 하라",
+      "source_text_hash": "96e68a8afc6fc811a0c1959f2bb270208e7d29cc8011b5ebfd6efe2f739fbb63",
+      "translation_text_hash": "9b89c3ce25572278cf014d50389e638889d2d4b8325fd0e89584d9fc0122376c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 일을 원망과 시비가 없이 하라"
+      ],
+      "raw_text_hashes": [
+        "9b89c3ce25572278cf014d50389e638889d2d4b8325fd0e89584d9fc0122376c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PHP:2:15",
+      "sequence": 29403,
+      "chapter_label": "PHP 2",
+      "verse_label": "15",
+      "locator": {
+        "book": "PHP",
+        "chapter": 2,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "PHP",
+          "chapter": 2,
+          "verse": 15
+        }
+      ],
+      "en": "that you may become blameless and harmless, children of God without defect in the middle of a crooked and perverse generation, among whom you are seen as lights in the world,",
+      "ko": "이는 너희가 흠이 없고 순전하여 어그러지고 거스리는 세대 가운데서 하나님의 흠 없는 자녀로 세상에서 그들 가운데 빛들로 나타내며",
+      "source_text_hash": "da514c8c9c2f0297e36bd120ff84f75b3bc584f1973ce12cbffc40de61e9ae05",
+      "translation_text_hash": "c8e318ea16190439893f7dabff2d94c42f967abed9d339bf7ad9f7245d8141e7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 너희가 흠이 없고 순전하여 어그러지고 거스리는 세대 가운데서 하나님의 흠 없는 자녀로 세상에서 그들 가운데 빛들로 나타내며"
+      ],
+      "raw_text_hashes": [
+        "c8e318ea16190439893f7dabff2d94c42f967abed9d339bf7ad9f7245d8141e7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PHP:2:16",
+      "sequence": 29404,
+      "chapter_label": "PHP 2",
+      "verse_label": "16",
+      "locator": {
+        "book": "PHP",
+        "chapter": 2,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "PHP",
+          "chapter": 2,
+          "verse": 16
+        }
+      ],
+      "en": "holding up the word of life, that I may have something to boast in the day of Christ that I didn’t run in vain nor labor in vain.",
+      "ko": "생명의 말씀을 밝혀 나의 달음질도 헛되지 아니하고 수고도 헛되지 아니함으로 그리스도의 날에 나로 자랑할 것이 있게 하려 함이라",
+      "source_text_hash": "1585f71f3366e66a5ee1eccb91ee5044b602fb388389b97e600c28dbaaee5c0d",
+      "translation_text_hash": "331ddb517be7797b67f261afd97e9d2701213d82851b04a40d3046995f4b1dfa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "생명의 말씀을 밝혀 나의 달음질도 헛되지 아니하고 수고도 헛되지 아니함으로 그리스도의 날에 나로 자랑할 것이 있게 하려 함이라"
+      ],
+      "raw_text_hashes": [
+        "331ddb517be7797b67f261afd97e9d2701213d82851b04a40d3046995f4b1dfa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PHP:2:17",
+      "sequence": 29405,
+      "chapter_label": "PHP 2",
+      "verse_label": "17",
+      "locator": {
+        "book": "PHP",
+        "chapter": 2,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "PHP",
+          "chapter": 2,
+          "verse": 17
+        }
+      ],
+      "en": "Yes, and if I am poured out on the sacrifice and service of your faith, I am glad and rejoice with you all.",
+      "ko": "만일 너희 믿음의 제물과 봉사 위에 내가 나를 관제로 드릴찌라도 나는 기뻐하고 너희 무리와 함께 기뻐하리니",
+      "source_text_hash": "b74294ae7aca48235eaaebbe4b15d41c35469a097bdbb6114904c32e55c01b55",
+      "translation_text_hash": "7f45737e1f8b41afd4c0b28af3d7e7b9a6863d69f8bb81ce57392d5b4786457f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 너희 믿음의 제물과 봉사 위에 내가 나를 관제로 드릴찌라도 나는 기뻐하고 너희 무리와 함께 기뻐하리니"
+      ],
+      "raw_text_hashes": [
+        "7f45737e1f8b41afd4c0b28af3d7e7b9a6863d69f8bb81ce57392d5b4786457f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PHP:2:18",
+      "sequence": 29406,
+      "chapter_label": "PHP 2",
+      "verse_label": "18",
+      "locator": {
+        "book": "PHP",
+        "chapter": 2,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "PHP",
+          "chapter": 2,
+          "verse": 18
+        }
+      ],
+      "en": "In the same way, you also should be glad and rejoice with me.",
+      "ko": "이와 같이 너희도 기뻐하고 나와 함께 기뻐하라",
+      "source_text_hash": "888a0a2d46bd0e61dc3e0e61e6dda60af1c52728e47d552eb23b6d8c787f86fc",
+      "translation_text_hash": "3283be4f4fb23ab04d4f36a8099a613bf78d42bdbb0b197ac4656d0e3a3ed2a1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이와 같이 너희도 기뻐하고 나와 함께 기뻐하라"
+      ],
+      "raw_text_hashes": [
+        "3283be4f4fb23ab04d4f36a8099a613bf78d42bdbb0b197ac4656d0e3a3ed2a1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PHP:2:19",
+      "sequence": 29407,
+      "chapter_label": "PHP 2",
+      "verse_label": "19",
+      "locator": {
+        "book": "PHP",
+        "chapter": 2,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "PHP",
+          "chapter": 2,
+          "verse": 19
+        }
+      ],
+      "en": "But I hope in the Lord Jesus to send Timothy to you soon, that I also may be cheered up when I know how you are doing.",
+      "ko": "내가 디모데를 속히 너희에게 보내기를 주 안에서 바람은 너희 사정을 앎으로 안위를 받으려 함이니",
+      "source_text_hash": "a0abec82471a045c48498e1caf04f055fbd2091b16d796da477acab716145526",
+      "translation_text_hash": "7f9179387a34e9429f1a50a19d05e80dafffe41e38bfae96df2c51795246d5e1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 디모데를 속히 너희에게 보내기를 주 안에서 바람은 너희 사정을 앎으로 안위를 받으려 함이니"
+      ],
+      "raw_text_hashes": [
+        "7f9179387a34e9429f1a50a19d05e80dafffe41e38bfae96df2c51795246d5e1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PHP:2:20",
+      "sequence": 29408,
+      "chapter_label": "PHP 2",
+      "verse_label": "20",
+      "locator": {
+        "book": "PHP",
+        "chapter": 2,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "PHP",
+          "chapter": 2,
+          "verse": 20
+        }
+      ],
+      "en": "For I have no one else like-minded, who will truly care about you.",
+      "ko": "이는 뜻을 같이 하여 너희 사정을 진실히 생각할 자가 이 밖에 내게 없음이라",
+      "source_text_hash": "1a2121d089010d71b5b5a2c5da4af25d6b9830f28c97909911b81f0d40cfb07f",
+      "translation_text_hash": "8c25fe18833c5be73544e51d68a02f8124b2a6d380cb008d6e658bd86d53a46f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 뜻을 같이 하여 너희 사정을 진실히 생각할 자가 이 밖에 내게 없음이라"
+      ],
+      "raw_text_hashes": [
+        "8c25fe18833c5be73544e51d68a02f8124b2a6d380cb008d6e658bd86d53a46f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PHP:2:21",
+      "sequence": 29409,
+      "chapter_label": "PHP 2",
+      "verse_label": "21",
+      "locator": {
+        "book": "PHP",
+        "chapter": 2,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "PHP",
+          "chapter": 2,
+          "verse": 21
+        }
+      ],
+      "en": "For they all seek their own, not the things of Jesus Christ.",
+      "ko": "저희가 다 자기 일을 구하고 그리스도 예수의 일을 구하지 아니하되",
+      "source_text_hash": "e79a404103de8820639fa59cea4fc01e1b81add758c375b80b2521fbce66469d",
+      "translation_text_hash": "25f0a7a4c16aa993bb4923b06fdc0005d44cc1e42f9ad86ed98cd05a9c0921a1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 다 자기 일을 구하고 그리스도 예수의 일을 구하지 아니하되"
+      ],
+      "raw_text_hashes": [
+        "25f0a7a4c16aa993bb4923b06fdc0005d44cc1e42f9ad86ed98cd05a9c0921a1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PHP:2:22",
+      "sequence": 29410,
+      "chapter_label": "PHP 2",
+      "verse_label": "22",
+      "locator": {
+        "book": "PHP",
+        "chapter": 2,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "PHP",
+          "chapter": 2,
+          "verse": 22
+        }
+      ],
+      "en": "But you know that he has proved himself. As a child serves a father, so he served with me in furtherance of the Good News.",
+      "ko": "디모데의 연단을 너희가 아나니 자식이 아비에게 함같이 나와 함께 복음을 위하여 수고하였느니라",
+      "source_text_hash": "4c0757050128a69840792c74f67352b8e1aef0f21ba85744e8fab89444dc2789",
+      "translation_text_hash": "da750a3fd9b0f4af57434811743357680941cb4429ee5d09f00ccb0be01a0e00",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "디모데의 연단을 너희가 아나니 자식이 아비에게 함같이 나와 함께 복음을 위하여 수고하였느니라"
+      ],
+      "raw_text_hashes": [
+        "da750a3fd9b0f4af57434811743357680941cb4429ee5d09f00ccb0be01a0e00"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PHP:2:23",
+      "sequence": 29411,
+      "chapter_label": "PHP 2",
+      "verse_label": "23",
+      "locator": {
+        "book": "PHP",
+        "chapter": 2,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "PHP",
+          "chapter": 2,
+          "verse": 23
+        }
+      ],
+      "en": "Therefore I hope to send him at once, as soon as I see how it will go with me.",
+      "ko": "그러므로 내가 내 일이 어떻게 될 것을 보아서 곧 이 사람을 보내기를 바라고",
+      "source_text_hash": "92d7a2a27a3303f2966f7b44f48e0430ff83d194093b16e90ace279df99d6e93",
+      "translation_text_hash": "7725b5f900b8dd14e9e33070d9eabc681e213dae3d4aaeb28d320e77ca7f7add",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 내가 내 일이 어떻게 될 것을 보아서 곧 이 사람을 보내기를 바라고"
+      ],
+      "raw_text_hashes": [
+        "7725b5f900b8dd14e9e33070d9eabc681e213dae3d4aaeb28d320e77ca7f7add"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PHP:2:24",
+      "sequence": 29412,
+      "chapter_label": "PHP 2",
+      "verse_label": "24",
+      "locator": {
+        "book": "PHP",
+        "chapter": 2,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "PHP",
+          "chapter": 2,
+          "verse": 24
+        }
+      ],
+      "en": "But I trust in the Lord that I myself also will come shortly.",
+      "ko": "나도 속히 가기를 주 안에서 확신하노라",
+      "source_text_hash": "4fcfaa969b9a6b6ddae8e572617544a0a86440de8fa75db6c98b116e7a528f10",
+      "translation_text_hash": "af8011f1dadcc5bf8610d83a8d4650a42141d67e90a90d33edaf6ba601e3906d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나도 속히 가기를 주 안에서 확신하노라"
+      ],
+      "raw_text_hashes": [
+        "af8011f1dadcc5bf8610d83a8d4650a42141d67e90a90d33edaf6ba601e3906d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PHP:2:25",
+      "sequence": 29413,
+      "chapter_label": "PHP 2",
+      "verse_label": "25",
+      "locator": {
+        "book": "PHP",
+        "chapter": 2,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "PHP",
+          "chapter": 2,
+          "verse": 25
+        }
+      ],
+      "en": "But I thought it necessary to send to you Epaphroditus, my brother, fellow worker, fellow soldier, and your apostle and servant of my need,",
+      "ko": "그러나 에바브로디도를 너희에게 보내는 것이 필요한 줄로 생각하노니 그는 나의 형제요 함께 수고하고 함께 군사된 자요 너희 사자로 나의 쓸 것을 돕는 자라",
+      "source_text_hash": "63b90a92bf0b6d229471ca40b199e9a83838e775ea8509e19dccb8dc9607f0ce",
+      "translation_text_hash": "c711fa01dff533962cb9754411255e39fe355531ba4f84e541aaeb90e4d12018",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 에바브로디도를 너희에게 보내는 것이 필요한 줄로 생각하노니 그는 나의 형제요 함께 수고하고 함께 군사된 자요 너희 사자로 나의 쓸 것을 돕는 자라"
+      ],
+      "raw_text_hashes": [
+        "c711fa01dff533962cb9754411255e39fe355531ba4f84e541aaeb90e4d12018"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PHP:2:26",
+      "sequence": 29414,
+      "chapter_label": "PHP 2",
+      "verse_label": "26",
+      "locator": {
+        "book": "PHP",
+        "chapter": 2,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "PHP",
+          "chapter": 2,
+          "verse": 26
+        }
+      ],
+      "en": "since he longed for you all, and was very troubled because you had heard that he was sick.",
+      "ko": "그가 너희 무리를 간절히 사모하고 자기 병든 것을 너희가 들은 줄을 알고 심히 근심한지라",
+      "source_text_hash": "b8392e99363d35b7fa22b842a9fcfd4885b6dd9156e4cbbca9a4980f36bf7eb3",
+      "translation_text_hash": "455d2f053b3049886e98f9963dd95d475dc5dc932b88d4c8fa37c5c2f3063570",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 너희 무리를 간절히 사모하고 자기 병든 것을 너희가 들은 줄을 알고 심히 근심한지라"
+      ],
+      "raw_text_hashes": [
+        "455d2f053b3049886e98f9963dd95d475dc5dc932b88d4c8fa37c5c2f3063570"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PHP:2:27",
+      "sequence": 29415,
+      "chapter_label": "PHP 2",
+      "verse_label": "27",
+      "locator": {
+        "book": "PHP",
+        "chapter": 2,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "PHP",
+          "chapter": 2,
+          "verse": 27
+        }
+      ],
+      "en": "For indeed he was sick nearly to death, but God had mercy on him, and not on him only, but on me also, that I might not have sorrow on sorrow.",
+      "ko": "저가 병들어 죽게 되었으나 하나님이 저를 긍휼히 여기셨고 저뿐 아니라 또 나를 긍휼히 여기사 내 근심 위에 근심을 면하게 하셨느니라",
+      "source_text_hash": "de0ebb9a488577ecb8f714f98b72c0e70b9343e750b931c9b34fb335affe5816",
+      "translation_text_hash": "553357be94acf66dc1137eb4e60c99b00fbae3dc450e4a655c08fce36f6e56f8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 병들어 죽게 되었으나 하나님이 저를 긍휼히 여기셨고 저뿐 아니라 또 나를 긍휼히 여기사 내 근심 위에 근심을 면하게 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "553357be94acf66dc1137eb4e60c99b00fbae3dc450e4a655c08fce36f6e56f8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PHP:2:28",
+      "sequence": 29416,
+      "chapter_label": "PHP 2",
+      "verse_label": "28",
+      "locator": {
+        "book": "PHP",
+        "chapter": 2,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "PHP",
+          "chapter": 2,
+          "verse": 28
+        }
+      ],
+      "en": "I have sent him therefore the more diligently, that when you see him again, you may rejoice, and that I may be the less sorrowful.",
+      "ko": "그러므로 내가 더욱 급히 저를 보낸 것은 너희로 저를 다시 보고 기뻐하게 하며 내 근심도 덜려 함이니",
+      "source_text_hash": "12ce30bec434641d1427cdae12070aea8eaacd5b06c75b7fecb853f7052e5eea",
+      "translation_text_hash": "77401aa36f7d975c3264d39da60a2667564aa0fa3e0d7dd1642a820f4acad3ff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 내가 더욱 급히 저를 보낸 것은 너희로 저를 다시 보고 기뻐하게 하며 내 근심도 덜려 함이니"
+      ],
+      "raw_text_hashes": [
+        "77401aa36f7d975c3264d39da60a2667564aa0fa3e0d7dd1642a820f4acad3ff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PHP:2:29",
+      "sequence": 29417,
+      "chapter_label": "PHP 2",
+      "verse_label": "29",
+      "locator": {
+        "book": "PHP",
+        "chapter": 2,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "PHP",
+          "chapter": 2,
+          "verse": 29
+        }
+      ],
+      "en": "Receive him therefore in the Lord with all joy, and hold such people in honor,",
+      "ko": "이러므로 너희가 주 안에서 모든 기쁨으로 저를 영접하고 또 이와 같은 자들을 존귀히 여기라",
+      "source_text_hash": "228a9b703df46052aaa6dd47dd488b5be600205698127479a4ea0690d718e196",
+      "translation_text_hash": "8673e863d03156e041d0d6a72b71463ac815801e6ee106949af905a3f16058e9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러므로 너희가 주 안에서 모든 기쁨으로 저를 영접하고 또 이와 같은 자들을 존귀히 여기라"
+      ],
+      "raw_text_hashes": [
+        "8673e863d03156e041d0d6a72b71463ac815801e6ee106949af905a3f16058e9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PHP:2:30",
+      "sequence": 29418,
+      "chapter_label": "PHP 2",
+      "verse_label": "30",
+      "locator": {
+        "book": "PHP",
+        "chapter": 2,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "PHP",
+          "chapter": 2,
+          "verse": 30
+        }
+      ],
+      "en": "because for the work of Christ he came near to death, risking his life to supply that which was lacking in your service toward me.",
+      "ko": "저가 그리스도의 일을 위하여 죽기에 이르러도 자기 목숨을 돌아보지 아니한 것은 나를 섬기는 너희의 일에 부족함을 채우려 함이니라",
+      "source_text_hash": "38f2ad933a834bcb9608bdc2501d0463cc9e6cd07e056525a3b9251f7da02d1f",
+      "translation_text_hash": "71f0745282a64915da9e165f45bf97ad0f444c63b1e65f41c18937f6ce83e508",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 그리스도의 일을 위하여 죽기에 이르러도 자기 목숨을 돌아보지 아니한 것은 나를 섬기는 너희의 일에 부족함을 채우려 함이니라"
+      ],
+      "raw_text_hashes": [
+        "71f0745282a64915da9e165f45bf97ad0f444c63b1e65f41c18937f6ce83e508"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,749 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EZK:chapter:014",
+  "unit_ordinal": 816,
+  "unit_label": "EZK 14",
+  "book_code": "EZK",
+  "chapter_number": 14,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EZK:14:1",
+      "sequence": 20733,
+      "chapter_label": "EZK 14",
+      "verse_label": "1",
+      "locator": {
+        "book": "EZK",
+        "chapter": 14,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 14,
+          "verse": 1
+        }
+      ],
+      "en": "Then some of the elders of Israel came to me and sat before me.",
+      "ko": "이스라엘 장로 두어사람이 나아와 내 앞에 앉으니",
+      "source_text_hash": "fb65a660ea21751d060ddda83221dad78541384a38299568c36f5ab0f3412ef3",
+      "translation_text_hash": "d587f52079f5cf3f72e232200842018940870edd57900416ba7b369c5090a681",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 장로 두어사람이 나아와 내 앞에 앉으니"
+      ],
+      "raw_text_hashes": [
+        "d587f52079f5cf3f72e232200842018940870edd57900416ba7b369c5090a681"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:14:2",
+      "sequence": 20734,
+      "chapter_label": "EZK 14",
+      "verse_label": "2",
+      "locator": {
+        "book": "EZK",
+        "chapter": 14,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 14,
+          "verse": 2
+        }
+      ],
+      "en": "The LORD’s word came to me, saying,",
+      "ko": "여호와의 말씀이 내게 임하여 가라사대",
+      "source_text_hash": "9896c4581212f69b0f4adc87dc02e9102477b3f2cc043645fc2c8a0c2e7ce852",
+      "translation_text_hash": "2fcb54244475e91bef0fbc3c3374d04d74406d7f7556cf1f7a2dd6aaa6668237",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 말씀이 내게 임하여 가라사대"
+      ],
+      "raw_text_hashes": [
+        "2fcb54244475e91bef0fbc3c3374d04d74406d7f7556cf1f7a2dd6aaa6668237"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:14:3",
+      "sequence": 20735,
+      "chapter_label": "EZK 14",
+      "verse_label": "3",
+      "locator": {
+        "book": "EZK",
+        "chapter": 14,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 14,
+          "verse": 3
+        }
+      ],
+      "en": "“Son of man, these men have taken their idols into their heart, and put the stumbling block of their iniquity before their face. Should I be inquired of at all by them?",
+      "ko": "인자야 이 사람들이 자기 우상을 마음에 들이며 죄악의 거치는 것을 자기 앞에 두었으니 그들이 내게 묻기를 내가 조금인들 용납하랴",
+      "source_text_hash": "ff2c406161df333bb59039cdbe47e9dc068b7d041da282338942ca7f88773591",
+      "translation_text_hash": "578bb4ed60f6e4a14b9266dee562b01763f3f75d50bc80d158b3a374cc789e1d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "인자야 이 사람들이 자기 우상을 마음에 들이며 죄악의 거치는 것을 자기 앞에 두었으니 그들이 내게 묻기를 내가 조금인들 용납하랴"
+      ],
+      "raw_text_hashes": [
+        "578bb4ed60f6e4a14b9266dee562b01763f3f75d50bc80d158b3a374cc789e1d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:14:4",
+      "sequence": 20736,
+      "chapter_label": "EZK 14",
+      "verse_label": "4",
+      "locator": {
+        "book": "EZK",
+        "chapter": 14,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 14,
+          "verse": 4
+        }
+      ],
+      "en": "Therefore speak to them and tell them, ‘The Lord GOD says: “Every man of the house of Israel who takes his idols into his heart and puts the stumbling block of his iniquity before his face then comes to the prophet, I the LORD will answer him there according to the multitude of his idols,",
+      "ko": "그런즉 너는 그들에게 말하여 이르라 나 주 여호와가 말하노라 이스라엘 족속 중에 무릇 그 우상을 마음에 들이며 죄악의 거치는 것을 자기 앞에 두고 선지자에게 나아오는 자에게는 나 여호와가 그 우상의 많은대로 응답하리니",
+      "source_text_hash": "23ffa8a38b54aa55ffb908a1f6c6ae556854444bbe9ff8efedfff2471a88a90e",
+      "translation_text_hash": "590306f3769c0cb98530fce29a9952b2ba32f795883e6157ec0ec12fe9823ef8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 너는 그들에게 말하여 이르라 나 주 여호와가 말하노라 이스라엘 족속 중에 무릇 그 우상을 마음에 들이며 죄악의 거치는 것을 자기 앞에 두고 선지자에게 나아오는 자에게는 나 여호와가 그 우상의 많은대로 응답하리니"
+      ],
+      "raw_text_hashes": [
+        "590306f3769c0cb98530fce29a9952b2ba32f795883e6157ec0ec12fe9823ef8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:14:5",
+      "sequence": 20737,
+      "chapter_label": "EZK 14",
+      "verse_label": "5",
+      "locator": {
+        "book": "EZK",
+        "chapter": 14,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 14,
+          "verse": 5
+        }
+      ],
+      "en": "that I may take the house of Israel in their own heart, because they are all estranged from me through their idols.”’",
+      "ko": "이는 이스라엘 족속이 다 그 우상으로 인하여 나를 배반하였으므로 내가 그들의 마음에 먹은대로 그들을 잡으려 함이니라",
+      "source_text_hash": "d786cf78d17aafaec7aa42b26b24e0d0cb213bc5e413aadc548bc5847d17270c",
+      "translation_text_hash": "b71eeeefedcaf3a9c1ac8677e064e028278e74888aa4d91645c5fe26b1acce33",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 이스라엘 족속이 다 그 우상으로 인하여 나를 배반하였으므로 내가 그들의 마음에 먹은대로 그들을 잡으려 함이니라"
+      ],
+      "raw_text_hashes": [
+        "b71eeeefedcaf3a9c1ac8677e064e028278e74888aa4d91645c5fe26b1acce33"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:14:6",
+      "sequence": 20738,
+      "chapter_label": "EZK 14",
+      "verse_label": "6",
+      "locator": {
+        "book": "EZK",
+        "chapter": 14,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 14,
+          "verse": 6
+        }
+      ],
+      "en": "“Therefore tell the house of Israel, ‘The Lord GOD says: “Return, and turn yourselves from your idols! Turn away your faces from all your abominations.",
+      "ko": "그런즉 너는 이스라엘 족속에게 이르기를 주 여호와의 말씀에 너희는 마음을 돌이켜 우상을 떠나고 얼굴을 돌이켜 모든 가증한 것을 떠나라",
+      "source_text_hash": "20210025d66804e96eba3fec8d0b3479c6275a0f463966c2d6117ad9562f66f9",
+      "translation_text_hash": "e52bb68fbe5182a7c3d41272a061ad46dece5a68ecd721a28b2ee418009a99f8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 너는 이스라엘 족속에게 이르기를 주 여호와의 말씀에 너희는 마음을 돌이켜 우상을 떠나고 얼굴을 돌이켜 모든 가증한 것을 떠나라"
+      ],
+      "raw_text_hashes": [
+        "e52bb68fbe5182a7c3d41272a061ad46dece5a68ecd721a28b2ee418009a99f8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:14:7",
+      "sequence": 20739,
+      "chapter_label": "EZK 14",
+      "verse_label": "7",
+      "locator": {
+        "book": "EZK",
+        "chapter": 14,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 14,
+          "verse": 7
+        }
+      ],
+      "en": "“‘“For everyone of the house of Israel, or of the strangers who live in Israel, who separates himself from me and takes his idols into his heart, and puts the stumbling block of his iniquity before his face, and comes to the prophet to inquire for himself of me, I the LORD will answer him by myself.",
+      "ko": "이스라엘 족속과 이스라엘 가운데 우거하는 외인 중에 무릇 나를 떠나고 자기 우상을 마음에 들이며 죄악의 거치는 것을 자기 앞에 두고 자기를 위하여 내게 묻고자 하여 선지자에게 나아오는 자에게는 나 여호와가 친히 응답하여",
+      "source_text_hash": "3588ab9f7e7f62bae191a759b3ef8dc5c1e61a47ebc07da6e207bc55cfb37d3b",
+      "translation_text_hash": "9758147880b1b10a641f0e91df64592d50e9adfa820c109c738dc466828a8441",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 족속과 이스라엘 가운데 우거하는 외인 중에 무릇 나를 떠나고 자기 우상을 마음에 들이며 죄악의 거치는 것을 자기 앞에 두고 자기를 위하여 내게 묻고자 하여 선지자에게 나아오는 자에게는 나 여호와가 친히 응답하여"
+      ],
+      "raw_text_hashes": [
+        "9758147880b1b10a641f0e91df64592d50e9adfa820c109c738dc466828a8441"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:14:8",
+      "sequence": 20740,
+      "chapter_label": "EZK 14",
+      "verse_label": "8",
+      "locator": {
+        "book": "EZK",
+        "chapter": 14,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 14,
+          "verse": 8
+        }
+      ],
+      "en": "I will set my face against that man and will make him an astonishment, for a sign and a proverb, and I will cut him off from among my people. Then you will know that I am the LORD.",
+      "ko": "그 사람을 대적하여 그들로 놀라움과 감계와 속담거리가 되게 하여 내 백성 가운데서 끊으리니 너희가 나를 여호와인줄 알리라",
+      "source_text_hash": "9f9253da9e598be6c235f42c2973a7c7a82461552553a29a4361518b30902d13",
+      "translation_text_hash": "84faa8df906e112eae66dfa17125bb5c11a740ddfbd92819395a48732c6adcf8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 사람을 대적하여 그들로 놀라움과 감계와 속담거리가 되게 하여 내 백성 가운데서 끊으리니 너희가 나를 여호와인줄 알리라"
+      ],
+      "raw_text_hashes": [
+        "84faa8df906e112eae66dfa17125bb5c11a740ddfbd92819395a48732c6adcf8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:14:9",
+      "sequence": 20741,
+      "chapter_label": "EZK 14",
+      "verse_label": "9",
+      "locator": {
+        "book": "EZK",
+        "chapter": 14,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 14,
+          "verse": 9
+        }
+      ],
+      "en": "“‘“If the prophet is deceived and speaks a word, I, the LORD, have deceived that prophet, and I will stretch out my hand on him, and will destroy him from among my people Israel.",
+      "ko": "만일 선지자가 유혹을 받고 말을 하면 나 여호와가 그 선지자로 유혹을 받게 하였음이어니와 내가 손을 펴서 내 백성 이스라엘 가운데서 그를 멸할 것이라",
+      "source_text_hash": "29c2b3634756d1fa19ef5a2db51662f3f163bccaf18eb4352dc1cd158363a3a6",
+      "translation_text_hash": "560e470ea53922a2fb8342735337a81aa2a31c95c25e7468b50184ee09b24c6f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 선지자가 유혹을 받고 말을 하면 나 여호와가 그 선지자로 유혹을 받게 하였음이어니와 내가 손을 펴서 내 백성 이스라엘 가운데서 그를 멸할 것이라"
+      ],
+      "raw_text_hashes": [
+        "560e470ea53922a2fb8342735337a81aa2a31c95c25e7468b50184ee09b24c6f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:14:10",
+      "sequence": 20742,
+      "chapter_label": "EZK 14",
+      "verse_label": "10",
+      "locator": {
+        "book": "EZK",
+        "chapter": 14,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 14,
+          "verse": 10
+        }
+      ],
+      "en": "They will bear their iniquity. The iniquity of the prophet will be even as the iniquity of him who seeks him,",
+      "ko": "선지자의 죄악과 그에게 묻는 자의 죄악이 같은즉 각각 자기의 죄악을 담당하리니",
+      "source_text_hash": "eb4fb005fd9c641a24256b36bf7b6ae890c10a3326ea0e32f2e5fe9223c1f2ab",
+      "translation_text_hash": "3a4753636e6affa219e7798e687e102352f1ec9e321d47edf4cfb0105c59f3e2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "선지자의 죄악과 그에게 묻는 자의 죄악이 같은즉 각각 자기의 죄악을 담당하리니"
+      ],
+      "raw_text_hashes": [
+        "3a4753636e6affa219e7798e687e102352f1ec9e321d47edf4cfb0105c59f3e2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:14:11",
+      "sequence": 20743,
+      "chapter_label": "EZK 14",
+      "verse_label": "11",
+      "locator": {
+        "book": "EZK",
+        "chapter": 14,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 14,
+          "verse": 11
+        }
+      ],
+      "en": "that the house of Israel may no more go astray from me, neither defile themselves any more with all their transgressions; but that they may be my people, and I may be their God,” says the Lord GOD.’”",
+      "ko": "이는 이스라엘 족속으로 다시는 미혹하여 나를 떠나지 않게 하며 다시는 모든 범죄함으로 스스로 더럽히지 않게 하여 그들로 내 백성을 삼고 나는 그들의 하나님이 되려 함이니라 나 주 여호와의 말이니라 하셨다 하라",
+      "source_text_hash": "a5c04cfb0309232ce91ea9facf86b859c436251cf80244e84ac8f155dd3dcfea",
+      "translation_text_hash": "d62b999c1ef69899859ef1147740d31ed0b7479a836c2f88e99e82a46c843156",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 이스라엘 족속으로 다시는 미혹하여 나를 떠나지 않게 하며 다시는 모든 범죄함으로 스스로 더럽히지 않게 하여 그들로 내 백성을 삼고 나는 그들의 하나님이 되려 함이니라 나 주 여호와의 말이니라 하셨다 하라"
+      ],
+      "raw_text_hashes": [
+        "d62b999c1ef69899859ef1147740d31ed0b7479a836c2f88e99e82a46c843156"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:14:12",
+      "sequence": 20744,
+      "chapter_label": "EZK 14",
+      "verse_label": "12",
+      "locator": {
+        "book": "EZK",
+        "chapter": 14,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 14,
+          "verse": 12
+        }
+      ],
+      "en": "The LORD’s word came to me, saying,",
+      "ko": "여호와의 말씀이 또 내게 임하여 가라사대",
+      "source_text_hash": "9896c4581212f69b0f4adc87dc02e9102477b3f2cc043645fc2c8a0c2e7ce852",
+      "translation_text_hash": "d80f64c74466735890f0e38292da375b0a0ec48e42ba77cef849f80e52a6bc56",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 말씀이 또 내게 임하여 가라사대"
+      ],
+      "raw_text_hashes": [
+        "d80f64c74466735890f0e38292da375b0a0ec48e42ba77cef849f80e52a6bc56"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:14:13",
+      "sequence": 20745,
+      "chapter_label": "EZK 14",
+      "verse_label": "13",
+      "locator": {
+        "book": "EZK",
+        "chapter": 14,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 14,
+          "verse": 13
+        }
+      ],
+      "en": "“Son of man, when a land sins against me by committing a trespass, and I stretch out my hand on it, and break the staff of its bread and send famine on it, and cut off from it man and animal—",
+      "ko": "인자야 가령 어느 나라가 불법하여 내게 범죄하므로 내가 손을 그 위에 펴서 그 의뢰하는 양식을 끊어 기근을 내려서 사람과 짐승을 그 나라에서 끊는다 하자",
+      "source_text_hash": "77aad015cc8971ed8da8fb0656c6e95e685a6e050f0ce2442e835b0e8da71ddd",
+      "translation_text_hash": "8606d0691b04f3e9fb573af216cc7b3a1102a4367b902ccb974676e49b479e33",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "인자야 가령 어느 나라가 불법하여 내게 범죄하므로 내가 손을 그 위에 펴서 그 의뢰하는 양식을 끊어 기근을 내려서 사람과 짐승을 그 나라에서 끊는다 하자"
+      ],
+      "raw_text_hashes": [
+        "8606d0691b04f3e9fb573af216cc7b3a1102a4367b902ccb974676e49b479e33"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:14:14",
+      "sequence": 20746,
+      "chapter_label": "EZK 14",
+      "verse_label": "14",
+      "locator": {
+        "book": "EZK",
+        "chapter": 14,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 14,
+          "verse": 14
+        }
+      ],
+      "en": "though these three men, Noah, Daniel, and Job, were in it, they would deliver only their own souls by their righteousness,” says the Lord GOD.",
+      "ko": "비록 노아, 다니엘, 욥, 이 세 사람이 거기 있을찌라도 그들은 자기의 의로 자기의 생명만 건지리라 나 주 여호와의 말이니라",
+      "source_text_hash": "5e5fa1549e1f83e85ff46510bf17afea9a717671752a25e8802c9ec9aca73d52",
+      "translation_text_hash": "a4ef9852dd57bc602410746e789638549858b9beda767776eaa54fc0a15823be",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "비록 노아, 다니엘, 욥, 이 세 사람이 거기 있을찌라도 그들은 자기의 의로 자기의 생명만 건지리라 나 주 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "a4ef9852dd57bc602410746e789638549858b9beda767776eaa54fc0a15823be"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:14:15",
+      "sequence": 20747,
+      "chapter_label": "EZK 14",
+      "verse_label": "15",
+      "locator": {
+        "book": "EZK",
+        "chapter": 14,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 14,
+          "verse": 15
+        }
+      ],
+      "en": "“If I cause evil animals to pass through the land, and they ravage it and it is made desolate, so that no man may pass through because of the animals—",
+      "ko": "가령 내가 사나운 짐승으로 그 땅에 통행하여 적막케 하며 황무케 하여 사람으로 그 짐승을 인하여 능히 통행하지 못하게 한다 하자",
+      "source_text_hash": "afa8d2d9669f5ac2b5644271e25ac7496e33650e7a5c48d84a8117c61740eda6",
+      "translation_text_hash": "1ce05361a2d36187aab30aaa180660c5b5f87d640c185b1721ad25dac078d79e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가령 내가 사나운 짐승으로 그 땅에 통행하여 적막케 하며 황무케 하여 사람으로 그 짐승을 인하여 능히 통행하지 못하게 한다 하자"
+      ],
+      "raw_text_hashes": [
+        "1ce05361a2d36187aab30aaa180660c5b5f87d640c185b1721ad25dac078d79e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:14:16",
+      "sequence": 20748,
+      "chapter_label": "EZK 14",
+      "verse_label": "16",
+      "locator": {
+        "book": "EZK",
+        "chapter": 14,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 14,
+          "verse": 16
+        }
+      ],
+      "en": "though these three men were in it, as I live,” says the Lord GOD, “they would deliver neither sons nor daughters. They only would be delivered, but the land would be desolate.",
+      "ko": "비록 이 세 사람이 거기 있을찌라도 나의 삶을 두고 맹세하노니 그들은 자녀도 건지지 못하고 자기만 건지겠고 그 땅은 황무하리라 나 주 여호와의 말이니라",
+      "source_text_hash": "83be6fc8e32e6cdc79985b25c231af9d577ae7992a909e0e6c47864db2f50789",
+      "translation_text_hash": "5cb0fa75b01cf8b1140b304dc08bd7958cea49240c7a95bd39205fec5752c6de",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "비록 이 세 사람이 거기 있을찌라도 나의 삶을 두고 맹세하노니 그들은 자녀도 건지지 못하고 자기만 건지겠고 그 땅은 황무하리라 나 주 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "5cb0fa75b01cf8b1140b304dc08bd7958cea49240c7a95bd39205fec5752c6de"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:14:17",
+      "sequence": 20749,
+      "chapter_label": "EZK 14",
+      "verse_label": "17",
+      "locator": {
+        "book": "EZK",
+        "chapter": 14,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 14,
+          "verse": 17
+        }
+      ],
+      "en": "“Or if I bring a sword on that land, and say, ‘Sword, go through the land, so that I cut off from it man and animal’—",
+      "ko": "가령 내가 칼로 그 땅에 임하게 하고 명하기를 칼아 이 땅에 통행하라 하여 사람과 짐승을 거기서 끊는다 하자",
+      "source_text_hash": "7a1331080d318a4f35778d6fa2578bbd4a08ccadee0cef8616095d1c6df752a1",
+      "translation_text_hash": "4962dc52b131af66528527f7e81516c714b3013e6b8cd49f2a3cdabae03b7871",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가령 내가 칼로 그 땅에 임하게 하고 명하기를 칼아 이 땅에 통행하라 하여 사람과 짐승을 거기서 끊는다 하자"
+      ],
+      "raw_text_hashes": [
+        "4962dc52b131af66528527f7e81516c714b3013e6b8cd49f2a3cdabae03b7871"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:14:18",
+      "sequence": 20750,
+      "chapter_label": "EZK 14",
+      "verse_label": "18",
+      "locator": {
+        "book": "EZK",
+        "chapter": 14,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 14,
+          "verse": 18
+        }
+      ],
+      "en": "though these three men were in it, as I live,” says the Lord GOD, “they would deliver neither sons nor daughters, but they only would be delivered themselves.",
+      "ko": "비록 이 세 사람이 거기 있을찌라도 나의 삶을 두고 맹세하노니 그들은 자녀도 건지지 못하고 자기만 건지리라 나 주 여호와의 말이니라",
+      "source_text_hash": "80e4dda4ec99277e0aa8309b28b11c10065615949d72895470703e44995f334d",
+      "translation_text_hash": "9cbeaf016684b801db6f6e9bd4c4aa1a7e6517f8134a11f7455814be14cf4a1d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "비록 이 세 사람이 거기 있을찌라도 나의 삶을 두고 맹세하노니 그들은 자녀도 건지지 못하고 자기만 건지리라 나 주 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "9cbeaf016684b801db6f6e9bd4c4aa1a7e6517f8134a11f7455814be14cf4a1d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:14:19",
+      "sequence": 20751,
+      "chapter_label": "EZK 14",
+      "verse_label": "19",
+      "locator": {
+        "book": "EZK",
+        "chapter": 14,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 14,
+          "verse": 19
+        }
+      ],
+      "en": "“Or if I send a pestilence into that land, and pour out my wrath on it in blood, to cut off from it man and animal—",
+      "ko": "가령 내가 그 땅에 온역을 내려 죽임으로 내 분을 그 위에 쏟아 사람과 짐승을 거기서 끊는다 하자",
+      "source_text_hash": "d790b412a3038e61203f43a00fb0f5aafc11afed25a7b3c3415ebb1c064eead7",
+      "translation_text_hash": "1e6c5bc47bbaccbf488d8f527645b33712ba0b035b120ece891d9e6ef6871cd8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가령 내가 그 땅에 온역을 내려 죽임으로 내 분을 그 위에 쏟아 사람과 짐승을 거기서 끊는다 하자"
+      ],
+      "raw_text_hashes": [
+        "1e6c5bc47bbaccbf488d8f527645b33712ba0b035b120ece891d9e6ef6871cd8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:14:20",
+      "sequence": 20752,
+      "chapter_label": "EZK 14",
+      "verse_label": "20",
+      "locator": {
+        "book": "EZK",
+        "chapter": 14,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 14,
+          "verse": 20
+        }
+      ],
+      "en": "though Noah, Daniel, and Job, were in it, as I live,” says the Lord GOD, “they would deliver neither son nor daughter; they would deliver only their own souls by their righteousness.”",
+      "ko": "비록 노아, 다니엘, 욥이 거기 있을찌라도 나의 삶을 두고 맹세하노니 그들은 자녀도 건지지 못하고 자기의 의로 자기의 생명만 건지리라 나 주 여호와의 말이니라 하시니라",
+      "source_text_hash": "14b32e5439bcdeabcde7839a6b177921115e167b5316c45e7741007f8defed05",
+      "translation_text_hash": "af0eff2abbca267bc270fc3a46301bafbff42f482459d96490f7589b597a41b5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "비록 노아, 다니엘, 욥이 거기 있을찌라도 나의 삶을 두고 맹세하노니 그들은 자녀도 건지지 못하고 자기의 의로 자기의 생명만 건지리라 나 주 여호와의 말이니라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "af0eff2abbca267bc270fc3a46301bafbff42f482459d96490f7589b597a41b5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:14:21",
+      "sequence": 20753,
+      "chapter_label": "EZK 14",
+      "verse_label": "21",
+      "locator": {
+        "book": "EZK",
+        "chapter": 14,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 14,
+          "verse": 21
+        }
+      ],
+      "en": "For the Lord GOD says: “How much more when I send my four severe judgments on Jerusalem—the sword, the famine, the evil animals, and the pestilence—to cut off from it man and animal!",
+      "ko": "주 여호와께서 가라사대 내가 나의 네가지 중한 벌 곧 칼과 기근과 사나운 짐승과 온역을 예루살렘에 함께 내려 사람과 짐승을 그 중에서 끊으리니 그 해가 더욱 심하지 않겠느냐",
+      "source_text_hash": "3469d375648df6e2a450a5c09dff955bcde5259cf4375a28d9be5cdcf81db535",
+      "translation_text_hash": "3204f6f1d72cb9347301cc92e6290d2396a359e22ade3fe526b0836b26e66535",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주 여호와께서 가라사대 내가 나의 네가지 중한 벌 곧 칼과 기근과 사나운 짐승과 온역을 예루살렘에 함께 내려 사람과 짐승을 그 중에서 끊으리니 그 해가 더욱 심하지 않겠느냐"
+      ],
+      "raw_text_hashes": [
+        "3204f6f1d72cb9347301cc92e6290d2396a359e22ade3fe526b0836b26e66535"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:14:22",
+      "sequence": 20754,
+      "chapter_label": "EZK 14",
+      "verse_label": "22",
+      "locator": {
+        "book": "EZK",
+        "chapter": 14,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 14,
+          "verse": 22
+        }
+      ],
+      "en": "Yet, behold, there will be left a remnant in it that will be carried out, both sons and daughters. Behold, they will come out to you, and you will see their way and their doings. Then you will be comforted concerning the evil that I have brought on Jerusalem, even concerning all that I have brought on it.",
+      "ko": "그러나 그 가운데 면하는 자가 남아 있어 끌려 나오리니 곧 자녀들이라 그들이 너희에게로 나아오리니 너희가 그 행동과 소위를 보면 내가 예루살렘에 내린 재앙 곧 그 내린 모든 일에 대하여 너희가 위로를 받을 것이라",
+      "source_text_hash": "55d878157652a90290ae27e2ce131347b9016d1e0eb224390fcd709bd822af4e",
+      "translation_text_hash": "e855e5c7b8f9bf6ede24d53dd56e1eab183f69154e94da12195bd9e80a807d78",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 그 가운데 면하는 자가 남아 있어 끌려 나오리니 곧 자녀들이라 그들이 너희에게로 나아오리니 너희가 그 행동과 소위를 보면 내가 예루살렘에 내린 재앙 곧 그 내린 모든 일에 대하여 너희가 위로를 받을 것이라"
+      ],
+      "raw_text_hashes": [
+        "e855e5c7b8f9bf6ede24d53dd56e1eab183f69154e94da12195bd9e80a807d78"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:14:23",
+      "sequence": 20755,
+      "chapter_label": "EZK 14",
+      "verse_label": "23",
+      "locator": {
+        "book": "EZK",
+        "chapter": 14,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 14,
+          "verse": 23
+        }
+      ],
+      "en": "They will comfort you, when you see their way and their doings; then you will know that I have not done all that I have done in it without cause,” says the Lord GOD.",
+      "ko": "너희가 그 행동과 소위를 볼 때에 그들로 인하여 위로를 받고 내가 예루살렘에서 행한 모든 일이 무고히 한 것이 아닌 줄을 알리라 나 주 여호와의 말이니라",
+      "source_text_hash": "8298d2395ef0d43de3ef76376b7b775c9288b05f132f47092f6890c8ead4da54",
+      "translation_text_hash": "cc488ef729ddd7350db0757902a603c6a99481b994c2bcb1473a378cc3e08d1d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 그 행동과 소위를 볼 때에 그들로 인하여 위로를 받고 내가 예루살렘에서 행한 모든 일이 무고히 한 것이 아닌 줄을 알리라 나 주 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "cc488ef729ddd7350db0757902a603c6a99481b994c2bcb1473a378cc3e08d1d"
+      ]
+    }
+  ]
+}

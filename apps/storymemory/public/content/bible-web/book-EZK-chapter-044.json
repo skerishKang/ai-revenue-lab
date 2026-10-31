@@ -1,0 +1,1005 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EZK:chapter:044",
+  "unit_ordinal": 846,
+  "unit_label": "EZK 44",
+  "book_code": "EZK",
+  "chapter_number": 44,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EZK:44:1",
+      "sequence": 21601,
+      "chapter_label": "EZK 44",
+      "verse_label": "1",
+      "locator": {
+        "book": "EZK",
+        "chapter": 44,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 44,
+          "verse": 1
+        }
+      ],
+      "en": "Then he brought me back by the way of the outer gate of the sanctuary, which looks toward the east; and it was shut.",
+      "ko": "그가 나를 데리고 성소 동향한 바깥 문에 돌아오시니 그 문이 닫히었더라",
+      "source_text_hash": "4d0a613af998daad22d04fde30efdce34fa6cddc3b716f3dee5f71e630402e67",
+      "translation_text_hash": "4faa966083dfb1a9db48129ce32a6e314f6b40a97b00d1bba3a90de68b8f7b28",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 나를 데리고 성소 동향한 바깥 문에 돌아오시니 그 문이 닫히었더라"
+      ],
+      "raw_text_hashes": [
+        "4faa966083dfb1a9db48129ce32a6e314f6b40a97b00d1bba3a90de68b8f7b28"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:44:2",
+      "sequence": 21602,
+      "chapter_label": "EZK 44",
+      "verse_label": "2",
+      "locator": {
+        "book": "EZK",
+        "chapter": 44,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 44,
+          "verse": 2
+        }
+      ],
+      "en": "The LORD said to me, “This gate shall be shut. It shall not be opened, no man shall enter in by it; for the LORD, the God of Israel, has entered in by it. Therefore it shall be shut.",
+      "ko": "여호와께서 내게 이르시되 이 문은 닫고 다시 열지 못할찌니 아무 사람도 그리로 들어 오지 못할 것은 이스라엘 하나님 나 여호와가 그리로 들어 왔음이라 그러므로 닫아 둘찌니라",
+      "source_text_hash": "46054940d0d35ed215b18e70427d8f4c1d01bb06e0cafafe0734759605f63661",
+      "translation_text_hash": "3a81ba4bdacff621c8969e98e6298a50f825ad3fa140da29ccbf40888b023e97",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 내게 이르시되 이 문은 닫고 다시 열지 못할찌니 아무 사람도 그리로 들어 오지 못할 것은 이스라엘 하나님 나 여호와가 그리로 들어 왔음이라 그러므로 닫아 둘찌니라"
+      ],
+      "raw_text_hashes": [
+        "3a81ba4bdacff621c8969e98e6298a50f825ad3fa140da29ccbf40888b023e97"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:44:3",
+      "sequence": 21603,
+      "chapter_label": "EZK 44",
+      "verse_label": "3",
+      "locator": {
+        "book": "EZK",
+        "chapter": 44,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 44,
+          "verse": 3
+        }
+      ],
+      "en": "As for the prince, he shall sit in it as prince to eat bread before the LORD. He shall enter by the way of the porch of the gate, and shall go out the same way.”",
+      "ko": "왕은 왕인 까닭에 안 길로 이 문 현관으로 들어와서 거기 앉아서 나 여호와 앞에서 음식을 먹고 그 길로 나갈 것이니라",
+      "source_text_hash": "73a982fa5542b7daf8f89df08a44f1c73f9a166171e4c34131f8520a9bdc4421",
+      "translation_text_hash": "3f0bfe6ebc0e32fa4780cca57e1666ffb4ca0f5b2d0b39b72f0971636a32b2d3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕은 왕인 까닭에 안 길로 이 문 현관으로 들어와서 거기 앉아서 나 여호와 앞에서 음식을 먹고 그 길로 나갈 것이니라"
+      ],
+      "raw_text_hashes": [
+        "3f0bfe6ebc0e32fa4780cca57e1666ffb4ca0f5b2d0b39b72f0971636a32b2d3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:44:4",
+      "sequence": 21604,
+      "chapter_label": "EZK 44",
+      "verse_label": "4",
+      "locator": {
+        "book": "EZK",
+        "chapter": 44,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 44,
+          "verse": 4
+        }
+      ],
+      "en": "Then he brought me by the way of the north gate before the house; and I looked, and behold, the LORD’s glory filled the LORD’s house; so I fell on my face.",
+      "ko": "그가 또 나를 데리고 북문을 통하여 전 앞에 이르시기로 내가 보니 여호와의 영광이 여호와의 전에 가득한지라 내가 얼굴을 땅에 대고 엎드린대",
+      "source_text_hash": "9ec82c4479f46fff12ba886c89091bf3dabf03e0e0a70bd0b4168a11ca57f275",
+      "translation_text_hash": "a5cdd12096ad0ef64a9298751f9c39b750e18088bc2a55f80c89ebf7da258e45",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 또 나를 데리고 북문을 통하여 전 앞에 이르시기로 내가 보니 여호와의 영광이 여호와의 전에 가득한지라 내가 얼굴을 땅에 대고 엎드린대"
+      ],
+      "raw_text_hashes": [
+        "a5cdd12096ad0ef64a9298751f9c39b750e18088bc2a55f80c89ebf7da258e45"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:44:5",
+      "sequence": 21605,
+      "chapter_label": "EZK 44",
+      "verse_label": "5",
+      "locator": {
+        "book": "EZK",
+        "chapter": 44,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 44,
+          "verse": 5
+        }
+      ],
+      "en": "The LORD said to me, “Son of man, mark well, and see with your eyes, and hear with your ears all that I tell you concerning all the ordinances of the LORD’s house and all its laws; and mark well the entrance of the house, with every exit of the sanctuary.",
+      "ko": "여호와께서 내게 이르시되 인자야 너는 전심으로 주목하여 내가 네게 말하는바 여호와의 전의 모든 규례와 모든 율례를 귀로 듣고 또 전의 입구와 성소의 출구를 전심으로 주의하고",
+      "source_text_hash": "1c580673bb0bd81a59d7515559416132c7e254cb7bd5681de0f166171ad265ef",
+      "translation_text_hash": "f3339a3193ea1fb3a40113cba0b0e401503dc99a65bd51e4b0378dbb8986c834",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 내게 이르시되 인자야 너는 전심으로 주목하여 내가 네게 말하는바 여호와의 전의 모든 규례와 모든 율례를 귀로 듣고 또 전의 입구와 성소의 출구를 전심으로 주의하고"
+      ],
+      "raw_text_hashes": [
+        "f3339a3193ea1fb3a40113cba0b0e401503dc99a65bd51e4b0378dbb8986c834"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:44:6",
+      "sequence": 21606,
+      "chapter_label": "EZK 44",
+      "verse_label": "6",
+      "locator": {
+        "book": "EZK",
+        "chapter": 44,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 44,
+          "verse": 6
+        }
+      ],
+      "en": "You shall tell the rebellious, even the house of Israel, ‘The Lord GOD says: “You house of Israel, let that be enough of all your abominations,",
+      "ko": "너는 패역한 자 곧 이스라엘 족속에게 이르기를 주 여호와의 말씀이 이스라엘 족속아 너희의 모든 가증한 일이 족하니라",
+      "source_text_hash": "7f7e535e9df2ed937b8aff7b542977f1e18f3cf3b656d64653c0768b4e54e636",
+      "translation_text_hash": "9c94d3124bf238f122bcb3ec2feef1ca6804a6e366c87f0e86a0cc0586ede6eb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 패역한 자 곧 이스라엘 족속에게 이르기를 주 여호와의 말씀이 이스라엘 족속아 너희의 모든 가증한 일이 족하니라"
+      ],
+      "raw_text_hashes": [
+        "9c94d3124bf238f122bcb3ec2feef1ca6804a6e366c87f0e86a0cc0586ede6eb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:44:7",
+      "sequence": 21607,
+      "chapter_label": "EZK 44",
+      "verse_label": "7",
+      "locator": {
+        "book": "EZK",
+        "chapter": 44,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 44,
+          "verse": 7
+        }
+      ],
+      "en": "in that you have brought in foreigners, uncircumcised in heart and uncircumcised in flesh, to be in my sanctuary, to profane it, even my house, when you offer my bread, the fat and the blood; and they have broken my covenant, to add to all your abominations.",
+      "ko": "대저 너희가 마음과 몸에 할례 받지 아니한 이방인을 데려오고 내 떡과 기름과 피를 드릴 때에 그들로 내 성소 안에 있게 하여 내 전을 더럽히므로 너희의 모든 가증한 일 외에 그들이 내 언약을 위반케 하는 것이 되었으며",
+      "source_text_hash": "3c5d257b0bb1547de04350b2736231626a129b156b66c9b673cda469d67bc6b7",
+      "translation_text_hash": "a9df50dfd504bfc02f290a788dfa7565208e3ac3cdcdae204b4386e78666a1f3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대저 너희가 마음과 몸에 할례 받지 아니한 이방인을 데려오고 내 떡과 기름과 피를 드릴 때에 그들로 내 성소 안에 있게 하여 내 전을 더럽히므로 너희의 모든 가증한 일 외에 그들이 내 언약을 위반케 하는 것이 되었으며"
+      ],
+      "raw_text_hashes": [
+        "a9df50dfd504bfc02f290a788dfa7565208e3ac3cdcdae204b4386e78666a1f3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:44:8",
+      "sequence": 21608,
+      "chapter_label": "EZK 44",
+      "verse_label": "8",
+      "locator": {
+        "book": "EZK",
+        "chapter": 44,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 44,
+          "verse": 8
+        }
+      ],
+      "en": "You have not performed the duty of my holy things; but you have set performers of my duty in my sanctuary for yourselves.”",
+      "ko": "너희가 내 성물의 직분을 지키지 아니하고 내 성소에 사람을 두어 너희 직분을 대신 지키게 하였느니라",
+      "source_text_hash": "a93ef922a200bb4add1701b3f462354482f607830440040bad59456e99a9342a",
+      "translation_text_hash": "c94a0c48890476b967c148af547770cf7e9c33152fdfb4ab5451a473d05930b5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 내 성물의 직분을 지키지 아니하고 내 성소에 사람을 두어 너희 직분을 대신 지키게 하였느니라"
+      ],
+      "raw_text_hashes": [
+        "c94a0c48890476b967c148af547770cf7e9c33152fdfb4ab5451a473d05930b5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:44:9",
+      "sequence": 21609,
+      "chapter_label": "EZK 44",
+      "verse_label": "9",
+      "locator": {
+        "book": "EZK",
+        "chapter": 44,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 44,
+          "verse": 9
+        }
+      ],
+      "en": "The Lord GOD says, “No foreigner, uncircumcised in heart and uncircumcised in flesh, shall enter into my sanctuary, of any foreigners who are among the children of Israel.",
+      "ko": "나 주 여호와가 말하노라 이스라엘 족속 중에 있는 이방인 중에 마음과 몸이 할례를 받지 아니한 이방인은 내 성소에 들어오지 못하리라",
+      "source_text_hash": "ee71fcd6940ca9f9808108c641e4bc875140f63c1caf0745f56341c9a5f26ec5",
+      "translation_text_hash": "df99fdfd3bcb4058f719277a5ef176f63c23a2b1c3d624495447dd43d720d90f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 주 여호와가 말하노라 이스라엘 족속 중에 있는 이방인 중에 마음과 몸이 할례를 받지 아니한 이방인은 내 성소에 들어오지 못하리라"
+      ],
+      "raw_text_hashes": [
+        "df99fdfd3bcb4058f719277a5ef176f63c23a2b1c3d624495447dd43d720d90f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:44:10",
+      "sequence": 21610,
+      "chapter_label": "EZK 44",
+      "verse_label": "10",
+      "locator": {
+        "book": "EZK",
+        "chapter": 44,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 44,
+          "verse": 10
+        }
+      ],
+      "en": "“‘“But the Levites who went far from me when Israel went astray, who went astray from me after their idols, they will bear their iniquity.",
+      "ko": "이스라엘 족속이 그릇하여 나를 떠날 때에 레위 사람도 그릇하여 그 우상을 좇아 나를 멀리 떠났으니 그 죄악을 담당하리라",
+      "source_text_hash": "41f8439d0363abcafb5bf14d4b932f39f6b38f691f158fc04918918917752567",
+      "translation_text_hash": "c4b2d30c207376b20822186527f3e42f6ac1d5717ee1f5d64ccc7d8ef4b5ccbc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 족속이 그릇하여 나를 떠날 때에 레위 사람도 그릇하여 그 우상을 좇아 나를 멀리 떠났으니 그 죄악을 담당하리라"
+      ],
+      "raw_text_hashes": [
+        "c4b2d30c207376b20822186527f3e42f6ac1d5717ee1f5d64ccc7d8ef4b5ccbc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:44:11",
+      "sequence": 21611,
+      "chapter_label": "EZK 44",
+      "verse_label": "11",
+      "locator": {
+        "book": "EZK",
+        "chapter": 44,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 44,
+          "verse": 11
+        }
+      ],
+      "en": "Yet they shall be ministers in my sanctuary, having oversight at the gates of the house, and ministering in the house. They shall kill the burnt offering and the sacrifice for the people, and they shall stand before them to minister to them.",
+      "ko": "그러나 그들이 내 성소에서 수종들어 전문을 맡을 것이며 전에서 수종들어 백성의 번제의 희생과 및 다른 희생을 잡아 백성 앞에 서서 수종들게 되리라",
+      "source_text_hash": "031e8daee333ab40692fadde6536180c2b35cd606f140db989b31fe1b18c00b5",
+      "translation_text_hash": "792485cb50e7470187f7ef4aafdc212fe6241e84fbfaf3a16f878c823287929b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 그들이 내 성소에서 수종들어 전문을 맡을 것이며 전에서 수종들어 백성의 번제의 희생과 및 다른 희생을 잡아 백성 앞에 서서 수종들게 되리라"
+      ],
+      "raw_text_hashes": [
+        "792485cb50e7470187f7ef4aafdc212fe6241e84fbfaf3a16f878c823287929b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:44:12",
+      "sequence": 21612,
+      "chapter_label": "EZK 44",
+      "verse_label": "12",
+      "locator": {
+        "book": "EZK",
+        "chapter": 44,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 44,
+          "verse": 12
+        }
+      ],
+      "en": "Because they ministered to them before their idols, and became a stumbling block of iniquity to the house of Israel, therefore I have lifted up my hand against them,” says the Lord GOD, “and they will bear their iniquity.",
+      "ko": "나 주 여호와가 말하노라 그들이 전에 백성을 위하여 그 우상 앞에서 수종들어서 이스라엘 족속으로 죄악에 거치게 하였으므로 내가 내 손을 들어 쳐서 그들로 그 죄악을 담당하여",
+      "source_text_hash": "ee19176fa1c57ae43f42ee42cd26e0cc75e71b8771d4a4228a5205b4893860b1",
+      "translation_text_hash": "553335db6768560c784228de30ba388bb1e28b442ccf9636f54db4eef757bf6e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 주 여호와가 말하노라 그들이 전에 백성을 위하여 그 우상 앞에서 수종들어서 이스라엘 족속으로 죄악에 거치게 하였으므로 내가 내 손을 들어 쳐서 그들로 그 죄악을 담당하여"
+      ],
+      "raw_text_hashes": [
+        "553335db6768560c784228de30ba388bb1e28b442ccf9636f54db4eef757bf6e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:44:13",
+      "sequence": 21613,
+      "chapter_label": "EZK 44",
+      "verse_label": "13",
+      "locator": {
+        "book": "EZK",
+        "chapter": 44,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 44,
+          "verse": 13
+        }
+      ],
+      "en": "They shall not come near to me, to execute the office of priest to me, nor to come near to any of my holy things, to the things that are most holy; but they will bear their shame and their abominations which they have committed.",
+      "ko": "내게 가까이 나아와 제사장의 직분을 행치 못하게 하며 또 내 성물 곧 지성물에 가까이 오지 못하게 하리니 그들이 자기의 수욕과 그 행한바 가증한 일을 담당하리라",
+      "source_text_hash": "cb6bbf3975ab86ed16ea7126508ff59878a2946414a3ae0f6e10c0a5da9c4b74",
+      "translation_text_hash": "ed3dbec48ffbdc7db6e8ee2a30511f38abb060a6c6baa437df1d471deccaa14f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내게 가까이 나아와 제사장의 직분을 행치 못하게 하며 또 내 성물 곧 지성물에 가까이 오지 못하게 하리니 그들이 자기의 수욕과 그 행한바 가증한 일을 담당하리라"
+      ],
+      "raw_text_hashes": [
+        "ed3dbec48ffbdc7db6e8ee2a30511f38abb060a6c6baa437df1d471deccaa14f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:44:14",
+      "sequence": 21614,
+      "chapter_label": "EZK 44",
+      "verse_label": "14",
+      "locator": {
+        "book": "EZK",
+        "chapter": 44,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 44,
+          "verse": 14
+        }
+      ],
+      "en": "Yet I will make them performers of the duty of the house, for all its service and for all that will be done therein.",
+      "ko": "그러나 내가 그들을 세워 전을 수직하게 하고 전에 모든 수종드는 일과 그 가운데서 행하는 모든 일을 맡기리라",
+      "source_text_hash": "0b20fa6664ca53220bef349cd79957c7d272c858d6ea995ce1968bbc6c529b32",
+      "translation_text_hash": "8b346741fe630f75ff484a37a83ff2c918c071742ff4d81d36ce2c6f0f1d6ecf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 내가 그들을 세워 전을 수직하게 하고 전에 모든 수종드는 일과 그 가운데서 행하는 모든 일을 맡기리라"
+      ],
+      "raw_text_hashes": [
+        "8b346741fe630f75ff484a37a83ff2c918c071742ff4d81d36ce2c6f0f1d6ecf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:44:15",
+      "sequence": 21615,
+      "chapter_label": "EZK 44",
+      "verse_label": "15",
+      "locator": {
+        "book": "EZK",
+        "chapter": 44,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 44,
+          "verse": 15
+        }
+      ],
+      "en": "“‘“But the Levitical priests, the sons of Zadok, who performed the duty of my sanctuary when the children of Israel went astray from me, shall come near to me to minister to me. They shall stand before me to offer to me the fat and the blood,” says the Lord GOD.",
+      "ko": "이스라엘 족속이 그릇하여 나를 떠날 때에 사독의 자손 레위 사람 제사장들은 내 성소의 직분을 지켰은즉 그들은 내게 가까이 나아와 수종을 들되 내 앞에 서서 기름과 피를 내게 드릴찌니라 나 주 여호와의 말이니라",
+      "source_text_hash": "48d492dda32133019456cdd330d8fdd7e8d5da681eac39f53d81f4f82c69f379",
+      "translation_text_hash": "d71bc96f71758be5febab9547d341c357b12c9d5a28ea0774c9474107279d253",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 족속이 그릇하여 나를 떠날 때에 사독의 자손 레위 사람 제사장들은 내 성소의 직분을 지켰은즉 그들은 내게 가까이 나아와 수종을 들되 내 앞에 서서 기름과 피를 내게 드릴찌니라 나 주 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "d71bc96f71758be5febab9547d341c357b12c9d5a28ea0774c9474107279d253"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:44:16",
+      "sequence": 21616,
+      "chapter_label": "EZK 44",
+      "verse_label": "16",
+      "locator": {
+        "book": "EZK",
+        "chapter": 44,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 44,
+          "verse": 16
+        }
+      ],
+      "en": "“They shall enter into my sanctuary, and they shall come near to my table, to minister to me, and they shall keep my instruction.",
+      "ko": "그들이 내 성소에 들어오며 또 내 상에 가까이 나아와 내게 수종들어 나의 맡긴 직분을 지키되",
+      "source_text_hash": "a19272c3ba0ad2fa7f5a45690235d9b0c93d60c43b1e65c9b1f334d2551dca8f",
+      "translation_text_hash": "e87c4a3c042903d01c1029095a639116ec447997406356a4df61d676c1d4978f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 내 성소에 들어오며 또 내 상에 가까이 나아와 내게 수종들어 나의 맡긴 직분을 지키되"
+      ],
+      "raw_text_hashes": [
+        "e87c4a3c042903d01c1029095a639116ec447997406356a4df61d676c1d4978f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:44:17",
+      "sequence": 21617,
+      "chapter_label": "EZK 44",
+      "verse_label": "17",
+      "locator": {
+        "book": "EZK",
+        "chapter": 44,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 44,
+          "verse": 17
+        }
+      ],
+      "en": "“‘“It will be that when they enter in at the gates of the inner court, they shall be clothed with linen garments. No wool shall come on them while they minister in the gates of the inner court, and within.",
+      "ko": "그들이 안 뜰 문에 들어올 때에나 안 뜰 문과 전 안에서 수종들 때에는 양털 옷을 입지 말고 가는 베 옷을 입을 것이니",
+      "source_text_hash": "8b755d7ea93873e0be4dc758cb0b3cbe95f4d0c1baaebb4975a270e3e705e9b3",
+      "translation_text_hash": "1d755ce1948d7627f3ea4ad6b487f68a98ccd3d1189e615139276eec8e113b78",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 안 뜰 문에 들어올 때에나 안 뜰 문과 전 안에서 수종들 때에는 양털 옷을 입지 말고 가는 베 옷을 입을 것이니"
+      ],
+      "raw_text_hashes": [
+        "1d755ce1948d7627f3ea4ad6b487f68a98ccd3d1189e615139276eec8e113b78"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:44:18",
+      "sequence": 21618,
+      "chapter_label": "EZK 44",
+      "verse_label": "18",
+      "locator": {
+        "book": "EZK",
+        "chapter": 44,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 44,
+          "verse": 18
+        }
+      ],
+      "en": "They shall have linen turbans on their heads, and shall have linen trousers on their waists. They shall not clothe themselves with anything that makes them sweat.",
+      "ko": "가는베 관을 머리에 쓰며 가는베 바지를 입고 땀 나게 하는 것으로 허리를 동이지 말 것이며",
+      "source_text_hash": "02c07c1ba9954092943d928ce9637ee2aed01f2686f4405d68efa6406c7d2257",
+      "translation_text_hash": "42ff15da5a63fe4a1f4a0f0d1c45c5b89bd2499cc9688d397ad10545af499144",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가는베 관을 머리에 쓰며 가는베 바지를 입고 땀 나게 하는 것으로 허리를 동이지 말 것이며"
+      ],
+      "raw_text_hashes": [
+        "42ff15da5a63fe4a1f4a0f0d1c45c5b89bd2499cc9688d397ad10545af499144"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:44:19",
+      "sequence": 21619,
+      "chapter_label": "EZK 44",
+      "verse_label": "19",
+      "locator": {
+        "book": "EZK",
+        "chapter": 44,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 44,
+          "verse": 19
+        }
+      ],
+      "en": "When they go out into the outer court, even into the outer court to the people, they shall put off their garments in which they minister and lay them in the holy rooms. They shall put on other garments, that they not sanctify the people with their garments.",
+      "ko": "그들이 바깥 뜰 백성에게로 나갈 때에는 수종드는 옷을 벗어 거룩한 방에 두고 다른 옷을 입을찌니 이는 그 옷으로 백성을 거룩케 할까 함이니라",
+      "source_text_hash": "fdd73b13357d90268ba689a9f95beb9b33a11c169cb3cc2b3635841f11d0b470",
+      "translation_text_hash": "9f615bc6f40b7acdb575690f36899ef0fd23261ad74e78e78000398830ac38ba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 바깥 뜰 백성에게로 나갈 때에는 수종드는 옷을 벗어 거룩한 방에 두고 다른 옷을 입을찌니 이는 그 옷으로 백성을 거룩케 할까 함이니라"
+      ],
+      "raw_text_hashes": [
+        "9f615bc6f40b7acdb575690f36899ef0fd23261ad74e78e78000398830ac38ba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:44:20",
+      "sequence": 21620,
+      "chapter_label": "EZK 44",
+      "verse_label": "20",
+      "locator": {
+        "book": "EZK",
+        "chapter": 44,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 44,
+          "verse": 20
+        }
+      ],
+      "en": "“‘“They shall not shave their heads, or allow their locks to grow long. They shall only cut off the hair of their heads.",
+      "ko": "그들은 또 머리털을 밀지도 말며 머리털을 길게 자라게도 말고 그 머리털을 깎기만 할 것이며",
+      "source_text_hash": "af07170954a607721fb6d219189f6487b41539e52d8b420149ae9166669ec426",
+      "translation_text_hash": "e2a9123b0667cbc30d826a8c6f6e15b4f9979f000cc9bfdb3c7ad4835f215110",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들은 또 머리털을 밀지도 말며 머리털을 길게 자라게도 말고 그 머리털을 깎기만 할 것이며"
+      ],
+      "raw_text_hashes": [
+        "e2a9123b0667cbc30d826a8c6f6e15b4f9979f000cc9bfdb3c7ad4835f215110"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:44:21",
+      "sequence": 21621,
+      "chapter_label": "EZK 44",
+      "verse_label": "21",
+      "locator": {
+        "book": "EZK",
+        "chapter": 44,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 44,
+          "verse": 21
+        }
+      ],
+      "en": "None of the priests shall drink wine when they enter into the inner court.",
+      "ko": "아무 제사장이든지 안 뜰에 들어갈 때에는 포도주를 마시지 말 것이며",
+      "source_text_hash": "ae69fd57a324e49ec44701432f711850c8f5a55f9025311524338db3ab7c0f65",
+      "translation_text_hash": "3c93de090445bd6608e22358f21b0700055aa1e6598d104e646d777a62c77f88",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아무 제사장이든지 안 뜰에 들어갈 때에는 포도주를 마시지 말 것이며"
+      ],
+      "raw_text_hashes": [
+        "3c93de090445bd6608e22358f21b0700055aa1e6598d104e646d777a62c77f88"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:44:22",
+      "sequence": 21622,
+      "chapter_label": "EZK 44",
+      "verse_label": "22",
+      "locator": {
+        "book": "EZK",
+        "chapter": 44,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 44,
+          "verse": 22
+        }
+      ],
+      "en": "They shall not take for their wives a widow, or her who is put away; but they shall take virgins of the offspring of the house of Israel, or a widow who is the widow of a priest.",
+      "ko": "과부나 이혼한 여인에게 장가 들지 말고 오직 이스라엘 족속의 처녀나 혹시 제사장의 과부에게 장가 들 것이며",
+      "source_text_hash": "d4a94820f1bbaf851fe10d8273fd2347b58e286edea12da09ee6b542685b7595",
+      "translation_text_hash": "527511ff5cea903352fb1ca77945d274e761b2ff4968ef4bab00d0dc7c0a8a5e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "과부나 이혼한 여인에게 장가 들지 말고 오직 이스라엘 족속의 처녀나 혹시 제사장의 과부에게 장가 들 것이며"
+      ],
+      "raw_text_hashes": [
+        "527511ff5cea903352fb1ca77945d274e761b2ff4968ef4bab00d0dc7c0a8a5e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:44:23",
+      "sequence": 21623,
+      "chapter_label": "EZK 44",
+      "verse_label": "23",
+      "locator": {
+        "book": "EZK",
+        "chapter": 44,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 44,
+          "verse": 23
+        }
+      ],
+      "en": "They shall teach my people the difference between the holy and the common, and cause them to discern between the unclean and the clean.",
+      "ko": "내 백성에게 거룩한 것과 속된 것의 구별을 가르치며 부정한 것과 정한 것을 분별하게 할 것이며",
+      "source_text_hash": "546ad01f8c2766cf5003f66729809246a91bc75d63efab7996554a4e57732ebf",
+      "translation_text_hash": "679bf0c8d62215ca1f6d501ab94d0954cbad43ed61f01995ce6da85b26d5441a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 백성에게 거룩한 것과 속된 것의 구별을 가르치며 부정한 것과 정한 것을 분별하게 할 것이며"
+      ],
+      "raw_text_hashes": [
+        "679bf0c8d62215ca1f6d501ab94d0954cbad43ed61f01995ce6da85b26d5441a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:44:24",
+      "sequence": 21624,
+      "chapter_label": "EZK 44",
+      "verse_label": "24",
+      "locator": {
+        "book": "EZK",
+        "chapter": 44,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 44,
+          "verse": 24
+        }
+      ],
+      "en": "“‘“In a controversy they shall stand to judge. They shall judge it according to my ordinances. They shall keep my laws and my statutes in all my appointed feasts. They shall make my Sabbaths holy.",
+      "ko": "송사하는 일을 재판하되 내 규례대로 재판할 것이며 내 모든 정한 절기에는 내 법도와 율례를 지킬 것이며 또 내 안식일을 거룩케 하며",
+      "source_text_hash": "e41adf2b495d588ae78c160539a24135b5e154331766bf973278eef439625583",
+      "translation_text_hash": "0960c9afbc4b26de39b998c81095dead605bc9f446e7d688026b925f52f65539",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "송사하는 일을 재판하되 내 규례대로 재판할 것이며 내 모든 정한 절기에는 내 법도와 율례를 지킬 것이며 또 내 안식일을 거룩케 하며"
+      ],
+      "raw_text_hashes": [
+        "0960c9afbc4b26de39b998c81095dead605bc9f446e7d688026b925f52f65539"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:44:25",
+      "sequence": 21625,
+      "chapter_label": "EZK 44",
+      "verse_label": "25",
+      "locator": {
+        "book": "EZK",
+        "chapter": 44,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 44,
+          "verse": 25
+        }
+      ],
+      "en": "“‘“They shall go in to no dead person to defile themselves; but for father, or for mother, or for son, or for daughter, for brother, or for sister who has had no husband, they may defile themselves.",
+      "ko": "시체를 가까이하여 스스로 더럽히지 못할 것이로되 부모나 자녀나 형제나 시집 가지 아니한 자매를 위하여는 더럽힐 수 있으며",
+      "source_text_hash": "2a10b686083d93a2c11c8c74269ef782de2d81f4b4bb05d604a26297b419cbce",
+      "translation_text_hash": "947be6a66855a184f42cb4da8ecc5d058eefe9a284b2dde2eb5a590d4657fda8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시체를 가까이하여 스스로 더럽히지 못할 것이로되 부모나 자녀나 형제나 시집 가지 아니한 자매를 위하여는 더럽힐 수 있으며"
+      ],
+      "raw_text_hashes": [
+        "947be6a66855a184f42cb4da8ecc5d058eefe9a284b2dde2eb5a590d4657fda8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:44:26",
+      "sequence": 21626,
+      "chapter_label": "EZK 44",
+      "verse_label": "26",
+      "locator": {
+        "book": "EZK",
+        "chapter": 44,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 44,
+          "verse": 26
+        }
+      ],
+      "en": "After he is cleansed, they shall reckon to him seven days.",
+      "ko": "이런 자는 스스로 정결케 한 후에 칠일을 더 지낼 것이요",
+      "source_text_hash": "9cd9e86d171d8a10a0ea2b836e211b7a7db93e4e04e7b9848de1a5ab945b1e55",
+      "translation_text_hash": "4062cc9cae5c1fd2139d8364c0832a50335c8f87694da55a5ac2e576e35c72d4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이런 자는 스스로 정결케 한 후에 칠일을 더 지낼 것이요"
+      ],
+      "raw_text_hashes": [
+        "4062cc9cae5c1fd2139d8364c0832a50335c8f87694da55a5ac2e576e35c72d4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:44:27",
+      "sequence": 21627,
+      "chapter_label": "EZK 44",
+      "verse_label": "27",
+      "locator": {
+        "book": "EZK",
+        "chapter": 44,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 44,
+          "verse": 27
+        }
+      ],
+      "en": "In the day that he goes into the sanctuary, into the inner court, to minister in the sanctuary, he shall offer his sin offering,” says the Lord GOD.",
+      "ko": "성소에 수종들려하여 안 뜰과 성소에 들어갈 때에는 속죄제를 드릴찌니라 나 주 여호와의 말이니라",
+      "source_text_hash": "8403b2dd460ffe608a7924bb3c7ae389a0dd067bda4252f29405f8df3c298e0c",
+      "translation_text_hash": "78e8ab8d79d6484996d12f57a477a96f113f2af4c8c1f19b48857e2ef9c59cf5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "성소에 수종들려하여 안 뜰과 성소에 들어갈 때에는 속죄제를 드릴찌니라 나 주 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "78e8ab8d79d6484996d12f57a477a96f113f2af4c8c1f19b48857e2ef9c59cf5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:44:28",
+      "sequence": 21628,
+      "chapter_label": "EZK 44",
+      "verse_label": "28",
+      "locator": {
+        "book": "EZK",
+        "chapter": 44,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 44,
+          "verse": 28
+        }
+      ],
+      "en": "“‘They shall have an inheritance: I am their inheritance; and you shall give them no possession in Israel. I am their possession.",
+      "ko": "그들은 기업이 있으리니 내가 곧 그 기업이라 너희는 이스라엘 가운데서 그들에게 산업을 주지 말라 나는 그 산업이 됨이니라",
+      "source_text_hash": "7d0b8539acf091ed98426ce5a6f175f7667a1aa170884a63ee5855e5a3be267a",
+      "translation_text_hash": "e90fd1bcde31c0912b2c70f8eec93d9eda72370c295162c9677441e4b20c8fc6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들은 기업이 있으리니 내가 곧 그 기업이라 너희는 이스라엘 가운데서 그들에게 산업을 주지 말라 나는 그 산업이 됨이니라"
+      ],
+      "raw_text_hashes": [
+        "e90fd1bcde31c0912b2c70f8eec93d9eda72370c295162c9677441e4b20c8fc6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:44:29",
+      "sequence": 21629,
+      "chapter_label": "EZK 44",
+      "verse_label": "29",
+      "locator": {
+        "book": "EZK",
+        "chapter": 44,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 44,
+          "verse": 29
+        }
+      ],
+      "en": "They shall eat the meal offering, and the sin offering, and the trespass offering; and every devoted thing in Israel shall be theirs.",
+      "ko": "그들은 소제와 속죄제와 속건제의 제물을 먹을찌니 이스라엘 중에서 구별하여 드리는 물건을 다 그들에게 돌리며",
+      "source_text_hash": "93be35b3115d04c3321c2170d2392eca32eaaaf763163dee6cb9485f75d376d0",
+      "translation_text_hash": "467bf2ddee10ba070fcca24f7ec7b0c9c30d1b35e8ca0e1e5dfd8f6b3a6a95c7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들은 소제와 속죄제와 속건제의 제물을 먹을찌니 이스라엘 중에서 구별하여 드리는 물건을 다 그들에게 돌리며"
+      ],
+      "raw_text_hashes": [
+        "467bf2ddee10ba070fcca24f7ec7b0c9c30d1b35e8ca0e1e5dfd8f6b3a6a95c7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:44:30",
+      "sequence": 21630,
+      "chapter_label": "EZK 44",
+      "verse_label": "30",
+      "locator": {
+        "book": "EZK",
+        "chapter": 44,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 44,
+          "verse": 30
+        }
+      ],
+      "en": "The first of all the first fruits of every thing, and every offering of everything, of all your offerings, shall be for the priest. You shall also give to the priests the first of your dough, to cause a blessing to rest on your house.",
+      "ko": "또 각종 처음 익은 열매와 너희 모든 예물 중에 각종 거제 제물을 다 제사장에게 돌리고 너희가 또 첫 밀가루를 제사장에게 주어 그들로 네 집에 복이 임하도록 하게 하라",
+      "source_text_hash": "ed75b897bc9ddc4a690ed7d53f519b03fb29779d23181f19d3e799d9bce87588",
+      "translation_text_hash": "54a926922a2d7a15167c9e63a0d95fd64831960beabb2c51a6a78c1853734497",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 각종 처음 익은 열매와 너희 모든 예물 중에 각종 거제 제물을 다 제사장에게 돌리고 너희가 또 첫 밀가루를 제사장에게 주어 그들로 네 집에 복이 임하도록 하게 하라"
+      ],
+      "raw_text_hashes": [
+        "54a926922a2d7a15167c9e63a0d95fd64831960beabb2c51a6a78c1853734497"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:44:31",
+      "sequence": 21631,
+      "chapter_label": "EZK 44",
+      "verse_label": "31",
+      "locator": {
+        "book": "EZK",
+        "chapter": 44,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 44,
+          "verse": 31
+        }
+      ],
+      "en": "The priests shall not eat of anything that dies of itself or is torn, whether it is bird or animal.",
+      "ko": "무릇 새나 육축의 스스로 죽은 것이나 찢긴 것은 다 제사장이 먹지 못할 것이니라",
+      "source_text_hash": "21abdcc557d641e22b35e02c74ba2b5a46677ad33386310d2403ba4f7076e153",
+      "translation_text_hash": "a8184db98c93c3627e44afc4917e8bd1e3a33243e9edd04953aa0387a260c63d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 새나 육축의 스스로 죽은 것이나 찢긴 것은 다 제사장이 먹지 못할 것이니라"
+      ],
+      "raw_text_hashes": [
+        "a8184db98c93c3627e44afc4917e8bd1e3a33243e9edd04953aa0387a260c63d"
+      ]
+    }
+  ]
+}

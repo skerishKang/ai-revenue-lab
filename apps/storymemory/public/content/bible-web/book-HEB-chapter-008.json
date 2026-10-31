@@ -1,0 +1,429 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:HEB:chapter:008",
+  "unit_ordinal": 1141,
+  "unit_label": "HEB 8",
+  "book_code": "HEB",
+  "chapter_number": 8,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:HEB:8:1",
+      "sequence": 30090,
+      "chapter_label": "HEB 8",
+      "verse_label": "1",
+      "locator": {
+        "book": "HEB",
+        "chapter": 8,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 8,
+          "verse": 1
+        }
+      ],
+      "en": "Now in the things which we are saying, the main point is this: we have such a high priest, who sat down on the right hand of the throne of the Majesty in the heavens,",
+      "ko": "이제 하는 말의 중요한 것은 이러한 대제사장이 우리에게 있는 것이라 그가 하늘에서 위엄의 보좌 우편에 앉으셨으니",
+      "source_text_hash": "f44eb72f8cb3aa70a97a1c98e0d884035e84d0be183cf4613eba100ae531455a",
+      "translation_text_hash": "564f48d1e866b7695f7f62373fa9809f4098aa83b88db6a8fc7fb29df0a6319c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제 하는 말의 중요한 것은 이러한 대제사장이 우리에게 있는 것이라 그가 하늘에서 위엄의 보좌 우편에 앉으셨으니"
+      ],
+      "raw_text_hashes": [
+        "564f48d1e866b7695f7f62373fa9809f4098aa83b88db6a8fc7fb29df0a6319c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:8:2",
+      "sequence": 30091,
+      "chapter_label": "HEB 8",
+      "verse_label": "2",
+      "locator": {
+        "book": "HEB",
+        "chapter": 8,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 8,
+          "verse": 2
+        }
+      ],
+      "en": "a servant of the sanctuary and of the true tabernacle which the Lord pitched, not man.",
+      "ko": "성소와 참장막에 부리는 자라 이 장막은 주께서 베푸신 것이요 사람이 한 것이 아니니라",
+      "source_text_hash": "5f432ac2e973075105cef077833cd18131efe41866c4a8eaa51b6448d9184966",
+      "translation_text_hash": "c9fc6c509ab7f9382e1999f294209ab00882f81dcca985aeb0d1a1461ff9a5b0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "성소와 참장막에 부리는 자라 이 장막은 주께서 베푸신 것이요 사람이 한 것이 아니니라"
+      ],
+      "raw_text_hashes": [
+        "c9fc6c509ab7f9382e1999f294209ab00882f81dcca985aeb0d1a1461ff9a5b0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:8:3",
+      "sequence": 30092,
+      "chapter_label": "HEB 8",
+      "verse_label": "3",
+      "locator": {
+        "book": "HEB",
+        "chapter": 8,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 8,
+          "verse": 3
+        }
+      ],
+      "en": "For every high priest is appointed to offer both gifts and sacrifices. Therefore it is necessary that this high priest also have something to offer.",
+      "ko": "대제사장마다 예물과 제사 드림을 위하여 세운 자니 이러므로 저도 무슨 드릴 것이 있어야 할찌니라",
+      "source_text_hash": "f5cda8a90dcb35c403048c3b8dce27317a86953b98078c4ffbd64fba8eda441a",
+      "translation_text_hash": "d8c982603665882109cb223fc362033bfcd551b5ed4d701561b866b7cbb30fc5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대제사장마다 예물과 제사 드림을 위하여 세운 자니 이러므로 저도 무슨 드릴 것이 있어야 할찌니라"
+      ],
+      "raw_text_hashes": [
+        "d8c982603665882109cb223fc362033bfcd551b5ed4d701561b866b7cbb30fc5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:8:4",
+      "sequence": 30093,
+      "chapter_label": "HEB 8",
+      "verse_label": "4",
+      "locator": {
+        "book": "HEB",
+        "chapter": 8,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 8,
+          "verse": 4
+        }
+      ],
+      "en": "For if he were on earth, he would not be a priest at all, seeing there are priests who offer the gifts according to the law,",
+      "ko": "예수께서 만일 땅에 계셨더면 제사장이 되지 아니하셨을 것이니 이는 율법을 좇아 예물을 드리는 제사장이 있음이라",
+      "source_text_hash": "8cad9cc0d7161f84d69ff7b5bd0e4e9b192da5576035960b64df5228a11c0ba8",
+      "translation_text_hash": "00f6328b23d5d213a5b9a0834f84d2ac9e303eed2d8a5e946340ed47d633e1af",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 만일 땅에 계셨더면 제사장이 되지 아니하셨을 것이니 이는 율법을 좇아 예물을 드리는 제사장이 있음이라"
+      ],
+      "raw_text_hashes": [
+        "00f6328b23d5d213a5b9a0834f84d2ac9e303eed2d8a5e946340ed47d633e1af"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:8:5",
+      "sequence": 30094,
+      "chapter_label": "HEB 8",
+      "verse_label": "5",
+      "locator": {
+        "book": "HEB",
+        "chapter": 8,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 8,
+          "verse": 5
+        }
+      ],
+      "en": "who serve a copy and shadow of the heavenly things, even as Moses was warned by God when he was about to make the tabernacle, for he said, “See, you shall make everything according to the pattern that was shown to you on the mountain.”",
+      "ko": "저희가 섬기는 것은 하늘에 있는 것의 모형과 그림자라 모세가 장막을 지으려 할 때에 지시하심을 얻음과 같으니 가라사대 삼가 모든 것을 산에서 네게 보이던 본을 좇아 지으라 하셨느니라",
+      "source_text_hash": "f834cac937036f3cee9d8078de21771690f73051bde0121a3aaf485c35d7a8da",
+      "translation_text_hash": "e1ad8fc28518564e7adc9c0e9edde613b230eec6aa8dac9bd922f8134cced8ac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 섬기는 것은 하늘에 있는 것의 모형과 그림자라 모세가 장막을 지으려 할 때에 지시하심을 얻음과 같으니 가라사대 삼가 모든 것을 산에서 네게 보이던 본을 좇아 지으라 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "e1ad8fc28518564e7adc9c0e9edde613b230eec6aa8dac9bd922f8134cced8ac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:8:6",
+      "sequence": 30095,
+      "chapter_label": "HEB 8",
+      "verse_label": "6",
+      "locator": {
+        "book": "HEB",
+        "chapter": 8,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 8,
+          "verse": 6
+        }
+      ],
+      "en": "But now he has obtained a more excellent ministry, by as much as he is also the mediator of a better covenant, which on better promises has been given as law.",
+      "ko": "그러나 이제 그가 더 아름다운 직분을 얻으셨으니 이는 더 좋은 약속으로 세우신 더 좋은 언약의 중보시라",
+      "source_text_hash": "e9619802f6936e0b5130effa92a66e947e73fbf1259616e34634dac111e23e18",
+      "translation_text_hash": "50df3b086f2ac4d123cbec48c6a76900e2e3c173aa5061883c21a68795b32eaa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 이제 그가 더 아름다운 직분을 얻으셨으니 이는 더 좋은 약속으로 세우신 더 좋은 언약의 중보시라"
+      ],
+      "raw_text_hashes": [
+        "50df3b086f2ac4d123cbec48c6a76900e2e3c173aa5061883c21a68795b32eaa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:8:7",
+      "sequence": 30096,
+      "chapter_label": "HEB 8",
+      "verse_label": "7",
+      "locator": {
+        "book": "HEB",
+        "chapter": 8,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 8,
+          "verse": 7
+        }
+      ],
+      "en": "For if that first covenant had been faultless, then no place would have been sought for a second.",
+      "ko": "저 첫 언약이 무흠하였더면 둘째 것을 요구할 일이 없었으려니와",
+      "source_text_hash": "b9c735e5cdc6be263f26d160d8e7f03315b89b946e703e15c80b961e51a87e5a",
+      "translation_text_hash": "438a2d24295e85c3e692fa2672a33e6dddaec166584c32e513e6538e5b834f6a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저 첫 언약이 무흠하였더면 둘째 것을 요구할 일이 없었으려니와"
+      ],
+      "raw_text_hashes": [
+        "438a2d24295e85c3e692fa2672a33e6dddaec166584c32e513e6538e5b834f6a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:8:8",
+      "sequence": 30097,
+      "chapter_label": "HEB 8",
+      "verse_label": "8",
+      "locator": {
+        "book": "HEB",
+        "chapter": 8,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 8,
+          "verse": 8
+        }
+      ],
+      "en": "For finding fault with them, he said, “Behold, the days are coming”, says the Lord, “that I will make a new covenant with the house of Israel and with the house of Judah;",
+      "ko": "저희를 허물하여 일렀으되 주께서 가라사대 볼찌어다 날이 이르리니 내가 이스라엘 집과 유다 집으로 새 언약을 세우리라",
+      "source_text_hash": "aa494b205577aba8788e7b6b26d9f41cb0e02cf65eee05a25435d7d0d4f71148",
+      "translation_text_hash": "13e42fc306ec99d0e5dd30bbac18963a43405d5e0cb5159095a59c56fa7f47b9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희를 허물하여 일렀으되 주께서 가라사대 볼찌어다 날이 이르리니 내가 이스라엘 집과 유다 집으로 새 언약을 세우리라"
+      ],
+      "raw_text_hashes": [
+        "13e42fc306ec99d0e5dd30bbac18963a43405d5e0cb5159095a59c56fa7f47b9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:8:9",
+      "sequence": 30098,
+      "chapter_label": "HEB 8",
+      "verse_label": "9",
+      "locator": {
+        "book": "HEB",
+        "chapter": 8,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 8,
+          "verse": 9
+        }
+      ],
+      "en": "not according to the covenant that I made with their fathers in the day that I took them by the hand to lead them out of the land of Egypt; for they didn’t continue in my covenant, and I disregarded them,” says the Lord.",
+      "ko": "또 주께서 가라사대 내가 저희 열조들의 손을 잡고 애굽 땅에서 인도하여 내던 날에 저희와 세운 언약과 같지 아니하도다 저희는 내 언약 안에 머물러 있지 아니하므로 내가 저희를 돌아보지 아니하였노라",
+      "source_text_hash": "0d12dfacc39040afac2eb61946728e499ae979aa647349ab042d67546bfa448a",
+      "translation_text_hash": "c5402582d8f9d53153ebd180e4ef20b65b50d1b60521ea4bc917a837dc2e3f57",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 주께서 가라사대 내가 저희 열조들의 손을 잡고 애굽 땅에서 인도하여 내던 날에 저희와 세운 언약과 같지 아니하도다 저희는 내 언약 안에 머물러 있지 아니하므로 내가 저희를 돌아보지 아니하였노라"
+      ],
+      "raw_text_hashes": [
+        "c5402582d8f9d53153ebd180e4ef20b65b50d1b60521ea4bc917a837dc2e3f57"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:8:10",
+      "sequence": 30099,
+      "chapter_label": "HEB 8",
+      "verse_label": "10",
+      "locator": {
+        "book": "HEB",
+        "chapter": 8,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 8,
+          "verse": 10
+        }
+      ],
+      "en": "“For this is the covenant that I will make with the house of Israel after those days,” says the Lord: “I will put my laws into their mind; I will also write them on their heart. I will be their God, and they will be my people.",
+      "ko": "또 주께서 가라사대 그날 후에 내가 이스라엘 집으로 세울 언약이 이것이니 내 법을 저희 생각에 두고 저희 마음에 이것을 기록하리라 나는 저희에게 하나님이 되고 저희는 내게 백성이 되리라",
+      "source_text_hash": "ebf027f43d9ea2df562927b9c76f7f400b1c75fea1e2ebd47673a452af6eb276",
+      "translation_text_hash": "266cc591879139c2575e03370c2a35ca53e07282f106be197272b443a3c5f379",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 주께서 가라사대 그날 후에 내가 이스라엘 집으로 세울 언약이 이것이니 내 법을 저희 생각에 두고 저희 마음에 이것을 기록하리라 나는 저희에게 하나님이 되고 저희는 내게 백성이 되리라"
+      ],
+      "raw_text_hashes": [
+        "266cc591879139c2575e03370c2a35ca53e07282f106be197272b443a3c5f379"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:8:11",
+      "sequence": 30100,
+      "chapter_label": "HEB 8",
+      "verse_label": "11",
+      "locator": {
+        "book": "HEB",
+        "chapter": 8,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 8,
+          "verse": 11
+        }
+      ],
+      "en": "They will not teach every man his fellow citizen and every man his brother, saying, ‘Know the Lord,’ for all will know me, from their least to their greatest.",
+      "ko": "또 각각 자기 나라 사람과 각각 자기 형제를 가르쳐 이르기를 주를 알라 하지 아니할 것은 저희가 작은 자로부터 큰 자까지 다 나를 앎이니라",
+      "source_text_hash": "d584b7320b5d3660318d3e5650909111d98a2da55b3fb6154a97706536b5db5b",
+      "translation_text_hash": "5616be805b0ac27b60a84f1712fd0f7a22a3bdeabafc87a2cabcaacb5bc715e5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 각각 자기 나라 사람과 각각 자기 형제를 가르쳐 이르기를 주를 알라 하지 아니할 것은 저희가 작은 자로부터 큰 자까지 다 나를 앎이니라"
+      ],
+      "raw_text_hashes": [
+        "5616be805b0ac27b60a84f1712fd0f7a22a3bdeabafc87a2cabcaacb5bc715e5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:8:12",
+      "sequence": 30101,
+      "chapter_label": "HEB 8",
+      "verse_label": "12",
+      "locator": {
+        "book": "HEB",
+        "chapter": 8,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 8,
+          "verse": 12
+        }
+      ],
+      "en": "For I will be merciful to their unrighteousness. I will remember their sins and lawless deeds no more.”",
+      "ko": "내가 저희 불의를 긍휼히 여기고 저희 죄를 다시 기억하지 아니하리라 하셨느니라",
+      "source_text_hash": "58f322da8e6c11f43b896f3a54fd75b0b9a36987ff303c19117d55b096a02e49",
+      "translation_text_hash": "866795816d8a502e13f015da8aa43f036e6ca7834b87f394071b68d03d0e49c8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 저희 불의를 긍휼히 여기고 저희 죄를 다시 기억하지 아니하리라 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "866795816d8a502e13f015da8aa43f036e6ca7834b87f394071b68d03d0e49c8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:8:13",
+      "sequence": 30102,
+      "chapter_label": "HEB 8",
+      "verse_label": "13",
+      "locator": {
+        "book": "HEB",
+        "chapter": 8,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 8,
+          "verse": 13
+        }
+      ],
+      "en": "In that he says, “A new covenant”, he has made the first obsolete. But that which is becoming obsolete and grows aged is near to vanishing away.",
+      "ko": "새 언약이라 말씀하셨으매 첫것은 낡아지게 하신 것이니 낡아지고 쇠하는 것은 없어져가는 것이니라",
+      "source_text_hash": "d420c141e45c2bf3d885feaf7480049a0eddd89d89f4b6ec4afafd1610e757cb",
+      "translation_text_hash": "508fd14c520d23a2a088bd22dd7e1c89a64a8e8a993fe6869abf78356a577d46",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "새 언약이라 말씀하셨으매 첫것은 낡아지게 하신 것이니 낡아지고 쇠하는 것은 없어져가는 것이니라"
+      ],
+      "raw_text_hashes": [
+        "508fd14c520d23a2a088bd22dd7e1c89a64a8e8a993fe6869abf78356a577d46"
+      ]
+    }
+  ]
+}

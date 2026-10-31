@@ -1,0 +1,1165 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:LEV:chapter:008",
+  "unit_ordinal": 98,
+  "unit_label": "LEV 8",
+  "book_code": "LEV",
+  "chapter_number": 8,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:LEV:8:1",
+      "sequence": 2919,
+      "chapter_label": "LEV 8",
+      "verse_label": "1",
+      "locator": {
+        "book": "LEV",
+        "chapter": 8,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 8,
+          "verse": 1
+        }
+      ],
+      "en": "The LORD spoke to Moses, saying,",
+      "ko": "여호와께서 모세에게 일러 가라사대",
+      "source_text_hash": "28219e5da0d26514843495c6edb280f326aa0ccffb0d2bb642d0e1b0f4478ca1",
+      "translation_text_hash": "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:8:2",
+      "sequence": 2920,
+      "chapter_label": "LEV 8",
+      "verse_label": "2",
+      "locator": {
+        "book": "LEV",
+        "chapter": 8,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 8,
+          "verse": 2
+        }
+      ],
+      "en": "“Take Aaron and his sons with him, and the garments, and the anointing oil, and the bull of the sin offering, and the two rams, and the basket of unleavened bread;",
+      "ko": "너는 아론과 그 아들들과 그 의복과 관유와 속죄제의 수송아지와 수양 둘과 무교병 한 광주리를 이끌고",
+      "source_text_hash": "5031ae5a60f78feb65b08a76089857a1a4303182a156c40b25359c51ddb6993c",
+      "translation_text_hash": "f08b865f66e506ba9d948f3a9f7f37fa6d334a5e47c1b5d7f786375eee5c01a3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 아론과 그 아들들과 그 의복과 관유와 속죄제의 수송아지와 수양 둘과 무교병 한 광주리를 이끌고"
+      ],
+      "raw_text_hashes": [
+        "f08b865f66e506ba9d948f3a9f7f37fa6d334a5e47c1b5d7f786375eee5c01a3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:8:3",
+      "sequence": 2921,
+      "chapter_label": "LEV 8",
+      "verse_label": "3",
+      "locator": {
+        "book": "LEV",
+        "chapter": 8,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 8,
+          "verse": 3
+        }
+      ],
+      "en": "and assemble all the congregation at the door of the Tent of Meeting.”",
+      "ko": "온 회중을 회막문에 모으라",
+      "source_text_hash": "27f363f5d58b789a39564098ad0de32a37ce0d577bf198aa682c166b4d43bcd8",
+      "translation_text_hash": "a15e33753f4ce220652567a8a3b83d844c93eb4cae5440f32384a03f34368e55",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "온 회중을 회막문에 모으라"
+      ],
+      "raw_text_hashes": [
+        "a15e33753f4ce220652567a8a3b83d844c93eb4cae5440f32384a03f34368e55"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:8:4",
+      "sequence": 2922,
+      "chapter_label": "LEV 8",
+      "verse_label": "4",
+      "locator": {
+        "book": "LEV",
+        "chapter": 8,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 8,
+          "verse": 4
+        }
+      ],
+      "en": "Moses did as the LORD commanded him; and the congregation was assembled at the door of the Tent of Meeting.",
+      "ko": "모세가 여호와께서 자기에게 명하신대로 하매 회중이 회막 문에 모인지라",
+      "source_text_hash": "133fd2040d1fbc6c3aefc15c99db88d879dfbb5347560e22877d6039f5e39e50",
+      "translation_text_hash": "ac14184139da3d366b959a40a757e305c9eca253b980fcd3bf86185da447c93a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 여호와께서 자기에게 명하신대로 하매 회중이 회막 문에 모인지라"
+      ],
+      "raw_text_hashes": [
+        "ac14184139da3d366b959a40a757e305c9eca253b980fcd3bf86185da447c93a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:8:5",
+      "sequence": 2923,
+      "chapter_label": "LEV 8",
+      "verse_label": "5",
+      "locator": {
+        "book": "LEV",
+        "chapter": 8,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 8,
+          "verse": 5
+        }
+      ],
+      "en": "Moses said to the congregation, “This is the thing which the LORD has commanded to be done.”",
+      "ko": "모세가 회중에게 이르되 여호와께서 행하라고 명하신 것이 이러하니라 하고",
+      "source_text_hash": "6156c3c3c9af4a9df593ac9352a4e233bfe9b310d57619e3403809a7e0b12846",
+      "translation_text_hash": "50945c5f7e0f48633a706b728a36fb026a382ee66de6ffdb079306bf3aaa0f61",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 회중에게 이르되 여호와께서 행하라고 명하신 것이 이러하니라 하고"
+      ],
+      "raw_text_hashes": [
+        "50945c5f7e0f48633a706b728a36fb026a382ee66de6ffdb079306bf3aaa0f61"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:8:6",
+      "sequence": 2924,
+      "chapter_label": "LEV 8",
+      "verse_label": "6",
+      "locator": {
+        "book": "LEV",
+        "chapter": 8,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 8,
+          "verse": 6
+        }
+      ],
+      "en": "Moses brought Aaron and his sons, and washed them with water.",
+      "ko": "아론과 그 아들들을 데려다가 물로 그들을 씻기고",
+      "source_text_hash": "cc29a0b24486232d01129f003e67672b70e643e7ba0d0d88479ff124debe1696",
+      "translation_text_hash": "61deec6e52d3e4ebb5f33c68a9ec9e8d37b91b18043a52a62ca25eb4ac1b7486",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아론과 그 아들들을 데려다가 물로 그들을 씻기고"
+      ],
+      "raw_text_hashes": [
+        "61deec6e52d3e4ebb5f33c68a9ec9e8d37b91b18043a52a62ca25eb4ac1b7486"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:8:7",
+      "sequence": 2925,
+      "chapter_label": "LEV 8",
+      "verse_label": "7",
+      "locator": {
+        "book": "LEV",
+        "chapter": 8,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 8,
+          "verse": 7
+        }
+      ],
+      "en": "He put the tunic on him, tied the sash on him, clothed him with the robe, put the ephod on him, and he tied the skillfully woven band of the ephod on him and fastened it to him with it.",
+      "ko": "아론에게 속옷을 입히며 띠를 띠우고 겉옷을 입히며 에봇을 더하고 에봇의 기묘하게 짠 띠를 띠워서 에봇을 몸에 매고",
+      "source_text_hash": "4fdabe1643cd1d2162a22387a6529a4c054979f3a424ffce69e7bef3080d73ef",
+      "translation_text_hash": "0e0f52e7a83b6cdd6e19445ac3a581a0df7dedfacaa814347e3b3511a1ce3ad8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아론에게 속옷을 입히며 띠를 띠우고 겉옷을 입히며 에봇을 더하고 에봇의 기묘하게 짠 띠를 띠워서 에봇을 몸에 매고"
+      ],
+      "raw_text_hashes": [
+        "0e0f52e7a83b6cdd6e19445ac3a581a0df7dedfacaa814347e3b3511a1ce3ad8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:8:8",
+      "sequence": 2926,
+      "chapter_label": "LEV 8",
+      "verse_label": "8",
+      "locator": {
+        "book": "LEV",
+        "chapter": 8,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 8,
+          "verse": 8
+        }
+      ],
+      "en": "He placed the breastplate on him. He put the Urim and Thummim in the breastplate.",
+      "ko": "흉패를 붙이고 흉패에 우림과 둠밈을 넣고",
+      "source_text_hash": "fab4b6325a712bad9c7a99c1eb34da70b787beab3c1cb2e0e9cf60fe0cd02678",
+      "translation_text_hash": "a93d3d8fbc3a5a2d829af29a2df3c072da27a0466c165afd7a25e62135582e57",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "흉패를 붙이고 흉패에 우림과 둠밈을 넣고"
+      ],
+      "raw_text_hashes": [
+        "a93d3d8fbc3a5a2d829af29a2df3c072da27a0466c165afd7a25e62135582e57"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:8:9",
+      "sequence": 2927,
+      "chapter_label": "LEV 8",
+      "verse_label": "9",
+      "locator": {
+        "book": "LEV",
+        "chapter": 8,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 8,
+          "verse": 9
+        }
+      ],
+      "en": "He set the turban on his head. He set the golden plate, the holy crown, on the front of the turban, as the LORD commanded Moses.",
+      "ko": "그 머리에 관을 씌우고 그 관 위 전면에 금패를 붙이니 곧 거룩한 관이라 여호와께서 모세에게 명하심과 같았더라",
+      "source_text_hash": "0227d183450dbc471933d19b3ba784b4db429f4a3b93ac1e18fcce1fa35facad",
+      "translation_text_hash": "c4e342bab66d0c64eaf3236e54e363c4e4c987f3c278eac6570a5038df884c69",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 머리에 관을 씌우고 그 관 위 전면에 금패를 붙이니 곧 거룩한 관이라 여호와께서 모세에게 명하심과 같았더라"
+      ],
+      "raw_text_hashes": [
+        "c4e342bab66d0c64eaf3236e54e363c4e4c987f3c278eac6570a5038df884c69"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:8:10",
+      "sequence": 2928,
+      "chapter_label": "LEV 8",
+      "verse_label": "10",
+      "locator": {
+        "book": "LEV",
+        "chapter": 8,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 8,
+          "verse": 10
+        }
+      ],
+      "en": "Moses took the anointing oil, and anointed the tabernacle and all that was in it, and sanctified them.",
+      "ko": "모세가 관유를 취하여 장막과 그 안에 있는 모든 것에 발라 거룩하게 하고",
+      "source_text_hash": "a15bda571481214e2b9d5054c36b8ea5373960566068b8fd70b384384134133d",
+      "translation_text_hash": "aef73f8c0079c8f02a7bfb5f706d99167fb38211dad1aeae286cac73bb96048d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 관유를 취하여 장막과 그 안에 있는 모든 것에 발라 거룩하게 하고"
+      ],
+      "raw_text_hashes": [
+        "aef73f8c0079c8f02a7bfb5f706d99167fb38211dad1aeae286cac73bb96048d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:8:11",
+      "sequence": 2929,
+      "chapter_label": "LEV 8",
+      "verse_label": "11",
+      "locator": {
+        "book": "LEV",
+        "chapter": 8,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 8,
+          "verse": 11
+        }
+      ],
+      "en": "He sprinkled it on the altar seven times, and anointed the altar and all its vessels, and the basin and its base, to sanctify them.",
+      "ko": "또 단에 일곱번 뿌리고 또 그 단과 그 모든 기구와 물두멍과 그 받침에 발라 거룩하게 하고",
+      "source_text_hash": "1f91e04061a755129c21703e6deaff53927432d0a1e25a3272bbf6008a16b71f",
+      "translation_text_hash": "85764ae1466efbbe0730883c75860e2f04e5100bf263afd629062a71457741fe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 단에 일곱번 뿌리고 또 그 단과 그 모든 기구와 물두멍과 그 받침에 발라 거룩하게 하고"
+      ],
+      "raw_text_hashes": [
+        "85764ae1466efbbe0730883c75860e2f04e5100bf263afd629062a71457741fe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:8:12",
+      "sequence": 2930,
+      "chapter_label": "LEV 8",
+      "verse_label": "12",
+      "locator": {
+        "book": "LEV",
+        "chapter": 8,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 8,
+          "verse": 12
+        }
+      ],
+      "en": "He poured some of the anointing oil on Aaron’s head, and anointed him, to sanctify him.",
+      "ko": "또 관유로 아론의 머리에 부어 발라 거룩하게 하고",
+      "source_text_hash": "6cd792139047f0d72804e5f09938f3b151d7bf3c930431c2a6ebaddba3e72838",
+      "translation_text_hash": "f24fce77952a6e5a1415f61f0f6e56683ac61ae5b62693b2bb4b922b8af08dba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 관유로 아론의 머리에 부어 발라 거룩하게 하고"
+      ],
+      "raw_text_hashes": [
+        "f24fce77952a6e5a1415f61f0f6e56683ac61ae5b62693b2bb4b922b8af08dba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:8:13",
+      "sequence": 2931,
+      "chapter_label": "LEV 8",
+      "verse_label": "13",
+      "locator": {
+        "book": "LEV",
+        "chapter": 8,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 8,
+          "verse": 13
+        }
+      ],
+      "en": "Moses brought Aaron’s sons, and clothed them with tunics, and tied sashes on them, and put headbands on them, as the LORD commanded Moses.",
+      "ko": "모세가 또 아론의 아들들을 데려다가 그들에게 속옷을 입히고 띠를 띠우며 관을 씌웠으니 여호와께서 모세에게 명하심과 같았더라",
+      "source_text_hash": "797af62ab04e9b20bea99ce5872652efed0faacfce8b290d5c4384f0e4f2547e",
+      "translation_text_hash": "14b51d33c71950f629503ed553202422645361b9ac58204172ae54d6ca2db6e7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 또 아론의 아들들을 데려다가 그들에게 속옷을 입히고 띠를 띠우며 관을 씌웠으니 여호와께서 모세에게 명하심과 같았더라"
+      ],
+      "raw_text_hashes": [
+        "14b51d33c71950f629503ed553202422645361b9ac58204172ae54d6ca2db6e7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:8:14",
+      "sequence": 2932,
+      "chapter_label": "LEV 8",
+      "verse_label": "14",
+      "locator": {
+        "book": "LEV",
+        "chapter": 8,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 8,
+          "verse": 14
+        }
+      ],
+      "en": "He brought the bull of the sin offering, and Aaron and his sons laid their hands on the head of the bull of the sin offering.",
+      "ko": "모세가 또 속죄제의 수송아지를 끌어오니 아론과 그 아들들이 그 속죄제 수송아지 머리에 안수하매",
+      "source_text_hash": "1e028d80232377b0b1c89dbdcf593974b89842aa0dc9413a3129276f08336765",
+      "translation_text_hash": "533de9a417da4d350b69ca1f525e948f186588ba3b81f63965fcc3b691bbaf22",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 또 속죄제의 수송아지를 끌어오니 아론과 그 아들들이 그 속죄제 수송아지 머리에 안수하매"
+      ],
+      "raw_text_hashes": [
+        "533de9a417da4d350b69ca1f525e948f186588ba3b81f63965fcc3b691bbaf22"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:8:15",
+      "sequence": 2933,
+      "chapter_label": "LEV 8",
+      "verse_label": "15",
+      "locator": {
+        "book": "LEV",
+        "chapter": 8,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 8,
+          "verse": 15
+        }
+      ],
+      "en": "He killed it; and Moses took the blood, and put it around on the horns of the altar with his finger, and purified the altar, and poured out the blood at the base of the altar, and sanctified it, to make atonement for it.",
+      "ko": "모세가 잡고 그 피를 취하여 손가락으로 그 피를 단의 네 귀퉁이 뿔에 발라 단을 깨끗하게 하고 그 피는 단 밑에 쏟아 단을 속하여 거룩하게 하고",
+      "source_text_hash": "de9c90b75894a2e3675603cfaa9728c1e08c6daba8825cba887897a1db62a8a2",
+      "translation_text_hash": "d1e3b1620f24ded605dac4e7fc5edc23e906dc2d2a56c5ae6f1632ab6cba45ea",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 잡고 그 피를 취하여 손가락으로 그 피를 단의 네 귀퉁이 뿔에 발라 단을 깨끗하게 하고 그 피는 단 밑에 쏟아 단을 속하여 거룩하게 하고"
+      ],
+      "raw_text_hashes": [
+        "d1e3b1620f24ded605dac4e7fc5edc23e906dc2d2a56c5ae6f1632ab6cba45ea"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:8:16",
+      "sequence": 2934,
+      "chapter_label": "LEV 8",
+      "verse_label": "16",
+      "locator": {
+        "book": "LEV",
+        "chapter": 8,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 8,
+          "verse": 16
+        }
+      ],
+      "en": "He took all the fat that was on the innards, and the cover of the liver, and the two kidneys, and their fat; and Moses burned it on the altar.",
+      "ko": "또 내장에 덮인 모든 기름과 간 꺼풀과 두 콩팥과 그 기름을 취하여 단 위에 불사르고",
+      "source_text_hash": "72eac174e195b9f5f7d10779b821561bc9b9df7ed618aaa49f27b82f4b899225",
+      "translation_text_hash": "21d2cee54bf5cf5336dfb078aa1cb908fe7a0599f59ea9131a0de587d6729f9f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 내장에 덮인 모든 기름과 간 꺼풀과 두 콩팥과 그 기름을 취하여 단 위에 불사르고"
+      ],
+      "raw_text_hashes": [
+        "21d2cee54bf5cf5336dfb078aa1cb908fe7a0599f59ea9131a0de587d6729f9f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:8:17",
+      "sequence": 2935,
+      "chapter_label": "LEV 8",
+      "verse_label": "17",
+      "locator": {
+        "book": "LEV",
+        "chapter": 8,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 8,
+          "verse": 17
+        }
+      ],
+      "en": "But the bull, and its skin, and its meat, and its dung, he burned with fire outside the camp, as the LORD commanded Moses.",
+      "ko": "그 수송아지 곧 그 가죽과 고기와 똥은 진 밖에 불살랐으니 여호와께서 모세에게 명하심과 같았더라",
+      "source_text_hash": "635e16e333d60b82485d626c18bda7567ee9f41aeafb1a6143cfa27f581e0b5d",
+      "translation_text_hash": "1741b8248cc2c6b5d979adcf360971895c6ce80286ecb662cd37001ad3977907",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 수송아지 곧 그 가죽과 고기와 똥은 진 밖에 불살랐으니 여호와께서 모세에게 명하심과 같았더라"
+      ],
+      "raw_text_hashes": [
+        "1741b8248cc2c6b5d979adcf360971895c6ce80286ecb662cd37001ad3977907"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:8:18",
+      "sequence": 2936,
+      "chapter_label": "LEV 8",
+      "verse_label": "18",
+      "locator": {
+        "book": "LEV",
+        "chapter": 8,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 8,
+          "verse": 18
+        }
+      ],
+      "en": "He presented the ram of the burnt offering. Aaron and his sons laid their hands on the head of the ram.",
+      "ko": "또 번제의 수양을 드릴쌔 아론과 그 아들들이 그 수양의 머리에 안수하매",
+      "source_text_hash": "27b54fa7bdf5d58bb9e519990a7fad933eddb976356dbffbe439f4aab468e9bb",
+      "translation_text_hash": "77cdea8caf15df1eee0c333c025c1091e6c1ee2c976052af5a84f7d83f19387b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 번제의 수양을 드릴쌔 아론과 그 아들들이 그 수양의 머리에 안수하매"
+      ],
+      "raw_text_hashes": [
+        "77cdea8caf15df1eee0c333c025c1091e6c1ee2c976052af5a84f7d83f19387b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:8:19",
+      "sequence": 2937,
+      "chapter_label": "LEV 8",
+      "verse_label": "19",
+      "locator": {
+        "book": "LEV",
+        "chapter": 8,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 8,
+          "verse": 19
+        }
+      ],
+      "en": "He killed it; and Moses sprinkled the blood around on the altar.",
+      "ko": "모세가 잡아 그 피를 단 주위에 뿌리고",
+      "source_text_hash": "ee98f9b01c5e5b7bf5034b81139d87255609181d3b524ae9c21f0128cbcf2eb3",
+      "translation_text_hash": "aafe5cbd0c6f9efa93c41737a2ae50c79a3468d932276d6ea23f46309b6a0632",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 잡아 그 피를 단 주위에 뿌리고"
+      ],
+      "raw_text_hashes": [
+        "aafe5cbd0c6f9efa93c41737a2ae50c79a3468d932276d6ea23f46309b6a0632"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:8:20",
+      "sequence": 2938,
+      "chapter_label": "LEV 8",
+      "verse_label": "20",
+      "locator": {
+        "book": "LEV",
+        "chapter": 8,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 8,
+          "verse": 20
+        }
+      ],
+      "en": "He cut the ram into its pieces; and Moses burned the head, and the pieces, and the fat.",
+      "ko": "그 수양의 각을 뜨고 그 머리와 각뜬 것과 기름을 불사르고",
+      "source_text_hash": "72af8ec4c97deb73722911f42ec8ffa1eb38a5997ed66725d5179592f7c924e5",
+      "translation_text_hash": "6ebc680231e520fa68cac09dc043a185988084433e6098e5cc2cddf6a92359e1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 수양의 각을 뜨고 그 머리와 각뜬 것과 기름을 불사르고"
+      ],
+      "raw_text_hashes": [
+        "6ebc680231e520fa68cac09dc043a185988084433e6098e5cc2cddf6a92359e1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:8:21",
+      "sequence": 2939,
+      "chapter_label": "LEV 8",
+      "verse_label": "21",
+      "locator": {
+        "book": "LEV",
+        "chapter": 8,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 8,
+          "verse": 21
+        }
+      ],
+      "en": "He washed the innards and the legs with water; and Moses burned the whole ram on the altar. It was a burnt offering for a pleasant aroma. It was an offering made by fire to the LORD, as the LORD commanded Moses.",
+      "ko": "물로 내장과 정갱이들을 씻고 그 수양의 전부를 단 위에 불사르니 이는 향기로운 냄새를 위하여 드리는 번제로 여호와께 드리는 화제라 여호와께서 모세에게 명하심과 같았더라",
+      "source_text_hash": "0c5abcc294ff51a07d9435cd449651d3d5ac14521f059149b8399b5faedec14c",
+      "translation_text_hash": "e11cbee7368cb621afcd779619a714d6556fe84425d1088ccce90d3dd50b0407",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "물로 내장과 정갱이들을 씻고 그 수양의 전부를 단 위에 불사르니 이는 향기로운 냄새를 위하여 드리는 번제로 여호와께 드리는 화제라 여호와께서 모세에게 명하심과 같았더라"
+      ],
+      "raw_text_hashes": [
+        "e11cbee7368cb621afcd779619a714d6556fe84425d1088ccce90d3dd50b0407"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:8:22",
+      "sequence": 2940,
+      "chapter_label": "LEV 8",
+      "verse_label": "22",
+      "locator": {
+        "book": "LEV",
+        "chapter": 8,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 8,
+          "verse": 22
+        }
+      ],
+      "en": "He presented the other ram, the ram of consecration. Aaron and his sons laid their hands on the head of the ram.",
+      "ko": "또 다른 수양 곧 위임식의 수양을 드릴쌔 아론과 그 아들들이 그 수양의 머리에 안수하매",
+      "source_text_hash": "c07904ee1153baf5c259ed4abf867881de169498e2488ca8633c32005643a8de",
+      "translation_text_hash": "f07733317e1abe3ca496f8f53546d4bbe6d1b9d2b944fa74de01e679ac9fd6d1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 다른 수양 곧 위임식의 수양을 드릴쌔 아론과 그 아들들이 그 수양의 머리에 안수하매"
+      ],
+      "raw_text_hashes": [
+        "f07733317e1abe3ca496f8f53546d4bbe6d1b9d2b944fa74de01e679ac9fd6d1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:8:23",
+      "sequence": 2941,
+      "chapter_label": "LEV 8",
+      "verse_label": "23",
+      "locator": {
+        "book": "LEV",
+        "chapter": 8,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 8,
+          "verse": 23
+        }
+      ],
+      "en": "He killed it; and Moses took some of its blood, and put it on the tip of Aaron’s right ear, and on the thumb of his right hand, and on the great toe of his right foot.",
+      "ko": "모세가 잡고 그 피를 취하여 아론의 오른 귓부리와 오른손 엄지가락과 오른발 엄지가락에 바르고",
+      "source_text_hash": "9edaee90435bab0cd4d8a3a51b1ff8096c6726725a198d85de9dadac818e68c5",
+      "translation_text_hash": "05fb007745504a6bed6f804be300f99e2b0c4f447802c0cf61b7b014b9d174ef",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 잡고 그 피를 취하여 아론의 오른 귓부리와 오른손 엄지가락과 오른발 엄지가락에 바르고"
+      ],
+      "raw_text_hashes": [
+        "05fb007745504a6bed6f804be300f99e2b0c4f447802c0cf61b7b014b9d174ef"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:8:24",
+      "sequence": 2942,
+      "chapter_label": "LEV 8",
+      "verse_label": "24",
+      "locator": {
+        "book": "LEV",
+        "chapter": 8,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 8,
+          "verse": 24
+        }
+      ],
+      "en": "He brought Aaron’s sons; and Moses put some of the blood on the tip of their right ear, and on the thumb of their right hand, and on the great toe of their right foot; and Moses sprinkled the blood around on the altar.",
+      "ko": "아론의 아들들을 데려다가 그 오른 귓부리와 오른손 엄지가락과 오른발 엄지가락에 그 피를 바르고 또 그 피를 단 주위에 뿌리고",
+      "source_text_hash": "a08b5c6553d3006ccfa7a57547987930ad0156f70991db61b439dc04a06b3c55",
+      "translation_text_hash": "d8d6ea1406e29a8dfb442fab07de746ca6a498c1970c575ec2e03521d1a2e86e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아론의 아들들을 데려다가 그 오른 귓부리와 오른손 엄지가락과 오른발 엄지가락에 그 피를 바르고 또 그 피를 단 주위에 뿌리고"
+      ],
+      "raw_text_hashes": [
+        "d8d6ea1406e29a8dfb442fab07de746ca6a498c1970c575ec2e03521d1a2e86e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:8:25",
+      "sequence": 2943,
+      "chapter_label": "LEV 8",
+      "verse_label": "25",
+      "locator": {
+        "book": "LEV",
+        "chapter": 8,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 8,
+          "verse": 25
+        }
+      ],
+      "en": "He took the fat, the fat tail, all the fat that was on the innards, the cover of the liver, the two kidneys and their fat, and the right thigh;",
+      "ko": "그가 또 그 기름과 기름진 꼬리와 내장에 덮인 모든 기름과 간 꺼풀과 두 콩팥과 그 기름과 우편 뒷다리를 취하고",
+      "source_text_hash": "3756216c943e90e81bb715e49f32590cabe6cd9c1a8e9e6ebab7a2b5101c408e",
+      "translation_text_hash": "dd686343c6a6af30438c408adac1d28066d9befc27c2c3952b2cda69a2f26523",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 또 그 기름과 기름진 꼬리와 내장에 덮인 모든 기름과 간 꺼풀과 두 콩팥과 그 기름과 우편 뒷다리를 취하고"
+      ],
+      "raw_text_hashes": [
+        "dd686343c6a6af30438c408adac1d28066d9befc27c2c3952b2cda69a2f26523"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:8:26",
+      "sequence": 2944,
+      "chapter_label": "LEV 8",
+      "verse_label": "26",
+      "locator": {
+        "book": "LEV",
+        "chapter": 8,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 8,
+          "verse": 26
+        }
+      ],
+      "en": "and out of the basket of unleavened bread that was before the LORD, he took one unleavened cake, one cake of oiled bread, and one wafer, and placed them on the fat and on the right thigh.",
+      "ko": "여호와 앞 무교병 광주리에서 무교병 한개와 기름 섞은 떡 한개와 전병 한개를 취하여 그 기름 위에와 우편 뒷다리 위에 놓아",
+      "source_text_hash": "f48a219fc0d0f9a4c3af20ff35105352d626b3483498bde0f011de02de661489",
+      "translation_text_hash": "356d2bcc0141a41b24edbd5c9bfb4874842e0b41d26fdd8749ba2b36e7d7cf6b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와 앞 무교병 광주리에서 무교병 한개와 기름 섞은 떡 한개와 전병 한개를 취하여 그 기름 위에와 우편 뒷다리 위에 놓아"
+      ],
+      "raw_text_hashes": [
+        "356d2bcc0141a41b24edbd5c9bfb4874842e0b41d26fdd8749ba2b36e7d7cf6b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:8:27",
+      "sequence": 2945,
+      "chapter_label": "LEV 8",
+      "verse_label": "27",
+      "locator": {
+        "book": "LEV",
+        "chapter": 8,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 8,
+          "verse": 27
+        }
+      ],
+      "en": "He put all these in Aaron’s hands and in his sons’ hands, and waved them for a wave offering before the LORD.",
+      "ko": "그 전부를 아론의 손과 그 아들들의 손에 두어 여호와 앞에 흔들어 요제를 삼게 하고",
+      "source_text_hash": "d961d35589278c1ec16c6dd569c171274ddbbde14341863860aa7cd57aa7205b",
+      "translation_text_hash": "60b928ddaf2740ad4d361b63dee69a38b41198f43c2b0699b53984304f0d31c7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 전부를 아론의 손과 그 아들들의 손에 두어 여호와 앞에 흔들어 요제를 삼게 하고"
+      ],
+      "raw_text_hashes": [
+        "60b928ddaf2740ad4d361b63dee69a38b41198f43c2b0699b53984304f0d31c7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:8:28",
+      "sequence": 2946,
+      "chapter_label": "LEV 8",
+      "verse_label": "28",
+      "locator": {
+        "book": "LEV",
+        "chapter": 8,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 8,
+          "verse": 28
+        }
+      ],
+      "en": "Moses took them from their hands, and burned them on the altar on the burnt offering. They were a consecration offering for a pleasant aroma. It was an offering made by fire to the LORD.",
+      "ko": "모세가 그것을 그들의 손에서 취하여 단 윗 번제물 위에 불사르니 이는 향기로운 냄새를 위하여 드리는 위임식 제사로 여호와께 드리는 화제라",
+      "source_text_hash": "1a7165f829d887e3bddfec82de6a301c55cbafd38beec9c407e8c01eb72c26b6",
+      "translation_text_hash": "133af2d814c8183de40f296594e97886b6360aa9e431d3dac43c0099b944cc77",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 그것을 그들의 손에서 취하여 단 윗 번제물 위에 불사르니 이는 향기로운 냄새를 위하여 드리는 위임식 제사로 여호와께 드리는 화제라"
+      ],
+      "raw_text_hashes": [
+        "133af2d814c8183de40f296594e97886b6360aa9e431d3dac43c0099b944cc77"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:8:29",
+      "sequence": 2947,
+      "chapter_label": "LEV 8",
+      "verse_label": "29",
+      "locator": {
+        "book": "LEV",
+        "chapter": 8,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 8,
+          "verse": 29
+        }
+      ],
+      "en": "Moses took the breast, and waved it for a wave offering before the LORD. It was Moses’ portion of the ram of consecration, as the LORD commanded Moses.",
+      "ko": "이에 모세가 그 가슴을 취하여 여호와 앞에 흔들어 요제를 삼았으니 이는 위임식 수양의 모세의 응식이라 여호와께서 모세에게 명하심과 같았더라",
+      "source_text_hash": "de751b34c0f177bc389208a89b5c530eebf4aaadeb79e83275942255d9b6d0dc",
+      "translation_text_hash": "a57f27d452d63b76ef3df012df0e98579eb513da7b8e2f1342325b94b0200b6b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 모세가 그 가슴을 취하여 여호와 앞에 흔들어 요제를 삼았으니 이는 위임식 수양의 모세의 응식이라 여호와께서 모세에게 명하심과 같았더라"
+      ],
+      "raw_text_hashes": [
+        "a57f27d452d63b76ef3df012df0e98579eb513da7b8e2f1342325b94b0200b6b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:8:30",
+      "sequence": 2948,
+      "chapter_label": "LEV 8",
+      "verse_label": "30",
+      "locator": {
+        "book": "LEV",
+        "chapter": 8,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 8,
+          "verse": 30
+        }
+      ],
+      "en": "Moses took some of the anointing oil, and some of the blood which was on the altar, and sprinkled it on Aaron, on his garments, and on his sons, and on his sons’ garments with him, and sanctified Aaron, his garments, and his sons, and his sons’ garments with him.",
+      "ko": "모세가 관유와 단 위의 피를 취하여 아론과 그 옷과 그 아들들과 그 아들들의 옷에 뿌려서 아론과 그 옷과 그 아들들과 그 아들들의 옷을 거룩하게 하고",
+      "source_text_hash": "26c07dd083af78b5b08f60931a9c1241b046a84551d0ee78d4f2dcbe761217e9",
+      "translation_text_hash": "e35cc0ae86e70d233e7030261d46ab8e8b5cad4a41f160be58c35a648322001f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 관유와 단 위의 피를 취하여 아론과 그 옷과 그 아들들과 그 아들들의 옷에 뿌려서 아론과 그 옷과 그 아들들과 그 아들들의 옷을 거룩하게 하고"
+      ],
+      "raw_text_hashes": [
+        "e35cc0ae86e70d233e7030261d46ab8e8b5cad4a41f160be58c35a648322001f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:8:31",
+      "sequence": 2949,
+      "chapter_label": "LEV 8",
+      "verse_label": "31",
+      "locator": {
+        "book": "LEV",
+        "chapter": 8,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 8,
+          "verse": 31
+        }
+      ],
+      "en": "Moses said to Aaron and to his sons, “Boil the meat at the door of the Tent of Meeting, and there eat it and the bread that is in the basket of consecration, as I commanded, saying, ‘Aaron and his sons shall eat it.’",
+      "ko": "아론과 그 아들들에게 이르되 내게 이미 명하시기를 아론과 그 아들들은 먹으라 하셨은즉 너희는 회막 문에서 그 고기를 삶아 위임식 광주리 안의 떡과 아울러 그곳에서 먹고",
+      "source_text_hash": "fefcb057b2eb9ed04913c9df27954d086e9df6160b2da55c9b6098629753170d",
+      "translation_text_hash": "492ddb55b1e537660b6365a4414a4ae12fed58f050ae76da47b8fabfdddf6a7f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아론과 그 아들들에게 이르되 내게 이미 명하시기를 아론과 그 아들들은 먹으라 하셨은즉 너희는 회막 문에서 그 고기를 삶아 위임식 광주리 안의 떡과 아울러 그곳에서 먹고"
+      ],
+      "raw_text_hashes": [
+        "492ddb55b1e537660b6365a4414a4ae12fed58f050ae76da47b8fabfdddf6a7f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:8:32",
+      "sequence": 2950,
+      "chapter_label": "LEV 8",
+      "verse_label": "32",
+      "locator": {
+        "book": "LEV",
+        "chapter": 8,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 8,
+          "verse": 32
+        }
+      ],
+      "en": "What remains of the meat and of the bread you shall burn with fire.",
+      "ko": "고기와 떡의 나머지는 불사를찌며",
+      "source_text_hash": "db699714b17f164035edb1a4fa6c8e996f80837658cca5895bd8f10c868a480d",
+      "translation_text_hash": "22bc28ce1b020ed47f60a0099964c2aa1d13a6dcf7a04b127bda0e431030ea9b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "고기와 떡의 나머지는 불사를찌며"
+      ],
+      "raw_text_hashes": [
+        "22bc28ce1b020ed47f60a0099964c2aa1d13a6dcf7a04b127bda0e431030ea9b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:8:33",
+      "sequence": 2951,
+      "chapter_label": "LEV 8",
+      "verse_label": "33",
+      "locator": {
+        "book": "LEV",
+        "chapter": 8,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 8,
+          "verse": 33
+        }
+      ],
+      "en": "You shall not go out from the door of the Tent of Meeting for seven days, until the days of your consecration are fulfilled: for he shall consecrate you seven days.",
+      "ko": "위임식은 칠일 동안 행하나니 위임식이 마치는 날까지 칠일 동안은 회막문에 나가지 말라",
+      "source_text_hash": "bf110307119a469fab2e8940512eb9b49f4af2a0554f838aaa7e7f82d7a90560",
+      "translation_text_hash": "b8d6d911c49fc126d0fa7739bcccbc8f6c1b4ae4fff49a8d57e6699f6a7c3eba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "위임식은 칠일 동안 행하나니 위임식이 마치는 날까지 칠일 동안은 회막문에 나가지 말라"
+      ],
+      "raw_text_hashes": [
+        "b8d6d911c49fc126d0fa7739bcccbc8f6c1b4ae4fff49a8d57e6699f6a7c3eba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:8:34",
+      "sequence": 2952,
+      "chapter_label": "LEV 8",
+      "verse_label": "34",
+      "locator": {
+        "book": "LEV",
+        "chapter": 8,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 8,
+          "verse": 34
+        }
+      ],
+      "en": "What has been done today, so the LORD has commanded to do, to make atonement for you.",
+      "ko": "오늘날 행한 것은 여호와께서 너희를 위하여 속하게 하시려고 명하신 것이니",
+      "source_text_hash": "7153c6f640d4125e5a9120290d23f93fbe39851d91933a21b40f6400b2d07f3a",
+      "translation_text_hash": "1ecd92232b261d83b85dab0e1c3df56ef662af238ae454c4927ccc544ef8c9b2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오늘날 행한 것은 여호와께서 너희를 위하여 속하게 하시려고 명하신 것이니"
+      ],
+      "raw_text_hashes": [
+        "1ecd92232b261d83b85dab0e1c3df56ef662af238ae454c4927ccc544ef8c9b2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:8:35",
+      "sequence": 2953,
+      "chapter_label": "LEV 8",
+      "verse_label": "35",
+      "locator": {
+        "book": "LEV",
+        "chapter": 8,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 8,
+          "verse": 35
+        }
+      ],
+      "en": "You shall stay at the door of the Tent of Meeting day and night seven days, and keep the LORD’s command, that you don’t die: for so I am commanded.”",
+      "ko": "너희는 칠 주야를 회막 문에 거하여 여호와의 부탁을 지키라 그리하면 사망을 면하리라 내가 이같이 명령을 받았느니라",
+      "source_text_hash": "8b20719d488feecdc355127c61f040d902c66233a34e2dc220c08555280ff609",
+      "translation_text_hash": "1adf71efebfee68f6aee1bca745919a447d0f5c647a99e7680627401c413b97b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 칠 주야를 회막 문에 거하여 여호와의 부탁을 지키라 그리하면 사망을 면하리라 내가 이같이 명령을 받았느니라"
+      ],
+      "raw_text_hashes": [
+        "1adf71efebfee68f6aee1bca745919a447d0f5c647a99e7680627401c413b97b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:8:36",
+      "sequence": 2954,
+      "chapter_label": "LEV 8",
+      "verse_label": "36",
+      "locator": {
+        "book": "LEV",
+        "chapter": 8,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 8,
+          "verse": 36
+        }
+      ],
+      "en": "Aaron and his sons did all the things which the LORD commanded by Moses.",
+      "ko": "아론과 그 아들들이 여호와께서 모세로 명하신 모든 일을 준행하니라",
+      "source_text_hash": "5291827194ae141282f23aaf7e55e7f3fcdf94690814ffb3998d62e19ec800c4",
+      "translation_text_hash": "beb5544fd9908486bd2a5cb91c0aad8c53115300f3dd7456c9ecb4cb065e0df1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아론과 그 아들들이 여호와께서 모세로 명하신 모든 일을 준행하니라"
+      ],
+      "raw_text_hashes": [
+        "beb5544fd9908486bd2a5cb91c0aad8c53115300f3dd7456c9ecb4cb065e0df1"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1165 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:NUM:chapter:010",
+  "unit_ordinal": 127,
+  "unit_label": "NUM 10",
+  "book_code": "NUM",
+  "chapter_number": 10,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:NUM:10:1",
+      "sequence": 3990,
+      "chapter_label": "NUM 10",
+      "verse_label": "1",
+      "locator": {
+        "book": "NUM",
+        "chapter": 10,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 10,
+          "verse": 1
+        }
+      ],
+      "en": "The LORD spoke to Moses, saying,",
+      "ko": "여호와께서 모세에게 일러 가라사대",
+      "source_text_hash": "28219e5da0d26514843495c6edb280f326aa0ccffb0d2bb642d0e1b0f4478ca1",
+      "translation_text_hash": "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:10:2",
+      "sequence": 3991,
+      "chapter_label": "NUM 10",
+      "verse_label": "2",
+      "locator": {
+        "book": "NUM",
+        "chapter": 10,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 10,
+          "verse": 2
+        }
+      ],
+      "en": "“Make two trumpets of silver. You shall make them of beaten work. You shall use them for the calling of the congregation and for the journeying of the camps.",
+      "ko": "은나팔 둘을 만들되 쳐서 만들어서 그것으로 회중을 소집하며 진을 진행케 할 것이라",
+      "source_text_hash": "114a9bb8a63b17ef403e9e3af5f06f349e8f19fb5afa14d7ffecb4b9a321005d",
+      "translation_text_hash": "85865d900b38bc77450c3be1194654d5451dc7205b84dcbf31a82f58586aa4ac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "은나팔 둘을 만들되 쳐서 만들어서 그것으로 회중을 소집하며 진을 진행케 할 것이라"
+      ],
+      "raw_text_hashes": [
+        "85865d900b38bc77450c3be1194654d5451dc7205b84dcbf31a82f58586aa4ac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:10:3",
+      "sequence": 3992,
+      "chapter_label": "NUM 10",
+      "verse_label": "3",
+      "locator": {
+        "book": "NUM",
+        "chapter": 10,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 10,
+          "verse": 3
+        }
+      ],
+      "en": "When they blow them, all the congregation shall gather themselves to you at the door of the Tent of Meeting.",
+      "ko": "두 나팔을 불 때에는 온 회중이 회막 문 앞에 모여서 네게로 나아올 것이요",
+      "source_text_hash": "0b3cc08175bfec100a7e9d333523d4f20b81581e542b5dbaf30240ae6dd51a4c",
+      "translation_text_hash": "709eb6c87df0ab1dca6da09652b06d9345d8adcabeb55264eb554cac3f73e549",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "두 나팔을 불 때에는 온 회중이 회막 문 앞에 모여서 네게로 나아올 것이요"
+      ],
+      "raw_text_hashes": [
+        "709eb6c87df0ab1dca6da09652b06d9345d8adcabeb55264eb554cac3f73e549"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:10:4",
+      "sequence": 3993,
+      "chapter_label": "NUM 10",
+      "verse_label": "4",
+      "locator": {
+        "book": "NUM",
+        "chapter": 10,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 10,
+          "verse": 4
+        }
+      ],
+      "en": "If they blow just one, then the princes, the heads of the thousands of Israel, shall gather themselves to you.",
+      "ko": "하나만 불 때에는 이스라엘 천부장 된 족장들이 모여서 네게로 나아올 것이며",
+      "source_text_hash": "fbb3dcb04a4e98c83a47e708b51c9c181914ae3483ab0f7b399ececf2a459dad",
+      "translation_text_hash": "0e28b2497035994b53fe41f705bb13d76a0e392db0bd4c3fcc4035d1ece3a661",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나만 불 때에는 이스라엘 천부장 된 족장들이 모여서 네게로 나아올 것이며"
+      ],
+      "raw_text_hashes": [
+        "0e28b2497035994b53fe41f705bb13d76a0e392db0bd4c3fcc4035d1ece3a661"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:10:5",
+      "sequence": 3994,
+      "chapter_label": "NUM 10",
+      "verse_label": "5",
+      "locator": {
+        "book": "NUM",
+        "chapter": 10,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 10,
+          "verse": 5
+        }
+      ],
+      "en": "When you blow an alarm, the camps that lie on the east side shall go forward.",
+      "ko": "너희가 그것을 울려 불 때에는 동편 진들이 진행할 것이고",
+      "source_text_hash": "e6d37e4b568933b04591ff3de02923070eae4d2adfc44ecbe4c98a8166c429ec",
+      "translation_text_hash": "2cf27419e5d033528db2a779f5000f49c7e9cb9a8d77761584957e336548470a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 그것을 울려 불 때에는 동편 진들이 진행할 것이고"
+      ],
+      "raw_text_hashes": [
+        "2cf27419e5d033528db2a779f5000f49c7e9cb9a8d77761584957e336548470a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:10:6",
+      "sequence": 3995,
+      "chapter_label": "NUM 10",
+      "verse_label": "6",
+      "locator": {
+        "book": "NUM",
+        "chapter": 10,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 10,
+          "verse": 6
+        }
+      ],
+      "en": "When you blow an alarm the second time, the camps that lie on the south side shall go forward. They shall blow an alarm for their journeys.",
+      "ko": "제 이차로 울려 불 때에는 남편 진들이 진행할 것이라 무릇 진행하려 할 때에는 나팔소리를 울려 불 것이며",
+      "source_text_hash": "b57a51a88e00b99137cf46b4aa41f16cc4fb814ed33713c67fc42dac692bba7d",
+      "translation_text_hash": "75c255f805b5b131ce8da1d22fa2918b737ed56da5e75658a6daa104791739f8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제 이차로 울려 불 때에는 남편 진들이 진행할 것이라 무릇 진행하려 할 때에는 나팔소리를 울려 불 것이며"
+      ],
+      "raw_text_hashes": [
+        "75c255f805b5b131ce8da1d22fa2918b737ed56da5e75658a6daa104791739f8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:10:7",
+      "sequence": 3996,
+      "chapter_label": "NUM 10",
+      "verse_label": "7",
+      "locator": {
+        "book": "NUM",
+        "chapter": 10,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 10,
+          "verse": 7
+        }
+      ],
+      "en": "But when the assembly is to be gathered together, you shall blow, but you shall not sound an alarm.",
+      "ko": "또 회중을 모을 때에도 나팔을 불 것이나 소리를 울려 불지 말 것이며",
+      "source_text_hash": "07e4034e5110a2f56cf94585658838d7e9dbd183ccaf8ea652b9408e6dc9551a",
+      "translation_text_hash": "d1f6eb5b1ca02ab1f2d0ccdeb2f19f15c780b03f672f62143852b265a7f92ad1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 회중을 모을 때에도 나팔을 불 것이나 소리를 울려 불지 말 것이며"
+      ],
+      "raw_text_hashes": [
+        "d1f6eb5b1ca02ab1f2d0ccdeb2f19f15c780b03f672f62143852b265a7f92ad1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:10:8",
+      "sequence": 3997,
+      "chapter_label": "NUM 10",
+      "verse_label": "8",
+      "locator": {
+        "book": "NUM",
+        "chapter": 10,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 10,
+          "verse": 8
+        }
+      ],
+      "en": "“The sons of Aaron, the priests, shall blow the trumpets. This shall be to you for a statute forever throughout your generations.",
+      "ko": "그 나팔은 아론의 자손인 제사장들이 불찌니 이는 너희 대대에 영원한 율례니라",
+      "source_text_hash": "4ede6e2c9c738621335c4ed6f1d86429d797996503fdd427b6453eb5f568cd95",
+      "translation_text_hash": "2602ed3bfa120e183f221244c13ba21674c349197553bdbc0740d471dadea867",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 나팔은 아론의 자손인 제사장들이 불찌니 이는 너희 대대에 영원한 율례니라"
+      ],
+      "raw_text_hashes": [
+        "2602ed3bfa120e183f221244c13ba21674c349197553bdbc0740d471dadea867"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:10:9",
+      "sequence": 3998,
+      "chapter_label": "NUM 10",
+      "verse_label": "9",
+      "locator": {
+        "book": "NUM",
+        "chapter": 10,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 10,
+          "verse": 9
+        }
+      ],
+      "en": "When you go to war in your land against the adversary who oppresses you, then you shall sound an alarm with the trumpets. Then you will be remembered before the LORD your God, and you will be saved from your enemies.",
+      "ko": "또 너희 땅에서 너희가 자기를 압박하는 대적을 치러 나갈 때에는 나팔을 울려 불찌니 그리하면 너희 하나님 여호와가 너희를 기억하고 너희를 너희 대적에게서 구원하리라",
+      "source_text_hash": "5184edc33365d2b997af26cbf3bd4ebe152f6f8795fc5f3b577fbf8880028f50",
+      "translation_text_hash": "a53236164e5829f59f5d1a5000ef6cc1770d2c24f32990d8d950d63e3fa99bbf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 너희 땅에서 너희가 자기를 압박하는 대적을 치러 나갈 때에는 나팔을 울려 불찌니 그리하면 너희 하나님 여호와가 너희를 기억하고 너희를 너희 대적에게서 구원하리라"
+      ],
+      "raw_text_hashes": [
+        "a53236164e5829f59f5d1a5000ef6cc1770d2c24f32990d8d950d63e3fa99bbf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:10:10",
+      "sequence": 3999,
+      "chapter_label": "NUM 10",
+      "verse_label": "10",
+      "locator": {
+        "book": "NUM",
+        "chapter": 10,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 10,
+          "verse": 10
+        }
+      ],
+      "en": "“Also in the day of your gladness, and in your set feasts, and in the beginnings of your months, you shall blow the trumpets over your burnt offerings, and over the sacrifices of your peace offerings; and they shall be to you for a memorial before your God. I am the LORD your God.”",
+      "ko": "또 너희 희락의 날과 너희 정한 절기와 월삭에는 번제물의 위에와 화목제물의 위에 나팔을 불라 그로 말미암아 너희 하나님이 너희를 기억하리라 나는 너희 하나님 여호와니라",
+      "source_text_hash": "0b4217cf87ab4753dc09bf363d5fbbf2897d1029559d4355d835ccbd4ae9bb9e",
+      "translation_text_hash": "d6066ca06d4fe1fdf0197c60101a47cc16012686abdac440983d1551ae5b420c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 너희 희락의 날과 너희 정한 절기와 월삭에는 번제물의 위에와 화목제물의 위에 나팔을 불라 그로 말미암아 너희 하나님이 너희를 기억하리라 나는 너희 하나님 여호와니라"
+      ],
+      "raw_text_hashes": [
+        "d6066ca06d4fe1fdf0197c60101a47cc16012686abdac440983d1551ae5b420c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:10:11",
+      "sequence": 4000,
+      "chapter_label": "NUM 10",
+      "verse_label": "11",
+      "locator": {
+        "book": "NUM",
+        "chapter": 10,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 10,
+          "verse": 11
+        }
+      ],
+      "en": "In the second year, in the second month, on the twentieth day of the month, the cloud was taken up from over the tabernacle of the covenant.",
+      "ko": "제 이년 이월 이십일에 구름이 증거막에서 떠오르매",
+      "source_text_hash": "9d3bcfd9899b2845ac0bc41fa229b8ade88752a61eb1305b7e814ee1ba3095bb",
+      "translation_text_hash": "26ff92c510add7b3b85642bd679624dc69cde44d35202e22195f9d30b3761ffc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제 이년 이월 이십일에 구름이 증거막에서 떠오르매"
+      ],
+      "raw_text_hashes": [
+        "26ff92c510add7b3b85642bd679624dc69cde44d35202e22195f9d30b3761ffc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:10:12",
+      "sequence": 4001,
+      "chapter_label": "NUM 10",
+      "verse_label": "12",
+      "locator": {
+        "book": "NUM",
+        "chapter": 10,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 10,
+          "verse": 12
+        }
+      ],
+      "en": "The children of Israel went forward on their journeys out of the wilderness of Sinai; and the cloud stayed in the wilderness of Paran.",
+      "ko": "이스라엘 자손이 시내 광야에서 출발하여 자기 길을 행하더니 바란 광야에 구름이 머무니라",
+      "source_text_hash": "77d6bf89bb6045c415f1f61321ea8690425a341b8cf2618960019f2b35d6c1e2",
+      "translation_text_hash": "08d3ee2699570c42a8e0db45b1791ced254fd311c644afaa7fdd805caffa84e6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손이 시내 광야에서 출발하여 자기 길을 행하더니 바란 광야에 구름이 머무니라"
+      ],
+      "raw_text_hashes": [
+        "08d3ee2699570c42a8e0db45b1791ced254fd311c644afaa7fdd805caffa84e6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:10:13",
+      "sequence": 4002,
+      "chapter_label": "NUM 10",
+      "verse_label": "13",
+      "locator": {
+        "book": "NUM",
+        "chapter": 10,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 10,
+          "verse": 13
+        }
+      ],
+      "en": "They first went forward according to the commandment of the LORD by Moses.",
+      "ko": "이와 같이 그들이 여호와께서 모세로 명하신 것을 좇아 진행하기를 시작하였는데",
+      "source_text_hash": "26803cf5b24ecb771dcc401f01fea5136b220be550c441f7e0ed42c152d723da",
+      "translation_text_hash": "9625517b5d9a9e6de047a0ae9efaa559ef1c265f657f95f404c4390ed224790e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이와 같이 그들이 여호와께서 모세로 명하신 것을 좇아 진행하기를 시작하였는데"
+      ],
+      "raw_text_hashes": [
+        "9625517b5d9a9e6de047a0ae9efaa559ef1c265f657f95f404c4390ed224790e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:10:14",
+      "sequence": 4003,
+      "chapter_label": "NUM 10",
+      "verse_label": "14",
+      "locator": {
+        "book": "NUM",
+        "chapter": 10,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 10,
+          "verse": 14
+        }
+      ],
+      "en": "First, the standard of the camp of the children of Judah went forward according to their armies. Nahshon the son of Amminadab was over his army.",
+      "ko": "수두로 유다 자손 진 기에 속한 자들이 그 군대대로 진행하였으니 유다 군대는 암미나답의 아들 나손이 영솔하였고",
+      "source_text_hash": "99b9c00fdde4714d7587c71e55e8ce180d49007f99e3e62198bf2b83bdf8ddad",
+      "translation_text_hash": "9db4eea0d4fcf77ac9c3d50f72968f87b627ac39427680950fa708ab2f4d2725",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "수두로 유다 자손 진 기에 속한 자들이 그 군대대로 진행하였으니 유다 군대는 암미나답의 아들 나손이 영솔하였고"
+      ],
+      "raw_text_hashes": [
+        "9db4eea0d4fcf77ac9c3d50f72968f87b627ac39427680950fa708ab2f4d2725"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:10:15",
+      "sequence": 4004,
+      "chapter_label": "NUM 10",
+      "verse_label": "15",
+      "locator": {
+        "book": "NUM",
+        "chapter": 10,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 10,
+          "verse": 15
+        }
+      ],
+      "en": "Nethanel the son of Zuar was over the army of the tribe of the children of Issachar.",
+      "ko": "잇사갈 자손 지파의 군대는 수알의 아들 느다넬이 영솔하였고",
+      "source_text_hash": "306971e827d7896490735f4a3ac39232da595f1bed43036de727d92090a75723",
+      "translation_text_hash": "353f499600c48b97f90853fd7d14d284e25ddc8f1295e4be0dc20a043f31396b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "잇사갈 자손 지파의 군대는 수알의 아들 느다넬이 영솔하였고"
+      ],
+      "raw_text_hashes": [
+        "353f499600c48b97f90853fd7d14d284e25ddc8f1295e4be0dc20a043f31396b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:10:16",
+      "sequence": 4005,
+      "chapter_label": "NUM 10",
+      "verse_label": "16",
+      "locator": {
+        "book": "NUM",
+        "chapter": 10,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 10,
+          "verse": 16
+        }
+      ],
+      "en": "Eliab the son of Helon was over the army of the tribe of the children of Zebulun.",
+      "ko": "스불론 자손 지파의 군대는 헬론의 아들 엘리압이 영솔하였더라",
+      "source_text_hash": "f33d410e6202321662c8290e02ce46266cb2d8207e26d7116d71d57e576352c6",
+      "translation_text_hash": "2ea3f71a82918e313d0dd3ee9d989ee1778dbd196e3eb655c25f0e495ef7c9f7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "스불론 자손 지파의 군대는 헬론의 아들 엘리압이 영솔하였더라"
+      ],
+      "raw_text_hashes": [
+        "2ea3f71a82918e313d0dd3ee9d989ee1778dbd196e3eb655c25f0e495ef7c9f7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:10:17",
+      "sequence": 4006,
+      "chapter_label": "NUM 10",
+      "verse_label": "17",
+      "locator": {
+        "book": "NUM",
+        "chapter": 10,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 10,
+          "verse": 17
+        }
+      ],
+      "en": "The tabernacle was taken down; and the sons of Gershon and the sons of Merari, who bore the tabernacle, went forward.",
+      "ko": "이에 성막을 걷으매 게르손 자손과 므라리 자손이 성막을 메고 발행하였으며",
+      "source_text_hash": "acd8be72b860d0924ccd021e29e729af92b83c7772d690974cd0718e8cdbb4d5",
+      "translation_text_hash": "63bf4153d5f13430981a815ffde775db9e6c7ec9459b7cc11933ee33c7919212",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 성막을 걷으매 게르손 자손과 므라리 자손이 성막을 메고 발행하였으며"
+      ],
+      "raw_text_hashes": [
+        "63bf4153d5f13430981a815ffde775db9e6c7ec9459b7cc11933ee33c7919212"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:10:18",
+      "sequence": 4007,
+      "chapter_label": "NUM 10",
+      "verse_label": "18",
+      "locator": {
+        "book": "NUM",
+        "chapter": 10,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 10,
+          "verse": 18
+        }
+      ],
+      "en": "The standard of the camp of Reuben went forward according to their armies. Elizur the son of Shedeur was over his army.",
+      "ko": "다음으로 르우벤 진 기에 속한 자들이 그 군대대로 발행하였으니 르우벤의 군대는 스데울의 아들 엘리술이 영솔하였고",
+      "source_text_hash": "430d4e8dfc2210fe437c7df71ddf91b71bd67cef0a2b2a1ebb2db57e918870c4",
+      "translation_text_hash": "8417bc1d6f5b09d0865077c821f7249cf9748ef7baebdc639bdaa7e54a6925a9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다음으로 르우벤 진 기에 속한 자들이 그 군대대로 발행하였으니 르우벤의 군대는 스데울의 아들 엘리술이 영솔하였고"
+      ],
+      "raw_text_hashes": [
+        "8417bc1d6f5b09d0865077c821f7249cf9748ef7baebdc639bdaa7e54a6925a9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:10:19",
+      "sequence": 4008,
+      "chapter_label": "NUM 10",
+      "verse_label": "19",
+      "locator": {
+        "book": "NUM",
+        "chapter": 10,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 10,
+          "verse": 19
+        }
+      ],
+      "en": "Shelumiel the son of Zurishaddai was over the army of the tribe of the children of Simeon.",
+      "ko": "시므온 자손 지파의 군대는 수리삿대의 아들 슬루미엘이 영솔하였고",
+      "source_text_hash": "1ac56c930d6bee7756b4713f189384cc4e2260240d4166fba17ef54ee1e3d090",
+      "translation_text_hash": "887581067110e4e7e813b47591594bf87a880352d84b8d69a054702f9a9b1986",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시므온 자손 지파의 군대는 수리삿대의 아들 슬루미엘이 영솔하였고"
+      ],
+      "raw_text_hashes": [
+        "887581067110e4e7e813b47591594bf87a880352d84b8d69a054702f9a9b1986"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:10:20",
+      "sequence": 4009,
+      "chapter_label": "NUM 10",
+      "verse_label": "20",
+      "locator": {
+        "book": "NUM",
+        "chapter": 10,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 10,
+          "verse": 20
+        }
+      ],
+      "en": "Eliasaph the son of Deuel was over the army of the tribe of the children of Gad.",
+      "ko": "갓 자손 지파의 군대는 드우엘의 아들 엘리아삽이 영솔하였더라",
+      "source_text_hash": "3d7c8bad98d1a8412d18d67f98dfa6866a2ceeceeb2fd5b860d16423b03ed27b",
+      "translation_text_hash": "781332bc85170ac15f61cf80a7c8c3050cb5304dec64aaab486e27efa9fdfa63",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "갓 자손 지파의 군대는 드우엘의 아들 엘리아삽이 영솔하였더라"
+      ],
+      "raw_text_hashes": [
+        "781332bc85170ac15f61cf80a7c8c3050cb5304dec64aaab486e27efa9fdfa63"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:10:21",
+      "sequence": 4010,
+      "chapter_label": "NUM 10",
+      "verse_label": "21",
+      "locator": {
+        "book": "NUM",
+        "chapter": 10,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 10,
+          "verse": 21
+        }
+      ],
+      "en": "The Kohathites set forward, bearing the sanctuary. The others set up the tabernacle before they arrived.",
+      "ko": "고핫인은 성물을 메고 진행하였고 그들이 이르기 전에 성막을 세웠으며",
+      "source_text_hash": "92cb861e216dbf520e1570c50602bb634ab198fecd23e9566cd9125c228044d7",
+      "translation_text_hash": "a1c94a274abbd7314a033aef357392e958bb906b498095d9eca141b1f595bfa3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "고핫인은 성물을 메고 진행하였고 그들이 이르기 전에 성막을 세웠으며"
+      ],
+      "raw_text_hashes": [
+        "a1c94a274abbd7314a033aef357392e958bb906b498095d9eca141b1f595bfa3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:10:22",
+      "sequence": 4011,
+      "chapter_label": "NUM 10",
+      "verse_label": "22",
+      "locator": {
+        "book": "NUM",
+        "chapter": 10,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 10,
+          "verse": 22
+        }
+      ],
+      "en": "The standard of the camp of the children of Ephraim set forward according to their armies. Elishama the son of Ammihud was over his army.",
+      "ko": "다음으로 에브라임 자손 진 기에 속한 자들이 그 군대대로 진행하였으니 에브라임 군대는 암미훗의 아들 엘리사마가 영솔하였고",
+      "source_text_hash": "b946d93f4e51c4161fa07d9ec423857e2446680dcaa6c1293f4a7d8599c1eeb8",
+      "translation_text_hash": "b4a7551b51c7f783da43e72f5b540387395023b66dfd2b83fb7c97668c777c6b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다음으로 에브라임 자손 진 기에 속한 자들이 그 군대대로 진행하였으니 에브라임 군대는 암미훗의 아들 엘리사마가 영솔하였고"
+      ],
+      "raw_text_hashes": [
+        "b4a7551b51c7f783da43e72f5b540387395023b66dfd2b83fb7c97668c777c6b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:10:23",
+      "sequence": 4012,
+      "chapter_label": "NUM 10",
+      "verse_label": "23",
+      "locator": {
+        "book": "NUM",
+        "chapter": 10,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 10,
+          "verse": 23
+        }
+      ],
+      "en": "Gamaliel the son of Pedahzur was over the army of the tribe of the children of Manasseh.",
+      "ko": "므낫세 자손 지파의 군대는 브다술의 아들 가말리엘이 영솔하였고",
+      "source_text_hash": "087d9152f5e47c9340226d6cac83791fc8acc3ffd7e7b2c251610c0f458c8804",
+      "translation_text_hash": "b334ca539e988949141a3ebca4b433664ab09b875e3a02d126c24fb2a75071df",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "므낫세 자손 지파의 군대는 브다술의 아들 가말리엘이 영솔하였고"
+      ],
+      "raw_text_hashes": [
+        "b334ca539e988949141a3ebca4b433664ab09b875e3a02d126c24fb2a75071df"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:10:24",
+      "sequence": 4013,
+      "chapter_label": "NUM 10",
+      "verse_label": "24",
+      "locator": {
+        "book": "NUM",
+        "chapter": 10,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 10,
+          "verse": 24
+        }
+      ],
+      "en": "Abidan the son of Gideoni was over the army of the tribe of the children of Benjamin.",
+      "ko": "베냐민 자손 지파의 군대는 기드오니의 아들 아비단이 영솔하였더라",
+      "source_text_hash": "3159d2a5238bd5b29e5a8b6cac5f6f0951825ff41aeb7d3c3b44dfdccd421a46",
+      "translation_text_hash": "7002b9c0d1f0aa2b56d85a3501c5839e48b20e433326517338e5b9792655ed27",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베냐민 자손 지파의 군대는 기드오니의 아들 아비단이 영솔하였더라"
+      ],
+      "raw_text_hashes": [
+        "7002b9c0d1f0aa2b56d85a3501c5839e48b20e433326517338e5b9792655ed27"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:10:25",
+      "sequence": 4014,
+      "chapter_label": "NUM 10",
+      "verse_label": "25",
+      "locator": {
+        "book": "NUM",
+        "chapter": 10,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 10,
+          "verse": 25
+        }
+      ],
+      "en": "The standard of the camp of the children of Dan, which was the rear guard of all the camps, set forward according to their armies. Ahiezer the son of Ammishaddai was over his army.",
+      "ko": "다음으로 단 자손 진 기에 속한 자들이 그 군대대로 진행하였으니 이 군대는 모든 진의 후진이었더라 단 군대는 암미삿대의 아들 아히에셀이 영솔하였고",
+      "source_text_hash": "e542a8cf6247677f8124a14e916d41816a079022688229bce7e0bbfd88f16eb1",
+      "translation_text_hash": "6845960e43d1951173c8dcbae00662fa1b747b03d3e4cf2403956c5e26dc7c2a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다음으로 단 자손 진 기에 속한 자들이 그 군대대로 진행하였으니 이 군대는 모든 진의 후진이었더라 단 군대는 암미삿대의 아들 아히에셀이 영솔하였고"
+      ],
+      "raw_text_hashes": [
+        "6845960e43d1951173c8dcbae00662fa1b747b03d3e4cf2403956c5e26dc7c2a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:10:26",
+      "sequence": 4015,
+      "chapter_label": "NUM 10",
+      "verse_label": "26",
+      "locator": {
+        "book": "NUM",
+        "chapter": 10,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 10,
+          "verse": 26
+        }
+      ],
+      "en": "Pagiel the son of Ochran was over the army of the tribe of the children of Asher.",
+      "ko": "아셀 자손 지파의 군대는 오그란의 아들 바기엘이 영솔하였고",
+      "source_text_hash": "1339d99dd5605bd4316595d32ea88d2d215d3ca48c13000b883ccfe9f76e55df",
+      "translation_text_hash": "d56bf94bc5dbd38c4d2cc2ec44111172825ac41b41121748fa86a8d2932fcefa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아셀 자손 지파의 군대는 오그란의 아들 바기엘이 영솔하였고"
+      ],
+      "raw_text_hashes": [
+        "d56bf94bc5dbd38c4d2cc2ec44111172825ac41b41121748fa86a8d2932fcefa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:10:27",
+      "sequence": 4016,
+      "chapter_label": "NUM 10",
+      "verse_label": "27",
+      "locator": {
+        "book": "NUM",
+        "chapter": 10,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 10,
+          "verse": 27
+        }
+      ],
+      "en": "Ahira the son of Enan was over the army of the tribe of the children of Naphtali.",
+      "ko": "납달리 자손 지파의 군대는 에난의 아들 아히라가 영솔하였더라",
+      "source_text_hash": "3db935f17b0a840edce6ac6d9fff947648e0898cc3801cda72dde1cb1f280f06",
+      "translation_text_hash": "39044340195dbb52deaafc6e7d6bd1cbb67e8950a798d545b88fbe31c75bc7cf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "납달리 자손 지파의 군대는 에난의 아들 아히라가 영솔하였더라"
+      ],
+      "raw_text_hashes": [
+        "39044340195dbb52deaafc6e7d6bd1cbb67e8950a798d545b88fbe31c75bc7cf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:10:28",
+      "sequence": 4017,
+      "chapter_label": "NUM 10",
+      "verse_label": "28",
+      "locator": {
+        "book": "NUM",
+        "chapter": 10,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 10,
+          "verse": 28
+        }
+      ],
+      "en": "Thus were the travels of the children of Israel according to their armies; and they went forward.",
+      "ko": "이스라엘 자손이 진행할 때에 이와 같이 그 군대를 따라 나아갔더라",
+      "source_text_hash": "bf047a6a9672e81fd658fc0fd7319bac0231b01197fce317018bc3bccea590c6",
+      "translation_text_hash": "a6e62b3ce1556586372d01b7b201f69a99cd7cf11406eea0f4dac9d855898c4a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손이 진행할 때에 이와 같이 그 군대를 따라 나아갔더라"
+      ],
+      "raw_text_hashes": [
+        "a6e62b3ce1556586372d01b7b201f69a99cd7cf11406eea0f4dac9d855898c4a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:10:29",
+      "sequence": 4018,
+      "chapter_label": "NUM 10",
+      "verse_label": "29",
+      "locator": {
+        "book": "NUM",
+        "chapter": 10,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 10,
+          "verse": 29
+        }
+      ],
+      "en": "Moses said to Hobab, the son of Reuel the Midianite, Moses’ father-in-law, “We are journeying to the place of which the LORD said, ‘I will give it to you.’ Come with us, and we will treat you well; for the LORD has spoken good concerning Israel.”",
+      "ko": "모세가 그 장인 미디안 사람 르우엘의 아들 호밥에게 이르되 여호와께서 주마 하신 곳으로 우리가 진행하나니 우리와 동행하자 그리하면 선대하리라 여호와께서 이스라엘에게 복을 내리리라 하셨느니라",
+      "source_text_hash": "5ca8d891398f358aedf655d4f940044be5a4e9f85151c656c25dbdccfefe1b25",
+      "translation_text_hash": "488727d12a2348acfc48fc5c5512ad43f858e261846d7ea081bbea71ea9c6930",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 그 장인 미디안 사람 르우엘의 아들 호밥에게 이르되 여호와께서 주마 하신 곳으로 우리가 진행하나니 우리와 동행하자 그리하면 선대하리라 여호와께서 이스라엘에게 복을 내리리라 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "488727d12a2348acfc48fc5c5512ad43f858e261846d7ea081bbea71ea9c6930"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:10:30",
+      "sequence": 4019,
+      "chapter_label": "NUM 10",
+      "verse_label": "30",
+      "locator": {
+        "book": "NUM",
+        "chapter": 10,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 10,
+          "verse": 30
+        }
+      ],
+      "en": "He said to him, “I will not go; but I will depart to my own land, and to my relatives.”",
+      "ko": "호밥이 그에게 이르되 나는 가지 아니하고 내 고향 내 친족에게로 가리라",
+      "source_text_hash": "7367f38efbc5cc3272e70792be44f6fa8bdbb728d1e2c86816aea6364a3d8946",
+      "translation_text_hash": "fe6053eb31e5773ee3119c2b9ffd898ad97ff838d164885e97eab28514fbc540",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "호밥이 그에게 이르되 나는 가지 아니하고 내 고향 내 친족에게로 가리라"
+      ],
+      "raw_text_hashes": [
+        "fe6053eb31e5773ee3119c2b9ffd898ad97ff838d164885e97eab28514fbc540"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:10:31",
+      "sequence": 4020,
+      "chapter_label": "NUM 10",
+      "verse_label": "31",
+      "locator": {
+        "book": "NUM",
+        "chapter": 10,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 10,
+          "verse": 31
+        }
+      ],
+      "en": "Moses said, “Don’t leave us, please; because you know how we are to encamp in the wilderness, and you can be our eyes.",
+      "ko": "모세가 가로되 청컨대 우리를 떠나지 마소서 당신은 우리가 광야에서 어떻게 진 칠 것을 아나니 우리의 눈이 되리이다",
+      "source_text_hash": "3402a424cb52a600870373875a02c42592248862292ed7f5b3769724b998a4c3",
+      "translation_text_hash": "26287fa722790a5506c9a76d0df4a2373e62aac22ae4d41c6e6a6a406b2789b0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 가로되 청컨대 우리를 떠나지 마소서 당신은 우리가 광야에서 어떻게 진 칠 것을 아나니 우리의 눈이 되리이다"
+      ],
+      "raw_text_hashes": [
+        "26287fa722790a5506c9a76d0df4a2373e62aac22ae4d41c6e6a6a406b2789b0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:10:32",
+      "sequence": 4021,
+      "chapter_label": "NUM 10",
+      "verse_label": "32",
+      "locator": {
+        "book": "NUM",
+        "chapter": 10,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 10,
+          "verse": 32
+        }
+      ],
+      "en": "It shall be, if you go with us—yes, it shall be—that whatever good the LORD does to us, we will do the same to you.”",
+      "ko": "우리와 동행하면 여호와께서 우리에게 복을 내리시는대로 우리도 당신에게 행하리이다",
+      "source_text_hash": "d19a9ccf6c7cdd3a2d5dbbcf60cd2945fa36b73acd2a91e38738835b344d4786",
+      "translation_text_hash": "d3a1fa35d7f19708133a0875fe6147ee2f2c665e87726f81289daa42752f6b3a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리와 동행하면 여호와께서 우리에게 복을 내리시는대로 우리도 당신에게 행하리이다"
+      ],
+      "raw_text_hashes": [
+        "d3a1fa35d7f19708133a0875fe6147ee2f2c665e87726f81289daa42752f6b3a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:10:33",
+      "sequence": 4022,
+      "chapter_label": "NUM 10",
+      "verse_label": "33",
+      "locator": {
+        "book": "NUM",
+        "chapter": 10,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 10,
+          "verse": 33
+        }
+      ],
+      "en": "They set forward from the Mount of the LORD three days’ journey. The ark of the LORD’s covenant went before them three days’ journey, to seek out a resting place for them.",
+      "ko": "그들이 여호와의 산에서 떠나 삼일 길을 행할 때에 여호와의 언약궤가 그 삼일 길에 앞서 행하며 그들의 쉴 곳을 찾았고",
+      "source_text_hash": "fe8c00e36d03d7e1f8275ae8a33304093ee5666eaef4e2c92221e1a5552f7d87",
+      "translation_text_hash": "a10444db50fb31db9edf479bbc1e914c7f2d009fa8b739846b1d6bf341151332",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 여호와의 산에서 떠나 삼일 길을 행할 때에 여호와의 언약궤가 그 삼일 길에 앞서 행하며 그들의 쉴 곳을 찾았고"
+      ],
+      "raw_text_hashes": [
+        "a10444db50fb31db9edf479bbc1e914c7f2d009fa8b739846b1d6bf341151332"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:10:34",
+      "sequence": 4023,
+      "chapter_label": "NUM 10",
+      "verse_label": "34",
+      "locator": {
+        "book": "NUM",
+        "chapter": 10,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 10,
+          "verse": 34
+        }
+      ],
+      "en": "The cloud of the LORD was over them by day, when they set forward from the camp.",
+      "ko": "그들이 행진할 때에 낮에는 여호와의 구름이 그 위에 덮였었더라",
+      "source_text_hash": "7b53f17af90c8bb74de622aeff634c32c2845ebda51bc0437cd3c67f9920c978",
+      "translation_text_hash": "a55e7d374770e38bc27da9ba7e3c468fccb2dfc457aa8af6801ccab77127dff3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 행진할 때에 낮에는 여호와의 구름이 그 위에 덮였었더라"
+      ],
+      "raw_text_hashes": [
+        "a55e7d374770e38bc27da9ba7e3c468fccb2dfc457aa8af6801ccab77127dff3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:10:35",
+      "sequence": 4024,
+      "chapter_label": "NUM 10",
+      "verse_label": "35",
+      "locator": {
+        "book": "NUM",
+        "chapter": 10,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 10,
+          "verse": 35
+        }
+      ],
+      "en": "When the ark went forward, Moses said, “Rise up, LORD, and let your enemies be scattered! Let those who hate you flee before you!”",
+      "ko": "궤가 떠날 때에는 모세가 가로되 여호와여 일어나사 주의 대적들을 흩으시고 주를 미워하는 자로 주의 앞에서 도망하게 하소서 하였고",
+      "source_text_hash": "73dda1ca5ff924185ba3b40a15dc7e034ec90315599b6e1c72e704032ced2720",
+      "translation_text_hash": "214ff2e9b47e8431f0e9c74611bb9226d7b58984c6694327798c6a0877549b85",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "궤가 떠날 때에는 모세가 가로되 여호와여 일어나사 주의 대적들을 흩으시고 주를 미워하는 자로 주의 앞에서 도망하게 하소서 하였고"
+      ],
+      "raw_text_hashes": [
+        "214ff2e9b47e8431f0e9c74611bb9226d7b58984c6694327798c6a0877549b85"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:10:36",
+      "sequence": 4025,
+      "chapter_label": "NUM 10",
+      "verse_label": "36",
+      "locator": {
+        "book": "NUM",
+        "chapter": 10,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 10,
+          "verse": 36
+        }
+      ],
+      "en": "When it rested, he said, “Return, LORD, to the ten thousands of the thousands of Israel.”",
+      "ko": "궤가 쉴 때에는 가로되 여호와여 이스라엘 천만인에게로 돌아오소서 하였더라",
+      "source_text_hash": "f4d74f8dd84a5612c9859c339e49525e88bc7cecaf001f790daed07e8a630d3c",
+      "translation_text_hash": "268fc198438faa40a9baad71ddbfc69b3eaeb15671023b53e2eeb0cf8aa1df27",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "궤가 쉴 때에는 가로되 여호와여 이스라엘 천만인에게로 돌아오소서 하였더라"
+      ],
+      "raw_text_hashes": [
+        "268fc198438faa40a9baad71ddbfc69b3eaeb15671023b53e2eeb0cf8aa1df27"
+      ]
+    }
+  ]
+}

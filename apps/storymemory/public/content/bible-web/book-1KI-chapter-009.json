@@ -1,0 +1,909 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1KI:chapter:009",
+  "unit_ordinal": 300,
+  "unit_label": "1KI 9",
+  "book_code": "1KI",
+  "chapter_number": 9,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1KI:9:1",
+      "sequence": 9053,
+      "chapter_label": "1KI 9",
+      "verse_label": "1",
+      "locator": {
+        "book": "1KI",
+        "chapter": 9,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 9,
+          "verse": 1
+        }
+      ],
+      "en": "When Solomon had finished the building of the LORD’s house, the king’s house, and all Solomon’s desire which he was pleased to do,",
+      "ko": "솔로몬이 여호와의 전과 왕궁 건축하기를 마치며 자기의 무릇 이루기를 원하던 일이 마친 때에",
+      "source_text_hash": "aea5ed077aeddff2979affea487d25a234023fda64c0ef7d8389111d87c987b1",
+      "translation_text_hash": "270739a23d4c0d601a240ea35a4e44a7a145e428be54a0e19f3830f76dfd7c35",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "솔로몬이 여호와의 전과 왕궁 건축하기를 마치며 자기의 무릇 이루기를 원하던 일이 마친 때에"
+      ],
+      "raw_text_hashes": [
+        "270739a23d4c0d601a240ea35a4e44a7a145e428be54a0e19f3830f76dfd7c35"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:9:2",
+      "sequence": 9054,
+      "chapter_label": "1KI 9",
+      "verse_label": "2",
+      "locator": {
+        "book": "1KI",
+        "chapter": 9,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 9,
+          "verse": 2
+        }
+      ],
+      "en": "The LORD appeared to Solomon the second time, as he had appeared to him at Gibeon.",
+      "ko": "여호와께서 전에 기브온에서 나타나심 같이 다시 솔로몬에게 나타나사",
+      "source_text_hash": "31553d311f55d2ef0f374c2d9a6c48033fa9ade0134d0005e65ace3140ffd508",
+      "translation_text_hash": "dfb77b8c091824f578778a9cd6c2303d38b7ea8c56a5c6eeee155b7c5c05cdd7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 전에 기브온에서 나타나심 같이 다시 솔로몬에게 나타나사"
+      ],
+      "raw_text_hashes": [
+        "dfb77b8c091824f578778a9cd6c2303d38b7ea8c56a5c6eeee155b7c5c05cdd7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:9:3",
+      "sequence": 9055,
+      "chapter_label": "1KI 9",
+      "verse_label": "3",
+      "locator": {
+        "book": "1KI",
+        "chapter": 9,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 9,
+          "verse": 3
+        }
+      ],
+      "en": "The LORD said to him, “I have heard your prayer and your supplication that you have made before me. I have made this house holy, which you have built, to put my name there forever; and my eyes and my heart shall be there perpetually.",
+      "ko": "저에게 이르시되 네가 내 앞에서 기도하며 간구함을 내가 들었은즉 내가 너의 건축한 이 전을 거룩하게 구별하여 나의 이름을 영영히 그곳에 두며 나의 눈과 나의 마음이 항상 거기 있으리니",
+      "source_text_hash": "31e6f3e7a1e29c61a4a6d6bae6ee48d24b3d8a166ef6246092c0362150bb7049",
+      "translation_text_hash": "291b827cd120c72e67a24c395676c0e3b3cee9899a5a4863bdf59a5b655bdba7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저에게 이르시되 네가 내 앞에서 기도하며 간구함을 내가 들었은즉 내가 너의 건축한 이 전을 거룩하게 구별하여 나의 이름을 영영히 그곳에 두며 나의 눈과 나의 마음이 항상 거기 있으리니"
+      ],
+      "raw_text_hashes": [
+        "291b827cd120c72e67a24c395676c0e3b3cee9899a5a4863bdf59a5b655bdba7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:9:4",
+      "sequence": 9056,
+      "chapter_label": "1KI 9",
+      "verse_label": "4",
+      "locator": {
+        "book": "1KI",
+        "chapter": 9,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 9,
+          "verse": 4
+        }
+      ],
+      "en": "As for you, if you will walk before me as David your father walked, in integrity of heart and in uprightness, to do according to all that I have commanded you, and will keep my statutes and my ordinances,",
+      "ko": "네가 만일 네 아비 다윗의 행함 같이 마음을 온전히 하고 바르게 하여 내 앞에서 행하며 내가 네게 명한대로 온갖 것을 순종하여 나의 법도와 율례를 지키면",
+      "source_text_hash": "c27a93fef490f3770900db55eca295a69ec8e3332e3130d51e953c6033ee1203",
+      "translation_text_hash": "43bc963ff5accf8ccaabb9be3518e148c48a43c6ab32c6372fef8e2f51bc4339",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 만일 네 아비 다윗의 행함 같이 마음을 온전히 하고 바르게 하여 내 앞에서 행하며 내가 네게 명한대로 온갖 것을 순종하여 나의 법도와 율례를 지키면"
+      ],
+      "raw_text_hashes": [
+        "43bc963ff5accf8ccaabb9be3518e148c48a43c6ab32c6372fef8e2f51bc4339"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:9:5",
+      "sequence": 9057,
+      "chapter_label": "1KI 9",
+      "verse_label": "5",
+      "locator": {
+        "book": "1KI",
+        "chapter": 9,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 9,
+          "verse": 5
+        }
+      ],
+      "en": "then I will establish the throne of your kingdom over Israel forever, as I promised to David your father, saying, ‘There shall not fail from you a man on the throne of Israel.’",
+      "ko": "내가 네 아비 다윗에게 허하여 이르기를 이스라엘 위에 오를 사람이 네게서 끊어지지 아니하리라 한대로 너의 이스라엘의 왕위를 영원히 견고하게 하려니와",
+      "source_text_hash": "ad7e974548606af53926744e27d9eda576eed00b7af30b55cccb181c16464f32",
+      "translation_text_hash": "470e78e7703f1b894215e7d2da1db7315528d614b67f438a0f09cd310ac8fce1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 네 아비 다윗에게 허하여 이르기를 이스라엘 위에 오를 사람이 네게서 끊어지지 아니하리라 한대로 너의 이스라엘의 왕위를 영원히 견고하게 하려니와"
+      ],
+      "raw_text_hashes": [
+        "470e78e7703f1b894215e7d2da1db7315528d614b67f438a0f09cd310ac8fce1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:9:6",
+      "sequence": 9058,
+      "chapter_label": "1KI 9",
+      "verse_label": "6",
+      "locator": {
+        "book": "1KI",
+        "chapter": 9,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 9,
+          "verse": 6
+        }
+      ],
+      "en": "But if you turn away from following me, you or your children, and not keep my commandments and my statutes which I have set before you, but go and serve other gods and worship them,",
+      "ko": "만일 너희나 너희 자손이 아주 돌이켜 나를 좇지 아니하며 내가 너희 앞에 둔 나의 계명과 법도를 지키지 아니하고 가서 다른 신을 섬겨 그것을 숭배하면",
+      "source_text_hash": "f2f8759841ea22c2ca6054448e7b9700d8e65935b9ae18ccfbf1a6e3e380f2de",
+      "translation_text_hash": "53fc26e2f17e191d996da2d1864286479212d7ba1fae5abc457f973dbf7e504a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 너희나 너희 자손이 아주 돌이켜 나를 좇지 아니하며 내가 너희 앞에 둔 나의 계명과 법도를 지키지 아니하고 가서 다른 신을 섬겨 그것을 숭배하면"
+      ],
+      "raw_text_hashes": [
+        "53fc26e2f17e191d996da2d1864286479212d7ba1fae5abc457f973dbf7e504a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:9:7",
+      "sequence": 9059,
+      "chapter_label": "1KI 9",
+      "verse_label": "7",
+      "locator": {
+        "book": "1KI",
+        "chapter": 9,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 9,
+          "verse": 7
+        }
+      ],
+      "en": "then I will cut off Israel out of the land which I have given them; and I will cast this house, which I have made holy for my name, out of my sight; and Israel will be a proverb and a byword among all peoples.",
+      "ko": "내가 이스라엘을 나의 준 땅에서 끊어 버릴 것이요 내 이름을 위하여 내가 거룩하게 구별한 이 전이라도 내 앞에서 던져 버리리니 이스라엘은 모든 민족 가운데 속담거리와 이야기거리가 될 것이며",
+      "source_text_hash": "09f6f6459afe56883218137b95ea6ce3ac1bb7e523545fde68edcdfd46292842",
+      "translation_text_hash": "e82f62ee6170d9f9226d59ea9fa3c6f25678e7dbd377a4c7f9f490ff40b16b98",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 이스라엘을 나의 준 땅에서 끊어 버릴 것이요 내 이름을 위하여 내가 거룩하게 구별한 이 전이라도 내 앞에서 던져 버리리니 이스라엘은 모든 민족 가운데 속담거리와 이야기거리가 될 것이며"
+      ],
+      "raw_text_hashes": [
+        "e82f62ee6170d9f9226d59ea9fa3c6f25678e7dbd377a4c7f9f490ff40b16b98"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:9:8",
+      "sequence": 9060,
+      "chapter_label": "1KI 9",
+      "verse_label": "8",
+      "locator": {
+        "book": "1KI",
+        "chapter": 9,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 9,
+          "verse": 8
+        }
+      ],
+      "en": "Though this house is so high, yet everyone who passes by it will be astonished and hiss; and they will say, ‘Why has the LORD done this to this land and to this house?’",
+      "ko": "이 전이 높을찌라도 무릇 그리로 지나가는 자가 놀라며 비웃어 가로되 여호와께서 무슨 까닭으로 이 땅과 이 전에 이 같이 행하셨는고 하면",
+      "source_text_hash": "b21383a28c31a518280c803b823bb1d2623a17478707c7910d4cc6f1d80dd041",
+      "translation_text_hash": "9959cc0da75be6e6dcfdbdf51a744581f40701da61dfe2e7fc198196a830cecd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 전이 높을찌라도 무릇 그리로 지나가는 자가 놀라며 비웃어 가로되 여호와께서 무슨 까닭으로 이 땅과 이 전에 이 같이 행하셨는고 하면"
+      ],
+      "raw_text_hashes": [
+        "9959cc0da75be6e6dcfdbdf51a744581f40701da61dfe2e7fc198196a830cecd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:9:9",
+      "sequence": 9061,
+      "chapter_label": "1KI 9",
+      "verse_label": "9",
+      "locator": {
+        "book": "1KI",
+        "chapter": 9,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 9,
+          "verse": 9
+        }
+      ],
+      "en": "and they will answer, ‘Because they abandoned the LORD their God, who brought their fathers out of the land of Egypt, and embraced other gods, and worshiped them, and served them. Therefore the LORD has brought all this evil on them.’”",
+      "ko": "대답하기를 저희가 자기 열조를 애굽 땅에서 인도하여 내신 자기 하나님 여호와를 버리고 다른 신에게 부종하여 그를 숭배하여 섬기므로 여호와께서 이 모든 재앙을 저희에게 내리심이라 하리라 하셨더라",
+      "source_text_hash": "a0f321f4e9fce7420034747a11c8dfd3c62b9f297394a43a1d4c06e72bdf856d",
+      "translation_text_hash": "f006fc08578d127e36c8422ce9f31e39e9bd76e604877ff0d56a296a23ee94b5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대답하기를 저희가 자기 열조를 애굽 땅에서 인도하여 내신 자기 하나님 여호와를 버리고 다른 신에게 부종하여 그를 숭배하여 섬기므로 여호와께서 이 모든 재앙을 저희에게 내리심이라 하리라 하셨더라"
+      ],
+      "raw_text_hashes": [
+        "f006fc08578d127e36c8422ce9f31e39e9bd76e604877ff0d56a296a23ee94b5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:9:10",
+      "sequence": 9062,
+      "chapter_label": "1KI 9",
+      "verse_label": "10",
+      "locator": {
+        "book": "1KI",
+        "chapter": 9,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 9,
+          "verse": 10
+        }
+      ],
+      "en": "At the end of twenty years, in which Solomon had built the two houses, the LORD’s house and the king’s house",
+      "ko": "솔로몬이 두 집 곧 여호와의 전과 왕궁을 이십년 만에 건축하기를 마치고",
+      "source_text_hash": "acafd9bc897def0ae19170a554bfd13d0c4f116941791b68befc6c68c7bdeeb8",
+      "translation_text_hash": "5117cf651e793fe99c083ecbbab3dcf3783b9b1423352449d4122b0c4ecf3829",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "솔로몬이 두 집 곧 여호와의 전과 왕궁을 이십년 만에 건축하기를 마치고"
+      ],
+      "raw_text_hashes": [
+        "5117cf651e793fe99c083ecbbab3dcf3783b9b1423352449d4122b0c4ecf3829"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:9:11",
+      "sequence": 9063,
+      "chapter_label": "1KI 9",
+      "verse_label": "11",
+      "locator": {
+        "book": "1KI",
+        "chapter": 9,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 9,
+          "verse": 11
+        }
+      ],
+      "en": "(now Hiram the king of Tyre had furnished Solomon with cedar trees and cypress trees, and with gold, according to all his desire), King Solomon gave Hiram twenty cities in the land of Galilee.",
+      "ko": "갈릴리 땅의 성읍 이십을 히람에게 주었으니 이는 두로 왕 히람이 솔로몬에게 그 온갖 소원대로 백향목과 잣나무와 금을 지공하였음이라",
+      "source_text_hash": "7b4fbb008a8b4ce833e76d3991ba53657e95e7fc25f8214713e8acc5533ead5e",
+      "translation_text_hash": "1964da194c3fd9ea286926a8fd150234629db7cc3d1ce96e5af53b6299cb933a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "갈릴리 땅의 성읍 이십을 히람에게 주었으니 이는 두로 왕 히람이 솔로몬에게 그 온갖 소원대로 백향목과 잣나무와 금을 지공하였음이라"
+      ],
+      "raw_text_hashes": [
+        "1964da194c3fd9ea286926a8fd150234629db7cc3d1ce96e5af53b6299cb933a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:9:12",
+      "sequence": 9064,
+      "chapter_label": "1KI 9",
+      "verse_label": "12",
+      "locator": {
+        "book": "1KI",
+        "chapter": 9,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 9,
+          "verse": 12
+        }
+      ],
+      "en": "Hiram came out of Tyre to see the cities which Solomon had given him; and they didn’t please him.",
+      "ko": "히람이 두로에서 와서 솔로몬이 자기에게 준 성읍들을 보고 눈에 들지 아니하여",
+      "source_text_hash": "522a4ad32147c342e2abc485d037a66305838e5f1d3e6a9e91fb925eadb81b30",
+      "translation_text_hash": "cab4086a3f0435c56beb5841c4a4e498af5a926b438deec7ae94e0c449b27582",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "히람이 두로에서 와서 솔로몬이 자기에게 준 성읍들을 보고 눈에 들지 아니하여"
+      ],
+      "raw_text_hashes": [
+        "cab4086a3f0435c56beb5841c4a4e498af5a926b438deec7ae94e0c449b27582"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:9:13",
+      "sequence": 9065,
+      "chapter_label": "1KI 9",
+      "verse_label": "13",
+      "locator": {
+        "book": "1KI",
+        "chapter": 9,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 9,
+          "verse": 13
+        }
+      ],
+      "en": "He said, “What cities are these which you have given me, my brother?” He called them the land of Cabul to this day.",
+      "ko": "이르기를 나의 형이여 내게 준 이 성읍들이 이러하뇨 하고 이름하여 가불 땅이라 하였더니 그 이름이 오늘까지 있으니라",
+      "source_text_hash": "ad748a720a69ea9ba0858c325fd9bbbeb97f9138a37654c85c8fb3d4ff5e61ac",
+      "translation_text_hash": "f3fd13b0d6fd9c828776eacff097ead4fafe035f78b017224196fd193c728367",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이르기를 나의 형이여 내게 준 이 성읍들이 이러하뇨 하고 이름하여 가불 땅이라 하였더니 그 이름이 오늘까지 있으니라"
+      ],
+      "raw_text_hashes": [
+        "f3fd13b0d6fd9c828776eacff097ead4fafe035f78b017224196fd193c728367"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:9:14",
+      "sequence": 9066,
+      "chapter_label": "1KI 9",
+      "verse_label": "14",
+      "locator": {
+        "book": "1KI",
+        "chapter": 9,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 9,
+          "verse": 14
+        }
+      ],
+      "en": "Hiram sent to the king one hundred twenty talents of gold.",
+      "ko": "히람이 금 일백 이십 달란트를 왕에게 보내었더라",
+      "source_text_hash": "04656465ee728c316d4692e45260b724de81114c22e18e5eb5b23ce729c326a8",
+      "translation_text_hash": "a7bd54ea404b7d9c49a64c95971750accd77dcacec6d87c2609552907510c605",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "히람이 금 일백 이십 달란트를 왕에게 보내었더라"
+      ],
+      "raw_text_hashes": [
+        "a7bd54ea404b7d9c49a64c95971750accd77dcacec6d87c2609552907510c605"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:9:15",
+      "sequence": 9067,
+      "chapter_label": "1KI 9",
+      "verse_label": "15",
+      "locator": {
+        "book": "1KI",
+        "chapter": 9,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 9,
+          "verse": 15
+        }
+      ],
+      "en": "This is the reason of the forced labor which King Solomon conscripted: to build the LORD’s house, his own house, Millo, Jerusalem’s wall, Hazor, Megiddo, and Gezer.",
+      "ko": "솔로몬왕이 역군을 일으킨 까닭은 여호와의 전과 자기 궁과 밀로와 예루살렘성과 하솔과 므깃도와 게셀을 건축하려 하였음이라",
+      "source_text_hash": "5b02d0fb7274e199e211fa36631aa36c6b343de7ad30ed43cd73b002de7ba362",
+      "translation_text_hash": "ac9ce841effa3e160e57e33d7147c61e7334135675ae5fa1b6c00c681ef87921",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "솔로몬왕이 역군을 일으킨 까닭은 여호와의 전과 자기 궁과 밀로와 예루살렘성과 하솔과 므깃도와 게셀을 건축하려 하였음이라"
+      ],
+      "raw_text_hashes": [
+        "ac9ce841effa3e160e57e33d7147c61e7334135675ae5fa1b6c00c681ef87921"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:9:16",
+      "sequence": 9068,
+      "chapter_label": "1KI 9",
+      "verse_label": "16",
+      "locator": {
+        "book": "1KI",
+        "chapter": 9,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 9,
+          "verse": 16
+        }
+      ],
+      "en": "Pharaoh king of Egypt had gone up, taken Gezer, burned it with fire, killed the Canaanites who lived in the city, and given it for a wedding gift to his daughter, Solomon’s wife.",
+      "ko": "전에 애굽왕 바로가 올라와서 게셀을 탈취하여 불사르고 그 성에 사는 가나안 사람을 죽이고 그 성읍을 자기 딸 솔로몬의 아내에게 예물로 주었더니",
+      "source_text_hash": "2b5a2acb3236c731ff1c90a3e44b311d4325c2ee15e469f938a1facf42c338eb",
+      "translation_text_hash": "80901c3864ef2935382edc4e5dcd4491215202bd1d4eaac3c157903599333310",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "전에 애굽왕 바로가 올라와서 게셀을 탈취하여 불사르고 그 성에 사는 가나안 사람을 죽이고 그 성읍을 자기 딸 솔로몬의 아내에게 예물로 주었더니"
+      ],
+      "raw_text_hashes": [
+        "80901c3864ef2935382edc4e5dcd4491215202bd1d4eaac3c157903599333310"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:9:17",
+      "sequence": 9069,
+      "chapter_label": "1KI 9",
+      "verse_label": "17",
+      "locator": {
+        "book": "1KI",
+        "chapter": 9,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 9,
+          "verse": 17
+        }
+      ],
+      "en": "Solomon built in the land Gezer, Beth Horon the lower,",
+      "ko": "솔로몬이 게셀과 아래 벧호론을 건축하고",
+      "source_text_hash": "00a81d1d26134b56214b0c87f6fa1abe4ec9da1870f534a6d99966e65895915a",
+      "translation_text_hash": "d38fa8cb778acd923edc12b0a02ff707672c2d741c7396a8630f4508905bdd22",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "솔로몬이 게셀과 아래 벧호론을 건축하고"
+      ],
+      "raw_text_hashes": [
+        "d38fa8cb778acd923edc12b0a02ff707672c2d741c7396a8630f4508905bdd22"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:9:18",
+      "sequence": 9070,
+      "chapter_label": "1KI 9",
+      "verse_label": "18",
+      "locator": {
+        "book": "1KI",
+        "chapter": 9,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 9,
+          "verse": 18
+        }
+      ],
+      "en": "Baalath, Tamar in the wilderness,",
+      "ko": "또 바알랏과 그 땅의 들에 있는 다드몰과",
+      "source_text_hash": "3592d38921ecd8e3219a861666559951ea56ac00f980728fe3c74f6a9208e59a",
+      "translation_text_hash": "40b1e78403ae6c47784841ed122ff491d4502ee3a44c746d3c474f8e21f293f8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 바알랏과 그 땅의 들에 있는 다드몰과"
+      ],
+      "raw_text_hashes": [
+        "40b1e78403ae6c47784841ed122ff491d4502ee3a44c746d3c474f8e21f293f8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:9:19",
+      "sequence": 9071,
+      "chapter_label": "1KI 9",
+      "verse_label": "19",
+      "locator": {
+        "book": "1KI",
+        "chapter": 9,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 9,
+          "verse": 19
+        }
+      ],
+      "en": "all the storage cities that Solomon had, the cities for his chariots, the cities for his horsemen, and that which Solomon desired to build for his pleasure in Jerusalem, and in Lebanon, and in all the land of his dominion.",
+      "ko": "자기에게 있는 모든 국고성과 병거성들과 마병의 성들을 건축하고 솔로몬이 또 예루살렘과 레바논과 그 다스리는 온 땅에 건축하고자 하던 것을 다 건축하였는데",
+      "source_text_hash": "001034f940738e0e791970df0bc48825e99dfd36377d67e8673314c8b3e8363e",
+      "translation_text_hash": "fe960ac15a24b195887359aece61554a7762e977e50086ce48b475898343983b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자기에게 있는 모든 국고성과 병거성들과 마병의 성들을 건축하고 솔로몬이 또 예루살렘과 레바논과 그 다스리는 온 땅에 건축하고자 하던 것을 다 건축하였는데"
+      ],
+      "raw_text_hashes": [
+        "fe960ac15a24b195887359aece61554a7762e977e50086ce48b475898343983b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:9:20",
+      "sequence": 9072,
+      "chapter_label": "1KI 9",
+      "verse_label": "20",
+      "locator": {
+        "book": "1KI",
+        "chapter": 9,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 9,
+          "verse": 20
+        }
+      ],
+      "en": "As for all the people who were left of the Amorites, the Hittites, the Perizzites, the Hivites, and the Jebusites, who were not of the children of Israel—",
+      "ko": "무릇 이스라엘 자손이 아닌 아모리 사람과 헷 사람과 브리스 사람과 히위 사람과 여부스 사람의 남아 있는자",
+      "source_text_hash": "530d8dd718c40297a5e356869b27b9bf3eb4edb462bdc3ef6246f34aab1fd00a",
+      "translation_text_hash": "88a333ae06c22a55e5300005bbceb13251cb9e15d677cc2d8d4722d3b23ab53d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 이스라엘 자손이 아닌 아모리 사람과 헷 사람과 브리스 사람과 히위 사람과 여부스 사람의 남아 있는자"
+      ],
+      "raw_text_hashes": [
+        "88a333ae06c22a55e5300005bbceb13251cb9e15d677cc2d8d4722d3b23ab53d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:9:21",
+      "sequence": 9073,
+      "chapter_label": "1KI 9",
+      "verse_label": "21",
+      "locator": {
+        "book": "1KI",
+        "chapter": 9,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 9,
+          "verse": 21
+        }
+      ],
+      "en": "their children who were left after them in the land, whom the children of Israel were not able utterly to destroy—of them Solomon raised a levy of bondservants to this day.",
+      "ko": "곧 이스라엘 자손이 다 멸하지 못하므로 그 땅에 남아 있는 그 자손들을 솔로몬이 노예로 역군을 삼아 오늘까지 이르렀으되",
+      "source_text_hash": "ef9c9a01cc0aea4b5847ec986833ac505ed7095ab08b8d50127c71d8bdab35ec",
+      "translation_text_hash": "2bad110de9b602afb437e11d47535d0186347df57e25b6eb301018999ebb10ec",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 이스라엘 자손이 다 멸하지 못하므로 그 땅에 남아 있는 그 자손들을 솔로몬이 노예로 역군을 삼아 오늘까지 이르렀으되"
+      ],
+      "raw_text_hashes": [
+        "2bad110de9b602afb437e11d47535d0186347df57e25b6eb301018999ebb10ec"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:9:22",
+      "sequence": 9074,
+      "chapter_label": "1KI 9",
+      "verse_label": "22",
+      "locator": {
+        "book": "1KI",
+        "chapter": 9,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 9,
+          "verse": 22
+        }
+      ],
+      "en": "But of the children of Israel Solomon made no bondservants; but they were the men of war, his servants, his princes, his captains, and rulers of his chariots and of his horsemen.",
+      "ko": "오직 이스라엘 자손은 솔로몬이 노예를 삼지 아니하였으니 저희는 군사와 그 신복과 방백과 대장이며 병거와 마병의 장관이 됨이었더라",
+      "source_text_hash": "cf973cbf225d04661170cb7958c25e408cb6c12032b5838799332e4affca859d",
+      "translation_text_hash": "1d21fb2e81074a1461c1a176e9b318d34f2fe8e1d5e5a37441866c65a248e295",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 이스라엘 자손은 솔로몬이 노예를 삼지 아니하였으니 저희는 군사와 그 신복과 방백과 대장이며 병거와 마병의 장관이 됨이었더라"
+      ],
+      "raw_text_hashes": [
+        "1d21fb2e81074a1461c1a176e9b318d34f2fe8e1d5e5a37441866c65a248e295"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:9:23",
+      "sequence": 9075,
+      "chapter_label": "1KI 9",
+      "verse_label": "23",
+      "locator": {
+        "book": "1KI",
+        "chapter": 9,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 9,
+          "verse": 23
+        }
+      ],
+      "en": "These were the five hundred fifty chief officers who were over Solomon’s work, who ruled over the people who labored in the work.",
+      "ko": "솔로몬에게 역사를 감독하는 두목 오백 오십인이 있어 역사하는 백성을 다스렸더라",
+      "source_text_hash": "87a27cbac2eef825e4e8b4d0a4460c70ff9aa40d31cf70207880496667d5078f",
+      "translation_text_hash": "60fefc64a6408972c8638461febc64412354e61f8d82e1a2ba492d36dd62d447",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "솔로몬에게 역사를 감독하는 두목 오백 오십인이 있어 역사하는 백성을 다스렸더라"
+      ],
+      "raw_text_hashes": [
+        "60fefc64a6408972c8638461febc64412354e61f8d82e1a2ba492d36dd62d447"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:9:24",
+      "sequence": 9076,
+      "chapter_label": "1KI 9",
+      "verse_label": "24",
+      "locator": {
+        "book": "1KI",
+        "chapter": 9,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 9,
+          "verse": 24
+        }
+      ],
+      "en": "But Pharaoh’s daughter came up out of David’s city to her house which Solomon had built for her. Then he built Millo.",
+      "ko": "바로의 딸이 다윗성에서부터 올라와 솔로몬이 저를 위하여 건축한 궁에 이를 때에 솔로몬이 밀로를 건축하였더라",
+      "source_text_hash": "04eb1f574ceccded3e83278dc7a92d0addc49a6a236b1d0916a6d866055dff4b",
+      "translation_text_hash": "5b7ab259d4937f8bbffd46603a7b54a6a3e864dda26b9a67f0c124e16d1f9376",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바로의 딸이 다윗성에서부터 올라와 솔로몬이 저를 위하여 건축한 궁에 이를 때에 솔로몬이 밀로를 건축하였더라"
+      ],
+      "raw_text_hashes": [
+        "5b7ab259d4937f8bbffd46603a7b54a6a3e864dda26b9a67f0c124e16d1f9376"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:9:25",
+      "sequence": 9077,
+      "chapter_label": "1KI 9",
+      "verse_label": "25",
+      "locator": {
+        "book": "1KI",
+        "chapter": 9,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 9,
+          "verse": 25
+        }
+      ],
+      "en": "Solomon offered burnt offerings and peace offerings on the altar which he built to the LORD three times per year, burning incense with them on the altar that was before the LORD. So he finished the house.",
+      "ko": "솔로몬이 여호와를 위하여 쌓은 단 위에 해마다 세번씩 번제와 감사제를 드리고 또 여호와 앞에 있는 단에 분향하니라 이에 전 역사가 마치니라",
+      "source_text_hash": "6217a02f407b59cac131db9717fe07808206478eca0055f2dd319c4d036c867d",
+      "translation_text_hash": "12a1d15eea571e80fe0124507d6a84d47f5b2fb3ac97f0a929d4bf9b387b71b2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "솔로몬이 여호와를 위하여 쌓은 단 위에 해마다 세번씩 번제와 감사제를 드리고 또 여호와 앞에 있는 단에 분향하니라 이에 전 역사가 마치니라"
+      ],
+      "raw_text_hashes": [
+        "12a1d15eea571e80fe0124507d6a84d47f5b2fb3ac97f0a929d4bf9b387b71b2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:9:26",
+      "sequence": 9078,
+      "chapter_label": "1KI 9",
+      "verse_label": "26",
+      "locator": {
+        "book": "1KI",
+        "chapter": 9,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 9,
+          "verse": 26
+        }
+      ],
+      "en": "King Solomon made a fleet of ships in Ezion Geber, which is beside Eloth, on the shore of the Red Sea, in the land of Edom.",
+      "ko": "솔로몬왕이 에돔 땅 홍해 물 가 엘롯 근처 에시온게벨에서 배들을 지은지라",
+      "source_text_hash": "a75a390df187ddf5c03ad95a15ba0379b775b2d96a71bc600339f63c4a0c857e",
+      "translation_text_hash": "5ace5cc0da935eedd267dfe004faf089bc7c5eb233b9e9fc4d0c243c790edab1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "솔로몬왕이 에돔 땅 홍해 물 가 엘롯 근처 에시온게벨에서 배들을 지은지라"
+      ],
+      "raw_text_hashes": [
+        "5ace5cc0da935eedd267dfe004faf089bc7c5eb233b9e9fc4d0c243c790edab1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:9:27",
+      "sequence": 9079,
+      "chapter_label": "1KI 9",
+      "verse_label": "27",
+      "locator": {
+        "book": "1KI",
+        "chapter": 9,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 9,
+          "verse": 27
+        }
+      ],
+      "en": "Hiram sent in the fleet his servants, sailors who had knowledge of the sea, with the servants of Solomon.",
+      "ko": "히람이 자기 종 곧 바다에 익숙한 사공들을 솔로몬의 종과 함께 그 배로 보내매",
+      "source_text_hash": "0fc0057d6b6d1ad0176b20579bd281ac41c7e6a0122f91c17a6336a5af2650f5",
+      "translation_text_hash": "599c7aa63b3d7f18e1a6ae6c8bb51e48fb29a328c0ad398c4da294507fbff355",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "히람이 자기 종 곧 바다에 익숙한 사공들을 솔로몬의 종과 함께 그 배로 보내매"
+      ],
+      "raw_text_hashes": [
+        "599c7aa63b3d7f18e1a6ae6c8bb51e48fb29a328c0ad398c4da294507fbff355"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:9:28",
+      "sequence": 9080,
+      "chapter_label": "1KI 9",
+      "verse_label": "28",
+      "locator": {
+        "book": "1KI",
+        "chapter": 9,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 9,
+          "verse": 28
+        }
+      ],
+      "en": "They came to Ophir, and fetched from there gold, four hundred and twenty talents, and brought it to King Solomon.",
+      "ko": "저희가 오빌에 이르러 거기서 금 사백 이십 달란트를 얻고 솔로몬왕에게로 가져왔더라",
+      "source_text_hash": "3b1d2d045eb9a058f2caff4f9eb4c593da428f07a6a6e76ab0e9a28fbdad571a",
+      "translation_text_hash": "87767eb30e3afd60e8c87b091fd1f6b4443a75d7b1e03dab3d540298256206b3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 오빌에 이르러 거기서 금 사백 이십 달란트를 얻고 솔로몬왕에게로 가져왔더라"
+      ],
+      "raw_text_hashes": [
+        "87767eb30e3afd60e8c87b091fd1f6b4443a75d7b1e03dab3d540298256206b3"
+      ]
+    }
+  ]
+}

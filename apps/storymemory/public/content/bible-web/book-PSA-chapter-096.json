@@ -1,0 +1,429 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:096",
+  "unit_ordinal": 574,
+  "unit_label": "PSA 96",
+  "book_code": "PSA",
+  "chapter_number": 96,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:96:1",
+      "sequence": 15467,
+      "chapter_label": "PSA 96",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 96,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 96,
+          "verse": 1
+        }
+      ],
+      "en": "Sing to the LORD a new song! Sing to the LORD, all the earth.",
+      "ko": "새 노래로 여호와께 노래하라 온 땅이여 여호와께 노래할찌어다",
+      "source_text_hash": "7febec143439d559b50e0755041479e413272534e4e81cbea8e0d37124eb473d",
+      "translation_text_hash": "5f27ddad5dbe34fe6a74371730e5f56dfa93a091d03abc0de0808c01a49ef38d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "새 노래로 여호와께 노래하라 온 땅이여 여호와께 노래할찌어다"
+      ],
+      "raw_text_hashes": [
+        "5f27ddad5dbe34fe6a74371730e5f56dfa93a091d03abc0de0808c01a49ef38d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:96:2",
+      "sequence": 15468,
+      "chapter_label": "PSA 96",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 96,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 96,
+          "verse": 2
+        }
+      ],
+      "en": "Sing to the LORD! Bless his name! Proclaim his salvation from day to day!",
+      "ko": "여호와께 노래하여 그 이름을 송축하며 그 구원을 날마다 선파할찌어다",
+      "source_text_hash": "633a07bfce3da1223c278c186b35be833c4960899e96bda6ba03893a0c5f41d4",
+      "translation_text_hash": "4c93e294ee7df37a615aca50d1b73cc7685845173ab596bf73c6249955b4b12d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께 노래하여 그 이름을 송축하며 그 구원을 날마다 선파할찌어다"
+      ],
+      "raw_text_hashes": [
+        "4c93e294ee7df37a615aca50d1b73cc7685845173ab596bf73c6249955b4b12d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:96:3",
+      "sequence": 15469,
+      "chapter_label": "PSA 96",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 96,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 96,
+          "verse": 3
+        }
+      ],
+      "en": "Declare his glory among the nations, his marvelous works among all the peoples.",
+      "ko": "그 영광을 열방 중에, 그 기이한 행적을 만민 중에 선포할찌어다",
+      "source_text_hash": "869ff8db73a9b539238361820056754ab7aeb8d5294ecf3f77a4c4f2e53e6ed0",
+      "translation_text_hash": "b147d047bb31d0a3b22ac41ef5508fbbacc4d0863c2a14d8c777521be820b21f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 영광을 열방 중에, 그 기이한 행적을 만민 중에 선포할찌어다"
+      ],
+      "raw_text_hashes": [
+        "b147d047bb31d0a3b22ac41ef5508fbbacc4d0863c2a14d8c777521be820b21f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:96:4",
+      "sequence": 15470,
+      "chapter_label": "PSA 96",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 96,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 96,
+          "verse": 4
+        }
+      ],
+      "en": "For the LORD is great, and greatly to be praised! He is to be feared above all gods.",
+      "ko": "여호와는 광대하시니 극진히 찬양할 것이요 모든 신보다 경외할 것임이여",
+      "source_text_hash": "9cc91d710144e07d5909e7c683472c59d0edacf031adfc07bab8c63b2e4eca54",
+      "translation_text_hash": "ef673b17dfff573118574568ece4acbddbc839a7bf7880ca7ff241c054f6671f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와는 광대하시니 극진히 찬양할 것이요 모든 신보다 경외할 것임이여"
+      ],
+      "raw_text_hashes": [
+        "ef673b17dfff573118574568ece4acbddbc839a7bf7880ca7ff241c054f6671f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:96:5",
+      "sequence": 15471,
+      "chapter_label": "PSA 96",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 96,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 96,
+          "verse": 5
+        }
+      ],
+      "en": "For all the gods of the peoples are idols, but the LORD made the heavens.",
+      "ko": "만방의 모든 신은 헛 것이요 여호와께서는 하늘을 지으셨음이로다",
+      "source_text_hash": "34d02f39c407dca2a9eecb2e69a52998b5826b2f48b05d56c6f8470f9a8875ff",
+      "translation_text_hash": "e3ded49728fbecdcf53a22504a0ec33836379b216d6a9b04318dfe5d84b3784d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만방의 모든 신은 헛 것이요 여호와께서는 하늘을 지으셨음이로다"
+      ],
+      "raw_text_hashes": [
+        "e3ded49728fbecdcf53a22504a0ec33836379b216d6a9b04318dfe5d84b3784d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:96:6",
+      "sequence": 15472,
+      "chapter_label": "PSA 96",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 96,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 96,
+          "verse": 6
+        }
+      ],
+      "en": "Honor and majesty are before him. Strength and beauty are in his sanctuary.",
+      "ko": "존귀와 위엄이 그 앞에 있으며 능력과 아름다움이 그 성소에 있도다",
+      "source_text_hash": "46b9fb12165205a487a7e90874e0102ef2fec0da24ac4e859ca3f5856a5465f2",
+      "translation_text_hash": "82bdd1999ba33d2ce097b7b0b6e6e044e5fe898c1eb88d037680aebaffe61393",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "존귀와 위엄이 그 앞에 있으며 능력과 아름다움이 그 성소에 있도다"
+      ],
+      "raw_text_hashes": [
+        "82bdd1999ba33d2ce097b7b0b6e6e044e5fe898c1eb88d037680aebaffe61393"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:96:7",
+      "sequence": 15473,
+      "chapter_label": "PSA 96",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 96,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 96,
+          "verse": 7
+        }
+      ],
+      "en": "Ascribe to the LORD, you families of nations, ascribe to the LORD glory and strength.",
+      "ko": "만방의 족속들아 영광과 권능을 여호와께 돌릴찌어다 여호와께 돌릴찌어다",
+      "source_text_hash": "e3288df85b5d873251e829bc8ebb7b9d3eb4804c25c6f7d963b1e128e68d65aa",
+      "translation_text_hash": "face574b3175eb5cac34c1d07e106c5f2286156d6ff4e0a140590267b53f22f1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만방의 족속들아 영광과 권능을 여호와께 돌릴찌어다 여호와께 돌릴찌어다"
+      ],
+      "raw_text_hashes": [
+        "face574b3175eb5cac34c1d07e106c5f2286156d6ff4e0a140590267b53f22f1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:96:8",
+      "sequence": 15474,
+      "chapter_label": "PSA 96",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 96,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 96,
+          "verse": 8
+        }
+      ],
+      "en": "Ascribe to the LORD the glory due to his name. Bring an offering, and come into his courts.",
+      "ko": "여호와의 이름에 합당한 영광을 그에게 돌릴찌어다 예물을 가지고 그 궁정에 들어갈찌어다",
+      "source_text_hash": "273e8435bcfaf7fdc9845c69e2d9a008a0b0410961857a63c83eaefaeeb39146",
+      "translation_text_hash": "8ec3b5866704480e5f5cc9e8f5f5ab72fec9164736d52c850684c56de6486a06",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 이름에 합당한 영광을 그에게 돌릴찌어다 예물을 가지고 그 궁정에 들어갈찌어다"
+      ],
+      "raw_text_hashes": [
+        "8ec3b5866704480e5f5cc9e8f5f5ab72fec9164736d52c850684c56de6486a06"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:96:9",
+      "sequence": 15475,
+      "chapter_label": "PSA 96",
+      "verse_label": "9",
+      "locator": {
+        "book": "PSA",
+        "chapter": 96,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 96,
+          "verse": 9
+        }
+      ],
+      "en": "Worship the LORD in holy array. Tremble before him, all the earth.",
+      "ko": "아름답고 거룩한 것으로 여호와께 경배할찌어다 온 땅이여 그 앞에서 떨찌어다",
+      "source_text_hash": "328467e734b08657cd076d60832574b6a50e3a4e6015f8ef3dbb519c676f09c5",
+      "translation_text_hash": "ca2726a4e77cababd105f01dd072ab7338a8a71ba6cd448963fd1431416a5a38",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아름답고 거룩한 것으로 여호와께 경배할찌어다 온 땅이여 그 앞에서 떨찌어다"
+      ],
+      "raw_text_hashes": [
+        "ca2726a4e77cababd105f01dd072ab7338a8a71ba6cd448963fd1431416a5a38"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:96:10",
+      "sequence": 15476,
+      "chapter_label": "PSA 96",
+      "verse_label": "10",
+      "locator": {
+        "book": "PSA",
+        "chapter": 96,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 96,
+          "verse": 10
+        }
+      ],
+      "en": "Say among the nations, “The LORD reigns.” The world is also established. It can’t be moved. He will judge the peoples with equity.",
+      "ko": "열방 중에서는 이르기를 여호와께서 통치하시니 세계가 굳게 서고 흔들리지 못할찌라 저가 만민을 공평히 판단하시리라 할찌로다",
+      "source_text_hash": "c92091d401568b299f8b384f87b2f8afa28848eda1c2c9175ebb78cde07c1f8c",
+      "translation_text_hash": "7ed76d4bd555a5a63cce6beff9d066ac7e715245b03e2442b84de306f02bb4cb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "열방 중에서는 이르기를 여호와께서 통치하시니 세계가 굳게 서고 흔들리지 못할찌라 저가 만민을 공평히 판단하시리라 할찌로다"
+      ],
+      "raw_text_hashes": [
+        "7ed76d4bd555a5a63cce6beff9d066ac7e715245b03e2442b84de306f02bb4cb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:96:11",
+      "sequence": 15477,
+      "chapter_label": "PSA 96",
+      "verse_label": "11",
+      "locator": {
+        "book": "PSA",
+        "chapter": 96,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 96,
+          "verse": 11
+        }
+      ],
+      "en": "Let the heavens be glad, and let the earth rejoice. Let the sea roar, and its fullness!",
+      "ko": "하늘은 기뻐하고 땅은 즐거워하며 바다와 거기 충만한 것은 외치며",
+      "source_text_hash": "281a27acd95d8a52d50f7e086efb1e7a016f561a7c40570f874f4e00dc8eb012",
+      "translation_text_hash": "90e91636e273fe1430ca30a4d56d3f6809587f1e544008bca65a07f788cf3dba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하늘은 기뻐하고 땅은 즐거워하며 바다와 거기 충만한 것은 외치며"
+      ],
+      "raw_text_hashes": [
+        "90e91636e273fe1430ca30a4d56d3f6809587f1e544008bca65a07f788cf3dba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:96:12",
+      "sequence": 15478,
+      "chapter_label": "PSA 96",
+      "verse_label": "12",
+      "locator": {
+        "book": "PSA",
+        "chapter": 96,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 96,
+          "verse": 12
+        }
+      ],
+      "en": "Let the field and all that is in it exult! Then all the trees of the woods shall sing for joy",
+      "ko": "밭과 그 가운데 모든 것은 즐거워할찌로다 그리할 때에 삼림의 나무들이 여호와 앞에서 즐거이 노래하리니",
+      "source_text_hash": "428d2cba94e5dfb9e9f253afc6a23ef5d40fd40cca146cf43a12d620ca27a340",
+      "translation_text_hash": "c224c33b7f7549fbda868d4d40126755eda2e5326c80a06c355e1a7825218172",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "밭과 그 가운데 모든 것은 즐거워할찌로다 그리할 때에 삼림의 나무들이 여호와 앞에서 즐거이 노래하리니"
+      ],
+      "raw_text_hashes": [
+        "c224c33b7f7549fbda868d4d40126755eda2e5326c80a06c355e1a7825218172"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:96:13",
+      "sequence": 15479,
+      "chapter_label": "PSA 96",
+      "verse_label": "13",
+      "locator": {
+        "book": "PSA",
+        "chapter": 96,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 96,
+          "verse": 13
+        }
+      ],
+      "en": "before the LORD; for he comes, for he comes to judge the earth. He will judge the world with righteousness, the peoples with his truth.",
+      "ko": "저가 임하시되 땅을 판단하려 임하실 것임이라 저가 의로 세계를 판단하시며 그의 진실하심으로 백성을 판단하시리로다",
+      "source_text_hash": "35b06961a822c1a035df74f469a0666685b704563d2aa784043624ffc88652e6",
+      "translation_text_hash": "a993837c29f21dd22506dbf428ef4abcede91225e047b18d401178340dd6326a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 임하시되 땅을 판단하려 임하실 것임이라 저가 의로 세계를 판단하시며 그의 진실하심으로 백성을 판단하시리로다"
+      ],
+      "raw_text_hashes": [
+        "a993837c29f21dd22506dbf428ef4abcede91225e047b18d401178340dd6326a"
+      ]
+    }
+  ]
+}

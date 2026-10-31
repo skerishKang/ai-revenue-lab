@@ -1,0 +1,653 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:NEH:chapter:002",
+  "unit_ordinal": 415,
+  "unit_label": "NEH 2",
+  "book_code": "NEH",
+  "chapter_number": 2,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:NEH:2:1",
+      "sequence": 12309,
+      "chapter_label": "NEH 2",
+      "verse_label": "1",
+      "locator": {
+        "book": "NEH",
+        "chapter": 2,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 2,
+          "verse": 1
+        }
+      ],
+      "en": "In the month Nisan, in the twentieth year of Artaxerxes the king, when wine was before him, I picked up the wine, and gave it to the king. Now I had not been sad before in his presence.",
+      "ko": "아닥사스다왕 이십년 니산월에 왕의 앞에 술이 있기로 내가 들어 왕에게 드렸는데 이전에는 내가 왕의 앞에서 수색이 없었더니",
+      "source_text_hash": "fa1f9c95c9e323f805a31b5f22b6a2ede3171dc7aa90d42e89f31e7b2a8acbaf",
+      "translation_text_hash": "62ba52f882cefe29cec6298bee1001f493f2993b1bd9848e32f16741e3ce19d7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아닥사스다왕 이십년 니산월에 왕의 앞에 술이 있기로 내가 들어 왕에게 드렸는데 이전에는 내가 왕의 앞에서 수색이 없었더니"
+      ],
+      "raw_text_hashes": [
+        "62ba52f882cefe29cec6298bee1001f493f2993b1bd9848e32f16741e3ce19d7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:2:2",
+      "sequence": 12310,
+      "chapter_label": "NEH 2",
+      "verse_label": "2",
+      "locator": {
+        "book": "NEH",
+        "chapter": 2,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 2,
+          "verse": 2
+        }
+      ],
+      "en": "The king said to me, “Why is your face sad, since you are not sick? This is nothing else but sorrow of heart.” Then I was very much afraid.",
+      "ko": "왕이 내게 이르시되 네가 병이 없거늘 어찌하여 얼굴에 수색이 있느냐 이는 필연 네 마음에 근심이 있음이로다 그 때에 내가 크게 두려워하여",
+      "source_text_hash": "80e57de91172ad6b892d1ec6680ebee2a38d28c8d192bba6127300fcd914f6c7",
+      "translation_text_hash": "68b65172466788182c5c314acac0181ebc53d828a6d2ebb7760f72132aa3c4bf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 내게 이르시되 네가 병이 없거늘 어찌하여 얼굴에 수색이 있느냐 이는 필연 네 마음에 근심이 있음이로다 그 때에 내가 크게 두려워하여"
+      ],
+      "raw_text_hashes": [
+        "68b65172466788182c5c314acac0181ebc53d828a6d2ebb7760f72132aa3c4bf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:2:3",
+      "sequence": 12311,
+      "chapter_label": "NEH 2",
+      "verse_label": "3",
+      "locator": {
+        "book": "NEH",
+        "chapter": 2,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 2,
+          "verse": 3
+        }
+      ],
+      "en": "I said to the king, “Let the king live forever! Why shouldn’t my face be sad, when the city, the place of my fathers’ tombs, lies waste, and its gates have been consumed with fire?”",
+      "ko": "왕께 대답하되 왕은 만세수를 하옵소서 나의 열조의 묘실 있는 성읍이 이제까지 황무하고 성문이 소화되었사오니 내가 어찌 얼굴에 수색이 없사오리이까",
+      "source_text_hash": "fd36b3036f68054b683e4cb7a255c24f2cf213664ec45041442c39bfee3f2cee",
+      "translation_text_hash": "73e71096b941c98fbc420220ca358f70dac2b7ccdc98db51a7c88571fedd074a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕께 대답하되 왕은 만세수를 하옵소서 나의 열조의 묘실 있는 성읍이 이제까지 황무하고 성문이 소화되었사오니 내가 어찌 얼굴에 수색이 없사오리이까"
+      ],
+      "raw_text_hashes": [
+        "73e71096b941c98fbc420220ca358f70dac2b7ccdc98db51a7c88571fedd074a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:2:4",
+      "sequence": 12312,
+      "chapter_label": "NEH 2",
+      "verse_label": "4",
+      "locator": {
+        "book": "NEH",
+        "chapter": 2,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 2,
+          "verse": 4
+        }
+      ],
+      "en": "Then the king said to me, “What is your request?” So I prayed to the God of heaven.",
+      "ko": "왕이 내게 이르시되 그러면 네가 무엇을 원하느냐 하시기로 내가 곧 하늘의 하나님께 묵도하고",
+      "source_text_hash": "3c74e66858df00e185c45d3c9d29e5ef2f17d536285bea16d269e7590b27c3ac",
+      "translation_text_hash": "c2c6b8037722b222eff0a8f64755b7361c3a74da6711599a625ce4df3f9e1e6d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 내게 이르시되 그러면 네가 무엇을 원하느냐 하시기로 내가 곧 하늘의 하나님께 묵도하고"
+      ],
+      "raw_text_hashes": [
+        "c2c6b8037722b222eff0a8f64755b7361c3a74da6711599a625ce4df3f9e1e6d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:2:5",
+      "sequence": 12313,
+      "chapter_label": "NEH 2",
+      "verse_label": "5",
+      "locator": {
+        "book": "NEH",
+        "chapter": 2,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 2,
+          "verse": 5
+        }
+      ],
+      "en": "I said to the king, “If it pleases the king, and if your servant has found favor in your sight, I ask that you would send me to Judah, to the city of my fathers’ tombs, that I may build it.”",
+      "ko": "왕에게 고하되 왕이 만일 즐겨하시고 종이 왕의 목전에서 은혜를 얻었사오면 나를 유다 땅 나의 열조의 묘실 있는 성읍에 보내어 그 성을 중건하게 하옵소서 하였는데",
+      "source_text_hash": "f5503fa0aed0259cdaaf04a1ece95b9041f5c053fa45dd9c61737077200056c9",
+      "translation_text_hash": "d03ac6a4ac30d0fe24f1558dd4e98d07ebe7f57f73dd0416bd727d48ddde9705",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕에게 고하되 왕이 만일 즐겨하시고 종이 왕의 목전에서 은혜를 얻었사오면 나를 유다 땅 나의 열조의 묘실 있는 성읍에 보내어 그 성을 중건하게 하옵소서 하였는데"
+      ],
+      "raw_text_hashes": [
+        "d03ac6a4ac30d0fe24f1558dd4e98d07ebe7f57f73dd0416bd727d48ddde9705"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:2:6",
+      "sequence": 12314,
+      "chapter_label": "NEH 2",
+      "verse_label": "6",
+      "locator": {
+        "book": "NEH",
+        "chapter": 2,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 2,
+          "verse": 6
+        }
+      ],
+      "en": "The king said to me (the queen was also sitting by him), “How long will your journey be? When will you return?” So it pleased the king to send me, and I set a time for him.",
+      "ko": "그 때에 왕후도 왕의 곁에 앉았더라 왕이 내게 이르시되 네가 몇날에 행할 길이며 어느 때에 돌아 오겠느냐 하고 왕이 나를 보내기를 즐겨하시기로 내가 기한을 정하고",
+      "source_text_hash": "92d1dea0b0abb75145ce6efdd6d51951966dff5fa6cbc87bf6ff3b42469721e1",
+      "translation_text_hash": "677bfd03cb243b624dfc9ecc3b4b1c359fc78e9392a03a97b476916c430f9661",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 왕후도 왕의 곁에 앉았더라 왕이 내게 이르시되 네가 몇날에 행할 길이며 어느 때에 돌아 오겠느냐 하고 왕이 나를 보내기를 즐겨하시기로 내가 기한을 정하고"
+      ],
+      "raw_text_hashes": [
+        "677bfd03cb243b624dfc9ecc3b4b1c359fc78e9392a03a97b476916c430f9661"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:2:7",
+      "sequence": 12315,
+      "chapter_label": "NEH 2",
+      "verse_label": "7",
+      "locator": {
+        "book": "NEH",
+        "chapter": 2,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 2,
+          "verse": 7
+        }
+      ],
+      "en": "Moreover I said to the king, “If it pleases the king, let letters be given me to the governors beyond the River, that they may let me pass through until I come to Judah;",
+      "ko": "내가 또 왕에게 아뢰되 왕이 만일 즐겨하시거든 강 서편 총독들에게 내리시는 조서를 내게 주사 저희로 나를 용납하여 유다까지 통과하게 하시고",
+      "source_text_hash": "1e8b097349dfdb6e36ae7d07e8cdd2a8ccf3306331221aaa14fa0a9a88fc947f",
+      "translation_text_hash": "e826244eac559a24c05544d67c3ccf6be8d9b34b84a978cbce46e08d096a8be0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 또 왕에게 아뢰되 왕이 만일 즐겨하시거든 강 서편 총독들에게 내리시는 조서를 내게 주사 저희로 나를 용납하여 유다까지 통과하게 하시고"
+      ],
+      "raw_text_hashes": [
+        "e826244eac559a24c05544d67c3ccf6be8d9b34b84a978cbce46e08d096a8be0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:2:8",
+      "sequence": 12316,
+      "chapter_label": "NEH 2",
+      "verse_label": "8",
+      "locator": {
+        "book": "NEH",
+        "chapter": 2,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 2,
+          "verse": 8
+        }
+      ],
+      "en": "and a letter to Asaph the keeper of the king’s forest, that he may give me timber to make beams for the gates of the citadel by the temple, for the wall of the city, and for the house that I will occupy.” The king granted my requests, because of the good hand of my God on me.",
+      "ko": "또 왕의 삼림 감독 아삽에게 조서를 내리사 저로 전에 속한 영문의 문과 성곽과 나의 거할 집을 위하여 들보 재목을 주게 하옵소서 하매 내 하나님의 선한 손이 나를 도우심으로 왕이 허락하고",
+      "source_text_hash": "6aa0f6c07b5df8a7dda7a49b48abea031a0fbfdd16fbb4a3a12de9e972c4763c",
+      "translation_text_hash": "6236da4c503b2caf5ea7c46c077a19f63f552658f5e268cb78751b3b7f246a02",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 왕의 삼림 감독 아삽에게 조서를 내리사 저로 전에 속한 영문의 문과 성곽과 나의 거할 집을 위하여 들보 재목을 주게 하옵소서 하매 내 하나님의 선한 손이 나를 도우심으로 왕이 허락하고"
+      ],
+      "raw_text_hashes": [
+        "6236da4c503b2caf5ea7c46c077a19f63f552658f5e268cb78751b3b7f246a02"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:2:9",
+      "sequence": 12317,
+      "chapter_label": "NEH 2",
+      "verse_label": "9",
+      "locator": {
+        "book": "NEH",
+        "chapter": 2,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 2,
+          "verse": 9
+        }
+      ],
+      "en": "Then I came to the governors beyond the River, and gave them the king’s letters. Now the king had sent captains of the army and horsemen with me.",
+      "ko": "군대 장관과 마병을 보내어 나와 함께하게 하시기로 내가 강 서편에 있는 총독들에게 이르러 왕의 조서를 전하였더니",
+      "source_text_hash": "8a42890c9385950db4192b3d9e66349be511b9da5cd35f5ad7b5f4007bd38bb8",
+      "translation_text_hash": "1ca95c246994f671a5947292862cbe7d3d6202fbfd20ada9cf423905ba0a4e7a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "군대 장관과 마병을 보내어 나와 함께하게 하시기로 내가 강 서편에 있는 총독들에게 이르러 왕의 조서를 전하였더니"
+      ],
+      "raw_text_hashes": [
+        "1ca95c246994f671a5947292862cbe7d3d6202fbfd20ada9cf423905ba0a4e7a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:2:10",
+      "sequence": 12318,
+      "chapter_label": "NEH 2",
+      "verse_label": "10",
+      "locator": {
+        "book": "NEH",
+        "chapter": 2,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 2,
+          "verse": 10
+        }
+      ],
+      "en": "When Sanballat the Horonite and Tobiah the Ammonite servant heard of it, it grieved them exceedingly, because a man had come to seek the welfare of the children of Israel.",
+      "ko": "호론 사람 산발랏과 종 되었던 암몬 사람 도비야가 이스라엘 자손을 흥왕케 하려는 사람이 왔다 함을 듣고 심히 근심하더라",
+      "source_text_hash": "e8dcf85d27c3c2026c1a313191d601eeaacefd30ed482bc8afd73f0d29ad105b",
+      "translation_text_hash": "cf0dd0cd31e9adb12880ff78bfbe5deac4f6ba70d8feb660ba19deaccf04c2c8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "호론 사람 산발랏과 종 되었던 암몬 사람 도비야가 이스라엘 자손을 흥왕케 하려는 사람이 왔다 함을 듣고 심히 근심하더라"
+      ],
+      "raw_text_hashes": [
+        "cf0dd0cd31e9adb12880ff78bfbe5deac4f6ba70d8feb660ba19deaccf04c2c8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:2:11",
+      "sequence": 12319,
+      "chapter_label": "NEH 2",
+      "verse_label": "11",
+      "locator": {
+        "book": "NEH",
+        "chapter": 2,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 2,
+          "verse": 11
+        }
+      ],
+      "en": "So I came to Jerusalem, and was there three days.",
+      "ko": "내가 예루살렘에 이르러 거한지 삼일에",
+      "source_text_hash": "db6513dec34c878d943b3bf96b44c8b904eec7a6e455d1e2cf29d92ced8a7eab",
+      "translation_text_hash": "b040774cc7b71be44866f9b77ac550344acc57e4c130627b07c96560e05276f1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 예루살렘에 이르러 거한지 삼일에"
+      ],
+      "raw_text_hashes": [
+        "b040774cc7b71be44866f9b77ac550344acc57e4c130627b07c96560e05276f1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:2:12",
+      "sequence": 12320,
+      "chapter_label": "NEH 2",
+      "verse_label": "12",
+      "locator": {
+        "book": "NEH",
+        "chapter": 2,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 2,
+          "verse": 12
+        }
+      ],
+      "en": "I arose in the night, I and a few men with me. I didn’t tell anyone what my God put into my heart to do for Jerusalem. There wasn’t any animal with me except the animal that I rode on.",
+      "ko": "내 하나님이 내 마음을 감화하사 예루살렘을 위하여 행하게 하신 일을 내가 아무 사람에게도 말하지 아니하고 밤에 일어나 두어 사람과 함께 나갈쌔 내가 탄 짐승 외에는 다른 짐승이 없더라",
+      "source_text_hash": "ef70b6dd408522df1f85d1d7fb59b2a29a1ae3d88b76c55fca5eac27a7891470",
+      "translation_text_hash": "31a47f36062b3c0734c7d2256fc896812ab469649e9709f6564ed8384d472b57",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 하나님이 내 마음을 감화하사 예루살렘을 위하여 행하게 하신 일을 내가 아무 사람에게도 말하지 아니하고 밤에 일어나 두어 사람과 함께 나갈쌔 내가 탄 짐승 외에는 다른 짐승이 없더라"
+      ],
+      "raw_text_hashes": [
+        "31a47f36062b3c0734c7d2256fc896812ab469649e9709f6564ed8384d472b57"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:2:13",
+      "sequence": 12321,
+      "chapter_label": "NEH 2",
+      "verse_label": "13",
+      "locator": {
+        "book": "NEH",
+        "chapter": 2,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 2,
+          "verse": 13
+        }
+      ],
+      "en": "I went out by night by the valley gate toward the jackal’s well, then to the dung gate; and I inspected the walls of Jerusalem, which were broken down, and its gates were consumed with fire.",
+      "ko": "그 밤에 골짜기 문으로 나가서 용정으로 분문에 이르는 동안에 보니 예루살렘 성벽이 다 무너졌고 성문은 소화되었더라",
+      "source_text_hash": "7279bb0e88216510b8cb11ace615e5055e8fa70be772e0b3c499b8cbc198905b",
+      "translation_text_hash": "a365755ccbc036fe8fb9a2c5739e6102d5f15c73eeea75cc491612514b2fceac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 밤에 골짜기 문으로 나가서 용정으로 분문에 이르는 동안에 보니 예루살렘 성벽이 다 무너졌고 성문은 소화되었더라"
+      ],
+      "raw_text_hashes": [
+        "a365755ccbc036fe8fb9a2c5739e6102d5f15c73eeea75cc491612514b2fceac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:2:14",
+      "sequence": 12322,
+      "chapter_label": "NEH 2",
+      "verse_label": "14",
+      "locator": {
+        "book": "NEH",
+        "chapter": 2,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 2,
+          "verse": 14
+        }
+      ],
+      "en": "Then I went on to the spring gate and to the king’s pool, but there was no place for the animal that was under me to pass.",
+      "ko": "앞으로 행하여 샘문과 왕의 못에 이르러는 탄 짐승이 지나갈 곳이 없는지라",
+      "source_text_hash": "7990a7a6b0a251a2c6fae525b8ca7bfa48f0e6e35b661d1325675bfeedde9e40",
+      "translation_text_hash": "33f1bda395ca1a24488f4c40bb166f9e097e88dbe7973852fad55fc849dfd7ee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "앞으로 행하여 샘문과 왕의 못에 이르러는 탄 짐승이 지나갈 곳이 없는지라"
+      ],
+      "raw_text_hashes": [
+        "33f1bda395ca1a24488f4c40bb166f9e097e88dbe7973852fad55fc849dfd7ee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:2:15",
+      "sequence": 12323,
+      "chapter_label": "NEH 2",
+      "verse_label": "15",
+      "locator": {
+        "book": "NEH",
+        "chapter": 2,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 2,
+          "verse": 15
+        }
+      ],
+      "en": "Then I went up in the night by the brook and inspected the wall; and I turned back, and entered by the valley gate, and so returned.",
+      "ko": "그 밤에 시내를 좇아 올라가서 성벽을 살펴 본 후에 돌이켜 골짜기 문으로 들어와서 돌아 왔으나",
+      "source_text_hash": "513ffd14feff8da24c6a6510480c6095714083ebe4044ba48a010e5d13bde273",
+      "translation_text_hash": "923a18a0f4f8046fc24e7066e617df18e385c09fce1d924485a851153fc63dbd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 밤에 시내를 좇아 올라가서 성벽을 살펴 본 후에 돌이켜 골짜기 문으로 들어와서 돌아 왔으나"
+      ],
+      "raw_text_hashes": [
+        "923a18a0f4f8046fc24e7066e617df18e385c09fce1d924485a851153fc63dbd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:2:16",
+      "sequence": 12324,
+      "chapter_label": "NEH 2",
+      "verse_label": "16",
+      "locator": {
+        "book": "NEH",
+        "chapter": 2,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 2,
+          "verse": 16
+        }
+      ],
+      "en": "The rulers didn’t know where I went, or what I did. I had not as yet told it to the Jews, nor to the priests, nor to the nobles, nor to the rulers, nor to the rest who did the work.",
+      "ko": "방백들은 내가 어디 갔었으며 무엇을 하였는지 알지 못하였고 나도 그 일을 유다 사람들에게나 제사장들에게나 귀인들에게나 방백들에게나 그 외에 일하는 자들에게 고하지 아니하다가",
+      "source_text_hash": "b09b51eca6deb41ceaf54bce42329132f49ad7b42e90c07e64b58e5fadcd410f",
+      "translation_text_hash": "b204d4772799445c0a55e5fe440bab2a97ac43a508a339256e3dcb8c482bd6c4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "방백들은 내가 어디 갔었으며 무엇을 하였는지 알지 못하였고 나도 그 일을 유다 사람들에게나 제사장들에게나 귀인들에게나 방백들에게나 그 외에 일하는 자들에게 고하지 아니하다가"
+      ],
+      "raw_text_hashes": [
+        "b204d4772799445c0a55e5fe440bab2a97ac43a508a339256e3dcb8c482bd6c4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:2:17",
+      "sequence": 12325,
+      "chapter_label": "NEH 2",
+      "verse_label": "17",
+      "locator": {
+        "book": "NEH",
+        "chapter": 2,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 2,
+          "verse": 17
+        }
+      ],
+      "en": "Then I said to them, “You see the bad situation that we are in, how Jerusalem lies waste, and its gates are burned with fire. Come, let’s build up the wall of Jerusalem, that we won’t be disgraced.”",
+      "ko": "후에 저희에게 이르기를 우리의 당한 곤경은 너희도 목도하는바라 예루살렘이 황무하고 성문이 소화되었으니 자, 예루살렘 성을 중건하여 다시 수치를 받지 말자 하고",
+      "source_text_hash": "6336ae6801f57e8cacdaf0faef75aa55dcac9f5323ff102d025ef3ce98eb62c8",
+      "translation_text_hash": "454a22856efb09a0dd6fadda1b95cd7e5cc96dc9fa49e1df58fe5bde1cef44e6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "후에 저희에게 이르기를 우리의 당한 곤경은 너희도 목도하는바라 예루살렘이 황무하고 성문이 소화되었으니 자, 예루살렘 성을 중건하여 다시 수치를 받지 말자 하고"
+      ],
+      "raw_text_hashes": [
+        "454a22856efb09a0dd6fadda1b95cd7e5cc96dc9fa49e1df58fe5bde1cef44e6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:2:18",
+      "sequence": 12326,
+      "chapter_label": "NEH 2",
+      "verse_label": "18",
+      "locator": {
+        "book": "NEH",
+        "chapter": 2,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 2,
+          "verse": 18
+        }
+      ],
+      "en": "I told them about the hand of my God which was good on me, and also about the king’s words that he had spoken to me. They said, “Let’s rise up and build.” So they strengthened their hands for the good work.",
+      "ko": "또 저희에게 하나님의 선한 손이 나를 도우신 일과 왕이 내게 이른 말씀을 고하였더니 저희의 말이 일어나 건축하자 하고 모두 힘을 내어 이 선한 일을 하려 하매",
+      "source_text_hash": "742ed115ce9309ce5bfc5d8b61d4e570c9ac7e3c42b852a9fb8ff39d9ff391ea",
+      "translation_text_hash": "0bbb4a04d216ddd878dde03b4260d910028c76c988eff42a03ceb9ba03201fb6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 저희에게 하나님의 선한 손이 나를 도우신 일과 왕이 내게 이른 말씀을 고하였더니 저희의 말이 일어나 건축하자 하고 모두 힘을 내어 이 선한 일을 하려 하매"
+      ],
+      "raw_text_hashes": [
+        "0bbb4a04d216ddd878dde03b4260d910028c76c988eff42a03ceb9ba03201fb6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:2:19",
+      "sequence": 12327,
+      "chapter_label": "NEH 2",
+      "verse_label": "19",
+      "locator": {
+        "book": "NEH",
+        "chapter": 2,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 2,
+          "verse": 19
+        }
+      ],
+      "en": "But when Sanballat the Horonite, Tobiah the Ammonite servant, and Geshem the Arabian, heard it, they ridiculed us and despised us, and said, “What is this thing that you are doing? Will you rebel against the king?”",
+      "ko": "호론 사람 산발랏과 종이 되었던 암몬 사람 도비야와 아라비아 사람 게셈이 이 말을 듣고 우리를 업신여기고 비웃어 가로되 너희의 하는 일이 무엇이냐 왕을 배반코자 하느냐 하기로",
+      "source_text_hash": "63c1495d66bf35799b6fee9b8ccdab3252645b814756a0c66eb02b6b537ef39a",
+      "translation_text_hash": "29c8d92a59ae5f06724b2f7e99c90c6b79b3cc1d75a1a4f25913f077351fc8f3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "호론 사람 산발랏과 종이 되었던 암몬 사람 도비야와 아라비아 사람 게셈이 이 말을 듣고 우리를 업신여기고 비웃어 가로되 너희의 하는 일이 무엇이냐 왕을 배반코자 하느냐 하기로"
+      ],
+      "raw_text_hashes": [
+        "29c8d92a59ae5f06724b2f7e99c90c6b79b3cc1d75a1a4f25913f077351fc8f3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:2:20",
+      "sequence": 12328,
+      "chapter_label": "NEH 2",
+      "verse_label": "20",
+      "locator": {
+        "book": "NEH",
+        "chapter": 2,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 2,
+          "verse": 20
+        }
+      ],
+      "en": "Then I answered them, and said to them, “The God of heaven will prosper us. Therefore we, his servants, will arise and build; but you have no portion, nor right, nor memorial in Jerusalem.”",
+      "ko": "내가 대답하여 가로되 하늘의 하나님이 우리로 형통케 하시리니 그의 종 우리가 일어나 건축하려니와 오직 너희는 예루살렘에서 아무 기업도 없고 권리도 없고 명록도 없다 하였느니라",
+      "source_text_hash": "4567b37656639219aa04bc049b3cdf4e921e3818ea31ba25d91ed52150ce3b9a",
+      "translation_text_hash": "e76958c35686036bc8cc308f373ca305df0d39a1b8600ef49c2ff7e1b42866d4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 대답하여 가로되 하늘의 하나님이 우리로 형통케 하시리니 그의 종 우리가 일어나 건축하려니와 오직 너희는 예루살렘에서 아무 기업도 없고 권리도 없고 명록도 없다 하였느니라"
+      ],
+      "raw_text_hashes": [
+        "e76958c35686036bc8cc308f373ca305df0d39a1b8600ef49c2ff7e1b42866d4"
+      ]
+    }
+  ]
+}

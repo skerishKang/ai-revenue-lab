@@ -1,0 +1,429 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1CO:chapter:005",
+  "unit_ordinal": 1067,
+  "unit_label": "1CO 5",
+  "book_code": "1CO",
+  "chapter_number": 5,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1CO:5:1",
+      "sequence": 28452,
+      "chapter_label": "1CO 5",
+      "verse_label": "1",
+      "locator": {
+        "book": "1CO",
+        "chapter": 5,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 5,
+          "verse": 1
+        }
+      ],
+      "en": "It is actually reported that there is sexual immorality among you, and such sexual immorality as is not even named among the Gentiles, that one has his father’s wife.",
+      "ko": "너희 중에 심지어 음행이 있다 함을 들으니 이런 음행은 이방인 중에라도 없는 것이라 누가 그 아비의 아내를 취하였다 하는도다",
+      "source_text_hash": "abcefae755cacd0f35c0b7b4971f29232fe4a0ebedbaef31f3cc3cb827ea950e",
+      "translation_text_hash": "fe003b5163f9f3114cc8f24e38ce278fd4d572200963feb7635251919ffa96df",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 중에 심지어 음행이 있다 함을 들으니 이런 음행은 이방인 중에라도 없는 것이라 누가 그 아비의 아내를 취하였다 하는도다"
+      ],
+      "raw_text_hashes": [
+        "fe003b5163f9f3114cc8f24e38ce278fd4d572200963feb7635251919ffa96df"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:5:2",
+      "sequence": 28453,
+      "chapter_label": "1CO 5",
+      "verse_label": "2",
+      "locator": {
+        "book": "1CO",
+        "chapter": 5,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 5,
+          "verse": 2
+        }
+      ],
+      "en": "You are arrogant, and didn’t mourn instead, that he who had done this deed might be removed from among you.",
+      "ko": "그리하고도 너희가 오히려 교만하여져서 어찌하여 통한히 여기지 아니하고 그 일 행한 자를 너희 중에서 물리치지 아니하였느냐",
+      "source_text_hash": "ffac5bb75079c9b84654609c33bf9032ff849784becd5a251ce041ceed063c7e",
+      "translation_text_hash": "b8f0fce694c743b263a5c23d5025dc3248c31abf480378e8d45ccfd8ee4cddf3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그리하고도 너희가 오히려 교만하여져서 어찌하여 통한히 여기지 아니하고 그 일 행한 자를 너희 중에서 물리치지 아니하였느냐"
+      ],
+      "raw_text_hashes": [
+        "b8f0fce694c743b263a5c23d5025dc3248c31abf480378e8d45ccfd8ee4cddf3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:5:3",
+      "sequence": 28454,
+      "chapter_label": "1CO 5",
+      "verse_label": "3",
+      "locator": {
+        "book": "1CO",
+        "chapter": 5,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 5,
+          "verse": 3
+        }
+      ],
+      "en": "For I most certainly, as being absent in body but present in spirit, have already, as though I were present, judged him who has done this thing.",
+      "ko": "내가 실로 몸으로는 떠나 있으나 영으로는 함께 있어서 거기 있는 것 같이 이 일 행한 자를 이미 판단하였노라",
+      "source_text_hash": "c3ba616b2a7e259ee48da30c6d0c4cbe5ceb7ba71b549945ed146a10240419cd",
+      "translation_text_hash": "6fc21dfd34935ffb11fa85da094bd26bd62216be9e50f7ee0ca971e37ce07509",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 실로 몸으로는 떠나 있으나 영으로는 함께 있어서 거기 있는 것 같이 이 일 행한 자를 이미 판단하였노라"
+      ],
+      "raw_text_hashes": [
+        "6fc21dfd34935ffb11fa85da094bd26bd62216be9e50f7ee0ca971e37ce07509"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:5:4",
+      "sequence": 28455,
+      "chapter_label": "1CO 5",
+      "verse_label": "4",
+      "locator": {
+        "book": "1CO",
+        "chapter": 5,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 5,
+          "verse": 4
+        }
+      ],
+      "en": "In the name of our Lord Jesus Christ, when you are gathered together with my spirit with the power of our Lord Jesus Christ,",
+      "ko": "주 예수의 이름으로 너희가 내 영과 함께 모여서 우리 주 예수의 능력으로",
+      "source_text_hash": "67540cd7f9d004e335d184a6cd2cb6c31cc3f080bd64ed2435f7d4ec5b609719",
+      "translation_text_hash": "24f2bd8c3ae190af85f8cb3a66b6312bca49fa9db15cbed4f290802d72333cb5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주 예수의 이름으로 너희가 내 영과 함께 모여서 우리 주 예수의 능력으로"
+      ],
+      "raw_text_hashes": [
+        "24f2bd8c3ae190af85f8cb3a66b6312bca49fa9db15cbed4f290802d72333cb5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:5:5",
+      "sequence": 28456,
+      "chapter_label": "1CO 5",
+      "verse_label": "5",
+      "locator": {
+        "book": "1CO",
+        "chapter": 5,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 5,
+          "verse": 5
+        }
+      ],
+      "en": "you are to deliver such a one to Satan for the destruction of the flesh, that the spirit may be saved in the day of the Lord Jesus.",
+      "ko": "이런 자를 사단에게 내어주었으니 이는 육신은 멸하고 영은 주 예수의 날에 구원 얻게 하려 함이라",
+      "source_text_hash": "d2a6a607c8b8a7ced779202bb5bde333aa905bc655c875b11db17422abbab955",
+      "translation_text_hash": "602c02fb33c250425ccadbf26ea1e667be36398924af4d3876356e1eff3a9266",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이런 자를 사단에게 내어주었으니 이는 육신은 멸하고 영은 주 예수의 날에 구원 얻게 하려 함이라"
+      ],
+      "raw_text_hashes": [
+        "602c02fb33c250425ccadbf26ea1e667be36398924af4d3876356e1eff3a9266"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:5:6",
+      "sequence": 28457,
+      "chapter_label": "1CO 5",
+      "verse_label": "6",
+      "locator": {
+        "book": "1CO",
+        "chapter": 5,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 5,
+          "verse": 6
+        }
+      ],
+      "en": "Your boasting is not good. Don’t you know that a little yeast leavens the whole lump?",
+      "ko": "너희의 자랑하는 것이 옳지 아니하도다 적은 누룩이 온 덩어리에 퍼지는 것을 알지 못하느냐",
+      "source_text_hash": "8c4b104ed1f83d1d45c3bacbbcb8ea828ca2c25edc34b40d1f2ac5ecdff4d464",
+      "translation_text_hash": "c2dc52a5287c904c66ff18c60c2a28985db27edb359536c3c8f59c9d77f070b1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희의 자랑하는 것이 옳지 아니하도다 적은 누룩이 온 덩어리에 퍼지는 것을 알지 못하느냐"
+      ],
+      "raw_text_hashes": [
+        "c2dc52a5287c904c66ff18c60c2a28985db27edb359536c3c8f59c9d77f070b1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:5:7",
+      "sequence": 28458,
+      "chapter_label": "1CO 5",
+      "verse_label": "7",
+      "locator": {
+        "book": "1CO",
+        "chapter": 5,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 5,
+          "verse": 7
+        }
+      ],
+      "en": "Purge out the old yeast, that you may be a new lump, even as you are unleavened. For indeed Christ, our Passover, has been sacrificed in our place.",
+      "ko": "너희는 누룩 없는 자인데 새 덩어리가 되기 위하여 묵은 누룩을 내어버리라 우리의 유월절 양 곧 그리스도께서 희생이 되셨느니라",
+      "source_text_hash": "1f0fe9282603b06df376576dc7efb6b9a69721ed93b7d54f461c617bb3053f2a",
+      "translation_text_hash": "34ae685994940ed074334333a06019d6ee49ef4a6b3ee792a5825eceade55953",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 누룩 없는 자인데 새 덩어리가 되기 위하여 묵은 누룩을 내어버리라 우리의 유월절 양 곧 그리스도께서 희생이 되셨느니라"
+      ],
+      "raw_text_hashes": [
+        "34ae685994940ed074334333a06019d6ee49ef4a6b3ee792a5825eceade55953"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:5:8",
+      "sequence": 28459,
+      "chapter_label": "1CO 5",
+      "verse_label": "8",
+      "locator": {
+        "book": "1CO",
+        "chapter": 5,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 5,
+          "verse": 8
+        }
+      ],
+      "en": "Therefore let’s keep the feast, not with old yeast, neither with the yeast of malice and wickedness, but with the unleavened bread of sincerity and truth.",
+      "ko": "이러므로 우리가 명절을 지키되 묵은 누룩도 말고 괴악하고 악독한 누룩도 말고 오직 순전함과 진실함의 누룩 없는 떡으로 하자",
+      "source_text_hash": "7c1d32508cd6149a2d54e31952e2a85e24b36aca5205d841334c00500b859a6a",
+      "translation_text_hash": "59111dde4df2e72b7c186b3bb63ee5db3cf44cf40ff51d763d49ae236e156a97",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러므로 우리가 명절을 지키되 묵은 누룩도 말고 괴악하고 악독한 누룩도 말고 오직 순전함과 진실함의 누룩 없는 떡으로 하자"
+      ],
+      "raw_text_hashes": [
+        "59111dde4df2e72b7c186b3bb63ee5db3cf44cf40ff51d763d49ae236e156a97"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:5:9",
+      "sequence": 28460,
+      "chapter_label": "1CO 5",
+      "verse_label": "9",
+      "locator": {
+        "book": "1CO",
+        "chapter": 5,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 5,
+          "verse": 9
+        }
+      ],
+      "en": "I wrote to you in my letter to have no company with sexual sinners;",
+      "ko": "내가 너희에게 쓴 것에 음행하는 자들을 사귀지 말라 하였거니와",
+      "source_text_hash": "6f6064d8c715517bbfcef6c08b17f7a3c6a2a48dc3c41698d97f4acd17999fc6",
+      "translation_text_hash": "9d23557397a0a7e185fc3f132fdc2807d5b8307a65a64e8f4dfb3ee20e9e4540",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너희에게 쓴 것에 음행하는 자들을 사귀지 말라 하였거니와"
+      ],
+      "raw_text_hashes": [
+        "9d23557397a0a7e185fc3f132fdc2807d5b8307a65a64e8f4dfb3ee20e9e4540"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:5:10",
+      "sequence": 28461,
+      "chapter_label": "1CO 5",
+      "verse_label": "10",
+      "locator": {
+        "book": "1CO",
+        "chapter": 5,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 5,
+          "verse": 10
+        }
+      ],
+      "en": "yet not at all meaning with the sexual sinners of this world, or with the covetous and extortionists, or with idolaters, for then you would have to leave the world.",
+      "ko": "이 말은 이 세상의 음행하는 자들이나 탐하는 자들과 토색하는 자들이나 우상 숭배하는 자들을 도무지 사귀지 말라 하는 것이 아니니 만일 그리 하려면 세상 밖으로 나가야 할 것이라",
+      "source_text_hash": "329bf9f4c99aac07eab2d4267e65dbfdd449269c8dd0da8bb889c826277a6061",
+      "translation_text_hash": "630dcdcece92e2acf43e7d6607c9af88ad16d1e07390630fa18ab45a18b30236",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 말은 이 세상의 음행하는 자들이나 탐하는 자들과 토색하는 자들이나 우상 숭배하는 자들을 도무지 사귀지 말라 하는 것이 아니니 만일 그리 하려면 세상 밖으로 나가야 할 것이라"
+      ],
+      "raw_text_hashes": [
+        "630dcdcece92e2acf43e7d6607c9af88ad16d1e07390630fa18ab45a18b30236"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:5:11",
+      "sequence": 28462,
+      "chapter_label": "1CO 5",
+      "verse_label": "11",
+      "locator": {
+        "book": "1CO",
+        "chapter": 5,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 5,
+          "verse": 11
+        }
+      ],
+      "en": "But as it is, I wrote to you not to associate with anyone who is called a brother who is a sexual sinner, or covetous, or an idolater, or a slanderer, or a drunkard, or an extortionist. Don’t even eat with such a person.",
+      "ko": "이제 내가 너희에게 쓴 것은 만일 어떤 형제라 일컫는 자가 음행하거나 탐람하거나 우상 숭배를 하거나 후욕하거나 술 취하거나 토색하거든 사귀지도 말고 그런 자와는 함께 먹지도 말라 함이라",
+      "source_text_hash": "1c5c157bc38b6c845999e4816f11957821d3dfd929796ff76b6348241e99ca5e",
+      "translation_text_hash": "7d61f97563792e3a26f9afebf2a951c2391ceeaf4ec69255408be9b3be1c15d6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제 내가 너희에게 쓴 것은 만일 어떤 형제라 일컫는 자가 음행하거나 탐람하거나 우상 숭배를 하거나 후욕하거나 술 취하거나 토색하거든 사귀지도 말고 그런 자와는 함께 먹지도 말라 함이라"
+      ],
+      "raw_text_hashes": [
+        "7d61f97563792e3a26f9afebf2a951c2391ceeaf4ec69255408be9b3be1c15d6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:5:12",
+      "sequence": 28463,
+      "chapter_label": "1CO 5",
+      "verse_label": "12",
+      "locator": {
+        "book": "1CO",
+        "chapter": 5,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 5,
+          "verse": 12
+        }
+      ],
+      "en": "For what do I have to do with also judging those who are outside? Don’t you judge those who are within?",
+      "ko": "외인들을 판단하는데 내게 무슨 상관이 있으리요마는 교중 사람들이야 너희가 판단치 아니하랴",
+      "source_text_hash": "d29055ff037c1f159d5ebc4cf2ad5e1c1f360ae20e54f049e71907d90de95167",
+      "translation_text_hash": "e31ad7025a1b30244f496b75e54eac32411804c6477d3d25ca170a6ba425785c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "외인들을 판단하는데 내게 무슨 상관이 있으리요마는 교중 사람들이야 너희가 판단치 아니하랴"
+      ],
+      "raw_text_hashes": [
+        "e31ad7025a1b30244f496b75e54eac32411804c6477d3d25ca170a6ba425785c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:5:13",
+      "sequence": 28464,
+      "chapter_label": "1CO 5",
+      "verse_label": "13",
+      "locator": {
+        "book": "1CO",
+        "chapter": 5,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 5,
+          "verse": 13
+        }
+      ],
+      "en": "But those who are outside, God judges. “Put away the wicked man from among yourselves.”",
+      "ko": "외인들은 하나님이 판단하시려니와 이 악한 사람은 너희 중에서 내어 쫓으라",
+      "source_text_hash": "3b76afe4af9c67bdc726c0fc2153c41a9a6d952c9fb559f73e93b75c8883f298",
+      "translation_text_hash": "df6d684836e2f84891a7ee60ebb718604e34bf6ecfb64f7ad660e7a9a3da4868",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "외인들은 하나님이 판단하시려니와 이 악한 사람은 너희 중에서 내어 쫓으라"
+      ],
+      "raw_text_hashes": [
+        "df6d684836e2f84891a7ee60ebb718604e34bf6ecfb64f7ad660e7a9a3da4868"
+      ]
+    }
+  ]
+}

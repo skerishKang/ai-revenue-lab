@@ -1,0 +1,493 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:AMO:chapter:001",
+  "unit_ordinal": 880,
+  "unit_label": "AMO 1",
+  "book_code": "AMO",
+  "chapter_number": 1,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:AMO:1:1",
+      "sequence": 22366,
+      "chapter_label": "AMO 1",
+      "verse_label": "1",
+      "locator": {
+        "book": "AMO",
+        "chapter": 1,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 1,
+          "verse": 1
+        }
+      ],
+      "en": "The words of Amos, who was among the herdsmen of Tekoa, which he saw concerning Israel in the days of Uzziah king of Judah and in the days of Jeroboam the son of Joash, king of Israel, two years before the earthquake.",
+      "ko": "유다 왕 웃시야의 시대 곧 이스라엘 왕 요아스의 아들 여로보암의 시대의 지진전 이년에 드고아 목자 중 아모스가 이스라엘에 대하여 묵시 받은 말씀이라",
+      "source_text_hash": "ccd34c78c7eb677763626972dc9658338b63d7631bd4b28ac518daaf78f45fc9",
+      "translation_text_hash": "4ead5d0dbcd3e9390f33ecb8dc967975a67234199d1a18e7d854ddcbf708c5fc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다 왕 웃시야의 시대 곧 이스라엘 왕 요아스의 아들 여로보암의 시대의 지진전 이년에 드고아 목자 중 아모스가 이스라엘에 대하여 묵시 받은 말씀이라"
+      ],
+      "raw_text_hashes": [
+        "4ead5d0dbcd3e9390f33ecb8dc967975a67234199d1a18e7d854ddcbf708c5fc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:1:2",
+      "sequence": 22367,
+      "chapter_label": "AMO 1",
+      "verse_label": "2",
+      "locator": {
+        "book": "AMO",
+        "chapter": 1,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 1,
+          "verse": 2
+        }
+      ],
+      "en": "He said: “The LORD will roar from Zion, and utter his voice from Jerusalem; and the pastures of the shepherds will mourn, and the top of Carmel will wither.”",
+      "ko": "저가 가로되 여호와께서 시온에서부터 부르짖으시며 예루살렘에서부터 음성을 발하시리니 목자의 초장이 애통하며 갈멜산 꼭대기가 마르리로다",
+      "source_text_hash": "f8d48c40594107d10cf1cfe4b2dccd13deddd8bad11b8eeac1c423ecf2aa1cc6",
+      "translation_text_hash": "0586bed3d1529566b60dd1bb3d9de4982a832b3e57f8d28e5890e3298b6d7949",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 가로되 여호와께서 시온에서부터 부르짖으시며 예루살렘에서부터 음성을 발하시리니 목자의 초장이 애통하며 갈멜산 꼭대기가 마르리로다"
+      ],
+      "raw_text_hashes": [
+        "0586bed3d1529566b60dd1bb3d9de4982a832b3e57f8d28e5890e3298b6d7949"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:1:3",
+      "sequence": 22368,
+      "chapter_label": "AMO 1",
+      "verse_label": "3",
+      "locator": {
+        "book": "AMO",
+        "chapter": 1,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 1,
+          "verse": 3
+        }
+      ],
+      "en": "The LORD says: “For three transgressions of Damascus, yes, for four, I will not turn away its punishment, because they have threshed Gilead with threshing instruments of iron;",
+      "ko": "여호와께서 가라사대 다메섹의 서너가지 죄로 인하여 내가 그 벌을 돌이키지 아니하리니 이는 저희가 철 타작기로 타작하듯 길르앗을 압박하였음이라",
+      "source_text_hash": "c6ab4f800cdde64c945e577cf243d04aa752fc2738bd3beacd38f6402843e65d",
+      "translation_text_hash": "e5c8b2e50f240dadfa3737694df743e1ae385df26160b040fd52aad7442039f1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 가라사대 다메섹의 서너가지 죄로 인하여 내가 그 벌을 돌이키지 아니하리니 이는 저희가 철 타작기로 타작하듯 길르앗을 압박하였음이라"
+      ],
+      "raw_text_hashes": [
+        "e5c8b2e50f240dadfa3737694df743e1ae385df26160b040fd52aad7442039f1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:1:4",
+      "sequence": 22369,
+      "chapter_label": "AMO 1",
+      "verse_label": "4",
+      "locator": {
+        "book": "AMO",
+        "chapter": 1,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 1,
+          "verse": 4
+        }
+      ],
+      "en": "but I will send a fire into the house of Hazael, and it will devour the palaces of Ben Hadad.",
+      "ko": "내가 하사엘의 집에 불을 보내리니 벤하닷의 궁궐들을 사르리라",
+      "source_text_hash": "a0bdca413a38381d5566bd4f040a771a31935caa2375aaa2a0b9d545aa80302d",
+      "translation_text_hash": "a3e4f5a443c4031c9476ee78064301aa17b21b9120c2b2d8e2c2a6a5038ed15e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 하사엘의 집에 불을 보내리니 벤하닷의 궁궐들을 사르리라"
+      ],
+      "raw_text_hashes": [
+        "a3e4f5a443c4031c9476ee78064301aa17b21b9120c2b2d8e2c2a6a5038ed15e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:1:5",
+      "sequence": 22370,
+      "chapter_label": "AMO 1",
+      "verse_label": "5",
+      "locator": {
+        "book": "AMO",
+        "chapter": 1,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 1,
+          "verse": 5
+        }
+      ],
+      "en": "I will break the bar of Damascus, and cut off the inhabitant from the valley of Aven, and him who holds the scepter from the house of Eden; and the people of Syria shall go into captivity to Kir,” says the LORD.",
+      "ko": "내가 다메섹 빗장을 꺾으며 아웬 골짜기에서 그 거민을 끊으며 벧에던에서 홀 잡은 자를 끊으리니 아람 백성이 사로잡혀 길에 이르리라 이는 여호와의 말씀이니라",
+      "source_text_hash": "b65b49abebc616c4a6d0944ea435a0d120492aef365625e1894d6f77e89ba891",
+      "translation_text_hash": "6f36dc11e8d3b79142dc812becb879a69c4561de93245c0e4824d883896e08ae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 다메섹 빗장을 꺾으며 아웬 골짜기에서 그 거민을 끊으며 벧에던에서 홀 잡은 자를 끊으리니 아람 백성이 사로잡혀 길에 이르리라 이는 여호와의 말씀이니라"
+      ],
+      "raw_text_hashes": [
+        "6f36dc11e8d3b79142dc812becb879a69c4561de93245c0e4824d883896e08ae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:1:6",
+      "sequence": 22371,
+      "chapter_label": "AMO 1",
+      "verse_label": "6",
+      "locator": {
+        "book": "AMO",
+        "chapter": 1,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 1,
+          "verse": 6
+        }
+      ],
+      "en": "The LORD says: “For three transgressions of Gaza, yes, for four, I will not turn away its punishment, because they carried away captive the whole community, to deliver them up to Edom;",
+      "ko": "여호와께서 가라사대 가사의 서너가지 죄로 인하여 내가 그 벌을 돌이키지 아니하리니 이는 저희가 모든 사로잡은 자를 끌어 에돔에 붙였음이라",
+      "source_text_hash": "d8a7a1bf574daf80e6c32d36e3a1eb4443612453b8cbd1467e71d40d8aa8856b",
+      "translation_text_hash": "1a46e9ddd66343a2e6fc86103d5e7c9f50264d9c7606df42d9efc3d00f033065",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 가라사대 가사의 서너가지 죄로 인하여 내가 그 벌을 돌이키지 아니하리니 이는 저희가 모든 사로잡은 자를 끌어 에돔에 붙였음이라"
+      ],
+      "raw_text_hashes": [
+        "1a46e9ddd66343a2e6fc86103d5e7c9f50264d9c7606df42d9efc3d00f033065"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:1:7",
+      "sequence": 22372,
+      "chapter_label": "AMO 1",
+      "verse_label": "7",
+      "locator": {
+        "book": "AMO",
+        "chapter": 1,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 1,
+          "verse": 7
+        }
+      ],
+      "en": "but I will send a fire on the wall of Gaza, and it will devour its palaces.",
+      "ko": "내가 가사성에 불을 보내리니 그 궁궐들을 사르리라",
+      "source_text_hash": "75c3c9dc4f99ab9b77f13b9c7e4c7ef9a9ae29a7201132a2ce87ed03deaaead7",
+      "translation_text_hash": "a2a4707ee144de8d1e4ba406816ebffde368f10326afb16e2720d8566509ca36",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 가사성에 불을 보내리니 그 궁궐들을 사르리라"
+      ],
+      "raw_text_hashes": [
+        "a2a4707ee144de8d1e4ba406816ebffde368f10326afb16e2720d8566509ca36"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:1:8",
+      "sequence": 22373,
+      "chapter_label": "AMO 1",
+      "verse_label": "8",
+      "locator": {
+        "book": "AMO",
+        "chapter": 1,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 1,
+          "verse": 8
+        }
+      ],
+      "en": "I will cut off the inhabitant from Ashdod, and him who holds the scepter from Ashkelon; and I will turn my hand against Ekron; and the remnant of the Philistines will perish,” says the Lord GOD.",
+      "ko": "내가 또 아스돗에서 그 거민과 아스글론에서 홀 잡은 자를 끊고 또 손을 돌이켜 에그론을 치리니 블레셋의 남아 있는 자가 멸망하리라 이는 주 여호와의 말씀이니라",
+      "source_text_hash": "4961e648e9e6f73b376e64c2154705e5dd5da832282934bd7620255ecf8442a3",
+      "translation_text_hash": "cd140702dd3626c189a240ba72a8b1cca8e290ec98827ed2d83e1c013bca581b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 또 아스돗에서 그 거민과 아스글론에서 홀 잡은 자를 끊고 또 손을 돌이켜 에그론을 치리니 블레셋의 남아 있는 자가 멸망하리라 이는 주 여호와의 말씀이니라"
+      ],
+      "raw_text_hashes": [
+        "cd140702dd3626c189a240ba72a8b1cca8e290ec98827ed2d83e1c013bca581b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:1:9",
+      "sequence": 22374,
+      "chapter_label": "AMO 1",
+      "verse_label": "9",
+      "locator": {
+        "book": "AMO",
+        "chapter": 1,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 1,
+          "verse": 9
+        }
+      ],
+      "en": "The LORD says: “For three transgressions of Tyre, yes, for four, I will not turn away its punishment; because they delivered up the whole community to Edom, and didn’t remember the brotherly covenant;",
+      "ko": "여호와께서 가라사대 두로의 서너가지 죄로 인하여 내가 그 벌을 돌이키지 아니하리니 이는 저희가 그 형제의 계약을 기억지 아니하고 모든 사로잡은 자를 에돔에 붙였음이라",
+      "source_text_hash": "116538ff2416272ba566cfa04e995d9acda68b55afc70042920355570c86e7b8",
+      "translation_text_hash": "b3d6cf988ecb701286343f06058b1d6a8481cbe66a14a81029fa0dec2531b31c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 가라사대 두로의 서너가지 죄로 인하여 내가 그 벌을 돌이키지 아니하리니 이는 저희가 그 형제의 계약을 기억지 아니하고 모든 사로잡은 자를 에돔에 붙였음이라"
+      ],
+      "raw_text_hashes": [
+        "b3d6cf988ecb701286343f06058b1d6a8481cbe66a14a81029fa0dec2531b31c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:1:10",
+      "sequence": 22375,
+      "chapter_label": "AMO 1",
+      "verse_label": "10",
+      "locator": {
+        "book": "AMO",
+        "chapter": 1,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 1,
+          "verse": 10
+        }
+      ],
+      "en": "but I will send a fire on the wall of Tyre, and it will devour its palaces.”",
+      "ko": "내가 두로성에 불을 보내리니 그 궁궐들을 사르리라",
+      "source_text_hash": "6ecff812c681ac1d74a0556389be680f2fc24bd43480bb8b39fc2d3b669665ae",
+      "translation_text_hash": "ba9539c256faa17171c63688d93216fc906be885177e8ad2811131c12d347132",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 두로성에 불을 보내리니 그 궁궐들을 사르리라"
+      ],
+      "raw_text_hashes": [
+        "ba9539c256faa17171c63688d93216fc906be885177e8ad2811131c12d347132"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:1:11",
+      "sequence": 22376,
+      "chapter_label": "AMO 1",
+      "verse_label": "11",
+      "locator": {
+        "book": "AMO",
+        "chapter": 1,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 1,
+          "verse": 11
+        }
+      ],
+      "en": "The LORD says: “For three transgressions of Edom, yes, for four, I will not turn away its punishment, because he pursued his brother with the sword and cast off all pity, and his anger raged continually, and he kept his wrath forever;",
+      "ko": "여호와께서 가라사대 에돔의 서너 가지 죄로 인하여 내가 그 벌을 돌이키지 아니하리니 이는 저가 칼로 그 형제를 쫓아가며 긍휼을 버리며 노가 항상 맹렬하며 분을 끝 없이 품었음이라",
+      "source_text_hash": "6b8158f7375196a3bfdce89200194bc0ec063f10a06694f6a55916f3c686b6f5",
+      "translation_text_hash": "54f91e547c8775cbccadc301f0d86b656b9af6f3c16c44dccfee69f1b30ec7a7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 가라사대 에돔의 서너 가지 죄로 인하여 내가 그 벌을 돌이키지 아니하리니 이는 저가 칼로 그 형제를 쫓아가며 긍휼을 버리며 노가 항상 맹렬하며 분을 끝 없이 품었음이라"
+      ],
+      "raw_text_hashes": [
+        "54f91e547c8775cbccadc301f0d86b656b9af6f3c16c44dccfee69f1b30ec7a7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:1:12",
+      "sequence": 22377,
+      "chapter_label": "AMO 1",
+      "verse_label": "12",
+      "locator": {
+        "book": "AMO",
+        "chapter": 1,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 1,
+          "verse": 12
+        }
+      ],
+      "en": "but I will send a fire on Teman, and it will devour the palaces of Bozrah.”",
+      "ko": "내가 데만에 불을 보내리니 보스라의 궁궐들을 사르리라",
+      "source_text_hash": "be8f1dacbf0cf2ca9f02fb0b277640bdbaaa95ef6b0f41b1ec60ee1dca5c2118",
+      "translation_text_hash": "79070a4bdc5402598c42e0f9a6508e3838cf64fb825c1955e6fd6ca5c056022a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 데만에 불을 보내리니 보스라의 궁궐들을 사르리라"
+      ],
+      "raw_text_hashes": [
+        "79070a4bdc5402598c42e0f9a6508e3838cf64fb825c1955e6fd6ca5c056022a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:1:13",
+      "sequence": 22378,
+      "chapter_label": "AMO 1",
+      "verse_label": "13",
+      "locator": {
+        "book": "AMO",
+        "chapter": 1,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 1,
+          "verse": 13
+        }
+      ],
+      "en": "The LORD says: “For three transgressions of the children of Ammon, yes, for four, I will not turn away its punishment, because they have ripped open the pregnant women of Gilead, that they may enlarge their border.",
+      "ko": "여호와께서 가라사대 암몬 자손의 서너가지 죄로 인하여 내가 그 벌을 돌이키지 아니하리니 이는 저희가 자기 지경을 넓히고자하여 길르앗의 아이 밴 여인의 배를 갈랐음이니라",
+      "source_text_hash": "50c0bc6ded89d8944d868a2773dc3dfce979d6193ff024da9d8be292ca21a8f7",
+      "translation_text_hash": "528e335376b0453d3d65c462373feffaa28797428dc192af28b06d8117d31fa9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 가라사대 암몬 자손의 서너가지 죄로 인하여 내가 그 벌을 돌이키지 아니하리니 이는 저희가 자기 지경을 넓히고자하여 길르앗의 아이 밴 여인의 배를 갈랐음이니라"
+      ],
+      "raw_text_hashes": [
+        "528e335376b0453d3d65c462373feffaa28797428dc192af28b06d8117d31fa9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:1:14",
+      "sequence": 22379,
+      "chapter_label": "AMO 1",
+      "verse_label": "14",
+      "locator": {
+        "book": "AMO",
+        "chapter": 1,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 1,
+          "verse": 14
+        }
+      ],
+      "en": "But I will kindle a fire in the wall of Rabbah, and it will devour its palaces, with shouting in the day of battle, with a storm in the day of the whirlwind;",
+      "ko": "내가 랍바성에 불을 놓아 그 궁궐들을 사르되 전쟁의 날에 외침과 회리바람 날에 폭풍으로 할 것이며",
+      "source_text_hash": "be386f4ee3c1472bf3f65cd3741a1209eb4d0346b4351ef6d6471a3bf64a5271",
+      "translation_text_hash": "62fbfb5820334a81ec8282bc87aced01b141481130a9e8dbb9251055cb5c285e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 랍바성에 불을 놓아 그 궁궐들을 사르되 전쟁의 날에 외침과 회리바람 날에 폭풍으로 할 것이며"
+      ],
+      "raw_text_hashes": [
+        "62fbfb5820334a81ec8282bc87aced01b141481130a9e8dbb9251055cb5c285e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:1:15",
+      "sequence": 22380,
+      "chapter_label": "AMO 1",
+      "verse_label": "15",
+      "locator": {
+        "book": "AMO",
+        "chapter": 1,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 1,
+          "verse": 15
+        }
+      ],
+      "en": "and their king will go into captivity, he and his princes together,” says the LORD.",
+      "ko": "저희의 왕은 그 방백들과 함께 사로잡혀 가리라 이는 여호와의 말씀이니라",
+      "source_text_hash": "c9ec0a8b990f3ab3860211649b35941014565b58bf3ad61ca374179e6944702d",
+      "translation_text_hash": "fff788df1ba1625a3104e6fe6c11e2a5c332628b675f0de1d31784de7eeb1329",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희의 왕은 그 방백들과 함께 사로잡혀 가리라 이는 여호와의 말씀이니라"
+      ],
+      "raw_text_hashes": [
+        "fff788df1ba1625a3104e6fe6c11e2a5c332628b675f0de1d31784de7eeb1329"
+      ]
+    }
+  ]
+}

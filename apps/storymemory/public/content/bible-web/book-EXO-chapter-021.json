@@ -1,0 +1,1165 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EXO:chapter:021",
+  "unit_ordinal": 71,
+  "unit_label": "EXO 21",
+  "book_code": "EXO",
+  "chapter_number": 21,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EXO:21:1",
+      "sequence": 2079,
+      "chapter_label": "EXO 21",
+      "verse_label": "1",
+      "locator": {
+        "book": "EXO",
+        "chapter": 21,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 21,
+          "verse": 1
+        }
+      ],
+      "en": "“Now these are the ordinances which you shall set before them:",
+      "ko": "네가 백성 앞에 세울 율례는 이러하니라",
+      "source_text_hash": "12cda8e789f7c5b73e5fd25f832b67143ddea82b33e391d451d45d9aae29ec16",
+      "translation_text_hash": "2cdf5262e75092c761038c7b35d9c8821396267073d088c64227b725ffff4c7d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 백성 앞에 세울 율례는 이러하니라"
+      ],
+      "raw_text_hashes": [
+        "2cdf5262e75092c761038c7b35d9c8821396267073d088c64227b725ffff4c7d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:21:2",
+      "sequence": 2080,
+      "chapter_label": "EXO 21",
+      "verse_label": "2",
+      "locator": {
+        "book": "EXO",
+        "chapter": 21,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 21,
+          "verse": 2
+        }
+      ],
+      "en": "“If you buy a Hebrew servant, he shall serve six years, and in the seventh he shall go out free without paying anything.",
+      "ko": "네가 히브리 종을 사면 그가 육년 동안 섬길 것이요 제 칠년에는 값 없이 나가 자유할 것이며",
+      "source_text_hash": "6cc32a51653837eabffff462214abc37799cc89f937a736f1f0760447db096af",
+      "translation_text_hash": "ecd31cff6bedd9e1f424dc7b0d296bcefcbe4db34715af0de2f4067c93a781ab",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 히브리 종을 사면 그가 육년 동안 섬길 것이요 제 칠년에는 값 없이 나가 자유할 것이며"
+      ],
+      "raw_text_hashes": [
+        "ecd31cff6bedd9e1f424dc7b0d296bcefcbe4db34715af0de2f4067c93a781ab"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:21:3",
+      "sequence": 2081,
+      "chapter_label": "EXO 21",
+      "verse_label": "3",
+      "locator": {
+        "book": "EXO",
+        "chapter": 21,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 21,
+          "verse": 3
+        }
+      ],
+      "en": "If he comes in by himself, he shall go out by himself. If he is married, then his wife shall go out with him.",
+      "ko": "그가 단신으로 왔으면 단신으로 나갈 것이요 장가 들었으면 그 아내도 그와 함께 나가려니와",
+      "source_text_hash": "43c802f930f58bd2657c1e57d2731a0ad7c5bf29deebaae66bb6cdb46bb6853c",
+      "translation_text_hash": "90a8ec8341352b1cd1f6f3271bd53052aca75d271babfc0753398ea9200ca722",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 단신으로 왔으면 단신으로 나갈 것이요 장가 들었으면 그 아내도 그와 함께 나가려니와"
+      ],
+      "raw_text_hashes": [
+        "90a8ec8341352b1cd1f6f3271bd53052aca75d271babfc0753398ea9200ca722"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:21:4",
+      "sequence": 2082,
+      "chapter_label": "EXO 21",
+      "verse_label": "4",
+      "locator": {
+        "book": "EXO",
+        "chapter": 21,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 21,
+          "verse": 4
+        }
+      ],
+      "en": "If his master gives him a wife and she bears him sons or daughters, the wife and her children shall be her master’s, and he shall go out by himself.",
+      "ko": "상전이 그에게 아내를 줌으로 그 아내가 자녀간 낳았으면 그 아내와 그 자식들은 상전에게 속할 것이요 그는 단신으로 나갈 것이로되",
+      "source_text_hash": "10d4f86d0a22d009317b7863256c9c8d221cecd7626015cd969cb4321af68fdb",
+      "translation_text_hash": "bea479cc7889a7310d368fb92b9508c5b9a8712e4611d5e3181a4486b4d79410",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "상전이 그에게 아내를 줌으로 그 아내가 자녀간 낳았으면 그 아내와 그 자식들은 상전에게 속할 것이요 그는 단신으로 나갈 것이로되"
+      ],
+      "raw_text_hashes": [
+        "bea479cc7889a7310d368fb92b9508c5b9a8712e4611d5e3181a4486b4d79410"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:21:5",
+      "sequence": 2083,
+      "chapter_label": "EXO 21",
+      "verse_label": "5",
+      "locator": {
+        "book": "EXO",
+        "chapter": 21,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 21,
+          "verse": 5
+        }
+      ],
+      "en": "But if the servant shall plainly say, ‘I love my master, my wife, and my children. I will not go out free;’",
+      "ko": "종이 진정으로 말하기를 내가 상전과 내 처자를 사랑하니 나가서 자유하지 않겠노라 하면",
+      "source_text_hash": "3af5a13704eed18f85c19f3f1b8a2d49c8ea5d177e3167433929353b5cd74952",
+      "translation_text_hash": "a28a70b374e3f51e3b11abc2e44727fa997d853723e84cc8bcfb65592d1a47fe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "종이 진정으로 말하기를 내가 상전과 내 처자를 사랑하니 나가서 자유하지 않겠노라 하면"
+      ],
+      "raw_text_hashes": [
+        "a28a70b374e3f51e3b11abc2e44727fa997d853723e84cc8bcfb65592d1a47fe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:21:6",
+      "sequence": 2084,
+      "chapter_label": "EXO 21",
+      "verse_label": "6",
+      "locator": {
+        "book": "EXO",
+        "chapter": 21,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 21,
+          "verse": 6
+        }
+      ],
+      "en": "then his master shall bring him to God, and shall bring him to the door or to the doorpost, and his master shall bore his ear through with an awl, and he shall serve him forever.",
+      "ko": "상전이 그를 데리고 재판장에게로 갈 것이요 또 그를 문이나 문설주 앞으로 데리고 가서 그것에다가 송곳으로 그 귀를 뚫을 것이라 그가 영영히 그 상전을 섬기리라",
+      "source_text_hash": "cd0b4ecbe32b117b35774a3a19bc6df4e5ddeced1447363800168fff8a5d6dd7",
+      "translation_text_hash": "51d97dfd04bbca3c383b97b1f554ab024e0bbe7f0ad448af0e763e3d6b550877",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "상전이 그를 데리고 재판장에게로 갈 것이요 또 그를 문이나 문설주 앞으로 데리고 가서 그것에다가 송곳으로 그 귀를 뚫을 것이라 그가 영영히 그 상전을 섬기리라"
+      ],
+      "raw_text_hashes": [
+        "51d97dfd04bbca3c383b97b1f554ab024e0bbe7f0ad448af0e763e3d6b550877"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:21:7",
+      "sequence": 2085,
+      "chapter_label": "EXO 21",
+      "verse_label": "7",
+      "locator": {
+        "book": "EXO",
+        "chapter": 21,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 21,
+          "verse": 7
+        }
+      ],
+      "en": "“If a man sells his daughter to be a female servant, she shall not go out as the male servants do.",
+      "ko": "사람이 그 딸을 여종으로 팔았으면 그는 남종 같이 나오지 못할찌며",
+      "source_text_hash": "4be6919bad5e8ac683885dba6182841cbc2d362a9b8b8ae62712b5050c6ab184",
+      "translation_text_hash": "a832c78fe0a317562b291e7e9e668247ed8c9e6b46fc1c17f7764fe31ec9f39d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 그 딸을 여종으로 팔았으면 그는 남종 같이 나오지 못할찌며"
+      ],
+      "raw_text_hashes": [
+        "a832c78fe0a317562b291e7e9e668247ed8c9e6b46fc1c17f7764fe31ec9f39d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:21:8",
+      "sequence": 2086,
+      "chapter_label": "EXO 21",
+      "verse_label": "8",
+      "locator": {
+        "book": "EXO",
+        "chapter": 21,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 21,
+          "verse": 8
+        }
+      ],
+      "en": "If she doesn’t please her master, who has married her to himself, then he shall let her be redeemed. He shall have no right to sell her to a foreign people, since he has dealt deceitfully with her.",
+      "ko": "만일 상전이 그를 기뻐아니하여 상관치 아니하면 그를 속신케 할 것이나 그 여자를 속임이 되었으니 타국인에게 팔지 못할 것이요",
+      "source_text_hash": "37308284704f41661c5197b8ac3fedc63b6b08375af5ba6969dadb35ba63559b",
+      "translation_text_hash": "2ba518a5db97c7c80c4f33bbdb87e7203cd825ba087fd23358a1328446e92bd1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 상전이 그를 기뻐아니하여 상관치 아니하면 그를 속신케 할 것이나 그 여자를 속임이 되었으니 타국인에게 팔지 못할 것이요"
+      ],
+      "raw_text_hashes": [
+        "2ba518a5db97c7c80c4f33bbdb87e7203cd825ba087fd23358a1328446e92bd1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:21:9",
+      "sequence": 2087,
+      "chapter_label": "EXO 21",
+      "verse_label": "9",
+      "locator": {
+        "book": "EXO",
+        "chapter": 21,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 21,
+          "verse": 9
+        }
+      ],
+      "en": "If he marries her to his son, he shall deal with her as a daughter.",
+      "ko": "만일 그를 자기 아들에게 주기로 하였으면 그를 딸 같이 대접할 것이요",
+      "source_text_hash": "4e176a59cb08ba3b4e692bcd20d5fc9d11145701f78f6104e810909801001960",
+      "translation_text_hash": "b79087f3a60f7470d71abd4c7e297c2bf5c6cb6d1d3a669dbedf4b5f51123580",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 그를 자기 아들에게 주기로 하였으면 그를 딸 같이 대접할 것이요"
+      ],
+      "raw_text_hashes": [
+        "b79087f3a60f7470d71abd4c7e297c2bf5c6cb6d1d3a669dbedf4b5f51123580"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:21:10",
+      "sequence": 2088,
+      "chapter_label": "EXO 21",
+      "verse_label": "10",
+      "locator": {
+        "book": "EXO",
+        "chapter": 21,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 21,
+          "verse": 10
+        }
+      ],
+      "en": "If he takes another wife to himself, he shall not diminish her food, her clothing, and her marital rights.",
+      "ko": "만일 상전이 달리 장가 들찌라도 그의 의복과 음식과 동침하는 것은 끊지 못할 것이요",
+      "source_text_hash": "457f1e49b1e1f016ca2f6e71ad906e5bfd2d394021c0781818e5634bca2f5c4d",
+      "translation_text_hash": "b3cc04dfae5ba6e7cf6c10de57dfd1f3d315363c9604883f0d38f02284fddc39",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 상전이 달리 장가 들찌라도 그의 의복과 음식과 동침하는 것은 끊지 못할 것이요"
+      ],
+      "raw_text_hashes": [
+        "b3cc04dfae5ba6e7cf6c10de57dfd1f3d315363c9604883f0d38f02284fddc39"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:21:11",
+      "sequence": 2089,
+      "chapter_label": "EXO 21",
+      "verse_label": "11",
+      "locator": {
+        "book": "EXO",
+        "chapter": 21,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 21,
+          "verse": 11
+        }
+      ],
+      "en": "If he doesn’t do these three things for her, she may go free without paying any money.",
+      "ko": "이 세 가지를 시행하지 아니하면 그는 속전을 내지 않고 거저 나가게 할 것이니라",
+      "source_text_hash": "9c9575a988e3f1bb3dbd2968fcef9d6ce40e050f2169217394dd16102d9578f1",
+      "translation_text_hash": "ce61bdcc4bebe1e3b666842d76fe9e23d255d4183f686120f100fc36d8e6b70c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 세 가지를 시행하지 아니하면 그는 속전을 내지 않고 거저 나가게 할 것이니라"
+      ],
+      "raw_text_hashes": [
+        "ce61bdcc4bebe1e3b666842d76fe9e23d255d4183f686120f100fc36d8e6b70c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:21:12",
+      "sequence": 2090,
+      "chapter_label": "EXO 21",
+      "verse_label": "12",
+      "locator": {
+        "book": "EXO",
+        "chapter": 21,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 21,
+          "verse": 12
+        }
+      ],
+      "en": "“One who strikes a man so that he dies shall surely be put to death,",
+      "ko": "사람을 쳐 죽인 자는 반드시 죽일 것이나",
+      "source_text_hash": "a316313240bd0468544212545b7376ad6b4d756ce99179e2d2e58704dcb95634",
+      "translation_text_hash": "64a6299311f1aaaf03299ee33fc32684d4c30cc1454ead9792053c04fc11533e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람을 쳐 죽인 자는 반드시 죽일 것이나"
+      ],
+      "raw_text_hashes": [
+        "64a6299311f1aaaf03299ee33fc32684d4c30cc1454ead9792053c04fc11533e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:21:13",
+      "sequence": 2091,
+      "chapter_label": "EXO 21",
+      "verse_label": "13",
+      "locator": {
+        "book": "EXO",
+        "chapter": 21,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 21,
+          "verse": 13
+        }
+      ],
+      "en": "but not if it is unintentional, but God allows it to happen; then I will appoint you a place where he shall flee.",
+      "ko": "만일 사람이 계획함이 아니라 나 하나님이 사람을 그 손에 붙임이면 내가 위하여 한 곳을 정하리니 그 사람이 그리로 도망할 것이며",
+      "source_text_hash": "b4d83d422b85eb00b6b7b5971066b1c54a654e7f645e29fc44b42a503d4d7515",
+      "translation_text_hash": "2ccbd328bacaaec8ad1163ff22952819f2f3eb4f483a85bfa60675dd90a28bde",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 사람이 계획함이 아니라 나 하나님이 사람을 그 손에 붙임이면 내가 위하여 한 곳을 정하리니 그 사람이 그리로 도망할 것이며"
+      ],
+      "raw_text_hashes": [
+        "2ccbd328bacaaec8ad1163ff22952819f2f3eb4f483a85bfa60675dd90a28bde"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:21:14",
+      "sequence": 2092,
+      "chapter_label": "EXO 21",
+      "verse_label": "14",
+      "locator": {
+        "book": "EXO",
+        "chapter": 21,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 21,
+          "verse": 14
+        }
+      ],
+      "en": "If a man schemes and comes presumptuously on his neighbor to kill him, you shall take him from my altar, that he may die.",
+      "ko": "사람이 그 이웃을 짐짓 모살하였으면 너는 그를 내 단에서라도 잡아내려 죽일찌니라",
+      "source_text_hash": "41735798a397ef886057b7b5e946d26218a38c7294a3891f547777437b467aca",
+      "translation_text_hash": "d0e1856d5cb6f3b47663a38cdb2ff9a89b894e97b0a0d0b45ac961894c5554e1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 그 이웃을 짐짓 모살하였으면 너는 그를 내 단에서라도 잡아내려 죽일찌니라"
+      ],
+      "raw_text_hashes": [
+        "d0e1856d5cb6f3b47663a38cdb2ff9a89b894e97b0a0d0b45ac961894c5554e1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:21:15",
+      "sequence": 2093,
+      "chapter_label": "EXO 21",
+      "verse_label": "15",
+      "locator": {
+        "book": "EXO",
+        "chapter": 21,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 21,
+          "verse": 15
+        }
+      ],
+      "en": "“Anyone who attacks his father or his mother shall be surely put to death.",
+      "ko": "자기 아비나 어미를 치는 자는 반드시 죽일찌니라",
+      "source_text_hash": "23e6b4a8e60b1d6cd31594494e14cd03d42300996658cf2b494e7d9be69e7b96",
+      "translation_text_hash": "633c2a278cae00db9955a952fd64deb2c3ae495880bb2f4bb4da7444cd0c4a7e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자기 아비나 어미를 치는 자는 반드시 죽일찌니라"
+      ],
+      "raw_text_hashes": [
+        "633c2a278cae00db9955a952fd64deb2c3ae495880bb2f4bb4da7444cd0c4a7e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:21:16",
+      "sequence": 2094,
+      "chapter_label": "EXO 21",
+      "verse_label": "16",
+      "locator": {
+        "book": "EXO",
+        "chapter": 21,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 21,
+          "verse": 16
+        }
+      ],
+      "en": "“Anyone who kidnaps someone and sells him, or if he is found in his hand, he shall surely be put to death.",
+      "ko": "사람을 후린 자가 그 사람을 팔았든지 자기 수하에 두었든지 그를 반드시 죽일찌니라",
+      "source_text_hash": "1248623f11365b62334cfa92dbfba01beedb925a03970da5e8b13de93f44689a",
+      "translation_text_hash": "71edc61a32f6cd10db1717cd05cf7c2e325c229c545465f72b981dbb470d0a4c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람을 후린 자가 그 사람을 팔았든지 자기 수하에 두었든지 그를 반드시 죽일찌니라"
+      ],
+      "raw_text_hashes": [
+        "71edc61a32f6cd10db1717cd05cf7c2e325c229c545465f72b981dbb470d0a4c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:21:17",
+      "sequence": 2095,
+      "chapter_label": "EXO 21",
+      "verse_label": "17",
+      "locator": {
+        "book": "EXO",
+        "chapter": 21,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 21,
+          "verse": 17
+        }
+      ],
+      "en": "“Anyone who curses his father or his mother shall surely be put to death.",
+      "ko": "그 아비나 어미를 저주하는 자는 반드시 죽일찌니라",
+      "source_text_hash": "6749d26e6c2d74a46b92a995efc9c9596073dfff37103aadd5a9d376527b3c97",
+      "translation_text_hash": "8511409b9c648bd3136e38469fefbb93bb5dc5a818e7b5d7798c48d7d67561d7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 아비나 어미를 저주하는 자는 반드시 죽일찌니라"
+      ],
+      "raw_text_hashes": [
+        "8511409b9c648bd3136e38469fefbb93bb5dc5a818e7b5d7798c48d7d67561d7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:21:18",
+      "sequence": 2096,
+      "chapter_label": "EXO 21",
+      "verse_label": "18",
+      "locator": {
+        "book": "EXO",
+        "chapter": 21,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 21,
+          "verse": 18
+        }
+      ],
+      "en": "“If men quarrel and one strikes the other with a stone, or with his fist, and he doesn’t die, but is confined to bed;",
+      "ko": "사람이 서로 싸우다가 하나가 돌이나 주먹으로 그 적수를 쳤으나 그가 죽지 않고 자리에 누웠다가",
+      "source_text_hash": "a79fbe236522b2412a40f81c3202c67e8870eddef51dd6a261b2b2989096e494",
+      "translation_text_hash": "e98dad34cefae004bcc41477b408a4e607e72c550dac07827bd83243fb29c578",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 서로 싸우다가 하나가 돌이나 주먹으로 그 적수를 쳤으나 그가 죽지 않고 자리에 누웠다가"
+      ],
+      "raw_text_hashes": [
+        "e98dad34cefae004bcc41477b408a4e607e72c550dac07827bd83243fb29c578"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:21:19",
+      "sequence": 2097,
+      "chapter_label": "EXO 21",
+      "verse_label": "19",
+      "locator": {
+        "book": "EXO",
+        "chapter": 21,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 21,
+          "verse": 19
+        }
+      ],
+      "en": "if he rises again and walks around with his staff, then he who struck him shall be cleared; only he shall pay for the loss of his time, and shall provide for his healing until he is thoroughly healed.",
+      "ko": "지팡이를 짚고 기동하면 그를 친 자가 형벌은 면하되 기간 손해를 배상하고 그로 전치되게 할찌니라",
+      "source_text_hash": "53e2d67a852255de426708e2413494c9cf2dc77e34cae2e305a807739ac2ff02",
+      "translation_text_hash": "6b6c679e0673fe9403dc2dbc0d55143ae24c78ee7b6023f23ed6b5566b983b8a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "지팡이를 짚고 기동하면 그를 친 자가 형벌은 면하되 기간 손해를 배상하고 그로 전치되게 할찌니라"
+      ],
+      "raw_text_hashes": [
+        "6b6c679e0673fe9403dc2dbc0d55143ae24c78ee7b6023f23ed6b5566b983b8a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:21:20",
+      "sequence": 2098,
+      "chapter_label": "EXO 21",
+      "verse_label": "20",
+      "locator": {
+        "book": "EXO",
+        "chapter": 21,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 21,
+          "verse": 20
+        }
+      ],
+      "en": "“If a man strikes his servant or his maid with a rod, and he dies under his hand, the man shall surely be punished.",
+      "ko": "사람이 매로 그 남종이나 여종을 쳐서 당장에 죽으면 반드시 형벌을 받으려니와",
+      "source_text_hash": "96bacb068f7620f908b8e85b95a3cd7ce41578eaab52b246e5e2579eea9e1d04",
+      "translation_text_hash": "52f9b41a85ae807dafc9b8542aaa0d0539e84388d7b260174b2490bde40bf5c2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 매로 그 남종이나 여종을 쳐서 당장에 죽으면 반드시 형벌을 받으려니와"
+      ],
+      "raw_text_hashes": [
+        "52f9b41a85ae807dafc9b8542aaa0d0539e84388d7b260174b2490bde40bf5c2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:21:21",
+      "sequence": 2099,
+      "chapter_label": "EXO 21",
+      "verse_label": "21",
+      "locator": {
+        "book": "EXO",
+        "chapter": 21,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 21,
+          "verse": 21
+        }
+      ],
+      "en": "Notwithstanding, if his servant gets up after a day or two, he shall not be punished, for the servant is his property.",
+      "ko": "그가 일 일이나 이일을 연명하면 형벌을 면하리니 그는 상전의 금전임이니라",
+      "source_text_hash": "dc59335e28857106bc7d5447e13451231ea9715b366376ec41fa38d7d652e34c",
+      "translation_text_hash": "25b9caff5d7c661de158ea0060fffc7411caf07cc90baa2555f66d2779e04102",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 일 일이나 이일을 연명하면 형벌을 면하리니 그는 상전의 금전임이니라"
+      ],
+      "raw_text_hashes": [
+        "25b9caff5d7c661de158ea0060fffc7411caf07cc90baa2555f66d2779e04102"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:21:22",
+      "sequence": 2100,
+      "chapter_label": "EXO 21",
+      "verse_label": "22",
+      "locator": {
+        "book": "EXO",
+        "chapter": 21,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 21,
+          "verse": 22
+        }
+      ],
+      "en": "“If men fight and hurt a pregnant woman so that she gives birth prematurely, and yet no harm follows, he shall be surely fined as much as the woman’s husband demands and the judges allow.",
+      "ko": "사람이 서로 싸우다가 아이 밴 여인을 다쳐 낙태케 하였으나 다른 해가 없으면 그 남편의 청구대로 반드시 벌금을 내되 재판장의 판결을 좇아 낼 것이니라",
+      "source_text_hash": "f00eb1b9bef3e5e53010fb52fc4e14487135d8c2c650d7d0fa4a34d0f844eb08",
+      "translation_text_hash": "0ea30efc60411d5476e1c3f5aa72f395392abae80580a0ce4e479621ca480e15",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 서로 싸우다가 아이 밴 여인을 다쳐 낙태케 하였으나 다른 해가 없으면 그 남편의 청구대로 반드시 벌금을 내되 재판장의 판결을 좇아 낼 것이니라"
+      ],
+      "raw_text_hashes": [
+        "0ea30efc60411d5476e1c3f5aa72f395392abae80580a0ce4e479621ca480e15"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:21:23",
+      "sequence": 2101,
+      "chapter_label": "EXO 21",
+      "verse_label": "23",
+      "locator": {
+        "book": "EXO",
+        "chapter": 21,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 21,
+          "verse": 23
+        }
+      ],
+      "en": "But if any harm follows, then you must take life for life,",
+      "ko": "그러나 다른 해가 있으면 갚되 생명은 생명으로,",
+      "source_text_hash": "255ace0cc06257bdad8c6bc3c0c33c19ce82ad8001423fac6877a9230fd1f0b2",
+      "translation_text_hash": "d11d0875370a0f95072653227dc6968350ad37fb74da3fc86ddee26ce1c8a6f8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 다른 해가 있으면 갚되 생명은 생명으로,"
+      ],
+      "raw_text_hashes": [
+        "d11d0875370a0f95072653227dc6968350ad37fb74da3fc86ddee26ce1c8a6f8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:21:24",
+      "sequence": 2102,
+      "chapter_label": "EXO 21",
+      "verse_label": "24",
+      "locator": {
+        "book": "EXO",
+        "chapter": 21,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 21,
+          "verse": 24
+        }
+      ],
+      "en": "eye for eye, tooth for tooth, hand for hand, foot for foot,",
+      "ko": "눈은 눈으로, 이는 이로, 손은 손으로, 발은 발로,",
+      "source_text_hash": "9290b0ab582bc3abfb19c4ff7d07992e00afd75b865ecc80bbcbb5cc2d85d1db",
+      "translation_text_hash": "08686f01cc219c7cf9bdb71adda2f577a87ea0c616d656773170841c7d9cc7f3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "눈은 눈으로, 이는 이로, 손은 손으로, 발은 발로,"
+      ],
+      "raw_text_hashes": [
+        "08686f01cc219c7cf9bdb71adda2f577a87ea0c616d656773170841c7d9cc7f3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:21:25",
+      "sequence": 2103,
+      "chapter_label": "EXO 21",
+      "verse_label": "25",
+      "locator": {
+        "book": "EXO",
+        "chapter": 21,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 21,
+          "verse": 25
+        }
+      ],
+      "en": "burning for burning, wound for wound, and bruise for bruise.",
+      "ko": "데운 것은 데움으로, 상하게 한 것은 상함으로, 때린 것은 때림으로 갚을찌니라",
+      "source_text_hash": "8096fd0c56e5a6d8153f02561e6c81f12e7f86d4c68011df8d29c02ce19b7782",
+      "translation_text_hash": "97a7f6ba4601ca9a39530a12337ba3ebca62ae7c5c9f148424417b9acd0ac176",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "데운 것은 데움으로, 상하게 한 것은 상함으로, 때린 것은 때림으로 갚을찌니라"
+      ],
+      "raw_text_hashes": [
+        "97a7f6ba4601ca9a39530a12337ba3ebca62ae7c5c9f148424417b9acd0ac176"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:21:26",
+      "sequence": 2104,
+      "chapter_label": "EXO 21",
+      "verse_label": "26",
+      "locator": {
+        "book": "EXO",
+        "chapter": 21,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 21,
+          "verse": 26
+        }
+      ],
+      "en": "“If a man strikes his servant’s eye, or his maid’s eye, and destroys it, he shall let him go free for his eye’s sake.",
+      "ko": "사람이 그 남종의 한 눈이나 여종의 한 눈을 쳐서 상하게 하면 그 눈 대신에 그를 놓을 것이며",
+      "source_text_hash": "eaa224552a78c6319b2bedfda942f8a43d7aa6f8a555b4e07a9b70791bdce524",
+      "translation_text_hash": "0df05204c5a1cf79316015499265b35b8408c8657367785cfb9545bfedad8bf5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 그 남종의 한 눈이나 여종의 한 눈을 쳐서 상하게 하면 그 눈 대신에 그를 놓을 것이며"
+      ],
+      "raw_text_hashes": [
+        "0df05204c5a1cf79316015499265b35b8408c8657367785cfb9545bfedad8bf5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:21:27",
+      "sequence": 2105,
+      "chapter_label": "EXO 21",
+      "verse_label": "27",
+      "locator": {
+        "book": "EXO",
+        "chapter": 21,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 21,
+          "verse": 27
+        }
+      ],
+      "en": "If he strikes out his male servant’s tooth, or his female servant’s tooth, he shall let the servant go free for his tooth’s sake.",
+      "ko": "그 남종의 한 이나 여종의 한 이를 쳐서 빠뜨리면 그 이 대신에 그를 놓을찌니라",
+      "source_text_hash": "c5f204953d7d7ade372c546d2f674999d5fcded1c8a298a47ad6a5da0ae60af9",
+      "translation_text_hash": "f8f91a737f13ce857e6fb838cfcc3835dc9c0b814e9db53bce48a6db713f741a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 남종의 한 이나 여종의 한 이를 쳐서 빠뜨리면 그 이 대신에 그를 놓을찌니라"
+      ],
+      "raw_text_hashes": [
+        "f8f91a737f13ce857e6fb838cfcc3835dc9c0b814e9db53bce48a6db713f741a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:21:28",
+      "sequence": 2106,
+      "chapter_label": "EXO 21",
+      "verse_label": "28",
+      "locator": {
+        "book": "EXO",
+        "chapter": 21,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 21,
+          "verse": 28
+        }
+      ],
+      "en": "“If a bull gores a man or a woman to death, the bull shall surely be stoned, and its meat shall not be eaten; but the owner of the bull shall not be held responsible.",
+      "ko": "소가 남자나 여자를 받아서 죽이면 그 소는 반드시 돌에 맞아 죽을 것이요 그 고기는 먹지 말것이며 임자는 형벌을 면하려니와",
+      "source_text_hash": "32f0384f682123b04f5b6c31b226c580a2247f238b5990263f914279797ba515",
+      "translation_text_hash": "1d5d1e668609fe83919c5b658ee1b68aa89d9b352e86e72da45673eadbb8ef28",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "소가 남자나 여자를 받아서 죽이면 그 소는 반드시 돌에 맞아 죽을 것이요 그 고기는 먹지 말것이며 임자는 형벌을 면하려니와"
+      ],
+      "raw_text_hashes": [
+        "1d5d1e668609fe83919c5b658ee1b68aa89d9b352e86e72da45673eadbb8ef28"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:21:29",
+      "sequence": 2107,
+      "chapter_label": "EXO 21",
+      "verse_label": "29",
+      "locator": {
+        "book": "EXO",
+        "chapter": 21,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 21,
+          "verse": 29
+        }
+      ],
+      "en": "But if the bull had a habit of goring in the past, and this has been testified to its owner, and he has not kept it in, but it has killed a man or a woman, the bull shall be stoned, and its owner shall also be put to death.",
+      "ko": "소는 본래 받는 버릇이 있고 그 임자는 그로 인하여 경고를 받았으되 단속하지 아니하므로 남녀간에 받아 죽이면 그 소는 돌로 쳐 죽일 것이고 임자도 죽일 것이며",
+      "source_text_hash": "380d54b35d9c0a14a66087725b1498238c6fa9144952757f878472a25102535f",
+      "translation_text_hash": "906b80bb47475e3008b2f65f2e630e444b32d83c7ed86c41a9db72919c133ebd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "소는 본래 받는 버릇이 있고 그 임자는 그로 인하여 경고를 받았으되 단속하지 아니하므로 남녀간에 받아 죽이면 그 소는 돌로 쳐 죽일 것이고 임자도 죽일 것이며"
+      ],
+      "raw_text_hashes": [
+        "906b80bb47475e3008b2f65f2e630e444b32d83c7ed86c41a9db72919c133ebd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:21:30",
+      "sequence": 2108,
+      "chapter_label": "EXO 21",
+      "verse_label": "30",
+      "locator": {
+        "book": "EXO",
+        "chapter": 21,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 21,
+          "verse": 30
+        }
+      ],
+      "en": "If a ransom is imposed on him, then he shall give for the redemption of his life whatever is imposed.",
+      "ko": "만일 그에게 속죄금을 명하면 무릇 그 명한 것을 생명의 속으로 낼 것이요",
+      "source_text_hash": "eac25ebd7e258ce4b20da54894fd1fd471a515293d7b64a290781bc6760e024a",
+      "translation_text_hash": "2efe17497a0e44cf94623f81d68c94885c4351213d8c4e8679c533cd454460af",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 그에게 속죄금을 명하면 무릇 그 명한 것을 생명의 속으로 낼 것이요"
+      ],
+      "raw_text_hashes": [
+        "2efe17497a0e44cf94623f81d68c94885c4351213d8c4e8679c533cd454460af"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:21:31",
+      "sequence": 2109,
+      "chapter_label": "EXO 21",
+      "verse_label": "31",
+      "locator": {
+        "book": "EXO",
+        "chapter": 21,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 21,
+          "verse": 31
+        }
+      ],
+      "en": "Whether it has gored a son or has gored a daughter, according to this judgment it shall be done to him.",
+      "ko": "아들을 받든지 딸을 받든지 이 율례대로 그 임자에게 행할 것이며",
+      "source_text_hash": "18af264ccb419249de9989ab9c16b727cc10412a476651226635157eea3efdaa",
+      "translation_text_hash": "6969bfb8e6fe46c8c363028e3ce6e6e2d71e9237eb6f62c61507e036e38fc5d5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아들을 받든지 딸을 받든지 이 율례대로 그 임자에게 행할 것이며"
+      ],
+      "raw_text_hashes": [
+        "6969bfb8e6fe46c8c363028e3ce6e6e2d71e9237eb6f62c61507e036e38fc5d5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:21:32",
+      "sequence": 2110,
+      "chapter_label": "EXO 21",
+      "verse_label": "32",
+      "locator": {
+        "book": "EXO",
+        "chapter": 21,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 21,
+          "verse": 32
+        }
+      ],
+      "en": "If the bull gores a male servant or a female servant, thirty shekels of silver shall be given to their master, and the ox shall be stoned.",
+      "ko": "소가 만일 남종이나 여종을 받으면 소 임자가 은 삼십 세겔을 그 상전에게 줄 것이요 소는 돌에 맞아 죽을찌니라",
+      "source_text_hash": "c349b25a95fab0e44f33ad4026461a276d0413c71caf157b1124f316fcb7a501",
+      "translation_text_hash": "3af3b4a1dcb463a96ef50f6eb5661fa9e92843eed55ad340d6b81579c8e03a59",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "소가 만일 남종이나 여종을 받으면 소 임자가 은 삼십 세겔을 그 상전에게 줄 것이요 소는 돌에 맞아 죽을찌니라"
+      ],
+      "raw_text_hashes": [
+        "3af3b4a1dcb463a96ef50f6eb5661fa9e92843eed55ad340d6b81579c8e03a59"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:21:33",
+      "sequence": 2111,
+      "chapter_label": "EXO 21",
+      "verse_label": "33",
+      "locator": {
+        "book": "EXO",
+        "chapter": 21,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 21,
+          "verse": 33
+        }
+      ],
+      "en": "“If a man opens a pit, or if a man digs a pit and doesn’t cover it, and a bull or a donkey falls into it,",
+      "ko": "사람이 구덩이를 열어 두거나 구덩이를 파고 덮지 아니함으로 소나 나귀가 거기 빠지면",
+      "source_text_hash": "3923338fe27348b2b08c70d09df54c01229d7d201a3d4a0d03721fa7e993641e",
+      "translation_text_hash": "357c7b11f56e2db8872193a0d648481a863ec859fa938382297abdffd73a33a4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 구덩이를 열어 두거나 구덩이를 파고 덮지 아니함으로 소나 나귀가 거기 빠지면"
+      ],
+      "raw_text_hashes": [
+        "357c7b11f56e2db8872193a0d648481a863ec859fa938382297abdffd73a33a4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:21:34",
+      "sequence": 2112,
+      "chapter_label": "EXO 21",
+      "verse_label": "34",
+      "locator": {
+        "book": "EXO",
+        "chapter": 21,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 21,
+          "verse": 34
+        }
+      ],
+      "en": "the owner of the pit shall make it good. He shall give money to its owner, and the dead animal shall be his.",
+      "ko": "그 구덩이 주인이 잘 조처하여 짐승의 임자에게 돈을 줄 것이요 죽은 것은 그의 차지가 될찌니라",
+      "source_text_hash": "c05b700e79175f62de2f7b2c0441ce0abc97e5470290c12687615f15aad198c6",
+      "translation_text_hash": "a899635c9cd43e71a25cf53caacdf343468961ac8f2c87d3b33e96542c7039dd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 구덩이 주인이 잘 조처하여 짐승의 임자에게 돈을 줄 것이요 죽은 것은 그의 차지가 될찌니라"
+      ],
+      "raw_text_hashes": [
+        "a899635c9cd43e71a25cf53caacdf343468961ac8f2c87d3b33e96542c7039dd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:21:35",
+      "sequence": 2113,
+      "chapter_label": "EXO 21",
+      "verse_label": "35",
+      "locator": {
+        "book": "EXO",
+        "chapter": 21,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 21,
+          "verse": 35
+        }
+      ],
+      "en": "“If one man’s bull injures another’s, so that it dies, then they shall sell the live bull, and divide its price; and they shall also divide the dead animal.",
+      "ko": "이 사람의 소가 저 사람의 소를 받아 죽이면 산 소를 팔아 그 값을 반분하고 죽은 것도 반분하려니와",
+      "source_text_hash": "4453d36beceb5b2439e2146ca05a13e4eea33aba651faf6d3bbb9272f36925ab",
+      "translation_text_hash": "943a7bb9c2059d2cc017c4da3bee3d966cd3cd14b223fd5b78200b90063e27e0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 사람의 소가 저 사람의 소를 받아 죽이면 산 소를 팔아 그 값을 반분하고 죽은 것도 반분하려니와"
+      ],
+      "raw_text_hashes": [
+        "943a7bb9c2059d2cc017c4da3bee3d966cd3cd14b223fd5b78200b90063e27e0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:21:36",
+      "sequence": 2114,
+      "chapter_label": "EXO 21",
+      "verse_label": "36",
+      "locator": {
+        "book": "EXO",
+        "chapter": 21,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 21,
+          "verse": 36
+        }
+      ],
+      "en": "Or if it is known that the bull was in the habit of goring in the past, and its owner has not kept it in, he shall surely pay bull for bull, and the dead animal shall be his own.",
+      "ko": "그 소가 본래 받는 버릇이 있는 줄을 알고도 그 임자가 단속하지 아니하였으면 그는 소로 소를 갚을 것이요 죽은 것은 그의 차지가 될찌니라",
+      "source_text_hash": "e107ed2355fb716e53d7d9aa5bccecf9d334081b92b4af776ce673a9c3e53c47",
+      "translation_text_hash": "3720a1072ab732acbb974d7b4e1a4fb7a0e1e93c84325d49451ac5c6ad4f4f31",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 소가 본래 받는 버릇이 있는 줄을 알고도 그 임자가 단속하지 아니하였으면 그는 소로 소를 갚을 것이요 죽은 것은 그의 차지가 될찌니라"
+      ],
+      "raw_text_hashes": [
+        "3720a1072ab732acbb974d7b4e1a4fb7a0e1e93c84325d49451ac5c6ad4f4f31"
+      ]
+    }
+  ]
+}

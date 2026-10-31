@@ -1,0 +1,653 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1TI:chapter:001",
+  "unit_ordinal": 1120,
+  "unit_label": "1TI 1",
+  "book_code": "1TI",
+  "chapter_number": 1,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1TI:1:1",
+      "sequence": 29694,
+      "chapter_label": "1TI 1",
+      "verse_label": "1",
+      "locator": {
+        "book": "1TI",
+        "chapter": 1,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 1,
+          "verse": 1
+        }
+      ],
+      "en": "Paul, an apostle of Jesus Christ according to the commandment of God our Savior and the Lord Jesus Christ our hope,",
+      "ko": "우리 구주 하나님과 우리 소망이신 그리스도 예수의 명령을 따라 그리스도 예수의 사도 된 바울은",
+      "source_text_hash": "f8d5fb0b77c4e981cbef763fcbbb3e12b08f15e445e613c5b1d13d737ba7b524",
+      "translation_text_hash": "77719a55a16f298217227f8c5c3bf3c8117040b35e1f7003f6fdb54c31bdb13f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리 구주 하나님과 우리 소망이신 그리스도 예수의 명령을 따라 그리스도 예수의 사도 된 바울은"
+      ],
+      "raw_text_hashes": [
+        "77719a55a16f298217227f8c5c3bf3c8117040b35e1f7003f6fdb54c31bdb13f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:1:2",
+      "sequence": 29695,
+      "chapter_label": "1TI 1",
+      "verse_label": "2",
+      "locator": {
+        "book": "1TI",
+        "chapter": 1,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 1,
+          "verse": 2
+        }
+      ],
+      "en": "to Timothy, my true child in faith: Grace, mercy, and peace from God our Father and Christ Jesus our Lord.",
+      "ko": "믿음 안에서 참 아들 된 디모데에게 편지하노니 하나님 아버지와 그리스도 예수 우리 주께로부터 은혜와 긍휼과 평강이 네게 있을찌어다",
+      "source_text_hash": "f256b1dbd8c5698ecf5d4e904133493a7268db1877f66a2f25db3ae44fe1bed9",
+      "translation_text_hash": "3c58850feaaa6e2240418d99e66604924910b8a6dad2a5bdd7ba6defc549a5f4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "믿음 안에서 참 아들 된 디모데에게 편지하노니 하나님 아버지와 그리스도 예수 우리 주께로부터 은혜와 긍휼과 평강이 네게 있을찌어다"
+      ],
+      "raw_text_hashes": [
+        "3c58850feaaa6e2240418d99e66604924910b8a6dad2a5bdd7ba6defc549a5f4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:1:3",
+      "sequence": 29696,
+      "chapter_label": "1TI 1",
+      "verse_label": "3",
+      "locator": {
+        "book": "1TI",
+        "chapter": 1,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 1,
+          "verse": 3
+        }
+      ],
+      "en": "As I urged you when I was going into Macedonia, stay at Ephesus that you might command certain men not to teach a different doctrine,",
+      "ko": "내가 마게도냐로 갈 때에 너를 권하여 에베소에 머물라 한 것은 어떤 사람들을 명하여 다른 교훈을 가르치지 말며",
+      "source_text_hash": "09586d8e43ed98ca0af3c730b6a1cba03d52732a5c98c2b95589fe9c899a1969",
+      "translation_text_hash": "0a960ec9d603bb714fe389c8144c15810cba963b762ce881a95ee8d86c766ba8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 마게도냐로 갈 때에 너를 권하여 에베소에 머물라 한 것은 어떤 사람들을 명하여 다른 교훈을 가르치지 말며"
+      ],
+      "raw_text_hashes": [
+        "0a960ec9d603bb714fe389c8144c15810cba963b762ce881a95ee8d86c766ba8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:1:4",
+      "sequence": 29697,
+      "chapter_label": "1TI 1",
+      "verse_label": "4",
+      "locator": {
+        "book": "1TI",
+        "chapter": 1,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 1,
+          "verse": 4
+        }
+      ],
+      "en": "and not to pay attention to myths and endless genealogies, which cause disputes rather than God’s stewardship, which is in faith.",
+      "ko": "신화와 끝없는 족보에 착념치 말게 하려 함이라 이런 것은 믿음 안에 있는 하나님의 경륜을 이룸보다 도리어 변론을 내는 것이라",
+      "source_text_hash": "a290028273db086153aece9e148d19ad112c05f8e7c831a305af679b1c18a5b6",
+      "translation_text_hash": "fb7b01fa111f073fd583d40a2208385080035eb8dc2d763a27660038f848b4d4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "신화와 끝없는 족보에 착념치 말게 하려 함이라 이런 것은 믿음 안에 있는 하나님의 경륜을 이룸보다 도리어 변론을 내는 것이라"
+      ],
+      "raw_text_hashes": [
+        "fb7b01fa111f073fd583d40a2208385080035eb8dc2d763a27660038f848b4d4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:1:5",
+      "sequence": 29698,
+      "chapter_label": "1TI 1",
+      "verse_label": "5",
+      "locator": {
+        "book": "1TI",
+        "chapter": 1,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 1,
+          "verse": 5
+        }
+      ],
+      "en": "But the goal of this command is love from a pure heart, a good conscience, and sincere faith,",
+      "ko": "경계의 목적은 청결한 마음과 선한 양심과 거짓이 없는 믿음으로 나는 사랑이거늘",
+      "source_text_hash": "dfd0bf2c7cdc7915cd22b23d1c8076d3486b81c22ec34762f82bc64c4c4e0c9f",
+      "translation_text_hash": "9e235a859c4b0ab8525de1dadf71808ecd765cf9c6f6e4dca3336af04bb02aaa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "경계의 목적은 청결한 마음과 선한 양심과 거짓이 없는 믿음으로 나는 사랑이거늘"
+      ],
+      "raw_text_hashes": [
+        "9e235a859c4b0ab8525de1dadf71808ecd765cf9c6f6e4dca3336af04bb02aaa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:1:6",
+      "sequence": 29699,
+      "chapter_label": "1TI 1",
+      "verse_label": "6",
+      "locator": {
+        "book": "1TI",
+        "chapter": 1,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 1,
+          "verse": 6
+        }
+      ],
+      "en": "from which things some, having missed the mark, have turned away to vain talking,",
+      "ko": "사람들이 이에서 벗어나 헛된 말에 빠져",
+      "source_text_hash": "b04461a5680f987360b83e7e33f92e7856b2d2e5c45b26a77a0e635386c3eded",
+      "translation_text_hash": "083831e4e3c445365f7715245a1a8ca0731864e84c42163c932523a879d000cb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람들이 이에서 벗어나 헛된 말에 빠져"
+      ],
+      "raw_text_hashes": [
+        "083831e4e3c445365f7715245a1a8ca0731864e84c42163c932523a879d000cb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:1:7",
+      "sequence": 29700,
+      "chapter_label": "1TI 1",
+      "verse_label": "7",
+      "locator": {
+        "book": "1TI",
+        "chapter": 1,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 1,
+          "verse": 7
+        }
+      ],
+      "en": "desiring to be teachers of the law, though they understand neither what they say nor about what they strongly affirm.",
+      "ko": "율법의 선생이 되려 하나 자기의 말하는 것이나 자기의 확증하는 것도 깨닫지 못하는도다",
+      "source_text_hash": "b860631d18699ad2d11e687e3dc3b03a1533998f7e460cb06603fc5f08281058",
+      "translation_text_hash": "7341bfe30d4151af77d9dfc27534a25e6cc4e803ef0048aab43c6fc84f7cb605",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "율법의 선생이 되려 하나 자기의 말하는 것이나 자기의 확증하는 것도 깨닫지 못하는도다"
+      ],
+      "raw_text_hashes": [
+        "7341bfe30d4151af77d9dfc27534a25e6cc4e803ef0048aab43c6fc84f7cb605"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:1:8",
+      "sequence": 29701,
+      "chapter_label": "1TI 1",
+      "verse_label": "8",
+      "locator": {
+        "book": "1TI",
+        "chapter": 1,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 1,
+          "verse": 8
+        }
+      ],
+      "en": "But we know that the law is good if a person uses it lawfully,",
+      "ko": "그러나 사람이 율법을 법 있게 쓰면 율법은 선한 것인줄 우리는 아노라",
+      "source_text_hash": "f4d6f9199ae43761fea1985b80827010fd54042bd1f940e4c02df4686527cf6a",
+      "translation_text_hash": "92aefd2cb713bc022b69d5c1445f692c86a6f5ecdbeba2ccdf8192b5a5ed06cd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 사람이 율법을 법 있게 쓰면 율법은 선한 것인줄 우리는 아노라"
+      ],
+      "raw_text_hashes": [
+        "92aefd2cb713bc022b69d5c1445f692c86a6f5ecdbeba2ccdf8192b5a5ed06cd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:1:9",
+      "sequence": 29702,
+      "chapter_label": "1TI 1",
+      "verse_label": "9",
+      "locator": {
+        "book": "1TI",
+        "chapter": 1,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 1,
+          "verse": 9
+        }
+      ],
+      "en": "as knowing this, that law is not made for a righteous person, but for the lawless and insubordinate, for the ungodly and sinners, for the unholy and profane, for murderers of fathers and murderers of mothers, for manslayers,",
+      "ko": "알것은 이것이니 법은 옳은 사람을 위하여 세운 것이 아니요 오직 불법한 자와 복종치 아니하는 자며 경건치 아니한 자와 죄인이며 거룩하지 아니한 자와 망령된 자며 아비를 치는 자와 어미를 치는 자며 살인하는 자며",
+      "source_text_hash": "7968988b7b0b674c5b41ec169059fdf156b660f77300260101a1d3ce19cbb707",
+      "translation_text_hash": "3969618cd03f01d3b41f6a7b9884584348555b93c8d4c7992859c3ce7a6a3e35",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "알것은 이것이니 법은 옳은 사람을 위하여 세운 것이 아니요 오직 불법한 자와 복종치 아니하는 자며 경건치 아니한 자와 죄인이며 거룩하지 아니한 자와 망령된 자며 아비를 치는 자와 어미를 치는 자며 살인하는 자며"
+      ],
+      "raw_text_hashes": [
+        "3969618cd03f01d3b41f6a7b9884584348555b93c8d4c7992859c3ce7a6a3e35"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:1:10",
+      "sequence": 29703,
+      "chapter_label": "1TI 1",
+      "verse_label": "10",
+      "locator": {
+        "book": "1TI",
+        "chapter": 1,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 1,
+          "verse": 10
+        }
+      ],
+      "en": "for the sexually immoral, for homosexuals, for slave-traders, for liars, for perjurers, and for any other thing contrary to the sound doctrine,",
+      "ko": "음행하는 자며 남색하는 자며 사람을 탈취하는 자며 거짓말 하는 자며 거짓 맹세하는 자와 기타 바른 교훈을 거스리는 자를 위함이니",
+      "source_text_hash": "0eb999ad3076281185e57d8568d373becc955a6663aa30ba9bd82395fbd66ccb",
+      "translation_text_hash": "de0fb2d3e91d36a70908a82a7f065a1c464ed60139a6fb0ffd1e52277b7e431e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "음행하는 자며 남색하는 자며 사람을 탈취하는 자며 거짓말 하는 자며 거짓 맹세하는 자와 기타 바른 교훈을 거스리는 자를 위함이니"
+      ],
+      "raw_text_hashes": [
+        "de0fb2d3e91d36a70908a82a7f065a1c464ed60139a6fb0ffd1e52277b7e431e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:1:11",
+      "sequence": 29704,
+      "chapter_label": "1TI 1",
+      "verse_label": "11",
+      "locator": {
+        "book": "1TI",
+        "chapter": 1,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 1,
+          "verse": 11
+        }
+      ],
+      "en": "according to the Good News of the glory of the blessed God, which was committed to my trust.",
+      "ko": "이 교훈은 내게 맡기신바 복되신 하나님의 영광의 복음을 좇음이니라",
+      "source_text_hash": "92924a37bb3d6b8781cea0a116e52d9934a460b85c32069127b4763df93c2874",
+      "translation_text_hash": "306e04befa9c8a7c66d9af7ea382629c802300c6ede87bfbf3777121b6b08c6f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 교훈은 내게 맡기신바 복되신 하나님의 영광의 복음을 좇음이니라"
+      ],
+      "raw_text_hashes": [
+        "306e04befa9c8a7c66d9af7ea382629c802300c6ede87bfbf3777121b6b08c6f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:1:12",
+      "sequence": 29705,
+      "chapter_label": "1TI 1",
+      "verse_label": "12",
+      "locator": {
+        "book": "1TI",
+        "chapter": 1,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 1,
+          "verse": 12
+        }
+      ],
+      "en": "I thank him who enabled me, Christ Jesus our Lord, because he counted me faithful, appointing me to service,",
+      "ko": "나를 능하게 하신 그리스도 예수 우리 주께 내가 감사함은 나를 충성되이 여겨 내게 직분을 맡기심이니",
+      "source_text_hash": "523720bfab039c0d3aa090bde6f86df92f477bb0644034e4ef0c345be154b9b9",
+      "translation_text_hash": "cc6a29158d242f891db44949d67c5cc7ae40f373cff944f84c133b3b78edbf78",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나를 능하게 하신 그리스도 예수 우리 주께 내가 감사함은 나를 충성되이 여겨 내게 직분을 맡기심이니"
+      ],
+      "raw_text_hashes": [
+        "cc6a29158d242f891db44949d67c5cc7ae40f373cff944f84c133b3b78edbf78"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:1:13",
+      "sequence": 29706,
+      "chapter_label": "1TI 1",
+      "verse_label": "13",
+      "locator": {
+        "book": "1TI",
+        "chapter": 1,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 1,
+          "verse": 13
+        }
+      ],
+      "en": "although I used to be a blasphemer, a persecutor, and insolent. However, I obtained mercy because I did it ignorantly in unbelief.",
+      "ko": "내가 전에는 훼방자요 핍박자요 포행자이었으나 도리어 긍휼을 입은 것은 내가 믿지 아니할 때에 알지 못하고 행하였음이라",
+      "source_text_hash": "d997892aafd10cfa31451ad133a83d3b67587ca8fc98dbfb274dda5108adc013",
+      "translation_text_hash": "b28d477ed606089d0cdbd61a07fb14606945336e0089e125a6ee514eb25f60d2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 전에는 훼방자요 핍박자요 포행자이었으나 도리어 긍휼을 입은 것은 내가 믿지 아니할 때에 알지 못하고 행하였음이라"
+      ],
+      "raw_text_hashes": [
+        "b28d477ed606089d0cdbd61a07fb14606945336e0089e125a6ee514eb25f60d2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:1:14",
+      "sequence": 29707,
+      "chapter_label": "1TI 1",
+      "verse_label": "14",
+      "locator": {
+        "book": "1TI",
+        "chapter": 1,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 1,
+          "verse": 14
+        }
+      ],
+      "en": "The grace of our Lord abounded exceedingly with faith and love which is in Christ Jesus.",
+      "ko": "우리 주의 은혜가 그리스도 예수 안에 있는 믿음과 사랑과 함께 넘치도록 풍성하였도다",
+      "source_text_hash": "1c7d814edf641e3939a863e1475184080f38da5fc378544bf9ea7373eeb67a18",
+      "translation_text_hash": "65e553822e6bb2e90d2f7720644c1e6b5addbcfa581e195f101de9f3f828e722",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리 주의 은혜가 그리스도 예수 안에 있는 믿음과 사랑과 함께 넘치도록 풍성하였도다"
+      ],
+      "raw_text_hashes": [
+        "65e553822e6bb2e90d2f7720644c1e6b5addbcfa581e195f101de9f3f828e722"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:1:15",
+      "sequence": 29708,
+      "chapter_label": "1TI 1",
+      "verse_label": "15",
+      "locator": {
+        "book": "1TI",
+        "chapter": 1,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 1,
+          "verse": 15
+        }
+      ],
+      "en": "The saying is faithful and worthy of all acceptance, that Christ Jesus came into the world to save sinners, of whom I am chief.",
+      "ko": "미쁘다 모든 사람이 받을만한 이 말이여 그리스도 예수께서 죄인을 구원하시려고 세상에 임하셨다 하였도다 죄인 중에 내가 괴수니라",
+      "source_text_hash": "fc9a66ada2eb99d5de697585dd6425a1e0af847d40b86e2fe94bec9d452255dc",
+      "translation_text_hash": "63a2e20d0c215a66e831ad85e435b671e70e21609ef58145a52f86521e473654",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "미쁘다 모든 사람이 받을만한 이 말이여 그리스도 예수께서 죄인을 구원하시려고 세상에 임하셨다 하였도다 죄인 중에 내가 괴수니라"
+      ],
+      "raw_text_hashes": [
+        "63a2e20d0c215a66e831ad85e435b671e70e21609ef58145a52f86521e473654"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:1:16",
+      "sequence": 29709,
+      "chapter_label": "1TI 1",
+      "verse_label": "16",
+      "locator": {
+        "book": "1TI",
+        "chapter": 1,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 1,
+          "verse": 16
+        }
+      ],
+      "en": "However, for this cause I obtained mercy, that in me first, Jesus Christ might display all his patience for an example of those who were going to believe in him for eternal life.",
+      "ko": "그러나 내가 긍휼을 입은 까닭은 예수 그리스도께서 내게 먼저 일절 오래 참으심을 보이사 후에 주를 믿어 영생 얻는 자들에게 본이 되게 하려 하심이니라",
+      "source_text_hash": "f4d52885e8767be8113b23729c3b5328cb58b23be58dbe79c2c87c1b7e059a9c",
+      "translation_text_hash": "7756797bb3ee8b5ed7f5b3057802e10d36071fbf452a8b699f56574a8fb37978",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 내가 긍휼을 입은 까닭은 예수 그리스도께서 내게 먼저 일절 오래 참으심을 보이사 후에 주를 믿어 영생 얻는 자들에게 본이 되게 하려 하심이니라"
+      ],
+      "raw_text_hashes": [
+        "7756797bb3ee8b5ed7f5b3057802e10d36071fbf452a8b699f56574a8fb37978"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:1:17",
+      "sequence": 29710,
+      "chapter_label": "1TI 1",
+      "verse_label": "17",
+      "locator": {
+        "book": "1TI",
+        "chapter": 1,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 1,
+          "verse": 17
+        }
+      ],
+      "en": "Now to the King eternal, immortal, invisible, to God who alone is wise, be honor and glory forever and ever. Amen.",
+      "ko": "만세의 왕 곧 썩지 아니하고 보이지 아니하고 홀로 하나이신 하나님께 존귀와 영광이 세세토록 있어지이다 아멘",
+      "source_text_hash": "1172ad8458c52371f2a25317de76e825e6eb8faa92c7ae8d67af5185d411a7bf",
+      "translation_text_hash": "cfc35423c753506c427822a424e197a33b89efcfb746a7d72e7f59482e2929ac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만세의 왕 곧 썩지 아니하고 보이지 아니하고 홀로 하나이신 하나님께 존귀와 영광이 세세토록 있어지이다 아멘"
+      ],
+      "raw_text_hashes": [
+        "cfc35423c753506c427822a424e197a33b89efcfb746a7d72e7f59482e2929ac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:1:18",
+      "sequence": 29711,
+      "chapter_label": "1TI 1",
+      "verse_label": "18",
+      "locator": {
+        "book": "1TI",
+        "chapter": 1,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 1,
+          "verse": 18
+        }
+      ],
+      "en": "I commit this instruction to you, my child Timothy, according to the prophecies which were given to you before, that by them you may wage the good warfare,",
+      "ko": "아들 디모데야 내가 네게 이 경계로써 명하노니 전에 너를 지도한 예언을 따라 그것으로 선한 싸움을 싸우며",
+      "source_text_hash": "d1613cfcb929706d62992fac15c35d93a4fa0f30ab48feb0f7d9efa3dd0b983b",
+      "translation_text_hash": "86da0e2188c5afce0e4a7ae634399ba227f64ef605027db7b6b25913f3f72b21",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아들 디모데야 내가 네게 이 경계로써 명하노니 전에 너를 지도한 예언을 따라 그것으로 선한 싸움을 싸우며"
+      ],
+      "raw_text_hashes": [
+        "86da0e2188c5afce0e4a7ae634399ba227f64ef605027db7b6b25913f3f72b21"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:1:19",
+      "sequence": 29712,
+      "chapter_label": "1TI 1",
+      "verse_label": "19",
+      "locator": {
+        "book": "1TI",
+        "chapter": 1,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 1,
+          "verse": 19
+        }
+      ],
+      "en": "holding faith and a good conscience, which some having thrust away made a shipwreck concerning the faith,",
+      "ko": "믿음과 착한 양심을 가지라 어떤이들이 이 양심을 버렸고 그 믿음에 관하여는 파선하였느니라",
+      "source_text_hash": "56f794573f1a812e5eb860a33b7c283ff1df0ca7e1a8143390e205ae4e74701a",
+      "translation_text_hash": "ad0807a297ef7c9ac9987a44567036b7bd43c1b2abdf54bcafd18c8d10160341",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "믿음과 착한 양심을 가지라 어떤이들이 이 양심을 버렸고 그 믿음에 관하여는 파선하였느니라"
+      ],
+      "raw_text_hashes": [
+        "ad0807a297ef7c9ac9987a44567036b7bd43c1b2abdf54bcafd18c8d10160341"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:1:20",
+      "sequence": 29713,
+      "chapter_label": "1TI 1",
+      "verse_label": "20",
+      "locator": {
+        "book": "1TI",
+        "chapter": 1,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 1,
+          "verse": 20
+        }
+      ],
+      "en": "of whom are Hymenaeus and Alexander, whom I delivered to Satan that they might be taught not to blaspheme.",
+      "ko": "그 가운데 후메내오와 알렉산더가 있으니 내가 사단에게 내어준 것은 저희로 징계를 받아 훼방하지 말게 하려 함이니라",
+      "source_text_hash": "34778a542c7b34a35865b34bc1f78042e15020d4c8816b4e654ef67aa4cc1da6",
+      "translation_text_hash": "145154194ba0bd83e0557d73381971c070f0620c449f76da607eb1e70df5d67e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 가운데 후메내오와 알렉산더가 있으니 내가 사단에게 내어준 것은 저희로 징계를 받아 훼방하지 말게 하려 함이니라"
+      ],
+      "raw_text_hashes": [
+        "145154194ba0bd83e0557d73381971c070f0620c449f76da607eb1e70df5d67e"
+      ]
+    }
+  ]
+}

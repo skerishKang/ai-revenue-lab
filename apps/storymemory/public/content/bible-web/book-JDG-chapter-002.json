@@ -1,0 +1,749 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JDG:chapter:002",
+  "unit_ordinal": 213,
+  "unit_label": "JDG 2",
+  "book_code": "JDG",
+  "chapter_number": 2,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JDG:2:1",
+      "sequence": 6547,
+      "chapter_label": "JDG 2",
+      "verse_label": "1",
+      "locator": {
+        "book": "JDG",
+        "chapter": 2,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 2,
+          "verse": 1
+        }
+      ],
+      "en": "The LORD’s angel came up from Gilgal to Bochim. He said, “I brought you out of Egypt, and have brought you to the land which I swore to give your fathers. I said, ‘I will never break my covenant with you.",
+      "ko": "여호와의 사자가 길갈에서부터 보김에 이르러 가로되 내가 너희로 애굽에서 나오게 하고 인도하여 너희 열조에게 맹세한 땅으로 이끌어 왔으며 또 내가 이르기를 내가 너희에게 세운 언약을 영원히 어기지 아니하리니",
+      "source_text_hash": "722e6cd8f3c3920d3562f448ae3cb50579250e7618307b49f8313696d5a4ea50",
+      "translation_text_hash": "d141d712e70a12396e3d7cb67487b41640d29cf222aad0e29d5f675b82d16d0e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 사자가 길갈에서부터 보김에 이르러 가로되 내가 너희로 애굽에서 나오게 하고 인도하여 너희 열조에게 맹세한 땅으로 이끌어 왔으며 또 내가 이르기를 내가 너희에게 세운 언약을 영원히 어기지 아니하리니"
+      ],
+      "raw_text_hashes": [
+        "d141d712e70a12396e3d7cb67487b41640d29cf222aad0e29d5f675b82d16d0e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:2:2",
+      "sequence": 6548,
+      "chapter_label": "JDG 2",
+      "verse_label": "2",
+      "locator": {
+        "book": "JDG",
+        "chapter": 2,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 2,
+          "verse": 2
+        }
+      ],
+      "en": "You shall make no covenant with the inhabitants of this land. You shall break down their altars.’ But you have not listened to my voice. Why have you done this?",
+      "ko": "너희는 이 땅 거민과 언약을 세우지 말며 그들의 단을 헐라 하였거늘 너희가 내 목소리를 청종치 아니하였도다 그리함은 어찜이뇨",
+      "source_text_hash": "db32bd6d77dc11f112f98306282515c4586a9a15abb99d8a2486354b42d4758b",
+      "translation_text_hash": "9a225656cbf3d93c92fdb758ea46f4c4362c26a871b92adbc563eff1a56ea130",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 이 땅 거민과 언약을 세우지 말며 그들의 단을 헐라 하였거늘 너희가 내 목소리를 청종치 아니하였도다 그리함은 어찜이뇨"
+      ],
+      "raw_text_hashes": [
+        "9a225656cbf3d93c92fdb758ea46f4c4362c26a871b92adbc563eff1a56ea130"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:2:3",
+      "sequence": 6549,
+      "chapter_label": "JDG 2",
+      "verse_label": "3",
+      "locator": {
+        "book": "JDG",
+        "chapter": 2,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 2,
+          "verse": 3
+        }
+      ],
+      "en": "Therefore I also said, ‘I will not drive them out from before you; but they shall be in your sides, and their gods will be a snare to you.’”",
+      "ko": "그러므로 내가 또 말하기를 내가 그들을 너희 앞에서 쫓아내지 아니하리니 그들이 너희 옆구리에 가시가 될 것이며 그들의 신들이 너희에게 올무가 되리라 하였노라",
+      "source_text_hash": "a900dc394300fd20c760adb23a1649d921445946bd958e3f0649dee4c3c86052",
+      "translation_text_hash": "d374417cef3418f03fd3c995249c217a2bf163c942c4f4bcdff9d60718d35c51",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 내가 또 말하기를 내가 그들을 너희 앞에서 쫓아내지 아니하리니 그들이 너희 옆구리에 가시가 될 것이며 그들의 신들이 너희에게 올무가 되리라 하였노라"
+      ],
+      "raw_text_hashes": [
+        "d374417cef3418f03fd3c995249c217a2bf163c942c4f4bcdff9d60718d35c51"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:2:4",
+      "sequence": 6550,
+      "chapter_label": "JDG 2",
+      "verse_label": "4",
+      "locator": {
+        "book": "JDG",
+        "chapter": 2,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 2,
+          "verse": 4
+        }
+      ],
+      "en": "When the LORD’s angel spoke these words to all the children of Israel, the people lifted up their voice and wept.",
+      "ko": "여호와의 사자가 이스라엘 모든 자손에게 이 말씀을 이르매 백성이 소리를 높여 운지라",
+      "source_text_hash": "b0237cdcf95fe47d8d36fb6612779fc9fcb14e3c45c64b5b6cd3acd877d82f66",
+      "translation_text_hash": "a1d45819294e6807a534829d0ff7ca79502fa977175af9333c05e0921daa3d19",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 사자가 이스라엘 모든 자손에게 이 말씀을 이르매 백성이 소리를 높여 운지라"
+      ],
+      "raw_text_hashes": [
+        "a1d45819294e6807a534829d0ff7ca79502fa977175af9333c05e0921daa3d19"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:2:5",
+      "sequence": 6551,
+      "chapter_label": "JDG 2",
+      "verse_label": "5",
+      "locator": {
+        "book": "JDG",
+        "chapter": 2,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 2,
+          "verse": 5
+        }
+      ],
+      "en": "They called the name of that place Bochim, and they sacrificed there to the LORD.",
+      "ko": "그러므로 그 곳을 이름하여 보김이라 하니라 무리가 거기서 여호와께 제사를 드렸더라",
+      "source_text_hash": "0485b38b09ae687b101cce12ed5b69bf5f7fd50fefc34731eaba4e913de9cf86",
+      "translation_text_hash": "d0bd0bba13d2c8c226d3348e1f9244ad60324f84af787d35ce8d216bfb16d8eb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 그 곳을 이름하여 보김이라 하니라 무리가 거기서 여호와께 제사를 드렸더라"
+      ],
+      "raw_text_hashes": [
+        "d0bd0bba13d2c8c226d3348e1f9244ad60324f84af787d35ce8d216bfb16d8eb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:2:6",
+      "sequence": 6552,
+      "chapter_label": "JDG 2",
+      "verse_label": "6",
+      "locator": {
+        "book": "JDG",
+        "chapter": 2,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 2,
+          "verse": 6
+        }
+      ],
+      "en": "Now when Joshua had sent the people away, the children of Israel each went to his inheritance to possess the land.",
+      "ko": "전에 여호수아가 백성을 보내매 이스라엘 자손이 각기 그 기업으로 가서 땅을 차지하였고",
+      "source_text_hash": "c1b934d40aed8c443e533df01c75617426341dea24619f39db36efa1b45dc965",
+      "translation_text_hash": "4d02203ad6c28477b81a0793773493d577630fc13a6efc2ab1f7dcdcbabffddb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "전에 여호수아가 백성을 보내매 이스라엘 자손이 각기 그 기업으로 가서 땅을 차지하였고"
+      ],
+      "raw_text_hashes": [
+        "4d02203ad6c28477b81a0793773493d577630fc13a6efc2ab1f7dcdcbabffddb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:2:7",
+      "sequence": 6553,
+      "chapter_label": "JDG 2",
+      "verse_label": "7",
+      "locator": {
+        "book": "JDG",
+        "chapter": 2,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 2,
+          "verse": 7
+        }
+      ],
+      "en": "The people served the LORD all the days of Joshua, and all the days of the elders who outlived Joshua, who had seen all the great work of the LORD that he had worked for Israel.",
+      "ko": "백성이 여호수아의 사는 날 동안과 여호수아 뒤에 생존한 장로들 곧 여호와께서 이스라엘을 위하여 행하신 모든 큰 일을 본 자의 사는 날 동안에 여호와를 섬겼더라",
+      "source_text_hash": "443ac5c6b20b6eee3082219effde9e3765241ae506c5a9471901c8163a73d9dc",
+      "translation_text_hash": "0fb69187f4826380ea5407fa9962c04f04412fc3e51b58f24f2ea2e426f37e0c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "백성이 여호수아의 사는 날 동안과 여호수아 뒤에 생존한 장로들 곧 여호와께서 이스라엘을 위하여 행하신 모든 큰 일을 본 자의 사는 날 동안에 여호와를 섬겼더라"
+      ],
+      "raw_text_hashes": [
+        "0fb69187f4826380ea5407fa9962c04f04412fc3e51b58f24f2ea2e426f37e0c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:2:8",
+      "sequence": 6554,
+      "chapter_label": "JDG 2",
+      "verse_label": "8",
+      "locator": {
+        "book": "JDG",
+        "chapter": 2,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 2,
+          "verse": 8
+        }
+      ],
+      "en": "Joshua the son of Nun, the servant of the LORD, died, being one hundred ten years old.",
+      "ko": "여호와의 종 눈의 아들 여호수아가 일백 십세에 죽으매",
+      "source_text_hash": "ab689a68721faccdb1be482675df08e2060e3adb87936ce87a12e49b3923492a",
+      "translation_text_hash": "413ef8b827bc40e8fa12190a8217560b1e4662d1495269336a8faa91bd482fa7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 종 눈의 아들 여호수아가 일백 십세에 죽으매"
+      ],
+      "raw_text_hashes": [
+        "413ef8b827bc40e8fa12190a8217560b1e4662d1495269336a8faa91bd482fa7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:2:9",
+      "sequence": 6555,
+      "chapter_label": "JDG 2",
+      "verse_label": "9",
+      "locator": {
+        "book": "JDG",
+        "chapter": 2,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 2,
+          "verse": 9
+        }
+      ],
+      "en": "They buried him in the border of his inheritance in Timnath Heres, in the hill country of Ephraim, on the north of the mountain of Gaash.",
+      "ko": "무리가 그의 기업의 경내 에브라임 산지 가아스산 북 딤낫 헤레스에 장사하였고",
+      "source_text_hash": "2f9f110a27001e9565659f66a448a37d9ac0662b90460e6ca73f6ac29dc50f2f",
+      "translation_text_hash": "0a7d5033e444acb3f221566774f9a4cdb8ecdb793991a115367e5e9fc26ecef1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무리가 그의 기업의 경내 에브라임 산지 가아스산 북 딤낫 헤레스에 장사하였고"
+      ],
+      "raw_text_hashes": [
+        "0a7d5033e444acb3f221566774f9a4cdb8ecdb793991a115367e5e9fc26ecef1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:2:10",
+      "sequence": 6556,
+      "chapter_label": "JDG 2",
+      "verse_label": "10",
+      "locator": {
+        "book": "JDG",
+        "chapter": 2,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 2,
+          "verse": 10
+        }
+      ],
+      "en": "After all that generation were gathered to their fathers, another generation arose after them who didn’t know the LORD, nor the work which he had done for Israel.",
+      "ko": "그 세대 사람도 다 그 열조에게로 돌아갔고 그 후에 일어난 다른 세대는 여호와를 알지 못하며 여호와께서 이스라엘을 위하여 행하신 일도 알지 못하였더라",
+      "source_text_hash": "bc9f29be93d8e3ee918f2d56172237435bcd2369fd1912db5d56efef35c57727",
+      "translation_text_hash": "61d3f600a048b51ce0010f6937b20f2f2de33e95661ca1b9b0c172a093cd3ac3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 세대 사람도 다 그 열조에게로 돌아갔고 그 후에 일어난 다른 세대는 여호와를 알지 못하며 여호와께서 이스라엘을 위하여 행하신 일도 알지 못하였더라"
+      ],
+      "raw_text_hashes": [
+        "61d3f600a048b51ce0010f6937b20f2f2de33e95661ca1b9b0c172a093cd3ac3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:2:11",
+      "sequence": 6557,
+      "chapter_label": "JDG 2",
+      "verse_label": "11",
+      "locator": {
+        "book": "JDG",
+        "chapter": 2,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 2,
+          "verse": 11
+        }
+      ],
+      "en": "The children of Israel did that which was evil in the LORD’s sight, and served the Baals.",
+      "ko": "이스라엘 자손이 여호와의 목전에 악을 행하여 바알들을 섬기며",
+      "source_text_hash": "e60f845b03b1b7c2d2b379f2bc95ab443116526b2c4be3051174c325af64eaac",
+      "translation_text_hash": "3c8bce8fea1bbd17673a15b082afcdcecd48aacc845f386f9a02132f12d7a1a4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손이 여호와의 목전에 악을 행하여 바알들을 섬기며"
+      ],
+      "raw_text_hashes": [
+        "3c8bce8fea1bbd17673a15b082afcdcecd48aacc845f386f9a02132f12d7a1a4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:2:12",
+      "sequence": 6558,
+      "chapter_label": "JDG 2",
+      "verse_label": "12",
+      "locator": {
+        "book": "JDG",
+        "chapter": 2,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 2,
+          "verse": 12
+        }
+      ],
+      "en": "They abandoned the LORD, the God of their fathers, who brought them out of the land of Egypt, and followed other gods, of the gods of the peoples who were around them, and bowed themselves down to them; and they provoked the LORD to anger.",
+      "ko": "애굽 땅에서 그들을 인도하여 내신 그 열조의 하나님 여호와를 버리고 다른 신 곧 그 사방에 있는 백성의 신들을 좇아 그들에게 절하여 여호와를 진노하시게 하였으되",
+      "source_text_hash": "f93c5d222ae88ceb376c897af013287bf4877b99c60b23bbc41f0918e57807f9",
+      "translation_text_hash": "31989453146b7cbeede1752c68d79dfcd98669bd30951655f7b43078f45ba947",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "애굽 땅에서 그들을 인도하여 내신 그 열조의 하나님 여호와를 버리고 다른 신 곧 그 사방에 있는 백성의 신들을 좇아 그들에게 절하여 여호와를 진노하시게 하였으되"
+      ],
+      "raw_text_hashes": [
+        "31989453146b7cbeede1752c68d79dfcd98669bd30951655f7b43078f45ba947"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:2:13",
+      "sequence": 6559,
+      "chapter_label": "JDG 2",
+      "verse_label": "13",
+      "locator": {
+        "book": "JDG",
+        "chapter": 2,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 2,
+          "verse": 13
+        }
+      ],
+      "en": "They abandoned the LORD, and served Baal and the Ashtaroth.",
+      "ko": "곧 그들이 여호와를 버리고 바알과 아스다롯을 섬겼으므로",
+      "source_text_hash": "74250ab878f04ed9c40cb0d59403e3dfdc94c85b6f83b90a34c49947ad6725e2",
+      "translation_text_hash": "82f3692e3cfbb7718e39cec4718ad180fb58d21cbd393b14628f75a730e14949",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 그들이 여호와를 버리고 바알과 아스다롯을 섬겼으므로"
+      ],
+      "raw_text_hashes": [
+        "82f3692e3cfbb7718e39cec4718ad180fb58d21cbd393b14628f75a730e14949"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:2:14",
+      "sequence": 6560,
+      "chapter_label": "JDG 2",
+      "verse_label": "14",
+      "locator": {
+        "book": "JDG",
+        "chapter": 2,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 2,
+          "verse": 14
+        }
+      ],
+      "en": "The LORD’s anger burned against Israel, and he delivered them into the hands of raiders who plundered them. He sold them into the hands of their enemies all around, so that they could no longer stand before their enemies.",
+      "ko": "여호와께서 이스라엘에게 진노하사 노략하는 자의 손에 붙여 그들로 노략을 당케 하시며 또 사방 모든 대적의 손에 파시매 그들이 다시는 대적을 당치 못하였으며",
+      "source_text_hash": "5c864bf0694e5b04799d535ab389b628ad9063284961faae9b57d4c29aef9494",
+      "translation_text_hash": "9cd5869ab31d40f804c0474d8bac6148426d8316cad02cf6b4e7dd98633bc007",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 이스라엘에게 진노하사 노략하는 자의 손에 붙여 그들로 노략을 당케 하시며 또 사방 모든 대적의 손에 파시매 그들이 다시는 대적을 당치 못하였으며"
+      ],
+      "raw_text_hashes": [
+        "9cd5869ab31d40f804c0474d8bac6148426d8316cad02cf6b4e7dd98633bc007"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:2:15",
+      "sequence": 6561,
+      "chapter_label": "JDG 2",
+      "verse_label": "15",
+      "locator": {
+        "book": "JDG",
+        "chapter": 2,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 2,
+          "verse": 15
+        }
+      ],
+      "en": "Wherever they went out, the LORD’s hand was against them for evil, as the LORD had spoken, and as the LORD had sworn to them; and they were very distressed.",
+      "ko": "그들이 어디를 가든지 여호와의 손이 그들에게 재앙을 내리시매 곧 여호와께서 말씀하신 것과 같고 여호와께서 그들에게 맹세하신 것과 같아서 그들의 괴로움이 심하였더라",
+      "source_text_hash": "102156e3505c1b78572999b19cf19c4149795d06c3e5b65a35a54e06884f21d9",
+      "translation_text_hash": "f3d96b77c7458bc007b6c92bdd3f2d5d89fb224cdccdb6b8c22007f73a6db215",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 어디를 가든지 여호와의 손이 그들에게 재앙을 내리시매 곧 여호와께서 말씀하신 것과 같고 여호와께서 그들에게 맹세하신 것과 같아서 그들의 괴로움이 심하였더라"
+      ],
+      "raw_text_hashes": [
+        "f3d96b77c7458bc007b6c92bdd3f2d5d89fb224cdccdb6b8c22007f73a6db215"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:2:16",
+      "sequence": 6562,
+      "chapter_label": "JDG 2",
+      "verse_label": "16",
+      "locator": {
+        "book": "JDG",
+        "chapter": 2,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 2,
+          "verse": 16
+        }
+      ],
+      "en": "The LORD raised up judges, who saved them out of the hand of those who plundered them.",
+      "ko": "여호와께서 사사를 세우사 노략하는 자의 손에서 그들을 건져내게 하셨으나",
+      "source_text_hash": "ea0b93ca77dbb0f0b072535a78253490429dca111692d3892b3ad13d84eefeba",
+      "translation_text_hash": "0aefee490929defe956fe551033c2b542450a85cc2eb0efa9697733f2fbde169",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 사사를 세우사 노략하는 자의 손에서 그들을 건져내게 하셨으나"
+      ],
+      "raw_text_hashes": [
+        "0aefee490929defe956fe551033c2b542450a85cc2eb0efa9697733f2fbde169"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:2:17",
+      "sequence": 6563,
+      "chapter_label": "JDG 2",
+      "verse_label": "17",
+      "locator": {
+        "book": "JDG",
+        "chapter": 2,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 2,
+          "verse": 17
+        }
+      ],
+      "en": "Yet they didn’t listen to their judges; for they prostituted themselves to other gods, and bowed themselves down to them. They quickly turned away from the way in which their fathers walked, obeying the LORD’s commandments. They didn’t do so.",
+      "ko": "그들이 그 사사도 청종치 아니하고 돌이켜 다른 신들을 음란하듯 좇아 그들에게 절하고 여호와의 명령을 순종하던 그 열조의 행한 길을 속히 치우쳐 떠나서 그와 같이 행치 아니하였더라",
+      "source_text_hash": "939b42f0390a48d0d102a28c1df621d06baf28e6ce4e7c7a6b2a2b59d070424c",
+      "translation_text_hash": "b86ad38bf9656ff01af66d36ef760422c72d7889d67d1f97d3e6b1e6210d481b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 그 사사도 청종치 아니하고 돌이켜 다른 신들을 음란하듯 좇아 그들에게 절하고 여호와의 명령을 순종하던 그 열조의 행한 길을 속히 치우쳐 떠나서 그와 같이 행치 아니하였더라"
+      ],
+      "raw_text_hashes": [
+        "b86ad38bf9656ff01af66d36ef760422c72d7889d67d1f97d3e6b1e6210d481b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:2:18",
+      "sequence": 6564,
+      "chapter_label": "JDG 2",
+      "verse_label": "18",
+      "locator": {
+        "book": "JDG",
+        "chapter": 2,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 2,
+          "verse": 18
+        }
+      ],
+      "en": "When the LORD raised up judges for them, then the LORD was with the judge, and saved them out of the hand of their enemies all the days of the judge; for it grieved the LORD because of their groaning by reason of those who oppressed them and troubled them.",
+      "ko": "여호와께서 그들을 위하여 사사를 세우실 때에는 그 사사와 함께 하셨고 그 사사의 사는 날 동안에는 여호와께서 그들을 대적의 손에서 구원하셨으니 이는 그들이 대적에게 압박과 괴롭게 함을 받아 슬피 부르짖으므로 여호와께서 뜻을 돌이키셨음이어늘",
+      "source_text_hash": "c377e0d0c12bda4b623e584d8dd5cf0557375a8c910e09f908d6ba52b7b27b09",
+      "translation_text_hash": "6935d0f82146d0cdb7e995992134bce16b9cb7246c2e0010179f030220ce6906",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 그들을 위하여 사사를 세우실 때에는 그 사사와 함께 하셨고 그 사사의 사는 날 동안에는 여호와께서 그들을 대적의 손에서 구원하셨으니 이는 그들이 대적에게 압박과 괴롭게 함을 받아 슬피 부르짖으므로 여호와께서 뜻을 돌이키셨음이어늘"
+      ],
+      "raw_text_hashes": [
+        "6935d0f82146d0cdb7e995992134bce16b9cb7246c2e0010179f030220ce6906"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:2:19",
+      "sequence": 6565,
+      "chapter_label": "JDG 2",
+      "verse_label": "19",
+      "locator": {
+        "book": "JDG",
+        "chapter": 2,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 2,
+          "verse": 19
+        }
+      ],
+      "en": "But when the judge was dead, they turned back, and dealt more corruptly than their fathers in following other gods to serve them and to bow down to them. They didn’t cease what they were doing, or give up their stubborn ways.",
+      "ko": "그 사사가 죽은 후에는 그들이 돌이켜 그 열조보다 더욱 패괴하여 다른 신들을 좇아 섬겨 그들에게 절하고 그 행위와 패역한 길을 그치지 아니하였으므로",
+      "source_text_hash": "408df4056d39f4eb9028abeb7776d103c0fd779eaf2f69033cf5c673e7adf7da",
+      "translation_text_hash": "04aa6710c10de043180a888dbc04e209c26d1e2c154db1da91bd5ac9fd68cdb3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 사사가 죽은 후에는 그들이 돌이켜 그 열조보다 더욱 패괴하여 다른 신들을 좇아 섬겨 그들에게 절하고 그 행위와 패역한 길을 그치지 아니하였으므로"
+      ],
+      "raw_text_hashes": [
+        "04aa6710c10de043180a888dbc04e209c26d1e2c154db1da91bd5ac9fd68cdb3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:2:20",
+      "sequence": 6566,
+      "chapter_label": "JDG 2",
+      "verse_label": "20",
+      "locator": {
+        "book": "JDG",
+        "chapter": 2,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 2,
+          "verse": 20
+        }
+      ],
+      "en": "The LORD’s anger burned against Israel; and he said, “Because this nation transgressed my covenant which I commanded their fathers, and has not listened to my voice,",
+      "ko": "여호와께서 이스라엘에게 진노하여 이르시되 이 백성이 내가 그 열조와 세운 언약을 어기고 나의 목소리를 청종치 아니하였은즉",
+      "source_text_hash": "3b5b4e96307ea0912ff278b9a3d54da62bd1d57e6b2a8646eab4011ec85405ca",
+      "translation_text_hash": "7e258b91c1a9017e50ddcdd9c83014792854ad68dd30a850a6bacec27c8a154b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 이스라엘에게 진노하여 이르시되 이 백성이 내가 그 열조와 세운 언약을 어기고 나의 목소리를 청종치 아니하였은즉"
+      ],
+      "raw_text_hashes": [
+        "7e258b91c1a9017e50ddcdd9c83014792854ad68dd30a850a6bacec27c8a154b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:2:21",
+      "sequence": 6567,
+      "chapter_label": "JDG 2",
+      "verse_label": "21",
+      "locator": {
+        "book": "JDG",
+        "chapter": 2,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 2,
+          "verse": 21
+        }
+      ],
+      "en": "I also will no longer drive out any of the nations that Joshua left when he died from before them;",
+      "ko": "나도 여호수아가 죽을 때에 남겨둔 열국을 다시는 그들의 앞에서 하나도 쫓아내지 아니하리니",
+      "source_text_hash": "7d2f69b03bce44689af535869d06e9bdde8dbdb30ec65f5caee2ab0caadc2875",
+      "translation_text_hash": "9a59b24223e5c56881e8370e3dc21cc6edc45707a1fd75c1550decdc0a7e5f16",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나도 여호수아가 죽을 때에 남겨둔 열국을 다시는 그들의 앞에서 하나도 쫓아내지 아니하리니"
+      ],
+      "raw_text_hashes": [
+        "9a59b24223e5c56881e8370e3dc21cc6edc45707a1fd75c1550decdc0a7e5f16"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:2:22",
+      "sequence": 6568,
+      "chapter_label": "JDG 2",
+      "verse_label": "22",
+      "locator": {
+        "book": "JDG",
+        "chapter": 2,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 2,
+          "verse": 22
+        }
+      ],
+      "en": "that by them I may test Israel, to see if they will keep the LORD’s way to walk therein, as their fathers kept it, or not.”",
+      "ko": "이는 이스라엘이 그 열조의 지킨것 같이 나 여호와의 도를 지켜 행하나 아니하나 그들로 시험하려 함이라 하시니라",
+      "source_text_hash": "8bf2d9536f13fd1e412973fa12e162265ea14306c42ce86ad1dc450d5eb49d84",
+      "translation_text_hash": "13542cc5533f168e358eaa04558cf4ca6e7fcf3c7e137bac6e0ba255a435fe25",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 이스라엘이 그 열조의 지킨것 같이 나 여호와의 도를 지켜 행하나 아니하나 그들로 시험하려 함이라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "13542cc5533f168e358eaa04558cf4ca6e7fcf3c7e137bac6e0ba255a435fe25"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:2:23",
+      "sequence": 6569,
+      "chapter_label": "JDG 2",
+      "verse_label": "23",
+      "locator": {
+        "book": "JDG",
+        "chapter": 2,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 2,
+          "verse": 23
+        }
+      ],
+      "en": "So the LORD left those nations, without driving them out hastily. He didn’t deliver them into Joshua’s hand.",
+      "ko": "그 열국을 머물러두사 속히 쫓아내지 아니하시며 여호수아의 손에 붙이지 아니하셨음이 이를 인함이었더라",
+      "source_text_hash": "f1911e7325e88bea7c01588fcad95e5c8d13a2993a17d1e2617929592c886fa2",
+      "translation_text_hash": "32995ff8a3974205acbc6f4ecfce103d86b53b85ebdaa3333aa3ffd834921356",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 열국을 머물러두사 속히 쫓아내지 아니하시며 여호수아의 손에 붙이지 아니하셨음이 이를 인함이었더라"
+      ],
+      "raw_text_hashes": [
+        "32995ff8a3974205acbc6f4ecfce103d86b53b85ebdaa3333aa3ffd834921356"
+      ]
+    }
+  ]
+}

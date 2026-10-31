@@ -1,0 +1,717 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EPH:chapter:002",
+  "unit_ordinal": 1099,
+  "unit_label": "EPH 2",
+  "book_code": "EPH",
+  "chapter_number": 2,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EPH:2:1",
+      "sequence": 29227,
+      "chapter_label": "EPH 2",
+      "verse_label": "1",
+      "locator": {
+        "book": "EPH",
+        "chapter": 2,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 2,
+          "verse": 1
+        }
+      ],
+      "en": "You were made alive when you were dead in transgressions and sins,",
+      "ko": "너희의 허물과 죄로 죽었던 너희를 살리셨도다",
+      "source_text_hash": "60ce8c4724e04ada81a70afb31704671a138ad05df6ebbfbae470c5610d8b943",
+      "translation_text_hash": "2e5b1d6712c00ab66fca61d28f68eacaa1bf320fb4a1bfbe6c1325cc02176699",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희의 허물과 죄로 죽었던 너희를 살리셨도다"
+      ],
+      "raw_text_hashes": [
+        "2e5b1d6712c00ab66fca61d28f68eacaa1bf320fb4a1bfbe6c1325cc02176699"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:2:2",
+      "sequence": 29228,
+      "chapter_label": "EPH 2",
+      "verse_label": "2",
+      "locator": {
+        "book": "EPH",
+        "chapter": 2,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 2,
+          "verse": 2
+        }
+      ],
+      "en": "in which you once walked according to the course of this world, according to the prince of the power of the air, the spirit who now works in the children of disobedience.",
+      "ko": "그 때에 너희가 그 가운데서 행하여 이 세상 풍속을 좇고 공중의 권세 잡은 자를 따랐으니 곧 지금 불순종의 아들들 가운데서 역사하는 영이라",
+      "source_text_hash": "40945215cce8fee2634c651edfc8ad0910672b15e451b045ae9917dec2f78d82",
+      "translation_text_hash": "ab5901be8860e94c01292f9be5420d78af36d79a55475c26a52df3fe1b2153b7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 너희가 그 가운데서 행하여 이 세상 풍속을 좇고 공중의 권세 잡은 자를 따랐으니 곧 지금 불순종의 아들들 가운데서 역사하는 영이라"
+      ],
+      "raw_text_hashes": [
+        "ab5901be8860e94c01292f9be5420d78af36d79a55475c26a52df3fe1b2153b7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:2:3",
+      "sequence": 29229,
+      "chapter_label": "EPH 2",
+      "verse_label": "3",
+      "locator": {
+        "book": "EPH",
+        "chapter": 2,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 2,
+          "verse": 3
+        }
+      ],
+      "en": "We also all once lived among them in the lusts of our flesh, doing the desires of the flesh and of the mind, and were by nature children of wrath, even as the rest.",
+      "ko": "전에는 우리도 다 그 가운데서 우리 육체의 욕심을 따라 지내며 육체와 마음의 원하는 것을 하여 다른이들과 같이 본질상 진노의 자녀이었더니",
+      "source_text_hash": "01d2e27937ac13ec87eb67c07e19b436b5a18f46b431cf69ad0831ce992b5b51",
+      "translation_text_hash": "1ebfab31cc0176332a5ec7a4af7137727da551b777097e44f1d77933497f7cd9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "전에는 우리도 다 그 가운데서 우리 육체의 욕심을 따라 지내며 육체와 마음의 원하는 것을 하여 다른이들과 같이 본질상 진노의 자녀이었더니"
+      ],
+      "raw_text_hashes": [
+        "1ebfab31cc0176332a5ec7a4af7137727da551b777097e44f1d77933497f7cd9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:2:4",
+      "sequence": 29230,
+      "chapter_label": "EPH 2",
+      "verse_label": "4",
+      "locator": {
+        "book": "EPH",
+        "chapter": 2,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 2,
+          "verse": 4
+        }
+      ],
+      "en": "But God, being rich in mercy, for his great love with which he loved us,",
+      "ko": "긍휼에 풍성하신 하나님이 우리를 사랑하신 그 큰 사랑을 인하여",
+      "source_text_hash": "f4ed8dc7c36baf6ed3e464e82a38743f0faa1c566ff80b0960787f8da0e10716",
+      "translation_text_hash": "0ed6d6f5586502ab6df69a361a3a963c86f9941cb71bc2ed1678a36050a996e7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "긍휼에 풍성하신 하나님이 우리를 사랑하신 그 큰 사랑을 인하여"
+      ],
+      "raw_text_hashes": [
+        "0ed6d6f5586502ab6df69a361a3a963c86f9941cb71bc2ed1678a36050a996e7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:2:5",
+      "sequence": 29231,
+      "chapter_label": "EPH 2",
+      "verse_label": "5",
+      "locator": {
+        "book": "EPH",
+        "chapter": 2,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 2,
+          "verse": 5
+        }
+      ],
+      "en": "even when we were dead through our trespasses, made us alive together with Christ—by grace you have been saved—",
+      "ko": "허물로 죽은 우리를 그리스도와 함께 살리셨고 (너희가 은혜로 구원을 얻은 것이라)",
+      "source_text_hash": "bca056674839eae08539a210b16e6cc18df87ab292173e904cd8bdc2fd297e06",
+      "translation_text_hash": "2c56e072dd5105e65be3f869deac3f6000d566979930eeb8a9974580c99248b6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "허물로 죽은 우리를 그리스도와 함께 살리셨고 (너희가 은혜로 구원을 얻은 것이라)"
+      ],
+      "raw_text_hashes": [
+        "2c56e072dd5105e65be3f869deac3f6000d566979930eeb8a9974580c99248b6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:2:6",
+      "sequence": 29232,
+      "chapter_label": "EPH 2",
+      "verse_label": "6",
+      "locator": {
+        "book": "EPH",
+        "chapter": 2,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 2,
+          "verse": 6
+        }
+      ],
+      "en": "and raised us up with him, and made us to sit with him in the heavenly places in Christ Jesus,",
+      "ko": "또 함께 일으키사 그리스도 예수 안에서 함께 하늘에 앉히시니",
+      "source_text_hash": "1bdb309c244f821a4994fef604aee9f3dbd97fb41f019e60d143dd71e26f48fa",
+      "translation_text_hash": "97fb682c52eb28284228c895834a8472e8f411979007fb24ae109fad67637248",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 함께 일으키사 그리스도 예수 안에서 함께 하늘에 앉히시니"
+      ],
+      "raw_text_hashes": [
+        "97fb682c52eb28284228c895834a8472e8f411979007fb24ae109fad67637248"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:2:7",
+      "sequence": 29233,
+      "chapter_label": "EPH 2",
+      "verse_label": "7",
+      "locator": {
+        "book": "EPH",
+        "chapter": 2,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 2,
+          "verse": 7
+        }
+      ],
+      "en": "that in the ages to come he might show the exceeding riches of his grace in kindness toward us in Christ Jesus;",
+      "ko": "이는 그리스도 예수 안에서 우리에게 자비하심으로써 그 은혜의 지극히 풍성함을 오는 여러 세대에 나타내려 하심이니라",
+      "source_text_hash": "4fa65ee9af6ac167ae79997600003bb4317de32c284036d9f82870e2ec870de7",
+      "translation_text_hash": "4fe60b0d954532ee1f79d62eb3c7daa480720c799bdb73ccc5923c780a631e1a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 그리스도 예수 안에서 우리에게 자비하심으로써 그 은혜의 지극히 풍성함을 오는 여러 세대에 나타내려 하심이니라"
+      ],
+      "raw_text_hashes": [
+        "4fe60b0d954532ee1f79d62eb3c7daa480720c799bdb73ccc5923c780a631e1a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:2:8",
+      "sequence": 29234,
+      "chapter_label": "EPH 2",
+      "verse_label": "8",
+      "locator": {
+        "book": "EPH",
+        "chapter": 2,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 2,
+          "verse": 8
+        }
+      ],
+      "en": "for by grace you have been saved through faith, and that not of yourselves; it is the gift of God,",
+      "ko": "너희가 그 은혜를 인하여 믿음으로 말미암아 구원을 얻었나니 이것이 너희에게서 난 것이 아니요 하나님의 선물이라",
+      "source_text_hash": "1c3953f82afe0e5c3553c2eb6accd2e5beb55d691109107442ba0603b18e7dea",
+      "translation_text_hash": "da9674c7daa19ae50beb12d6bc6741d72e8ff7ba444a733c3644c38237a20cbe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 그 은혜를 인하여 믿음으로 말미암아 구원을 얻었나니 이것이 너희에게서 난 것이 아니요 하나님의 선물이라"
+      ],
+      "raw_text_hashes": [
+        "da9674c7daa19ae50beb12d6bc6741d72e8ff7ba444a733c3644c38237a20cbe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:2:9",
+      "sequence": 29235,
+      "chapter_label": "EPH 2",
+      "verse_label": "9",
+      "locator": {
+        "book": "EPH",
+        "chapter": 2,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 2,
+          "verse": 9
+        }
+      ],
+      "en": "not of works, that no one would boast.",
+      "ko": "행위에서 난 것이 아니니 이는 누구든지 자랑치 못하게 함이니라",
+      "source_text_hash": "e77eb859cb64be22af7c2c3630e359acad92001fb47761b00e119b798b741c44",
+      "translation_text_hash": "0c418c7f115fbeafe259a8fa89e9c89d0366dfd582080762a090b12c6926fb1c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "행위에서 난 것이 아니니 이는 누구든지 자랑치 못하게 함이니라"
+      ],
+      "raw_text_hashes": [
+        "0c418c7f115fbeafe259a8fa89e9c89d0366dfd582080762a090b12c6926fb1c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:2:10",
+      "sequence": 29236,
+      "chapter_label": "EPH 2",
+      "verse_label": "10",
+      "locator": {
+        "book": "EPH",
+        "chapter": 2,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 2,
+          "verse": 10
+        }
+      ],
+      "en": "For we are his workmanship, created in Christ Jesus for good works, which God prepared before that we would walk in them.",
+      "ko": "우리는 그의 만드신바라 그리스도 예수 안에서 선한 일을 위하여 지으심을 받은 자니 이 일은 하나님이 전에 예비하사 우리로 그 가운데서 행하게 하려 하심이니라",
+      "source_text_hash": "545f32cc1cdb60b061ee4d67e702577ff7de98eb83636966dcf6acb8f17d9082",
+      "translation_text_hash": "69efd2dc167cf8c56bf57511909d28b1cbad77973b35754a64d9c6b1e14c958d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리는 그의 만드신바라 그리스도 예수 안에서 선한 일을 위하여 지으심을 받은 자니 이 일은 하나님이 전에 예비하사 우리로 그 가운데서 행하게 하려 하심이니라"
+      ],
+      "raw_text_hashes": [
+        "69efd2dc167cf8c56bf57511909d28b1cbad77973b35754a64d9c6b1e14c958d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:2:11",
+      "sequence": 29237,
+      "chapter_label": "EPH 2",
+      "verse_label": "11",
+      "locator": {
+        "book": "EPH",
+        "chapter": 2,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 2,
+          "verse": 11
+        }
+      ],
+      "en": "Therefore remember that once you, the Gentiles in the flesh, who are called “uncircumcision” by that which is called “circumcision” (in the flesh, made by hands),",
+      "ko": "그러므로 생각하라 너희는 그 때에 육체로 이방인이요 손으로 육체에 행한 할례당이라 칭하는 자들에게 무할례당이라 칭함을 받는 자들이라",
+      "source_text_hash": "0a4bdd815e816407b22ef792b3e4e148c251c4714c475bd62112e7025c25540c",
+      "translation_text_hash": "13b0bcaed43d95e1707b45c18bcdc61bc3e77830f7b912b8bf2de0cbcc3bdfe6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 생각하라 너희는 그 때에 육체로 이방인이요 손으로 육체에 행한 할례당이라 칭하는 자들에게 무할례당이라 칭함을 받는 자들이라"
+      ],
+      "raw_text_hashes": [
+        "13b0bcaed43d95e1707b45c18bcdc61bc3e77830f7b912b8bf2de0cbcc3bdfe6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:2:12",
+      "sequence": 29238,
+      "chapter_label": "EPH 2",
+      "verse_label": "12",
+      "locator": {
+        "book": "EPH",
+        "chapter": 2,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 2,
+          "verse": 12
+        }
+      ],
+      "en": "that you were at that time separate from Christ, alienated from the commonwealth of Israel, and strangers from the covenants of the promise, having no hope and without God in the world.",
+      "ko": "그 때에 너희는 그리스도 밖에 있었고 이스라엘 나라 밖의 사람이라 약속의 언약들에 대하여 외인이요 세상에서 소망이 없고 하나님도 없는 자이더니",
+      "source_text_hash": "e958e6f8e543ad69e879759a1a4e0f17a7b4a9d3adfa05bd9521136e0af5beb7",
+      "translation_text_hash": "dc98ea53d25c001ee1a274b9cc47600e3279f7740c6edf3157682d52c05161af",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 너희는 그리스도 밖에 있었고 이스라엘 나라 밖의 사람이라 약속의 언약들에 대하여 외인이요 세상에서 소망이 없고 하나님도 없는 자이더니"
+      ],
+      "raw_text_hashes": [
+        "dc98ea53d25c001ee1a274b9cc47600e3279f7740c6edf3157682d52c05161af"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:2:13",
+      "sequence": 29239,
+      "chapter_label": "EPH 2",
+      "verse_label": "13",
+      "locator": {
+        "book": "EPH",
+        "chapter": 2,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 2,
+          "verse": 13
+        }
+      ],
+      "en": "But now in Christ Jesus you who once were far off are made near in the blood of Christ.",
+      "ko": "이제는 전에 멀리 있던 너희가 그리스도 예수 안에서 그리스도의 피로 가까와졌느니라",
+      "source_text_hash": "41d59485084a0236dbdd284a1fa409ebd7c74e58c7e59322a254f19bef7099ee",
+      "translation_text_hash": "a41d3964f64b358032912dfa884689df748c7ed7e06d137905de545a74a5042c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제는 전에 멀리 있던 너희가 그리스도 예수 안에서 그리스도의 피로 가까와졌느니라"
+      ],
+      "raw_text_hashes": [
+        "a41d3964f64b358032912dfa884689df748c7ed7e06d137905de545a74a5042c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:2:14",
+      "sequence": 29240,
+      "chapter_label": "EPH 2",
+      "verse_label": "14",
+      "locator": {
+        "book": "EPH",
+        "chapter": 2,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 2,
+          "verse": 14
+        }
+      ],
+      "en": "For he is our peace, who made both one, and broke down the middle wall of separation,",
+      "ko": "그는 우리의 화평이신지라 둘로 하나를 만드사 중간에 막힌 담을 허시고",
+      "source_text_hash": "37ece02393c49b2e4d6caa064dc38895c65fd2f2d308b1d0f6ea68b2414169fd",
+      "translation_text_hash": "1caa9610dc170d0f8e923fc6fe822954474611e40ced208afce82473a9118357",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그는 우리의 화평이신지라 둘로 하나를 만드사 중간에 막힌 담을 허시고"
+      ],
+      "raw_text_hashes": [
+        "1caa9610dc170d0f8e923fc6fe822954474611e40ced208afce82473a9118357"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:2:15",
+      "sequence": 29241,
+      "chapter_label": "EPH 2",
+      "verse_label": "15",
+      "locator": {
+        "book": "EPH",
+        "chapter": 2,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 2,
+          "verse": 15
+        }
+      ],
+      "en": "having abolished in his flesh the hostility, the law of commandments contained in ordinances, that he might create in himself one new man of the two, making peace,",
+      "ko": "원수 된 것 곧 의문에 속한 계명의 율법을 자기 육체로 폐하셨으니 이는 이 둘로 자기의 안에서 한 새 사람을 지어 화평하게 하시고",
+      "source_text_hash": "dab17a658413c2c2aeb7ecf1da3f080dac6ede2548c434b4314e1fb4e7f992d8",
+      "translation_text_hash": "e6cb0ef9ca52f36d893d23ce484591515afa3f92a1aa5cc96e67cae5c4ec0696",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "원수 된 것 곧 의문에 속한 계명의 율법을 자기 육체로 폐하셨으니 이는 이 둘로 자기의 안에서 한 새 사람을 지어 화평하게 하시고"
+      ],
+      "raw_text_hashes": [
+        "e6cb0ef9ca52f36d893d23ce484591515afa3f92a1aa5cc96e67cae5c4ec0696"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:2:16",
+      "sequence": 29242,
+      "chapter_label": "EPH 2",
+      "verse_label": "16",
+      "locator": {
+        "book": "EPH",
+        "chapter": 2,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 2,
+          "verse": 16
+        }
+      ],
+      "en": "and might reconcile them both in one body to God through the cross, having killed the hostility through it.",
+      "ko": "또 십자가로 이 둘을 한 몸으로 하나님과 화목하게 하려 하심이라 원수 된것을 십자가로 소멸하시고",
+      "source_text_hash": "f65c459702811a2486d7318982ce612e44f7a890847bf66b6d16029408d60b60",
+      "translation_text_hash": "b1fa93338d0159bcbda66a4b5889e1e05f34a069aa3154c9906ab2fc3b5837a8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 십자가로 이 둘을 한 몸으로 하나님과 화목하게 하려 하심이라 원수 된것을 십자가로 소멸하시고"
+      ],
+      "raw_text_hashes": [
+        "b1fa93338d0159bcbda66a4b5889e1e05f34a069aa3154c9906ab2fc3b5837a8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:2:17",
+      "sequence": 29243,
+      "chapter_label": "EPH 2",
+      "verse_label": "17",
+      "locator": {
+        "book": "EPH",
+        "chapter": 2,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 2,
+          "verse": 17
+        }
+      ],
+      "en": "He came and preached peace to you who were far off and to those who were near.",
+      "ko": "또 오셔서 먼데 있는 너희에게 평안을 전하고 가까운데 있는 자들에게 평안을 전하셨으니",
+      "source_text_hash": "94286c936fe10645e8edfd8ef64219ed2a201e788f2c72ca13f5d2464c8f748b",
+      "translation_text_hash": "35c353c82cb4ea317740958191594ab3ad00c596ee592ae47823b52bfbb8eaed",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 오셔서 먼데 있는 너희에게 평안을 전하고 가까운데 있는 자들에게 평안을 전하셨으니"
+      ],
+      "raw_text_hashes": [
+        "35c353c82cb4ea317740958191594ab3ad00c596ee592ae47823b52bfbb8eaed"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:2:18",
+      "sequence": 29244,
+      "chapter_label": "EPH 2",
+      "verse_label": "18",
+      "locator": {
+        "book": "EPH",
+        "chapter": 2,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 2,
+          "verse": 18
+        }
+      ],
+      "en": "For through him we both have our access in one Spirit to the Father.",
+      "ko": "이는 저로 말미암아 우리 둘이 한 성령 안에서 아버지께 나아감을 얻게 하려 하심이라",
+      "source_text_hash": "32e4df32c8a408eee2ed5d8d78609d4bd49bccb7a237fb7f81b6bc96a9aaf8f9",
+      "translation_text_hash": "7245e387d780659f258acb021420b596b151027535b5d9a9b358232d401aa2fa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 저로 말미암아 우리 둘이 한 성령 안에서 아버지께 나아감을 얻게 하려 하심이라"
+      ],
+      "raw_text_hashes": [
+        "7245e387d780659f258acb021420b596b151027535b5d9a9b358232d401aa2fa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:2:19",
+      "sequence": 29245,
+      "chapter_label": "EPH 2",
+      "verse_label": "19",
+      "locator": {
+        "book": "EPH",
+        "chapter": 2,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 2,
+          "verse": 19
+        }
+      ],
+      "en": "So then you are no longer strangers and foreigners, but you are fellow citizens with the saints and of the household of God,",
+      "ko": "그러므로 이제부터 너희가 외인도 아니요 손도 아니요 오직 성도들과 동일한 시민이요 하나님의 권속이라",
+      "source_text_hash": "8498505a504de831b7019598aad591a3583292e5c0ece3c14ae33091213a345b",
+      "translation_text_hash": "cee77cf91fc39731f6df30e6fcc62b444e23206c17ec41aaadf08e6190af1865",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 이제부터 너희가 외인도 아니요 손도 아니요 오직 성도들과 동일한 시민이요 하나님의 권속이라"
+      ],
+      "raw_text_hashes": [
+        "cee77cf91fc39731f6df30e6fcc62b444e23206c17ec41aaadf08e6190af1865"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:2:20",
+      "sequence": 29246,
+      "chapter_label": "EPH 2",
+      "verse_label": "20",
+      "locator": {
+        "book": "EPH",
+        "chapter": 2,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 2,
+          "verse": 20
+        }
+      ],
+      "en": "being built on the foundation of the apostles and prophets, Christ Jesus himself being the chief cornerstone;",
+      "ko": "너희는 사도들과 선지자들의 터 위에 세우심을 입은 자라 그리스도 예수께서 친히 모퉁이 돌이 되셨느니라",
+      "source_text_hash": "ea8b2c9febc82df0fee249d78bae82c0e51b14bccabdf5f4d362b725aac164ce",
+      "translation_text_hash": "30de6b50582f0c40b6dd5e508248b5b2705b00398300f9f79835b62f25976911",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 사도들과 선지자들의 터 위에 세우심을 입은 자라 그리스도 예수께서 친히 모퉁이 돌이 되셨느니라"
+      ],
+      "raw_text_hashes": [
+        "30de6b50582f0c40b6dd5e508248b5b2705b00398300f9f79835b62f25976911"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:2:21",
+      "sequence": 29247,
+      "chapter_label": "EPH 2",
+      "verse_label": "21",
+      "locator": {
+        "book": "EPH",
+        "chapter": 2,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 2,
+          "verse": 21
+        }
+      ],
+      "en": "in whom the whole building, fitted together, grows into a holy temple in the Lord;",
+      "ko": "그의 안에서 건물마다 서로 연결하여 주 안에서 성전이 되어가고",
+      "source_text_hash": "c68cc77e448961d3753b2bfac16345db66ebe1ec3810835319ec14376d2ebc3e",
+      "translation_text_hash": "f6b102f67174b961f8ef0962a51ee8f8e8da8b0ce0b52f1a2de8b9fce4c02449",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그의 안에서 건물마다 서로 연결하여 주 안에서 성전이 되어가고"
+      ],
+      "raw_text_hashes": [
+        "f6b102f67174b961f8ef0962a51ee8f8e8da8b0ce0b52f1a2de8b9fce4c02449"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:2:22",
+      "sequence": 29248,
+      "chapter_label": "EPH 2",
+      "verse_label": "22",
+      "locator": {
+        "book": "EPH",
+        "chapter": 2,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 2,
+          "verse": 22
+        }
+      ],
+      "en": "in whom you also are built together for a habitation of God in the Spirit.",
+      "ko": "너희도 성령 안에서 하나님의 거하실 처소가 되기 위하여 예수 안에서 함께 지어져 가느니라",
+      "source_text_hash": "9c1c237649fb9d29c81c63073945c1377a449aed27edd09735c698bd1a832b90",
+      "translation_text_hash": "46e7d4d2f0b2b8746794dc630f5137dbc17c2274d00f7ce11486b0f0c1c77cb6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희도 성령 안에서 하나님의 거하실 처소가 되기 위하여 예수 안에서 함께 지어져 가느니라"
+      ],
+      "raw_text_hashes": [
+        "46e7d4d2f0b2b8746794dc630f5137dbc17c2274d00f7ce11486b0f0c1c77cb6"
+      ]
+    }
+  ]
+}

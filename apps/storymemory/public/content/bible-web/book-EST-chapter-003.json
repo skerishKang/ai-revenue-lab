@@ -1,0 +1,493 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EST:chapter:003",
+  "unit_ordinal": 429,
+  "unit_label": "EST 3",
+  "book_code": "EST",
+  "chapter_number": 3,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EST:3:1",
+      "sequence": 12749,
+      "chapter_label": "EST 3",
+      "verse_label": "1",
+      "locator": {
+        "book": "EST",
+        "chapter": 3,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 3,
+          "verse": 1
+        }
+      ],
+      "en": "After these things King Ahasuerus promoted Haman the son of Hammedatha the Agagite, and advanced him, and set his seat above all the princes who were with him.",
+      "ko": "그 후에 아하수에로왕이 아각 사람 함므다다의 아들 하만의 지위를 높이 올려 모든 함께 있는 대신 위에 두니",
+      "source_text_hash": "abed292b655df5e4b9d0bce7873c3f55b147197aec693a0cab3157b7668cf19a",
+      "translation_text_hash": "6a46459762809f601e8974db39180e4f43b83c8754c9fd8fa176757b3f734e13",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 후에 아하수에로왕이 아각 사람 함므다다의 아들 하만의 지위를 높이 올려 모든 함께 있는 대신 위에 두니"
+      ],
+      "raw_text_hashes": [
+        "6a46459762809f601e8974db39180e4f43b83c8754c9fd8fa176757b3f734e13"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:3:2",
+      "sequence": 12750,
+      "chapter_label": "EST 3",
+      "verse_label": "2",
+      "locator": {
+        "book": "EST",
+        "chapter": 3,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 3,
+          "verse": 2
+        }
+      ],
+      "en": "All the king’s servants who were in the king’s gate bowed down and paid homage to Haman, for the king had so commanded concerning him. But Mordecai didn’t bow down or pay him homage.",
+      "ko": "대궐 문에 있는 왕의 모든 신복이 다 왕의 명대로 하만에게 꿇어 절하되 모르드개는 꿇지도 아니하고 절하지도 아니하니",
+      "source_text_hash": "2ef0a0de2792d39a0d51074aec8bfbdc11134b8bcf6d427656895a5fab844f96",
+      "translation_text_hash": "8a194cda3b1cab8c7325d788c32c0e071d23113d9edf89ac03d8fc2ebc049244",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대궐 문에 있는 왕의 모든 신복이 다 왕의 명대로 하만에게 꿇어 절하되 모르드개는 꿇지도 아니하고 절하지도 아니하니"
+      ],
+      "raw_text_hashes": [
+        "8a194cda3b1cab8c7325d788c32c0e071d23113d9edf89ac03d8fc2ebc049244"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:3:3",
+      "sequence": 12751,
+      "chapter_label": "EST 3",
+      "verse_label": "3",
+      "locator": {
+        "book": "EST",
+        "chapter": 3,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 3,
+          "verse": 3
+        }
+      ],
+      "en": "Then the king’s servants who were in the king’s gate said to Mordecai, “Why do you disobey the king’s commandment?”",
+      "ko": "대궐 문에 있는 왕의 신복이 모르드개에게 이르되 너는 어찌하여 왕의 명령을 거역하느냐 하고",
+      "source_text_hash": "99cdec60aaa036c2fb30dbb3b3cc52db9a753b8eab05383494414dab7400810c",
+      "translation_text_hash": "c18f81c7f5eafb6387f436048603ae0e329d8bb5426fceb543bcba41b8a403f1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대궐 문에 있는 왕의 신복이 모르드개에게 이르되 너는 어찌하여 왕의 명령을 거역하느냐 하고"
+      ],
+      "raw_text_hashes": [
+        "c18f81c7f5eafb6387f436048603ae0e329d8bb5426fceb543bcba41b8a403f1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:3:4",
+      "sequence": 12752,
+      "chapter_label": "EST 3",
+      "verse_label": "4",
+      "locator": {
+        "book": "EST",
+        "chapter": 3,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 3,
+          "verse": 4
+        }
+      ],
+      "en": "Now it came to pass, when they spoke daily to him, and he didn’t listen to them, that they told Haman, to see whether Mordecai’s reason would stand; for he had told them that he was a Jew.",
+      "ko": "날마다 권하되 모르드개가 듣지 아니하고 자기는 유다인임을 고하였더니 저희가 모르드개의 일이 어찌 되나 보고자 하여 하만에게 고하였더라",
+      "source_text_hash": "c58b94b67bd0a7e88a4e93180d39f1173b48103a721cec5260c26841c3004f60",
+      "translation_text_hash": "c52e9a1e38955cc8310aaebfe68614004df15f91df52ceae7231392b5ae79c0a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "날마다 권하되 모르드개가 듣지 아니하고 자기는 유다인임을 고하였더니 저희가 모르드개의 일이 어찌 되나 보고자 하여 하만에게 고하였더라"
+      ],
+      "raw_text_hashes": [
+        "c52e9a1e38955cc8310aaebfe68614004df15f91df52ceae7231392b5ae79c0a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:3:5",
+      "sequence": 12753,
+      "chapter_label": "EST 3",
+      "verse_label": "5",
+      "locator": {
+        "book": "EST",
+        "chapter": 3,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 3,
+          "verse": 5
+        }
+      ],
+      "en": "When Haman saw that Mordecai didn’t bow down nor pay him homage, Haman was full of wrath.",
+      "ko": "하만이 모르드개가 꿇지도 아니하고 절하지도 아니함을 보고 심히 노하더니",
+      "source_text_hash": "bc37c278aa13113101afa82c0b9d60075f949cf22604e04876e95ab45e60f3a7",
+      "translation_text_hash": "27ce0f8a061f209f8403ea2c5b02c3b7b92d5d1c03c98f9d549d159c8d4baf6f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하만이 모르드개가 꿇지도 아니하고 절하지도 아니함을 보고 심히 노하더니"
+      ],
+      "raw_text_hashes": [
+        "27ce0f8a061f209f8403ea2c5b02c3b7b92d5d1c03c98f9d549d159c8d4baf6f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:3:6",
+      "sequence": 12754,
+      "chapter_label": "EST 3",
+      "verse_label": "6",
+      "locator": {
+        "book": "EST",
+        "chapter": 3,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 3,
+          "verse": 6
+        }
+      ],
+      "en": "But he scorned the thought of laying hands on Mordecai alone, for they had made known to him Mordecai’s people. Therefore Haman sought to destroy all the Jews who were throughout the whole kingdom of Ahasuerus, even Mordecai’s people.",
+      "ko": "저희가 모르드개의 민족을 하만에게 고한고로 하만이 모르드개만 죽이는 것이 경하다 하고 아하수에로의 온 나라에 있는 유다인 곧 모르드개의 민족을 다 멸하고자 하더라",
+      "source_text_hash": "046d237351a6211b66c087d7087cfb40814abe76ffbef877e3462796735604de",
+      "translation_text_hash": "c2b3cce63602cbdd74b5d4655d38b18639a526263dfa497859c66694a33a81ce",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 모르드개의 민족을 하만에게 고한고로 하만이 모르드개만 죽이는 것이 경하다 하고 아하수에로의 온 나라에 있는 유다인 곧 모르드개의 민족을 다 멸하고자 하더라"
+      ],
+      "raw_text_hashes": [
+        "c2b3cce63602cbdd74b5d4655d38b18639a526263dfa497859c66694a33a81ce"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:3:7",
+      "sequence": 12755,
+      "chapter_label": "EST 3",
+      "verse_label": "7",
+      "locator": {
+        "book": "EST",
+        "chapter": 3,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 3,
+          "verse": 7
+        }
+      ],
+      "en": "In the first month, which is the month Nisan, in the twelfth year of King Ahasuerus, they cast Pur, that is, the lot, before Haman from day to day, and from month to month, and chose the twelfth month, which is the month Adar.",
+      "ko": "아하수에로왕 십 이년 정월 곧 니산월에 무리가 하만 앞에서 날과 달에 대하여 부르 곧 제비를 뽑아 십이월 곧 아달월을 얻은지라",
+      "source_text_hash": "563d9ce4ce4857600263ac8dffeebb62ac3bf6bcbb09e3a9f0227d4c40631fa3",
+      "translation_text_hash": "421827bd6d19d3f34bd96a2d584c5a9cf558290e44ef94da7500afa58d31e98c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아하수에로왕 십 이년 정월 곧 니산월에 무리가 하만 앞에서 날과 달에 대하여 부르 곧 제비를 뽑아 십이월 곧 아달월을 얻은지라"
+      ],
+      "raw_text_hashes": [
+        "421827bd6d19d3f34bd96a2d584c5a9cf558290e44ef94da7500afa58d31e98c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:3:8",
+      "sequence": 12756,
+      "chapter_label": "EST 3",
+      "verse_label": "8",
+      "locator": {
+        "book": "EST",
+        "chapter": 3,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 3,
+          "verse": 8
+        }
+      ],
+      "en": "Haman said to King Ahasuerus, “There is a certain people scattered abroad and dispersed among the peoples in all the provinces of your kingdom, and their laws are different from other people’s. They don’t keep the king’s laws. Therefore it is not for the king’s profit to allow them to remain.",
+      "ko": "하만이 아하수에로왕에게 아뢰되 한 민족이 왕의 나라 각 도 백성 중에 흩어져 거하는데 그 법률이 만민보다 달라서 왕의 법률을 지키지 아니하오니 용납하는 것이 왕에게 무익하니이다",
+      "source_text_hash": "b7e26f95e11a8b20d185552103c42892a8f6c6f4832df796cbd92bf69ca2dbc3",
+      "translation_text_hash": "3894d8ecdf1a10a0d2045d96026aff897da9eb597894abe2773aaaafd9634eda",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하만이 아하수에로왕에게 아뢰되 한 민족이 왕의 나라 각 도 백성 중에 흩어져 거하는데 그 법률이 만민보다 달라서 왕의 법률을 지키지 아니하오니 용납하는 것이 왕에게 무익하니이다"
+      ],
+      "raw_text_hashes": [
+        "3894d8ecdf1a10a0d2045d96026aff897da9eb597894abe2773aaaafd9634eda"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:3:9",
+      "sequence": 12757,
+      "chapter_label": "EST 3",
+      "verse_label": "9",
+      "locator": {
+        "book": "EST",
+        "chapter": 3,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 3,
+          "verse": 9
+        }
+      ],
+      "en": "If it pleases the king, let it be written that they be destroyed; and I will pay ten thousand talents of silver into the hands of those who are in charge of the king’s business, to bring it into the king’s treasuries.”",
+      "ko": "왕이 옳게 여기시거든 조서를 내려 저희를 진멸하소서 내가 은 일만 달란트를 왕의 일을 맡은 자의 손에 부쳐 왕의 부고에 드리리이다",
+      "source_text_hash": "88b41b7845f1b229711d974533b7d4f626c7ba7298fc80dfb528bf9674a7554d",
+      "translation_text_hash": "618c71490a2a3a600c92cf6487ffeebc6331d53804fd43d2c793473e6acb6100",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 옳게 여기시거든 조서를 내려 저희를 진멸하소서 내가 은 일만 달란트를 왕의 일을 맡은 자의 손에 부쳐 왕의 부고에 드리리이다"
+      ],
+      "raw_text_hashes": [
+        "618c71490a2a3a600c92cf6487ffeebc6331d53804fd43d2c793473e6acb6100"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:3:10",
+      "sequence": 12758,
+      "chapter_label": "EST 3",
+      "verse_label": "10",
+      "locator": {
+        "book": "EST",
+        "chapter": 3,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 3,
+          "verse": 10
+        }
+      ],
+      "en": "The king took his ring from his hand, and gave it to Haman the son of Hammedatha the Agagite, the Jews’ enemy.",
+      "ko": "왕이 반지를 손에서 빼어 유다인의 대적 곧 아각 사람 함므다다의 아들 하만에게 주며",
+      "source_text_hash": "430a56b852429c1955517f50a34363011792cbf7ca984f89d7dbfa017b82d3a0",
+      "translation_text_hash": "700ade617ba8663c0b204abe01e592ca6121ef8174202e7368d4af9083862d08",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 반지를 손에서 빼어 유다인의 대적 곧 아각 사람 함므다다의 아들 하만에게 주며"
+      ],
+      "raw_text_hashes": [
+        "700ade617ba8663c0b204abe01e592ca6121ef8174202e7368d4af9083862d08"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:3:11",
+      "sequence": 12759,
+      "chapter_label": "EST 3",
+      "verse_label": "11",
+      "locator": {
+        "book": "EST",
+        "chapter": 3,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 3,
+          "verse": 11
+        }
+      ],
+      "en": "The king said to Haman, “The silver is given to you, the people also, to do with them as it seems good to you.”",
+      "ko": "이르되 그 은을 네게 주고 그 백성도 그리하노니 너는 소견에 좋을대로 행하라 하더라",
+      "source_text_hash": "768f95db4061f410eceeb4320b70167be69d264c637dfd5850db914a0023ab70",
+      "translation_text_hash": "381c417007d947969abfbfe2f0e1b555532c5abf8244a4eda5827c763a26bad1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이르되 그 은을 네게 주고 그 백성도 그리하노니 너는 소견에 좋을대로 행하라 하더라"
+      ],
+      "raw_text_hashes": [
+        "381c417007d947969abfbfe2f0e1b555532c5abf8244a4eda5827c763a26bad1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:3:12",
+      "sequence": 12760,
+      "chapter_label": "EST 3",
+      "verse_label": "12",
+      "locator": {
+        "book": "EST",
+        "chapter": 3,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 3,
+          "verse": 12
+        }
+      ],
+      "en": "Then the king’s scribes were called in on the first month, on the thirteenth day of the month; and all that Haman commanded was written to the king’s local governors, and to the governors who were over every province, and to the princes of every people, to every province according to its writing, and to every people in their language. It was written in the name of King Ahasuerus, and it was sealed with the king’s ring.",
+      "ko": "정월 십 삼일에 왕의 서기관이 소집되어 하만의 명을 따라 왕의 대신과 각 도 방백과 각 민족의 관원에게 아하수에로왕의 이름으로 조서를 쓰되 곧 각 도의 문자와 각 민족의 방언대로 쓰고 왕의 반지로 인치니라",
+      "source_text_hash": "9d265eba2b4ac1167f4333e3b1030e9141b191f057079fc6514d37d0743645c4",
+      "translation_text_hash": "fbb18400e0bedb0ac7126838fd9e1e3db53dd7fe48bfc422ed74fae041147cfc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "정월 십 삼일에 왕의 서기관이 소집되어 하만의 명을 따라 왕의 대신과 각 도 방백과 각 민족의 관원에게 아하수에로왕의 이름으로 조서를 쓰되 곧 각 도의 문자와 각 민족의 방언대로 쓰고 왕의 반지로 인치니라"
+      ],
+      "raw_text_hashes": [
+        "fbb18400e0bedb0ac7126838fd9e1e3db53dd7fe48bfc422ed74fae041147cfc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:3:13",
+      "sequence": 12761,
+      "chapter_label": "EST 3",
+      "verse_label": "13",
+      "locator": {
+        "book": "EST",
+        "chapter": 3,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 3,
+          "verse": 13
+        }
+      ],
+      "en": "Letters were sent by couriers into all the king’s provinces, to destroy, to kill, and to cause to perish, all Jews, both young and old, little children and women, in one day, even on the thirteenth day of the twelfth month, which is the month Adar, and to plunder their possessions.",
+      "ko": "이에 그 조서를 역졸에게 부쳐 왕의 각 도에 보내니 십이월 곧 아달월 십 삼일 하루 동안에 모든 유다인을 노소나 어린 아이나 부녀를 무론하고 죽이고 도륙하고 진멸하고 또 그 재산을 탈취하라 하였고",
+      "source_text_hash": "8ec7f81c1a12f7d4e7a7c294a9ec603efb77d63ad4fec738dad0afcfcc5c3c85",
+      "translation_text_hash": "79e52d6c2e63ecc968fe5e299b34e237d733cbc5d2f6999e487969d1bef8b481",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 그 조서를 역졸에게 부쳐 왕의 각 도에 보내니 십이월 곧 아달월 십 삼일 하루 동안에 모든 유다인을 노소나 어린 아이나 부녀를 무론하고 죽이고 도륙하고 진멸하고 또 그 재산을 탈취하라 하였고"
+      ],
+      "raw_text_hashes": [
+        "79e52d6c2e63ecc968fe5e299b34e237d733cbc5d2f6999e487969d1bef8b481"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:3:14",
+      "sequence": 12762,
+      "chapter_label": "EST 3",
+      "verse_label": "14",
+      "locator": {
+        "book": "EST",
+        "chapter": 3,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 3,
+          "verse": 14
+        }
+      ],
+      "en": "A copy of the letter, that the decree should be given out in every province, was published to all the peoples, that they should be ready against that day.",
+      "ko": "이 명령을 각 도에 전하기 위하여 조서의 초본을 모든 민족에게 선포하여 그 날을 위하여 준비하게 하라 하였더라",
+      "source_text_hash": "1e8ab52cd93726bfb43b487fa53f5cc93838095899cf9649d03648bbc81e39cb",
+      "translation_text_hash": "21921d00e245bbc37dcb9e321ec45b4a8d807ed175a37442f164bfef19dd4b4b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 명령을 각 도에 전하기 위하여 조서의 초본을 모든 민족에게 선포하여 그 날을 위하여 준비하게 하라 하였더라"
+      ],
+      "raw_text_hashes": [
+        "21921d00e245bbc37dcb9e321ec45b4a8d807ed175a37442f164bfef19dd4b4b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:3:15",
+      "sequence": 12763,
+      "chapter_label": "EST 3",
+      "verse_label": "15",
+      "locator": {
+        "book": "EST",
+        "chapter": 3,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 3,
+          "verse": 15
+        }
+      ],
+      "en": "The couriers went out in haste by the king’s commandment, and the decree was given out in the citadel of Susa. The king and Haman sat down to drink; but the city of Susa was perplexed.",
+      "ko": "역졸이 왕의 명을 받들어 급히 나가매 그 조서가 도성 수산에도 반포되니 왕은 하만과 함께 앉아 마시되 수산성은 어지럽더라",
+      "source_text_hash": "fa8bec8c129a1383356be9ac818c9889307eae4320056b1f5eb859cb8bcf883f",
+      "translation_text_hash": "0803a7b75556c7096587b199d46a0168f5b7fc5319d8f2b5193c67447081f6fa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "역졸이 왕의 명을 받들어 급히 나가매 그 조서가 도성 수산에도 반포되니 왕은 하만과 함께 앉아 마시되 수산성은 어지럽더라"
+      ],
+      "raw_text_hashes": [
+        "0803a7b75556c7096587b199d46a0168f5b7fc5319d8f2b5193c67447081f6fa"
+      ]
+    }
+  ]
+}

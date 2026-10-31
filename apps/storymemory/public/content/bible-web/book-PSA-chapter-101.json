@@ -1,0 +1,269 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:101",
+  "unit_ordinal": 579,
+  "unit_label": "PSA 101",
+  "book_code": "PSA",
+  "chapter_number": 101,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:101:1",
+      "sequence": 15515,
+      "chapter_label": "PSA 101",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 101,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 101,
+          "verse": 1
+        }
+      ],
+      "en": "I will sing of loving kindness and justice. To you, LORD, I will sing praises.",
+      "ko": "내가 인자와 공의를 찬송하겠나이다 여호와여 내가 주께 찬양하리이다",
+      "source_text_hash": "1eb94f14d57ffccbc0232fc09e6b0c885dca04d0b41c236489e075c8497cb530",
+      "translation_text_hash": "acb9c7c4811e462d150681c51051cc1096138a89f7df1ba0974ba3665b747c22",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 인자와 공의를 찬송하겠나이다 여호와여 내가 주께 찬양하리이다"
+      ],
+      "raw_text_hashes": [
+        "acb9c7c4811e462d150681c51051cc1096138a89f7df1ba0974ba3665b747c22"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:101:2",
+      "sequence": 15516,
+      "chapter_label": "PSA 101",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 101,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 101,
+          "verse": 2
+        }
+      ],
+      "en": "I will be careful to live a blameless life. When will you come to me? I will walk within my house with a blameless heart.",
+      "ko": "내가 완전한 길에 주의하오리니 주께서 언제나 내게 임하시겠나이까 내가 완전한 마음으로 내 집안에서 행하리이다",
+      "source_text_hash": "e738fb3eae0dc6ca1b1cb9eb8d8302f09702c887f82879b6111276334a4d74ae",
+      "translation_text_hash": "f0072a9b6ac80507a37dcc94b831fcb7272df7666033346028ca2aec2be6d073",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 완전한 길에 주의하오리니 주께서 언제나 내게 임하시겠나이까 내가 완전한 마음으로 내 집안에서 행하리이다"
+      ],
+      "raw_text_hashes": [
+        "f0072a9b6ac80507a37dcc94b831fcb7272df7666033346028ca2aec2be6d073"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:101:3",
+      "sequence": 15517,
+      "chapter_label": "PSA 101",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 101,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 101,
+          "verse": 3
+        }
+      ],
+      "en": "I will set no vile thing before my eyes. I hate the deeds of faithless men. They will not cling to me.",
+      "ko": "나는 비루한 것을 내 눈 앞에 두지 아니할 것이요 배도자들의 행위를 미워하니 이것이 내게 붙접지 아니하리이다",
+      "source_text_hash": "a43bbf9c055aa153b96304c174dbf71ccc2d069f44b25eaf69298d63edd8b7f8",
+      "translation_text_hash": "89c1a5ad8c7ed40513fe06a9d45aae05b4ba6e5e6c9040fff608155f2ec78592",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 비루한 것을 내 눈 앞에 두지 아니할 것이요 배도자들의 행위를 미워하니 이것이 내게 붙접지 아니하리이다"
+      ],
+      "raw_text_hashes": [
+        "89c1a5ad8c7ed40513fe06a9d45aae05b4ba6e5e6c9040fff608155f2ec78592"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:101:4",
+      "sequence": 15518,
+      "chapter_label": "PSA 101",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 101,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 101,
+          "verse": 4
+        }
+      ],
+      "en": "A perverse heart will be far from me. I will have nothing to do with evil.",
+      "ko": "사특한 마음이 내게서 떠날 것이니 악한 일을 내가 알지 아니하리로다",
+      "source_text_hash": "7cdbe8c8ce30c8f230b3e46e70d7863a67074bf6db13b7ab5fd613612753df6c",
+      "translation_text_hash": "fae778cf99409baae6b5ca0feb8ffc80b693f33e54b5d95db37f80908a5f708f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사특한 마음이 내게서 떠날 것이니 악한 일을 내가 알지 아니하리로다"
+      ],
+      "raw_text_hashes": [
+        "fae778cf99409baae6b5ca0feb8ffc80b693f33e54b5d95db37f80908a5f708f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:101:5",
+      "sequence": 15519,
+      "chapter_label": "PSA 101",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 101,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 101,
+          "verse": 5
+        }
+      ],
+      "en": "I will silence whoever secretly slanders his neighbor. I won’t tolerate one who is arrogant and conceited.",
+      "ko": "그 이웃을 그윽히 허는 자를 내가 멸할 것이요 눈이 높고 마음이 교만한 자를 내가 용납지 아니하리로다",
+      "source_text_hash": "d466060ee42b9f81f1b25c400ebcf7d90d097f66ead6d3e71e05bb1ad0469b0e",
+      "translation_text_hash": "65988376c5fcfec23df64c09f3f214778dcb09b0d0a5ec0e67fccaa782953280",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 이웃을 그윽히 허는 자를 내가 멸할 것이요 눈이 높고 마음이 교만한 자를 내가 용납지 아니하리로다"
+      ],
+      "raw_text_hashes": [
+        "65988376c5fcfec23df64c09f3f214778dcb09b0d0a5ec0e67fccaa782953280"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:101:6",
+      "sequence": 15520,
+      "chapter_label": "PSA 101",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 101,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 101,
+          "verse": 6
+        }
+      ],
+      "en": "My eyes will be on the faithful of the land, that they may dwell with me. He who walks in a perfect way, he will serve me.",
+      "ko": "내 눈이 이땅의 충성된 자를 살펴 나와 함께 거하게 하리니 완전한 길에 행하는 자가 나를 수종하리로다",
+      "source_text_hash": "6a55b0c4bd10c06956434cd720ab106bf55e9615dd14813de62a537ec1e1772d",
+      "translation_text_hash": "9ddefe11bed4b36b0e97b4e4f1d96682cdce317815f9f918f65eaed339a65ef8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 눈이 이땅의 충성된 자를 살펴 나와 함께 거하게 하리니 완전한 길에 행하는 자가 나를 수종하리로다"
+      ],
+      "raw_text_hashes": [
+        "9ddefe11bed4b36b0e97b4e4f1d96682cdce317815f9f918f65eaed339a65ef8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:101:7",
+      "sequence": 15521,
+      "chapter_label": "PSA 101",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 101,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 101,
+          "verse": 7
+        }
+      ],
+      "en": "He who practices deceit won’t dwell within my house. He who speaks falsehood won’t be established before my eyes.",
+      "ko": "거짓 행하는 자가 내 집 안에 거하지 못하며 거짓말 하는 자가 내 목전에 서지 못하리로다",
+      "source_text_hash": "66aae5b2cb0605594f26040966df49851aaaeec27eb6347483846ca62c720ff8",
+      "translation_text_hash": "474fb7a9d1c9650be62dbc104df3430ed5741d5a4791549a79e4912997872d48",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거짓 행하는 자가 내 집 안에 거하지 못하며 거짓말 하는 자가 내 목전에 서지 못하리로다"
+      ],
+      "raw_text_hashes": [
+        "474fb7a9d1c9650be62dbc104df3430ed5741d5a4791549a79e4912997872d48"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:101:8",
+      "sequence": 15522,
+      "chapter_label": "PSA 101",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 101,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 101,
+          "verse": 8
+        }
+      ],
+      "en": "Morning by morning, I will destroy all the wicked of the land, to cut off all the workers of iniquity from the LORD’s city.",
+      "ko": "아침마다 내가 이땅의 모든 악인을 멸하리니 죄악 행하는 자는 여호와의 성에서 다 끊어지리로다",
+      "source_text_hash": "b45b281fbf5342e6021f386729cf82e048c181d96c79d59c56c4a87119b0601e",
+      "translation_text_hash": "bc0a3e950a624aab699724f46f4832c463932d172e82840a5ae7f158b3b5ce50",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아침마다 내가 이땅의 모든 악인을 멸하리니 죄악 행하는 자는 여호와의 성에서 다 끊어지리로다"
+      ],
+      "raw_text_hashes": [
+        "bc0a3e950a624aab699724f46f4832c463932d172e82840a5ae7f158b3b5ce50"
+      ]
+    }
+  ]
+}

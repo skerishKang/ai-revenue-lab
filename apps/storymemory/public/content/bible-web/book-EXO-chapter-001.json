@@ -1,0 +1,717 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EXO:chapter:001",
+  "unit_ordinal": 51,
+  "unit_label": "EXO 1",
+  "book_code": "EXO",
+  "chapter_number": 1,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EXO:1:1",
+      "sequence": 1534,
+      "chapter_label": "EXO 1",
+      "verse_label": "1",
+      "locator": {
+        "book": "EXO",
+        "chapter": 1,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 1,
+          "verse": 1
+        }
+      ],
+      "en": "Now these are the names of the sons of Israel, who came into Egypt (every man and his household came with Jacob):",
+      "ko": "야곱과 함께 각기 권속을 데리고 애굽에 이른 이스라엘 아들들의 이름은 이러하니",
+      "source_text_hash": "2137496ffd6b9e23d101f07d073d3d35c1ae38330c437c9f2ec9ee0c1cc83aa2",
+      "translation_text_hash": "4826d18fc298ae18ff23a6baed77eaaccfa2a8063bd73bd4af76dca88e843aa6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야곱과 함께 각기 권속을 데리고 애굽에 이른 이스라엘 아들들의 이름은 이러하니"
+      ],
+      "raw_text_hashes": [
+        "4826d18fc298ae18ff23a6baed77eaaccfa2a8063bd73bd4af76dca88e843aa6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:1:2",
+      "sequence": 1535,
+      "chapter_label": "EXO 1",
+      "verse_label": "2",
+      "locator": {
+        "book": "EXO",
+        "chapter": 1,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 1,
+          "verse": 2
+        }
+      ],
+      "en": "Reuben, Simeon, Levi, and Judah,",
+      "ko": "르우벤과 시므온과 레위와 유다와",
+      "source_text_hash": "6125492a41c8a5c06e8de88af772df85a8b7fc089becd5af4e83a9a6372e1f05",
+      "translation_text_hash": "3b48ee3128abdc3351dee204c8614b5a8dfc3a4964e925846cd17020f59abf6a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "르우벤과 시므온과 레위와 유다와"
+      ],
+      "raw_text_hashes": [
+        "3b48ee3128abdc3351dee204c8614b5a8dfc3a4964e925846cd17020f59abf6a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:1:3",
+      "sequence": 1536,
+      "chapter_label": "EXO 1",
+      "verse_label": "3",
+      "locator": {
+        "book": "EXO",
+        "chapter": 1,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 1,
+          "verse": 3
+        }
+      ],
+      "en": "Issachar, Zebulun, and Benjamin,",
+      "ko": "잇사갈과 스불론과 베냐민과",
+      "source_text_hash": "668feee425fe5c950cbb20f3b16276fef5f50e91ea3010477f32c3dcf11d326e",
+      "translation_text_hash": "3fb6d2004bce02e73bf4ee47dfe16942937143ad4b9d6619708504de7073000d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "잇사갈과 스불론과 베냐민과"
+      ],
+      "raw_text_hashes": [
+        "3fb6d2004bce02e73bf4ee47dfe16942937143ad4b9d6619708504de7073000d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:1:4",
+      "sequence": 1537,
+      "chapter_label": "EXO 1",
+      "verse_label": "4",
+      "locator": {
+        "book": "EXO",
+        "chapter": 1,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 1,
+          "verse": 4
+        }
+      ],
+      "en": "Dan and Naphtali, Gad and Asher.",
+      "ko": "단과 납달리와 갓과 아셀이요",
+      "source_text_hash": "98b12aaac7bad584a282b21ed52265345d3c87ca82de5cd3b4789093dfa702f9",
+      "translation_text_hash": "781f3eca97aa4f0f8615a255a3c963c78e0b88a73e2033d24d7dec4f5f26218c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "단과 납달리와 갓과 아셀이요"
+      ],
+      "raw_text_hashes": [
+        "781f3eca97aa4f0f8615a255a3c963c78e0b88a73e2033d24d7dec4f5f26218c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:1:5",
+      "sequence": 1538,
+      "chapter_label": "EXO 1",
+      "verse_label": "5",
+      "locator": {
+        "book": "EXO",
+        "chapter": 1,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 1,
+          "verse": 5
+        }
+      ],
+      "en": "All the souls who came out of Jacob’s body were seventy souls, and Joseph was in Egypt already.",
+      "ko": "이미 애굽에 있는 요셉까지 야곱의 혈속이 모두 칠십인이었더라",
+      "source_text_hash": "1c2d80e4425d09edcaa4c49e9d1ede65b032b8f6ad6d8e05f7d3b2bd97430979",
+      "translation_text_hash": "7d2c98270b90fc7c13334c4e9f2bfe61bf0b249f8bfe0d00570727f676bc7afa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이미 애굽에 있는 요셉까지 야곱의 혈속이 모두 칠십인이었더라"
+      ],
+      "raw_text_hashes": [
+        "7d2c98270b90fc7c13334c4e9f2bfe61bf0b249f8bfe0d00570727f676bc7afa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:1:6",
+      "sequence": 1539,
+      "chapter_label": "EXO 1",
+      "verse_label": "6",
+      "locator": {
+        "book": "EXO",
+        "chapter": 1,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 1,
+          "verse": 6
+        }
+      ],
+      "en": "Joseph died, as did all his brothers, and all that generation.",
+      "ko": "요셉과 그의 모든 형제와 그 시대 사람은 다 죽었고",
+      "source_text_hash": "6c8fc062b09a5d480ee21c9d97da16a9dbdad44f8729e2ed43b91aa7560833c1",
+      "translation_text_hash": "01ef8445b8159c41ebd46a70e8d6dbdd835fdd30f488a7abfe69aad73a7b9e27",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요셉과 그의 모든 형제와 그 시대 사람은 다 죽었고"
+      ],
+      "raw_text_hashes": [
+        "01ef8445b8159c41ebd46a70e8d6dbdd835fdd30f488a7abfe69aad73a7b9e27"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:1:7",
+      "sequence": 1540,
+      "chapter_label": "EXO 1",
+      "verse_label": "7",
+      "locator": {
+        "book": "EXO",
+        "chapter": 1,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 1,
+          "verse": 7
+        }
+      ],
+      "en": "The children of Israel were fruitful, and increased abundantly, and multiplied, and grew exceedingly mighty; and the land was filled with them.",
+      "ko": "이스라엘 자손은 생육이 중다하고 번식하고 창성하고 심히 강대하여 온 땅에 가득하게 되었더라",
+      "source_text_hash": "5d7c97adc308efd44ff93a81c7064ae6b33ca01c1c9a9e3e3eaa807c390d5574",
+      "translation_text_hash": "644f6dff85e5ed9d1e96f38a364541e84475ebbb097faddca188488a8709fcdd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손은 생육이 중다하고 번식하고 창성하고 심히 강대하여 온 땅에 가득하게 되었더라"
+      ],
+      "raw_text_hashes": [
+        "644f6dff85e5ed9d1e96f38a364541e84475ebbb097faddca188488a8709fcdd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:1:8",
+      "sequence": 1541,
+      "chapter_label": "EXO 1",
+      "verse_label": "8",
+      "locator": {
+        "book": "EXO",
+        "chapter": 1,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 1,
+          "verse": 8
+        }
+      ],
+      "en": "Now there arose a new king over Egypt, who didn’t know Joseph.",
+      "ko": "요셉을 알지 못하는 새 왕이 일어나서 애굽을 다스리더니",
+      "source_text_hash": "d7b807166f2cebcf3f071f049ad7f1e25b6b4c9e314cc97f9b7e7c8c97e34d06",
+      "translation_text_hash": "0cdf38c8a5ab227428d3581e9bb87fcb0751c01b9ef72e9820aeda4cbc792ef8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요셉을 알지 못하는 새 왕이 일어나서 애굽을 다스리더니"
+      ],
+      "raw_text_hashes": [
+        "0cdf38c8a5ab227428d3581e9bb87fcb0751c01b9ef72e9820aeda4cbc792ef8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:1:9",
+      "sequence": 1542,
+      "chapter_label": "EXO 1",
+      "verse_label": "9",
+      "locator": {
+        "book": "EXO",
+        "chapter": 1,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 1,
+          "verse": 9
+        }
+      ],
+      "en": "He said to his people, “Behold, the people of the children of Israel are more and mightier than we.",
+      "ko": "그가 그 신민에게 이르되 이 백성 이스라엘 자손이 우리보다 많고 강하도다",
+      "source_text_hash": "fe4ee253b22b6516700814cf02ad9ba40f1d65a036a5822806c5109de8c7fe7f",
+      "translation_text_hash": "12e62dbda383a857815dae5f600d80d141f99de994fa80ba0d0ebcf4dac39aaa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 그 신민에게 이르되 이 백성 이스라엘 자손이 우리보다 많고 강하도다"
+      ],
+      "raw_text_hashes": [
+        "12e62dbda383a857815dae5f600d80d141f99de994fa80ba0d0ebcf4dac39aaa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:1:10",
+      "sequence": 1543,
+      "chapter_label": "EXO 1",
+      "verse_label": "10",
+      "locator": {
+        "book": "EXO",
+        "chapter": 1,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 1,
+          "verse": 10
+        }
+      ],
+      "en": "Come, let’s deal wisely with them, lest they multiply, and it happen that when any war breaks out, they also join themselves to our enemies and fight against us, and escape out of the land.”",
+      "ko": "자, 우리가 그들에게 대하여 지혜롭게 하자 두렵건대 그들이 더 많게 되면 전쟁이 일어날 때에 우리 대적과 합하여 우리와 싸우고 이 땅에서 갈까 하노라 하고",
+      "source_text_hash": "0cf3056ef2a971f50e97986a6d62bdc8064ec7bdd877f79de9558af48a76c341",
+      "translation_text_hash": "ce456852ed2684ffbff4214e3d8e5958c72a1d90ba6f6b52a3fce762dcfcee9d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자, 우리가 그들에게 대하여 지혜롭게 하자 두렵건대 그들이 더 많게 되면 전쟁이 일어날 때에 우리 대적과 합하여 우리와 싸우고 이 땅에서 갈까 하노라 하고"
+      ],
+      "raw_text_hashes": [
+        "ce456852ed2684ffbff4214e3d8e5958c72a1d90ba6f6b52a3fce762dcfcee9d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:1:11",
+      "sequence": 1544,
+      "chapter_label": "EXO 1",
+      "verse_label": "11",
+      "locator": {
+        "book": "EXO",
+        "chapter": 1,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 1,
+          "verse": 11
+        }
+      ],
+      "en": "Therefore they set taskmasters over them to afflict them with their burdens. They built storage cities for Pharaoh: Pithom and Raamses.",
+      "ko": "감독들을 그들 위에 세우고 그들에게 무거운 짐을 지워 괴롭게 하여 그들로 바로를 위하여 국고성 비돔과 라암셋을 건축하게 하니라",
+      "source_text_hash": "db621426ac4a72b2a6176b089919d27dfdfd07c93005b2907167c561d2932829",
+      "translation_text_hash": "734c8d445958c6a5d385b1d8631ec29b1219d4c4898a64657da0ba4c5490fba7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "감독들을 그들 위에 세우고 그들에게 무거운 짐을 지워 괴롭게 하여 그들로 바로를 위하여 국고성 비돔과 라암셋을 건축하게 하니라"
+      ],
+      "raw_text_hashes": [
+        "734c8d445958c6a5d385b1d8631ec29b1219d4c4898a64657da0ba4c5490fba7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:1:12",
+      "sequence": 1545,
+      "chapter_label": "EXO 1",
+      "verse_label": "12",
+      "locator": {
+        "book": "EXO",
+        "chapter": 1,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 1,
+          "verse": 12
+        }
+      ],
+      "en": "But the more they afflicted them, the more they multiplied and the more they spread out. They started to dread the children of Israel.",
+      "ko": "그러나 학대를 받을수록 더욱 번식하고 창성하니 애굽 사람이 이스라엘 자손을 인하여 근심하여",
+      "source_text_hash": "a4f5c82588ab1ff3f6f08b59aa82bbc102fd849b49742e95f2317fa8f1d6b105",
+      "translation_text_hash": "bab0a07952341487340bd52eed3640296adb8189cc19229f5d5da7040f15bb78",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 학대를 받을수록 더욱 번식하고 창성하니 애굽 사람이 이스라엘 자손을 인하여 근심하여"
+      ],
+      "raw_text_hashes": [
+        "bab0a07952341487340bd52eed3640296adb8189cc19229f5d5da7040f15bb78"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:1:13",
+      "sequence": 1546,
+      "chapter_label": "EXO 1",
+      "verse_label": "13",
+      "locator": {
+        "book": "EXO",
+        "chapter": 1,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 1,
+          "verse": 13
+        }
+      ],
+      "en": "The Egyptians ruthlessly made the children of Israel serve,",
+      "ko": "이스라엘 자손의 역사를 엄하게 하여",
+      "source_text_hash": "1cc667285df219e0a6ef59565b370de8e96046e2f088b8e88ce79c1b3cebfffa",
+      "translation_text_hash": "6aeaa9dc2e7c5ae039c275e6ba2e6e40f47df7f9c0ea022b798020b44893eba4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손의 역사를 엄하게 하여"
+      ],
+      "raw_text_hashes": [
+        "6aeaa9dc2e7c5ae039c275e6ba2e6e40f47df7f9c0ea022b798020b44893eba4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:1:14",
+      "sequence": 1547,
+      "chapter_label": "EXO 1",
+      "verse_label": "14",
+      "locator": {
+        "book": "EXO",
+        "chapter": 1,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 1,
+          "verse": 14
+        }
+      ],
+      "en": "and they made their lives bitter with hard service in mortar and in brick, and in all kinds of service in the field, all their service, in which they ruthlessly made them serve.",
+      "ko": "고역으로 그들의 생활을 괴롭게 하니 곧 흙 이기기와 벽돌 굽기와 농사의 여러가지 일이라 그 시키는 역사가 다 엄하였더라",
+      "source_text_hash": "00a85f9dfd3b0c8a0d12794e7111b197a04ce7ed52c24d65165a52a1d21bbf11",
+      "translation_text_hash": "cb02edf4cfdd8373f32b1ce024bc317ab3864ae021df8bfcb48e3819bbd6192d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "고역으로 그들의 생활을 괴롭게 하니 곧 흙 이기기와 벽돌 굽기와 농사의 여러가지 일이라 그 시키는 역사가 다 엄하였더라"
+      ],
+      "raw_text_hashes": [
+        "cb02edf4cfdd8373f32b1ce024bc317ab3864ae021df8bfcb48e3819bbd6192d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:1:15",
+      "sequence": 1548,
+      "chapter_label": "EXO 1",
+      "verse_label": "15",
+      "locator": {
+        "book": "EXO",
+        "chapter": 1,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 1,
+          "verse": 15
+        }
+      ],
+      "en": "The king of Egypt spoke to the Hebrew midwives, of whom the name of the one was Shiphrah, and the name of the other Puah,",
+      "ko": "애굽 왕이 히브리 산파 십브라라 하는 자와 부아라 하는 자에게 일러",
+      "source_text_hash": "15ae36f102bf2a79a04c1a0f9493a9b2495bc33a3a88de7355a9c26fdbcf3f6d",
+      "translation_text_hash": "d552e304eeed12d3077a725f78d7debe77bf548093468592af96248225ce5515",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "애굽 왕이 히브리 산파 십브라라 하는 자와 부아라 하는 자에게 일러"
+      ],
+      "raw_text_hashes": [
+        "d552e304eeed12d3077a725f78d7debe77bf548093468592af96248225ce5515"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:1:16",
+      "sequence": 1549,
+      "chapter_label": "EXO 1",
+      "verse_label": "16",
+      "locator": {
+        "book": "EXO",
+        "chapter": 1,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 1,
+          "verse": 16
+        }
+      ],
+      "en": "and he said, “When you perform the duty of a midwife to the Hebrew women, and see them on the birth stool, if it is a son, then you shall kill him; but if it is a daughter, then she shall live.”",
+      "ko": "가로되 너희는 히브리 여인을 위하여 조산할 때에 살펴서 남자여든 죽이고 여자여든 그는 살게 두라",
+      "source_text_hash": "2d8bcc1ec43de60e4deae517493e907f26681cbbefc89989d3a6e02674385fe6",
+      "translation_text_hash": "5eabe18b3d40e2b3cb5aac9c1f09e43510a6142634677ed817c206ceeb4dd077",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 너희는 히브리 여인을 위하여 조산할 때에 살펴서 남자여든 죽이고 여자여든 그는 살게 두라"
+      ],
+      "raw_text_hashes": [
+        "5eabe18b3d40e2b3cb5aac9c1f09e43510a6142634677ed817c206ceeb4dd077"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:1:17",
+      "sequence": 1550,
+      "chapter_label": "EXO 1",
+      "verse_label": "17",
+      "locator": {
+        "book": "EXO",
+        "chapter": 1,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 1,
+          "verse": 17
+        }
+      ],
+      "en": "But the midwives feared God, and didn’t do what the king of Egypt commanded them, but saved the baby boys alive.",
+      "ko": "그러나 산파들이 하나님을 두려워하여 애굽 왕의 명을 어기고 남자를 살린지라",
+      "source_text_hash": "10ebc3310e1d9e8d0a5cd9a3698dcf9a2d51ecd7f72651903099722f1b8669f3",
+      "translation_text_hash": "2f9a4ce75f2884d7b1e442dd12215ee195f3098adf2e5be78407200b7543c538",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 산파들이 하나님을 두려워하여 애굽 왕의 명을 어기고 남자를 살린지라"
+      ],
+      "raw_text_hashes": [
+        "2f9a4ce75f2884d7b1e442dd12215ee195f3098adf2e5be78407200b7543c538"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:1:18",
+      "sequence": 1551,
+      "chapter_label": "EXO 1",
+      "verse_label": "18",
+      "locator": {
+        "book": "EXO",
+        "chapter": 1,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 1,
+          "verse": 18
+        }
+      ],
+      "en": "The king of Egypt called for the midwives, and said to them, “Why have you done this thing and saved the boys alive?”",
+      "ko": "애굽 왕이 산파를 불러서 그들에게 이르되 너희가 어찌 이같이 하여 남자를 살렸느냐",
+      "source_text_hash": "1364df9cb3820008a698b2008b40ba79b93511adda8f4275c531c78297c81e7d",
+      "translation_text_hash": "d2ec5d0dd6e0489be4b419e2065280a3ad7dfa1d35a32a7256e3fc10e8571c95",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "애굽 왕이 산파를 불러서 그들에게 이르되 너희가 어찌 이같이 하여 남자를 살렸느냐"
+      ],
+      "raw_text_hashes": [
+        "d2ec5d0dd6e0489be4b419e2065280a3ad7dfa1d35a32a7256e3fc10e8571c95"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:1:19",
+      "sequence": 1552,
+      "chapter_label": "EXO 1",
+      "verse_label": "19",
+      "locator": {
+        "book": "EXO",
+        "chapter": 1,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 1,
+          "verse": 19
+        }
+      ],
+      "en": "The midwives said to Pharaoh, “Because the Hebrew women aren’t like the Egyptian women; for they are vigorous and give birth before the midwife comes to them.”",
+      "ko": "산파가 바로에게 대답하되 히브리 여인은 애굽 여인과 같지 아니하고 건장하여 산파가 그들에게 이르기 전에 해산하였더이다 하매",
+      "source_text_hash": "ef1bfd3efa68288bc48d2bb2e53114760e402b22774b54ed36b2d0bfdc198c3c",
+      "translation_text_hash": "bb38bd926c9ee6a157a4a0358e3a38bb1e2c6ab351a9217a34956f95a781b695",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "산파가 바로에게 대답하되 히브리 여인은 애굽 여인과 같지 아니하고 건장하여 산파가 그들에게 이르기 전에 해산하였더이다 하매"
+      ],
+      "raw_text_hashes": [
+        "bb38bd926c9ee6a157a4a0358e3a38bb1e2c6ab351a9217a34956f95a781b695"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:1:20",
+      "sequence": 1553,
+      "chapter_label": "EXO 1",
+      "verse_label": "20",
+      "locator": {
+        "book": "EXO",
+        "chapter": 1,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 1,
+          "verse": 20
+        }
+      ],
+      "en": "God dealt well with the midwives, and the people multiplied, and grew very mighty.",
+      "ko": "하나님이 그 산파들에게 은혜를 베푸시니라 백성은 생육이 번성하고 심히 강대하며",
+      "source_text_hash": "d37ae53d0c95d5243dda362f07f1e267b826b65e20f72d9c1a0768803d473693",
+      "translation_text_hash": "6c38709a854a2e63935bda030edcaf0946e85761620c2d74407ea2708f0754ef",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 그 산파들에게 은혜를 베푸시니라 백성은 생육이 번성하고 심히 강대하며"
+      ],
+      "raw_text_hashes": [
+        "6c38709a854a2e63935bda030edcaf0946e85761620c2d74407ea2708f0754ef"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:1:21",
+      "sequence": 1554,
+      "chapter_label": "EXO 1",
+      "verse_label": "21",
+      "locator": {
+        "book": "EXO",
+        "chapter": 1,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 1,
+          "verse": 21
+        }
+      ],
+      "en": "Because the midwives feared God, he gave them families.",
+      "ko": "산파는 하나님을 경외하였으므로 하나님이 그들의 집을 왕성케 하신지라",
+      "source_text_hash": "567062821721d2e2052642f3966a9cae01534f46a6cc8a7e9f49b1edbe98b93f",
+      "translation_text_hash": "63012efe65f6888467203f0fdc6b17f6b3467c965b8de9d54e20227b85a14d56",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "산파는 하나님을 경외하였으므로 하나님이 그들의 집을 왕성케 하신지라"
+      ],
+      "raw_text_hashes": [
+        "63012efe65f6888467203f0fdc6b17f6b3467c965b8de9d54e20227b85a14d56"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:1:22",
+      "sequence": 1555,
+      "chapter_label": "EXO 1",
+      "verse_label": "22",
+      "locator": {
+        "book": "EXO",
+        "chapter": 1,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 1,
+          "verse": 22
+        }
+      ],
+      "en": "Pharaoh commanded all his people, saying, “You shall cast every son who is born into the river, and every daughter you shall save alive.”",
+      "ko": "그러므로 바로가 그 모든 신민에게 명하여 가로되 남자가 나거든 너희는 그를 하수에 던지고 여자여든 살리라 하였더라",
+      "source_text_hash": "479e0106f707dcd31754ec112055abd97592c1efb5147a05edc46cabb13c35b9",
+      "translation_text_hash": "f6230cd0dd230456272ea3e7294c7109f1aaa3da3c53c58c0188426f55ea9460",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 바로가 그 모든 신민에게 명하여 가로되 남자가 나거든 너희는 그를 하수에 던지고 여자여든 살리라 하였더라"
+      ],
+      "raw_text_hashes": [
+        "f6230cd0dd230456272ea3e7294c7109f1aaa3da3c53c58c0188426f55ea9460"
+      ]
+    }
+  ]
+}

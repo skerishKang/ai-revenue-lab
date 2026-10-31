@@ -1,0 +1,461 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ISA:chapter:058",
+  "unit_ordinal": 737,
+  "unit_label": "ISA 58",
+  "book_code": "ISA",
+  "chapter_number": 58,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ISA:58:1",
+      "sequence": 18788,
+      "chapter_label": "ISA 58",
+      "verse_label": "1",
+      "locator": {
+        "book": "ISA",
+        "chapter": 58,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 58,
+          "verse": 1
+        }
+      ],
+      "en": "“Cry aloud! Don’t spare! Lift up your voice like a trumpet! Declare to my people their disobedience, and to the house of Jacob their sins.",
+      "ko": "크게 외치라 아끼지 말라 네 목소리를 나팔 같이 날려 내 백성에게 그 허물을, 야곱 집에 그 죄를 고하라",
+      "source_text_hash": "fbfbce7216cfe46a4bf5a805951609f1aa0cf07bb98637cac5a7627ce2e2932d",
+      "translation_text_hash": "ddf8e54a69e65488158bcb8f3672d698419afb8be99736e3f1a2fc5637f0501e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "크게 외치라 아끼지 말라 네 목소리를 나팔 같이 날려 내 백성에게 그 허물을, 야곱 집에 그 죄를 고하라"
+      ],
+      "raw_text_hashes": [
+        "ddf8e54a69e65488158bcb8f3672d698419afb8be99736e3f1a2fc5637f0501e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:58:2",
+      "sequence": 18789,
+      "chapter_label": "ISA 58",
+      "verse_label": "2",
+      "locator": {
+        "book": "ISA",
+        "chapter": 58,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 58,
+          "verse": 2
+        }
+      ],
+      "en": "Yet they seek me daily, and delight to know my ways. As a nation that did righteousness, and didn’t forsake the ordinance of their God, they ask of me righteous judgments. They delight to draw near to God.",
+      "ko": "그들이 날마다 나를 찾아 나의 길 알기를 즐거워함이 마치 의를 행하여 그 하나님의 규례를 폐하지 아니하는 나라 같아서 의로운 판단을 내게 구하며 하나님과 가까이 하기를 즐겨하며",
+      "source_text_hash": "96b952a5dcced761088b17216ff45c8ac486ecd55e206cfa290045c22e6afe76",
+      "translation_text_hash": "f2780b3e4a262a22ad695beba52b5dc97628135243645c45071140e9591c39b5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 날마다 나를 찾아 나의 길 알기를 즐거워함이 마치 의를 행하여 그 하나님의 규례를 폐하지 아니하는 나라 같아서 의로운 판단을 내게 구하며 하나님과 가까이 하기를 즐겨하며"
+      ],
+      "raw_text_hashes": [
+        "f2780b3e4a262a22ad695beba52b5dc97628135243645c45071140e9591c39b5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:58:3",
+      "sequence": 18790,
+      "chapter_label": "ISA 58",
+      "verse_label": "3",
+      "locator": {
+        "book": "ISA",
+        "chapter": 58,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 58,
+          "verse": 3
+        }
+      ],
+      "en": "‘Why have we fasted,’ they say, ‘and you don’t see? Why have we afflicted our soul, and you don’t notice?’ “Behold, in the day of your fast you find pleasure, and oppress all your laborers.",
+      "ko": "이르기를 우리가 금식하되 주께서 보지 아니하심은 어찜이오며 우리가 마음을 괴롭게 하되 주께서 알아주지 아니하심은 어찜이니이까 하느니라 보라 너희가 금식하는 날에 오락을 찾아 얻으며 온갖 일을 시키는도다",
+      "source_text_hash": "18fcd785aa1acca7e4744e41ea63d326aa43c35b789014607748cfd6c18aca42",
+      "translation_text_hash": "b43bb327d8d32f543caf81d7a6a2698173ec42d330d4243beee670c7e9d6e478",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이르기를 우리가 금식하되 주께서 보지 아니하심은 어찜이오며 우리가 마음을 괴롭게 하되 주께서 알아주지 아니하심은 어찜이니이까 하느니라 보라 너희가 금식하는 날에 오락을 찾아 얻으며 온갖 일을 시키는도다"
+      ],
+      "raw_text_hashes": [
+        "b43bb327d8d32f543caf81d7a6a2698173ec42d330d4243beee670c7e9d6e478"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:58:4",
+      "sequence": 18791,
+      "chapter_label": "ISA 58",
+      "verse_label": "4",
+      "locator": {
+        "book": "ISA",
+        "chapter": 58,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 58,
+          "verse": 4
+        }
+      ],
+      "en": "Behold, you fast for strife and contention, and to strike with the fist of wickedness. You don’t fast today so as to make your voice to be heard on high.",
+      "ko": "보라 너희가 금식하면서 다투며 싸우며 악한 주먹으로 치는도다 너희의 오늘 금식하는 것은 너희 목소리로 상달케 하려 하는 것이 아니라",
+      "source_text_hash": "3af13b5f0ff8336e454ebe3f877a58bc751b2b0c9623557fe39d2c91d6f1cb89",
+      "translation_text_hash": "6b4d30614a2e2156ff6f966f00ca8de4de3113874b2950447d97b629a39b4a05",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보라 너희가 금식하면서 다투며 싸우며 악한 주먹으로 치는도다 너희의 오늘 금식하는 것은 너희 목소리로 상달케 하려 하는 것이 아니라"
+      ],
+      "raw_text_hashes": [
+        "6b4d30614a2e2156ff6f966f00ca8de4de3113874b2950447d97b629a39b4a05"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:58:5",
+      "sequence": 18792,
+      "chapter_label": "ISA 58",
+      "verse_label": "5",
+      "locator": {
+        "book": "ISA",
+        "chapter": 58,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 58,
+          "verse": 5
+        }
+      ],
+      "en": "Is this the fast that I have chosen? A day for a man to humble his soul? Is it to bow down his head like a reed, and to spread sackcloth and ashes under himself? Will you call this a fast, and an acceptable day to the LORD?",
+      "ko": "이것이 어찌 나의 기뻐하는 금식이 되겠으며 이것이 어찌 사람이 그 마음을 괴롭게 하는 날이 되겠느냐 그 머리를 갈대 같이 숙이고 굵은 베와 재를 펴는 것을 어찌 금식이라 하겠으며 여호와께 열납될 날이라 하겠느냐",
+      "source_text_hash": "e9f490b28979f131a18d17e78a50f854870e488c59390b7eb8dd82823bf398da",
+      "translation_text_hash": "6464218e922ca18257d5132e2a7cf42efa5d1727da5cef707dc0e1940985eb9b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이것이 어찌 나의 기뻐하는 금식이 되겠으며 이것이 어찌 사람이 그 마음을 괴롭게 하는 날이 되겠느냐 그 머리를 갈대 같이 숙이고 굵은 베와 재를 펴는 것을 어찌 금식이라 하겠으며 여호와께 열납될 날이라 하겠느냐"
+      ],
+      "raw_text_hashes": [
+        "6464218e922ca18257d5132e2a7cf42efa5d1727da5cef707dc0e1940985eb9b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:58:6",
+      "sequence": 18793,
+      "chapter_label": "ISA 58",
+      "verse_label": "6",
+      "locator": {
+        "book": "ISA",
+        "chapter": 58,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 58,
+          "verse": 6
+        }
+      ],
+      "en": "“Isn’t this the fast that I have chosen: to release the bonds of wickedness, to undo the straps of the yoke, to let the oppressed go free, and that you break every yoke?",
+      "ko": "나의 기뻐하는 금식은 흉악의 결박을 풀어 주며 멍에의 줄을 끌러주며 압제 당하는 자를 자유케 하며 모든 멍에를 꺾는 것이 아니겠느냐",
+      "source_text_hash": "907a3e076d58eacf8ab9b36047eb1be901268e1afeda197342cc7df0b1677c00",
+      "translation_text_hash": "634f8180caa694ad88eb64055485046d9e5726a4ee064858fcde748580867652",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 기뻐하는 금식은 흉악의 결박을 풀어 주며 멍에의 줄을 끌러주며 압제 당하는 자를 자유케 하며 모든 멍에를 꺾는 것이 아니겠느냐"
+      ],
+      "raw_text_hashes": [
+        "634f8180caa694ad88eb64055485046d9e5726a4ee064858fcde748580867652"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:58:7",
+      "sequence": 18794,
+      "chapter_label": "ISA 58",
+      "verse_label": "7",
+      "locator": {
+        "book": "ISA",
+        "chapter": 58,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 58,
+          "verse": 7
+        }
+      ],
+      "en": "Isn’t it to distribute your bread to the hungry, and that you bring the poor who are cast out to your house? When you see the naked, that you cover him; and that you not hide yourself from your own flesh?",
+      "ko": "또 주린 자에게 네 식물을 나눠 주며 유리하는 빈민을 네 집에 들이며 벗은 자를 보면 입히며 또 네 골육을 피하여 스스로 숨지 아니하는 것이 아니겠느냐",
+      "source_text_hash": "ce3790e7ee89b301a8122a071702391f28a83066883b775550ea420d5c84bfd3",
+      "translation_text_hash": "5bc8c9832fd767f2c6823ee230635d6a97e42fc1ef4ac312362cd71046d40c27",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 주린 자에게 네 식물을 나눠 주며 유리하는 빈민을 네 집에 들이며 벗은 자를 보면 입히며 또 네 골육을 피하여 스스로 숨지 아니하는 것이 아니겠느냐"
+      ],
+      "raw_text_hashes": [
+        "5bc8c9832fd767f2c6823ee230635d6a97e42fc1ef4ac312362cd71046d40c27"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:58:8",
+      "sequence": 18795,
+      "chapter_label": "ISA 58",
+      "verse_label": "8",
+      "locator": {
+        "book": "ISA",
+        "chapter": 58,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 58,
+          "verse": 8
+        }
+      ],
+      "en": "Then your light will break out as the morning, and your healing will appear quickly; then your righteousness shall go before you, and the LORD’s glory will be your rear guard.",
+      "ko": "그리하면 네 빛이 아침 같이 비췰 것이며 네 치료가 급속할 것이며 네 의가 네 앞에 행하고 여호와의 영광이 네 뒤에 호위하리니",
+      "source_text_hash": "54e76f71f2488d071d009cf661c6ea69d8c740b32f7452ce161fa113d6c97782",
+      "translation_text_hash": "7a90162e4e98473a9ffa0f1c972e69fc85850604e6948509f9ce1cfe5de60560",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그리하면 네 빛이 아침 같이 비췰 것이며 네 치료가 급속할 것이며 네 의가 네 앞에 행하고 여호와의 영광이 네 뒤에 호위하리니"
+      ],
+      "raw_text_hashes": [
+        "7a90162e4e98473a9ffa0f1c972e69fc85850604e6948509f9ce1cfe5de60560"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:58:9",
+      "sequence": 18796,
+      "chapter_label": "ISA 58",
+      "verse_label": "9",
+      "locator": {
+        "book": "ISA",
+        "chapter": 58,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 58,
+          "verse": 9
+        }
+      ],
+      "en": "Then you will call, and the LORD will answer. You will cry for help, and he will say, ‘Here I am.’ “If you take away from among you the yoke, finger pointing, and speaking wickedly;",
+      "ko": "네가 부를 때에는 나 여호와가 응답하겠고 네가 부르짖을 때에는 말하기를 내가 여기 있다 하리라 만일 네가 너희 중에서 멍에와 손가락질과 허망한 말을 제하여 버리고",
+      "source_text_hash": "119232f594a47b82343bf3f3d51e73e876a35200535b256bb932f11f3f677936",
+      "translation_text_hash": "e9323cfdb5b4450b09ee237987387c6d661a40ea662aad3e5736fd756e8b2604",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 부를 때에는 나 여호와가 응답하겠고 네가 부르짖을 때에는 말하기를 내가 여기 있다 하리라 만일 네가 너희 중에서 멍에와 손가락질과 허망한 말을 제하여 버리고"
+      ],
+      "raw_text_hashes": [
+        "e9323cfdb5b4450b09ee237987387c6d661a40ea662aad3e5736fd756e8b2604"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:58:10",
+      "sequence": 18797,
+      "chapter_label": "ISA 58",
+      "verse_label": "10",
+      "locator": {
+        "book": "ISA",
+        "chapter": 58,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 58,
+          "verse": 10
+        }
+      ],
+      "en": "and if you pour out your soul to the hungry, and satisfy the afflicted soul, then your light will rise in darkness, and your obscurity will be as the noonday;",
+      "ko": "주린 자에게 네 심정을 동하며 괴로와하는 자의 마음을 만족케 하면 네 빛이 흑암 중에서 발하여 네 어두움이 낮과 같이 될 것이며",
+      "source_text_hash": "3392827b6c9cce55ec79a528d9165fc4b32bd6d24c2317c9b377c3c6576ca90b",
+      "translation_text_hash": "dadcec6d2f3886f9030a8314ff6c655d832ccdffb5f003e226fe429839a76723",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주린 자에게 네 심정을 동하며 괴로와하는 자의 마음을 만족케 하면 네 빛이 흑암 중에서 발하여 네 어두움이 낮과 같이 될 것이며"
+      ],
+      "raw_text_hashes": [
+        "dadcec6d2f3886f9030a8314ff6c655d832ccdffb5f003e226fe429839a76723"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:58:11",
+      "sequence": 18798,
+      "chapter_label": "ISA 58",
+      "verse_label": "11",
+      "locator": {
+        "book": "ISA",
+        "chapter": 58,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 58,
+          "verse": 11
+        }
+      ],
+      "en": "and the LORD will guide you continually, satisfy your soul in dry places, and make your bones strong. You will be like a watered garden, and like a spring of water whose waters don’t fail.",
+      "ko": "나 여호와가 너를 항상 인도하여 마른 곳에서도 네 영혼을 만족케 하며 네 뼈를 견고케 하리니 너는 물 댄 동산 같겠고 물이 끊어지지 아니하는 샘 같을 것이라",
+      "source_text_hash": "5b28b701cc437bd09369090e7658db030fb2a0b1b39330cbf8614da9c9d09dde",
+      "translation_text_hash": "59fdb00498c0d405ce7500e4c69503ef38a828268c665ea1a676594a255b42b4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와가 너를 항상 인도하여 마른 곳에서도 네 영혼을 만족케 하며 네 뼈를 견고케 하리니 너는 물 댄 동산 같겠고 물이 끊어지지 아니하는 샘 같을 것이라"
+      ],
+      "raw_text_hashes": [
+        "59fdb00498c0d405ce7500e4c69503ef38a828268c665ea1a676594a255b42b4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:58:12",
+      "sequence": 18799,
+      "chapter_label": "ISA 58",
+      "verse_label": "12",
+      "locator": {
+        "book": "ISA",
+        "chapter": 58,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 58,
+          "verse": 12
+        }
+      ],
+      "en": "Those who will be of you will build the old waste places. You will raise up the foundations of many generations. You will be called Repairer of the Breach, Restorer of Paths with Dwellings.",
+      "ko": "네게서 날 자들이 오래 황폐된 곳들을 다시 세울 것이며 너는 역대의 파괴된 기초를 쌓으리니 너를 일컬어 무너진데를 수보하는 자라 할 것이며 길을 수축하여 거할 곳이 되게 하는 자라 하리라",
+      "source_text_hash": "8cc50eac4b9eb77c328150e313fd57619fc4af255e7513abff880f3f2fe7bf67",
+      "translation_text_hash": "3eface24666f8fb7479c1191b87745f496c3ee2717b00362ca2aca8420ad9d06",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네게서 날 자들이 오래 황폐된 곳들을 다시 세울 것이며 너는 역대의 파괴된 기초를 쌓으리니 너를 일컬어 무너진데를 수보하는 자라 할 것이며 길을 수축하여 거할 곳이 되게 하는 자라 하리라"
+      ],
+      "raw_text_hashes": [
+        "3eface24666f8fb7479c1191b87745f496c3ee2717b00362ca2aca8420ad9d06"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:58:13",
+      "sequence": 18800,
+      "chapter_label": "ISA 58",
+      "verse_label": "13",
+      "locator": {
+        "book": "ISA",
+        "chapter": 58,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 58,
+          "verse": 13
+        }
+      ],
+      "en": "“If you turn away your foot from the Sabbath, from doing your pleasure on my holy day, and call the Sabbath a delight, and the holy of the LORD honorable, and honor it, not doing your own ways, nor finding your own pleasure, nor speaking your own words,",
+      "ko": "만일 안식일에 네 발을 금하여 내 성일에 오락을 행치 아니하고 안식일을 일컬어 즐거운 날이라, 여호와의 성일을 존귀한 날이라 하여 이를 존귀히 여기고 네 길로 행치 아니하며 네 오락을 구치 아니하며 사사로운 말을 하지 아니하면",
+      "source_text_hash": "6c098ab315c0aff8037b26f1da791ddef1cd4771b0f4eb5353451f5a108d9655",
+      "translation_text_hash": "d788de3f571af91178d3a407c5a04a9dcd703ffde1bedc574251c0c7e9392f84",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 안식일에 네 발을 금하여 내 성일에 오락을 행치 아니하고 안식일을 일컬어 즐거운 날이라, 여호와의 성일을 존귀한 날이라 하여 이를 존귀히 여기고 네 길로 행치 아니하며 네 오락을 구치 아니하며 사사로운 말을 하지 아니하면"
+      ],
+      "raw_text_hashes": [
+        "d788de3f571af91178d3a407c5a04a9dcd703ffde1bedc574251c0c7e9392f84"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:58:14",
+      "sequence": 18801,
+      "chapter_label": "ISA 58",
+      "verse_label": "14",
+      "locator": {
+        "book": "ISA",
+        "chapter": 58,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 58,
+          "verse": 14
+        }
+      ],
+      "en": "then you will delight yourself in the LORD, and I will make you to ride on the high places of the earth, and I will feed you with the heritage of Jacob your father;” for the LORD’s mouth has spoken it.",
+      "ko": "네가 여호와의 안에서 즐거움을 얻을 것이라 내가 너를 땅의 높은 곳에 올리고 네 조상 야곱의 업으로 기르리라 여호와의 입의 말이니라",
+      "source_text_hash": "05001da6ceae84e3a7a99c9de57629e582c63d043abdc3d88eb877db6c2b635c",
+      "translation_text_hash": "05a2a3c6478d16d51147a690014158b7d1f28f830ee1e81214606ba21dea6300",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 여호와의 안에서 즐거움을 얻을 것이라 내가 너를 땅의 높은 곳에 올리고 네 조상 야곱의 업으로 기르리라 여호와의 입의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "05a2a3c6478d16d51147a690014158b7d1f28f830ee1e81214606ba21dea6300"
+      ]
+    }
+  ]
+}

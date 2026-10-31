@@ -1,0 +1,877 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JER:chapter:017",
+  "unit_ordinal": 762,
+  "unit_label": "JER 17",
+  "book_code": "JER",
+  "chapter_number": 17,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JER:17:1",
+      "sequence": 19359,
+      "chapter_label": "JER 17",
+      "verse_label": "1",
+      "locator": {
+        "book": "JER",
+        "chapter": 17,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 17,
+          "verse": 1
+        }
+      ],
+      "en": "“The sin of Judah is written with a pen of iron, and with the point of a diamond. It is engraved on the tablet of their heart, and on the horns of your altars.",
+      "ko": "유다의 죄는 금강석 끝 철필로 기록되되 그들의 마음 판과 그들의 단 뿔에 새겨졌거늘",
+      "source_text_hash": "b6c09ba4e32d54846fad5c24ce559707837f6bd276796793de77433356271a37",
+      "translation_text_hash": "d040b2affdefa6dc9bd88bf2f2f1aee1fcd5ae26dc41a7104f675a5098fae8c4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다의 죄는 금강석 끝 철필로 기록되되 그들의 마음 판과 그들의 단 뿔에 새겨졌거늘"
+      ],
+      "raw_text_hashes": [
+        "d040b2affdefa6dc9bd88bf2f2f1aee1fcd5ae26dc41a7104f675a5098fae8c4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:17:2",
+      "sequence": 19360,
+      "chapter_label": "JER 17",
+      "verse_label": "2",
+      "locator": {
+        "book": "JER",
+        "chapter": 17,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 17,
+          "verse": 2
+        }
+      ],
+      "en": "Even their children remember their altars and their Asherah poles by the green trees on the high hills.",
+      "ko": "그들의 자녀가 높은 메 위 푸른 나무 곁에 있는 그 단들과 아세라들을 생각하도다",
+      "source_text_hash": "f2c5861aa5b81cddd817ba9b82c1ee0f916ce3b6e90d975cde9d67d713604a03",
+      "translation_text_hash": "8532f324b8eda699c1f8f9a1fbbd86e166a865fd2c17db2d198d2b0e2bd755fa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들의 자녀가 높은 메 위 푸른 나무 곁에 있는 그 단들과 아세라들을 생각하도다"
+      ],
+      "raw_text_hashes": [
+        "8532f324b8eda699c1f8f9a1fbbd86e166a865fd2c17db2d198d2b0e2bd755fa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:17:3",
+      "sequence": 19361,
+      "chapter_label": "JER 17",
+      "verse_label": "3",
+      "locator": {
+        "book": "JER",
+        "chapter": 17,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 17,
+          "verse": 3
+        }
+      ],
+      "en": "My mountain in the field, I will give your substance and all your treasures for a plunder, and your high places, because of sin, throughout all your borders.",
+      "ko": "들에 있는 나의 산아 네 온 지경의 죄로 인하여 내가 네 재산과 네 모든 보물과 산당들로 노략을 당하게 하리니",
+      "source_text_hash": "2a972926c7be63760023cd8cffb426e6c0b539e1ecd7ae098783f34b7e06289f",
+      "translation_text_hash": "ab4dced670816f48c1809a30c49e9980ac1c6cf9458a19ee652c519d2e105a8d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "들에 있는 나의 산아 네 온 지경의 죄로 인하여 내가 네 재산과 네 모든 보물과 산당들로 노략을 당하게 하리니"
+      ],
+      "raw_text_hashes": [
+        "ab4dced670816f48c1809a30c49e9980ac1c6cf9458a19ee652c519d2e105a8d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:17:4",
+      "sequence": 19362,
+      "chapter_label": "JER 17",
+      "verse_label": "4",
+      "locator": {
+        "book": "JER",
+        "chapter": 17,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 17,
+          "verse": 4
+        }
+      ],
+      "en": "You, even of yourself, will discontinue from your heritage that I gave you. I will cause you to serve your enemies in the land which you don’t know, for you have kindled a fire in my anger which will burn forever.”",
+      "ko": "내가 네게 준 네 기업에서 네 손을 뗄 것이며 또 내가 너로 너의 알지 못하는 땅에서 네 대적을 섬기게 하리니 이는 너희가 내 노로 맹렬케 하여 영영히 타는 불을 일으켰음이니라",
+      "source_text_hash": "f14876221f14a0653b38b7bea70f6bdb4c4d1520d937ea94d07c95e78a35bc15",
+      "translation_text_hash": "e93bd593f73d0086a5d235b9262dabe306d3f4339d9258d38e45bcf318e29096",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 네게 준 네 기업에서 네 손을 뗄 것이며 또 내가 너로 너의 알지 못하는 땅에서 네 대적을 섬기게 하리니 이는 너희가 내 노로 맹렬케 하여 영영히 타는 불을 일으켰음이니라"
+      ],
+      "raw_text_hashes": [
+        "e93bd593f73d0086a5d235b9262dabe306d3f4339d9258d38e45bcf318e29096"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:17:5",
+      "sequence": 19363,
+      "chapter_label": "JER 17",
+      "verse_label": "5",
+      "locator": {
+        "book": "JER",
+        "chapter": 17,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 17,
+          "verse": 5
+        }
+      ],
+      "en": "The LORD says: “Cursed is the man who trusts in man, relies on strength of flesh, and whose heart departs from the LORD.",
+      "ko": "나 여호와가 이같이 말하노라 무릇 사람을 믿으며 혈육으로 그 권력을 삼고 마음이 여호와에게서 떠난 그 사람은 저주를 받을 것이라",
+      "source_text_hash": "79b5a960f12bc1420bb66ecfd16fe37f099d6a0d085807708c7ee87de46bca15",
+      "translation_text_hash": "5ea15aaaf359f724e7cc8abbc5db924b18e60e1ce1299d699804bacc1e84807e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와가 이같이 말하노라 무릇 사람을 믿으며 혈육으로 그 권력을 삼고 마음이 여호와에게서 떠난 그 사람은 저주를 받을 것이라"
+      ],
+      "raw_text_hashes": [
+        "5ea15aaaf359f724e7cc8abbc5db924b18e60e1ce1299d699804bacc1e84807e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:17:6",
+      "sequence": 19364,
+      "chapter_label": "JER 17",
+      "verse_label": "6",
+      "locator": {
+        "book": "JER",
+        "chapter": 17,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 17,
+          "verse": 6
+        }
+      ],
+      "en": "For he will be like a bush in the desert, and will not see when good comes, but will inhabit the parched places in the wilderness, an uninhabited salt land.",
+      "ko": "그는 사막의 떨기나무 같아서 좋은 일의 오는 것을 보지 못하고 광야 간조한 곳, 건건한 땅, 사람이 거하지 않는 땅에 거하리라",
+      "source_text_hash": "32bc52121c70613137b10c968a337d987f755df680700d64b8c9e28cc655ba4a",
+      "translation_text_hash": "8b2f945cc5fa94dcde01fae8a0e8155d50a818fad7181fb4ddaef14666f42e23",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그는 사막의 떨기나무 같아서 좋은 일의 오는 것을 보지 못하고 광야 간조한 곳, 건건한 땅, 사람이 거하지 않는 땅에 거하리라"
+      ],
+      "raw_text_hashes": [
+        "8b2f945cc5fa94dcde01fae8a0e8155d50a818fad7181fb4ddaef14666f42e23"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:17:7",
+      "sequence": 19365,
+      "chapter_label": "JER 17",
+      "verse_label": "7",
+      "locator": {
+        "book": "JER",
+        "chapter": 17,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 17,
+          "verse": 7
+        }
+      ],
+      "en": "“Blessed is the man who trusts in the LORD, and whose confidence is in the LORD.",
+      "ko": "그러나 무릇 여호와를 의지하며 여호와를 의뢰하는 그 사람은 복을 받을 것이라",
+      "source_text_hash": "e74c43789536befcfafffc488ff1b17d36ab999bcf365e7f2b5c0b5eeba6c12b",
+      "translation_text_hash": "b1d5f18f0292dc8191ef792d09251aa6839cf7474eff893b8273dbae60fdb126",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 무릇 여호와를 의지하며 여호와를 의뢰하는 그 사람은 복을 받을 것이라"
+      ],
+      "raw_text_hashes": [
+        "b1d5f18f0292dc8191ef792d09251aa6839cf7474eff893b8273dbae60fdb126"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:17:8",
+      "sequence": 19366,
+      "chapter_label": "JER 17",
+      "verse_label": "8",
+      "locator": {
+        "book": "JER",
+        "chapter": 17,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 17,
+          "verse": 8
+        }
+      ],
+      "en": "For he will be as a tree planted by the waters, who spreads out its roots by the river, and will not fear when heat comes, but its leaf will be green, and will not be concerned in the year of drought. It won’t cease from yielding fruit.",
+      "ko": "그는 물가에 심기운 나무가 그 뿌리를 강변에 뻗치고 더위가 올찌라도 두려워 아니하며 그 잎이 청청하며 가무는 해에도 걱정이 없고 결실이 그치지 아니함 같으리라",
+      "source_text_hash": "081f7a8cf9e2b706475297b318c4b248be23a01f272831d01394d78aaf787c73",
+      "translation_text_hash": "4d369443702b07a3e50d99dc1e00f3a1286e70a72cdd3fd706df419cbe93715a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그는 물가에 심기운 나무가 그 뿌리를 강변에 뻗치고 더위가 올찌라도 두려워 아니하며 그 잎이 청청하며 가무는 해에도 걱정이 없고 결실이 그치지 아니함 같으리라"
+      ],
+      "raw_text_hashes": [
+        "4d369443702b07a3e50d99dc1e00f3a1286e70a72cdd3fd706df419cbe93715a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:17:9",
+      "sequence": 19367,
+      "chapter_label": "JER 17",
+      "verse_label": "9",
+      "locator": {
+        "book": "JER",
+        "chapter": 17,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 17,
+          "verse": 9
+        }
+      ],
+      "en": "The heart is deceitful above all things and it is exceedingly corrupt. Who can know it?",
+      "ko": "만물보다 거짓되고 심히 부패한 것은 마음이라 누가 능히 이를 알리요마는",
+      "source_text_hash": "9a6d28e14f5f9785a02203884272b0962060cadc32b989182283f05b599d274a",
+      "translation_text_hash": "56eafb8e3994ba4a3bb5589f1b743b05f24877852c1dbfe70450707763afb01b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만물보다 거짓되고 심히 부패한 것은 마음이라 누가 능히 이를 알리요마는"
+      ],
+      "raw_text_hashes": [
+        "56eafb8e3994ba4a3bb5589f1b743b05f24877852c1dbfe70450707763afb01b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:17:10",
+      "sequence": 19368,
+      "chapter_label": "JER 17",
+      "verse_label": "10",
+      "locator": {
+        "book": "JER",
+        "chapter": 17,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 17,
+          "verse": 10
+        }
+      ],
+      "en": "“I, the LORD, search the mind. I try the heart, even to give every man according to his ways, according to the fruit of his doings.”",
+      "ko": "나 여호와는 심장을 살피며 폐부를 시험하고 각각 그 행위와 그 행실대로 보응하나니",
+      "source_text_hash": "604290441f63441515f623964545deac42a7e6671f4d7c1130e93e2f01e06a45",
+      "translation_text_hash": "16a25d25b8a6018cf9b881926a8ccbe9d2a321c464cdfd14afda053a318fb057",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와는 심장을 살피며 폐부를 시험하고 각각 그 행위와 그 행실대로 보응하나니"
+      ],
+      "raw_text_hashes": [
+        "16a25d25b8a6018cf9b881926a8ccbe9d2a321c464cdfd14afda053a318fb057"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:17:11",
+      "sequence": 19369,
+      "chapter_label": "JER 17",
+      "verse_label": "11",
+      "locator": {
+        "book": "JER",
+        "chapter": 17,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 17,
+          "verse": 11
+        }
+      ],
+      "en": "As the partridge that sits on eggs which she has not laid, so is he who gets riches, and not by right. In the middle of his days, they will leave him. At his end, he will be a fool.",
+      "ko": "불의로 치부하는 자는 자고새가 낳지 아니한 알을 품음 같아서 그 중년에 그것이 떠나겠고 필경은 어리석은 자가 되리라",
+      "source_text_hash": "75a1545057f285b77a215eb036a13c46919b8f49ec2eec9bcf36f70a93d8666d",
+      "translation_text_hash": "955cd0b0d5ac93689a9c4cc5e31b5d079018257f095ad74d26119770775e78a1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "불의로 치부하는 자는 자고새가 낳지 아니한 알을 품음 같아서 그 중년에 그것이 떠나겠고 필경은 어리석은 자가 되리라"
+      ],
+      "raw_text_hashes": [
+        "955cd0b0d5ac93689a9c4cc5e31b5d079018257f095ad74d26119770775e78a1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:17:12",
+      "sequence": 19370,
+      "chapter_label": "JER 17",
+      "verse_label": "12",
+      "locator": {
+        "book": "JER",
+        "chapter": 17,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 17,
+          "verse": 12
+        }
+      ],
+      "en": "A glorious throne, set on high from the beginning, is the place of our sanctuary.",
+      "ko": "영화로우신 보좌여 원시부터 높이 계시며 우리의 성소이시며",
+      "source_text_hash": "5ad9264338778686cba9f59c6cb10b4f372f33489e6cd8e5a83c54d06f00c47e",
+      "translation_text_hash": "3899ff97b224f0bdfeeb1325aa9ce2b06429b0c08743b48ba5b45b833dda85bf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "영화로우신 보좌여 원시부터 높이 계시며 우리의 성소이시며"
+      ],
+      "raw_text_hashes": [
+        "3899ff97b224f0bdfeeb1325aa9ce2b06429b0c08743b48ba5b45b833dda85bf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:17:13",
+      "sequence": 19371,
+      "chapter_label": "JER 17",
+      "verse_label": "13",
+      "locator": {
+        "book": "JER",
+        "chapter": 17,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 17,
+          "verse": 13
+        }
+      ],
+      "en": "LORD, the hope of Israel, all who forsake you will be disappointed. Those who depart from me will be written in the earth, because they have forsaken the LORD, the spring of living waters.",
+      "ko": "이스라엘의 소망이신 여호와여 무릇 주를 버리는 자는 다 수치를 당할 것이라 무릇 여호와를 떠나는 자는 흙에 기록이 되오리니 이는 생수의 근원이신 여호와를 버림이니이다",
+      "source_text_hash": "d32947112ad25b15de6744126537a1868f50259082a1c6375cc7878b01849735",
+      "translation_text_hash": "67aff3b8b2882251eaa1874512505a23a2b545b3fb7f4c9ff0d15be774dc08fe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘의 소망이신 여호와여 무릇 주를 버리는 자는 다 수치를 당할 것이라 무릇 여호와를 떠나는 자는 흙에 기록이 되오리니 이는 생수의 근원이신 여호와를 버림이니이다"
+      ],
+      "raw_text_hashes": [
+        "67aff3b8b2882251eaa1874512505a23a2b545b3fb7f4c9ff0d15be774dc08fe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:17:14",
+      "sequence": 19372,
+      "chapter_label": "JER 17",
+      "verse_label": "14",
+      "locator": {
+        "book": "JER",
+        "chapter": 17,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 17,
+          "verse": 14
+        }
+      ],
+      "en": "Heal me, O LORD, and I will be healed. Save me, and I will be saved; for you are my praise.",
+      "ko": "여호와여 주는 나의 찬송이시오니 나를 고치소서 그리하시면 내가 낫겠나이다 나를 구원하소서 그리하시면 내가 구원을 얻으리이다",
+      "source_text_hash": "75427280f60e79a7f1fcbd1b781003cb49a258453dd30bd04ca9b634faddb523",
+      "translation_text_hash": "9e2e9815b8fd5a13555f6f62649a0e32ad569ce0c5e914bcfc3fa781a8cb7c83",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 주는 나의 찬송이시오니 나를 고치소서 그리하시면 내가 낫겠나이다 나를 구원하소서 그리하시면 내가 구원을 얻으리이다"
+      ],
+      "raw_text_hashes": [
+        "9e2e9815b8fd5a13555f6f62649a0e32ad569ce0c5e914bcfc3fa781a8cb7c83"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:17:15",
+      "sequence": 19373,
+      "chapter_label": "JER 17",
+      "verse_label": "15",
+      "locator": {
+        "book": "JER",
+        "chapter": 17,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 17,
+          "verse": 15
+        }
+      ],
+      "en": "Behold, they ask me, “Where is the LORD’s word? Let it be fulfilled now.”",
+      "ko": "그들이 내게 이르기를 여호와의 말씀이 어디 있느뇨 이제 임하게 할찌어다 하나이다",
+      "source_text_hash": "17030d80456c12a2e26e274fb3ee60d6db2e53e9cd25c12dc20fde19f2fd1d40",
+      "translation_text_hash": "87111b36aac1e6577bd9b1d98227b90e830f709b875f497613c96aab181e99f3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 내게 이르기를 여호와의 말씀이 어디 있느뇨 이제 임하게 할찌어다 하나이다"
+      ],
+      "raw_text_hashes": [
+        "87111b36aac1e6577bd9b1d98227b90e830f709b875f497613c96aab181e99f3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:17:16",
+      "sequence": 19374,
+      "chapter_label": "JER 17",
+      "verse_label": "16",
+      "locator": {
+        "book": "JER",
+        "chapter": 17,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 17,
+          "verse": 16
+        }
+      ],
+      "en": "As for me, I have not hurried from being a shepherd after you. I haven’t desired the woeful day. You know. That which came out of my lips was before your face.",
+      "ko": "나는 목자의 직분에서 물러가지 아니하고 주를 좇았사오며 재앙의 날도 내가 원치 아니하였음을 주께서 아시는바라 내 입술에서 나온 것이 주의 목전에 있나이다",
+      "source_text_hash": "0039d63d1fed6eaf0fa5524fc51adf5d4841b87b3c6d742e74425d1b05fa5500",
+      "translation_text_hash": "5ead2831087219f89bde63b9feb64e9b5c1d3a311002156e8f779734ea880b26",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 목자의 직분에서 물러가지 아니하고 주를 좇았사오며 재앙의 날도 내가 원치 아니하였음을 주께서 아시는바라 내 입술에서 나온 것이 주의 목전에 있나이다"
+      ],
+      "raw_text_hashes": [
+        "5ead2831087219f89bde63b9feb64e9b5c1d3a311002156e8f779734ea880b26"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:17:17",
+      "sequence": 19375,
+      "chapter_label": "JER 17",
+      "verse_label": "17",
+      "locator": {
+        "book": "JER",
+        "chapter": 17,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 17,
+          "verse": 17
+        }
+      ],
+      "en": "Don’t be a terror to me. You are my refuge in the day of evil.",
+      "ko": "주는 내게 두려움이 되지 마옵소서 재앙의 날에 주는 나의 피난처시니이다",
+      "source_text_hash": "ced5d8c840d1decaf9d2abd9ce456706bfc45aee14396aefbe29ad1284afbe6f",
+      "translation_text_hash": "1ea7c76fd3d0fcdf689f469e4c341f701d2956423c44ff3632c277c7c87248c0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주는 내게 두려움이 되지 마옵소서 재앙의 날에 주는 나의 피난처시니이다"
+      ],
+      "raw_text_hashes": [
+        "1ea7c76fd3d0fcdf689f469e4c341f701d2956423c44ff3632c277c7c87248c0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:17:18",
+      "sequence": 19376,
+      "chapter_label": "JER 17",
+      "verse_label": "18",
+      "locator": {
+        "book": "JER",
+        "chapter": 17,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 17,
+          "verse": 18
+        }
+      ],
+      "en": "Let them be disappointed who persecute me, but don’t let me be disappointed. Let them be dismayed, but don’t let me be dismayed. Bring on them the day of evil, and destroy them with double destruction.",
+      "ko": "나를 박해하는 자로 수욕을 당케 하시고 나로 수욕을 당케 마옵소서 그들로 놀라게 하시고 나로 놀라게 마시옵소서 재앙의 날을 그들에게 임하게 하시며 배나 되는 멸망으로 그들을 멸하소서",
+      "source_text_hash": "2e04bcdb40746f29b8c3f1448548bbca584b625ae2459bfed38c6fbc3694e63e",
+      "translation_text_hash": "89a3b6a2902496d3bb76a8fa07275ed9a030a1e462a2763af11c8a4d9f05e45c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나를 박해하는 자로 수욕을 당케 하시고 나로 수욕을 당케 마옵소서 그들로 놀라게 하시고 나로 놀라게 마시옵소서 재앙의 날을 그들에게 임하게 하시며 배나 되는 멸망으로 그들을 멸하소서"
+      ],
+      "raw_text_hashes": [
+        "89a3b6a2902496d3bb76a8fa07275ed9a030a1e462a2763af11c8a4d9f05e45c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:17:19",
+      "sequence": 19377,
+      "chapter_label": "JER 17",
+      "verse_label": "19",
+      "locator": {
+        "book": "JER",
+        "chapter": 17,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 17,
+          "verse": 19
+        }
+      ],
+      "en": "The LORD said this to me: “Go and stand in the gate of the children of the people, through which the kings of Judah come in and by which they go out, and in all the gates of Jerusalem.",
+      "ko": "여호와께서 내게 이같이 말씀하시되 너는 가서 유다 왕들의 출입하는 평민의 문과 예루살렘 모든 문에 서서",
+      "source_text_hash": "1be61d8eeb25e1e5c230073f863a827cc87e5ff50608446905734a33c1643f01",
+      "translation_text_hash": "e0d19f71f0977d9c105851ecf101e7890ae7bf043e8cddfb0db648ab46ca784b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 내게 이같이 말씀하시되 너는 가서 유다 왕들의 출입하는 평민의 문과 예루살렘 모든 문에 서서"
+      ],
+      "raw_text_hashes": [
+        "e0d19f71f0977d9c105851ecf101e7890ae7bf043e8cddfb0db648ab46ca784b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:17:20",
+      "sequence": 19378,
+      "chapter_label": "JER 17",
+      "verse_label": "20",
+      "locator": {
+        "book": "JER",
+        "chapter": 17,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 17,
+          "verse": 20
+        }
+      ],
+      "en": "Tell them, ‘Hear the LORD’s word, you kings of Judah, all Judah, and all the inhabitants of Jerusalem, that enter in by these gates:",
+      "ko": "무리에게 이르기를 이 문으로 들어 오는 유다 왕들과 유다 모든 백성과 예루살렘 모든 거민 너희는 여호와의 말씀을 들을찌어다",
+      "source_text_hash": "dbbbf6a8ba8913eaeb948ce198b3b7d2a8df838297c1035a4b11e8253ef7ddcb",
+      "translation_text_hash": "f0f1bd5d829cdb429e4a5892e74d2b8908e8f54b8a8ced40669d29c5ee3eb842",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무리에게 이르기를 이 문으로 들어 오는 유다 왕들과 유다 모든 백성과 예루살렘 모든 거민 너희는 여호와의 말씀을 들을찌어다"
+      ],
+      "raw_text_hashes": [
+        "f0f1bd5d829cdb429e4a5892e74d2b8908e8f54b8a8ced40669d29c5ee3eb842"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:17:21",
+      "sequence": 19379,
+      "chapter_label": "JER 17",
+      "verse_label": "21",
+      "locator": {
+        "book": "JER",
+        "chapter": 17,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 17,
+          "verse": 21
+        }
+      ],
+      "en": "The LORD says, “Be careful, and bear no burden on the Sabbath day, nor bring it in by the gates of Jerusalem.",
+      "ko": "여호와께서 이같이 말씀하시되 너희는 스스로 삼가서 안식일에 짐을 지고 예루살렘 문으로 들어오지 말며",
+      "source_text_hash": "5d7fa1f6023bcb916416877e554e3bdf6c0297a0ef0451b991d6cd237705f190",
+      "translation_text_hash": "4a0af9f6f748cb49f25aa110247a241791c63a174c9638cedea1d281faf5592f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 이같이 말씀하시되 너희는 스스로 삼가서 안식일에 짐을 지고 예루살렘 문으로 들어오지 말며"
+      ],
+      "raw_text_hashes": [
+        "4a0af9f6f748cb49f25aa110247a241791c63a174c9638cedea1d281faf5592f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:17:22",
+      "sequence": 19380,
+      "chapter_label": "JER 17",
+      "verse_label": "22",
+      "locator": {
+        "book": "JER",
+        "chapter": 17,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 17,
+          "verse": 22
+        }
+      ],
+      "en": "Don’t carry a burden out of your houses on the Sabbath day. Don’t do any work, but make the Sabbath day holy, as I commanded your fathers.",
+      "ko": "안식일에 너희 집에서 짐을 내지 말며 아무 일이든지 하지 말아서 내가 너희 열조에게 명함 같이 안식일을 거룩히 할찌어다",
+      "source_text_hash": "b1f24e0604516b6960ec4e1f9ea84d89b28d56551afff197ade0d03b50f150c2",
+      "translation_text_hash": "26f5213c92f9678618f48768afdcb55bb9b2bed34e8765fbfeb5a1da7e04a242",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "안식일에 너희 집에서 짐을 내지 말며 아무 일이든지 하지 말아서 내가 너희 열조에게 명함 같이 안식일을 거룩히 할찌어다"
+      ],
+      "raw_text_hashes": [
+        "26f5213c92f9678618f48768afdcb55bb9b2bed34e8765fbfeb5a1da7e04a242"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:17:23",
+      "sequence": 19381,
+      "chapter_label": "JER 17",
+      "verse_label": "23",
+      "locator": {
+        "book": "JER",
+        "chapter": 17,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 17,
+          "verse": 23
+        }
+      ],
+      "en": "But they didn’t listen. They didn’t turn their ear, but made their neck stiff, that they might not hear, and might not receive instruction.",
+      "ko": "그들은 청종치 아니하며 귀를 기울이지 아니하며 그 목을 곧게 하여 듣지 아니하며 교훈을 받지 아니하였느니라",
+      "source_text_hash": "7c5334e7391839c5a95739a454cd226a72495253181955bb8da7236be4014133",
+      "translation_text_hash": "5b8ecc5f2b32e1478aa5500b72603aaa598d78800fef4ee9064d9d59a5130511",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들은 청종치 아니하며 귀를 기울이지 아니하며 그 목을 곧게 하여 듣지 아니하며 교훈을 받지 아니하였느니라"
+      ],
+      "raw_text_hashes": [
+        "5b8ecc5f2b32e1478aa5500b72603aaa598d78800fef4ee9064d9d59a5130511"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:17:24",
+      "sequence": 19382,
+      "chapter_label": "JER 17",
+      "verse_label": "24",
+      "locator": {
+        "book": "JER",
+        "chapter": 17,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 17,
+          "verse": 24
+        }
+      ],
+      "en": "It will happen, if you diligently listen to me,” says the LORD, “to bring in no burden through the gates of this city on the Sabbath day, but to make the Sabbath day holy, to do no work therein;",
+      "ko": "나 여호와가 말하노라 너희가 만일 삼가 나를 청종하여 안식일에 짐을 지고 이 성문으로 들어오지 아니하며 안식일을 거룩히 하여 아무 일이든지 하지 아니하면",
+      "source_text_hash": "7eaae05fd86db5a01f9a0505425964c24ea4da1498fe4e68134f210480a85b7a",
+      "translation_text_hash": "50b5734ffc3157a282a6e43d697f4423b28c3b861a7a44813061599d3e76ae4f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와가 말하노라 너희가 만일 삼가 나를 청종하여 안식일에 짐을 지고 이 성문으로 들어오지 아니하며 안식일을 거룩히 하여 아무 일이든지 하지 아니하면"
+      ],
+      "raw_text_hashes": [
+        "50b5734ffc3157a282a6e43d697f4423b28c3b861a7a44813061599d3e76ae4f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:17:25",
+      "sequence": 19383,
+      "chapter_label": "JER 17",
+      "verse_label": "25",
+      "locator": {
+        "book": "JER",
+        "chapter": 17,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 17,
+          "verse": 25
+        }
+      ],
+      "en": "then there will enter in by the gates of this city kings and princes sitting on David’s throne, riding in chariots and on horses, they and their princes, the men of Judah and the inhabitants of Jerusalem; and this city will remain forever.",
+      "ko": "다윗의 위에 앉는 왕들과 방백들이 병거와 말을 타고 이 성문으로 들어오되 그들과 유다 모든 백성과 예루살렘 거민들이 함께 그리할 것이요 이 성은 영영히 있을 것이며",
+      "source_text_hash": "0b02c84991a8187724d2f9f5882fa367ba98da9dceaa1f5bf65b82ea7e32b4b6",
+      "translation_text_hash": "c2f436c943d08a8297bb50561493d2c4d8ebe811ce8a5b46342fe531544b6863",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗의 위에 앉는 왕들과 방백들이 병거와 말을 타고 이 성문으로 들어오되 그들과 유다 모든 백성과 예루살렘 거민들이 함께 그리할 것이요 이 성은 영영히 있을 것이며"
+      ],
+      "raw_text_hashes": [
+        "c2f436c943d08a8297bb50561493d2c4d8ebe811ce8a5b46342fe531544b6863"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:17:26",
+      "sequence": 19384,
+      "chapter_label": "JER 17",
+      "verse_label": "26",
+      "locator": {
+        "book": "JER",
+        "chapter": 17,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 17,
+          "verse": 26
+        }
+      ],
+      "en": "They will come from the cities of Judah, and from the places around Jerusalem, from the land of Benjamin, from the lowland, from the hill country, and from the South, bringing burnt offerings, sacrifices, meal offerings, and frankincense, and bringing sacrifices of thanksgiving to the LORD’s house.",
+      "ko": "사람들이 유다 성읍들과 예루살렘에 둘린 곳들과 베냐민 땅과 평지와 산지와 남방에서 이르러서 번제와 희생과 소제와 유향과 감사의 희생을 가지고 여호와의 집으로 오려니와",
+      "source_text_hash": "27a6e51840785ab97a88595c4f5dfbb288056e14918d72ed7b7d6cdc5672d66f",
+      "translation_text_hash": "9510770d37d1dde055533dbac7d2098e28bf2334bed7da8f3db3f74041ff83ad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람들이 유다 성읍들과 예루살렘에 둘린 곳들과 베냐민 땅과 평지와 산지와 남방에서 이르러서 번제와 희생과 소제와 유향과 감사의 희생을 가지고 여호와의 집으로 오려니와"
+      ],
+      "raw_text_hashes": [
+        "9510770d37d1dde055533dbac7d2098e28bf2334bed7da8f3db3f74041ff83ad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:17:27",
+      "sequence": 19385,
+      "chapter_label": "JER 17",
+      "verse_label": "27",
+      "locator": {
+        "book": "JER",
+        "chapter": 17,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 17,
+          "verse": 27
+        }
+      ],
+      "en": "But if you will not listen to me to make the Sabbath day holy, and not to bear a burden and enter in at the gates of Jerusalem on the Sabbath day, then I will kindle a fire in its gates, and it will devour the palaces of Jerusalem. It will not be quenched.”’”",
+      "ko": "너희가 나를 청종치 아니하고 안식일을 거룩케 아니하여 안식일에 짐을 지고 예루살렘 문으로 들어오면 내가 성문에 불을 놓아 예루살렘 궁전을 삼키게 하리니 그 불이 꺼지지 아니하리라 하셨다 할찌니라",
+      "source_text_hash": "b6ee9b751501da2ae301cc8848c41bce8d4b048747dcc554a7a2aa07c027477d",
+      "translation_text_hash": "98a44b4a40c73de68aad50145ba81f673fba81f41ca021b666f03431c3a2aa38",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 나를 청종치 아니하고 안식일을 거룩케 아니하여 안식일에 짐을 지고 예루살렘 문으로 들어오면 내가 성문에 불을 놓아 예루살렘 궁전을 삼키게 하리니 그 불이 꺼지지 아니하리라 하셨다 할찌니라"
+      ],
+      "raw_text_hashes": [
+        "98a44b4a40c73de68aad50145ba81f673fba81f41ca021b666f03431c3a2aa38"
+      ]
+    }
+  ]
+}

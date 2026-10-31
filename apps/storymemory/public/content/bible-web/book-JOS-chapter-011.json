@@ -1,0 +1,749 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JOS:chapter:011",
+  "unit_ordinal": 198,
+  "unit_label": "JOS 11",
+  "book_code": "JOS",
+  "chapter_number": 11,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JOS:11:1",
+      "sequence": 6109,
+      "chapter_label": "JOS 11",
+      "verse_label": "1",
+      "locator": {
+        "book": "JOS",
+        "chapter": 11,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 11,
+          "verse": 1
+        }
+      ],
+      "en": "When Jabin king of Hazor heard of it, he sent to Jobab king of Madon, to the king of Shimron, to the king of Achshaph,",
+      "ko": "하솔 왕 야빈이 이 소식을 듣고 마돈 왕 요밥과 시므론 왕과 악삽 왕과",
+      "source_text_hash": "0e6f3328aa7f5b0cd9e2afbf45bdcb4751239490b333d45ed1dfdaa559a55ef6",
+      "translation_text_hash": "13f99353dc21860837a382894f60dbe4222d3758916a370e9a5425781f35c5d6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하솔 왕 야빈이 이 소식을 듣고 마돈 왕 요밥과 시므론 왕과 악삽 왕과"
+      ],
+      "raw_text_hashes": [
+        "13f99353dc21860837a382894f60dbe4222d3758916a370e9a5425781f35c5d6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:11:2",
+      "sequence": 6110,
+      "chapter_label": "JOS 11",
+      "verse_label": "2",
+      "locator": {
+        "book": "JOS",
+        "chapter": 11,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 11,
+          "verse": 2
+        }
+      ],
+      "en": "and to the kings who were on the north, in the hill country, in the Arabah south of Chinneroth, in the lowland, and in the heights of Dor on the west,",
+      "ko": "및 북방 산지와 긴네롯 남편 아라바와 평지와 서방 돌의 높은 곳에 있는 왕들과",
+      "source_text_hash": "a2f729c6e1ed918780efbcf184a30e744e3675a86c265ebbc4034170cf0e8903",
+      "translation_text_hash": "9f1630c2b86e5417462c4c235a3a4e7a623311a287fdf8cce8796fe6b3dfa402",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "및 북방 산지와 긴네롯 남편 아라바와 평지와 서방 돌의 높은 곳에 있는 왕들과"
+      ],
+      "raw_text_hashes": [
+        "9f1630c2b86e5417462c4c235a3a4e7a623311a287fdf8cce8796fe6b3dfa402"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:11:3",
+      "sequence": 6111,
+      "chapter_label": "JOS 11",
+      "verse_label": "3",
+      "locator": {
+        "book": "JOS",
+        "chapter": 11,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 11,
+          "verse": 3
+        }
+      ],
+      "en": "to the Canaanite on the east and on the west, the Amorite, the Hittite, the Perizzite, the Jebusite in the hill country, and the Hivite under Hermon in the land of Mizpah.",
+      "ko": "동서편 가나안 사람과 아모리 사람과 헷 사람과 브리스 사람과 산지의 여부스 사람과 미스바 땅 헤르몬산 아래 히위 사람들에게 사람을 보내매",
+      "source_text_hash": "bcfa260e4be74657e89f2c0121d32954577e98a98263e72009c8cfb9162b3533",
+      "translation_text_hash": "a84a3ae84b7d6298986f3f862ae82af2d6c6e66e72cec3115ecfad4b47510da4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "동서편 가나안 사람과 아모리 사람과 헷 사람과 브리스 사람과 산지의 여부스 사람과 미스바 땅 헤르몬산 아래 히위 사람들에게 사람을 보내매"
+      ],
+      "raw_text_hashes": [
+        "a84a3ae84b7d6298986f3f862ae82af2d6c6e66e72cec3115ecfad4b47510da4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:11:4",
+      "sequence": 6112,
+      "chapter_label": "JOS 11",
+      "verse_label": "4",
+      "locator": {
+        "book": "JOS",
+        "chapter": 11,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 11,
+          "verse": 4
+        }
+      ],
+      "en": "They went out, they and all their armies with them, many people, even as the sand that is on the seashore in multitude, with very many horses and chariots.",
+      "ko": "그들이 그 모든 군대를 거느리고 나왔으니 민중이 많아 해변의 수다한 모래 같고 말과 병거도 심히 많았으며",
+      "source_text_hash": "b7630fa4230266205bafa7d7d8a082d99c702a8092792edc37e093f2ec45584f",
+      "translation_text_hash": "162c4f74a4173a1b7d0795eb3d7f2903345dba0d48919664d9370e64c1ff6597",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 그 모든 군대를 거느리고 나왔으니 민중이 많아 해변의 수다한 모래 같고 말과 병거도 심히 많았으며"
+      ],
+      "raw_text_hashes": [
+        "162c4f74a4173a1b7d0795eb3d7f2903345dba0d48919664d9370e64c1ff6597"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:11:5",
+      "sequence": 6113,
+      "chapter_label": "JOS 11",
+      "verse_label": "5",
+      "locator": {
+        "book": "JOS",
+        "chapter": 11,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 11,
+          "verse": 5
+        }
+      ],
+      "en": "All these kings met together; and they came and encamped together at the waters of Merom, to fight with Israel.",
+      "ko": "이 왕들이 모여 나아와서 이스라엘과 싸우려고 메롬 물가에 함께 진 쳤더라",
+      "source_text_hash": "d8f79fc3a60bc9dd091d2066fe3c63c67468f83078152d0b7a4c4263698a41b5",
+      "translation_text_hash": "a57d92ffb8e900bb5999abb2ef4e05ef54c2a08b9658b719957e5c17a503d370",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 왕들이 모여 나아와서 이스라엘과 싸우려고 메롬 물가에 함께 진 쳤더라"
+      ],
+      "raw_text_hashes": [
+        "a57d92ffb8e900bb5999abb2ef4e05ef54c2a08b9658b719957e5c17a503d370"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:11:6",
+      "sequence": 6114,
+      "chapter_label": "JOS 11",
+      "verse_label": "6",
+      "locator": {
+        "book": "JOS",
+        "chapter": 11,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 11,
+          "verse": 6
+        }
+      ],
+      "en": "The LORD said to Joshua, “Don’t be afraid because of them; for tomorrow at this time, I will deliver them up all slain before Israel. You shall hamstring their horses and burn their chariots with fire.”",
+      "ko": "여호와께서 여호수아에게 이르시되 그들을 인하여 두려워 말라 내일 이맘때에 내가 그들을 이스라엘 앞에 붙여 몰살시키리니 너는 그들의 말 뒷발의 힘줄을 끊고 불로 그 병거를 사르라",
+      "source_text_hash": "2bee2abfce0478e9a7204d3d4bc43930a650e0cfb656d8de2b4fe261fcb4be50",
+      "translation_text_hash": "5e169cfb0bd933cba825aa7d21847d49aed3ec839f314427fd78892bd0b29be3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 여호수아에게 이르시되 그들을 인하여 두려워 말라 내일 이맘때에 내가 그들을 이스라엘 앞에 붙여 몰살시키리니 너는 그들의 말 뒷발의 힘줄을 끊고 불로 그 병거를 사르라"
+      ],
+      "raw_text_hashes": [
+        "5e169cfb0bd933cba825aa7d21847d49aed3ec839f314427fd78892bd0b29be3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:11:7",
+      "sequence": 6115,
+      "chapter_label": "JOS 11",
+      "verse_label": "7",
+      "locator": {
+        "book": "JOS",
+        "chapter": 11,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 11,
+          "verse": 7
+        }
+      ],
+      "en": "So Joshua came suddenly, with all the warriors, against them by the waters of Merom, and attacked them.",
+      "ko": "이에 여호수아가 모든 군사와 함께 메롬 물가로 가서 졸지에 습격할 때에",
+      "source_text_hash": "068fc218f8931a94fe7e6f56d83ae95f1987f8a5253411843c8676b5a89931b1",
+      "translation_text_hash": "bfe35a0f4074053779a6ea40eadc672269a744d16ec13309edc89fde52509fa9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 여호수아가 모든 군사와 함께 메롬 물가로 가서 졸지에 습격할 때에"
+      ],
+      "raw_text_hashes": [
+        "bfe35a0f4074053779a6ea40eadc672269a744d16ec13309edc89fde52509fa9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:11:8",
+      "sequence": 6116,
+      "chapter_label": "JOS 11",
+      "verse_label": "8",
+      "locator": {
+        "book": "JOS",
+        "chapter": 11,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 11,
+          "verse": 8
+        }
+      ],
+      "en": "The LORD delivered them into the hand of Israel, and they struck them, and chased them to great Sidon, and to Misrephoth Maim, and to the valley of Mizpah eastward. They struck them until they left them no one remaining.",
+      "ko": "여호와께서 그들을 이스라엘의 손에 붙이신고로 그들을 격파하고 큰 시돈과 미스르봇 마임까지 쫓고 동편에서는 미스바 골짜기까지 쫓아가서 한 사람도 남기지 아니하고 쳐죽이고",
+      "source_text_hash": "fe4ed81d3d78d4b26218d7a942dabaf22d441aac81507a63795e3b0a25fa1bab",
+      "translation_text_hash": "bf52d5b50af4b3784ac6e3d29d8c27d73c09cc45a8bd73712c83e3fdebbd94d8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 그들을 이스라엘의 손에 붙이신고로 그들을 격파하고 큰 시돈과 미스르봇 마임까지 쫓고 동편에서는 미스바 골짜기까지 쫓아가서 한 사람도 남기지 아니하고 쳐죽이고"
+      ],
+      "raw_text_hashes": [
+        "bf52d5b50af4b3784ac6e3d29d8c27d73c09cc45a8bd73712c83e3fdebbd94d8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:11:9",
+      "sequence": 6117,
+      "chapter_label": "JOS 11",
+      "verse_label": "9",
+      "locator": {
+        "book": "JOS",
+        "chapter": 11,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 11,
+          "verse": 9
+        }
+      ],
+      "en": "Joshua did to them as the LORD told him. He hamstrung their horses and burned their chariots with fire.",
+      "ko": "여호수아가 여호와께서 자기에게 명하신대로 행하여 그들의 말 뒷발의 힘줄을 끊고 불로 그 병거를 살랐더라",
+      "source_text_hash": "1f9b96387e778cd42f4fc404acb8200cc9f390d25551d0a434d2877fc8586b84",
+      "translation_text_hash": "5a6adfa96643245e27339fc94f402995ed840efa503171eb96262e86601587af",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호수아가 여호와께서 자기에게 명하신대로 행하여 그들의 말 뒷발의 힘줄을 끊고 불로 그 병거를 살랐더라"
+      ],
+      "raw_text_hashes": [
+        "5a6adfa96643245e27339fc94f402995ed840efa503171eb96262e86601587af"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:11:10",
+      "sequence": 6118,
+      "chapter_label": "JOS 11",
+      "verse_label": "10",
+      "locator": {
+        "book": "JOS",
+        "chapter": 11,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 11,
+          "verse": 10
+        }
+      ],
+      "en": "Joshua turned back at that time, and took Hazor, and struck its king with the sword; for Hazor used to be the head of all those kingdoms.",
+      "ko": "하솔은 본래 그 모든 나라의 머리였더니 그때에 여호수아가 돌아와서 하솔을 취하고 그 왕을 칼날로 쳐 죽이고",
+      "source_text_hash": "1d1eed6f3f6e2b4121470ede04640b26664e8f980cdfde54a1527ebc1946f0a2",
+      "translation_text_hash": "401018ab8ad0f95f1fced351195d2bdf3854946b77992f8b8a523648796f8444",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하솔은 본래 그 모든 나라의 머리였더니 그때에 여호수아가 돌아와서 하솔을 취하고 그 왕을 칼날로 쳐 죽이고"
+      ],
+      "raw_text_hashes": [
+        "401018ab8ad0f95f1fced351195d2bdf3854946b77992f8b8a523648796f8444"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:11:11",
+      "sequence": 6119,
+      "chapter_label": "JOS 11",
+      "verse_label": "11",
+      "locator": {
+        "book": "JOS",
+        "chapter": 11,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 11,
+          "verse": 11
+        }
+      ],
+      "en": "They struck all the souls who were in it with the edge of the sword, utterly destroying them. There was no one left who breathed. He burned Hazor with fire.",
+      "ko": "그 가운데 모든 사람을 칼날로 쳐서 진멸하여 호흡이 있는 자는 하나도 남기지 아니하였고 또 불로 하솔을 살랐으며",
+      "source_text_hash": "82709002bdca43d1767ff772b33c3f8f839b2203e46894631398ff91b7a3c6f6",
+      "translation_text_hash": "7c826eb586eb30f4750132d85afd2046fd7e827d3bb15245882167b8d7092574",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 가운데 모든 사람을 칼날로 쳐서 진멸하여 호흡이 있는 자는 하나도 남기지 아니하였고 또 불로 하솔을 살랐으며"
+      ],
+      "raw_text_hashes": [
+        "7c826eb586eb30f4750132d85afd2046fd7e827d3bb15245882167b8d7092574"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:11:12",
+      "sequence": 6120,
+      "chapter_label": "JOS 11",
+      "verse_label": "12",
+      "locator": {
+        "book": "JOS",
+        "chapter": 11,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 11,
+          "verse": 12
+        }
+      ],
+      "en": "Joshua captured all the cities of those kings, with their kings, and he struck them with the edge of the sword, and utterly destroyed them, as Moses the servant of the LORD commanded.",
+      "ko": "여호수아가 그 왕들의 모든 성읍과 그 모든 왕을 취하여 칼날로 쳐서 진멸하여 여호와의 종 모세의 명한 것과 같이 하였으되",
+      "source_text_hash": "1fae73ddd24e5a3b4124b0183ad79eec7dcc0c9981063acd391049f88be3566f",
+      "translation_text_hash": "32dd33192d15e6a4d6533e02176213725227e64db866f87bb601ff605b32c33e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호수아가 그 왕들의 모든 성읍과 그 모든 왕을 취하여 칼날로 쳐서 진멸하여 여호와의 종 모세의 명한 것과 같이 하였으되"
+      ],
+      "raw_text_hashes": [
+        "32dd33192d15e6a4d6533e02176213725227e64db866f87bb601ff605b32c33e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:11:13",
+      "sequence": 6121,
+      "chapter_label": "JOS 11",
+      "verse_label": "13",
+      "locator": {
+        "book": "JOS",
+        "chapter": 11,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 11,
+          "verse": 13
+        }
+      ],
+      "en": "But as for the cities that stood on their mounds, Israel burned none of them, except Hazor only. Joshua burned that.",
+      "ko": "여호수아가 하솔만 불살랐고 산 위에 건축된 성읍들은 이스라엘이 불사르지 아니하였으며",
+      "source_text_hash": "310960312d54d23fa8b2e128af8365d5a8f684500b44bf8eb5d0a6318745788e",
+      "translation_text_hash": "4383aee2c089068353c701a732c540e192132f6f985f3435a793d1c46af3bce9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호수아가 하솔만 불살랐고 산 위에 건축된 성읍들은 이스라엘이 불사르지 아니하였으며"
+      ],
+      "raw_text_hashes": [
+        "4383aee2c089068353c701a732c540e192132f6f985f3435a793d1c46af3bce9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:11:14",
+      "sequence": 6122,
+      "chapter_label": "JOS 11",
+      "verse_label": "14",
+      "locator": {
+        "book": "JOS",
+        "chapter": 11,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 11,
+          "verse": 14
+        }
+      ],
+      "en": "The children of Israel took all the plunder of these cities, with the livestock, as plunder for themselves; but every man they struck with the edge of the sword, until they had destroyed them. They didn’t leave any who breathed.",
+      "ko": "이 성읍들의 모든 재물과 가축은 이스라엘 자손들이 탈취하고 모든 사람은 칼날로 쳐서 진멸하여 호흡이 있는 자는 하나도 남기지 아니하였으니",
+      "source_text_hash": "7a302b443fe0f79656b1f9ce31cdb91c4ec9f6dd18cb5f609bf52cd403a4c170",
+      "translation_text_hash": "6e201f0806372ba12aebe11ad96c6a3c513533270f491f4d5083ce3014575286",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 성읍들의 모든 재물과 가축은 이스라엘 자손들이 탈취하고 모든 사람은 칼날로 쳐서 진멸하여 호흡이 있는 자는 하나도 남기지 아니하였으니"
+      ],
+      "raw_text_hashes": [
+        "6e201f0806372ba12aebe11ad96c6a3c513533270f491f4d5083ce3014575286"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:11:15",
+      "sequence": 6123,
+      "chapter_label": "JOS 11",
+      "verse_label": "15",
+      "locator": {
+        "book": "JOS",
+        "chapter": 11,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 11,
+          "verse": 15
+        }
+      ],
+      "en": "As the LORD commanded Moses his servant, so Moses commanded Joshua. Joshua did so. He left nothing undone of all that the LORD commanded Moses.",
+      "ko": "여호와께서 그종 모세에게 명하신 것을 모세는 여호수아에게 명하였고 여호수아는 그대로 행하여 여호와께서 무릇 모세에게 명하신 것을 하나도 행치 아니한 것이 없었더라",
+      "source_text_hash": "3f0a7a8de92f7b22cb93312095e0de986e7ae48dde038f5c5532ebb372ece75f",
+      "translation_text_hash": "28dad975c12be3f7e5e378fe07b8e8d9e5469598ccf0ee9e92d223b00cc8d8c3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 그종 모세에게 명하신 것을 모세는 여호수아에게 명하였고 여호수아는 그대로 행하여 여호와께서 무릇 모세에게 명하신 것을 하나도 행치 아니한 것이 없었더라"
+      ],
+      "raw_text_hashes": [
+        "28dad975c12be3f7e5e378fe07b8e8d9e5469598ccf0ee9e92d223b00cc8d8c3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:11:16",
+      "sequence": 6124,
+      "chapter_label": "JOS 11",
+      "verse_label": "16",
+      "locator": {
+        "book": "JOS",
+        "chapter": 11,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 11,
+          "verse": 16
+        }
+      ],
+      "en": "So Joshua captured all that land, the hill country, all the South, all the land of Goshen, the lowland, the Arabah, the hill country of Israel, and the lowland of the same,",
+      "ko": "여호수아가 이같이 그 온 땅 곧 산지와 온 남방과 고센 온 땅과 평지와 아라바와 이스라엘의 산지와 그 평지를 취하였으니",
+      "source_text_hash": "619279b5c7749a86d69b8395a58163e2a14b32bc952e67d1be4b198e8f4b6ea0",
+      "translation_text_hash": "bd67243b8a4e8e01d3d303e0fd4e3bb583e6998fce1c922779e99a895284874d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호수아가 이같이 그 온 땅 곧 산지와 온 남방과 고센 온 땅과 평지와 아라바와 이스라엘의 산지와 그 평지를 취하였으니"
+      ],
+      "raw_text_hashes": [
+        "bd67243b8a4e8e01d3d303e0fd4e3bb583e6998fce1c922779e99a895284874d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:11:17",
+      "sequence": 6125,
+      "chapter_label": "JOS 11",
+      "verse_label": "17",
+      "locator": {
+        "book": "JOS",
+        "chapter": 11,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 11,
+          "verse": 17
+        }
+      ],
+      "en": "from Mount Halak, that goes up to Seir, even to Baal Gad in the valley of Lebanon under Mount Hermon. He took all their kings, struck them, and put them to death.",
+      "ko": "곧 세일로 올라가는 할락산에서부터 헤르몬산 아래 레바논 골짜기의 바알갓까지라 그 모든 왕을 잡아 쳐죽였으며",
+      "source_text_hash": "7c0d9e0bac61427c1473759efe2d59f120666cfc3680f9238f57453ce362dc1b",
+      "translation_text_hash": "2b92faa8e3f820e2cf708a843241b4939a919bd53c8c725d08607526fc91f7fd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 세일로 올라가는 할락산에서부터 헤르몬산 아래 레바논 골짜기의 바알갓까지라 그 모든 왕을 잡아 쳐죽였으며"
+      ],
+      "raw_text_hashes": [
+        "2b92faa8e3f820e2cf708a843241b4939a919bd53c8c725d08607526fc91f7fd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:11:18",
+      "sequence": 6126,
+      "chapter_label": "JOS 11",
+      "verse_label": "18",
+      "locator": {
+        "book": "JOS",
+        "chapter": 11,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 11,
+          "verse": 18
+        }
+      ],
+      "en": "Joshua made war a long time with all those kings.",
+      "ko": "여호수아가 그 모든 왕과 싸운지는 여러 날이라",
+      "source_text_hash": "a50c912879d9d541cb8c0fb9e69c2109f96ddd57f9193a41657a517f5329b0c0",
+      "translation_text_hash": "e2178da97b59107325d5af30b5d336ee81ba0997c299bdf4d90299e5811e0f39",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호수아가 그 모든 왕과 싸운지는 여러 날이라"
+      ],
+      "raw_text_hashes": [
+        "e2178da97b59107325d5af30b5d336ee81ba0997c299bdf4d90299e5811e0f39"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:11:19",
+      "sequence": 6127,
+      "chapter_label": "JOS 11",
+      "verse_label": "19",
+      "locator": {
+        "book": "JOS",
+        "chapter": 11,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 11,
+          "verse": 19
+        }
+      ],
+      "en": "There was not a city that made peace with the children of Israel, except the Hivites, the inhabitants of Gibeon. They took all in battle.",
+      "ko": "기브온 거민 히위 사람 외에는 이스라엘 자손과 화친한 성읍이 하나도 없고 다 이스라엘 자손에게 쳐서 취한바 되었으니",
+      "source_text_hash": "48b87ede24f866f35a119d6de09426f33d328f84722ecc3164dd6349f5f50e86",
+      "translation_text_hash": "b08e63790c02e2b51db85d25e885fd2557400e61b94b6d6bad9c26417f8fe09e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "기브온 거민 히위 사람 외에는 이스라엘 자손과 화친한 성읍이 하나도 없고 다 이스라엘 자손에게 쳐서 취한바 되었으니"
+      ],
+      "raw_text_hashes": [
+        "b08e63790c02e2b51db85d25e885fd2557400e61b94b6d6bad9c26417f8fe09e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:11:20",
+      "sequence": 6128,
+      "chapter_label": "JOS 11",
+      "verse_label": "20",
+      "locator": {
+        "book": "JOS",
+        "chapter": 11,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 11,
+          "verse": 20
+        }
+      ],
+      "en": "For it was of the LORD to harden their hearts, to come against Israel in battle, that he might utterly destroy them, that they might have no favor, but that he might destroy them, as the LORD commanded Moses.",
+      "ko": "그들의 마음이 강퍅하여 이스라엘을 대적하여 싸우러 온 것은 여호와께서 그리하게 하신 것이라 그들로 저주 받은 자 되게 하여 은혜를 입지 못하게 하시고 여호와께서 모세에게 명하신대로 진멸하려 하심이었더라",
+      "source_text_hash": "542a609837e3f25f75e251b9929c70aaa4de7a38a8e0e39aa16b8e634bb8f4fd",
+      "translation_text_hash": "06ba25911f2e8df5832fa38442b4dc06c71f4238acd76fee146f04f1e74cd4d9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들의 마음이 강퍅하여 이스라엘을 대적하여 싸우러 온 것은 여호와께서 그리하게 하신 것이라 그들로 저주 받은 자 되게 하여 은혜를 입지 못하게 하시고 여호와께서 모세에게 명하신대로 진멸하려 하심이었더라"
+      ],
+      "raw_text_hashes": [
+        "06ba25911f2e8df5832fa38442b4dc06c71f4238acd76fee146f04f1e74cd4d9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:11:21",
+      "sequence": 6129,
+      "chapter_label": "JOS 11",
+      "verse_label": "21",
+      "locator": {
+        "book": "JOS",
+        "chapter": 11,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 11,
+          "verse": 21
+        }
+      ],
+      "en": "Joshua came at that time, and cut off the Anakim from the hill country, from Hebron, from Debir, from Anab, and from all the hill country of Judah, and from all the hill country of Israel. Joshua utterly destroyed them with their cities.",
+      "ko": "그 때에 여호수아가 가서 산지와 헤브론과 드빌과 아납과 유다 온 산지와 이스라엘의 온 산지에서 아낙 사람을 멸절하고 그가 또 그 성읍들을 진멸하였으므로",
+      "source_text_hash": "8401e57f7db552df943f248241053404852d945f4f934eeb70af42d445c67cbc",
+      "translation_text_hash": "baa66a54e6c92871d088a706cfc6dda32f1ef369511cee06c0fc805498a2e6d3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 여호수아가 가서 산지와 헤브론과 드빌과 아납과 유다 온 산지와 이스라엘의 온 산지에서 아낙 사람을 멸절하고 그가 또 그 성읍들을 진멸하였으므로"
+      ],
+      "raw_text_hashes": [
+        "baa66a54e6c92871d088a706cfc6dda32f1ef369511cee06c0fc805498a2e6d3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:11:22",
+      "sequence": 6130,
+      "chapter_label": "JOS 11",
+      "verse_label": "22",
+      "locator": {
+        "book": "JOS",
+        "chapter": 11,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 11,
+          "verse": 22
+        }
+      ],
+      "en": "There were none of the Anakim left in the land of the children of Israel. Only in Gaza, in Gath, and in Ashdod, did some remain.",
+      "ko": "이스라엘 자손의 땅 안에는 아낙 사람이 하나도 남음이 없고 가사와 가드와 아스돗에만 약간 남았었더라",
+      "source_text_hash": "874518879c22588d7e5fcb05d0758161af3971886e75849af4f40ef1de60ff2b",
+      "translation_text_hash": "5124d345aece057b3e2192020db4c33789f3c1095dd70017de7950ad25e66249",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손의 땅 안에는 아낙 사람이 하나도 남음이 없고 가사와 가드와 아스돗에만 약간 남았었더라"
+      ],
+      "raw_text_hashes": [
+        "5124d345aece057b3e2192020db4c33789f3c1095dd70017de7950ad25e66249"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:11:23",
+      "sequence": 6131,
+      "chapter_label": "JOS 11",
+      "verse_label": "23",
+      "locator": {
+        "book": "JOS",
+        "chapter": 11,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 11,
+          "verse": 23
+        }
+      ],
+      "en": "So Joshua took the whole land, according to all that the LORD spoke to Moses; and Joshua gave it for an inheritance to Israel according to their divisions by their tribes. Then the land had rest from war.",
+      "ko": "이와 같이 여호수아가 여호와께서 모세에게 이르신 말씀대로 그 온 땅을 취하여 이스라엘 지파의 구별을 따라 기업으로 주었더라 그 땅에 전쟁이 그쳤더라",
+      "source_text_hash": "b9e713ffe434d22ff03dcbdfc2ff3726a588d7cb142de1c71d16ce153dbe4d0d",
+      "translation_text_hash": "56f90fb50f688636ee530661945f55a7eb65928305aed07fc84fea95c6d4652b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이와 같이 여호수아가 여호와께서 모세에게 이르신 말씀대로 그 온 땅을 취하여 이스라엘 지파의 구별을 따라 기업으로 주었더라 그 땅에 전쟁이 그쳤더라"
+      ],
+      "raw_text_hashes": [
+        "56f90fb50f688636ee530661945f55a7eb65928305aed07fc84fea95c6d4652b"
+      ]
+    }
+  ]
+}

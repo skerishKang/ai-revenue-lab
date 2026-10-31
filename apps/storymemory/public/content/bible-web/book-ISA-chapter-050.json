@@ -1,0 +1,365 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ISA:chapter:050",
+  "unit_ordinal": 729,
+  "unit_label": "ISA 50",
+  "book_code": "ISA",
+  "chapter_number": 50,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ISA:50:1",
+      "sequence": 18664,
+      "chapter_label": "ISA 50",
+      "verse_label": "1",
+      "locator": {
+        "book": "ISA",
+        "chapter": 50,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 50,
+          "verse": 1
+        }
+      ],
+      "en": "The LORD says, “Where is the bill of your mother’s divorce, with which I have put her away? Or to which of my creditors have I sold you? Behold, you were sold for your iniquities, and your mother was put away for your transgressions.",
+      "ko": "나 여호와가 이같이 이르노라 내가 너희 어미를 내어보낸 이혼서가 어디 있느냐 내가 어느 채주에게 너희를 팔았느냐 오직 너희는 너희의 죄악을 인하여 팔렸고 너희 어미는 너희의 허물을 인하여 내어 보냄을 입었느니라",
+      "source_text_hash": "85e890412e14de4710b196dc15a669eef85e1610d527fe56c40485df338edba6",
+      "translation_text_hash": "cb0ad1188158083d99d21180e74c54e63850d1b3b37ab0b7734314e8fea1f9a7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와가 이같이 이르노라 내가 너희 어미를 내어보낸 이혼서가 어디 있느냐 내가 어느 채주에게 너희를 팔았느냐 오직 너희는 너희의 죄악을 인하여 팔렸고 너희 어미는 너희의 허물을 인하여 내어 보냄을 입었느니라"
+      ],
+      "raw_text_hashes": [
+        "cb0ad1188158083d99d21180e74c54e63850d1b3b37ab0b7734314e8fea1f9a7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:50:2",
+      "sequence": 18665,
+      "chapter_label": "ISA 50",
+      "verse_label": "2",
+      "locator": {
+        "book": "ISA",
+        "chapter": 50,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 50,
+          "verse": 2
+        }
+      ],
+      "en": "Why, when I came, was there no one? When I called, why was there no one to answer? Is my hand shortened at all, that it can’t redeem? Or have I no power to deliver? Behold, at my rebuke I dry up the sea. I make the rivers a wilderness. Their fish stink because there is no water, and die of thirst.",
+      "ko": "내가 왔어도 사람이 없었으며 내가 불러도 대답하는 자가 없었음은 어찜이뇨 내 손이 어찌 짧아 구속하지 못하겠느냐 내게 어찌 건질 능력이 없겠느냐 보라 내가 꾸짖은즉 바다가 마르며 하수가 광야가 될것이며 거기 물이 없어졌으므로 어족이 갈하여 죽어 악취를 발하게 되느니라",
+      "source_text_hash": "0d41f4aba70dd52e9d58923272ee6da26301f8e3464b791e5ac2ee00526f3b42",
+      "translation_text_hash": "797786b2463853c98e5542223e18eb146846709da475f52b4009adea10c46573",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 왔어도 사람이 없었으며 내가 불러도 대답하는 자가 없었음은 어찜이뇨 내 손이 어찌 짧아 구속하지 못하겠느냐 내게 어찌 건질 능력이 없겠느냐 보라 내가 꾸짖은즉 바다가 마르며 하수가 광야가 될것이며 거기 물이 없어졌으므로 어족이 갈하여 죽어 악취를 발하게 되느니라"
+      ],
+      "raw_text_hashes": [
+        "797786b2463853c98e5542223e18eb146846709da475f52b4009adea10c46573"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:50:3",
+      "sequence": 18666,
+      "chapter_label": "ISA 50",
+      "verse_label": "3",
+      "locator": {
+        "book": "ISA",
+        "chapter": 50,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 50,
+          "verse": 3
+        }
+      ],
+      "en": "I clothe the heavens with blackness. I make sackcloth their covering.”",
+      "ko": "내가 흑암으로 하늘을 입히며 굵은 베로 덮느니라",
+      "source_text_hash": "0adb36faf38c6adc5fd3a55d66407d7d10a9b4b6c08420241f13e38532b2a739",
+      "translation_text_hash": "8dbba5269128c05575e38847e823395a2045e15faa7395aaa639ad5bb530f994",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 흑암으로 하늘을 입히며 굵은 베로 덮느니라"
+      ],
+      "raw_text_hashes": [
+        "8dbba5269128c05575e38847e823395a2045e15faa7395aaa639ad5bb530f994"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:50:4",
+      "sequence": 18667,
+      "chapter_label": "ISA 50",
+      "verse_label": "4",
+      "locator": {
+        "book": "ISA",
+        "chapter": 50,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 50,
+          "verse": 4
+        }
+      ],
+      "en": "The Lord GOD has given me the tongue of those who are taught, that I may know how to sustain with words him who is weary. He awakens morning by morning, he awakens my ear to hear as those who are taught.",
+      "ko": "주 여호와께서 학자의 혀를 내게 주사 나로 곤핍한 자를 말로 어떻게 도와 줄줄을 알게 하시고 아침마다 깨우치시되 나의 귀를 깨우치사 학자 같이 알아듣게 하시도다",
+      "source_text_hash": "adf881cb35cdffedde432dcdc7cec2afcff80f33d63bf4d646bca434002d4333",
+      "translation_text_hash": "41a68bfb6e44788caa06a135139e4b0d28304b9b03ca9f4ba829ecbe58fc5f21",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주 여호와께서 학자의 혀를 내게 주사 나로 곤핍한 자를 말로 어떻게 도와 줄줄을 알게 하시고 아침마다 깨우치시되 나의 귀를 깨우치사 학자 같이 알아듣게 하시도다"
+      ],
+      "raw_text_hashes": [
+        "41a68bfb6e44788caa06a135139e4b0d28304b9b03ca9f4ba829ecbe58fc5f21"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:50:5",
+      "sequence": 18668,
+      "chapter_label": "ISA 50",
+      "verse_label": "5",
+      "locator": {
+        "book": "ISA",
+        "chapter": 50,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 50,
+          "verse": 5
+        }
+      ],
+      "en": "The Lord GOD has opened my ear. I was not rebellious. I have not turned back.",
+      "ko": "주 여호와께서 나의 귀를 열으셨으므로 내가 거역지도 아니하며 뒤로 물러가지도 아니하며",
+      "source_text_hash": "79a62cc40e233f2d00f02342859afae43c415438e66f3e84d45d6ee5cf0b3fc8",
+      "translation_text_hash": "71ef700d796e7e5e73173e29d1f25d9593b4254c35d08be62e4e38611dcb4d29",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주 여호와께서 나의 귀를 열으셨으므로 내가 거역지도 아니하며 뒤로 물러가지도 아니하며"
+      ],
+      "raw_text_hashes": [
+        "71ef700d796e7e5e73173e29d1f25d9593b4254c35d08be62e4e38611dcb4d29"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:50:6",
+      "sequence": 18669,
+      "chapter_label": "ISA 50",
+      "verse_label": "6",
+      "locator": {
+        "book": "ISA",
+        "chapter": 50,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 50,
+          "verse": 6
+        }
+      ],
+      "en": "I gave my back to those who beat me, and my cheeks to those who plucked off the hair. I didn’t hide my face from shame and spitting.",
+      "ko": "나를 때리는 자들에게 내 등을 맡기며 나의 수염을 뽑는 자들에게 나의 뺨을 맡기며 수욕과 침 뱉음을 피하려고 내 얼굴을 가리우지 아니하였느니라",
+      "source_text_hash": "602cec43fccddca3a1a94c1fe9b52e7aadb0a9642de6438601bf5bb25ff2d3ce",
+      "translation_text_hash": "38af90681f59ac96a8ab104a1805b91b2f9467861d60febd793f9fd34e55286f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나를 때리는 자들에게 내 등을 맡기며 나의 수염을 뽑는 자들에게 나의 뺨을 맡기며 수욕과 침 뱉음을 피하려고 내 얼굴을 가리우지 아니하였느니라"
+      ],
+      "raw_text_hashes": [
+        "38af90681f59ac96a8ab104a1805b91b2f9467861d60febd793f9fd34e55286f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:50:7",
+      "sequence": 18670,
+      "chapter_label": "ISA 50",
+      "verse_label": "7",
+      "locator": {
+        "book": "ISA",
+        "chapter": 50,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 50,
+          "verse": 7
+        }
+      ],
+      "en": "For the Lord GOD will help me. Therefore I have not been confounded. Therefore I have set my face like a flint, and I know that I won’t be disappointed.",
+      "ko": "주 여호와께서 나를 도우시므로 내가 부끄러워 아니하고 내 얼굴을 부싯돌 같이 굳게 하였은즉 내가 수치를 당치 아니할줄 아노라",
+      "source_text_hash": "2d58988d4ecb238ab76292e5db82d9458cdf5838b5267a0914bc4a71f44b8cd2",
+      "translation_text_hash": "9dedb581bc31ee729be8d67961714fccc83ddb42f5f0083c012a365ec2ea283d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주 여호와께서 나를 도우시므로 내가 부끄러워 아니하고 내 얼굴을 부싯돌 같이 굳게 하였은즉 내가 수치를 당치 아니할줄 아노라"
+      ],
+      "raw_text_hashes": [
+        "9dedb581bc31ee729be8d67961714fccc83ddb42f5f0083c012a365ec2ea283d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:50:8",
+      "sequence": 18671,
+      "chapter_label": "ISA 50",
+      "verse_label": "8",
+      "locator": {
+        "book": "ISA",
+        "chapter": 50,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 50,
+          "verse": 8
+        }
+      ],
+      "en": "He who justifies me is near. Who will bring charges against me? Let us stand up together. Who is my adversary? Let him come near to me.",
+      "ko": "나를 의롭다 하시는 이가 가까이 계시니 나와 다툴 자가 누구뇨 나와 함께 설찌어다 나의 대적이 누구뇨 내게 가까이 나아올찌어다",
+      "source_text_hash": "b5576b70c431e7e43a54144e602f4c1e28308e7368eea4d6a90d87d632bfc335",
+      "translation_text_hash": "6152c938d72b0616e7b03b59f977f51ed703aecd4a46aafd6d5d348e33b8253a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나를 의롭다 하시는 이가 가까이 계시니 나와 다툴 자가 누구뇨 나와 함께 설찌어다 나의 대적이 누구뇨 내게 가까이 나아올찌어다"
+      ],
+      "raw_text_hashes": [
+        "6152c938d72b0616e7b03b59f977f51ed703aecd4a46aafd6d5d348e33b8253a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:50:9",
+      "sequence": 18672,
+      "chapter_label": "ISA 50",
+      "verse_label": "9",
+      "locator": {
+        "book": "ISA",
+        "chapter": 50,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 50,
+          "verse": 9
+        }
+      ],
+      "en": "Behold, the Lord GOD will help me! Who is he who will condemn me? Behold, they will all grow old like a garment. The moths will eat them up.",
+      "ko": "주 여호와께서 나를 도우시리니 나를 정죄할 자 누구뇨 그들은 다 옷과 같이 해어지며 좀에게 먹히리라",
+      "source_text_hash": "bcda4e46521480210ee55f1693296c7b625956a3f114436db1d1b07b2d0e4948",
+      "translation_text_hash": "3e640979c6b69e272171ac9c67f057426ca5b56b82c6673e12725c369684c785",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주 여호와께서 나를 도우시리니 나를 정죄할 자 누구뇨 그들은 다 옷과 같이 해어지며 좀에게 먹히리라"
+      ],
+      "raw_text_hashes": [
+        "3e640979c6b69e272171ac9c67f057426ca5b56b82c6673e12725c369684c785"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:50:10",
+      "sequence": 18673,
+      "chapter_label": "ISA 50",
+      "verse_label": "10",
+      "locator": {
+        "book": "ISA",
+        "chapter": 50,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 50,
+          "verse": 10
+        }
+      ],
+      "en": "Who among you fears the LORD and obeys the voice of his servant? He who walks in darkness and has no light, let him trust in the LORD’s name, and rely on his God.",
+      "ko": "너희 중에 여호와를 경외하며 그 종의 목소리를 청종하는 자가 누구뇨 흑암 중에 행하여 빛이 없는 자라도 여호와의 이름을 의뢰하며 자기 하나님께 의지할찌어다",
+      "source_text_hash": "a7a37b42a9767b0dac3e1c23b131cc2b8c0dcdaa6a0654afc1538b361ec15db4",
+      "translation_text_hash": "c65138846ceb42b68076c474a21b03961284cd889bba6759a34c37e0f16345ad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 중에 여호와를 경외하며 그 종의 목소리를 청종하는 자가 누구뇨 흑암 중에 행하여 빛이 없는 자라도 여호와의 이름을 의뢰하며 자기 하나님께 의지할찌어다"
+      ],
+      "raw_text_hashes": [
+        "c65138846ceb42b68076c474a21b03961284cd889bba6759a34c37e0f16345ad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:50:11",
+      "sequence": 18674,
+      "chapter_label": "ISA 50",
+      "verse_label": "11",
+      "locator": {
+        "book": "ISA",
+        "chapter": 50,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 50,
+          "verse": 11
+        }
+      ],
+      "en": "Behold, all you who kindle a fire, who adorn yourselves with torches around yourselves, walk in the flame of your fire, and among the torches that you have kindled. You will have this from my hand: you will lie down in sorrow.",
+      "ko": "불을 피우고 횃불을 둘러 띤 자여 너희가 다 너희의 불꽃 가운데로 들어가며 너희의 피운 횃불 가운데로 들어갈찌어다 너희가 내 손에서 얻을 것이 이것이라 너희가 슬픔 중에 누우리라",
+      "source_text_hash": "2a430315f70d2a6dbb21fe83d713054f4880fdaafc09d2186ad0052f19a1be52",
+      "translation_text_hash": "506beb03239bb04820459268c56ced75594c69e157b343c88211f43cb60c7f4d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "불을 피우고 횃불을 둘러 띤 자여 너희가 다 너희의 불꽃 가운데로 들어가며 너희의 피운 횃불 가운데로 들어갈찌어다 너희가 내 손에서 얻을 것이 이것이라 너희가 슬픔 중에 누우리라"
+      ],
+      "raw_text_hashes": [
+        "506beb03239bb04820459268c56ced75594c69e157b343c88211f43cb60c7f4d"
+      ]
+    }
+  ]
+}

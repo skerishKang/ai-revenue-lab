@@ -1,0 +1,237 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:014",
+  "unit_ordinal": 492,
+  "unit_label": "PSA 14",
+  "book_code": "PSA",
+  "chapter_number": 14,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:14:1",
+      "sequence": 14082,
+      "chapter_label": "PSA 14",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 14,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 14,
+          "verse": 1
+        }
+      ],
+      "en": "The fool has said in his heart, “There is no God.” They are corrupt. They have done abominable deeds. There is no one who does good.",
+      "ko": "어리석은 자는 그 마음에 이르기를 하나님이 없다 하도다 저희는 부패하고 소행이 가증하여 선을 행하는 자가 없도다",
+      "source_text_hash": "b956ca5036de97cc6fb1a53d5a58fe0bb5bc5c244a1fefe6f1e47ae2151cf8d6",
+      "translation_text_hash": "86eb17879f5e32524d1a9722f5f548f11846daa604407478b1a998c95c87261a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어리석은 자는 그 마음에 이르기를 하나님이 없다 하도다 저희는 부패하고 소행이 가증하여 선을 행하는 자가 없도다"
+      ],
+      "raw_text_hashes": [
+        "86eb17879f5e32524d1a9722f5f548f11846daa604407478b1a998c95c87261a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:14:2",
+      "sequence": 14083,
+      "chapter_label": "PSA 14",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 14,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 14,
+          "verse": 2
+        }
+      ],
+      "en": "The LORD looked down from heaven on the children of men, to see if there were any who understood, who sought after God.",
+      "ko": "여호와께서 하늘에서 인생을 굽어 살피사 지각이 있어 하나님을 찾는 자가 있는가 보려 하신즉",
+      "source_text_hash": "5a4dd9fae287d2a20761c646f5459fccb8de6a3fdb21dd0101824c9aac6ccbb3",
+      "translation_text_hash": "d73f7640e3d94fab34ffc665e4e62e65711ecea0b2da4596e83d8ef6ade56af5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 하늘에서 인생을 굽어 살피사 지각이 있어 하나님을 찾는 자가 있는가 보려 하신즉"
+      ],
+      "raw_text_hashes": [
+        "d73f7640e3d94fab34ffc665e4e62e65711ecea0b2da4596e83d8ef6ade56af5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:14:3",
+      "sequence": 14084,
+      "chapter_label": "PSA 14",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 14,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 14,
+          "verse": 3
+        }
+      ],
+      "en": "They have all gone aside. They have together become corrupt. There is no one who does good, no, not one.",
+      "ko": "다 치우쳤으며 함께 더러운 자가 되고 선을 행하는 자가 없으니 하나도 없도다",
+      "source_text_hash": "d08196ed5e27cb83cbe6737ec721072d249ce331002d05e913474ce371f0e529",
+      "translation_text_hash": "192d7a4ccfb3039a58d9a4302ca68449c62b61f73cbf140cfb08e4e4cb48249d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다 치우쳤으며 함께 더러운 자가 되고 선을 행하는 자가 없으니 하나도 없도다"
+      ],
+      "raw_text_hashes": [
+        "192d7a4ccfb3039a58d9a4302ca68449c62b61f73cbf140cfb08e4e4cb48249d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:14:4",
+      "sequence": 14085,
+      "chapter_label": "PSA 14",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 14,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 14,
+          "verse": 4
+        }
+      ],
+      "en": "Have all the workers of iniquity no knowledge, who eat up my people as they eat bread, and don’t call on the LORD?",
+      "ko": "죄악을 행하는 자는 다 무지하뇨 저희가 떡 먹듯이 내 백성을 먹으면서 여호와를 부르지 아니하는도다",
+      "source_text_hash": "ecd9539234a67098f72a48bdfe7a59b11d71101ab1fddb8686f017d23d274c7d",
+      "translation_text_hash": "e14d233d2b55bdd02199ad282497eefc5789390aaaae35c94dcda2a6da5d31e2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "죄악을 행하는 자는 다 무지하뇨 저희가 떡 먹듯이 내 백성을 먹으면서 여호와를 부르지 아니하는도다"
+      ],
+      "raw_text_hashes": [
+        "e14d233d2b55bdd02199ad282497eefc5789390aaaae35c94dcda2a6da5d31e2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:14:5",
+      "sequence": 14086,
+      "chapter_label": "PSA 14",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 14,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 14,
+          "verse": 5
+        }
+      ],
+      "en": "There they were in great fear, for God is in the generation of the righteous.",
+      "ko": "저희가 거기서 두려워하고 두려워하였으니 하나님이 의인의 세대에 계심이로다",
+      "source_text_hash": "2be5d13188caef760820e66d37058791ea74d0600013a368d44be85ec4f487a6",
+      "translation_text_hash": "b561f1a9083158348c3e9fef3e2fa7804b51bdf6e74b60672be3121332381b03",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 거기서 두려워하고 두려워하였으니 하나님이 의인의 세대에 계심이로다"
+      ],
+      "raw_text_hashes": [
+        "b561f1a9083158348c3e9fef3e2fa7804b51bdf6e74b60672be3121332381b03"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:14:6",
+      "sequence": 14087,
+      "chapter_label": "PSA 14",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 14,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 14,
+          "verse": 6
+        }
+      ],
+      "en": "You frustrate the plan of the poor, because the LORD is his refuge.",
+      "ko": "너희가 가난한 자의 경영을 부끄럽게 하나 오직 여호와는 그 피난처가 되시도다",
+      "source_text_hash": "2e3188c5be7efc148d0d5c6cb4c9742f2dfc2f15da0fea070b8bbbad2ef78563",
+      "translation_text_hash": "b14b76f08193b905fbd6dcfcb3d99265cf0c179a838a370854305bcee7903121",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 가난한 자의 경영을 부끄럽게 하나 오직 여호와는 그 피난처가 되시도다"
+      ],
+      "raw_text_hashes": [
+        "b14b76f08193b905fbd6dcfcb3d99265cf0c179a838a370854305bcee7903121"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:14:7",
+      "sequence": 14088,
+      "chapter_label": "PSA 14",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 14,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 14,
+          "verse": 7
+        }
+      ],
+      "en": "Oh that the salvation of Israel would come out of Zion! When the LORD restores the fortunes of his people, then Jacob shall rejoice, and Israel shall be glad.",
+      "ko": "이스라엘의 구원이 시온에서 나오기를 원하도다 여호와께서 그 백성의 포로된 것을 돌이키실 때에 야곱이 즐거워하고 이스라엘이 기뻐하리로다",
+      "source_text_hash": "cdadac59469c6f8c7f06967700b17888c3fe3ca7b585bcb5ccc84e2e192ac883",
+      "translation_text_hash": "90ae337ca517301c688bf648672c31f73a407054e99e1080dca66901ce1717fe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘의 구원이 시온에서 나오기를 원하도다 여호와께서 그 백성의 포로된 것을 돌이키실 때에 야곱이 즐거워하고 이스라엘이 기뻐하리로다"
+      ],
+      "raw_text_hashes": [
+        "90ae337ca517301c688bf648672c31f73a407054e99e1080dca66901ce1717fe"
+      ]
+    }
+  ]
+}

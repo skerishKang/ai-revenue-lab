@@ -1,0 +1,461 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:HOS:chapter:012",
+  "unit_ordinal": 874,
+  "unit_label": "HOS 12",
+  "book_code": "HOS",
+  "chapter_number": 12,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:HOS:12:1",
+      "sequence": 22254,
+      "chapter_label": "HOS 12",
+      "verse_label": "1",
+      "locator": {
+        "book": "HOS",
+        "chapter": 12,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 12,
+          "verse": 1
+        }
+      ],
+      "en": "Ephraim feeds on wind, and chases the east wind. He continually multiplies lies and desolation. They make a covenant with Assyria, and oil is carried into Egypt.",
+      "ko": "에브라임은 바람을 먹으며 동풍을 따라가서 날마다 거짓과 포학을 더하며 앗수르와 계약을 맺고 기름을 애굽에 보내도다",
+      "source_text_hash": "bf60f61d5bcc7a9701e7ec67e1750683df4138c7409eda09213af8545f97120f",
+      "translation_text_hash": "4af25d19972f1f6506426769598f18b6ed79708ee53b6760c9addb9f2376ce62",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에브라임은 바람을 먹으며 동풍을 따라가서 날마다 거짓과 포학을 더하며 앗수르와 계약을 맺고 기름을 애굽에 보내도다"
+      ],
+      "raw_text_hashes": [
+        "4af25d19972f1f6506426769598f18b6ed79708ee53b6760c9addb9f2376ce62"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:12:2",
+      "sequence": 22255,
+      "chapter_label": "HOS 12",
+      "verse_label": "2",
+      "locator": {
+        "book": "HOS",
+        "chapter": 12,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 12,
+          "verse": 2
+        }
+      ],
+      "en": "The LORD also has a controversy with Judah, and will punish Jacob according to his ways; according to his deeds he will repay him.",
+      "ko": "여호와께서 유다와 쟁변하시고 야곱의 소행대로 벌 주시며 그 소위대로 보응하시리라",
+      "source_text_hash": "b9904d70b7d63d81ae0924e5284157001205f8e4f996c76417c8b17cf9ab55fd",
+      "translation_text_hash": "4afc67f2a33be6cfef1c462bcc61aeb07afb0ece3fc611f388d7a7cef8764a1b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 유다와 쟁변하시고 야곱의 소행대로 벌 주시며 그 소위대로 보응하시리라"
+      ],
+      "raw_text_hashes": [
+        "4afc67f2a33be6cfef1c462bcc61aeb07afb0ece3fc611f388d7a7cef8764a1b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:12:3",
+      "sequence": 22256,
+      "chapter_label": "HOS 12",
+      "verse_label": "3",
+      "locator": {
+        "book": "HOS",
+        "chapter": 12,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 12,
+          "verse": 3
+        }
+      ],
+      "en": "In the womb he took his brother by the heel, and in his manhood he contended with God.",
+      "ko": "야곱은 태에서 그 형의 발뒤꿈치를 잡았고 또 장년에 하나님과 힘을 겨루되",
+      "source_text_hash": "4650c4660e9e8e277cabead9381584d636e645236ea05e203283b035ceb612e7",
+      "translation_text_hash": "870dda32f9a80fae0404df5dd38f09fa0a9bfc7b0dc794fc284c869b9f00d08b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야곱은 태에서 그 형의 발뒤꿈치를 잡았고 또 장년에 하나님과 힘을 겨루되"
+      ],
+      "raw_text_hashes": [
+        "870dda32f9a80fae0404df5dd38f09fa0a9bfc7b0dc794fc284c869b9f00d08b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:12:4",
+      "sequence": 22257,
+      "chapter_label": "HOS 12",
+      "verse_label": "4",
+      "locator": {
+        "book": "HOS",
+        "chapter": 12,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 12,
+          "verse": 4
+        }
+      ],
+      "en": "Indeed, he struggled with the angel, and prevailed; he wept, and made supplication to him. He found him at Bethel, and there he spoke with us—",
+      "ko": "천사와 힘을 겨루어 이기고 울며 그에게 간구하였으며 하나님은 벧엘에서 저를 만나셨고 거기서 우리에게 말씀하셨나니",
+      "source_text_hash": "068fce43cbb0fa30e90983cf8dcba0644c5998527e2b71bb7a99e98edeeb2b48",
+      "translation_text_hash": "bccc5d91cc280ba4a22a8ec6e20c86ecc94510a592970d83501e92fa15877e8b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "천사와 힘을 겨루어 이기고 울며 그에게 간구하였으며 하나님은 벧엘에서 저를 만나셨고 거기서 우리에게 말씀하셨나니"
+      ],
+      "raw_text_hashes": [
+        "bccc5d91cc280ba4a22a8ec6e20c86ecc94510a592970d83501e92fa15877e8b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:12:5",
+      "sequence": 22258,
+      "chapter_label": "HOS 12",
+      "verse_label": "5",
+      "locator": {
+        "book": "HOS",
+        "chapter": 12,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 12,
+          "verse": 5
+        }
+      ],
+      "en": "even the LORD, the God of Armies. The LORD is his name of renown!",
+      "ko": "저는 만군의 하나님 여호와시라 여호와는 그의 기념 칭호니라",
+      "source_text_hash": "1fa4b868159402fba68260b9b7b6d35740cf74715b77feccb4a0efe8d8649b71",
+      "translation_text_hash": "99e9ce66b3bbc30ef9923257d953d0318903e77b85b72ef427d402f2cbb132ff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저는 만군의 하나님 여호와시라 여호와는 그의 기념 칭호니라"
+      ],
+      "raw_text_hashes": [
+        "99e9ce66b3bbc30ef9923257d953d0318903e77b85b72ef427d402f2cbb132ff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:12:6",
+      "sequence": 22259,
+      "chapter_label": "HOS 12",
+      "verse_label": "6",
+      "locator": {
+        "book": "HOS",
+        "chapter": 12,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 12,
+          "verse": 6
+        }
+      ],
+      "en": "Therefore turn to your God. Keep kindness and justice, and wait continually for your God.",
+      "ko": "그런즉 너의 하나님께로 돌아와서 인애와 공의를 지키며 항상 너의 하나님을 바라볼찌니라",
+      "source_text_hash": "0afe105c9202d8cea014b947dd8b71efb3121509315ebed4ed3ad65dd97cf710",
+      "translation_text_hash": "80ebe6e2aff888f381f2d6cbadc11c6b79948f16fa15113b54e853102cac22be",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 너의 하나님께로 돌아와서 인애와 공의를 지키며 항상 너의 하나님을 바라볼찌니라"
+      ],
+      "raw_text_hashes": [
+        "80ebe6e2aff888f381f2d6cbadc11c6b79948f16fa15113b54e853102cac22be"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:12:7",
+      "sequence": 22260,
+      "chapter_label": "HOS 12",
+      "verse_label": "7",
+      "locator": {
+        "book": "HOS",
+        "chapter": 12,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 12,
+          "verse": 7
+        }
+      ],
+      "en": "A merchant has dishonest scales in his hand. He loves to defraud.",
+      "ko": "저는 상고여늘 손에 거짓 저울을 가지고 사취하기를 좋아하는도다",
+      "source_text_hash": "30b37c67369eec9f2894fe38456115dc42ba6b6dd71b0a190b32031ec2a49e67",
+      "translation_text_hash": "a8d25d88c46101a0cf7165707a5159e674c68362bf90bdab245fbf6927f83bbd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저는 상고여늘 손에 거짓 저울을 가지고 사취하기를 좋아하는도다"
+      ],
+      "raw_text_hashes": [
+        "a8d25d88c46101a0cf7165707a5159e674c68362bf90bdab245fbf6927f83bbd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:12:8",
+      "sequence": 22261,
+      "chapter_label": "HOS 12",
+      "verse_label": "8",
+      "locator": {
+        "book": "HOS",
+        "chapter": 12,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 12,
+          "verse": 8
+        }
+      ],
+      "en": "Ephraim said, “Surely I have become rich. I have found myself wealth. In all my wealth they won’t find in me any iniquity that is sin.”",
+      "ko": "에브라임이 말하기를 나는 실로 부자라 내가 재물을 얻었는데 무릇 나의 수고한 중에서 죄라 할만한 불의를 발견할 자 없으리라 하거니와",
+      "source_text_hash": "f43a8126fca04f18b185807f8598847c5e5cea8315d50898edb3f9c47259ad23",
+      "translation_text_hash": "aff0a8b432b31a1eff1397a16a5572a6b56b8746c502faaedd95b2f25aefb484",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에브라임이 말하기를 나는 실로 부자라 내가 재물을 얻었는데 무릇 나의 수고한 중에서 죄라 할만한 불의를 발견할 자 없으리라 하거니와"
+      ],
+      "raw_text_hashes": [
+        "aff0a8b432b31a1eff1397a16a5572a6b56b8746c502faaedd95b2f25aefb484"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:12:9",
+      "sequence": 22262,
+      "chapter_label": "HOS 12",
+      "verse_label": "9",
+      "locator": {
+        "book": "HOS",
+        "chapter": 12,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 12,
+          "verse": 9
+        }
+      ],
+      "en": "“But I am the LORD your God from the land of Egypt. I will yet again make you dwell in tents, as in the days of the solemn feast.",
+      "ko": "네가 애굽 땅에서 나옴으로부터 나는 네 하나님 여호와니라 내가 너로 다시 장막에 거하게 하기를 명절일에 하던 것 같게 하리라",
+      "source_text_hash": "428f2765826cca57afd318448db3ce2256dcf1ecd2b4c0743eb03231a80af3d9",
+      "translation_text_hash": "44cee38db5ad9efb954af49cba9d4782fee1d477210cd9c81961e292577ede59",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 애굽 땅에서 나옴으로부터 나는 네 하나님 여호와니라 내가 너로 다시 장막에 거하게 하기를 명절일에 하던 것 같게 하리라"
+      ],
+      "raw_text_hashes": [
+        "44cee38db5ad9efb954af49cba9d4782fee1d477210cd9c81961e292577ede59"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:12:10",
+      "sequence": 22263,
+      "chapter_label": "HOS 12",
+      "verse_label": "10",
+      "locator": {
+        "book": "HOS",
+        "chapter": 12,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 12,
+          "verse": 10
+        }
+      ],
+      "en": "I have also spoken to the prophets, and I have multiplied visions; and by the ministry of the prophets I have used parables.",
+      "ko": "내가 여러 선지자에게 말하였고 이상을 많이 보였으며 선지자들을 빙자하여 비유를 베풀었노라",
+      "source_text_hash": "b6ce10ac53d95e3efbf572e7ed9154124037c107f68a469847cc0361708e6bfc",
+      "translation_text_hash": "679d7912d74a0a5deb45475f515c064024dde620e9d8954fd9aca6bbe4833659",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 여러 선지자에게 말하였고 이상을 많이 보였으며 선지자들을 빙자하여 비유를 베풀었노라"
+      ],
+      "raw_text_hashes": [
+        "679d7912d74a0a5deb45475f515c064024dde620e9d8954fd9aca6bbe4833659"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:12:11",
+      "sequence": 22264,
+      "chapter_label": "HOS 12",
+      "verse_label": "11",
+      "locator": {
+        "book": "HOS",
+        "chapter": 12,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 12,
+          "verse": 11
+        }
+      ],
+      "en": "If Gilead is wicked, surely they are worthless. In Gilgal they sacrifice bulls. Indeed, their altars are like heaps in the furrows of the field.",
+      "ko": "길르앗은 불의한 것이냐 저희는 과연 거짓되도다 길갈에서는 무리가 수송아지로 제사를 드리며 그 제단은 밭이랑에 쌓인 돌 무더기 같도다",
+      "source_text_hash": "55076f60ee0be4c7cb9143416ef70677080424d463e68077d596a81dfd5d6d33",
+      "translation_text_hash": "43e07e762ee8726c8af395b90bce2e81ea32b1f66eb90f5c7292fa5b9c60c0f3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "길르앗은 불의한 것이냐 저희는 과연 거짓되도다 길갈에서는 무리가 수송아지로 제사를 드리며 그 제단은 밭이랑에 쌓인 돌 무더기 같도다"
+      ],
+      "raw_text_hashes": [
+        "43e07e762ee8726c8af395b90bce2e81ea32b1f66eb90f5c7292fa5b9c60c0f3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:12:12",
+      "sequence": 22265,
+      "chapter_label": "HOS 12",
+      "verse_label": "12",
+      "locator": {
+        "book": "HOS",
+        "chapter": 12,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 12,
+          "verse": 12
+        }
+      ],
+      "en": "Jacob fled into the country of Aram. Israel served to get a wife. For a wife he tended flocks and herds.",
+      "ko": "옛적에 야곱이 아람 들로 도망하였으며 이스라엘이 아내 얻기 위하여 사람을 섬기며 아내 얻기 위하여 양을 쳤고",
+      "source_text_hash": "64fcd61d84d1067ae9c2d67073ceb6fef07b0253d2e563eeee57d5ea84e0fbbc",
+      "translation_text_hash": "e55c0e09557f5f009eb98561c6324399af465663763a32a638d123ce88124208",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "옛적에 야곱이 아람 들로 도망하였으며 이스라엘이 아내 얻기 위하여 사람을 섬기며 아내 얻기 위하여 양을 쳤고"
+      ],
+      "raw_text_hashes": [
+        "e55c0e09557f5f009eb98561c6324399af465663763a32a638d123ce88124208"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:12:13",
+      "sequence": 22266,
+      "chapter_label": "HOS 12",
+      "verse_label": "13",
+      "locator": {
+        "book": "HOS",
+        "chapter": 12,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 12,
+          "verse": 13
+        }
+      ],
+      "en": "By a prophet the LORD brought Israel up out of Egypt, and by a prophet he was preserved.",
+      "ko": "여호와께서는 선지자로 이스라엘을 애굽에서 인도하여 내시며 선지자로 저를 보호하셨거늘",
+      "source_text_hash": "9d30b2bf9646db6f182b755a65ba0e4a62bc5c7e1bf91829303871bd04ec326e",
+      "translation_text_hash": "e5426764b755c22f468512177dfc1c06b3543b8ae00d364b0df9207242aba21e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서는 선지자로 이스라엘을 애굽에서 인도하여 내시며 선지자로 저를 보호하셨거늘"
+      ],
+      "raw_text_hashes": [
+        "e5426764b755c22f468512177dfc1c06b3543b8ae00d364b0df9207242aba21e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:12:14",
+      "sequence": 22267,
+      "chapter_label": "HOS 12",
+      "verse_label": "14",
+      "locator": {
+        "book": "HOS",
+        "chapter": 12,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 12,
+          "verse": 14
+        }
+      ],
+      "en": "Ephraim has bitterly provoked anger. Therefore his blood will be left on him, and his Lord will repay his contempt.",
+      "ko": "에브라임이 격노케 함이 극심하였으니 그 주께서 그 피로 그 위에 머물러 있게 하시며 저의 수치를 저에게 돌리시리라",
+      "source_text_hash": "d0f3163184221c71645ab275d8046c4502c729bd2c4b24b9c280cb95c81599a3",
+      "translation_text_hash": "5e1ef342027eeb89240eb09458b8fd51928237390910ac0bd9442b6b1484db73",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에브라임이 격노케 함이 극심하였으니 그 주께서 그 피로 그 위에 머물러 있게 하시며 저의 수치를 저에게 돌리시리라"
+      ],
+      "raw_text_hashes": [
+        "5e1ef342027eeb89240eb09458b8fd51928237390910ac0bd9442b6b1484db73"
+      ]
+    }
+  ]
+}

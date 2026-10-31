@@ -1,0 +1,1133 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:LEV:chapter:004",
+  "unit_ordinal": 94,
+  "unit_label": "LEV 4",
+  "book_code": "LEV",
+  "chapter_number": 4,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:LEV:4:1",
+      "sequence": 2797,
+      "chapter_label": "LEV 4",
+      "verse_label": "1",
+      "locator": {
+        "book": "LEV",
+        "chapter": 4,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 4,
+          "verse": 1
+        }
+      ],
+      "en": "The LORD spoke to Moses, saying,",
+      "ko": "여호와께서 모세에게 일러 가라사대",
+      "source_text_hash": "28219e5da0d26514843495c6edb280f326aa0ccffb0d2bb642d0e1b0f4478ca1",
+      "translation_text_hash": "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:4:2",
+      "sequence": 2798,
+      "chapter_label": "LEV 4",
+      "verse_label": "2",
+      "locator": {
+        "book": "LEV",
+        "chapter": 4,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 4,
+          "verse": 2
+        }
+      ],
+      "en": "“Speak to the children of Israel, saying, ‘If anyone sins unintentionally, in any of the things which the LORD has commanded not to be done, and does any one of them,",
+      "ko": "이스라엘 자손에게 고하여 이르라 누구든지 여호와의 금령중 하나라도 그릇 범하였으되",
+      "source_text_hash": "470dd665105f7d0b909bf12e59d841186b188f90388c0a3ebca0c9b9dc37e4cf",
+      "translation_text_hash": "4481038b4226db8e2048540ae41f111b67982880caa6797ff4c6cce78d07b3ad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손에게 고하여 이르라 누구든지 여호와의 금령중 하나라도 그릇 범하였으되"
+      ],
+      "raw_text_hashes": [
+        "4481038b4226db8e2048540ae41f111b67982880caa6797ff4c6cce78d07b3ad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:4:3",
+      "sequence": 2799,
+      "chapter_label": "LEV 4",
+      "verse_label": "3",
+      "locator": {
+        "book": "LEV",
+        "chapter": 4,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 4,
+          "verse": 3
+        }
+      ],
+      "en": "if the anointed priest sins so as to bring guilt on the people, then let him offer for his sin which he has sinned a young bull without defect to the LORD for a sin offering.",
+      "ko": "만일 기름 부음을 받은 제사장이 범죄하여 백성으로 죄얼을 입게 하였으면 그 범한 죄를 인하여 흠 없는 수송아지로 속죄 제물을 삼아 여호와께 드릴찌니",
+      "source_text_hash": "b6929f9010118d95e3bbbc7def3cfaed06081dff0efa7ae23087547ce4e57f0a",
+      "translation_text_hash": "2382d08524e2b2d1d96439327b76a1b741cc3c64b3923e5454a5fff95a276584",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 기름 부음을 받은 제사장이 범죄하여 백성으로 죄얼을 입게 하였으면 그 범한 죄를 인하여 흠 없는 수송아지로 속죄 제물을 삼아 여호와께 드릴찌니"
+      ],
+      "raw_text_hashes": [
+        "2382d08524e2b2d1d96439327b76a1b741cc3c64b3923e5454a5fff95a276584"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:4:4",
+      "sequence": 2800,
+      "chapter_label": "LEV 4",
+      "verse_label": "4",
+      "locator": {
+        "book": "LEV",
+        "chapter": 4,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 4,
+          "verse": 4
+        }
+      ],
+      "en": "He shall bring the bull to the door of the Tent of Meeting before the LORD; and he shall lay his hand on the head of the bull, and kill the bull before the LORD.",
+      "ko": "곧 그 수송아지를 회막문 여호와 앞으로 끌어다가 그 수송아지 머리에 안수하고 그것을 여호와 앞에서 잡을 것이요",
+      "source_text_hash": "817ee308faf47ac7edd5e4c547440e2d01fe2bb046193e4e78b61c869911dc51",
+      "translation_text_hash": "99856eaa1dc9daaa560564192abe45f7659f867f499482c83606fcf69d3ba949",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 그 수송아지를 회막문 여호와 앞으로 끌어다가 그 수송아지 머리에 안수하고 그것을 여호와 앞에서 잡을 것이요"
+      ],
+      "raw_text_hashes": [
+        "99856eaa1dc9daaa560564192abe45f7659f867f499482c83606fcf69d3ba949"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:4:5",
+      "sequence": 2801,
+      "chapter_label": "LEV 4",
+      "verse_label": "5",
+      "locator": {
+        "book": "LEV",
+        "chapter": 4,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 4,
+          "verse": 5
+        }
+      ],
+      "en": "The anointed priest shall take some of the blood of the bull, and bring it to the Tent of Meeting.",
+      "ko": "기름 부음을 받은 제사장은 그 수송아지의 피를 가지고 회막에 들어가서",
+      "source_text_hash": "dba4cd9e79bed88b96df53ac9e63f49d86da06be870586c2bc1d743ca2c09bed",
+      "translation_text_hash": "275dc730998512f604cd842c9954d93b9a5332c58d933ba6505272d31fb8f4ad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "기름 부음을 받은 제사장은 그 수송아지의 피를 가지고 회막에 들어가서"
+      ],
+      "raw_text_hashes": [
+        "275dc730998512f604cd842c9954d93b9a5332c58d933ba6505272d31fb8f4ad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:4:6",
+      "sequence": 2802,
+      "chapter_label": "LEV 4",
+      "verse_label": "6",
+      "locator": {
+        "book": "LEV",
+        "chapter": 4,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 4,
+          "verse": 6
+        }
+      ],
+      "en": "The priest shall dip his finger in the blood, and sprinkle some of the blood seven times before the LORD, before the veil of the sanctuary.",
+      "ko": "그 제사장이 손가락에 그 피를 찍어 여호와 앞 곧 성소 장 앞에 일곱번 뿌릴 것이며",
+      "source_text_hash": "063c1c4da4e5ff40a8716fb3e4a61956d50fbd38d019e3ec022b53eba7293161",
+      "translation_text_hash": "160bb6a5ca312dece23b44b246a3662d0d24ac87a7f5786cee1724bcfaf08427",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 제사장이 손가락에 그 피를 찍어 여호와 앞 곧 성소 장 앞에 일곱번 뿌릴 것이며"
+      ],
+      "raw_text_hashes": [
+        "160bb6a5ca312dece23b44b246a3662d0d24ac87a7f5786cee1724bcfaf08427"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:4:7",
+      "sequence": 2803,
+      "chapter_label": "LEV 4",
+      "verse_label": "7",
+      "locator": {
+        "book": "LEV",
+        "chapter": 4,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 4,
+          "verse": 7
+        }
+      ],
+      "en": "The priest shall put some of the blood on the horns of the altar of sweet incense before the LORD, which is in the Tent of Meeting; and he shall pour out the rest of the blood of the bull at the base of the altar of burnt offering, which is at the door of the Tent of Meeting.",
+      "ko": "제사장은 또 그 피를 여호와 앞 곧 회막 안 향단 뿔에 바르고 그 송아지의 피 전부를 회막문 앞 번제단 밑에 쏟을 것이며",
+      "source_text_hash": "33744705acea0389e3b9c90abfc5ca704a7250a8293d6610f75484eac5f6aebf",
+      "translation_text_hash": "2909c75609f72365cdc186f1e58433204f20d698d5034d302c2849f9582f5e8e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장은 또 그 피를 여호와 앞 곧 회막 안 향단 뿔에 바르고 그 송아지의 피 전부를 회막문 앞 번제단 밑에 쏟을 것이며"
+      ],
+      "raw_text_hashes": [
+        "2909c75609f72365cdc186f1e58433204f20d698d5034d302c2849f9582f5e8e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:4:8",
+      "sequence": 2804,
+      "chapter_label": "LEV 4",
+      "verse_label": "8",
+      "locator": {
+        "book": "LEV",
+        "chapter": 4,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 4,
+          "verse": 8
+        }
+      ],
+      "en": "He shall take all the fat of the bull of the sin offering from it: the fat that covers the innards, and all the fat that is on the innards,",
+      "ko": "또 그 속죄 제물 된 수송아지의 모든 기름을 취할찌니 곧 내장에 덮인 기름과 내장에 붙은 모든 기름과",
+      "source_text_hash": "6a6f9c0de96a6d5f429980e25a1a9f1cec1ee0f9950c20b21530e88bdb85691a",
+      "translation_text_hash": "ce4a996c7ea5ab794f33102f17432057760b8a78fa352df24d7ff97e2d622442",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 그 속죄 제물 된 수송아지의 모든 기름을 취할찌니 곧 내장에 덮인 기름과 내장에 붙은 모든 기름과"
+      ],
+      "raw_text_hashes": [
+        "ce4a996c7ea5ab794f33102f17432057760b8a78fa352df24d7ff97e2d622442"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:4:9",
+      "sequence": 2805,
+      "chapter_label": "LEV 4",
+      "verse_label": "9",
+      "locator": {
+        "book": "LEV",
+        "chapter": 4,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 4,
+          "verse": 9
+        }
+      ],
+      "en": "and the two kidneys, and the fat that is on them, which is by the loins, and the cover on the liver, with the kidneys, he shall remove,",
+      "ko": "두 콩팥과 그 위의 기름 곧 허리 근방에 있는 것과 간에 덮인 꺼풀을 콩팥과 함께 취하되",
+      "source_text_hash": "d50cb1286933957f79fc7753756f063b5376fd8a4c440b5c91ed9236a2612587",
+      "translation_text_hash": "26f0fc9aa8ef0e6a031a6382d3340bf4f542b44b2c1108ec4e705d339c547362",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "두 콩팥과 그 위의 기름 곧 허리 근방에 있는 것과 간에 덮인 꺼풀을 콩팥과 함께 취하되"
+      ],
+      "raw_text_hashes": [
+        "26f0fc9aa8ef0e6a031a6382d3340bf4f542b44b2c1108ec4e705d339c547362"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:4:10",
+      "sequence": 2806,
+      "chapter_label": "LEV 4",
+      "verse_label": "10",
+      "locator": {
+        "book": "LEV",
+        "chapter": 4,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 4,
+          "verse": 10
+        }
+      ],
+      "en": "as it is removed from the bull of the sacrifice of peace offerings. The priest shall burn them on the altar of burnt offering.",
+      "ko": "화목제 희생의 소에게서 취함 같이 할것이요 제사장은 그것을 번제단 위에 불사를 것이며",
+      "source_text_hash": "5761dcceb174aad502dd709077c1ed320c728e2beea5be940faf910b6134e963",
+      "translation_text_hash": "5b17d92c255e08bfb0479ee136a244639f227b0adea10ffde5af4445df1546d1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "화목제 희생의 소에게서 취함 같이 할것이요 제사장은 그것을 번제단 위에 불사를 것이며"
+      ],
+      "raw_text_hashes": [
+        "5b17d92c255e08bfb0479ee136a244639f227b0adea10ffde5af4445df1546d1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:4:11",
+      "sequence": 2807,
+      "chapter_label": "LEV 4",
+      "verse_label": "11",
+      "locator": {
+        "book": "LEV",
+        "chapter": 4,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 4,
+          "verse": 11
+        }
+      ],
+      "en": "He shall carry the bull’s skin, all its meat, with its head, and with its legs, its innards, and its dung",
+      "ko": "그 수송아지의 가죽과 그 모든 고기와 그 머리와 다리와 내장과",
+      "source_text_hash": "d1147b22efa5394a72c27ab769032146d5ed9efbb4074dbce78296a5bb7f536b",
+      "translation_text_hash": "970824977d0d5368134a7ea7eb9256efefe151897dbf87649aeded698b26e69a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 수송아지의 가죽과 그 모든 고기와 그 머리와 다리와 내장과"
+      ],
+      "raw_text_hashes": [
+        "970824977d0d5368134a7ea7eb9256efefe151897dbf87649aeded698b26e69a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:4:12",
+      "sequence": 2808,
+      "chapter_label": "LEV 4",
+      "verse_label": "12",
+      "locator": {
+        "book": "LEV",
+        "chapter": 4,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 4,
+          "verse": 12
+        }
+      ],
+      "en": "—all the rest of the bull—outside of the camp to a clean place where the ashes are poured out, and burn it on wood with fire. It shall be burned where the ashes are poured out.",
+      "ko": "똥 곧 그 송아지의 전체를 진 바깥 재 버리는 곳인 정결한 곳으로 가져다가 불로 나무 위에 사르되 곧 재 버리는 곳에서 사를찌니라",
+      "source_text_hash": "df4938a6874c6c6d7ca28d5f69172a001ace37b395e81cbd0c4874cde411c062",
+      "translation_text_hash": "421ee733122775b5ba64a072fe6b7042b648053f3fc58f2b79a562c094f4be75",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "똥 곧 그 송아지의 전체를 진 바깥 재 버리는 곳인 정결한 곳으로 가져다가 불로 나무 위에 사르되 곧 재 버리는 곳에서 사를찌니라"
+      ],
+      "raw_text_hashes": [
+        "421ee733122775b5ba64a072fe6b7042b648053f3fc58f2b79a562c094f4be75"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:4:13",
+      "sequence": 2809,
+      "chapter_label": "LEV 4",
+      "verse_label": "13",
+      "locator": {
+        "book": "LEV",
+        "chapter": 4,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 4,
+          "verse": 13
+        }
+      ],
+      "en": "“‘If the whole congregation of Israel sins, and the thing is hidden from the eyes of the assembly, and they have done any of the things which the LORD has commanded not to be done, and are guilty;",
+      "ko": "만일 이스라엘 온 회중이 여호와의 금령중 하나라도 그릇 범하여 허물이 있으나 스스로 깨닫지 못하다가",
+      "source_text_hash": "13b8f8a626df5a9bdab796230357a976e89443b387e30eb62dea2bab6af258d8",
+      "translation_text_hash": "78953bb306457d49a30f07879b1f6c99a9728866247da707fc4f23a9cb475c24",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 이스라엘 온 회중이 여호와의 금령중 하나라도 그릇 범하여 허물이 있으나 스스로 깨닫지 못하다가"
+      ],
+      "raw_text_hashes": [
+        "78953bb306457d49a30f07879b1f6c99a9728866247da707fc4f23a9cb475c24"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:4:14",
+      "sequence": 2810,
+      "chapter_label": "LEV 4",
+      "verse_label": "14",
+      "locator": {
+        "book": "LEV",
+        "chapter": 4,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 4,
+          "verse": 14
+        }
+      ],
+      "en": "when the sin in which they have sinned is known, then the assembly shall offer a young bull for a sin offering, and bring it before the Tent of Meeting.",
+      "ko": "그 범한 죄를 깨달으면 회중은 수송아지를 속죄제로 드릴찌니 그것을 회막 앞으로 끌어다가",
+      "source_text_hash": "b03d9cb879d17fb3b4b753ad50af306ffa1b9a7d31200aafb01524b36c50e511",
+      "translation_text_hash": "651adb5514ff757ca78fd65c90e75a2f0c498636fc4a87e382f25b0f73425e1e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 범한 죄를 깨달으면 회중은 수송아지를 속죄제로 드릴찌니 그것을 회막 앞으로 끌어다가"
+      ],
+      "raw_text_hashes": [
+        "651adb5514ff757ca78fd65c90e75a2f0c498636fc4a87e382f25b0f73425e1e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:4:15",
+      "sequence": 2811,
+      "chapter_label": "LEV 4",
+      "verse_label": "15",
+      "locator": {
+        "book": "LEV",
+        "chapter": 4,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 4,
+          "verse": 15
+        }
+      ],
+      "en": "The elders of the congregation shall lay their hands on the head of the bull before the LORD; and the bull shall be killed before the LORD.",
+      "ko": "회중의 장로들이 여호와 앞에서 그 수송아지 머리에 안수하고 그것을 여호와 앞에서 잡을 것이요",
+      "source_text_hash": "983fd98b9917901d7060ef3694a919a1b20893f0588c5a94696b2453b02c79bc",
+      "translation_text_hash": "c1946b23df9b3515488670c71c68d53e60260e50cf2512e27921033d4bb47708",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "회중의 장로들이 여호와 앞에서 그 수송아지 머리에 안수하고 그것을 여호와 앞에서 잡을 것이요"
+      ],
+      "raw_text_hashes": [
+        "c1946b23df9b3515488670c71c68d53e60260e50cf2512e27921033d4bb47708"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:4:16",
+      "sequence": 2812,
+      "chapter_label": "LEV 4",
+      "verse_label": "16",
+      "locator": {
+        "book": "LEV",
+        "chapter": 4,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 4,
+          "verse": 16
+        }
+      ],
+      "en": "The anointed priest shall bring some of the blood of the bull to the Tent of Meeting.",
+      "ko": "기름 부음을 받은 제사장은 그 수송아지 피를 가지고 회막에 들어가서",
+      "source_text_hash": "d2c158e14a33ab52a3a3b548274c3252d1d9fb3907780e616c0add2c75db7dea",
+      "translation_text_hash": "122c60d7441bf12e22aad8d59b61b4177ee095d564c2ff6886a4091848560b53",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "기름 부음을 받은 제사장은 그 수송아지 피를 가지고 회막에 들어가서"
+      ],
+      "raw_text_hashes": [
+        "122c60d7441bf12e22aad8d59b61b4177ee095d564c2ff6886a4091848560b53"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:4:17",
+      "sequence": 2813,
+      "chapter_label": "LEV 4",
+      "verse_label": "17",
+      "locator": {
+        "book": "LEV",
+        "chapter": 4,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 4,
+          "verse": 17
+        }
+      ],
+      "en": "The priest shall dip his finger in the blood and sprinkle it seven times before the LORD, before the veil.",
+      "ko": "그 제사장이 손가락으로 그 피를 찍어 여호와 앞, 장 앞에 일곱 번 뿌릴 것이며",
+      "source_text_hash": "babe42cd95b54942c2f6d6cd32ddfb3f50162ea073d622b44f9beccf23e50fb4",
+      "translation_text_hash": "bac080c9fd590530e00d2f72121b4c4d25516125a0da01162b1254fbc5490fa6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 제사장이 손가락으로 그 피를 찍어 여호와 앞, 장 앞에 일곱 번 뿌릴 것이며"
+      ],
+      "raw_text_hashes": [
+        "bac080c9fd590530e00d2f72121b4c4d25516125a0da01162b1254fbc5490fa6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:4:18",
+      "sequence": 2814,
+      "chapter_label": "LEV 4",
+      "verse_label": "18",
+      "locator": {
+        "book": "LEV",
+        "chapter": 4,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 4,
+          "verse": 18
+        }
+      ],
+      "en": "He shall put some of the blood on the horns of the altar which is before the LORD, that is in the Tent of Meeting; and the rest of the blood he shall pour out at the base of the altar of burnt offering, which is at the door of the Tent of Meeting.",
+      "ko": "또 그 피로 회막 안 여호와 앞에 있는 단 뿔에 바르고 그 피 전부는 회막문 앞 번제단 밑에 쏟을 것이며",
+      "source_text_hash": "7c8d50c487d0162417cd8271b3cb60606c2077fec898182efda9703b7c0fffd1",
+      "translation_text_hash": "f573a2820166a643281fa2902d61282405a0375debc856151b68f3f11aebb710",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 그 피로 회막 안 여호와 앞에 있는 단 뿔에 바르고 그 피 전부는 회막문 앞 번제단 밑에 쏟을 것이며"
+      ],
+      "raw_text_hashes": [
+        "f573a2820166a643281fa2902d61282405a0375debc856151b68f3f11aebb710"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:4:19",
+      "sequence": 2815,
+      "chapter_label": "LEV 4",
+      "verse_label": "19",
+      "locator": {
+        "book": "LEV",
+        "chapter": 4,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 4,
+          "verse": 19
+        }
+      ],
+      "en": "All its fat he shall take from it, and burn it on the altar.",
+      "ko": "그 기름은 다 취하여 단 위에 불사르되",
+      "source_text_hash": "784f0aae6517edac1fba9a181dfcc63e439cedb83a0648705c97aa9b4b1eaa89",
+      "translation_text_hash": "57ce4986ac605c4cfeba06f4cc4237a5cc015756d34be946d396e59b06cc9359",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 기름은 다 취하여 단 위에 불사르되"
+      ],
+      "raw_text_hashes": [
+        "57ce4986ac605c4cfeba06f4cc4237a5cc015756d34be946d396e59b06cc9359"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:4:20",
+      "sequence": 2816,
+      "chapter_label": "LEV 4",
+      "verse_label": "20",
+      "locator": {
+        "book": "LEV",
+        "chapter": 4,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 4,
+          "verse": 20
+        }
+      ],
+      "en": "He shall do this with the bull; as he did with the bull of the sin offering, so he shall do with this; and the priest shall make atonement for them, and they shall be forgiven.",
+      "ko": "그 송아지를 속죄제의 수송아지에게 한것 같이 할찌며 제사장이 그것으로 회중을 위하여 속죄한즉 그들이 사함을 얻으리라",
+      "source_text_hash": "232a0be9ec7137e579cf567c448b5f7c8a093ae752eed3f723ecaf17d9f94de5",
+      "translation_text_hash": "ac0053aad65adf8090875e61c2d1ed9b4ad628c30e14be6cf0e8f9656a52e4cb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 송아지를 속죄제의 수송아지에게 한것 같이 할찌며 제사장이 그것으로 회중을 위하여 속죄한즉 그들이 사함을 얻으리라"
+      ],
+      "raw_text_hashes": [
+        "ac0053aad65adf8090875e61c2d1ed9b4ad628c30e14be6cf0e8f9656a52e4cb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:4:21",
+      "sequence": 2817,
+      "chapter_label": "LEV 4",
+      "verse_label": "21",
+      "locator": {
+        "book": "LEV",
+        "chapter": 4,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 4,
+          "verse": 21
+        }
+      ],
+      "en": "He shall carry the bull outside the camp, and burn it as he burned the first bull. It is the sin offering for the assembly.",
+      "ko": "그는 그 수송아지를 진밖으로 가져다가 첫번 수송아지를 사름 같이 사를찌니 이는 회중의 속죄제니라",
+      "source_text_hash": "ec18170a9aed2667b813b4ceee61b44a41b84c37ae9051a2fa202836241880c6",
+      "translation_text_hash": "c6fb33221a969e1e5278f5f56d572ee9c7e4fe5055451803a2b4cf0925cde0e5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그는 그 수송아지를 진밖으로 가져다가 첫번 수송아지를 사름 같이 사를찌니 이는 회중의 속죄제니라"
+      ],
+      "raw_text_hashes": [
+        "c6fb33221a969e1e5278f5f56d572ee9c7e4fe5055451803a2b4cf0925cde0e5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:4:22",
+      "sequence": 2818,
+      "chapter_label": "LEV 4",
+      "verse_label": "22",
+      "locator": {
+        "book": "LEV",
+        "chapter": 4,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 4,
+          "verse": 22
+        }
+      ],
+      "en": "“‘When a ruler sins, and unwittingly does any one of all the things which the LORD his God has commanded not to be done, and is guilty,",
+      "ko": "만일 족장이 그 하나님 여호와의 금령중 하나라도 부지중에 범하여 허물이 있었다가",
+      "source_text_hash": "eb57761ad47cca182fb7f0f02afa8b9aeacddca95b91236aab0d70c1a171da28",
+      "translation_text_hash": "da69d765afe7ae0b48c533e73176fbb6847ae460c04f93822fec97711490e9c6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 족장이 그 하나님 여호와의 금령중 하나라도 부지중에 범하여 허물이 있었다가"
+      ],
+      "raw_text_hashes": [
+        "da69d765afe7ae0b48c533e73176fbb6847ae460c04f93822fec97711490e9c6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:4:23",
+      "sequence": 2819,
+      "chapter_label": "LEV 4",
+      "verse_label": "23",
+      "locator": {
+        "book": "LEV",
+        "chapter": 4,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 4,
+          "verse": 23
+        }
+      ],
+      "en": "if his sin in which he has sinned is made known to him, he shall bring as his offering a goat, a male without defect.",
+      "ko": "그 범한 죄에 깨우침을 받거든 그는 흠 없는 수염소를 예물로 가져다가",
+      "source_text_hash": "9e601d82696159feeb8852057bd48801eb6e13bd2dce11935afafd4fae9c17d6",
+      "translation_text_hash": "7e08b80763869ade2d6d69f2c7d8cdc23d47d093cfc8f9b18ed6ee32ce20e8eb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 범한 죄에 깨우침을 받거든 그는 흠 없는 수염소를 예물로 가져다가"
+      ],
+      "raw_text_hashes": [
+        "7e08b80763869ade2d6d69f2c7d8cdc23d47d093cfc8f9b18ed6ee32ce20e8eb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:4:24",
+      "sequence": 2820,
+      "chapter_label": "LEV 4",
+      "verse_label": "24",
+      "locator": {
+        "book": "LEV",
+        "chapter": 4,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 4,
+          "verse": 24
+        }
+      ],
+      "en": "He shall lay his hand on the head of the goat, and kill it in the place where they kill the burnt offering before the LORD. It is a sin offering.",
+      "ko": "그 수염소의 머리에 안수하고 여호와 앞 번제 희생을 잡는 곳에서 잡을찌니 이는 속죄제라",
+      "source_text_hash": "88e76ec3ca9f7020a9d56746ea374fbfd9405de38219efa276151b02091134b3",
+      "translation_text_hash": "28dacade279fc73fea1acc4f5099db6d754f21b2e3bf6f3d4c11157162ac6936",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 수염소의 머리에 안수하고 여호와 앞 번제 희생을 잡는 곳에서 잡을찌니 이는 속죄제라"
+      ],
+      "raw_text_hashes": [
+        "28dacade279fc73fea1acc4f5099db6d754f21b2e3bf6f3d4c11157162ac6936"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:4:25",
+      "sequence": 2821,
+      "chapter_label": "LEV 4",
+      "verse_label": "25",
+      "locator": {
+        "book": "LEV",
+        "chapter": 4,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 4,
+          "verse": 25
+        }
+      ],
+      "en": "The priest shall take some of the blood of the sin offering with his finger, and put it on the horns of the altar of burnt offering. He shall pour out the rest of its blood at the base of the altar of burnt offering.",
+      "ko": "제사장은 그 속죄 희생의 피를 손가락에 찍어 번제단 뿔에 바르고 그 피는 번제단 밑에 쏟고",
+      "source_text_hash": "2303fa1265ad4698dd6ad90053030220b5fe97112936a4979873e942c7d3d941",
+      "translation_text_hash": "a1398d5dd286d68321c43214656d0fd6db7204e93e12f39ba9730e648fce8851",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장은 그 속죄 희생의 피를 손가락에 찍어 번제단 뿔에 바르고 그 피는 번제단 밑에 쏟고"
+      ],
+      "raw_text_hashes": [
+        "a1398d5dd286d68321c43214656d0fd6db7204e93e12f39ba9730e648fce8851"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:4:26",
+      "sequence": 2822,
+      "chapter_label": "LEV 4",
+      "verse_label": "26",
+      "locator": {
+        "book": "LEV",
+        "chapter": 4,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 4,
+          "verse": 26
+        }
+      ],
+      "en": "All its fat he shall burn on the altar, like the fat of the sacrifice of peace offerings; and the priest shall make atonement for him concerning his sin, and he will be forgiven.",
+      "ko": "그 모든 기름은 화목제 희생의 기름 같이 단 위에 불사를찌니 이같이 제사장이 그 범한 죄에 대하여 그를 위하여 속죄한즉 그가 사함을 얻으리라",
+      "source_text_hash": "b2a2fabfc17dd2ce96f67c4cf0547f381eebcb31e4c0748060ac6dd7e5264fb3",
+      "translation_text_hash": "0a64cea3742420727a9ed637cb720177a80214fdd3d5d7ad568fc502e2af1113",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 모든 기름은 화목제 희생의 기름 같이 단 위에 불사를찌니 이같이 제사장이 그 범한 죄에 대하여 그를 위하여 속죄한즉 그가 사함을 얻으리라"
+      ],
+      "raw_text_hashes": [
+        "0a64cea3742420727a9ed637cb720177a80214fdd3d5d7ad568fc502e2af1113"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:4:27",
+      "sequence": 2823,
+      "chapter_label": "LEV 4",
+      "verse_label": "27",
+      "locator": {
+        "book": "LEV",
+        "chapter": 4,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 4,
+          "verse": 27
+        }
+      ],
+      "en": "“‘If anyone of the common people sins unwittingly, in doing any of the things which the LORD has commanded not to be done, and is guilty,",
+      "ko": "만일 평민의 하나가 여호와의 금령 중 하나라도 부지중에 범하여 허물이 있었다가",
+      "source_text_hash": "309bd5caf1c6eb1d5d8336583283a86092f38b957557a1bd3e1fa2c9072c2b17",
+      "translation_text_hash": "09aeebe49e52fd7f305753c05e46c364c87802defe20c644a3f7cf2f2642a4b1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 평민의 하나가 여호와의 금령 중 하나라도 부지중에 범하여 허물이 있었다가"
+      ],
+      "raw_text_hashes": [
+        "09aeebe49e52fd7f305753c05e46c364c87802defe20c644a3f7cf2f2642a4b1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:4:28",
+      "sequence": 2824,
+      "chapter_label": "LEV 4",
+      "verse_label": "28",
+      "locator": {
+        "book": "LEV",
+        "chapter": 4,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 4,
+          "verse": 28
+        }
+      ],
+      "en": "if his sin which he has sinned is made known to him, then he shall bring for his offering a goat, a female without defect, for his sin which he has sinned.",
+      "ko": "그 범한 죄에 깨우침을 받거든 그는 흠 없는 암염소를 끌고 와서 그 범한 죄를 인하여 그것을 예물로 삼아",
+      "source_text_hash": "96598d0d4df5e213aa683b9a5bebf358d92a82b2d236781be259431f8053c9d6",
+      "translation_text_hash": "8d4c0c41815a3cda8e894bd462764d4ad7819488029e8495ea7660f07ecfb7a5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 범한 죄에 깨우침을 받거든 그는 흠 없는 암염소를 끌고 와서 그 범한 죄를 인하여 그것을 예물로 삼아"
+      ],
+      "raw_text_hashes": [
+        "8d4c0c41815a3cda8e894bd462764d4ad7819488029e8495ea7660f07ecfb7a5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:4:29",
+      "sequence": 2825,
+      "chapter_label": "LEV 4",
+      "verse_label": "29",
+      "locator": {
+        "book": "LEV",
+        "chapter": 4,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 4,
+          "verse": 29
+        }
+      ],
+      "en": "He shall lay his hand on the head of the sin offering, and kill the sin offering in the place of burnt offering.",
+      "ko": "그 속죄제 희생의 머리에 안수하고 그 희생을 번제소에서 잡을 것이요",
+      "source_text_hash": "2fde6df369dbd8e42874cb0c6ff22ff1abe6ffd27ddcc10db120215847b97cc8",
+      "translation_text_hash": "4df6bc15332eb29c76a40cc309a9966fb94e644a9063dcb444bde80e32ef120c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 속죄제 희생의 머리에 안수하고 그 희생을 번제소에서 잡을 것이요"
+      ],
+      "raw_text_hashes": [
+        "4df6bc15332eb29c76a40cc309a9966fb94e644a9063dcb444bde80e32ef120c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:4:30",
+      "sequence": 2826,
+      "chapter_label": "LEV 4",
+      "verse_label": "30",
+      "locator": {
+        "book": "LEV",
+        "chapter": 4,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 4,
+          "verse": 30
+        }
+      ],
+      "en": "The priest shall take some of its blood with his finger, and put it on the horns of the altar of burnt offering; and the rest of its blood he shall pour out at the base of the altar.",
+      "ko": "제사장은 손가락으로 그 피를 찍어 번제단 뿔에 바르고 그 피 전부를 단 밑에 쏟고",
+      "source_text_hash": "e3876b99d678f160ee7778bbf6b068c77b918ffa50cd4f1ddaea96e970f89b12",
+      "translation_text_hash": "83b630604d9616cfaa92080e254861d55a3dc9ddc89cee69fb22df4a1ebf6685",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장은 손가락으로 그 피를 찍어 번제단 뿔에 바르고 그 피 전부를 단 밑에 쏟고"
+      ],
+      "raw_text_hashes": [
+        "83b630604d9616cfaa92080e254861d55a3dc9ddc89cee69fb22df4a1ebf6685"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:4:31",
+      "sequence": 2827,
+      "chapter_label": "LEV 4",
+      "verse_label": "31",
+      "locator": {
+        "book": "LEV",
+        "chapter": 4,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 4,
+          "verse": 31
+        }
+      ],
+      "en": "All its fat he shall take away, like the fat is taken away from the sacrifice of peace offerings; and the priest shall burn it on the altar for a pleasant aroma to the LORD; and the priest shall make atonement for him, and he will be forgiven.",
+      "ko": "그 모든 기름을 화목제 희생의 기름을 취한것 같이 취하여 단 위에 불살라 여호와께 향기롭게 할지니 제사장이 그를 위하여 속죄한즉 그가 사함을 얻으리라",
+      "source_text_hash": "81bd3e5901b3bec68352dd17afada3b4b8a8d260a04391fa000bb604f45f76c8",
+      "translation_text_hash": "d8b4b8bd3fba47abb2af5f2bc14fa34e133095a1d172a820071ae06a68ac715a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 모든 기름을 화목제 희생의 기름을 취한것 같이 취하여 단 위에 불살라 여호와께 향기롭게 할지니 제사장이 그를 위하여 속죄한즉 그가 사함을 얻으리라"
+      ],
+      "raw_text_hashes": [
+        "d8b4b8bd3fba47abb2af5f2bc14fa34e133095a1d172a820071ae06a68ac715a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:4:32",
+      "sequence": 2828,
+      "chapter_label": "LEV 4",
+      "verse_label": "32",
+      "locator": {
+        "book": "LEV",
+        "chapter": 4,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 4,
+          "verse": 32
+        }
+      ],
+      "en": "“‘If he brings a lamb as his offering for a sin offering, he shall bring a female without defect.",
+      "ko": "그가 만일 어린 양을 속죄 제물로 가져오려거든 흠 없는 암컷을 끌어다가",
+      "source_text_hash": "98efa1caa53e44b5d3bdd274b2793916c0f73cf76b7dff032e6895a3d5998f6c",
+      "translation_text_hash": "345283d0cb2cf112715facbf8f70421847080a541b1d029ebddbcb1d17d554a9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 만일 어린 양을 속죄 제물로 가져오려거든 흠 없는 암컷을 끌어다가"
+      ],
+      "raw_text_hashes": [
+        "345283d0cb2cf112715facbf8f70421847080a541b1d029ebddbcb1d17d554a9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:4:33",
+      "sequence": 2829,
+      "chapter_label": "LEV 4",
+      "verse_label": "33",
+      "locator": {
+        "book": "LEV",
+        "chapter": 4,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 4,
+          "verse": 33
+        }
+      ],
+      "en": "He shall lay his hand on the head of the sin offering, and kill it for a sin offering in the place where they kill the burnt offering.",
+      "ko": "그 속죄제 희생의 머리에 안수하고 번제 희생을 잡는 곳에서 잡아 속죄제를 삼을 것이요",
+      "source_text_hash": "9908b30208ba8098ee70ba330e8add4b67ad9d985c1766db0e1f13995589dbda",
+      "translation_text_hash": "e8a754f7ab4d9d95e85e0aa75a54ad7fd7dbe3e50ee85dd095e634bcba3bfafe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 속죄제 희생의 머리에 안수하고 번제 희생을 잡는 곳에서 잡아 속죄제를 삼을 것이요"
+      ],
+      "raw_text_hashes": [
+        "e8a754f7ab4d9d95e85e0aa75a54ad7fd7dbe3e50ee85dd095e634bcba3bfafe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:4:34",
+      "sequence": 2830,
+      "chapter_label": "LEV 4",
+      "verse_label": "34",
+      "locator": {
+        "book": "LEV",
+        "chapter": 4,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 4,
+          "verse": 34
+        }
+      ],
+      "en": "The priest shall take some of the blood of the sin offering with his finger, and put it on the horns of the altar of burnt offering; and all the rest of its blood he shall pour out at the base of the altar.",
+      "ko": "제사장은 그 속죄제 희생의 피를 손가락으로 찍어 번제단 뿔에 바르고 그 피는 전부를 단 밑에 쏟고",
+      "source_text_hash": "e397584cd6a837b9747dce65048f1b6b2c116a1417543b3df43c8e3cbba43823",
+      "translation_text_hash": "20a8f7a53f6cf1b997e4b798330e03c1dd237fd34b62d421bae85b41254f73db",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장은 그 속죄제 희생의 피를 손가락으로 찍어 번제단 뿔에 바르고 그 피는 전부를 단 밑에 쏟고"
+      ],
+      "raw_text_hashes": [
+        "20a8f7a53f6cf1b997e4b798330e03c1dd237fd34b62d421bae85b41254f73db"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:4:35",
+      "sequence": 2831,
+      "chapter_label": "LEV 4",
+      "verse_label": "35",
+      "locator": {
+        "book": "LEV",
+        "chapter": 4,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 4,
+          "verse": 35
+        }
+      ],
+      "en": "He shall remove all its fat, like the fat of the lamb is removed from the sacrifice of peace offerings. The priest shall burn them on the altar, on the offerings of the LORD made by fire. The priest shall make atonement for him concerning his sin that he has sinned, and he will be forgiven.",
+      "ko": "그 모든 기름을 화목제 어린 양의 기름을 취한것 같이 취하여 단 위 여호와의 화제물 위에 불사를지니 이같이 제사장이 그의 범한 죄에 대하여 그를 위하여 속죄한즉 그가 사함을 얻으리라",
+      "source_text_hash": "eb82077195f8cde5a6d3c8f6abe5e7825bd4b10ff9a2a4d82f6c46ba747eaba1",
+      "translation_text_hash": "00c3ce69e38baa65a8e3f187b637ebb96bd2ab2b350bc6854fc63bc99ffcab44",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 모든 기름을 화목제 어린 양의 기름을 취한것 같이 취하여 단 위 여호와의 화제물 위에 불사를지니 이같이 제사장이 그의 범한 죄에 대하여 그를 위하여 속죄한즉 그가 사함을 얻으리라"
+      ],
+      "raw_text_hashes": [
+        "00c3ce69e38baa65a8e3f187b637ebb96bd2ab2b350bc6854fc63bc99ffcab44"
+      ]
+    }
+  ]
+}

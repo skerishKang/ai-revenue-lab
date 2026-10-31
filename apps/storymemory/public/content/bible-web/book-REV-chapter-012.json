@@ -1,0 +1,557 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:REV:chapter:012",
+  "unit_ordinal": 1179,
+  "unit_label": "REV 12",
+  "book_code": "REV",
+  "chapter_number": 12,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:REV:12:1",
+      "sequence": 30889,
+      "chapter_label": "REV 12",
+      "verse_label": "1",
+      "locator": {
+        "book": "REV",
+        "chapter": 12,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 12,
+          "verse": 1
+        }
+      ],
+      "en": "A great sign was seen in heaven: a woman clothed with the sun, and the moon under her feet, and on her head a crown of twelve stars.",
+      "ko": "하늘에 큰 이적이 보이니 해를 입은 한 여자가 있는데 그 발 아래는 달이 있고 그 머리에는 열 두 별의 면류관을 썼더라",
+      "source_text_hash": "4728aade2a528bc57e7da656b5defddb4cb6385b8a4f91bcc2235a78ac06bc05",
+      "translation_text_hash": "5fce56be22429bbf669c37edbe844a7644ded90da55a3d13375d62f1d3a8d90d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하늘에 큰 이적이 보이니 해를 입은 한 여자가 있는데 그 발 아래는 달이 있고 그 머리에는 열 두 별의 면류관을 썼더라"
+      ],
+      "raw_text_hashes": [
+        "5fce56be22429bbf669c37edbe844a7644ded90da55a3d13375d62f1d3a8d90d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:12:2",
+      "sequence": 30890,
+      "chapter_label": "REV 12",
+      "verse_label": "2",
+      "locator": {
+        "book": "REV",
+        "chapter": 12,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 12,
+          "verse": 2
+        }
+      ],
+      "en": "She was with child. She cried out in pain, laboring to give birth.",
+      "ko": "이 여자가 아이를 배어 해산하게 되매 아파서 애써 부르짖더라",
+      "source_text_hash": "912c45ebe5620fa793006eddecc29494da4c41bf59de70af86e9ef196d17ed90",
+      "translation_text_hash": "18f3d90701026c73bb2b5a857ffef2fbb052da7622ec3954fdcf245c47b46e36",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 여자가 아이를 배어 해산하게 되매 아파서 애써 부르짖더라"
+      ],
+      "raw_text_hashes": [
+        "18f3d90701026c73bb2b5a857ffef2fbb052da7622ec3954fdcf245c47b46e36"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:12:3",
+      "sequence": 30891,
+      "chapter_label": "REV 12",
+      "verse_label": "3",
+      "locator": {
+        "book": "REV",
+        "chapter": 12,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 12,
+          "verse": 3
+        }
+      ],
+      "en": "Another sign was seen in heaven. Behold, a great red dragon, having seven heads and ten horns, and on his heads seven crowns.",
+      "ko": "하늘에 또 다른 이적이 보이니 보라 한 큰 붉은 용이 있어 머리가 일곱이요 뿔이 열이라 그 여러 머리에 일곱 면류관이 있는데",
+      "source_text_hash": "5c3aa598b7d32015516f94db14b66e7da21f8704860b87613b87c68d196f674f",
+      "translation_text_hash": "6eba887d617c32a5029e0bae45811f25dd792cd31e1adb75b353c1f59dbb2f19",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하늘에 또 다른 이적이 보이니 보라 한 큰 붉은 용이 있어 머리가 일곱이요 뿔이 열이라 그 여러 머리에 일곱 면류관이 있는데"
+      ],
+      "raw_text_hashes": [
+        "6eba887d617c32a5029e0bae45811f25dd792cd31e1adb75b353c1f59dbb2f19"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:12:4",
+      "sequence": 30892,
+      "chapter_label": "REV 12",
+      "verse_label": "4",
+      "locator": {
+        "book": "REV",
+        "chapter": 12,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 12,
+          "verse": 4
+        }
+      ],
+      "en": "His tail drew one third of the stars of the sky, and threw them to the earth. The dragon stood before the woman who was about to give birth, so that when she gave birth he might devour her child.",
+      "ko": "그 꼬리가 하늘 별 삼분의 일을 끌어다가 땅에 던지더라 용이 해산하려는 여자 앞에서 그가 해산하면 그 아이를 삼키고자 하더니",
+      "source_text_hash": "cc9a250093acd7984ba4579902fb080c34904516a06e2acad14e671dba3381be",
+      "translation_text_hash": "602438fd74c1f1629168d7c3643108d368c474f26ce3e2be2d8e6f79d4d35650",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 꼬리가 하늘 별 삼분의 일을 끌어다가 땅에 던지더라 용이 해산하려는 여자 앞에서 그가 해산하면 그 아이를 삼키고자 하더니"
+      ],
+      "raw_text_hashes": [
+        "602438fd74c1f1629168d7c3643108d368c474f26ce3e2be2d8e6f79d4d35650"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:12:5",
+      "sequence": 30893,
+      "chapter_label": "REV 12",
+      "verse_label": "5",
+      "locator": {
+        "book": "REV",
+        "chapter": 12,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 12,
+          "verse": 5
+        }
+      ],
+      "en": "She gave birth to a son, a male child, who is to rule all the nations with a rod of iron. Her child was caught up to God and to his throne.",
+      "ko": "여자가 아들을 낳으니 이는 장차 철장으로 만국을 다스릴 남자라 그 아이를 하나님 앞과 그 보좌 앞으로 올려가더라",
+      "source_text_hash": "36163d25071f4d58931cb9cd7879b5a53c3def096678ffb43ca19fc6add7aa2e",
+      "translation_text_hash": "8748f98a998d7cdf57ebf571056aee0f149694f28adf147180ef682a8289b240",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여자가 아들을 낳으니 이는 장차 철장으로 만국을 다스릴 남자라 그 아이를 하나님 앞과 그 보좌 앞으로 올려가더라"
+      ],
+      "raw_text_hashes": [
+        "8748f98a998d7cdf57ebf571056aee0f149694f28adf147180ef682a8289b240"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:12:6",
+      "sequence": 30894,
+      "chapter_label": "REV 12",
+      "verse_label": "6",
+      "locator": {
+        "book": "REV",
+        "chapter": 12,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 12,
+          "verse": 6
+        }
+      ],
+      "en": "The woman fled into the wilderness, where she has a place prepared by God, that there they may nourish her one thousand two hundred sixty days.",
+      "ko": "그 여자가 광야로 도망하매 거기서 일천 이백 육십일 동안 저를 양육하기 위하여 하나님의 예비하신 곳이 있더라",
+      "source_text_hash": "c066a5beea9494a86689cb38c71cfb663ee0bc657325586ab9b7946e184060a4",
+      "translation_text_hash": "e3db32c3651384b158babf818aa046ed41755bf04157341bed6480320fc80e0f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 여자가 광야로 도망하매 거기서 일천 이백 육십일 동안 저를 양육하기 위하여 하나님의 예비하신 곳이 있더라"
+      ],
+      "raw_text_hashes": [
+        "e3db32c3651384b158babf818aa046ed41755bf04157341bed6480320fc80e0f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:12:7",
+      "sequence": 30895,
+      "chapter_label": "REV 12",
+      "verse_label": "7",
+      "locator": {
+        "book": "REV",
+        "chapter": 12,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 12,
+          "verse": 7
+        }
+      ],
+      "en": "There was war in the sky. Michael and his angels made war on the dragon. The dragon and his angels made war.",
+      "ko": "하늘에 전쟁이 있으니 미가엘과 그의 사자들이 용으로 더불어 싸울쌔 용과 그의 사자들도 싸우나",
+      "source_text_hash": "21f4855ce787eb68b048707ee2e3f97f143678e9f12cc45191f31317716ce4b1",
+      "translation_text_hash": "276a702e7c63ebf1584c31a3eaf6d26d769876bc128ea6d579cb053f4157cd6e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하늘에 전쟁이 있으니 미가엘과 그의 사자들이 용으로 더불어 싸울쌔 용과 그의 사자들도 싸우나"
+      ],
+      "raw_text_hashes": [
+        "276a702e7c63ebf1584c31a3eaf6d26d769876bc128ea6d579cb053f4157cd6e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:12:8",
+      "sequence": 30896,
+      "chapter_label": "REV 12",
+      "verse_label": "8",
+      "locator": {
+        "book": "REV",
+        "chapter": 12,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 12,
+          "verse": 8
+        }
+      ],
+      "en": "They didn’t prevail. No place was found for them any more in heaven.",
+      "ko": "이기지 못하여 다시 하늘에서 저희의 있을 곳을 얻지 못한지라",
+      "source_text_hash": "fdbaa86907821e3dab6212dc8c2232dba68c688181b721392792ecf572b2d99c",
+      "translation_text_hash": "3a91ad44b9a7e4d07313d145d3e28ad211623758c1efbdd1b9ff65c6a29cfea5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이기지 못하여 다시 하늘에서 저희의 있을 곳을 얻지 못한지라"
+      ],
+      "raw_text_hashes": [
+        "3a91ad44b9a7e4d07313d145d3e28ad211623758c1efbdd1b9ff65c6a29cfea5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:12:9",
+      "sequence": 30897,
+      "chapter_label": "REV 12",
+      "verse_label": "9",
+      "locator": {
+        "book": "REV",
+        "chapter": 12,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 12,
+          "verse": 9
+        }
+      ],
+      "en": "The great dragon was thrown down, the old serpent, he who is called the devil and Satan, the deceiver of the whole world. He was thrown down to the earth, and his angels were thrown down with him.",
+      "ko": "큰 용이 내어 쫓기니 옛 뱀 곧 마귀라고도 하고 사단이라고도 하는 온 천하를 꾀는 자라 땅으로 내어 쫓기니 그의 사자들도 저와 함께 내어 쫓기니라",
+      "source_text_hash": "e74235cf11199059647d22c8f4cf0b4002b128eb339e32fc1643e8fffea52938",
+      "translation_text_hash": "c01709c992cd2d98635dba4ac2b79be0c34f90de24c618e7475b001f3750ccd7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "큰 용이 내어 쫓기니 옛 뱀 곧 마귀라고도 하고 사단이라고도 하는 온 천하를 꾀는 자라 땅으로 내어 쫓기니 그의 사자들도 저와 함께 내어 쫓기니라"
+      ],
+      "raw_text_hashes": [
+        "c01709c992cd2d98635dba4ac2b79be0c34f90de24c618e7475b001f3750ccd7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:12:10",
+      "sequence": 30898,
+      "chapter_label": "REV 12",
+      "verse_label": "10",
+      "locator": {
+        "book": "REV",
+        "chapter": 12,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 12,
+          "verse": 10
+        }
+      ],
+      "en": "I heard a loud voice in heaven, saying, “Now the salvation, the power, and the Kingdom of our God, and the authority of his Christ has come; for the accuser of our brothers has been thrown down, who accuses them before our God day and night.",
+      "ko": "내가 또 들으니 하늘에 큰 음성이 있어 가로되 이제 우리 하나님의 구원과 능력과 나라와 또 그의 그리스도의 권세가 이루었으니 우리 형제들을 참소하던 자 곧 우리 하나님 앞에서 밤낮 참소하던 자가 쫓겨 났고",
+      "source_text_hash": "4c3b02deeb3b6585ea5cc84cf3d851029c6e7d676c7bcebfeda300b26f48f3cf",
+      "translation_text_hash": "41c478874fcdccb56bdb68e4baa632a9cb286ebe4c5219a9f2b1ffd46821b888",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 또 들으니 하늘에 큰 음성이 있어 가로되 이제 우리 하나님의 구원과 능력과 나라와 또 그의 그리스도의 권세가 이루었으니 우리 형제들을 참소하던 자 곧 우리 하나님 앞에서 밤낮 참소하던 자가 쫓겨 났고"
+      ],
+      "raw_text_hashes": [
+        "41c478874fcdccb56bdb68e4baa632a9cb286ebe4c5219a9f2b1ffd46821b888"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:12:11",
+      "sequence": 30899,
+      "chapter_label": "REV 12",
+      "verse_label": "11",
+      "locator": {
+        "book": "REV",
+        "chapter": 12,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 12,
+          "verse": 11
+        }
+      ],
+      "en": "They overcame him because of the Lamb’s blood, and because of the word of their testimony. They didn’t love their life, even to death.",
+      "ko": "또 여러 형제가 어린 양의 피와 자기의 증거하는 말을 인하여 저를 이기었으니 그들은 죽기까지 자기 생명을 아끼지 아니하였도다",
+      "source_text_hash": "e3c6b7f25e62c76cd6a9d670a2f2cff014d48cee81ba382e13409b95b189bc00",
+      "translation_text_hash": "163dbc3432d940e6f2b17084a959ab1a31f3cfdb120f52aef479c44b5a0c4ad4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 여러 형제가 어린 양의 피와 자기의 증거하는 말을 인하여 저를 이기었으니 그들은 죽기까지 자기 생명을 아끼지 아니하였도다"
+      ],
+      "raw_text_hashes": [
+        "163dbc3432d940e6f2b17084a959ab1a31f3cfdb120f52aef479c44b5a0c4ad4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:12:12",
+      "sequence": 30900,
+      "chapter_label": "REV 12",
+      "verse_label": "12",
+      "locator": {
+        "book": "REV",
+        "chapter": 12,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 12,
+          "verse": 12
+        }
+      ],
+      "en": "Therefore rejoice, heavens, and you who dwell in them. Woe to the earth and to the sea, because the devil has gone down to you, having great wrath, knowing that he has but a short time.”",
+      "ko": "그러므로 하늘과 그 가운데 거하는 자들은 즐거워하라 그러나 땅과 바다는 화 있을찐저 이는 마귀가 자기의 때가 얼마 못된 줄을 알므로 크게 분내어 너희에게 내려 갔음이라 하더라",
+      "source_text_hash": "e9172c0fd07ac71208e4c67f166e2da3941311d695e34fd5275252fae5edbc2b",
+      "translation_text_hash": "93d2ed5841f2f6eaf2d922951f1689838b1fc94dcfc926001af151bb42f84292",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 하늘과 그 가운데 거하는 자들은 즐거워하라 그러나 땅과 바다는 화 있을찐저 이는 마귀가 자기의 때가 얼마 못된 줄을 알므로 크게 분내어 너희에게 내려 갔음이라 하더라"
+      ],
+      "raw_text_hashes": [
+        "93d2ed5841f2f6eaf2d922951f1689838b1fc94dcfc926001af151bb42f84292"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:12:13",
+      "sequence": 30901,
+      "chapter_label": "REV 12",
+      "verse_label": "13",
+      "locator": {
+        "book": "REV",
+        "chapter": 12,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 12,
+          "verse": 13
+        }
+      ],
+      "en": "When the dragon saw that he was thrown down to the earth, he persecuted the woman who gave birth to the male child.",
+      "ko": "용이 자기가 땅으로 내어쫓긴 것을 보고 남자를 낳은 여자를 핍박하는지라",
+      "source_text_hash": "91677d598743ebcf924553276f51cb9d26854ab195e3210f52435e62b3a0d86f",
+      "translation_text_hash": "23042622b9e0911bafec6b11672357948644a730f8d09fe7ba9b2961aafd3de5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "용이 자기가 땅으로 내어쫓긴 것을 보고 남자를 낳은 여자를 핍박하는지라"
+      ],
+      "raw_text_hashes": [
+        "23042622b9e0911bafec6b11672357948644a730f8d09fe7ba9b2961aafd3de5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:12:14",
+      "sequence": 30902,
+      "chapter_label": "REV 12",
+      "verse_label": "14",
+      "locator": {
+        "book": "REV",
+        "chapter": 12,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 12,
+          "verse": 14
+        }
+      ],
+      "en": "Two wings of the great eagle were given to the woman, that she might fly into the wilderness to her place, so that she might be nourished for a time, times, and half a time, from the face of the serpent.",
+      "ko": "그 여자가 큰 독수리의 두 날개를 받아 광야 자기 곳으로 날아가 거기서 그 뱀의 낯을 피하여 한 때와 두 때와 반 때를 양육 받으매",
+      "source_text_hash": "67d5c685e1fa30b07cd20022d0288897dcfd0d2b6e09a75930b275bf7b3b91d7",
+      "translation_text_hash": "f814c72bb0182e3170bee4efb04d2ac0c13b650beaaff33d5f9daf0a2d818592",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 여자가 큰 독수리의 두 날개를 받아 광야 자기 곳으로 날아가 거기서 그 뱀의 낯을 피하여 한 때와 두 때와 반 때를 양육 받으매"
+      ],
+      "raw_text_hashes": [
+        "f814c72bb0182e3170bee4efb04d2ac0c13b650beaaff33d5f9daf0a2d818592"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:12:15",
+      "sequence": 30903,
+      "chapter_label": "REV 12",
+      "verse_label": "15",
+      "locator": {
+        "book": "REV",
+        "chapter": 12,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 12,
+          "verse": 15
+        }
+      ],
+      "en": "The serpent spewed water out of his mouth after the woman like a river, that he might cause her to be carried away by the stream.",
+      "ko": "여자의 뒤에서 뱀이 그 입으로 물을 강 같이 토하여 여자를 물에 떠내려 가게 하려 하되",
+      "source_text_hash": "d23c2f162f3d2d582e7f3aa64a1da36acca2323423c08d6f68714d642a8c9220",
+      "translation_text_hash": "ce6b86ad17560e4034f8e591ec354916ed0f97faaf783bf9363085105e0480a4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여자의 뒤에서 뱀이 그 입으로 물을 강 같이 토하여 여자를 물에 떠내려 가게 하려 하되"
+      ],
+      "raw_text_hashes": [
+        "ce6b86ad17560e4034f8e591ec354916ed0f97faaf783bf9363085105e0480a4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:12:16",
+      "sequence": 30904,
+      "chapter_label": "REV 12",
+      "verse_label": "16",
+      "locator": {
+        "book": "REV",
+        "chapter": 12,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 12,
+          "verse": 16
+        }
+      ],
+      "en": "The earth helped the woman, and the earth opened its mouth and swallowed up the river which the dragon spewed out of his mouth.",
+      "ko": "땅이 여자를 도와 그 입을 벌려 용의 입에서 토한 강물을 삼키니",
+      "source_text_hash": "f2b834a32937eac718dee43cb5b9848ff4755a5293b249fdd41072abad0a5206",
+      "translation_text_hash": "4cebe877d038014177f054305281a6df7aa4ffc2a6390dbd65bb2ac1958244cb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "땅이 여자를 도와 그 입을 벌려 용의 입에서 토한 강물을 삼키니"
+      ],
+      "raw_text_hashes": [
+        "4cebe877d038014177f054305281a6df7aa4ffc2a6390dbd65bb2ac1958244cb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:12:17",
+      "sequence": 30905,
+      "chapter_label": "REV 12",
+      "verse_label": "17",
+      "locator": {
+        "book": "REV",
+        "chapter": 12,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 12,
+          "verse": 17
+        }
+      ],
+      "en": "The dragon grew angry with the woman, and went away to make war with the rest of her offspring, who keep God’s commandments and hold Jesus’ testimony.",
+      "ko": "용이 여자에게 분노하여 돌아가서 그 여자의 남은 자손 곧 하나님의 계명을 지키며 예수의 증거를 가진 자들로 더불어 싸우려고 바다 모래 위에 섰더라",
+      "source_text_hash": "3efe6b8a713415ca5c08acecc3137579e5c8d1e5829c24bc55efdf97363a1358",
+      "translation_text_hash": "a5b4c257d072e5874248266717387a94c98f3dac9a5b8b15e381feef7d3d76c9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "용이 여자에게 분노하여 돌아가서 그 여자의 남은 자손 곧 하나님의 계명을 지키며 예수의 증거를 가진 자들로 더불어 싸우려고 바다 모래 위에 섰더라"
+      ],
+      "raw_text_hashes": [
+        "a5b4c257d072e5874248266717387a94c98f3dac9a5b8b15e381feef7d3d76c9"
+      ]
+    }
+  ]
+}
