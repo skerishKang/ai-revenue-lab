@@ -108,6 +108,7 @@ ISSUE=#5115 (COM2 이전 추적)
 
 - `deploy/host-com2/**`의 cloudflared 예시에는 `chat.padiem.net` hostname을 두지 않습니다. tunnel이 직접 받으면 front를 건너뛰어 서명 없는 요청이 컴2로 들어옵니다. `deploy/host-com2/chat/tests/test_ingress_public_hostname_guard.py`가 이 금지를 고정합니다.
 - tunnel은 지금처럼 `chat-com2.padiem.net` → `127.0.0.1:8798` 하나입니다. 이 hostname·포트가 운영 유닛(`padiem-chat-com2.service`)과 같은지, #6400의 `FRONT_ORIGIN`과 같은지 시험이 대조합니다(#6400이 main에 없으면 skip 사유를 남기고 대기).
+- 확인된 사항(읽기 전용 조사): front의 `UPSTREAM_TIMEOUT_MS`(8초)는 **응답 헤더 수신까지만** 적용됩니다. 헤더가 오면 `forward()`가 타이머를 해제하고 받은 `Response`를 그대로 반환하므로 SSE/NDJSON 본문은 8초에서 끊기지 않고, 응답이 시작된 뒤 fallback이 끼어들지도 않습니다(5xx·헤더 지연은 본문 전달 전에 대체). WebSocket 업그레이드도 같은 헤더 대기 시간만 적용됩니다. 재현 시험: `apps/padiem-chat-front/test/stream_timeout.test.mjs`.
 - `chat-com2.padiem.net`은 공개 hostname이라 front를 거치지 않고 직접 들어올 수 있습니다. 그 경로는 #6400 `EdgeProofMiddleware`가 막습니다: `GET /health`를 뺀 **모든 http·websocket 요청**이 서명을 요구하고, 검증기는 `GET /api/claw/connector/gateway/session` 외에는 통과시키지 않습니다(그 밖의 경로는 403, WSS는 close 1008).
 - 전환·원복은 각각 1회입니다: 런북 §2(도메인 이동) / §3(재이동). 앞단 배포·도메인 이동은 저장소 PR로 실행되지 않습니다.
 - 되돌리기: Custom Domain을 `padiem-chat`으로 재이동(1회)하고, 컴2에만 쓰인 데이터는 핸드백으로 D1에 반영한 뒤 쓰기 재개.
