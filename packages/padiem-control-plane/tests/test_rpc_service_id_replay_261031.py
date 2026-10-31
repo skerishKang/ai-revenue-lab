@@ -293,23 +293,6 @@ def test_the_identity_worker_refuses_a_replayed_request() -> None:
     assert fresh.status in (200, 201)
 
 
-# --- staging instance isolation --------------------------------------------
-
-def test_the_staging_identity_is_its_own_worker_and_names_no_production_state() -> None:
-    config = json.loads(
-        (ROOT / "wrangler.identity-authority.jsonc").read_text(encoding="utf-8")
-    )
-    staging = config["env"]["staging"]
-    text = json.dumps(staging)
-
-    assert config["name"] == "padiem-control-plane-identity"
-    assert config["workers_dev"] is False
-    assert staging["name"] == "padiem-control-plane-identity-staging"
-    assert staging["workers_dev"] is True
-    assert "routes" not in staging and "routes" not in config
-    assert staging["durable_objects"] == config["durable_objects"]
-    # Nothing in staging names the production Worker or its authority domain.
-    assert "control-plane.identity.production" not in text
-    assert staging["name"] not in text.replace(staging["name"], "", 1)
-    assert staging["vars"]["PADIEM_RPC_SERVICE_ID_POLICY"] == "required"
-    assert set(config["secrets"]["required"]) <= set(staging["secrets"]["required"])
+# The staging-instance config assertion lives outside this package, in
+# .github/tests/test_identity_staging_config_261031.py: the foundation package
+# gate refuses the config tool's name in any .py inside it.
