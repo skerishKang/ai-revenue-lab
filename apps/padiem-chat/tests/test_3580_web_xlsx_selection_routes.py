@@ -179,7 +179,7 @@ def test_limit_migration_preserves_rows_receipts_and_fks_in_one_transaction():
                "d" * 64, "school", 100, "confirmed", "revision", "e" * 64,
                "created", "updated")
     conn.execute("INSERT INTO claw_web_xlsx_quote_edit_receipts VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", receipt)
-    conn.executescript("BEGIN;" + (migrations / "071_claw_web_xlsx_selection_limit.sql").read_text() + "COMMIT;")
+    conn.executescript("BEGIN;" + (migrations / "081_claw_web_xlsx_selection_limit.sql").read_text() + "COMMIT;")
     assert conn.execute("SELECT * FROM claw_web_xlsx_selections").fetchone() == row
     assert conn.execute("SELECT * FROM claw_web_xlsx_quote_edit_receipts").fetchone() == receipt
     assert conn.execute("PRAGMA foreign_key_check").fetchall() == []
@@ -203,7 +203,7 @@ async def test_xlsx_upload_above_legacy_limit_uses_new_sql_and_keeps_owner_scope
     app, settings, metadata, r2, source, conn = setup()
     migrations = Path(__file__).resolve().parents[1] / "migrations"
     conn.executescript((migrations / "032_claw_web_xlsx_quote_edit_receipts.sql").read_text())
-    conn.executescript((migrations / "071_claw_web_xlsx_selection_limit.sql").read_text())
+    conn.executescript((migrations / "081_claw_web_xlsx_selection_limit.sql").read_text())
     # Exercise real bytes with a small fixture; the 1GiB boundary is metadata-only.
     payload_size = 2 * 1024 * 1024
     assert MAX_WEB_XLSX_BYTES == 1024 * 1024 * 1024
@@ -237,7 +237,7 @@ def test_one_gib_selection_metadata_boundary_without_loading_file_contents():
     app, _, _, _, _, conn = setup()
     migrations = Path(__file__).resolve().parents[1] / "migrations"
     conn.executescript((migrations / "032_claw_web_xlsx_quote_edit_receipts.sql").read_text())
-    conn.executescript((migrations / "071_claw_web_xlsx_selection_limit.sql").read_text())
+    conn.executescript((migrations / "081_claw_web_xlsx_selection_limit.sql").read_text())
     source = {"document_id": "doc_" + "d" * 32, "source_sha256": "a" * 64,
               "filename": "metadata-only.xlsx", "size_bytes": MAX_WEB_XLSX_BYTES,
               "original_immutable": True, "processing_authorized": False,

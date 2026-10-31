@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Exact 029 -> 071 XLSX selection gate; metadata/counts only on live D1."""
+"""Exact 029 -> 081 XLSX selection gate; metadata/counts only on live D1."""
 import json
 import re
 import sqlite3
@@ -10,7 +10,7 @@ ROOT = Path(__file__).resolve().parents[2] / "apps/padiem-chat/migrations"
 UPLOAD_MAX_BYTES = 1024 * 1024 * 1024
 TABLES = ("claw_web_xlsx_selections", "claw_web_xlsx_quote_edit_receipts")
 FILES = ("029_claw_web_xlsx_selection.sql", "032_claw_web_xlsx_quote_edit_receipts.sql",
-         "071_claw_web_xlsx_selection_limit.sql")
+         "081_claw_web_xlsx_selection_limit.sql")
 QUERY = (
     "SELECT name,type,sql FROM sqlite_master WHERE name IN "
     "('claw_web_xlsx_selections','claw_web_xlsx_quote_edit_receipts');"
@@ -57,7 +57,7 @@ def reference_schemas():
         db.executescript(old + receipt)
         expected = {"029": schemas(db)}
         db.executescript(new)
-        expected["071"] = schemas(db)
+        expected["081"] = schemas(db)
         return expected
     finally:
         db.close()
@@ -96,7 +96,7 @@ def classify(payload):
 def verify_preservation(before, after):
     old_label, old_counts = classify(before)
     new_label, new_counts = classify(after)
-    if old_label not in ("029", "071") or new_label != "071" or old_counts != new_counts:
+    if old_label not in ("029", "081") or new_label != "081" or old_counts != new_counts:
         raise ValueError("XLSX schema, row preservation, or foreign keys failed")
 
 
@@ -124,7 +124,7 @@ def main():
         print("B62_WEB_XLSX_FOREIGN_KEYS=PASS")
     elif action == "apply":
         if len(sys.argv) != 4 or sys.argv[3] != "029":
-            raise ValueError("071 rebuild requires exact 029 schema")
+            raise ValueError("081 rebuild requires exact 029 schema")
         reference_schemas()
         path.write_text(json.dumps({"sql": source()[2]}), encoding="utf-8")
     elif action == "check-apply":

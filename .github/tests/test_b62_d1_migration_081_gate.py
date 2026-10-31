@@ -1,4 +1,4 @@
-"""071 source-only release gate: exact schemas, two counts, unchanged receipts."""
+"""081 source-only release gate: exact schemas, two counts, unchanged receipts."""
 import copy
 import importlib.util
 import json
@@ -10,9 +10,9 @@ import unittest
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-SCRIPT = ROOT / ".github/scripts/b62_d1_migration_071_schema.py"
-WORKFLOW = ROOT / ".github/workflows/b62-d1-migration-071-gate.yml"
-spec = importlib.util.spec_from_file_location("migration_071", SCRIPT)
+SCRIPT = ROOT / ".github/scripts/b62_d1_migration_081_schema.py"
+WORKFLOW = ROOT / ".github/workflows/b62-d1-migration-081-gate.yml"
+spec = importlib.util.spec_from_file_location("migration_081", SCRIPT)
 module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(module)
 
@@ -44,7 +44,7 @@ def seed(db):
     return row, receipt
 
 
-class Gate071Tests(unittest.TestCase):
+class Gate081Tests(unittest.TestCase):
     def setUp(self):
         self.db = database()
         self.addCleanup(self.db.close)
@@ -55,7 +55,7 @@ class Gate071Tests(unittest.TestCase):
     def test_reference_old_and_new_classify_both_tables(self):
         self.assertEqual(module.classify(payload(self.db)), ("029", dict.fromkeys(module.TABLES, 0)))
         self.migrate()
-        self.assertEqual(module.classify(payload(self.db)), ("071", dict.fromkeys(module.TABLES, 0)))
+        self.assertEqual(module.classify(payload(self.db)), ("081", dict.fromkeys(module.TABLES, 0)))
 
     def test_transaction_keeps_exact_rows_grants_indexes_and_foreign_keys(self):
         row, receipt = seed(self.db)
@@ -89,7 +89,7 @@ class Gate071Tests(unittest.TestCase):
                 row["sql"] = row["sql"].replace("1048576", "2097152")
         self.assertEqual(module.classify(value)[0], "DRIFT")
 
-    def test_old_ten_mib_071_is_drift_against_owner_one_gib(self):
+    def test_old_ten_mib_081_is_drift_against_owner_one_gib(self):
         self.db.executescript(module.source()[2].replace("1073741824", "10485760"))
         self.assertEqual(module.classify(payload(self.db))[0], "DRIFT")
 
@@ -148,7 +148,7 @@ class Gate071Tests(unittest.TestCase):
                 module.verify_preservation(before, modified)
         with self.assertRaises(ValueError):
             module.verify_preservation(before, before)
-        module.verify_preservation(after, after)  # Already 071 is a verified no-op.
+        module.verify_preservation(after, after)  # Already 081 is a verified no-op.
 
     def test_partial_apply_response_is_not_success(self):
         for value in ({}, {"success": True, "result": []},
@@ -164,22 +164,22 @@ class Gate071Tests(unittest.TestCase):
             self.assertEqual(json.loads(path.read_text())["sql"], module.QUERY)
             subprocess.run([sys.executable, str(SCRIPT), "apply", str(path), "029"], check=True, capture_output=True)
             self.assertEqual(json.loads(path.read_text())["sql"], module.source()[2])
-            result = subprocess.run([sys.executable, str(SCRIPT), "apply", str(path), "071"], capture_output=True)
+            result = subprocess.run([sys.executable, str(SCRIPT), "apply", str(path), "081"], capture_output=True)
             self.assertNotEqual(result.returncode, 0)
 
     def test_workflow_exact_main_confirmation_and_two_count_guards(self):
         text = WORKFLOW.read_text()
-        for required in ("repository_preflight", "- readonly", "apply_migration_071",
-                         "environment: production", "APPLY_B62_WEB_XLSX_071_FROM_EXACT_MAIN",
-                         "PADIEM_CHAT_DB", "029|071", "env.STATE != '071'",
+        for required in ("repository_preflight", "- readonly", "apply_migration_081",
+                         "environment: production", "APPLY_B62_WEB_XLSX_081_FROM_EXACT_MAIN",
+                         "PADIEM_CHAT_DB", "029|081", "env.STATE != '081'",
                          'test "${POST_SELECTION_COUNT}" = "${BEFORE_SELECTION_COUNT}"',
                          'test "${POST_RECEIPT_COUNT}" = "${BEFORE_RECEIPT_COUNT}"',
                          "verify-preservation", "032_claw_web_xlsx_quote_edit_receipts.sql",
-                         "071_claw_web_xlsx_selection_limit.sql"):
+                         "081_claw_web_xlsx_selection_limit.sql"):
             self.assertIn(required, text)
         self.assertGreaterEqual(text.count('test "$(git rev-parse origin/main)" = "${TARGET_SHA}"'), 4)
         self.assertIn("github.event_name == 'workflow_dispatch' && inputs.mode != 'repository_preflight'", text)
-        self.assertIn("github.event_name == 'workflow_dispatch' && inputs.mode == 'apply_migration_071'", text)
+        self.assertIn("github.event_name == 'workflow_dispatch' && inputs.mode == 'apply_migration_081'", text)
         self.assertNotIn("curl --verbose", text)
         self.assertNotIn("set -x", text)
 
