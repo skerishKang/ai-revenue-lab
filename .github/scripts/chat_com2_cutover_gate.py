@@ -1,24 +1,28 @@
 #!/usr/bin/env python3
 """Manual Chat front gate. No network or mutation happens at import time.
 
-Only switch deploys; switch/rollback each use one Attach Worker Domain PUT.
-No tunnel edits, secret creation, D1 operations, unfreeze or automatic rollback.
+Only switch deploys. Switch and rollback detach, attach and verify the domain.
+A failed attachment is restored to the original Worker when absence is verified.
 Responses and child stdout/stderr are private inputs, never log messages.
 """
 from __future__ import annotations
 
-import io
 import json
-import math
 import os
 import re
 import subprocess
+import sys
 import tomllib
 import urllib.error
 import urllib.request
-import zipfile
-from datetime import datetime, timezone
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from chat_domain_transfer import transfer, TransferError, read_owner
+from chat_rehearsal_evidence import (
+    EvidenceError as Refused, REHEARSAL_STAGES, https_url, identity,
+    parse_json, require, validate_rehearsal, verify_summary,
+)
 
 ROOT = Path(__file__).resolve().parents[2]
 HOST = "chat.padiem.net"
@@ -33,19 +37,6 @@ FROZEN_PATHS = (
     "/auth/google/callback", "/auth/lovetree/start",
     "/api/connectors/github/start", "/api/connectors/github/callback",
 )
-REHEARSAL_STAGES = (
-    "preflight", "stop_before_window", "freeze_on", "freeze_probe",
-    "snapshot_pair", "reflect", "parity", "object_reference",
-)
-
-
-class Refused(Exception):
-    """Only fixed public-safe reason codes may reach the log."""
-
-
-def require(ok, code):
-    if not ok:
-        raise Refused(code)
 
 
 def validate_dispatch(env):
@@ -56,6 +47,8 @@ def validate_dispatch(env):
     require(sha == env.get("GITHUB_SHA"), "dispatch_sha_mismatch")
     require(mode in MODES, "mode_invalid")
     require(env.get("CONFIRMATION") == f"{mode.upper()}_CHAT_COM2_{sha}", "confirmation_mismatch")
+    if mode != "rollback":
+        identity(sha, env.get("TARGET_GENERATION_ID", ""))
 
 
 class NoRedirect(urllib.request.HTTPRedirectHandler):
@@ -75,13 +68,6 @@ def request(url, *, method="GET", headers=None, data=None):
         raise Refused("transport_failed") from None
 
 
-def parse_json(raw):
-    try:
-        return json.loads(raw)
-    except (ValueError, TypeError):
-        raise Refused("response_json_invalid") from None
-
-
 def run_command(argv, *, env=None):
     # Never let Wrangler/Git error text echo credentials, headers or bindings.
     result = subprocess.run(argv, cwd=ROOT, env=env, capture_output=True, text=True, check=False)
@@ -89,41 +75,12 @@ def run_command(argv, *, env=None):
     return result.stdout.strip()
 
 
-def validate_rehearsal(report, *, maximum_age_hours=None):
-    # Consume chat_cutover_rehearsal.py --json unchanged. A green dry-run or
-    # synthetic localhost report is not evidence for the staging rehearsal.
-    require(report.get("target") == "https://chat-com2-staging.padiem.net", "rehearsal_target")
-    require(report.get("dry_run") is False and report.get("failed_stage") is None,
-            "rehearsal_not_pass")
-    stages = report.get("stages", [])
-    require([s.get("stage") for s in stages] == list(REHEARSAL_STAGES), "rehearsal_order")
-    for stage in stages:
-        require(stage.get("passed") is True and stage.get("started_utc") and stage.get("ended_utc"),
-                "rehearsal_stage_not_executed")
-        if maximum_age_hours is not None:
-            # A new upload/run timestamp must not refresh an old PASS report.
-            try:
-                start = datetime.fromisoformat(stage["started_utc"].replace("Z", "+00:00"))
-                end = datetime.fromisoformat(stage["ended_utc"].replace("Z", "+00:00"))
-                now = datetime.now(timezone.utc)
-                fresh = start <= end <= now and (now - start).total_seconds() / 3600 <= maximum_age_hours
-            except (ValueError, TypeError):
-                raise Refused("rehearsal_timestamp_invalid") from None
-            require(fresh, "rehearsal_report_stale")
-        if stage.get("skipped"):
-            # Existing --apply-pending puts the pre-migration parity verdict
-            # in reflect. It must not silently turn any other skip into PASS.
-            require(stage["stage"] == "parity" and
-                    stage.get("detail") == "post_apply_comparison_skipped: reflect_pre_apply_match is the evidence" and
-                    stages[5].get("detail") == "exit=0 expect=STAGING_DB_FROM_GENERATION=READY+CHAT_COPY_PARITY=MATCH+STAGING_DB_PENDING_APPLIED",
-                    "rehearsal_skipped")
-
-
 class Gate:
     def __init__(self, env=None):
         self.env = dict(os.environ if env is None else env)
         self.sha = self.env.get("TARGET_SHA", "")
         self.mode = self.env.get("MODE", "")
+        self.generation = self.env.get("TARGET_GENERATION_ID", "")
 
     def exact_main(self):
         require(run_command(["git", "rev-parse", "HEAD"]) == self.sha, "checkout_sha_mismatch")
@@ -137,6 +94,8 @@ class Gate:
                                  method=method, headers={"Authorization": "Bearer " + token, "Content-Type": "application/json"},
                                  data=None if payload is None else json.dumps(payload).encode())
         require(200 <= status < 300, "cloudflare_http_failed")
+        if method == "DELETE" and status == 200 and not raw:
+            return None
         result = parse_json(raw)
         require(result.get("success") is True, "cloudflare_api_failed")
         return result["result"]
@@ -189,42 +148,18 @@ class Gate:
         return run
 
     def rehearsal(self):
-        workflow = self.env.get("REHEARSAL_WORKFLOW", "")
-        require(bool(re.fullmatch(r"[a-zA-Z0-9_-]+\.ya?ml", workflow)) and workflow != WORKFLOW,
-                "approved_rehearsal_workflow_missing")
-        run_id = self.env.get("REHEARSAL_RUN_ID", "")
-        run = self.source_run(run_id, workflow)
-        try:
-            maximum = float(self.env.get("REHEARSAL_MAX_AGE_HOURS", ""))
-            age = (datetime.now(timezone.utc) - datetime.fromisoformat(run["updated_at"].replace("Z", "+00:00"))).total_seconds() / 3600
-        except (ValueError, KeyError, TypeError):
-            raise Refused("rehearsal_freshness_unconfigured") from None
-        require(math.isfinite(maximum) and maximum > 0 and 0 <= age <= maximum, "rehearsal_stale")
-        listing = self.github(f"/actions/runs/{run_id}/artifacts?per_page=100")
-        require(listing.get("total_count") == len(listing.get("artifacts", [])), "artifact_listing_incomplete")
-        artifacts = [a for a in listing.get("artifacts", []) if a.get("name") == "chat-cutover-rehearsal"]
-        require(len(artifacts) == 1 and artifacts[0].get("expired") is False, "rehearsal_artifact_missing")
-        artifact_id = artifacts[0]["id"]
-        require(isinstance(artifact_id, int) and artifact_id > 0, "artifact_id_invalid")
-        # GitHub's archive API redirects to signed storage. Follow that URL
-        # manually WITHOUT the GitHub token; never print the Location header.
-        url = f"https://api.github.com/repos/skerishKang/ai-revenue-lab/actions/artifacts/{artifact_id}/zip"
-        status, headers, raw = request(url, headers={"Authorization": "Bearer " + self.env["GH_TOKEN"]})
-        if status == 302:
-            location = next((v for k, v in headers.items() if k.lower() == "location"), "")
-            require(location.startswith("https://"), "artifact_redirect_invalid")
-            status, _, raw = request(location)
-        require(status == 200, "artifact_download_failed")
-        try:
-            with zipfile.ZipFile(io.BytesIO(raw)) as archive:
-                require(archive.namelist().count("rehearsal.json") == 1, "rehearsal_json_missing")
-                report = parse_json(archive.read("rehearsal.json"))
-        except (zipfile.BadZipFile, KeyError):
-            raise Refused("rehearsal_archive_invalid") from None
-        validate_rehearsal(report, maximum_age_hours=maximum)
+        identity(self.sha, self.generation)
+        url = https_url(self.env.get("REHEARSAL_EVIDENCE_URL", ""))
+        public_pem = self.env.get("REHEARSAL_PUBLIC_KEY_PEM", "").encode()
+        require(bool(public_pem), "evidence_public_key_missing")
+        status, _, raw = request(url, headers={"Cache-Control": "no-cache"})
+        require(status == 200, "evidence_download_failed")
+        verify_summary(parse_json(raw), public_pem, expected_sha=self.sha,
+                       expected_generation=self.generation)
+        print("REHEARSAL_EVIDENCE=PASS signature=Ed25519 max_age_hours=24")
 
     def probe(self, origin, path, expected, *, method="GET", maintenance=False):
-        status, response_headers, raw = request(origin + path, method=method)
+        status, response_headers, raw = request(origin + path, method=method, headers={"User-Agent": "padiem-boot-recovery/1.0"})
         require(status == expected, "probe_status_mismatch")
         lower = {key.lower(): value for key, value in response_headers.items()}
         require("x-padiem-front" not in lower, "front_fallback_detected")
@@ -285,7 +220,7 @@ class Gate:
 
     def prior_readonly(self):
         run = self.source_run(self.env.get("READONLY_RUN_ID", ""), WORKFLOW)
-        require(run.get("display_title") == f"chat-com2/readonly/{self.sha}", "readonly_run_required")
+        require(run.get("display_title") == f"chat-com2/readonly/{self.sha}/{self.generation}", "readonly_run_required")
 
     def deploy(self):
         require(self.domain()["service"] == LEGACY, "switch_source_not_legacy")
@@ -298,21 +233,30 @@ class Gate:
         require(self.domain()["service"] == LEGACY, "deployment_changed_domain")
 
     def move_domain(self, target):
-        require(target in (FRONT, LEGACY), "domain_target_invalid")
-        self.exact_main()
-        before = self.domain()
-        if before["service"] == target:
-            require(target == LEGACY, "switch_source_not_legacy")
-            print("DOMAIN_ALREADY_AT_TARGET=yes")
-            return
-        # Exactly one documented Attach Worker Domain call. A conflict/timeout
-        # is a stop, NEVER a DELETE + recreate, retry or automatic rollback.
-        self.cf("/workers/domains", method="PUT", payload={
-            "hostname": HOST, "service": target, "zone_id": before["zone_id"],
-            "enabled": True, "previews_enabled": False,
-        })
-        after = self.domain()
-        require(after["service"] == target and after["zone_id"] == before["zone_id"], "domain_move_unverified")
+        def read_rows():
+            return self.cf("/workers/domains?hostname=" + HOST)
+
+        def mutate(method, path, payload):
+            return self.cf(path, method=method, payload=payload)
+
+        def report(stage, owner):
+            print("DOMAIN_OWNER_STATE=" + owner + " STAGE=" + stage)
+
+        try:
+            require(target in (FRONT, LEGACY), "domain_target_invalid")
+            self.exact_main()
+            before = self.domain()
+            if before["service"] == target:
+                require(target == LEGACY, "switch_source_not_legacy")
+                print("DOMAIN_ALREADY_AT_TARGET=yes")
+                return
+            transfer(host=HOST, before=before, target=target, read_rows=read_rows,
+                     mutate=mutate, report=report)
+        except TransferError as error:
+            raise Refused(error.stage) from None
+        except Exception:
+            report("preflight_failed", read_owner(read_rows, HOST))
+            raise
 
     def execute(self):
         validate_dispatch(self.env)
@@ -334,6 +278,7 @@ class Gate:
                 self.deploy()
                 # Recheck the write window after deployment, before the PUT.
                 self.readonly()
+                self.rehearsal()  # Evidence must still be fresh immediately before the PUT.
                 self.move_domain(FRONT)
                 self.probe(PUBLIC, "/health", 200)
                 # Gate sends no proof here: only the deployed front can sign.
@@ -346,8 +291,9 @@ class Gate:
 
 
 def main():
+    instance = Gate()
     try:
-        Gate().execute()
+        instance.execute()
         return 0
     except Refused as error:
         print("CHAT_COM2_GATE=REFUSED reason=" + str(error))
@@ -355,6 +301,8 @@ def main():
         # Never stringify exceptions containing requests, signed URLs, JSON,
         # subprocess stdout/stderr, tokens or binding values.
         print("CHAT_COM2_GATE=REFUSED reason=unexpected_failure")
+    owner = read_owner(lambda: instance.cf("/workers/domains?hostname=" + HOST), HOST)
+    print("DOMAIN_OWNER_STATE=" + owner + " STAGE=final")
     if os.environ.get("MODE") == "switch":
         print("ROLLBACK_GUIDANCE=wait_for_run_end_then_rollback_mode_keep_write_freeze")
     return 2

@@ -167,7 +167,11 @@ def _json_ok(payload: Any, expect: str) -> bool:
 
 def _read_json(url: str, timeout: float = 5.0) -> tuple[bool, str, Any]:
     try:
-        with urllib.request.urlopen(url, timeout=timeout) as response:
+        # A named user agent: the padiem.net Cloudflare zone's managed rules
+        # answer 403 to the default Python-urllib UA, which would make every
+        # public tunnel probe a false boot failure.
+        request = urllib.request.Request(url, headers={"user-agent": "padiem-boot-recovery/1.0"})
+        with urllib.request.urlopen(request, timeout=timeout) as response:
             if response.status != 200:
                 return False, f"http_{response.status}", None
             raw = response.read(65537)

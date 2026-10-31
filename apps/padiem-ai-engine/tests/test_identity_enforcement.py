@@ -927,3 +927,93 @@ def test_retired_caller_guard_is_a_single_closed_request_time_constant() -> None
     guard = auth_body.index("if caller_id in RETIRED_CALLER_IDS:")
     assert auth_body.index("overlay_caller.caller_id") < guard
     assert guard < auth_body.index("registry=registry,")
+
+
+
+# The second overlay cannot shadow existing callers.
+_B61_TEST_CREDENTIAL = "X" * 48
+
+
+def _b61_env(caller_id="storymemory-b61-20261031", allowed_app_ids=None):
+    env = BaseAndOverlayEnv()
+    env.PADIEM_ENGINE_CALLER_REGISTRY_V1_OVERLAY_B61 = _overlay_payload(
+        caller_id=caller_id,
+        credential=_B61_TEST_CREDENTIAL,
+        allowed_app_ids=["b61"] if allowed_app_ids is None else allowed_app_ids,
+    )
+    return env
+
+
+def test_second_overlay_absent_preserves_first_overlay_and_base():
+    for caller_id, credential, app_id in (
+        ("caller-a", SECRET_A, "app-a"),
+        ("overlay-caller", SECRET_OVERLAY, "overlay-app"),
+    ):
+        authenticate_request(env=BaseAndOverlayEnv(), headers={
+            CALLER_ID_HEADER: caller_id, CALLER_CREDENTIAL_HEADER: credential,
+        }, requested_app_id=app_id)
+
+
+def test_second_overlay_and_existing_callers_authenticate():
+    env = _b61_env()
+    for caller_id, credential, app_id in (
+        ("storymemory-b61-20261031", _B61_TEST_CREDENTIAL, "b61"),
+        ("caller-a", SECRET_A, "app-a"),
+        ("overlay-caller", SECRET_OVERLAY, "overlay-app"),
+    ):
+        authenticate_request(env=env, headers={
+            CALLER_ID_HEADER: caller_id, CALLER_CREDENTIAL_HEADER: credential,
+        }, requested_app_id=app_id)
+
+
+@pytest.mark.parametrize("caller_id", ["caller-a", "overlay-caller"])
+def test_second_overlay_duplicate_fails_closed(caller_id):
+    with pytest.raises(ServiceIdentityError) as exc:
+        build_registry_from_env(_b61_env(caller_id))
+    assert exc.value.code == "duplicate_service_caller"
+
+
+def test_second_overlay_rejects_unauthorized_app():
+    with pytest.raises(ServiceIdentityError) as exc:
+        authenticate_request(env=_b61_env(), headers={
+            CALLER_ID_HEADER: "storymemory-b61-20261031",
+            CALLER_CREDENTIAL_HEADER: _B61_TEST_CREDENTIAL,
+        }, requested_app_id="other-app")
+    assert exc.value.code == "service_app_not_authorized"
+
+
+@pytest.mark.parametrize("raw", ["", " ", "not-json", 42])
+def test_second_overlay_invalid_fails_closed(raw):
+    env = BaseAndOverlayEnv()
+    env.PADIEM_ENGINE_CALLER_REGISTRY_V1_OVERLAY_B61 = raw
+    with pytest.raises(ServiceIdentityError) as exc:
+        build_registry_from_env(env)
+    assert exc.value.code == "invalid_caller_registry"
+
+
+def test_second_overlay_requires_v1_base():
+    class Env:
+        PADIEM_ENGINE_CALLER_REGISTRY_V1_OVERLAY_B61 = _overlay_payload()
+
+    with pytest.raises(ServiceIdentityError) as exc:
+        build_registry_from_env(Env())
+    assert exc.value.code == "invalid_caller_registry"
+
+
+
+def test_second_overlay_works_without_first_overlay():
+    env = _b61_env()
+    env.PADIEM_ENGINE_CALLER_REGISTRY_V1_OVERLAY = None
+    authenticate_request(env=env, headers={
+        CALLER_ID_HEADER: "storymemory-b61-20261031",
+        CALLER_CREDENTIAL_HEADER: _B61_TEST_CREDENTIAL,
+    }, requested_app_id="b61")
+
+
+def test_second_overlay_rejects_wrong_credential():
+    with pytest.raises(ServiceIdentityError) as exc:
+        authenticate_request(env=_b61_env(), headers={
+            CALLER_ID_HEADER: "storymemory-b61-20261031",
+            CALLER_CREDENTIAL_HEADER: "Y" * 48,
+        }, requested_app_id="b61")
+    assert exc.value.code == "service_authentication_failed"

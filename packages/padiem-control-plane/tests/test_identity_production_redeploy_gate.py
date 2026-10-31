@@ -318,8 +318,8 @@ def test_identity_private_ingress_is_reasserted_after_deploy():
     source = _gate()
     assert "IDENTITY_PUBLIC_INGRESS_UNCHANGED=PASS" in source
     assert "PUBLIC_CUSTOM_DOMAIN=NO" in source
-    # workers.dev and preview URLs must stay disabled on the identity Worker.
-    assert ".result.enabled == false and .result.previews_enabled == false" in source
+    # Identity workers.dev is enabled while preview URLs stay disabled.
+    assert ".result.enabled == true and .result.previews_enabled == false" in source
 
 
 # --------------------------------------------------------------------------
@@ -368,7 +368,9 @@ def test_identity_config_keeps_private_ingress_and_required_secrets():
 
     config = json.loads(re.sub(r"//.*", "", IDENTITY_CONFIG.read_text(encoding="utf-8")))
     assert config["name"] == IDENTITY_WORKER_NAME
-    assert config["workers_dev"] is False
+    assert config["workers_dev"] is True
+    assert config["env"]["staging"]["workers_dev"] is True
+    assert config["env"]["staging"]["preview_urls"] is False
     assert config["preview_urls"] is False
     assert set(config["secrets"]["required"]) == {
         "CONTROL_PLANE_IDENTITY_LOOKUP_KEY",

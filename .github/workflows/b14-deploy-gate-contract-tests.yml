@@ -14,6 +14,8 @@ name: B14 Deploy Gate Contract Tests
 on:
   pull_request:
     paths:
+      - ".github/workflows/**"
+      - ".github/tests/test_production_wrangler_keep_vars.py"
       - ".github/workflows/b14-production-deploy-gate.yml"
       - ".github/workflows/b14-deploy-gate-contract-tests.yml"
       - ".github/tests/test_b14_production_deploy_gate.py"
@@ -55,6 +57,7 @@ jobs:
       - name: Run gate contract tests
         run: |
           python -m pytest -q \
+            .github/tests/test_production_wrangler_keep_vars.py \
             .github/tests/test_b14_production_deploy_gate.py \
             .github/tests/test_b14_real_model_call_smoke.py \
             .github/tests/test_cloudflare_served_version_cli.py

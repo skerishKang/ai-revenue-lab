@@ -447,7 +447,9 @@ def test_worker_config_requires_private_identity_service_without_public_route() 
         )
     )
 
-    assert config["workers_dev"] is False
+    assert config["workers_dev"] is True
+    assert config["env"]["staging"]["workers_dev"] is True
+    assert config["env"]["staging"]["preview_urls"] is False
     assert config["preview_urls"] is False
     assert "routes" not in config
     assert config["services"] == [

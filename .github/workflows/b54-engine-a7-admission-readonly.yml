@@ -77,15 +77,20 @@ jobs:
         run: |
           set -euo pipefail
           python - <<'PY'
+          import json
           from pathlib import Path
 
-          cp_config = Path(
+          cp_config = json.loads(Path(
               "packages/padiem-control-plane/wrangler.engine-admission-authority.jsonc"
-          ).read_text(encoding="utf-8")
-          if '"name": "padiem-control-plane-engine-admission"' not in cp_config:
+          ).read_text(encoding="utf-8"))
+          if cp_config.get("name") != "padiem-control-plane-engine-admission":
               raise SystemExit("reviewed Control Plane admission Worker name drift")
-          if '"workers_dev": false' not in cp_config or '"preview_urls": false' not in cp_config:
-              raise SystemExit("private Control Plane admission Worker exposure drift")
+          if cp_config.get("workers_dev") is not True or cp_config.get("preview_urls") is not False:
+              raise SystemExit("Control Plane admission Worker exposure drift")
+          if cp_config["env"]["staging"].get("workers_dev") is not True or cp_config["env"]["staging"].get("preview_urls") is not False:
+              raise SystemExit("staging admission Worker exposure drift")
+          if "route" in cp_config or "routes" in cp_config:
+              raise SystemExit("unexpected Control Plane admission Worker route")
 
           engine_config = Path(
               "apps/padiem-ai-engine/wrangler.toml"
