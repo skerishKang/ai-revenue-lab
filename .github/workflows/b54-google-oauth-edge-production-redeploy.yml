@@ -79,7 +79,7 @@ jobs:
               "GOOGLE_PROVIDER_CALLS=0",
           ):
               assert marker in workflow, marker
-          strict_deploy = "pywrangler " + "deploy --strict"
+          strict_deploy = "pywrangler " + "deploy --keep-vars --strict"
           assert workflow.count(strict_deploy) == 1
           forbidden = (
               "/workers/" + "routes",

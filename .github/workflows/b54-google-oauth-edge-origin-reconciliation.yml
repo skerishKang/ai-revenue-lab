@@ -102,7 +102,7 @@ jobs:
           for marker in forbidden_refs:
               assert marker not in workflow, marker
 
-          strict_deploy = "pywrangler " + "deploy --strict"
+          strict_deploy = "pywrangler " + "deploy --keep-vars --strict"
           assert workflow.count(strict_deploy) == 1
 
           pull_paths = workflow.split("pull_request:", 1)[1].split("workflow_dispatch:", 1)[0]
