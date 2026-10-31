@@ -14,6 +14,7 @@ transaction, not a per-statement autocommit sequence.
 from __future__ import annotations
 
 import sqlite3
+import threading
 from typing import Any, Callable, TypeVar
 
 __all__ = ["SqLiteDurableStorage"]
@@ -31,15 +32,17 @@ class _Cursor:
 
 
 class _Sql:
-    def __init__(self, connection: sqlite3.Connection):
+    def __init__(self, connection: sqlite3.Connection, lock):
         self._connection = connection
+        self._lock = lock
 
     def exec(self, statement: str, *args: Any) -> _Cursor:
-        cursor = self._connection.execute(statement, args)
-        if cursor.description is not None:
-            return _Cursor([dict(row) for row in cursor.fetchall()], 0)
-        written = cursor.rowcount
-        return _Cursor([], written if isinstance(written, int) and written > 0 else 0)
+        with self._lock:
+            cursor = self._connection.execute(statement, args)
+            if cursor.description is not None:
+                return _Cursor([dict(row) for row in cursor.fetchall()], 0)
+            written = cursor.rowcount
+            return _Cursor([], written if isinstance(written, int) and written > 0 else 0)
 
 
 class SqLiteDurableStorage:
@@ -51,7 +54,8 @@ class SqLiteDurableStorage:
         if connection.row_factory is not sqlite3.Row:
             connection.row_factory = sqlite3.Row
         self._connection = connection
-        self.sql = _Sql(connection)
+        self._lock = threading.RLock()
+        self.sql = _Sql(connection, self._lock)
 
     @classmethod
     def open(cls, path: str, *, busy_timeout_ms: int = 5000) -> "SqLiteDurableStorage":
@@ -64,14 +68,17 @@ class SqLiteDurableStorage:
         return cls(connection)
 
     def transactionSync(self, operation: Callable[[], _T]) -> _T:
-        self._connection.execute("BEGIN IMMEDIATE")
-        try:
-            result = operation()
-        except BaseException:
-            self._connection.execute("ROLLBACK")
-            raise
-        self._connection.execute("COMMIT")
-        return result
+        with self._lock:
+            self._connection.execute("BEGIN IMMEDIATE")
+            try:
+                result = operation()
+                self._connection.execute("COMMIT")
+            except BaseException:
+                if self._connection.in_transaction:
+                    self._connection.execute("ROLLBACK")
+                raise
+            return result
 
     def close(self) -> None:
-        self._connection.close()
+        with self._lock:
+            self._connection.close()
