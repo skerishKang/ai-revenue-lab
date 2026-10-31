@@ -13,7 +13,7 @@
 ## 미확인 항목
 
 - 전체 SQL 저장소의 HTTP 및 비동기 진입점 역추적, 일부 GET 부수 호출.
-- WSS의 Broker DO 내부 저장 키와 각 RPC 쓰기, queue 소비·외부 producer 및 정지 증거.
+- WSS의 Broker DO 페어링·자격증명 추가 저장 대상과 전체 RPC 쓰기, queue 소비·외부 producer 및 정지 증거.
 - 스트리밍 완료·취소 후 호출의 모든 저장 대상과 대기 중 요청 드레인 보장.
 - 정지 창 도중의 일시 쓰기 감지: 두 스냅숏만으로 증명 불가능.
 
@@ -65,3 +65,14 @@ Google callback의 Control Plane 및 B54 세션은 외부 identity authority 호
 | scheduled automation terminal push | `notify_terminal_run` → `deliver_inbox_push` → `unregister` | `claw_push_subscription` 삭제(404/410 시) | cron 진행 중 외부 push 응답 후 await | `app/claw_automation_background_execution.py:569`-579, `app/claw_automation_push_notification.py:122`, `app/claw_push_subscriptions.py:339`-391, `:273`-288 |
 
 WSS의 Broker는 기존 Durable Object 권위이며 COM2 새 skeleton은 동일 pairing/runtime을 SQLite storage에 감싼다(`apps/padiem-broker/service.py:1`-6, `:27`-30, `:131`-142). 이것은 WSS RPC별 저장 키의 완전한 목록은 아니다. 스트림은 완료 callback을 await하고 종료 시 producer를 취소·await한다(`app/claw_live_events.py:263`, `:277`-286). callback의 모든 대상과 취소 경합은 추가 확인이 필요하다.
+
+
+## WSS Broker gateway 저장 대상 추가 추적
+
+| 진입점 | 저장소 함수 | 대상 | 실행 | 근거 |
+|---|---|---|---|---|
+| WSS `/api/claw/connector/gateway/session` → Broker gateway `begin` | `DurableBrokerGatewayBootstrap.begin` | `canonical_local_agent_gateway_bootstrap` 만료 행 삭제·행 생성 | WSS 프레임 처리 중 RPC, 조건부 | `apps/padiem-chat/app/connector_gateway_websocket_session.py:257`; `packages/padiem-control-plane/canonical_broker_pairing_rpc.py:238`-243; `canonical_broker_gateway_bootstrap.py:165`, `:184`, `:194` |
+| 같은 WSS → Broker gateway `finish` | `DurableBrokerGatewayBootstrap.finish` | `canonical_local_agent_gateway_bootstrap` 상태 업데이트 | WSS 프레임 처리 중 RPC | `connector_gateway_websocket_session.py:285`; `canonical_broker_pairing_rpc.py:244`-249; `canonical_broker_gateway_bootstrap.py:214`, `:240`, `:246` |
+| 같은 WSS → Broker gateway `authorize` | `DurableBrokerGatewayBootstrap.authorize_action` | `canonical_local_agent_gateway_bootstrap` 상태 업데이트 | WSS 프레임 처리 중 RPC | `connector_gateway_websocket_session.py:301`; `canonical_broker_pairing_rpc.py:250` 이하; `canonical_broker_gateway_bootstrap.py:264`, `:316`, `:322` |
+
+위 표는 Broker 저장 표이며 Chat D1 다이제스트 범위가 아니다. WSS에서 이어지는 pairing redeem 및 identity authority의 모든 저장 대상까지 완료한 것은 아니다. 장시간 연결을 막는 것과 기존 연결이 종료될 때까지 드레인하는 것은 별개다.
