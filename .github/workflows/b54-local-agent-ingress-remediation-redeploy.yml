@@ -295,7 +295,7 @@ jobs:
           printf 'LOCAL_AGENT_BROKER_PEPPER=%s\n' "${BROKER_PEPPER}" > "${secret_file}"
           chmod 600 "${secret_file}"
           cp "${STATE_CONFIG}" "${temp_config}"
-          uvx --from 'workers-py>=1.17.1,<2' pywrangler deploy --secrets-file "${secret_file}" --strict --tag "git-${TARGET_SHA}" --message "B54 ingress remediation state ${TARGET_SHA}"
+          uvx --from 'workers-py>=1.17.1,<2' pywrangler deploy --keep-vars --secrets-file "${secret_file}" --strict --tag "git-${TARGET_SHA}" --message "B54 ingress remediation state ${TARGET_SHA}"
           rm -f "${temp_config}"
           echo "STATE_FIRST_REDEPLOY=SUCCESS"
           echo "DURABLE_OBJECT_DELETE=NO"
@@ -346,7 +346,7 @@ jobs:
           trap 'rm -f "${temp_config}"' EXIT
           test ! -e "${temp_config}"
           cp "${EDGE_CONFIG}" "${temp_config}"
-          uvx --from 'workers-py>=1.17.1,<2' pywrangler deploy --strict --tag "git-${TARGET_SHA}" --message "B54 ingress remediation edge ${TARGET_SHA}"
+          uvx --from 'workers-py>=1.17.1,<2' pywrangler deploy --keep-vars --strict --tag "git-${TARGET_SHA}" --message "B54 ingress remediation edge ${TARGET_SHA}"
           rm -f "${temp_config}"
           echo "EDGE_SECOND_REDEPLOY=SUCCESS"
 

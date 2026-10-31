@@ -87,19 +87,7 @@ All agents (Web CTO, implementation workers and validators) must report to the P
 - **Respect delegated CTO execution**: proceed with authorized ordinary source reviews/merges instead of reflexively asking the owner again. Ask for approval only at an actual reserved decision or Production-mutation boundary; identify the **specific operation** needing approval.
 - **Match detail to the question**: a short question gets a short answer. A detailed audit request gets an evidence-backed report. Avoid inflated headings, repeated tables, ceremonial phrasing and multiple summaries of the same result.
 
-Examples of preferred owner-facing Korean:
-
-```text
-Q: 다음은 뭘 해야 해?
-A: 다음은 Engine에 Owner D1을 연결하고 실제 운영 상태를 검증하는 것입니다.
-
-Q: 롤백 요청 수정은 끝났어?
-A: 완료했습니다. PR #3862 병합, 관련 CI 통과. 다음 작업은 Engine 운영 연결입니다.
-
-Q: 지금 운영 연결이 됐어?
-A: 아직 연결하지 않았습니다. 소스 검증과 배포 절차까지 완료했습니다.
-   운영 연결은 별도 승인 후 실행합니다.
-```
+[Owner communication examples](docs/agents/OWNER_COMMUNICATION_EXAMPLES.md).
 
 The writing style must **increase clarity, never manufacture certainty**. If a critical safety limitation changes the next action, report it as a factual blocking condition, not as a habitual `다만` afterthought.
 
@@ -109,23 +97,7 @@ Before each consequential implementation change, first inspect the current sourc
 
 ## Search / adopt before build
 
-For substantial new capabilities, workers and the Web CTO follow the canonical technology-adoption gate before custom implementation:
-
-```text
-SEARCH
-→ REUSE_INTERNAL
-→ BUY / ADOPT / ADAPT
-→ SIDECAR / LOCAL_SERVICE
-→ BUILD_FROM_SCRATCH
-```
-
-Open-source and commercial technology are both valid. Paid APIs, SDKs, commercial licenses and self-hosted products may be preferable to weeks of custom development.
-
-A custom commodity implementation requires an explicit reason. Historical `SECOND_*` locks mean no competing **Padiem product authority**; they do not prohibit internal parsers/decoders/native libraries used behind one reviewed adopted-project boundary.
-
-See `docs/operations/TECHNOLOGY_ADOPTION_POLICY.md`.
-
-Technology discovery does not automatically pause an already-approved active task. Continue the bounded accepted scope while scans run in parallel; use new findings for the next slice or a reviewed replacement decision unless CENTRAL explicitly pauses the work.
+For substantial capabilities, follow the canonical technology-adoption gate before custom implementation: SEARCH → REUSE_INTERNAL → BUY / ADOPT / ADAPT → SIDECAR / LOCAL_SERVICE → BUILD_FROM_SCRATCH. Open-source and commercial options are valid; custom commodity implementation requires a reason. Historical `SECOND_*` locks concern competing product authority. Continue approved work while discovery proceeds. See the [full guidance](docs/agents/TECHNOLOGY_ADOPTION_GUIDANCE.md) and `docs/operations/TECHNOLOGY_ADOPTION_POLICY.md`.
 
 ## Roles
 
@@ -168,18 +140,7 @@ A failing asynchronous validator blocks merge of the affected revision, not unre
 
 AI Revenue Lab does **not** require every Business to follow a mandatory UI → UX → backend ceremony.
 
-A work contract selects the smallest evidence stage needed to answer the current product question, for example:
-
-```text
-PRODUCT_FRAMED
-COMPETITIVE_DEMO
-INVESTOR_DEMO
-MVP_VERTICAL_SLICE
-SERVICE_LED_PILOT
-RUNTIME_PILOT
-COMMERCIAL_HARDENING
-OPERATING_PRODUCT
-```
+A work contract selects the smallest evidence stage needed; the [stage list](docs/agents/EVIDENCE_AND_DELIVERY_FLOWS.md) gives examples.
 
 The same stage list and the rule that verdicts of different kinds remain separate are canonical in `docs/operations/AI_DEVELOPMENT_OPERATING_POLICY.md` section 3 and `docs/operations/UI_UX_BACKEND_PHASE_GATES.md`.
 
@@ -189,18 +150,7 @@ A customer handoff or pilot deadline is an operating constraint, not an invitati
 
 The evidenced handoff-blocker set, validation budget, fixed handoff gate, final smoke budget and terminal rule are canonical in `docs/operations/AI_DEVELOPMENT_OPERATING_POLICY.md` section 3A.
 
-Default MVP closeout flow:
-
-```text
-confirmed blocker
-→ minimal fix
-→ focused regression
-→ relevant configured CI
-→ authorized Production deployment
-→ bounded real-account/primary-journey smoke
-→ customer handoff
-→ non-blocking hardening continues after handoff
-```
+See the [MVP closeout flow](docs/agents/EVIDENCE_AND_DELIVERY_FLOWS.md): confirmed blocker through customer handoff.
 
 ## Finish-first execution mode
 
@@ -224,21 +174,7 @@ The fast-development rule means "do not wait on unrelated validation"; it does *
 
 ## Default responsibility flow
 
-```text
-User request / portfolio authority
-→ Web CTO exact work contract
-→ Implementation Worker (local model) implementation
-→ focused self-check + DEV_FAST_GATE
-→ DEV_ACTOR_RELEASED; implementation may continue elsewhere
-→ asynchronous Windows / Ubuntu / browser validators when required
-→ FULL_VALIDATION on the final exact head
-→ Web CTO final review
-→ owner decision when materially required
-→ merge
-→ configured Production deployment and acceptance when authorized
-```
-
-This is a responsibility/evidence flow, not a mandatory product-stage sequence. A stage may be `NOT_REQUIRED` only with a recorded reason.
+The responsibility and evidence sequence runs from the work contract and implementation through validation, CTO review, applicable owner decision, merge, and authorized deployment; see the [full flow](docs/agents/EVIDENCE_AND_DELIVERY_FLOWS.md). This is not a mandatory product-stage sequence. A stage may be `NOT_REQUIRED` only with a recorded reason.
 
 ## Repository-wide test-scope rule
 

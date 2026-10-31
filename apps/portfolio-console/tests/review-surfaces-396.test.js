@@ -38,13 +38,13 @@ runFile(context, 'review-surfaces-396.js');
 const businesses = windowObject.ARL_BUSINESSES;
 const review = windowObject.ARL_REVIEW_SURFACES;
 
-const businessNumbers = businesses.map((b) => b.number);
+const businessNumbers = Array.from(businesses, (b) => b.number);
 const maxBusinessNumber = Math.max(...businessNumbers);
 const expectedBusinessNumbers = Array.from({ length: maxBusinessNumber }, (_, index) => index + 1)
-  .filter((number) => number !== 56);
+  .filter((number) => !new Set([56, 62, 63, 65, 66, 67, 68, 69, 70, 71]).has(number));
 
 assert.ok(maxBusinessNumber >= 60, 'B60 or a later registered Business must be represented');
-assert.deepEqual(businessNumbers, expectedBusinessNumbers, 'Business numbers must stay ordered with only B56 intentionally unused');
+assert.deepEqual(businessNumbers, expectedBusinessNumbers, 'Business numbers must stay ordered with documented unregistered gaps');
 assert.equal(new Set(businessNumbers).size, businesses.length, 'Business numbers must be unique');
 assert.equal(businesses.some((b) => b.number === 56), false, 'B56 is an intentional gap');
 

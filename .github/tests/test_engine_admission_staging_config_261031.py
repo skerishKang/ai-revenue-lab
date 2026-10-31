@@ -23,7 +23,9 @@ def test_the_staging_instance_is_its_own_worker_with_its_own_namespace() -> None
     staging = config["env"]["staging"]
 
     assert config["name"] == "padiem-control-plane-engine-admission"
-    assert config["workers_dev"] is False
+    assert config["workers_dev"] is True
+    assert config["preview_urls"] is False
+    assert staging["preview_urls"] is False
     assert staging["name"] == "padiem-control-plane-engine-admission-staging"
     assert staging["name"] != config["name"]
     # workers.dev only: no zone route may exist on the staging instance.

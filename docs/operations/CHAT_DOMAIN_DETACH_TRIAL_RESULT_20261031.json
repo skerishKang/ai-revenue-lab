@@ -1,0 +1,57 @@
+{
+  "schema": "chat-domain-detach-trial-result/v1",
+  "host": "chat-cutover-test.padiem.net",
+  "workers": [
+    "padiem-cutover-trial-a",
+    "padiem-cutover-trial-b"
+  ],
+  "switch": {
+    "state": "STOP",
+    "error": "DELETE_FAILED",
+    "delete_http_status": 200,
+    "delete_response": "empty body",
+    "reattach_state": "TARGET_CONFIRMED",
+    "reattach_http_status": 200,
+    "reattach_success": true,
+    "measurement": {
+      "http_sample_count": 22,
+      "http_failed_samples": 21,
+      "http_sample_gap_max_seconds": 1.625,
+      "http_failure_observation_span_seconds": 29.594000000040978,
+      "first_target_response_seconds": null,
+      "dns_failed_samples": 0,
+      "tls_failed_samples": 0,
+      "tls_first_observed_certificate_change_seconds": 1.109000000054948,
+      "tls_first_observed_newer_not_before_seconds": null
+    },
+    "limitation": "Sampler stopped before separately resumed attachment; end-to-end convergence and outage duration cannot be determined."
+  },
+  "rollback": {
+    "state": "TARGET_CONFIRMED",
+    "api_statuses": [
+      200,
+      200
+    ],
+    "measurement": {
+      "http_sample_count": 22,
+      "http_failed_samples": 0,
+      "http_sample_gap_max_seconds": 1.5160000000614673,
+      "http_failure_observation_span_seconds": null,
+      "first_target_response_seconds": 1.484000000054948,
+      "dns_failed_samples": 0,
+      "tls_failed_samples": 0,
+      "tls_first_observed_certificate_change_seconds": 1.1560000000754371,
+      "tls_first_observed_newer_not_before_seconds": 23.469000000040978
+    },
+    "delete_seconds": 0.35900000005494803,
+    "attach_seconds": 1.047000000020489
+  },
+  "evidence_files": [
+    "E:/astra2-trial-detach-261031/switch.json",
+    "E:/astra2-trial-detach-261031/resume.json",
+    "E:/astra2-trial-detach-261031/rollback.json"
+  ],
+  "final_owner": "padiem-cutover-trial-a",
+  "production_change": "none",
+  "gate_change": "not implemented; continuous forward measurement incomplete"
+}

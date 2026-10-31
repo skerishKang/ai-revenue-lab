@@ -185,12 +185,12 @@ jobs:
               if token not in worker:
                   raise SystemExit(f'identity worker lost contract: {token}')
 
-          # Private Worker ingress must stay private in the canonical config.
+          # Only the signed identity ingress is exposed; previews stay disabled.
           raw = Path('packages/padiem-control-plane/wrangler.identity-authority.jsonc').read_text(encoding='utf-8')
           config = json.loads(re.sub(r'//.*', '', raw))
           if config['name'] != 'padiem-control-plane-identity':
               raise SystemExit('identity worker name drift')
-          if config['workers_dev'] is not False or config['preview_urls'] is not False:
+          if config['workers_dev'] is not True or config['preview_urls'] is not False:
               raise SystemExit('identity worker public ingress drifted')
           for key in ('routes', 'custom_domain', 'custom_domains'):
               if key in config:
@@ -201,7 +201,7 @@ jobs:
 
           print('IDENTITY_ONLY_SOURCE_CONTRACT=PASS')
           print('RESOLVE_CONNECTOR_WORKSPACE_SOURCE_REQUIRED=PASS')
-          print('PRIVATE_INGRESS_CONTRACT=PASS')
+          print('IDENTITY_WORKERS_DEV_CONFIG=PASS')
           print('PRODUCTION_MUTATION=0')
           PY
 
@@ -304,8 +304,8 @@ jobs:
           jq -e '.success == true and (.result.bindings | type == "array")' "${settings}" >/dev/null
           jq -e '.success == true and (.result.deployments | length) > 0 and (.result.deployments[0].versions | length) == 1 and .result.deployments[0].versions[0].percentage == 100' "${deployments}" >/dev/null
           jq -e '.success == true and (.result.items | length) > 0' "${versions}" >/dev/null
-          # Private ingress: workers.dev disabled on the identity Worker.
-          jq -e '.success == true and .result.enabled == false and .result.previews_enabled == false' "${subdomain}" >/dev/null
+          # Signed identity ingress is exposed on workers.dev; previews stay disabled.
+          jq -e '.success == true and .result.enabled == true and .result.previews_enabled == false' "${subdomain}" >/dev/null
 
           active="$(jq -r '.result.deployments[0].versions[0].version_id // empty' "${deployments}")"
           latest="$(jq -r '.result.items[0].id // empty' "${versions}")"
@@ -413,7 +413,9 @@ jobs:
             dep="${RUNNER_TEMP}/${worker}-dep-before.json"
             curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${worker}/subdomain" -o "${sub}"
             curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${worker}/deployments" -o "${dep}"
-            if [ "${private}" = "yes" ]; then
+            if [ "${worker}" = "${IDENTITY_WORKER}" ]; then
+              jq -e '.success == true and .result.enabled == true and .result.previews_enabled == false' "${sub}" >/dev/null
+            elif [ "${private}" = "yes" ]; then
               jq -e '.success == true and .result.enabled == false and .result.previews_enabled == false' "${sub}" >/dev/null
             fi
             jq -e '.success == true and (.result.deployments | length) > 0 and (.result.deployments[0].versions | length) == 1 and .result.deployments[0].versions[0].percentage == 100' "${dep}" >/dev/null
@@ -473,7 +475,7 @@ jobs:
               raise SystemExit('identity worker name drift')
           Path('wrangler.jsonc').write_text(json.dumps(config, indent=2) + '\n', encoding='utf-8')
           PY
-          uvx --from 'workers-py>=1.17.1,<2' pywrangler deploy --secrets-file "${secret_file}" --strict --tag "git-${TARGET_SHA}" --message "B1D identity resolve_connector_workspace ${TARGET_SHA}"
+          uvx --from 'workers-py>=1.17.1,<2' pywrangler deploy --keep-vars --secrets-file "${secret_file}" --strict --tag "git-${TARGET_SHA}" --message "B1D identity resolve_connector_workspace ${TARGET_SHA}"
           rm -f "${temp_config}"
           echo "IDENTITY_WORKER_REDEPLOY=1"
           echo "SECRET_VALUES_OUTPUT=0"
@@ -530,7 +532,7 @@ jobs:
 
           sub_after="${RUNNER_TEMP}/identity-sub-after.json"
           curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${IDENTITY_WORKER}/subdomain" -o "${sub_after}"
-          jq -e '.success == true and .result.enabled == false and .result.previews_enabled == false' "${sub_after}" >/dev/null
+          jq -e '.success == true and .result.enabled == true and .result.previews_enabled == false' "${sub_after}" >/dev/null
           identity_sub_after="${IDENTITY_WORKER}@$(jq -c '{enabled:.result.enabled,previews_enabled:.result.previews_enabled}' "${sub_after}")"
           test "${identity_sub_after}" = "${IDENTITY_SUB_BEFORE}"
           echo "IDENTITY_PUBLIC_INGRESS_UNCHANGED=PASS"
