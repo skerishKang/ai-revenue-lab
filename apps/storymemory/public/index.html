@@ -8063,6 +8063,10 @@ function passageChips(packet){
     if(!loc)continue;
     if(!labelForLocator(loc))continue;
     var parts=String(loc).split(':');
+    // Show sources from the reader's current Bible chapter. Prior passages may
+    // still be sent as model context, but are not labelled as chapter evidence.
+    if (parts[0] === 'bible' && /^bible:[^:]+:[^:]+:\d+$/.test(String(rc.current_unit_key || ''))
+        && parts.slice(0, 4).join(':') !== String(rc.current_unit_key)) continue;
     var key=parts[2]+':'+parts[3];
     if(!byChapter[key]){byChapter[key]={chLabel:(volumeByCode[parts[2]]||'')+' '+Number(parts[3]),verses:[]};order.push(key);}
     byChapter[key].verses.push({locator:loc,verse:parts.length>=5?Number(parts[4]):null});
