@@ -11,6 +11,7 @@ ExecStart=/opt/padiem/identity/venv/bin/python -m uvicorn --factory com2_identit
 UMask=0077
 NoNewPrivileges=true
 ProtectSystem=strict
+ReadWritePaths=/mnt/d/padiem/identity
 PrivateTmp=true
 Restart=on-failure
 
