@@ -613,3 +613,15 @@ def test_workflow_never_echoes_secrets_or_uses_automatic_rollback():
     assert all(line.strip().startswith("echo ") for line in failure["run"].splitlines() if line.strip())
     execution_env = next(step["env"] for step in steps if step.get("name") == "Execute one approved mode")
     assert gate.SECRET_NAME not in execution_env
+
+
+def test_public_probe_sends_named_user_agent(monkeypatch):
+    seen = {}
+    def fake_request(url, **kwargs):
+        seen.update(url=url, **kwargs)
+        return 200, {}, b""
+    monkeypatch.setattr(gate, "request", fake_request)
+    gate.Gate(environment()).probe("https://chat.padiem.net", "/health", 200)
+    assert seen["url"] == "https://chat.padiem.net/health"
+    assert seen["method"] == "GET"
+    assert seen["headers"]["User-Agent"] == "padiem-boot-recovery/1.0"
