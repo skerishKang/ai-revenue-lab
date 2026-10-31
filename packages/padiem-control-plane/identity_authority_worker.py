@@ -17,7 +17,16 @@ from identity_connector_ticket import (
     GoogleConnectTicketIssuer,
     decode_connect_ticket_key,
 )
-from internal_rpc_ingress import handle_internal_rpc, resolve_ingress_secret
+from internal_rpc_ingress import (
+    SERVICE_ID_POLICY_ENV,
+    handle_internal_rpc,
+    resolve_ingress_secret,
+    service_id_policy_from_env,
+)
+from service_id_replay import (
+    DurableObjectServiceIdReplayGuard,
+    SqliteServiceIdReplayStore,
+)
 from padiem_control_plane.contracts import (
     CanonicalSubjectRef,
     ControlPlaneContractError,
@@ -42,6 +51,7 @@ IDENTITY_RPC_INGRESS_METHODS: frozenset[str] = frozenset({
     "resolve_connector_workspace",
     "resolve_connector_context",
 })
+_SERVICE_ID_CLAIM_KEYS = frozenset({"service_id", "expires_at"})
 _LINK_KEYS = frozenset({"product_id", "product_user_id", "auth_provider", "provider_subject"})
 _SESSION_KEYS = frozenset({"product_id", "subject", "authenticated_at", "not_after"})
 _RESOLVE_KEYS = frozenset({"session_id"})
@@ -205,6 +215,9 @@ class CanonicalIdentityDurableObject(CanonicalIdentityEnrollmentConsentRPC, Dura
         self._connector_enrollment_records = IdentityDurableConnectorEnrollmentRecords(
             storage=ctx.storage, session_reader=self._store
         )
+        # #6417: signed-request replay memory, in this DO's own SQLite so it
+        # survives isolates. One row per id, pruned after its window.
+        self._service_ids = SqliteServiceIdReplayStore(ctx.storage)
 
     async def resolve_or_create_product_link(self, payload: dict) -> dict:
         try:
@@ -595,6 +608,23 @@ class Default(WorkerEntrypoint):
     async def revoke_connector_enrollment_consent(self, payload: dict) -> dict:
         return await self._stub().revoke_connector_enrollment_consent(payload)
 
+    async def claim_service_id(self, payload: dict) -> dict:
+        """Consume one signed request id; the ingress refuses a second use."""
+
+        try:
+            wire = _closed(payload, _SERVICE_ID_CLAIM_KEYS, "service id claim")
+            service_id = wire["service_id"]
+            expires_at = wire["expires_at"]
+            if not isinstance(service_id, str) or isinstance(expires_at, bool) or not isinstance(expires_at, int):
+                raise ControlPlaneContractError(
+                    "invalid_identity_authority_rpc",
+                    "service id claim must carry an id and an expiry",
+                )
+            claimed = await self._service_ids.claim(service_id, expires_at=expires_at)
+            return {"ok": True, "claimed": claimed}
+        except ControlPlaneContractError as exc:
+            return _safe_error(exc)
+
     async def fetch(self, request):
         secret = await resolve_ingress_secret(
             getattr(self.env, IDENTITY_RPC_INGRESS_SECRET_BINDING, None)
@@ -605,6 +635,10 @@ class Default(WorkerEntrypoint):
                 secret=secret,
                 allowed_methods=IDENTITY_RPC_INGRESS_METHODS,
                 dispatcher=self,
+                service_id_policy=service_id_policy_from_env(
+                    getattr(self.env, SERVICE_ID_POLICY_ENV, None)
+                ),
+                replay_guard=DurableObjectServiceIdReplayGuard(self._stub()),
             )
             if handled is not None:
                 status, payload, headers = handled
