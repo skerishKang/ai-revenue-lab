@@ -55,6 +55,7 @@ RENEW_INTERVAL_SECONDS = 20
 #: the rounds per minute before and after.
 IDLE_POLL_BASE_SECONDS = 1
 IDLE_POLL_MAX_SECONDS = 60
+COM2_IDLE_POLL_MAX_SECONDS = 10
 #: Only an empty answer from the lane earns a longer wait. A round this host skipped -
 #: the failover gate closed, or a held result still waiting to be sent - proves nothing
 #: about the queue, and backing off there would slow exactly the moment a handover needs
@@ -2024,7 +2025,8 @@ def main(environ: Optional[dict[str, str]] = None) -> int:
       ORACLE_MESH_WORK_DIR          optional scratch directory
       ORACLE_MESH_POLL_SECONDS      optional interval after a refused channel, default 5
       ORACLE_MESH_IDLE_POLL_MAX_SECONDS
-                                    optional ceiling on the idle wait, default 60;
+                                    optional ceiling on the idle wait, default 10 with a queue origin,
+                                    otherwise 60;
                                     one reproduces the pre-backoff cadence verbatim
       ORACLE_MESH_READ_TIMEOUT_SECONDS
                                     optional PC-step deadline in seconds, default
@@ -2126,9 +2128,11 @@ def main(environ: Optional[dict[str, str]] = None) -> int:
                     entries.append(entry)
                 return entries
 
+        queue_origin = env.get("ORACLE_MESH_QUEUE_ORIGIN", "").strip() or None
+        default_idle_max = COM2_IDLE_POLL_MAX_SECONDS if queue_origin else IDLE_POLL_MAX_SECONDS
         raw_idle_max = env.get("ORACLE_MESH_IDLE_POLL_MAX_SECONDS")
         if raw_idle_max is None:
-            idle_max = IDLE_POLL_MAX_SECONDS
+            idle_max = default_idle_max
         else:
             try:
                 idle_max = int(raw_idle_max)
@@ -2136,8 +2140,8 @@ def main(environ: Optional[dict[str, str]] = None) -> int:
                     raise ValueError
                 idle_max = min(idle_max, 300)
             except (ValueError, TypeError):
-                idle_max = IDLE_POLL_MAX_SECONDS
-                print("oracle-mesh-executor: invalid ORACLE_MESH_IDLE_POLL_MAX_SECONDS; using default 60",
+                idle_max = default_idle_max
+                print(f"oracle-mesh-executor: invalid ORACLE_MESH_IDLE_POLL_MAX_SECONDS; using default {default_idle_max}",
                       file=sys.stderr)
 
         executor = make_oracle_mesh_executor(
@@ -2145,7 +2149,7 @@ def main(environ: Optional[dict[str, str]] = None) -> int:
             channel_secret=_read_secret_file(
                 need("ORACLE_MESH_CHANNEL_SECRET_FILE"), "channel secret"
             ),
-            queue_origin=env.get("ORACLE_MESH_QUEUE_ORIGIN", "").strip() or None,
+            queue_origin=queue_origin,
             idle_poll_max_seconds=idle_max,
             meshctrl_js=need("ORACLE_MESH_MESHCTRL_JS"),
             login_user=need("ORACLE_MESH_LOGIN_USER"),

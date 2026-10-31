@@ -26,6 +26,7 @@ def test_guest_browser_blocks_writes_and_reports_status():
     if not chrome.exists():
         pytest.skip("local Chrome unavailable")
     writes = []
+    reads = []
     class Handler(BaseHTTPRequestHandler):
         def log_message(self, *args):
             pass
@@ -34,6 +35,7 @@ def test_guest_browser_blocks_writes_and_reports_status():
             self.send_response(204)
             self.end_headers()
         def do_GET(self):
+            reads.append(self.path)
             if self.path == "/health":
                 data, content = b'{"status":"ok","runtime":"mock"}', "application/json"
             elif self.path == "/api/auth/status":
@@ -41,7 +43,7 @@ def test_guest_browser_blocks_writes_and_reports_status():
             elif self.path == "/style.css":
                 data, content = b"body { color: red; }", "text/css"
             elif self.path == "/script.js":
-                data, content = b"fetch('/api/write',{method:'POST',body:'x'}).catch(()=>{});", "application/javascript"
+                data, content = b"fetch('/api/read').catch(()=>{});fetch('/api/write',{method:'POST',body:'x'}).catch(()=>{});", "application/javascript"
             else:
                 data, content = b'<html><head><link rel="stylesheet" href="/style.css"></head><body><div class="app-shell">Chat</div><script src="/script.js"></script></body></html>', "text/html"
             self.send_response(200)
@@ -52,14 +54,18 @@ def test_guest_browser_blocks_writes_and_reports_status():
     thread = threading.Thread(target=server.serve_forever, daemon=True)
     thread.start()
     try:
-        report = smoke.smoke(f"http://127.0.0.1:{server.server_port}", browser_executable=str(chrome))
+        base = f"http://127.0.0.1:{server.server_port}"
+        report = smoke.smoke(base, browser_executable=str(chrome), compare_origin=base)
         assert report["stages"]["health"]["status"] == "PASS"
-        assert report["stages"]["front"]["status"] == "UNVERIFIED"
+        assert report["stages"]["front"]["status"] == "PASS"
+        assert report["stages"]["front"]["equal"] is True
         assert report["stages"]["guest"]["status"] == "PASS"
         assert report["stages"]["assets"]["status"] == "PASS"
         assert report["stages"]["auth_status"]["status"] == "PASS"
         assert report["stages"]["conversation"]["reason"] == "login required"
         assert report["stages"]["console"]["blocked_requests"] >= 1
+        assert report["stages"]["console"]["error_count"] == 0
+        assert "/api/read" in reads
         assert not writes
         assert "secret" not in json.dumps(report)
     finally:
