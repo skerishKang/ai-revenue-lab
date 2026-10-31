@@ -83,6 +83,30 @@ PADIEM_CHAT_WRITE_FREEZE_PATHS=/auth/google/callback,/auth/lovetree/start,/api/c
 
 관찰 목록(분류표의 미확인 항목을 2번 창에서 확인): 전체 SQL 저장소의 HTTP·비동기 진입점 역추적, 일부 GET의 부수 호출, WSS Broker의 추가 저장 대상, 스트리밍 완료·취소 후 저장, queue 소비·외부 producer. 창 안에서 새 쓰기 경로가 확인되면 목록에 추가하고 창을 유지합니다.
 
+### 5.1 실행 스크립트
+
+위 순서를 손으로 반복하면 단계를 건너뛰거나 판정을 놓칠 수 있으므로, 같은 순서를 **기존 도구만 호출해** 묶은 스크립트가 있습니다: `.github/scripts/chat_cutover_rehearsal.py`.
+
+```bash
+python .github/scripts/chat_cutover_rehearsal.py \
+  --base-url https://chat-com2-staging.padiem.net \
+  --generation-pointer D:/.../snapshots/current_generation.json \
+  --generations-dir D:/.../snapshots/generations \
+  --snapshot-a /mnt/d/padiem/chat-staging/baseline.sqlite3 \
+  --snapshot-b /mnt/d/padiem/chat-staging/window-end.sqlite3 \
+  --staging-db /mnt/d/padiem/chat-staging/chat.sqlite3 \
+  --sentinel /mnt/d/padiem/chat-staging/MAINTENANCE \
+  --mirror-inventory /mnt/d/padiem/chat-staging/r2-inventory.json \
+  --confirm-stop-tick --confirm-stop-wss --confirm-stop-queue
+```
+
+- 단계 순서: 사전(preflight) → 1b 창 전 중지 확인 → 1 쓰기 정지 → 동결 경로 503 확인 → 2 스냅숏 2회 비교 → 3·4 스테이징 DB 생성 → 5 패리티 → 4b 객체 참조.
+- 판정은 각 도구의 종료 코드와 그 도구가 출력한 판정 줄입니다(`CHAT_COPY_PARITY=MATCH`, `STAGING_DB_FROM_GENERATION=READY`, `CHAT_OBJECT_REFERENCE=MATCH`). 스크립트가 판정을 새로 만들지 않습니다.
+- 실패하면 그 자리에서 멈추고 되돌림 안내를 출력한 뒤, 읽기 전용인 `chat_d1_handback_gate plan` → `verify`만 실행합니다. `apply`는 CTO 승인 뒤 별도 실행입니다. 창은 스크립트가 닫지 않습니다.
+- 운영 주소(`chat.padiem.net`), 운영 DB 경로(`/mnt/d/padiem/chat-com2`), `b62-chat-api`, 큐 `8797`이 인자에 있으면 아무것도 실행하지 않고 거부합니다. 운영 전환은 별도 지시로 이 제한을 풉니다.
+- `--dry-run`은 실행 없이 단계·명령만 출력합니다. `--synthetic`은 배치 규칙만 완화하고 운영 거부는 그대로 둡니다(합성 검증용).
+- 1b 중지는 스크립트가 관측할 수 없습니다. `--confirm-stop-tick`·`--confirm-stop-wss`·`--confirm-stop-queue`로 운영자 확인을 받고, 없으면 동결을 켜기 전에 멈춥니다.
+
 ## 6. 합성 리허설 실행 결과
 
 합성 SQLite 두 개(2표 5행)로 **실제 도구**를 그대로 돌린 출력입니다. 기준선을 복사한 뒤 COM2 쪽에 insert 1·update 1·delete 1을 만들고, 패리티 → 핸드백 plan → apply → 다시 패리티 순서로 진행했습니다.
