@@ -20,6 +20,7 @@ import secrets
 import sqlite3
 from datetime import datetime, timezone
 from pathlib import Path
+from types import SimpleNamespace
 
 from .app_factory import create_app
 from .b66_b14_free_first_resolver import B66ExplicitQuoteModelResolver
@@ -35,6 +36,12 @@ from .local_service_bridge import (
 )
 from .maintenance_mode import apply_write_freeze
 from .project_files import D1ProjectFileStore
+from .queue_store_proxy import (
+    QueueBackedPairingStore,
+    QueueBackedPresenceStore,
+    QueueForwardingHistoryStore,
+    build_queue_client,
+)
 from .saved_outputs import D1SavedOutputStore
 from .usage_gate import D1UsageCounterStore
 
@@ -169,6 +176,17 @@ def build_app():
         b66_pdf_renderer_client=pdf_renderer,
     )
 
+    queue_client = build_queue_client(_queue_env())
+    if queue_client is not None:
+        # The same three replacements worker.py performs when its env selects
+        # the queue. Production still defaults to D1; only a deployment that
+        # explicitly sets PC_QUEUE_BACKEND=com2 takes this path.
+        app.state.pc_device_pairing_store = QueueBackedPairingStore(queue_client)
+        app.state.mesh_device_presence_store = QueueBackedPresenceStore(queue_client)
+        app.state.history_store = QueueForwardingHistoryStore(
+            app.state.history_store, queue_client
+        )
+
     if settings.runtime_mode == "b14":
         # The same replacement worker.py performs when it composes the B14
         # transports: the default client stays as a stub any other subsystem
@@ -203,3 +221,35 @@ def _optional_pair(origin_env: str, secret_env: str) -> tuple[str | None, str | 
     if not origin or not secret:
         raise ConfigError(f"{origin_env} and {secret_env} must be set together")
     return origin, secret
+
+
+def _queue_service_secret() -> str:
+    """The queue secret value, preferably read from the staging file path.
+
+    The COM2 staging queue keeps its service secret in a root-owned file. The
+    deployment names that path, not the value; this reads it only when the
+    queue is switched on. The value is never logged or written back out.
+    """
+
+    direct = os.getenv("PC_QUEUE_SERVICE_SECRET", "").strip()
+    if direct:
+        return direct
+    path = os.getenv("PC_QUEUE_SERVICE_SECRET_FILE", "").strip()
+    if not path:
+        return ""
+    try:
+        return Path(path).read_text(encoding="utf-8").strip()
+    except OSError as exc:
+        raise ConfigError("PC_QUEUE_SERVICE_SECRET_FILE is unreadable") from exc
+
+
+def _queue_env() -> SimpleNamespace:
+    backend = os.getenv("PC_QUEUE_BACKEND", "").strip().lower()
+    return SimpleNamespace(
+        PC_QUEUE_BACKEND=backend,
+        PC_QUEUE_ORIGIN=os.getenv("PC_QUEUE_ORIGIN"),
+        PC_QUEUE_SERVICE_SECRET=_queue_service_secret() if backend == "com2" else "",
+        PADIEM_CHAT_QUEUE_ALLOW_LOOPBACK_HTTP=os.getenv(
+            "PADIEM_CHAT_QUEUE_ALLOW_LOOPBACK_HTTP"
+        ),
+    )

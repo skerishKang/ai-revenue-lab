@@ -1,0 +1,31 @@
+[Unit]
+Description=PADIEM COM2 Chat staging (CPython, port 8801)
+Wants=network-online.target
+After=network-online.target
+RequiresMountsFor=/mnt/d/padiem/chat-staging
+ConditionPathIsMountPoint=/mnt/d
+ConditionPathExists=/opt/padiem/chat-staging/.env
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+User=padiem-chat
+Group=padiem-chat
+WorkingDirectory=/opt/padiem/chat-staging
+EnvironmentFile=/opt/padiem/chat-staging/.env
+ExecCondition=/opt/padiem/chat-staging/venv/bin/python /opt/padiem/chat-staging/check_config_staging.py
+ExecStart=/opt/padiem/chat-staging/venv/bin/python -m uvicorn --factory app.local_cpython:build_app --host 127.0.0.1 --port 8801 --no-server-header
+Restart=always
+RestartSec=5
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/mnt/d/padiem/chat-staging
+ReadOnlyPaths=/opt/padiem/mesh-queue-staging
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
