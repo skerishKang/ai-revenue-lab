@@ -228,7 +228,7 @@ async function fetch(url, opts) {
     return json({
       files: storedFiles.map((f) => ({
         id: f.id, name: f.name, media_type: f.media_type, content_chars: f.content_chars,
-        doc_kind: f.doc_kind || "", doc_version_of: f.doc_version_of || null,
+        doc_kind: f.doc_kind || "", doc_version_of: f.doc_version_of || null, created_at: f.created_at || "",
       })),
     });
   }
@@ -1310,6 +1310,32 @@ const SCENARIOS = {
     observation.alerts = alerts.slice();
     observation.pageErrors = pageErrors;
     return observation;
+  },
+
+  async meeting_period() {
+    storedFiles.push(
+      { id:"mp1", name:"first.txt", doc_kind:"meeting", content:"회의 일시: 2026-10-10T10:00\n내용", created_at:"2026-09-01T12:00:00Z" },
+      { id:"mp2", name:"second.txt", doc_kind:"meeting", content:"날짜 없음", created_at:"2026-10-15T12:00:00Z" },
+      { id:"mp3", name:"third.txt", doc_kind:"meeting", content:"회의 일시: 2026-11-10\n내용", created_at:"2026-10-12T12:00:00Z" }
+    );
+    const session = spawnSession();
+    await openTool(session, "meeting");
+    await sleep(40);
+    const start = find(session, "utilBookPeriodStart"), end = find(session, "utilBookPeriodEnd");
+    const selected = () => Array.from(find(session, "utilMeetingArchive").querySelectorAll(".util-book-check")).filter((cb) => cb.checked).map((cb) => cb.value);
+    start.value = "2026-10-01"; end.value = "2026-10-31";
+    await end.dispatch("change"); await sleep(40);
+    const initial = selected();
+    const check = find(session, "utilMeetingArchive").querySelectorAll(".util-book-check").find((cb) => cb.value === "mp2");
+    check.checked = false; await check.dispatch("change");
+    const down = find(session, "utilMeetingArchive").querySelectorAll(".util-record-move").find((b) => b.dataset.move === "1" && !b.disabled);
+    await down.dispatch("click");
+    const manual = selected();
+    const order = Array.from(find(session, "utilMeetingArchive").querySelectorAll(".util-book-check")).map((cb) => cb.value);
+    start.value = "2025-01-01"; end.value = "2025-01-31";
+    await end.dispatch("change"); await sleep(40);
+    return { initial, manual, order, empty: text(find(session, "utilBookPeriodStatus")), emptySelected: selected(),
+      quickLabels: labels(find(session, "utilBookPeriod").querySelectorAll("button")), pageErrors };
   },
 
   async meeting() {
