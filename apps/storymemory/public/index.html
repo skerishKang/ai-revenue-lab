@@ -358,7 +358,7 @@
           <span class="crop-mark crop-tl"></span><span class="crop-mark crop-tr"></span>
           <span class="crop-mark crop-bl"></span><span class="crop-mark crop-br"></span>
           <div class="paper-inner">
-            <div class="paper-eyebrow"><span id="readerEyebrowLeft">THE FIRST LETTER TO THE CORINTHIANS</span><span class="reader-source-badge" id="readerSourceBadge">SOURCE · DEMO</span><span id="readerEyebrowRight">CHAPTER 03</span></div>
+            <div class="paper-eyebrow"><span id="readerEyebrowLeft">THE FIRST LETTER TO THE CORINTHIANS</span><span class="reader-source-badge" id="readerSourceBadge">예시 본문</span><span id="readerEyebrowRight">CHAPTER 03</span></div>
             <div class="paper-running-head"><span>MEMORY EDITION</span><i></i><span>READING COPY</span></div>
             <div class="paper-rule-ornament"><i></i><b>✦</b><i></i></div>
             <div class="paper-head"><h1><span id="readerVolumeTitle">고린도전서</span> <em id="readerChapterTitle">3장</em></h1><small id="readerPageCount">PAGE 1 / 3</small></div>
@@ -3361,8 +3361,8 @@ function updateReaderSourceBadge(){
   const badge=document.getElementById('readerSourceBadge');
   if(!badge)return;
   const source=sourceForReaderContext();
-  badge.textContent=source.status==='demo'?'SOURCE · DEMO':'SOURCE · READING COPY';
-  badge.title=`${source.title} · ${source.rights}`;
+  badge.textContent=source.status==='demo'?'예시 본문':'본문 안내';
+  badge.title=source.status==='demo'?'예시로 제공되는 본문입니다.':'본문 정보가 준비되지 않았습니다.';
 }
 function unifiedProgressEntries(){
   const out={};
@@ -6034,10 +6034,9 @@ const __smV322UpdateReaderSourceBadge=updateReaderSourceBadge;
 updateReaderSourceBadge=function(){
   const badge=document.getElementById('readerSourceBadge');
   if(storyMemoryIsAuthoritativeReaderMode()&&badge){
-    const translated=__smDynamicReaderState.passages.some(x=>x.language==='ko');
-    const channel=__smDynamicReaderState.mode==='static'?'STATIC':'DB';
-    badge.textContent=translated?`SOURCE · ${channel} + KO`:`SOURCE · ${channel} · EN`;
-    const c=__smDynamicReaderState.content;badge.title=`${c?.sourceEdition||c?.title||'Canonical source'} · ${c?.rightsMode||'source'} · verified locator/hash`;
+    const langs=new Set(__smDynamicReaderState.passages.map(x=>x.language));
+    badge.textContent=langs.has('ko')?(langs.has('en')?'한글 · 영어':'한글'):(langs.has('en')?'영어':'본문');
+    const c=__smDynamicReaderState.content;badge.title=c?.sourceEdition||c?.title||'본문';
     return;
   }
   __smV322UpdateReaderSourceBadge();
@@ -6453,8 +6452,8 @@ function storyMemoryPrefetchedPaperMarkup(entry,step){
   const count=clone.querySelector('#readerPageCount');if(count)count.textContent=`PAGE ${pageIndex+1} / ${entry.pages.length}`;
   const chapter=clone.querySelector('#readerChapterTitle');if(chapter)chapter.textContent=storyMemoryReaderUnitLabel(entry.unitOrdinal,storyMemoryReaderUnitSpec(entry.content));
   const eyeRight=clone.querySelector('#readerEyebrowRight');if(eyeRight)eyeRight.textContent=`${storyMemoryReaderUnitLabel(entry.unitOrdinal,storyMemoryReaderUnitSpec(entry.content))} / ${String(storyMemoryReaderUnitSpec(entry.content)?.count||1).padStart(storyMemoryReaderUnitSpec(entry.content)?.pad||2,'0')}`;
-  const footer=clone.querySelector('#readerFooterFolio');if(footer)footer.textContent=`${storyMemoryReaderUnitLabel(entry.unitOrdinal,storyMemoryReaderUnitSpec(entry.content))} · PREFETCHED VERIFIED SOURCE`;
-  const badge=clone.querySelector('#readerSourceBadge');if(badge){const channel=entry.mode==='static'?'STATIC':'DB';badge.textContent=entry.passages.some(x=>x.language==='ko')?`SOURCE · ${channel} + KO`:`SOURCE · ${channel} · EN`;}
+  const footer=clone.querySelector('#readerFooterFolio');if(footer)footer.textContent=`${storyMemoryReaderUnitLabel(entry.unitOrdinal,storyMemoryReaderUnitSpec(entry.content))}`;
+  const badge=clone.querySelector('#readerSourceBadge');if(badge){const langs=new Set(entry.passages.map(x=>x.language));badge.textContent=langs.has('ko')?(langs.has('en')?'한글 · 영어':'한글'):(langs.has('en')?'영어':'본문');}
   return __smSanitizeCurlClone(clone).outerHTML;
 }
 function storyMemoryApplyPrefetchedUnit(entry,{step=1}={}){
