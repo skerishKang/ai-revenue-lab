@@ -43,7 +43,7 @@ def test_provider_readiness_mock_without_sensenova_secret_is_not_ready(monkeypat
     assert sensenova["route_ready"] is False
 
 
-def test_provider_readiness_live_with_sensenova_secret_is_ready(monkeypatch):
+def test_provider_readiness_live_with_sensenova_secret_is_disabled(monkeypatch):
     secret = "snsv_live_abcdefghijklmnopqrstuvwxyz1234"
     monkeypatch.setenv("B14_PROVIDER_MODE", "live")
     monkeypatch.setenv(SENSENOVA_CREDENTIAL_BINDING, secret)
@@ -54,12 +54,13 @@ def test_provider_readiness_live_with_sensenova_secret_is_ready(monkeypatch):
     data = response.json()
     sensenova = _sensenova_provider(data)
     assert not [p for p in data["providers"] if p["provider_id"]=="kilo"]
-    assert data["status"] == "ready"
+    assert data["status"] == "not_ready"
     assert data["provider_mode"] == "live"
-    assert data["ready_provider_count"] >= 1
+    assert data["ready_provider_count"] == 0
+    assert sensenova["enabled"] is False
     assert sensenova["credential_ready"] is True
-    assert sensenova["route_ready"] is True
-    assert sensenova["models"] == [SENSENOVA_MODEL_ID]
+    assert sensenova["route_ready"] is False
+    assert sensenova["models"] == []
     assert secret not in response.text
     assert SENSENOVA_CREDENTIAL_BINDING not in response.text
     assert "credential_binding_name" not in response.text
@@ -96,7 +97,7 @@ def test_provider_readiness_makes_no_upstream_provider_call(monkeypatch):
     response = TestClient(create_app()).get("/api/pilot/provider-readiness")
 
     assert response.status_code == 200
-    assert response.json()["status"] == "ready"
+    assert response.json()["status"] == "not_ready"
 
 
 def test_agnes_legacy_binding_name_never_satisfies_reonboarded_provider(monkeypatch):
