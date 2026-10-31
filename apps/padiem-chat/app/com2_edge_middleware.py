@@ -16,6 +16,8 @@ class EdgeProofMiddleware:
         kind = scope.get("type")
         if kind not in ("http", "websocket"):
             return await self.app(scope, receive, send)
+        if kind == "http" and scope.get("method") == "GET" and scope.get("path") == "/health":
+            return await self.app(scope, receive, send)
         names = [name.lower() for name, _ in scope.get("headers", ())]
         valid = all(names.count(name) == 1 for name in _PROOF_HEADERS)
         if valid:

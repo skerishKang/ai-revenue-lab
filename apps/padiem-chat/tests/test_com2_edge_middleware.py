@@ -57,3 +57,32 @@ def test_websocket_and_disabled_middleware(tmp_path, monkeypatch):
     with TestClient(Starlette(routes=[route])) as client:
         with client.websocket_connect("/api/socket") as socket:
             assert socket.receive_text() == "ok"
+
+
+def test_health_is_the_only_unsigned_exception_and_uses_public_fields(tmp_path):
+    from app.app_factory import create_app
+    from app.config import Settings
+    app = create_app(settings=Settings.from_values(runtime_mode="mock", auth_mode="off"))
+    app.add_middleware(EdgeProofMiddleware, verifier=EdgeProofVerifier(
+        SECRET, str(tmp_path / "replay.sqlite"), all_requests=True))
+    with TestClient(app) as client:
+        response = client.get("/health")
+        assert response.status_code == 200
+        body = response.json()
+        assert set(body) == {
+            "status", "app", "runtime", "b14_configured", "web_tools_ready",
+            "deep_research_ready", "image_attachment_ready", "text_document_attachment_ready",
+            "binary_document_attachment_ready", "auth_configured", "history_store_bound",
+            "projects_code_ready", "project_files_code_ready", "project_file_store_bound",
+            "saved_outputs_code_ready", "saved_output_store_bound", "quota_store_bound",
+            "live_abuse_gate_ready", "live_enabled", "canonical_identity_bound",
+            "identity_shadow_bound", "request_telemetry_enabled", "voice_stt_available",
+        }
+        assert body["status"] == "ok" and body["app"] == "padiem-chat"
+        assert body["runtime"] == "mock"
+        assert all(isinstance(value, bool) for key, value in body.items()
+                   if key not in {"status", "app", "runtime"})
+        assert SECRET not in response.text
+        assert client.get("/health/").status_code == 403
+        assert client.post("/health").status_code == 403
+        assert client.get("/api/auth/status").status_code == 403

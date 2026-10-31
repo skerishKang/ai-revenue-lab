@@ -5,9 +5,9 @@ The COM2 host opts in with `PADIEM_COM2_EDGE_PROOF_REQUIRED` and reads
 front Worker requires the corresponding secret `PADIEM_COM2_EDGE_SECRET`.
 Provisioning and enabling them are separate operational actions.
 
-When enabled, all HTTP and WebSocket requests, including `/health`, require
-a proof. There is no loopback health exemption: direct health monitors need
-a signed request before this mode can be enabled. Missing proof fails closed.
+When enabled, all HTTP and WebSocket requests require proof except the exact
+HTTP GET `/health` path. The exception is path-based, not loopback-based.
+Every other request without proof fails closed.
 The existing v1 proof binds method, path, timestamp, request ID and observed
 TLS version; it does not bind the query string or request body. TLS transport
 to the tunnel remains required. Request IDs are recorded in the durable
