@@ -673,3 +673,29 @@ def test_the_default_runner_reports_a_missing_executable_as_a_failure(
 
     assert status.installed is True
     assert status.index_ready is False
+
+
+def test_server_folder_label_is_preserved_for_multi_root_read(tmp_path):
+    root = tmp_path / "drive"
+    root.mkdir()
+    file = root / "document.txt"
+    file.write_text("x", encoding="utf8")
+    scope = PcFileSearchScope(root=str(root), device_id=DEVICE_ID, local_device_id=DEVICE_ID, label="DriveOne", multiple_roots=True)
+    result = search_pc_files(scope=scope, query="document", port=_FixtureIndexPort([str(file)]))
+    assert result.entries[0].read_payload() == {"op": "read", "path": "DriveOne/document.txt"}
+
+
+def test_single_root_read_keeps_existing_path(tmp_path):
+    root = tmp_path / "drive"
+    root.mkdir()
+    file = root / "document.txt"
+    file.write_text("x", encoding="utf8")
+    scope = PcFileSearchScope(root=str(root), device_id=DEVICE_ID, local_device_id=DEVICE_ID, label="DriveOne")
+    result = search_pc_files(scope=scope, query="document", port=_FixtureIndexPort([str(file)]))
+    assert result.entries[0].read_payload() == {"op": "read", "path": "document.txt"}
+
+
+@pytest.mark.parametrize("label", [None, "", ".", "..", "C:", "a/b", "a\\b", "a\n"])
+def test_multi_root_rejects_invalid_label(tmp_path, label):
+    with pytest.raises(PcFileSearchError):
+        PcFileSearchScope(root=str(tmp_path), device_id=DEVICE_ID, local_device_id=DEVICE_ID, label=label, multiple_roots=True)

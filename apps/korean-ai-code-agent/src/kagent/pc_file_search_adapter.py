@@ -114,12 +114,18 @@ class PcFileSearchScope:
     root: str
     device_id: str
     local_device_id: str
+    label: str | None = None
+    multiple_roots: bool = False
 
     def __post_init__(self) -> None:
         for name in ("root", "device_id", "local_device_id"):
             value = getattr(self, name)
             if not isinstance(value, str) or not value.strip():
                 raise PcFileSearchError(f"{name} must be a non-empty string")
+        if type(self.multiple_roots) is not bool:
+            raise PcFileSearchError("multiple_roots must be boolean")
+        if self.multiple_roots and (not isinstance(self.label, str) or not self.label or self.label in (".", "..") or any(ch in self.label for ch in "/\\:") or any(ord(ch) < 32 for ch in self.label)):
+            raise PcFileSearchError("server folder label required")
         if not os.path.isabs(self.root):
             raise PcFileSearchError("root must be an absolute folder path")
         if self.device_id != self.local_device_id:
@@ -151,6 +157,7 @@ class PcFileSearchEntry:
     size_bytes: int | None = None
     modified_at: str | None = None
     is_directory: bool = False
+    folder_label: str | None = None
 
     def safe_dict(self) -> dict[str, Any]:
         """The existing file item contract (no body, no absolute path)."""
@@ -164,7 +171,10 @@ class PcFileSearchEntry:
 
     def read_payload(self) -> dict[str, str]:
         """The payload the existing read path already accepts."""
-        return {"op": "read", "path": self.relative_path}
+        path = self.relative_path
+        if self.folder_label is not None:
+            path = self.folder_label + "/" + path
+        return {"op": "read", "path": path}
 
 
 @dataclass(frozen=True, slots=True)
@@ -580,6 +590,7 @@ def search_pc_files(
             size_bytes=size_bytes,
             modified_at=modified_at,
             is_directory=is_directory,
+            folder_label=scope.label if scope.multiple_roots else None,
         ))
 
     if not entries:
