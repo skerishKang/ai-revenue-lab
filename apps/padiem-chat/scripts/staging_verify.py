@@ -6,7 +6,7 @@ from pathlib import Path
 
 # Import the same reviewed target used to generate the candidate config.
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from staging_config import IDENTITY_SERVICE
+from staging_config import IDENTITY_SERVICE, STAGING_AUTH_SECRETS, STAGING_CLIENT_KID
 
 DB = "e064ac35-6e45-4fd8-9a2c-c3ae6583c964"
 DB_NAME = "padiem-chat-staging-db"
@@ -43,9 +43,14 @@ def verify_bindings(data, *, before=False):
     if services and (services[0].get("environment") not in (None, "production") or services[0].get("entrypoint") is not None):
         raise ValueError("unexpected service environment")
     allowed.add(("service", IDENTITY_SERVICE[0]))
+    allowed.update(("secret_text", name) for name in STAGING_AUTH_SECRETS)
+    for name in STAGING_AUTH_SECRETS:
+        count = sum(b.get("name") == name and b.get("type") == "secret_text" for b in bindings)
+        if count > 1 or (not before and count != 1):
+            raise ValueError("missing or duplicate staging secret binding")
     allowed.update(("plain_text", name) for name in ["PADIEM_CHAT_LIVE_ENABLED", "PADIEM_CHAT_PUBLIC_BASE_URL",
                    "PADIEM_CHAT_RUNTIME_MODE", "PADIEM_CHAT_SHARED_AUTH_COMPARE_ENABLED", "PADIEM_CHAT_SHARED_LOGIN_ENABLED",
-                   "PC_QUEUE_BACKEND", "PC_QUEUE_ORIGIN", "PADIEM_CHAT_SHARED_AUTH_CLIENT_ID"])
+                   "PC_QUEUE_BACKEND", "PC_QUEUE_ORIGIN", "PADIEM_CHAT_SHARED_AUTH_CLIENT_ID", "PADIEM_CHAT_SHARED_AUTH_CLIENT_KID"])
     if any((b.get("type"), b.get("name")) not in allowed for b in bindings):
         raise ValueError("unexpected binding")
     names = {b.get("name") for b in bindings}
@@ -56,7 +61,7 @@ def verify_bindings(data, *, before=False):
                 "PADIEM_CHAT_RUNTIME_MODE": "mock", "PADIEM_CHAT_LIVE_ENABLED": "false",
                 "PADIEM_CHAT_PUBLIC_BASE_URL": "https://padiem-chat-staging.charliekant.workers.dev"}
     if not before:
-        expected.update({"PADIEM_CHAT_SHARED_LOGIN_ENABLED": "true", "PADIEM_CHAT_SHARED_AUTH_CLIENT_ID": "b62-staging"})
+        expected.update({"PADIEM_CHAT_SHARED_LOGIN_ENABLED": "true", "PADIEM_CHAT_SHARED_AUTH_CLIENT_ID": "b62-staging", "PADIEM_CHAT_SHARED_AUTH_CLIENT_KID": STAGING_CLIENT_KID})
     else:
         login = [b.get("text") for b in bindings if b.get("name") == "PADIEM_CHAT_SHARED_LOGIN_ENABLED" and b.get("type") == "plain_text"]
         if len(login) != 1 or login[0] not in ("true", "false"):

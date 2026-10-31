@@ -190,12 +190,19 @@ async def create_worker_shared_login_flow(env, authority):
     from .shared_auth_compare_flow import WorkerJwksVerifier, exchange_with_httpx
     try:
         if authority is None:
-            raise ValueError('identity_unavailable')
+            print('shared_login: missing IDENTITY_AUTHORITY_SERVICE')
+            return None
         private = await resolve_secret_binding(env, 'PADIEM_CHAT_SHARED_AUTH_CLIENT_PRIVATE_JWK')
         state = await resolve_secret_binding(env, 'PADIEM_CHAT_SHARED_AUTH_COMPARE_STATE_KEY')
         kid = binding_value(env, 'PADIEM_CHAT_SHARED_AUTH_CLIENT_KID')
-        if not private or not state or not kid:
-            raise ValueError('configuration_unavailable')
+        missing = [name for name, value in (
+            ('PADIEM_CHAT_SHARED_AUTH_CLIENT_PRIVATE_JWK', private),
+            ('PADIEM_CHAT_SHARED_AUTH_COMPARE_STATE_KEY', state),
+            ('PADIEM_CHAT_SHARED_AUTH_CLIENT_KID', kid),
+        ) if not value]
+        if missing:
+            print('shared_login: missing ' + ', '.join(missing))
+            return None
         client_id = str(binding_value(env, 'PADIEM_CHAT_SHARED_AUTH_CLIENT_ID') or 'b62').strip()
         public_base_url = binding_value(env, 'PADIEM_CHAT_PUBLIC_BASE_URL')
         verifier = WorkerJwksVerifier(audience=client_id)
