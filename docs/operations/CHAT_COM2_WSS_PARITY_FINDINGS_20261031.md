@@ -39,3 +39,24 @@ post-approval bootstrap: the broker closed with 1008 while the relay returned
 1000. The relay now forwards supported upstream close codes, and the focused
 socket test confirms both paths return 1008 for this denial. This does not
 establish parity for a successful pairing close.
+
+## Canonical pairing and Identity handoff follow-up
+
+`test_com2_real_pairing_bootstrap.py` installs a synthetic canonical pairing
+and gateway schema in temporary SQLite. On actual local sockets, direct Broker
+and the signed Chat relay both complete PC possession proof, owner delivery,
+canonical pairing begin/finish, and authenticated `credential_fetch`.
+
+The Identity handoff then refuses both COM2 paths. The broker route tracks the
+live actor in `_com2_pc_sessions` (`apps/padiem-broker/pc_offer_asgi.py`), while
+`broker_pending_pc_identity_handoff._actor` searches only
+`_pending_pc_wss_by_id`. The pending-link map is consumed on delivery. The
+focused test demonstrates `pending_pc_identity_live_proof_missing` with an
+otherwise authenticated live actor. This is an observed host integration gap,
+not evidence that an actual Cloudflare production pairing was tested.
+Credential delivery, install ACK and paired-offline close remain unverified.
+
+A prior grouped test run stopped after the first test. Its exact cause was not
+captured and did not recur in three isolated, 25-second-bounded repetitions
+(7 passed each). The in-process parity bridge now bounds its queue receive to
+five seconds so a missing actor message cannot block that wait indefinitely.
