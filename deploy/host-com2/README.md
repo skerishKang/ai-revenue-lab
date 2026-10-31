@@ -68,7 +68,7 @@ sudo env PADIEM_COM2_OPS_CHECKOUT=/mnt/d/work/ai-revenue-lab-ops \
 `apps/padiem-ai-engine/` → p01, `apps/korean-ai-platform/` → b14. 서비스마다 **정지 → 재설치 →
 기동 → health** 순서이고, 실패하면 직전 버전으로 되돌린다.
 
-- chat: `STATE_DIR/previous/<old-sha>` 체크아웃으로 다시 설치한다(`install.sh`가 그 체크아웃을
+- chat: `PADIEM_COM2_PREVIOUS_DIR/<old-sha>` 체크아웃으로 다시 설치한다(`install.sh`가 그 체크아웃을
   가리키는 링크를 만든다).
 - p01: #6442 설치기가 `/opt/padiem/p01/rollback/`에 남긴 스냅숏으로 `app` 링크를 되돌린다.
 - b14: `/opt/padiem/b14/app`이 링크면 이전 체크아웃으로 되돌리고, 복사본이면
@@ -84,7 +84,11 @@ sudo env PADIEM_COM2_OPS_CHECKOUT=/mnt/d/work/ai-revenue-lab-ops \
 | --- | --- | --- |
 | `PADIEM_COM2_OPS_CHECKOUT` | 없음(필수) | 운영 전용 체크아웃 |
 | `PADIEM_COM2_STAGING_CHECKOUT` | `/mnt/d/work/ai-revenue-lab-staging-chat` | 스테이징 경로(같으면 거부) |
-| `PADIEM_COM2_STATE_DIR` | `/var/lib/padiem-com2-deploy` | 직전 체크아웃·실행 사본 |
+| `PADIEM_COM2_STATE_DIR` | `/var/lib/padiem-com2-deploy` | 실행 사본 보관 |
+| `PADIEM_COM2_PREVIOUS_DIR` | `/opt/padiem/com2-deploy/previous` | root 소유·서비스 읽기 가능한 직전 체크아웃 |
+| `PADIEM_COM2_CHAT_HEALTH_ATTEMPTS` | `31` | Chat 기동 health 확인 횟수 |
+| `PADIEM_COM2_CHAT_HEALTH_INTERVAL` | `2` | Chat health 재시도 간격(초) |
+| `PADIEM_COM2_CHAT_HEALTH_TIMEOUT` | `60` | Chat health 전체 대기 상한(초) |
 | `PADIEM_COM2_CHAT_DB` | `/mnt/d/padiem/chat-com2/chat.sqlite3` | 마이그레이션 원장을 읽는 운영 DB |
 | `PADIEM_COM2_P01_APP` | `/opt/padiem/p01` | P01 설치 루트 (`app`, `rollback/`) |
 | `PADIEM_COM2_B14_APP` | `/opt/padiem/b14/app` | B14 앱 체크아웃 |
@@ -92,7 +96,7 @@ sudo env PADIEM_COM2_OPS_CHECKOUT=/mnt/d/work/ai-revenue-lab-ops \
 | `PADIEM_COM2_CHAT_HEALTH_URL` 등 | 루프백 URL | 헬스 프로브 주소 |
 
 `--apply`는 Linux·root·systemd를 요구한다. dry-run은 root 없이 돌지만, 체크아웃을 옮기는
-스크립트가 자기 자신을 읽지 않도록 `STATE_DIR`에 사본을 만든다(그래서 쓰기 가능해야 한다).
+스크립트가 자기 자신을 읽지 않도록 `STATE_DIR`에 사본을 만든다(그래서 쓰기 가능해야 한다). P01의 `app` 링크가 가리키는 실제 코드와 대상 Git 트리를 비교하며, 일치하지 않거나 확인할 수 없으면 P01을 건너뛰지 않는다. Chat health는 기본 2초 간격으로 최대 31회, 전체 60초 이내로 확인한다. 직전 코드 디렉터리는 서비스가 읽고 통과할 수 있어야 하며 서비스에 쓰기 권한은 주지 않는다.
 
 ### 하지 않는 것
 
