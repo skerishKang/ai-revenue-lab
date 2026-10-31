@@ -7,7 +7,9 @@ pieces are new here — the SQLite storage adapter (`storage.py`) and this entry
 point. No broker rule is re-implemented.
 
 Door rules (mirroring the #6149 target ingress):
-* `POST /internal/rpc/<method>` only, guarded by the shared v1 service proof;
+* `POST /internal/rpc/<method>` only, guarded by the shared service proof — a
+  v2 request id whose replay is refused, or a v1 request while the transitional
+  policy still accepts one;
 * an explicit allowlist of the Stage 2-C lanes — queue-owned dispatch methods
   (poll/admit/enqueue_command/reconcile) are not exposed here;
 * the service refuses to start without its proof secret and pepper file;
@@ -28,7 +30,12 @@ from canonical_broker_pairing_rpc import (
     CanonicalBrokerPairingRPC,
     armed_durable_pairing_authority,
 )
-from internal_rpc_ingress import handle_internal_rpc
+from internal_rpc_ingress import (
+    SERVICE_ID_POLICY_ENV,
+    handle_internal_rpc,
+    service_id_policy_from_env,
+)
+from service_id_replay import SqliteServiceIdReplayStore
 from canonical_broker_pending_pc_private_rpc import CanonicalBrokerPendingPcLiveRPC
 from local_agent_broker_android_profile import (
     BrokerAndroidSafProfileStore,
@@ -264,6 +271,11 @@ def build_app(
     composition = BrokerComposition(
         storage=storage, env=_broker_env(envs, pepper=pepper, authority_ref=authority_ref),
     )
+    # #6417: the same reviewed request-id memory, over this broker's own
+    # database. `claim` has no await inside and this service is one process on
+    # one event loop, so two requests cannot both take the same id.
+    service_ids = SqliteServiceIdReplayStore(storage)
+    service_id_policy = service_id_policy_from_env(envs.get(SERVICE_ID_POLICY_ENV))
 
     async def health(request: Request) -> JSONResponse:
         return JSONResponse({"status": "ok", "service": "padiem-broker"})
@@ -272,6 +284,7 @@ def build_app(
         handled = await handle_internal_rpc(
             request, secret=secret, allowed_methods=BROKER_RPC_METHODS,
             dispatcher=composition,
+            service_id_policy=service_id_policy, replay_guard=service_ids,
         )
         if handled is None:
             return JSONResponse(
