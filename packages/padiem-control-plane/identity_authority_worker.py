@@ -208,13 +208,18 @@ class CanonicalIdentityDurableObject(CanonicalIdentityEnrollmentConsentRPC, Dura
 
     async def resolve_or_create_product_link(self, payload: dict) -> dict:
         try:
-            wire = _closed(payload, _LINK_KEYS, "identity-link RPC")
+            keys = _LINK_KEYS | {"expected_canonical_subject_id"} if isinstance(payload, dict) and "expected_canonical_subject_id" in payload else _LINK_KEYS
+            wire = _closed(payload, keys, "identity-link RPC")
+            expected = wire.get("expected_canonical_subject_id")
+            if "expected_canonical_subject_id" in wire and not isinstance(expected, str):
+                raise ControlPlaneContractError("invalid_identity_authority_rpc", "invalid expected subject")
             link = self._store.resolve_or_create_product_link(
                 product_id=wire["product_id"],
                 product_user_id=wire["product_user_id"],
                 auth_provider=wire["auth_provider"],
                 provider_subject=wire["provider_subject"],
                 now=datetime.now().astimezone(),
+                **({"expected_canonical_subject_id": expected} if expected is not None else {}),
             )
             return {"ok": True, "link": link.to_public_dict()}
         except ControlPlaneContractError as exc:

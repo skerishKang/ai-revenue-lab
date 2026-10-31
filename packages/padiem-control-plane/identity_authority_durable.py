@@ -330,6 +330,7 @@ class CloudflareCanonicalIdentityAuthorityStore:
         auth_provider: str,
         provider_subject: str,
         now: datetime,
+        expected_canonical_subject_id: str | None = None,
     ) -> ProductIdentityLink:
         product = self._require_product(product_id)
         user_id = _product_user_id(product_user_id)
@@ -352,6 +353,12 @@ class CloudflareCanonicalIdentityAuthorityStore:
                     "identity_authority_storage_error",
                     "canonical provider identity is ambiguous",
                 )
+            if expected_canonical_subject_id is not None:
+                expected = self._require_subject_id(expected_canonical_subject_id)
+                if not subject_rows or str(subject_rows[0]["canonical_subject_id"]) != expected:
+                    raise ControlPlaneContractError(
+                        "identity_rebind_forbidden", "canonical identity does not match expected subject"
+                    )
             if subject_rows:
                 canonical_subject_id = str(subject_rows[0]["canonical_subject_id"])
             else:

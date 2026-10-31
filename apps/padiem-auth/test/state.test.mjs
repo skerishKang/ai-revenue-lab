@@ -65,3 +65,16 @@ test('Google login state is browser bound, expires, and is consumed once', () =>
   s.createLogin({ ...req, stateDigest: 'expired' });
   assert.equal(s.consumeLogin({ stateDigest: 'expired', browserDigest: 'browser', now: 60 }), null);
 });
+
+test('encrypted profile is consumed atomically and expired profiles are removed', () => {
+  const s = setup();
+  const code = {digest:'code-profile', client:'b62', redirect:'https://example.test/cb', challenge:'challenge', subject:'sub_a', accountId:'sub_a', expires:60, encryptedProfile:'ciphertext'};
+  s.createCode(code);
+  const request = {codeDigest:code.digest, client:code.client, redirect:code.redirect, challenge:code.challenge, now:1, id:'session', expires:100, refreshDigest:'refresh'};
+  assert.equal(s.exchangeCode({...request, challenge:'wrong'}), false);
+  assert.equal(s.exchangeCode(request).encryptedProfile, 'ciphertext');
+  assert.equal(s.sql.exec('SELECT * FROM code_profiles').toArray().length, 0);
+  s.createCode({...code, digest:'abandoned'});
+  s.clearExpiredProfiles(60);
+  assert.equal(s.sql.exec('SELECT * FROM code_profiles').toArray().length, 0);
+});

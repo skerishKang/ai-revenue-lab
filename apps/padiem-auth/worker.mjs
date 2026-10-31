@@ -2,6 +2,7 @@ import { AuthState } from './state.mjs';
 import { verifyGoogleIdToken } from './google-id-token.mjs';
 import { issueAccessToken } from './access-token.mjs';
 import { verifyClientAssertion } from './client-assertion.mjs';
+import { profileClaimAllowlist, verifiedProfile } from './profile-claims.mjs';
 
 const ORIGIN = 'https://auth.padiem.net';
 const CALLBACK = `${ORIGIN}/oauth/google/callback`;
@@ -83,10 +84,11 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
       const client = clients[id];
       if (!validClient.test(id) || !client || client.id !== id || !client.redirect_uris.includes(returnTo) ||
           !opaque.test(serviceState) || !opaque.test(challenge) || one(url.searchParams, 'code_challenge_method') !== 'S256') return json(400, { error: 'invalid_request' });
+      const fields = profileClaimAllowlist(client);
       const object = random(), stateSecret = random(), browser = random(), nonce = random(), verifier = random();
       await stateFor(object).createLogin({ stateDigest: await digest(stateSecret), browserDigest: await digest(browser), client: id, redirect: returnTo, serviceState, serviceChallenge: challenge, googleNonce: nonce, googleVerifier: verifier, expires: current + 600 });
       const google = new URL('https://accounts.google.com/o/oauth2/v2/auth');
-      const values = { client_id: googleClientId, redirect_uri: CALLBACK, response_type: 'code', scope: 'openid', state: `${object}.${stateSecret}`, nonce, code_challenge: await digest(verifier), code_challenge_method: 'S256' };
+      const values = { client_id: googleClientId, redirect_uri: CALLBACK, response_type: 'code', scope: fields.length ? 'openid email profile' : 'openid', state: `${object}.${stateSecret}`, nonce, code_challenge: await digest(verifier), code_challenge_method: 'S256' };
       for (const [k, v] of Object.entries(values)) google.searchParams.set(k, v);
       return redirect(google.href, { 'set-cookie': cookieHeader(browser, 600) });
     }
@@ -107,7 +109,7 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
       const identity = await diagnosed('google_id_token_verification_failed', async () => {
         const keyResponse = await fetcher('https://www.googleapis.com/oauth2/v3/certs', { redirect: 'manual' });
         if (!keyResponse.ok) throw new Error('google keys unavailable');
-        return verifyGoogleIdToken({ token: googleToken.id_token, jwks: await keyResponse.json(), clientId: googleClientId, nonce: pending.google_nonce, now: now() });
+        return verifyGoogleIdToken({ token: googleToken.id_token, jwks: await keyResponse.json(), clientId: googleClientId, nonce: pending.google_nonce, now: now(), profile: profileClaimAllowlist(clients[pending.client]).length > 0 });
       });
       const account = await diagnosed('identity_lookup_failed', async () => {
         const userId = await googleProductUserId(identity.sub);
@@ -116,8 +118,17 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
         if (!result || result.state !== 'active' || !/^sub_[A-Za-z0-9_-]+$/.test(result.account_id ?? '')) throw new Error('identity authority failed');
         return result;
       });
-      const codeSecret = random();
-      await diagnosed('code_issue_failed', async () => stateFor(state[0]).createCode({ digest: await digest(codeSecret), client: pending.client, redirect: pending.redirect, challenge: pending.service_challenge, subject: account.account_id, accountId: account.account_id, expires: current + 60 }));
+      const codeSecret = random(), codeDigest = await digest(codeSecret);
+      const fields = profileClaimAllowlist(clients[pending.client]);
+      let encryptedProfile;
+      if (fields.length) {
+        const profile = verifiedProfile(identity.profile, fields);
+        const iv = crypto.getRandomValues(new Uint8Array(12));
+        const aad = encoder.encode(`profile:${pending.client}:${codeDigest}`);
+        const cipher = await crypto.subtle.encrypt({name:'AES-GCM',iv,additionalData:aad}, refreshKey, encoder.encode(JSON.stringify(profile)));
+        encryptedProfile = `${b64(iv)}.${b64(new Uint8Array(cipher))}`;
+      }
+      await diagnosed('code_issue_failed', async () => stateFor(state[0]).createCode({ digest: codeDigest, client: pending.client, redirect: pending.redirect, challenge: pending.service_challenge, subject: account.account_id, accountId: account.account_id, expires: current + 60, encryptedProfile }));
       const target = new URL(pending.redirect); target.searchParams.set('code', `${state[0]}.${codeSecret}`); target.searchParams.set('state', pending.service_state);
       return redirect(target.href, { 'set-cookie': cookieHeader('', 0), 'referrer-policy': 'no-referrer' });
     }
@@ -126,7 +137,7 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
       const id = one(params, 'client_id'), client = clients[id];
       if (!client || client.id !== id) return json(401, { error: 'invalid_client' });
       try { await verifyClient(params, client, current); } catch { return json(401, { error: 'invalid_client' }); }
-      let subject, accountId, object, sessionId, nextSecret = random();
+      let subject, accountId, object, sessionId, profile, nextSecret = random();
       if (url.pathname === '/token' && one(params, 'grant_type') === 'authorization_code') {
         const code = split(one(params, 'code')), verifier = one(params, 'code_verifier'), returnTo = one(params, 'redirect_uri');
         if (!code || !opaque.test(verifier) || !client.redirect_uris.includes(returnTo)) return json(400, { error: 'invalid_grant' });
@@ -135,6 +146,15 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
         if (!result) return json(400, { error: 'invalid_grant' });
         subject = result.subject;
         accountId = result.accountId;
+        const fields = profileClaimAllowlist(client);
+        if (fields.length) {
+          if (typeof result.encryptedProfile !== 'string') throw new Error('profile unavailable');
+          const [iv, cipher, extra] = result.encryptedProfile.split('.');
+          if (!iv || !cipher || extra !== undefined) throw new Error('invalid profile');
+          const aad = encoder.encode(`profile:${id}:${await digest(code[1])}`);
+          const plain = await crypto.subtle.decrypt({name:'AES-GCM',iv:un64(iv),additionalData:aad}, refreshKey, un64(cipher));
+          profile = verifiedProfile(JSON.parse(new TextDecoder().decode(plain)), fields);
+        }
       } else {
         const token = one(params, 'refresh_token').split('.');
         if (token.length !== 3 || !token.every(x => opaque.test(x))) return json(400, { error: 'invalid_grant' });
@@ -162,7 +182,9 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
         return json(200, JSON.parse(new TextDecoder().decode(plain)));
       }
       const access = await issueAccessToken({ key: signingKey, kid: signingKid, issuer: ORIGIN, audience: id, subject, accountId, sessionId, now: current });
-      return json(200, { access_token: access, token_type: 'Bearer', expires_in: 900, refresh_token: `${object}.${sessionId}.${nextSecret}` });
+      const response = { access_token: access, token_type: 'Bearer', expires_in: 900, refresh_token: `${object}.${sessionId}.${nextSecret}` };
+      if (profile) { response.account_id = accountId; response.profile = profile; }
+      return json(200, response);
     }
     return json(404, { error: 'not_found' });
   }
@@ -172,17 +194,25 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
 const methods = new Set(['createLogin', 'consumeLogin', 'claimAssertion', 'createCode', 'exchangeCode', 'inspectRefresh', 'rotate', 'revoke', 'resolveAccount', 'accountById', 'setAccountStatus']);
 export class AuthStateObject extends AuthState {
   constructor(state, env) { super(state); this.state = state; this.env = env; }
+  async createCode(input) {
+    if (input.encryptedProfile) await this.storage.setAlarm(input.expires * 1000);
+    return super.createCode(input);
+  }
+  async alarm() { this.clearExpiredProfiles(Math.floor(Date.now() / 1000)); }
   async resolveAccount({ fingerprint, productId, userId, subject }) {
     // DO serialization prevents two concurrent first logins from issuing two
     // authority calls or binding one fingerprint to different accounts.
     return this.state.blockConcurrencyWhile(async () => {
       const current = this.accountByFingerprint(fingerprint);
-      if (current) return current;
+      if (current && (current.state !== 'active' || productId !== 'b62')) return current;
       const linked = await diagnosed('identity_authority_rpc_failed', async () => {
-        const result = await this.env.IDENTITY_AUTHORITY.resolve_or_create_product_link({ product_id: productId, product_user_id: userId, auth_provider: 'google', provider_subject: subject });
+        const request = { product_id: productId, product_user_id: userId, auth_provider: 'google', provider_subject: subject };
+        if (current) request.expected_canonical_subject_id = current.account_id;
+        const result = await this.env.IDENTITY_AUTHORITY.resolve_or_create_product_link(request);
         if (result?.ok !== true || result?.link?.state !== 'active' || result?.link?.product_id !== productId || result?.link?.product_user_id !== userId || !/^sub_[A-Za-z0-9_-]+$/.test(result?.link?.canonical_subject_id ?? '')) throw new Error('identity authority failed');
         return result;
       });
+      if (current && current.account_id !== linked.link.canonical_subject_id) throw new Error('identity_conflict');
       return diagnosed('account_mapping_storage_failed', async () => this.putAccount({ fingerprint, accountId: linked.link.canonical_subject_id }));
     });
   }
