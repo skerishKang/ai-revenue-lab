@@ -2,7 +2,8 @@
 
 The Workers runtime does not provide the normal socket-backed httpx execution
 environment for app-owned outbound fetches, so this module provides the subset
-used by B62 auth/web clients, backed by ``from js import fetch`` on Workers, and
+used by B62 auth/web clients, backed by Workers ``fetch`` (read per request, never at
+import) on Workers, and
 re-exports real ``httpx`` on CPython for tests.
 
 IMPORTANT: do not use this compatibility type family for a custom transport
@@ -34,10 +35,20 @@ from __future__ import annotations
 from typing import Any, AsyncIterator
 
 
+# The runtime is detected by importing the ``js`` *module* and nothing else. Reading
+# an attribute of it (``from js import fetch``) creates a PyProxy, and this Worker's
+# compat date (2026-08-25) still carries the platform's cold-init ``NoGilError`` race:
+# doing that while the Python instance is still initialising is what turned every
+# login and session request into a 500 at ``preparePython`` -> ``initPyInstance``. The
+# globals are read through :func:`_js_global` where a request needs them instead.
 try:
-    from js import fetch as _js_fetch  # type: ignore  # Pyodide / Workers only
+    import js as _js_runtime  # type: ignore  # Pyodide / Workers only
     _IN_WORKERS = True
 except ImportError:
+    _js_runtime = None
+    _IN_WORKERS = False
+
+if not _IN_WORKERS:
     # CPython (local dev, CI, tests): re-export the real httpx unchanged.
     # The module name is assembled at runtime so that static bundlers
     # (e.g. pywrangler) do not resolve ``httpx`` as a static dependency of
@@ -62,11 +73,15 @@ except ImportError:
 
 
 if _IN_WORKERS:
-    from js import URLSearchParams as _JsURLSearchParams  # type: ignore
-    try:
-        from js import AbortSignal as _JsAbortSignal  # type: ignore
-    except ImportError:
-        _JsAbortSignal = None
+
+    def _js_global(name: str) -> Any:
+        """One Workers global (``fetch``, ``URLSearchParams``, ``AbortSignal``).
+
+        Resolved when a request needs it, never at import: the module handle above is
+        imported once, and reading an attribute here is what a request is allowed to do.
+        """
+
+        return getattr(_js_runtime, name)
 
     class Timeout:
         """Signature-compatible timeout holder for Workers fetch.
@@ -282,9 +297,13 @@ if _IN_WORKERS:
             return None
         milliseconds = max(1, int(round(seconds * 1000)))
         try:
-            if _JsAbortSignal is None:
+            signal_api = _js_global("AbortSignal")
+        except (AttributeError, ImportError):
+            signal_api = None
+        try:
+            if signal_api is None:
                 raise RuntimeError("AbortSignal is unavailable")
-            return _JsAbortSignal.timeout(milliseconds)
+            return signal_api.timeout(milliseconds)
         except Exception as exc:
             # A configured timeout must never silently become unbounded.
             raise RequestError(
@@ -324,7 +343,7 @@ if _IN_WORKERS:
         elif "data" in kwargs and kwargs["data"] is not None:
             data = kwargs["data"]
             if isinstance(data, dict):
-                params = _JsURLSearchParams.new()
+                params = _js_global("URLSearchParams").new()
                 for k, v in data.items():
                     params.append(str(k), str(v))
                 body = str(params).encode("utf-8")
@@ -399,7 +418,8 @@ if _IN_WORKERS:
             if body is not None:
                 init["body"] = body
             try:
-                js_resp = await _js_fetch(  # type: ignore[misc]
+                worker_fetch = _js_global("fetch")
+                js_resp = await worker_fetch(
                     self._url,
                     _js_request_init(init),
                 )

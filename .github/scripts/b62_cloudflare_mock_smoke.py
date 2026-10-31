@@ -80,7 +80,7 @@ def main() -> int:
         chat_status, chat_headers, chat_raw = request_with_retry(
             base + "/api/chat",
             method="POST",
-            payload={"messages": [{"role": "user", "content": "안녕하세요"}], "mode": "auto"},
+            payload={"messages": [{"role": "user", "content": "안녕하세요"}]},
         )
         assert chat_status == 200
         require_security(chat_headers, api=True)

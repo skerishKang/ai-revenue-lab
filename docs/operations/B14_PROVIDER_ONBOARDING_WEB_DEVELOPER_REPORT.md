@@ -40,7 +40,7 @@ commit.
 
 ## Cloudflare evidence
 
-The authenticated Tabbit browser inspected the correct `Charliekant@gmail.com's Account` Secrets Store. The following entries were visible as active Workers secrets; values were never opened:
+The authenticated Tabbit browser inspected the correct `[OWNER Cloudflare 계정]'s Account` Secrets Store. The following entries were visible as active Workers secrets; values were never opened:
 
 - `PADIEM_INFRON_API_KEY`
 - `PADIEM_INCEPTION_MERCURY_API_KEY`

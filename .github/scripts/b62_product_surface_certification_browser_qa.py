@@ -157,8 +157,11 @@ async def _install_api(page: Page, requests: list[dict[str, Any]]) -> None:
         body = json.loads(raw)
         if not isinstance(body, dict):
             raise AssertionError(f"chat request must be an object: {body!r}")
-        if body.get("mode") != "auto":
-            raise AssertionError(f"certification request escaped provider-neutral Auto mode: {body!r}")
+        if "mode" in body:
+            # The chat `mode` key was the leftover of the abolished B14 auto selection
+            # (#4844); the request contract refuses it, so a certification run that
+            # still sends it proves the browser grew the surface back.
+            raise AssertionError(f"certification request sent the removed chat mode: {body!r}")
         if any(key in body for key in ("provider", "model", "route", "credential")):
             raise AssertionError(f"browser asserted routing authority: {body!r}")
         requests.append(body)

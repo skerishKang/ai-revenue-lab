@@ -8,7 +8,10 @@ from typing import Any, Callable
 from app.pilot.catalog import get_catalog_by_id
 from app.pilot.errors import NoSafeRoute
 
-MAX_IMAGE_BYTES = 4 * 1024 * 1024
+# #4379: a pilot image carries no PADIEM byte total. The media type, the
+# magic bytes and the base64 shape stay. This symbol is retained for import
+# compatibility.
+MAX_IMAGE_BYTES = 1024 * 1024 * 1024
 _ALLOWED_MEDIA_TYPES = frozenset({"image/jpeg", "image/png", "image/webp"})
 _DATA_PREFIXES = {media: f"data:{media};base64," for media in _ALLOWED_MEDIA_TYPES}
 
@@ -44,16 +47,12 @@ def validate_image_data_url(value: Any) -> str:
         )
     if not payload:
         raise MultimodalContractError("image data must not be empty")
-    if len(payload) > ((MAX_IMAGE_BYTES + 2) // 3) * 4:
-        raise MultimodalContractError("decoded image must not exceed 4 MiB")
     try:
         decoded = base64.b64decode(payload, validate=True)
     except (binascii.Error, ValueError) as exc:
         raise MultimodalContractError("image data must be valid base64") from exc
     if not decoded:
         raise MultimodalContractError("image data must not be empty")
-    if len(decoded) > MAX_IMAGE_BYTES:
-        raise MultimodalContractError("decoded image must not exceed 4 MiB")
     if not _matches_magic(media_type, decoded):
         raise MultimodalContractError("image media type does not match image bytes")
     return f"data:{media_type};base64,{payload}"
@@ -171,22 +170,17 @@ def install_gateway_multimodal_contract(gateway_module: Any) -> None:
         body["business14"] = opts
 
         model_id = body["model"]
-        if model_id != "b14/auto":
-            catalog_model = get_catalog_by_id(model_id)
-            if catalog_model is None:
-                raise invalid_body_cls(
-                    "multimodal image input is supported only by Business 14 catalog routing"
-                )
-            if "image" not in catalog_model.capabilities:
-                raise NoSafeRoute(
-                    reason_code="manual_model_capability_mismatch",
-                    message="선택한 모델은 이미지 입력을 지원하지 않습니다.",
-                    upstream_called=False,
-                )
-            # Manual fallback candidates are not capability-filtered in the legacy
-            # manual router. Disable fallback rather than risk an image request
-            # reaching a text-only model.
-            opts["allow_external_fallback"] = False
+        catalog_model = get_catalog_by_id(model_id)
+        if catalog_model is None:
+            raise invalid_body_cls(
+                "multimodal image input is supported only by Business 14 catalog routing"
+            )
+        if "image" not in catalog_model.capabilities:
+            raise NoSafeRoute(
+                reason_code="manual_model_capability_mismatch",
+                message="선택한 모델은 이미지 입력을 지원하지 않습니다.",
+                upstream_called=False,
+            )
 
         return body
 

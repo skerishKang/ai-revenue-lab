@@ -25,6 +25,12 @@ from app.service import (
     EngineService,
 )
 
+# #5002: an inert, syntactically valid model route. It is used only to prove
+# the Engine forwards the selected model verbatim; B14 stays the availability
+# authority, so nothing here claims these are registered models. The suspended
+# Router auto route is never a valid fixture model on an Engine product route.
+_INERT_MODEL_ID = "testowner/example-model.v1"
+
 
 def valid_payload() -> dict:
     return {
@@ -39,9 +45,8 @@ def valid_payload() -> dict:
             "max_tokens": 512,
             "required_capabilities": ["free"],
             "model_policy": {
-                "model": "b14/auto",
+                "model": _INERT_MODEL_ID,
                 "allow_external_fallback": False,
-                "max_attempts": 1,
             },
         },
         "messages": [{"role": "user", "content": "안녕"}],
@@ -137,9 +142,11 @@ async def test_success_maps_strict_request_to_core_once() -> None:
     assert request.agent.allowed_tools == ()
     assert request.agent.max_steps == 1
     assert request.agent.required_capabilities == ("free",)
-    assert request.agent.model_policy["model"] == "b14/auto"
+    assert request.agent.model_policy["model"] == _INERT_MODEL_ID
     assert request.agent.model_policy["allow_external_fallback"] is False
-    assert request.agent.model_policy["max_attempts"] == 1
+    # #4317: there is no attempt budget in the policy. B14 derives the walk
+    # from the candidates the declared product grade allows.
+    assert "max_attempts" not in request.agent.model_policy
     assert request.messages == ({"role": "user", "content": "안녕"},)
     assert request.session_id == "session-1"
     assert request.trace_id == "trace-1"
@@ -186,13 +193,40 @@ class FakeB14:
 @pytest.mark.parametrize(
     "policy",
     [
-        {"model": "b14/auto", "unknown": True},
-        {"model": "b14/auto", "max_attempts": 99},
+        {"model": _INERT_MODEL_ID, "unknown": True},
+        # #4317: a declared attempt budget is not a Core policy field at all, so
+        # any value of it fails closed here instead of narrowing B14's roster.
+        {"model": _INERT_MODEL_ID, "max_attempts": 0},
+        {"model": _INERT_MODEL_ID, "max_attempts": 1},
+        {"model": _INERT_MODEL_ID, "max_attempts": True},
     ],
 )
 async def test_invalid_core_model_policy_fails_before_b14(policy) -> None:
     payload = valid_payload()
     payload["agent"]["model_policy"] = policy
+    b14 = FakeB14()
+    service = EngineService(
+        runtime_factory=lambda app_id: ExecutionRuntime(app_id=app_id, b14_client=b14),
+        b14_service_bound=True,
+    )
+
+    response = await service.execute_payload(payload)
+
+    assert response.status_code == 400
+    assert response.body["error"]["code"] == "invalid_execution_request"
+    assert b14.calls == []
+
+
+@pytest.mark.asyncio
+async def test_a_declared_attempt_budget_is_rejected_before_b14() -> None:
+    """#4317: the policy has no attempt budget, so a declared one fails closed.
+
+    The allowed candidate roster is the only ceiling. Accepting a caller number
+    here could only narrow that roster, so Core does not carry the field at all
+    and the real runtime refuses the request before any upstream call.
+    """
+    payload = valid_payload()
+    payload["agent"]["model_policy"] = {"model": _INERT_MODEL_ID, "max_attempts": 99}
     b14 = FakeB14()
     service = EngineService(
         runtime_factory=lambda app_id: ExecutionRuntime(app_id=app_id, b14_client=b14),
@@ -371,11 +405,13 @@ async def test_http_contract_bounds_body_and_content_type() -> None:
         content_type="application/json; charset=utf-8",
         body=raw,
     )
+    # #4379: the model route carries no PADIEM request body total, so an
+    # oversized body is no longer refused with 413.
     too_large = await service.handle(
         method="POST",
         path=EXECUTE_PATH,
         content_type="application/json",
-        body=b"x" * (MAX_MODEL_EXECUTE_REQUEST_BODY_BYTES + 1),
+        body=b"x" * (6_000_001),
     )
     bad_media = await service.handle(
         method="POST", path=EXECUTE_PATH, content_type="text/plain", body=raw
@@ -385,8 +421,8 @@ async def test_http_contract_bounds_body_and_content_type() -> None:
     )
 
     assert ok.status_code == 200
-    assert too_large.status_code == 413
-    assert too_large.body["error"]["code"] == "request_too_large"
+    assert too_large.status_code == 400
+    assert too_large.body["error"]["code"] == "invalid_json"
     assert bad_media.status_code == 415
     assert bad_json.status_code == 400
 
@@ -396,11 +432,11 @@ async def test_model_execute_accepts_long_unicode_payload_before_provider_withou
     # Old 128KiB pilot cap rejected this input despite B14/Core supporting it.
     runtime = FakeRuntime(value=result())
     service = EngineService(runtime_factory=lambda _: runtime, b14_service_bound=True)
-    raw_user_text = ("한글 긴 모델 입력 " * 14000) + "최종"
+    raw_user_text = ("한글 긴 모델 입력 " * 112_000) + "최종"
     payload = valid_payload()
     payload["messages"] = [{"role": "user", "content": raw_user_text}]
     raw = json.dumps(payload, ensure_ascii=False).encode("utf-8")
-    assert MAX_REQUEST_BODY_BYTES < len(raw) < MAX_MODEL_EXECUTE_REQUEST_BODY_BYTES
+    assert MAX_REQUEST_BODY_BYTES < len(raw)
     response = await service.handle(
         method="POST", path=EXECUTE_PATH, content_type="application/json", body=raw
     )
@@ -410,12 +446,13 @@ async def test_model_execute_accepts_long_unicode_payload_before_provider_withou
 
 
 def test_model_ingress_does_not_change_other_engine_route_memory_guards() -> None:
-    assert MAX_REQUEST_BODY_BYTES == 128 * 1024
-    assert MAX_MODEL_EXECUTE_REQUEST_BODY_BYTES == 6_000_000
+    assert MAX_REQUEST_BODY_BYTES == 1024 * 1024
+    # #4379: the model routes carry no PADIEM request body total.
+    assert MAX_MODEL_EXECUTE_REQUEST_BODY_BYTES is None
     from pathlib import Path
     worker = (Path(__file__).resolve().parents[1] / "worker.py").read_text(encoding="utf-8")
     # Three model-orchestration paths share the existing 6MB model ingress;
-    # all unrelated Engine routes continue using their original 128KiB.
+    # all unrelated Engine routes retain their own 1MiB bounded guard.
     assert "EXECUTE_PATH, ORCHESTRATE_PATH," in worker
     assert "ORCHESTRATION_STREAM_PATH, ORCHESTRATE_RESUME_PATH," in worker
     assert "else MAX_REQUEST_BODY_BYTES" in worker

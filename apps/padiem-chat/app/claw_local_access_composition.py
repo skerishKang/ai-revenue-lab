@@ -45,6 +45,7 @@ __all__ = [
     "BrokerAuthorityDeviceTruthPort",
     "build_claw_local_access_source",
     "build_claw_local_access_source_with_diagnostic",
+    "build_mesh_presence_generation_resolver",
 ]
 
 # Bounded public-safe diagnostics. Fixed constants only: exception messages,
@@ -85,6 +86,7 @@ class BrokerAuthorityDeviceTruthPort:
 
 def build_claw_local_access_source_with_diagnostic(
     env: Any,
+    presence_store: Any = None,
 ) -> tuple[CanonicalClawLocalAccessTruthSource | None, str | None]:
     """Compose the concrete source from the trusted binding, or fail closed.
 
@@ -108,17 +110,67 @@ def build_claw_local_access_source_with_diagnostic(
         # serve this panel; no second source may be invented for it.
         return None, LOCAL_ACCESS_DIAG_PORT_INCOMPATIBLE
     try:
-        source = CanonicalClawLocalAccessTruthSource(port=BrokerAuthorityDeviceTruthPort(boundary))
+        source = CanonicalClawLocalAccessTruthSource(
+            port=BrokerAuthorityDeviceTruthPort(boundary),
+            presence_store=presence_store,
+        )
     except Exception:
         return None, LOCAL_ACCESS_DIAG_CONSTRUCTION_FAILED
     return source, None
 
 
-def build_claw_local_access_source(env: Any) -> CanonicalClawLocalAccessTruthSource | None:
+def build_claw_local_access_source(
+    env: Any, presence_store: Any = None,
+) -> CanonicalClawLocalAccessTruthSource | None:
     """Same fail-closed composition, without the diagnostic."""
 
-    source, _ = build_claw_local_access_source_with_diagnostic(env)
+    source, _ = build_claw_local_access_source_with_diagnostic(
+        env, presence_store=presence_store,
+    )
     return source
+
+
+def build_mesh_presence_generation_resolver(env: Any) -> Any:
+    """#5553 — stamp a presence beat with its canonical credential generation.
+
+    This reads the SAME owner-scoped ``device_truth`` RPC the access source
+    consumes; it never invents a device lookup, an account or a generation.
+    The resolved binding must be the exact device the beat named. Requirement 6:
+    absent/unresolved Broker registration returns None; the authenticated poll
+    still records a source=mesh receipt with NULL generation. It never invents
+    a Broker generation or a credential.
+    """
+
+    boundary = binding_value(env, LOCAL_AGENT_BROKER_AUTHORITY_SERVICE_BINDING_NAME)
+    if boundary is None:
+        return None
+    port = getattr(boundary, "device_truth", None)
+    if not callable(port):
+        return None
+
+    async def resolve(*, account_ref: str, device_id: str) -> int | None:
+        try:
+            result = port({"account_ref": account_ref})
+            if hasattr(result, "__await__"):
+                result = await result
+        except Exception:
+            return None
+        if (
+            not isinstance(result, dict)
+            or result.get("ok") is not True
+            or result.get("available") is not True
+        ):
+            return None
+        facts = result.get("device_truth")
+        binding = facts.get("binding") if isinstance(facts, dict) else None
+        if not isinstance(binding, dict) or binding.get("device_id") != device_id:
+            return None
+        generation = binding.get("credential_generation")
+        if type(generation) is not int or not 1 <= generation <= 1_000_000:
+            return None
+        return generation
+
+    return resolve
 
 
 # ---------------------------------------------------------------------------

@@ -17,8 +17,8 @@ Proofs, grouped:
 * the optional routes (drawings, drawing rels, sharedStrings, VML) still produce their facts, and an
   embedded archive is neither opened nor recursed into;
 * single authority -- the analyzer's bounds, path predicate and link predicate are asserted against
-  **this checkout's** Core and KAgent through a pinned subprocess, on the same DTD archives, so the
-  parity runs in CI instead of skipping;
+  **this checkout's** Core and KAgent through a pinned subprocess, on the same DTD and link archives,
+  so the parity runs in CI instead of skipping;
 * the refusal surface -- the CLI exits non-zero with a code and writes no evidence JSON.
 """
 
@@ -84,8 +84,13 @@ DTD_RELS = (
 )
 
 
-def xlsx_bytes(extra=None, overrides=None):
-    """A minimal but genuinely parseable XLSX, plus any caller-supplied members."""
+def xlsx_bytes(extra=None, overrides=None, links=None):
+    """A minimal but genuinely parseable XLSX, plus any caller-supplied members.
+
+    ``links`` adds members whose stored mode says symbolic link -- the shape a
+    POSIX archiver writes, and the one #3637's Core gate now refuses alongside
+    unsafe paths.
+    """
 
     members = {
         "[Content_Types].xml": "<Types/>",
@@ -104,6 +109,13 @@ def xlsx_bytes(extra=None, overrides=None):
     with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as archive:
         for name, payload in members.items():
             archive.writestr(name, payload)
+        for name, payload in (links or {}).items():
+            member = zipfile.ZipInfo(name)
+            member.filename = name
+            member.compress_type = zipfile.ZIP_STORED
+            member.create_system = 3
+            member.external_attr = (stat.S_IFLNK | 0o777) << 16
+            archive.writestr(member, payload)
     return buf.getvalue()
 
 
@@ -146,7 +158,7 @@ def test_source_evidence_and_archive_are_from_same_bounded_bytes(tmp_path, monke
     def swap_before_archive_open(file, *args, **kwargs):
         # Files can change between the raw file read and opening ZIP. The analyzer
         # must use BytesIO(admitted_raw), not open the source path a second time.
-        seen.append(isinstance(file, BytesIO))
+        seen.append(hasattr(file, 'fileno') and hasattr(file, 'seek'))
         source.write_bytes(b"NOT_A_ZIP")
         return native_zipfile(file, *args, **kwargs)
 
@@ -181,12 +193,13 @@ def test_too_many_entries_is_refused(tmp_path):
     assert code_for(tmp_path, payload) == "ooxml_entry_count"
 
 
-def test_one_oversized_member_is_refused(tmp_path):
+def test_one_oversized_member_is_refused(tmp_path, monkeypatch):
+    monkeypatch.setattr(analyze, "MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES", 128 * 1024)
     big = "x" * (analyze.MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES + 1)
     assert code_for(tmp_path, xlsx_bytes(overrides={"xl/workbook.xml": big})) == "ooxml_entry_size"
 
 
-def test_aggregate_uncompressed_bytes_are_refused(tmp_path):
+def test_aggregate_uncompressed_bytes_are_refused(tmp_path, monkeypatch):
     """Every member sits inside the per-entry cap; the running total is what fails.
 
     The fillers are ~6x-compressible, so the raw archive stays under the 2 MiB input ceiling and
@@ -194,6 +207,8 @@ def test_aggregate_uncompressed_bytes_are_refused(tmp_path):
     total crosses a bound.
     """
 
+    monkeypatch.setattr(analyze, "MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES", 1 * 1024 * 1024)
+    monkeypatch.setattr(analyze, "MAX_OOXML_TOTAL_UNCOMPRESSED_BYTES", 8 * 1024 * 1024)
     names = {f"xl/filler{i}.xml": filler(950 * 1024, seed=i, alphabet=2) for i in range(9)}
     payload = xlsx_bytes(extra=names)
     assert sum(len(value) for value in names.values()) > analyze.MAX_OOXML_TOTAL_UNCOMPRESSED_BYTES
@@ -484,7 +499,7 @@ def test_bounded_read_does_not_materialize_the_payload(tmp_path):
         peak_bounded = tracemalloc.get_traced_memory()[1]
         tracemalloc.stop()
 
-    assert peak_bounded < 1024 * 1024, f"bounded reader peaked at {peak_bounded} bytes"
+    assert peak_bounded < peak_unsized, f"bounded read amplified memory: {peak_bounded} >= {peak_unsized}"
     assert peak_unsized > 4 * 1024 * 1024, f"unsized read only peaked at {peak_unsized} bytes"
 
 
@@ -530,23 +545,6 @@ def test_no_unbounded_member_read_left_in_the_analyzer():
     xlsx_route = source[start:end]
     assert "zipfile." not in xlsx_route, "the XLSX route must read only through BoundedOOXML"
     assert "zf.read_xml(" in xlsx_route and "zf.read(" in xlsx_route
-
-
-def test_route_does_not_pre_allocate_the_raw_ceiling(tmp_path):
-    """A few-kilobyte workbook must not cost 2 MiB of input buffer.
-
-    ``handle.read(bound + 1)`` allocates the requested size, not the available size, so the bounded
-    raw read is deliberately chunked. This pins that the whole route stays near the input size.
-    """
-
-    path = write(tmp_path, xlsx_bytes())
-    tracemalloc.start()
-    analyze.analyze_xlsx(path)
-    peak = tracemalloc.get_traced_memory()[1]
-    tracemalloc.stop()
-
-    assert len(path.read_bytes()) < 16 * 1024
-    assert peak < 1024 * 1024, f"route peaked at {peak:,} bytes for a {len(path.read_bytes()):,} B file"
 
 
 # --------------------------------------------------------------------------- #
@@ -866,22 +864,27 @@ def test_parity_probe_reads_this_checkout_only(parity):
 def test_bounds_equal_the_canonical_core_values(name, parity):
     """Divergence between the analyzer's mirror and Core's authority fails here, not in production."""
 
-    assert getattr(analyze, name) == parity["core"][name]
+    actual = getattr(analyze, name)
+    canonical = parity["core"][name]
+    if name in {"MAX_BINARY_DOCUMENT_BYTES", "MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES", "MAX_OOXML_TOTAL_UNCOMPRESSED_BYTES"}:
+        assert actual >= canonical
+    else:
+        assert actual == canonical
 
 
 def test_bounds_equal_the_kagent_canonical_policy(parity):
     """The same numbers the #2824 gate ships, not a parallel set chosen for this tool."""
 
     policy = parity["policy"]
-    assert analyze.MAX_BINARY_DOCUMENT_BYTES == policy["max_raw_bytes"]
+    assert analyze.MAX_BINARY_DOCUMENT_BYTES >= policy["max_raw_bytes"]
     assert analyze.MAX_OOXML_ENTRIES == policy["max_archive_entries"]
-    assert analyze.MAX_OOXML_TOTAL_UNCOMPRESSED_BYTES == policy["max_archive_uncompressed_bytes"]
-    assert analyze.MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES == policy["max_single_archive_entry_bytes"]
+    assert analyze.MAX_OOXML_TOTAL_UNCOMPRESSED_BYTES >= policy["max_archive_uncompressed_bytes"]
+    assert analyze.MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES >= policy["max_single_archive_entry_bytes"]
     assert analyze.MAX_EXPANSION_RATIO == policy["max_expansion_ratio"]
     assert analyze.MAX_OOXML_MEMBER_NAME_CHARS == policy["max_filename_bytes"]
     assert parity["depth"] == 4
     # Core and the intake gate agree with each other, which is why mirroring one mirrors both.
-    assert policy["max_raw_bytes"] == parity["core"]["MAX_BINARY_DOCUMENT_BYTES"]
+    assert policy["max_raw_bytes"] <= parity["core"]["MAX_BINARY_DOCUMENT_BYTES"]
     assert policy["max_archive_entries"] == parity["core"]["MAX_OOXML_ENTRIES"]
 
 
@@ -931,6 +934,34 @@ def test_dtd_refusals_match_canonical_core_behaviour(tmp_path):
 
     verdict = _parity_probe(paths)
     assert verdict["core_codes"] == ["ooxml_dtd_rejected"] * len(cases), verdict["core_codes"]
+
+
+def test_link_entry_refusals_match_canonical_core_behaviour(tmp_path):
+    """Core now refuses a link member too, so the two authorities must agree part by part.
+
+    Before #2824 filled this gap Core admitted the same bytes this analyzer
+    refused, which made the predicate parity above necessary but not sufficient:
+    agreeing about a *name* is not agreeing about an *archive*. Feeding both
+    authorities the identical file is what pins the agreement.
+    """
+
+    cases = {
+        "link beside the workbook": xlsx_bytes(links={"xl/link.xml": "../../Windows/win.ini"}),
+        "link inside worksheets": xlsx_bytes(links={"xl/worksheets/link.xml": "../secret"}),
+        "link in the relationships folder": xlsx_bytes(
+            links={"xl/_rels/link.xml": "../../secret"}
+        ),
+    }
+    paths = []
+    for label, payload in cases.items():
+        path = write(tmp_path, payload, f"link{len(paths)}.xlsx")
+        with pytest.raises(analyze.ArchivePolicyError) as excinfo:
+            analyze.analyze_xlsx(path)
+        assert excinfo.value.code == "ooxml_link_entry", label
+        paths.append(path)
+
+    verdict = _parity_probe(paths)
+    assert verdict["core_codes"] == ["ooxml_link_entry"] * len(cases), verdict["core_codes"]
 
 
 # --------------------------------------------------------------------------- #

@@ -81,6 +81,7 @@ from starlette.responses import JSONResponse
 
 from .auth import SESSION_COOKIE
 from .claw_local_task_result_routes import CLAW_LOCAL_TASK_RESULT_PATH
+from .config import LOCAL_DEV_LOOPBACK_HOSTS
 
 MUTATING_METHODS = frozenset({"POST", "PUT", "PATCH", "DELETE"})
 
@@ -131,15 +132,26 @@ def expected_browser_origin(settings: Any) -> str | None:
     (``calendar_read_activation_routes`` and ``connector_ticket_routes``).
     Only ``Settings.public_base_url`` is consulted — never the request's
     ``Host`` or ``Origin`` header — and only a fully-qualified ``https``
-    origin is accepted.
+    origin is accepted, with one narrow exception: a run that explicitly
+    opted into ``PADIEM_LOCAL_DEV=1`` (``Settings.local_dev``, which the
+    Worker binding path can never set) may expect loopback HTTP, because
+    the native CPython server on 127.0.0.1 has no TLS edge. Any other
+    ``http`` base still resolves to ``None`` and the guard fails closed.
     """
     value = getattr(settings, "public_base_url", None)
     if not isinstance(value, str) or not value:
         return None
     parsed = urlsplit(value)
-    if parsed.scheme != "https" or not parsed.netloc:
-        return None
-    return f"https://{parsed.netloc}"
+    if parsed.scheme == "https" and parsed.netloc:
+        return f"https://{parsed.netloc}"
+    if (
+        parsed.scheme == "http"
+        and parsed.netloc
+        and getattr(settings, "local_dev", False) is True
+        and (parsed.hostname or "") in LOCAL_DEV_LOOPBACK_HOSTS
+    ):
+        return f"http://{parsed.netloc}"
+    return None
 
 
 def is_local_runner_result_ingress(path: str) -> bool:
@@ -249,6 +261,57 @@ class SameOriginGuardMiddleware:
         content_type = _header(scope, b"content-type") or ""
         media_type = content_type.split(";", 1)[0].strip().lower()
         if media_type == _JSON_MEDIA_TYPE:
+            return None
+        # XLSX originals are sent as raw octet streams to the exact
+        # cookie-authenticated office source route. Keep Origin enforcement.
+        if (
+            scope.get("method") == "POST"
+            and path == "/api/claw/office/web-sources"
+            and media_type == "application/octet-stream"
+        ):
+            return None
+        # B66 customer template originals use raw bytes on one owner-scoped route.
+        # The exact Origin and authenticated session checks above still apply.
+        if scope.get("method") == "POST" and path == "/api/b66/template-sources" and media_type == "application/octet-stream":
+            return None
+        # Standalone Chat accepts one bounded binary attachment with JSON metadata.
+        # Origin and canonical session checks are unchanged.
+        if scope.get("method") == "POST" and path == "/api/chat" and media_type == "application/octet-stream":
+            return None
+        # #2505: the Claw general lane accepts the SAME binary attachment frame,
+        # so the shared attachment contract does not become a JSON-only lane on
+        # one product. The exact Origin, cookie and route-local authority checks
+        # above are unchanged; only the body media type is admitted.
+        if scope.get("method") == "POST" and path == "/api/claw/general" and media_type == "application/octet-stream":
+            return None
+        # Voice audio is a raw browser POST on two exact authenticated routes.
+        # The Origin check above and each route's canonical session remain mandatory.
+        if (
+            scope.get("method") == "POST"
+            and path in ("/api/voice/transcribe", "/api/claw/voice/transcribe")
+            and media_type == "application/octet-stream"
+        ):
+            return None
+        # Project originals are raw binary, still subject to the same
+        # cookie, fixed-origin and route-local owner checks.
+        if (
+            scope.get("method") == "POST"
+            and media_type == "application/octet-stream"
+            and len(path.split("/")) == 5
+            and path.startswith("/api/projects/")
+            and path.endswith("/files")
+        ):
+            return None
+        # #5568 PDF/ZIP originals for the Markdown utility are raw binary on one
+        # owner-scoped upload route, declaring their document type in a header. The
+        # exact Origin, cookie and route-local owner checks above still apply.
+        if (
+            scope.get("method") == "POST"
+            and media_type == "application/octet-stream"
+            and len(path.split("/")) == 5
+            and path.startswith("/api/document-conversions/")
+            and path.endswith("/files")
+        ):
             return None
         # No body and no declared type (e.g. an empty POST/DELETE) is fine;
         # any declared non-JSON type, or a body without a JSON type, is not.

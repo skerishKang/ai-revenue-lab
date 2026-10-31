@@ -1,0 +1,156 @@
+name: B62 Authenticated Logout Reuse Production Check
+
+# Owner-authorized bounded Production verification for #5225: a session cookie
+# stored before a logout must be refused by a protected Chat API afterwards.
+#
+# It reuses the existing CGI Alpha QA identity and the existing production
+# environment of the long-context canary. It creates no account, mutates no
+# admin model/tier authorization, calls no model and prints no secret, cookie
+# or customer data.
+
+on:
+  pull_request:
+    paths:
+      - ".github/scripts/b62_live_logout_reuse_check.py"
+      - ".github/workflows/b62-live-logout-reuse-check.yml"
+  workflow_dispatch:
+    inputs:
+      target_sha:
+        description: "Exact current main SHA to verify"
+        required: true
+        type: string
+      confirmation:
+        description: "Type RUN_B62_LOGOUT_REUSE_CHECK_ONCE"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: b62-live-logout-reuse-production-check
+  cancel-in-progress: false
+
+jobs:
+  source-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    outputs:
+      target_sha: ${{ steps.b62_target_sha.outputs.target_sha }}
+    steps:
+      # The body below is copied verbatim from the marked region of
+      # .github/scripts/b62_verify_target_sha.py, which stays the rule's only authority:
+      # a step that runs before any checkout has no repository to read a script from.
+      - name: Verify target_sha shape before any checkout
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        id: b62_target_sha
+        env:
+          B62_TARGET_SHA_RAW: ${{ inputs.target_sha }}
+        shell: bash
+        run: |
+          python3 - <<'B62_TARGET_SHA_GUARD'
+          import os
+          import re
+          import sys
+
+          _SHA = re.compile(r"^[0-9a-f]{40}$")
+
+
+          def canonical_target_sha(raw):
+              # Case is the only forgiveness: a short or non-hex value is not a commit.
+              value = (raw or "").strip()
+              if len(value) != 40:
+                  return None
+              candidate = value.lower()
+              return candidate if _SHA.match(candidate) else None
+
+
+          def failure_message(raw):
+              return f"target_sha는 40자리 전체 SHA여야 합니다(입력: {len((raw or '').strip())}자리). git rev-parse origin/main 값을 넣으세요"
+
+
+          def main():
+              raw = os.environ.get("B62_TARGET_SHA_RAW", "")
+              canonical = canonical_target_sha(raw)
+              if canonical is None:
+                  sys.stdout.write("::error::" + failure_message(raw) + "\n")
+                  return 1
+              for key, name in (("GITHUB_OUTPUT", "target_sha"), ("GITHUB_ENV", "TARGET_SHA")):
+                  path = os.environ.get(key)
+                  if path:
+                      with open(path, "a", encoding="utf-8") as handle:
+                          handle.write(f"{name}={canonical}\n")
+              sys.stdout.write("B62_TARGET_SHA_INPUT_SHAPE=PASS\n")
+              return 0
+
+
+          if __name__ == "__main__":
+              raise SystemExit(main())
+          B62_TARGET_SHA_GUARD
+
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && steps.b62_target_sha.outputs.target_sha || github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Exact main source guard
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        shell: bash
+        env:
+          TARGET_SHA: ${{ steps.b62_target_sha.outputs.target_sha }}
+        run: |
+          set -euo pipefail
+          test "${GITHUB_REF}" = "refs/heads/main"
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          echo 'B62_LOGOUT_REUSE_EXACT_MAIN=PASS'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Source-only guarded QA contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          python .github/scripts/b62_live_logout_reuse_check.py --self-test
+          python -m py_compile .github/scripts/b62_live_logout_reuse_check.py
+          echo 'B62_LOGOUT_REUSE_DEFAULT_LIVE_EXECUTION=BLOCKED'
+          echo 'B62_LOGOUT_REUSE_MODEL_CALLS=0'
+          echo 'B62_LOGOUT_REUSE_ADMIN_OR_SECRET_MUTATIONS=0'
+
+  live-logout-reuse:
+    needs: source-contract
+    if: >-
+      ${{ github.event_name == 'workflow_dispatch' &&
+          inputs.confirmation == 'RUN_B62_LOGOUT_REUSE_CHECK_ONCE' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    environment: production
+    env:
+      TARGET_SHA: ${{ needs.source-contract.outputs.target_sha }}
+      B66_CGI_ALPHA_USERNAME: ${{ vars.B66_CGI_ALPHA_USERNAME }}
+      B66_CGI_ALPHA_PASSWORD: ${{ secrets.B66_CGI_ALPHA_PASSWORD }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          persist-credentials: false
+      - name: Verify unchanged exact-main and QA credentials before any request
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${GITHUB_REF}" = "refs/heads/main"
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          test -n "${B66_CGI_ALPHA_USERNAME}"
+          test -n "${B66_CGI_ALPHA_PASSWORD}"
+          echo 'B62_LOGOUT_REUSE_QA_AUTH_PREFLIGHT=PASS'
+          echo 'CREDENTIAL_VALUES_LOGGED=0'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Real logout, stored-cookie reuse and other-session check
+        shell: bash
+        run: |
+          set -euo pipefail
+          python .github/scripts/b62_live_logout_reuse_check.py --authorized-live

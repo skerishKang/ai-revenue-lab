@@ -51,7 +51,7 @@ TELEGRAM_GET_ME_PATH = "/getMe"
 TELEGRAM_GET_CHAT_PATH = "/getChat"
 ALLOWED_TELEGRAM_METHOD_PATHS = frozenset({TELEGRAM_GET_ME_PATH, TELEGRAM_GET_CHAT_PATH})
 
-MAX_TELEGRAM_RESPONSE_BYTES = 1_000_000
+MAX_TELEGRAM_RESPONSE_BYTES = 10 * 1024 * 1024
 PROVIDER_REQUEST_FAILED = "telegram_provider_request_failed"
 
 _BOT_TOKEN_RE = re.compile(r"^[0-9]{6,64}:[A-Za-z0-9_-]{20,128}$")
@@ -115,7 +115,7 @@ class HttpxTelegramReadPort(TelegramReadPort):
         url: str,
         params: dict[str, str] | None,
         max_response_bytes: int,
-        timeout_seconds: int,
+        timeout_seconds: int | None,
     ) -> dict[str, Any]:
         async with httpx.AsyncClient(
             transport=self._transport, timeout=timeout_seconds, follow_redirects=False
@@ -149,7 +149,7 @@ class HttpxTelegramReadPort(TelegramReadPort):
         base_url: str,
         path: str,
         query: dict[str, str],
-        timeout_seconds: int,
+        timeout_seconds: int | None,
         max_response_bytes: int,
     ) -> dict[str, Any] | Awaitable[dict[str, Any]]:
         # (1) Scope gate: the port only ever runs the promoted readonly scope.

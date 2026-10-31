@@ -2,28 +2,35 @@
   "use strict";
 
   const messageList = document.getElementById("messageList");
-  const sidebarBottom = document.querySelector(".sidebar-bottom");
-  const accountControls = document.querySelector(".sidebar-account");
+  // #5560: the export entry moved from the sidebar bottom into Settings >
+  // Data management. The export scope and the fail-closed state rules stay
+  // exactly as they were; only the mount point changed.
+  const exportMount = document.getElementById("dataSettingsActions");
 
-  if (!messageList || !sidebarBottom) return;
+  if (!messageList || !exportMount) return;
+
+  function localeText(key, fallback) {
+    try {
+      if (window.__padiemLocale && typeof window.__padiemLocale.text === "function") {
+        const value = window.__padiemLocale.text(key);
+        if (value && value !== key) return value;
+      }
+    } catch (_) {}
+    return fallback;
+  }
 
   const exportButton = document.createElement("button");
   exportButton.type = "button";
   exportButton.id = "conversationExportButton";
-  exportButton.className = "login-button conversation-export-button";
-  exportButton.textContent = "대화 내보내기";
-  exportButton.setAttribute("aria-label", "현재 대화를 텍스트 파일로 내보내기");
+  // #5560: the export entry is a Settings action now, so it carries the
+  // settings button skin instead of the sidebar session button skin.
+  exportButton.className = "settings-action conversation-export-button";
+  exportButton.textContent = localeText("export", "대화 내보내기");
+  exportButton.setAttribute("aria-label", localeText("export-aria", "현재 대화를 텍스트 파일로 내보내기"));
   exportButton.hidden = true;
   exportButton.disabled = true;
 
-  // Conversation export is a conversation utility, not an account capability.
-  // Keep it outside the fail-closed account wrapper so guest/unavailable auth
-  // presentation cannot accidentally hide an otherwise exportable conversation.
-  if (accountControls && accountControls.parentElement === sidebarBottom) {
-    sidebarBottom.insertBefore(exportButton, accountControls);
-  } else {
-    sidebarBottom.appendChild(exportButton);
-  }
+  exportMount.appendChild(exportButton);
 
   const SKIP_SELECTOR = [
     ".typing",
@@ -171,20 +178,14 @@
   messageList.addEventListener("padiem:message-lifecycle", updateExportState);
   updateExportState();
 
-  function ensureSidebarOpenForExport() {
-    const shellEl = document.querySelector(".app-shell");
-    const mobile = window.matchMedia("(max-width: 920px)").matches;
-    if (!mobile) return;
-    if (shellEl && !shellEl.classList.contains("sidebar-open")) {
-      shellEl.classList.add("sidebar-open");
-      const menu = document.getElementById("mobileMenu");
-      if (menu) menu.setAttribute("aria-expanded", "true");
-      const scrim = document.getElementById("sidebarScrim");
-      if (scrim) scrim.hidden = false;
-    }
+  function ensureSettingsOpenForExport() {
+    // #5560: the export entry lives in Settings > Data management, so the
+    // request opens that screen instead of the sidebar.
+    const settingsButton = document.getElementById("settingsButton");
+    if (settingsButton && settingsButton.hidden === false) settingsButton.click();
   }
 
   document.addEventListener("padiem:request-export", () => {
-    ensureSidebarOpenForExport();
+    ensureSettingsOpenForExport();
   });
 })();

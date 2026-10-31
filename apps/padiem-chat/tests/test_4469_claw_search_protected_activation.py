@@ -29,38 +29,16 @@ def _with_search(*, value="true"):
     }])
 
 
-def test_claw_search_exact_missing_to_on_builder_and_guard(tmp_path):
+def test_new_search_variable_uses_repo_value_and_existing_value_is_preserved(tmp_path):
+    import tomllib
     module = _load_module()
-    before = _settings_payload(_production_bindings())
-    live = module.parse_live_bindings(before)
-    config = module.build_production_config(
-        live, _write_repo_config(tmp_path), PUBLIC_URL,
-        activate_claw_public_search=True,
-    )
-    assert 'PADIEM_CLAW_PUBLIC_WEB_SEARCH_ENABLED = "true"' in config
-    module.verify_mutation_zero(config, live, allow_claw_public_search=True)
-    with pytest.raises(module.ProductionConfigError, match="mutates live"):
-        module.verify_mutation_zero(config, live)
-    guard = _binding_guard()
-    guard.assert_claw_public_search_added_only(before, _with_search())
-
-
-def test_on_is_idempotent_and_off_cannot_be_overwritten(tmp_path):
-    mod = _load_module()
-    exact = _with_search()
-    live = mod.parse_live_bindings(exact)
-    output = mod.build_production_config(
-        live, _write_repo_config(tmp_path), PUBLIC_URL,
-        activate_claw_public_search=True,
-    )
-    mod.verify_mutation_zero(output, live, allow_claw_public_search=True)
-    _binding_guard().assert_claw_public_search_added_only(exact, exact)
-    drift = mod.parse_live_bindings(_with_search(value="false"))
-    with pytest.raises(mod.ProductionConfigError, match="conflicts"):
-        mod.build_production_config(
-            drift, _write_repo_config(tmp_path), PUBLIC_URL,
-            activate_claw_public_search=True,
-        )
+    repo = _write_repo_config(tmp_path)
+    with repo.open("a") as f: f.write('PADIEM_CLAW_PUBLIC_WEB_SEARCH_ENABLED = "true"\n')
+    live = module.parse_live_bindings(_settings_payload(_production_bindings()))
+    assert tomllib.loads(module.build_production_config(live, repo, PUBLIC_URL))["vars"]["PADIEM_CLAW_PUBLIC_WEB_SEARCH_ENABLED"] == "true"
+    live = module.parse_live_bindings(_with_search(value="false"))
+    assert tomllib.loads(module.build_production_config(live, repo, PUBLIC_URL))["vars"]["PADIEM_CLAW_PUBLIC_WEB_SEARCH_ENABLED"] == "false"
+    assert tomllib.loads(module.build_production_config(live, repo, PUBLIC_URL, set_var={"PADIEM_CLAW_PUBLIC_WEB_SEARCH_ENABLED": "true"}))["vars"]["PADIEM_CLAW_PUBLIC_WEB_SEARCH_ENABLED"] == "true"
 
 
 def test_no_unrelated_binding_change_allowed():
@@ -79,10 +57,9 @@ def test_no_unrelated_binding_change_allowed():
         guard.assert_claw_public_search_added_only(before, plus)
 
 
-def test_existing_production_workflow_requires_explicit_single_mode():
-    text = (ROOT / ".github/workflows/b62-production-code-deploy-gate.yml").read_text(encoding="utf-8")
-    assert "ACTIVATE_CLAW_PUBLIC_SEARCH" in text
-    assert "DEPLOY_B62_CLAW_PUBLIC_WEB_SEARCH_FROM_EXACT_MAIN" in text
-    assert "--activate-claw-public-search" in text
-    assert "--expected-add-claw-public-search" in text
-    assert "ACTIVATE_CLAW_PUBLIC_SEARCH" in text.split("Read back exact post-deploy binding and variable state")[1]
+def test_existing_production_workflow_uses_generic_explicit_variable_input():
+    text = (ROOT / ".github/workflows/b62-production-code-deploy-gate.yml").read_text()
+    assert "ACTIVATE_CLAW_PUBLIC_SEARCH" not in text
+    assert "--activate-claw-public-search" not in text
+    assert "      set_var:" in text
+    assert '--dispatch-event "${GITHUB_EVENT_PATH}"' in text

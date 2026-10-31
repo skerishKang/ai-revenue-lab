@@ -41,7 +41,10 @@ AUTOMATION_PROJECTION = "READ_ONLY_DURABLE_STORE"
 MAX_TITLE_CHARS = 200
 MAX_CONTENT_CHARS = 4_000
 MAX_DESCRIPTION_CHARS = 4_000
-MAX_REMINDER_MINUTES = 40_320  # 4 weeks
+# Provider bound, not a PADIEM ceiling (#5895-C): a calendar reminder
+# override accepts 0..40320 minutes (4 weeks) upstream, so a larger value
+# could not be delivered anyway.
+MAX_REMINDER_MINUTES = 40_320
 MAX_CALENDAR_LIST_LIMIT = 256
 MAX_CALENDAR_LINK_BACKS = 4
 

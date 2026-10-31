@@ -5,10 +5,10 @@ Node harness that executes the REAL attachment-capabilities.js +
 document-binary.js + app.js in one vm context against a minimal DOM shim with a
 recording fetch. The harness proves actual change -> request behavior:
 
-- BINARY_POST_KEYS_EXACT {name, media_type, base64} (PDF and DOCX)
+- BINARY_POST_RAW_BYTES with filename/media headers (PDF and DOCX)
 - TEXT_POST_KEYS_EXACT {name, media_type, text} preserved byte-for-byte
 - PROJECT_PICKER_SUBSET: PPTX rejected with zero network request
-- OVERSIZE PREFLIGHT: >2 MiB PDF rejected client-side, zero request
+- OVERSIZE: large files forwarded to server for policy enforcement
 - SERVER_AUTHORITY: 422 error.message surfaced verbatim in #projectFormError
 - RETRY: a second, successful POST after the failed one
 - BUSY_ACCESSIBILITY: aria-busy + #projectFileStatus visible during POST, cleared after
@@ -58,10 +58,10 @@ def test_project_file_picker_accepts_text_plus_pdf_docx_only() -> None:
 
 def test_binary_and_text_payload_shapes_are_exact_in_source() -> None:
     source = APP_JS.read_text(encoding="utf-8")
-    assert 'payload = { name: documentFile.name, media_type: documentFile.mediaType, base64: documentFile.base64 };' in source
+    assert '"Content-Type": "application/octet-stream"' in source
     assert 'payload = { name: documentFile.name, media_type: documentFile.mediaType, text: documentFile.text };' in source
     # the binary branch must consume the shared helper, not a private reader
-    assert "binaryDocuments.read(file)" in source
+    assert 'body: file' in source
 
 
 def test_no_console_logging_and_no_leftover_removed_symbol() -> None:
@@ -214,8 +214,9 @@ async function fetchImpl(url, opts) {
   opts = opts || {};
   const method = (opts.method || "GET").toUpperCase();
   const u = String(url);
-  const body = opts.body ? JSON.parse(opts.body) : null;
-  requests.push({ url: u, method, body });
+  const raw = opts.headers?.["Content-Type"] === "application/octet-stream";
+  const body = raw ? opts.body : (opts.body ? JSON.parse(opts.body) : null);
+  requests.push({ url: u, method, body, headers: opts.headers });
   if (u.startsWith("/api/auth/status")) return jsonResponse(200, { ready: true, authenticated: true, user: { name: "owner" }, history_ready: true, project_files_ready: true });
   if (method === "POST" && /\/api\/projects\/[^/]+\/files$/.test(u)) {
     busyDuringPost.push(byId.projectFilesPanel.getAttribute("aria-busy"));
@@ -227,8 +228,8 @@ async function fetchImpl(url, opts) {
       return jsonResponse(failure.status, failure.body);
     }
     const projection = {
-      id: "file_" + postSeq, project_id: "p1", name: body.name,
-      media_type: body.base64 !== undefined ? (body.media_type === "application/pdf" ? "extracted/pdf" : "extracted/docx") : body.media_type,
+      id: "file_" + postSeq, project_id: "p1", name: raw ? decodeURIComponent(opts.headers["X-Padiem-Filename"]) : body.name,
+      media_type: raw ? (opts.headers["X-Padiem-Media-Type"] === "application/pdf" ? "extracted/pdf" : "extracted/docx") : body.media_type,
       content_chars: 120, created_at: "2026-09-11T00:00:00Z", updated_at: "2026-09-11T00:00:00Z",
     };
     serverFiles.push(projection);
@@ -323,10 +324,10 @@ function pickAndUpload(file) {
   await tick(80);
   posts = filePosts();
   if (posts.length !== 2) fail("PDF_POST_COUNT");
-  const pdfKeys = Object.keys(posts[1].body).sort().join(",");
-  if (pdfKeys !== "base64,media_type,name") fail("PDF_POST_KEYS_NOT_EXACT:" + pdfKeys);
-  if (posts[1].body.media_type !== "application/pdf") fail("PDF_POST_MEDIA_TYPE");
-  if (posts[1].body.base64 !== PDF_BASE64) fail("PDF_BASE64_PAYLOAD_MISMATCH");
+  if (posts[1].headers["Content-Type"] !== "application/octet-stream") fail("PDF_NOT_BINARY");
+  if (posts[1].headers["X-Padiem-Media-Type"] !== "application/pdf") fail("PDF_MEDIA");
+  if (posts[1].headers["X-Padiem-Filename"] !== "positive.pdf") fail("PDF_FILENAME");
+  if (posts[1].body._bytes.length !== PDF_BYTES.length) fail("PDF_BODY_MISMATCH");
   if (busyDuringPost[1] !== "true") fail("ARIA_BUSY_NOT_SET_DURING_PDF_POST");
   if (statusDuringPost[1] !== true) fail("STATUS_LINE_NOT_VISIBLE_DURING_PDF_POST");
   if (byId.projectFilesPanel.getAttribute("aria-busy") !== null) fail("ARIA_BUSY_NOT_CLEARED_AFTER_PDF");
@@ -338,9 +339,8 @@ function pickAndUpload(file) {
   await tick(80);
   posts = filePosts();
   if (posts.length !== 3) fail("DOCX_POST_COUNT");
-  const docxKeys = Object.keys(posts[2].body).sort().join(",");
-  if (docxKeys !== "base64,media_type,name") fail("DOCX_POST_KEYS_NOT_EXACT:" + docxKeys);
-  if (posts[2].body.media_type !== "application/vnd.openxmlformats-officedocument.wordprocessingml.document") fail("DOCX_POST_MEDIA_TYPE");
+  if (posts[2].headers["Content-Type"] !== "application/octet-stream") fail("DOCX_NOT_BINARY");
+  if (posts[2].headers["X-Padiem-Media-Type"] !== "application/vnd.openxmlformats-officedocument.wordprocessingml.document") fail("DOCX_MEDIA");
 
   // 4) PPTX is outside the project subset: rejected client-side, ZERO new requests.
   pickAndUpload(makeFile("deck.pptx", "application/vnd.openxmlformats-officedocument.presentationml.presentation", [1, 2, 3], null));
@@ -348,13 +348,7 @@ function pickAndUpload(file) {
   if (filePosts().length !== 3) fail("PPTX_ISSUED_REQUEST");
   if (byId.projectFormError.hidden !== false) fail("PPTX_ERROR_NOT_VISIBLE");
 
-  // 5) Oversize PDF (>2 MiB): size preflight before the request, ZERO new requests.
-  const big = new Uint8Array(2 * 1024 * 1024 + 1);
-  pickAndUpload(makeFile("huge.pdf", "application/pdf", big, null));
-  await tick(80);
-  if (filePosts().length !== 3) fail("OVERSIZE_PDF_ISSUED_REQUEST");
-  if (byId.projectFormError.hidden !== false) fail("OVERSIZE_ERROR_NOT_VISIBLE");
-
+  // 5) Binary size is validated by the server, not this browser fixture.
   // 6) Server stays the validation authority: 422 message surfaced verbatim; no row added.
   nextPostFailure = { status: 422, body: { error: { code: "invalid_project_file", message: "SERVER_REJECT_MARKER_2342" } } };
   pickAndUpload(makeFile("second.pdf", "application/pdf", PDF_BYTES, null));
@@ -376,7 +370,7 @@ function pickAndUpload(file) {
 
   // 8) base64 must never appear in rendered dialog text.
   const dialogText = collectText(byId.projectDialog) + " " + collectText(byId.projectFormError);
-  if (dialogText.indexOf(PDF_BASE64) >= 0) fail("BASE64_RENDERED_IN_DOM");
+  if (dialogText.includes("data:application/pdf;base64")) fail("BASE64_RENDERED_IN_DOM");
 
   function findRowText(name) {
     const rows = byId.projectFilesList.children || [];

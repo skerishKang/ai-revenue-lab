@@ -1,0 +1,127 @@
+{
+  "worker": "padiem-ai-engine",
+  "reviewed_utc": "2026-10-21",
+  "source_served_version": "e281d358-7486-4aed-9771-07a17738d6d6",
+  "bindings": [
+    {
+      "name": "B14_SERVICE",
+      "type": "service"
+    },
+    {
+      "name": "CLAW_ENGINE_DESKTOP_SECRET",
+      "type": "secrets_store_secret"
+    },
+    {
+      "name": "CONTROL_PLANE_ENGINE_ADMISSION",
+      "type": "service"
+    },
+    {
+      "name": "CONTROL_PLANE_GOOGLE_OAUTH",
+      "type": "service"
+    },
+    {
+      "name": "CONTROL_PLANE_IDENTITY",
+      "type": "service"
+    },
+    {
+      "name": "ENGINE_CALENDAR_ALLOWED_CALENDARS",
+      "type": "secret_text"
+    },
+    {
+      "name": "ENGINE_CONNECTOR_GRANTS",
+      "type": "d1"
+    },
+    {
+      "name": "ENGINE_CONTINUATION",
+      "type": "d1"
+    },
+    {
+      "name": "ENGINE_DOCUMENT_STORE",
+      "type": "d1"
+    },
+    {
+      "name": "ENGINE_EVIDENCE_STORE",
+      "type": "d1"
+    },
+    {
+      "name": "ENGINE_IDEMPOTENCY",
+      "type": "d1"
+    },
+    {
+      "name": "ENGINE_IMAGE_STORE",
+      "type": "d1"
+    },
+    {
+      "name": "ENGINE_TELEGRAM_BOT_TOKEN",
+      "type": "secret_text"
+    },
+    {
+      "name": "ENGINE_TELEGRAM_PAIRED_CHAT_IDS",
+      "type": "secret_text"
+    },
+    {
+      "name": "PADIEM_B14_SERVICE_PROOF_SECRET",
+      "type": "secrets_store_secret"
+    },
+    {
+      "name": "PADIEM_CHAT_SERVICE",
+      "type": "service"
+    },
+    {
+      "name": "PADIEM_ENGINE_AGENT_DURABLE_ENABLED",
+      "type": "plain_text"
+    },
+    {
+      "name": "PADIEM_ENGINE_ALLOWED_APPS",
+      "type": "secret_text"
+    },
+    {
+      "name": "PADIEM_ENGINE_CALLER_ID",
+      "type": "secret_text"
+    },
+    {
+      "name": "PADIEM_ENGINE_CALLER_REGISTRY_V1",
+      "type": "secret_text"
+    },
+    {
+      "name": "PADIEM_ENGINE_CALLER_REGISTRY_V1_OVERLAY",
+      "type": "secret_text"
+    },
+    {
+      "name": "PADIEM_ENGINE_CALLER_SECRET",
+      "type": "secret_text"
+    },
+    {
+      "name": "PADIEM_GRAFANA_OTLP_TOKEN",
+      "type": "secrets_store_secret"
+    },
+    {
+      "name": "PADIEM_WEB_XLSX_P01_DURABLE_TOOL_ENABLED",
+      "type": "plain_text"
+    },
+    {
+      "name": "PADIEM_WEB_XLSX_P01_ENGINE_SCOPE_ENABLED",
+      "type": "plain_text"
+    },
+    {
+      "name": "PADIEM_WEB_XLSX_P01_OWNER_DECISION_ENABLED",
+      "type": "plain_text"
+    },
+    {
+      "name": "PADIEM_WEB_XLSX_QUOTE_WRITE_DURABLE_ENABLED",
+      "type": "plain_text"
+    },
+    {
+      "name": "PADIEM_WEB_XLSX_QUOTE_WRITE_ENGINE_ENABLED",
+      "type": "plain_text"
+    },
+    {
+      "name": "PADIEM_WEB_XLSX_QUOTE_WRITE_OWNER_DECISION_ENABLED",
+      "type": "plain_text"
+    },
+    {
+      "name": "WEB_XLSX_PRIVATE_B62_D1",
+      "type": "d1"
+    }
+  ]
+}

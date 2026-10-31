@@ -652,9 +652,25 @@ class BoundedChildResultTests(unittest.TestCase):
         self.assertEqual(result.outcome, isolation.ParserOutcome.FAILED)
         self.assertIsNone(result.text)
 
-    def test_child_text_over_the_core_character_bound_fails_closed(self) -> None:
-        over = json.dumps({"ok": True, "text": "x" * 50_000}).encode("utf-8")
-        result = self._boundary(_ProcessDouble(stdout=over))
+    def test_a_long_report_within_the_pipe_allocation_is_a_result(self) -> None:
+        """#5734 stage 2: the parent's allocation decides, not a character count.
+
+        A 100,000-character answer used to be refused by the report's own copy of
+        Core's character ceiling even though the parent had room for it. The pipe
+        bound is the one that still speaks, and this report fits inside it.
+        """
+        text = "x" * 100_000
+        body = json.dumps({"ok": True, "text": text}).encode("utf-8")
+        self.assertLess(len(body), contract.MAX_CHILD_OUTPUT_BYTES)
+        self.assertGreater(len(text), contract.MAX_DOCUMENT_CHARS)
+        result = self._boundary(_ProcessDouble(stdout=body))
+        self.assertEqual(result.outcome, isolation.ParserOutcome.COMPLETED)
+        self.assertEqual(result.text, text)
+
+    def test_a_report_past_the_pipe_allocation_still_fails_closed(self) -> None:
+        text = "x" * (contract.MAX_CHILD_OUTPUT_BYTES + 1)
+        body = json.dumps({"ok": True, "text": text}).encode("utf-8")
+        result = self._boundary(_ProcessDouble(stdout=body))
         self.assertEqual(result.outcome, isolation.ParserOutcome.FAILED)
         self.assertIsNone(result.text)
 
@@ -677,12 +693,15 @@ class BoundedChildResultTests(unittest.TestCase):
         self.assertEqual(result.outcome, isolation.ParserOutcome.FAILED)
 
     def test_oversized_input_is_refused_without_spawning(self) -> None:
-        oversized = b"%PDF-" + b"\x00" * (2 * 1024 * 1024)
-        spy = _SpawnSpy()
-        with mock.patch.object(isolation, "_spawn_parser_child", spy):
-            result = isolation.extract_binary_document_isolated(
-                name="plan.pdf", media_type=PDF_MEDIA, payload=oversized
-            )
+        # The refusal is driven by the current input bound, so the test does
+        # not build a multi-gigabyte payload.
+        oversized = b"%PDF-" + b"\x00" * 1024
+        with mock.patch.object(isolation, "MAX_BINARY_DOCUMENT_BYTES", 16):
+            spy = _SpawnSpy()
+            with mock.patch.object(isolation, "_spawn_parser_child", spy):
+                result = isolation.extract_binary_document_isolated(
+                    name="plan.pdf", media_type=PDF_MEDIA, payload=oversized
+                )
         self.assertEqual(spy.calls, 0)
         self.assertEqual(result.outcome, isolation.ParserOutcome.FAILED)
         self.assertEqual(result.reason_code, contract.PARSER_INPUT_REASON_CODE)
@@ -886,17 +905,18 @@ class PolicyTests(unittest.TestCase):
     """The timeout and the byte ceilings are bounded on both sides."""
 
     def test_default_timeout_is_the_central_decision(self) -> None:
-        self.assertEqual(isolation.DOCUMENT_PARSER_TIMEOUT_SECONDS, 30.0)
-        self.assertEqual(
-            isolation.DEFAULT_PARSER_ISOLATION_POLICY.timeout_seconds, 30.0
+        # #4379: the parser isolation carries no PADIEM wall-clock ceiling, so
+        # the default is no wait ceiling at all.
+        self.assertIsNone(isolation.DOCUMENT_PARSER_TIMEOUT_SECONDS)
+        self.assertIsNone(
+            isolation.DEFAULT_PARSER_ISOLATION_POLICY.timeout_seconds
         )
-        self.assertLessEqual(
-            isolation.DOCUMENT_PARSER_TIMEOUT_SECONDS,
-            isolation.DOCUMENT_PARSER_TIMEOUT_MAX_SECONDS,
-        )
+        self.assertIsNone(isolation.DOCUMENT_PARSER_TIMEOUT_MAX_SECONDS)
 
     def test_unbounded_or_non_positive_timeouts_are_rejected(self) -> None:
-        for value in (0, 0.0, -1.0, 30.5, 31.0, 300.0, float("inf"), float("nan")):
+        # #4379: a large timeout is accepted. Only a non-positive or a
+        # non-finite value is still refused.
+        for value in (0, 0.0, -1.0, float("inf"), float("nan")):
             with self.subTest(timeout=value), self.assertRaises(
                 isolation.ParserIsolationError
             ):
@@ -962,16 +982,22 @@ class LifecycleBoundTests(unittest.TestCase):
     def test_canonical_grace_ceilings_exist_and_are_the_policy_defaults(self) -> None:
         policy = isolation.DEFAULT_PARSER_ISOLATION_POLICY
         for knob, constant_name in _SECONDS_CEILING_NAMES:
+            if knob == "timeout_seconds":
+                continue
             ceiling = getattr(isolation, constant_name)
             with self.subTest(knob=knob):
                 self.assertEqual(getattr(policy, knob), ceiling)
-        self.assertEqual(isolation.DOCUMENT_PARSER_TIMEOUT_MAX_SECONDS, 30.0)
+        self.assertIsNone(isolation.DOCUMENT_PARSER_TIMEOUT_MAX_SECONDS)
         self.assertEqual(isolation.DOCUMENT_PARSER_TERMINATE_GRACE_MAX_SECONDS, 2.0)
         self.assertEqual(isolation.DOCUMENT_PARSER_KILL_GRACE_MAX_SECONDS, 2.0)
         self.assertEqual(isolation.DOCUMENT_PARSER_DRAIN_JOIN_MAX_SECONDS, 2.0)
 
     def test_above_max_seconds_knobs_are_rejected(self) -> None:
+        # #4379: the timeout knob has no ceiling any more. The grace knobs
+        # keep theirs.
         for knob, constant_name in _SECONDS_CEILING_NAMES:
+            if knob == "timeout_seconds":
+                continue
             ceiling = getattr(isolation, constant_name)
             for value in (ceiling + 1e-6, ceiling * 2, ceiling + 60.0, 1e9, float("inf")):
                 with self.subTest(knob=knob, value=value), self.assertRaises(
@@ -991,6 +1017,8 @@ class LifecycleBoundTests(unittest.TestCase):
     def test_a_single_knob_above_its_ceiling_is_enough_to_be_refused(self) -> None:
         # Proves the ceiling is per-knob, not a sum or a check on one field.
         for knob, constant_name in _SECONDS_CEILING_NAMES:
+            if knob == "timeout_seconds":
+                continue
             with self.subTest(knob=knob), self.assertRaises(
                 isolation.ParserIsolationError
             ):
@@ -1006,9 +1034,11 @@ class LifecycleBoundTests(unittest.TestCase):
             **{
                 knob: getattr(isolation, constant_name)
                 for knob, constant_name in _SECONDS_CEILING_NAMES
+                if knob != "timeout_seconds"
             }
         )
-        self.assertEqual(policy.timeout_seconds, 30.0)
+        # #4379: no wait ceiling is applied unless a policy asks for one.
+        self.assertIsNone(policy.timeout_seconds)
         self.assertEqual(policy.terminate_grace_seconds, 2.0)
         self.assertEqual(policy.kill_grace_seconds, 2.0)
         self.assertEqual(policy.drain_join_seconds, 2.0)

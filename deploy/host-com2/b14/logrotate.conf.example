@@ -1,0 +1,20 @@
+# Rotation for the B14 file log on COM2 (template; not installed by this repo).
+#
+# Matches the reviewed COM2 convention: daily, seven generations, a hard size
+# ceiling so a chatty day cannot outrun the disk, compression one cycle late so
+# the newest file stays readable, and copytruncate because the service holds the
+# descriptor open through systemd's append:.
+#
+# Verified offline by the bundle contract test, and by the operator with
+# `logrotate --debug --state /dev/null <this file>` before any installation.
+
+/opt/padiem/b14/logs/*.log {
+    daily
+    rotate 7
+    maxsize 50M
+    compress
+    delaycompress
+    missingok
+    notifempty
+    copytruncate
+}

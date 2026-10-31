@@ -42,7 +42,7 @@ def test_worker_bindings_default_to_mock_web_off_auth_off_with_finite_limits():
     assert settings.web_provider == "off"
     assert settings.firecrawl_api_key is None
     assert settings.daum_rest_api_key is None
-    assert settings.web_timeout_seconds == 15.0
+    assert settings.web_timeout_seconds == 30.0
     assert settings.auth_mode == "off"
     assert settings.public_base_url is None
     assert settings.google_client_id is None
@@ -80,7 +80,10 @@ def test_worker_b14_mode_requires_valid_fixed_url():
 def test_server_only_worker_bindings_and_google_config_validation():
     assert WORKER_BINDING_NAMES == {
         "PADIEM_CHAT_RUNTIME_MODE",
+        "BYOK_VIA_B14",
         "PADIEM_CHAT_B14_BASE_URL",
+        "B14_UPSTREAM_MODE",
+        "B14_UPSTREAM_URL",
         "PADIEM_CHAT_B66_QUOTE_BASE_URL",
         "PADIEM_CHAT_TIMEOUT_SECONDS",
         "PADIEM_CHAT_LIVE_ENABLED",
@@ -112,6 +115,10 @@ def test_server_only_worker_bindings_and_google_config_validation():
     assert "FIRECRAWL_API_KEY" in WORKER_BINDING_NAMES
     assert "PADIEM_CHAT_DAUM_REST_API_KEY" in WORKER_BINDING_NAMES
     assert "TINYFISH_API_KEY" in WORKER_BINDING_NAMES
+    # #5784: the upstream switch is a declared read name on both platforms, and
+    # the same two names are what a COM2 unit sets as environment variables.
+    assert "B14_UPSTREAM_MODE" in WORKER_BINDING_NAMES
+    assert "B14_UPSTREAM_URL" in WORKER_BINDING_NAMES
 
     with pytest.raises(ConfigError):
         settings_from_worker_bindings({"PADIEM_CHAT_WEB_PROVIDER": "firecrawl"})
@@ -227,17 +234,23 @@ def test_worker_package_is_mock_first_static_bound_and_no_fake_d1_id():
     assert 'base_dir = ".b66-worker-src"' in wrangler
     assert 'command = "uv run python scripts/build_b66_worker_dependencies.py"' in wrangler
     assert 'compatibility_flags = ["python_workers"]' in wrangler
-    assert 'directory = "static"' in wrangler
+    # The release serves the generated bundle, so the Assets set and the Python
+    # moduleRoot are the same byte-verified tree (see wrangler.toml [assets]).
+    assert 'directory = ".b66-worker-src/static"' in wrangler
     assert 'PADIEM_CHAT_RUNTIME_MODE = "mock"' in wrangler
     assert 'PADIEM_CHAT_LIVE_ENABLED = "false"' in wrangler
-    assert "database_id" not in wrangler
+    import tomllib
+    from uuid import UUID
+    databases = tomllib.loads(wrangler)["d1_databases"]
+    assert databases[0]["binding"] == "PADIEM_CHAT_DB"
+    assert UUID(databases[0]["database_id"]).int > 0
     assert "settings_from_worker_bindings(self.env, resolved_web_keys=web_keys)" in worker
     assert "await resolve_web_secrets_store_keys(self.env)" in worker
     assert "D1HistoryStore" in worker and "PADIEM_CHAT_DB" not in worker
     assert "D1UsageCounterStore" in worker
     assert "UsageGate(settings, usage_store)" in worker
     assert "usage_gate_enforced = True" in worker
-    assert "_worker_app = create_app(" in worker
+    assert "worker_app = create_app(" in worker
     for required_arg in (
         "settings=settings",
         "history_store=history_store",
@@ -275,3 +288,13 @@ def test_source_wrangler_model_idle_matches_chat_worker_default():
     assert config["vars"]["PADIEM_CHAT_RUNTIME_MODE"] == "mock"
     assert config["vars"]["PADIEM_CHAT_TIMEOUT_SECONDS"] == "600"
     assert settings_from_worker_bindings(config["vars"]).timeout_seconds == 600.0
+
+
+def test_byok_via_b14_switch_defaults_off_and_reads_trusted_environment(monkeypatch):
+    assert Settings().byok_via_b14 is False
+    assert settings_from_worker_bindings({}).byok_via_b14 is False
+    assert settings_from_worker_bindings({"BYOK_VIA_B14":"true"}).byok_via_b14 is True
+    monkeypatch.setenv("BYOK_VIA_B14", "true")
+    assert Settings.from_env().byok_via_b14 is True
+    with pytest.raises(ConfigError):
+        settings_from_worker_bindings({"BYOK_VIA_B14":"invalid"})

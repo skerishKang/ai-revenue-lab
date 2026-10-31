@@ -7,8 +7,8 @@ again: the ingress used to read 128 KiB and collect a completed answer at 1 MiB,
 so a model request the Engine would have admitted was refused at the front door,
 and a healthy large answer came back as ``engine_response_too_large``.
 
-It also pins the opposite direction: the non-model Engine guard stays where it
-was, because loosening the model path is not a licence to loosen tool, control,
+It also pins the opposite direction: the non-model Engine guard stays bounded (1MiB by Owner rule),
+because loosening the model path is not a licence to loosen tool, control,
 memory and approval routes in the same sweep.
 """
 from __future__ import annotations
@@ -41,7 +41,13 @@ def _literal(name: str) -> int:
 
 
 def test_ingress_request_budget_equals_the_engine_model_budget() -> None:
-    assert _literal("MAX_REQUEST_BODY_BYTES") == MAX_MODEL_EXECUTE_REQUEST_BODY_BYTES
+    # #4379: neither side declares a PADIEM model-request byte total. The
+    # ingress literal and the Engine constant must both be absent, so the
+    # two cannot drift apart again.
+    assert MAX_MODEL_EXECUTE_REQUEST_BODY_BYTES is None
+    assert "const MAX_REQUEST_BODY_BYTES = null;" in INGRESS.read_text(
+        encoding="utf-8"
+    )
 
 
 def test_ingress_response_budget_equals_the_completed_json_contract() -> None:
@@ -56,7 +62,9 @@ def test_ingress_serves_only_the_model_execute_route() -> None:
 
 
 def test_non_model_engine_guard_is_not_released_in_the_same_sweep() -> None:
-    assert MAX_REQUEST_BODY_BYTES == 128 * 1024
-    assert MAX_MODEL_EXECUTE_REQUEST_BODY_BYTES > MAX_REQUEST_BODY_BYTES
+    # The non-model Engine guard stays bounded (Owner tier: 1MiB): loosening the model path
+    # is not a licence to loosen the tool, control, memory and approval
+    # routes in the same sweep.
+    assert MAX_REQUEST_BODY_BYTES == 1024 * 1024
     worker = (ROOT / "worker.py").read_text(encoding="utf-8")
     assert "else MAX_REQUEST_BODY_BYTES" in worker

@@ -70,6 +70,7 @@ _SCRIPT = r"""
   // approve-link from its original tab after verifying this local handoff.
   const pendingBox = el("pending-pc");
   const pendingState = el("pending-state");
+  const pendingReturn = el("pending-return");
   const query = new URL(window.location.href).searchParams;
   const linkRef = query.get("request_ref");
   const singleRef = query.size === 1 && /^link\.[0-9a-f]{32}$/.test(linkRef || "");
@@ -77,17 +78,49 @@ _SCRIPT = r"""
     pendingBox.hidden = false;
     launch.hidden = true;
     el("operator-restore").hidden = true;
+    let channel = null;
+    let settled = false;
+    // This page performs no approval. It closes only after the ONE approve
+    // attempt in the original Claw tab reports its settlement, so a mere app
+    // launch or an approval still in flight never closes the window.
+    const settle = (type) => {
+      if (settled) return;
+      settled = true;
+      if (channel) { try { channel.close(); } catch { } channel = null; }
+      pendingState.textContent = type === "pc_offer_approved"
+        ? "연결 요청이 처리되었습니다. Padiem 창에서 연결 상태를 확인합니다."
+        : "연결 요청을 완료하지 못했습니다. Padiem 창에서 상태를 확인하세요.";
+      try { window.close(); } catch { }
+      // A window the browser did not open cannot close itself. Only in that
+      // case is the manual way back to Claw offered.
+      window.setTimeout(() => {
+        if (!window.closed && pendingReturn) pendingReturn.hidden = false;
+      }, 400);
+    };
     try {
       if (typeof BroadcastChannel !== "function") throw new Error("no local receiver");
-      const channel = new BroadcastChannel("padiem-claw-pc-connect-v1");
+      channel = new BroadcastChannel("padiem-claw-pc-connect-v1");
+      channel.onmessage = (event) => {
+        const data = event && event.data;
+        if (!data || Object.getPrototypeOf(data) !== Object.prototype) return;
+        if (Object.keys(data).length !== 2 || typeof data.request_ref !== "string") return;
+        if (data.request_ref !== linkRef) return;
+        if (data.type !== "pc_offer_approved" && data.type !== "pc_offer_failed") return;
+        settle(data.type);
+      };
       channel.postMessage({ type: "pc_offer_ready", request_ref: linkRef });
       console.info("PADIEM_4139_STAGE=setup_handoff_posted");
-      channel.close();
-      pendingState.textContent = "기존 Claw 연결 요청 화면에서 상태를 확인해 주세요.";
+      pendingState.textContent = "Padiem Claw 연결 승인을 기다리는 중입니다.";
+      // No settlement means the approval may still be running. Stay open and
+      // say exactly that instead of closing on an assumption.
+      window.setTimeout(() => {
+        if (settled) return;
+        pendingState.textContent = "승인 결과를 확인하지 못했습니다. Padiem 창에서 연결 상태를 확인하세요.";
+      }, 25000);
     } catch {
       // Never grant or POST from this page; no owner-click context here.
       console.info("PADIEM_4139_STAGE=setup_handoff_unavailable");
-      pendingState.textContent = "Claw 연결 요청 화면에서 연결을 다시 시작해 주세요.";
+      pendingState.textContent = "연결 요청을 확인할 수 없습니다. Padiem 창에서 연결을 다시 시작해 주세요.";
     }
   }
   grant.addEventListener("click", async () => {
@@ -223,9 +256,8 @@ code{font-size:.9em}
 <button type="button" id="native-launch">&#52964;&#45349;&#53552; &#49892;&#54665;</button>
 <output id="native-state" role="status" aria-live="polite">&#49444;&#52824;&#54620; &#52964;&#45349;&#53552;&#47484; &#49892;&#54665;&#54624; &#49688; &#51080;&#49845;&#45768;&#45796;. &#49436;&#48260; &#50672;&#44208;&#51008; &#46321;&#47197; &#54980; &#54869;&#51064;&#54633;&#45768;&#45796;.</output>
 <section id="pending-pc" hidden>
-<h2>PC 연결 정보 전달</h2>
-<p>설치 PC의 연결 정보가 확인됐습니다. 기존 Padiem Claw 화면에서 진행 상황을 확인하세요.</p>
-<output id="pending-state" role="status" aria-live="polite">Padiem Claw 연결 요청 화면을 확인해 주세요.</output>
+<output id="pending-state" role="status" aria-live="polite">Padiem Claw 연결 승인을 기다리는 중입니다.</output>
+<p id="pending-return" hidden><a href="/">Claw로 돌아가기</a></p>
 </section>
 <details id="operator-restore"><summary>&#44288;&#47532;&#51088;&#50857; &#46321;&#47197; &#48373;&#44396;</summary>
 <p>PC의 <code>padiem-connector status</code>에 표시된 기기 ID를 입력하세요.

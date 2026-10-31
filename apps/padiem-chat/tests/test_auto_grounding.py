@@ -6,13 +6,13 @@ import httpx
 import pytest
 
 from app.auto_grounding import AutoGroundingService
-from app.b14_client import PADIEM_IDENTITY_INSTRUCTION
 from app.config import Settings
 from app.evidence import Evidence
 from app.grounding import GroundedChatService
 from app.main import create_app
 import app.model_policy as model_policy_module
 from app.model_policy import DEFAULT_B14_MODEL_ID
+from padiem_ai_core.dispatch_preinstruction import render_product_identity_instruction
 
 
 @pytest.fixture(autouse=True)
@@ -136,7 +136,7 @@ async def test_current_question_auto_searches_once_and_returns_grounded_envelope
     provider = RecordingProvider()
     install_provider(app, provider)
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
-        response = await client.post("/api/chat", json={"messages": CURRENT, "mode": "auto"})
+        response = await client.post("/api/chat", json={"messages": CURRENT})
 
     assert response.status_code == 200
     body = response.json()
@@ -170,7 +170,7 @@ async def test_stable_concept_does_not_over_search() -> None:
     provider = RecordingProvider()
     install_provider(app, provider)
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
-        response = await client.post("/api/chat", json={"messages": STABLE, "mode": "auto", "skill": "explain"})
+        response = await client.post("/api/chat", json={"messages": STABLE, "skill": "plan"})
 
     assert response.status_code == 200
     body = response.json()
@@ -179,13 +179,18 @@ async def test_stable_concept_does_not_over_search() -> None:
     assert provider.search_calls == []
     assert len(seen) == 1
     assert seen[0]["messages"][0]["role"] == "system"
-    assert PADIEM_IDENTITY_INSTRUCTION in seen[0]["messages"][0]["content"]
+    # #5347: the Chat identity instruction names the request's server-authorized
+    # tier. The route bound the default "free" tier for this request, so the
+    # neutral brand sentence is not the whole instruction any more and the grade
+    # must reach the dispatch.
+    assert render_product_identity_instruction("chat", "free") in seen[0]["messages"][0]["content"]
+    assert "PADIEM Chat의 PADIEM Free 모드" in seen[0]["messages"][0]["content"]
     assert seen[0]["messages"][1:] == STABLE
     assert "max_tokens" not in seen[0]
 
 
 @pytest.mark.asyncio
-async def test_required_search_with_web_off_fails_before_laguna() -> None:
+async def test_required_search_with_web_off_continues_with_a_notice() -> None:
     b14_calls = 0
 
     async def b14_handler(request: httpx.Request) -> httpx.Response:
@@ -198,11 +203,12 @@ async def test_required_search_with_web_off_fails_before_laguna() -> None:
         transport=httpx.MockTransport(b14_handler),
     )
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
-        response = await client.post("/api/chat", json={"messages": CURRENT, "mode": "auto"})
+        response = await client.post("/api/chat", json={"messages": CURRENT})
 
-    assert response.status_code == 503
-    assert response.json()["error"]["code"] == "web_tools_off"
-    assert b14_calls == 0
+    assert response.status_code == 200
+    assert response.json()["metadata"]["web_grounding_error"] == "web_grounding_unavailable"
+    assert response.json()["notice"] == "웹 검색을 사용할 수 없어 근거 없이 답변합니다"
+    assert b14_calls == 1
 
 
 @pytest.mark.asyncio
@@ -211,7 +217,17 @@ async def test_current_question_streams_after_search_and_done_exposes_safe_evide
 
     async def b14_handler(request: httpx.Request) -> httpx.Response:
         seen.append(json.loads(request.content))
-        return httpx.Response(200, json=completion_payload())
+        # The stream route streams SSE frames from B14. A completed JSON body on
+        # the streaming endpoint is not a valid upstream stream, so the fixture
+        # answers with the frames the route consumes.
+        return httpx.Response(
+            200,
+            headers={"content-type": "text/event-stream"},
+            stream=ChunkStream([
+                stream_frame(completion_payload()["choices"][0]["message"]["content"]),
+                b"data: [DONE]\n\n",
+            ]),
+        )
 
     app = create_app(
         Settings(
@@ -224,7 +240,7 @@ async def test_current_question_streams_after_search_and_done_exposes_safe_evide
     provider = RecordingProvider()
     install_provider(app, provider)
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
-        response = await client.post("/api/chat/stream", json={"messages": CURRENT, "mode": "auto"})
+        response = await client.post("/api/chat/stream", json={"messages": CURRENT})
 
     assert response.status_code == 200
     assert response.headers["content-type"].startswith("text/event-stream")
@@ -240,8 +256,9 @@ async def test_current_question_streams_after_search_and_done_exposes_safe_evide
     assert provider.search_calls == [(CURRENT[0]["content"], 5)]
     assert len(seen) == 1
     assert seen[0]["model"] == DEFAULT_B14_MODEL_ID
-    assert seen[0]["business14"]["allow_external_fallback"] is False
-    assert seen[0]["business14"]["max_attempts"] == 1
+    # B5: the retired fallback knob no longer travels on the wire.
+    assert "allow_external_fallback" not in seen[0]["business14"]
+    assert "max_attempts" not in seen[0]["business14"]
     assert "웹 근거 사용 규칙" in seen[0]["messages"][0]["content"]
 
 
@@ -254,13 +271,13 @@ class EmptyProvider:
 
 
 @pytest.mark.asyncio
-async def test_stream_required_search_with_no_evidence_never_calls_laguna() -> None:
+async def test_stream_required_search_with_no_evidence_continues_with_a_notice() -> None:
     b14_calls = 0
 
     async def b14_handler(request: httpx.Request) -> httpx.Response:
         nonlocal b14_calls
         b14_calls += 1
-        return httpx.Response(500)
+        return httpx.Response(200, headers={"content-type": "text/event-stream"}, content=stream_frame("모델 답변") + b"data: [DONE]\n\n")
 
     app = create_app(
         Settings(
@@ -274,8 +291,11 @@ async def test_stream_required_search_with_no_evidence_never_calls_laguna() -> N
     install_provider(app, provider)
 
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
-        response = await client.post("/api/chat/stream", json={"messages": CURRENT, "mode": "auto"})
+        response = await client.post("/api/chat/stream", json={"messages": CURRENT})
 
-    assert response.status_code == 404
-    assert response.json()["error"]["code"] == "no_evidence"
-    assert b14_calls == 0
+    assert response.status_code == 200
+    done = [data for event, data in parse_public_sse(response.text) if event == "done"][-1]
+    assert done["metadata"]["web_grounding_error"] == "web_grounding_no_evidence"
+    assert done["notice"] == "웹 근거를 찾지 못해 근거 없이 답변합니다"
+    assert "evidence" not in done
+    assert b14_calls == 1

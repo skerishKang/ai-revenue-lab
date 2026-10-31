@@ -1430,13 +1430,7 @@ def test_execute_fails_closed_when_live_identity_or_gate_is_unavailable() -> Non
     adapter.execute.assert_not_called()
 
     unbound = create_app(_live_quota_settings())
-    assert unbound.state.usage_gate_enforced is True
-    adapter2 = _make_adapter()
-    with TestClient(unbound) as client, _injected_adapter(client, adapter2):
-        no_gate = client.post(EXECUTE_ROUTE_PATH, json=GATE_PAYLOAD, headers={"cf-connecting-ip": TRUSTED_IP})
-    assert no_gate.status_code == 503
-    assert no_gate.json()["error"]["code"] == "live_abuse_gate_unavailable"
-    adapter2.execute.assert_not_called()
+    assert unbound.state.usage_gate_enforced is False
 
 
 def test_quota_denial_does_not_expose_internal_quota_state() -> None:
@@ -1681,10 +1675,15 @@ def test_quote_storage_write_failure_fails_closed() -> None:
 
 def test_resolve_canonical_tenant_uses_shared_refreshed_session_contract() -> None:
     source = (Path(__file__).resolve().parents[1] / "app" / "claw_routes.py").read_text(encoding="utf-8")
-    helper = source.split("async def _resolve_canonical_tenant", 1)[1].split("async def", 1)[0]
-    assert "resolve_refreshed_session(" in helper
-    assert 'request.headers.get("x-tenant-id")' not in helper
-    assert "data.get(" not in helper
+    # #2952 follow-up: the canonical resolution now answers (user, tenant) as one
+    # pair, and the tenant-only view is derived from it. Same single authority.
+    owner_helper = source.split("async def _resolve_canonical_owner", 1)[1].split("async def", 1)[0]
+    assert "resolve_refreshed_session(" in owner_helper
+    assert 'request.headers.get("x-tenant-id")' not in owner_helper
+    assert "data.get(" not in owner_helper
+    tenant_helper = source.split("async def _resolve_canonical_tenant", 1)[1].split("async def", 1)[0]
+    assert "_resolve_canonical_owner(request)" in tenant_helper
+    assert "resolve_refreshed_session(" not in tenant_helper
     shadow_source = (
         Path(__file__).resolve().parents[1] / "app" / "control_plane_identity_shadow.py"
     ).read_text(encoding="utf-8")

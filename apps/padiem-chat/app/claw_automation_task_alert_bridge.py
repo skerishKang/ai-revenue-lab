@@ -73,6 +73,7 @@ from .claw_automation_owner_resolution import ResolvedAutomationOwner
 from .claw_automation_projection_bridge import (
     ClawTaskAlertProjectionStore,
     project_scheduled_run_output,
+    project_terminal_run_status_alert,
 )
 
 # Fail closed on status evolution: only statuses explicitly classified as
@@ -176,8 +177,9 @@ async def project_terminal_scheduled_run_to_task_alert(
     Every guard here runs before any store access, and every record-shape and
     persistence decision is delegated to the existing projection authority, whose
     refusals propagate unchanged. A run whose rule/output type materializes no
-    record (REPORT/DRAFT) and a terminal run that is not COMPLETED
-    (FAILED/CANCELLED) resolve to a bounded no-op with zero writes.
+    record (REPORT/DRAFT) falls through to the separate status boundary, which
+    answers for a FAILED or CANCELLED terminal row and creates nothing for any
+    other status.
     """
 
     checked_rule = _require_rule(rule)
@@ -193,6 +195,16 @@ async def project_terminal_scheduled_run_to_task_alert(
         run=checked_run,
         store=store,
     )
+    if result.created_kind is None:
+        # #5034 option 1: an execution-status result is still a result. Only a
+        # row that the output boundary answered nothing for reaches here, so one
+        # run can never produce two records from one event.
+        result = await project_terminal_run_status_alert(
+            owner=checked_owner,
+            rule=checked_rule,
+            run=checked_run,
+            store=store,
+        )
     return ScheduledTaskAlertProjection(
         run_id=checked_run.run_id,
         status=checked_run.status,

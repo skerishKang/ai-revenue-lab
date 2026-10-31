@@ -1,5 +1,19 @@
 /* #4647: first-class meeting workspace. Reuses Chat/Claw standalone view,
    navigation, light/dark theme variables; no dialog, overlay, or duplicate rail. */
+/* #5028: the meeting sidebar entry lights up on this page the same way the
+   calendar/library/claw entries do (aria-current is already set by app.js). */
+#meetingNavButton[aria-current="page"] {
+  border-color: var(--accent-strong, #2f6f99);
+  background: rgba(121, 188, 231, 0.22);
+}
+
+html[data-theme="padiem-glass"] #meetingNavButton[aria-current="page"] {
+  color: rgba(255, 255, 255, 0.96);
+  border-color: rgba(121, 188, 231, 0.38);
+  background: rgba(121, 188, 231, 0.3);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14);
+}
+
 .meeting-view { min-width: 0; }
 .meeting-panel {
   display: grid;
@@ -27,17 +41,25 @@
 .meeting-modes label { display: flex; align-items: center; gap: 8px; cursor: pointer; }
 .meeting-modes input { accent-color: var(--accent, #3c70a5); width: 18px; height: 18px; flex-shrink: 0; }
 .meeting-controls, .meeting-exports { display: flex; gap: 10px; flex-wrap: wrap; }
+/* #5028: same secondary surface family as the util result actions — a real
+   bordered chip on the shared tokens instead of a near-invisible ghost. */
 .meeting-controls button, .meeting-exports button {
-  border: 1px solid currentColor; border-color: color-mix(in srgb, currentColor 20%, transparent);
-  border-radius: 11px; padding: 10px 14px; min-height: 44px;
-  background: transparent; color: inherit; cursor: pointer; font: inherit;
+  display: inline-flex; align-items: center; justify-content: center;
+  border: 1px solid var(--line, rgba(26, 34, 48, .12));
+  border-radius: 10px; padding: 10px 14px; min-height: 44px;
+  background: var(--panel, #ffffff); color: var(--text, #17202a);
+  cursor: pointer; font: inherit;
+}
+.meeting-controls button:hover:not(:disabled):not(#meetingStart),
+.meeting-exports button:hover:not(:disabled) {
+  background: var(--accent-soft); border-color: var(--accent);
 }
 .meeting-controls #meetingStart { background: var(--accent, #335e9d); color: #fff; }
 .meeting-view button:disabled { opacity: .45; cursor: not-allowed; }
 .meeting-status { font-size: 14px; margin: 0; font-weight: 550; overflow-wrap: anywhere; }
 .meeting-panel > label { font-size: 14px; font-weight: 600; }
 .meeting-panel textarea {
-  width: 100%; min-height: clamp(220px, 35vh, 390px); padding: 14px; resize: vertical;
+  width: 100%; min-height: clamp(180px, 24vh, 260px); padding: 14px; resize: vertical;
   box-sizing: border-box; border: 1px solid currentColor;
   border-color: color-mix(in srgb, currentColor 24%, transparent);
   border-radius: 10px; color: inherit; background: transparent;
@@ -70,6 +92,31 @@
     overflow-x: hidden;
     overflow-y: auto;
     overscroll-behavior-y: contain;
+  }
+  /* The Glass theme paints a fixed decorative portrait at z-index 1 behind the
+     content column. At <921px the meeting view is not inside the six-panel frame,
+     so its semi-transparent surface lets the portrait and the body's dark gradient
+     show through as a band across the top and a haze over the whole panel.
+     Hide the shell portrait fragments and use a fully opaque surface so the
+     meeting workspace reads as its own page. */
+  html[data-theme="padiem-glass"] body .app-shell[data-state="meeting"] .glass-shell-portrait,
+  html[data-theme="padiem-glass"] body .app-shell[data-state="meeting"] .glass-shell-frag {
+    opacity: 0 !important;
+  }
+  html[data-theme="padiem-glass"] body .app-shell[data-state="meeting"] .meeting-view {
+    background: #f2f5f7;
+    position: relative;
+    z-index: 2;
+  }
+  /* #5028: below 921px the opaque page sheet is the only surface. The ≥921px
+     contract already flattens .meeting-panel for exactly this reason — the
+     nested bordered card double-insets the content on phones (390px). */
+  html[data-theme="padiem-glass"] body .app-shell[data-state="meeting"] .meeting-panel {
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
   }
 }
 @media (min-width: 921px) {

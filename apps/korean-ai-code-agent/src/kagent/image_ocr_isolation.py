@@ -147,8 +147,12 @@ __all__ = [
 #: largest value a policy may request, so no caller can widen the ceiling.
 #: OCR is slower than document parsing, so the budget is larger — but it is a
 #: finite process budget, and a model that exceeds it is terminated and killed.
-IMAGE_OCR_TIMEOUT_SECONDS = 120.0
-IMAGE_OCR_TIMEOUT_MAX_SECONDS = 120.0
+# #4379: the OCR isolation carries no PADIEM wall-clock ceiling. The
+# default is no wait ceiling at all, and a policy may request any
+# positive timeout. The terminate/kill/drain grace ceilings below stay:
+# they bound the termination ladder, not the work budget.
+IMAGE_OCR_TIMEOUT_SECONDS: float | None = None
+IMAGE_OCR_TIMEOUT_MAX_SECONDS: float | None = None
 
 #: Canonical grace/join ceilings. ``OCR_TIMEOUT_LIFECYCLE_BOUNDED=YES`` only holds
 #: if *every* stage of the ladder is bounded, not just the OCR wait: a policy
@@ -174,7 +178,6 @@ IMAGE_OCR_MAX_IMAGE_PIXELS = MAX_OCR_INPUT_PIXELS
 #: ``0 < value <= ceiling`` is refused at construction, so no caller can convert
 #: the bounded ladder into an unbounded wait.
 _BOUNDED_SECONDS_CEILINGS = (
-    ("timeout_seconds", IMAGE_OCR_TIMEOUT_MAX_SECONDS),
     ("terminate_grace_seconds", IMAGE_OCR_TERMINATE_GRACE_MAX_SECONDS),
     ("kill_grace_seconds", IMAGE_OCR_KILL_GRACE_MAX_SECONDS),
     ("drain_join_seconds", IMAGE_OCR_DRAIN_JOIN_MAX_SECONDS),
@@ -236,7 +239,7 @@ class OcrOutcome(str, Enum):
 class OcrIsolationPolicy:
     """Bounded OCR-isolation policy, validated on construction."""
 
-    timeout_seconds: float = IMAGE_OCR_TIMEOUT_SECONDS
+    timeout_seconds: float | None = IMAGE_OCR_TIMEOUT_SECONDS
     terminate_grace_seconds: float = IMAGE_OCR_TERMINATE_GRACE_MAX_SECONDS
     kill_grace_seconds: float = IMAGE_OCR_KILL_GRACE_MAX_SECONDS
     drain_join_seconds: float = IMAGE_OCR_DRAIN_JOIN_MAX_SECONDS
@@ -249,6 +252,15 @@ class OcrIsolationPolicy:
         # Positive-only validation is not enough: it would leave every knob
         # unbounded in practice. Each value is checked against its canonical
         # ceiling as well as its floor.
+        # #4379: the work timeout carries no PADIEM ceiling. None means no
+        # wait ceiling at all, and any positive finite timeout is accepted.
+        if self.timeout_seconds is not None and (
+            isinstance(self.timeout_seconds, bool)
+            or not isinstance(self.timeout_seconds, (int, float))
+            or not math.isfinite(float(self.timeout_seconds))
+            or float(self.timeout_seconds) <= 0
+        ):
+            raise OcrIsolationError("timeout_seconds must be a positive finite number or None")
         for name, ceiling in _BOUNDED_SECONDS_CEILINGS:
             value = getattr(self, name)
             if (

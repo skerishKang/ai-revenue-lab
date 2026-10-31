@@ -4,7 +4,6 @@ on:
   pull_request:
     paths:
       - 'apps/living-learning/**'
-      - 'packages/padiem-ai-core/**'
       - 'scripts/experiments/benchmark_padiem_search_providers.py'
       - 'scripts/experiments/benchmark_padiem_fetch_providers.py'
       - '.github/tests/test_3989_engine_living_learning_ci_scope.py'
@@ -39,6 +38,11 @@ jobs:
           python -m pip install --disable-pip-version-check -r requirements-padiem-core.txt
           python -m pip install --disable-pip-version-check -e '.[dev]'
           python -m pip install --disable-pip-version-check 'jsonschema>=4.23,<5'
+          # Core's image surface imports Pillow at module load, so the Core suite
+          # cannot even be collected here without it. Test-runner dependency
+          # only, pinned to the version this repository already adopts; it does
+          # not add a runtime image path to Living Learning.
+          python -m pip install --disable-pip-version-check 'Pillow==12.3.0'
           python -m pip check
 
       - name: Compile Living Learning and Core

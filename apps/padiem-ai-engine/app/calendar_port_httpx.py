@@ -212,7 +212,7 @@ class HttpxGoogleCalendarReadPort(CalendarReadPort):
         url: str,
         params: dict[str, str] | None,
         max_response_bytes: int,
-        timeout_seconds: int,
+        timeout_seconds: int | None,
     ) -> dict[str, Any]:
         async with httpx.AsyncClient(
             transport=self._transport, timeout=timeout_seconds, follow_redirects=False
@@ -251,7 +251,7 @@ class HttpxGoogleCalendarReadPort(CalendarReadPort):
         base_url: str,
         path: str,
         query: dict[str, str],
-        timeout_seconds: int,
+        timeout_seconds: int | None,
         max_response_bytes: int,
     ) -> dict[str, Any] | Awaitable[dict[str, Any]]:
         # (1) Scope gate: the port only ever runs the promoted readonly scope.

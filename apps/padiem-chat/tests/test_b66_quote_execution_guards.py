@@ -106,7 +106,9 @@ def test_exact_quote_local_failure_refunds_before_any_service_post(failure):
     elif failure == "messages":
         kwargs["messages"] = [{"role": "assistant", "content": "invalid"}]
     elif failure == "context":
-        kwargs["additional_system_context"] = "x" * (MAX_ADDITIONAL_SYSTEM_CONTEXT_BYTES + 1)
+        # #4379: the provider context carries no PADIEM byte total, so the
+        # local refusal is the shape rule instead of a size rule.
+        kwargs["additional_system_context"] = 123
     elif failure == "invalid_shape":
         kwargs["messages"] = [{"role": "user", "content": "valid", "unsupported_field": "reject"}]
     elif failure == "serialization":
@@ -211,8 +213,12 @@ def test_actual_quote_core_budget_reaches_b14_gateway_with_one_provider_timeout(
     ))
     payload = binding.calls[0][1]
     assert payload["business14"]["max_retries"] == 0
-    assert payload["business14"]["max_attempts"] == 1
-    assert payload["business14"]["allow_external_fallback"] is False
+    # #5362 removed the default one-step agent execution ceiling, so no
+    # attempt ceiling is sent. The one-shot contract is the pinned retry
+    # budget above.
+    assert "max_attempts" not in payload["business14"]
+    # B5: the retired fallback knob no longer travels on the wire.
+    assert "allow_external_fallback" not in payload["business14"]
 
     repo = Path(__file__).resolve().parents[3]
     script = '''
@@ -304,7 +310,7 @@ def test_valid_large_b66_quote_completion_crosses_legacy_core_one_mib():
         "choices": [{"message": {"role": "assistant", "content": answer}}],
         "business14": {"route_mode": "manual", "selected_model": MODEL},
     }).encode()
-    assert MAX_B14_RESPONSE_BYTES < len(payload) < MAX_CONFIGURED_B14_RESPONSE_BYTES
+    assert 1_048_576 < len(payload) < MAX_CONFIGURED_B14_RESPONSE_BYTES
 
     class LongBinding:
         def __init__(self):

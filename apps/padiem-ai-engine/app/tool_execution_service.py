@@ -269,7 +269,7 @@ class ToolExecutionEngineService:
         authority: TrustedToolAuthority,
         canonical_tool_id: str,
         invocation: ToolInvocation,
-        effective_timeout_seconds: float,
+        effective_timeout_seconds: float | None,
         run_id: str,
     ) -> tuple[ServiceResponse | None, ToolExecutionResult | None, ToolRuntimeError | None]:
         """Single Core ToolRuntime chokepoint shared by execute and resume.
@@ -286,7 +286,10 @@ class ToolExecutionEngineService:
                     authority.compiled.runtime_profile,
                     authority.authorization,
                 ),
-                timeout=effective_timeout_seconds + _ENGINE_TIMEOUT_GRACE_SECONDS,
+                timeout=(
+                    None if effective_timeout_seconds is None else
+                    effective_timeout_seconds + _ENGINE_TIMEOUT_GRACE_SECONDS
+                ),
             )
         except ToolRuntimeError as exc:
             if exc.code in _APPROVAL_BLOCK_CODES:
@@ -443,7 +446,13 @@ class ToolExecutionEngineService:
         authority = binding.resolve_authority(wire.agent_id)
         entry = binding.resolve_tool(wire.tool_id)
         effective = binding.effective_resources(entry)
-        if json_size(wire.arguments) > effective.argument_bytes:
+        # #4379: the effective resources carry no PADIEM aggregate byte
+        # ceiling. A tool that declares its own narrower argument budget is
+        # still honoured; a tool that declares none is not refused for size.
+        if (
+            effective.argument_bytes is not None
+            and json_size(wire.arguments) > effective.argument_bytes
+        ):
             raise EngineToolProjectionError(
                 "tool_arguments_too_large",
                 "Tool arguments exceed the effective resource bound.",

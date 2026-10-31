@@ -1,0 +1,105 @@
+{
+  "A_connectors_header": {
+    "hasToggle": false,
+    "hasLongNote": false,
+    "tagline": true,
+    "detailsEl": false
+  },
+  "B_connectors_820": {
+    "viewBg": "rgb(242, 245, 247)",
+    "panelBorder": null,
+    "panelBg": null,
+    "radius": null
+  },
+  "B_automation_820": {
+    "viewBg": "rgb(242, 245, 247)",
+    "panelBorder": null,
+    "panelBg": null,
+    "radius": null
+  },
+  "B_meeting_820": {
+    "viewBg": "rgb(242, 245, 247)",
+    "panelBorder": null,
+    "panelBg": null,
+    "radius": null
+  },
+  "B_connectors_390": {
+    "viewBg": "rgb(242, 245, 247)",
+    "panelBorder": null,
+    "panelBg": null,
+    "radius": null
+  },
+  "B_automation_390": {
+    "viewBg": "rgb(242, 245, 247)",
+    "panelBorder": null,
+    "panelBg": null,
+    "radius": null
+  },
+  "B_meeting_390": {
+    "viewBg": "rgb(242, 245, 247)",
+    "panelBorder": null,
+    "panelBg": null,
+    "radius": null
+  },
+  "B_calendar_error_slot": {
+    "titleY": 0,
+    "titleYWithError": 0,
+    "delta": 0
+  },
+  "C_chat_1440": {
+    "conv": {
+      "rect": {
+        "x": 310,
+        "y": 94,
+        "w": 622,
+        "h": 790
+      },
+      "ml": "57.6px",
+      "width": "621.594px"
+    },
+    "overflowX": 0
+  },
+  "C_chat_1920": {
+    "conv": {
+      "rect": {
+        "x": 324,
+        "y": 94,
+        "w": 960,
+        "h": 970
+      },
+      "ml": "72px",
+      "width": "960px"
+    },
+    "overflowX": 0
+  },
+  "C_chat_2560": {
+    "conv": {
+      "rect": {
+        "x": 646,
+        "y": 94,
+        "w": 960,
+        "h": 1090
+      },
+      "ml": "394px",
+      "width": "960px"
+    },
+    "overflowX": 0
+  },
+  "D_chip_states": {
+    "connected": {
+      "state": "unavailable",
+      "label": "상태 확인 불가",
+      "mark": true
+    },
+    "disconnected": {
+      "state": "unavailable",
+      "label": "상태 확인 불가",
+      "mark": true
+    },
+    "unavailable": {
+      "state": "unavailable",
+      "label": "상태 확인 불가",
+      "mark": true
+    }
+  }
+}

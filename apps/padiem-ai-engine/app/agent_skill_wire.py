@@ -14,7 +14,6 @@ from typing import Any
 
 from padiem_ai_core.execution_context import ExecutionContext
 from padiem_ai_core.execution_runtime import ExecutionRequest
-from padiem_ai_core.tool_runtime import MAX_TOOL_ARGUMENT_BYTES
 
 from app.agent_skill_authority import (
     EngineAgentSkillAuthorityError,
@@ -24,7 +23,7 @@ from app.agent_skill_authority import (
 from app.execution_context_wire import parse_execution_context
 from app.orchestration_wire import _parse_agent_plan, _parse_cancel_reason
 from app.service import ServiceContractError
-from app.tool_projection import MAX_WIRE_TOOL_ARGUMENTS_BYTES, EngineToolProjectionError, json_size
+from app.tool_projection import EngineToolProjectionError, json_size
 
 AGENT_SKILL_RUN_PATH = "/internal/v1/agent-skill/run"
 AGENT_SKILL_RESUME_PATH = "/internal/v1/agent-skill/resume"
@@ -321,7 +320,6 @@ def parse_tool_arguments(value: Any) -> dict[str, dict[str, Any]]:
             "tool_arguments contains too many entries.",
         )
     parsed: dict[str, dict[str, Any]] = {}
-    total = 0
     for key, item in value.items():
         if not _bounded_identifier(key):
             raise ServiceContractError(
@@ -335,22 +333,13 @@ def parse_tool_arguments(value: Any) -> dict[str, dict[str, Any]]:
             )
         arguments = dict(item)
         try:
-            size = json_size(arguments)
+            json_size(arguments)
         except EngineToolProjectionError:
             raise ServiceContractError(
                 "invalid_tool_arguments",
                 "tool_arguments must contain JSON-compatible values only.",
             ) from None
-        if size > MAX_TOOL_ARGUMENT_BYTES:
-            raise ServiceContractError(
-                "invalid_tool_arguments",
-                "tool_arguments step entry exceeds the bounded argument size.",
-            )
-        total += size
+        # #4379: the plan wire carries no PADIEM byte total for tool
+        # arguments. The JSON shape and the step identifier rules stay.
         parsed[key] = arguments
-    if total > MAX_WIRE_TOOL_ARGUMENTS_BYTES:
-        raise ServiceContractError(
-            "tool_arguments_too_large",
-            "tool_arguments exceed the bounded Agent/Skill argument budget.",
-        )
     return parsed

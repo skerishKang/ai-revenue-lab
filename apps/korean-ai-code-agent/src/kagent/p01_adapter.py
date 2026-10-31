@@ -18,6 +18,7 @@ from padiem_ai_core import (
     OrchestrationResult,
 )
 from padiem_ai_core.logical_execution_identity import agent_identity_payload
+from padiem_ai_core.dispatch_preinstruction import render_product_identity_instruction
 from padiem_control_plane.product_tier_routes import (
     ProductTierLabel,
     ProductTierRoutesError,
@@ -38,12 +39,14 @@ from .p01_approval_pause_transport import (
     P01PausedWireResult,
 )
 from .runs import ClawRun, RunStateError
-from .security import redact_secrets
 
 
 P01_APP_ID = "b54-padiem-claw"
 P01_AGENT_ID = "b54-padiem-claw"
-DEFAULT_P01_TIMEOUT_SECONDS = 900.0
+PADIEM_CLAW_IDENTITY_INSTRUCTION = render_product_identity_instruction("claw", None)
+# #4379: the P01 run carries no PADIEM execution budget. None declares no
+# total, so the run is bounded by the platform and by cancellation.
+DEFAULT_P01_TIMEOUT_SECONDS: float | None = None
 
 # #3382: the canonical USER subject is CP-issued in the exact
 # `sub_<32 lowercase hex>` form. The Engine's own `_parse_subject_id` accepts
@@ -266,7 +269,7 @@ class ClawOrchestrationOutcome:
         # the browser never receives resume authority or the trusted request.
         return {
             "projection": self.projection.safe_dict(),
-            "answer": redact_secrets(self.answer) if self.answer is not None else None,
+            "answer": self.answer,
             "p01_run_id": self.p01_run_id,
             "p01_event_count": self.p01_event_count,
             "continuation_ref": self.continuation_ref,
@@ -336,6 +339,7 @@ def _agent_profile(
     *,
     selected_model_id: str | None = None,
     central_route_model_id: str | None = None,
+    identity_tier_id: str | None = None,
 ) -> AgentProfile:
     """Return the conservative B54 product profile consumed by P01.
 
@@ -399,7 +403,12 @@ def _agent_profile(
         id=P01_AGENT_ID,
         title="Padiem Claw",
         description="B54 repository task execution consumer",
-        system_instruction=None,
+        system_instruction=render_product_identity_instruction(
+            "claw",
+            identity_tier_id
+            if identity_tier_id
+            else product_tier.value.removeprefix("Padiem ").lower(),
+        ),
         # Core is the only authority for these two enums (see
         # padiem_ai_core.b14_execution.B14RoutingOptions). Values outside the
         # Core sets are rejected while the B14 routing options are built, i.e.
@@ -426,15 +435,18 @@ class P01RequestFactory:
     def __init__(
         self,
         *,
-        timeout_seconds: float = DEFAULT_P01_TIMEOUT_SECONDS,
+        timeout_seconds: float | None = DEFAULT_P01_TIMEOUT_SECONDS,
         clock: Callable[[], datetime] | None = None,
         product_tier: ProductTierLabel = ProductTierLabel.PLUS,
         allow_subject_identity: bool = False,
     ) -> None:
-        if isinstance(timeout_seconds, bool) or not isinstance(timeout_seconds, (int, float)):
+        if timeout_seconds is not None and (
+            isinstance(timeout_seconds, bool)
+            or not isinstance(timeout_seconds, (int, float))
+        ):
             raise P01AdapterError(
                 "invalid_timeout",
-                "P01 timeout must be numeric.",
+                "P01 timeout must be numeric or None.",
                 dispatch_class=P01DispatchClass.NOT_DISPATCHED,
             )
         if not isinstance(allow_subject_identity, bool):
@@ -443,7 +455,9 @@ class P01RequestFactory:
                 "P01 subject identity lane must be a boolean.",
                 dispatch_class=P01DispatchClass.NOT_DISPATCHED,
             )
-        normalized_timeout = float(timeout_seconds)
+        normalized_timeout = (
+            None if timeout_seconds is None else float(timeout_seconds)
+        )
         # Validate against the canonical public P01 contract instead of importing
         # private/internal timeout constants. This makes Core the single authority
         # for the accepted execution budget.
@@ -482,6 +496,7 @@ class P01RequestFactory:
         pc_drive_query: bool = False,
         pc_files_query: bool = False,
         pc_files_device_id: str | None = None,
+        identity_tier_id: str | None = None,
     ) -> P01RequestBundle:
         if run.terminal:
             raise P01AdapterError(
@@ -533,6 +548,7 @@ class P01RequestFactory:
                 product_tier or self._product_tier,
                 selected_model_id=selected_model_id,
                 central_route_model_id=central_route_model_id,
+                identity_tier_id=identity_tier_id,
             ),
             messages=({"role": "user", "content": run.intent.task},),
             session_id=run.run_id,
@@ -801,27 +817,27 @@ class ClawOrchestrationProjector:
         elif kind is OrchestrationEventKind.APPROVAL_PAUSED:
             self._run.transition(
                 ClawRunStatus.WAITING_APPROVAL,
-                summary=redact_secrets(event.message or "사용자 승인 대기"),
+                summary=(event.message or "사용자 승인 대기"),
             )
         elif kind is OrchestrationEventKind.RUN_RESUMED:
             self._run.transition(
                 ClawRunStatus.RUNNING,
-                summary=redact_secrets(event.message or "승인 후 실행 재개"),
+                summary=(event.message or "승인 후 실행 재개"),
             )
         elif kind is OrchestrationEventKind.RUN_COMPLETED:
             self._run.transition(
                 ClawRunStatus.COMPLETED,
-                summary=redact_secrets(event.message or "작업 완료"),
+                summary=(event.message or "작업 완료"),
             )
         elif kind is OrchestrationEventKind.RUN_FAILED:
             self._run.transition(
                 ClawRunStatus.FAILED,
-                summary=redact_secrets(event.message or "P01 실행 실패"),
+                summary=(event.message or "P01 실행 실패"),
             )
         elif kind is OrchestrationEventKind.RUN_CANCELLED:
             self._run.transition(
                 ClawRunStatus.CANCELLED,
-                summary=redact_secrets(event.message or "작업 취소"),
+                summary=(event.message or "작업 취소"),
             )
 
 
@@ -879,6 +895,7 @@ class P01CoreOrchestrationAdapter:
         pc_drive_query: bool = False,
         pc_files_query: bool = False,
         pc_files_device_id: str | None = None,
+        identity_tier_id: str | None = None,
         on_event: Callable[[OrchestrationEvent], Awaitable[None]] | None = None,
     ) -> ClawOrchestrationOutcome:
         try:
@@ -895,6 +912,7 @@ class P01CoreOrchestrationAdapter:
                 pc_drive_query=pc_drive_query,
                 pc_files_query=pc_files_query,
                 pc_files_device_id=pc_files_device_id,
+                identity_tier_id=identity_tier_id,
             )
             projector = ClawOrchestrationProjector(
                 run,
@@ -1023,7 +1041,7 @@ class P01CoreOrchestrationAdapter:
                 await on_event(live_terminal)
 
             answer = (
-                redact_secrets(result.execution_result.answer)
+                result.execution_result.answer
                 if run.status is ClawRunStatus.COMPLETED
                 else None
             )

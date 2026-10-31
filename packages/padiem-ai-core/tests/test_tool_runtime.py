@@ -178,9 +178,14 @@ def test_invocation_rejects_non_json_values(arguments) -> None:
         ToolInvocation("core.echo", arguments)  # type: ignore[arg-type]
 
 
-def test_invocation_rejects_oversized_arguments() -> None:
-    with pytest.raises(ValueError, match="size limit"):
-        ToolInvocation("core.echo", {"value": "x" * (MAX_TOOL_ARGUMENT_BYTES + 1)})
+def test_invocation_keeps_a_large_argument_payload() -> None:
+    # #4379: a Tool argument is not refused for its size. The JSON shape and
+    # the identifier grammar still apply.
+    payload = {"value": "x" * (MAX_TOOL_ARGUMENT_BYTES + 1)}
+    invocation = ToolInvocation("core.echo", payload)
+    assert invocation.arguments_copy() == payload
+    with pytest.raises(ValueError):
+        ToolInvocation("core.echo", ["not", "an", "object"])  # type: ignore[arg-type]
 
 
 def test_registers_async_handler_and_lists_ids() -> None:
@@ -652,16 +657,19 @@ def test_invalid_non_json_or_non_finite_output_is_rejected(bad_output) -> None:
     )
 
 
-def test_oversized_output_is_rejected() -> None:
+def test_a_large_tool_output_is_kept() -> None:
+    # #4379: a Tool result is not refused for its size either. The settled
+    # result is owned by the durable tool result ledger, so a long result is
+    # no longer lost after the tool already ran.
     runtime = ToolRuntime()
+    payload = {"value": "x" * (MAX_TOOL_OUTPUT_BYTES + 1)}
 
     async def handler(arguments):
-        return {"value": "x" * (MAX_TOOL_OUTPUT_BYTES + 1)}
+        return payload
 
     runtime.register(spec(), handler)
-    with pytest.raises(ToolRuntimeError) as info:
-        run(runtime.execute(ToolInvocation("core.echo", {"value": "x"}), profile("core.echo"), auth()))
-    assert info.value.code == "invalid_tool_output"
+    result = run(runtime.execute(ToolInvocation("core.echo", {"value": "x"}), profile("core.echo"), auth()))
+    assert result.output_copy() == payload
 
 
 def test_valid_output_is_copy_safe_and_public_result_is_bounded_shape() -> None:

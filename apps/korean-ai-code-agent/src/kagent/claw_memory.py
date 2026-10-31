@@ -12,8 +12,10 @@ Boundary rules enforced by this module:
 - Durable memory updates require explicit user approval (approved, or an
   edited proposal approved with edits). Applying anything else fails closed.
 - Durable records keep a source/evidence reference where possible.
-- Raw inbound body is never part of a safe projection; the source ref may
-  hold a review-only excerpt that is excluded from ``safe_dict`` output.
+- #5360: the authorized workspace owner reads their own original business
+  content in full. The owner-facing projection therefore carries the owner's
+  own inbound text; a diagnostic or log projection must omit it with
+  ``include_raw=False`` and never copies it into a log.
 - No hidden model/provider output is stored as authority: model-derived
   values must arrive as candidates the user reviews.
 
@@ -32,7 +34,6 @@ import re
 from typing import Any
 
 from .contracts import ContractError
-from .security import redact_secrets
 
 CONTRACT_VERSION = "claw-memory.v1"
 
@@ -64,8 +65,6 @@ def _text(value: str, name: str, *, limit: int = _MAX_TEXT_CHARS) -> str:
     value = value.strip()
     if not value:
         raise ClawMemoryError(f"{name} is required")
-    if len(value) > limit:
-        raise ClawMemoryError(f"{name} exceeds {limit} characters")
     if _CONTROL_RE.search(value):
         raise ClawMemoryError(f"{name} contains control characters")
     return value
@@ -176,11 +175,13 @@ def sha256_text(body: str) -> str:
 
 @dataclass(frozen=True, slots=True)
 class ClawMemorySourceRef:
-    """Evidence reference for a memory fact. Never authoritative by itself.
+    """Evidence reference to one inbound text, with the owner's original body.
 
-    ``raw_excerpt`` is optional and review-only: it is excluded from
-    ``safe_dict`` output by default. The SHA-256 digest lets durable records
-    point back to the exact inbound text without embedding the untrusted body.
+    #5360: the excerpt is the authorized owner's own inbound business text,
+    so the owner-facing projection carries it unchanged. A diagnostic or log
+    projection passes ``include_raw=False``; the SHA-256 digest still lets a
+    durable record point back to the exact inbound text without embedding the
+    body.
     """
 
     source_id: str
@@ -203,7 +204,12 @@ class ClawMemorySourceRef:
                 self, "raw_excerpt", _text(self.raw_excerpt, "raw_excerpt", limit=_MAX_RAW_EXCERPT_CHARS)
             )
 
-    def safe_dict(self, *, include_raw: bool = False) -> dict[str, Any]:
+    def safe_dict(self, *, include_raw: bool = True) -> dict[str, Any]:
+        """The authorized owner-facing projection of one source reference.
+
+        ``include_raw=False`` is the diagnostic/logging boundary: it keeps the
+        body digest and drops the owner's original text.
+        """
         data: dict[str, Any] = {
             "contract_version": CONTRACT_VERSION,
             "source_id": self.source_id,
@@ -213,7 +219,7 @@ class ClawMemorySourceRef:
             "created_at": self.created_at.isoformat(),
         }
         if include_raw and self.raw_excerpt is not None:
-            data["raw_excerpt"] = redact_secrets(self.raw_excerpt)
+            data["raw_excerpt"] = self.raw_excerpt
         return data
 
 
@@ -240,14 +246,15 @@ class ClawMemoryCandidate:
             raise ClawMemoryError("candidate workspace must match source workspace")
         object.__setattr__(self, "created_at", _aware_utc(self.created_at, "created_at"))
 
-    def safe_dict(self) -> dict[str, Any]:
+    def safe_dict(self, *, include_raw: bool = True) -> dict[str, Any]:
+        """The authorized owner-facing projection of one untrusted candidate."""
         return {
             "contract_version": CONTRACT_VERSION,
             "candidate_id": self.candidate_id,
             "workspace_id": self.workspace_id,
             "kind": self.kind.value,
             "payload": dict(self.payload),
-            "source": self.source.safe_dict(),
+            "source": self.source.safe_dict(include_raw=include_raw),
             "created_at": self.created_at.isoformat(),
         }
 
@@ -300,7 +307,8 @@ class ClawMemoryProposal:
     def applicable(self) -> bool:
         return self.state in (ClawProposalState.APPROVED, ClawProposalState.EDITED)
 
-    def safe_dict(self) -> dict[str, Any]:
+    def safe_dict(self, *, include_raw: bool = True) -> dict[str, Any]:
+        """The authorized owner-facing projection of one reviewable proposal."""
         return {
             "contract_version": CONTRACT_VERSION,
             "proposal_id": self.proposal_id,
@@ -309,7 +317,7 @@ class ClawMemoryProposal:
             "payload": dict(self.payload),
             "edited_payload": dict(self.edited_payload) if self.edited_payload else None,
             "effective_payload": self.effective_payload,
-            "source": self.source.safe_dict(),
+            "source": self.source.safe_dict(include_raw=include_raw),
             "candidate_id": self.candidate_id,
             "state": self.state.value,
             "decided_by": self.decided_by,
@@ -350,7 +358,7 @@ class ClawPartyMemory:
             "memory_id": self.memory_id,
             "workspace_id": self.workspace_id,
             "kind": ClawMemoryKind.PARTY.value,
-            "name": redact_secrets(self.name),
+            "name": self.name,
             "role": self.role.value,
             "preferred_contact_method": self.preferred_contact_method,
             "delivery_preference": self.delivery_preference,
@@ -392,7 +400,7 @@ class ClawItemMemory:
             "memory_id": self.memory_id,
             "workspace_id": self.workspace_id,
             "kind": ClawMemoryKind.ITEM.value,
-            "item_name": redact_secrets(self.item_name),
+            "item_name": self.item_name,
             "item_kind": self.item_kind.value,
             "sku": self.sku,
             "unit": self.unit,
@@ -455,7 +463,7 @@ class ClawPriceMemory:
             "unit_price": str(self.unit_price),
             "currency": self.currency,
             "quoted_at": self.quoted_at.isoformat(),
-            "quote_note": redact_secrets(self.quote_note) if self.quote_note else None,
+            "quote_note": self.quote_note if self.quote_note else None,
             "source_id": self.source_id,
             "updated_at": self.updated_at.isoformat(),
         }
@@ -501,7 +509,7 @@ class ClawFollowupTask:
             "task_id": self.task_id,
             "workspace_id": self.workspace_id,
             "member_id": self.member_id,
-            "title": redact_secrets(self.title),
+            "title": self.title,
             "status": self.status.value,
             "due_date": self.due_date.isoformat() if self.due_date else None,
             "source_id": self.source_id,
@@ -567,7 +575,7 @@ class ClawAlert:
             "workspace_id": self.workspace_id,
             "kind": self.kind.value,
             "severity": self.severity.value,
-            "title": redact_secrets(self.title),
+            "title": self.title,
             "status": self.status.value,
             "visible_to_all": self.visible_to_all,
             "visible_to_members": list(self.visible_to_members),
@@ -701,7 +709,15 @@ def durable_record_from_proposal(
 
 
 class ClawMemoryStore:
-    """Abstract workspace-scoped memory boundary (fake implementations only)."""
+    """Abstract workspace-scoped memory boundary (fake implementations only).
+
+    #6324: every task/alert read and status change names its owner —
+    ``member_id`` is a required keyword-only argument with no default, so an
+    owner-less read cannot even be expressed (``TypeError``). A tenant-mate's
+    rows resolve to "not found" for single-record reads and never appear in
+    lists. ``visible_to_all`` alerts stay company-shared through
+    ``is_visible_to``, which is the one intended shared surface.
+    """
 
     def submit_candidate(self, candidate: ClawMemoryCandidate, *, proposal_id: str) -> ClawMemoryProposal:
         raise NotImplementedError
@@ -715,16 +731,35 @@ class ClawMemoryStore:
     def add_task(self, task: ClawFollowupTask) -> ClawFollowupTask:
         raise NotImplementedError
 
-    def set_task_status(self, task_id: str, status: ClawTaskStatus, *, workspace_id: str, at: datetime) -> ClawFollowupTask:
+    def get_task(self, task_id: str, *, workspace_id: str, member_id: str) -> ClawFollowupTask | None:
+        raise NotImplementedError
+
+    def list_tasks(self, workspace_id: str, *, member_id: str) -> tuple[ClawFollowupTask, ...]:
+        raise NotImplementedError
+
+    def set_task_status(
+        self, task_id: str, status: ClawTaskStatus, *, workspace_id: str, member_id: str, at: datetime
+    ) -> ClawFollowupTask:
         raise NotImplementedError
 
     def add_alert(self, alert: ClawAlert) -> ClawAlert:
         raise NotImplementedError
 
-    def set_alert_status(self, alert_id: str, status: ClawAlertStatus, *, workspace_id: str, at: datetime) -> ClawAlert:
+    def get_alert(self, alert_id: str, *, workspace_id: str, member_id: str) -> ClawAlert | None:
         raise NotImplementedError
 
-    def projection(self, workspace_id: str, *, member_id: str | None = None) -> dict[str, Any]:
+    def list_alerts(self, workspace_id: str, *, member_id: str) -> tuple[ClawAlert, ...]:
+        raise NotImplementedError
+
+    def set_alert_status(
+        self, alert_id: str, status: ClawAlertStatus, *, workspace_id: str, member_id: str, at: datetime
+    ) -> ClawAlert:
+        raise NotImplementedError
+
+    def projection(
+        self, workspace_id: str, *, member_id: str,
+        include_raw: bool = True,
+    ) -> dict[str, Any]:
         raise NotImplementedError
 
 
@@ -793,10 +828,20 @@ class InMemoryClawMemoryStore(ClawMemoryStore):
         self._tasks[task.task_id] = task
         return task
 
+    def get_task(self, task_id: str, *, workspace_id: str, member_id: str) -> ClawFollowupTask | None:
+        """Non-disclosing single-task read: a tenant-mate's row is ``None``."""
+        _safe_id(workspace_id, "workspace_id")
+        _safe_id(task_id, "task_id")
+        _safe_id(member_id, "member_id")
+        task = self._tasks.get(task_id)
+        if task is None or task.workspace_id != workspace_id or task.member_id != member_id:
+            return None
+        return task
+
     def set_task_status(
-        self, task_id: str, status: ClawTaskStatus, *, workspace_id: str, at: datetime
+        self, task_id: str, status: ClawTaskStatus, *, workspace_id: str, member_id: str, at: datetime
     ) -> ClawFollowupTask:
-        task = self._require(self._tasks, task_id, workspace_id, "task")
+        task = self._require_owned(self._tasks, task_id, workspace_id, member_id, "task")
         updated = task.with_status(_enum_value(ClawTaskStatus, status), at=at)
         self._tasks[task_id] = updated
         return updated
@@ -807,10 +852,23 @@ class InMemoryClawMemoryStore(ClawMemoryStore):
         self._alerts[alert.alert_id] = alert
         return alert
 
+    def get_alert(self, alert_id: str, *, workspace_id: str, member_id: str) -> ClawAlert | None:
+        """Single-alert read; ``visible_to_all`` rows stay company-shared."""
+        _safe_id(workspace_id, "workspace_id")
+        _safe_id(alert_id, "alert_id")
+        _safe_id(member_id, "member_id")
+        alert = self._alerts.get(alert_id)
+        if alert is None or alert.workspace_id != workspace_id or not alert.is_visible_to(member_id):
+            return None
+        return alert
+
     def set_alert_status(
-        self, alert_id: str, status: ClawAlertStatus, *, workspace_id: str, at: datetime
+        self, alert_id: str, status: ClawAlertStatus, *, workspace_id: str, member_id: str, at: datetime
     ) -> ClawAlert:
+        _safe_id(member_id, "member_id")
         alert = self._require(self._alerts, alert_id, workspace_id, "alert")
+        if not alert.is_visible_to(member_id):
+            raise ClawMemoryError("alert not found in workspace")
         updated = alert.with_status(_enum_value(ClawAlertStatus, status), at=at)
         self._alerts[alert_id] = updated
         return updated
@@ -827,30 +885,48 @@ class InMemoryClawMemoryStore(ClawMemoryStore):
         _safe_id(workspace_id, "workspace_id")
         return tuple(r for r in self._prices.values() if r.workspace_id == workspace_id)
 
-    def list_tasks(self, workspace_id: str) -> tuple[ClawFollowupTask, ...]:
+    def list_tasks(self, workspace_id: str, *, member_id: str) -> tuple[ClawFollowupTask, ...]:
+        """#6324: the owner predicate is in the read, not left to the caller."""
         _safe_id(workspace_id, "workspace_id")
-        return tuple(r for r in self._tasks.values() if r.workspace_id == workspace_id)
+        _safe_id(member_id, "member_id")
+        return tuple(
+            r
+            for r in self._tasks.values()
+            if r.workspace_id == workspace_id and r.member_id == member_id
+        )
 
-    def list_alerts(self, workspace_id: str, *, member_id: str | None = None) -> tuple[ClawAlert, ...]:
+    def list_alerts(self, workspace_id: str, *, member_id: str) -> tuple[ClawAlert, ...]:
+        """``visible_to_all`` rows stay company-shared via ``is_visible_to``."""
         _safe_id(workspace_id, "workspace_id")
+        _safe_id(member_id, "member_id")
         return tuple(
             alert
             for alert in self._alerts.values()
             if alert.workspace_id == workspace_id and alert.is_visible_to(member_id)
         )
 
-    def projection(self, workspace_id: str, *, member_id: str | None = None) -> dict[str, Any]:
-        """Safe workspace projection. Raw inbound bodies are never included."""
+    def projection(
+        self, workspace_id: str, *, member_id: str,
+        include_raw: bool = True,
+    ) -> dict[str, Any]:
+        """The authorized workspace projection of one owner's business memory.
+
+        #5360: the owner reads their own original business content in full, so
+        the projection carries the owner's inbound text unchanged. A diagnostic
+        or log projection passes ``include_raw=False``; the body digest still
+        identifies the exact text without embedding it. #6324: the projection
+        names its owner — tasks and alerts are scoped to ``member_id``.
+        """
         return {
             "contract_version": CONTRACT_VERSION,
             "workspace_id": workspace_id,
             "parties": [record.safe_dict() for record in self.list_parties(workspace_id)],
             "items": [record.safe_dict() for record in self.list_items(workspace_id)],
             "prices": [record.safe_dict() for record in self.list_prices(workspace_id)],
-            "tasks": [task.safe_dict() for task in self.list_tasks(workspace_id)],
+            "tasks": [task.safe_dict() for task in self.list_tasks(workspace_id, member_id=member_id)],
             "alerts": [alert.safe_dict() for alert in self.list_alerts(workspace_id, member_id=member_id)],
             "proposals": [
-                proposal.safe_dict()
+                proposal.safe_dict(include_raw=include_raw)
                 for proposal in self._proposals.values()
                 if proposal.workspace_id == workspace_id
             ],
@@ -861,5 +937,14 @@ class InMemoryClawMemoryStore(ClawMemoryStore):
         _safe_id(workspace_id, "workspace_id")
         record = store.get(_safe_id(item_id, f"{label}_id"))
         if record is None or record.workspace_id != workspace_id:
+            raise ClawMemoryError(f"{label} not found in workspace")
+        return record
+
+    def _require_owned(
+        self, store: dict[str, Any], item_id: str, workspace_id: str, member_id: str, label: str
+    ) -> Any:
+        """#6324: an owner-less or tenant-mate lookup is the same "not found"."""
+        record = self._require(store, item_id, workspace_id, label)
+        if record.member_id != member_id:
             raise ClawMemoryError(f"{label} not found in workspace")
         return record

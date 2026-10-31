@@ -387,6 +387,11 @@ def _assert_3748_b62_production_argv_source(src: str) -> None:
     assert "cloudflare_served_version_lineage.py" in src
     assert "LATEST_VERSION_EQUALS_ACTIVE_VERSION" in src
     assert "P01_ENGINE_WORKER: padiem-ai-engine" in src
+    # The rollback mode reads the same two resolved ids, but through its own argv
+    # name and exactly once: it may never grow into a second canonical lineage call.
+    assert src.count("python3 .github/scripts/b62_rollback_recorded_version_guard.py") == 1
+    assert '- ".github/scripts/b62_rollback_recorded_version_guard.py"' in src
+    assert src.count('--newest-upload-version="${latest}"') == 1
 
 
 def _run_3748_b62_production_lineage(*argv: str):
@@ -579,3 +584,73 @@ def test_claw_desktop_secret_mode_is_exclusive():
             allow_oracle_mesh=True,
             allow_claw_desktop_secret=True,
         )
+
+
+# ── #5441: the Owner-registered transactional-mail reference ───────────────
+
+def _resend_store_binding():
+    return {
+        "name": "B66_ALERT_RESEND_API_KEY",
+        "type": "secrets_store_secret",
+        "store_id": "f0b09ca04a7b43248154c773704a5616",
+        "secret_name": "B66_ALERT_RESEND_API_KEY",
+    }
+
+
+def test_the_approved_transactional_mail_reference_may_be_added_once():
+    """The served version may carry exactly that one new reference."""
+    before = _entries(base_bindings_map())
+    expected = mod.secret_name_type_set(before)
+    grown = dict(base_bindings_map())
+    grown["B66_ALERT_RESEND_API_KEY"] = _resend_store_binding()
+    mod.verify_secret_set(
+        expected, _entries(grown), allow_resend_alert_secret=True,
+    )
+
+
+def test_an_unrelated_new_secret_still_fails_closed_in_that_mode():
+    before = _entries(base_bindings_map())
+    expected = mod.secret_name_type_set(before)
+    grown = dict(base_bindings_map())
+    grown["B66_ALERT_RESEND_API_KEY"] = _resend_store_binding()
+    grown["SURPRISE_SECRET"] = secret("SURPRISE_SECRET")
+    with pytest.raises(mod.ServedVersionGuardError) as exc:
+        mod.verify_secret_set(
+            expected, _entries(grown), allow_resend_alert_secret=True,
+        )
+    assert "unexpected new secret: SURPRISE_SECRET" in str(exc.value)
+
+
+def test_the_mode_requires_the_approved_reference_to_be_served():
+    """The allowance is an addition, never a waiver of the approved identity."""
+    before = _entries(base_bindings_map())
+    expected = mod.secret_name_type_set(before)
+    with pytest.raises(mod.ServedVersionGuardError) as exc:
+        mod.verify_secret_set(
+            expected, before, allow_resend_alert_secret=True,
+        )
+    assert "transactional-mail served Secrets Store identity missing or drift" in str(exc.value)
+
+
+def test_the_transactional_mail_reference_may_not_be_added_without_the_mode():
+    before = _entries(base_bindings_map())
+    expected = mod.secret_name_type_set(before)
+    grown = dict(base_bindings_map())
+    grown["B66_ALERT_RESEND_API_KEY"] = _resend_store_binding()
+    with pytest.raises(mod.ServedVersionGuardError) as exc:
+        mod.verify_secret_set(expected, _entries(grown))
+    assert "unexpected new secret: B66_ALERT_RESEND_API_KEY" in str(exc.value)
+
+
+def test_a_drifted_transactional_mail_identity_fails_closed():
+    before = _entries(base_bindings_map())
+    expected = mod.secret_name_type_set(before)
+    grown = dict(base_bindings_map())
+    drifted = _resend_store_binding()
+    drifted["secret_name"] = "OTHER_SECRET"
+    grown["B66_ALERT_RESEND_API_KEY"] = drifted
+    with pytest.raises(mod.ServedVersionGuardError) as exc:
+        mod.verify_secret_set(
+            expected, _entries(grown), allow_resend_alert_secret=True,
+        )
+    assert "transactional-mail served Secrets Store identity missing or drift" in str(exc.value)

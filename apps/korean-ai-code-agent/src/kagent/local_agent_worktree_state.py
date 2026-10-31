@@ -48,7 +48,8 @@ from .windows_local_executor import WorktreeStatePort
 #: Bound on the child process lifetime. A worktree probe is a local status read;
 #: anything slower than this is an operational failure, not a clean worktree.
 GIT_STATUS_TIMEOUT_SECONDS = 5.0
-MAX_GIT_STATUS_TIMEOUT_SECONDS = 60.0
+# #4379: the git status read carries no PADIEM wall-clock ceiling.
+MAX_GIT_STATUS_TIMEOUT_SECONDS: float | None = None
 #: Bound on captured stdout/stderr. The child is killed the moment the cap is
 #: exceeded, so a pathological repository cannot grow the runner's memory.
 GIT_STATUS_MAX_OUTPUT_BYTES = 256 * 1024
@@ -216,10 +217,9 @@ class WindowsGitWorktreeStatePort:
             raise ValueError("git_executable must be a non-empty reference")
         if isinstance(timeout_seconds, bool) or not isinstance(timeout_seconds, (int, float)):
             raise ValueError("timeout_seconds must be a number")
-        if not 0 < float(timeout_seconds) <= MAX_GIT_STATUS_TIMEOUT_SECONDS:
-            raise ValueError(
-                f"timeout_seconds must be between 0 and {MAX_GIT_STATUS_TIMEOUT_SECONDS}"
-            )
+        # #4379: no PADIEM wall-clock ceiling. The positive lower bound stays.
+        if not 0 < float(timeout_seconds):
+            raise ValueError("timeout_seconds must be greater than 0")
         if isinstance(max_output_bytes, bool) or not isinstance(max_output_bytes, int):
             raise ValueError("max_output_bytes must be an integer")
         if not MIN_GIT_STATUS_MAX_OUTPUT_BYTES <= max_output_bytes <= MAX_GIT_STATUS_MAX_OUTPUT_BYTES:

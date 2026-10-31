@@ -153,7 +153,9 @@ class ToolSpec:
     input_schema: Mapping[str, Any] = field(default_factory=dict)
     output_contract: Mapping[str, Any] = field(default_factory=dict)
     auth_scope: tuple[str, ...] = ()
-    timeout_seconds: float = 30.0
+    # #4379: a Tool call carries no PADIEM execution budget. None means the
+    # call runs until it finishes or the caller cancels it.
+    timeout_seconds: float | None = None
     user_visible: bool = False
 
     def __post_init__(self) -> None:
@@ -167,8 +169,12 @@ class ToolSpec:
             raise ValueError("approval_policy must be ApprovalPolicy")
         if self.side_effect in {ToolSideEffect.WRITE, ToolSideEffect.HIGH_RISK} and self.approval_policy is ApprovalPolicy.NOT_REQUIRED:
             raise ValueError("write/high-risk tools require an approval policy")
-        if isinstance(self.timeout_seconds, bool) or not isinstance(self.timeout_seconds, (int, float)) or not 0 < self.timeout_seconds <= 300:
-            raise ValueError("timeout_seconds must be > 0 and <= 300")
+        if self.timeout_seconds is not None and (
+            isinstance(self.timeout_seconds, bool)
+            or not isinstance(self.timeout_seconds, (int, float))
+            or not 0 < self.timeout_seconds
+        ):
+            raise ValueError("timeout_seconds must be a positive number or None")
         object.__setattr__(self, "auth_scope", _tuple_of_identifiers("auth_scope", self.auth_scope))
         object.__setattr__(self, "input_schema", _freeze(self.input_schema))
         object.__setattr__(self, "output_contract", _freeze(self.output_contract))
@@ -202,7 +208,7 @@ class AgentProfile:
     required_capabilities: tuple[str, ...] = ()
     context_policy: Mapping[str, Any] = field(default_factory=dict)
     model_policy: Mapping[str, Any] = field(default_factory=dict)
-    max_steps: int = 1
+    max_steps: int | None = None
     output_contract: Mapping[str, Any] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
@@ -219,8 +225,15 @@ class AgentProfile:
             or self.max_tokens <= 0
         ):
             raise ValueError("max_tokens must be a positive integer or None")
-        if isinstance(self.max_steps, bool) or not isinstance(self.max_steps, int) or not 1 <= self.max_steps <= 100:
-            raise ValueError("max_steps must be between 1 and 100")
+        if self.max_steps is not None and (
+            isinstance(self.max_steps, bool)
+            or not isinstance(self.max_steps, int)
+            or self.max_steps < 1
+        ):
+            # #4379: None means no step ceiling and an explicit ceiling has
+            # no PADIEM maximum. The model decides when the work is done; the
+            # inactivity watchdog and cancellation still end a stuck run.
+            raise ValueError("max_steps must be a positive integer or None")
         object.__setattr__(self, "allowed_tools", _tuple_of_identifiers("allowed_tools", self.allowed_tools))
         object.__setattr__(self, "required_capabilities", _tuple_of_identifiers("required_capabilities", self.required_capabilities))
         object.__setattr__(self, "context_policy", _freeze(self.context_policy))

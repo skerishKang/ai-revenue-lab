@@ -351,12 +351,16 @@ async def test_lazy_overlapping_requests_isolate_handle_and_key():
 
 
 @pytest.mark.asyncio
-async def test_auto_chain_fetches_only_chain_and_stops_without_fallback(monkeypatch):
+async def test_retired_auto_chain_prep_loads_nothing_and_manual_prep_loads_its_route(monkeypatch):
+    """B7: the b14/auto secret-prep branch is gone with the chain.
+
+    The retired id resolves to no catalog model, so no Provider binding is
+    fetched for it; a manual route still preloads exactly its own binding.
+    """
     from app.pilot.b14_runtime_config import runtime_config
     monkeypatch.setattr(runtime_config, "provider_mode", "live")
     from types import SimpleNamespace
     from app.pilot import platform as _registration  # noqa: F401
-    from app.pilot.routing_policy import B14_AUTO_CHAIN
     from app.pilot.platform_secrets import (
         ensure_route_secrets, get_platform_provider,
     )
@@ -371,42 +375,18 @@ async def test_auto_chain_fetches_only_chain_and_stops_without_fallback(monkeypa
             self.calls += 1
             return self.value
 
-    chain_keys = [
-        get_platform_provider(get_catalog_by_id(mid).platform_provider_id).credential_binding_name
-        for mid in B14_AUTO_CHAIN
-    ]
-    assert len(chain_keys) == 2
-    first, second, other = Binding("synthetic_agnes_usable"), Binding("synthetic_poolside"), Binding("synthetic_exlab")
-    env = SimpleNamespace(**dict(zip(chain_keys, (first, second))),
-                          PADIEM_B14_CREDENTIAL_04=other)
-    token = bind_request_env(collect_request_bindings(
-        env, (*chain_keys, "PADIEM_B14_CREDENTIAL_04")
-    ))
+    manual_id = "agnes-ai/agnes-3.0-flash"
+    manual_key = get_platform_provider(
+        get_catalog_by_id(manual_id).platform_provider_id
+    ).credential_binding_name
+    other_key = "PADIEM_B14_CREDENTIAL_04"
+    first, other = Binding("synthetic_agnes_usable"), Binding("synthetic_exlab")
+    env = SimpleNamespace(**{manual_key: first, other_key: other})
+    token = bind_request_env(collect_request_bindings(env, (manual_key, other_key)))
     try:
-        await ensure_route_secrets("b14/auto", allow_external_fallback=False)
-        assert (first.calls, second.calls, other.calls) == (1, 0, 0)
-    finally:
-        reset_request_env(token)
-
-    # Without fallback, a revoked primary must permit the next *ready*
-    # fixed-chain position to be selected, not falsely report no route.
-    first.value = None
-    token = bind_request_env(collect_request_bindings(
-        env, (*chain_keys, "PADIEM_B14_CREDENTIAL_04")
-    ))
-    try:
-        await ensure_route_secrets("b14/auto", allow_external_fallback=False)
-        assert (first.calls, second.calls, other.calls) == (2, 1, 0)
-    finally:
-        reset_request_env(token)
-    first.value = "synthetic_agnes_usable"
-
-    token = bind_request_env(collect_request_bindings(
-        env, (*chain_keys, "PADIEM_B14_CREDENTIAL_04")
-    ))
-    try:
-        await ensure_route_secrets("b14/auto", allow_external_fallback=True)
-        assert (first.calls, second.calls, other.calls) == (3, 2, 0)
+        await ensure_route_secrets("b14/auto")
+        await ensure_route_secrets(manual_id)
+        assert (first.calls, other.calls) == (1, 0)
     finally:
         reset_request_env(token)
 

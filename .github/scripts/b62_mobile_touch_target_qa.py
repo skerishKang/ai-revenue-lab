@@ -126,6 +126,15 @@ async def run_mobile(page: Page) -> dict:
     assert_floor(drawer, "open-drawer")
     await assert_no_overflow(page, "open-drawer")
     await page.screenshot(path=str(OUT_DIR / "mobile-drawer-390x844.png"), full_page=True)
+    for image_name in ('mobile-first-390x844.png', 'mobile-drawer-390x844.png'):
+        image_path = OUT_DIR / image_name
+        if not image_path.is_file() or image_path.stat().st_size == 0:
+            raise AssertionError(f'mobile screenshot evidence missing or empty: {image_name}')
+        png_header = image_path.read_bytes()[:24]
+        if len(png_header) != 24 or png_header[:8] != bytes.fromhex('89504e470d0a1a0a') or png_header[12:16] != b'IHDR':
+            raise AssertionError(f'mobile screenshot evidence is not a PNG: {image_name}')
+        if int.from_bytes(png_header[16:20], 'big') != 390 or int.from_bytes(png_header[20:24], 'big') < 844:
+            raise AssertionError(f'mobile screenshot evidence has wrong viewport dimensions: {image_name}')
 
     if unexpected_hosts:
         raise AssertionError(f"unexpected external browser hosts: {sorted(unexpected_hosts)}")

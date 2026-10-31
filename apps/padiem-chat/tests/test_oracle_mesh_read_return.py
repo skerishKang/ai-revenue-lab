@@ -9,12 +9,14 @@ from __future__ import annotations
 
 import asyncio
 import hashlib
+import inspect
 import json
 from datetime import datetime, timedelta, timezone
 from types import SimpleNamespace
 
 import pytest
 
+from app import app_factory
 from app import oracle_mesh_read_return_routes as routes
 from app.history import HistoryError, HistoryForbidden
 from app.claw_local_task_result_projection import result_message_id
@@ -140,6 +142,9 @@ class History:
         self._seq += 1
         dispatch_id = f"dsp-{self._seq}"
         row = {**fields, "dispatch_id": dispatch_id, "state": "pending",
+               # Mirror the production store's default kind: the browser read
+               # intent stages the kind=read download lane.
+               "kind": fields.get("kind") or "read",
                "nonce_sha256": None, "result_sha256": None, "result_bytes": None,
                "created_at": NOW.isoformat()}
         self.rows[dispatch_id] = row
@@ -250,12 +255,33 @@ class History:
             return None
         return dict(row)
 
+    async def oracle_mesh_dispatch_cancellation(self, *, dispatch_id):
+        if getattr(self, "cancellation_raises", False):
+            raise HistoryError("the store will not answer")
+        return dispatch_id in getattr(self, "cancelled_flags", set())
 
-def state(*, mesh=None, history=None, identity=None, secret=SECRET):
+    async def oracle_mesh_node_live_claims(self, *, node_ref, except_dispatch_id=""):
+        if getattr(self, "live_claims_raises", False):
+            raise HistoryError("the store will not answer")
+        return getattr(self, "live_claims", 0)
+
+    async def oracle_mesh_lane_status(self, *, node_limit=8):
+        if getattr(self, "lane_status_raises", False):
+            raise HistoryError("the store will not answer")
+        return getattr(self, "lane_status", {
+            "unclaimed": {"count": 0, "oldest_seconds": None},
+            "claimed": {"count": 0, "oldest_seconds": None},
+            "nodes": [],
+        })
+
+
+def state(*, mesh=None, history=None, identity=None, secret=SECRET,
+            presence=None, watch_secret=None):
     return SimpleNamespace(
+        mesh_device_presence_store=presence,
 oracle_mesh_return_source=routes.build_oracle_mesh_return_source(
             mesh if mesh is not None else _mapping(), secret,
-            routes.EXECUTION_MODE_MESH,
+            routes.EXECUTION_MODE_MESH, watch_secret,
         ),
         control_plane_identity_authority=identity or Identity(consent()),
         history_store=history or History(),
@@ -332,9 +358,8 @@ def test_request_poll_real_read_result_reaches_the_same_conversation(monkeypatch
     read_calls: list[dict] = []
 
     class ReadPort:
-        def read_bytes(self, *, node_ref, file_path, timeout_seconds):
-            read_calls.append({"node_ref": node_ref, "file_path": file_path,
-                               "timeout_seconds": timeout_seconds})
+        def read_bytes(self, *, node_ref, file_path, **kwargs):
+            read_calls.append({"node_ref": node_ref, "file_path": file_path, **kwargs})
             return TEXT_BYTES
 
     executor = OracleMeshExecutor(
@@ -348,8 +373,7 @@ def test_request_poll_real_read_result_reaches_the_same_conversation(monkeypatch
     )
     outcome = executor.execute(dispatched)
     assert outcome.exit_code == 0 and outcome.body == TEXT_BYTES
-    assert read_calls == [{"node_ref": NODE, "file_path": FILE_PATH,
-                           "timeout_seconds": 120}]
+    assert read_calls == [{"node_ref": NODE, "file_path": FILE_PATH}]
 
     # 3. the executor submits; the server verifies and appends once
     submitted = []
@@ -373,7 +397,43 @@ def test_request_poll_real_read_result_reaches_the_same_conversation(monkeypatch
         command_id=granted["command_id"], revision_ref=granted["revision_ref"],
     )
     assert history.rows[dispatch_id]["state"] == "done"
+    # #5015: the exact verified read body is in the existing original store,
+    # so the Engine result mode can re-feed it.
+    assert history.originals[dispatch_id] == TEXT_BYTES
     del seen_paths
+
+
+def test_a_failed_read_keeps_its_marker_body_and_closes_failed(monkeypatch):
+    """#5015: an oversize/read failure is stored, never collapsed to empty."""
+
+    setup_auth(monkeypatch)
+    history = History()
+    dispatch_id = create_dispatch(history)
+    _, poll, _ = call(routes.oracle_mesh_read_poll,
+                      Request({}, state(history=history), secret=SECRET))
+    nonce = poll["dispatch"]["nonce"]
+
+    marker = routes.PC_FILES_ERROR_PREFIX + "too_large"
+    marker_bytes = marker.encode("utf-8")
+    marker_sha = hashlib.sha256(marker_bytes).hexdigest()
+    status, result, _ = call(
+        routes.oracle_mesh_read_result,
+        Request(
+            result_body(
+                dispatch_id, nonce, termination="exited", exit_code=1,
+                content_utf8=marker, content_sha256=marker_sha,
+                content_bytes=len(marker_bytes),
+            ),
+            state(history=history), secret=SECRET,
+        ),
+    )
+    assert status == 200, result
+    assert result["status"] == "failed"
+    assert history.rows[dispatch_id]["state"] == "failed"
+    # The marker, not the file, is the verified body the Engine will read.
+    assert history.originals[dispatch_id] == marker_bytes
+    assert history.appended[0]["status"] == "failed"
+    assert marker not in history.appended[0]["content"]
 
 
 def test_poll_then_result_twice_refuses_the_second_consume(monkeypatch):
@@ -580,7 +640,8 @@ def test_executor_holds_the_result_across_a_store_failure(monkeypatch):
     reads = []
 
     class ReadPort:
-        def read_bytes(self, *, node_ref, file_path, timeout_seconds):
+        def read_bytes(self, *, node_ref, file_path, **kwargs):
+            assert "timeout_seconds" not in kwargs
             reads.append(file_path)
             return TEXT_BYTES
 
@@ -676,14 +737,56 @@ def test_foreign_pinned_account_is_a_hard_ownership_refusal(monkeypatch):
     assert status == 403
     assert result["error"]["code"] == "oracle_mesh_ownership_unverified"
 
-def _deployment_env(mapping=None, secret=SECRET, mode="mesh"):
+_NO_WATCH = object()
+
+
+def _deployment_env(mapping=None, secret=SECRET, mode="mesh", watch=_NO_WATCH):
     import json
-    return {
+    env = {
         routes.ORACLE_MESH_OWNERSHIP_MAP_ENV: json.dumps(
             mapping if mapping is not None else _mapping()),
         routes.ORACLE_MESH_CHANNEL_SECRET_ENV: secret,
         routes.ORACLE_MESH_EXECUTION_MODE_ENV: mode,
     }
+    if watch is not _NO_WATCH:
+        env[routes.CONNECTOR_WATCH_READ_SECRET_ENV] = watch
+    return env
+
+
+def test_the_env_builder_reads_the_optional_watch_secret_and_keeps_it_optional():
+    """Deployment wiring for the split secret.
+
+    Absent means "not configured", not a failure: the read-only leg then keeps the
+    channel-secret-only behaviour, and the watch workflow reports UNKNOWN instead of
+    authenticating with a credential it must not hold.
+    """
+    import asyncio
+
+    plain = asyncio.run(routes.build_oracle_mesh_return_source_from_env(
+        _deployment_env(watch=WATCH_SECRET)))
+    assert plain is not None
+    assert plain.check_read_secret(WATCH_SECRET) is True
+    assert plain.check_channel_secret(WATCH_SECRET) is False
+
+    absent = asyncio.run(routes.build_oracle_mesh_return_source_from_env(
+        _deployment_env()))
+    assert absent is not None
+    assert absent.check_read_secret(WATCH_SECRET) is False
+    assert absent.check_read_secret(SECRET) is True
+
+    class Store:
+        def get(self):
+            return WATCH_SECRET
+
+    stored = asyncio.run(routes.build_oracle_mesh_return_source_from_env(
+        _deployment_env(watch=Store())))
+    assert stored is not None and stored.check_read_secret(WATCH_SECRET) is True
+
+    # A watch value the secret rules refuse makes the source unconfigured rather than
+    # silently falling back to "channel only" for a deployment that asked for a split.
+    refused = asyncio.run(routes.build_oracle_mesh_return_source_from_env(
+        _deployment_env(watch="short")))
+    assert refused is None
 
 
 def test_env_builder_resolves_the_secrets_store_binding():
@@ -986,3 +1089,330 @@ def test_5015_mesh_source_startup_reason_does_not_log_secrets(caplog):
     good = asyncio.run(routes.build_oracle_mesh_return_source_from_env(_deployment_env()))
     assert good is not None and good.configured is True
     assert caplog.messages == []
+
+
+# ------------------------------------------------------- the owner's stop, read back
+_MISSING = object()
+
+
+def _cancel_read(history, dispatch_id, *, secret=SECRET, payload=_MISSING):
+    if payload is _MISSING:
+        payload = {"dispatch_id": dispatch_id}
+    return call(
+        routes.oracle_mesh_read_cancel_check,
+        Request(payload, state(history=history), secret=secret),
+    )
+
+
+def test_the_executor_reads_the_owner_stop_for_the_command_it_is_running(monkeypatch):
+    """One dispatch id in, one boolean out - and the claim survives the read.
+
+    #5895: the owner's 그만 has to reach a command the executor already holds,
+    because #5995 removed the client deadline and a PC that never answers would
+    otherwise hold every later operation on that PC behind it. This read claims
+    nothing and writes nothing, which is what lets the executor ask it between
+    read slices for as long as the PC works.
+    """
+    setup_auth(monkeypatch)
+    history = History()
+    dispatch_id = create_dispatch(history)
+    _status, poll, _headers = call(
+        routes.oracle_mesh_read_poll,
+        Request({}, state(history=history), secret=SECRET),
+    )
+    nonce = poll["dispatch"]["nonce"]
+
+    status, body, _ = _cancel_read(history, dispatch_id)
+    assert status == 200 and body == {"ok": True, "cancelled": False}
+
+    history.cancelled_flags = {dispatch_id}
+    status, body, _ = _cancel_read(history, dispatch_id)
+    assert status == 200 and body == {"ok": True, "cancelled": True}
+
+    # Reading the stop is not consuming the claim: the result is still owed.
+    assert history.rows[dispatch_id]["nonce_sha256"]
+    status, submitted, _ = call(
+        routes.oracle_mesh_read_result,
+        Request(result_body(dispatch_id, nonce), state(history=history), secret=SECRET),
+    )
+    assert status == 200, submitted
+
+
+def test_the_stop_read_is_channel_only_and_answers_no_when_it_cannot_ask(monkeypatch):
+    setup_auth(monkeypatch)
+    history = History()
+    dispatch_id = create_dispatch(history)
+
+    status, body, _ = _cancel_read(history, dispatch_id, secret=None)
+    assert status == 403 and body["error"]["code"] == "oracle_mesh_channel_rejected"
+
+    for payload in ({}, {"dispatch_id": ""}, {"dispatch_id": {"a": 1}}, {"other": 1}, None):
+        bad = _cancel_read(history, dispatch_id, payload=payload)
+        assert bad[0] == 400, (payload, bad)
+
+    # An unreadable answer is never an owner's stop: ending a real command because
+    # a read failed is the worse of the two mistakes.
+    history.cancellation_raises = True
+    status, body, _ = _cancel_read(history, dispatch_id)
+    assert status == 200 and body == {"ok": True, "cancelled": False}
+
+
+# --------------------------------------- what the server counts as work on one PC
+def _busy_read(history, node, *, secret=SECRET, payload=_MISSING, **fields):
+    if payload is _MISSING:
+        payload = {"node_ref": node}
+        payload.update(fields)
+    return call(
+        routes.oracle_mesh_read_busy_check,
+        Request(payload, state(history=history), secret=secret),
+    )
+
+
+def test_the_executor_asks_whether_a_pc_is_working_before_it_clears_one(monkeypatch):
+    """#6106 follow-up, one node reference in and one boolean out.
+
+    The connector can see its own running dispatch and nothing else. The failover
+    partner (#5462) can hold a claim on the same PC, and the agent answers this
+    host's request "already busy" and drops it, so the silence the first host reads
+    is the partner's real work. Clearing it would cut a job short, which standard
+    rule 1 forbids, so this read decides whether the sweep runs at all.
+
+    It claims nothing and writes nothing, the same as the stop read, and the asker's
+    own dispatch id is excluded so the answer can be "idle" at all.
+    """
+    setup_auth(monkeypatch)
+    history = History()
+    dispatch_id = create_dispatch(history)
+
+    history.live_claims = 0
+    status, body, _ = _busy_read(history, NODE, dispatch_id=dispatch_id)
+    assert status == 200 and body == {"ok": True, "working": False, "live_claims": 0}
+
+    history.live_claims = 2
+    status, body, _ = _busy_read(history, NODE, dispatch_id=dispatch_id)
+    assert status == 200 and body == {"ok": True, "working": True, "live_claims": 2}
+
+    # Asking is not claiming and not consuming: the row is still pending and its
+    # result is still owed.
+    assert history.rows[dispatch_id]["state"] == "pending"
+
+
+def test_the_busy_read_is_channel_only_and_answers_busy_when_it_cannot_ask(monkeypatch):
+    """Every unreadable case answers ``working: true``.
+
+    That is the stop read's default turned around, and for the same reason read the
+    other way: the answer unlocks ending a process on a customer machine, so an
+    answer this route cannot prove must be the one that touches nothing.
+    """
+    setup_auth(monkeypatch)
+    history = History()
+
+    status, body, _ = _busy_read(history, NODE, secret=None)
+    assert status == 403 and body["error"]["code"] == "oracle_mesh_channel_rejected"
+
+    for bad in ({}, {"node_ref": ""}, {"node_ref": 12}, {"node_ref": None},
+                {"node_ref": NODE, "dispatch_id": {"a": 1}},
+                {"node_ref": NODE, "dispatch_id": "x" * 129}, None):
+        status, body, _ = _busy_read(history, NODE, payload=bad)
+        assert status == 400, (bad, body)
+
+    history.live_claims_raises = True
+    status, body, _ = _busy_read(history, NODE, dispatch_id="dsp_" + "a" * 32)
+    assert status == 200 and body["working"] is True, "not a free sweep"
+
+    # A store with no such reader is not configured, not idle.
+    status, body, _ = call(
+        routes.oracle_mesh_read_busy_check,
+        Request({"node_ref": NODE}, SimpleNamespace(
+            history_store=SimpleNamespace(),
+            oracle_mesh_return_source=routes.build_oracle_mesh_return_source(
+                _mapping(), SECRET, routes.EXECUTION_MODE_MESH,
+            ),
+        ), secret=SECRET),
+    )
+    assert status == 503 and body["error"]["code"] == "oracle_mesh_unconfigured"
+
+
+def test_the_busy_route_is_mounted_on_the_same_channel_proof_as_poll():
+    """A new executor leg is mounted where the existing legs are, not beside them."""
+
+    source = inspect.getsource(routes.oracle_mesh_read_busy_check)
+    assert "_channel_proof(request, mesh_source)" in source, "the same secret gate"
+    assert routes.ORACLE_MESH_READ_BUSY_PATH == "/api/claw/connector/mesh-reads/busy"
+    app_source = inspect.getsource(app_factory)
+    assert ('Route(ORACLE_MESH_READ_BUSY_PATH, oracle_mesh_read_busy_check,'
+            ' methods=["POST"])') in app_source
+
+
+def _lane_status_read(history, *, secret=SECRET, payload=None, presence=None,
+                      watch_secret=None):
+    return call(
+        routes.oracle_mesh_read_lane_status,
+        Request(
+            {} if payload is None else payload,
+            state(history=history, presence=presence, watch_secret=watch_secret),
+            secret=secret,
+        ),
+    )
+
+
+def test_the_monitor_reads_the_lane_as_counts_and_ages(monkeypatch):
+    """#82 standard 4: work waiting for a claim is a number a monitor can read.
+
+    Nothing is claimed or written, and the numbers are the lane's own columns:
+    a monitor may ask every few minutes forever. A store that will not answer is a
+    503 rather than a zero, because "nothing is waiting" read from a failed read
+    would call a stalled lane healthy.
+    """
+    setup_auth(monkeypatch)
+    history = History()
+    lane = {
+        "unclaimed": {"count": 3, "oldest_seconds": 900},
+        "claimed": {"count": 1, "oldest_seconds": 40},
+        "nodes": [{"node_ref": NODE, "open": 4, "oldest_seconds": 900}],
+    }
+    history.lane_status = lane
+    status, body, _ = _lane_status_read(history)
+    assert status == 200 and body == {"ok": True, **lane}
+
+    status, body, _ = _lane_status_read(history, secret=None)
+    assert status == 403 and body["error"]["code"] == "oracle_mesh_channel_rejected"
+
+    history.lane_status_raises = True
+    status, body, _ = _lane_status_read(history)
+    assert status == 503 and body["error"]["code"] == "oracle_mesh_lane_unavailable"
+
+    # A request with no body is the plain read; a body must still be a JSON object.
+    for bad in ("not json", [1, 2], {"device_ids": "not a list"},
+                {"device_ids": ["d-%d" % i for i in range(9)]},
+                {"device_ids": [None]}):
+        status, body, _ = _lane_status_read(History(), payload=bad)
+        assert status == 400, (bad, body)
+
+
+def test_the_lane_status_reports_the_executor_beat_only_for_devices_it_is_asked_about(
+    monkeypatch,
+):
+    """The presence beat is the only real evidence of "the executor was alive".
+
+    The caller names the devices, bounded by the same limit the poll beat uses, and
+    a device with no row is reported as ``seen: false`` rather than as an offline
+    device: absence of a record and a recorded disconnection are different facts.
+    """
+    setup_auth(monkeypatch)
+    loaded = {}
+
+    class _Presence:
+        async def load(self, device_id):
+            return loaded.get(device_id)
+
+    loaded["device-oracle-1"] = {"connected": 1, "received_at": "2026-10-29T00:00:00Z"}
+    status, body, _ = _lane_status_read(
+        History(), payload={"device_ids": ["device-oracle-1", "device-never-seen"]},
+        presence=_Presence(),
+    )
+    assert status == 200, body
+    assert body["beats"] == [
+        {"device_id": "device-oracle-1", "connected": True,
+         "received_at": "2026-10-29T00:00:00Z", "seen": True},
+        {"device_id": "device-never-seen", "connected": None,
+         "received_at": None, "seen": False},
+    ]
+
+
+def test_the_lane_status_route_is_mounted_where_the_other_executor_legs_are():
+    source = inspect.getsource(app_factory)
+    assert ("Route(ORACLE_MESH_READ_LANE_STATUS_PATH, oracle_mesh_read_lane_status,"
+            ' methods=["POST"])') in source
+    handler = inspect.getsource(routes.oracle_mesh_read_lane_status)
+    # The read-only leg takes the watch secret; every mutating leg takes the channel
+    # secret only. This test pins which one this route uses.
+    assert "_watch_read_proof(request, mesh_source)" in handler
+    assert "_channel_proof(request, mesh_source)" not in handler
+    assert routes.ORACLE_MESH_READ_LANE_STATUS_PATH == (
+        "/api/claw/connector/mesh-reads/lane-status")
+
+
+WATCH_SECRET = "watch-only-read-secret-value-261029"
+
+
+def test_the_watch_secret_opens_the_lane_read_and_nothing_that_can_claim(monkeypatch):
+    """#82 security: the monitor must not hold the credential that can take work.
+
+    The channel secret can claim a dispatch and submit a result on a customer PC. A
+    workflow that leaked it could steal work from the executor or plant a result for
+    work that never ran, so the read-only leg accepts a second, separate secret — and
+    every mutating leg keeps refusing it.
+    """
+    setup_auth(monkeypatch)
+    history = History()
+
+    # The read-only secret works for the read.
+    status, body, _ = _lane_status_read(history, secret=WATCH_SECRET,
+                                        watch_secret=WATCH_SECRET)
+    assert status == 200 and body["ok"] is True
+
+    # The channel secret still works there, unchanged.
+    status, body, _ = _lane_status_read(history, secret=SECRET, watch_secret=WATCH_SECRET)
+    assert status == 200
+
+    # And the read-only secret is refused by every leg that can mutate the lane.
+    from app import oracle_mesh_lease_renew_routes as renew_routes
+
+    for handler in (routes.oracle_mesh_read_poll,
+                    renew_routes.oracle_mesh_read_renew,
+                    routes.oracle_mesh_read_cancel_check,
+                    routes.oracle_mesh_read_busy_check):
+        status, body, _ = call(
+            handler,
+            Request({"dispatch_id": "dsp_" + "a" * 32},
+                    state(history=history, watch_secret=WATCH_SECRET),
+                    secret=WATCH_SECRET),
+        )
+        assert status == 403, (handler.__name__, status, body)
+        assert body["error"]["code"] == "oracle_mesh_channel_rejected"
+
+    # The submission leg too: a planted result must never come from the watch secret.
+    status, body, _ = call(
+        routes.oracle_mesh_read_result,
+        Request(result_body("dsp_" + "a" * 32, "n" * 32),
+                state(history=history, watch_secret=WATCH_SECRET),
+                secret=WATCH_SECRET),
+    )
+    assert status == 403 and body["error"]["code"] == "oracle_mesh_channel_rejected"
+
+
+def test_without_a_watch_secret_only_the_channel_secret_is_accepted(monkeypatch):
+    setup_auth(monkeypatch)
+    status, body, _ = _lane_status_read(History(), secret=WATCH_SECRET)
+    assert status == 403 and body["error"]["code"] == "oracle_mesh_channel_rejected"
+    status, body, _ = _lane_status_read(History(), secret=SECRET)
+    assert status == 200
+
+
+def test_the_read_leg_keeps_the_512_character_refusal(monkeypatch):
+    setup_auth(monkeypatch)
+    for secret in (WATCH_SECRET, SECRET):
+        status, body, _ = _lane_status_read(
+            History(), secret=secret + "x" * 600, watch_secret=WATCH_SECRET,
+        )
+        assert status == 403, secret[:6]
+
+
+def test_one_value_under_two_names_is_refused_at_composition():
+    # A deployment that sets both names to the same value would look split and not be.
+    assert routes.build_oracle_mesh_return_source(
+        _mapping(), SECRET, routes.EXECUTION_MODE_MESH, SECRET,
+    ) is None
+    assert routes.build_oracle_mesh_return_source(
+        _mapping(), SECRET, routes.EXECUTION_MODE_MESH, "too-short",
+    ) is None
+
+
+def test_a_cancelled_command_reports_no_exit_code_rather_than_an_invented_zero():
+    """The killed client never saw a console answer, so nothing may claim one."""
+    source = inspect.getsource(routes.oracle_mesh_read_result)
+    allowed = source.split('wire.get("termination") not in (', 1)[1].split("):", 1)[0]
+    assert '"cancelled"' in allowed
+    for observed in ("timed_out", "no_reply", "not_executed"):
+        assert '"%s"' % observed in allowed

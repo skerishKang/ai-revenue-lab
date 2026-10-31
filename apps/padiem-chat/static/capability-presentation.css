@@ -13,6 +13,46 @@
   box-shadow: 0 8px 24px color-mix(in srgb, var(--text) 7%, transparent);
 }
 
+/* #5221: the work card is a disclosure. The summary always names the real
+ * current state, and the stages behind it stay one click away. */
+.capability-kit-disclosure {
+  display: grid;
+  gap: 10px;
+}
+
+.capability-kit-disclosure > .capability-kit-header {
+  cursor: pointer;
+  list-style: none;
+  min-height: 44px;
+}
+
+.capability-kit-disclosure > .capability-kit-header::-webkit-details-marker {
+  display: none;
+}
+
+.capability-kit-disclosure > .capability-kit-header:focus-visible {
+  outline: 2px solid var(--focus-ring, var(--accent, #6557e8));
+  outline-offset: 3px;
+  border-radius: 8px;
+}
+
+.capability-kit-caret {
+  flex: 0 0 auto;
+  margin-left: auto;
+  font-size: 15px;
+  line-height: 1;
+  color: var(--muted);
+  transition: transform .18s ease;
+}
+
+.capability-preview-badge + .capability-kit-caret {
+  margin-left: 0;
+}
+
+.capability-kit-disclosure[open] > .capability-kit-header .capability-kit-caret {
+  transform: rotate(90deg);
+}
+
 .capability-kit-header {
   display: flex;
   flex-wrap: wrap;
@@ -39,6 +79,22 @@
 .capability-current {
   background: var(--capability-soft);
   color: var(--accent-strong, var(--accent));
+}
+
+/* #5573 §7: the elapsed clock is secondary to the stage, so it stays quiet and
+ * keeps a fixed digit width while it ticks. */
+.capability-elapsed {
+  font-variant-numeric: tabular-nums;
+  font-size: 11px;
+  font-weight: 650;
+  color: var(--muted);
+}
+
+.capability-long-wait {
+  margin: 8px 0 0;
+  font-size: 12px;
+  font-weight: 650;
+  color: var(--muted);
 }
 
 .capability-preview-badge {

@@ -201,3 +201,105 @@ def test_domain_hints_do_not_accept_urls_or_overlapping_authority() -> None:
         assert "both authoritative and trusted-secondary" in str(exc)
     else:
         raise AssertionError("overlapping domain authority must be rejected")
+
+
+# #4469 production evidence: the sources the live search returned for the
+# reported question. The Korean request rejected every one of them, so the
+# whole Chat turn failed closed with `no_evidence` (HTTP 404).
+_PRODUCTION_QUERY = "오늘 Meta의 최신 실적을 웹에서 확인해 줘"
+
+
+def _production_evidence() -> list[Evidence]:
+    return [
+        _ev(
+            "public",
+            title="Latest Report, Earnings Call & Financials - Meta",
+            snippet=(
+                "Meta (META) reported its most recent earnings on Oct 21, 2026 for "
+                "Q3 2026, posting earnings per share (EPS) of $7.40."
+            ),
+            url="https://public.com/stocks/meta/earnings",
+            provider="tinyfish",
+        ),
+        _ev(
+            "cnbc",
+            title="Meta (META) Q3 2026 earnings report: Live updates",
+            snippet="Meta reports third-quarter revenue beat and issues strong guidance.",
+            url="https://www.cnbc.com/2026/10/21/meta-earnings-q3-2026-live-updates.html",
+            provider="tinyfish",
+        ),
+        _ev(
+            "investor",
+            title="Financials - Meta Investor Relations",
+            snippet="Meta's most recent Annual Report on Form 10-K or Quarterly Report on Form 10-Q.",
+            url="https://investor.atmeta.com/financials/",
+            provider="tinyfish",
+        ),
+    ]
+
+
+def test_a_korean_request_selects_the_on_topic_sources() -> None:
+    """#4469: the reported Korean request must reach its own search results."""
+
+    selection = select_grounding_evidence(_PRODUCTION_QUERY, _production_evidence())
+
+    assert sorted(item.id for item in selection.evidence) == ["cnbc", "investor", "public"]
+    assert selection.rejected_count == 0
+
+
+def test_a_korean_request_still_rejects_an_unrelated_source() -> None:
+    """The normalisation must not turn the gate into a free pass."""
+
+    unrelated = _ev(
+        "unrelated",
+        title="저녁 메뉴 추천",
+        snippet="오늘 먹을 음식",
+        url="https://example.com/dinner",
+    )
+
+    selection = select_grounding_evidence(_PRODUCTION_QUERY, [unrelated])
+
+    assert selection.evidence == ()
+    assert selection.rejected_count == 1
+
+
+def test_a_korean_postposition_does_not_hide_the_entity() -> None:
+    """A fused postposition keeps the subject comparable, exactly not by prefix."""
+
+    on_topic = _ev(
+        "on_topic",
+        title="Padiem 파디엠 AI",
+        snippet="파디엠의 공식 제품 안내",
+        url="https://padiem.net/",
+    )
+    shorter_fragment = _ev(
+        "shorter_fragment",
+        title="모 딸님의 영어로 민주 디엠",
+        snippet="가입하자마자 디엠이 왔어요",
+        url="https://example.com/dm",
+    )
+
+    selection = select_grounding_evidence(
+        "파디엠의 최신 소식을 찾아줘",
+        [shorter_fragment, on_topic],
+    )
+
+    assert [item.id for item in selection.evidence] == ["on_topic"]
+    fragment_assessment = assess_source_quality("파디엠의 최신 소식을 찾아줘", shorter_fragment)
+    assert fragment_assessment.relevance_score == 0.0
+    assert "no_exact_query_token_match" in fragment_assessment.reasons
+
+
+def test_postposition_normalisation_never_truncates_a_real_word() -> None:
+    """A word that merely ends like a postposition keeps its spelling."""
+
+    evidence = _ev(
+        "word",
+        title="추가 비용 안내",
+        snippet="마을 수도 안내",
+        url="https://example.com/notice",
+    )
+
+    selection = select_grounding_evidence("추가 비용", [evidence])
+
+    assert [item.id for item in selection.evidence] == ["word"]

@@ -10,6 +10,7 @@ import time
 from types import MappingProxyType
 from typing import Any, Awaitable, Callable, Mapping, Protocol
 
+from ._pc_core_invoke import pc_core_log, pc_core_stage
 from .contracts import (
     AgentProfile,
     ApprovalPolicy,
@@ -20,6 +21,11 @@ from .contracts import (
 )
 from .dispatch_evidence import mark_execution_dispatch_started
 
+# #4379: a Tool argument or result carries no PADIEM aggregate byte ceiling.
+# The JSON shape, the identifier grammar and the object rule still apply, and
+# the settled result is owned by the durable tool result ledger, so a large
+# result is no longer refused after the tool already ran.
+# These symbols are retained for import compatibility.
 MAX_TOOL_ARGUMENT_BYTES = 65_536
 MAX_TOOL_OUTPUT_BYTES = 262_144
 _IDENTIFIER_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$")
@@ -281,11 +287,19 @@ def _thaw_json(value: Any) -> Any:
     return value
 
 
-def _bounded_json(value: Any, *, name: str, max_bytes: int, require_object: bool) -> Any:
+def _bounded_json(
+    value: Any, *, name: str, max_bytes: int | None = None,
+    require_object: bool,
+) -> Any:
+    """Normalize one JSON value.
+
+    #4379: ``max_bytes=None`` means no PADIEM byte ceiling. The value is still
+    normalized and frozen, so the shape contract is unchanged.
+    """
     normalized = _normalize_json(value, path=name)
     if require_object and not isinstance(normalized, dict):
         raise ValueError(f"{name} must be a JSON object")
-    if _json_size(normalized) > max_bytes:
+    if max_bytes is not None and _json_size(normalized) > max_bytes:
         raise ValueError(f"{name} exceeds the configured size limit")
     return _freeze_json(normalized)
 
@@ -328,7 +342,6 @@ class ToolInvocation:
         frozen = _bounded_json(
             self.arguments,
             name="arguments",
-            max_bytes=MAX_TOOL_ARGUMENT_BYTES,
             require_object=True,
         )
         object.__setattr__(self, "arguments", frozen)
@@ -352,7 +365,6 @@ class ToolExecutionResult:
         frozen = _bounded_json(
             self.output,
             name="output",
-            max_bytes=MAX_TOOL_OUTPUT_BYTES,
             require_object=False,
         )
         object.__setattr__(self, "output", frozen)
@@ -500,6 +512,7 @@ class ToolRuntime:
         if not isinstance(authorization, ToolAuthorizationContext):
             raise ValueError("authorization must be ToolAuthorizationContext")
 
+        pc_core_log("runtime_checks", invocation.tool_id, "enter")
         registered = self._registry.get(invocation.tool_id)
         if registered is None:
             raise self._error(
@@ -572,6 +585,7 @@ class ToolRuntime:
                 error_class=ErrorClass.POLICY_BLOCKED,
             )
 
+        pc_core_log("permissions_passed", invocation.tool_id, "done")
         arguments = invocation.arguments_copy()
         try:
             registered.validator.validate(arguments)
@@ -584,13 +598,18 @@ class ToolRuntime:
                 error_class=ErrorClass.TOOL_VALIDATION_ERROR,
             ) from exc
 
+        pc_core_log("schema_passed", invocation.tool_id, "done")
+        pc_core_log("runtime_checks", invocation.tool_id, "done")
         started = time.monotonic()
         try:
             mark_execution_dispatch_started()
-            raw_output = await asyncio.wait_for(
-                registered.handler(arguments),
-                timeout=float(spec.timeout_seconds),
-            )
+            with pc_core_stage("handler_wait_for", invocation.tool_id, timeout=spec.timeout_seconds):
+                raw_output = await asyncio.wait_for(
+                    registered.handler(arguments),
+                    # #4379: a Tool call has no PADIEM deadline. None waits for the
+                    # call to finish.
+                    timeout=spec.timeout_seconds,
+                )
         except asyncio.TimeoutError as exc:
             duration_ms = max(0, int((time.monotonic() - started) * 1000))
             raise self._error(

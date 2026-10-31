@@ -179,8 +179,11 @@ def _directory_fixture() -> str:
     return json.dumps({
         "ok": True, "available": True, "ownerScoped": True,
         "devices": [
+            # The server marks an executable Mesh target separately, so only
+            # this row is selectable and therefore keyboard reachable.
             {"deviceId": "home", "deviceName": "집 컴퓨터", "platform": "Windows",
-             "state": "CONNECTED", "usable": True},
+             "state": "CONNECTED", "usable": True,
+             "executable": True, "selectable": True},
             # The disabled row must keep the same floor as the enabled ones.
             {"deviceId": "laptop", "deviceName": "노트북", "platform": "Windows",
              "state": "OFFLINE", "usable": False},
@@ -280,16 +283,41 @@ def test_keyboard_access_and_locale_copy(browser, server) -> None:
     assert page.locator(panel).is_hidden(), "Enter on the focused toggle must close the directory"
     page.keyboard.press("Enter")
     page.locator(".claw-device-manager-close").wait_for(state="visible")
+    # The reopened directory reads the owner directory again, so its device
+    # rows must exist before the keyboard order is inspected.
+    page.locator("#clawDeviceManagerList li").first.wait_for()
     assert page.evaluate("(s) => document.querySelector(s).getAttribute('aria-expanded')",
                          toggle) == "true"
+    # The directory panel is mounted above the composer area, so it is the
+    # next element in the reading order. Opening it moves the focus into the
+    # panel, and every panel control is then reachable forward with Tab.
+    assert page.evaluate(
+        "(s) => document.activeElement === document.querySelector(s)",
+        ".claw-device-manager-close"
+    ), "opening the directory must move the focus into the panel"
 
     reached = []
     for _ in range(8):
         page.keyboard.press("Tab")
         reached.append(page.evaluate(
             "() => String(document.activeElement.id || document.activeElement.className)"))
-    for control in ("claw-device-manager-close", "claw-device-manager-refresh", "claw-device-manager-select"):
+    for control in ("claw-device-manager-refresh", "claw-device-manager-select"):
         assert any(control in step for step in reached), f"Tab never reaches {control}: {reached}"
+    # A disabled device row is not keyboard reachable, an enabled one is.
+    assert page.evaluate(
+        """() => {
+          const rows = [...document.querySelectorAll('.claw-device-manager-select')];
+          return rows.some((row) => row.disabled) && rows.some((row) => !row.disabled);
+        }"""
+    ), "the fixture must contain an enabled and a disabled device row"
+    # The panel's own close control stays reachable as well.
+    assert page.evaluate(
+        """() => {
+          const close = document.querySelector('.claw-device-manager-close');
+          close.focus();
+          return document.activeElement === close;
+        }"""
+    ), "the directory close control must be focusable"
     ring = page.evaluate(
         """() => { const cs = getComputedStyle(document.activeElement);
              return [cs.outlineStyle, parseFloat(cs.outlineWidth)]; }""")

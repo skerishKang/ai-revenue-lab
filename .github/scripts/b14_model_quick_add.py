@@ -36,7 +36,11 @@ class OnboardError(ValueError):
 
 def checked_registry(path: Path) -> dict:
     data = read_registry(path)
-    if len(load_current_models(path)) != len(data["models"]):
+    # The owner registry keeps disabled records for the models the owner
+    # turned off, so the count of all rows is not the count of the allowed
+    # models. The guard is that every *enabled* row is an owner-allowed one.
+    enabled = {row["id"] for row in data["models"] if row.get("enabled") is True}
+    if set(load_current_models(path)) != enabled:
         raise OnboardError("some_models_disallowed_by_owner")
     return data
 

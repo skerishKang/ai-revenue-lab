@@ -7,6 +7,7 @@ from typing import Any
 from urllib.parse import urlparse
 
 from padiem_ai_engine_client import (
+    ENGINE_DOCUMENT_ADMISSION_PATH,
     ENGINE_HEALTH_PATH,
     ENGINE_INTERNAL_ORIGIN,
     ENGINE_MULTIMODAL_ATTACHMENTS_PATH,
@@ -24,19 +25,20 @@ from padiem_ai_engine_client.orchestration_stream import MAX_NDJSON_TERMINAL_LIN
 
 from .canonical_orchestration_bridge import CanonicalSubjectB62EngineOrchestrationBridge
 from .orchestration_bridge import B62EngineOrchestrationBridge, D1OrchestrationStateStore
+from .orchestration_composition import (
+    CHAT_ENGINE_APP_ID,
+    ORCHESTRATION_ENABLED_ENV,
+    compose_orchestration_bridge,
+)
 from .service_binding_response import (
     ServiceBindingResponseError,
     ServiceBindingResponseTooLarge,
     read_bounded_service_binding_body,
     cloudflare_chunk_bytes,
 )
-from .worker_config import binding_value
+from .worker_config import binding_value, p01_engine_config_from_worker_bindings
 
-ENGINE_SERVICE_BINDING_NAME = "ENGINE_SERVICE"
-ORCHESTRATION_ENABLED_ENV = "PADIEM_CHAT_ORCHESTRATION_ENABLED"
-ENGINE_CALLER_ID_ENV = "PADIEM_CHAT_ENGINE_CALLER_ID"
-ENGINE_CALLER_SECRET_ENV = "PADIEM_CHAT_ENGINE_CALLER_SECRET"
-_MAX_ENGINE_RESPONSE_BYTES = 1_048_576  # small non-model Engine contracts
+_MAX_ENGINE_RESPONSE_BYTES = 10 * 1024 * 1024  # small non-model Engine contracts
 _MAX_ENGINE_ORCHESTRATION_RESPONSE_BYTES = MAX_NDJSON_TERMINAL_LINE_BYTES
 # Match the Engine's *existing* 6MB model execute ingress safety envelope.
 # The legacy 256KiB was falsely smaller than Claw's guarded 5.5MB context.
@@ -59,6 +61,10 @@ _ALLOWED_ENGINE_PATHS = frozenset(
         ENGINE_ORCHESTRATE_RESUME_PATH,
         ENGINE_ORCHESTRATE_CANCEL_PATH,
         ENGINE_MULTIMODAL_ATTACHMENTS_PATH,
+        # #5881: a COM2 document reference plus its signed read claim. No
+        # document bytes travel here, so the text/reference bound above is the
+        # right envelope and no new limit is introduced.
+        ENGINE_DOCUMENT_ADMISSION_PATH,
     }
 )
 
@@ -257,32 +263,27 @@ def build_orchestration_bridge(
     #1228 Control Plane identity path. Ordinary Worker composition currently does
     not supply one, so Production behavior is unchanged until separately activated.
     """
-    if _server_text(env, ORCHESTRATION_ENABLED_ENV).lower() != "true":
-        return None
-    if getattr(settings, "runtime_mode", "mock") != "b14":
-        return None
-    engine_binding = binding_value(env, ENGINE_SERVICE_BINDING_NAME)
-    caller_id = _server_text(env, ENGINE_CALLER_ID_ENV)
-    caller_secret = _server_text(env, ENGINE_CALLER_SECRET_ENV)
-    if engine_binding is None or db_binding is None or not caller_id or not caller_secret:
-        return None
-    try:
-        client = PadiemAiEngineClient(
-            transport=CloudflareEngineServiceTransport(
-                engine_binding,
-                request_factory=request_factory,
-            ),
-            app_id="padiem-chat",
-            caller_id=caller_id,
-            credential=caller_secret,
-        )
-    except (TypeError, ValueError):
-        return None
-    store = D1OrchestrationStateStore(db_binding)
-    if canonical_subject_resolver is not None:
-        return CanonicalSubjectB62EngineOrchestrationBridge(
-            client=client,
-            store=store,
-            canonical_subject_resolver=canonical_subject_resolver,
-        )
-    return B62EngineOrchestrationBridge(client=client, store=store)
+    def build_client() -> PadiemAiEngineClient | None:
+        engine = p01_engine_config_from_worker_bindings(env)
+        if engine is None:
+            return None
+        try:
+            return PadiemAiEngineClient(
+                transport=CloudflareEngineServiceTransport(
+                    engine.service_binding,
+                    request_factory=request_factory,
+                ),
+                app_id=CHAT_ENGINE_APP_ID,
+                caller_id=engine.caller_id,
+                credential=engine.credential,
+            )
+        except (TypeError, ValueError):
+            return None
+
+    return compose_orchestration_bridge(
+        env=env,
+        settings=settings,
+        db_binding=db_binding,
+        build_client=build_client,
+        canonical_subject_resolver=canonical_subject_resolver,
+    )

@@ -743,3 +743,19 @@ def test_claw_desktop_secret_rejects_removing_a_served_binding():
     after = settings(*base_bindings()[1:], CLAW_DESKTOP_SECRET_BINDING)
     with pytest.raises(mod.BindingStateError):
         mod.assert_exact_claw_desktop_added_only(before, after)
+
+
+def test_2824_parser_additive_binding_and_idempotent():
+    before = settings(*base_bindings())
+    binding = {"type": "service", "name": "DOCUMENT_PARSER_SERVICE", "service": "padiem-document-parser"}
+    after = settings(*base_bindings(), binding)
+    mod.assert_document_parser_added_only(before, after)
+    mod.assert_document_parser_added_only(after, after)
+
+
+def test_2824_parser_rejects_wrong_target_and_unrelated_changes():
+    before = settings(*base_bindings())
+    with pytest.raises(mod.BindingStateError):
+        mod.assert_document_parser_added_only(before, settings(*base_bindings(), {"type": "service", "name": "DOCUMENT_PARSER_SERVICE", "service": "wrong"}))
+    with pytest.raises(mod.BindingStateError):
+        mod.assert_document_parser_added_only(before, settings(*base_bindings(), {"type": "service", "name": "DOCUMENT_PARSER_SERVICE", "service": "padiem-document-parser"}, {"type": "secret_text", "name": "EXTRA_SECRET"}))

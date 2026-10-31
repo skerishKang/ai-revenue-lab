@@ -118,12 +118,69 @@ async def _run_view(
 ) -> dict[str, Any]:
     await page.set_viewport_size({"width": width, "height": height})
 
+    # The QA server has no COM2 configuration. Verify it fails closed before
+    # simulating the browser-facing file lane; real owner isolation and the
+    # reference resolver are exercised by the offline ASGI integration suite.
+    native_health = await page.request.get(BASE_URL + "/health")
+    if (await native_health.json()).get("binary_document_attachment_ready") is not False:
+        raise AssertionError("unconfigured file lane must not advertise binary readiness")
+
+    fixture_id = "file_" + "a" * 32
+    uploads: list[bytes] = []
+    async def fixture_route(route):
+        request = route.request
+        path = urlparse(request.url).path
+        if path == "/health":
+            response = await route.fetch()
+            payload = await response.json()
+            payload["binary_document_attachment_ready"] = True
+            await route.fulfill(response=response, json=payload)
+        elif path == "/api/files/capabilities":
+            await route.fulfill(json={"ready": True, "formats": ["pdf","docx","pptx","xlsx"]})
+        elif path == "/api/files/ticket":
+            await route.fulfill(json={"ok":True, "upload_url":"https://files.qa.example/files", "headers":{}})
+        elif urlparse(request.url).hostname == "files.qa.example" and path == "/files":
+            data = request.post_data_buffer or b""
+            uploads.append(data)
+            await route.fulfill(status=201, json={"ok":True, "file_id":fixture_id, "size_bytes":len(data)})
+        elif path == "/api/chat" and request.method == "POST":
+            payload = request.post_data_json
+            attachments = payload.get("attachments") or []
+            if attachments and attachments[0].get("type") == "file":
+                if attachments != [{"type":"file","file_id":fixture_id}]:
+                    raise AssertionError("binary turn did not contain only its file reference")
+                if not uploads:
+                    raise AssertionError("binary turn arrived before the file upload")
+                # Keep the existing real mock Chat DOCX extraction check: the
+                # harness bridges the synthetic file-lane fixture into its
+                # already-supported inline parser. Product traffic is not altered.
+                payload["attachments"] = [{"type":"document", "name":BINARY_NAME,
+                    "media_type":BINARY_MIME, "base64":base64.b64encode(uploads[-1]).decode()}]
+                headers = {**request.headers, "content-type":"application/json"}
+                response = await route.fetch(post_data=json.dumps(payload), headers=headers)
+                await route.fulfill(response=response)
+            else:
+                await route.continue_()
+        else:
+            await route.continue_()
+    await page.route("**/*", fixture_route)
+
     chat_posts: list[dict[str, Any]] = []
 
     def record_request(request) -> None:
         parsed = urlparse(request.url)
         if request.method == "POST" and parsed.path in {"/api/chat", "/api/chat/stream"}:
             payload: Any = None
+            raw_body = request.post_data_buffer
+            if raw_body and request.headers.get("content-type", "").startswith("application/octet-stream"):
+                if len(raw_body) < 5:
+                    raise AssertionError("binary chat frame too short")
+                header_size = int.from_bytes(raw_body[:4], "big")
+                if not 0 < header_size <= 65536 or len(raw_body) <= header_size + 4:
+                    raise AssertionError("invalid binary chat frame")
+                payload = json.loads(raw_body[4:4 + header_size].decode("utf-8"))
+                chat_posts.append({"path": parsed.path, "payload": payload, "binary": raw_body[4 + header_size:]})
+                return
             if request.post_data:
                 try:
                     payload = json.loads(request.post_data)
@@ -132,6 +189,24 @@ async def _run_view(
             chat_posts.append({"path": parsed.path, "payload": payload})
 
     page.on("request", record_request)
+    # Capture outbound Blob bytes in page: Playwright may omit Blob POST post_data.
+    await page.add_init_script("""
+    (() => {
+      const originalFetch = window.fetch;
+      window.__b62RawUploads = [];
+      window.fetch = function(input, init) {
+        if (input === '/api/chat' && init && init.body instanceof Blob) {
+          init.body.arrayBuffer().then(buffer => {
+            const bytes = new Uint8Array(buffer);
+            const size = new DataView(buffer).getUint32(0, false);
+            const metadata = JSON.parse(new TextDecoder().decode(bytes.slice(4, 4 + size)));
+            window.__b62RawUploads.push({payload: metadata, binary: Array.from(bytes.slice(4 + size))});
+          });
+        }
+        return originalFetch.apply(this, arguments);
+      };
+    })();
+    """)
 
     await page.goto(BASE_URL, wait_until="domcontentloaded", timeout=30_000)
     await page.locator("#messageInput").wait_for(state="visible")
@@ -217,7 +292,7 @@ async def _run_view(
     # Reset conversation state without coupling document QA to the mobile sidebar viewport.
     await page.locator("#newChatButton").evaluate("(el) => el.click()")
 
-    # New binary DOCX path: browser keeps bytes ephemeral and server performs extraction.
+    # Binary DOCX path: browser uploads to the file lane and submits a reference.
     binary_payload = _docx_bytes(BINARY_MARKER)
     await file_input.set_input_files(
         {"name": BINARY_NAME, "mimeType": BINARY_MIME, "buffer": binary_payload}
@@ -262,18 +337,11 @@ async def _run_view(
         raise AssertionError(f"binary bridge must dispatch one completed /api/chat: {binary_post!r}")
     binary_request = binary_post["payload"]
     if not isinstance(binary_request, dict):
-        raise AssertionError(f"binary request payload missing: {binary_request!r}")
-    attachments = binary_request.get("attachments")
-    if not isinstance(attachments, list) or len(attachments) != 1:
-        raise AssertionError(f"binary request must carry one attachment: {attachments!r}")
-    binary_document = attachments[0]
-    if binary_document.get("type") != "document" or binary_document.get("name") != BINARY_NAME:
-        raise AssertionError(f"binary document metadata mismatch: {binary_document!r}")
-    if binary_document.get("media_type") != BINARY_MIME or "text" in binary_document:
-        raise AssertionError(f"binary document variant must carry base64, not text: {binary_document!r}")
-    encoded = binary_document.get("base64")
-    if not isinstance(encoded, str) or base64.b64decode(encoded, validate=True) != binary_payload:
-        raise AssertionError("binary document payload did not round-trip exactly")
+        raise AssertionError("binary reference request missing")
+    if binary_request.get("attachments") != [{"type": "file", "file_id": fixture_id}]:
+        raise AssertionError("binary request must carry only the file reference")
+    if uploads != [binary_payload]:
+        raise AssertionError("file lane must receive the exact original document once")
     for payload in (text_payload, binary_request):
         if any(key in payload for key in ("model", "provider", "route", "business14")):
             raise AssertionError(f"browser payload must not select model/provider routing: {payload!r}")

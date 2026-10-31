@@ -68,6 +68,9 @@ B62_CHAT_EXPECTED_PATHS = (
     # #3989 scoped Chat CI source/guard changes always trigger FULL lane.
     ".github/scripts/b62_ci_impact_scope_3989.py",
     ".github/tests/test_b62_ci_impact_scope_3989.py",
+    # #5341 shared Core import-scope proof and its contract test.
+    ".github/scripts/ci_core_import_scope.py",
+    ".github/tests/test_5341_core_import_scope.py",
     ".github/scripts/b62_worker_probe_*.sh",
     ".github/scripts/b62_worker_probe_shared_assertions.py",
     ".github/tests/test_3989_b62_worker_probe_parallel.py",
@@ -75,6 +78,11 @@ B62_CHAT_EXPECTED_PATHS = (
     ".github/tests/test_3989_b62_parallel_runtime_jobs.py",
     ".github/workflows/b62-padiem-chat-ci.yml",
     ".github/workflows/b62-cloudflare-worker-deploy.yml",
+    # #6209 부수 피해: chat 테스트가 게이트 워크플로 본문을 직접 읽는다.
+    # 이 세 게이트를 바꾼 PR에서 chat 스위트가 함께 돌지 않아 main이 빨개졌다.
+    ".github/workflows/b62-claw-production-smoke-gate.yml",
+    ".github/workflows/b62-production-code-deploy-gate.yml",
+    ".github/workflows/b62-browser-qa-unified.yml",
 )
 B62_CHAT_EXPECTED_JOBS = {
     "registry-ci-plan",
@@ -84,7 +92,11 @@ B62_CHAT_EXPECTED_JOBS = {
     "b62-worker-suite",
     "b62-static-ui",
     "b62-ui-mixed-tests",  # #4459 exact changed-test runner; required b62-test fan-in
+    "b62-core-parser-focused",  # #5341 opt-in isolated parser focused contract
+    "b62-b14-attempt-focused",  # B14 outbound attempt-policy targeted regression
     "b14-multimodal-test",
+    "engine-full-regression",  # #5678 Engine whole suite on every main push
+    "b14-full-regression",  # #5678 B14 whole suite on every main push
 }
 
 
@@ -101,11 +113,11 @@ def _b62_chat_ci_events(document: dict) -> dict:
     return events
 
 
-def _assert_b62_chat_ci_parity(document: dict) -> None:
-    """Pin both event scopes to #3764, not merely to one another.
+def _assert_b62_chat_ci_scope(document: dict) -> None:
+    """#5678: main is unfiltered; retain the exact #3764 PR dependency scope.
 
-    If both trigger arrays drift in the same way, simple equality would pass.
-    An independent exact path source-contract pin must also reject that case.
+    Neither reintroducing a main filter nor broadening/narrowing the PR paths
+    may silently change the Owner-approved post-merge/review contract.
     """
     events = _b62_chat_ci_events(document)
     assert set(events) == {"push", "pull_request", "workflow_dispatch"}
@@ -113,17 +125,16 @@ def _assert_b62_chat_ci_parity(document: dict) -> None:
 
     push, review = events["push"], events["pull_request"]
     assert isinstance(push, dict) and isinstance(review, dict)
-    assert set(push) == {"branches", "paths"}, "no wider push controls"
+    assert set(push) == {"branches"}, "main push must have no path/type filter"
     assert push["branches"] == ["main"], "only main may trigger push CI"
     assert set(review) == {"paths"}, "preserve review trigger semantics"
-    for name, block in (("push", push), ("pull_request", review)):
+    for name, block in (("pull_request", review),):
         paths = block["paths"]
         assert isinstance(paths, list)
         assert len(paths) == len(B62_CHAT_EXPECTED_PATHS) == len(set(paths)), name
         assert tuple(paths) == B62_CHAT_EXPECTED_PATHS, (
             f"{name} changed #3764 dependency trigger paths"
         )
-    assert push["paths"] == review["paths"], "main and PR coverage diverged"
     assert set(document["jobs"]) == B62_CHAT_EXPECTED_JOBS, (
         "preserve the B62 job graph and required gate"
     )
@@ -131,6 +142,8 @@ def _assert_b62_chat_ci_parity(document: dict) -> None:
     # required b62-test must depend on the focused UI pytest job too.
     aggregate = document["jobs"]["b62-test"]
     assert "b62-ui-mixed-tests" in aggregate["needs"]
+    assert "b62-core-parser-focused" in aggregate["needs"]
+    assert "b62-b14-attempt-focused" in aggregate["needs"]
     assert "MIXED_RESULT" in aggregate["steps"][0]["env"]
 
 
@@ -223,44 +236,48 @@ def _b62_chat_ci_path_triggers(path: str, event: str, branch: str = "main") -> b
     document = _b62_chat_ci_document()
     events = _b62_chat_ci_events(document)
     assert event in ("push", "pull_request")
-    if event == "push" and branch not in events["push"]["branches"]:
-        return False
+    if event == "push":
+        if branch not in events["push"]["branches"]:
+            return False
+        if "paths" not in events["push"]:
+            return True
     return any(_b62_chat_segment_glob(p, path) for p in events[event]["paths"])
 
 
-def test_b62_chat_ci_push_and_pr_share_exact_dependency_path_contract() -> None:
+def test_b62_chat_ci_main_is_unfiltered_and_pr_keeps_exact_dependency_paths() -> None:
     """Existing #3527 policy job runs this test on every PR."""
-    _assert_b62_chat_ci_parity(_b62_chat_ci_document())
+    _assert_b62_chat_ci_scope(_b62_chat_ci_document())
 
 
-@pytest.mark.parametrize("event", ("push", "pull_request"))
+@pytest.mark.parametrize("event", ("pull_request",))
 @pytest.mark.parametrize("index", range(len(B62_CHAT_EXPECTED_PATHS)))
 def test_b62_chat_ci_deleted_dependency_path_is_rejected(event: str, index: int) -> None:
     document = deepcopy(_b62_chat_ci_document())
     del _b62_chat_ci_events(document)[event]["paths"][index]
     with pytest.raises(AssertionError):
-        _assert_b62_chat_ci_parity(document)
+        _assert_b62_chat_ci_scope(document)
 
 
-@pytest.mark.parametrize("event", ("push", "pull_request"))
+@pytest.mark.parametrize("event", ("pull_request",))
 @pytest.mark.parametrize("index", range(len(B62_CHAT_EXPECTED_PATHS)))
 def test_b62_chat_ci_modified_dependency_path_is_rejected(event: str, index: int) -> None:
     document = deepcopy(_b62_chat_ci_document())
     paths = _b62_chat_ci_events(document)[event]["paths"]
     paths[index] = paths[index] + ".drift"
     with pytest.raises(AssertionError):
-        _assert_b62_chat_ci_parity(document)
+        _assert_b62_chat_ci_scope(document)
 
 
 @pytest.mark.parametrize("index", range(len(B62_CHAT_EXPECTED_PATHS)))
-def test_b62_chat_ci_matching_two_sided_drift_is_rejected(index: int) -> None:
-    """Equality alone cannot catch a shared accidental narrowing."""
+def test_b62_chat_ci_reintroduced_push_filter_with_matching_pr_drift_is_rejected(index: int) -> None:
+    """Matching filters cannot restore the superseded main/PR parity rule."""
     document = deepcopy(_b62_chat_ci_document())
     events = _b62_chat_ci_events(document)
+    events["push"]["paths"] = list(events["pull_request"]["paths"])
     for event in ("push", "pull_request"):
         events[event]["paths"][index] = "docs/incorrect-ci-scope/**"
     with pytest.raises(AssertionError):
-        _assert_b62_chat_ci_parity(document)
+        _assert_b62_chat_ci_scope(document)
 
 
 @pytest.mark.parametrize("branches", ([], ["release"], ["main", "develop"], None))
@@ -268,11 +285,11 @@ def test_b62_chat_ci_main_only_branch_gate_cannot_drift(branches: object) -> Non
     document = deepcopy(_b62_chat_ci_document())
     _b62_chat_ci_events(document)["push"]["branches"] = branches
     with pytest.raises(AssertionError):
-        _assert_b62_chat_ci_parity(document)
+        _assert_b62_chat_ci_scope(document)
 
 
 @pytest.mark.parametrize("event", ("push", "pull_request"))
-def test_b62_chat_ci_dependency_globs_match_only_intended_scope(event: str) -> None:
+def test_b62_chat_ci_main_runs_all_paths_while_pr_keeps_intended_scope(event: str) -> None:
     included = (
         "apps/padiem-chat/app/main.py",
         "apps/padiem-chat/static/app.js",
@@ -284,6 +301,9 @@ def test_b62_chat_ci_dependency_globs_match_only_intended_scope(event: str) -> N
         ".github/scripts/b14_model_registration_ci_plan.py",
         ".github/workflows/b62-padiem-chat-ci.yml",
         ".github/workflows/b62-cloudflare-worker-deploy.yml",
+        ".github/workflows/b62-claw-production-smoke-gate.yml",
+        ".github/workflows/b62-production-code-deploy-gate.yml",
+        ".github/workflows/b62-browser-qa-unified.yml",
     )
     excluded = (
         "README.md",
@@ -301,7 +321,7 @@ def test_b62_chat_ci_dependency_globs_match_only_intended_scope(event: str) -> N
     for path in included:
         assert _b62_chat_ci_path_triggers(path, event), path
     for path in excluded:
-        assert not _b62_chat_ci_path_triggers(path, event), path
+        assert _b62_chat_ci_path_triggers(path, event) == (event == "push"), path
     if event == "push":
-        for path in included:
+        for path in (*included, *excluded):
             assert not _b62_chat_ci_path_triggers(path, event, "feature"), path

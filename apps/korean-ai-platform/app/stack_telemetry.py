@@ -9,6 +9,7 @@ import asyncio
 import base64
 from contextvars import ContextVar
 import json
+import logging
 import re
 import time
 import uuid
@@ -99,7 +100,15 @@ def make_events(state: dict, status: int) -> list[dict]:
 
 
 async def _send(events: list[dict], env) -> None:
-    """Only invoked via Worker waitUntil; failures never affect customers."""
+    """Own the deadline inside waitUntil so its TimeoutError never escapes."""
+    try:
+        await asyncio.wait_for(_send_once(events, env), timeout=1.0)
+    except TimeoutError:
+        logging.getLogger(__name__).debug("stack_telemetry_send_timeout")
+
+
+async def _send_once(events: list[dict], env) -> None:
+    """Best-effort export; no credentials or raw exceptions enter logs."""
     try:
         secret = getattr(env, "PADIEM_GRAFANA_OTLP_TOKEN", None)
         if secret is None:
@@ -138,7 +147,7 @@ async def _send(events: list[dict], env) -> None:
         # Avoid logging response text or headers.
         _ = int(response.status)
     except Exception:
-        return
+        logging.getLogger(__name__).debug("stack_telemetry_send_failed")
 
 
 def finish_trace(state: dict, token, response, ctx, env) -> None:
@@ -149,7 +158,7 @@ def finish_trace(state: dict, token, response, ctx, env) -> None:
             from pyodide.ffi import create_proxy
             pending = _send(events, env)
             try:
-                ctx.waitUntil(create_proxy(asyncio.wait_for(pending, timeout=1.0)))
+                ctx.waitUntil(create_proxy(pending))
             except Exception:
                 pending.close()
     except Exception:

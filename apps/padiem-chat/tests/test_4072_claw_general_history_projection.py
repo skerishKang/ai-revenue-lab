@@ -340,9 +340,12 @@ def test_real_d1_owner_conversation_created_only_after_completed_claw():
     """SQLite executes the same owner-scoped D1 SQL as Production history."""
     import json
     import sqlite3
+    from app.d1_sqlite import SqliteD1
     from app.history import D1HistoryStore
 
-    db = sqlite3.connect(":memory:", check_same_thread=False)
+    # isolation_level=None: the shared facade autocommits every statement, the
+    # way a real D1 binding does — a write is durable the moment it runs.
+    db = sqlite3.connect(":memory:", isolation_level=None, check_same_thread=False)
     db.row_factory = sqlite3.Row
     db.executescript(
         "CREATE TABLE conversations (id TEXT PRIMARY KEY, user_id TEXT, "
@@ -351,34 +354,7 @@ def test_real_d1_owner_conversation_created_only_after_completed_claw():
         "sequence_number INTEGER, role TEXT, content TEXT, created_at TEXT);"
     )
 
-    class Statement:
-        def __init__(self, sql):
-            self.sql = sql
-            self.values = ()
-
-        def bind(self, *values):
-            self.values = values
-            return self
-
-        async def run(self):
-            cursor = db.execute(self.sql, self.values)
-            if self.sql.lstrip().upper().startswith("SELECT"):
-                return {"success": True, "results": [dict(row) for row in cursor.fetchall()]}
-            db.commit()
-            return {"success": True}
-
-        async def first(self):
-            found = db.execute(self.sql, self.values).fetchone()
-            return dict(found) if found else None
-
-        async def all(self):
-            return [dict(row) for row in db.execute(self.sql, self.values).fetchall()]
-
-    class SQLiteD1:
-        def prepare(self, sql):
-            return Statement(sql)
-
-    store = D1HistoryStore(SQLiteD1())
+    store = D1HistoryStore(SqliteD1(db))
     adapter = base._make_adapter(outcome=base._make_outcome(answer="persisted on D1"))
     with owner_client(store, adapter) as client:
         completed = client.post(base.GENERAL_ROUTE_PATH, json=base._payload())

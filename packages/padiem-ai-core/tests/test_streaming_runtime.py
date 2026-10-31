@@ -8,7 +8,8 @@ import pytest
 
 import padiem_ai_core
 from padiem_ai_core.b14_execution import B14ExecutionError, B14RouteMetadata
-from padiem_ai_core.b14_streaming import B14StreamEvent
+from padiem_ai_core.b14_streaming import B14StreamEvent, B14StreamToolCall
+from padiem_ai_core.tool_channel import ToolDefinition
 from padiem_ai_core.contracts import AgentProfile, ErrorClass, RunStatus, UsageMetadata
 from padiem_ai_core.dispatch_preinstruction import PREINSTRUCTION_VERSION
 from padiem_ai_core.execution_runtime import ExecutionRequest, ExecutionRuntimeError
@@ -103,7 +104,7 @@ def test_package_root_exports_streaming_runtime_facade() -> None:
     assert padiem_ai_core.StreamingExecutionEvent is StreamingExecutionEvent
 
 
-def test_auto_stream_dispatches_once_and_surfaces_progress_before_completion() -> None:
+def test_stream_dispatches_once_and_surfaces_progress_before_completion() -> None:
     client = FakeStreamClient(complete_events())
     runtime = StreamingExecutionRuntime(
         app_id="test-app", b14_stream_client=client, clock=lambda: 10.0
@@ -113,7 +114,10 @@ def test_auto_stream_dispatches_once_and_surfaces_progress_before_completion() -
 
     assert len(client.dispatches) == 1
     kind, b14_request = client.dispatches[0]
-    assert kind == "auto"
+    # B7: there is a single stream lane now — the runtime dispatches the
+    # fixture's retired auto id through the same manual surface, and the B14
+    # gateway refuses the id before any routing (pinned platform-side).
+    assert kind == "manual"
     assert b14_request.model == "b14/auto"
     assert [event.delta_content for event in events[:-1]] == ["안녕", "하세요"]
     assert all(event.done is False for event in events[:-1])
@@ -138,9 +142,6 @@ def test_manual_stream_uses_explicit_model_and_reuses_completed_request_policy()
         model_policy={
             "model": "openrouter/free",
             "temperature": 0.4,
-            "provider_order": ["OpenRouter"],
-            "max_attempts": 1,
-            "allow_external_fallback": False,
         }
     )
     client = FakeStreamClient(complete_events())
@@ -171,13 +172,9 @@ def test_manual_stream_uses_explicit_model_and_reuses_completed_request_policy()
     )
     assert payload["messages"][1] == {"role": "user", "content": "안녕하세요"}
     assert sum(item["role"] == "system" for item in payload["messages"]) == 1
+    # B4/B5: only the real routing inputs travel on the wire now.
     assert payload["business14"] == {
-        "task_type": "general",
         "required_capabilities": ["free"],
-        "optimize_for": "korean",
-        "allow_external_fallback": False,
-        "provider_order": ["OpenRouter"],
-        "max_attempts": 1,
     }
 
 
@@ -494,3 +491,61 @@ def test_stream_event_public_contract_separates_delta_and_terminal_answer() -> N
             metadata=metadata_done,
             done=True,
         )
+
+
+
+@pytest.mark.parametrize("model", ["b14/auto", "google/gemini-3.1-flash-lite"])
+def test_stream_runtime_forwards_native_tools_and_surfaces_tool_only_completion(model):
+    call = B14StreamToolCall(id="call_1", name="pc_files", arguments={"plan": "files_list"}, index=0)
+    client = FakeStreamClient((
+        B14StreamEvent(tool_call=call),
+        B14StreamEvent(done=True, finish_reason="tool_calls"),
+    ))
+    runtime = StreamingExecutionRuntime(app_id="test-app", b14_stream_client=client)
+    events = run(collect(runtime, request(
+        agent(model_policy={"model": model}),
+        tools=(ToolDefinition(name="pc_files"),), tool_choice="auto",
+    )))
+    assert len(client.dispatches) == 1
+    kind, outgoing = client.dispatches[0]
+    # B7: the retired auto id never gets its own dispatch lane.
+    assert kind == "manual"
+    assert outgoing.tools == (ToolDefinition(name="pc_files"),)
+    assert outgoing.tool_choice == "auto"
+    assert len(events) == 2
+    assert events[0].tool_call == call and events[0].delta_content is None
+    assert events[0].to_public_dict()["tool_call"] == call.to_public_dict()
+    assert events[0].metadata.status is RunStatus.MODEL_RUNNING
+    assert events[1].done and events[1].answer == ""
+    assert events[1].finish_reason == "tool_calls"
+    assert events[1].metadata.status is RunStatus.COMPLETED
+    assert client.closed == 1
+
+
+def test_stream_runtime_empty_tools_keep_request_bytes_and_public_objects_unchanged():
+    outputs = []
+    bodies = []
+    for kwargs in ({}, {"tools": (), "tool_choice": None}):
+        client = FakeStreamClient(complete_events())
+        runtime = StreamingExecutionRuntime(
+            app_id="test-app", b14_stream_client=client, clock=lambda: 10.0
+        )
+        outputs.append([e.to_public_dict() for e in run(collect(runtime, request(**kwargs)))])
+        payload = client.dispatches[0][1].to_payload()
+        assert "tools" not in payload and "tool_choice" not in payload
+        bodies.append(json.dumps(payload, ensure_ascii=False).encode())
+    assert bodies[0] == bodies[1]
+    assert outputs[0] == outputs[1]
+    assert json.dumps(outputs[0]).encode() == json.dumps(outputs[1]).encode()
+    assert all(set(event) == {
+        "delta_content", "answer", "finish_reason", "route", "metadata", "done",
+    } for event in outputs[0])
+
+
+def test_stream_runtime_tool_finish_without_a_call_keeps_empty_answer_rejection():
+    client = FakeStreamClient((B14StreamEvent(done=True, finish_reason="tool_calls"),))
+    runtime = StreamingExecutionRuntime(app_id="test-app", b14_stream_client=client)
+    with pytest.raises(ExecutionRuntimeError) as exc:
+        run(collect(runtime, request(tools=(ToolDefinition(name="pc_files"),))))
+    assert exc.value.code == "empty_upstream_answer"
+    assert client.closed == 1

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from datetime import date, datetime, timezone
 from decimal import Decimal
+import inspect
 import unittest
 
 from kagent.claw_memory import (
@@ -16,6 +17,7 @@ from kagent.claw_memory import (
     ClawMemoryError,
     ClawMemoryKind,
     ClawMemorySourceRef,
+    ClawMemoryStore,
     ClawPartyMemory,
     ClawPartyRole,
     ClawPriceMemory,
@@ -65,6 +67,21 @@ def make_party_candidate(workspace_id: str = "ws-a") -> ClawMemoryCandidate:
 
 
 class ClawMemoryContractTests(unittest.TestCase):
+    def test_long_raw_excerpt_and_business_text_are_not_rejected(self):
+        source = ClawMemorySourceRef(
+            source_id="src-long", workspace_id="ws-a", origin=ClawSourceOrigin.PASTE,
+            body_sha256=sha256_text("a" * 9000), created_at=T0,
+            raw_excerpt="a" * 9000,
+        )
+        self.assertEqual(len(source.raw_excerpt), 9000)
+        candidate = ClawMemoryCandidate(
+            candidate_id="cand-long", workspace_id="ws-a", kind=ClawMemoryKind.PARTY,
+            payload={"name": "b" * 6000, "role": "customer"},
+            source=source, created_at=T0,
+        )
+        self.assertEqual(candidate.payload["name"], "b" * 6000)
+
+
     def test_party_item_price_records_are_workspace_scoped(self):
         party = ClawPartyMemory(
             memory_id="mem-p1",
@@ -227,10 +244,10 @@ class ClawMemoryContractTests(unittest.TestCase):
         self.assertEqual(reopened.safe_dict()["due_date"], "2026-09-20")
         store = InMemoryClawMemoryStore()
         store.add_task(task)
-        self.assertEqual([t.task_id for t in store.list_tasks("ws-a")], ["task-1"])
-        self.assertEqual(store.list_tasks("ws-b"), ())
+        self.assertEqual([t.task_id for t in store.list_tasks("ws-a", member_id="member-1")], ["task-1"])
+        self.assertEqual(store.list_tasks("ws-b", member_id="member-1"), ())
         with self.assertRaises(ClawMemoryError):
-            store.set_task_status("task-1", ClawTaskStatus.DONE, workspace_id="ws-b", at=T2)
+            store.set_task_status("task-1", ClawTaskStatus.DONE, workspace_id="ws-b", member_id="member-1", at=T2)
 
     def test_alert_supports_kind_severity_visibility_and_linked_refs(self):
         alert = ClawAlert(
@@ -263,16 +280,131 @@ class ClawMemoryContractTests(unittest.TestCase):
         self.assertEqual([a.alert_id for a in store.list_alerts("ws-a", member_id="member-2")], ["alert-2"])
         self.assertEqual(len(store.list_alerts("ws-a", member_id="member-1")), 2)
 
-    def test_safe_projection_excludes_raw_body(self):
+    def test_6324_same_tenant_tenant_mate_tasks_are_invisible_to_the_store(self):
+        """#6324: A/B in one tenant — the store read itself carries the owner."""
+        store = InMemoryClawMemoryStore()
+        store.add_task(
+            ClawFollowupTask(
+                task_id="task-a1",
+                workspace_id="ws-a",
+                member_id="member-1",
+                title="A의 발주 확인",
+                status=ClawTaskStatus.OPEN,
+                created_at=T0,
+            )
+        )
+        self.assertEqual(store.list_tasks("ws-a", member_id="member-2"), ())
+        self.assertEqual([t.task_id for t in store.list_tasks("ws-a", member_id="member-1")], ["task-a1"])
+        self.assertIsNone(store.get_task("task-a1", workspace_id="ws-a", member_id="member-2"))
+        self.assertIsNotNone(store.get_task("task-a1", workspace_id="ws-a", member_id="member-1"))
+
+    def test_6324_tenant_mate_cannot_change_my_task_status(self):
+        store = InMemoryClawMemoryStore()
+        store.add_task(
+            ClawFollowupTask(
+                task_id="task-a1",
+                workspace_id="ws-a",
+                member_id="member-1",
+                title="A의 발주 확인",
+                status=ClawTaskStatus.OPEN,
+                created_at=T0,
+            )
+        )
+        with self.assertRaises(ClawMemoryError):
+            store.set_task_status(
+                "task-a1", ClawTaskStatus.DONE, workspace_id="ws-a", member_id="member-2", at=T2
+            )
+        mine = store.get_task("task-a1", workspace_id="ws-a", member_id="member-1")
+        self.assertIsNotNone(mine)
+        self.assertIs(mine.status, ClawTaskStatus.OPEN)
+
+    def test_6324_shared_alert_stays_company_visible_while_private_stays_owned(self):
+        store = InMemoryClawMemoryStore()
+        store.add_alert(
+            ClawAlert(
+                alert_id="alert-shared",
+                workspace_id="ws-a",
+                kind=ClawAlertKind.MEMORY_PROPOSAL,
+                severity=ClawAlertSeverity.INFO,
+                title="회사 공유 알림",
+                created_at=T0,
+            )
+        )
+        store.add_alert(
+            ClawAlert(
+                alert_id="alert-private",
+                workspace_id="ws-a",
+                kind=ClawAlertKind.FOLLOWUP_DUE,
+                severity=ClawAlertSeverity.WARN,
+                title="A 전용 알림",
+                created_at=T0,
+                visible_to_members=("member-1",),
+            )
+        )
+        self.assertEqual(
+            [a.alert_id for a in store.list_alerts("ws-a", member_id="member-2")],
+            ["alert-shared"],
+        )
+        self.assertEqual(len(store.list_alerts("ws-a", member_id="member-1")), 2)
+        self.assertIsNotNone(store.get_alert("alert-shared", workspace_id="ws-a", member_id="member-2"))
+        self.assertIsNone(store.get_alert("alert-private", workspace_id="ws-a", member_id="member-2"))
+        with self.assertRaises(ClawMemoryError):
+            store.set_alert_status(
+                "alert-private", ClawAlertStatus.DISMISSED, workspace_id="ws-a", member_id="member-2", at=T2
+            )
+
+    def test_6324_owner_less_reads_and_status_changes_cannot_be_expressed(self):
+        """#6324: no default member_id anywhere — an owner-less call is a TypeError."""
+        store = InMemoryClawMemoryStore()
+        with self.assertRaises(TypeError):
+            store.list_tasks("ws-a")  # type: ignore[call-arg]
+        with self.assertRaises(TypeError):
+            store.list_alerts("ws-a")  # type: ignore[call-arg]
+        with self.assertRaises(TypeError):
+            store.get_task("task-1", workspace_id="ws-a")  # type: ignore[call-arg]
+        with self.assertRaises(TypeError):
+            store.get_alert("alert-1", workspace_id="ws-a")  # type: ignore[call-arg]
+        with self.assertRaises(TypeError):
+            store.set_task_status("task-1", ClawTaskStatus.DONE, workspace_id="ws-a", at=T0)  # type: ignore[call-arg]
+        with self.assertRaises(TypeError):
+            store.set_alert_status("alert-1", ClawAlertStatus.DISMISSED, workspace_id="ws-a", at=T0)  # type: ignore[call-arg]
+        with self.assertRaises(TypeError):
+            store.projection("ws-a")  # type: ignore[call-arg]
+
+    def test_6324_protocol_declares_member_id_required_on_every_read(self):
+        """The contract itself forbids a loose re-implementation."""
+        for name in (
+            "get_task",
+            "list_tasks",
+            "set_task_status",
+            "get_alert",
+            "list_alerts",
+            "set_alert_status",
+            "projection",
+        ):
+            parameter = inspect.signature(getattr(ClawMemoryStore, name)).parameters["member_id"]
+            self.assertEqual(parameter.kind, inspect.Parameter.KEYWORD_ONLY, name)
+            self.assertIs(parameter.default, inspect.Parameter.empty, name)
+
+    def test_owner_projection_carries_the_original_body_and_diagnostics_omit_it(self):
+        """#5360: the owner reads their own original business text in full.
+
+        A diagnostic or log projection keeps the body digest and drops the
+        owner's original text, so the text never reaches a log.
+        """
         store = InMemoryClawMemoryStore()
         store.submit_candidate(make_party_candidate(), proposal_id="prop-1")
-        projection = store.projection("ws-a")
+        projection = store.projection("ws-a", member_id="member-1")
         rendered = repr(projection)
-        self.assertNotIn(RAW_BODY, rendered)
+        self.assertIn(RAW_BODY, rendered)
         self.assertIn(sha256_text(RAW_BODY), rendered)
+        diagnostic = store.projection("ws-a", member_id="member-1", include_raw=False)
+        self.assertNotIn(RAW_BODY, repr(diagnostic))
+        self.assertIn(sha256_text(RAW_BODY), repr(diagnostic))
         source = make_source()
-        self.assertNotIn("raw_excerpt", source.safe_dict())
-        self.assertIn("raw_excerpt", source.safe_dict(include_raw=True))
+        self.assertEqual(source.safe_dict()["raw_excerpt"], RAW_BODY)
+        self.assertEqual(source.safe_dict(include_raw=True)["raw_excerpt"], RAW_BODY)
+        self.assertEqual(source.safe_dict(include_raw=False).get("raw_excerpt"), None)
 
     def test_cross_workspace_candidate_and_access_fail_closed(self):
         with self.assertRaises(ClawMemoryError):

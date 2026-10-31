@@ -15,7 +15,7 @@ import re
 from types import MappingProxyType
 from typing import Any, AsyncIterator, Mapping, Protocol
 
-from .orchestration_stream import EngineNdjsonContractError, decode_orchestration_ndjson
+from .orchestration_stream import EngineNdjsonContractError, EngineStreamError, decode_orchestration_ndjson
 
 ENGINE_INTERNAL_ORIGIN = "https://padiem-ai-engine.internal"
 ENGINE_CONTRACT_MAJOR = 1
@@ -28,6 +28,7 @@ ENGINE_ORCHESTRATE_STREAM_PATH = "/internal/v1/orchestrate/stream"
 ENGINE_ORCHESTRATE_RESUME_PATH = "/internal/v1/orchestrate/resume"
 ENGINE_ORCHESTRATE_CANCEL_PATH = "/internal/v1/orchestrate/cancel"
 ENGINE_MULTIMODAL_ATTACHMENTS_PATH = "/internal/v1/multimodal/attachments"
+ENGINE_DOCUMENT_ADMISSION_PATH = "/internal/v1/documents"
 
 _ENGINE_CALLER_HEADER = "X-Padiem-Engine-Caller"
 _ENGINE_CREDENTIAL_HEADER = "X-Padiem-Engine-Credential"
@@ -48,6 +49,35 @@ _ATTACHMENT_ADMISSION_ALLOWED = frozenset(
 _ATTACHMENT_ADMISSION_REQUIRED = frozenset({"session_id", "media_type", "image_base64"})
 _ATTACHMENT_PROJECTION_FIELDS = ("attachment_ref", "media_type", "byte_size", "expires_at")
 
+# COM2 document reference admission (#5881). The Engine route stays the single
+# size/media/grammar authority; this client mirrors the bounded shape so a
+# malformed reference fails before any transport, and it never rewrites the
+# signed ticket values it carries for the product. Pinned against the Engine's
+# own module by a drift test so the two copies cannot silently diverge.
+FILE_TICKET_HEADER_NAMES = frozenset(
+    {"X-Padiem-File-Ticket", "X-Padiem-File-Time", "X-Padiem-File-Proof"}
+)
+_DOCUMENT_FILE_ID_RE = re.compile(r"^file_[a-f0-9]{32}$")
+_DOCUMENT_SHA256_RE = re.compile(r"^[a-f0-9]{64}$")
+_DOCUMENT_TICKET_VALUE_RE = re.compile(r"^[\x20-\x7e]+$")
+_DOCUMENT_REF_RE = re.compile(r"^doc_[A-Za-z0-9_-]{16,120}$")
+_DOCUMENT_ADMISSION_ALLOWED = frozenset(
+    {"session_id", "file_id", "sha256", "file_ticket", "filename"}
+)
+_DOCUMENT_ADMISSION_REQUIRED = frozenset(
+    {"session_id", "file_id", "sha256", "file_ticket"}
+)
+DOCUMENT_LANE_MEDIA_TYPE = "text/plain"
+_DOCUMENT_PROJECTION_FIELDS = (
+    "document_ref",
+    "media_type",
+    "byte_size",
+    "expires_at",
+    "total_chars",
+    "next_offset",
+    "window_eof",
+)
+
 _EXECUTION_ALLOWED = frozenset(
     {
         "agent",
@@ -61,6 +91,9 @@ _EXECUTION_ALLOWED = frozenset(
 _ORCHESTRATION_ALLOWED = _EXECUTION_ALLOWED | frozenset(
     {
         "subject_id",
+        "user_credential_ref",
+        "declared_plan",
+        "pc_tools",
         "agent_plan",
         "tool_arguments",
         "recovery_policy",
@@ -72,6 +105,7 @@ _ORCHESTRATION_ALLOWED = _EXECUTION_ALLOWED | frozenset(
 _ORCHESTRATION_RESUME_ALLOWED = _EXECUTION_ALLOWED | frozenset(
     {
         "continuation_ref",
+        "user_credential_ref",
         "decision",
         "subject_id",
         "agent_plan",
@@ -107,13 +141,24 @@ _PC_PLAN_STEPS = MappingProxyType({
         ("list_files", "claw.pc.list_files"),
         ("read_file", "claw.pc.read_file"),
     ),
+    #: #5573: a listing-only request. The plan carries the list step alone, so
+    #: the Engine is told not to read; the Engine still refuses ``read_file``
+    #: for this hint. The table stays closed: any other shape is refused.
+    "files_list": (("list_files", "claw.pc.list_files"),),
+    #: #4434: the write lane. Its own shape, so a plan that may change a file is
+    #: never also a plan that may read one.
+    "files_write": (
+        ("write_file", "claw.pc.write_file"),
+        ("move_file", "claw.pc.move_file"),
+        ("delete_file", "claw.pc.delete_file"),
+    ),
 })
 #: Canonical PC device identity grammar (#5172). This client package has no
 #: runtime dependency, so the two patterns are copied verbatim from
 #: ``padiem_ai_core.pc_device_identity`` and a parity test proves the copies
 #: stay identical to that single authority.
-PC_DEVICE_ID_PATTERN = r"^[A-Za-z0-9_.:@+-]{1,128}$"
-PC_MESH_NODE_ID_PATTERN = r"^node/[A-Za-z0-9._-]{0,64}/[A-Za-z0-9_.:@+-]{1,128}$"
+PC_DEVICE_ID_PATTERN = r"^[A-Za-z0-9_.$:@+-]{1,128}$"
+PC_MESH_NODE_ID_PATTERN = r"^node/[A-Za-z0-9._-]{0,64}/[A-Za-z0-9_.$:@+-]{1,128}$"
 _PC_DEVICE_ID_RE = re.compile(PC_DEVICE_ID_PATTERN)
 _PC_MESH_NODE_ID_RE = re.compile(PC_MESH_NODE_ID_PATTERN)
 
@@ -133,7 +178,7 @@ def _trusted_pc_tool_arguments(agent_plan: Any, tool_arguments: Any) -> bool:
         return False
     if agent_plan.get("agent_id") not in _PC_PLAN_AGENT_IDS:
         return False
-    if set(tool_arguments) not in ({"query_drives"}, {"files"}):
+    if set(tool_arguments) not in ({"query_drives"}, {"files"}, {"files_list"}):
         return False
     key = next(iter(tool_arguments))
     steps = agent_plan.get("steps")
@@ -164,6 +209,7 @@ ORCHESTRATION_FIELD_PARITY = MappingProxyType(
         "execution_context": "SUPPORTED_AND_MAPPED",
         "subject_id": "SUPPORTED_AND_MAPPED",
         "agent_plan": "SUPPORTED_AND_MAPPED",
+        "declared_plan": "PC_REQUEST_SCOPE_DECLARATION_ONLY",
         "recovery_policy": "SUPPORTED_AND_MAPPED",
         "max_retries": "SUPPORTED_AND_MAPPED",
         "require_evidence": "SUPPORTED_AND_MAPPED",
@@ -288,14 +334,15 @@ def _execution_context(value: Any) -> dict[str, Any] | None:
         normalized["idempotency_key"] = key
     if "timeout_seconds" in data:
         timeout = data["timeout_seconds"]
-        if (
+        # #4379: an explicit null means the execution carries no PADIEM deadline.
+        if timeout is not None and (
             isinstance(timeout, bool)
             or not isinstance(timeout, (int, float))
             or not 1 <= float(timeout) <= 3600
         ):
             raise PadiemAiEngineClientError(
                 "invalid_engine_request",
-                "execution_context.timeout_seconds must be between 1 and 3600",
+                "execution_context.timeout_seconds must be a positive number or None",
             )
         normalized["timeout_seconds"] = timeout
     return normalized
@@ -329,6 +376,26 @@ def _decision(value: Any) -> dict[str, Any]:
     return data
 
 
+
+def _pc_tools_context(data, app_id):
+    value = data["pc_tools"]
+    if (
+        app_id not in {"padiem-chat", "b54-padiem-claw"}
+        or not data.get("subject_id") or not data.get("session_id")
+        or data.get("agent_plan") is not None
+        or "tool_arguments" in data or "declared_plan" in data
+        or not isinstance(value, Mapping) or set(value) != {"device_id", "allowed_scopes"}
+        or not _is_pc_device_id(value.get("device_id"))
+    ):
+        raise PadiemAiEngineClientError("invalid_engine_request", "PC tools context is invalid")
+    scopes = value["allowed_scopes"]
+    if (not isinstance(scopes, list) or not scopes or len(scopes) > 3
+        or any(not isinstance(v, str) or v not in {"query_drives", "files_list", "files"} for v in scopes)
+        or len(set(scopes)) != len(scopes)):
+        raise PadiemAiEngineClientError("invalid_engine_request", "PC tools scopes are invalid")
+    return {"device_id": value["device_id"], "allowed_scopes": list(scopes)}
+
+
 def _run_payload(app_id: str, request: Any, *, allowed: frozenset[str]) -> dict[str, Any]:
     if not isinstance(request, Mapping):
         raise PadiemAiEngineClientError("invalid_engine_request", "Engine request must be an object")
@@ -353,6 +420,12 @@ def _run_payload(app_id: str, request: Any, *, allowed: frozenset[str]) -> dict[
         raise PadiemAiEngineClientError(
             "invalid_engine_request", "Engine request contains unsupported fields"
         )
+    if "declared_plan" in data:
+        declared = data["declared_plan"]
+        if not isinstance(declared, str) or declared not in _PC_PLAN_STEPS:
+            raise PadiemAiEngineClientError(
+                "invalid_engine_request", "declared_plan must be files_list, files, or query_drives"
+            )
     if "agent" not in data or "messages" not in data:
         raise PadiemAiEngineClientError(
             "invalid_engine_request", "Engine request requires agent and messages"
@@ -364,6 +437,7 @@ def _run_payload(app_id: str, request: Any, *, allowed: frozenset[str]) -> dict[
         "trace_id",
         "subject_id",
         "agent_plan",
+        "declared_plan",
         "tool_arguments",
         "recovery_policy",
         "max_retries",
@@ -373,6 +447,13 @@ def _run_payload(app_id: str, request: Any, *, allowed: frozenset[str]) -> dict[
     ):
         if name in data:
             payload[name] = data[name]
+    if "user_credential_ref" in data:
+        ref = data["user_credential_ref"]
+        if app_id != "padiem-chat" or not isinstance(ref, str) or not ref:
+            raise PadiemAiEngineClientError("invalid_engine_request", "User credential reference is invalid")
+        payload["user_credential_ref"] = ref
+    if "pc_tools" in data:
+        payload["pc_tools"] = _pc_tools_context(data, app_id)
     if "execution_context" in data:
         payload["execution_context"] = _execution_context(data["execution_context"])
     if "decision" in data:
@@ -496,6 +577,105 @@ def _attachment_projection(body: dict[str, Any]) -> dict[str, Any]:
                 "invalid_engine_response", "Engine attachment admission response is invalid"
             )
     return {name: attachment[name] for name in _ATTACHMENT_PROJECTION_FIELDS}
+
+
+def _document_admission_payload(app_id: str, request: Any) -> dict[str, Any]:
+    if not isinstance(request, Mapping):
+        raise PadiemAiEngineClientError(
+            "invalid_engine_request", "Engine document request must be an object"
+        )
+    data = dict(request)
+    if set(data) - _DOCUMENT_ADMISSION_ALLOWED:
+        raise PadiemAiEngineClientError(
+            "invalid_engine_request",
+            "Engine document request contains unsupported fields",
+        )
+    if _DOCUMENT_ADMISSION_REQUIRED - set(data):
+        raise PadiemAiEngineClientError(
+            "invalid_engine_request",
+            "Engine document request is missing required fields",
+        )
+    file_id = data["file_id"]
+    if not isinstance(file_id, str) or not _DOCUMENT_FILE_ID_RE.fullmatch(file_id):
+        raise PadiemAiEngineClientError(
+            "invalid_engine_request", "Engine document file_id is invalid"
+        )
+    sha256 = data["sha256"]
+    if not isinstance(sha256, str) or not _DOCUMENT_SHA256_RE.fullmatch(sha256):
+        raise PadiemAiEngineClientError(
+            "invalid_engine_request", "Engine document sha256 is invalid"
+        )
+    ticket = data["file_ticket"]
+    if not isinstance(ticket, Mapping) or set(ticket) != FILE_TICKET_HEADER_NAMES:
+        raise PadiemAiEngineClientError(
+            "invalid_engine_request", "Engine document file_ticket is invalid"
+        )
+    # The claim values are the product's own signed bytes: carried unchanged so
+    # a second signature can never be minted here, and refused only when the
+    # shape could not survive an HTTP header.
+    headers = {name: ticket[name] for name in sorted(FILE_TICKET_HEADER_NAMES)}
+    for name, value in headers.items():
+        if not isinstance(value, str) or not _DOCUMENT_TICKET_VALUE_RE.fullmatch(value):
+            raise PadiemAiEngineClientError(
+                "invalid_engine_request",
+                f"Engine document file_ticket {name} is invalid",
+            )
+    payload: dict[str, Any] = {
+        "app_id": app_id,
+        "session_id": _safe_identifier("session_id", data["session_id"]),
+        "file_id": file_id,
+        "sha256": sha256,
+        "file_ticket": headers,
+    }
+    if "filename" in data:
+        filename = data["filename"]
+        if not isinstance(filename, str) or not filename.strip():
+            raise PadiemAiEngineClientError(
+                "invalid_engine_request", "Engine document filename is invalid"
+            )
+        payload["filename"] = filename.strip()
+    return payload
+
+
+def _document_projection(body: dict[str, Any]) -> dict[str, Any]:
+    invalid = PadiemAiEngineClientError(
+        "invalid_engine_response", "Engine document admission response is invalid"
+    )
+    if body.get("ok") is not True:
+        raise invalid
+    document = body.get("document")
+    if not isinstance(document, Mapping) or set(document) != set(_DOCUMENT_PROJECTION_FIELDS):
+        raise invalid
+    projected = dict(document)
+    if not isinstance(projected["document_ref"], str) or not _DOCUMENT_REF_RE.fullmatch(
+        projected["document_ref"]
+    ):
+        raise invalid
+    if projected["media_type"] != DOCUMENT_LANE_MEDIA_TYPE:
+        raise invalid
+    if projected["window_eof"] not in (True, False):
+        raise invalid
+    for name in ("byte_size", "total_chars", "next_offset"):
+        value = projected[name]
+        if name == "total_chars" and value is None:
+            continue
+        if isinstance(value, bool) or not isinstance(value, int) or value < 0:
+            raise invalid
+    if projected["byte_size"] < 1:
+        raise invalid
+    if projected["total_chars"] is not None and projected["total_chars"] < projected["next_offset"]:
+        raise invalid
+    expires_at = projected["expires_at"]
+    if expires_at is not None:
+        if not isinstance(expires_at, str):
+            raise invalid
+        try:
+            parsed = datetime.fromisoformat(expires_at)
+        except ValueError:
+            raise invalid from None
+        if parsed.tzinfo is None or parsed.utcoffset() is None:
+            raise invalid
+    return {name: projected[name] for name in _DOCUMENT_PROJECTION_FIELDS}
 
 
 def _json_body(response: EngineTransportResponse) -> dict[str, Any]:
@@ -668,13 +848,18 @@ class PadiemAiEngineClient:
         return dict(orchestration)
 
     async def stream_orchestration(
-        self, request: Mapping[str, Any]
+        self, request: Mapping[str, Any], *, pc_progress: bool = False
     ) -> AsyncIterator[dict[str, Any]]:
         """Opt-in Engine NDJSON transport; no implicit switch from orchestrate().
 
         The caller must validate P01 correlation and the terminal result before
         committing success. Partial event yields have no approval/dispatch power.
         """
+        if type(pc_progress) is not bool:
+            raise PadiemAiEngineClientError("invalid_engine_request", "pc_progress must be boolean")
+        headers = self._headers()
+        if pc_progress:
+            headers["X-Padiem-PC-Progress"] = "1"
         payload = _run_payload(self.app_id, request, allowed=_ORCHESTRATION_ALLOWED)
         stream_request = getattr(self._transport, "stream_request", None)
         if not callable(stream_request):
@@ -684,7 +869,7 @@ class PadiemAiEngineClient:
         response = await stream_request(
             method="POST",
             url=f"{ENGINE_INTERNAL_ORIGIN}{ENGINE_ORCHESTRATE_STREAM_PATH}",
-            headers=self._headers(),
+            headers=headers,
             body=json.dumps(payload, ensure_ascii=False, separators=(",", ":"), allow_nan=False).encode("utf-8"),
         )
         if not isinstance(response, EngineStreamTransportResponse):
@@ -701,13 +886,12 @@ class PadiemAiEngineClient:
         try:
             async for item in decode_orchestration_ndjson(response.chunks):
                 yield item
+        except EngineStreamError as exc:
+            raise PadiemAiEngineClientError(exc.code, str(exc)) from exc
         except EngineNdjsonContractError as exc:
-            # #5015: carry the Engine's bounded stage code (when present)
-            # alongside the contract reason so callers can attribute the
-            # failure without re-reading any Engine text.
-            metadata: dict[str, Any] = {"reason": exc.code}
-            if exc.engine_code is not None:
-                metadata["engine_code"] = exc.engine_code
+            metadata: dict[str, Any] = {
+                "reason": exc.code, "record_kind": exc.record_kind,
+            }
             raise PadiemAiEngineClientError(
                 "invalid_engine_stream", "Engine streaming contract failed",
                 metadata=metadata,
@@ -737,6 +921,19 @@ class PadiemAiEngineClient:
             _attachment_admission_payload(self.app_id, request),
         )
         return _attachment_projection(body)
+
+    async def admit_document_reference(self, request: Mapping[str, Any]) -> dict[str, Any]:
+        """Admit one COM2 file reference: the lane keeps the bytes, Engine the text.
+
+        The reference shape carries no document bytes, so the request stays far
+        below the inline admission envelope. ``file_ticket`` is the product's own
+        signed read claim, forwarded unchanged.
+        """
+        body = await self._post(
+            ENGINE_DOCUMENT_ADMISSION_PATH,
+            _document_admission_payload(self.app_id, request),
+        )
+        return _document_projection(body)
 
     async def health(self) -> dict[str, Any]:
         response = await self._transport.request(

@@ -2,20 +2,29 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 from datetime import datetime, timedelta, timezone
+import html as html_module
 import json
 
 from starlette.requests import Request
-from starlette.responses import JSONResponse, RedirectResponse, Response
+from starlette.responses import HTMLResponse, JSONResponse, RedirectResponse, Response
 
 from padiem_control_plane.b54_identity_bridge import B54BridgedIdentitySession
 
 from .android_auth_routes import (
+    _page,
     android_handoff_confirm_page,
     android_handoff_terminal_page,
     bind_android_handoff_user,
     load_android_handoff_for_callback,
 )
 from .android_auth_store import HANDOFF_STATUS_AWAITING_CONFIRMATION
+from .lovetree_auth_routes import (
+    bind_after_verified_login,
+    bind_lovetree_handoff,
+    load_lovetree_handoff_for_callback,
+    not_ready as lovetree_handoff_not_ready,
+    return_to_lovetree,
+)
 from .auth import (
     AuthError,
     OAUTH_STATE_COOKIE,
@@ -23,10 +32,12 @@ from .auth import (
     GoogleOAuthClient,
     create_oauth_state,
     create_session_token,
+    decode_session_claims,
     decode_session_token,
     oauth_state_cookie_kwargs,
     session_cookie_kwargs,
     verify_oauth_state,
+    verified_oauth_return_target,
 )
 from .auth_abuse import UNAVAILABLE_WINDOW, AuthAbuseWindow
 from .b66_signup_notifications import deliver_after_signup
@@ -36,22 +47,37 @@ from .b54_canonical_session import (
 )
 from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
 from .config import Settings
-from .control_plane_identity import TrustedProductAuthEvidence, bridge_trusted_product_auth
+from .control_plane_identity import (
+    PADIEM_CHAT_PRODUCT_ID,
+    TrustedProductAuthEvidence,
+    bridge_trusted_product_auth,
+)
 from .history import HistoryConflict, HistoryStore, PasswordCredential
 from .password_auth import (
     PasswordAuthError,
-    hash_password,
+    hash_password_async,
     normalize_display_name,
     normalize_email,
+    normalize_login_identifier,
     normalize_username,
-    verify_password,
+    verify_password_async,
     validate_password,
 )
+from .password_reset import (
+    RESET_DELIVERY_UNAVAILABLE,
+    RESET_INVALID_REQUEST,
+    RESET_TOKEN_INVALID,
+    RESET_UNAVAILABLE,
+    PasswordResetError,
+    PasswordResetService,
+    PasswordResetToken,
+)
+from .session_revocation_guard import session_verdict
 
 
 def auth_ready(request: Request) -> bool:
     settings: Settings = request.app.state.settings
-    return settings.auth_mode != "off" and request.app.state.history_store is not None
+    return (settings.auth_mode != "off" or getattr(request.app.state, "shared_login_flow", None) is not None) and request.app.state.history_store is not None
 
 
 def google_auth_ready(request: Request) -> bool:
@@ -70,14 +96,64 @@ def password_auth_ready(request: Request) -> bool:
         and store is not None
         and callable(getattr(store, "register_password_user", None))
         and callable(getattr(store, "find_password_credential", None))
+        and callable(getattr(store, "find_password_credential_by_user_id", None))
+        and callable(getattr(store, "update_password_credential", None))
         and callable(getattr(store, "record_password_failure", None))
         and callable(getattr(store, "reset_password_failures", None))
     )
 
 
 def current_user_id(request: Request) -> str | None:
+    """Resolve the signed-in product user for this request.
+
+    #5225: when the canonical session guard resolved a verdict for this
+    request, that verdict is the authority. A revoked, unknown or unbound
+    canonical session never yields a user id, so every protected Chat/Claw API
+    refuses a stored session cookie right after the logout that revoked it.
+    Without a verdict — a deployment without the canonical identity authority,
+    or a directly invoked route handler — the pre-existing cookie-only
+    behaviour is unchanged.
+    """
+
+    verdict = session_verdict(request)
     settings: Settings = request.app.state.settings
-    return decode_session_token(settings, request.cookies.get(SESSION_COOKIE))
+    if verdict is None or verdict.authenticated:
+        legacy_user = decode_session_token(settings, request.cookies.get(SESSION_COOKIE))
+        if legacy_user:
+            return legacy_user
+    # Set only by SharedSessionMiddleware after ES256 verification and mapping.
+    shared_user = getattr(getattr(request, 'state', None), 'padiem_shared_user_id', None)
+    return shared_user if isinstance(shared_user, str) and shared_user else None
+
+
+def _wants_html(request: Request) -> bool:
+    """A browser navigation carries text/html in Accept; this app's own fetches
+    always ask for JSON. One login failure speaks both languages: the navigation
+    gets the Korean screen, the fetch keeps its JSON contract (#6114)."""
+    accept = request.headers.get("accept", "")
+    return "text/html" in accept.lower()
+
+
+_GOOGLE_LOGIN_RETRY_HREF = "/auth/google/start"
+
+
+def google_login_error_page(message: str, status: int) -> HTMLResponse:
+    """The browser-navigated login failure screen. One Korean line the owner can
+    act on and one button that starts the login over with a fresh signed state —
+    never the raw JSON envelope, never a code the owner cannot act on."""
+    body = (
+        "<h1>로그인을 마치지 못했어요</h1>"
+        f"<p class=\"error\" role=\"alert\">{html_module.escape(message)}</p>"
+        f"<a class=\"action\" href=\"{_GOOGLE_LOGIN_RETRY_HREF}\">다시 로그인</a>"
+        "<p class=\"note\">버튼이 로그인을 다시 시작합니다. 문제가 반복되면 잠시 후 다시 시도해 주세요.</p>"
+    )
+    return _page("Padiem 로그인", body, status)
+
+
+def _auth_failure(request: Request, status: int, code: str, message: str) -> Response:
+    if _wants_html(request):
+        return google_login_error_page(message, status)
+    return _auth_error(status, code, message)
 
 
 def _unavailable() -> JSONResponse:
@@ -85,6 +161,95 @@ def _unavailable() -> JSONResponse:
         {"error": {"code": "auth_unavailable", "message": "로그인을 현재 사용할 수 없습니다."}},
         status_code=503,
     )
+
+
+def _password_reset_service(request: Request) -> PasswordResetService | None:
+    """The configured lost-password reset service, or ``None``."""
+
+    service = getattr(request.app.state, "password_reset_service", None)
+    return service if isinstance(service, PasswordResetService) else None
+
+
+def _password_reset_delivery(request: Request):
+    """The configured reset-mail transport, or ``None`` when unconfigured."""
+
+    delivery = getattr(request.app.state, "password_reset_delivery", None)
+    if delivery is None or not callable(getattr(delivery, "send", None)):
+        return None
+    return delivery
+
+
+async def _revoke_all_canonical_sessions(
+    request: Request, *, user_id: str, strict: bool
+) -> str | None:
+    """End every canonical session of one account (#5441).
+
+    A replaced credential has to end every session it could still
+    authenticate, on every device. The canonical Control Plane session store is
+    the only revocation authority, so the revocation happens there instead of
+    in a second, product-local session registry.
+
+    ``strict`` decides what an authority without the reviewed capability means:
+
+    * ``True`` (the lost-password reset) — the revocation cannot be confirmed,
+      so the credential must not move. The caller reports the failure and the
+      member retries with the same link.
+    * ``False`` (the #5434 signed-in change) — the capability is simply not
+      deployed yet, so the already-reviewed single-session revocation stays in
+      force and the route keeps working.
+
+    Returns ``None`` when the sessions are ended (or when there was nothing to
+    end), and a stable error code otherwise.
+    """
+
+    authority = getattr(request.app.state, "control_plane_identity_authority", None)
+    if authority is None:
+        # No canonical authority bound: this deployment has no canonical
+        # sessions, so there is nothing to revoke.
+        return None
+    revoke_all = getattr(authority, "revoke_all_auth_sessions", None)
+    if not callable(revoke_all):
+        return "session_revocation_unavailable" if strict else None
+    try:
+        await revoke_all(
+            product_id=PADIEM_CHAT_PRODUCT_ID,
+            product_user_id=user_id,
+        )
+    except Exception as exc:
+        code = getattr(exc, "code", "")
+        if code in {
+            "canonical_product_identity_link_not_found",
+            "canonical_product_identity_link_not_active",
+        }:
+            # The account has no canonical subject link, so it owns no
+            # canonical session. There is nothing to end.
+            return None
+        return "session_revocation_failed"
+    return None
+
+
+async def _account_method(store: HistoryStore | None, user_id: str) -> str:
+    """The signed-in account's own authentication method.
+
+    #5434: the account settings offer the password change only for an
+    account that actually owns a password credential. The fact comes from the
+    server's own credential row, never from the browser, and a failed lookup
+    stays "unknown" so the UI never offers a change it cannot prove.
+    """
+    lookup = (
+        getattr(store, "find_password_credential_by_user_id", None)
+        if store is not None
+        else None
+    )
+    if not callable(lookup):
+        return "unknown"
+    try:
+        credential = await lookup(user_id)
+    except Exception:
+        return "unknown"
+    if credential is None:
+        return "google"
+    return "password"
 
 
 async def auth_status(request: Request) -> JSONResponse:
@@ -123,17 +288,21 @@ async def auth_status(request: Request) -> JSONResponse:
         "history_ready": ready and store is not None,
         "user": user,
     }
-    # Owner decision 2026-10-17: a guest may browse the product, but the model is
-    # not available without a session. This is the server-authoritative condition
-    # the browser is allowed to act on, and it mirrors the anonymous-request rule
-    # the Chat and Claw routes already enforce (`runtime_mode != "mock"`). An
-    # isolated mock app — the CI browser QA target — never advertises it, so no
-    # browser lane can silently change what Production does.
+    if getattr(request.app.state, 'shared_login_flow', None) is not None:
+        payload['shared_login_enabled'] = True
+        # Presentation hint only; authentication never trusts this value.
+        payload['shared_session_present'] = request.cookies.get('__Host-padiem-shared-marker') == '1'
+    # Owner decision 2026-10-24 (#5474): a guest may use Free on the Chat lane,
+    # bounded by the usage gate; paid tiers, Claw, Custom and projects still
+    # need a session. This flag is the server-authoritative condition the
+    # browser may act on, and an isolated mock app (the CI browser QA target)
+    # never advertises it, so no browser lane silently changes Production.
     payload["model_requires_session"] = bool(
         ready and request.app.state.settings.runtime_mode != "mock"
     )
     if authenticated:
         payload["member_grade"] = await verified_member_grade(request, uid)
+        payload["account_method"] = await _account_method(store, uid)
     # Keep the legacy unavailable payload stable. Once auth is actually ready,
     # expose a bounded presentation state so the browser does not infer expiry.
     if ready:
@@ -157,16 +326,25 @@ def _bridge_origin(request: Request) -> str | None:
 
 
 async def google_start(request: Request) -> Response:
+    shared_flow = getattr(request.app.state, 'shared_login_flow', None)
+    # Preserve existing handoffs and explicit return targets during migration.
+    if shared_flow is not None and not request.query_params:
+        return await shared_flow.start_login(request)
     if not google_auth_ready(request):
-        return _unavailable()
+        return _auth_failure(request, 503, "auth_unavailable", "로그인을 현재 사용할 수 없습니다.")
     settings: Settings = request.app.state.settings
     oauth: GoogleOAuthClient = request.app.state.google_oauth
     bridge_origin = _bridge_origin(request)
     try:
-        state, signed = create_oauth_state(settings)
+        # An app that signs in inside its own page asks to come back here. The
+        # value is accepted only when it is exactly one of the declared app
+        # entries, and it travels in the signed state, not in the provider URL.
+        state, signed = create_oauth_state(
+            settings, return_to=request.query_params.get("return_to")
+        )
         location = oauth.authorization_url(state, bridge_origin=bridge_origin)
     except AuthError as exc:
-        return JSONResponse({"error": {"code": exc.code, "message": exc.user_message}}, status_code=exc.status_code)
+        return _auth_failure(request, exc.status_code, exc.code, exc.user_message)
     response = RedirectResponse(location, status_code=302)
     response.set_cookie(OAUTH_STATE_COOKIE, signed, **oauth_state_cookie_kwargs())
     return response
@@ -181,19 +359,34 @@ async def _write_identity_shadow_after_login(
     authenticated_at: datetime,
     expires_at: datetime,
     ensure_personal_tenant: bool = False,
-) -> None:
-    """Best-effort shadow write; never turns migration telemetry into login authority.
+) -> str | None:
+    """Establish the canonical B62 session behind a verified login and shadow it.
 
-    The canonical values still come only from the injected trusted Control Plane
-    authority. Failure here means the later shared-authority path has no usable
-    shadow and therefore fails closed; the existing B62 Google login remains
-    available during the migration/shadow phase.
+    The canonical Control Plane identity authority is the single session
+    authority for PADIEM, and this is the production callsite that binds one
+    verified login to exactly one canonical session. #5225 reuses that session:
+    the logout revokes it, so a stored session cookie stops authenticating.
+
+    The only input is the server-verified identity, never request content: no
+    request field can name a user, provider subject, tenant, product or
+    session.
+
+    Returns the canonical session id to bind into the signed session cookie, or
+    ``None`` when this deployment established no canonical session for this
+    login — a deployment without the canonical identity shadow, or a canonical
+    authority that could not confirm the session. Such a session keeps the
+    pre-existing cookie-only behaviour; #5225 adds a revocation path to the
+    canonical session, it never removes the compatibility login.
+
+    The D1 shadow write stays best-effort. It is a non-authoritative local
+    pointer and never turns a migration telemetry write into login authority;
+    a shadow failure therefore does not fail the login.
     """
 
     authority = getattr(request.app.state, "control_plane_identity_authority", None)
     shadow_store = getattr(request.app.state, "identity_shadow_store", None)
     if authority is None or shadow_store is None:
-        return
+        return None
     try:
         bridged = await bridge_trusted_product_auth(
             authority,
@@ -212,7 +405,8 @@ async def _write_identity_shadow_after_login(
         # Shadow/parity collection is intentionally not the compatibility login
         # authority. Shared-authority consumers independently fail closed if the
         # projection/current canonical session cannot later be resolved.
-        return
+        return None
+    return bridged.auth_session.session_id
 
 
 async def establish_b54_canonical_session_after_login(
@@ -288,43 +482,41 @@ async def establish_b54_canonical_session_after_google_login(
 
 async def google_callback(request: Request) -> Response:
     if not google_auth_ready(request):
-        return _unavailable()
+        return _auth_failure(request, 503, "auth_unavailable", "로그인을 현재 사용할 수 없습니다.")
     settings: Settings = request.app.state.settings
     query_state = request.query_params.get("state")
     cookie_state = request.cookies.get(OAUTH_STATE_COOKIE)
     handoff_record = None
+    pending = None
     if not verify_oauth_state(settings, query_state, cookie_state):
         # Android 1.0.0 completes Google in the device's external browser. That
         # browser has no WebView state cookie, so a handoff state is verified by
         # its own signature instead. It only identifies the pending handoff; it
         # never authenticates a user or issues a session.
         if not isinstance(query_state, str) or not query_state:
-            return JSONResponse(
-                {"error": {"code": "invalid_oauth_state", "message": "로그인 요청을 확인할 수 없습니다. 다시 로그인해 주세요."}},
-                status_code=400,
-            )
+            return _auth_failure(request, 400, "invalid_oauth_state", "로그인 요청을 확인할 수 없습니다. 다시 로그인해 주세요.")
         handoff_record, handoff_response = await load_android_handoff_for_callback(
             request, query_state
         )
         if handoff_response is not None:
             return handoff_response
         if handoff_record is None:
-            # Not a signed handoff state either: keep the pre-existing
-            # invalid-OAuth-state rejection and never exchange the code.
-            return JSONResponse(
-                {"error": {"code": "invalid_oauth_state", "message": "로그인 요청을 확인할 수 없습니다. 다시 로그인해 주세요."}},
-                status_code=400,
-            )
-        if handoff_record.status == HANDOFF_STATUS_AWAITING_CONFIRMATION:
+            # LoveTree sends its own browser here the same way: the login request is
+            # named by a Chat-signed state, and that state only picks a pending row.
+            pending, pending_response = await load_lovetree_handoff_for_callback(request, query_state)
+            if pending_response is not None:
+                return pending_response
+            if pending is None:
+                # Not a signed handoff state either: keep the pre-existing
+                # invalid-OAuth-state rejection and never exchange the code.
+                return _auth_failure(request, 400, "invalid_oauth_state", "로그인 요청을 확인할 수 없습니다. 다시 로그인해 주세요.")
+        if handoff_record is not None and handoff_record.status == HANDOFF_STATUS_AWAITING_CONFIRMATION:
             # The Google code was already exchanged on the first callback. A
             # reload must not consume it again; render the same code form.
             return android_handoff_confirm_page(query_state)
     code = request.query_params.get("code")
     if not isinstance(code, str) or not code.strip() or len(code) > 4096:
-        return JSONResponse(
-            {"error": {"code": "invalid_oauth_callback", "message": "Google 로그인 결과를 확인할 수 없습니다."}},
-            status_code=400,
-        )
+        return _auth_failure(request, 400, "invalid_oauth_callback", "Google 로그인 결과를 확인할 수 없습니다.")
     oauth: GoogleOAuthClient = request.app.state.google_oauth
     store: HistoryStore = request.app.state.history_store
     bridge_origin = _bridge_origin(request)
@@ -337,27 +529,28 @@ async def google_callback(request: Request) -> Response:
         authenticated_epoch = int(datetime.now(timezone.utc).timestamp())
         authenticated_at = datetime.fromtimestamp(authenticated_epoch, tz=timezone.utc)
         expires_at = authenticated_at + timedelta(seconds=settings.session_max_age_seconds)
+        canonical_session_id = await _write_identity_shadow_after_login(
+            request,
+            product_user_id=profile.id,
+            provider="google",
+            provider_subject=identity["subject"],
+            authenticated_at=authenticated_at,
+            expires_at=expires_at,
+        )
         session = (
-            create_session_token(settings, profile.id, now=authenticated_epoch)
-            if handoff_record is None
+            create_session_token(
+                settings,
+                profile.id,
+                now=authenticated_epoch,
+                canonical_session_id=canonical_session_id,
+            )
+            if handoff_record is None and pending is None
             else None
         )
     except AuthError as exc:
-        return JSONResponse({"error": {"code": exc.code, "message": exc.user_message}}, status_code=exc.status_code)
+        return _auth_failure(request, exc.status_code, exc.code, exc.user_message)
     except Exception:
-        return JSONResponse(
-            {"error": {"code": "auth_storage_error", "message": "로그인 정보를 저장하지 못했습니다. 다시 시도해 주세요."}},
-            status_code=503,
-        )
-
-    await _write_identity_shadow_after_login(
-        request,
-        product_user_id=profile.id,
-        provider="google",
-        provider_subject=identity["subject"],
-        authenticated_at=authenticated_at,
-        expires_at=expires_at,
-    )
+        return _auth_failure(request, 503, "auth_storage_error", "로그인 정보를 저장하지 못했습니다. 다시 시도해 주세요.")
 
     # #3240: the B62 Google login above is already complete and unchanged. The
     # canonical B54 session is additive and best-effort — a B54 failure returns
@@ -376,12 +569,25 @@ async def google_callback(request: Request) -> Response:
             return android_handoff_terminal_page("failed")
         return android_handoff_confirm_page(query_state)
 
-    if not isinstance(session, str) or not session:
-        return JSONResponse(
-            {"error": {"code": "auth_storage_error", "message": "로그인 정보를 저장하지 못했습니다. 다시 시도해 주세요."}},
-            status_code=503,
+    if pending is not None:
+        # LoveTree's browser also gets no PADIEM session. What it gets is one ticket,
+        # and the only identity written is the one this callback just verified.
+        bound = await bind_lovetree_handoff(
+            request,
+            pending,
+            user_id=profile.id,
+            auth_provider="google",
+            provider_subject=identity["subject"],
         )
-    response = RedirectResponse("/", status_code=302)
+        if not bound:
+            return lovetree_handoff_not_ready()
+        return await return_to_lovetree(request, pending)
+
+    if not isinstance(session, str) or not session:
+        return _auth_failure(request, 503, "auth_storage_error", "로그인 정보를 저장하지 못했습니다. 다시 시도해 주세요.")
+    response = RedirectResponse(
+        verified_oauth_return_target(settings, cookie_state), status_code=302
+    )
     response.set_cookie(SESSION_COOKIE, session, **session_cookie_kwargs(settings))
     response.delete_cookie(OAUTH_STATE_COOKIE, path="/", secure=True, httponly=True, samesite="lax")
     return response
@@ -514,9 +720,26 @@ async def _identifier_failure_window(
     return window if isinstance(window, AuthAbuseWindow) else UNAVAILABLE_WINDOW
 
 
-def _session_response(settings: Settings, profile) -> JSONResponse:
-    session = create_session_token(settings, profile.id)
-    response = JSONResponse({"ok": True, "user": profile.public_dict()})
+def _display_name_fallback(login_identifier: str) -> str:
+    """The display name used when a registration supplies no name.
+
+    The login identifier is the email address, so its readable part is the
+    local part. This is a presentation default only; it never becomes an
+    account authority.
+    """
+    return login_identifier.partition("@")[0] or login_identifier
+
+
+def _session_response(
+    settings: Settings, profile, *, canonical_session_id: str | None = None, extra: dict | None = None
+) -> JSONResponse:
+    session = create_session_token(
+        settings, profile.id, canonical_session_id=canonical_session_id
+    )
+    payload = {"ok": True, "user": profile.public_dict()}
+    if extra:
+        payload.update(extra)
+    response = JSONResponse(payload)
     response.set_cookie(SESSION_COOKIE, session, **session_cookie_kwargs(settings))
     return response
 
@@ -529,19 +752,29 @@ async def password_register(request: Request) -> JSONResponse:
         return _auth_error(400, "invalid_request", "회원가입 정보를 확인해 주세요.")
 
     try:
-        username = normalize_username(data.get("username"))
-        email = normalize_email(data.get("email"))
-        display_name = normalize_display_name(data.get("name"), fallback=username)
-        password = validate_password(data.get("password"), username=username)
-        encoded = hash_password(password)
+        # #5424: the email address is the single login identifier. The
+        # credential keeps storing that identifier in its own subject column,
+        # so the canonical id derivation and the "password:" compatibility
+        # subject are unchanged. A client-supplied "username" is no longer
+        # part of the signup contract and is ignored on purpose.
+        login_identifier = normalize_login_identifier(data.get("email"))
+        display_name = normalize_display_name(
+            data.get("name"), fallback=_display_name_fallback(login_identifier)
+        )
+        password = validate_password(
+            data.get("password"), identifier=login_identifier
+        )
+        encoded = await hash_password_async(password)
     except PasswordAuthError as exc:
         return _auth_error(400, exc.code, exc.message)
 
     store: HistoryStore = request.app.state.history_store
     try:
+        # The credential subject and the account email are the one identifier
+        # now, so the stored username column holds the normalized email.
         profile = await store.register_password_user(
-            username,
-            email,
+            login_identifier,
+            login_identifier,
             display_name,
             encoded,
         )
@@ -549,7 +782,7 @@ async def password_register(request: Request) -> JSONResponse:
         return _auth_error(
             409,
             "account_exists",
-            "이미 사용 중인 아이디 또는 이메일입니다.",
+            "이미 사용 중인 이메일입니다.",
         )
     except Exception:
         return _auth_error(
@@ -562,21 +795,24 @@ async def password_register(request: Request) -> JSONResponse:
     authenticated_epoch = int(datetime.now(timezone.utc).timestamp())
     authenticated_at = datetime.fromtimestamp(authenticated_epoch, tz=timezone.utc)
     expires_at = authenticated_at + timedelta(seconds=settings.session_max_age_seconds)
-    await _write_identity_shadow_after_login(
-        request,
-        product_user_id=profile.id,
-        provider="password",
-        provider_subject=username,
-        authenticated_at=authenticated_at,
-        expires_at=expires_at,
-        ensure_personal_tenant=True,
-    )
+    try:
+        canonical_session_id = await _write_identity_shadow_after_login(
+            request,
+            product_user_id=profile.id,
+            provider="password",
+            provider_subject=login_identifier,
+            authenticated_at=authenticated_at,
+            expires_at=expires_at,
+            ensure_personal_tenant=True,
+        )
+    except Exception:
+        canonical_session_id = None
     # Preserve B62's recently merged canonical-session registration fix.
     try:
-        registered_credential = await store.find_password_credential(username)
+        registered_credential = await store.find_password_credential(login_identifier)
         if (isinstance(registered_credential, PasswordCredential)
                 and registered_credential.user.id == profile.id
-                and registered_credential.username == username):
+                and registered_credential.username == login_identifier):
             await establish_b54_canonical_session_after_login(
                 request, registered_credential,
             )
@@ -584,7 +820,9 @@ async def password_register(request: Request) -> JSONResponse:
         # B54 fails closed independently; do not roll back B62 signup.
         pass
     await deliver_after_signup(request, profile.id)
-    return _session_response(settings, profile)
+    return _session_response(
+        settings, profile, canonical_session_id=canonical_session_id
+    )
 
 
 async def password_login(request: Request) -> JSONResponse:
@@ -599,6 +837,9 @@ async def password_login(request: Request) -> JSONResponse:
     try:
         if not isinstance(identifier_raw, str):
             raise PasswordAuthError("invalid_credentials", "invalid")
+        # The email address is the login identifier (#5424). An account that
+        # was registered before the unification keeps signing in with the ID
+        # it was created with, so the legacy grammar is still accepted here.
         identifier = (
             normalize_email(identifier_raw)
             if "@" in identifier_raw
@@ -616,7 +857,7 @@ async def password_login(request: Request) -> JSONResponse:
         return _auth_error(503, "auth_storage_error", "로그인 정보를 확인하지 못했습니다.")
 
     # Always execute the verifier, including for a missing identifier.
-    password_ok = verify_password(password, credential.password_hash if credential else None)
+    password_ok = await verify_password_async(password, credential.password_hash if credential else None)
     now = datetime.now(timezone.utc)
 
     # #3501/#3508: lock state is server-owned and never disclosed. A
@@ -661,7 +902,7 @@ async def password_login(request: Request) -> JSONResponse:
         return _auth_error(
             401,
             "invalid_credentials",
-            "아이디 또는 비밀번호가 올바르지 않습니다.",
+            "이메일 또는 비밀번호가 올바르지 않습니다.",
         )
 
     try:
@@ -673,24 +914,353 @@ async def password_login(request: Request) -> JSONResponse:
     authenticated_epoch = int(now.timestamp())
     authenticated_at = datetime.fromtimestamp(authenticated_epoch, tz=timezone.utc)
     expires_at = authenticated_at + timedelta(seconds=settings.session_max_age_seconds)
-    await _write_identity_shadow_after_login(
-        request,
-        product_user_id=credential.user.id,
-        provider="password",
-        provider_subject=credential.username,
-        authenticated_at=authenticated_at,
-        expires_at=expires_at,
-        ensure_personal_tenant=True,
-    )
+    try:
+        canonical_session_id = await _write_identity_shadow_after_login(
+            request,
+            product_user_id=credential.user.id,
+            provider="password",
+            provider_subject=credential.username,
+            authenticated_at=authenticated_at,
+            expires_at=expires_at,
+            ensure_personal_tenant=True,
+        )
+    except Exception:
+        canonical_session_id = None
     # Establishing the session is the product outcome: it lands in the single
     # canonical Control Plane session store for the B54 product scope, where a
     # B54-scoped consumer resolves it. #2963 Step 3 is that consumer and remains a
     # separately authorized gate, so nothing here projects it to the browser.
     await establish_b54_canonical_session_after_login(request, credential)
-    return _session_response(settings, credential.user)
+    # LoveTree handoff, password leg. Reached only past the verified credential above, so a
+    # wrong password, a lock, or an unknown identifier can never bind or return a ticket.
+    handoff_return = await bind_after_verified_login(
+        request,
+        data.get("handoff"),
+        user_id=credential.user.id,
+        auth_provider="password",
+        provider_subject=credential.username,
+    )
+    return _session_response(
+        settings,
+        credential.user,
+        canonical_session_id=canonical_session_id,
+        extra={"handoff_return": handoff_return} if handoff_return else None,
+    )
 
 
-async def logout(request: Request) -> JSONResponse:
+async def _revoke_canonical_session(request: Request) -> str | None:
+    """Revoke the canonical session behind this cookie.
+
+    Returns ``None`` when the session is ended (or was already gone), or a
+    stable error code when the revocation could not be confirmed. #5225: the
+    signed cookie is a stateless bearer value, so the canonical session has to
+    be revoked server-side before a stored copy of the cookie stops working.
+
+    Shared by the logout and by the #5434 self-service password change, which
+    ends the session it changed the credential for.
+    """
+    settings: Settings = request.app.state.settings
+    claims = decode_session_claims(settings, request.cookies.get(SESSION_COOKIE))
+    canonical_session_id = claims.canonical_session_id if claims is not None else None
+    if not canonical_session_id:
+        return None
+    authority = getattr(request.app.state, "control_plane_identity_authority", None)
+    revoke = getattr(authority, "revoke_auth_session", None) if authority is not None else None
+    if not callable(revoke):
+        return "session_revocation_unavailable"
+    try:
+        await revoke(
+            product_id=PADIEM_CHAT_PRODUCT_ID,
+            session_id=canonical_session_id,
+        )
+    except Exception as exc:
+        if getattr(exc, "code", "") != "canonical_auth_session_not_found":
+            # The canonical session is still active, so the stored cookie
+            # would keep working.
+            return "session_revocation_failed"
+        # The canonical session is already gone, so the stored cookie can no
+        # longer authenticate anything. The outcome is already true.
+    return None
+
+
+async def password_change(request: Request) -> JSONResponse:
+    """Change the signed-in account's own password (#5434).
+
+    The account is resolved from the signed session only. A request body can
+    never name the account to change, so one signed-in account can never
+    change another account's password. The current password is verified
+    against the stored hash first, the new password is validated by the same
+    server policy the signup uses, and only the hash, the failure counter and
+    the lock of that one credential row move.
+
+    The session that changed the credential is ended afterwards, so the browser
+    proves the new password by signing in again and a stored copy of the old
+    session stops working.
+    """
+    if not password_auth_ready(request) or not auth_ready(request):
+        return _unavailable()
+    user_id = current_user_id(request)
+    if not user_id:
+        return _auth_error(401, "authentication_required", "로그인이 필요합니다.")
+    data = await _json_body(request)
+    if data is None or set(data) != {"current_password", "new_password"}:
+        return _auth_error(400, "invalid_request", "비밀번호 변경 정보를 확인해 주세요.")
+    current_password = data.get("current_password")
+    new_password = data.get("new_password")
+    if not isinstance(current_password, str) or not isinstance(new_password, str):
+        return _auth_error(400, "invalid_request", "비밀번호 변경 정보를 확인해 주세요.")
+
+    store: HistoryStore = request.app.state.history_store
+    try:
+        credential = await store.find_password_credential_by_user_id(user_id)
+    except Exception:
+        return _auth_error(503, "auth_storage_error", "계정 정보를 확인하지 못했습니다.")
+    if credential is None:
+        # A Google-only account has no password credential to change, and the
+        # existing Google login rule stays exactly as it was.
+        return _auth_error(
+            400,
+            "password_change_unavailable",
+            "이 계정은 Google 로그인 계정이라 비밀번호를 변경할 수 없습니다.",
+        )
+
+    if not await verify_password_async(current_password, credential.password_hash):
+        # The current password is the proof of ownership. A wrong one never
+        # reaches the hash and never changes any stored value.
+        return _auth_error(401, "invalid_credentials", "현재 비밀번호가 올바르지 않습니다.")
+
+    try:
+        validated = validate_password(new_password, identifier=credential.user.email)
+    except PasswordAuthError as exc:
+        return _auth_error(400, exc.code, exc.message)
+    # The new password is hashed once and stored once. The route deliberately
+    # runs no further key derivation: the Worker's CPU budget for one request
+    # fits the same two derivations the login path already runs, and a third
+    # one is what made this route exceed the limit in Production.
+    encoded = await hash_password_async(validated)
+
+    # End the session first: a session that cannot be ended leaves the
+    # credential untouched, so the user can simply try again.
+    failure = await _revoke_canonical_session(request)
+    if failure is not None:
+        return _auth_error(
+            503,
+            failure,
+            "세션을 종료하지 못했습니다. 다시 시도해 주세요.",
+        )
+    # #5441: end the sessions of this account on the other devices too. The
+    # reviewed single-session revocation above stays in force; this is the
+    # additional account-wide revocation, and it is best effort here so an
+    # identity authority that predates the capability keeps the route working.
+    await _revoke_all_canonical_sessions(request, user_id=user_id, strict=False)
+    try:
+        await store.update_password_credential(user_id, encoded)
+    except Exception:
+        return _auth_error(503, "auth_storage_error", "비밀번호를 저장하지 못했습니다.")
+
     response = JSONResponse({"ok": True})
     response.delete_cookie(SESSION_COOKIE, path="/", secure=True, httponly=True, samesite="lax")
     return response
+
+
+async def password_reset_request(request: Request) -> JSONResponse:
+    """Issue one lost-password reset link (#5441).
+
+    The member proves ownership of the account's email address with a
+    one-time link and then chooses the new password themselves. An email
+    address alone never changes a password: the stored hash moves only after
+    that link is redeemed.
+
+    The public answer never says whether the address belongs to an account, so
+    this unauthenticated route cannot be used to enumerate members. When the
+    deployment has no mail transport at all the request is refused honestly
+    with a retryable error instead of a fake "we sent it" answer.
+    """
+
+    if not password_auth_ready(request) or not auth_ready(request):
+        return _unavailable()
+    service = _password_reset_service(request)
+    if service is None or not service.ready:
+        return _auth_error(
+            503, RESET_UNAVAILABLE, "비밀번호 찾기를 현재 사용할 수 없습니다."
+        )
+    delivery = _password_reset_delivery(request)
+    if delivery is None:
+        return _auth_error(
+            503,
+            RESET_DELIVERY_UNAVAILABLE,
+            "비밀번호 찾기 메일을 현재 보낼 수 없습니다. 잠시 후 다시 시도해 주세요.",
+        )
+    data = await _json_body(request)
+    if data is None or set(data) != {"email"}:
+        return _auth_error(400, RESET_INVALID_REQUEST, "이메일 정보를 확인해 주세요.")
+    raw_email = data.get("email")
+    try:
+        identifier = normalize_email(raw_email)
+    except PasswordAuthError as exc:
+        return _auth_error(400, exc.code, exc.message)
+
+    try:
+        await service.check_request_allowed(identifier=identifier)
+    except PasswordResetError as exc:
+        # A throttled request is audited as rejected, so it never consumes the
+        # daily budget it was refused by.
+        await service.record_request(
+            identifier=identifier, user_id=None, reason_code=exc.code
+        )
+        return _auth_error(429, exc.code, exc.message)
+
+    store: HistoryStore = request.app.state.history_store
+    try:
+        credential = await store.find_password_credential(identifier)
+    except Exception:
+        return _auth_error(503, "auth_storage_error", "계정 정보를 확인하지 못했습니다.")
+
+    # Always run the verifier, including for an unknown identifier, so the
+    # answer time does not reveal whether the address owns an account.
+    await verify_password_async("", credential.password_hash if credential else None)
+
+    await service.record_request(
+        identifier=identifier,
+        user_id=credential.user.id if credential is not None else None,
+    )
+    if credential is None:
+        # No password credential owns this identifier: there is no password to
+        # reset and no mail is sent. The public answer stays the same one.
+        return JSONResponse({"ok": True}, status_code=202)
+
+    raw_token, _token = await service.issue(
+        identifier=identifier, user_id=credential.user.id
+    )
+    link = service.link_for(raw_token)
+    delivered = False
+    try:
+        from .password_reset_delivery import (
+            RESET_MAIL_SUBJECT,
+            build_reset_mail_text,
+        )
+
+        delivered = bool(
+            await delivery.send(
+                to=identifier,
+                subject=RESET_MAIL_SUBJECT,
+                text=build_reset_mail_text(link),
+            )
+        )
+    except Exception:
+        delivered = False
+    await service.record_delivery(
+        identifier=identifier, user_id=credential.user.id, delivered=delivered
+    )
+    # The answer is the same for a delivered and for a refused mail, so the
+    # route never reveals whether the address owns an account. The delivery
+    # outcome itself is recorded in the audit ledger.
+    return JSONResponse({"ok": True}, status_code=202)
+
+
+async def password_reset_confirm(request: Request) -> JSONResponse:
+    """Redeem one reset link and set the new password (#5441).
+
+    The token is single use and short lived. A second redemption of the same
+    token is refused, the outstanding tokens of that account die with the
+    successful redemption, and every canonical session of that account is
+    ended before the stored hash moves, so the old password and every old
+    session stop working together.
+    """
+
+    if not password_auth_ready(request) or not auth_ready(request):
+        return _unavailable()
+    service = _password_reset_service(request)
+    if service is None or not service.ready:
+        return _auth_error(
+            503, RESET_UNAVAILABLE, "비밀번호 찾기를 현재 사용할 수 없습니다."
+        )
+    data = await _json_body(request)
+    if data is None or set(data) != {"token", "new_password"}:
+        return _auth_error(400, RESET_INVALID_REQUEST, "비밀번호 정보를 확인해 주세요.")
+    raw_token = data.get("token")
+    new_password = data.get("new_password")
+    if not isinstance(raw_token, str) or not isinstance(new_password, str):
+        return _auth_error(400, RESET_INVALID_REQUEST, "비밀번호 정보를 확인해 주세요.")
+
+    peeked = await service.peek(raw_token)
+    if peeked is None:
+        return _auth_error(
+            400, RESET_TOKEN_INVALID, "재설정 링크가 올바르지 않습니다."
+        )
+
+    store: HistoryStore = request.app.state.history_store
+    try:
+        credential = await store.find_password_credential_by_user_id(peeked.user_id)
+    except Exception:
+        return _auth_error(503, "auth_storage_error", "계정 정보를 확인하지 못했습니다.")
+    if credential is None:
+        return _auth_error(
+            400, RESET_TOKEN_INVALID, "재설정 링크가 올바르지 않습니다."
+        )
+    try:
+        validated = validate_password(new_password, identifier=credential.user.email)
+    except PasswordAuthError as exc:
+        return _auth_error(400, exc.code, exc.message)
+    encoded = await hash_password_async(validated)
+
+    # End every session of this account first. A session that cannot be ended
+    # leaves the credential untouched, so the member can retry with the same
+    # link.
+    failure = await _revoke_all_canonical_sessions(
+        request, user_id=peeked.user_id, strict=True
+    )
+    if failure is not None:
+        return _auth_error(
+            503,
+            failure,
+            "세션을 종료하지 못했습니다. 다시 시도해 주세요.",
+        )
+
+    try:
+        user_id = await service.redeem(raw_token=raw_token)
+    except PasswordResetError as exc:
+        return _auth_error(400, exc.code, exc.message)
+    if user_id != peeked.user_id:
+        return _auth_error(
+            400, RESET_TOKEN_INVALID, "재설정 링크가 올바르지 않습니다."
+        )
+
+    try:
+        await store.update_password_credential(user_id, encoded)
+    except Exception:
+        return _auth_error(503, "auth_storage_error", "비밀번호를 저장하지 못했습니다.")
+
+    response = JSONResponse({"ok": True})
+    response.delete_cookie(SESSION_COOKIE, path="/", secure=True, httponly=True, samesite="lax")
+    return response
+
+
+async def logout(request: Request) -> JSONResponse:
+    """Revoke the canonical session behind this cookie, then clear the cookie.
+
+    #5225: deleting the browser cookie alone left the signed session token
+    usable on every protected Chat/Claw API until it expired. The canonical
+    Control Plane session is therefore revoked server-side first, so a stored
+    copy of the cookie is refused by the protected APIs immediately after a
+    successful logout.
+
+    Exactly one canonical session is revoked. A second device that signed in
+    normally owns a different canonical session and keeps it.
+
+    A revocation the canonical authority could not confirm is reported as a
+    failure and the cookie is kept: the session was not ended, so the logout
+    must not be reported as successful.
+    """
+
+    failure = await _revoke_canonical_session(request)
+    if failure is not None:
+        return _auth_error(
+            503,
+            failure,
+            "로그아웃을 완료하지 못했습니다. 다시 시도해 주세요.",
+        )
+    response = JSONResponse({"ok": True})
+    response.delete_cookie(SESSION_COOKIE, path="/", secure=True, httponly=True, samesite="lax")
+    return response
+

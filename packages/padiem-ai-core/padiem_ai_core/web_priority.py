@@ -27,7 +27,7 @@ class TinyFishDaumPriorityWebProvider:
         *,
         tinyfish_key: str,
         daum_key: str,
-        timeout_seconds: float = 15.0,
+        timeout_seconds: float = 30.0,
         daum_search_sort: str = "accuracy",
         transport: httpx.AsyncBaseTransport | None = None,
     ) -> None:

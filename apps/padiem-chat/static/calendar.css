@@ -78,7 +78,7 @@ html[data-theme="padiem-glass"] .sidebar {
 }
 
 .calendar-view-kicker {
-  margin: 0 0 2px;
+  margin: 0 0 4px;
   font-size: 11px;
   letter-spacing: 0.08em;
   opacity: 0.55;
@@ -618,12 +618,6 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="calendar"] .calendar
   -webkit-backdrop-filter: blur(28px) saturate(106%);
   overflow: visible;
 }
-html[data-theme="padiem-glass"] body .app-shell[data-state="calendar"] .calendar-view-title {
-  font-size: clamp(25px, 2.2vw, 32px);
-  font-weight: 740;
-  letter-spacing: -.035em;
-  color: #1a2731;
-}
 html[data-theme="padiem-glass"] body .app-shell[data-state="calendar"] .calendar-view-help {
   color: #52616e;
   opacity: 1;
@@ -698,6 +692,17 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="calendar"] .calendar
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));
   min-width: 495px;
+}
+@media (max-width: 480px) {
+  .calendar-visual-weekdays,
+  .calendar-month-grid,
+  .calendar-week-grid {
+    min-width: 0;
+    grid-template-columns: repeat(7, minmax(46px, 1fr));
+  }
+  .calendar-visual-weekday { padding: 10px 1px; font-size: 11px; }
+  .calendar-visual-date { font-size: 11px; }
+  .calendar-visual-event { padding: 2px 4px; font-size: 10px; }
 }
 .calendar-visual-weekdays {
   background: rgba(222,233,241,.56);
@@ -952,15 +957,25 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="calendar"] .calendar
 
 .app-shell[data-state="calendar"] .calendar-view-header > div:has(> .calendar-error) {
   display: flex;
+  flex-direction: row;
   flex-wrap: wrap;
-  align-items: center;
+  /* #5028: flex-start, not center. The error chip and the title have different
+     line boxes; centering the row nudged the title off the shared header row by
+     ~1.75px whenever the error slot wrapped. With flex-start the title position
+     depends only on the kicker above it, exactly like the no-error header. */
+  align-items: flex-start;
   column-gap: 8px;
-  row-gap: 2px;
+  /* The gap belongs to the error line, not to the eyebrow/title pair: a container
+     row-gap lands on top of the shared kicker margin and pushes the title 2px
+     below the row the other four views sit on. The direction is stated too, so the
+     shared column rule below cannot turn this row into a centred column. */
+  row-gap: 0;
 }
 .app-shell[data-state="calendar"] .calendar-view-header > div > .calendar-view-kicker {
   flex-basis: 100%;
 }
 .app-shell[data-state="calendar"] .calendar-view-header > div > .calendar-error {
+  margin-top: 2px;
   margin-left: 0;
   max-width: 240px;
 }

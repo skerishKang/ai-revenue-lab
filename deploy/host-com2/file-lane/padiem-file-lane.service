@@ -1,0 +1,32 @@
+[Unit]
+Description=PADIEM COM2 file lane
+Wants=network-online.target
+After=network-online.target
+RequiresMountsFor=/mnt/d/padiem/file-lane
+ConditionPathIsMountPoint=/mnt/d
+ConditionPathExists=/opt/padiem/file-lane/.env
+
+[Service]
+Type=simple
+User=padiem-file-lane
+Group=padiem-file-lane
+WorkingDirectory=/opt/padiem/file-lane
+EnvironmentFile=/opt/padiem/file-lane/.env
+Environment=FILE_LANE_ROOT=/mnt/d/padiem/file-lane
+Environment=FILE_LANE_HOST=127.0.0.1
+Environment=FILE_LANE_PORT=8788
+ExecCondition=/opt/padiem/file-lane/venv/bin/python /opt/padiem/file-lane/check_config.py
+ExecStart=/opt/padiem/file-lane/venv/bin/python -m padiem_file_lane
+Restart=always
+RestartSec=5
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/mnt/d/padiem/file-lane
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

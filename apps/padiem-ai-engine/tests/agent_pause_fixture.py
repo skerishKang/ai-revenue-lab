@@ -79,9 +79,14 @@ class DecisionVerifierStub:
 
 
 def _binding(
-    *, app_id: str = APP_ID, subject_id: str = SUBJECT_ID, pre_confirmed: bool = False
+    *,
+    app_id: str = APP_ID,
+    subject_id: str = SUBJECT_ID,
+    pre_confirmed: bool = False,
+    tool_call_recorder: ToolCallRecorder | None = None,
 ) -> EngineAgentSkillBinding:
     tool_runtime = ToolRuntime()
+    recorder = tool_call_recorder if tool_call_recorder is not None else ToolCallRecorder()
     spec = ToolSpec(
         id=RUNTIME_TOOL,
         title="Continuation write",
@@ -97,7 +102,7 @@ def _binding(
         },
         timeout_seconds=5,
     )
-    tool_runtime.register(spec, ToolCallRecorder())
+    tool_runtime.register(spec, recorder)
     registry = ToolRegistrySnapshot.from_entries(
         (RegisteredTool.from_spec(canonical_tool_id=CANONICAL_TOOL, runtime_spec=spec),)
     )
@@ -164,17 +169,29 @@ class PausedRunFixture:
         self.verifier = DecisionVerifierStub()
         self.runtime = NoProviderRuntime()
         self.pre_confirmed = False
-        self.binding = _binding(pre_confirmed=False)
+        # One recorder for the whole lifecycle, so a caller can prove the
+        # confirmation-gated write executed exactly once across a race.
+        self.tool_recorder = ToolCallRecorder()
+        self.binding = _binding(
+            pre_confirmed=False, tool_call_recorder=self.tool_recorder
+        )
         self.service = AgentSkillEngineService(
             runtime_factory=lambda _app_id: self.runtime,
             binding_resolver=lambda requested: _binding(
-                pre_confirmed=self.pre_confirmed
+                pre_confirmed=self.pre_confirmed,
+                tool_call_recorder=self.tool_recorder,
             )
             if requested == APP_ID
             else None,
             approval_decision_verifier=self.verifier,
             continuation_store=self.store,
         )
+
+    @property
+    def tool_calls(self) -> int:
+        """How many times the confirmation-gated write actually executed."""
+
+        return self.tool_recorder.calls
 
     # -- request builders -------------------------------------------------
 

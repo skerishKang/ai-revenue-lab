@@ -1,21 +1,14 @@
 """Router Core for Business 14 Alpha.
 
-Implements Manual and Automatic (b14/auto) routing with deterministic
-model selection, fallback logic, and no-safe-route handling.
+Implements manual routing with deterministic model selection, fallback
+logic, and no-safe-route handling.
 
 Manual:
   - Specific catalog model ID → single upstream call
   - No provider switching unless explicit
-
-Automatic (D14, #2044):
-  - model = "b14/auto"
-  - Resolves through the owner-designated fixed chain in
-    app.pilot.routing_policy (ROUTING_POLICY_ID = "fixed_chain_v1").
-    No scorer is consulted; task_type / required_capabilities /
-    optimize_for / provider_order / allow_paid are accepted but ignored
-    (recorded as ignored_options in reason_codes).
-  - allow_external_fallback=False → one attempt; max_attempts bounds the
-    chain walk (capped at the chain length).
+  - The owner-selected free-tier primary with a trusted product grade
+    receives exactly one preselected grade fallback (tier_fallback);
+    no other route offers catalog substitutions (#2085 no-auto policy).
   - Fallback on: timeout, transport failure, HTTP 429, HTTP 5xx
   - No fallback on: HTTP 400/401/403/404/409/422/any other 4xx,
     malformed request, malformed upstream response, missing key,
@@ -36,14 +29,15 @@ from app.pilot.catalog import (
     get_catalog_models,
 )
 from app.pilot.b14_runtime_config import runtime_config
-from app.pilot.owner_model_exclusions import excluded_from_owner_customer_selection
+from app.pilot.owner_model_exclusions import (
+    excluded_from_owner_customer_selection,
+    free_candidate_excluded_from_execution,
+)
 from app.pilot.errors import NoSafeRoute, RoutingError
 
 
 class RouteMode(str, enum.Enum):
     MANUAL = "manual"
-    AUTO = "auto"
-    AUTO_FALLBACK = "auto_fallback"
 
 
 class EvidenceStatus(str, enum.Enum):
@@ -109,7 +103,11 @@ class RouteDecision:
     evidence_status: str
     request_id: str
     provider_mode: str
-    max_attempts: int
+    # There is no attempt limit here. The number of candidates one dispatch
+    # may try is the number of candidates the declared product grade allows:
+    # the selected model plus ``eligible_fallback``. B14 walks that list in
+    # order, advances only on a recoverable provider error, visits each
+    # candidate once, and stops when the list is exhausted (#4317).
     credential_source: str = ""  # platform_secret (OpenRouter retired, D14 #2044)
     platform_provider_id: str = ""
 
@@ -158,7 +156,6 @@ def _platform_secret_present(cm) -> bool:
 
 def resolve_manual_route(
     model_id: str,
-    allow_external_fallback: bool = False,
     product_tier: str = "free",
 ) -> RouteDecision:
     """Resolve a manual route for a specific model ID.
@@ -169,7 +166,11 @@ def resolve_manual_route(
     Manual routes default to no arbitrary catalog substitutions. An owner-
     selected primary with trusted product grade instead receives
     exactly one preselected grade fallback on recoverable provider failure.
-    The generic allow_external_fallback flag does not disable this fixed pair.
+
+    The number of candidates this route may try is the number of candidates
+    it allows: the selected model plus its eligible fallback list. No separate
+    attempt count narrows that list, so a grade with more allowed candidates
+    is tried in full without any numeric ceiling to maintain (#4317).
     """
     request_id = _new_request_id()
     # Owner exclusions override historical B14 registration in live mode.
@@ -178,6 +179,15 @@ def resolve_manual_route(
         raise NoSafeRoute(
             reason_code="owner_model_excluded",
             message="OWNER가 제외한 모델은 실행할 수 없습니다.",
+            upstream_called=False,
+        )
+    # #2505 (owner decision 2026-10-21): an excluded free candidate is never
+    # an execution candidate, so a customer that sends the exact id, or a
+    # resolver that answers with it, gets no route at all.
+    if free_candidate_excluded_from_execution(model_id):
+        raise NoSafeRoute(
+            reason_code="free_candidate_excluded",
+            message="제외된 무료 모델은 실행할 수 없습니다.",
             upstream_called=False,
         )
     cm = get_catalog_by_id(model_id)
@@ -197,14 +207,7 @@ def resolve_manual_route(
         )
 
     # Free-only TokenHarbor routes may never fall back to another provider's
-    # paid model, even when a client requests external fallback.
-    if cm.platform_provider_id == "tokenharbor" and allow_external_fallback:
-        raise NoSafeRoute(
-            reason_code="tokenharbor_free_only_fallback_disabled",
-            message="TokenHarbor free-only routes do not allow external fallback.",
-            upstream_called=False,
-        )
-
+    # paid model; external fallback is not offered to any manual route.
     cred_ok, cred_status, cred_source, plat_pid = _credential_status_for(cm)
 
     # Platform-owned secret missing -> fail closed with zero upstream calls.
@@ -231,7 +234,7 @@ def resolve_manual_route(
             raise NoSafeRoute(reason_code="invalid_product_tier", message="Unsupported product tier.", upstream_called=False)
         for candidate_id in TIER_FALLBACK_B14_MODELS[product_tier]:
             target = get_catalog_by_id(candidate_id)
-            if target is not None and target.enabled and not excluded_from_owner_customer_selection(target.model_id) and _platform_secret_present(target):
+            if target is not None and target.enabled and not excluded_from_owner_customer_selection(target.model_id) and not free_candidate_excluded_from_execution(target.model_id) and _platform_secret_present(target):
                 fallback_candidates.append({
                     "model_id": target.model_id,
                     "upstream_model": target.upstream_model,
@@ -240,28 +243,10 @@ def resolve_manual_route(
                     "route_id": f"platform:{target.model_id}",
                     "reason": "owner_selected_tier_fallback",
                 })
-    elif allow_external_fallback:
-        all_models = get_catalog_models()
-        fallback_candidates = [
-            {
-                "model_id": m.model_id,
-                "upstream_model": m.upstream_model,
-                "provider": m.provider,
-                "route_id": f"platform:{m.model_id}",
-                "platform_provider_id": m.platform_provider_id,
-                "reason": "catalog_alternative",
-            }
-            for m in all_models
-            if m.model_id != model_id
-            and not excluded_from_owner_customer_selection(m.model_id)
-            and m.model_id != "experiential/qwen3.8-flash-next-uncensored"
-        ][:3]  # limit to top 3 fallback candidates
 
     reason_codes = ["manual_selection"]
     if owner_tier_pair:
         reason_codes.append("owner_selected_tier_fallback:" + product_tier)
-    elif not allow_external_fallback:
-        reason_codes.append("external_fallback_disabled")
 
     return RouteDecision(
         route_mode=RouteMode.MANUAL.value,
@@ -270,7 +255,7 @@ def resolve_manual_route(
         selected_upstream_model=cm.upstream_model,
         selected_route_id=route_id,
         reason_codes=reason_codes,
-        fallback_allowed=bool(fallback_candidates) if owner_tier_pair else allow_external_fallback,
+        fallback_allowed=bool(fallback_candidates),
         eligible_fallback=fallback_candidates,
         excluded_candidates=[],
         credential_available=cred_ok,
@@ -278,7 +263,6 @@ def resolve_manual_route(
         evidence_status=EvidenceStatus.RESOLVED_NOT_CALLED.value,
         request_id=request_id,
         provider_mode=runtime_config.provider_mode,
-        max_attempts=(1 + len(fallback_candidates)) if owner_tier_pair else (1 if not allow_external_fallback else min(1 + len(fallback_candidates), 3)),
         credential_source=cred_source,
         platform_provider_id=plat_pid,
     )
@@ -287,52 +271,37 @@ def resolve_manual_route(
 
 
 def resolve_route(model_id: str, business14_options: dict[str, Any] | None = None) -> RouteDecision:
-    """Resolve any route (manual or auto) without making upstream calls.
+    """Resolve a manual route without making upstream calls.
 
-    - If model_id == "b14/auto": use the owner-designated fixed chain
-      (app.pilot.routing_policy, D14 #2044)
-    - Otherwise: use manual routing with the specific model_id
+    The retired ``b14/auto`` id never reaches this module: request validation
+    rejects it as a string. Every resolved route is manual.
 
     Returns RouteDecision. Raises NoSafeRoute if routing fails.
     """
     opts = business14_options or {}
 
-    if model_id.strip() == "b14/auto":
-        # D14 (#2044): owner-designated fixed chain, no scorer. Imported
-        # lazily because routing_policy depends on this module's types.
-        from app.pilot.routing_policy import resolve_chain_route
-
-        allow_external_fallback = opts.get("allow_external_fallback", True)
-        return resolve_chain_route(
-            allow_external_fallback=allow_external_fallback,
-            max_attempts=opts.get("max_attempts"),
-            requested_options=opts,
-        )
-
-    allow_external_fallback = opts.get("allow_external_fallback", False)
     return resolve_manual_route(
         model_id,
-        allow_external_fallback=allow_external_fallback,
         product_tier=opts.get("product_tier", "free"),
     )
 
 
 # Fallback-allowable error codes:
-# transport failure, timeout, HTTP 429, HTTP 5xx ONLY.
+# transport failure, timeout, HTTP 429/5xx and unreadable provider responses.
 _FALLBACK_ALLOWED_CODES = frozenset({
     "upstream_timeout",
+    "malformed_upstream_response",
     "upstream_server_error",
     "upstream_rate_limited",
 })
 
 # Fallback-prohibited error codes:
 # HTTP 400/401/403/404/409/422/any other 4xx, malformed request,
-# malformed upstream response, oversize response, missing key,
+# oversize response, missing key,
 # unsupported feature, internal errors.
 _FALLBACK_PROHIBITED_CODES = frozenset({
     "upstream_auth_failed",
     "upstream_client_error",
-    "malformed_upstream_response",
     "upstream_response_too_large",
     "missing_provider_key",
     "placeholder_key_rejected",
@@ -347,11 +316,15 @@ _FALLBACK_PROHIBITED_CODES = frozenset({
 })
 
 
-def is_error_fallback_allowed(code: str) -> bool:
+def is_error_fallback_allowed(code: str, *, reason: str | None = None) -> bool:
     """Return True if an error code permits fallback to another candidate.
 
     Anything not explicitly allowed is prohibited (fail closed).
     """
+    # HTTP 400 has a legacy malformed code. Preserve its no-fallback rule
+    # without changing the external error/attempt schema for rejected input.
+    if reason in {"upstream_http_400", "unexpected_http_status"}:
+        return False
     if code in _FALLBACK_ALLOWED_CODES:
         return True
     return False

@@ -105,7 +105,6 @@ import re
 from dataclasses import dataclass, field
 
 from .document_normalization import (
-    MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES,
     HwpxPackageMember,
     extract_hwpx_text,
     hwpx_section_index,
@@ -139,11 +138,13 @@ HWPX_MANIFEST_MEMBER = "Contents/content.hpf"
 #: The member-name prefix embedded binary data lives under.
 HWPX_BIN_DATA_PREFIX = "BinData/"
 
-#: Largest canonical PNG this authority will embed. Derived from the archive
-#: gate's own per-entry uncompressed bound: an image larger than this could not
-#: be admitted back through the same gate, so embedding it would only produce a
-#: package this Core would then refuse.
-MAX_HWPX_IMAGE_BYTES = MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES
+#: Largest canonical PNG this authority will embed — an owner-decided image cap
+#: (#5872, 2026-10-26). It used to ride the archive gate's per-entry uncompressed
+#: bound because an image larger than that could not be admitted back through the
+#: same gate. That bound is now a 32MiB memory allocation for a single inflated
+#: part, so riding it would have turned a 10MiB photo policy into 320MiB. The two
+#: numbers answer different questions and are kept apart deliberately.
+MAX_HWPX_IMAGE_BYTES = 10 * 1024 * 1024
 
 #: HWPUNIT per pixel used when the caller supplies no draw extent. 96 DPI is the
 #: screen resolution the reference implementation's 14400-HWPUNIT default width

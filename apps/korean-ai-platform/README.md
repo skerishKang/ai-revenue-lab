@@ -127,6 +127,29 @@ python3 -m uvicorn app.main:app --host 127.0.0.1 --port 8000
 
 `app.main` loads working-directory `.env` before creating the application; the documented owner-startup contract intentionally does not use `--env-file .env`.
 
+### Running without Cloudflare Workers (the COM2 adapter)
+
+`asgi.py` is the second entrypoint for a host that has no Worker platform: the
+same application plus `app/local_runtime.py`, which supplies the three things
+Workers used to provide — the call ledger as a SQLite file behind the existing
+`prepare().bind().run()/.first()/.all()` surface, named credentials from the
+process environment or one private file per binding name under
+`B14_SECRET_DIR`, and the per-request binding scope, response policy and product
+entrypoint redirect that `worker.fetch` applies.
+
+```bash
+cd apps/korean-ai-platform
+python3 -m uvicorn asgi:app --host 127.0.0.1 --port 8789
+```
+
+`worker.py` stays the Cloudflare entrypoint and the production binding
+authority; provider credential isolation, the service-proof check, the ledger
+contract and the fail-open storage posture are read through the existing modules
+unchanged. `b14.env.example` lists binding names only — no value belongs in it.
+
+The suite can drive either application: `B14_TEST_RUNTIME=local` builds the
+fixture app through the adapter.
+
 Useful local surfaces may include the workspace and pilot APIs exposed by the current application. Always verify endpoint availability against current source/tests rather than historical phase docs.
 
 ## Generation-budget semantics

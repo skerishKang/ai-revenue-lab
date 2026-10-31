@@ -32,7 +32,10 @@ MAX_ISSUE_DATE_CHARS = 40
 MAX_SKILL_ID_CHARS = 64
 MAX_WORKSPACE_ID_CHARS = 160
 MAX_USER_ID_CHARS = 80
-MAX_SNAPSHOT_JSON_BYTES = 128 * 1024
+# #4379: a stored quote snapshot carries no PADIEM byte or item total.
+# These symbols are retained for import compatibility and are no longer
+# enforced.
+MAX_SNAPSHOT_JSON_BYTES = 1024 * 1024
 MAX_SENDER_JSON_BYTES = 16 * 1024
 MAX_ITEMS = 200
 
@@ -150,8 +153,7 @@ def _normalize_items(items: object) -> list[dict[str, Any]]:
         return []
     if not isinstance(items, list):
         raise QuoteHistoryStoreError("snapshot.items is invalid")
-    if len(items) > MAX_ITEMS:
-        raise QuoteHistoryStoreError("snapshot.items is too large")
+    # #4379: the item list carries no PADIEM item-count total.
     normalized: list[dict[str, Any]] = []
     for index, item in enumerate(items):
         if not isinstance(item, dict):
@@ -213,10 +215,8 @@ def normalize_quote_draft_snapshot(payload: object) -> NormalizedQuoteDraftSnaps
             sender_size = len(sender_json.encode("utf-8"))
     except (TypeError, ValueError, UnicodeError, RecursionError) as exc:
         raise QuoteHistoryStoreError("snapshot is not valid JSON for storage") from exc
-    if snapshot_size > MAX_SNAPSHOT_JSON_BYTES:
-        raise QuoteHistoryStoreError("snapshot is too large")
-    if sender_size > MAX_SENDER_JSON_BYTES:
-        raise QuoteHistoryStoreError("snapshot.sender is too large")
+    # #4379: the stored snapshot carries no PADIEM byte total. A large
+    # quote record is stored and read back in full.
 
     saved_skill_id = _clean_optional_text(stripped.get("savedSkillId"),
                                           label="saved_skill_id", limit=MAX_SKILL_ID_CHARS)
@@ -277,18 +277,18 @@ def _rows_from_result(result: Any) -> list[dict[str, Any]]:
     return output
 
 
-def _read_stored_json_object(raw: object, *, max_bytes: int) -> dict[str, Any]:
+def _read_stored_json_object(raw: object, *, max_bytes: int | None) -> dict[str, Any]:
     """Refuse an invalid/hostile legacy row before Starlette builds the response.
 
     Never return NaN/Infinity, a lone UTF-16 surrogate, a non-object snapshot,
     or a malformed/oversized historical JSON blob. These failures must become
     the route's existing bounded 503, not an unhandled Worker HTTP 500.
     """
-    if not isinstance(raw, str) or len(raw) > max_bytes:
+    # #4379: the stored JSON carries no PADIEM byte total. The JSON object
+    # shape, the NaN/Infinity rule and the surrogate rule stay.
+    if not isinstance(raw, str):
         raise QuoteHistoryStoreError("stored quote JSON is invalid")
     try:
-        if len(raw.encode("utf-8")) > max_bytes:
-            raise QuoteHistoryStoreError("stored quote JSON exceeds limit")
         value = json.loads(raw)
         if not isinstance(value, dict):
             raise QuoteHistoryStoreError("stored quote JSON must be an object")

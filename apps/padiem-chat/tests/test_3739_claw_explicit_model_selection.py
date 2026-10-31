@@ -193,8 +193,10 @@ def test_claw_browser_keeps_explicit_id_in_submit_snapshot_only():
     assert 'data.get("model_id")' in GENERAL
     assert "selected_model_id" in GENERAL
     # A Claw request with an attachment must not silently switch to direct B14.
-    assert "if (clawGeneralRequest && attachments)" in FRONT
-    assert "throw new Error" in FRONT
+    # #2505: the attachment now travels on the Claw lane itself, so the guard is
+    # the product check on the completed-attachment path, not a refusal.
+    assert "if (attachments && !clawGeneralRequest)" in FRONT
+    assert "if (clawGeneralRequest && attachments)" not in FRONT
 
 class _B14ReadyChoices:
     def __init__(self, choices=None, error=False):

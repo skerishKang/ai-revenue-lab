@@ -13,8 +13,9 @@ from starlette.responses import StreamingResponse
 from padiem_ai_core.b14_execution import B14RouteMetadata
 from padiem_ai_core.b14_streaming import B14StreamEvent
 
+import app.chat_pc_drive as chat_pc_drive
 from app.auth import SESSION_COOKIE, create_session_token
-from app.b14_client import ChatRuntimeError
+from app.b14_client import ChatRuntimeError, ChatStreamEvent, ChatToolCall
 from app.config import Settings
 from app.history import ProjectProfile
 from app.main import api_chat_stream, create_app
@@ -31,7 +32,6 @@ USER_ID = "usr_" + "4" * 32
 def _payload(**extra):
     value = {
         "messages": [{"role": "user", "content": "스트리밍으로 답해 주세요"}],
-        "mode": "auto",
     }
     value.update(extra)
     return value
@@ -106,6 +106,43 @@ class BlockingClient:
             await asyncio.Event().wait()
         finally:
             self.closed = True
+
+
+class ToolScriptedClient:
+    """Records the exact keyword shape the route sent to the B14 client."""
+
+    def __init__(self, script):
+        self.script = list(script)
+        self.calls: list[dict] = []
+
+    async def stream_text_auto(self, messages, **kwargs):
+        self.calls.append(
+            {"messages": [dict(item) for item in messages], **kwargs}
+        )
+        for item in self.script:
+            if isinstance(item, BaseException):
+                raise item
+            yield item
+
+
+class FakeCatalog:
+    def __init__(self, rows):
+        self.rows = list(rows)
+
+    async def list_registered_models(self):
+        return list(self.rows)
+
+
+FREE_B14_MODEL_ID = "google/gemini-3.1-flash-lite"
+
+
+def _catalog_row(*capabilities: str):
+    return {
+        "model_id": FREE_B14_MODEL_ID,
+        "capabilities": list(capabilities),
+        "b14_enabled": True,
+        "owner_excluded": False,
+    }
 
 
 class MemoryHistoryStore:
@@ -436,6 +473,465 @@ def test_conversation_project_mismatch_is_rejected_before_model_dispatch():
     assert response.status_code == 404
     assert response.json()["error"]["code"] == "conversation_not_found"
     assert client.calls == []
+
+
+def _tool_lane_app(client, *, rows, monkeypatch, pc_verified: bool):
+    settings = _google_settings()
+    app = _app_with_client(
+        client, settings=settings, history_store=MemoryHistoryStore(),
+    )
+    app.state.b14_catalog_source = FakeCatalog(rows)
+
+    async def _available(request, *, uid):
+        return pc_verified
+
+    monkeypatch.setattr(chat_pc_drive, "chat_pc_tools_available", _available)
+    return app, settings
+
+
+def test_verified_pc_on_a_tools_route_declares_the_closed_pc_tool_set(monkeypatch):
+    client = ToolScriptedClient([_event("보통 답변"), _event(done=True)])
+    app, settings = _tool_lane_app(
+        client,
+        rows=[_catalog_row("chat", "tools")],
+        monkeypatch=monkeypatch,
+        pc_verified=True,
+    )
+
+    async def _no_lane(*args, **kwargs):
+        pytest.fail("an ordinary answer must not enter the PC lane")
+
+    monkeypatch.setattr(chat_pc_drive, "execute_chat_pc_drive_lane", _no_lane)
+    response = asyncio.run(_post(app, _payload(), settings=settings, signed_in=True))
+
+    assert response.status_code == 200
+    assert '"delta":"보통 답변"' in response.text
+    assert len(client.calls) == 1
+    sent = client.calls[0]
+    assert [tool.name for tool in sent["tools"]] == [
+        "query_drives", "files_list", "files",
+    ]
+    assert sent["tool_choice"] == "auto"
+
+
+def test_route_without_tools_capability_keeps_the_pre_slice_request(monkeypatch):
+    client = ToolScriptedClient([_event("답변"), _event(done=True)])
+    app, settings = _tool_lane_app(
+        client,
+        rows=[_catalog_row("chat")],
+        monkeypatch=monkeypatch,
+        pc_verified=True,
+    )
+    response = asyncio.run(_post(app, _payload(), settings=settings, signed_in=True))
+
+    assert response.status_code == 200
+    assert "tools" not in client.calls[0]
+    assert "tool_choice" not in client.calls[0]
+
+
+def test_unverified_pc_withholds_the_tool_definitions(monkeypatch):
+    client = ToolScriptedClient([_event("답변"), _event(done=True)])
+    app, settings = _tool_lane_app(
+        client,
+        rows=[_catalog_row("chat", "tools")],
+        monkeypatch=monkeypatch,
+        pc_verified=False,
+    )
+    response = asyncio.run(_post(app, _payload(), settings=settings, signed_in=True))
+
+    assert response.status_code == 200
+    assert "tools" not in client.calls[0]
+    assert "tool_choice" not in client.calls[0]
+
+
+def test_model_tool_call_hands_the_turn_to_the_pc_lane(monkeypatch):
+    client = ToolScriptedClient([
+        ChatStreamEvent(
+            tool_call=ChatToolCall(
+                id="call_1", name="files_list", arguments={},
+            ),
+        ),
+        _event(done=True),
+    ])
+    app, settings = _tool_lane_app(
+        client,
+        rows=[_catalog_row("chat", "tools")],
+        monkeypatch=monkeypatch,
+        pc_verified=True,
+    )
+    recorded: dict = {}
+
+    async def _lane(request, **kwargs):
+        recorded.update(kwargs)
+        return ("내 PC의 폴더 목록입니다", CHAT_ID)
+
+    monkeypatch.setattr(chat_pc_drive, "execute_chat_pc_drive_lane", _lane)
+    response = asyncio.run(_post(app, _payload(), settings=settings, signed_in=True))
+
+    assert response.status_code == 200
+    assert 'data: {"delta":"내 PC의 폴더 목록입니다"}' in response.text
+    assert '"conversation_id":"' + CHAT_ID + '"' in response.text
+    assert recorded["selected_tool"] == "files_list"
+    assert recorded["declared_plan"] == chat_pc_drive.chat_pc_plan_for_tool(
+        "files_list"
+    )
+    assert [
+        step["step_id"] for step in recorded["declared_plan"]["steps"]
+    ] == ["list_files"]
+    assert all(
+        step["tool_id"] != "claw.pc.read_file"
+        for step in recorded["declared_plan"]["steps"]
+    )
+    assert "도구 앞의 텍스트" not in response.text
+
+
+@pytest.mark.parametrize(
+    ("row", "expected"),
+    [
+        (_catalog_row("chat", "tools"), True),
+        (_catalog_row("chat"), False),
+        ({**_catalog_row("chat", "tools"), "b14_enabled": False}, False),
+        ({**_catalog_row("chat", "tools"), "owner_excluded": True}, False),
+        ({**_catalog_row("chat", "tools"), "model_id": "other/model"}, False),
+    ],
+)
+def test_route_tools_capability_is_catalog_authoritative(row, expected):
+    from app.chat_pc_drive import chat_pc_route_declares_tools
+
+    async def scenario():
+        app = SimpleNamespace(
+            state=SimpleNamespace(b14_catalog_source=FakeCatalog([row])),
+        )
+        request = SimpleNamespace(app=app)
+        return await chat_pc_route_declares_tools(request, FREE_B14_MODEL_ID)
+
+    assert asyncio.run(scenario()) is expected
+
+
+class _RegistryTransport:
+    """The real B14 ``/api/pilot/models`` answer: an object, never a list.
+
+    The B66 registry view parses the raw bytes itself; the guard's catalog
+    source consumes an already-decoded body. Both read the same payload here.
+    """
+
+    def __init__(self, payload):
+        self.payload = payload
+        self.calls = []
+
+    async def get_json(self, path):
+        self.calls.append(path)
+        return 200, json.dumps(self.payload, ensure_ascii=False).encode("utf-8")
+
+    async def decoded_json(self, path):
+        self.calls.append(path)
+        return 200, self.payload
+
+
+def _real_registry_payload(model_id, capabilities, *, enabled=True):
+    provider, _, tail = model_id.partition("/")
+    route = {
+        "id": model_id,
+        "provider_id": provider,
+        "owner_excluded": False,
+        "capabilities": list(capabilities),
+    }
+    catalog_row = {"id": model_id, "provider_id": provider, "name": tail}
+    return {
+        "models": [],
+        "configured": True,
+        "mode": "multi-provider",
+        "catalog": [catalog_row] if enabled else [],
+        "registered_routes": [route],
+        "model_groups": {},
+    }
+
+
+def _registry_request(**state_fields):
+    from app.chat_pc_drive import chat_pc_route_declares_tools
+
+    state = SimpleNamespace(**state_fields)
+    request = SimpleNamespace(app=SimpleNamespace(state=state))
+    return request, chat_pc_route_declares_tools
+
+
+def test_the_tools_capability_is_read_from_the_real_b14_registry_view():
+    """The live B14 registry is an object, so the normalized view decides.
+
+    Production withheld the PC tools from a PC-capable account: the raw catalog
+    source only accepts a JSON list, so in front of the real payload it sees no
+    rows and the ``tools`` declaration could never reach the request. The read
+    now goes through ``b14_model_choice_resolver``, the existing
+    owner-allowed/live-ready B14 view Claw and B66 already consume.
+    """
+    from app.b66_b14_free_first_resolver import B66ExplicitQuoteModelResolver
+    from app.final_dispatch_guard_wiring import SimpleB14CatalogSource
+
+    payload = _real_registry_payload(FREE_B14_MODEL_ID, ["chat", "coding", "tools"])
+    transport = _RegistryTransport(payload)
+    raw_source = SimpleB14CatalogSource(transport.decoded_json)
+    request, reader = _registry_request(
+        b14_catalog_source=raw_source,
+        b14_model_choice_resolver=B66ExplicitQuoteModelResolver(transport),
+    )
+    assert asyncio.run(reader(request, FREE_B14_MODEL_ID)) is True
+
+    # The same payload proves nothing through the raw source alone: an unknown
+    # capability stays withheld instead of a guess exposing the tools.
+    request, reader = _registry_request(
+        b14_catalog_source=raw_source, b14_model_choice_resolver=None,
+    )
+    assert asyncio.run(reader(request, FREE_B14_MODEL_ID)) is False
+
+    def view(capabilities, *, enabled=True):
+        resolver = B66ExplicitQuoteModelResolver(_RegistryTransport(
+            _real_registry_payload(FREE_B14_MODEL_ID, capabilities, enabled=enabled),
+        ))
+        request, reader = _registry_request(
+            b14_catalog_source=None, b14_model_choice_resolver=resolver,
+        )
+        return asyncio.run(reader(request, FREE_B14_MODEL_ID))
+
+    assert view(["chat"]) is False
+    assert view(["chat", "tools"], enabled=False) is False
+    assert asyncio.run(raw_source.list_registered_models()) == []
+
+
+def test_gemini_35_registry_declaration_exposes_pc_tools_but_gemma_does_not():
+    from pathlib import Path
+    from app.b66_b14_free_first_resolver import B66ExplicitQuoteModelResolver
+
+    registry_path = (
+        Path(__file__).resolve().parents[3]
+        / "apps/korean-ai-platform/app/pilot/b14_models.json"
+    )
+    models = {row["id"]: row for row in json.loads(registry_path.read_text())["models"]}
+    for model_id, expected in (
+        ("google/gemini-3.5-flash-lite", True),
+        ("google/gemma-4-31b-it", False),
+    ):
+        row = models[model_id]
+        resolver = B66ExplicitQuoteModelResolver(_RegistryTransport(
+            _real_registry_payload(model_id, row["capabilities"], enabled=row["enabled"]),
+        ))
+        request, reader = _registry_request(
+            b14_catalog_source=None, b14_model_choice_resolver=resolver,
+        )
+        assert asyncio.run(reader(request, model_id)) is expected
+
+
+def test_raw_catalog_source_sees_no_rows_in_the_real_b14_payload():
+    """Why the normalized view is required: the object payload is not a list."""
+    from app.final_dispatch_guard_wiring import SimpleB14CatalogSource
+
+    transport = _RegistryTransport(
+        _real_registry_payload(FREE_B14_MODEL_ID, ["tools"]),
+    )
+    source = SimpleB14CatalogSource(transport.decoded_json)
+    assert asyncio.run(source.list_registered_models()) == []
+
+
+
+PC_RUN = "chat_pcq_" + "e" * 32
+
+
+class _ScopeStore:
+    """The one reader the pinned PC scope notice comes back through."""
+
+    def __init__(self, notice):
+        self.notice = notice
+        self.calls = []
+
+    async def get_pc_run_scope_notice(self, *, user_id, run_id):
+        self.calls.append({"user_id": user_id, "run_id": run_id})
+        return self.notice
+
+
+def test_model_tool_turn_keeps_the_browser_run_handle_and_its_scope(monkeypatch):
+    """#5573/#5735/#5567: the tool turn is the run the browser already waits on.
+
+    The handle the browser generated before submit must become the staged run
+    id, or a dropped connection recovers a run that never existed, and the
+    scope pinned before dispatch has to reach the completion frame as its own
+    field so "목록만 조회합니다" is shown without editing the answer.
+    """
+    from app.history import PC_SCOPE_NOTICE_LABELS
+
+    notice = PC_SCOPE_NOTICE_LABELS["files_list"]
+    client = ToolScriptedClient([
+        ChatStreamEvent(tool_call=ChatToolCall(
+            id="call_1", name="files_list", arguments={"path": "보고서"},
+        )),
+        _event(done=True),
+    ])
+    app, settings = _tool_lane_app(
+        client,
+        rows=[_catalog_row("chat", "tools")],
+        monkeypatch=monkeypatch,
+        pc_verified=True,
+    )
+    store = _ScopeStore(notice)
+    app.state.history_store = store
+    recorded: dict = {}
+
+    async def _lane(request, **kwargs):
+        recorded.update(kwargs)
+        return ("폴더에 3개 항목이 있습니다", CHAT_ID)
+
+    monkeypatch.setattr(chat_pc_drive, "execute_chat_pc_drive_lane", _lane)
+    response = asyncio.run(_post(
+        app, _payload(pc_run_id=PC_RUN), settings=settings, signed_in=True,
+    ))
+
+    assert response.status_code == 200
+    assert recorded["run_id"] == PC_RUN
+    assert recorded["selected_tool"] == "files_list"
+    assert store.calls == [{"user_id": USER_ID, "run_id": PC_RUN}]
+    assert '"scope_notice":"' + notice + '"' in response.text
+    # The notice is display metadata on the completion frame. The answer text
+    # is the PC result alone and never carries the notice inside it.
+    assert '"delta":"폴더에 3개 항목이 있습니다"' in response.text
+    assert notice not in response.text.split('"delta":')[1].split('"')[0]
+
+
+def test_a_model_tool_turn_without_a_pinned_scope_gains_no_field(monkeypatch):
+    """No pinned scope means the completion frame keeps its exact shape."""
+    client = ToolScriptedClient([
+        ChatStreamEvent(tool_call=ChatToolCall(
+            id="call_1", name="query_drives", arguments={},
+        )),
+        _event(done=True),
+    ])
+    app, settings = _tool_lane_app(
+        client,
+        rows=[_catalog_row("chat", "tools")],
+        monkeypatch=monkeypatch,
+        pc_verified=True,
+    )
+    app.state.history_store = _ScopeStore(None)
+
+    async def _lane(request, **kwargs):
+        return ("C 드라이브가 있습니다", CHAT_ID)
+
+    monkeypatch.setattr(chat_pc_drive, "execute_chat_pc_drive_lane", _lane)
+    response = asyncio.run(_post(
+        app, _payload(pc_run_id=PC_RUN), settings=settings, signed_in=True,
+    ))
+
+    assert response.status_code == 200
+    assert "scope_notice" not in response.text
+
+
+def test_a_project_turn_is_never_offered_the_pc_tools(monkeypatch):
+    """#5573: a project turn keeps its own reference context and its bytes.
+
+    Declaring the PC tools on a project turn would let a model hand that turn
+    to the PC lane instead of answering from the project's files, so the
+    declaration is withheld there entirely.
+    """
+    settings = _google_settings()
+    project = ProjectProfile(
+        id=PROJECT_ID, name="시장조사", instructions="",
+        created_at="2026-08-27T00:00:00Z", updated_at="2026-08-27T00:00:00Z",
+    )
+    client = ToolScriptedClient([_event("프로젝트 답변"), _event(done=True)])
+    app = _app_with_client(
+        client,
+        settings=settings,
+        history_store=MemoryHistoryStore(project=project),
+        project_file_store=MemoryProjectFileStore(
+            [ProjectFile("brief.txt", "text/plain", "수ce 12345")]
+        ),
+    )
+    app.state.b14_catalog_source = FakeCatalog([_catalog_row("chat", "tools")])
+
+    async def _available(request, *, uid):
+        return True
+
+    def _no_lane(*args, **kwargs):
+        raise AssertionError("a project turn must not enter the PC lane")
+
+    monkeypatch.setattr(chat_pc_drive, "chat_pc_tools_available", _available)
+    monkeypatch.setattr(chat_pc_drive, "execute_chat_pc_drive_lane", _no_lane)
+    response = asyncio.run(_post(
+        app, _payload(project_id=PROJECT_ID), settings=settings, signed_in=True,
+    ))
+
+    assert response.status_code == 200, response.text
+    assert len(client.calls) == 1
+    assert "tools" not in client.calls[0], client.calls[0]
+    assert "tool_choice" not in client.calls[0]
+
+
+@pytest.mark.parametrize(
+    "engine_code", ["unsupported_orchestration_field", "upstream_auth_error"],
+)
+def test_a_pc_tool_turn_engine_failure_keeps_only_the_bounded_cause(
+    monkeypatch, engine_code,
+):
+    """#5015/#5573: a tool turn that fails keeps its code, status and cause.
+
+    The cause is one internal engine code. Whatever the provider or the engine
+    returned alongside it never rides to the browser, and the failure is not
+    collapsed into a generic stream error.
+    """
+    from app.chat_pc_drive import ChatPCDriveError
+
+    client = ToolScriptedClient([
+        ChatStreamEvent(tool_call=ChatToolCall(
+            id="call_1", name="files", arguments={"path": "sample.txt"},
+        )),
+        _event(done=True),
+    ])
+    app, settings = _tool_lane_app(
+        client,
+        rows=[_catalog_row("chat", "tools")],
+        monkeypatch=monkeypatch,
+        pc_verified=True,
+    )
+
+    async def _fail(request, **kwargs):
+        raise ChatPCDriveError(
+            "chat_pc_engine_unavailable",
+            "AI 작업을 처리하지 못했습니다.",
+            400,
+            cause=engine_code,
+        )
+
+    monkeypatch.setattr(chat_pc_drive, "execute_chat_pc_drive_lane", _fail)
+    response = asyncio.run(_post(app, _payload(), settings=settings, signed_in=True))
+
+    assert response.status_code == 400
+    assert response.json()["error"] == {
+        "code": "chat_pc_engine_unavailable",
+        "message": "AI 작업을 처리하지 못했습니다.",
+        "cause": engine_code,
+    }
+
+
+def test_a_tool_turn_that_cannot_start_reports_a_bounded_failure(monkeypatch):
+    """A lane that never staged cannot answer: the turn fails explicitly."""
+    client = ToolScriptedClient([
+        ChatStreamEvent(tool_call=ChatToolCall(
+            id="call_1", name="files_list", arguments={},
+        )),
+        _event(done=True),
+    ])
+    app, settings = _tool_lane_app(
+        client,
+        rows=[_catalog_row("chat", "tools")],
+        monkeypatch=monkeypatch,
+        pc_verified=True,
+    )
+
+    async def _none(request, **kwargs):
+        return None
+
+    monkeypatch.setattr(chat_pc_drive, "execute_chat_pc_drive_lane", _none)
+    response = asyncio.run(_post(app, _payload(), settings=settings, signed_in=True))
+
+    assert response.status_code == 502
+    assert response.json()["error"]["code"] == "chat_pc_lane_unavailable"
 
 
 def test_public_route_returns_after_first_visible_token_and_consumer_close_closes_b62_stream():

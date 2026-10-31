@@ -29,12 +29,17 @@ from app.continuation_identity import (
 )
 from app.orchestration_service import (
     OrchestrationEngineService,
+    _PC_PLAN_AGENT_IDS,
     _parse_agent_plan,
     _parse_approval_decision_submission,
     _parse_continuation_ref,
     _parse_recovery_policy,
+    _pc_tool_arguments_gate,
+    _validated_pc_declared_plan,
+    _canonical_pc_plan,
 )
 from app.service import ServiceContractError, ServiceResponse, _service_error, build_execution_request
+from app.tool_projection import EngineToolProjectionError
 
 
 _ORCHESTRATE_ALLOWED_FIELDS = frozenset(
@@ -55,6 +60,24 @@ _ORCHESTRATE_ALLOWED_FIELDS = frozenset(
     }
 )
 _RESUME_ALLOWED_FIELDS = _ORCHESTRATE_ALLOWED_FIELDS | {"continuation_ref", "decision"}
+
+
+def _wire_allowed_fields(payload: Any) -> frozenset[str]:
+    """The closed identity-bound run wire, plus ``tool_arguments`` for a PC run.
+
+    The extra field is admitted from the gate's own product/plan test, never
+    from a caller-declared flag, so every non-PC payload is rejected exactly as
+    before.
+    """
+    allowed = _ORCHESTRATE_ALLOWED_FIELDS
+    from app.pc_tools_turn import parse_pc_tools
+    if parse_pc_tools(payload) is not None:
+        allowed |= {"pc_tools"}
+    if _pc_tool_arguments_gate(payload) is not None:
+        allowed |= {"tool_arguments"}
+    if _validated_pc_declared_plan(payload) is not None:
+        allowed |= {"declared_plan"}
+    return allowed
 
 
 def _reject_unknown_fields(payload: Mapping[str, Any], *, allowed: frozenset[str]) -> None:
@@ -140,7 +163,7 @@ class IdentityBoundOrchestrationEngineService(OrchestrationEngineService):
         if not isinstance(payload, Mapping):
             return _service_error("invalid_request", "Request body must be an object.", status_code=400)
         try:
-            _reject_unknown_fields(payload, allowed=_ORCHESTRATE_ALLOWED_FIELDS)
+            _reject_unknown_fields(payload, allowed=_wire_allowed_fields(payload))
         except ServiceContractError as exc:
             return _service_error(exc.code, exc.safe_message, status_code=exc.status_code)
         app_id = payload.get("app_id")
@@ -162,6 +185,45 @@ class IdentityBoundOrchestrationEngineService(OrchestrationEngineService):
             max_retries = int(payload.get("max_retries", 3))
             require_evidence = bool(payload.get("require_evidence", False))
             require_verification = bool(payload.get("require_verification", False))
+            # Trusted tool authority is attached for the canonical PC plan
+            # only. Adding it for every registered app would widen what the
+            # identity-bound lane executes beyond this fix's scope.
+            #
+            # The authority follows the plan, not the device hint: both product
+            # adapters also send the canonical PC plan without a hint when the
+            # owner has no explicit selection, and the Broker then resolves the
+            # pinned target from the owner scope. Binding the authority to the
+            # presence of the optional ``tool_arguments`` field left that
+            # product-designed request with no tool authority at all, so the
+            # plan started and then failed inside Core instead of running the
+            # PC tool. The closed device grammar is unchanged: a hint that is
+            # present is still validated by the shared PC plan validator.
+            canonical_pc_plan = _canonical_pc_plan(app_id, plan)
+            if (
+                plan is not None
+                and getattr(plan, "agent_id", None) in _PC_PLAN_AGENT_IDS
+                and canonical_pc_plan is None
+            ):
+                # A canonical PC agent id was presented, but not under the
+                # product that owns it, or with a plan shape that is not one of
+                # the two canonical PC plans. That is a wrong product identity
+                # or a wrong plan, so it is refused here, before any tool can
+                # run. Without this the request carried no tool authority and
+                # failed later inside Core as an opaque internal error.
+                return _service_error(
+                    "invalid_plan",
+                    "The PC plan does not match the canonical PC plan for this product.",
+                    status_code=400,
+                )
+            tool_kwargs = (
+                {}
+                if canonical_pc_plan is None
+                else self._tool_request_kwargs(
+                    app_id=app_id,
+                    plan=canonical_pc_plan,
+                    raw_tool_arguments=payload.get("tool_arguments"),
+                )
+            )
             orch_req = OrchestrationRequest(
                 execution_request=exec_req,
                 context=ctx,
@@ -172,8 +234,16 @@ class IdentityBoundOrchestrationEngineService(OrchestrationEngineService):
                 max_retries=max_retries,
                 require_evidence=require_evidence,
                 require_verification=require_verification,
+                **tool_kwargs,
             )
-            runtime = self._runtime_factory(app_id)
+            attached = self._attach_pc_query_step_driver(
+                app_id=app_id, orch_req=orch_req, exec_req=exec_req,
+                declared_plan=payload.get("declared_plan"),
+            )
+            if isinstance(attached, ServiceResponse):
+                return attached
+            orch_req = attached
+            runtime = self._runtime_for_payload(app_id, payload)
             runner = OrchestrationRunner(runtime=runtime, idempotency=self._idempotency_adapter)
             result = await runner.run(orch_req)
         except IdempotencyConflictError:
@@ -183,6 +253,8 @@ class IdentityBoundOrchestrationEngineService(OrchestrationEngineService):
                 status_code=409,
             )
         except ServiceContractError as exc:
+            return _service_error(exc.code, exc.safe_message, status_code=exc.status_code)
+        except EngineToolProjectionError as exc:
             return _service_error(exc.code, exc.safe_message, status_code=exc.status_code)
         except OrchestrationError as exc:
             status_code = 422 if exc.code in {"invalid_plan", "authority_widening_rejected"} else 400
@@ -303,6 +375,8 @@ class IdentityBoundOrchestrationEngineService(OrchestrationEngineService):
                 )
             record = claimed_record
         except ServiceContractError as exc:
+            return _service_error(exc.code, exc.safe_message, status_code=exc.status_code)
+        except EngineToolProjectionError as exc:
             return _service_error(exc.code, exc.safe_message, status_code=exc.status_code)
         except (TypeError, ValueError):
             return _service_error("invalid_request", "Resume request is invalid.", status_code=400)

@@ -184,12 +184,12 @@ def test_worker_source_keeps_the_interpreter_rebind_in_the_composition_seam():
     from pathlib import Path
 
     worker_source = (Path(__file__).resolve().parents[1] / "worker.py").read_text(encoding="utf-8")
-    assert "_worker_app.state.b14_client = DispatchAwareB14Client(" in worker_source
+    assert "worker_app.state.b14_client = DispatchAwareB14Client(" in worker_source
     assert (
-        "_worker_app.state.b66_quote_interpreter = B66QuoteConversationInterpreter("
+        "worker_app.state.b66_quote_interpreter = B66QuoteConversationInterpreter("
         in worker_source
     )
-    rebind_at = worker_source.index("_worker_app.state.b66_quote_interpreter = B66QuoteConversationInterpreter(")
-    composed_at = worker_source.index("_worker_app.state.b14_client = DispatchAwareB14Client(")
+    rebind_at = worker_source.index("worker_app.state.b66_quote_interpreter = B66QuoteConversationInterpreter(")
+    composed_at = worker_source.index("worker_app.state.b14_client = DispatchAwareB14Client(")
     assert composed_at < rebind_at, "rebind must follow the Production client composition"
     print("WORKER_SOURCE_SEAM_LOCKSTEP=PASS")

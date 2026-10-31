@@ -4,7 +4,12 @@
  */
 html[data-theme="padiem-glass"] body .app-shell {
   --padiem-six-panel-left: clamp(48px, 4vw, 72px);
-  --padiem-six-panel-width: min(1200px,
+  /* #5661: the content lane caps at 960px. The 1200px cap let the panel and
+     its cards keep growing past 1920px while the hero text and starter cards
+     stayed content-sized, so the empty panel area between the copy and the
+     artwork grew with every wider screen. 960px is the measured stable lane
+     (the hero, the four starters and the composer all fit without reflow). */
+  --padiem-six-panel-width: min(960px,
     calc(100vw - var(--workspace-rail, 252px) - var(--padiem-six-panel-left) - clamp(360px, 32vw, 560px) - 48px));
   --padiem-six-panel-pad-x: clamp(18px, 2.4vw, 34px);
   /* The Chat/Claw composer is inset this far from the frame edge, and the amount
@@ -16,6 +21,39 @@ html[data-theme="padiem-glass"] body .app-shell {
    * the page views are `flex: 0 1 auto` and take this literal, which overflowed
    * the document by 10px at every viewport height. */
   --padiem-six-panel-height: calc(100dvh - 110px);
+  /* ONE first-screen origin: the inset that puts the brand line (the eyebrow) and
+   * the hero at the same row in every product surface. It is derived from the band
+   * between the content column and the composer, NOT from the product's own block
+   * height. The two per-product constants this replaces (747px for Chat, 836px for
+   * Claw, because the Claw hero block measures 565px against Chat's 476px) made a
+   * content difference move the shared origin, so the Claw brand line landed
+   * 29.7px below the Chat one on the same screen. A taller product block now changes
+   * only the space under it. Every consumer reads this one value. */
+  --padiem-first-screen-inset: max(12px, calc((100dvh - 747px) / 3));
+}
+
+/* The first screen is one surface. A page opts into it with the layout variant
+ * the shell publishes from the page contract in app.js (`conversation`), so the
+ * hero container, its layout model and its origin are declared here once and a
+ * new page inherits all three instead of adding a product sheet.
+ *
+ * The container is a grid in every product because the theme sheet leaves it a
+ * block sequence: inside a block the brand line sits on a text line box, inside
+ * a grid it is the first row, and the same content started 7.66px lower in Chat
+ * than in Claw at 900x900 and at 820x1180 (measured, identical blocks). Claw
+ * carried its own `display: grid` copy of this decision; it is here now. */
+.app-shell[data-layout-variant="conversation"] #emptyState:not([hidden]) {
+  display: grid;
+}
+
+/* #5634: the greeting and the entry row take the top third of the band between
+ * the content column and the fixed composer. This is the only desktop origin
+ * rule; every product and page reads the token above through the variant. */
+@media (min-width: 641px) {
+  .app-shell[data-layout-variant="conversation"]
+    .conversation:has(#emptyState:not([hidden])) {
+      padding-top: var(--padiem-first-screen-inset);
+    }
 }
 @media (min-width: 1024px) and (max-width: 1439px) {
   html[data-theme="padiem-glass"] body .app-shell {
@@ -33,7 +71,7 @@ html[data-theme="padiem-glass"] body .app-shell {
 @media (min-width: 921px) {
   html[data-theme="padiem-glass"] body .app-shell :is(
     .conversation, .calendar-view, .connectors-view,
-    .library-view, .automation-view, .meeting-view
+    .library-view, .automation-view, .meeting-view, .util-view
   ) {
     box-sizing: border-box !important;
     width: var(--padiem-six-panel-width) !important;
@@ -53,14 +91,28 @@ html[data-theme="padiem-glass"] body .app-shell {
     overscroll-behavior-y: contain;
     scrollbar-gutter: stable;
   }
-  /* Calendar/Connectors/Library/Automation/Meeting use the Chat/Claw eyebrow origin:
-   * the same height-relative inset the hero uses, minus the 6px the page header box
-   * adds above its first line, so the brand line lands on the same row at any
-   * viewport height. The previous fixed inset only matched at one height. */
+/* #5661: past 1920px the freed lane width must not pile up on one side. The
+ * panel keeps its cap and is centred in the space between the workspace rail
+ * and the reserved artwork column, so the breathing room splits evenly instead
+ * of opening one wide gap between the copy and the image. */
+@media (min-width: 1921px) {
   html[data-theme="padiem-glass"] body .app-shell :is(
-    .calendar-view, .connectors-view, .library-view, .automation-view, .meeting-view
+    .conversation, .calendar-view, .connectors-view,
+    .library-view, .automation-view, .meeting-view, .util-view
   ) {
-    padding: calc(clamp(52px, 7.4vh, 88px) - 7px) var(--padiem-six-panel-pad-x) 36px !important;
+    margin-left: calc(
+      (100vw - var(--workspace-rail, 252px) - clamp(360px, 32vw, 560px) - var(--padiem-six-panel-width)) / 2
+    ) !important;
+  }
+}
+  /* Calendar/Connectors/Library/Automation/Meeting use the Chat/Claw eyebrow origin:
+   * one token, minus the 6px the page header box adds above its first line, so the
+   * brand line lands on the same row as the hero at desktop viewport heights
+   * previous copy of the inset here matched only one height. */
+  html[data-theme="padiem-glass"] body .app-shell :is(
+    .calendar-view, .connectors-view, .library-view, .automation-view, .meeting-view, .util-view
+  ) {
+    padding: calc(var(--padiem-first-screen-inset) - 7px) var(--padiem-six-panel-pad-x) 36px !important;
   }
   /* The meeting transcript is the page's whole working surface, the same role the
    * composer has in Chat/Claw, so it takes the composer lane: inset 14px from the
@@ -85,11 +137,26 @@ html[data-theme="padiem-glass"] body .app-shell {
     width: calc(var(--padiem-six-panel-width) - (2 * var(--padiem-six-panel-input-inset))) !important;
     transform: none !important;
   }
+  /* #5661: past 1920px the frame lane recenters (the margin in the 1921px block
+     above), so the composer must recenter with it or the body and the input
+     split into two columns. Same lane start as the frame margin, plus the same
+     14px input inset — the composer stays frame-left + 14px at every width. */
+  @media (min-width: 1921px) {
+    html[data-theme="padiem-glass"] body .app-shell:not(.sidebar-collapsed):is(
+      [data-state="home"], [data-state="chat"], [data-state="claw"]
+    ) .composer-wrap {
+      left: calc(
+        (100vw - var(--workspace-rail, 252px) - clamp(360px, 32vw, 560px) - var(--padiem-six-panel-width)) / 2
+        + var(--workspace-rail, 252px)
+        + var(--padiem-six-panel-input-inset)
+      ) !important;
+    }
+  }
   /* Collapsing the sidebar changes the shared frame location once, for all
      destinations; it must not change between an empty and active conversation. */
   html[data-theme="padiem-glass"] body .app-shell.sidebar-collapsed :is(
     .conversation, .calendar-view, .connectors-view,
-    .library-view, .automation-view, .meeting-view
+    .library-view, .automation-view, .meeting-view, .util-view
   ) {
     width: min(920px, calc(100% - 48px)) !important;
     margin-left: auto !important;
@@ -156,7 +223,10 @@ html[data-theme="padiem-glass"] body .sidebar .history-delete:is(:hover, :focus-
  * coordinates and colors while continuing messages inside this frame. */
 @media (min-width: 921px) {
   html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .conversation {
-    padding-top: clamp(52px,7.4vh,88px) !important;
+    /* The active conversation keeps the first-screen origin instead of carrying a
+     * second copy of it: landing on Home and opening a new Chat used to start the
+     * same empty screen 85px apart. */
+    padding-top: var(--padiem-first-screen-inset) !important;
     background: linear-gradient(155deg,rgba(248,250,251,.88),rgba(233,238,241,.84)) !important;
     box-shadow: 0 24px 70px rgba(28,36,44,.16), inset 0 1px 0 rgba(255,255,255,.72) !important;
   }
@@ -271,13 +341,66 @@ html[data-theme="padiem-glass"] body .sidebar .history-actions-menu .history-men
   html[data-theme="padiem-glass"][data-glass-mode="reading"] body .app-shell[data-state="chat"]::before {
     opacity: .34 !important;
   }
-  /* The composer keeps its original position even during stop/send swaps. */
-  html[data-theme="padiem-glass"] body .app-shell:is([data-state="home"],[data-state="chat"]) .composer-wrap {
+  /* The composer keeps its original position even during stop/send swaps. One
+     rule for the three surfaces that carry it: the Claw copy below was the same
+     value pasted a second time when Claw joined the Chat frame. */
+  html[data-theme="padiem-glass"] body .app-shell:is([data-state="home"],[data-state="chat"],[data-state="claw"]) .composer-wrap {
     bottom: 16px !important;
   }
   html[data-theme="padiem-glass"] body .app-shell:is([data-state="home"],[data-state="chat"]) .composer-note {
     display: none !important;
   }
+}
+
+/* CENTRAL_OWNER_HOME_VISUAL_LOCK_20261015 (narrow-window completion 2026-10-21)
+ * The lock above covers the wide screen. The narrow window had the same
+ * problem in a different layer: the reading layer swaps the conversation
+ * sheet and dims the artwork there, and the reading layer's surface tokens
+ * change the panel and the composer gradient. The first screen is the
+ * authority there as well, so the same values are declared for the narrow
+ * window and for the chat state. */
+@media (max-width: 920px) {
+  html[data-theme="padiem-glass"][data-glass-mode="reading"] body .app-shell[data-state="chat"] .conversation.conversation {
+    background: rgba(242, 245, 247, .90) !important;
+    border-color: rgba(255, 255, 255, .58) !important;
+    box-shadow: 0 24px 70px rgba(28, 36, 44, .16), inset 0 1px 0 rgba(255, 255, 255, .72) !important;
+    backdrop-filter: blur(30px) saturate(106%) !important;
+    -webkit-backdrop-filter: blur(30px) saturate(106%) !important;
+  }
+  /* The artwork keeps the first screen's narrow-window composition. */
+  html[data-theme="padiem-glass"][data-glass-mode="reading"] body .app-shell[data-state="chat"] .main-panel::before {
+    right: -24vw !important;
+    width: 82vw !important;
+    background-position: right 52% !important;
+    background-size: auto 72vh !important;
+    opacity: .22 !important;
+    filter: saturate(.52) contrast(.86) brightness(1.16) blur(.4px) !important;
+    transform: translate3d(0, 0, 0) scale(1) !important;
+  }
+}
+
+@media (max-width: 620px) {
+  html[data-theme="padiem-glass"][data-glass-mode="reading"] body .app-shell[data-state="chat"] .main-panel::before {
+    right: -34vw !important;
+    width: 94vw !important;
+    opacity: .16 !important;
+  }
+}
+
+/* The surface tokens the panel and the composer read are the first screen's
+ * values in the chat state too, so the same frame and the same input box are
+ * drawn before and after the conversation starts. The Claw workspace keeps the
+ * reading layer's own tokens, which is a different surface.
+ *
+ * The shell portrait keeps the first screen's strength for the same reason:
+ * the picture is the background, and the background does not change when a
+ * message is sent. The shell's reveal animation, its mask and its settle
+ * behaviour are untouched. */
+html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] {
+  --glass-chat-surface: rgba(238, 242, 245, .82);
+  --glass-chat-border: rgba(255, 255, 255, .58);
+  --glass-composer-surface: rgba(248, 250, 251, .90);
+  --glass-shell-max: 1;
 }
 
 
@@ -353,9 +476,6 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="claw"] .mode-present
     margin: 0 !important;
     min-height: 0 !important;
     padding: 0 !important;
-  }
-  html[data-theme="padiem-glass"] body .app-shell[data-state="claw"] .composer-wrap {
-    bottom: 16px !important;
   }
 }
 /* The card surface, its height and the ON/OFF switch placement are shared by

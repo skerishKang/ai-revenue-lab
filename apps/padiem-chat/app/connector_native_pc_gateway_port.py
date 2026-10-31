@@ -11,6 +11,7 @@ treat WSS delivery/send success as durable Windows installation evidence.
 """
 from __future__ import annotations
 
+import asyncio
 import base64
 from datetime import datetime, timedelta, timezone
 import re
@@ -22,6 +23,12 @@ from .connector_owner_identity_pc_completion import VerifiedCanonicalPcHandoff
 
 REVIEW_ONLY_NATIVE_PC_GATEWAY_WIRED = False
 REVIEW_ONLY_NATIVE_PC_GATEWAY_PRODUCTION_ENABLED = False
+#: Bound for one private Broker Durable Object RPC on the native PC path. The
+#: Durable Object itself waits up to 25s for this PC's install ACK, so the
+#: transport bound stays above that. An unbounded await left the whole owner
+#: approval request hanging with NO completion log and NO stage event, which
+#: made the PC's own credential timeout the only observable evidence.
+NATIVE_PC_PRIVATE_RPC_TIMEOUT_SECONDS = 30.0
 _REF = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@+\-]{0,255}$")
 _SAFE_BINDING = frozenset({
     "binding_ref", "device_id", "account_ref", "workspace_ref", "credential_ref",
@@ -83,7 +90,10 @@ class CanonicalNativePcTrustedGateway:
 
     async def _call(self, method: str, payload: dict[str, Any]) -> Any:
         try:
-            return await getattr(self._broker, method)(payload)
+            return await asyncio.wait_for(
+                getattr(self._broker, method)(payload),
+                timeout=NATIVE_PC_PRIVATE_RPC_TIMEOUT_SECONDS,
+            )
         except Exception:
             raise NativePcGatewayDenied("native_pc_private_rpc_unconfirmed") from None
 

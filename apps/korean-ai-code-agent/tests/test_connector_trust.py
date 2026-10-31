@@ -175,7 +175,7 @@ class ConnectorTrustTests(unittest.TestCase):
         )
         self.assertFalse(duplicate.accepted())
 
-    def test_inbound_body_is_untrusted_bounded_and_redacted(self):
+    def test_inbound_body_is_untrusted_bounded_and_unchanged(self):
         event = ConnectorInboundEvent(
             event_ref="event_3",
             connector_id="slack",
@@ -188,9 +188,10 @@ class ConnectorTrustTests(unittest.TestCase):
             signature_timestamp=None,
             replay=ReplayDisposition.NEW,
         )
+        self.assertEqual(event.body_text, "token=supersecretvalue")
         rendered = event.safe_dict()
         self.assertFalse(rendered["body_trusted"])
-        self.assertNotIn("supersecretvalue", rendered["body_text"])
+        self.assertEqual(rendered["body_text"], "token=supersecretvalue")
         self.assertTrue(rendered["accepted"])
 
     def test_write_intent_requires_trusted_approval_and_evidence_refs(self):

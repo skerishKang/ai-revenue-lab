@@ -7,15 +7,16 @@ shared Padiem AI Core.
 
 from __future__ import annotations
 
+from app.pc_tools_turn import CatalogToolCapabilities
+
 import json
-from typing import Any
+from typing import Any, Callable
 from urllib.parse import urlparse
 
 from workers import Request, Response, WorkerEntrypoint
 
 from padiem_ai_core import (
     B14ExecutionClient,
-    B14ExecutionConfig,
     B14StreamingClient,
     ExecutionRuntime,
     StreamingExecutionRuntime,
@@ -45,9 +46,11 @@ from app.cloudflare_request_body import (
     read_bounded_worker_request_body,
 )
 from app.cloudflare_transport import (
-    B14_INTERNAL_ORIGIN,
-    CloudflareB14ServiceBindingTransport,
+    b14_upstream_from_bindings,
+    build_b14_execution_configs,
+    build_b14_transport,
 )
+from app.drive_case_pdf_binary import B67_CASE_PDF_BINARY_PATH
 from app.engine_composition import EngineServices
 from app.idempotency_binding import CloudflareD1IdempotencyAdapter
 from app.idempotency_replay_service import (
@@ -115,6 +118,29 @@ def _binding_value(env: Any, name: str) -> Any | None:
         return None
 
 
+def _tool_result_ledger_factory_for_env(env: Any) -> Callable[[str, str | None], Any] | None:
+    """Build the durable tool result ledger factory, or None without a binding.
+
+    #4379: the ledger is owner-scoped, so a reference from another subject can
+    never resolve this run's payload. A missing binding leaves the Core's
+    process-local ledger in place.
+    """
+    # #4379: the tool result table lives in the same provisioned Engine
+    # database, so the existing D1 binding carries it. No new binding and no
+    # new provision gate is required.
+    binding = _binding_value(env, ENGINE_IDEMPOTENCY_BINDING_NAME)
+    if binding is None:
+        return None
+    from app.agent_tool_result_ledger import D1ToolResultLedger
+    from app.agent_durable_d1 import agent_run_owner_scope
+
+    def factory(app_id: str, subject_id: str | None) -> Any:
+        owner_scope = agent_run_owner_scope(app_id, subject_id or "anonymous")
+        return D1ToolResultLedger(binding, owner_scope=owner_scope)
+
+    return factory
+
+
 def _env_text(env: Any, name: str) -> str | None:
     value = _binding_value(env, name)
     if value is None:
@@ -142,7 +168,7 @@ def _web_runtime_config_for_env(env: Any) -> WebRuntimeConfig:
     """
 
     timeout_raw = _env_text(env, ENGINE_WEB_TIMEOUT_SECONDS_ENV)
-    timeout = 15.0 if timeout_raw is None else float(timeout_raw)
+    timeout = 30.0 if timeout_raw is None else float(timeout_raw)
     return WebRuntimeConfig(
         provider=_env_text(env, ENGINE_WEB_PROVIDER_ENV) or "off",
         firecrawl_api_key=_env_text(env, ENGINE_FIRECRAWL_API_KEY_ENV),
@@ -169,7 +195,7 @@ def _engine_web_provider_for_env(env: Any):
         return TinyFishDaumPriorityWebProvider(
             tinyfish_key=_env_text(env, ENGINE_TINYFISH_API_KEY_ENV),
             daum_key=_env_text(env, ENGINE_DAUM_REST_API_KEY_ENV),
-            timeout_seconds=15.0 if timeout_raw is None else float(timeout_raw),
+            timeout_seconds=30.0 if timeout_raw is None else float(timeout_raw),
             daum_search_sort=_env_text(env, ENGINE_DAUM_SEARCH_SORT_ENV) or "accuracy",
             transport=transport,
         )
@@ -190,7 +216,27 @@ def _idempotency_adapter_for_env(env: Any) -> CloudflareD1IdempotencyAdapter | N
     return CloudflareD1IdempotencyAdapter(binding)
 
 
+def _record_refusal_code(result: ServiceResponse) -> None:
+    """Keep the bounded refusal code on the request's telemetry event (#5015).
+
+    Every Engine error response is built from a ``ServiceResponse`` whose body
+    already names the exact branch. The exporter dropped that identifier, so an
+    operator could only see ``400 client_error``. Recording happens here, on the
+    one response path every route shares, and never changes the response.
+    """
+    if result.status_code < 400:
+        return
+    try:
+        from app.stack_telemetry import record_refusal
+
+        record_refusal(result.status_code, result.body)
+    except Exception:
+        # Telemetry must never turn a bounded refusal into a Worker failure.
+        pass
+
+
 def _json_response(result: ServiceResponse) -> Response:
+    _record_refusal_code(result)
     return Response(
         json.dumps(
             dict(result.body),
@@ -304,6 +350,29 @@ def _agent_skill_service_for_env(
     )
 
 
+async def _resolve_b14_proof_secret(env: Any) -> str | None:
+    """Resolve the deployment-owned B14 caller proof secret, or None.
+
+    The value lives only in Cloudflare Secrets Store. It is never logged and
+    never falls back to another credential.
+    """
+    binding = _binding_value(env, "PADIEM_B14_SERVICE_PROOF_SECRET")
+    if isinstance(binding, str):
+        return binding or None
+    getter = getattr(binding, "get", None)
+    if not callable(getter):
+        return None
+    try:
+        resolved = getter()
+        if hasattr(resolved, "__await__"):
+            resolved = await resolved
+    except Exception:
+        return None
+    if isinstance(resolved, str) and resolved:
+        return resolved
+    return None
+
+
 async def _engine_services_for_env(env: Any) -> EngineServices:
     """Legacy compatibility composition; never the Production authority.
 
@@ -355,16 +424,21 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
             tool_execution=ToolExecutionEngineService(tool_binding_resolver=None),
         )
 
-    transport = CloudflareB14ServiceBindingTransport(
+    b14_upstream = b14_upstream_from_bindings(env)
+    transport = build_b14_transport(
         binding=binding,
         request_factory=Request,
+        # B14 spends platform-owned Provider credentials on this lane.
+        # The proof binds this exact body to this deployment.
+        proof_secret=await _resolve_b14_proof_secret(env),
+        upstream=b14_upstream,
     )
-    config = B14ExecutionConfig(
-        base_url=B14_INTERNAL_ORIGIN,
+    completed_config, stream_config = build_b14_execution_configs(
         timeout_seconds=_b14_timeout_seconds_for_env(env),
+        upstream=b14_upstream,
     )
-    b14_client = B14ExecutionClient(config, transport=transport)
-    b14_stream_client = B14StreamingClient(config, transport=transport)
+    b14_client = B14ExecutionClient(completed_config, transport=transport)
+    b14_stream_client = B14StreamingClient(stream_config, transport=transport)
     idempotency_adapter = _idempotency_adapter_for_env(env)
 
     def runtime_factory(app_id: str) -> ExecutionRuntime:
@@ -392,8 +466,13 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
         ),
         orchestration=OrchestrationEngineService(
             runtime_factory=runtime_factory,
+            pc_streaming_runtime_factory=streaming_runtime_factory,
+            pc_tools_capability=CatalogToolCapabilities(binding, Request),
             b14_service_bound=True,
             idempotency_adapter=idempotency_adapter,
+            # #4379: the durable ledger owns the tool payloads, so a long run
+            # does not retain every tool output in the Worker.
+            tool_result_ledger_factory=_tool_result_ledger_factory_for_env(env),
         ),
         research=WebResearchEngineService(
             research_runtime_factory=research_runtime_factory,
@@ -515,6 +594,35 @@ async def _drive_case_pdf_rpc_for_env(env: Any, operation: str, payload: Any) ->
     return await drive_case_pdf_rpc(service, operation=operation, payload=payload)
 
 
+async def _drive_case_pdf_binary_response(env: Any, body: bytes) -> Response:
+    """Serve one authorized B67 case PDF as raw bytes on the internal route.
+
+    #4379: the byte frame replaces the whole-file Base64 the JSON RPC carried.
+    Composition failures degrade to ``service = None`` exactly like the RPC
+    seam, so the route answers the bounded unavailable error and never leaks
+    infrastructure detail. Authorization is the same body-authenticated
+    internal caller gate every other non-health route passes through.
+    """
+
+    from app.drive_case_pdf_binary import drive_case_pdf_binary_read
+    from worker_identity import _drive_case_pdf_service_for_env
+
+    try:
+        service = _drive_case_pdf_service_for_env(env)
+    except Exception:
+        service = None
+    result = await drive_case_pdf_binary_read(service, body=body)
+    return Response(
+        result.body,
+        status=result.status_code,
+        headers={
+            "Content-Type": result.content_type,
+            "Cache-Control": "no-store",
+            "X-Content-Type-Options": "nosniff",
+        },
+    )
+
+
 class Default(WorkerEntrypoint):
     engine_services_factory = staticmethod(_engine_services_for_env)
 
@@ -585,6 +693,7 @@ class Default(WorkerEntrypoint):
             RESEARCH_PATH,
             MEMORY_PATH,
             MEMORY_WRITE_PATH,
+            B67_CASE_PDF_BINARY_PATH,
         } | orchestration_paths | agent_skill_paths | idempotency_paths | tool_paths
         if path not in allowed_paths:
             result = ServiceResponse(
@@ -637,14 +746,24 @@ class Default(WorkerEntrypoint):
             if auth_error is not None:
                 return auth_error
 
+        if path == B67_CASE_PDF_BINARY_PATH:
+            return await _drive_case_pdf_binary_response(self.env, body)
+
         services = await self.engine_services_factory(self.env)
 
         if path == ORCHESTRATION_STREAM_PATH:
+            # Optional presentation protocol, never execution authority.
+            progress_options = (
+                {"pc_progress": True}
+                if headers is not None and headers.get("X-Padiem-PC-Progress") == "1"
+                else {}
+            )
             prepared = await services.orchestration.prepare_stream(
                 method=method,
                 path=path,
                 content_type=content_type,
                 body=body,
+                **progress_options,
             )
             if isinstance(prepared, ServiceResponse):
                 return _json_response(prepared)

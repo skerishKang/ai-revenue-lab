@@ -20,11 +20,12 @@ test("Chat and Claw share a group; meeting, automation, library, calendar follow
   const order = [
     "newChatButton", "sidebarSearchButton", "clawNavButton",
     "meetingNavButton", "automationNavButton", "filesNavButton",
-    "calendarNavButton", "connectorsNavButton", "skillsNavButton",
+    "calendarNavButton", "connectorsNavButton",
   ];
   const positions = order.map((id) => html.indexOf('id="' + id + '"'));
   assert.ok(positions.every((p) => p >= 0), "all existing navigation actions must be preserved");
   assert.deepEqual([...positions].sort((a, b) => a - b), positions);
+  assert.doesNotMatch(html, /id="skillsNavButton"/);
   assert.ok(html.indexOf('class="sidebar-chat-claw-group"') < positions[0]);
   const workspace = html.indexOf('id="workspaceNav"');
   assert.ok(workspace > positions[2] && workspace < positions[3]);
@@ -95,8 +96,10 @@ test("meeting view joins the shared glass frame instead of drawing its own surfa
   assert.match(unified, /\[data-state="meeting"\]/);
   assert.match(unified, /\.standalone-view-kicker, \.calendar-view-kicker, \.library-kicker, \.claw-workspace-kicker\) \{/);
   assert.match(unified, /\.standalone-view-kicker, \.calendar-view-kicker, \.library-kicker, \.claw-workspace-kicker\)::before \{/);
-  assert.equal((frame.match(/\.automation-view, \.meeting-view/g) || []).length, 3,
-    "meeting must be in all three six-panel frame lists");
+  // #5661 added the fourth list: the >=1921px centring rule keeps meeting in
+  // the same frame family on ultra-wide screens.
+  assert.equal((frame.match(/\.automation-view, \.meeting-view/g) || []).length, 4,
+    "meeting must be in all four six-panel frame lists");
   assert.ok(frame.includes(".calendar-view, .connectors-view"), "the owner visual-lock frame literal stays intact");
   assert.doesNotMatch(meetingCss, /max-width:\s*1080px/);
   assert.doesNotMatch(meetingCss, /\.meeting-header\s+(p|h2)\s*\{/);
@@ -120,4 +123,27 @@ test("a visitor may open the meeting page while the session guard stays on the c
   assert.match(capture, /draftInClaw\.disabled = state\.active \|\| !text\.value\.trim\(\) \|\| !signedIn/);
   assert.match(capture, /driveText\.disabled = state\.active \|\| !text\.value\.trim\(\) \|\| !signedIn \|\| uploadInFlight/);
   assert.match(capture, /startButton\.disabled = !signedIn \|\| controller\.snapshot\(\)\.active/);
+});
+
+test("#5028: the meeting page nav lights up and its actions use the shared surface family", () => {
+  // The sidebar entry must highlight on this page the way calendar/library/
+  // claw already do; aria-current alone carried no visual state before.
+  assert.match(meetingCss, /#meetingNavButton\[aria-current="page"\]\s*\{[\s\S]*?background: rgba\(121, 188, 231, 0\.22\);/);
+  assert.match(meetingCss, /html\[data-theme="padiem-glass"\] #meetingNavButton\[aria-current="page"\]\s*\{/);
+  // The connectors/automation entries live in the shared standalone contract.
+  assert.match(views, /#connectorsNavButton\[aria-current="page"\],\s*\n#automationNavButton\[aria-current="page"\]\s*\{/);
+  assert.match(views, /html\[data-theme="padiem-glass"\] #connectorsNavButton\[aria-current="page"\],\s*\nhtml\[data-theme="padiem-glass"\] #automationNavButton\[aria-current="page"\]\s*\{/);
+  // Controls and exports share the bordered secondary chip family (util
+  // result actions) instead of a transparent ghost surface. The block is
+  // sliced so the negative assertion cannot reach later, legitimate
+  // `background: transparent` panel rules.
+  const actionsBlock = meetingCss.slice(
+    meetingCss.indexOf(".meeting-controls button, .meeting-exports button {"),
+    meetingCss.indexOf("}", meetingCss.indexOf(".meeting-controls button, .meeting-exports button {"))
+  );
+  assert.match(actionsBlock, /background: var\(--panel, #ffffff\); color: var\(--text, #17202a\);/);
+  assert.doesNotMatch(actionsBlock, /background:\s*transparent/);
+  // The idle transcript area no longer over-expands the bright panel.
+  assert.match(meetingCss, /\.meeting-panel textarea \{[\s\S]*?min-height: clamp\(180px, 24vh, 260px\);/);
+  assert.doesNotMatch(meetingCss, /min-height: clamp\(200px, 30vh, 330px\)/);
 });

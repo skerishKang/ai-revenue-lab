@@ -5,6 +5,11 @@
   border: 1px solid var(--border, rgba(127, 127, 127, 0.28));
   border-radius: 18px;
   background: var(--panel, #11151d);
+  /* The glass theme's --panel is 46% alpha for cards that sit on the app's
+     own blurred backdrop. A modal dialog hovers the raw page instead, so it
+     carries its own blur — the hero text must not read through the form. */
+  backdrop-filter: blur(24px) saturate(108%);
+  -webkit-backdrop-filter: blur(24px) saturate(108%);
   color: inherit;
 }
 .b66-quote-dialog::backdrop {
@@ -53,7 +58,9 @@
 .b66-quote-field textarea {
   width: 100%;
   box-sizing: border-box;
-  border: 1px solid var(--border, rgba(127, 127, 127, 0.28));
+  /* #6100: inputs take the input-only border token; the themes define it to
+     clear the 3:1 non-text floor where the shared --border hairline does not. */
+  border: 1px solid var(--input-border-strong, var(--border, rgba(127, 127, 127, 0.28)));
   border-radius: 10px;
   background: var(--surface, rgba(255, 255, 255, 0.05));
   color: inherit;
@@ -80,6 +87,31 @@
   margin: 0;
   font-size: 13px;
   opacity: 0.8;
+}
+/* #6100: the logged-out stand-in for the selects — one line and the product's
+   own login entry, not three empty controls. */
+.b66-quote-signin-hint {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 0;
+  font-size: 13px;
+  color: var(--muted, inherit);
+}
+.b66-quote-signin-hint[hidden] {
+  display: none !important;
+}
+.b66-quote-signin-button {
+  font: inherit;
+  font-weight: 650;
+  min-height: 40px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--input-border-strong, var(--border, rgba(127, 127, 127, 0.3)));
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
 }
 .b66-quote-status[data-state="error"],
 .b66-quote-status[data-state="missing"] {
@@ -171,7 +203,7 @@
   font: inherit;
   color: inherit;
   background: transparent;
-  border: 1px solid var(--border, rgba(127,127,127,.3));
+  border: 1px solid var(--input-border-strong, var(--border, rgba(127,127,127,.3)));
   border-radius: 9px;
   padding: 8px 10px;
   min-height: 40px;
@@ -201,4 +233,73 @@
 .b66-quote-connect :focus-visible { outline: 3px solid var(--focus, #2a7db4); outline-offset: 2px; }
 @media (max-width: 640px) {
   .b66-quote-connect-item { align-items: flex-start; flex-direction: column; }
+}
+
+/* #5895: the quote screen's own Excel form section. The picker is its own dialog;
+   this only lays out the button, the chosen form, and the plain waiting lines. */
+.b66-quote-pcform {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 4px 0 8px;
+}
+
+.b66-quote-pcform-pick,
+.b66-quote-pcform-make,
+.b66-quote-pcform-save,
+.b66-quote-pcform-remember,
+.b66-quote-pcform-connect {
+  font: inherit;
+  min-height: 44px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--line, rgba(66, 106, 135, 0.28));
+  background: var(--surface, rgba(255, 255, 255, 0.8));
+  color: inherit;
+  cursor: pointer;
+  align-self: flex-start;
+}
+
+.b66-quote-pcform-chosen,
+.b66-quote-pcform-note,
+.b66-quote-pcform-status {
+  margin: 0;
+  font-size: 0.86rem;
+  color: var(--muted, #5a7488);
+}
+
+/* #3180: what the fill put where, before the owner saves the workbook. */
+.b66-quote-pcform-review {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px 10px;
+  border: 1px solid var(--line, rgba(66, 106, 135, 0.28));
+  border-radius: 10px;
+  background: var(--surface, rgba(255, 255, 255, 0.7));
+}
+
+.b66-quote-pcform-review-lead,
+.b66-quote-pcform-review-title,
+.b66-quote-pcform-review-extend,
+.b66-quote-pcform-review-note,
+.b66-quote-pcform-review-empty {
+  margin: 0;
+  font-size: 0.86rem;
+}
+
+.b66-quote-pcform-review-title {
+  font-weight: 600;
+}
+
+.b66-quote-pcform-review-list {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 0.84rem;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.b66-quote-pcform-review-note {
+  color: var(--muted, #5a7488);
 }

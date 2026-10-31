@@ -182,7 +182,8 @@ def test_bounded_copy_is_applied_at_every_claw_failure_surface():
     # Live SSE error frame, streamed-partial catch, and the caller catch are the
     # three places that previously collapsed every Claw failure to unknown.
     assert APP.count("clawGeneralFailure(") == 4  # 1 definition body reference + 3 call sites
-    assert "renderStreamError(article, message, outboundMessages, skill, contextSnapshot, clawGeneralRequest, lifecycleForError(chatTransport.errorFor(data, message)), clawFailure)" in APP
+    assert "const terminalFailure = chatTransport.errorFor(data, message);" in APP
+    assert "renderStreamError(article, message, outboundMessages, skill, contextSnapshot, clawGeneralRequest, lifecycleForError(terminalFailure), clawFailure, terminalFailure.code)" in APP
     assert "renderStreamError(article, clawFailure.message," in APP
     assert "clawGeneralRequest && error?.clawFailureDetail === \"engine_provider_rate_limited\"" in APP
     # Standalone Chat's own path and message remain byte-for-byte what they were.

@@ -43,25 +43,43 @@ def test_relative_path_refuses_traversal_and_absolute_forms():
 
 def test_file_commands_are_server_built_literals():
     list_command = routes._pc_files_command(
-        op="list", root=ROOT, relative=".", limit=200,
+        op="list", root=ROOT, relative=".", offset=0, page_size=200,
     )
     assert "Get-ChildItem -LiteralPath " in list_command
     assert "Select-Object Name, Length" in list_command
     assert "ConvertTo-Json" in list_command
-    assert "@{" not in list_command
     assert "\r" not in list_command and "\n" not in list_command
+    # #5895 follow-up: a page of a fixed order, never a silent cut. Folders first,
+    # then name, and the reply carries the folder's total and whether more remains.
+    assert "Sort-Object -Property @{Expression={-not $_.PSIsContainer}}, Name" in list_command
+    assert "Select-Object -Skip 0 -First 200" in list_command
+    assert "total=$n" in list_command and "has_more=" in list_command
+    assert "offset=0" in list_command
 
-    read_command = routes._pc_files_command(
-        op="read", root=ROOT, relative="notes.txt", limit=200,
+    paged = routes._pc_files_command(
+        op="list", root=ROOT, relative=".", offset=400, page_size=200,
     )
-    assert "[IO.File]::ReadAllText" in read_command
-    assert routes.PC_FILES_ERROR_PREFIX + "read_failed" in read_command
-    assert ROOT + "/notes.txt" in read_command
+    assert "Select-Object -Skip 400 -First 200" in paged and "offset=400" in paged
+
+    # #5015: read no longer builds any shell command. The former
+    # ReadAllText command timed out through the MeshCentral PowerShell reply;
+    # read uses the existing kind="read" download lane instead.
+    with pytest.raises(ValueError, match="only list"):
+        routes._pc_files_command(
+            op="read", root=ROOT, relative="notes.txt",
+        )
+
+    for bad in (-1, "0", True):
+        with pytest.raises(ValueError, match="paging offset"):
+            routes._pc_files_command(op="list", root=ROOT, relative=".", offset=bad)
+    for bad in (0, 2001, False):
+        with pytest.raises(ValueError, match="paging offset"):
+            routes._pc_files_command(op="list", root=ROOT, relative=".", page_size=bad)
 
     quoted = routes._pc_files_command(
-        op="read", root=ROOT, relative="it's.txt", limit=200,
+        op="list", root=ROOT + "/it's", relative=".",
     )
-    assert "it''s.txt" in quoted
+    assert "it''s" in quoted
 
 
 class _DB:
@@ -106,7 +124,16 @@ def _store():
         "request_fingerprint TEXT, account_ref TEXT, workspace_ref TEXT, device_id TEXT, "
         "binding_ref TEXT, node_ref TEXT, root_ref TEXT, path_relative TEXT, file_path TEXT, "
         "kind TEXT, command_text TEXT, nonce_sha256 TEXT, state TEXT, expires_at TEXT, "
-        "created_at TEXT);"
+        "created_at TEXT, tool_call_ref TEXT);"
+        # 063: the dispatch scopes are separate indexes, plus one call key
+        # that covers both row shapes.
+        "CREATE UNIQUE INDEX idx_oracle_mesh_dispatch_run_scope "
+        "ON oracle_mesh_dispatch (user_id, run_id) WHERE tool_call_ref IS NULL;"
+        "CREATE UNIQUE INDEX idx_oracle_mesh_dispatch_tool_call "
+        "ON oracle_mesh_dispatch (user_id, run_id, tool_call_ref) "
+        "WHERE tool_call_ref IS NOT NULL;"
+        "CREATE UNIQUE INDEX idx_oracle_mesh_dispatch_tool_request "
+        "ON oracle_mesh_dispatch (user_id, run_id, tool_request_ref);"
     )
     connection.execute(
         "INSERT INTO claw_run_history VALUES (?,?,?)", ("row-1", RUN, OWNER),
@@ -175,5 +202,39 @@ def test_tool_call_ref_must_be_bounded():
         arguments["tool_call_ref"] = "bad ref with spaces"
         with pytest.raises(HistoryError, match="tool_call_ref"):
             asyncio.run(store.create_oracle_mesh_dispatch(**arguments))
+    finally:
+        connection.close()
+
+
+def test_scope_notice_is_persistent_owner_scoped_and_cannot_be_replaced():
+    from app.history import HistoryForbidden
+    store, connection = _store()
+    try:
+        for column in ("status", "result_summary", "conversation_id", "workspace_id", "updated_at", "action"):
+            connection.execute("ALTER TABLE claw_run_history ADD COLUMN " + column + " TEXT")
+        connection.executescript(
+            "CREATE TABLE conversations (id TEXT PRIMARY KEY, user_id TEXT);"
+            "CREATE TABLE messages (id TEXT PRIMARY KEY, conversation_id TEXT, role TEXT, content TEXT, "
+            "created_at TEXT, sequence_number INTEGER, UNIQUE(conversation_id,sequence_number));"
+        )
+        connection.execute("INSERT INTO conversations VALUES (?,?)", ("chat_scope", OWNER))
+        connection.execute("UPDATE claw_run_history SET conversation_id='chat_scope',status='running',action='pc_files_query'")
+        connection.commit()
+        claim = {"version": 1, "requested": "files", "admitted": "files_list", "source": "declared",
+                 "ops": ["list"], "app_id": "padiem-chat"}
+        asyncio.run(store.pin_pc_run_scope(user_id=OWNER, run_id=RUN, claim=claim))
+        restarted = D1HistoryStore(_DB(connection))
+        assert asyncio.run(restarted.get_pc_run_scope(user_id=OWNER, run_id=RUN)) == claim
+        asyncio.run(restarted.pin_pc_run_scope(user_id=OWNER, run_id=RUN, claim=claim))
+        with pytest.raises(HistoryForbidden):
+            asyncio.run(restarted.pin_pc_run_scope(user_id=OWNER, run_id=RUN,
+                claim={**claim, "admitted": "files", "ops": ["list", "read"]}))
+        assert asyncio.run(restarted.get_pc_run_scope(user_id="other-owner", run_id=RUN)) is None
+        with pytest.raises(HistoryForbidden):
+            asyncio.run(restarted.pin_pc_run_scope(user_id="other-owner", run_id=RUN, claim=claim))
+        rows = connection.execute("SELECT content FROM messages").fetchall()
+        assert len(rows) == 1
+        assert rows[0]["content"].startswith("목록만 조회합니다. 파일 내용은 읽지 않습니다.")
+        assert connection.execute("SELECT status FROM claw_run_history").fetchone()["status"] == "running"
     finally:
         connection.close()

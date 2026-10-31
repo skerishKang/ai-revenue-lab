@@ -283,8 +283,8 @@ def test_malformed_image_payload_is_refused_with_a_core_image_code() -> None:
     assert exc.value.code in {"image_decode_failed", "image_bytes_invalid"}
 
 
-def test_canonical_png_respects_the_archive_gate_per_entry_bound() -> None:
-    assert MAX_HWPX_IMAGE_BYTES == 1024 * 1024
+def test_canonical_png_uses_the_owner_ten_mib_image_bound() -> None:
+    assert MAX_HWPX_IMAGE_BYTES == 10 * 1024 * 1024
 
 
 # --------------------------------------------------------------------------- #

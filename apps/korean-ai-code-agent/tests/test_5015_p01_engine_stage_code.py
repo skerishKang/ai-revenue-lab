@@ -19,6 +19,8 @@ from kagent.p01_adapter import (
     P01AdapterError,
     P01DispatchClass,
     P01_FAILURE_DETAIL_DOWNSTREAM,
+    P01_FAILURE_DETAIL_PROVIDER_RATE_LIMITED,
+    P01_FAILURE_DETAIL_PROVIDER_TIMEOUT,
 )
 from kagent.p01_orchestration_client import P01EngineOrchestrationClient
 
@@ -56,6 +58,17 @@ class TestEngineStageCodeSurvives(SyntheticPlusRouteTestCase):
         self.assertEqual(exc.dispatch_class, P01DispatchClass.UNKNOWN)
         self.assertEqual(exc.failure_detail, "pc_query_admission_required")
 
+    def test_provider_rate_limit_code_becomes_the_provider_detail(self):
+        # #5484: the live lane received this exact class from the Engine but
+        # reported engine_downstream_execution_failed, hiding the provider 429.
+        exc = self.fail_with("upstream_rate_limited")
+        self.assertEqual(exc.code, "p01_engine_stream_failed")
+        self.assertEqual(exc.failure_detail, P01_FAILURE_DETAIL_PROVIDER_RATE_LIMITED)
+
+    def test_provider_timeout_code_becomes_the_provider_detail(self):
+        exc = self.fail_with("upstream_timeout")
+        self.assertEqual(exc.failure_detail, P01_FAILURE_DETAIL_PROVIDER_TIMEOUT)
+
     def test_non_stage_engine_code_keeps_the_downstream_bucket(self):
         exc = self.fail_with("engine_internal_error")
         self.assertEqual(exc.code, "p01_engine_stream_failed")
@@ -64,4 +77,8 @@ class TestEngineStageCodeSurvives(SyntheticPlusRouteTestCase):
     def test_absent_engine_code_keeps_the_downstream_bucket(self):
         exc = self.fail_with(None)
         self.assertEqual(exc.code, "p01_engine_stream_failed")
+        self.assertEqual(exc.failure_detail, P01_FAILURE_DETAIL_DOWNSTREAM)
+
+    def test_unbounded_metadata_code_keeps_the_downstream_bucket(self):
+        exc = self.fail_with("provider said: slow down")
         self.assertEqual(exc.failure_detail, P01_FAILURE_DETAIL_DOWNSTREAM)

@@ -20,7 +20,8 @@ Public documentation is deliberately redacted. Names, phone numbers, and private
 4. [`DATA_APPROVAL_EVIDENCE_MODEL.md`](./DATA_APPROVAL_EVIDENCE_MODEL.md) — business records, approvals and evidence linkage.
 5. [`MANAGED_CLOUD_AND_MODES.md`](./MANAGED_CLOUD_AND_MODES.md) — Managed Cloud, BYOK, Local and Self-Hosted modes.
 6. [`PILOT_AND_COMMERCIALIZATION.md`](./PILOT_AND_COMMERCIALIZATION.md) — design-partner pilot, KPIs and commercialization/public-program evidence.
-7. [`index.html`](./index.html) — read-only visual overview.
+7. [`PRODUCT_LISTING_PILOT_5446.md`](./PRODUCT_LISTING_PILOT_5446.md) — online product listing / sales-channel operations pilot slice (#5446).
+8. [`index.html`](./index.html) — read-only visual overview.
 
 ## Issue map
 

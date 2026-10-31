@@ -132,7 +132,7 @@ def quote_write_spec() -> ToolSpec:
         id=RUNTIME_TOOL, title="Confirm exact Hark XLSX quote revision",
         description="Independent user confirmation of one immutable edit plan",
         owner="core", side_effect=ToolSideEffect.WRITE,
-        approval_policy=ApprovalPolicy.USER_CONFIRMATION,
+        approval_policy=ApprovalPolicy.EXTERNAL_AUTHORIZATION,
         auth_scope=(SCOPE,),
         input_schema={"type": "object", "additionalProperties": False,
                       "properties": props, "required": list(props)},
@@ -142,7 +142,7 @@ def quote_write_spec() -> ToolSpec:
             "source_sha256", "workcopy_document_id", "workcopy_sha256",
             "edit_sha256", "pdf_exported",
         ]},
-        timeout_seconds=5.0, user_visible=False,
+        timeout_seconds=None, user_visible=False,
     )
 
 
@@ -198,7 +198,7 @@ def build_web_quote_write_tool_binding(
     policy = TrustedAgentRuntimePolicy(
         context_policy_ref="context:default", model_policy_ref="model:auto",
         output_contract_ref="output:text@1", task_type="general",
-        optimize_for="balanced", max_tokens=128, max_steps_cap=2,
+        optimize_for="balanced", max_tokens=None, max_steps_cap=None,
         context_policy={}, model_policy={}, output_contract={},
         tool_bindings=(ToolRuntimeBinding(
             canonical_tool_id=CANONICAL_TOOL, runtime_tool_id=RUNTIME_TOOL,
@@ -208,6 +208,9 @@ def build_web_quote_write_tool_binding(
     auth = ToolAuthorizationContext(
         app_id=APP_ID, agent_id=compiled.runtime_profile.id,
         granted_auth_scopes=(SCOPE,),
+        # Owner decision 2026-10-28: pre-delegated with backup before write;
+        # verify_exact re-authorizes each invocation before the handler runs.
+        externally_authorized_tools=frozenset({RUNTIME_TOOL}),
     )
     return EngineToolBinding(
         app_id=APP_ID, tool_runtime=runtime, registry=registry,

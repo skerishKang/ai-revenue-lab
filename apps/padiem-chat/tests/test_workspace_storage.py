@@ -8,7 +8,6 @@ import pytest
 from app.workspace_storage import (
     DOCX_MEDIA_TYPE,
     GENERATED_DOCUMENT_RETENTION_DAYS,
-    SINGLE_FILE_MAX_BYTES,
     WorkspaceDocumentStore,
     WorkspaceStorageAccessError,
     WorkspaceStorageError,
@@ -210,18 +209,37 @@ async def test_expired_generated_document_is_deleted_and_not_returned() -> None:
     assert saved.document_id not in metadata.rows
 
 
-async def test_single_file_bound_is_enforced_before_r2_write() -> None:
+async def test_an_empty_body_is_refused_before_r2_write() -> None:
     storage, _, r2 = store()
 
     with pytest.raises(ValueError):
         await storage.put_generated_docx(
             tenant_id=TENANT,
-            filename="too-large.docx",
-            body=b"x" * (SINGLE_FILE_MAX_BYTES + 1),
+            filename="empty.docx",
+            body=b"",
             now=NOW,
         )
 
     assert r2.put_calls == []
+
+
+async def test_a_body_past_the_released_ceiling_is_still_stored() -> None:
+    # #4379: the 10 MiB total was a PADIEM capacity claim, not a platform
+    # request limit, and the D1 metadata column no longer carries it either.
+    storage, metadata, r2 = store()
+    body = b"x" * (10 * 1024 * 1024 + 1)
+
+    saved = await storage.put_generated_docx(
+        tenant_id=TENANT,
+        filename="large.docx",
+        body=body,
+        now=NOW,
+    )
+
+    assert saved.byte_length == len(body)
+    assert len(r2.put_calls) == 1
+    assert r2.put_calls[0][1] == body
+    assert metadata.rows[saved.document_id].byte_length == len(body)
 
 
 async def test_r2_write_failure_fails_closed_without_metadata_row() -> None:
@@ -284,16 +302,24 @@ async def test_caller_cannot_supply_object_key_or_document_id() -> None:
     assert method_params is None
 
 
-def test_d1_metadata_schema_stores_no_binary_body_and_enforces_10mb_limit() -> None:
-    migration = (Path(__file__).resolve().parents[1] / "migrations" / "008_claw_document_metadata.sql").read_text()
+def test_d1_metadata_schema_stores_no_binary_body_and_releases_the_byte_ceiling() -> None:
+    migrations = Path(__file__).resolve().parents[1] / "migrations"
+    migration = (migrations / "008_claw_document_metadata.sql").read_text()
 
     assert "claw_document_metadata" in migration
     assert "tenant_id TEXT NOT NULL" in migration
     assert "object_key TEXT NOT NULL UNIQUE" in migration
     assert "byte_length INTEGER NOT NULL" in migration
+    # #4379: 008 keeps its released text; the capacity ceiling is released by
+    # the forward rebuild, which must carry the non-empty rule across.
     assert "10485760" in migration
     lowered = migration.lower()
     assert "blob" not in lowered
     assert "document_bytes" not in lowered
     assert "refresh_token" not in lowered
     assert "access_token" not in lowered
+
+    forward = (migrations / "060_byte_length_capacity_ceiling_release.sql").read_text()
+    assert "DROP TABLE claw_document_metadata;" in forward
+    assert "byte_length INTEGER NOT NULL CHECK (byte_length > 0)" in forward
+    assert "10485760" not in forward

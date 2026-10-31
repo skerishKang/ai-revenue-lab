@@ -107,6 +107,7 @@ from .claw_automation_owner_resolution import (
 )
 from .claw_automation_projection_bridge import ClawTaskAlertProjectionStore
 from .claw_automation_task_alert_bridge import project_terminal_scheduled_run_to_task_alert
+from .claw_automation_push_notification import notify_terminal_run
 from .claw_automation_terminal_outcome_bridge import (
     execute_and_project_scheduled_occurrence,
 )
@@ -537,12 +538,20 @@ async def _project_terminal_run(
     owner: ResolvedAutomationOwner,
     history_store: HistoryStore,
     task_alert_store: ClawTaskAlertProjectionStore,
+    push_store: Any | None = None,
+    push_sender: Any | None = None,
+    push_scope: str = "",
 ) -> None:
     """Reuse the existing terminal projections for one already-terminal row.
 
     Run history first, then Task/Alert. Both authorities own their own
     idempotency, their own record shape and their own refusal surface, and both
     are read-only for a row whose output type materializes no record.
+
+    #5034: after the existing Task/Alert projection has written the inbox
+    record, additionally attempt a Web Push to this account's opted-in devices.
+    The push is strictly additive: it cannot change the record, cannot re-run
+    the job, and cannot raise into this lane.
     """
 
     await project_terminal_scheduled_run_to_history(
@@ -551,12 +560,24 @@ async def _project_terminal_run(
         owner=owner,
         store=history_store,
     )
-    await project_terminal_scheduled_run_to_task_alert(
+    projection = await project_terminal_scheduled_run_to_task_alert(
         rule=rule,
         scheduled_run=scheduled_run,
         owner=owner,
         store=task_alert_store,
     )
+    if push_store is not None:
+        await notify_terminal_run(
+            push_store=push_store,
+            push_sender=push_sender,
+            workspace_id=owner.workspace_id,
+            member_id=owner.member_id,
+            scope=push_scope,
+            created_kind=getattr(projection, "created_kind", None),
+            created=bool(getattr(projection, "created", False)),
+            run_status=str(getattr(scheduled_run, "status", "")),
+            run_id=getattr(scheduled_run, "run_id", None),
+        )
 
 
 async def compose_background_execution(
@@ -568,6 +589,9 @@ async def compose_background_execution(
     owner_resolver: ClawAutomationOwnerResolver,
     history_store: HistoryStore,
     task_alert_store: ClawTaskAlertProjectionStore,
+    push_store: Any | None = None,
+    push_sender: Any | None = None,
+    push_scope: str = "",
     recovery_bound: int = _DEFAULT_RECOVERY_BOUND,
     lease: SandboxLease | None = None,
     product_tier: Any | None = None,
@@ -717,6 +741,9 @@ async def compose_background_execution(
                     owner=owner,
                     history_store=history_store,
                     task_alert_store=task_alert_store,
+                    push_store=push_store,
+                    push_sender=push_sender,
+                    push_scope=push_scope,
                 )
                 continue
             failed_before_dispatch.append(run.run_id)
@@ -751,6 +778,9 @@ async def compose_background_execution(
                 owner=owner,
                 history_store=history_store,
                 task_alert_store=task_alert_store,
+                push_store=push_store,
+                push_sender=push_sender,
+                push_scope=push_scope,
             )
             continue
 
@@ -761,6 +791,9 @@ async def compose_background_execution(
             owner=owner,
             history_store=history_store,
             task_alert_store=task_alert_store,
+            push_store=push_store,
+            push_sender=push_sender,
+            push_scope=push_scope,
         )
 
     return BackgroundExecutionReceipt(

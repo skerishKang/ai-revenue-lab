@@ -2,10 +2,11 @@ from __future__ import annotations
 
 import hashlib
 import inspect
+import json
 import re
 import uuid
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from typing import Any, Protocol
 
 from .workspace_storage import _safe_identifier
@@ -22,11 +23,52 @@ MAX_CONVERSATION_SEARCH_RESULTS = 20
 MAX_CONVERSATION_SEARCH_SCAN_ROWS = 2000
 MAX_CONVERSATION_SEARCH_SNIPPET_CHARS = 120
 MAX_PROJECT_NAME_CHARS = 80
-MAX_PROJECT_INSTRUCTIONS_CHARS = 1800
+# Page size for the project listing. This is a read shape, not a ceiling:
+# nothing refuses creating a project because the owner already has this many
+# (#5895-D). Kept until the list grows a pagination UI.
 MAX_PROJECTS = 50
 MAX_CLAW_RUNS = 30
 MAX_RUN_RESULT_SUMMARY_CHARS = 200
+#: #5015 the lane actions whose run may hold more than one PC tool call. The
+#: 063 dispatch scope (``tool_call_ref``) is written only by the trusted PC file
+#: tool lane, and that lane is this one; the marker therefore names the same
+#: lane the dispatch scope names, without a second authority.
+MULTI_COMMAND_RUN_ACTIONS = frozenset({"pc_files_query"})
+
+#: #5895 — how long one executor claim is held before the same dispatch may be
+#: handed out again. The Oracle executor holds a poll open for 20 seconds and
+#: re-requests about a second after an empty or dead round, so a claim whose
+#: response never reached it is offered again inside roughly three of those
+#: rounds. This is a delivery timer, not a workload limit: it decides nothing
+#: about how long a PC command may run, and the instant that ends a dispatch
+#: stays the `expires_at` the poll route stamps (#4139).
+ORACLE_MESH_CLAIM_LEASE_SECONDS = 60
+
 MAX_CLAW_HANDOFF_TRUSTED_REQUEST_CHARS = 32000
+
+
+def is_multi_command_action(action: object) -> bool:
+    """#5015 — True when one run may store more than one PC tool-call result."""
+
+    return isinstance(action, str) and action in MULTI_COMMAND_RUN_ACTIONS
+
+
+def _merge_run_result_summaries(stored: object, addition: str) -> str:
+    """#5015 — the run's aggregate summary over its commands' own summaries.
+
+    The aggregate keeps the order the commands finished in, never repeats one
+    summary, and stays inside the run summary bound. A failure is never
+    dropped: the caller stores the failing command's own summary, and this
+    merge keeps it in the aggregate.
+    """
+
+    parts: list[str] = []
+    if isinstance(stored, str) and stored:
+        parts = [part for part in stored.split("; ") if part]
+    if addition and addition not in parts:
+        parts.append(addition)
+    return "; ".join(parts)[:MAX_RUN_RESULT_SUMMARY_CHARS]
+
 
 #: #4139 mesh result originals share the private full-context R2 store with
 #: chat/model full texts. The bound is the result wire envelope the server
@@ -35,6 +77,17 @@ MAX_CLAW_HANDOFF_TRUSTED_REQUEST_CHARS = 32000
 #: encode. R2 keys stay server-derived (conversation + deterministic result
 #: id); a browser can never choose an object key.
 ORACLE_MESH_ORIGINAL_MAX_BYTES = 6_000_000
+ORACLE_MESH_PC_READ_ORIGINAL_MAX_BYTES = 20_000_000
+
+
+def _oracle_mesh_original_max_bytes(row: dict[str, Any]) -> int:
+    # The persisted server dispatch owns this distinction, never a store-call
+    # argument or model value. Commands and other reads retain the 6MB guard.
+    if row.get("kind") == "read" and row.get("root_ref") == "pc_files_read":
+        return ORACLE_MESH_PC_READ_ORIGINAL_MAX_BYTES
+    return ORACLE_MESH_ORIGINAL_MAX_BYTES
+
+
 #: #4139 dispatch row bounds. Each number is the ceiling of the thing it
 #: describes, not a safety guess:
 #: * a reference keeps the bound this table has always used;
@@ -72,12 +125,66 @@ PRODUCT_SCOPE_CHAT = "b62-chat"
 PRODUCT_SCOPE_B66 = "b66-quote"
 KNOWN_PRODUCT_SCOPES = frozenset({PRODUCT_SCOPE_CHAT, PRODUCT_SCOPE_B66})
 
+# #5226 — one statement appends a turn, and it allocates the sequence numbers
+# itself. The sequence is read inside the same write transaction that performs
+# the insert, so a concurrent append to the same conversation can never claim a
+# sequence_number another append already took, and a turn can never be half
+# written: the user row and the assistant row are the same statement, so they
+# land together or not at all. The pre-existing `UNIQUE(conversation_id,
+# sequence_number)` stays the schema authority; this is what stops two writers
+# from racing into it.
+#
+# The `next_sequence` CTE is read once for the statement, so the user row takes
+# `n` and the assistant row takes `n + 1` — adjacent, with no gap and no
+# duplicated number. `COALESCE(MAX(...), -1) + 1` keeps a first turn at 0.
+_APPEND_EXCHANGE_SQL = (
+    "WITH next_sequence AS ("
+    " SELECT COALESCE(MAX(sequence_number), -1) + 1 AS n"
+    " FROM messages WHERE conversation_id = ?"
+    ") "
+    "INSERT INTO messages (id, conversation_id, sequence_number, role, content, created_at) "
+    "SELECT ?, ?, n, 'user', ?, ? FROM next_sequence "
+    "UNION ALL "
+    "SELECT ?, ?, n + 1, 'assistant', ?, ? FROM next_sequence"
+)
+
+#: #5226 — the same atomic sequence rule for a single stored turn (the Claw
+#: pending user turn). One statement, one sequence, allocated under the write
+#: lock, so two pending runs on one conversation never collide.
+_APPEND_USER_MESSAGE_SQL = (
+    "WITH next_sequence AS ("
+    " SELECT COALESCE(MAX(sequence_number), -1) + 1 AS n"
+    " FROM messages WHERE conversation_id = ?"
+    ") "
+    "INSERT INTO messages (id, conversation_id, sequence_number, role, content, created_at) "
+    "SELECT ?, ?, n, 'user', ?, ? FROM next_sequence"
+)
+
 
 def _require_product_scope(value: object) -> str:
     """Fail closed: only a known server-owned scope may address conversations."""
     if not isinstance(value, str) or value not in KNOWN_PRODUCT_SCOPES:
         raise HistoryForbidden("conversation product scope is not recognized")
     return value
+
+
+#: The bounded wording of one admitted PC scope, keyed by the admission the
+#: Engine already signed. It is a notice, never part of an answer.
+PC_SCOPE_NOTICE_LABELS = {
+    "files_list": "목록만 조회합니다. 파일 내용은 읽지 않습니다.",
+    "files": "요청한 파일의 목록과 내용을 확인합니다.",
+    "files_write": "요청한 파일을 만들거나 바꾸고, 옮기거나 지웁니다. 바뀌기 전 내용은 백업합니다.",
+    "query_drives": "드라이브 목록만 조회합니다.",
+    "none": "허용된 PC 작업 범위를 확인하지 못했습니다.",
+}
+
+
+def pc_scope_notice(claim: object) -> str | None:
+    """The notice for a stored scope claim, or None for anything unknown."""
+    if not isinstance(claim, dict):
+        return None
+    notice = PC_SCOPE_NOTICE_LABELS.get(claim.get("admitted"))
+    return notice if isinstance(notice, str) else None
 
 # #2956: closed server-derived trusted P01 request shape. Unknown keys fail
 # closed so browser-supplied authority fields can never enter the handoff.
@@ -153,6 +260,8 @@ class HistoryStore(Protocol):
     async def upsert_google_user(self, subject: str, email: str, name: str, picture: str) -> UserProfile: ...
     async def register_password_user(self, username: str, email: str, name: str, password_hash: str) -> UserProfile: ...
     async def find_password_credential(self, identifier: str) -> PasswordCredential | None: ...
+    async def find_password_credential_by_user_id(self, user_id: str) -> PasswordCredential | None: ...
+    async def update_password_credential(self, user_id: str, password_hash: str) -> None: ...
     async def record_password_failure(self, user_id: str, failed_attempts: int, locked_until: str | None) -> None: ...
     async def reset_password_failures(self, user_id: str) -> None: ...
     async def get_user(self, user_id: str) -> UserProfile | None: ...
@@ -160,7 +269,7 @@ class HistoryStore(Protocol):
     async def search_conversations(self, user_id: str, query: str, *, product_scope: str, limit: int = MAX_CONVERSATION_SEARCH_RESULTS) -> list[dict[str, Any]]: ...
     async def get_conversation(self, user_id: str, conversation_id: str, *, product_scope: str) -> dict[str, Any] | None: ...
     async def delete_conversation(self, user_id: str, conversation_id: str, *, product_scope: str) -> bool: ...
-    async def append_exchange(self, user_id: str, conversation_id: str | None, user_text: str, assistant_text: str, project_id: str | None = None, *, product_scope: str) -> str: ...
+    async def append_exchange(self, user_id: str, conversation_id: str | None, user_text: str, assistant_text: str, project_id: str | None = None, *, product_scope: str, assistant_message_id: str | None = None) -> str: ...
     async def list_projects(self, user_id: str) -> list[ProjectProfile]: ...
     async def get_project(self, user_id: str, project_id: str) -> ProjectProfile | None: ...
     async def create_project(self, user_id: str, name: str, instructions: str) -> ProjectProfile: ...
@@ -183,15 +292,6 @@ def _normalize_search_query(query: object) -> str:
     return collapsed[:MAX_CONVERSATION_SEARCH_QUERY_CHARS]
 
 
-def _escape_like(query: object) -> str:
-    """Make a user query a literal LIKE substring under ESCAPE '\\'.
-
-    The escape character is escaped first, then the LIKE wildcards.
-    """
-    normalized = _normalize_search_query(query)
-    return normalized.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
-
-
 def _search_snippet(hit: object, query: object) -> str:
     """Short excerpt around the first literal match. '' when there is no body hit."""
     if not isinstance(hit, str) or not hit:
@@ -209,8 +309,58 @@ def _search_snippet(hit: object, query: object) -> str:
     return prefix + excerpt + suffix
 
 
+def _iso(moment: datetime) -> str:
+    return moment.isoformat(timespec="milliseconds").replace("+00:00", "Z")
+
+
+def _lane_seconds(oldest: Any, moment: datetime) -> int | None:
+    """How long the oldest row in a lane bucket has been waiting, in whole seconds.
+
+    ``None`` means the bucket is empty, which is a different fact from "0 seconds"
+    and is reported as ``None`` rather than folded into a number.
+    """
+    if not isinstance(oldest, str) or not oldest:
+        return None
+    try:
+        then = datetime.fromisoformat(oldest.replace("Z", "+00:00"))
+    except ValueError:
+        return None
+    if then.tzinfo is None:
+        then = then.replace(tzinfo=timezone.utc)
+    return max(0, int((moment - then).total_seconds()))
+
+
+def _lane_count_age(row: Any, moment: datetime) -> dict[str, Any]:
+    """One ``COUNT(*) / MIN(created_at)`` pair, as a count and an age."""
+    if not isinstance(row, dict):
+        raise HistoryError("oracle mesh lane read unavailable")
+    count = row.get("n")
+    if isinstance(count, bool) or not isinstance(count, int) or count < 0:
+        raise HistoryError("oracle mesh lane read is not a count")
+    return {"count": count, "oldest_seconds": _lane_seconds(row.get("oldest"), moment)}
+
+
+def _lane_node(row: Any, moment: datetime) -> dict[str, Any]:
+    """One PC's unanswered total, keyed by the node reference the lane stores."""
+    if not isinstance(row, dict):
+        raise HistoryError("oracle mesh lane read is not a row")
+    node_ref = row.get("node_ref")
+    count = row.get("n")
+    if not isinstance(node_ref, str) or not node_ref:
+        raise HistoryError("oracle mesh lane read names no node")
+    if isinstance(count, bool) or not isinstance(count, int) or count < 0:
+        raise HistoryError("oracle mesh lane read is not a count")
+    waiting = row.get("waiting")
+    if isinstance(waiting, bool) or not isinstance(waiting, int) or waiting < 0:
+        raise HistoryError("oracle mesh lane read has no waiting count")
+    return {"node_ref": node_ref[:256], "open": count,
+            "oldest_seconds": _lane_seconds(row.get("oldest"), moment),
+            "waiting": waiting,
+            "waiting_oldest_seconds": _lane_seconds(row.get("waiting_oldest"), moment)}
+
+
 def _now_iso() -> str:
-    return datetime.now(timezone.utc).isoformat(timespec="milliseconds").replace("+00:00", "Z")
+    return _iso(datetime.now(timezone.utc))
 
 
 def _user_id(subject: str) -> str:
@@ -230,6 +380,48 @@ def _chat_id() -> str:
 
 def _message_id() -> str:
     return "msg_" + uuid.uuid4().hex
+
+
+#: #5015: the run-scoped id of the assistant message that a model-only Claw run
+#: stores for exactly that run. It follows the existing deterministic result-id
+#: convention (``msg_ltr_<40hex>`` from a salted hash, the same shape
+#: ``local_task_result_message_id`` produces), because the private full-context
+#: key validator only accepts the canonical message identities. Deriving it from
+#: the server-owned run id keeps the owner-scoped lookup correlatable without a
+#: schema change and without ever matching a later turn's text.
+GENERAL_ANSWER_MESSAGE_SALT = "claw-general-answer:v1"
+
+#: #5015: the run action the general lane itself records. Only a run the
+#: server stored under this action is a verified model-only execution; a PC,
+#: desktop or staged run keeps its own action and is never answered from a
+#: model reply.
+MODEL_ONLY_RUN_ACTION = "general"
+
+
+def general_answer_message_id(run_id: str) -> str:
+    """The one message id a model-only run owns for its verified answer.
+
+    The id must satisfy the canonical message identity the private full-context
+    store accepts, otherwise a long answer (stored as a D1 preview plus an R2
+    original) would fail its R2 key validation and take the whole conversation
+    save down with it.
+    """
+    if not isinstance(run_id, str) or not run_id:
+        raise HistoryError("run_id is required")
+    payload = f"{GENERAL_ANSWER_MESSAGE_SALT}:{run_id}"
+    message_id = "msg_ltr_" + hashlib.sha256(payload.encode("utf-8")).hexdigest()[:40]
+    if len(message_id) > 128:
+        raise HistoryError("run-scoped answer message id is not bounded")
+    return message_id
+
+
+def _message_reference(value: object) -> str:
+    """Validate a caller-supplied message id as a bounded safe reference."""
+    if not isinstance(value, str) or not value or len(value) > 128:
+        raise HistoryError("message id must be a bounded safe reference")
+    if any(not (ch.isalnum() or ch in "_-") for ch in value):
+        raise HistoryError("message id must be a bounded safe reference")
+    return value
 
 
 def _project_id() -> str:
@@ -314,6 +506,16 @@ def validate_project_id(value: object) -> str | None:
     return _validate_hex_id(value, "proj_", "project_id")
 
 
+def validate_chat_pc_run_id(value: object) -> str | None:
+    """#5015 — the canonical Chat PC run id (``chat_pcq_`` plus 32 hex).
+
+    The same canonical id rule the conversation and project ids use, so a
+    Chat PC run is addressable by its own id instead of by a widened pattern.
+    """
+
+    return _validate_hex_id(value, "chat_pcq_", "run_id")
+
+
 def validate_project_fields(name: object, instructions: object = "") -> tuple[str, str]:
     if not isinstance(name, str):
         raise ValueError("프로젝트 이름 형식이 올바르지 않습니다.")
@@ -323,8 +525,8 @@ def validate_project_fields(name: object, instructions: object = "") -> tuple[st
     if not isinstance(instructions, str):
         raise ValueError("프로젝트 지침 형식이 올바르지 않습니다.")
     cleaned_instructions = instructions.strip()
-    if len(cleaned_instructions) > MAX_PROJECT_INSTRUCTIONS_CHARS:
-        raise ValueError("프로젝트 지침은 1800자 이하로 입력해 주세요.")
+    # #5895-C: no character ceiling on project instructions. The 1800 the
+    # composer used to enforce was a pilot-era input clamp, not a store bound.
     return cleaned_name, cleaned_instructions
 
 
@@ -370,6 +572,21 @@ def _title_from_user_text(text: str) -> str:
     if boundary:
         one_line = one_line[:boundary.end()]
     return one_line[:MAX_HISTORY_TITLE_CHARS] or "새 대화"
+
+
+def _is_bounded_preview(content: str) -> bool:
+    """Whether a stored D1 row is the bounded preview of a longer original.
+
+    A message longer than ``MAX_HISTORY_MESSAGE_CHARS`` is stored as a
+    truncated preview plus the private original, and the preview is marked
+    explicitly. Every read that has to return the *whole* stored text decides
+    with this one predicate, so the preview can never be mistaken for the
+    answer.
+    """
+    return (
+        len(content) == MAX_HISTORY_MESSAGE_CHARS
+        and content.endswith(HISTORY_PREVIEW_SUFFIX)
+    )
 
 
 def _changed_rows(result: Any) -> int:
@@ -515,15 +732,170 @@ def _run_history_public(row: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+class VerifiedDispatch(dict):
+    """A dispatch row that an owner-scoped read produced, tagged with who it was read for.
+
+    It stays a dict, so every reader of these rows keeps working and the value survives the
+    queue's JSON boundary. The tag is the point: the original stores refuse a plain dict, so
+    a result submission can prove its pin from the row already in hand instead of re-reading
+    `oracle_mesh_dispatch` from D1 — which, with the queue live, no longer holds the row, and
+    that re-read is what answered the 19:09 submission 403.
+    """
+
+    __slots__ = ()
+
+    @property
+    def verified_for(self) -> str:
+        return str(self.get(_VERIFIED_FOR) or "")
+
+
+_VERIFIED_FOR = "verified_for_user"
+
+
+def _tagged(row: Any) -> "VerifiedDispatch":
+    """Mark a row an owner-scoped read produced with the owner it names.
+
+    Only the store wraps, so a dict that arrives from anywhere else is not a handle and
+    falls back to the authoritative lookup.
+    """
+
+    marked = VerifiedDispatch(row)
+    marked[_VERIFIED_FOR] = str(row.get("user_id") or "")
+    return marked
+
 class D1HistoryStore:
     """Cloudflare D1 adapter. All dynamic values use prepared statement binds."""
 
-    def __init__(self, db: Any, *, full_context_bucket: Any = None):
+    def __init__(self, db: Any, *, full_context_bucket: Any = None,
+                 run_ownership: Any = None):
         if db is None:
             raise ValueError("D1 binding is required")
         self.db = db
         # Existing private workspace R2 binding, never an incoming browser key.
         self.full_context_bucket = full_context_bucket
+        # Where "does this run belong to this user" is answered. Absent, it is answered
+        # from `claw_run_history` — the D1 that owns conversation rows. The 컴2 queue
+        # deliberately does not own that table, so it supplies its own answer; without
+        # this seam every dispatch creation on the queue died on `no such table` and the
+        # PC lane stopped working the moment the switch went live (2026-10-30 14:11).
+        self.run_ownership = run_ownership
+        # Which store answers dispatch-row reads. It is this store until the queue is
+        # wired in as the authority (com2), because that is where `oracle_mesh_dispatch`
+        # lives then. Without the seam the conversation read-back re-read a table that is
+        # no longer in D1 and answered `run_result_unavailable` (503) to the browser.
+        self.dispatch_authority: Any = None
+
+    def set_dispatch_authority(self, authority: Any) -> None:
+        if authority is None or authority is self:
+            return
+        self.dispatch_authority = authority
+
+    async def _dispatch(self, name: str, **arguments: Any) -> Any:
+        source = self.dispatch_authority if self.dispatch_authority is not None else self
+        return await getattr(source, name)(**arguments)
+
+    @staticmethod
+    def _verified(row: Any, user_id: str) -> "VerifiedDispatch | None":
+        if not isinstance(row, dict):
+            return None
+        owner = row.get("user_id")
+        if owner is not None and owner != user_id:
+            return None
+        marked = VerifiedDispatch(row)
+        marked[_VERIFIED_FOR] = user_id
+        return marked
+
+    async def get_oracle_mesh_dispatch_pin(self, *, user_id: str, dispatch_id: str):
+        """The owner-scoped pin: who dispatched it and what result was already accepted."""
+
+        if not isinstance(user_id, str) or not user_id:
+            return None
+        if not isinstance(dispatch_id, str) or not dispatch_id:
+            return None
+        row = await self._first(
+            "SELECT user_id, result_sha256, result_bytes, kind, root_ref FROM oracle_mesh_dispatch "
+            "WHERE dispatch_id=?",
+            dispatch_id,
+        )
+        return self._verified(row, user_id)
+
+    async def get_oracle_mesh_run_correlation(self, *, user_id: str, run_id: str):
+        """The terminal receipt of one run, read wherever dispatch rows live."""
+
+        if not isinstance(user_id, str) or not user_id:
+            return None
+        if not isinstance(run_id, str) or not run_id:
+            return None
+        row = await self._first(
+            "SELECT user_id, command_id, revision_ref, dispatch_id FROM oracle_mesh_dispatch "
+            "WHERE user_id=? AND run_id=? AND state='done'",
+            user_id, run_id,
+        )
+        return self._verified(row, user_id)
+
+    async def get_oracle_mesh_run_command(self, *, user_id: str, run_id: str, command_id: str):
+        """Whether one command was dispatched by this owner inside this run."""
+
+        row = await self._first(
+            "SELECT user_id, dispatch_id FROM oracle_mesh_dispatch "
+            "WHERE user_id=? AND run_id=? AND command_id=? LIMIT 1",
+            user_id, run_id, command_id,
+        )
+        return self._verified(row, user_id)
+
+    async def get_oracle_mesh_run_open_state(self, *, user_id: str, run_id: str) -> dict:
+        """Which of this run's dispatches still lack a terminal result, and which failed."""
+
+        pending = await self._first(
+            "SELECT dispatch_id FROM oracle_mesh_dispatch "
+            "WHERE user_id=? AND run_id=? AND state NOT IN ('done', 'failed') LIMIT 1",
+            user_id, run_id,
+        )
+        failed = await self._first(
+            "SELECT dispatch_id FROM oracle_mesh_dispatch "
+            "WHERE user_id=? AND run_id=? AND state='failed' LIMIT 1",
+            user_id, run_id,
+        )
+        return {
+            "pending_dispatch_id": (pending or {}).get("dispatch_id"),
+            "failed_dispatch_id": (failed or {}).get("dispatch_id"),
+        }
+
+    async def _mesh_dispatch_pin(self, *, user_id: str, dispatch_id: str,
+                                 expected_sha256: str, expected_bytes: int,
+                                 verified: Any = None):
+        """The owner + pin check the original stores share, without a D1 re-read.
+
+        A handle is honoured only when it is the tagged dict an owner-scoped read produced
+        for this same user; a plain dict — however well shaped — falls back to the
+        authoritative lookup, so a caller cannot talk its way past the check by inventing a
+        row. Forgery of the pin and another owner's dispatch stay refused either way.
+        """
+
+        row: Any = verified if isinstance(verified, VerifiedDispatch) else None
+        if row is not None and (row.verified_for != user_id
+                                or row.get("user_id") not in (None, user_id)):
+            raise HistoryForbidden("mesh dispatch is not owned by current user")
+        if row is None:
+            row = await self._dispatch("get_oracle_mesh_dispatch_pin",
+                                        user_id=user_id, dispatch_id=dispatch_id)
+        if row is None:
+            raise HistoryForbidden("mesh dispatch is not owned by current user")
+        if row.get("result_sha256") != expected_sha256 or row.get("result_bytes") != expected_bytes:
+            raise HistoryError("mesh original does not match the pinned result")
+        return row
+
+    async def _run_is_owned(self, run_id: str, user_id: str) -> bool:
+        if self.run_ownership is not None:
+            owned = self.run_ownership(run_id, user_id)
+            if hasattr(owned, "__await__"):
+                owned = await owned
+            return bool(owned)
+        row = await self._first(
+            "SELECT id FROM claw_run_history WHERE run_id=? AND user_id=?",
+            run_id, user_id,
+        )
+        return row is not None
 
     @staticmethod
     def _context_key(conversation_id: str, message_id: str) -> str:
@@ -569,9 +941,32 @@ class D1HistoryStore:
                 # DB owner/row authority remains independent of R2 cleanup.
                 pass
 
+    async def _delete_orphan_full_keys(self, keys: list[tuple[str, str]]) -> None:
+        """Remove only the originals whose own message row never landed.
+
+        A row that DID land keeps its R2 original, so a stored message never
+        degrades into a preview-only row with a missing full text. The check is
+        per message id, because the run-scoped answer id of #5015 is
+        deterministic: a repeated completion event collides on the
+        ``messages.id`` primary key, and that collision must not strip the
+        original of the record that is already stored.
+
+        A row that cannot be read is treated as landed: an original that might
+        belong to a stored row is never destroyed on an unproven guess.
+        """
+        orphan_keys: list[str] = []
+        for message_id, key in keys:
+            try:
+                landed = await self._first("SELECT id FROM messages WHERE id=?", message_id)
+            except Exception:
+                continue
+            if not isinstance(landed, dict):
+                orphan_keys.append(key)
+        await self._delete_full_keys(orphan_keys)
+
     async def _read_full_message(self, conversation_id: str, row: dict[str, Any]) -> str:
         preview = str(row.get("content", ""))
-        if len(preview) != MAX_HISTORY_MESSAGE_CHARS or not preview.endswith(HISTORY_PREVIEW_SUFFIX):
+        if not _is_bounded_preview(preview):
             return preview
         bucket = self.full_context_bucket
         if bucket is None or not callable(getattr(bucket, "get", None)):
@@ -604,11 +999,21 @@ class D1HistoryStore:
 
         Browser APIs keep bounded previews; the canonical full-original (R2)
         restoration is only ever reachable through this product-scoped read.
+
+        #4317 perf: this used to call :meth:`get_conversation` first, which
+        reads the conversation row *and* the bounded message preview, and then
+        read the same message rows again for the full-original bodies. The
+        preview read was pure waste on this path, so the conversation row is
+        read directly here and the message rows are read once. The returned
+        shape is unchanged.
         """
-        owned = await self.get_conversation(
-            user_id, conversation_id, product_scope=product_scope
+        scope = _require_product_scope(product_scope)
+        conv = await self._first(
+            "SELECT id, title, project_id, created_at, updated_at FROM conversations "
+            "WHERE id=? AND user_id=? AND product_scope=?",
+            conversation_id, user_id, scope,
         )
-        if owned is None:
+        if not conv:
             return None
         rows = await self._all(
             "SELECT id, role, content, sequence_number FROM messages "
@@ -624,7 +1029,18 @@ class D1HistoryStore:
             if byte_total > MAX_MODEL_CONTEXT_BYTES:
                 raise HistoryError("conversation context exceeds transport envelope")
             full_messages.append({"role": row["role"], "content": content})
-        return {**owned, "messages": full_messages}
+        return {
+            "id": str(conv.get("id", "")),
+            "title": str(conv.get("title", "")),
+            "project_id": (
+                str(conv.get("project_id"))
+                if conv.get("project_id") is not None
+                else None
+            ),
+            "created_at": str(conv.get("created_at", "")),
+            "updated_at": str(conv.get("updated_at", "")),
+            "messages": full_messages,
+        }
 
     async def _first(self, sql: str, *values: Any) -> dict[str, Any] | None:
         statement = self.db.prepare(sql)
@@ -644,11 +1060,33 @@ class D1HistoryStore:
             statement = statement.bind(*values)
         return _rows_from_result(await statement.run())
 
+    async def upsert_shared_user(self, user_id: str, account_id: str, email: str, name: str, picture: str) -> UserProfile:
+        if not re.fullmatch(r'usr_[0-9a-f]{32}', user_id) or not re.fullmatch(r'sub_[A-Za-z0-9_-]+', account_id):
+            raise HistoryError('invalid shared identity')
+        now = _now_iso()
+        display = (name.strip() or email.split('@', 1)[0])[:160]
+        pic = picture.strip()[:1000]
+        marker = 'shared:' + account_id
+        rows = await self._all(
+            "INSERT INTO users (id, auth_provider, provider_subject, email, display_name, picture_url, created_at, updated_at) "
+            "VALUES (?, 'google', ?, ?, ?, ?, ?, ?) "
+            "ON CONFLICT(id) DO UPDATE SET email=excluded.email, display_name=excluded.display_name, "
+            "picture_url=excluded.picture_url, updated_at=excluded.updated_at "
+            "WHERE users.provider_subject NOT LIKE 'shared:%' OR users.provider_subject=excluded.provider_subject RETURNING id",
+            user_id, marker, email, display, pic, now, now,
+        )
+        if len(rows) != 1:
+            raise HistoryConflict('shared identity conflict')
+        return UserProfile(user_id, email, display, pic)
+
     async def upsert_google_user(self, subject: str, email: str, name: str, picture: str) -> UserProfile:
         uid = _user_id(subject)
         now = _now_iso()
         display = (name.strip() or email.split("@", 1)[0])[:160]
         pic = picture.strip()[:1000]
+        # The user ID derives from the verified Google subject, so only its
+        # own shared placeholder may be replaced when rolling back login.
+        await self._run("UPDATE users SET provider_subject=? WHERE id=? AND provider_subject LIKE 'shared:%'", subject, uid)
         await self._run(
             "INSERT INTO users (id, auth_provider, provider_subject, email, display_name, picture_url, created_at, updated_at) "
             "VALUES (?, 'google', ?, ?, ?, ?, ?, ?) "
@@ -757,6 +1195,60 @@ class D1HistoryStore:
             user_id,
         )
 
+    async def find_password_credential_by_user_id(
+        self, user_id: str
+    ) -> PasswordCredential | None:
+        """The credential row of one already known account.
+
+        #5434: a self-service password change resolves the account from the
+        signed session, never from a request-supplied identifier, so the
+        lookup is keyed by the server-owned user id.
+        """
+        if not isinstance(user_id, str) or not user_id:
+            return None
+        row = await self._first(
+            "SELECT u.id, u.email, u.display_name, u.picture_url, c.username, c.password_hash, "
+            "c.failed_attempts, c.locked_until "
+            "FROM password_credentials c JOIN users u ON u.id=c.user_id "
+            "WHERE c.user_id=? LIMIT 1",
+            user_id,
+        )
+        if row is None:
+            return None
+        return PasswordCredential(
+            user=UserProfile(
+                str(row.get("id", "")),
+                str(row.get("email", "")),
+                str(row.get("display_name", "")),
+                str(row.get("picture_url", "")),
+            ),
+            username=str(row.get("username", "")),
+            password_hash=str(row.get("password_hash", "")),
+            failed_attempts=max(0, int(row.get("failed_attempts", 0))),
+            locked_until=str(row.get("locked_until")) if row.get("locked_until") else None,
+        )
+
+    async def update_password_credential(
+        self, user_id: str, password_hash: str
+    ) -> None:
+        """Replace the stored hash of one account and clear its failure state.
+
+        #5434: only the hash, the failure counter and the lock move. The
+        account id, the role rows, the membership rows and every other
+        account-owned record stay exactly as they were.
+        """
+        if not isinstance(user_id, str) or not user_id:
+            raise HistoryError("user_id is required")
+        if not isinstance(password_hash, str) or not password_hash:
+            raise HistoryError("password_hash is required")
+        await self._run(
+            "UPDATE password_credentials SET password_hash=?, failed_attempts=0, "
+            "locked_until=NULL, updated_at=? WHERE user_id=?",
+            password_hash,
+            _now_iso(),
+            user_id,
+        )
+
     async def get_user(self, user_id: str) -> UserProfile | None:
         row = await self._first(
             "SELECT id, email, display_name, picture_url FROM users "
@@ -795,26 +1287,32 @@ class D1HistoryStore:
         """Owner-scoped search over the signed-in user's own conversations.
 
         Matches conversation titles and recent message text. Every value is a
-        bound parameter; LIKE wildcards in the query are escaped so it is always
-        a literal substring. Results and scanned rows are bounded. Stored
-        conversations are never truncated.
+        bound parameter and the query is always a literal substring. Results and
+        scanned rows are bounded. Stored conversations are never truncated.
+
+        Membership is `instr`, not `LIKE`. D1 refuses a LIKE pattern longer than
+        50 bytes as "too complex", and a 17-character Korean query is already 53
+        bytes once wrapped in `%…%` — the store accepts 80 characters. `instr`
+        takes an ordinary bound value, so no query length can reach that
+        ceiling; the run-result read below uses the same route for the same
+        reason. `lower()` on both sides keeps the ASCII case-insensitivity that
+        `LIKE` gave, and there is no wildcard left to escape.
         """
-        needle = _escape_like(query)
+        needle = _normalize_search_query(query)
         if not needle:
             return []
         scope = _require_product_scope(product_scope)
         bounded = max(1, min(int(limit), MAX_CONVERSATION_SEARCH_RESULTS))
-        pattern = f"%{needle}%"
         rows = await self._all(
             "SELECT c.id, c.title, c.project_id, c.created_at, c.updated_at, "
             "(SELECT m.content FROM messages m WHERE m.conversation_id = c.id "
-            " AND m.content LIKE ? ESCAPE '\\' ORDER BY m.sequence_number ASC LIMIT 1) AS hit "
+            " AND instr(lower(m.content), lower(?)) > 0 ORDER BY m.sequence_number ASC LIMIT 1) AS hit "
             "FROM conversations c "
-            "WHERE c.user_id=? AND c.product_scope=? AND (c.title LIKE ? ESCAPE '\\' OR EXISTS ("
+            "WHERE c.user_id=? AND c.product_scope=? AND (instr(lower(c.title), lower(?)) > 0 OR EXISTS ("
             "  SELECT 1 FROM (SELECT m.content FROM messages m WHERE m.conversation_id = c.id "
-            "  ORDER BY m.sequence_number DESC LIMIT ?) scan WHERE scan.content LIKE ? ESCAPE '\\')) "
+            "  ORDER BY m.sequence_number DESC LIMIT ?) scan WHERE instr(lower(scan.content), lower(?)) > 0)) "
             "ORDER BY c.updated_at DESC LIMIT ?",
-            pattern, user_id, scope, pattern, MAX_CONVERSATION_SEARCH_SCAN_ROWS, pattern, bounded,
+            needle, user_id, scope, needle, MAX_CONVERSATION_SEARCH_SCAN_ROWS, needle, bounded,
         )
         return [{
             "id": str(row.get("id", "")),
@@ -933,7 +1431,7 @@ class D1HistoryStore:
         )
         return True
 
-    async def append_exchange(self, user_id: str, conversation_id: str | None, user_text: str, assistant_text: str, project_id: str | None = None, *, product_scope: str) -> str:
+    async def append_exchange(self, user_id: str, conversation_id: str | None, user_text: str, assistant_text: str, project_id: str | None = None, *, product_scope: str, assistant_message_id: str | None = None) -> str:
         scope = _require_product_scope(product_scope)
         user_content = _bounded_text(user_text, "user_text")
         assistant_content = _bounded_text(assistant_text, "assistant_text")
@@ -944,7 +1442,6 @@ class D1HistoryStore:
             if project_id is not None and await self.get_project(user_id, project_id) is None:
                 raise HistoryForbidden("project is not owned by current user")
             cid = _chat_id()
-            sequence = 0
         else:
             owned = await self._first(
                 "SELECT id, project_id FROM conversations WHERE id=? AND user_id=? AND product_scope=?",
@@ -958,17 +1455,23 @@ class D1HistoryStore:
             stored_project = str(owned.get("project_id")) if owned.get("project_id") is not None else None
             if stored_project != project_id:
                 raise HistoryForbidden("conversation project mismatch")
-            row = await self._first("SELECT MAX(sequence_number) AS max_sequence FROM messages WHERE conversation_id=?", cid)
-            raw_seq = None if row is None else row.get("max_sequence")
-            sequence = int(raw_seq) + 1 if raw_seq is not None else 0
 
-        user_msg_id, answer_msg_id = _message_id(), _message_id()
-        r2_keys: list[str] = []
+        # #5015: a model-only run stores its verified answer under a run-scoped
+        # message id, so the owner-scoped lookup can correlate the stored
+        # completion record with the actual message. The default stays the
+        # random id, and an explicit id is never taken from a browser value.
+        user_msg_id = _message_id()
+        answer_msg_id = (
+            _message_reference(assistant_message_id)
+            if assistant_message_id is not None else _message_id()
+        )
+        r2_keys: list[tuple[str, str]] = []
+        persisted = False
         try:
             for msg_id, raw in ((user_msg_id, user_text.strip()), (answer_msg_id, assistant_text.strip())):
                 key = await self._put_full_message(cid, msg_id, raw)
                 if key is not None:
-                    r2_keys.append(key)
+                    r2_keys.append((msg_id, key))
             if creating:
                 # Store private full text first; unavailable R2 must not leave
                 # a misleading, empty D1 conversation for the first turn.
@@ -976,20 +1479,44 @@ class D1HistoryStore:
                     "INSERT INTO conversations (id, user_id, project_id, title, created_at, updated_at, product_scope) VALUES (?, ?, ?, ?, ?, ?, ?)",
                     cid, user_id, project_id, _title_from_user_text(user_content), now, now, scope,
                 )
+            # #5226: the whole exchange is one statement, so the user row and the
+            # assistant row land together and the two sequence numbers are
+            # allocated inside the same write transaction. Two concurrent
+            # appends to one conversation therefore cannot collide on
+            # `UNIQUE(conversation_id, sequence_number)` and cannot leave a
+            # half-written turn behind.
             await self._run(
-                "INSERT INTO messages (id, conversation_id, sequence_number, role, content, created_at) VALUES (?, ?, ?, 'user', ?, ?)",
-                user_msg_id, cid, sequence, user_content, now,
+                _APPEND_EXCHANGE_SQL,
+                cid,
+                user_msg_id, cid, user_content, now,
+                answer_msg_id, cid, assistant_content, now,
             )
-            await self._run(
-                "INSERT INTO messages (id, conversation_id, sequence_number, role, content, created_at) VALUES (?, ?, ?, 'assistant', ?, ?)",
-                answer_msg_id, cid, sequence + 1, assistant_content, now,
-            )
+            persisted = True
+            await self._run("UPDATE conversations SET updated_at=? WHERE id=? AND user_id=?", now, cid, user_id)
+            if project_id is not None:
+                await self._run("UPDATE projects SET updated_at=? WHERE id=? AND user_id=?", now, project_id, user_id)
         except Exception:
-            await self._delete_full_keys(r2_keys)
+            # The R2 original is removed only when its D1 row never landed. A row
+            # that DID land keeps its R2 original, so a stored message never
+            # degrades into a preview-only row with a missing full text, and a
+            # failed append leaves no orphan R2 object behind.
+            # #5015: the run-scoped answer id is deterministic, so a repeated
+            # completion event collides on the messages primary key instead of
+            # appending the same answer twice. The row of the first record is
+            # still there, and its original has to survive that collision.
+            if not persisted:
+                await self._delete_orphan_full_keys(r2_keys)
+                if creating:
+                    # A first turn that never landed must not leave an empty
+                    # conversation behind.
+                    try:
+                        await self._run(
+                            "DELETE FROM conversations WHERE id=? AND user_id=? AND product_scope=?",
+                            cid, user_id, scope,
+                        )
+                    except Exception:
+                        pass
             raise
-        await self._run("UPDATE conversations SET updated_at=? WHERE id=? AND user_id=?", now, cid, user_id)
-        if project_id is not None:
-            await self._run("UPDATE projects SET updated_at=? WHERE id=? AND user_id=?", now, project_id, user_id)
         return cid
 
     async def record_txt_pending_run(
@@ -1008,7 +1535,6 @@ class D1HistoryStore:
         project_id = None
         if creating:
             cid = _chat_id()
-            sequence = 0
         else:
             owned = await self._first(
                 "SELECT id,project_id FROM conversations WHERE id=? AND user_id=? AND product_scope=?",
@@ -1017,15 +1543,10 @@ class D1HistoryStore:
             if not owned:
                 raise HistoryForbidden("conversation is not owned by current user")
             project_id = owned.get("project_id")
-            found = await self._first(
-                "SELECT MAX(sequence_number) AS max_sequence FROM messages WHERE conversation_id=?",
-                cid,
-            )
-            number = found.get("max_sequence") if isinstance(found, dict) else None
-            sequence = int(number) + 1 if number is not None else 0
         now = _now_iso()
         msg_id = _message_id()
         key = await self._put_full_message(cid, msg_id, user_text.strip())
+        persisted = False
         try:
             if creating:
                 await self._run(
@@ -1033,11 +1554,14 @@ class D1HistoryStore:
                     "VALUES (?,?,NULL,?,?,?,?)",
                     cid, user_id, _title_from_user_text(content), now, now, PRODUCT_SCOPE_CHAT,
                 )
+            # #5226: the same atomic sequence rule as a Chat exchange — the
+            # turn number is allocated inside the write that stores the turn.
             await self._run(
-                "INSERT INTO messages (id,conversation_id,sequence_number,role,content,created_at) "
-                "VALUES (?,?,?,'user',?,?)",
-                msg_id, cid, sequence, content, now,
+                _APPEND_USER_MESSAGE_SQL,
+                cid,
+                msg_id, cid, content, now,
             )
+            persisted = True
             await self.record_claw_run(
                 user_id=user_id, run_id=run_id, channel="web",
                 action="txt_read", title=("Claw: " + content)[:MAX_HISTORY_TITLE_CHARS],
@@ -1048,7 +1572,8 @@ class D1HistoryStore:
                 now, cid, user_id,
             )
         except Exception:
-            if key is not None:
+            # Only a turn that never landed may lose its R2 original.
+            if not persisted and key is not None:
                 await self._delete_full_keys([key])
             raise
         return cid
@@ -1084,11 +1609,87 @@ class D1HistoryStore:
         )
         return run_id
 
+    async def _chat_stream_turn(self, user_id: str, run_id: str) -> dict | None:
+        validate_chat_pc_run_id(run_id)
+        return await self._first(
+            "SELECT m.conversation_id,m.content FROM messages m "
+            "JOIN conversations c ON c.id=m.conversation_id "
+            "WHERE m.id=? AND m.role='user' AND c.user_id=? AND c.product_scope=? "
+            "AND NOT EXISTS (SELECT 1 FROM messages a WHERE a.id IN (?,?,?))",
+            general_answer_message_id(run_id + ":chat-stream-user"), user_id,
+            PRODUCT_SCOPE_CHAT, general_answer_message_id(run_id + ":chat-stream-answer"),
+            run_id + "_answer", run_id + "_final",
+        )
+
+    async def begin_chat_stream_turn(
+        self, *, user_id: str, run_id: str, workspace_id: str,
+        user_text: str, conversation_id: str | None,
+    ) -> str:
+        """Persist the real user turn, never a PC run before a tool is selected."""
+        if (await self.get_claw_run(user_id, run_id) is not None
+                or await self._first("SELECT id FROM messages WHERE id=?",
+                    general_answer_message_id(run_id + ":chat-stream-user")) is not None):
+            raise HistoryForbidden("Chat stream turn already exists")
+        validate_chat_pc_run_id(run_id)
+        return await self.record_chat_pc_drive_run(
+            user_id=user_id, run_id=run_id, workspace_id=workspace_id,
+            user_text=user_text, conversation_id=conversation_id, stage_run=False,
+            user_message_id=general_answer_message_id(run_id + ":chat-stream-user"),
+        )
+
+    async def promote_chat_stream_pc_run(
+        self, *, user_id: str, run_id: str, workspace_id: str, action: str,
+    ) -> dict | None:
+        """Called only after a signed Engine tool call revalidates its owner."""
+        if action not in ("pc_files_query", "pc_drive_query"):
+            raise HistoryForbidden("Invalid PC run action")
+        turn = await self._chat_stream_turn(user_id, run_id)
+        if turn is None:
+            return None
+        await self.record_claw_run(
+            user_id=user_id, run_id=run_id, channel="web", action=action,
+            title=("PC: " + turn["content"])[:MAX_HISTORY_TITLE_CHARS], status="pending",
+            conversation_id=turn["conversation_id"], workspace_id=_safe_identifier("workspace_id", workspace_id),
+        )
+        return await self.get_claw_run(user_id, run_id)
+
+    async def finish_chat_stream_turn(
+        self, *, user_id: str, run_id: str, answer: str,
+    ) -> str | None:
+        """Append one answer to the already stored user turn, without duplication."""
+        turn = await self._chat_stream_turn(user_id, run_id)
+        if turn is None:
+            raise HistoryForbidden("Chat stream turn is not pending")
+        cid = turn["conversation_id"]
+        run = await self.get_claw_run(user_id, run_id)
+        if run is not None:
+            # Reuse the existing PC completion invariants and verified summary.
+            from .chat_pc_drive import _append_lane_answer
+            if not await _append_lane_answer(None, self, uid=user_id, run_id=run_id, content=answer):
+                return cid
+        else:
+            content = _bounded_text(answer, "assistant_text")
+            message_id = general_answer_message_id(run_id + ":chat-stream-answer")
+            key = await self._put_full_message(cid, message_id, answer.strip())
+            try:
+                await self._run(
+                    _APPEND_USER_MESSAGE_SQL.replace("'user'", "'assistant'"),
+                    cid, message_id, cid, content, _now_iso(),
+                )
+            except Exception:
+                if key is not None:
+                    await self._delete_orphan_full_keys([(message_id, key)])
+                raise
+        await self._run("UPDATE conversations SET updated_at=? WHERE id=? AND user_id=?",
+                        _now_iso(), cid, user_id)
+        return cid
+
     async def record_chat_pc_drive_run(
         self, *, user_id: str, run_id: str, workspace_id: str,
         user_text: str, conversation_id: str | None,
         action: str = "pc_drive_query",
         title_prefix: str = "PC 드라이브 조회: ",
+        stage_run: bool = True, user_message_id: str | None = None,
     ) -> str:
         """Stage a real b62 Chat owner conversation + pending PC tool run.
 
@@ -1109,7 +1710,6 @@ class D1HistoryStore:
         project_id = None
         if creating:
             cid = _chat_id()
-            sequence = 0
         else:
             owned = await self._first(
                 "SELECT id,project_id FROM conversations WHERE id=? AND user_id=? AND product_scope=?",
@@ -1118,15 +1718,10 @@ class D1HistoryStore:
             if not owned:
                 raise HistoryForbidden("conversation is not owned by current user")
             project_id = owned.get("project_id")
-            found = await self._first(
-                "SELECT MAX(sequence_number) AS max_sequence FROM messages WHERE conversation_id=?",
-                cid,
-            )
-            number = found.get("max_sequence") if isinstance(found, dict) else None
-            sequence = int(number) + 1 if number is not None else 0
         now = _now_iso()
-        msg_id = _message_id()
+        msg_id = _message_reference(user_message_id) if user_message_id is not None else _message_id()
         key = await self._put_full_message(cid, msg_id, user_text.strip())
+        persisted = False
         try:
             if creating:
                 await self._run(
@@ -1134,22 +1729,26 @@ class D1HistoryStore:
                     "VALUES (?,?,NULL,?,?,?,?)",
                     cid, user_id, _title_from_user_text(content), now, now, PRODUCT_SCOPE_CHAT,
                 )
+            # #5226: the same atomic sequence rule as a Chat exchange.
             await self._run(
-                "INSERT INTO messages (id,conversation_id,sequence_number,role,content,created_at) "
-                "VALUES (?,?,?,'user',?,?)",
-                msg_id, cid, sequence, content, now,
+                _APPEND_USER_MESSAGE_SQL,
+                cid,
+                msg_id, cid, content, now,
             )
-            await self.record_claw_run(
-                user_id=user_id, run_id=run_id, channel="web",
-                action=action, title=(title_prefix + content)[:MAX_HISTORY_TITLE_CHARS],
-                status="pending", conversation_id=cid, workspace_id=workspace,
-            )
+            persisted = True
+            if stage_run:
+                await self.record_claw_run(
+                    user_id=user_id, run_id=run_id, channel="web",
+                    action=action, title=(title_prefix + content)[:MAX_HISTORY_TITLE_CHARS],
+                    status="pending", conversation_id=cid, workspace_id=workspace,
+                )
             await self._run(
                 "UPDATE conversations SET updated_at=? WHERE id=? AND user_id=?",
                 now, cid, user_id,
             )
         except Exception:
-            if key is not None:
+            # Only a turn that never landed may lose its R2 original.
+            if not persisted and key is not None:
                 await self._delete_full_keys([key])
             raise
         return cid
@@ -1444,10 +2043,70 @@ class D1HistoryStore:
         result = await self._run(
             "UPDATE claw_run_history SET status=?, updated_at=?, "
             "result_summary=CASE WHEN ? IS NULL THEN result_summary ELSE ? END "
-            "WHERE run_id=? AND user_id=? AND status<>'completed'",
-            status, _now_iso(), summary, summary, run_id, user_id,
+            "WHERE run_id=? AND user_id=? AND status<>'completed' "
+            "AND (? <> 'running' OR action <> 'pc_files_query' OR status NOT IN ('failed', 'cancelled', 'timed_out'))",
+            status, _now_iso(), summary, summary, run_id, user_id, status,
         )
         return _changed_rows(result) > 0
+
+    async def get_pc_run_scope(self, *, user_id: str, run_id: str) -> dict[str, Any] | None:
+        """The immutable scope notice in the run's existing conversation."""
+        row = await self._first(
+            "SELECT m.content FROM messages m JOIN claw_run_history r "
+            "ON r.conversation_id=m.conversation_id "
+            "JOIN conversations c ON c.id=m.conversation_id AND c.user_id=r.user_id "
+            "WHERE r.user_id=? AND r.run_id=? AND m.id=?",
+            user_id, run_id, run_id + "_scope",
+        )
+        if row is None:
+            return None
+        try:
+            content = row["content"]
+            claim = json.loads(content.split("\n<!--pc_scope:", 1)[1].removesuffix("-->"))
+            if not isinstance(claim, dict):
+                raise ValueError("invalid scope")
+            return claim
+        except (KeyError, IndexError, TypeError, ValueError) as exc:
+            raise HistoryError("stored PC scope is invalid") from exc
+
+    async def get_pc_run_scope_notice(self, *, user_id: str, run_id: str) -> str | None:
+        """The stored scope's notice wording, or None when nothing is pinned.
+
+        An absent, foreign or malformed record is simply "no notice": the
+        live answer and the recovery GET keep their existing shape.
+        """
+        try:
+            claim = await self.get_pc_run_scope(user_id=user_id, run_id=run_id)
+        except Exception:
+            return None
+        return pc_scope_notice(claim)
+
+    async def pin_pc_run_scope(self, *, user_id: str, run_id: str, claim: dict[str, Any]) -> None:
+        """Record before dispatch, once per owner/run; never alter its terminal."""
+        owned = await self.get_claw_run(user_id, run_id)
+        if not isinstance(owned, dict) or not owned.get("conversation_id"):
+            raise HistoryForbidden("PC run is not owned")
+        message_id = run_id + "_scope"
+        if len(message_id) > 128:
+            raise HistoryError("PC scope message id is invalid")
+        encoded = json.dumps(claim, sort_keys=True, separators=(",", ":"))
+        if claim.get("admitted") not in PC_SCOPE_NOTICE_LABELS or len(encoded) > 1024:
+            raise HistoryError("PC scope claim is invalid")
+        content = PC_SCOPE_NOTICE_LABELS[claim["admitted"]] + "\n<!--pc_scope:" + encoded + "-->"
+        cid = owned["conversation_id"]
+        # A concurrent conflicting admission loses INSERT OR IGNORE and the
+        # read-back comparison refuses it. Existing messages carry the record;
+        # no new authority table, migration, or terminal-status write is needed.
+        await self._run(
+            "INSERT OR IGNORE INTO messages (id,conversation_id,role,content,created_at,sequence_number) "
+            "SELECT ?,c.id,'assistant',?,?,COALESCE((SELECT MAX(sequence_number) "
+            "FROM messages WHERE conversation_id=c.id),0)+1 FROM conversations c "
+            "JOIN claw_run_history r ON r.conversation_id=c.id AND r.user_id=c.user_id "
+            "WHERE c.id=? AND r.user_id=? AND r.run_id=?",
+            message_id, content, _now_iso(), cid, user_id, run_id,
+        )
+        if await self.get_pc_run_scope(user_id=user_id, run_id=run_id) != claim:
+            raise HistoryForbidden("PC run scope is already fixed")
 
     async def get_claw_run(self, user_id: str, run_id: str) -> dict[str, Any] | None:
         """#3139 — the owner-scoped origin row for one Claw run.
@@ -1462,9 +2121,30 @@ class D1HistoryStore:
         if not isinstance(run_id, str) or not run_id:
             raise HistoryError("run_id is required")
         return await self._first(
-            "SELECT id, run_id, status, result_summary, conversation_id, workspace_id, updated_at "
-            "FROM claw_run_history WHERE run_id=? AND user_id=?",
+            "SELECT id, run_id, status, result_summary, conversation_id, workspace_id, "
+            "updated_at, action FROM claw_run_history WHERE run_id=? AND user_id=?",
             run_id, user_id,
+        )
+
+    async def get_claw_run_for_artifact_document(
+        self, user_id: str, document_id: str
+    ) -> dict[str, Any] | None:
+        """#2952 follow-up — the owner row that minted one generated document.
+
+        ``claw_document_metadata`` carries no owner column, so the only existing
+        canonical authority binding a document to a product user is the run row
+        that recorded ``artifact_document_id``. A read that finds nothing here has
+        no verified owner and must fail closed.
+        """
+
+        if not isinstance(user_id, str) or not user_id:
+            raise HistoryError("user_id is required")
+        if not isinstance(document_id, str) or not document_id:
+            raise HistoryError("document_id is required")
+        return await self._first(
+            "SELECT run_id, artifact_document_id, artifact_filename, artifact_media_type "
+            "FROM claw_run_history WHERE artifact_document_id=? AND user_id=?",
+            document_id, user_id,
         )
 
     async def get_claw_run_result_message(
@@ -1475,11 +2155,8 @@ class D1HistoryStore:
         # Prefer the actual Oracle receipt. Claw may also have a preliminary
         # local correlation under the same run; it is not the completed Mesh
         # command/revision that minted the persisted assistant message.
-        correlation = await self._first(
-            "SELECT command_id, revision_ref FROM oracle_mesh_dispatch "
-            "WHERE user_id=? AND run_id=? AND state='done'",
-            user_id, run_id,
-        )
+        correlation = await self._dispatch(
+            "get_oracle_mesh_run_correlation", user_id=user_id, run_id=run_id)
         if not isinstance(correlation, dict):
             correlation = await self.get_local_task_correlation(user_id, run_id)
         if not isinstance(correlation, dict):
@@ -1496,16 +2173,352 @@ class D1HistoryStore:
         # and this exact id plus the split-part marker is already 51. A prefix
         # comparison keeps the same membership without the LIKE pattern.
         part_prefix = message_id + "_p"
+        # #5015: a run that held more than one PC tool call answers with its
+        # own final answer beside the command outputs, so the final message of
+        # such a run is read too. The id belongs to that lane alone, so a
+        # single-command run reads exactly what it read before.
+        final_id = run_id + "_final"
         rows = await self._all(
             "SELECT m.id, m.content FROM messages m JOIN conversations c "
             "ON c.id=m.conversation_id WHERE m.role='assistant' "
             "AND m.conversation_id=? AND c.user_id=? AND c.product_scope=? "
-            "AND (m.id=? OR substr(m.id, 1, ?)=?) "
+            "AND (m.id=? OR substr(m.id, 1, ?)=? OR m.id=?) "
             "ORDER BY m.sequence_number LIMIT 16",
             conversation_id, user_id, PRODUCT_SCOPE_CHAT,
-            message_id, len(part_prefix), part_prefix,
+            message_id, len(part_prefix), part_prefix, final_id,
         )
         return "\n".join(row["content"] for row in rows) if rows else None
+
+    async def get_claw_run_result(
+        self, user_id: str, run_id: str, conversation_id: str,
+    ) -> dict[str, str] | None:
+        """The owner's completed run result, correlated to the actual message.
+
+        Two proven sources, and never a summary substitution:
+
+        * a completed Mesh / Local Runner command run resolves through the
+          dispatch correlation to the assistant message that holds the verified
+          PC command result (``pc_command_result``);
+        * a completed model-only run resolves through the run-scoped answer
+          message the general lane stored for exactly that run
+          (``model_reply``).
+
+        Both branches are bounded by the owner's own run row, its conversation
+        and the message row itself, so a later turn's text can never be
+        returned for an older run. An unverified run returns ``None`` so the
+        caller keeps its truthful state instead of claiming a success.
+
+        A model reply is only ever returned for a run the server itself
+        recorded as a model-only execution. A run with a PC execution
+        correlation keeps its existing unavailable state when its own verified
+        result is missing, and a run whose recorded action is not the
+        model-only action is never answered from a model reply.
+
+        A model reply is the run's *actual* stored answer: a long answer is
+        kept as a bounded D1 preview plus the private original, so the
+        original is restored before it is returned. The bounded preview is
+        never presented as the answer.
+        """
+        if not isinstance(user_id, str) or not user_id:
+            raise HistoryError("user_id is required")
+        if not isinstance(run_id, str) or not run_id:
+            raise HistoryError("run_id is required")
+        correlation = await self._dispatch(
+            "get_oracle_mesh_run_correlation", user_id=user_id, run_id=run_id)
+        if not isinstance(correlation, dict):
+            # #5015: the legacy local-runner correlation table comes from a
+            # source migration that a deployment may never have applied. The
+            # Mesh dispatch row above is the authority for a PC execution, so
+            # an unavailable legacy table can only mean "this deployment holds
+            # no local-runner correlation" - it must never turn a model-only
+            # run into an unavailable result. A PC run stays unavailable
+            # through its own action record instead.
+            try:
+                correlation = await self.get_local_task_correlation(user_id, run_id)
+            except Exception:
+                correlation = None
+        pc_correlated = (
+            isinstance(correlation, dict)
+            and isinstance(correlation.get("command_id"), str)
+            and isinstance(correlation.get("revision_ref"), str)
+        )
+        if pc_correlated:
+            # #5015: a PC execution run keeps its own verified-result contract.
+            # The correlation may point at a dispatch whose message is stored
+            # under the dispatch identity, so the established lookup is reused
+            # unchanged. A PC run without its own verified result keeps the
+            # truthful unavailable state; it is never answered from a model
+            # reply.
+            answer = await self.get_claw_run_result_message(
+                user_id, run_id, conversation_id
+            )
+            if isinstance(answer, str) and answer:
+                return {"answer": answer, "answer_source": "pc_command_result"}
+            return None
+        run_row = await self._first(
+            "SELECT id, action, status, conversation_id FROM claw_run_history "
+            "WHERE run_id=? AND user_id=?",
+            run_id, user_id,
+        )
+        if not isinstance(run_row, dict):
+            return None
+        # Only a run the store itself recorded as a completed model-only
+        # execution may answer with a model reply. A PC, desktop or staged run
+        # keeps its own action and is never answered from one.
+        if run_row.get("action") != MODEL_ONLY_RUN_ACTION:
+            return None
+        # A run that the store did not record as completed stays unverified.
+        if run_row.get("status") != "completed":
+            return None
+        if run_row.get("conversation_id") != conversation_id:
+            return None
+        message_id = general_answer_message_id(run_id)
+        rows = await self._all(
+            "SELECT m.id, m.content FROM messages m JOIN conversations c "
+            "ON c.id=m.conversation_id WHERE m.id=? AND m.role='assistant' "
+            "AND m.conversation_id=? AND c.user_id=? AND c.product_scope=? "
+            "ORDER BY m.sequence_number LIMIT 16",
+            message_id, conversation_id, user_id, PRODUCT_SCOPE_CHAT,
+        )
+        if not rows:
+            return None
+        # #5015: a long model answer is stored as a bounded D1 preview plus the
+        # private R2 original, so the D1 row is NOT the answer. The stored
+        # original is restored through the same authority the model-context
+        # read uses, inside the owner / run / conversation / assistant-message
+        # scope the query above already proved. A row whose original is
+        # unavailable stays unverified instead of answering with a truncated
+        # preview body.
+        contents: list[str] = []
+        for row in rows:
+            content = str(row.get("content", ""))
+            if _is_bounded_preview(content):
+                try:
+                    content = await self._read_full_message(conversation_id, row)
+                except HistoryContextIncomplete:
+                    return None
+            contents.append(content)
+        answer = "\n".join(contents)
+        if not answer:
+            return None
+        return {
+            "answer": answer,
+            "answer_source": "model_reply",
+        }
+
+    async def append_command_result(
+        self,
+        *,
+        user_id: str,
+        run_id: str,
+        message_id: str,
+        command_id: str,
+        summary: str,
+        content: str,
+        status: str,
+        preserve_edges: bool = False,
+    ) -> bool:
+        """#5015 — append one bounded per-command result of a multi-tool-call run.
+
+        A PC tool-call run stores every command it executed, correlated by the
+        dispatch's existing ``command_id``. The command's own terminal record
+        stays the dispatch row (state/termination/exit_code/result digest) and
+        its message row; the run row carries only the aggregate. Individual
+        command completion is therefore distinct from overall work completion,
+        which only the run's owner may seal through :meth:`seal_run_terminal`.
+
+        No new result store is introduced: the per-command projection is the
+        message row the caller already derives from the command identity, and
+        the aggregate lives on the existing run row.
+
+        Same structural guarantees as :meth:`append_local_task_result`, scoped
+        to the command rather than the run:
+
+        * **Exactly once per command.** The message id is derived by the caller
+          from the command identity and the insert is ``INSERT OR IGNORE``
+          against the ``messages.id`` primary key, so a repeat append is a
+          no-op rather than a second row.
+        * **Per-command terminal immutability.** A command that already carries
+          a different terminal outcome is refused before any statement is
+          issued, so one command can never be rewritten by another outcome.
+        * **Aggregate truthfulness.** A command result never seals the run:
+          a completed command leaves the run ``running`` and a failed command
+          leaves it ``failed``, so the overall completion stays the run
+          owner's decision.
+        """
+
+        if not isinstance(user_id, str) or not user_id:
+            raise HistoryError("user_id is required")
+        if not isinstance(run_id, str) or not run_id:
+            raise HistoryError("run_id is required")
+        if not isinstance(message_id, str) or not message_id or len(message_id) > 128:
+            raise HistoryError("message_id must be a bounded safe reference")
+        if not isinstance(command_id, str) or not command_id or len(command_id) > 128:
+            raise HistoryError("command_id must be a bounded safe reference")
+        if status not in ("completed", "failed"):
+            raise HistoryError("command result status must be completed or failed")
+        body = _bounded_text(content, "local_task_result", preserve_edges=preserve_edges)
+        if len(body) > MAX_HISTORY_MESSAGE_CHARS:
+            raise HistoryError("local_task_result is not bounded")
+        owned = await self._first(
+            "SELECT id, conversation_id, result_summary, status FROM claw_run_history "
+            "WHERE run_id=? AND user_id=?",
+            run_id, user_id,
+        )
+        if owned is None:
+            raise HistoryForbidden("claw run is not owned by current user")
+        conversation_id = owned.get("conversation_id")
+        if not isinstance(conversation_id, str) or not conversation_id:
+            raise HistoryError("claw run has no originating conversation")
+        # The command scope must name a command this owner dispatched inside
+        # this run: a result can never be attached to a command of another run
+        # or of another owner.
+        dispatched = await self._dispatch(
+            "get_oracle_mesh_run_command", user_id=user_id, run_id=run_id,
+            command_id=command_id)
+        if dispatched is None:
+            raise HistoryError("claw run command is not dispatched for this run")
+        bounded_summary = summary[:MAX_RUN_RESULT_SUMMARY_CHARS]
+        already = await self._first(
+            "SELECT id, content FROM messages WHERE id=? AND conversation_id=?",
+            message_id, conversation_id,
+        )
+        if already is not None:
+            # The command's projection is already durable. The identical result
+            # is inert; a different outcome for the same command is refused, so
+            # one command can never carry two contradictory results.
+            if str(already.get("content") or "") != body:
+                raise HistoryError(
+                    "claw run command already carries a different terminal result"
+                )
+            return False
+        now = _now_iso()
+        aggregate_status = "failed" if status == "failed" else "running"
+        aggregate_summary = _merge_run_result_summaries(
+            owned.get("result_summary"), bounded_summary,
+        )
+        statements = [
+            # The message insert is scoped to a conversation owned by user_id
+            # through the conversations join, so a run pointing at someone
+            # else's conversation inserts nothing and discloses nothing.
+            self.db.prepare(
+                "INSERT OR IGNORE INTO messages (id, conversation_id, sequence_number, role, content, created_at) "
+                "SELECT ?, c.id, "
+                "(SELECT COALESCE(MAX(sequence_number), -1) + 1 FROM messages WHERE conversation_id = c.id), "
+                "'assistant', ?, ? FROM conversations c "
+                "JOIN claw_run_history r ON r.id = ? "
+                "WHERE c.id = ? AND c.user_id = ?"
+            ).bind(message_id, body, now, str(owned.get("id")),
+                   conversation_id, user_id),
+            # The aggregate only moves when the command's own message actually
+            # landed, so a refused insert can never leave a run claiming a
+            # command result that was never stored. A run that is already
+            # completed keeps that terminal: a late command result never
+            # reopens it.
+            self.db.prepare(
+                "UPDATE claw_run_history SET status=CASE WHEN status='failed' THEN status ELSE ? END, updated_at=?, "
+                "result_summary=CASE WHEN status='failed' AND result_summary='pc_read_failed' "
+                "THEN result_summary ELSE ? END "
+                "WHERE id=? AND status != 'completed' "
+                "AND EXISTS (SELECT 1 FROM messages WHERE id=? AND conversation_id=?)"
+            ).bind(aggregate_status, now, aggregate_summary, str(owned.get("id")),
+                   message_id, conversation_id),
+        ]
+        results = await self.db.batch(statements)
+        if _batch_returned_row(results, 1) is None:
+            return False
+        await self._run(
+            "UPDATE conversations SET updated_at=? WHERE id=? AND user_id=?",
+            now, conversation_id, user_id,
+        )
+        return True
+
+    async def seal_run_terminal(
+        self,
+        *,
+        user_id: str,
+        run_id: str,
+        message_id: str | None = None,
+        summary: str,
+        content: str | None = None,
+        status: str,
+    ) -> bool:
+        """#5015 — record the overall completion of a multi-command run.
+
+        Only the run's owner may seal the aggregate, and the seal is refused
+        while the run's own commands have not all reached a terminal result or
+        while one of them failed. A run can therefore never read as completed
+        while a command is pending, and a failed command is never reported as
+        an overall success.
+
+        An already-completed run keeps its first terminal (terminal
+        immutability). A run that already failed stays failed: a later success
+        never upgrades it.
+        """
+
+        if not isinstance(user_id, str) or not user_id:
+            raise HistoryError("user_id is required")
+        if not isinstance(run_id, str) or not run_id:
+            raise HistoryError("run_id is required")
+        if status not in ("completed", "failed"):
+            raise HistoryError("run terminal status must be completed or failed")
+        if message_id is not None and (
+            not isinstance(message_id, str) or not message_id or len(message_id) > 128
+        ):
+            raise HistoryError("message_id must be a bounded safe reference")
+        owned = await self._first(
+            "SELECT id, conversation_id, result_summary, status FROM claw_run_history "
+            "WHERE run_id=? AND user_id=?",
+            run_id, user_id,
+        )
+        if owned is None:
+            raise HistoryForbidden("claw run is not owned by current user")
+        conversation_id = owned.get("conversation_id")
+        if not isinstance(conversation_id, str) or not conversation_id:
+            raise HistoryError("claw run has no originating conversation")
+        if str(owned.get("status") or "") == "completed":
+            # The first terminal of a completed run is never rewritten.
+            return False
+        if status == "completed":
+            if str(owned.get("status") or "") == "failed":
+                # A command of this run already failed: the work can never
+                # read as an overall success.
+                raise HistoryError("claw run carries a failed command")
+            open_state = await self._dispatch(
+                "get_oracle_mesh_run_open_state", user_id=user_id, run_id=run_id)
+            if open_state.get("pending_dispatch_id"):
+                raise HistoryError("claw run has commands without a terminal result")
+            if open_state.get("failed_dispatch_id"):
+                raise HistoryError("claw run carries a failed command")
+        now = _now_iso()
+        bounded_summary = summary[:MAX_RUN_RESULT_SUMMARY_CHARS]
+        statements = [self.db.prepare(
+            "UPDATE claw_run_history SET status=?, updated_at=?, "
+            "result_summary=CASE WHEN ? = 'pc_read_failed' AND ? = 'failed' THEN ? "
+            "WHEN result_summary IS NULL THEN ? ELSE result_summary END "
+            "WHERE id=? AND status != 'completed'"
+        ).bind(status, now, bounded_summary, status, bounded_summary, bounded_summary, str(owned.get("id")))]
+        if message_id is not None and content is not None:
+            body = _bounded_text(content, "local_task_result")
+            if len(body) > MAX_HISTORY_MESSAGE_CHARS:
+                raise HistoryError("local_task_result is not bounded")
+            statements.append(self.db.prepare(
+                "INSERT OR IGNORE INTO messages (id, conversation_id, sequence_number, role, content, created_at) "
+                "SELECT ?, c.id, "
+                "(SELECT COALESCE(MAX(sequence_number), -1) + 1 FROM messages WHERE conversation_id = c.id), "
+                "'assistant', ?, ? FROM conversations c "
+                "JOIN claw_run_history r ON r.id = ? "
+                "WHERE c.id = ? AND c.user_id = ?"
+            ).bind(message_id, body, now, str(owned.get("id")),
+                   conversation_id, user_id))
+        results = await self.db.batch(statements)
+        if _batch_returned_row(results, 0) is None:
+            return False
+        await self._run(
+            "UPDATE conversations SET updated_at=? WHERE id=? AND user_id=?",
+            now, conversation_id, user_id,
+        )
+        return True
 
     async def append_local_task_result(
         self,
@@ -1517,6 +2530,7 @@ class D1HistoryStore:
         content: str,
         status: str,
         preserve_edges: bool = False,
+        command_scope: str | None = None,
     ) -> bool:
         """#3139 — append one bounded Local Runner result to the run's conversation.
 
@@ -1536,6 +2550,13 @@ class D1HistoryStore:
         * **Terminal immutability.** The run row is updated only when its stored
           summary is absent or identical, so a projected run cannot be rewritten
           with a different outcome.
+
+        #5015: a command scope makes this a per-command result of a
+        multi-tool-call run. Such a result is stored beside the other commands
+        of the same run and never seals the run row; the run's overall
+        completion is the run owner's own decision, sealed through
+        :meth:`seal_run_terminal`. Without a command scope the single-command
+        contract above is unchanged for every other lane.
         """
 
         if not isinstance(user_id, str) or not user_id:
@@ -1544,6 +2565,18 @@ class D1HistoryStore:
             raise HistoryError("run_id is required")
         if not isinstance(message_id, str) or not message_id or len(message_id) > 128:
             raise HistoryError("message_id must be a bounded safe reference")
+        if command_scope is not None:
+            if (
+                not isinstance(command_scope, str)
+                or not command_scope
+                or len(command_scope) > 128
+            ):
+                raise HistoryError("command_scope must be a bounded safe reference")
+            return await self.append_command_result(
+                user_id=user_id, run_id=run_id, message_id=message_id,
+                command_id=command_scope, summary=summary, content=content,
+                status=status, preserve_edges=preserve_edges,
+            )
         body = _bounded_text(content, "local_task_result", preserve_edges=preserve_edges)
         if len(body) > MAX_HISTORY_MESSAGE_CHARS:
             raise HistoryError("local_task_result is not bounded")
@@ -1746,6 +2779,16 @@ class D1HistoryStore:
         a distinct row for each call, while re-staging the exact same call still
         finds its terminal row and refuses a second execution.
 
+        The stored ``tool_call_ref`` (NULL for the legacy lane) is what 063's
+        indexes enforce, and it is the database — not this read-then-write —
+        that decides a concurrent staging: the loser of an INSERT race re-reads
+        the winner's row and returns it only when it is the same payload, never
+        when a different call won. The legacy lane is correlated to the
+        run-scoped rows only, so a trusted file call staged in the same run is
+        never selected, reused or replaced by it; the trusted lane keeps
+        correlating on ``tool_request_ref`` so a row written before 063 (which
+        has no scope column) is still found and still refuses a replay.
+
         ``evidence_ref`` and ``binding_ref`` are nullable on purpose. A PC that
         has never completed the native PC offer has no Broker binding and no
         Broker-minted evidence, and this table stores NULL for both rather than
@@ -1820,13 +2863,17 @@ class D1HistoryStore:
             correlation_sql = "user_id=? AND run_id=? AND tool_request_ref=?"
             correlation_params = (user_id, run_id, tool_call_ref)
         else:
-            correlation_sql = "user_id=? AND run_id=?"
+            # The legacy single-command lane owns the run-scoped rows and
+            # nothing else. Selecting by run alone would read a trusted file
+            # call of the same run as if it were the legacy dispatch, and an
+            # expired pending file row would then be replaced — losing the
+            # file call's own replay protection.
+            correlation_sql = "user_id=? AND run_id=? AND tool_call_ref IS NULL"
             correlation_params = (user_id, run_id)
-        owned = await self._first(
-            "SELECT id FROM claw_run_history WHERE run_id=? AND user_id=?",
-            run_id, user_id,
-        )
-        if owned is None:
+        # The owner is established by the layer that holds the run rows: on D1 that is
+        # `claw_run_history`; on the 컴2 queue it is the Worker, whose route already fetched
+        # this run for this user and answered 404 before forwarding (see `run_ownership`).
+        if not await self._run_is_owned(run_id, user_id):
             raise HistoryForbidden("claw run is not owned by current user")
         existing = await self._first(
             "SELECT dispatch_id, kind, command_text, command_id, tool_request_ref, request_id, revision_ref, "
@@ -1835,13 +2882,16 @@ class D1HistoryStore:
             f"state, expires_at FROM oracle_mesh_dispatch WHERE {correlation_sql}",
             *correlation_params,
         )
-        now = _now_iso()
-        if existing is not None:
-            same = all(
-                existing.get(name) == value
+        def same_payload(row: dict[str, Any]) -> bool:
+            return all(
+                row.get(name) == value
                 for name, value in fields.items()
                 if name not in ("user_id", "run_id")
             )
+
+        now = _now_iso()
+        if existing is not None:
+            same = same_payload(existing)
             if same and existing.get("state") == "pending" and existing.get("expires_at", "") > now:
                 return dict(existing)
             if same and existing.get("state") in ("done", "failed"):
@@ -1864,13 +2914,14 @@ class D1HistoryStore:
                 "request_id=?, revision_ref=?, evidence_ref=?, request_fingerprint=?, "
                 "account_ref=?, workspace_ref=?, device_id=?, binding_ref=?, node_ref=?, "
                 "root_ref=?, path_relative=?, file_path=?, kind=?, command_text=?, "
-                "nonce_sha256=NULL, state=?, "
+                "tool_call_ref=?, nonce_sha256=NULL, claimed_until=NULL, state=?, "
                 "expires_at=?, created_at=? WHERE "
                 f"{correlation_sql} AND state=? AND expires_at<=?",
                 command_id, tool_request_ref, request_id, revision_ref,
                 evidence_ref, request_fingerprint, account_ref, workspace_ref,
                 device_id, binding_ref, node_ref, root_ref, path_relative,
-                file_path, kind, command_text, "pending", expires_at, now,
+                file_path, kind, command_text, tool_call_ref,
+                "pending", expires_at, now,
                 *correlation_params, "pending", now,
             )
             replaced = await self._first(
@@ -1884,20 +2935,47 @@ class D1HistoryStore:
                 raise HistoryError("oracle mesh dispatch unavailable")
             return dict(replaced)
         dispatch_id = "dsp_" + uuid.uuid4().hex
-        await self._run(
-            "INSERT INTO oracle_mesh_dispatch "
-            "(dispatch_id, user_id, run_id, command_id, tool_request_ref, request_id, "
-            "revision_ref, evidence_ref, request_fingerprint, account_ref, workspace_ref, "
-            "device_id, binding_ref, node_ref, root_ref, path_relative, file_path, "
-            "kind, command_text, "
-            "nonce_sha256, state, expires_at, created_at) "
-            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL, ?, ?, ?)",
-            dispatch_id, user_id, run_id, command_id, tool_request_ref,
-            request_id, revision_ref, evidence_ref, request_fingerprint,
-            account_ref, workspace_ref, device_id, binding_ref, node_ref,
-            root_ref, path_relative, file_path, kind, command_text,
-            "pending", expires_at, now,
-        )
+        try:
+            await self._run(
+                "INSERT INTO oracle_mesh_dispatch "
+                "(dispatch_id, user_id, run_id, command_id, tool_request_ref, request_id, "
+                "revision_ref, evidence_ref, request_fingerprint, account_ref, workspace_ref, "
+                "device_id, binding_ref, node_ref, root_ref, path_relative, file_path, "
+                "kind, command_text, tool_call_ref, "
+                "nonce_sha256, state, expires_at, created_at) "
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL, ?, ?, ?)",
+                dispatch_id, user_id, run_id, command_id, tool_request_ref,
+                request_id, revision_ref, evidence_ref, request_fingerprint,
+                account_ref, workspace_ref, device_id, binding_ref, node_ref,
+                root_ref, path_relative, file_path, kind, command_text,
+                tool_call_ref, "pending", expires_at, now,
+            )
+        except Exception:
+            # 063 makes the database the decider of a concurrent staging: two
+            # requests can both read no row and then race to INSERT, and only
+            # one of them can win. The loser resolves to the winner's row when
+            # it is the exact same payload, and is refused otherwise — it never
+            # reports a dispatch it did not stage, and it never retries the
+            # INSERT.
+            raced = await self._first(
+                "SELECT dispatch_id, kind, command_text, command_id, tool_request_ref, request_id, "
+                "revision_ref, evidence_ref, request_fingerprint, account_ref, workspace_ref, "
+                "device_id, binding_ref, node_ref, root_ref, path_relative, file_path, "
+                "nonce_sha256, state, expires_at FROM oracle_mesh_dispatch "
+                f"WHERE {correlation_sql}",
+                *correlation_params,
+            )
+            if raced is None:
+                raise
+            if (
+                same_payload(raced)
+                and raced.get("state") == "pending"
+                and raced.get("expires_at", "") > now
+            ):
+                return dict(raced)
+            if same_payload(raced) and raced.get("state") in ("done", "failed"):
+                raise HistoryError("oracle mesh run already executed") from None
+            raise HistoryError("oracle mesh run already dispatched") from None
         created = await self._first(
             "SELECT dispatch_id, kind, command_text, command_id, tool_request_ref, request_id, revision_ref, "
             "evidence_ref, request_fingerprint, account_ref, workspace_ref, device_id, "
@@ -1912,18 +2990,23 @@ class D1HistoryStore:
     async def oldest_pending_oracle_mesh_dispatch(self) -> dict[str, Any] | None:
         """#4139 — the single oldest claimable Oracle execution, if any.
 
-        Claimable means pending, unexpired and never handed out (no nonce).
-        The caller (the poll route, under the channel secret) atomically claims
-        it before responding; this read alone hands out nothing.
+        Claimable means pending, unexpired and either never handed out or handed
+        out under a lease that has run out (#5895). A lease that ran out is the
+        only evidence that a claim reached nobody: the poll route wrote the nonce
+        and the response died before the executor could read it. The caller (the
+        poll route, under the channel secret) re-claims atomically before
+        responding; this read alone hands out nothing.
         """
+        now = _now_iso()
         row = await self._first(
             "SELECT dispatch_id, user_id, run_id, kind, command_text, command_id, tool_request_ref, "
             "request_id, revision_ref, evidence_ref, request_fingerprint, account_ref, "
             "workspace_ref, device_id, binding_ref, node_ref, root_ref, path_relative, "
             "file_path, nonce_sha256, state, expires_at FROM oracle_mesh_dispatch "
-            "WHERE state=? AND expires_at>? AND nonce_sha256 IS NULL "
+            "WHERE state=? AND expires_at>? "
+            "AND (nonce_sha256 IS NULL OR (claimed_until IS NOT NULL AND claimed_until<=?)) "
             "ORDER BY created_at ASC LIMIT 1",
-            "pending", _now_iso(),
+            "pending", now, now,
         )
         return dict(row) if row is not None else None
 
@@ -1933,20 +3016,223 @@ class D1HistoryStore:
         """#4139 — atomically hand one pending dispatch to the executor.
 
         The conditional update is the single-claim gate: exactly one poll wins
-        per dispatch. Returns False when another poll already claimed it, when
-        it expired, or when it left pending meanwhile.
+        one round. #5895 makes the hand-out a lease — the same UPDATE records the
+        instant the claim may be handed out again, under the same condition the
+        yield uses — so a claim whose response never reached the executor is not
+        a permanent loss. Re-claiming rolls the nonce, so a submission still
+        carrying the superseded nonce is refused by the existing nonce comparison
+        instead of attaching a second result. Returns False when another poll won
+        this round, when it expired, or when it left pending meanwhile.
         """
         if not isinstance(dispatch_id, str) or not dispatch_id:
             raise HistoryError("dispatch_id is required")
         if not isinstance(nonce_sha256, str) or not nonce_sha256:
             raise HistoryError("nonce_sha256 is required")
-        now = _now_iso()
+        moment = datetime.now(timezone.utc)
+        now = _iso(moment)
         written = await self._run(
-            "UPDATE oracle_mesh_dispatch SET nonce_sha256=? "
-            "WHERE dispatch_id=? AND state=? AND expires_at>? AND nonce_sha256 IS NULL",
-            nonce_sha256, dispatch_id, "pending", now,
+            "UPDATE oracle_mesh_dispatch SET nonce_sha256=?, claimed_until=? "
+            "WHERE dispatch_id=? AND state=? AND expires_at>? "
+            "AND (nonce_sha256 IS NULL OR (claimed_until IS NOT NULL AND claimed_until<=?))",
+            nonce_sha256,
+            _iso(moment + timedelta(seconds=ORACLE_MESH_CLAIM_LEASE_SECONDS)),
+            dispatch_id, "pending", now, now,
         )
         return _changed_rows(written) == 1
+
+    async def renew_oracle_mesh_claim(
+        self, *, dispatch_id: str, nonce_sha256: str,
+    ) -> str | None:
+        """#5997 — extend the lease of a command this executor is still running.
+
+        The condition is the same proof a submission carries: the row is still
+        pending and still names this nonce. A renewal whose claim was lost — the
+        lease ran out and a later poll re-rolled the nonce — changes nothing and is
+        told so, so the executor stops renewing instead of resurrecting a claim the
+        lane has already given to somebody else. A running executor that keeps
+        renewing is never handed out again; one that dies stops renewing, and the
+        existing lease expiry re-delivers the work exactly as before.
+        """
+        if not isinstance(dispatch_id, str) or not dispatch_id:
+            raise HistoryError("dispatch_id is required")
+        if not isinstance(nonce_sha256, str) or not nonce_sha256:
+            raise HistoryError("nonce_sha256 is required")
+        moment = datetime.now(timezone.utc)
+        until = _iso(moment + timedelta(seconds=ORACLE_MESH_CLAIM_LEASE_SECONDS))
+        written = await self._run(
+            "UPDATE oracle_mesh_dispatch SET claimed_until=? "
+            "WHERE dispatch_id=? AND state=? AND nonce_sha256=?",
+            until, dispatch_id, "pending", nonce_sha256,
+        )
+        return until if _changed_rows(written) == 1 else None
+
+    async def cancel_oracle_mesh_dispatches_for_run(
+        self, *, user_id: str, run_id: str,
+    ) -> int:
+        """#5895 — stop one owner run's PC work, whether it is queued or running.
+
+        ``pending`` with no claim nonce is exactly "no executor has ever seen
+        this": stopping it removes the work from the queue, and the existing poll
+        — which yields only ``pending`` rows — never hands it out again, so the
+        next request the owner makes is claimed straight away instead of sitting
+        behind it.
+
+        A row that already carries a nonce is the case the owner is really asking
+        about: the PC has the command and the wait has no deadline (#5995 took the
+        client ceiling away, and a command the customer's shell never finishes -
+        measured on 2026-10-28 - holds every later operation on that PC behind it).
+        That row is not failed here. Its ``termination`` is set to ``cancelled``
+        and its ``state`` stays ``pending``, so the executor can read the owner's
+        stop through the existing channel, end its own child, and land its result
+        through the nonce gate it already holds. The row stays submittable on
+        purpose: a refused submission would be resent until quarantined, which
+        holds the queue longer than the stop the owner asked for.
+
+        The terminal row says ``cancelled`` in the column that already records how
+        a command ended, so an owner's own stop is never reported back as a PC
+        failure. Both the read and the write are owner-scoped in the WHERE clause,
+        so another account's dispatch is not addressable, and each update is one
+        conditional statement: a claim that won the race is not cancelled as
+        queued work, and a cancel that won is never claimed twice.
+        """
+        if not isinstance(user_id, str) or not user_id:
+            raise HistoryError("user_id is required")
+        if not isinstance(run_id, str) or not run_id:
+            raise HistoryError("run_id is required")
+        stopped = await self._run(
+            "UPDATE oracle_mesh_dispatch SET state=?, termination=? "
+            "WHERE user_id=? AND run_id=? AND state=? AND nonce_sha256 IS NULL",
+            "failed", "cancelled", user_id, run_id, "pending",
+        )
+        running = await self._run(
+            "UPDATE oracle_mesh_dispatch SET termination=? "
+            "WHERE user_id=? AND run_id=? AND state=? AND nonce_sha256 IS NOT NULL",
+            "cancelled", user_id, run_id, "pending",
+        )
+        return _changed_rows(stopped) + _changed_rows(running)
+
+    async def oracle_mesh_dispatch_cancellation(self, *, dispatch_id: str) -> bool:
+        """Whether the owner stopped one already-claimed dispatch, for the executor.
+
+        One bounded read on a single column, addressed only by the dispatch id the
+        executor already holds. It never claims, never writes, and answers ``False``
+        for anything it cannot read: an unreachable store must not look like an
+        owner's stop, because ``False`` leaves the running command alone while
+        ``True`` ends it.
+        """
+        if not isinstance(dispatch_id, str) or not dispatch_id:
+            raise HistoryError("dispatch_id is required")
+        row = await self._first(
+            "SELECT termination FROM oracle_mesh_dispatch "
+            "WHERE dispatch_id=? AND state=?",
+            dispatch_id, "pending",
+        )
+        return isinstance(row, dict) and row.get("termination") == "cancelled"
+
+    async def oracle_mesh_node_live_claims(
+        self, *, node_ref: str, except_dispatch_id: str = "",
+    ) -> int:
+        """How many dispatches are claimed on one PC right now, for the executor.
+
+        #6106 leaves a held console line only when nothing on that PC is working.
+        The connector's own map covers the host that runs it, and this row set is
+        the only view that also covers the failover partner (#5462): during a
+        handover both hosts can hold a claim, and a sweep that ended the partner's
+        running command would break standard rule 1 — the work on a PC is never
+        cut short.
+
+        The claim is read from the same real columns the lease already uses: a row
+        still ``pending``, unexpired, handed out (``nonce_sha256`` set) and not yet
+        yielded (``claimed_until`` in the future). Nothing is inferred from text.
+        ``except_dispatch_id`` removes the asker's own claim, which is live for
+        exactly as long as it is asking, so without it the answer would always be
+        "busy" and no wedged line could ever be cleared.
+
+        It never claims, never writes, and raises on an unreadable row like every
+        other reader here: the route turns that into the safe answer, which is
+        "busy", because the alternative ends a real command on a customer machine.
+        """
+        if not isinstance(node_ref, str) or not node_ref or len(node_ref) > 256:
+            raise HistoryError("node_ref is required")
+        if not isinstance(except_dispatch_id, str):
+            raise HistoryError("except_dispatch_id must be text")
+        now = _now_iso()
+        sql = (
+            "SELECT COUNT(*) AS n FROM oracle_mesh_dispatch "
+            "WHERE node_ref=? AND state=? AND expires_at>? "
+            "AND nonce_sha256 IS NOT NULL AND claimed_until>?"
+        )
+        params: list[Any] = [node_ref, "pending", now, now]
+        if except_dispatch_id:
+            sql += " AND dispatch_id<>?"
+            params.append(except_dispatch_id)
+        row = await self._first(sql, *params)
+        if not isinstance(row, dict):
+            raise HistoryError("oracle mesh claim read unavailable")
+        count = row.get("n")
+        if isinstance(count, bool) or not isinstance(count, int) or count < 0:
+            raise HistoryError("oracle mesh claim read is not a count")
+        return count
+
+
+    #: #82 monitoring reads this to answer "is anything waiting that nobody is
+    #: claiming" without a log line and without a string match. The node list is
+    #: bounded the same way the presence beat is (#5553 shares the number).
+    LANE_STATUS_NODE_LIMIT = 8
+
+    async def oracle_mesh_lane_status(
+        self, *, node_limit: int = LANE_STATUS_NODE_LIMIT,
+    ) -> dict[str, Any]:
+        """The dispatch lane's own state, as counts and ages.
+
+        Three questions, all of them answerable from the columns the lane already
+        writes: work that no executor has claimed (`state='pending'`, unexpired, no
+        nonce or a lease that has run out — the exact condition the poll yields on),
+        work a claim is held for right now (the lease columns #5997 renews), and,
+        per PC, how long its oldest unanswered dispatch has been waiting.
+
+        Ages are computed here from the stored timestamps rather than in SQL, so the
+        D1 and the local SQLite dialect answer the same way and one number cannot
+        drift between environments.
+        """
+        if (isinstance(node_limit, bool) or not isinstance(node_limit, int)
+                or not 1 <= node_limit <= 64):
+            raise HistoryError("node_limit is out of range")
+        moment = datetime.now(timezone.utc)
+        now = _iso(moment)
+        waiting = await self._first(
+            "SELECT COUNT(*) AS n, MIN(created_at) AS oldest FROM oracle_mesh_dispatch "
+            "WHERE state=? AND expires_at>? "
+            "AND (nonce_sha256 IS NULL OR (claimed_until IS NOT NULL AND claimed_until<=?))",
+            "pending", now, now,
+        )
+        claimed = await self._first(
+            "SELECT COUNT(*) AS n, MIN(created_at) AS oldest FROM oracle_mesh_dispatch "
+            "WHERE state=? AND expires_at>? AND nonce_sha256 IS NOT NULL AND claimed_until>?",
+            "pending", now, now,
+        )
+        # Per PC, two different questions, because the owner standard keeps them
+        # apart: `open` is everything still unfinished there (a long command under a
+        # live claim is that, and nothing may call it a stop), while `waiting` is
+        # only the work no claim covers. A silence verdict reads `waiting` alone.
+        nodes = await self._all(
+            "SELECT node_ref, COUNT(*) AS n, MIN(created_at) AS oldest, "
+            "SUM(CASE WHEN nonce_sha256 IS NULL "
+            "OR (claimed_until IS NOT NULL AND claimed_until<=?) THEN 1 ELSE 0 END) "
+            "AS waiting, "
+            "MIN(CASE WHEN nonce_sha256 IS NULL "
+            "OR (claimed_until IS NOT NULL AND claimed_until<=?) THEN created_at "
+            "ELSE NULL END) AS waiting_oldest "
+            "FROM oracle_mesh_dispatch WHERE state=? AND expires_at>? "
+            "AND node_ref IS NOT NULL AND node_ref<>'' "
+            "GROUP BY node_ref ORDER BY oldest ASC LIMIT ?",
+            now, now, "pending", now, node_limit,
+        )
+        return {
+            "unclaimed": _lane_count_age(waiting, moment),
+            "claimed": _lane_count_age(claimed, moment),
+            "nodes": [_lane_node(row, moment) for row in nodes if isinstance(row, dict)],
+        }
 
     async def consume_oracle_mesh_dispatch(
         self, *, dispatch_id: str, nonce: str
@@ -1988,12 +3274,13 @@ class D1HistoryStore:
         if row is None:
             return None
         expected = row.get("nonce_sha256")
-        if (
-            not isinstance(expected, str) or not expected
-            or not isinstance(row.get("expires_at"), str)
-            or row["expires_at"] <= _now_iso()
-        ):
+        if not isinstance(expected, str) or not expected:
             return None
+        # Owner decision 2026-10-28: the dispatch TTL does not expire a result.
+        # A run whose lease is being extended (#5997 renew) may finish late; the
+        # nonce still proves this is the claimed executor, and the claim/lease
+        # gate above still decides delivery. Only a foreign or stale nonce is
+        # refused here.
         presented = _hashlib.sha256(nonce.encode("utf-8")).hexdigest()
         if not _hmac.compare_digest(presented, expected):
             return None
@@ -2009,7 +3296,7 @@ class D1HistoryStore:
             )
             if _changed_rows(written) != 1:
                 return None
-            return {**dict(row), "state": "received", "claim": "retry"}
+            return _tagged({**dict(row), "state": "received", "claim": "retry"})
         if state != "pending":
             return None
         written = await self._run(
@@ -2030,7 +3317,7 @@ class D1HistoryStore:
         )
         if accepted is None or accepted.get("state") != "received":
             return None
-        return {**dict(accepted), "claim": "first"}
+        return _tagged({**dict(accepted), "claim": "first"})
 
     async def record_oracle_mesh_first_result(
         self, *, dispatch_id: str, content_sha256: str, content_bytes: int,
@@ -2124,6 +3411,7 @@ class D1HistoryStore:
     async def store_oracle_mesh_original(
         self, *, user_id: str, dispatch_id: str, conversation_id: str,
         message_id: str, raw: str, expected_sha256: str, expected_bytes: int,
+        verified: Any = None,
     ) -> str:
         """#4139 — keep one over-budget command output in the private R2
         original store under a server-derived key.
@@ -2142,20 +3430,15 @@ class D1HistoryStore:
             raise HistoryError("original text is required")
         if not isinstance(expected_sha256, str) or not expected_sha256:
             raise HistoryError("expected digest is required")
-        row = await self._first(
-            "SELECT user_id, result_sha256, result_bytes FROM oracle_mesh_dispatch "
-            "WHERE dispatch_id=?",
-            dispatch_id,
+        row = await self._mesh_dispatch_pin(
+            user_id=user_id, dispatch_id=dispatch_id, expected_sha256=expected_sha256,
+            expected_bytes=expected_bytes, verified=verified,
         )
-        if row is None or row.get("user_id") != user_id:
-            raise HistoryForbidden("mesh dispatch is not owned by current user")
-        if row.get("result_sha256") != expected_sha256 or row.get("result_bytes") != expected_bytes:
-            raise HistoryError("mesh original does not match the pinned result")
         data = raw.encode("utf-8")
         if len(data) != expected_bytes or hashlib.sha256(data).hexdigest() != expected_sha256:
             raise HistoryError("mesh original bytes do not match the pinned result")
         key = await self._put_full_message(
-            conversation_id, message_id, raw, max_bytes=ORACLE_MESH_ORIGINAL_MAX_BYTES,
+            conversation_id, message_id, raw, max_bytes=_oracle_mesh_original_max_bytes(row),
         )
         if key is None:
             # _put_full_message only skips short texts; an over-budget output
@@ -2167,6 +3450,7 @@ class D1HistoryStore:
     async def store_oracle_mesh_command_result(
         self, *, user_id: str, dispatch_id: str, conversation_id: str,
         message_id: str, raw: str, expected_sha256: str, expected_bytes: int,
+        verified: Any = None,
     ) -> str:
         """#5015 — keep one small verified command output for Engine re-feed.
 
@@ -2184,19 +3468,14 @@ class D1HistoryStore:
             raise HistoryError("original text is required")
         if not isinstance(expected_sha256, str) or not expected_sha256:
             raise HistoryError("expected digest is required")
-        row = await self._first(
-            "SELECT user_id, result_sha256, result_bytes FROM oracle_mesh_dispatch "
-            "WHERE dispatch_id=?",
-            dispatch_id,
+        row = await self._mesh_dispatch_pin(
+            user_id=user_id, dispatch_id=dispatch_id, expected_sha256=expected_sha256,
+            expected_bytes=expected_bytes, verified=verified,
         )
-        if row is None or row.get("user_id") != user_id:
-            raise HistoryForbidden("mesh dispatch is not owned by current user")
-        if row.get("result_sha256") != expected_sha256 or row.get("result_bytes") != expected_bytes:
-            raise HistoryError("mesh original does not match the pinned result")
         data = raw.encode("utf-8")
         if len(data) != expected_bytes or hashlib.sha256(data).hexdigest() != expected_sha256:
             raise HistoryError("mesh original bytes do not match the pinned result")
-        if len(data) > ORACLE_MESH_ORIGINAL_MAX_BYTES:
+        if len(data) > _oracle_mesh_original_max_bytes(row):
             raise HistoryError("mesh original exceeds the bounded storage envelope")
         bucket = self.full_context_bucket
         if bucket is None or not callable(getattr(bucket, "put", None)):
@@ -2229,15 +3508,10 @@ class D1HistoryStore:
             raise HistoryError("unsupported mesh original media type")
         if not isinstance(expected_sha256, str) or not expected_sha256:
             raise HistoryError("expected digest is required")
-        row = await self._first(
-            "SELECT user_id, result_sha256, result_bytes FROM oracle_mesh_dispatch "
-            "WHERE dispatch_id=?",
-            dispatch_id,
+        row = await self._mesh_dispatch_pin(
+            user_id=user_id, dispatch_id=dispatch_id, expected_sha256=expected_sha256,
+            expected_bytes=expected_bytes, verified=verified,
         )
-        if row is None or row.get("user_id") != user_id:
-            raise HistoryForbidden("mesh dispatch is not owned by current user")
-        if row.get("result_sha256") != expected_sha256 or row.get("result_bytes") != expected_bytes:
-            raise HistoryError("mesh original does not match the pinned result")
         data = bytes(raw)
         if len(data) != expected_bytes or hashlib.sha256(data).hexdigest() != expected_sha256:
             raise HistoryError("mesh original bytes do not match the pinned result")
@@ -2267,12 +3541,9 @@ class D1HistoryStore:
         """
         if not isinstance(user_id, str) or not user_id:
             return None
-        row = await self._first(
-            "SELECT user_id, result_sha256, result_bytes FROM oracle_mesh_dispatch "
-            "WHERE dispatch_id=?",
-            dispatch_id,
-        )
-        if row is None or row.get("user_id") != user_id:
+        row = await self._dispatch(
+            "get_oracle_mesh_dispatch_pin", user_id=user_id, dispatch_id=dispatch_id)
+        if row is None:
             return None
         pinned_sha = row.get("result_sha256")
         pinned_bytes = row.get("result_bytes")
@@ -2325,7 +3596,7 @@ class D1HistoryStore:
         )
         if row is None:
             return None
-        return dict(row)
+        return _tagged(row)
 
     async def record_claw_approval_handoff(
         self,

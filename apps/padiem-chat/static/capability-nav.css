@@ -119,8 +119,9 @@ html[data-theme="padiem-glass"] #clawDialog {
 }
 
 .capability-card {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-content: start;
   gap: 4px;
   padding: 14px;
   border: 1px solid var(--line, #e3e3e9);
@@ -135,6 +136,43 @@ html[data-theme="padiem-glass"] #clawDialog {
 .capability-card[disabled] {
   opacity: 0.55;
   cursor: not-allowed;
+}
+
+/* #5553: the service mark is a letter chip in the card's own tokens, so a
+   card needs no image asset and the mark never covers the name, the state or
+   the action. */
+/* The mark and the name share the card's first row; every other line
+   spans the card, so the mark never covers the state or the action. */
+.capability-card > * { grid-column: 1 / -1; }
+.capability-card[data-service-mark]::before {
+  grid-column: 1;
+  grid-row: 1;
+  align-self: center;
+}
+.capability-card > strong {
+  grid-column: 2;
+  grid-row: 1;
+  align-self: center;
+}
+
+/* The service mark is drawn from the card's own attribute, so the reviewed
+   card element structure is untouched and no image asset is introduced. It
+   is the first item of the card's first row, and the name sits next to it. */
+.capability-card[data-service-mark]::before {
+  content: attr(data-service-mark);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--line, #e3e3e9);
+  border-radius: 9px;
+  background: var(--panel, #fff);
+  color: var(--muted, #53606c);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: .01em;
 }
 
 .capability-card strong {
@@ -205,7 +243,17 @@ html[data-theme="padiem-glass"] .capability-read {
 
 .capability-card[data-connector-status="connected"] .capability-workspace {
   font-weight: 700;
+  color: var(--success, #1a6b3a);
+}
+
+/* The computer card and the composer chip share one status vocabulary and
+   one colour per state, so the two surfaces read the same. */
+.capability-card[data-connector-status="connecting"] .capability-workspace {
   color: var(--accent-strong, #2f6f99);
+}
+
+.capability-card[data-connector-status="unavailable"] .capability-workspace {
+  color: var(--danger, #b3261e);
 }
 
 .capability-card[data-connector-status="ambiguous"] .capability-workspace,
@@ -217,6 +265,73 @@ html[data-theme="padiem-glass"] .capability-read {
   .connector-live-status {
     align-items: flex-start;
     flex-wrap: wrap;
+  }
+}
+
+/* ── #5555 Connectors screen: one grid, one card shape, one action row ──── */
+/* The screen shows a fixed two-column card grid on desktop and a single
+   column on a phone, with the same padding, the same information order and
+   the same action placement on every card. The Glass tokens, the radius and
+   the existing status colours are reused unchanged. */
+.capability-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  align-items: stretch;
+  padding: 4px 0 20px;
+}
+
+.capability-card {
+  gap: 6px;
+  padding: 16px;
+  min-height: 148px;
+}
+
+.capability-card strong {
+  font-size: 15px;
+  line-height: 1.35;
+}
+
+/* The connection state is the information the user came for, so it is the
+   strongest line on the card. The support capability stays a separate,
+   quieter line: a supported capability is never a connected state. */
+.capability-card .capability-workspace {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.capability-card[data-connector-status="connected"] .capability-workspace {
+  font-weight: 700;
+  color: var(--accent-strong, #2f6f99);
+}
+
+.capability-card .capability-read {
+  font-size: 11px;
+  font-weight: 500;
+  opacity: .85;
+}
+
+/* One action row per card, aligned to the card bottom so a card with two
+   actions and a card with one action still read as the same block. */
+.capability-card .connector-retry {
+  align-self: flex-start;
+  margin-top: auto;
+  min-height: 44px;
+  padding: 8px 14px;
+  border-radius: 10px;
+}
+
+.capability-card .connector-connect {
+  margin-top: auto;
+}
+
+@media (max-width: 720px) {
+  .capability-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .capability-card {
+    min-height: 0;
   }
 }
 

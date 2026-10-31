@@ -17,6 +17,7 @@ from __future__ import annotations
 import asyncio
 import hashlib
 import inspect
+import json
 import secrets
 from collections.abc import Mapping
 from contextvars import ContextVar, Token
@@ -56,9 +57,9 @@ from app.orchestration_idempotency_service import (
     _initial_execution_fingerprint,
 )
 from app.orchestration_identity_service import (
-    _ORCHESTRATE_ALLOWED_FIELDS,
     _RESUME_ALLOWED_FIELDS,
     _reject_unknown_fields,
+    _wire_allowed_fields,
 )
 from app.orchestration_service import (
     _parse_agent_plan,
@@ -66,12 +67,15 @@ from app.orchestration_service import (
     _parse_continuation_ref,
     _parse_orchestration_options,
     _parse_recovery_policy,
+    _pc_query_selected_device,
+    _validated_pc_tool_arguments,
 )
 from app.service import (
     ServiceContractError,
     _service_error,
     build_execution_request,
 )
+from app.tool_projection import EngineToolProjectionError
 from app.usage_lifecycle import build_terminal_usage_receipt, is_idempotency_replay
 
 
@@ -115,7 +119,7 @@ def _run_admission_request(payload: Any) -> ExecutionAdmissionRequest | None:
     if not isinstance(payload, Mapping):
         return None
     try:
-        _reject_unknown_fields(payload, allowed=_ORCHESTRATE_ALLOWED_FIELDS)
+        _reject_unknown_fields(payload, allowed=_wire_allowed_fields(payload))
         fingerprint = _initial_execution_fingerprint(payload)
         if fingerprint is None:
             return None
@@ -191,7 +195,7 @@ def _loose_run_would_execute(payload: Any) -> bool:
     try:
         if not isinstance(payload, Mapping):
             return False
-        _reject_unknown_fields(payload, allowed=_ORCHESTRATE_ALLOWED_FIELDS)
+        _reject_unknown_fields(payload, allowed=_wire_allowed_fields(payload))
         app_id = payload.get("app_id")
         if not isinstance(app_id, str) or not app_id.strip():
             return False
@@ -219,6 +223,10 @@ def _loose_run_would_execute(payload: Any) -> bool:
         int(payload.get("max_retries", 3))
         bool(payload.get("require_evidence", False))
         bool(payload.get("require_verification", False))
+        # A PC target that fails the closed validation makes the identity
+        # service answer 400 before Core, so it must not read as an admission
+        # bypass. The shared validator is the only PC parser used here.
+        _validated_pc_tool_arguments(payload)
         return True
     except Exception:
         return False
@@ -389,32 +397,24 @@ class AdmissionBoundOrchestrationEngineService(CanonicalIdempotencyOrchestration
         # admission-bound logical request. Neither comes from model arguments.
         from app.claw_desktop_step_driver import CLAW_APP_ID, _ENGINE_DESKTOP_OWNER
         from app.claw_pc_query_step_driver import CHAT_APP_ID, _PC_QUERY_OWNER
+        from kagent.pc_query_adapter import PC_QUERY_RUN_SCOPE
         desktop_owner = None
         pc_query_owner = None
         if binding.app_id in (CLAW_APP_ID, CHAT_APP_ID) and binding.subject_id is not None:
             run_id = payload.get("session_id") if isinstance(payload, dict) else None
             if isinstance(run_id, str) and run_id:
                 desktop_owner = (binding.subject_id, run_id)
-                selected_device = None
-                tool_arguments = (
-                    payload.get("tool_arguments") if isinstance(payload, dict) else None
-                )
-                if isinstance(tool_arguments, dict):
-                    # The drive plan keys the target by query_drives; the file
-                    # plan uses the shared files hint. Both carry one device.
-                    for step_id in ("files", "query_drives"):
-                        entry = tool_arguments.get(step_id)
-                        if not isinstance(entry, dict):
-                            continue
-                        candidate = entry.get("device_id")
-                        if isinstance(candidate, str) and 0 < len(candidate) <= 128:
-                            selected_device = candidate
-                            break
+                # The drive plan keys the target by query_drives; the file plan
+                # uses the shared files hint. Both carry one device, taken from
+                # the same closed validation the tool projection consumes.
+                pc_target = _validated_pc_tool_arguments(payload)
                 pc_query_owner = (
-                    binding.subject_id, run_id, binding.app_id, selected_device,
+                    binding.subject_id, run_id, binding.app_id,
+                    _pc_query_selected_device(pc_target),
                 )
         desktop_scope_token = _ENGINE_DESKTOP_OWNER.set(desktop_owner)
         pc_query_scope_token = _PC_QUERY_OWNER.set(pc_query_owner)
+        pc_run_scope_token = PC_QUERY_RUN_SCOPE.set({} if pc_query_owner else None)
         original_token: Token[OriginalAdmissionBinding | None] = _ACTIVE_ORIGINAL_ADMISSION.set(binding)
         result_token = _ACTIVE_TERMINAL_RESULT.set(None)
         dispatch_evidence = ExecutionDispatchEvidence()
@@ -458,6 +458,64 @@ class AdmissionBoundOrchestrationEngineService(CanonicalIdempotencyOrchestration
             _ACTIVE_ORIGINAL_ADMISSION.reset(original_token)
             _ENGINE_DESKTOP_OWNER.reset(desktop_scope_token)
             _PC_QUERY_OWNER.reset(pc_query_scope_token)
+            PC_QUERY_RUN_SCOPE.reset(pc_run_scope_token)
+
+
+    async def prepare_stream(self, **options):
+        """New PC-tool general turns reuse trusted admission and usage policy."""
+        try:
+            payload = json.loads(bytes(options.get("body", b"")).decode("utf-8"))
+        except (ValueError, TypeError):
+            return await super().prepare_stream(**options)
+        if not isinstance(payload, Mapping) or "pc_tools" not in payload:
+            return await super().prepare_stream(**options)
+        query = _run_admission_request(payload)
+        if query is None:
+            return _service_error("invalid_pc_tools", "PC tools context is invalid.", status_code=422)
+        try:
+            admission = await resolve_and_require_trusted_admission(
+                adapter=self._admission_adapter, request=query,
+            )
+            if query.request_fingerprint is None or admission.request_fingerprint != query.request_fingerprint:
+                raise ExecutionAdmissionError(
+                    "entitlement_request_mismatch", "Execution admission does not match the PC turn.", status_code=403,
+                )
+            binding = OriginalAdmissionBinding.from_run_admission(admission)
+        except ExecutionAdmissionError as exc:
+            return self._receipt_error(exc)
+        original_token = _ACTIVE_ORIGINAL_ADMISSION.set(binding)
+        fingerprint_token = set_canonical_idempotency_fingerprint(query.request_fingerprint)
+        evidence = ExecutionDispatchEvidence()
+        dispatch_token = activate_execution_dispatch_evidence(evidence)
+        try:
+            prepared = await super().prepare_stream(**options)
+            from app.orchestration_service import PreparedOrchestrationStream
+            if not isinstance(prepared, PreparedOrchestrationStream):
+                return prepared
+            underlying = prepared.task
+
+            async def settle():
+                try:
+                    result = await underlying
+                    if evidence.dispatched or is_idempotency_replay(result):
+                        await self._record_terminal_usage(binding, outcome="succeeded", result=result)
+                    return result
+                except asyncio.CancelledError:
+                    if evidence.dispatched:
+                        await self._record_terminal_usage(binding, outcome="cancelled")
+                    raise
+                except ExecutionAdmissionError as exc:
+                    raise ServiceContractError(exc.code, exc.safe_message, status_code=exc.status_code) from None
+                except Exception:
+                    if evidence.dispatched:
+                        await self._record_terminal_usage(binding, outcome="failed")
+                    raise
+            from dataclasses import replace
+            return replace(prepared, task=asyncio.create_task(settle()))
+        finally:
+            reset_execution_dispatch_evidence(dispatch_token)
+            reset_canonical_idempotency_fingerprint(fingerprint_token)
+            _ACTIVE_ORIGINAL_ADMISSION.reset(original_token)
 
     async def resume_payload(self, payload: Any):  # noqa: C901 - lifecycle gate must stay linear
         """Resume only with fresh non-widening trusted admission before claim."""
@@ -619,6 +677,8 @@ class AdmissionBoundOrchestrationEngineService(CanonicalIdempotencyOrchestration
                     status_code=422,
                 )
         except ServiceContractError as exc:
+            return _service_error(exc.code, exc.safe_message, status_code=exc.status_code)
+        except EngineToolProjectionError as exc:
             return _service_error(exc.code, exc.safe_message, status_code=exc.status_code)
 
         # Fingerprint-scoped Core idempotency (mirrors CanonicalIdempotency service).

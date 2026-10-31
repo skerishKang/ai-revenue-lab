@@ -44,7 +44,12 @@ REPRESENTATIVE_COMPATIBILITY_EXPORTS = {
     "EvidenceGraph",
     "VerificationRequest",
     "OrchestrationRunner",
+}
+
+REMOVED_COMPATIBILITY_EXPORTS = {
     "AdapterConformanceSuite",
+    "AgentDelegationRequest",
+    "DelegatedAgentAuthority",
 }
 
 
@@ -54,6 +59,9 @@ def test_package_root_all_is_unique_and_keeps_approved_contract_families() -> No
     assert len(exported) == len(set(exported))
     assert FOUNDATIONAL_ROOT_EXPORTS <= set(exported)
     assert REPRESENTATIVE_COMPATIBILITY_EXPORTS <= set(exported)
+    assert REMOVED_COMPATIBILITY_EXPORTS.isdisjoint(exported)
+    for name in REMOVED_COMPATIBILITY_EXPORTS:
+        assert not hasattr(core, name), name
 
 
 def test_package_root_all_names_are_direct_or_lazy_exports() -> None:

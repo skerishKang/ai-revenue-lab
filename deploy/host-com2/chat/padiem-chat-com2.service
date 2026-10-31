@@ -1,0 +1,31 @@
+[Unit]
+Description=PADIEM COM2 Chat (CPython parallel host)
+Wants=network-online.target
+After=network-online.target
+RequiresMountsFor=/mnt/d/padiem/chat-com2
+ConditionPathIsMountPoint=/mnt/d
+ConditionPathExists=/opt/padiem/chat-com2/.env
+# Keep retrying a failing start and keep leaving the failure in the journal.
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+User=padiem-chat
+Group=padiem-chat
+WorkingDirectory=/opt/padiem/chat-com2
+EnvironmentFile=/opt/padiem/chat-com2/.env
+ExecCondition=/opt/padiem/chat-com2/venv/bin/python /opt/padiem/chat-com2/check_config.py
+ExecStart=/opt/padiem/chat-com2/venv/bin/python -m uvicorn --factory app.local_cpython:build_app --host 127.0.0.1 --port 8798 --no-server-header
+Restart=always
+RestartSec=5
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/mnt/d/padiem/chat-com2
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,1106 @@
+{
+  "measuredAt": "2026-10-30",
+  "url": "https://chat.padiem.net/?theme=padiem-glass",
+  "chromium": "156.0.8078.4",
+  "deviceScaleFactor": 1,
+  "zoom": "100% (browser default)",
+  "widths": {
+    "1920": "1920x1080",
+    "1440": "1440x1000",
+    "820": "820x1180",
+    "390": "390x844"
+  },
+  "sourceRevision": "09e601c9d7d4994412624b9efbd85d73eaf5c0a4",
+  "liveAssetsByteIdenticalToMain": {
+    "index.html": "sha256:497b8201e194e35b",
+    "util-menu.js": "sha256:1f834b45f6e12c94"
+  },
+  "screens": {
+    "1920": {
+      "speech": {
+        "png": "live-util-speech-1920.png",
+        "pngActions": "live-util-speech-actions-1920.png",
+        "panelVisible": true,
+        "panelH": 1034,
+        "kicker": "Padiem Speech",
+        "kickerStartX": 359,
+        "kickerFont": "10px",
+        "dot": {
+          "w": "6px",
+          "h": "6px",
+          "bg": "rgba(121, 188, 231, 0.95)",
+          "radius": "50%",
+          "display": "block"
+        },
+        "title": "축사·인사말",
+        "titleStartX": 359,
+        "titleFont": "34px",
+        "titleWeight": "770",
+        "tagline": "행사에 맞는 축사·인사말 초안을 준비합니다",
+        "taglineStartX": 359,
+        "contrast": {
+          "input-event": 6.33,
+          "textarea": 6.33,
+          "select": 6.33
+        },
+        "controlCount": 11,
+        "fieldsetLegends": [
+          "참고 글",
+          "기본 정보",
+          "내용",
+          "분량·말투·참고"
+        ],
+        "buttons": [
+          {
+            "text": "내 PC에서 예전 글 가져오기",
+            "id": null,
+            "disabled": false,
+            "w": 206,
+            "h": 44,
+            "bg": "rgba(255, 255, 255, 0.8)",
+            "color": "rgb(23, 32, 42)"
+          },
+          {
+            "text": "초안 생성",
+            "id": null,
+            "disabled": false,
+            "w": 84,
+            "h": 44,
+            "bg": "rgb(121, 188, 231)",
+            "color": "rgb(16, 32, 46)"
+          },
+          {
+            "text": "저장",
+            "id": "utilSpeechSave",
+            "disabled": false,
+            "w": 72,
+            "h": 44,
+            "bg": "rgba(235, 239, 242, 0.46)",
+            "color": "rgb(23, 32, 42)"
+          }
+        ],
+        "horizontalOverflow": false,
+        "scrollWidth": 1920,
+        "clientWidth": 1920,
+        "overflowingElements": []
+      },
+      "sns": {
+        "png": "live-util-sns-1920.png",
+        "pngActions": "live-util-sns-actions-1920.png",
+        "panelVisible": true,
+        "panelH": 66,
+        "kicker": "Padiem Util",
+        "kickerStartX": 359,
+        "kickerFont": "10px",
+        "dot": {
+          "w": "6px",
+          "h": "6px",
+          "bg": "rgba(121, 188, 231, 0.95)",
+          "radius": "50%",
+          "display": "block"
+        },
+        "title": "SNS 홍보",
+        "titleStartX": 359,
+        "titleFont": "34px",
+        "titleWeight": "770",
+        "tagline": "AI 홍보·기록 비서",
+        "taglineStartX": 359,
+        "contrast": {},
+        "controlCount": 0,
+        "fieldsetLegends": [],
+        "buttons": [],
+        "horizontalOverflow": false,
+        "scrollWidth": 1920,
+        "clientWidth": 1920,
+        "overflowingElements": []
+      },
+      "meeting": {
+        "png": "live-util-meeting-1920.png",
+        "pngActions": "live-util-meeting-actions-1920.png",
+        "panelVisible": true,
+        "panelH": 66,
+        "kicker": "Padiem Util",
+        "kickerStartX": 359,
+        "kickerFont": "10px",
+        "dot": {
+          "w": "6px",
+          "h": "6px",
+          "bg": "rgba(121, 188, 231, 0.95)",
+          "radius": "50%",
+          "display": "block"
+        },
+        "title": "회의정리·책 제작",
+        "titleStartX": 359,
+        "titleFont": "34px",
+        "titleWeight": "770",
+        "tagline": "AI 홍보·기록 비서",
+        "taglineStartX": 359,
+        "contrast": {},
+        "controlCount": 0,
+        "fieldsetLegends": [],
+        "buttons": [],
+        "horizontalOverflow": false,
+        "scrollWidth": 1920,
+        "clientWidth": 1920,
+        "overflowingElements": []
+      },
+      "pdfmd": {
+        "png": "live-util-pdfmd-1920.png",
+        "pngActions": "live-util-pdfmd-actions-1920.png",
+        "panelVisible": true,
+        "panelH": 538,
+        "kicker": "Padiem Util",
+        "kickerStartX": 359,
+        "kickerFont": "10px",
+        "dot": {
+          "w": "6px",
+          "h": "6px",
+          "bg": "rgba(121, 188, 231, 0.95)",
+          "radius": "50%",
+          "display": "block"
+        },
+        "title": "PDF → Markdown",
+        "titleStartX": 359,
+        "titleFont": "34px",
+        "titleWeight": "770",
+        "tagline": "AI 홍보·기록 비서",
+        "taglineStartX": 359,
+        "contrast": {
+          "select": 1.05
+        },
+        "controlCount": 1,
+        "fieldsetLegends": [],
+        "buttons": [
+          {
+            "text": "내 PC에서 가져오기 · 준비 중",
+            "id": "pdfmdPcPick",
+            "disabled": true,
+            "w": 182,
+            "h": 44,
+            "bg": "rgba(235, 239, 242, 0.46)",
+            "color": "rgb(23, 32, 42)"
+          }
+        ],
+        "horizontalOverflow": false,
+        "scrollWidth": 1920,
+        "clientWidth": 1920,
+        "overflowingElements": []
+      }
+    },
+    "1440": {
+      "speech": {
+        "png": "live-util-speech-1440.png",
+        "pngActions": "live-util-speech-actions-1440.png",
+        "panelVisible": true,
+        "panelH": 1034,
+        "kicker": "Padiem Speech",
+        "kickerStartX": 345,
+        "kickerFont": "10px",
+        "dot": {
+          "w": "6px",
+          "h": "6px",
+          "bg": "rgba(121, 188, 231, 0.95)",
+          "radius": "50%",
+          "display": "block"
+        },
+        "title": "축사·인사말",
+        "titleStartX": 345,
+        "titleFont": "34px",
+        "titleWeight": "770",
+        "tagline": "행사에 맞는 축사·인사말 초안을 준비합니다",
+        "taglineStartX": 345,
+        "contrast": {
+          "input-event": 6.33,
+          "textarea": 6.33,
+          "select": 6.33
+        },
+        "controlCount": 11,
+        "fieldsetLegends": [
+          "참고 글",
+          "기본 정보",
+          "내용",
+          "분량·말투·참고"
+        ],
+        "buttons": [
+          {
+            "text": "내 PC에서 예전 글 가져오기",
+            "id": null,
+            "disabled": false,
+            "w": 206,
+            "h": 44,
+            "bg": "rgba(255, 255, 255, 0.8)",
+            "color": "rgb(23, 32, 42)"
+          },
+          {
+            "text": "초안 생성",
+            "id": null,
+            "disabled": false,
+            "w": 84,
+            "h": 44,
+            "bg": "rgb(121, 188, 231)",
+            "color": "rgb(16, 32, 46)"
+          },
+          {
+            "text": "저장",
+            "id": "utilSpeechSave",
+            "disabled": false,
+            "w": 72,
+            "h": 44,
+            "bg": "rgba(235, 239, 242, 0.46)",
+            "color": "rgb(23, 32, 42)"
+          }
+        ],
+        "horizontalOverflow": false,
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "overflowingElements": []
+      },
+      "sns": {
+        "png": "live-util-sns-1440.png",
+        "pngActions": "live-util-sns-actions-1440.png",
+        "panelVisible": true,
+        "panelH": 66,
+        "kicker": "Padiem Util",
+        "kickerStartX": 345,
+        "kickerFont": "10px",
+        "dot": {
+          "w": "6px",
+          "h": "6px",
+          "bg": "rgba(121, 188, 231, 0.95)",
+          "radius": "50%",
+          "display": "block"
+        },
+        "title": "SNS 홍보",
+        "titleStartX": 345,
+        "titleFont": "34px",
+        "titleWeight": "770",
+        "tagline": "AI 홍보·기록 비서",
+        "taglineStartX": 345,
+        "contrast": {},
+        "controlCount": 0,
+        "fieldsetLegends": [],
+        "buttons": [],
+        "horizontalOverflow": false,
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "overflowingElements": []
+      },
+      "meeting": {
+        "png": "live-util-meeting-1440.png",
+        "pngActions": "live-util-meeting-actions-1440.png",
+        "panelVisible": true,
+        "panelH": 66,
+        "kicker": "Padiem Util",
+        "kickerStartX": 345,
+        "kickerFont": "10px",
+        "dot": {
+          "w": "6px",
+          "h": "6px",
+          "bg": "rgba(121, 188, 231, 0.95)",
+          "radius": "50%",
+          "display": "block"
+        },
+        "title": "회의정리·책 제작",
+        "titleStartX": 345,
+        "titleFont": "34px",
+        "titleWeight": "770",
+        "tagline": "AI 홍보·기록 비서",
+        "taglineStartX": 345,
+        "contrast": {},
+        "controlCount": 0,
+        "fieldsetLegends": [],
+        "buttons": [],
+        "horizontalOverflow": false,
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "overflowingElements": []
+      },
+      "pdfmd": {
+        "png": "live-util-pdfmd-1440.png",
+        "pngActions": "live-util-pdfmd-actions-1440.png",
+        "panelVisible": true,
+        "panelH": 558,
+        "kicker": "Padiem Util",
+        "kickerStartX": 345,
+        "kickerFont": "10px",
+        "dot": {
+          "w": "6px",
+          "h": "6px",
+          "bg": "rgba(121, 188, 231, 0.95)",
+          "radius": "50%",
+          "display": "block"
+        },
+        "title": "PDF → Markdown",
+        "titleStartX": 345,
+        "titleFont": "34px",
+        "titleWeight": "770",
+        "tagline": "AI 홍보·기록 비서",
+        "taglineStartX": 345,
+        "contrast": {
+          "select": 1.05
+        },
+        "controlCount": 1,
+        "fieldsetLegends": [],
+        "buttons": [
+          {
+            "text": "내 PC에서 가져오기 · 준비 중",
+            "id": "pdfmdPcPick",
+            "disabled": true,
+            "w": 182,
+            "h": 44,
+            "bg": "rgba(235, 239, 242, 0.46)",
+            "color": "rgb(23, 32, 42)"
+          }
+        ],
+        "horizontalOverflow": false,
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "overflowingElements": []
+      }
+    },
+    "820": {
+      "speech": {
+        "png": "live-util-speech-820.png",
+        "pngActions": "live-util-speech-actions-820.png",
+        "panelVisible": true,
+        "panelH": 1094,
+        "kicker": "Padiem Speech",
+        "kickerStartX": 33,
+        "kickerFont": "10px",
+        "dot": {
+          "w": "6px",
+          "h": "6px",
+          "bg": "rgba(121, 188, 231, 0.95)",
+          "radius": "50%",
+          "display": "block"
+        },
+        "title": "축사·인사말",
+        "titleStartX": 33,
+        "titleFont": "32.8px",
+        "titleWeight": "770",
+        "tagline": "행사에 맞는 축사·인사말 초안을 준비합니다",
+        "taglineStartX": 33,
+        "contrast": {
+          "input-event": 6.33,
+          "textarea": 6.33,
+          "select": 6.33
+        },
+        "controlCount": 11,
+        "fieldsetLegends": [
+          "참고 글",
+          "기본 정보",
+          "내용",
+          "분량·말투·참고"
+        ],
+        "buttons": [
+          {
+            "text": "내 PC에서 예전 글 가져오기",
+            "id": null,
+            "disabled": false,
+            "w": 206,
+            "h": 44,
+            "bg": "rgba(255, 255, 255, 0.8)",
+            "color": "rgb(23, 32, 42)"
+          },
+          {
+            "text": "초안 생성",
+            "id": null,
+            "disabled": false,
+            "w": 84,
+            "h": 44,
+            "bg": "rgb(121, 188, 231)",
+            "color": "rgb(16, 32, 46)"
+          },
+          {
+            "text": "저장",
+            "id": "utilSpeechSave",
+            "disabled": false,
+            "w": 72,
+            "h": 44,
+            "bg": "rgba(235, 239, 242, 0.46)",
+            "color": "rgb(23, 32, 42)"
+          }
+        ],
+        "horizontalOverflow": false,
+        "scrollWidth": 820,
+        "clientWidth": 820,
+        "overflowingElements": []
+      },
+      "sns": {
+        "png": "live-util-sns-820.png",
+        "pngActions": "live-util-sns-actions-820.png",
+        "panelVisible": true,
+        "panelH": 157,
+        "kicker": "Padiem Util",
+        "kickerStartX": 33,
+        "kickerFont": "10px",
+        "dot": {
+          "w": "6px",
+          "h": "6px",
+          "bg": "rgba(121, 188, 231, 0.95)",
+          "radius": "50%",
+          "display": "block"
+        },
+        "title": "SNS 홍보",
+        "titleStartX": 33,
+        "titleFont": "32.8px",
+        "titleWeight": "770",
+        "tagline": "AI 홍보·기록 비서",
+        "taglineStartX": 33,
+        "contrast": {},
+        "controlCount": 0,
+        "fieldsetLegends": [],
+        "buttons": [],
+        "horizontalOverflow": false,
+        "scrollWidth": 820,
+        "clientWidth": 820,
+        "overflowingElements": []
+      },
+      "meeting": {
+        "png": "live-util-meeting-820.png",
+        "pngActions": "live-util-meeting-actions-820.png",
+        "panelVisible": true,
+        "panelH": 157,
+        "kicker": "Padiem Util",
+        "kickerStartX": 33,
+        "kickerFont": "10px",
+        "dot": {
+          "w": "6px",
+          "h": "6px",
+          "bg": "rgba(121, 188, 231, 0.95)",
+          "radius": "50%",
+          "display": "block"
+        },
+        "title": "회의정리·책 제작",
+        "titleStartX": 33,
+        "titleFont": "32.8px",
+        "titleWeight": "770",
+        "tagline": "AI 홍보·기록 비서",
+        "taglineStartX": 33,
+        "contrast": {},
+        "controlCount": 0,
+        "fieldsetLegends": [],
+        "buttons": [],
+        "horizontalOverflow": false,
+        "scrollWidth": 820,
+        "clientWidth": 820,
+        "overflowingElements": []
+      },
+      "pdfmd": {
+        "png": "live-util-pdfmd-820.png",
+        "pngActions": "live-util-pdfmd-actions-820.png",
+        "panelVisible": true,
+        "panelH": 619,
+        "kicker": "Padiem Util",
+        "kickerStartX": 33,
+        "kickerFont": "10px",
+        "dot": {
+          "w": "6px",
+          "h": "6px",
+          "bg": "rgba(121, 188, 231, 0.95)",
+          "radius": "50%",
+          "display": "block"
+        },
+        "title": "PDF → Markdown",
+        "titleStartX": 33,
+        "titleFont": "32.8px",
+        "titleWeight": "770",
+        "tagline": "AI 홍보·기록 비서",
+        "taglineStartX": 33,
+        "contrast": {
+          "select": 1.03
+        },
+        "controlCount": 1,
+        "fieldsetLegends": [],
+        "buttons": [
+          {
+            "text": "내 PC에서 가져오기 · 준비 중",
+            "id": "pdfmdPcPick",
+            "disabled": true,
+            "w": 182,
+            "h": 44,
+            "bg": "rgba(235, 239, 242, 0.46)",
+            "color": "rgb(23, 32, 42)"
+          }
+        ],
+        "horizontalOverflow": false,
+        "scrollWidth": 820,
+        "clientWidth": 820,
+        "overflowingElements": []
+      }
+    },
+    "390": {
+      "speech": {
+        "png": "live-util-speech-390.png",
+        "pngActions": "live-util-speech-actions-390.png",
+        "panelVisible": true,
+        "panelH": 1403,
+        "kicker": "Padiem Speech",
+        "kickerStartX": 10,
+        "kickerFont": "10px",
+        "dot": {
+          "w": "6px",
+          "h": "6px",
+          "bg": "rgba(121, 188, 231, 0.95)",
+          "radius": "50%",
+          "display": "block"
+        },
+        "title": "축사·인사말",
+        "titleStartX": 10,
+        "titleFont": "26px",
+        "titleWeight": "770",
+        "tagline": "행사에 맞는 축사·인사말 초안을 준비합니다",
+        "taglineStartX": 10,
+        "contrast": {
+          "input-event": 6.33,
+          "textarea": 6.33,
+          "select": 6.33
+        },
+        "controlCount": 11,
+        "fieldsetLegends": [
+          "참고 글",
+          "기본 정보",
+          "내용",
+          "분량·말투·참고"
+        ],
+        "buttons": [
+          {
+            "text": "내 PC에서 예전 글 가져오기",
+            "id": null,
+            "disabled": false,
+            "w": 206,
+            "h": 44,
+            "bg": "rgba(255, 255, 255, 0.8)",
+            "color": "rgb(23, 32, 42)"
+          },
+          {
+            "text": "초안 생성",
+            "id": null,
+            "disabled": false,
+            "w": 84,
+            "h": 44,
+            "bg": "rgb(121, 188, 231)",
+            "color": "rgb(16, 32, 46)"
+          },
+          {
+            "text": "저장",
+            "id": "utilSpeechSave",
+            "disabled": false,
+            "w": 72,
+            "h": 44,
+            "bg": "rgba(235, 239, 242, 0.46)",
+            "color": "rgb(23, 32, 42)"
+          }
+        ],
+        "horizontalOverflow": false,
+        "scrollWidth": 390,
+        "clientWidth": 390,
+        "overflowingElements": []
+      },
+      "sns": {
+        "png": "live-util-sns-390.png",
+        "pngActions": "live-util-sns-actions-390.png",
+        "panelVisible": true,
+        "panelH": 136,
+        "kicker": "Padiem Util",
+        "kickerStartX": 10,
+        "kickerFont": "10px",
+        "dot": {
+          "w": "6px",
+          "h": "6px",
+          "bg": "rgba(121, 188, 231, 0.95)",
+          "radius": "50%",
+          "display": "block"
+        },
+        "title": "SNS 홍보",
+        "titleStartX": 10,
+        "titleFont": "26px",
+        "titleWeight": "770",
+        "tagline": "AI 홍보·기록 비서",
+        "taglineStartX": 10,
+        "contrast": {},
+        "controlCount": 0,
+        "fieldsetLegends": [],
+        "buttons": [],
+        "horizontalOverflow": false,
+        "scrollWidth": 390,
+        "clientWidth": 390,
+        "overflowingElements": []
+      },
+      "meeting": {
+        "png": "live-util-meeting-390.png",
+        "pngActions": "live-util-meeting-actions-390.png",
+        "panelVisible": true,
+        "panelH": 136,
+        "kicker": "Padiem Util",
+        "kickerStartX": 10,
+        "kickerFont": "10px",
+        "dot": {
+          "w": "6px",
+          "h": "6px",
+          "bg": "rgba(121, 188, 231, 0.95)",
+          "radius": "50%",
+          "display": "block"
+        },
+        "title": "회의정리·책 제작",
+        "titleStartX": 10,
+        "titleFont": "26px",
+        "titleWeight": "770",
+        "tagline": "AI 홍보·기록 비서",
+        "taglineStartX": 10,
+        "contrast": {},
+        "controlCount": 0,
+        "fieldsetLegends": [],
+        "buttons": [],
+        "horizontalOverflow": false,
+        "scrollWidth": 390,
+        "clientWidth": 390,
+        "overflowingElements": []
+      },
+      "pdfmd": {
+        "png": "live-util-pdfmd-390.png",
+        "pngActions": "live-util-pdfmd-actions-390.png",
+        "panelVisible": true,
+        "panelH": 648,
+        "kicker": "Padiem Util",
+        "kickerStartX": 10,
+        "kickerFont": "10px",
+        "dot": {
+          "w": "6px",
+          "h": "6px",
+          "bg": "rgba(121, 188, 231, 0.95)",
+          "radius": "50%",
+          "display": "block"
+        },
+        "title": "PDF → Markdown",
+        "titleStartX": 10,
+        "titleFont": "26px",
+        "titleWeight": "770",
+        "tagline": "AI 홍보·기록 비서",
+        "taglineStartX": 10,
+        "contrast": {
+          "select": 1.03
+        },
+        "controlCount": 1,
+        "fieldsetLegends": [],
+        "buttons": [
+          {
+            "text": "내 PC에서 가져오기 · 준비 중",
+            "id": "pdfmdPcPick",
+            "disabled": true,
+            "w": 182,
+            "h": 44,
+            "bg": "rgba(235, 239, 242, 0.46)",
+            "color": "rgb(23, 32, 42)"
+          }
+        ],
+        "horizontalOverflow": false,
+        "scrollWidth": 390,
+        "clientWidth": 390,
+        "overflowingElements": []
+      }
+    }
+  },
+  "speech390TouchAudit": {
+    "measured": 20,
+    "under44Rendered": [],
+    "notRenderedAtCapture": [
+      "",
+      "복사",
+      "TXT 다운로드",
+      "내 PC에 저장",
+      "다시 시도"
+    ],
+    "all": [
+      {
+        "t": "button",
+        "txt": "UUtil⌄",
+        "w": 225,
+        "h": 44,
+        "name": "utilNavButton"
+      },
+      {
+        "t": "button",
+        "txt": "축사·인사말",
+        "w": 195,
+        "h": 44,
+        "name": null
+      },
+      {
+        "t": "button",
+        "txt": "SNS 홍보",
+        "w": 195,
+        "h": 44,
+        "name": null
+      },
+      {
+        "t": "button",
+        "txt": "회의정리·활동집",
+        "w": 195,
+        "h": 44,
+        "name": null
+      },
+      {
+        "t": "button",
+        "txt": "PDF → Markdown",
+        "w": 195,
+        "h": 44,
+        "name": null
+      },
+      {
+        "t": "button",
+        "txt": "☰",
+        "w": 44,
+        "h": 44,
+        "name": "mobileMenu"
+      },
+      {
+        "t": "button",
+        "txt": "내 PC에서 예전 글 가져오기",
+        "w": 206,
+        "h": 44,
+        "name": null
+      },
+      {
+        "t": "input",
+        "txt": "",
+        "w": 298,
+        "h": 44,
+        "name": "event"
+      },
+      {
+        "t": "input",
+        "txt": "",
+        "w": 298,
+        "h": 44,
+        "name": "date"
+      },
+      {
+        "t": "input",
+        "txt": "",
+        "w": 298,
+        "h": 44,
+        "name": "place"
+      },
+      {
+        "t": "input",
+        "txt": "",
+        "w": 298,
+        "h": 44,
+        "name": "nature"
+      },
+      {
+        "t": "input",
+        "txt": "",
+        "w": 298,
+        "h": 44,
+        "name": "audience"
+      },
+      {
+        "t": "input",
+        "txt": "",
+        "w": 298,
+        "h": 44,
+        "name": "author"
+      },
+      {
+        "t": "textarea",
+        "txt": "",
+        "w": 298,
+        "h": 85,
+        "name": "message"
+      },
+      {
+        "t": "textarea",
+        "txt": "",
+        "w": 298,
+        "h": 63,
+        "name": "emphasis"
+      },
+      {
+        "t": "select",
+        "txt": "짧게보통길게",
+        "w": 298,
+        "h": 44,
+        "name": "length"
+      },
+      {
+        "t": "select",
+        "txt": "공식따뜻한간결",
+        "w": 298,
+        "h": 44,
+        "name": "tone"
+      },
+      {
+        "t": "textarea",
+        "txt": "",
+        "w": 298,
+        "h": 108,
+        "name": "style"
+      },
+      {
+        "t": "button",
+        "txt": "초안 생성",
+        "w": 84,
+        "h": 44,
+        "name": null
+      },
+      {
+        "t": "button",
+        "txt": "저장",
+        "w": 72,
+        "h": 44,
+        "name": "utilSpeechSave"
+      }
+    ]
+  },
+  "speech1440TouchAudit": {
+    "under44Rendered": [],
+    "notRenderedAtCapture": [
+      "☰",
+      "",
+      "복사",
+      "TXT 다운로드",
+      "내 PC에 저장",
+      "다시 시도"
+    ]
+  },
+  "focusAndHover": {
+    "inputFocus": {
+      "outlineWidth": "3px",
+      "outlineStyle": "solid",
+      "outlineColor": "rgba(121, 188, 231, 0.42)",
+      "boxShadow": "rgba(121, 188, 231, 0.22) 0px 0px 0px 4px",
+      "background": "rgb(255, 255, 255)",
+      "color": "rgb(23, 32, 42)",
+      "borderColor": "rgb(121, 188, 231)",
+      "opacity": "1"
+    },
+    "generateFocus": {
+      "outlineWidth": "3px",
+      "outlineStyle": "solid",
+      "outlineColor": "rgba(121, 188, 231, 0.42)",
+      "boxShadow": "rgba(121, 188, 231, 0.22) 0px 0px 0px 4px",
+      "background": "rgb(121, 188, 231)",
+      "color": "rgb(16, 32, 46)",
+      "borderColor": "rgb(16, 32, 46)",
+      "opacity": "1"
+    },
+    "generateHover": {
+      "outlineWidth": "3px",
+      "outlineStyle": "solid",
+      "outlineColor": "rgba(121, 188, 231, 0.42)",
+      "boxShadow": "rgba(121, 188, 231, 0.22) 0px 0px 0px 4px",
+      "background": "rgb(140, 200, 238)",
+      "color": "rgb(16, 32, 46)",
+      "borderColor": "rgb(16, 32, 46)",
+      "opacity": "1"
+    },
+    "saveRest": {
+      "outlineWidth": "3px",
+      "outlineStyle": "none",
+      "outlineColor": "rgb(23, 32, 42)",
+      "boxShadow": "none",
+      "background": "rgba(235, 239, 242, 0.46)",
+      "color": "rgb(23, 32, 42)",
+      "borderColor": "rgba(51, 74, 91, 0.34)"
+    },
+    "saveFocus": {
+      "outlineWidth": "3px",
+      "outlineStyle": "solid",
+      "outlineColor": "rgba(121, 188, 231, 0.42)",
+      "boxShadow": "rgba(121, 188, 231, 0.22) 0px 0px 0px 4px",
+      "background": "rgba(235, 239, 242, 0.46)",
+      "color": "rgb(23, 32, 42)",
+      "borderColor": "rgba(51, 74, 91, 0.34)"
+    },
+    "saveHover": {
+      "outlineWidth": "3px",
+      "outlineStyle": "none",
+      "outlineColor": "rgb(23, 32, 42)",
+      "boxShadow": "none",
+      "background": "rgba(121, 188, 231, 0.16)",
+      "color": "rgb(23, 32, 42)",
+      "borderColor": "rgba(51, 74, 91, 0.34)",
+      "opacity": "1"
+    },
+    "tabOrderAfterStyleField": [
+      "BUTTON:초안 생성",
+      "BUTTON:저장#utilSpeechSave",
+      "BODY:×\n        PPad",
+      "A:PPadiem Chat"
+    ],
+    "saveDisabledAttribute": {
+      "disabled": false,
+      "aria": null,
+      "cls": "util-save"
+    },
+    "savedDraftLane": {
+      "present": true,
+      "id": "utilSpeechSaved",
+      "cls": "util-saved-list",
+      "hidden": false,
+      "text": "",
+      "childCount": 0
+    }
+  },
+  "textContrastAgainstPanelBackground": {
+    "panelBackgroundPixel": "#eff3f4",
+    "label": {
+      "color": "rgb(51, 74, 91)",
+      "ratio": 8.28
+    },
+    "kicker": {
+      "color": "rgb(51, 74, 91)",
+      "ratio": 8.28
+    },
+    "title": {
+      "color": "rgb(23, 32, 42)",
+      "ratio": 14.73
+    },
+    "tagline": {
+      "color": "rgb(83, 96, 108)",
+      "ratio": 5.77
+    },
+    "generateButton": {
+      "bg": "rgb(121, 188, 231)",
+      "ink": "rgb(16, 32, 46)",
+      "inkOnButtonRatio": 8.01,
+      "buttonOnPanelRatio": 1.85
+    },
+    "saveButton": {
+      "bg": "rgba(235, 239, 242, 0.46)",
+      "border": "rgba(51, 74, 91, 0.34)",
+      "inkOnButtonRatio": 14.48,
+      "borderOnPanelRatio": 1.77,
+      "borderComposited": "#afbac0"
+    },
+    "inputFocusRing": {
+      "outlineDeclared": "rgba(121, 188, 231, 0.42)",
+      "outlineComposited": "#bddcef",
+      "outlineOnPanelRatio": 1.28,
+      "borderDeclared": "rgb(121, 188, 231)",
+      "borderOnPanelRatio": 1.85
+    },
+    "restInputBorderRatio": {
+      "declared": "rgb(121, 188, 231)",
+      "border": "#79bce7",
+      "fill": "#ffffff",
+      "ratio": 2.07
+    }
+  },
+  "pdfmdPanelDetail": {
+    "header": "PDF → Markdown 변환문서 처리 서버를 COM2로 이전 중입니다. 신규 PDF·ZIP 업로드 및 변환은 일시 중단하며, 기존 작업 이력과 결과 다운로드는 이용할 수 있습니다.",
+    "buttons": [
+      {
+        "t": "내 PC에서 가져오기 · 준비 중",
+        "id": "pdfmdPcPick",
+        "dis": true,
+        "r": [
+          182,
+          44
+        ],
+        "style": {
+          "border": "1px rgba(255, 255, 255, 0.38)",
+          "bg": "rgba(235, 239, 242, 0.46)",
+          "color": "rgb(23, 32, 42)",
+          "fs": "13px",
+          "fw": "650"
+        }
+      }
+    ],
+    "controls": [
+      {
+        "tag": "select",
+        "name": "pdfmdMode",
+        "r": [
+          91,
+          44
+        ],
+        "style": {
+          "border": "1px rgba(255, 255, 255, 0.38)",
+          "bg": "rgba(235, 239, 242, 0.46)",
+          "color": "rgb(23, 32, 42)",
+          "fs": "13px",
+          "fw": "400"
+        }
+      }
+    ],
+    "heads": [
+      {
+        "t": "PDF → Markdown 변환문서 처리 서버를 COM2로 이전 중입니다. 신규 PDF·ZIP 업로드 및 변환은 일시 중단하며",
+        "cls": "pdfmd-header",
+        "style": {
+          "border": "0px rgb(23, 32, 42)",
+          "bg": "rgba(0, 0, 0, 0)",
+          "color": "rgb(23, 32, 42)",
+          "fs": "16px",
+          "fw": "400"
+        }
+      },
+      {
+        "t": "PDF → Markdown 변환",
+        "cls": "",
+        "style": {
+          "border": "0px rgb(23, 32, 42)",
+          "bg": "rgba(0, 0, 0, 0)",
+          "color": "rgb(23, 32, 42)",
+          "fs": "18px",
+          "fw": "700"
+        }
+      },
+      {
+        "t": "빠른 변환: PDF의 텍스트만 곧바로 Markdown으로 옮깁니다. 디지털 PDF를 빠르게 확인할 때 적합합니다.",
+        "cls": "pdfmd-mode-help",
+        "style": {
+          "border": "0px rgb(83, 96, 108)",
+          "bg": "rgba(0, 0, 0, 0)",
+          "color": "rgb(83, 96, 108)",
+          "fs": "12px",
+          "fw": "400"
+        }
+      },
+      {
+        "t": "원본과 변환본 비교",
+        "cls": "",
+        "style": {
+          "border": "0px rgb(23, 32, 42)",
+          "bg": "rgba(0, 0, 0, 0)",
+          "color": "rgb(23, 32, 42)",
+          "fs": "14px",
+          "fw": "700"
+        }
+      }
+    ],
+    "drop": {
+      "r": [
+        542,
+        150
+      ],
+      "style": {
+        "border": "1px rgba(255, 255, 255, 0.38)",
+        "bg": "rgba(235, 239, 242, 0.46)",
+        "color": "rgb(23, 32, 42)",
+        "fs": "16px",
+        "fw": "400"
+      },
+      "cls": "pdfmd-drop pdfmd-paused"
+    }
+  },
+  "snsMeetingLiveFailure": {
+    "snsPanel": {
+      "children": 1,
+      "firstChildClass": "util-soon-msg",
+      "text": "SNS 홍보 화면을 열 수 없습니다."
+    },
+    "meetingPanel": {
+      "children": 1,
+      "firstChildClass": "util-soon-msg",
+      "text": "회의정리·책 제작 화면을 열 수 없습니다."
+    },
+    "pageError": "NotFoundError: Failed to execute 'insertBefore' on 'Node': The node before which the new node is to be inserted is not a child of this node. | at buildSns (https://chat.padiem.net/util-menu.js:1507:12) | at activateUtilTab (util-menu.js:855:41)",
+    "secondClickRepairs": false,
+    "shippedToolCaptureSnsOnLive": "Page.wait_for_selector('#utilSnsForm', timeout=5000ms) Timeout exceeded",
+    "authIsNotTheCause": "로그아웃 상태에서 실패 지점은 DOM 생성 코드이며 서빙된 index.html·util-menu.js는 main과 바이트 동일"
+  }
+}

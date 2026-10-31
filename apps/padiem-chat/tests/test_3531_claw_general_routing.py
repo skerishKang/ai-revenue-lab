@@ -162,5 +162,12 @@ def test_sticky_bottom_reserve_intact() -> None:
     # its scroll reserves, so recent runs and body content are not clipped.
     assert "position: fixed" in STYLES_CSS
     assert "bottom: 0" in STYLES_CSS
-    assert "padding-bottom: 280px" in WORKSPACE_CSS
+    # #5014/#5260: the reserve follows the measured composer clearance. The
+    # former fixed 280px inset survives only as its fallback, never as the
+    # sole padding value.
+    conversation = WORKSPACE_CSS.split('.app-shell[data-state="claw"] .conversation {', 1)[1].split("}", 1)[0]
+    assert "padding-bottom: calc(" in conversation
+    assert "var(--padiem-composer-clearance, 280px)" in conversation
+    assert "var(--padiem-visual-keyboard-inset, 0px)" in conversation
+    assert "padding-bottom: 280px" not in conversation
     assert "overflow-y: auto" in WORKSPACE_CSS

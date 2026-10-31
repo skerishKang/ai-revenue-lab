@@ -37,7 +37,10 @@ class StructuredDesktopStepDriver:
 
     async def next_step(self, context: AgentStepContext, compiled_profile: Any) -> AgentStepDecision:
         observations = []
-        for index, result in enumerate(context.tool_results):
+        # #4379: the driver resolves the results it needs through their
+        # authorized references, so the runtime never retains every payload.
+        for index, ref in enumerate(context.tool_result_refs):
+            result = await context.resolve_tool_result(ref)
             output = result.output_copy()
             if not isinstance(output, dict):
                 raise DesktopStepContractError("desktop result must be an object")
@@ -46,7 +49,7 @@ class StructuredDesktopStepDriver:
             if receipt is not None:
                 if not isinstance(receipt, str) or not receipt:
                     raise DesktopStepContractError("invalid capture receipt")
-                if index == len(context.tool_results) - 1:
+                if index == len(context.tool_result_refs) - 1:
                     # The latest capture is authoritative for the next decision.
                     # Earlier snapshots stay as audit metadata, not R2 re-reads.
                     image = await self._read_capture(
@@ -239,7 +242,7 @@ def build_claw_desktop_tool_binding(*, service, request_factory, secret):
             "device_id": {"type": "string", "minLength": 1, "maxLength": 128},
             "use_pinned_device": {"type": "boolean", "enum": [True]},
         }, "additionalProperties": False},
-        output_contract={"type": "object"}, timeout_seconds=300.0,
+        output_contract={"type": "object"}, timeout_seconds=None,
     )
     runtime = ToolRuntime()
 
@@ -280,7 +283,7 @@ def build_claw_desktop_tool_binding(*, service, request_factory, secret):
             auth_scope=(DESKTOP_CAPTURE_SCOPE,),
             input_schema={"type": "object", "properties": schema,
                           "required": required, "additionalProperties": False},
-            output_contract={"type": "object"}, timeout_seconds=300.0,
+            output_contract={"type": "object"}, timeout_seconds=None,
         )
     for name, input_spec in input_specs.items():
         async def perform(arguments, _name=name):
@@ -439,7 +442,6 @@ def build_live_desktop_driver(*, b14_client, chat_service, request_factory,
                 if model_policy is not None else None,
                 max_retries=model_policy.get("max_retries")
                 if model_policy is not None else None,
-                task_type=task_type, optimize_for=optimize_for,
             ),
         )
         response = await b14_client.execute(request)

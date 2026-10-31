@@ -7,7 +7,6 @@ from padiem_ai_core.document_template import (
     DOCUMENT_TEMPLATE_SCHEMA_VERSION,
     MAX_TEMPLATE_COLLECTION_ITEMS,
     MAX_TEMPLATE_NESTING_DEPTH,
-    MAX_TEMPLATE_STRING_CHARS,
     DocumentTemplateApproval,
     DocumentTemplateCandidate,
     DocumentTemplateError,
@@ -146,9 +145,11 @@ def test_nested_and_encoded_data_are_bounded() -> None:
         candidate(structure_profile={"root": nested})
     assert depth.value.code == "template_data_budget_exceeded"
 
-    with pytest.raises(DocumentTemplateError) as text:
-        candidate(fixed_content={"text": "x" * (MAX_TEMPLATE_STRING_CHARS + 1)})
-    assert text.value.code == "template_data_budget_exceeded"
+    # #4379: a template string and the template data carry no PADIEM size
+    # total, so a long value is kept rather than refused.
+    long_text = "x" * 100_000
+    kept = candidate(fixed_content={"text": long_text})
+    assert kept.fixed_content.to_python()["text"] == long_text
 
     with pytest.raises(DocumentTemplateError) as count:
         candidate(structure_profile={f"key_{i}": i for i in range(MAX_TEMPLATE_COLLECTION_ITEMS + 1)})

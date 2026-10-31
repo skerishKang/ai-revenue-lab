@@ -485,7 +485,9 @@ def _payload(ref: str, app_id: str = APP_ID) -> dict[str, Any]:
             "optimize_for": "korean",
             "max_tokens": 512,
             "required_capabilities": ["chat", "image"],
-            "model_policy": {"model": "b14/auto", "allow_external_fallback": False, "max_attempts": 1},
+            # #5002: an inert explicit route; the suspended Router auto route is
+            # never a valid Engine product-route model.
+            "model_policy": {"model": "testowner/example-model.v1", "allow_external_fallback": False},
         },
         "messages": [{"role": "user", "content": "이 사진을 설명해줘"}],
         "attachment_ref": ref,

@@ -118,11 +118,18 @@ def test_glass_kicker_uses_chat_eyebrow_ink() -> None:
 
 
 def test_page_eyebrow_shares_the_hero_vertical_origin() -> None:
-    """The brand line must land on the Chat/Claw row at any viewport height."""
+    """The brand line must land on the Chat/Claw row at any viewport height.
+
+    #5561: this used to restate the hero's inset as its own `clamp(52px, 7.4vh,
+    88px)` copy. A copy tracks one height only, and it was one of five places
+    that declared the same origin; the row now reads the shared token, so one
+    edit moves Chat, Claw and every page together.
+    """
     frame = (STATIC / "shared-six-panel-frame.css").read_text(encoding="utf-8")
     decl = frame.split("use the Chat/Claw eyebrow origin", 1)[1].split("!important", 1)[0]
     padding = [line for line in decl.splitlines() if line.strip().startswith("padding:")][0]
-    assert "calc(clamp(52px, 7.4vh, 88px) - 7px)" in padding
+    assert "calc(var(--padiem-first-screen-inset) - 7px)" in padding
+    assert "clamp(52px, 7.4vh, 88px)" not in padding, "a copied inset drifts from the hero"
     assert "78px" not in padding, "a fixed inset cannot track the height-relative hero inset"
     locale = (STATIC / "locale.js").read_text(encoding="utf-8")
     assert locale.count('"connectors-kicker": "Padiem Connectors"') == 2
@@ -167,7 +174,13 @@ def test_typography_reuses_chat_scale() -> None:
 
 def test_workspace_reserves_room_for_fixed_composer() -> None:
     layout = WORKSPACE_CSS.split("/* ── Workspace layout", 1)[1]
-    assert "padding: clamp(20px, 5vh, 48px) 0 280px" in layout.split("}", 1)[0]
+    # #5014/#5260: the workspace strip reserves the measured composer
+    # clearance, with 280px only as its fallback for older runtime values.
+    strip = layout.split("}", 1)[0]
+    assert "padding: clamp(20px, 5vh, 48px) 0 calc(" in strip
+    assert "var(--padiem-composer-clearance, 280px)" in strip
+    assert "var(--padiem-visual-keyboard-inset, 0px)" in strip
+    assert "padding: clamp(20px, 5vh, 48px) 0 280px" not in strip
     mobile = WORKSPACE_CSS.split("@media (max-width: 920px)", 1)[1]
     assert "padding: 16px 0 260px" in mobile
 
@@ -222,13 +235,28 @@ def test_request_echo_is_plain_user_message() -> None:
 # ── R3: disabled capabilities demote to a collapsed disclosure ────────────────
 
 
-def test_disabled_controls_are_collapsed_disclosure() -> None:
-    conv = _conversation_inner()
-    assert "<details" in conv and 'class="claw-disabled-controls"' in conv
-    assert "<summary" in conv
-    assert conv.count('class="claw-disabled-control"') == 5
-    # no longer a top-level block inside the workspace canvas
-    assert 'class="claw-disabled-controls"' not in _workspace_inner()
+def test_disabled_controls_disclosure_is_gone() -> None:
+    # The five never-wired "coming soon" buttons (two of which falsely claimed
+    # Markdown/DOCX downloads were missing) are removed rather than collapsed.
+    assert 'class="claw-disabled-controls"' not in INDEX
+    assert 'class="claw-disabled-control"' not in INDEX
+    assert "준비 중인 기능 5개" not in INDEX
+    locale = (STATIC / "locale.js").read_text(encoding="utf-8")
+    for key in (
+        "claw-disabled-summary",
+        "coming-features-aria",
+        "claw-ctrl-md-title",
+        "claw-ctrl-md-note",
+        "claw-ctrl-docx-title",
+        "claw-ctrl-docx-note",
+        "claw-ctrl-mem-title",
+        "claw-ctrl-mem-note",
+        "claw-ctrl-email-title",
+        "claw-ctrl-email-note",
+        "claw-ctrl-share-title",
+        "claw-ctrl-share-note",
+    ):
+        assert f'"{key}"' not in locale, key
 
 
 # ── R4: auth-unavailable copy is separated from re-login copy ─────────────────

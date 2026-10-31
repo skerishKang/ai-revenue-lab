@@ -1,0 +1,25 @@
+name: Validate COM2 Chat Packaging
+on:
+  pull_request:
+    paths:
+      - 'deploy/host-com2/chat/**'
+      - 'apps/padiem-chat/app/local_cpython.py'
+      - 'apps/padiem-chat/app/local_cron.py'
+      - 'apps/padiem-chat/app/local_service_bridge.py'
+      - 'docs/operations/CHAT_COM2_RUNBOOK.md'
+      - '.github/workflows/validate-chat-com2-packaging.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  packaging:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Offline installer, systemd units, health, backup and lock contracts
+        run: python -m unittest discover -s deploy/host-com2/chat/tests -q

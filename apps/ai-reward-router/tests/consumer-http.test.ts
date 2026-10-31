@@ -26,6 +26,7 @@ function assertSecurityHeaders(response: Response): void {
   assert.equal(response.headers.get('x-frame-options'), 'DENY');
   assert.equal(response.headers.get('referrer-policy'), 'no-referrer');
   assert.match(response.headers.get('content-security-policy') ?? '', /script-src 'none'/);
+  assert.match(response.headers.get('content-security-policy') ?? '', /form-action 'self'/);
 }
 
 test('default HTTP entrypoint renders honest zero-supply P0 Home at root', async () => {
@@ -36,7 +37,7 @@ test('default HTTP entrypoint renders honest zero-supply P0 Home at root', async
   assertSecurityHeaders(response);
   const html = await response.text();
   assert.match(html, /data-empty-state="NO_LIVE_REWARD_SUPPLY"/);
-  assert.match(html, /바로 적립/);
+  assert.match(html, /홈/);
   assert.doesNotMatch(html, /설문|마이크로태스크|단기 프로젝트|구직/);
 });
 
@@ -88,12 +89,69 @@ test('unsupported methods fail closed with 405', async () => {
   assertSecurityHeaders(response);
 });
 
+test('/today renders an honest zero-supply P0 Today Route at the dedicated route', async () => {
+  const handler = createEmptySupplyConsumerHttpHandler();
+  const response = await handler(new Request('https://b64.example/today'));
+  assert.equal(response.status, 200);
+  assert.match(response.headers.get('content-type') ?? '', /text\/html/);
+  assertSecurityHeaders(response);
+  const html = await response.text();
+  assert.match(html, /data-consumer-mode="TODAY_ROUTE_AD_CLICK_FIRST"/);
+  assert.match(html, /data-empty-state="NO_LIVE_REWARD_SUPPLY"/);
+  assert.doesNotMatch(html, /설문|마이크로태스크|단기 프로젝트|구직/);
+});
+
 test('unknown routes return secured 404 responses', async () => {
   const handler = createEmptySupplyConsumerHttpHandler();
   const response = await handler(new Request('https://b64.example/survey'));
   assert.equal(response.status, 404);
   assertSecurityHeaders(response);
   assert.equal(await response.text(), 'Not Found');
+});
+
+test('/browse renders an honest zero-supply P0 browse surface', async () => {
+  const handler = createEmptySupplyConsumerHttpHandler();
+  const response = await handler(new Request('https://b64.example/browse'));
+  assert.equal(response.status, 200);
+  assert.match(response.headers.get('content-type') ?? '', /text\/html/);
+  assertSecurityHeaders(response);
+  const html = await response.text();
+  assert.match(html, /data-consumer-mode="OPPORTUNITY_BROWSE_AD_CLICK_FIRST"/);
+  assert.match(html, /data-empty-state="NO_LIVE_REWARD_SUPPLY"/);
+});
+
+test('/browse filters by query and maxSeconds', async () => {
+  const handler = createConsumerHttpHandler({ loadCandidates: () => [liveAd] });
+  const r1 = await handler(new Request('https://b64.example/browse?q=광고'));
+  assert.equal(r1.status, 200);
+  assert.match(await r1.text(), /data-visible-card-count="1"/);
+  const r2 = await handler(new Request('https://b64.example/browse?maxSeconds=10'));
+  assert.equal(r2.status, 200);
+  // #6074: this used to expect NO_LIVE_REWARD_SUPPLY, which is the defect — a
+  // duration cap that excludes the one card is a filter outcome, not a statement
+  // that B64 has no verified supply.
+  const r2html = await r2.text();
+  assert.ok(!r2html.includes('data-visible-card-count="1"'), 'the 10s cap excludes the 15s card');
+  assert.match(r2html, /data-empty-state="NO_FILTER_MATCH"/);
+});
+
+test('/detail renders a known opportunity and 404s an unknown one', async () => {
+  const handler = createConsumerHttpHandler({ loadCandidates: () => [liveAd] });
+  const ok = await handler(new Request('https://b64.example/detail?id=http-live-ad'));
+  assert.equal(ok.status, 200);
+  const okHtml = await ok.text();
+  assert.match(okHtml, /data-consumer-mode="OPPORTUNITY_DETAIL_AD_CLICK_FIRST"/);
+  assert.match(okHtml, /15초 광고 보기/);
+  const missing = await handler(new Request('https://b64.example/detail?id=nope'));
+  assert.equal(missing.status, 404);
+  assertSecurityHeaders(missing);
+});
+
+test('/detail without id returns 404', async () => {
+  const handler = createEmptySupplyConsumerHttpHandler();
+  const response = await handler(new Request('https://b64.example/detail'));
+  assert.equal(response.status, 404);
+  assertSecurityHeaders(response);
 });
 
 test('candidate loader failure returns 503 instead of pretending supply is empty', async () => {

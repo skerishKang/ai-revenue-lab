@@ -42,6 +42,7 @@ Contract markers
 from __future__ import annotations
 
 import inspect
+import json
 import re
 from datetime import datetime, timezone
 from typing import Any, Mapping, Protocol
@@ -90,6 +91,7 @@ _NO_STORE_HEADERS = {
 _REASON_UNCONFIGURED = "local_access_truth_source_unconfigured"
 _REASON_NO_OWNER = "owner_session_required"
 _REASON_SOURCE_FAILED = "local_access_source_failed"
+_REASON_LINKED_PC = "pc_device_linked"
 _REASON_OK = None
 
 
@@ -131,6 +133,32 @@ def _capabilities(value: Any) -> list[str]:
         if capability and capability not in cleaned:
             cleaned.append(capability)
     return cleaned
+
+
+async def _owner_has_linked_pc(request: Request, owner_id: str) -> bool:
+    """Whether #5573 already links a PC for this account.
+
+    One read-only question to the pairing directory the same deployment already
+    composed. No store, an unapplied 072 migration or a failed read all answer
+    ``False``, which leaves the panel exactly as it behaved before links.
+
+    The card asks "does this account have a PC", not "may work be sent to it
+    now", so a paused link still counts: pausing stops dispatch and must not
+    bring the desktop panel back. ``list_links`` answers that (everything except
+    a revoked pair); the execution-facing reader is the fallback for a store that
+    composes only that one method.
+    """
+    store = getattr(request.app.state, "pc_device_pairing_store", None)
+    reader = getattr(store, "list_links", None) or getattr(store, "links_for_owner", None)
+    if not callable(reader):
+        return False
+    try:
+        links = reader(user_id=owner_id)
+        if inspect.isawaitable(links):
+            links = await links
+    except Exception:
+        return False
+    return isinstance(links, list) and bool(links)
 
 
 def _unavailable_projection(reason: str, conversation_id: str | None) -> dict[str, Any]:
@@ -235,24 +263,41 @@ async def claw_local_access(request: Request) -> JSONResponse:
 
     source = getattr(request.app.state, "claw_local_access_source", None)
     project = getattr(source, "project_local_access", None)
-    if project is None or getattr(source, "configured", True) is False:
-        return _failure(LOCAL_ACCESS_UNCONFIGURED_REASON, conversation_id)
-
-    try:
-        projected = project(
-            owner_id=uid,
-            conversation_id=conversation_id,
-            now=datetime.now(timezone.utc),
-        )
-        if inspect.isawaitable(projected):
-            projected = await projected
-    except Exception:
-        # Exception text can carry identifiers or storage detail, so only the
-        # bounded code is reported.
-        return _failure(_REASON_SOURCE_FAILED, conversation_id)
-
+    configured = callable(project) and getattr(source, "configured", True) is not False
+    reason = _REASON_SOURCE_FAILED if configured else LOCAL_ACCESS_UNCONFIGURED_REASON
+    projected = None
+    if configured:
+        try:
+            projected = project(owner_id=uid, conversation_id=conversation_id,
+                                now=datetime.now(timezone.utc))
+            if inspect.isawaitable(projected):
+                projected = await projected
+        except Exception:
+            projected = None  # No exception text/identifiers cross the boundary.
     if projected is None:
-        return _failure(_REASON_SOURCE_FAILED, conversation_id)
+        # Requirement 6: reuse the SAME verified directory, never require a
+        # Broker binding or enumerate unscoped presence rows for this panel.
+        try:
+            from .claw_device_directory_routes import _read_device_directory
+            from .claw_memory_routes import _resolve_memory_workspace
+            from .claw_local_access_source import mesh_directory_local_access_projection
+            workspace = await _resolve_memory_workspace(request, uid)
+            if workspace:
+                response = await _read_device_directory(request, uid=uid, workspace_id=workspace)
+                projected = mesh_directory_local_access_projection(json.loads(response.body))
+        except Exception:
+            pass
+    if projected is None:
+        return _failure(reason, conversation_id)
+    if (_flag(_read(projected, "requires_local_access"))
+            and await _owner_has_linked_pc(request, uid)):
+        # The #3084 card asks for the computer the user is browsing on. A PC this
+        # account linked through #5573 is not that computer, and a file request
+        # that already has a linked PC runs on the Mesh lane without it. Showing
+        # the card anyway tells the user to install a desktop app the request
+        # never uses, so it is not shown. Presentation only: no device state is
+        # claimed and no execution authority changes.
+        return _failure(_REASON_LINKED_PC, conversation_id)
 
     return JSONResponse(
         {

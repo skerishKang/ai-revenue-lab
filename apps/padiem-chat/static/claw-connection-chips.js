@@ -25,7 +25,8 @@ const pcTruth=(phase,ko,en)=>{
 // switch, so Drive/GitHub no longer stretch an "확인 불가" label under it.
 const cardStatus={pc:pcStatus,drive:document.getElementById("clawDriveCardStatus"),github:document.getElementById("clawGithubCardStatus")};
 const cardEl=id=>document.querySelector('[data-claw-card="'+(id==="pc"?"computer":id)+'"]');
-const truthText=value=>value==="on"?message("연결되었습니다","Connected"):value==="off"?message("연결 끔","Off"):message("연결 확인 필요","Connection needs checking");
+const vocabStatus=(key,fallback)=>{const v=window.PadiemConnectorVocabulary;return v&&typeof v.status==="function"?(v.status(key)||fallback):fallback;};
+const truthText=value=>value==="on"?vocabStatus("connected",message("연결되었습니다","Connected")):value==="off"?vocabStatus("disconnected",message("연결 끔","Off")):vocabStatus("checking",message("연결 확인 필요","Connection needs checking"));
 const cardTruth=(id,value)=>{
  const card=cardEl(id);if(card)card.dataset.connectionPhase=value;
  const el=cardStatus[id];if(el)el.textContent=truthText(value);
@@ -47,7 +48,7 @@ function set(id,value){
  element.setAttribute("aria-label",(id==="pc"?message("컴퓨터","Computer"):id==="drive"?"Google Drive":"GitHub")+" "+display);
  cardTruth(id,value);
 }
-const reset=()=>{ids.forEach(id=>set(id,"unknown"));pcTruth("unknown","\uC5F0\uACB0 \uD655\uC778 \uD544\uC694","Connection needs checking");const gh=chip("github");if(gh)delete gh.dataset.connectionLinked;};
+const reset=()=>{ids.forEach(id=>set(id,"unknown"));pcTruth("unknown",vocabStatus("checking","\uC5F0\uACB0 \uD655\uC778 \uD544\uC694"),"Connection needs checking");const gh=chip("github");if(gh)delete gh.dataset.connectionLinked;};
 const guestHint=()=>{
  if(!home()||signedIn())return;
  pcTruth("login_required","\uB85C\uADF8\uC778\uD558\uC138\uC694","Sign in first");
@@ -72,15 +73,15 @@ async function refresh(){
     // command enqueue/poll/admission; an offline heartbeat cannot fake it.
     set("pc","off");
     chip("pc").dataset.pcPaused="true";
-    pcTruth("paused","\uC5F0\uACB0 \uAEBC\uC9D0","Connection off");
+    pcTruth("paused",vocabStatus("disconnected","\uC5F0\uACB0 \uAEBC\uC9D0"),"Connection off");
    }else if(!d.devices.length){
     set("pc","off");
-    pcTruth("unregistered","\uC5F0\uACB0\uD558\uC138\uC694","Connect your computer");
+    pcTruth("unregistered",vocabStatus("disconnected","C5F0-ACB0-D558-C138-C694"),vocabStatus("disconnected","Connect your computer"));
    }else{
     const records=d.devices.map(x=>x?.projection&&typeof x.projection==="object"?x.projection:x);
     if(records.some(x=>x?.state==="CONNECTED"&&x.usable===true&&x.revoked!==true&&x.expired!==true)){
      set("pc","on");
-     pcTruth("online","\uC5F0\uACB0\uB418\uC5C8\uC2B5\uB2C8\uB2E4","Connected");
+     pcTruth("online",vocabStatus("connected","C5F0-ACB0-B418-C5C8-C2B5-B2C8-B2E4"),vocabStatus("connected","Connected"));
     }else if(records.every(x=>x&&["PAIRING","OFFLINE","REVOKED","ACTION_REQUIRED"].includes(x.state))){
      // One generic line cannot help anyone: a revoked binding, an expired
      // credential, a PC that is simply offline and a Mesh target whose online
@@ -229,8 +230,17 @@ ids.forEach(id=>chip(id)?.addEventListener("click",event=>{
  if(state==="on"&&id==="drive"){
   // OFF is a temporary pause, not credential revocation. The Google authority
   // has no reversible pause operation yet; never silently delete its grant.
-  feedback("Google Drive 일시 중지는 아직 준비 중입니다. 연결 삭제는 커넥터 관리에서 선택해 주세요.",
-    "Google Drive pause is not available yet. Remove authorization in Connectors.");
+  feedback("Google 권한은 잠시 멈출 수 없어요. 완전히 끊으려면 Google 계정 > 보안 > 타사 앱에서 해제하세요.",
+    "Google permissions cannot be paused. To revoke them, open Google Account > Security > third-party apps.");
+  const feedbackEl=document.getElementById("clawConnectionFeedback");
+  if(feedbackEl){
+   const revokeLink=document.createElement("a");
+   revokeLink.href="https://myaccount.google.com/connections";
+   revokeLink.target="_blank";
+   revokeLink.rel="noopener noreferrer";
+   revokeLink.textContent=message("Google 계정 보안 설정 열기","Open Google Account security");
+   feedbackEl.append(document.createTextNode(" "),revokeLink);
+  }
   return;
  }
  if(state==="on"&&id==="github"){

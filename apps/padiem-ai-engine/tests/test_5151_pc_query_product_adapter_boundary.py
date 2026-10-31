@@ -21,6 +21,8 @@ from pathlib import Path
 
 import pytest
 
+from padiem_ai_core.agent_tool_result_ledger import InMemoryToolResultLedger
+
 from app import claw_pc_query_step_driver as engine_driver
 from app.claw_pc_query_step_driver import (
     PC_DRIVES_TOOL_ID,
@@ -101,19 +103,27 @@ def test_engine_module_re_exports_the_same_contract_objects() -> None:
     assert engine_driver._plan_step_arguments is product_adapter.plan_step_arguments
 
 
-def test_engine_binding_registers_the_same_three_tools() -> None:
+def test_engine_binding_registers_the_same_six_tools() -> None:
     binding = build_claw_pc_query_tool_binding(
         service=_FakeService(), request_factory=lambda *a, **k: None,
         secret="s" * 64,
     )
     registered = binding.tool_runtime.registered_tool_ids
+    # Exact on purpose: a PC tool that exists but is not registered here would
+    # run unobserved, and one registered twice would be a second authority over
+    # the same machine.
     assert set(registered) == {
         PC_DRIVES_TOOL_ID, PC_LIST_FILES_TOOL_ID, PC_READ_FILE_TOOL_ID,
+        engine_driver.PC_WRITE_FILE_TOOL_ID, engine_driver.PC_MOVE_FILE_TOOL_ID,
+        engine_driver.PC_DELETE_FILE_TOOL_ID,
     }
     canonical = {entry.canonical_tool_id for entry in binding.registry.entries}
     assert canonical == {
         product_adapter.PC_DRIVES_CANONICAL_TOOL_ID,
         product_adapter.PC_LIST_FILES_CANONICAL_TOOL_ID,
+        product_adapter.PC_WRITE_FILE_CANONICAL_TOOL_ID,
+        product_adapter.PC_MOVE_FILE_CANONICAL_TOOL_ID,
+        product_adapter.PC_DELETE_FILE_CANONICAL_TOOL_ID,
         product_adapter.PC_READ_FILE_CANONICAL_TOOL_ID,
     }
     authority = binding.authorities[product_adapter.PC_QUERY_AGENT_ID]
@@ -121,6 +131,9 @@ def test_engine_binding_registers_the_same_three_tools() -> None:
         product_adapter.PC_QUERY_SCOPE,
         product_adapter.PC_LIST_FILES_SCOPE,
         product_adapter.PC_READ_FILE_SCOPE,
+        product_adapter.PC_WRITE_FILE_SCOPE,
+        product_adapter.PC_MOVE_FILE_SCOPE,
+        product_adapter.PC_DELETE_FILE_SCOPE,
     )
 
 
@@ -137,7 +150,14 @@ def test_step_policy_uses_the_trusted_plan_target_and_refuses_a_model_device() -
     )
 
     class _Context:
-        tool_results: tuple = ()
+        tool_result_refs: tuple = ()
+        result_ledger = InMemoryToolResultLedger()
+
+        async def resolve_tool_results(self):
+            return ()
+
+        async def resolve_tool_result(self, ref):
+            return await self.result_ledger.resolve(ref)
 
     decision = _run(driver.next_step(_Context(), None))
     assert decision.invocation is not None

@@ -34,7 +34,12 @@ def test_meeting_workspace_is_inside_shared_main_not_outside_app_shell():
                    "meetingDownloadAudio","meetingDownloadText",
                    "meetingSaveAudioDrive","meetingSaveTextDrive","meetingDraftInClaw"):
         assert INDEX.count(f'id="{target}"')==1
-    assert 'state !== "meeting"' in APP
+    # The view must show only on its own page. That condition moved into the
+    # page contract table (the meeting entry names its panel) and one shared
+    # loop hides every panel the current page does not own, which keeps the
+    # guarantee without a per-product if/else.
+    assert 'panelId: "meetingView"' in APP
+    assert "panel.hidden = entry.panelId !== page.panelId" in APP
     assert 'padiem:meeting-open' in APP
     assert 'data-state="meeting"' in CSS
     assert 'overflow-y: auto;' in CSS

@@ -86,13 +86,19 @@ def test_subagents_are_forbidden_in_v1() -> None:
         make_agent(allow_subagents=True)
 
 
-def test_budget_is_bounded() -> None:
+def test_budget_has_no_padiem_maximum() -> None:
+    # #4379: an explicit budget is a caller choice, so it has no PADIEM
+    # maximum. The type and the sign still fail closed.
     with pytest.raises(AgentDefinitionError):
         AgentExecutionBudget(max_steps=0)
     with pytest.raises(AgentDefinitionError):
-        AgentExecutionBudget(max_skill_calls=65)
+        AgentExecutionBudget(max_tool_calls=-1)
     with pytest.raises(AgentDefinitionError):
-        AgentExecutionBudget(max_wall_seconds=3601)
+        AgentExecutionBudget(max_wall_seconds=0)
+    assert AgentExecutionBudget(max_skill_calls=1000).max_skill_calls == 1000
+    assert AgentExecutionBudget(max_tool_calls=5000).max_tool_calls == 5000
+    assert AgentExecutionBudget(max_steps=1000).max_steps == 1000
+    assert AgentExecutionBudget(max_wall_seconds=86_400).max_wall_seconds == 86_400
 
 
 def test_duplicate_ids_fail_closed() -> None:
@@ -135,6 +141,8 @@ def test_agent_has_no_self_authorization_or_credential_fields() -> None:
 
 
 def test_default_agent_run_budget_matches_long_form_context():
-    assert AgentExecutionBudget().max_wall_seconds == 900
+    assert AgentExecutionBudget().max_wall_seconds == 1800
+    # #4379: the inactivity window has no PADIEM maximum either.
+    assert AgentExecutionBudget(max_wall_seconds=86_400).max_wall_seconds == 86_400
     with pytest.raises(AgentDefinitionError):
-        AgentExecutionBudget(max_wall_seconds=3601)
+        AgentExecutionBudget(max_wall_seconds=0)

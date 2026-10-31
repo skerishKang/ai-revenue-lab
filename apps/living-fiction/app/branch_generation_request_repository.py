@@ -428,59 +428,6 @@ def fail_branch_generation_request(
         )
 
 
-# ── Legacy state transition helpers (kept for backward compat, use CAS instead) ──
-
-
-def mark_completed(
-    conn: sqlite3.Connection,
-    request_id: str,
-    branch_episode_id: str,
-) -> None:
-    """Mark a request as completed (within service-owned transaction, no commit)."""
-    conn.execute(
-        "UPDATE branch_generation_requests SET status = 'completed', "
-        "branch_episode_id = ?, completed_at = ? WHERE id = ?",
-        (branch_episode_id, now_utc_iso(), request_id),
-    )
-
-
-def mark_failed(
-    conn: sqlite3.Connection,
-    request_id: str,
-    error_message: str,
-) -> None:
-    """Mark a request as failed (within service-owned transaction, no commit)."""
-    conn.execute(
-        "UPDATE branch_generation_requests SET status = 'failed', "
-        "error_message = ?, completed_at = ?, updated_at = ? WHERE id = ?",
-        (error_message, now_utc_iso(), now_utc_iso(), request_id),
-    )
-
-
-def transition_failed_to_pending(
-    conn: sqlite3.Connection,
-    request_id: str,
-) -> None:
-    """Transition a failed request back to pending for retry.
-
-    Reuses the same row — does NOT insert a new row.
-    Increments attempt_number, clears error_message and branch_episode_id.
-    Updates pending_lease_at and updated_at timestamps.
-    """
-    conn.execute(
-        "UPDATE branch_generation_requests SET "
-        "status = 'pending', "
-        "attempt_number = attempt_number + 1, "
-        "branch_episode_id = NULL, "
-        "error_message = NULL, "
-        "pending_lease_at = ?, "
-        "updated_at = ?, "
-        "completed_at = NULL "
-        "WHERE id = ?",
-        (now_utc_iso(), now_utc_iso(), request_id),
-    )
-
-
 def transition_stale_pending_to_pending(
     conn: sqlite3.Connection,
     request_id: str,

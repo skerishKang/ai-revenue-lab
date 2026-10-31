@@ -33,6 +33,7 @@ from kagent.claw_memory import (
     ClawAlertSeverity,
     ClawAlertStatus,
     ClawFollowupTask,
+    ClawMemoryError,
     ClawTaskStatus,
 )
 from kagent.core import redact_secrets
@@ -115,17 +116,19 @@ class _MemoryStore:
         self.tasks: dict[str, ClawFollowupTask] = {}
         self.alerts: dict[str, ClawAlert] = {}
 
-    async def get_task(self, task_id: str, *, workspace_id: str) -> ClawFollowupTask | None:
+    async def get_task(
+        self, task_id: str, *, workspace_id: str, member_id: str
+    ) -> ClawFollowupTask | None:
         task = self.tasks.get(task_id)
-        return task if task is not None and task.workspace_id == workspace_id else None
+        if task is None or task.workspace_id != workspace_id:
+            return None
+        return task if task.member_id == member_id else None
 
-    async def get_alert(self, alert_id: str, *, workspace_id: str, member_id: str | None = None) -> ClawAlert | None:
+    async def get_alert(self, alert_id: str, *, workspace_id: str, member_id: str) -> ClawAlert | None:
         alert = self.alerts.get(alert_id)
         if alert is None or alert.workspace_id != workspace_id:
             return None
-        if member_id is not None and not alert.is_visible_to(member_id):
-            return None
-        return alert
+        return alert if alert.is_visible_to(member_id) else None
 
     async def add_task(self, task: ClawFollowupTask) -> ClawFollowupTask:
         self.tasks[task.task_id] = task
@@ -235,6 +238,37 @@ async def test_alert_completed_creates_one_active_automation_alert() -> None:
     assert len(store.tasks) == 0
 
 
+async def test_alert_projection_carries_the_run_and_rule_references() -> None:
+    store = _MemoryStore()
+    rule = _rule(output_type=ClawAutomationOutputType.ALERT)
+    run = _run(rule=rule, status=ClawScheduledRunStatus.COMPLETED, output=_output(output_type=ClawAutomationOutputType.ALERT))
+
+    result = await project_scheduled_run_output(owner=_owner(), rule=rule, run=run, store=store)
+
+    # #5034: the click target is derived server-side from the run that produced
+    # the alert, in run-then-rule order, exactly like the task projection.
+    alert = store.alerts[result.record_id]
+    assert alert.linked_refs == (RUN_ID, RULE_ID)
+
+
+async def test_alert_projection_refuses_a_row_written_for_another_run() -> None:
+    store = _MemoryStore()
+    rule = _rule(output_type=ClawAutomationOutputType.ALERT)
+    run = _run(rule=rule, status=ClawScheduledRunStatus.COMPLETED, output=_output(output_type=ClawAutomationOutputType.ALERT))
+    alert_id = _deterministic_id(WS, RUN_ID, "alert")
+    store.alerts[alert_id] = ClawAlert(
+        alert_id=alert_id, workspace_id=WS, kind=ClawAlertKind.AUTOMATION,
+        severity=ClawAlertSeverity.INFO, title=run.output.title, created_at=NOW,
+        visible_to_members=(MEMBER,), linked_refs=("run-other", RULE_ID),
+    )
+
+    # A row whose reference points somewhere else is a foreign identity: it is
+    # refused instead of being silently repointed at this run.
+    with pytest.raises(AutomationProjectionError):
+        await project_scheduled_run_output(owner=_owner(), rule=rule, run=run, store=store)
+    assert store.alerts[alert_id].linked_refs == ("run-other", RULE_ID)
+
+
 async def test_same_run_second_projection_creates_no_second_alert() -> None:
     store = _MemoryStore()
     rule = _rule(output_type=ClawAutomationOutputType.ALERT)
@@ -260,6 +294,7 @@ async def test_existing_dismissed_alert_remains_dismissed() -> None:
         alert_id=alert_id, workspace_id=WS, kind=ClawAlertKind.AUTOMATION,
         severity=ClawAlertSeverity.INFO, title=output.title, created_at=NOW,
         status=ClawAlertStatus.DISMISSED, visible_to_members=(MEMBER,),
+        linked_refs=(RUN_ID, RULE_ID),
     )
 
     result = await project_scheduled_run_output(owner=_owner(), rule=rule, run=run, store=store)
@@ -428,7 +463,12 @@ async def test_raw_output_content_is_not_persisted() -> None:
     assert RAW_CONTENT not in json.dumps([t.safe_dict() for t in store.tasks.values()], default=str)
 
 
-async def test_secret_shaped_title_is_redacted() -> None:
+async def test_the_owners_own_title_is_stored_unchanged() -> None:
+    """#5360: the owner's own business content is not masked by default.
+
+    The record is the owner's own workspace-scoped task, and the diagnostic
+    and log surfaces keep their own credential filtering.
+    """
     store = _MemoryStore()
     raw_title = "Authorization: Bearer " + "a" * 24
     # Guard: the fixture must actually be secret-shaped for the canonical helper.
@@ -440,59 +480,60 @@ async def test_secret_shaped_title_is_redacted() -> None:
     result = await project_scheduled_run_output(owner=_owner(), rule=rule, run=run, store=store)
 
     task = store.tasks[result.record_id]
-    assert task.title == redact_secrets(raw_title)
-    assert task.title != raw_title
+    assert task.title == raw_title
+    assert task.member_id == MEMBER
+    assert task.workspace_id == WS
 
 
 # ── D1 adapter proof ─────────────────────────────────────────────────────────
 
 
-class _FakeStatement:
-    def __init__(self, db: "_FakeD1", sql: str) -> None:
-        self._db = db
-        self._sql = " ".join(sql.split())
+class _Statement:
+    """Runs the store's own SQL through a D1-shaped surface over sqlite."""
+
+    def __init__(self, conn, sql: str) -> None:
+        self._conn = conn
+        self._sql = sql
         self._values: tuple = ()
 
-    def bind(self, *values) -> "_FakeStatement":
+    def bind(self, *values) -> "_Statement":
         self._values = values
         return self
 
     async def run(self) -> dict:
-        sql = self._sql
-        if sql.startswith("INSERT INTO"):
-            cols = [c.strip() for c in sql[sql.index("(") + 1: sql.index(")")].split(",")]
-            values_part = sql.split("VALUES", 1)[1].strip()
-            inner = values_part[values_part.index("(") + 1: values_part.rindex(")")]
-            tokens = [t.strip() for t in inner.split(",")]
-            row: dict = {}
-            vi = 0
-            for col, tok in zip(cols, tokens):
-                if tok == "?":
-                    row[col] = self._values[vi]
-                    vi += 1
-                elif tok.upper() == "NULL":
-                    row[col] = None
-                else:
-                    row[col] = int(tok)
-            self._db.rows[row["id"]] = row
-            return {"success": True, "meta": {"changes": 1}}
-        raise AssertionError(f"unexpected SQL for run(): {sql!r}")
+        cur = self._conn.execute(self._sql, self._values)
+        return {"success": True, "meta": {"changes": cur.rowcount}}
 
     async def first(self):
-        kind = "task" if "kind='task'" in self._sql else ("alert" if "kind='alert'" in self._sql else None)
-        row_id, workspace_id = self._values[0], self._values[1]
-        row = self._db.rows.get(row_id)
-        if row is None or row["workspace_id"] != workspace_id or row["kind"] != kind:
-            return None
-        return dict(row)
+        row = self._conn.execute(self._sql, self._values).fetchone()
+        return dict(row) if row else None
+
+    async def all(self) -> list:
+        return [dict(r) for r in self._conn.execute(self._sql, self._values).fetchall()]
 
 
 class _FakeD1:
-    def __init__(self) -> None:
-        self.rows: dict = {}
+    """sqlite with migration 010, so the member predicate in the real WHERE
+    clauses is what these tests observe."""
 
-    def prepare(self, sql: str) -> _FakeStatement:
-        return _FakeStatement(self, sql)
+    def __init__(self) -> None:
+        import sqlite3
+        from pathlib import Path as _Path
+
+        self.conn = sqlite3.connect(":memory:", isolation_level=None)
+        self.conn.row_factory = sqlite3.Row
+        schema = _Path(__file__).resolve().parents[1] / "migrations" / "010_claw_task_alert.sql"
+        self.conn.executescript(schema.read_text(encoding="utf-8"))
+
+    @property
+    def rows(self) -> dict:
+        return {
+            row["id"]: dict(row)
+            for row in self.conn.execute("SELECT * FROM claw_task_alert").fetchall()
+        }
+
+    def prepare(self, sql: str) -> _Statement:
+        return _Statement(self.conn, sql)
 
 
 def _d1_store():
@@ -514,7 +555,9 @@ async def test_d1_task_first_insert_then_duplicate_no_second_insert() -> None:
     second = await project_scheduled_run_output(owner=_owner(), rule=rule, run=run, store=store)
     assert second.created is False
     assert len(db.rows) == 1  # no second insert
-    assert (await store.get_task(first.record_id, workspace_id=WS)).status is ClawTaskStatus.OPEN
+    assert (
+        await store.get_task(first.record_id, workspace_id=WS, member_id=_owner().member_id)
+    ).status is ClawTaskStatus.OPEN
 
 
 async def test_d1_alert_first_insert_then_duplicate_no_second_insert() -> None:
@@ -545,3 +588,57 @@ def test_deterministic_ids_are_stable_and_distinct() -> None:
     assert task_id.startswith("automation_task:") and len(task_id) == len("automation_task:") + 64
     assert alert_id.startswith("automation_alert:") and len(alert_id) == len("automation_alert:") + 64
     assert _deterministic_id(WS2, RUN_ID, "task") != task_id
+
+
+async def test_d1_a_tenant_mate_cannot_read_or_replace_the_projected_task() -> None:
+    """#2952 follow-up on the durable store: the projection row belongs to its member."""
+    store, db = _d1_store()
+    rule = _rule(output_type=ClawAutomationOutputType.TASK_PROPOSAL)
+    run = _run(
+        rule=rule,
+        status=ClawScheduledRunStatus.COMPLETED,
+        output=_output(output_type=ClawAutomationOutputType.TASK_PROPOSAL),
+    )
+
+    first = await project_scheduled_run_output(owner=_owner(), rule=rule, run=run, store=store)
+    assert first.created is True
+
+    other = _owner(member_id="member_other_2952")
+    assert await store.get_task(first.record_id, workspace_id=WS, member_id=other.member_id) is None
+    with pytest.raises(ClawMemoryError):
+        await store.set_task_status(
+            first.record_id,
+            ClawTaskStatus.DONE,
+            workspace_id=WS,
+            member_id=other.member_id,
+        )
+
+    again = await project_scheduled_run_output(owner=_owner(), rule=rule, run=run, store=store)
+    assert again.created is False
+    assert len(db.rows) == 1
+    stored = await store.get_task(first.record_id, workspace_id=WS, member_id=_owner().member_id)
+    assert stored is not None and stored.status is ClawTaskStatus.OPEN
+
+
+async def test_d1_a_second_member_cannot_take_over_the_same_deterministic_row() -> None:
+    """Same run, another member: the durable PRIMARY KEY refuses, nothing is rewritten."""
+    from app.workspace_storage import WorkspaceStorageError
+
+    store, db = _d1_store()
+    rule = _rule(output_type=ClawAutomationOutputType.TASK_PROPOSAL)
+    run = _run(
+        rule=rule,
+        status=ClawScheduledRunStatus.COMPLETED,
+        output=_output(output_type=ClawAutomationOutputType.TASK_PROPOSAL),
+    )
+
+    first = await project_scheduled_run_output(owner=_owner(), rule=rule, run=run, store=store)
+    assert first.created is True
+
+    other = _owner(member_id="member_other_2952")
+    with pytest.raises(WorkspaceStorageError):
+        await project_scheduled_run_output(owner=other, rule=rule, run=run, store=store)
+
+    assert len(db.rows) == 1
+    assert db.rows[first.record_id]["member_id"] == MEMBER
+    assert db.rows[first.record_id]["status"] == ClawTaskStatus.OPEN.value

@@ -35,10 +35,13 @@
     const known = connection === "on" || connection === "off";
     github.dataset.connectorStatus = known
       ? (connection === "on" ? "connected" : "not_connected") : "unavailable";
-    write(githubState, connection === "on" ? tr("연결됨 · ON","Connected · ON") :
-      connection === "off" && linked ? tr("일시 중지 · OFF","Paused · OFF") :
-      connection === "off" ? tr("연결 안 됨","Not connected") :
-      tr("연결 상태 확인 불가","Connection status unavailable"));
+    // #5555: one status vocabulary for every card — connected / connecting /
+    // not connected / could not verify / preparing. The ON/OFF wording moves
+    // to the button, so the line itself says only what the server proved.
+    write(githubState, connection === "on" ? tr("연결됨","Connected") :
+      connection === "off" && linked ? tr("일시 중지","Paused") :
+      connection === "off" ? tr("미연결","Not connected") :
+      tr("확인 불가","Could not verify"));
     show(githubPrimary, known);
     show(githubRemove, known && linked);
     show(githubPermissions, known && linked);

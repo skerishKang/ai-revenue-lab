@@ -26,3 +26,47 @@ packages/padiem-ai-core/tests/test_document_normalization.py text eol=lf
 
 # Existing Win32 tray module is stored as CRLF; its CR is not trailing space.
 apps/claw-connect/claw_connect/tray.py whitespace=cr-at-eol
+
+# #5573: the connect program's build inputs. The manifest travels into the exe byte
+# for byte, so a machine that checks this out with CRLF would otherwise build a
+# different artifact from the same reviewed source - and the pinned SHA-256 would
+# stop describing the file. Pinned at the three inputs the build hash covers.
+scripts/pc_pairing/connect-exe/app.manifest text eol=lf
+scripts/pc_pairing/connect-exe/PadiemPcConnect.cs text eol=lf
+scripts/pc_pairing/connect-exe/win32_reproducible.py text eol=lf
+
+# #5881 follow-on: the 컴2 queue's systemd units and shell scripts are read by a Linux
+# PID 1 and by bash on the host. core.autocrlf=true would materialize them CRLF on a
+# Windows checkout, and the same file that passes review here then fails on the machine
+# that runs it - systemd reports an unparseable unit, bash a `$'\r'` command. Pinned at
+# the deploy directory rather than repo-wide, in step with the entries above.
+apps/padiem-mesh-queue/deploy/*.sh text eol=lf
+apps/padiem-mesh-queue/deploy/*.service text eol=lf
+apps/padiem-mesh-queue/deploy/*.timer text eol=lf
+apps/padiem-mesh-queue/requirements.txt text eol=lf
+
+# Deploy shell scripts run under bash in packaging tests and on Linux hosts;
+# a CRLF checkout (core.autocrlf=true on Windows) breaks `bash -n` locally.
+deploy/host-com2/**/*.sh text eol=lf
+apps/padiem-broker/deploy/*.sh text eol=lf
+
+# The staging .env example is copied verbatim to /opt/padiem and sourced by
+# systemd/start scripts; CRLF on a Windows checkout corrupts the values.
+deploy/host-com2/chat/.env.staging.example text eol=lf
+
+# The P01 COM2 package's unit and env example are copied verbatim to /opt/padiem
+# and read by systemd; CRLF on a Windows checkout breaks the unit file.
+deploy/host-com2/p01/*.service.example text eol=lf
+deploy/host-com2/p01/p01.env.example text eol=lf
+
+# Chat first-paint byte checks require LF on Windows checkouts.
+apps/padiem-chat/static/index.html text eol=lf
+apps/padiem-chat/static/padiem-glass.css text eol=lf
+apps/padiem-chat/static/padiem-glass-portrait.css text eol=lf
+apps/padiem-chat/static/theme-init.js text eol=lf
+
+# Staging service units and environment examples must stay LF on Windows checkouts.
+deploy/host-com2/broker/*.service text eol=lf
+deploy/host-com2/broker/*.env.example text eol=lf
+deploy/host-com2/identity/*.service text eol=lf
+deploy/host-com2/identity/*-staging.env.example text eol=lf

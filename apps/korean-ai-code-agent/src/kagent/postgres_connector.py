@@ -425,7 +425,7 @@ def validate_postgres_read_request(binding: PostgresBindingProjection, request: 
 def _safe_cell(value: Any) -> Any:
     if value is None or isinstance(value, (bool, int, float)):
         return value
-    text = redact_secrets(str(value))
+    text = str(value)
     return text if len(text) <= MAX_CELL_CHARS else text[:MAX_CELL_CHARS]
 
 

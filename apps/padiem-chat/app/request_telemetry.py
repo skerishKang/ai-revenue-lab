@@ -73,6 +73,13 @@ _REQUEST_ID_MAX_LENGTH = 64
 # the single-line event shape.
 _REQUEST_ID_RE = re.compile(r"^[A-Za-z0-9._:-]{8,64}$")
 
+# #5015: a refused request already names its exact branch in the response body.
+# Retain only that one bounded identifier on the request event, so a repeated
+# 503 can be attributed without re-running the turn. The body itself is never
+# kept: it is read once, capped, and discarded before the event is built.
+_REFUSAL_BODY_MAX_BYTES = 2048
+_REFUSAL_CODE_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@-]{0,63}$")
+
 LoggerEmitter = Callable[[dict[str, object]], None]
 
 _LOGGER = logging.getLogger("padiem_chat.request")
@@ -97,6 +104,33 @@ def is_safe_request_id(value: Any) -> bool:
     if len(value) < _REQUEST_ID_MIN_LENGTH or len(value) > _REQUEST_ID_MAX_LENGTH:
         return False
     return bool(_REQUEST_ID_RE.fullmatch(value))
+
+
+def refusal_code_from_body(body: bytes | bytearray) -> str | None:
+    """The response's own bounded refusal identifier, or ``None`` (#5015).
+
+    A Chat refusal already answers with ``{"error": {"code": "..."}}``. Only
+    that identifier crosses this boundary: the message, any nested detail and
+    every other field in the body stay in the response. An unrecognized,
+    unbounded or non-text code is dropped rather than truncated.
+    """
+    if not isinstance(body, (bytes, bytearray)) or not body:
+        return None
+    if len(body) > _REFUSAL_BODY_MAX_BYTES:
+        return None
+    try:
+        payload = json.loads(body)
+    except (TypeError, ValueError):
+        return None
+    if not isinstance(payload, dict):
+        return None
+    error = payload.get("error")
+    if not isinstance(error, dict):
+        return None
+    code = error.get("code")
+    if isinstance(code, str) and _REFUSAL_CODE_RE.fullmatch(code):
+        return code
+    return None
 
 
 def classify_outcome(status_code: int) -> str:
@@ -158,10 +192,11 @@ def build_request_event(
     duration_ms: float,
     service: str = SERVICE_NAME,
     occurred_at: datetime | None = None,
+    error_code: str | None = None,
 ) -> dict[str, object]:
     """Build the single bounded event emitted per request."""
     moment = occurred_at or datetime.now(timezone.utc)
-    return {
+    event: dict[str, object] = {
         "event": EVENT_NAME,
         "service": service,
         "ts": moment.isoformat(timespec="milliseconds").replace("+00:00", "Z"),
@@ -174,6 +209,11 @@ def build_request_event(
         "duration_ms": duration_ms,
         "outcome": classify_outcome(status),
     }
+    # Only a refused request carries the code, and only when it is the bounded
+    # identifier shape. A successful request never gains an empty field.
+    if status >= 400 and isinstance(error_code, str) and _REFUSAL_CODE_RE.fullmatch(error_code):
+        event["error_code"] = error_code
+    return event
 
 
 def default_emitter(event: dict[str, object]) -> None:
@@ -309,14 +349,37 @@ class RequestTelemetryMiddleware:
         stage_context_token = _CURRENT_STAGE_EVENTS.set([])
 
         status_holder: dict[str, int] = {}
+        # #5015: a refusal body is read once, capped, and discarded. The bytes
+        # are passed through untouched; nothing here changes the response.
+        refusal_body: list[bytes] = []
+        refusal_bytes = 0
+        refusal_overflow = False
 
         async def send_with_request_id(message: dict[str, Any]) -> None:
+            nonlocal refusal_bytes, refusal_overflow
             if message.get("type") == "http.response.start":
                 status = message.get("status")
                 if isinstance(status, int):
                     status_holder["status"] = status
                 headers = MutableHeaders(scope=message)
                 headers[REQUEST_ID_HEADER] = request_id
+            elif message.get("type") == "http.response.body":
+                chunk = message.get("body")
+                current = status_holder.get("status", 0)
+                if (
+                    isinstance(current, int) and current >= 400
+                    and isinstance(chunk, (bytes, bytearray))
+                    and refusal_bytes < _REFUSAL_BODY_MAX_BYTES
+                ):
+                    remaining = _REFUSAL_BODY_MAX_BYTES - refusal_bytes
+                    if len(chunk) > remaining:
+                        refusal_overflow = True
+                    piece = bytes(chunk[:remaining])
+                    if piece:
+                        refusal_body.append(piece)
+                        refusal_bytes += len(piece)
+                elif isinstance(chunk, (bytes, bytearray)) and chunk:
+                    refusal_overflow = True
             await send(message)
 
         started = time.perf_counter()
@@ -339,6 +402,10 @@ class RequestTelemetryMiddleware:
                     route=resolve_route_template(scope.get("app"), scope),
                     status=status,
                     duration_ms=elapsed_ms,
+                    error_code=(
+                        refusal_code_from_body(b"".join(refusal_body))
+                        if refusal_body and not refusal_overflow else None
+                    ),
                 )
                 self.emitter(http_event)
                 if self.exporter is not None and (

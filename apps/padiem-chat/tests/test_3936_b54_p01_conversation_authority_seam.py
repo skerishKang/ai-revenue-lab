@@ -211,12 +211,17 @@ def test_p01_dispatch_arguments_are_a_closed_set() -> None:
     # #5015: the only additional dispatch arg is the server-composed PC work
     # context. It must remain free of conversation/tenant/workspace values; the
     # closed-set guard below still rejects any other argument.
+    # #5347: the identity tier is the server-resolved grade id. It carries no
+    # conversation/tenant/workspace value, so it joins the closed set.
     assert set(kwargs) <= {
         "product_tier", "subject_id", "selected_model_id",
         "central_route_model_id", "additional_system_context",
+        "identity_tier_id",
     }
     assert kwargs["subject_id"] == CANONICAL_SUBJECT
     assert "tenant_forged" not in str(kwargs)
+    # The identity tier is a server-resolved grade id, never browser text.
+    assert kwargs.get("identity_tier_id") in (None, "free", "plus", "pro", "max")
     # #5015: the optional server-composed PC context is not an authority
     # channel. Neither the browser-supplied workspace nor the owner's
     # conversation/thread may appear in it.

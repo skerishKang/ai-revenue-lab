@@ -147,14 +147,22 @@ async def _install_api(page: Page, state: FixtureState) -> None:
         if route.request.method != "POST":
             await _reply_json(route, {"error": {"code": "method_not_allowed"}}, status=405)
             return
-        body = _request_json(route)
+        is_binary = route.request.headers.get("content-type", "").split(";", 1)[0] == "application/octet-stream"
+        if is_binary:
+            from urllib.parse import unquote
+            media = route.request.headers.get("x-padiem-media-type", "")
+            name = unquote(route.request.headers.get("x-padiem-filename", ""))
+            payload = route.request.post_data_buffer
+            body = {"name": name, "media_type": media, "bytes": payload}
+        else:
+            body = _request_json(route)
         state.file_posts.append(body)
         keys = set(body)
         if state.reject_next_uploads > 0:
             state.reject_next_uploads -= 1
             await _reply_json(route, {"error": {"code": "invalid_project_file", "message": SERVER_REJECT_MARKER}}, status=422)
             return
-        if keys == {"name", "media_type", "base64"}:
+        if keys == {"name", "media_type", "bytes"}:
             # #2342 binary branch: server-legal project binaries are PDF/DOCX only and the
             # POST must carry exactly {name, media_type, base64}. Persisted rows project the
             # server-side extracted media type; original bytes never come back to the browser.
@@ -163,8 +171,8 @@ async def _install_api(page: Page, state: FixtureState) -> None:
             if body["media_type"] not in extracted:
                 await _reply_json(route, {"error": {"code": "invalid_project_file", "message": "지원하지 않는 파일 형식입니다."}}, status=422)
                 return
-            if body["base64"] != extracted[body["media_type"]][2]:
-                raise AssertionError(f"{body['media_type']} binary POST must carry the exact base64 of the picked file")
+            if body["bytes"] != (PDF_BYTES if body["media_type"] == PDF_MEDIA_TYPE else DOCX_BYTES):
+                raise AssertionError("binary POST bytes differ from picked file")
             stored_type, extracted_text, _ = extracted[body["media_type"]]
             state.binary_posts.append(dict(body))
             record = {
@@ -403,12 +411,12 @@ async def _run(page: Page, *, label: str, width: int, height: int, mobile: bool)
     })
     await wait_for_binary_row(DOCX_NAME, "extracted/docx")
     expected_binary_posts = [
-        {"name": PDF_NAME, "media_type": PDF_MEDIA_TYPE, "base64": PDF_BASE64},
-        {"name": DOCX_NAME, "media_type": DOCX_MEDIA_TYPE, "base64": DOCX_BASE64},
+        {"name": PDF_NAME, "media_type": PDF_MEDIA_TYPE, "bytes": PDF_BYTES},
+        {"name": DOCX_NAME, "media_type": DOCX_MEDIA_TYPE, "bytes": DOCX_BYTES},
     ]
     if state.binary_posts != expected_binary_posts:
         raise AssertionError(f"unexpected binary Project File POSTs: {state.binary_posts!r}")
-    if [post for post in state.file_posts if set(post) == {"name", "media_type", "base64"}] != expected_binary_posts:
+    if [post for post in state.file_posts if set(post) == {"name", "media_type", "bytes"}] != expected_binary_posts:
         raise AssertionError(f"binary POSTs missing from recorded file_posts: {state.file_posts!r}")
     body_text = await page.locator("body").inner_text()
     if PDF_BASE64 in body_text or DOCX_BASE64 in body_text:

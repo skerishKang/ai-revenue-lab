@@ -109,6 +109,15 @@
       "credential_source": "platform_secret",
       "credential_binding_name": "PADIEM_B14_CREDENTIAL_14",
       "enabled": false
+    },
+    "sakura-ai-engine": {
+      "base_origin": "https://api.ai.sakura.ad.jp/v1",
+      "allowed_hosts": [
+        "api.ai.sakura.ad.jp"
+      ],
+      "credential_source": "platform_secret",
+      "credential_binding_name": "PADIEM_SAKURA_AI_ENGINE_API_KEY",
+      "enabled": false
     }
   },
   "models": [
@@ -154,7 +163,8 @@
       "capabilities": [
         "chat",
         "coding",
-        "image"
+        "image",
+        "tools"
       ],
       "context_window": 1048576,
       "input_price_usd_per_1m": 0.25,
@@ -172,7 +182,8 @@
       "capabilities": [
         "chat",
         "coding",
-        "image"
+        "image",
+        "tools"
       ],
       "context_window": 1048576,
       "input_price_usd_per_1m": 0.3,
@@ -221,7 +232,8 @@
       "display_name": "Inception: Mercury 2.5",
       "provider_name": "Inception",
       "capabilities": [
-        "chat"
+        "chat",
+        "tools"
       ],
       "context_window": 0,
       "input_price_usd_per_1m": null,
@@ -256,7 +268,8 @@
       "provider_name": "SenseNova",
       "capabilities": [
         "chat",
-        "coding"
+        "coding",
+        "tools"
       ],
       "context_window": 256000,
       "input_price_usd_per_1m": null,
@@ -322,7 +335,8 @@
       "provider_name": "TokenHarbor",
       "capabilities": [
         "chat",
-        "free"
+        "free",
+        "tools"
       ],
       "context_window": 1000000,
       "input_price_usd_per_1m": 0,
@@ -428,13 +442,14 @@
       "provider_name": "OpenCode Go",
       "capabilities": [
         "chat",
-        "coding"
+        "coding",
+        "tools"
       ],
       "context_window": 0,
       "input_price_usd_per_1m": null,
       "output_price_usd_per_1m": null,
-      "source": "https://dev.opencode.ai/v2/docs/console/go/ (OpenCode Go Responses API, current 2026-10-15)",
-      "source_checked_at": "2026-10-15",
+      "source": "https://dev.opencode.ai/v2/docs/console/go/ (OpenCode Go Responses API, current 2026-10-15); function calling documented for Muse Spark by the model maker at https://dev.meta.ai/docs/models (read 2026-10-25); the B14 adapter proves the call shape, the live tool turn is still measured per #4727",
+      "source_checked_at": "2026-10-25",
       "enabled": true
     },
     {
@@ -485,6 +500,22 @@
       "output_price_usd_per_1m": null,
       "source": "Account-authenticated GET https://zanslab.id/v1/models (200; exact id op/gpt-6-luna) on 2026-10-12; https://zanslab.id/documentation; completion/SSE unverified",
       "source_checked_at": "2026-10-12",
+      "enabled": false
+    },
+    {
+      "id": "sakura-ai-engine/gpt-oss-120b",
+      "provider_id": "sakura-ai-engine",
+      "upstream_model": "gpt-oss-120b",
+      "display_name": "Sakura AI Engine: GPT-OSS 120B",
+      "provider_name": "Sakura Internet AI Engine",
+      "capabilities": [
+        "chat"
+      ],
+      "context_window": 0,
+      "input_price_usd_per_1m": null,
+      "output_price_usd_per_1m": null,
+      "source": "https://manual.sakura.ad.jp/cloud/ai-engine/02-howto.html",
+      "source_checked_at": "2026-10-30",
       "enabled": false
     }
   ],

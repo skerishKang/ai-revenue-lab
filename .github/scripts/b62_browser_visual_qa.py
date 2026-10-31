@@ -1241,10 +1241,19 @@ async def _run_view(page: Page, *, name: str, width: int, height: int, mobile: b
     await page.locator("#sendButton").click()
 
     await page.locator('.app-shell[data-state="chat"]').wait_for(state="attached")
+    # #5559: the waiting state is the status card. The typing marker stays in
+    # the answer body as the "the answer is not written yet" marker that the
+    # sources and export flows read, but it draws no second waiting
+    # indicator. The card is the one status surface of the turn.
     typing = page.locator("#messageList .assistant-message .typing").last
-    await typing.wait_for(state="visible", timeout=3_000)
-    if await typing.get_attribute("aria-label") != "답변 준비 중":
-        raise AssertionError("typing state must expose the visible '답변 준비 중' label")
+    await typing.wait_for(state="attached", timeout=3_000)
+    status_card = page.locator("#messageList .assistant-message .capability-kit").last
+    await status_card.wait_for(state="visible", timeout=3_000)
+    waiting_state = (await status_card.locator(".capability-current").inner_text()).strip()
+    if waiting_state != "답변 준비 중":
+        raise AssertionError(f"the status card must name the real waiting state: {waiting_state!r}")
+    if await typing.is_visible():
+        raise AssertionError("the waiting state must not be drawn twice")
     await _assert_no_horizontal_overflow(page, f"{name}-loading")
     try:
         await page.screenshot(path=str(OUT_DIR / f"{name}-loading.png"), full_page=True)

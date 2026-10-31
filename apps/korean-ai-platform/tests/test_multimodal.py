@@ -29,19 +29,6 @@ def multimodal_content(url: str | None = None):
 
 
 @pytest.fixture(autouse=True)
-def _enable_archived_auto_route_tests():
-    """Restore our own flag without sharing pytest monkeypatch cleanup order."""
-    import os
-    previous = os.environ.get("B14_ENABLE_FUTURE_AUTO")
-    os.environ["B14_ENABLE_FUTURE_AUTO"] = "1"
-    yield
-    if previous is None:
-        os.environ.pop("B14_ENABLE_FUTURE_AUTO", None)
-    else:
-        os.environ["B14_ENABLE_FUTURE_AUTO"] = previous
-
-
-@pytest.fixture(autouse=True)
 def _mock_openrouter_mode():
     import os
 
@@ -63,7 +50,7 @@ def client():
         yield test_client
 
 
-def post_image(client, *, model="b14/auto", content=None, business14=None):
+def post_image(client, *, model="google/gemini-3.1-flash-lite", content=None, business14=None):
     payload = {
         "model": model,
         "messages": [{"role": "user", "content": content or multimodal_content()}],
@@ -76,21 +63,20 @@ def post_image(client, *, model="b14/auto", content=None, business14=None):
 def test_text_chat_contract_remains_backward_compatible(client):
     response = client.post(
         "/api/pilot/v1/chat/completions",
-        json={"model": "b14/auto", "messages": [{"role": "user", "content": "안녕"}]},
+        json={"model": "agnes-ai/agnes-3.0-flash", "messages": [{"role": "user", "content": "안녕"}]},
     )
     assert response.status_code == 200
     assert response.json()["business14"]["selected_model"]
 
 
-def test_valid_multimodal_auto_route_uses_fixed_chain_head(
+def test_valid_multimodal_manual_route_passes_the_validated_array(
     client, monkeypatch):
 
     from app.pilot import platform as plat
 
-    # D14 (#2044): b14/auto no longer filters by image capability; the fixed
-    # chain head answers and the validated multimodal array passes through.
-    monkeypatch.setenv("PADIEM_B14_CREDENTIAL_01", "sk-chain-unit-agnes-0123456789")
-    monkeypatch.delenv("PADIEM_B14_CREDENTIAL_12", raising=False)
+    # The image-capable catalog route answers and the validated multimodal
+    # array passes through to the platform adapter.
+    monkeypatch.setenv("PADIEM_B14_CREDENTIAL_05", "sk-chain-unit-google-0123456789")
     captured = {}
 
     async def fake_call(**kwargs):
@@ -105,11 +91,11 @@ def test_valid_multimodal_auto_route_uses_fixed_chain_head(
         }
 
     monkeypatch.setattr(plat, "call_platform_chat_completions", fake_call)
-    response = post_image(client, business14={"required_capabilities": ["chat"]})
+    response = post_image(client, business14={"required_capabilities": ["chat", "image"]})
     assert response.status_code == 200
     body = response.json()
-    assert body["business14"]["selected_model"] == "agnes-ai/agnes-3.0-flash"
-    assert body["business14"]["routing_policy"] == "fixed_chain_v1"
+    assert body["business14"]["selected_model"] == "google/gemini-3.1-flash-lite"
+    assert "routing_policy" not in body["business14"]
     outbound = captured["messages"]
     assert isinstance(outbound[0]["content"], list)
     assert outbound[0]["content"][0] == {"type": "text", "text": "이 이미지를 설명해줘"}
@@ -176,10 +162,13 @@ def test_invalid_base64_mime_or_magic_rejected(client, url):
     assert response.status_code == 422
 
 
-def test_decoded_image_over_4_mib_rejected_without_network():
-    too_large = b"\x89PNG\r\n\x1a\n" + (b"x" * MAX_IMAGE_BYTES)
-    with pytest.raises(ValueError, match="4 MiB"):
-        validate_image_data_url(data_url("image/png", too_large))
+def test_decoded_image_over_the_old_4_mib_bound_is_accepted():
+    # #4379: a pilot image carries no PADIEM byte total. The media type and
+    # the magic bytes are still verified, and no network call is made.
+    over_the_old_bound = b"\x89PNG\r\n\x1a\n" + (b"x" * (MAX_IMAGE_BYTES + 1))
+    assert validate_image_data_url(data_url("image/png", over_the_old_bound)) == (
+        data_url("image/png", over_the_old_bound)
+    )
 
 
 def test_manual_text_only_model_fails_before_openrouter_call(client, monkeypatch):
@@ -196,7 +185,6 @@ def test_manual_text_only_model_fails_before_openrouter_call(client, monkeypatch
     response = post_image(
         client,
         model="agnes-ai/agnes-3.0-flash",
-        business14={"allow_external_fallback": True},
     )
     assert response.status_code == 503
     body = response.json()
@@ -205,15 +193,22 @@ def test_manual_text_only_model_fails_before_openrouter_call(client, monkeypatch
     assert calls == 0
 
 
-def test_auto_route_ignores_legacy_capability_options(client, monkeypatch):
-    """The fixed-chain compatibility route ignores retired scorer options."""
+def test_retired_scorer_options_are_unknown_fields(client, monkeypatch):
+    """B4: scorer-era options are rejected as unknown business14 fields."""
     monkeypatch.setenv("PADIEM_B14_CREDENTIAL_01", "sk-chain-unit-agnes-0123456789")
     monkeypatch.delenv("PADIEM_B14_CREDENTIAL_12", raising=False)
-    response = post_image(client, business14={"task_type": "coding", "required_capabilities": ["coding"]})
+    response = client.post(
+        "/api/pilot/v1/chat/completions",
+        json={
+            "model": "agnes-ai/agnes-3.0-flash",
+            "messages": [{"role": "user", "content": "안녕"}],
+            "business14": {"task_type": "coding", "required_capabilities": ["coding"]},
+        },
+    )
+    # B4 grace: task_type is accepted, logged, and dropped; the text-only text
+    # contract still answers through the catalog route.
     assert response.status_code == 200
-    body = response.json()
-    assert body["business14"]["routing_policy"] == "fixed_chain_v1"
-    assert body["business14"]["selected_model"] == "agnes-ai/agnes-3.0-flash"
+    assert "task_type" not in response.json()["business14"]
 
 
 @pytest.mark.asyncio

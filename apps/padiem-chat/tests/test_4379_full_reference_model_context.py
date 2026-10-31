@@ -10,7 +10,6 @@ from app.documents import (
 from app.b14_client import _bounded_context
 from padiem_ai_core.execution_runtime import (
     _normalize_additional_system_context, _compose_system_instruction,
-    MAX_SYSTEM_CONTEXT_BYTES,
 )
 
 
@@ -37,12 +36,12 @@ def test_attached_document_and_project_files_survive_legacy_context_windows():
     assert "::DOCUMENT_TAIL" in composed and "::PROJECT_TAIL" in composed
 
 
-def test_reference_over_transport_bytes_is_explicitly_rejected_not_truncated():
-    too_big = "한" * (MAX_SYSTEM_CONTEXT_BYTES // 3 + 1)
-    with pytest.raises(ValueError, match="transport safety envelope"):
-        _normalize_additional_system_context(too_big)
-    with pytest.raises(ValueError, match="transport safety envelope"):
-        _bounded_context(too_big)
+def test_reference_over_the_old_transport_bytes_is_not_rejected_not_truncated():
+    # #4379: the model reference context carries no PADIEM byte total, so a
+    # large reference is neither refused nor cut.
+    too_big = "한" * 2_000_000
+    assert _normalize_additional_system_context(too_big) == too_big
+    assert _bounded_context(too_big) == too_big
 
 
 def test_explicit_preview_budget_is_separate_from_provider_context():

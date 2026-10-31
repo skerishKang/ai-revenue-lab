@@ -2,6 +2,10 @@ from __future__ import annotations
 
 from starlette.responses import JSONResponse
 
+from .model_policy import ClawExecutionGrade
+from .model_policy import bind_verified_member_grade
+from .platform_model_authority import is_model_admin
+
 GRADES = ("free", "plus", "pro", "max")
 
 
@@ -18,16 +22,18 @@ async def verified_member_grade(request, user_id, access=None):
     # Missing/unreadable membership evidence never grants a paid tier.
     # The Google-verified owner has the maximum model grade independently
     # of customer membership. Never trust a client-supplied admin flag.
-    store = getattr(request.app.state, "b66_member_admin_store", None)
-    is_admin = getattr(store, "is_google_admin", None) if store is not None else None
-    if callable(is_admin) and isinstance(user_id, str) and user_id:
-        try:
-            if await is_admin(user_id):
-                return "max"
-        except Exception:
-            pass  # Continue with server-verified membership, never elevate.
+    #
+    # #5483: the administrator model ceiling is judged by the same server
+    # authority that already reveals the administrator hub, so an account the
+    # server proves to be an administrator is never locked to the ordinary
+    # member grade. The member record below stays the only source of a paid
+    # grade for everybody else.
+    if await is_model_admin(request, user_id):
+        bind_verified_member_grade("max")
+        return "max"
     known = _known_grade(access)
     if known is not None:
+        bind_verified_member_grade(known)
         return known
     store = getattr(request.app.state, "b66_member_admin_store", None)
     read = getattr(store, "runtime_access", None) if store is not None else None
@@ -36,6 +42,7 @@ async def verified_member_grade(request, user_id, access=None):
             candidate = await read(user_id)
             known = _known_grade(candidate)
             if known is not None:
+                bind_verified_member_grade(known)
                 return known
         except Exception:
             pass
@@ -43,7 +50,9 @@ async def verified_member_grade(request, user_id, access=None):
     # fixtures may exercise paid grades without real production credentials.
     settings = getattr(request.app.state, "settings", None)
     if getattr(settings, "runtime_mode", None) == "mock":
+        bind_verified_member_grade("max")
         return "max"
+    bind_verified_member_grade("free")
     return "free"
 
 
@@ -83,3 +92,19 @@ async def selected_grade_denial(request, user_id, selected_grade):
     if GRADES.index(selected_grade.lower()) > GRADES.index(allowed):
         return JSONResponse({"error": {"code": "tier_not_available", "message": "회원 등급 이하의 AI 등급을 선택해 주세요."}}, status_code=403)
     return None
+
+
+async def claw_execution_tier_denial(request, user_id, grade: ClawExecutionGrade):
+    """Refuse a Claw execution whose grade the server cannot grant.
+
+    #5223: the administrator lane is judged by the operator admin authority
+    (``selected_admin_denial``) and the member grades by the verified
+    membership (``selected_grade_denial``). A browser-supplied grade is never
+    an authority by itself, and both Claw lanes go through this one
+    dispatcher, so a lane cannot refuse a valid administrator or accept a
+    forged one.
+    """
+
+    if grade.admin_lane:
+        return await selected_admin_denial(request, user_id)
+    return await selected_grade_denial(request, user_id, grade.tier_id)

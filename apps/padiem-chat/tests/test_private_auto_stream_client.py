@@ -14,7 +14,7 @@ from app.dispatch_quota import (
     _refund_active_reservation,
 )
 from app.model_policy import DEFAULT_B14_MODEL_ID, LOW_B14_MODEL_ID
-from app.skills import get_skill
+from app.task_modes import get_task_mode
 from app.usage_gate import UsageDecision
 
 
@@ -116,15 +116,17 @@ def test_private_compat_stream_uses_manual_endpoint_and_exact_plus_policy():
             )
         ]
 
-        skill = get_skill()
+        skill = get_task_mode()
         assert seen_url == "https://b14.internal" + MANUAL_PATH
         assert seen["stream"] is True
         assert seen["model"] == REQUEST_MODEL == DEFAULT_B14_MODEL_ID
         assert seen["business14"]["required_capabilities"] == ["free"]
-        assert seen["business14"]["allow_external_fallback"] is False
-        assert seen["business14"]["max_attempts"] == 1
-        assert seen["business14"]["task_type"] == skill.task_type
-        assert seen["business14"]["optimize_for"] == skill.optimize_for
+        # B5: the retired fallback knob no longer travels on the wire.
+        assert "allow_external_fallback" not in seen["business14"]
+        assert "max_attempts" not in seen["business14"]
+        # B4: the scorer-era fields no longer travel on the wire.
+        assert "task_type" not in seen["business14"]
+        assert "optimize_for" not in seen["business14"]
         assert "provider" not in seen["business14"]
         assert "provider_order" not in seen["business14"]
         assert seen["messages"][0]["role"] == "system"
@@ -142,7 +144,7 @@ def test_private_compat_stream_uses_manual_endpoint_and_exact_plus_policy():
     asyncio.run(scenario())
 
 
-def test_private_compat_stream_pro_alias_fails_closed_before_manual_route():
+def test_private_compat_stream_slash_text_is_ordinary_and_reaches_transport():
     async def scenario():
         calls = 0
 
@@ -152,15 +154,16 @@ def test_private_compat_stream_pro_alias_fails_closed_before_manual_route():
             return httpx.Response(503, json={"error": {"code": "upstream_unavailable"}})
 
         # The owner-tier-pair primary (beam-free) streams via bounded
-        # completion, so the single-attempt fail-closed probe rides the
-        # completion transport, not the manual stream-preview transport.
+        # completion, so the single-attempt probe rides the completion
+        # transport, not the manual stream-preview transport.
         client = B14Client(_settings(), transport=httpx.MockTransport(handler))
-        with pytest.raises(ChatRuntimeError):
+        with pytest.raises(ChatRuntimeError) as info:
             async for _ in client.stream_text_auto(
                 [{"role": "user", "content": "/pro �ѱ���� ������"}]
             ):
                 pass
-        assert calls == 0
+        assert info.value.code == "provider_server_error"
+        assert calls == 1
 
     asyncio.run(scenario())
 

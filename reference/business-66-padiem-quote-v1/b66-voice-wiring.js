@@ -145,20 +145,6 @@
     if (name === "NotReadableError" || name === "TrackStartError" || name === "AbortError") return ERROR_CODES.UNAVAILABLE;
     return ERROR_CODES.UNAVAILABLE;
   }
-  function blobToBase64(blob) {
-    const reader = new FileReader();
-    return new Promise(function (resolve, reject) {
-      reader.onerror = function () { reject(new Error("audio-read-failed")); };
-      reader.onload = function () {
-        const result = reader.result;
-        if (typeof result !== "string") { reject(new Error("audio-read-failed")); return; }
-        const comma = result.indexOf(",");
-        resolve(comma === -1 ? "" : result.slice(comma + 1));
-      };
-      reader.readAsDataURL(blob);
-    });
-  }
-
   function createRecognizer(deps) {
     const win = deps.win;
     const fetchImpl = deps.fetchImpl;
@@ -266,16 +252,22 @@
     }
     function sendChunk(blob, utteranceId) {
       if (typeof fetchImpl !== "function") return Promise.reject(new Error("no-transport"));
-      return blobToBase64(blob).then(function (audioBase64) {
-        if (cancelled) throw new Error("voice-cancelled");
-        inflightController = typeof win.AbortController === "function" ? new win.AbortController() : null;
-        return fetchImpl(TRANSCRIBE_PATH, {
-          method: "POST", credentials: "same-origin",
-          signal: inflightController ? inflightController.signal : undefined,
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ audio_base64: audioBase64, mime_type: blob.type || "audio/webm", utterance_id: utteranceId }),
-        });
-      }).then(function (response) {
+      if (cancelled) return Promise.reject(new Error("voice-cancelled"));
+      inflightController = typeof win.AbortController === "function" ? new win.AbortController() : null;
+      // #4379: the recorded Blob is the request body. A FileReader pass to
+      // base64 inflated every chunk by a third and held a second full copy in
+      // memory; the Chat route already reads this raw-body contract (#5315),
+      // so the bytes travel unchanged with their container and turn id.
+      return Promise.resolve(fetchImpl(TRANSCRIBE_PATH, {
+        method: "POST", credentials: "same-origin",
+        signal: inflightController ? inflightController.signal : undefined,
+        headers: {
+          "Content-Type": "application/octet-stream",
+          "X-Padiem-Audio-Type": (blob.type || "audio/webm").split(";", 1)[0],
+          "X-Padiem-Utterance-Id": utteranceId,
+        },
+        body: blob,
+      })).then(function (response) {
         if (cancelled) throw new Error("voice-cancelled");
         return response.json().then(function (payload) {
           if (!response.ok) { const code = payload && payload.error && payload.error.code; throw new Error(code || ERROR_CODES.TRANSCRIBE_FAILED); }

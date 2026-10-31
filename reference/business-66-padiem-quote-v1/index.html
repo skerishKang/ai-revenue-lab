@@ -542,13 +542,13 @@
       </button>
       <div class="padiem-auth-divider" id="padiemAuthDivider" hidden><span>또는</span></div>
       <form class="padiem-auth-form" id="padiemLoginForm" hidden>
-        <label for="padiemLoginIdentifier">아이디 또는 이메일
-          <input id="padiemLoginIdentifier" name="identifier" type="text" autocomplete="username" maxlength="320" required>
+        <label for="padiemLoginIdentifier">이메일
+          <input id="padiemLoginIdentifier" name="identifier" type="text" inputmode="email" autocomplete="username" maxlength="320" required>
         </label>
         <label for="padiemLoginPassword">비밀번호
           <input id="padiemLoginPassword" name="password" type="password" autocomplete="current-password" maxlength="128" required>
         </label>
-        <button id="padiemLoginSubmit" type="submit">아이디/이메일로 로그인</button>
+        <button id="padiemLoginSubmit" type="submit">이메일로 로그인</button>
       </form>
       <p class="padiem-auth-note">구글 계정 또는 기존 계정으로 로그인할 수 있습니다.</p>
       <p class="padiem-auth-error" id="padiemAuthError" role="alert"></p>

@@ -27,7 +27,7 @@ EXPECTED_EXTRACTION_MAX_ITEMS = 100
 EXPECTED_SAVED_SKILL_SEMANTIC_MAX_ITEMS = 100
 EXPECTED_SERVER_CONVERSATION_MAX_ITEMS = 100
 EXPECTED_SERVER_HISTORY_MAX_ITEMS = 200
-EXPECTED_SERVER_HISTORY_SNAPSHOT_BYTES = 128 * 1024
+EXPECTED_SERVER_HISTORY_SNAPSHOT_BYTES = 1024 * 1024
 EXPECTED_SAVED_SKILL_ENVELOPE_BYTES = 96 * 1024
 EXPECTED_CERTIFIED_PDF_REQUEST_BYTES = 32 * 1024
 EXPECTED_CERTIFIED_PDF_RESPONSE_BYTES = 32 * 1024 * 1024
@@ -80,7 +80,7 @@ B66_MULTI_ITEM_CUTOFFS: tuple[B66MultiItemCutoff, ...] = (
     B66MultiItemCutoff("quote_core_calculation", None, None,
                         "none",
                         "reference/.../quote-core.js", False),
-    B66MultiItemCutoff("server_history_snapshot", 200, 131072,
+    B66MultiItemCutoff("server_history_snapshot", 200, 1024 * 1024,
                         "snapshot.items is too large",
                         "apps/padiem-chat/app/b66_quote_history_store.py",
                         False),

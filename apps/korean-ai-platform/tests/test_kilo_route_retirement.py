@@ -10,6 +10,8 @@ adds the Space Bunny lane to the same retired set: it executes nowhere.
 
 from __future__ import annotations
 
+import pytest
+
 from app.pilot.catalog import get_catalog_by_id, get_catalog_models
 from app.pilot.kilo_provider import (
     KILO_HY3_MODEL_ID,
@@ -19,7 +21,6 @@ from app.pilot.kilo_provider import (
     KILO_SPACE_BUNNY_MODEL_ID,
     RETIRED_KILO_FREE_MODEL_IDS,
 )
-from app.pilot.routing_policy import B14_AUTO_CHAIN
 
 
 def test_retired_free_ids_are_declared() -> None:
@@ -35,9 +36,13 @@ def test_retired_free_ids_are_unregistered_from_the_catalog() -> None:
         assert get_catalog_by_id(retired_id) is None
 
 
-def test_retired_free_ids_are_absent_from_fixed_chain_v1() -> None:
-    for retired_id in RETIRED_KILO_FREE_MODEL_IDS:
-        assert retired_id not in B14_AUTO_CHAIN
+def test_retired_free_ids_cannot_return_via_a_fixed_chain() -> None:
+    # B7: the fixed chain (fixed_chain_v1) is retired entirely, so no retired
+    # id can rejoin an executable auto lane.
+    import importlib
+
+    with pytest.raises(ModuleNotFoundError):
+        importlib.import_module("app.pilot.routing_policy")
 
 
 def test_owner_removed_remaining_kilo_free_routes_from_catalog() -> None:

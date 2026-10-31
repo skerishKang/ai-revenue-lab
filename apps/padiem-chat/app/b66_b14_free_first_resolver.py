@@ -19,12 +19,13 @@ from .b66_registered_model_boundary import (
     B66ModelRouteError,
     B66QuoteTaskRequirements,
 )
+from padiem_control_plane.product_tier_routes import is_free_execution_candidate
 
 _MODELS_PATH = "/api/pilot/models"
 _READINESS_PATH = "/api/pilot/provider-readiness"
 _OWNER_POLICY = "OWNER_REGISTERED_AND_ALLOWED"
-_MAX_REGISTRY_BODY = 131072
-_MAX_REGISTRY_ROWS = 256
+# #4379: the B14 registry body and row count are no longer capped here.
+# B14 and the platform bound them; a PADIEM ceiling only emptied B66's list.
 _SAFE_ID = re.compile(r"[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}\Z")
 
 
@@ -45,14 +46,31 @@ def _excluded_by_owner(model_id: str) -> bool:
     )
 
 
+def _excluded_free_candidate(model_id: str) -> bool:
+    """Refuse an excluded free execution candidate for B66's selection.
+
+    #2505 (owner decision 2026-10-21): an OpenCode Go free model is never an
+    execution candidate, so it is not a customer-selectable B66 route either.
+    The rule is the shared contract's, so B66 and the other products agree.
+    """
+    return is_free_execution_candidate(model_id)
+
+
 class B14RegisteredModelView(Protocol):
     async def get_json(self, path: str) -> tuple[int, bytes]: ...
 
 
 def _parse_bounded_response(status: object, raw: object) -> dict[str, Any]:
+    """Parse one B14 registry or readiness response.
+
+    #4379: the response used to be refused above 128 KB and the registry above
+    256 rows, so a larger B14 registry silently emptied B66's model list. The
+    B14 response size and the row count are now bounded by the platform and by
+    B14 itself, not by a PADIEM ceiling.
+    """
     if (
         type(status) is not int or status != 200 or not isinstance(raw, bytes)
-        or len(raw) == 0 or len(raw) > _MAX_REGISTRY_BODY
+        or len(raw) == 0
     ):
         raise B66ModelRouteError("selection_unavailable")
     try:
@@ -65,11 +83,7 @@ def _parse_bounded_response(status: object, raw: object) -> dict[str, Any]:
 
 
 def _dict_rows(value: object) -> list[dict[str, Any]]:
-    if (
-        not isinstance(value, list)
-        or len(value) > _MAX_REGISTRY_ROWS
-        or any(not isinstance(row, dict) for row in value)
-    ):
+    if not isinstance(value, list) or any(not isinstance(row, dict) for row in value):
         raise B66ModelRouteError("selection_unavailable")
     return value
 
@@ -110,6 +124,10 @@ def _qualified_routes(
         # Both the local owner exclusion and B14's explicit exclusion claim
         # must permit the exact route. Missing owner_excluded fails closed.
         if _excluded_by_owner(mid) or route.get("owner_excluded") is not False:
+            continue
+        # #2505: an excluded free candidate is never an execution candidate, so
+        # it is not a selectable B66 route either.
+        if _excluded_free_candidate(mid):
             continue
         # B14 free/public/auto_eligible/explicit_only flags belong to its
         # general-purpose auto router. They are NOT B66 eligibility gates.
@@ -179,6 +197,10 @@ class B14FreeFirstQuoteModelResolver:
     ) -> B14AuthorizedModelRoute | None:
         if not isinstance(requirements.selected_model_id, str) or not _SAFE_ID.fullmatch(requirements.selected_model_id):
             raise B66ModelRouteError("selection_unconfigured")
+        # #2505: an excluded free candidate is refused before any B14 read, so
+        # a customer cannot force one by sending its exact model id.
+        if _excluded_free_candidate(requirements.selected_model_id):
+            raise B66ModelRouteError("model_not_authorized")
         if replace(requirements, selected_model_id=None) != B66QuoteTaskRequirements():
             raise B66ModelRouteError("selection_unavailable")
         if self._transport is None:

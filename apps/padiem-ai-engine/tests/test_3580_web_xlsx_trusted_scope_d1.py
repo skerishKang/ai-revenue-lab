@@ -104,6 +104,33 @@ async def test_engine_independent_d1_scope_proves_exact_original_metadata():
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize("size,accepted", [
+    (1024 * 1024 + 1, True),
+    (10 * 1024 * 1024, True),
+    (10 * 1024 * 1024 + 1, False),
+])
+async def test_owner_xlsx_size_tier_preserves_the_independent_scope_check(size, accepted):
+    # Exercise the Engine consumer of a trusted join row. Chat migration 029
+    # still caps stored selections at 1MiB until slice 3/3; this is deliberately
+    # not evidence that today's producer/schema admits a larger upload.
+    class SizeStatement(Statement):
+        async def first(self):
+            row = await super().first()
+            if row is not None:
+                row.update(size_bytes=size, stored_size=size)
+            return row
+
+    class SizeD1(D1):
+        def prepare(self, sql):
+            return SizeStatement(self.db, sql)
+
+    db = database()
+    scope = await D1WebXlsxTrustedScopeResolver(SizeD1(db))(SEL)
+    assert (scope is not None) is accepted
+    db.close()
+
+
+@pytest.mark.asyncio
 @pytest.mark.parametrize("mutation", [
     "UPDATE claw_web_xlsx_selections SET user_id='foreign' WHERE selection_ref='" + SEL + "'",
     "UPDATE claw_web_xlsx_selections SET source_sha256='" + "f"*64 + "'",
@@ -140,8 +167,9 @@ async def test_engine_preflight_denies_foreign_digest_without_creating_pause():
         "tool_id": CANONICAL_TOOL, "arguments": web_xlsx_p01_arguments(original),
     }
     allowed = await engine.execute_payload(body)
-    assert allowed.status_code == 202, allowed.body
-    assert allowed.body["tool"]["status"] == "paused"
+    assert allowed.status_code == 200, allowed.body
+    # Owner decision 2026-10-28: no confirmation pause; the handler completes.
+    assert allowed.body["tool"]["status"] == "completed"
     for key, bad in (
         ("owner_id", "someone_else"),
         ("workspace_id", "owner:other"),
@@ -181,7 +209,10 @@ async def test_engine_preflight_authority_db_unavailable_prevents_pause():
 
 
 @pytest.mark.asyncio
-async def test_separate_pre_pause_and_post_approved_d1_status_recheck():
+async def test_predelegated_execute_verifies_the_live_dispatching_selection():
+    """Owner decision 2026-10-28: no approval pause, so the handler runs at
+    start and re-verifies the live (dispatching) selection; the waiting_p01
+    status this lane used to require post-approval is unreachable."""
     from padiem_ai_core import ToolAuthorizationContext, ToolInvocation, ToolRuntimeError
     db = database()
     first = D1WebXlsxTrustedScopeResolver(D1(db))
@@ -199,27 +230,18 @@ async def test_separate_pre_pause_and_post_approved_d1_status_recheck():
     confirmed = ToolAuthorizationContext(
         app_id=APP_ID, agent_id=auth.compiled.runtime_profile.id,
         granted_auth_scopes=("workspace.xlsx.original.read.intent",),
-        user_confirmed_tools=("workspace.xlsx.confirm_original_read",),
+        externally_authorized_tools=("workspace.xlsx.confirm_original_read",),
     )
     invocation = ToolInvocation(
         tool_id="workspace.xlsx.confirm_original_read", arguments=args,
     )
-    # Engine user confirmation alone cannot prematurely read a source while
-    # B62 still has an uncommitted/uncertain dispatch.
-    with pytest.raises(ToolRuntimeError):
-        await binding.tool_runtime.execute(
-            invocation, auth.compiled.runtime_profile, confirmed,
-        )
-    db.execute("UPDATE claw_web_xlsx_p01_requests SET status='waiting_p01'")
-    assert await first(SEL) is None
-    assert await approved_only(SEL) is not None
     result = await binding.tool_runtime.execute(
         invocation, auth.compiled.runtime_profile, confirmed,
     )
     assert result.output["p01_intent_confirmed"] is True
     assert result.output["read_executed"] is False
     assert result.output["workcopy_created"] is False
-    # Even on the approved invocation, a missing original stops processing.
+    # Even without an approval pause, a missing original stops processing.
     db.execute("UPDATE claw_document_metadata SET deleted_at=? WHERE document_id=?",
                (datetime.now(timezone.utc).isoformat(), DOC))
     with pytest.raises(ToolRuntimeError):

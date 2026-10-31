@@ -18,7 +18,7 @@ from padiem_ai_core.b14_execution import (
 from padiem_ai_core.b14_multimodal import B14MultimodalChatRequest
 from padiem_ai_core.contracts import AgentProfile
 from padiem_ai_core.execution_runtime import (
-    ExecutionRequest, ExecutionRuntime, MAX_ADDITIONAL_SYSTEM_CONTEXT_CHARS,
+    ExecutionRequest, ExecutionRuntime,
 )
 from padiem_ai_core.multimodal_execution_runtime import MultimodalExecutionRequest
 
@@ -113,8 +113,8 @@ def test_security_guards_and_invalid_shapes_remain():
         B14ChatRequest(messages=({"role": "tool", "content": "x"},), model="test/route")
     with pytest.raises(ValueError):
         B14ExecutionConfig(base_url="https://test.example", max_response_bytes=MAX_CONFIGURED_B14_RESPONSE_BYTES + 1)
-    with pytest.raises(ValueError, match="transport safety envelope"):
-        ExecutionRequest(
-            agent=_agent(), messages=({"role": "user", "content": "ok"},),
-            additional_system_context="x" * (MAX_ADDITIONAL_SYSTEM_CONTEXT_CHARS + 1),
-        )
+    # #4379: the additional system context carries no PADIEM byte total.
+    ExecutionRequest(
+        agent=_agent(), messages=({"role": "user", "content": "ok"},),
+        additional_system_context="x" * 5_000_000,
+    )

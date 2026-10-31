@@ -79,6 +79,16 @@
   align-items: end;
 }
 
+@media (max-width: 620px) {
+  /* A phone cannot afford the 300px editorial column: it pushed the home
+   * cards past the viewport and made the whole page scroll sideways. Every
+   * home item already spans both columns, so a single column is the same
+   * composition without the horizontal overflow. */
+  .empty-state {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
 .eyebrow,
 .empty-state h1,
 .starter-grid {
@@ -239,8 +249,8 @@
 }
 
 .app-shell:is([data-state="chat"],[data-state="claw"]) .assistant-avatar {
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
   border-radius: 10px;
   font-size: 12px;
   box-shadow:
@@ -260,7 +270,7 @@
   text-transform: uppercase;
 }
 
-.app-shell[data-state="chat"] .demo-label {
+.app-shell:is([data-state="chat"],[data-state="claw"]) .demo-label {
   padding: 3px 8px 2px;
   border: 1px solid rgba(255, 255, 255, .10);
   border-radius: 6px;
@@ -319,6 +329,13 @@
 }
 
 /* Streaming signal -------------------------------------------------------- */
+/* #5559: the waiting state is the status card. The typing marker stays in
+   the answer body as the "the answer is not written yet" marker that the
+   sources and export flows read, but an empty marker draws nothing, so the
+   user does not see the same waiting state twice. */
+.app-shell:is([data-state="chat"],[data-state="claw"]) .typing:empty {
+  display: none !important;
+}
 .app-shell:is([data-state="chat"],[data-state="claw"]) .typing {
   min-height: 34px;
   gap: 6px;

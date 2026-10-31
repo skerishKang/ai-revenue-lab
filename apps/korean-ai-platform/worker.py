@@ -7,11 +7,17 @@ Security headers are applied to every response, including static assets.
 
 from __future__ import annotations
 
+import logging
 from pathlib import Path
 from typing import Any
 from urllib.parse import urlparse
 
 from workers import Response, WorkerEntrypoint
+
+# Restore INFO operations logs even when the Worker runtime already has a
+# handler. Preserve those handlers and leave sampling to Workers settings.
+logging.basicConfig(level=logging.INFO)
+logging.getLogger().setLevel(logging.INFO)
 
 from app.main import app
 
@@ -60,6 +66,9 @@ _ENV_KEYS = frozenset({
     "PADIEM_B14_CREDENTIAL_13",
     "PADIEM_B14_CREDENTIAL_11",
     "PADIEM_B14_CREDENTIAL_14",
+    # Deployment-owned server-to-server caller proof for the platform-credential
+    # execution lanes. The value lives only in Cloudflare Secrets Store.
+    "PADIEM_B14_SERVICE_PROOF_SECRET",
     "B14_PROVIDER_MODE",
 })
 
@@ -120,6 +129,15 @@ class Default(WorkerEntrypoint):
         if env_overrides:
             _apply_env_once(env_overrides)
         token = bind_request_env(env_overrides)
+        # #5318: the call-ledger D1 handle travels as a request-scoped object,
+        # never through the env bridge above. That bridge coerces values with
+        # str(), which would turn a database binding into a string and destroy
+        # it, and it would widen the secret allowlist for a non-secret binding.
+        from app.pilot.call_ledger_store import bind_ledger_env, reset_ledger_env
+        from app.pilot.deferred_writes import bind, drain, reset
+
+        ledger_token = bind_ledger_env(self.env)
+        writes_token = bind()
         try:
             # Optional protected registry: exact digest/immutable R2 object,
             # installed before ASGI touches any model catalog or fallback.
@@ -141,8 +159,13 @@ class Default(WorkerEntrypoint):
             return response
         finally:
             reset_request_env(token)
-            if observed:
-                finish_trace(state, trace_token, response, getattr(self, "ctx", None), self.env)
+            try:
+                await drain(getattr(self, "ctx", None))
+            finally:
+                reset(writes_token)
+                reset_ledger_env(ledger_token)
+                if observed:
+                    finish_trace(state, trace_token, response, getattr(self, "ctx", None), self.env)
 
 
 # ---------------------------------------------------------------------------

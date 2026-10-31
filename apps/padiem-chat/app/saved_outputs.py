@@ -5,17 +5,17 @@ from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from typing import Any, Protocol
 
-MAX_SAVED_OUTPUTS = 200
+# Page size for one saved-output listing. This is a read shape, not a ceiling:
+# nothing refuses a save because the owner already has this many (#5895-C).
 MAX_OUTPUT_LIST = 100
+# D1 row size 한계(약 2MB) — the storage engine's own physical bound, not a
+# PADIEM ceiling. The row also carries the id, title and timestamps, so a
+# content guard at exactly this number stays on the conservative side.
+MAX_OUTPUT_ROW_BYTES = 2_000_000
 MAX_OUTPUT_TITLE_CHARS = 100
-MAX_OUTPUT_CONTENT_CHARS = 32_000
 
 
 class SavedOutputError(RuntimeError):
-    pass
-
-
-class SavedOutputLimitError(SavedOutputError):
     pass
 
 
@@ -92,8 +92,14 @@ def validate_output_content(value: object) -> str:
     if not isinstance(value, str):
         raise ValueError("저장할 답변 형식이 올바르지 않습니다.")
     content = value.strip()
-    if not 1 <= len(content) <= MAX_OUTPUT_CONTENT_CHARS:
-        raise ValueError("저장할 답변은 1자 이상 32,000자 이하만 지원합니다.")
+    # #5895-C: no character ceiling. A saved answer is the answer the owner
+    # already received, so the store must not shrink it (see #6054, which
+    # removed the PADIEM output size ceiling). The storage layer's own row
+    # bound is the only real limit here.
+    if not content:
+        raise ValueError("저장할 답변을 입력해 주세요.")
+    if len(content.encode("utf-8")) > MAX_OUTPUT_ROW_BYTES:
+        raise ValueError("답변이 너무 커서 저장할 수 없어요. 파일로 내려받아 주세요.")
     if "\x00" in content:
         raise ValueError("저장할 답변에 지원하지 않는 문자가 있습니다.")
     return content
@@ -196,12 +202,6 @@ class D1SavedOutputStore:
     ) -> SavedOutputRecord:
         clean_title = validate_output_title(title)
         clean_content = validate_output_content(content)
-        aggregate = await self._first(
-            "SELECT COUNT(*) AS output_count FROM saved_outputs WHERE user_id=?",
-            user_id,
-        ) or {}
-        if int(aggregate.get("output_count") or 0) >= MAX_SAVED_OUTPUTS:
-            raise SavedOutputLimitError("저장한 답변은 최대 200개까지 보관할 수 있습니다.")
         oid = _output_id()
         now = _now_iso()
         await self._run(

@@ -237,13 +237,15 @@ class CapabilityMappingTests(unittest.TestCase):
     def test_payload_text_bounds_enforced(self):
         transport = RecordingTransport()
         port = make_port(transport=transport)
-        with self.assertRaises(SidecarContractError):
-            port.invoke_capability("context.project", {"text": "x" * 8_001})
+        # #4379: a capability payload carries no PADIEM character total, so a
+        # long text is forwarded. The empty-text and the shape rules stay.
+        port.invoke_capability("context.project", {"text": "x" * 8_001})
+        self.assertEqual(len(transport.calls), 1)
         with self.assertRaises(SidecarContractError):
             port.invoke_capability("context.project", {"text": "   "})
         with self.assertRaises(SidecarContractError):
             port.invoke_capability("context.project", "not-a-mapping")
-        self.assertEqual(transport.calls, [])
+        self.assertEqual(len(transport.calls), 1)
 
 
 class TransportFailureProjectionTests(unittest.TestCase):

@@ -28,7 +28,7 @@ Add four owner-confirmed candidate providers to the B14 Worker evaluation plane 
 
 ## Confirmed Cloudflare metadata
 
-Authenticated browser inspection of the `charliekant@gmail.com` Cloudflare account confirmed active Workers Secrets Store entries. Secret values were not opened or read.
+Authenticated browser inspection of the `[OWNER Cloudflare 계정]` Cloudflare account confirmed active Workers Secrets Store entries. Secret values were not opened or read.
 
 | Provider | Binding | Model | Fixed origin |
 |---|---|---|---|

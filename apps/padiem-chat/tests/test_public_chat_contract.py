@@ -90,7 +90,7 @@ async def test_completed_browser_json_never_contains_internal_identity_bytes() -
     ) as client:
         response = await client.post(
             "/api/chat",
-            json={"messages": [{"role": "user", "content": "질문"}], "mode": "auto"},
+            json={"messages": [{"role": "user", "content": "질문"}]},
         )
 
     assert response.status_code == 200
@@ -131,7 +131,7 @@ async def test_browser_sse_never_serializes_internal_stream_model_identity() -> 
     ) as client:
         response = await client.post(
             "/api/chat/stream",
-            json={"messages": [{"role": "user", "content": "질문"}], "mode": "auto"},
+            json={"messages": [{"role": "user", "content": "질문"}]},
         )
 
     assert response.status_code == 200

@@ -114,14 +114,14 @@
 }
 
 .assistant-message {
-  grid-template-columns: 38px minmax(0, 1fr);
+  grid-template-columns: 32px minmax(0, 1fr);
   gap: 14px;
 }
 
 .assistant-avatar {
-  width: 36px;
-  height: 36px;
-  border-radius: 11px;
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
   font-family: var(--font-label);
   font-size: 13px;
   letter-spacing: .05em;

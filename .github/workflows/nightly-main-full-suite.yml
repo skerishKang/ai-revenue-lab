@@ -1,0 +1,293 @@
+# Nightly full-suite safety net for the latest main commit.
+#
+# Why: this repository's PR CI is mostly path-scoped, so an app test suite can
+# break on main without any PR touching that app (observed with the KAgent
+# suite, #6265 -> #6340). This workflow runs every included app test suite
+# against the current main HEAD once a day (KST early morning) plus manual
+# dispatch, one job per app so one failing suite still reports the others.
+#
+# Rules honored here:
+# - Pure tests only: no Production deploy, no Cloudflare access, no secrets.
+# - Run commands are reused verbatim from each app's existing CI workflow
+#   (b64-ai-reward-router-ci, b62-padiem-chat-react-ci, padiem-ai-engine-ci,
+#   claw-connect-contract-tests, claw4-3083-desktop-shell-ci,
+#   b03-living-fiction-cloudflare-m0-ci); suites without a prior CI workflow
+#   use the app's own documented uv/pytest invocation.
+# - A failing suite opens or updates exactly one tracking issue.
+
+name: Nightly Main Full Suite
+
+on:
+  schedule:
+    # 19:30 UTC == 04:30 KST (KST 새벽)
+    - cron: "30 19 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: nightly-main-full-suite
+  cancel-in-progress: false
+
+jobs:
+  app-b64-ai-reward-router:
+    name: tests — b64-ai-reward-router
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: npm ci
+        working-directory: apps/ai-reward-router
+        run: npm ci
+      - name: npm run build
+        working-directory: apps/ai-reward-router
+        run: npm run build
+      - name: npm run typecheck
+        working-directory: apps/ai-reward-router
+        run: npm run typecheck
+      - name: npm test
+        working-directory: apps/ai-reward-router
+        run: npm test
+
+  app-padiem-chat-react:
+    name: tests — padiem-chat-react
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: npm ci
+        working-directory: apps/padiem-chat-react
+        run: npm ci
+      - name: npm run typecheck
+        working-directory: apps/padiem-chat-react
+        run: npm run typecheck
+      - name: npm run test
+        working-directory: apps/padiem-chat-react
+        run: npm run test
+      - name: npm run build
+        working-directory: apps/padiem-chat-react
+        run: npm run build
+
+  app-padiem-desktop-shell:
+    name: tests — padiem-desktop-shell
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: npm ci
+        working-directory: apps/padiem-desktop-shell
+        run: npm ci
+      - name: npm run typecheck
+        working-directory: apps/padiem-desktop-shell
+        run: npm run typecheck
+      - name: npm test
+        working-directory: apps/padiem-desktop-shell
+        run: npm test
+
+  app-claw-connect:
+    name: tests — claw-connect (contract)
+    runs-on: windows-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install test dependencies
+        working-directory: apps/claw-connect
+        run: python -m pip install --disable-pip-version-check 'pytest>=8,<10' 'cryptography' -r requirements-wss-review.txt
+      - name: Run contract tests
+        working-directory: apps/claw-connect
+        run: python -m pytest -q tests
+
+  app-padiem-chat:
+    name: tests — padiem-chat
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: '0.13.5'
+      - name: uv sync
+        working-directory: apps/padiem-chat
+        run: uv sync --extra dev --frozen
+      - name: pytest
+        working-directory: apps/padiem-chat
+        run: uv run --frozen pytest -q
+
+  app-padiem-ai-engine:
+    name: tests — padiem-ai-engine
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: '0.13.5'
+      - name: uv sync
+        working-directory: apps/padiem-ai-engine
+        run: uv sync --extra dev
+      - name: compileall
+        working-directory: apps/padiem-ai-engine
+        run: uv run python -m compileall -q app worker.py ../../packages/padiem-ai-core/padiem_ai_core
+      - name: pytest
+        working-directory: apps/padiem-ai-engine
+        run: uv run python -m pytest -q
+
+  app-korean-ai-platform:
+    name: tests — korean-ai-platform (B14 pilot)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: '0.13.5'
+      - name: uv sync
+        working-directory: apps/korean-ai-platform
+        run: uv sync --group dev
+      - name: pytest
+        working-directory: apps/korean-ai-platform
+        run: uv run pytest -q
+
+  app-padiem-ai-core:
+    name: tests — packages/padiem-ai-core
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: '0.13.5'
+      - name: uv sync
+        working-directory: packages/padiem-ai-core
+        run: uv sync --extra dev
+      - name: pytest
+        working-directory: packages/padiem-ai-core
+        run: uv run pytest -q tests
+
+  app-padiem-control-plane:
+    name: tests — packages/padiem-control-plane
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: '0.13.5'
+      - name: uv sync
+        working-directory: packages/padiem-control-plane
+        run: uv sync --extra dev
+      - name: pytest
+        working-directory: packages/padiem-control-plane
+        run: uv run pytest -q tests
+
+  app-korean-ai-code-agent:
+    name: tests — korean-ai-code-agent
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: '0.13.5'
+      - name: uv sync
+        working-directory: apps/korean-ai-code-agent
+        run: uv sync
+      - name: pytest
+        working-directory: apps/korean-ai-code-agent
+        run: uv run --with 'pytest>=8,<10' pytest -q tests
+
+  app-living-fiction:
+    name: tests — living-fiction (b03 contract)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install pytest only
+        run: python -m pip install --disable-pip-version-check 'pytest>=8,<10'
+      - name: contract tests
+        working-directory: apps/living-fiction
+        run: |
+          python -m pytest -q tests/test_cloudflare_migration_contract.py
+          python -m pytest -q tests/test_migration_prefix_guard_3110.py
+      - name: compileall
+        working-directory: apps/living-fiction
+        run: python -m compileall -q app deploy/cloudflare/worker.py
+
+  nightly-failure-issue:
+    name: failure issue (create or update)
+    needs:
+      - app-b64-ai-reward-router
+      - app-padiem-chat-react
+      - app-padiem-desktop-shell
+      - app-claw-connect
+      - app-padiem-chat
+      - app-padiem-ai-engine
+      - app-korean-ai-platform
+      - app-padiem-ai-core
+      - app-padiem-control-plane
+      - app-korean-ai-code-agent
+      - app-living-fiction
+    if: always() && contains(needs.*.result, 'failure')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      issues: write
+    steps:
+      - name: Create or update the fixed-title failure issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          NEEDS_JSON: ${{ toJSON(needs) }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          COMMIT: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          title="[CI] 야간 main 전체 점검 실패"
+          failed="$(printf '%s' "${NEEDS_JSON}" | jq -r 'to_entries[] | select(.value.result == "failure") | .key' | sort | sed 's/^/- /')"
+          if [ -z "${failed}" ]; then
+            echo "no failed job found; nothing to report" >&2
+            exit 0
+          fi
+          body="$(printf '야간 main 전체 점검에서 실패한 앱 스위트:\n\n%s\n\n실행 로그: %s\n대상 커밋: %s' "${failed}" "${RUN_URL}" "${COMMIT}")"
+          existing="$(gh issue list --state open --search "\"${title}\" in:title" --json number --jq '.[0].number' 2>/dev/null || true)"
+          if [ -n "${existing}" ]; then
+            gh issue comment "${existing}" --body "${body}"
+            echo "ISSUE_UPDATED=${existing}"
+          else
+            gh issue create --title "${title}" --body "${body}"
+            echo "ISSUE_CREATED"
+          fi

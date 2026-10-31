@@ -288,6 +288,9 @@ class NegotiationDraftTests(unittest.TestCase):
         projection = compare_supplier_quotes(payload(A, B, C), received_at=NOW).safe_dict()
         negotiation = projection["negotiation"]
         self.assertIsNotNone(negotiation)
+        original = compare_supplier_quotes(payload(A, B, C), received_at=NOW)
+        self.assertEqual(negotiation["message"], original.negotiation.message)
+        self.assertEqual(negotiation["supplier_label"], original.label(original.negotiation.supplier_id))
         self.assertEqual(negotiation["status"], "draft_only")
         self.assertIs(negotiation["send_performed"], False)
         self.assertIs(projection["draft_only"], True)
@@ -567,7 +570,7 @@ class ModuleBoundaryTests(unittest.TestCase):
     def test_only_the_existing_ops_authority_is_imported(self):
         self.assertEqual(
             self._relative_imports(),
-            {".contracts", ".ops_comparison", ".ops_contracts", ".security"},
+            {".contracts", ".ops_comparison", ".ops_contracts"},
         )
 
     def test_no_outbound_send_is_ever_called(self):

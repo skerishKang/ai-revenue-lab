@@ -40,16 +40,17 @@ class ClawContractTests(unittest.TestCase):
         ):
             self.assertNotIn(forbidden, rendered)
 
-    def test_task_and_repository_projection_redact_accidental_secrets(self):
+    def test_task_and_repository_projection_preserve_owner_originals(self):
         intent = ClawTaskIntent(
             task_id="task_002",
             task="이 값을 노출하지 말아줘 token=supersecretvalue",
             repository_ref="OPENROUTER_API_KEY=sk-or-v1-abcdef1234567890",
         )
-        rendered = str(intent.safe_dict())
-        self.assertNotIn("supersecretvalue", rendered)
-        self.assertNotIn("abcdef1234567890", rendered)
-        self.assertIn("REDACTED", rendered)
+        rendered = intent.safe_dict()
+        self.assertEqual(rendered["task"], "이 값을 노출하지 말아줘 token=supersecretvalue")
+        self.assertEqual(
+            rendered["repository_ref"], "OPENROUTER_API_KEY=sk-or-v1-abcdef1234567890"
+        )
 
     def test_identifier_and_text_bounds_fail_closed(self):
         with self.assertRaises(ContractError):
@@ -179,7 +180,7 @@ class ClawContractTests(unittest.TestCase):
         )
         rendered = projection.safe_dict()
         self.assertTrue(rendered["terminal"])
-        self.assertNotIn("secretvalue123", str(rendered))
+        self.assertEqual(rendered["summary"], "완료 token=secretvalue123")
         for forbidden in ("provider", "model", "credential", "hidden_reasoning"):
             self.assertNotIn(forbidden, rendered)
         with self.assertRaises(ContractError):

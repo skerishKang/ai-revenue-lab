@@ -3,24 +3,50 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
-from .attachments import AttachmentValidationError, ImageAttachment, parse_attachments
-from .history import validate_conversation_id, validate_project_id
+from .attachments import (
+    AttachmentValidationError,
+    ImageAttachment,
+    parse_attachments,
+    parse_attachments_async,
+)
+from .history import (
+    validate_chat_pc_run_id,
+    validate_conversation_id,
+    validate_project_id,
+)
 from .model_policy import ModelPolicyError, resolve_model_policy, resolve_tier_policy
 from .task_modes import TaskMode, get_task_mode
 from .tool_presentations import ToolPresentationDescriptor, get_tool_presentation
-from .web_tools import MAX_QUERY_CHARS, normalize_public_url
+from .web_tools import MAX_QUERY_CHARS, SEARCH_QUERY_TOO_LONG_MESSAGE, normalize_public_url
 
-MAX_BROWSER_BODY_BYTES = 6_000_000
-# Deprecated model-input caps remain importable for compatibility; no product
-# pilot count/character ceiling applies before B14. HTTP body safety is separate.
-MAX_MESSAGES: int | None = None
-MAX_MESSAGE_CHARS: int | None = None
-MAX_TOTAL_MESSAGE_CHARS: int | None = None
+# #4379: a browser request body carries no PADIEM byte total. The reader
+# stays incremental, so the body is never materialized past the platform's
+# own request limit. The main branch raised this constant to a very large
+# finite value; a finite value is still a PADIEM total, so the limit is
+# removed instead of enlarged.
+MAX_BROWSER_BODY_BYTES: int | None = None
 _ALLOWED_ROLES = {"user", "assistant"}
+# Routing label for the three 의원3종 utilities. It grants no identity, tier,
+# entitlement or tool scope, and it is not an authentication input.
+_UTIL_SCOPES = frozenset({"speech", "sns", "meeting"})
+# #6046: the content-country vocabulary shared with project files. The chat
+# request no longer accepts a `country` key (B3): it was validated here and then
+# never read. `project_file_routes` still uses this set for the project-file
+# country filter, which is a live feature and unchanged.
+COUNTRIES = frozenset({"kr", "us", "uk", "fr"})
 
 
 class BrowserRequestError(ValueError):
-    pass
+    code = "invalid_request"
+
+
+class StaleChatClientError(BrowserRequestError):
+    """A removed browser contract needs a page refresh."""
+    code = "stale_chat_client"
+
+
+_RETIRED_TASK_MODES = frozenset({"explain", "write", "translate", "summarize", "code", "brainstorm"})
+_STALE_CHAT_MESSAGE = '화면이 오래되었습니다. 새로고침이 필요합니다.'
 
 
 @dataclass(frozen=True, slots=True)
@@ -81,8 +107,12 @@ def _validate_tool_request(raw: dict[str, Any]) -> BrowserToolRequest | None:
         if not isinstance(value, str):
             raise BrowserRequestError("검색어 형식이 올바르지 않습니다.")
         query = value.strip()
-        if not query or len(query) > MAX_QUERY_CHARS:
-            raise BrowserRequestError("검색어는 1자 이상 2000자 이하로 입력해 주세요.")
+        if not query:
+            raise BrowserRequestError("검색할 내용을 한 줄로 알려 주세요.")
+        if len(query) > MAX_QUERY_CHARS:
+            # #6090: MAX_QUERY_CHARS is the search provider's own query contract.
+            # The answer names what the user can do, not the number.
+            raise BrowserRequestError(SEARCH_QUERY_TOO_LONG_MESSAGE)
         return BrowserToolRequest(tool=tool, tool_input=query)
     if tool.id == "web_fetch":
         if not isinstance(value, str) or not value.strip():
@@ -95,19 +125,49 @@ def _validate_tool_request(raw: dict[str, Any]) -> BrowserToolRequest | None:
     raise BrowserRequestError("지원하지 않는 도구입니다.")
 
 
-def _validate_payload(
+def declared_util_scope(raw: Any) -> str | None:
+    """Return the utility scope of a request that declared one.
+
+    Call this only after ``_validate_payload_async`` accepted the payload; the
+    re-check here is the trust boundary, not a second validator.
+    """
+    scope = raw.get("util") if isinstance(raw, dict) else None
+    return scope if isinstance(scope, str) and scope in _UTIL_SCOPES else None
+
+
+def _validate_payload_parts(
     raw: Any,
-) -> tuple[list[dict[str, str]], TaskMode, BrowserToolRequest | None, tuple[Any, ...], str | None, str | None, CustomModelSelection | None]:
+) -> tuple[list[dict[str, str]], TaskMode, BrowserToolRequest | None]:
     if not isinstance(raw, dict):
         raise BrowserRequestError("요청 형식이 올바르지 않습니다.")
-    if set(raw) - {"messages", "mode", "tier", "skill", "tool", "tool_input", "attachments", "conversation_id", "project_id", "timezone", "calendar_turn_id", "custom", "device_id"}:
+    # An old tab can still send fields removed from the current browser contract.
+    # Only recognize the known retired keys/modes; unknown input stays invalid.
+    if "mode" in raw or "country" in raw or (
+        isinstance(raw.get("skill"), str) and raw["skill"].strip() in _RETIRED_TASK_MODES
+    ):
+        raise StaleChatClientError(_STALE_CHAT_MESSAGE)
+    # `mode` is gone, not merely unvalidated: B14 automatic model selection was
+    # abolished (#4844), the server accepted only "auto", and the four-mode catalog
+    # in `app/chat_modes.py` (자동/빠르게/균형/깊게) had no call site at all. A key that
+    # no client may meaningfully set is refused here rather than ignored, so nothing
+    # can grow a mode-shaped promise again.
+    # The tail order below is a load-bearing literal: test_5015 pins
+    # `"pc_run_id", "web_search"}` as the end of this set.
+    if set(raw) - {"messages", "tier", "skill", "tool", "tool_input", "attachments", "conversation_id", "project_id", "timezone", "calendar_turn_id", "custom", "device_id", "util", "pc_run_id", "web_search"}:
         raise BrowserRequestError("지원하지 않는 요청 항목이 있습니다.")
+    if "util" in raw:
+        util_scope = raw["util"]
+        if not isinstance(util_scope, str) or util_scope not in _UTIL_SCOPES:
+            raise BrowserRequestError("유틸 업무 식별자가 올바르지 않습니다.")
+    if "pc_run_id" in raw:
+        try:
+            validate_chat_pc_run_id(raw.get("pc_run_id"))
+        except ValueError as exc:
+            raise BrowserRequestError("PC 작업 실행 ID가 올바르지 않습니다.") from exc
     if "calendar_turn_id" in raw:
         turn_id = raw["calendar_turn_id"]
         if not isinstance(turn_id, str) or not turn_id.strip() or len(turn_id) > 128:
             raise BrowserRequestError("Calendar 요청 식별자 형식이 올바르지 않습니다.")
-    if raw.get("mode", "auto") != "auto":
-        raise BrowserRequestError("현재는 자동 추천 모드만 지원합니다.")
 
     skill_id = raw.get("skill", "auto")
     if not isinstance(skill_id, str) or not skill_id.strip():
@@ -136,10 +196,17 @@ def _validate_payload(
         raise BrowserRequestError("사용자 질문이 필요합니다.")
 
     tool_request = _validate_tool_request(raw)
-    try:
-        attachments = parse_attachments(raw.get("attachments"))
-    except AttachmentValidationError as exc:
-        raise BrowserRequestError(str(exc)) from exc
+    return out, skill, tool_request
+
+
+def _finish_payload(
+    raw: dict[str, Any],
+    *,
+    messages: list[dict[str, str]],
+    skill: TaskMode,
+    tool_request: BrowserToolRequest | None,
+    attachments: tuple[Any, ...],
+) -> tuple[list[dict[str, str]], TaskMode, BrowserToolRequest | None, tuple[Any, ...], str | None, str | None, CustomModelSelection | None]:
     if tool_request is not None and any(isinstance(item, ImageAttachment) for item in attachments):
         raise BrowserRequestError("현재는 사진 첨부와 웹 도구를 한 요청에서 함께 사용할 수 없습니다.")
     custom = _validate_custom_selection(raw)
@@ -150,7 +217,43 @@ def _validate_payload(
         project_id = validate_project_id(raw.get("project_id"))
     except ValueError as exc:
         raise BrowserRequestError(str(exc)) from exc
-    return out, skill, tool_request, attachments, conversation_id, project_id, custom
+    return messages, skill, tool_request, attachments, conversation_id, project_id, custom
+
+
+def _validate_payload(
+    raw: Any,
+) -> tuple[list[dict[str, str]], TaskMode, BrowserToolRequest | None, tuple[Any, ...], str | None, str | None, CustomModelSelection | None]:
+    messages, skill, tool_request = _validate_payload_parts(raw)
+    try:
+        attachments = parse_attachments(raw.get("attachments"))
+    except AttachmentValidationError as exc:
+        raise BrowserRequestError(str(exc)) from exc
+    return _finish_payload(
+        raw,
+        messages=messages,
+        skill=skill,
+        tool_request=tool_request,
+        attachments=attachments,
+    )
+
+
+async def _validate_payload_async(
+    raw: Any, *, file_resolver=None,
+) -> tuple[list[dict[str, str]], TaskMode, BrowserToolRequest | None, tuple[Any, ...], str | None, str | None, CustomModelSelection | None]:
+    """Worker request path: validate with the async isolated parser authority."""
+
+    messages, skill, tool_request = _validate_payload_parts(raw)
+    try:
+        attachments = await parse_attachments_async(raw.get("attachments"), file_resolver=file_resolver)
+    except AttachmentValidationError as exc:
+        raise BrowserRequestError(str(exc)) from exc
+    return _finish_payload(
+        raw,
+        messages=messages,
+        skill=skill,
+        tool_request=tool_request,
+        attachments=attachments,
+    )
 
 
 def _apply_b62_model_policy(
@@ -161,8 +264,8 @@ def _apply_b62_model_policy(
     """Resolve browser tier selection without exposing provider/model authority.
 
     Explicit browser tier ids are resolved server-side through the shared Padiem
-    product-tier contract. With no tier field, hidden slash aliases remain a
-    compatibility/test surface.
+    product-tier contract. With no tier field, ordinary chat resolves the
+    default product tier; slash-prefixed text is ordinary prompt text.
     """
     try:
         if tier_id is None:
@@ -175,7 +278,6 @@ def _apply_b62_model_policy(
             policy = resolve_tier_policy(messages, tier_id, require_executable=False)
     except ModelPolicyError as exc:
         raise BrowserRequestError(exc.message) from exc
-    # Preserve validated browser messages until the B14/tier-identity dispatch
-    # boundary. Hidden slash selectors are stripped by the existing client-side
-    # model policy there; explicit browser tier selection rides request context.
+    # Preserve validated browser messages verbatim; explicit browser tier
+    # selection rides request context and prompt text is never rewritten.
     return policy.model_id, [dict(message) for message in messages]

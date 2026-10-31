@@ -73,9 +73,9 @@ def test_owned_model_response_lanes_keep_600s_source_defaults(rel, owner, member
 def test_b14_provider_chunk_idle_clock_is_not_45s_retry_budget():
     rel = "apps/korean-ai-platform/app/pilot/b14_timeout_policy.py"
     assert literal_default(rel, owner=None, member="READ_SECONDS") == 600.0
-    assert literal_default(rel, owner=None, member="GATEWAY_WALL_SECONDS") == 45.0
+    assert "GATEWAY_WALL_SECONDS = READ_SECONDS" in source(rel)
     s = source(rel)
-    assert "the initial attempt" in s
+    assert "initial attempt" in s.lower()
     assert "read=READ_SECONDS" in s
     assert "connect=CONNECT_SECONDS" in s
     assert "CONNECT_SECONDS = READ_SECONDS" in s
@@ -118,7 +118,7 @@ def test_agent_wall_clock_is_inactivity_watchdog_not_a_fixed_cap():
     # a progressing run, and no run may silently lose its liveness bound.
     budget = "packages/padiem-ai-core/padiem_ai_core/agent_definition.py"
     context = "packages/padiem-ai-core/padiem_ai_core/execution_context.py"
-    assert literal_default(budget, owner="AgentExecutionBudget", member="max_wall_seconds") == 900
+    assert literal_default(budget, owner="AgentExecutionBudget", member="max_wall_seconds") == 1800
     assert literal_default(budget, owner="AgentExecutionBudget", member="max_total_seconds") is None
     assert literal_default(context, owner=None, member="MAX_TIMEOUT_SECONDS") == 3600.0
     agent = source("packages/padiem-ai-core/padiem_ai_core/agent_runtime.py")

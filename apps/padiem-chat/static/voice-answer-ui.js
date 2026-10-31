@@ -1,6 +1,11 @@
-// #4816: answer listen/stop for M3 ("\ub3d9\uc758 + \uc758\uc2dd \ud5c8\ub3d9").
+// #4816: answer listen/stop for M3 ("문자 + 음성 재생").
 // Existing browser speechSynthesis only; explicit user click starts playback.
 // Auto-speaks newly arrived answers only while M3 is the active mode.
+//
+// #5559: the answer used to carry two identical playback controls, one next to
+// the product name and one in the answer action row. The action row is the one
+// that stays, so this module owns the M3 auto-speech only. It marks the turn
+// as speaking, and the single answer action can stop it.
 (function (win, doc) {
   "use strict";
   const ttsAPI = win.PadiemVoiceTTSOutput;
@@ -9,25 +14,38 @@
   if (!ttsAPI || typeof ttsAPI.create !== "function") return;
 
   let tts = null;
-  let currentButton = null;
+  let currentArticle = null;
   let pendingSpeech = [];
   let lastAutoText = "";
+  // #4816 lifecycle token. Every stop/end/account change bumps it, so a speak
+  // that was scheduled for a session that already ended is dropped instead of
+  // starting later.
+  let speakToken = 0;
+  let knownIdentity = null;
   const ko = () => /^ko/i.test(doc.documentElement.lang || "ko");
-  const playText = () => ko() ? "\uc758\uc2dd\uc758\ubc1c \ud1b5\ud55c" : "Listen";
-  const stopText = () => ko() ? "\uc758\uc2dd \uc815\ubcf4" : "Stop audio";
-  const errorText = () => ko() ? "\uc758\uc2dd \uc7ac\ub300 \ubd88\uac00" : "Speech unavailable";
+  // Chat/Claw separation: the listen/stop/error copy comes from the existing locale
+  // catalogue. The previous inline Korean literals were corrupted escape
+  // sequences that rendered as "의식의발 통한" instead of a real label.
+  function localeText(key, fallback) {
+    try {
+      if (win.__padiemLocale && typeof win.__padiemLocale.text === "function") {
+        const value = win.__padiemLocale.text(key);
+        if (value && value !== key) return value;
+      }
+    } catch (_) {}
+    return fallback;
+  }
+  const errorText = () => localeText("voice-speech-unavailable", ko() ? "음성 재생 불가" : "Speech unavailable");
 
   function resetButton() {
-    if (currentButton) {
-      currentButton.textContent = playText();
-      currentButton.setAttribute("aria-label", playText());
-      currentButton.setAttribute("aria-pressed", "false");
-    }
-    currentButton = null;
+    // The single answer action at the bottom of the answer owns the playback
+    // control, so there is no second button to relabel here.
+    if (currentArticle) currentArticle.dataset.ttsSpeaking = "false";
+    currentArticle = null;
     pendingSpeech = [];
   }
 
-  function speakText(text) {
+  function speakText(text, article) {
     const parts = [];
     let left = String(text || "").trim();
     while (left) {
@@ -40,46 +58,37 @@
     if (!parts.length) return false;
     tts.start();
     pendingSpeech = parts.slice(1);
+    if (article) {
+      currentArticle = article;
+      article.dataset.ttsSpeaking = "true";
+    }
     return tts.speakText(parts[0]) !== false;
   }
 
-  function attach(article) {
-    if (article.querySelector(".voice-answer-listen")) return;
-    const content = article.querySelector(".assistant-content");
-    if (!content) return;
-    const meta = article.querySelector(".assistant-meta") || content.parentNode;
-    if (!meta) return;
-    const b = doc.createElement("button");
-    b.type = "button";
-    b.className = "voice-answer-listen";
-    b.setAttribute("aria-label", playText());
-    b.setAttribute("aria-pressed", "false");
-    b.textContent = playText();
-    b.disabled = !tts.isSupported();
-    b.addEventListener("click", function () {
-      if (currentButton === b) { tts.stopOutput(); resetButton(); return; }
-      tts.cancel(); resetButton();
-      const text = content.innerText || content.textContent || "";
-      if (!text) return;
-      currentButton = b;
-      b.setAttribute("aria-pressed", "true");
-      b.setAttribute("aria-label", stopText());
-      b.textContent = stopText();
-      speakText(text);
-    });
-    meta.appendChild(b);
+  function autoSpeakAllowed() {
+    return !!(menuAPI && typeof menuAPI.isTtsActive === "function" && menuAPI.isTtsActive());
+  }
+
+  function stopPlayback() {
+    speakToken += 1;
+    tts.stopOutput();
+    resetButton();
   }
 
   function handleAnswer(article) {
     if (!article || article.nodeType !== 1) return;
-    attach(article);
     const content = article.querySelector(".assistant-content");
     const text = content ? (content.innerText || content.textContent || "").trim() : "";
-    if (menuAPI && typeof menuAPI.isTtsActive === "function" && menuAPI.isTtsActive() &&
-        text && text !== lastAutoText) {
-      lastAutoText = text;
-      setTimeout(function () { speakText(text); }, 0);
-    }
+    if (!autoSpeakAllowed() || !text || text === lastAutoText) return;
+    lastAutoText = text;
+    const token = speakToken;
+    setTimeout(function () {
+      // Fire-time authority: the session may have ended (call end, mute,
+      // cancel, mode switch, account change) between the answer insert and this
+      // task. Re-check both the token and the live mode before speaking.
+      if (token !== speakToken || !autoSpeakAllowed()) return;
+      speakText(text, article);
+    }, 0);
   }
 
   if (win.MutationObserver) {
@@ -102,13 +111,13 @@
   tts = ttsAPI.create({  // single shared instance; overrides placeholder above
     lang: "ko-KR",
     onEnd: function () {
-      if (currentButton && pendingSpeech.length) {
+      if (currentArticle && pendingSpeech.length) {
         const next = pendingSpeech.shift();
         if (!tts.speakText(next)) resetButton();
       } else resetButton();
     },
     onError: function () {
-      if (currentButton) currentButton.textContent = errorText();
+      if (currentArticle) currentArticle.dataset.ttsSpeaking = "false";
       pendingSpeech = [];
     }
   });
@@ -118,15 +127,23 @@
   }
 
   win.addEventListener("padiem:auth-state", function (event) {
-    if (!event.detail || event.detail.authenticated !== true) {
-      tts.stopOutput(); resetButton();
-    }
+    if (!event.detail || event.detail.authenticated !== true) stopPlayback();
+  });
+  // #4816 session boundaries: the voice session ended (call end, mute, mode
+  // switch) or the signed-in identity changed. Late TTS belongs to a session
+  // that no longer owns the answer.
+  win.addEventListener("padiem:voice-end", stopPlayback);
+  win.addEventListener("padiem:voice-identity", function (event) {
+    const next = event && event.detail && event.detail.identityKey != null
+      ? String(event.detail.identityKey) : "";
+    if (knownIdentity !== null && next !== knownIdentity) stopPlayback();
+    knownIdentity = next;
   });
 
   win.PadiemVoiceAnswer = {
     isSupported: tts.isSupported,
-    speak: speakText,
-    stop: function () { tts.stopOutput(); resetButton(); },
+    speak: function (text) { return speakText(text, null); },
+    stop: stopPlayback,
     getState: tts.getState ? tts.getState() : {supported: tts.isSupported()}
   };
 })(window, document);

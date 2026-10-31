@@ -212,3 +212,14 @@ This policy never downgrades concrete failures involving:
 - an actual platform-required merge check that is legitimately relevant.
 
 The rule is **test what can invalidate the claim, not everything that can be tested**.
+
+## 2026-10-21 — Owner-led visual acceptance and issue closure
+
+**Latest Owner instruction:** For a normal bounded implementation, the Owner personally verifies the released UI. CENTRAL CTO finishes implementation, focused regression and required existing CI, merges, executes the applicable production release, and **closes the implementation issue without waiting for a separate post-deploy visual/browser QA**.
+
+- Record `OWNER_VISUAL_QA=OWNER_HANDLED` and `LIVE_VISUAL_E2E=NOT_RUN`; never claim an unperformed check passed.
+- If deployment is part of the requested delivery, close only after the deployment actually succeeds. Record exact PR, commit and release evidence; distinguish completed work from operational incidents.
+- On a later Owner-reported mismatch or defect, **reopen the original issue**, document the actual reproduction and fix it there. Do not spawn a redundant validation issue for the same bounded defect.
+- Do not impose a second reviewer, unnecessary pre-launch approval or full browser regression merely to close a completed UI issue.
+- Preserve platform-enforced branch protection, required CI, real production release gates, security/auth/data integrity checks and rollback. A failed mandatory gate is a real blocker, not a reason to report success.
+- Example status: `MERGED=YES; DEPLOYED=YES; RELEASE_GATE=PASS; OWNER_VISUAL_QA=OWNER_HANDLED; LIVE_VISUAL_E2E=NOT_RUN; ISSUE=CLOSED`.

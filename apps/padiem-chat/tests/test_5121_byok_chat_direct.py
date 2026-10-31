@@ -310,6 +310,8 @@ async def test_store_seals_rotates_and_isolates_owner_keys():
         {
             "provider": PROVIDER_ID,
             "key_last4": ROTATED_KEY[-4:],
+            "endpoint": "https://opencode.ai/inference/go/v1",
+            "endpoint_is_default": True,
             "created_at": 100,
             "updated_at": 200,
         }
@@ -345,7 +347,13 @@ async def test_credential_routes_are_session_scoped_and_metadata_only():
     body = saved.json()
     assert CUSTOM_KEY not in saved.text
     assert body["credential"]["key_last4"] == CUSTOM_KEY[-4:]
-    assert set(body["credential"]) == {"provider", "key_last4", "updated_at"}
+    assert set(body["credential"]) == {
+        "provider",
+        "key_last4",
+        "endpoint",
+        "endpoint_is_default",
+        "updated_at",
+    }
 
     status = await request(app, "GET", "/api/chat/custom/credential", uid=OTHER)
     assert status.status_code == 200

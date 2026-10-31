@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Owner-authorized bounded B62 production QA: real password login and 2 model turns.
+"""Owner-authorized bounded B62 production QA: real login, 2 JSON turns, 1 SSE turn.
 
 Uses ONLY the pre-existing CGI Alpha QA identity from the protected GitHub
 production environment. Does not print secrets, cookies, user identity,
@@ -21,10 +21,13 @@ ORIGIN = "https://chat.padiem.net"
 LOGIN = "/api/auth/password/login"
 STATUS = "/api/auth/status"
 CHAT = "/api/chat"
+STREAM = "/api/chat/stream"
 CONVERSATION = "/api/conversations/"
-MAX_REQUESTS = 1 + 1 + 2 + 1 + 1  # login, status, two chat turns, history, delete
+# login, status, two JSON turns, history, delete, composer SSE turn, delete
+MAX_REQUESTS = 1 + 1 + 2 + 1 + 1 + 1 + 1
 QA_BYTES_CAP = 400_000
 RESPONSE_BYTES_CAP = 2_000_000
+STREAM_LINE_CAP = 20_000
 CHAT_TIMEOUT_SECONDS = 115
 _CODE = re.compile(r"^[a-z][a-z0-9_]{0,80}$")
 _ID = re.compile(r"^chat_[0-9a-f]{32}$")
@@ -58,6 +61,11 @@ def bounded_call(opener, path: str, *, method: str = "GET", payload=None, timeou
         "User-Agent": "PADIEM-B62-owner-long-context-canary/1.0",
         "Cache-Control": "no-store",
     }
+    _version_header = os.environ.get("B62_STAGED_VERSION_HEADER", "")
+    _version_id = os.environ.get("B62_STAGED_VERSION_ID", "")
+    if _version_header and _version_id:
+        # #5895 staged rollout: pin these probes to the version under test.
+        headers[_version_header] = _version_id
     data = None
     if payload is not None:
         data = json.dumps(payload, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
@@ -91,6 +99,94 @@ def error_code(payload) -> str:
     return code if isinstance(code, str) and _CODE.fullmatch(code) else "no_safe_error_code"
 
 
+def parse_stream(lines) -> dict:
+    """Bounded SSE reader for the composer route contract (delta/done/error)."""
+    delta_events = 0
+    answer_chars = 0
+    done = False
+    conversation_id = None
+    stream_error = None
+    event_name = ""
+    total_bytes = 0
+    for count, line in enumerate(lines, 1):
+        if count > STREAM_LINE_CAP:
+            raise CanaryError("stream_line_cap_exceeded")
+        total_bytes += len(line)
+        if total_bytes > RESPONSE_BYTES_CAP:
+            raise CanaryError("stream_response_exceeds_qa_guard")
+        text = line.decode("utf-8", "replace").rstrip("\r\n")
+        if text.startswith("event:"):
+            event_name = text[6:].strip()
+            continue
+        if not text.startswith("data:"):
+            continue
+        try:
+            payload = json.loads(text[5:].strip())
+        except ValueError:
+            raise CanaryError("unexpected_stream_json_shape") from None
+        if not isinstance(payload, dict):
+            raise CanaryError("unexpected_stream_json_shape")
+        if event_name == "delta":
+            delta = payload.get("delta")
+            if isinstance(delta, str) and delta:
+                delta_events += 1
+                answer_chars += len(delta)
+        elif event_name == "done":
+            done = True
+            candidate = payload.get("conversation_id")
+            if isinstance(candidate, str) and _ID.fullmatch(candidate):
+                conversation_id = candidate
+            break
+        elif event_name == "error":
+            stream_error = error_code(payload)
+            break
+    return {
+        "delta_events": delta_events,
+        "answer_chars": answer_chars,
+        "done": done,
+        "conversation_id": conversation_id,
+        "error_code": stream_error,
+    }
+
+
+def bounded_stream_call(opener, path: str, *, payload, timeout=CHAT_TIMEOUT_SECONDS) -> dict:
+    assert path.startswith("/") and not path.startswith("//")
+    data = json.dumps(payload, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
+    if len(data) > QA_BYTES_CAP:
+        raise CanaryError("client_qa_transport_guard")
+    headers = {
+        "Accept": "text/event-stream",
+        "Content-Type": "application/json",
+        "User-Agent": "PADIEM-B62-owner-stream-canary/1.0",
+        "Cache-Control": "no-store",
+        "Origin": ORIGIN,
+        "Referer": ORIGIN + "/",
+    }
+    req = Request(ORIGIN + path, method="POST", data=data, headers=headers)
+    try:
+        response = opener.open(req, timeout=timeout)
+    except HTTPError as err:
+        body = err.read(RESPONSE_BYTES_CAP + 1)
+        try:
+            parsed = json.loads(body.decode("utf-8"))
+        except (UnicodeError, ValueError):
+            parsed = None
+        return {
+            "status": err.code,
+            "delta_events": 0,
+            "answer_chars": 0,
+            "done": False,
+            "conversation_id": None,
+            "error_code": error_code(parsed) if isinstance(parsed, dict) else "no_safe_error_code",
+        }
+    except (TimeoutError, URLError, OSError) as exc:
+        raise CanaryError("http_transport_unavailable") from exc
+    with response:
+        parsed = parse_stream(response)
+    parsed["status"] = response.status
+    return parsed
+
+
 def run() -> int:
     username = os.environ.get("B66_CGI_ALPHA_USERNAME", "")
     password = os.environ.get("B66_CGI_ALPHA_PASSWORD", "")
@@ -102,6 +198,7 @@ def run() -> int:
     jar = http.cookiejar.CookieJar()
     opener = build_opener(HTTPCookieProcessor(jar))
     chat_id = None
+    stream_chat_id = None
     try:
         code, body = bounded_call(
             opener, LOGIN, method="POST",
@@ -119,7 +216,7 @@ def run() -> int:
         code, body = bounded_call(
             opener, CHAT, method="POST", timeout=CHAT_TIMEOUT_SECONDS,
             payload={
-                "mode": "auto", "tier": "plus",
+                "tier": "plus",
                 "messages": [{"role": "user", "content": prompt}],
             },
         )
@@ -151,7 +248,7 @@ def run() -> int:
         code, result = bounded_call(
             opener, CHAT, method="POST", timeout=CHAT_TIMEOUT_SECONDS,
             payload={
-                "mode": "auto", "tier": "plus", "conversation_id": chat_id,
+                "tier": "plus", "conversation_id": chat_id,
                 # Deliberately supply the displayed 8k previews to mimic the
                 # reopened browser. Server must recover full owner R2 text.
                 "messages": [
@@ -173,15 +270,41 @@ def run() -> int:
             return 7
         print("B62_LONG_CONTEXT_TAIL_RECALL=PASS")
         print("B62_LONG_CONTEXT_LIVE_ACCEPTANCE=PASS")
+        stream = bounded_stream_call(
+            opener, STREAM,
+            payload={
+                "tier": "plus",
+                "messages": [{"role": "user", "content":
+                              "정상 작동 여부 확인입니다. 한 문장으로 답해 주세요."}],
+            },
+        )
+        print("B62_STREAM_CHAT_HTTP=" + str(stream["status"]))
+        if stream["status"] != 200:
+            print("B62_STREAM_ERROR_CODE=" + stream["error_code"])
+            print("B62_COMPOSER_STREAM_LIVE_ACCEPTANCE="
+                  + ("BLOCKED" if stream["status"] in (401, 403, 429, 503) else "FAILED"))
+            return 9
+        print("B62_STREAM_DELTA_EVENTS=" + str(stream["delta_events"]))
+        print("B62_STREAM_ANSWER_CHARS=" + str(stream["answer_chars"]))
+        if stream["error_code"] is not None or not stream["done"] \
+                or stream["delta_events"] < 1 or stream["answer_chars"] < 1:
+            print("B62_STREAM_ERROR_CODE=" + (stream["error_code"] or "none"))
+            print("B62_COMPOSER_STREAM_LIVE_ACCEPTANCE=FAILED")
+            return 9
+        print("B62_STREAM_DONE=PASS")
+        stream_chat_id = stream["conversation_id"]
+        print("B62_COMPOSER_STREAM_LIVE_ACCEPTANCE=PASS")
         return 0
     except CanaryError as exc:
         print("B62_LONG_CONTEXT_CANARY_ERROR=" + exc.public_code)
         print("B62_LONG_CONTEXT_LIVE_ACCEPTANCE=FAILED")
         return 8
     finally:
-        if chat_id is not None:
+        for handle in (chat_id, stream_chat_id):
+            if handle is None:
+                continue
             try:
-                status, cleanup = bounded_call(opener, CONVERSATION + chat_id, method="DELETE")
+                status, cleanup = bounded_call(opener, CONVERSATION + handle, method="DELETE")
                 if status == 200 and cleanup.get("deleted") is True:
                     print("B62_QA_CONVERSATION_CLEANUP=PASS")
                 else:
@@ -193,6 +316,7 @@ def run() -> int:
 
 
 def self_test() -> int:
+    import io
     text, mark = synthetic_text("offline-proof")
     assert len(text) > 8_000 and text.endswith(mark)
     assert len(text.encode("utf-8")) < QA_BYTES_CAP
@@ -200,7 +324,20 @@ def self_test() -> int:
     assert error_code({"error": {"code": "model_profile_unassigned"}}) == "model_profile_unassigned"
     assert error_code({"error": {"code": "danger\nhello"}}) == "no_safe_error_code"
     assert ORIGIN == "https://chat.padiem.net"
+    assert STREAM == "/api/chat/stream"
+    assert MAX_REQUESTS == 8
     assert CHAT_TIMEOUT_SECONDS < 120
+    parsed = parse_stream(io.BytesIO(
+        b'event: delta\ndata: {"delta":"ok"}\n\n'
+        b'event: done\ndata: {"done":true,"conversation_id":"chat_' + b"a" * 32 + b'"}\n\n'
+    ))
+    assert parsed["delta_events"] == 1 and parsed["answer_chars"] == 2
+    assert parsed["done"] is True and parsed["error_code"] is None
+    assert parsed["conversation_id"] == "chat_" + "a" * 32
+    empty = parse_stream(io.BytesIO(
+        b'event: error\ndata: {"error":{"code":"empty_upstream_answer","message":"x"}}\n\n'
+    ))
+    assert empty["error_code"] == "empty_upstream_answer" and empty["done"] is False
     print("B62_LONG_CONTEXT_CANARY_SOURCE=PASS")
     return 0
 
