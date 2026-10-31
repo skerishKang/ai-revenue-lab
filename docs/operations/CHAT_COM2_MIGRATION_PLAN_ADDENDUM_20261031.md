@@ -17,7 +17,8 @@ PARENT=docs/operations/CHAT_COM2_MIGRATION_RESUME_PLAN_20261031.md
 | --- | --- | --- | --- |
 | Chat·Claw API (`b62-chat-api`) | `18764` | `b62-chat-api/start-b62-release.ps1`, B14 런타임 연결 | `COM2_PRIMARY_RUNTIME_SUPERVISOR_AND_TUNNEL_20261019.md` |
 | B14 Router | `18717` | `infrastructure/start-b14-release.ps1`, DPAPI secret-store 경유 | 같은 문서 |
-| P01 Engine | `18731` | `p01-ai-engine/start-p01-local.ps1`, 내부 실행 경계 | 같은 문서 |
+| P01 Engine | `18731` (Windows 릴리스, 정본 아님) | `p01-ai-engine/start-p01-local.ps1`, 내부 실행 경계 | 같은 문서 |
+| P01 Engine 정본 | `8811` (Linux/WSL systemd) | `deploy/host-com2/p01/padiem-p01.service.example` | **2026-10-31 CTO 결정**, `CPYTHON_P01_ENGINE_TRANSPORT_20261031.md` |
 
 - 설치 위치: `D:\PADIEM-Servers\b62-chat-api` 계열(런타임·백업·secret-store). 감독기·터널 렌더러는 `D:\padiem-cloudflare-com2\scripts\ops\com2_runtime.py`·`com2_tunnel.py`.
 - 스케줄: `PADIEM-Local-AI-OnLogon`·`PADIEM-Local-AI-Watchdog`(5분), `PADIEM-COM2-D1-R2-Sync`(매일 04:20).
@@ -33,7 +34,8 @@ PARENT=docs/operations/CHAT_COM2_MIGRATION_RESUME_PLAN_20261031.md
 | 데이터 정본은 무엇인가 | **18764는 정본으로 선언된 적이 없다.** generation pointer가 고른 읽기 시드(57표, `production_bound=false`)를 쓰는 결합 런타임이다. 계획의 8798은 검토된 마이그레이션 장부(현재 001–079)와 `/mnt/d/padiem/chat-com2/chat.sqlite3`를 쓴다 | `COM2_B62_GENERATION_BINDING_20261019.md`, `apps/padiem-chat/migrations/` |
 | 계획은 18764를 어떻게 다루어야 하는가 | ③ D1 전환(쓰기 정지 창)까지 **현행 유지**, 창에서 18764에 새 쓰기가 있는지 확인한 뒤 은퇴 판단. 8798과 18764가 동시에 쓰기 정본이 되는 상태를 만들지 않는다 | 상위 계획 §4-③, #6202 split-brain 표 |
 | B14는 어느 쪽인가 | 후보가 **둘**이다: Windows `18717`(10-19 릴리스 라우터)과 Linux `8789`(`B14_COM2_RUNBOOK`의 `b14.padiem.net`). 계획의 방향(B14도 컴2)을 따르며, 정본은 **2026-10-31 CTO 결정으로 Linux `8789`(`b14.padiem.net`)**로 확정됐다(Windows `18717`은 정본 후보에서 제외) | `B14_COM2_RUNBOOK.md`, `COM2_PRIMARY_RUNTIME_SUPERVISOR_AND_TUNNEL_20261019.md` |
-| P01 `18731` | 계획의 크론 tick이 필요로 하는 엔진 레인이다. 18764가 이미 이 포트에 붙어 있으므로 8798도 같은 로컬 엔진을 upstream으로 쓸 수 있는지가 ①단계 확인 항목이다 | `app/local_cron.py` `p01_engine_transport_unbound`, 같은 감독기 문서 |
+| P01은 어느 쪽인가 | 후보가 **둘**이었다: Windows `18731`(10-25 릴리스)과 Linux 루프백(계획의 8798이 부를 upstream). **2026-10-31 CTO 결정으로 Linux(WSL) systemd `127.0.0.1:8811`이 정본**이다. B14 `8789`와 같은 근거다: COM2 운영 서비스가 이미 WSL/systemd에 있고, Windows 릴리스 프로세스는 로그온 세션·드라이브 마운트에 묶인다. Windows `18731`은 은퇴 판단 대상이며 공개 매핑 대상이 아니다 | `deploy/host-com2/p01/`, `CPYTHON_P01_ENGINE_TRANSPORT_20261031.md` |
+| P01 미결 항목 | 호스트 쪽은 끝났다: 8798의 엔진 전송(루프백 HTTP, #6382)과 8811 꾸러미. 남은 것은 **엔진의 CPython ASGI 진입점이 이 저장소에 없다는 점**이다(Worker `worker.py`·Windows `start-p01-local.ps1`만 존재). 꾸러미는 `asgi.py`가 없으면 `p01_asgi_entry_missing`으로 거부하고 기동하지 않는다 | `deploy/host-com2/p01/README.md` |
 | 메시(Oracle) | **이번 범위 밖.** 메시·브로커 상태는 별도 레인이며 이 계획의 ①②③④⑤ 어디에도 포함하지 않는다 | 상위 계획 §0 |
 
 **결론 3줄**
@@ -41,6 +43,7 @@ PARENT=docs/operations/CHAT_COM2_MIGRATION_RESUME_PLAN_20261031.md
 1. 18764는 계획의 8798과 같은 제품의 **다른 호스트 인스턴스**이며, 데이터 정본이 아니라 generation pointer가 고른 시드를 쓰는 결합 런타임이다.
 2. 전환 대상 정본 후보는 계획의 8798(검토된 001–079 장부)로 유지하고, 18764는 ③ 창에서 쓰기 발생 여부를 확인한 뒤 은퇴 판단한다.
 3. B14 후보는 18717(Windows)과 8789(Linux)로 갈려 있었고, **2026-10-31 CTO 결정으로 Linux `8789`(`b14.padiem.net`)가 정본**이다. Windows `18717`은 은퇴 판단 대상이며 이 문서는 결정을 기록만 한다.
+4. P01도 같은 날 **Linux(WSL) systemd 루프백 `8811`이 정본**으로 결정됐다. 8798→8811 호출은 #6382의 루프백 전송 설정 이름을 쓰고, 꾸러미는 `deploy/host-com2/p01/`이다. 설치·기동은 하지 않았다.
 
 ## 3. 테스트 범위 — 전환 후 은퇴 / 새로 필요
 
@@ -76,4 +79,5 @@ PARENT=docs/operations/CHAT_COM2_MIGRATION_RESUME_PLAN_20261031.md
 - 컴2 호스트에 접속해 18764·18717·18731의 **현재** 가동·설정·데이터를 확인하지 않았다. §1의 값은 2026-10-19 저장소 기록이다.
 - 18764와 8798 중 어느 쪽이 더 최신 데이터를 가졌는지 판정하지 않았다. ③ 창의 쓰기 확인 전에는 알 수 없다.
 - B14 정본을 고르지 않는다. 2026-10-31 CTO 결정(Linux `8789`, `b14.padiem.net`)을 기록할 뿐이고, 8789의 현재 가동 상태는 확인하지 않았다.
+- P01 정본도 같은 원칙이다. 2026-10-31 CTO 결정(Linux/WSL `8811`)을 기록하고 꾸러미를 추가했을 뿐, 8811 서비스는 설치·기동하지 않았고 엔진의 CPython ASGI 진입점은 아직 저장소에 없다.
 - 메시(Oracle) 레인은 범위 밖이며 이 문서가 상태를 판단하지 않는다.
