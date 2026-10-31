@@ -4,7 +4,12 @@ import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { createFront, MAINTENANCE_HTML } from "../worker.mjs";
+import { createFront as realCreateFront, MAINTENANCE_HTML } from "../worker.mjs";
+
+const createFront = (options = {}) => realCreateFront({
+  ...options,
+  sign: async (request) => new Headers(request.headers),
+});
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ORIGIN = "https://chat-com2.padiem.net";
@@ -205,4 +210,22 @@ test("the worker stays inside a proxy-only CPU shape", () => {
   // One upstream fetch call site; the service fallback has its own binding call.
   assert.equal((source.match(/await fetchImpl\(/g) || []).length, 1);
   assert.equal((source.match(/await env\.CHAT_WORKER\.fetch\(/g) || []).length, 1);
+});
+
+test("static assets stay on Cloudflare and dynamic requests use real signing", async () => {
+  const cryptoModule = await import("node:crypto");
+  if (!globalThis.crypto) globalThis.crypto = cryptoModule.webcrypto;
+  const fetchImpl = recordingFetch(() => new Response("dynamic"));
+  const handle = realCreateFront({ fetchImpl });
+  const env = baseEnv({
+    PADIEM_COM2_EDGE_SECRET: "synthetic-only-secret-0123456789",
+    ASSETS: { fetch: async () => new Response("asset") },
+  });
+  assert.equal(await (await handle(new Request("https://chat.padiem.net/app.js"), env)).text(), "asset");
+  assert.equal(fetchImpl.calls.length, 0);
+  const api = new Request("https://chat.padiem.net/api/status", { headers: { "x-padiem-edge-proof": "forged" } });
+  api.cf = { tlsVersion: "TLSv1.3" };
+  assert.equal((await handle(api, env)).status, 200);
+  assert.match(fetchImpl.calls[0].headers.get("x-padiem-edge-proof"), /^v1=[0-9a-f]{64}$/);
+  assert.notEqual(fetchImpl.calls[0].headers.get("x-padiem-edge-proof"), "forged");
 });

@@ -38,10 +38,14 @@ FILE_PATH = "C:\\ProgramData\\Padiem\\report.txt"
 
 
 class _StubPort:
-    """Stand-in read port; the channel transport is what is under test here."""
+    """Stand-in read port; the channel transport is what is under test here.
 
-    def read_bytes(self, *, node_ref, file_path, timeout_seconds=None):  # noqa: D102
-        del node_ref, file_path, timeout_seconds
+    The default matches the real port (60), never None: a fake whose default
+    was None let the #6327 shape pass — a deadline the real port refuses.
+    """
+
+    def read_bytes(self, *, node_ref, file_path, timeout_seconds=60, max_bytes=None):  # noqa: D102
+        del node_ref, file_path, timeout_seconds, max_bytes
         return b""
 
 
@@ -122,11 +126,22 @@ class ChannelSocketDeadlineTests(unittest.TestCase):
     """
 
     class _RecordingPort:
+        # Contract-audit shape: the fake must accept exactly the real port's
+        # keyword interface. The sentinel keeps "the executor left the
+        # argument out" observable without letting **call swallow a renamed
+        # or mistyped argument the way the old **call fake did.
+        _NOT_SENT = object()
+
         def __init__(self):
             self.calls: list[dict] = []
 
-        def read_bytes(self, **call):  # noqa: D102
-            self.calls.append(dict(call))
+        def read_bytes(self, *, node_ref, file_path, timeout_seconds=_NOT_SENT, max_bytes=_NOT_SENT):  # noqa: D102
+            recorded = {"node_ref": node_ref, "file_path": file_path}
+            if timeout_seconds is not self._NOT_SENT:
+                recorded["timeout_seconds"] = timeout_seconds
+            if max_bytes is not self._NOT_SENT:
+                recorded["max_bytes"] = max_bytes
+            self.calls.append(recorded)
             return b"ok"
 
     def _executor(self, **kwargs) -> OracleMeshExecutor:
@@ -167,7 +182,8 @@ class ChannelSocketDeadlineTests(unittest.TestCase):
         # A None deadline is never handed to the port: the private read port
         # validates the argument and refuses before the official client runs,
         # which is exactly how every read failed from 2026-10-29 to 10-30. An
-        # executor without its own deadline defers to the port's default.
+        # executor without its own deadline defers to the port's default — the
+        # sentinel recording fake only carries keys the executor actually sent.
         self.assertNotIn("timeout_seconds", port.calls[0])
 
         seen: dict = {}
@@ -805,8 +821,9 @@ class ReadDeadlineRegressionTests(unittest.TestCase):
             def __init__(self):
                 self.calls: list[dict] = []
 
-            def read_bytes(self, **call):
-                self.calls.append(dict(call))
+            def read_bytes(self, *, node_ref, file_path, timeout_seconds=60, max_bytes=None):
+                self.calls.append({"node_ref": node_ref, "file_path": file_path,
+                                   "timeout_seconds": timeout_seconds, "max_bytes": max_bytes})
                 return b"ok"
 
         port = _Recording()
@@ -819,7 +836,8 @@ class ReadDeadlineRegressionTests(unittest.TestCase):
 
     def test_a_refused_read_names_the_class_and_reason_without_content(self):
         class _Refusing:
-            def read_bytes(self, **call):
+            def read_bytes(self, *, node_ref, file_path, timeout_seconds=60, max_bytes=None):
+                del node_ref, file_path, timeout_seconds, max_bytes
                 raise MeshCentralReadRefused(
                     "the official meshcentral client refused the private read: "
                     "Unable to download file: not connected"
@@ -843,7 +861,8 @@ class ReadDeadlineRegressionTests(unittest.TestCase):
 
     def test_a_decode_refusal_never_quotes_the_bytes(self):
         class _Binary:
-            def read_bytes(self, **call):
+            def read_bytes(self, *, node_ref, file_path, timeout_seconds=60, max_bytes=None):
+                del node_ref, file_path, timeout_seconds, max_bytes
                 return b"\xff\xfe\x00b\x00a\x00d"
 
         executor = OracleMeshExecutor(

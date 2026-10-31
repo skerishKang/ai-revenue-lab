@@ -674,7 +674,8 @@ class _NoopPort:
 
 
 class _ReadPort:
-    def read_bytes(self, **call):
+    def read_bytes(self, *, node_ref, file_path, timeout_seconds=60, max_bytes=None):
+        del node_ref, file_path, timeout_seconds, max_bytes
         raise AssertionError("the command lane never reads a file")
 
 

@@ -1,0 +1,83 @@
+{
+  "worker": "ai-revenue-korean-ai-platform",
+  "reviewed_utc": "2026-10-25",
+  "source_served_version": "4e8257c3-5b68-4df6-9cc8-229155d87d9e",
+  "bindings": [
+    {
+      "name": "ASSETS",
+      "type": "assets"
+    },
+    {
+      "name": "B14_CALL_LEDGER_D1",
+      "type": "d1"
+    },
+    {
+      "name": "B14_PROVIDER_MODE",
+      "type": "plain_text"
+    },
+    {
+      "name": "PADIEM_B14_CREDENTIAL_01",
+      "type": "secrets_store_secret"
+    },
+    {
+      "name": "PADIEM_B14_CREDENTIAL_02",
+      "type": "secrets_store_secret"
+    },
+    {
+      "name": "PADIEM_B14_CREDENTIAL_03",
+      "type": "secrets_store_secret"
+    },
+    {
+      "name": "PADIEM_B14_CREDENTIAL_04",
+      "type": "secrets_store_secret"
+    },
+    {
+      "name": "PADIEM_B14_CREDENTIAL_05",
+      "type": "secrets_store_secret"
+    },
+    {
+      "name": "PADIEM_B14_CREDENTIAL_06",
+      "type": "secrets_store_secret"
+    },
+    {
+      "name": "PADIEM_B14_CREDENTIAL_07",
+      "type": "secrets_store_secret"
+    },
+    {
+      "name": "PADIEM_B14_CREDENTIAL_08",
+      "type": "secrets_store_secret"
+    },
+    {
+      "name": "PADIEM_B14_CREDENTIAL_09",
+      "type": "secrets_store_secret"
+    },
+    {
+      "name": "PADIEM_B14_CREDENTIAL_10",
+      "type": "secrets_store_secret"
+    },
+    {
+      "name": "PADIEM_B14_CREDENTIAL_11",
+      "type": "secrets_store_secret"
+    },
+    {
+      "name": "PADIEM_B14_CREDENTIAL_12",
+      "type": "secrets_store_secret"
+    },
+    {
+      "name": "PADIEM_B14_CREDENTIAL_13",
+      "type": "secrets_store_secret"
+    },
+    {
+      "name": "PADIEM_B14_CREDENTIAL_14",
+      "type": "secrets_store_secret"
+    },
+    {
+      "name": "PADIEM_B14_SERVICE_PROOF_SECRET",
+      "type": "secrets_store_secret"
+    },
+    {
+      "name": "PADIEM_GRAFANA_OTLP_TOKEN",
+      "type": "secrets_store_secret"
+    }
+  ]
+}

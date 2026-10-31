@@ -5,6 +5,8 @@ The Cloudflare edge signer and staged deployment are separate work.
 """
 from __future__ import annotations
 
+import os
+
 from starlette.websockets import WebSocket
 
 from .canonical_connector_gateway_source_composition import (
@@ -28,7 +30,10 @@ _BROKER_METHODS = frozenset({
 class LoopbackRpcBinding(HttpRpcBinding):
     """Binding-shaped service-proof RPC, restricted to a fixed COM2 port."""
 
-    def __init__(self, *, port: int, secret: str, methods: frozenset[str], client=None):
+    def __init__(
+        self, *, port: int, secret: str, methods: frozenset[str], client=None,
+        sign_request_id: bool = True,
+    ):
         if port not in (8799, 8802):
             raise ValueError("unapproved COM2 RPC port")
         self._origin = f"http://127.0.0.1:{port}"
@@ -36,6 +41,7 @@ class LoopbackRpcBinding(HttpRpcBinding):
         self._client = client
         self._timeout = 8.0
         self._methods = methods
+        self._sign_request_id = bool(sign_request_id)
 
     def __getattr__(self, method):
         if method not in self._methods:
@@ -67,8 +73,14 @@ def create_com2_gateway(*, verifier, identity_binding, broker_binding):
         proof_names = (b"x-padiem-edge-at", b"x-padiem-edge-id",
                        b"x-padiem-edge-tls", b"x-padiem-edge-proof")
         if (scope.get("query_string") or any(names.count(name) != 1 for name in proof_names)
-            or not verifier.verify(method="GET", path=scope["path"], headers=websocket.headers)):
+            or (scope.get("com2_edge_verified_verifier") is not verifier and not verifier.verify(method="GET", path=scope["path"], headers=websocket.headers))):
             await websocket.close(code=1008)
+            return
+        # The opt-in relay requires the broker's authenticated PC-offer
+        # route and durable replay prevention. It remains off until available.
+        if os.getenv("PADIEM_COM2_PC_OFFER_RELAY_ENABLED", "").strip().lower() in {"1", "true"}:
+            from .com2_pc_offer_relay import relay_pc_offer
+            await relay_pc_offer(websocket, broker_binding)
             return
         trusted_scope = dict(scope)
         trusted_scope["scheme"] = "wss"

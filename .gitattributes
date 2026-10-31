@@ -70,3 +70,6 @@ deploy/host-com2/broker/*.service text eol=lf
 deploy/host-com2/broker/*.env.example text eol=lf
 deploy/host-com2/identity/*.service text eol=lf
 deploy/host-com2/identity/*-staging.env.example text eol=lf
+
+# Android Gradle wrapper is stored with CRLF.
+apps/padiem-android-connector/gradlew.bat whitespace=trailing,cr-at-eol,blank-at-eof,space-before-tab

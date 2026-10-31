@@ -108,6 +108,7 @@ ISSUE=#5115 (COM2 이전 추적)
 
 - `deploy/host-com2/**`의 cloudflared 예시에는 `chat.padiem.net` hostname을 두지 않습니다. tunnel이 직접 받으면 front를 건너뛰어 서명 없는 요청이 컴2로 들어옵니다. `deploy/host-com2/chat/tests/test_ingress_public_hostname_guard.py`가 이 금지를 고정합니다.
 - tunnel은 지금처럼 `chat-com2.padiem.net` → `127.0.0.1:8798` 하나입니다. 이 hostname·포트가 운영 유닛(`padiem-chat-com2.service`)과 같은지, #6400의 `FRONT_ORIGIN`과 같은지 시험이 대조합니다(#6400이 main에 없으면 skip 사유를 남기고 대기).
+- 확인된 사항(읽기 전용 조사): front의 `UPSTREAM_TIMEOUT_MS`(8초)는 **응답 헤더 수신까지만** 적용됩니다. 헤더가 오면 `forward()`가 타이머를 해제하고 받은 `Response`를 그대로 반환하므로 SSE/NDJSON 본문은 8초에서 끊기지 않고, 응답이 시작된 뒤 fallback이 끼어들지도 않습니다(5xx·헤더 지연은 본문 전달 전에 대체). WebSocket 업그레이드도 같은 헤더 대기 시간만 적용됩니다. 재현 시험: `apps/padiem-chat-front/test/stream_timeout.test.mjs`.
 - `chat-com2.padiem.net`은 공개 hostname이라 front를 거치지 않고 직접 들어올 수 있습니다. 그 경로는 #6400 `EdgeProofMiddleware`가 막습니다: `GET /health`를 뺀 **모든 http·websocket 요청**이 서명을 요구하고, 검증기는 `GET /api/claw/connector/gateway/session` 외에는 통과시키지 않습니다(그 밖의 경로는 403, WSS는 close 1008).
 - 전환·원복은 각각 1회입니다: 런북 §2(도메인 이동) / §3(재이동). 앞단 배포·도메인 이동은 저장소 PR로 실행되지 않습니다.
 - 되돌리기: Custom Domain을 `padiem-chat`으로 재이동(1회)하고, 컴2에만 쓰인 데이터는 핸드백으로 D1에 반영한 뒤 쓰기 재개.
@@ -119,6 +120,14 @@ ISSUE=#5115 (COM2 이전 추적)
 - **레인 PR**: ⑤-1 정적·입구 전용 Worker 축소(바인딩·변수 정리 + 기준선 갱신) ⑤-2 `scheduled()`·크론 lane 제거와 COM2 타이머 활성 절차 ⑤-3 문서 종결(이 계획, 이전 인벤토리, 런북 상태 갱신) — **3개**.
 
 **총 레인 PR 18개** (① 4 · ② 5 · ③ 3 · ④ 3 · ⑤ 3), 별도 검증 기록 2건.
+
+### ④-전 RPC 서명 v2(service_id) 운영 전환 위치 — 준비 기록 (배포 없음)
+
+- 순서 한 줄: **보내는 쪽 배포 → 운영 `required`.** 받는 쪽 v2 코드(공용 검증기 + 재전송 저장소)는 `optional` 정책으로 먼저 서야 한다. 그 상태에서는 v1 요청도 계속 통과하므로, v2로 서명하는 보내는 쪽(컴2 Chat 호스트의 신원기관 연결, P01 엔진 승인 어댑터)이 그다음에 배포되고, 마지막에 정책을 `required`로 조인다. 보내는 쪽을 v2 수신보다 먼저 배포하면 그 경로는 403/503으로 닫힌다.
+- 운영 신원기관: `packages/padiem-control-plane/wrangler.identity-authority.jsonc`의 최상위 `"vars"`에 `PADIEM_RPC_SERVICE_ID_POLICY`를 넣는다.
+- 승인 Worker: `packages/padiem-control-plane/wrangler.engine-admission-authority.jsonc`의 `"vars"`에 같은 이름을 넣는다.
+- 컴2 CPython 신원기관 입구의 재전송 저장소 경로: 호스트 설정 `PADIEM_COM2_IDENTITY_REPLAY_DB`(파일 경로, `:memory:` 불가).
+- 값과 배포 실행은 이 문서가 정하지 않는다. 실제 정책 값 결정과 Cloudflare 변경은 승인된 별도 작업이다.
 
 ## 5. 컴2 포트 배정
 

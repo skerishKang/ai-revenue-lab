@@ -5,6 +5,10 @@ on:
       - 'deploy/host-com2/file-lane/**'
       - 'docs/operations/FILE_LANE_COM2_RUNBOOK.md'
       - 'apps/padiem-file-lane/**'
+      # #6265 retroactive guard: the file lane declares the shared Core as a
+      # file:// dependency, so any Core source change is a packaging surface
+      # change too.
+      - 'packages/padiem-ai-core/**'
       - '.github/workflows/validate-file-lane-com2-packaging.yml'
   workflow_dispatch:
 permissions:

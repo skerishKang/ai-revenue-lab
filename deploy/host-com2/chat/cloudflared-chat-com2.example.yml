@@ -1,6 +1,22 @@
-# cloudflared ingress for the COM2 Chat parallel host (chat-com2.padiem.net).
+# cloudflared ingress for the COM2 Chat ORIGIN hostname (chat-com2.padiem.net).
+#
+# This is not a staging entry and not a second public door. It binds the origin
+# hostname that padiem-chat-front calls as FRONT_ORIGIN
+# (apps/padiem-chat-front/wrangler.toml) and terminates on the PRODUCTION Chat
+# listener 127.0.0.1:8798 (deploy/host-com2/chat/padiem-chat-com2.service, data
+# root /mnt/d/padiem/chat-com2). The staging profile is a different unit
+# (padiem-chat-staging.service, 8801, /mnt/d/padiem/chat-staging).
+#
+# chat.padiem.net must never be bound here: the front owns that hostname and
+# signs every request before forwarding. deploy/host-com2/chat/tests/
+# test_ingress_public_hostname_guard.py fails if it ever is.
+#
+# Timeout relation: connectTimeout is 15s and the front's UPSTREAM_TIMEOUT_MS
+# is 8s, so the front gives up first and this tunnel deadline never decides a
+# request. The front's deadline covers the response HEADERS only; once they
+# arrive the body stream (SSE/NDJSON) is not aborted.
+#
 # Copy under /etc/cloudflared/ and add `--config` to that tunnel's unit.
-# chat.padiem.net keeps its own tunnel/config — nothing here selects it.
 tunnel: CHAT_COM2_TUNNEL_UUID
 credentials-file: /etc/cloudflared/CHAT_COM2_TUNNEL_UUID.json
 
