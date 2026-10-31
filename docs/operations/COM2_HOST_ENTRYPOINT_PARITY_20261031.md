@@ -101,3 +101,16 @@
 - 저장소 소스 읽기만 수행했다. 운영 Worker·컴2 서비스·Cloudflare 계정 조회는 하지 않았다.
 - #6396·#6398은 미머지이므로 엔진 행은 #6396 머지 시점에 "같음"으로 바뀐다.
 - 컴2에서 실제로 어떤 진입점 파일이 기동 중인지는 확인하지 않았다(`deploy/host-com2/*` 유닛이 가리키는 모듈 기준).
+
+## 6. Chat 크론 대응 표 — Cloudflare scheduled ↔ 컴2 systemd 타이머 (10-31)
+
+`apps/padiem-chat/wrangler.toml`과 `wrangler.connector-acceptance-4139.toml`에는 `[triggers]`/`crons` 선언이 없습니다. 배포된 크론 식은 대시보드가 소유하므로 저장소에서 읽을 수 없고, 설치 시 `CRON_SCHEDULE`로 그 값을 그대로 받습니다(비어 있으면 `CRON_INSTALL=REFUSED reason=CRON_SCHEDULE_REQUIRED`).
+
+| Cloudflare 크론 식 | 하는 일 | 타이머 유닛 | OnCalendar | 실행 명령 |
+| --- | --- | --- | --- | --- |
+| 저장소 선언 없음(대시보드 소유) | `Default.scheduled()` → `run_scheduled_automation_source` — Claw 자동화 tick 1건 | `padiem-chat-cron-<profile>.timer` → `padiem-chat-cron-<profile>.service`(oneshot) | 설치 시 `CRON_SCHEDULE`(대시보드 값과 같아야 함), `Timezone=UTC` | `run-cron.sh` → `python -m app.local_cron --once` |
+
+- 1:1 근거는 `deploy/host-com2/cron/cron_parity.json`(작업 1건)이고, `.github/tests/test_com2_cron_parity_261031.py`가 wrangler 크론 목록·`scheduled()` 분기·타이머 템플릿·프로필을 대조해 어긋나면 실패합니다.
+- 시간대: Cloudflare 크론은 UTC입니다. 타이머에 `Timezone=UTC`가 없으면 systemd가 같은 식을 호스트 로컬 시간(KST, +9시간)으로 해석해 시각이 9시간 어긋납니다. 이번 PR에서 `Timezone=UTC`를 넣었습니다(systemd ≥ 240 필요).
+- 프로필: 스테이징 `padiem-chat-cron-staging`, 운영 `padiem-chat-cron-com2`. 스테이징 주기는 운영과 달라도 되고, 운영 값만 Cloudflare와 같아야 합니다.
+- 창 전환 순서(중복 tick 금지)는 `deploy/host-com2/cron/README.md`의 "Cutover order"를 따릅니다. 이 패키지는 설치·기동·활성화하지 않았습니다.
