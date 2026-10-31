@@ -73,6 +73,48 @@ MAX_SEARCH_RESULTS = 500
 #: enough and keeps the request bounded.
 TRUNCATION_PROBE_ROWS = 1
 
+# Applied in the search query and checked again before returning any result.
+EXCLUDED_COMPONENTS = frozenset({
+    "windows", "program files", "program files (x86)", "programdata",
+    "$recycle.bin", "system volume information", "recovery", "appdata",
+    ".ssh", ".gnupg", ".aws", ".azure", ".kube", ".docker", ".git",
+})
+EXCLUDED_ROOT_FILES = frozenset({"pagefile.sys", "hiberfil.sys", "swapfile.sys"})
+
+
+def _excluded_relative(relative: str) -> bool:
+    parts = relative.replace("\\", "/").split("/")
+    return any(part.casefold() in EXCLUDED_COMPONENTS for part in parts) or (
+        len(parts) == 1 and parts[0].casefold() in EXCLUDED_ROOT_FILES
+    )
+
+
+def _hidden_system_on_path(root: str, path: str) -> bool:
+    # Check every component, so children of a hidden+system folder stay hidden.
+    relative = os.path.relpath(path, root)
+    current = root
+    for part in relative.split(os.sep):
+        current = os.path.join(current, part)
+        try:
+            attrs = getattr(os.stat(current, follow_symlinks=False), "st_file_attributes", 0)
+        except OSError:
+            return True
+        if attrs & 0x2 and attrs & 0x4:
+            return True
+    return False
+
+
+# A fixed full-path regex, independent of the index's attribute configuration.
+# The root-only swap files are excluded separately by the verified root.
+def _everything_exclusions(root: str) -> str:
+    components = "|".join(re.escape(name) for name in sorted(EXCLUDED_COMPONENTS))
+    # Windows paths in Everything are matched in full-path mode.
+    folders = r'!path:regex:"(^|[\\/])(?:' + components + r')([\\/]|$)"'
+    root_path = re.escape(root.rstrip("\\/"))
+    filenames = "|".join(re.escape(name) for name in sorted(EXCLUDED_ROOT_FILES))
+    root_files = r'!path:regex:"^' + root_path + r'[\\/](?:' + filenames + r')$"'
+    return folders + " " + root_files
+
 #: The code page the port asks the ES CLI to convert its output to. ES writes
 #: to a console with WriteConsole, but to a pipe or a file with WriteFile
 #: after converting to its current code page; without the switch a Korean
@@ -444,7 +486,7 @@ class EverythingEsCliSearchPort:
             raise PcFileSearchUnsupported(
                 "the local searcher does not support this search contract"
             )
-        search_text = everything_search_argument(query)
+        search_text = everything_search_argument(query) + " " + _everything_exclusions(root)
         argv = [
             executable,
             "-path", root,
@@ -580,7 +622,7 @@ def search_pc_files(
             excluded += 1
             continue
         relative = _relative_to_root(resolved_root, resolved)
-        if relative is None:
+        if relative is None or _excluded_relative(relative) or _hidden_system_on_path(resolved_root, resolved):
             excluded += 1
             continue
         size_bytes, modified_at, is_directory = _entry_metadata(resolved)

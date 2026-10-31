@@ -448,7 +448,7 @@ def test_the_everything_port_queries_the_existing_index(tmp_path: Path) -> None:
     assert "-code-page" in argv
     assert argv[argv.index("-code-page") + 1] == "65001"
     assert "-search*" in argv
-    assert argv[-1] == "한글"
+    assert argv[-1] == adapter.everything_search_argument("한글") + " " + adapter._everything_exclusions(str(tmp_path))
     # The literal form only holds while it is the last switch, so no later
     # switch can be swallowed as search text.
     assert argv.index("-search*") == len(argv) - 2
@@ -563,7 +563,7 @@ def test_the_search_text_is_escaped_in_the_actual_argv(tmp_path: Path) -> None:
 
     # The version probe is the first call; the query is the last one.
     argv = calls[-1]
-    assert argv[-1] == "이름&quot:따옴표"
+    assert argv[-1] == adapter.everything_search_argument('이름"따옴표') + " " + adapter._everything_exclusions(str(tmp_path))
     assert argv[-2] == "-search*"
     # Piped output follows the requested code page, which is the one decoded
     # as UTF-8 above; without it the same Korean text would arrive as an ANSI
@@ -699,3 +699,36 @@ def test_single_root_read_keeps_existing_path(tmp_path):
 def test_multi_root_rejects_invalid_label(tmp_path, label):
     with pytest.raises(PcFileSearchError):
         PcFileSearchScope(root=str(tmp_path), device_id=DEVICE_ID, local_device_id=DEVICE_ID, label=label, multiple_roots=True)
+
+
+def test_excluded_directories_and_hidden_system_never_return(tmp_path, monkeypatch):
+    root = tmp_path / "drive"
+    files = [root / "Users" / "person" / "AppData" / "secret.txt",
+             root / "Users" / "person" / ".ssh" / "private.txt",
+             root / "hidden-system.txt", root / "ordinary.txt"]
+    for file in files:
+        file.parent.mkdir(parents=True, exist_ok=True)
+        file.write_text("x", encoding="utf8")
+    real_stat = adapter.os.stat
+    def stat_with_attributes(path, *args, **kwargs):
+        info = real_stat(path, *args, **kwargs)
+        if str(path).casefold() == str(files[2]).casefold():
+            return SimpleNamespace(st_file_attributes=6, st_size=info.st_size, st_mtime=info.st_mtime)
+        return info
+    monkeypatch.setattr(adapter.os, "stat", stat_with_attributes)
+    result = search_pc_files(scope=_scope(root), query="x", port=_FixtureIndexPort([str(p) for p in files]))
+    assert [e.relative_path for e in result.entries] == ["ordinary.txt"]
+    assert result.excluded_count == 3
+
+
+def test_everything_query_applies_path_exclusion(tmp_path):
+    exe = tmp_path / "es.exe"
+    exe.write_text("", encoding="utf8")
+    calls = []
+    def runner(argv, *, timeout):
+        calls.append(argv)
+        return (0, "1.5.0" if "-get-everything-version" in argv else "", "")
+    EverythingEsCliSearchPort(executable=str(exe), runner=runner).search(query="report", root=str(tmp_path), limit=5)
+    assert calls[-1][-1] == "report " + adapter._everything_exclusions(str(tmp_path))
+    for name in ("appdata", "windows", "programdata", "ssh", "git"):
+        assert name in calls[-1][-1].lower()
