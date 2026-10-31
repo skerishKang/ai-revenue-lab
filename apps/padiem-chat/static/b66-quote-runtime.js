@@ -290,6 +290,7 @@
   }
 
   async function pcLinkedNow() {
+    if (window.PadiemAuthGate?.authenticated() === false) return null;
     try {
       const response = await nativeFetch(PC_PAIRINGS_PATH, { credentials: "same-origin", cache: "no-store", headers: { "Accept": "application/json" } });
       if (!response.ok) return null;

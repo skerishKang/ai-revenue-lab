@@ -394,6 +394,9 @@
       // Opening the panel reads the directory. One authenticated-session
       // restore also reads it without opening, so a new conversation can use
       // the saved target; no idle polling is created.
+      if (window.PadiemAuthGate?.authenticated() === false) {
+        reset(); if (opened) setStatus("login"); return;
+      }
       const restoreOnly = options && options.restoreOnly === true;
       if (!opened && !restoreOnly) return;
       // Refreshing also invalidates the previous request. A late response can
