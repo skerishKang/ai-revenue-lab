@@ -258,6 +258,11 @@
   }
 
   async function readPairings() {
+    if (window.PadiemAuthGate?.authenticated() === false) {
+      state.links = []; state.read = "unavailable"; state.everRead = false;
+      publish();
+      return {ok: false, status: 401};
+    }
     const result = await request(PAIRINGS, { method: "GET" });
     if (result.ok && result.body && Array.isArray(result.body.links)) {
       state.links = result.body.links;
@@ -638,6 +643,7 @@
     };
     wireStarter();
     wireLangRepaint();
+    window.addEventListener("padiem:auth-state", () => { void readPairings(); });
     void readPairings();
   };
   if (document.readyState === "loading") {

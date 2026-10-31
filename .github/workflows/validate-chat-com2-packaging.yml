@@ -3,6 +3,9 @@ on:
   pull_request:
     paths:
       - 'deploy/host-com2/chat/**'
+      - 'deploy/host-com2/deploy_from_main.sh'
+      - 'deploy/host-com2/tests/**'
+      - 'deploy/host-com2/README.md'
       - 'apps/padiem-chat/app/local_cpython.py'
       - 'apps/padiem-chat/app/local_cron.py'
       - 'apps/padiem-chat/app/local_service_bridge.py'
@@ -23,3 +26,5 @@ jobs:
           python-version: '3.12'
       - name: Offline installer, systemd units, health, backup and lock contracts
         run: python -m unittest discover -s deploy/host-com2/chat/tests -q
+      - name: Deploy-from-main plan, apply, rollback and migration stop
+        run: python -m unittest discover -s deploy/host-com2/tests -q
