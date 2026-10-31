@@ -1,5 +1,4 @@
-// Sign only the WebSocket route supported by COM2 EdgeProofVerifier.
-const PATH = "/api/claw/connector/gateway/session";
+// v1 signs method and URL pathname; query strings are excluded.
 const PROOF_HEADERS = ["x-padiem-edge-at", "x-padiem-edge-id", "x-padiem-edge-tls", "x-padiem-edge-proof"];
 
 export async function signedRequestHeaders(request, secret, { now = () => Date.now(), random = () => crypto.randomUUID().replaceAll("-", "") } = {}) {

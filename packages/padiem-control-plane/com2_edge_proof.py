@@ -35,8 +35,7 @@ class EdgeProofVerifier:
             request_id = headers.get("x-padiem-edge-id")
             tls = headers.get("x-padiem-edge-tls")
             proof = headers.get("x-padiem-edge-proof")
-            if ((not self._all_requests and (method != "GET" or path != "/api/claw/connector/gateway/session"))
-                or not isinstance(method, str) or not method or "\n" in method
+            if (not isinstance(method, str) or not method or "\n" in method
                 or not isinstance(path, str) or not path.startswith("/") or "\n" in path
                 or not isinstance(at_text, str) or not at_text.isascii() or not at_text.isdigit()
                 or not isinstance(request_id, str) or not ID_RE.fullmatch(request_id)

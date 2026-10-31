@@ -86,3 +86,58 @@ def test_health_is_the_only_unsigned_exception_and_uses_public_fields(tmp_path):
         assert client.get("/health/").status_code == 403
         assert client.post("/health").status_code == 403
         assert client.get("/api/auth/status").status_code == 403
+
+
+def test_common_chat_paths_query_and_path_substitution(tmp_path, monkeypatch):
+    monkeypatch.setattr("com2_edge_proof.time.time", lambda: 1700000000)
+    async def ok(request):
+        return PlainTextResponse("ok")
+    app = Starlette(routes=[Route("/api/chat", ok, methods=["POST"]),
+                            Route("/api/conversations", ok)])
+    app.add_middleware(EdgeProofMiddleware, verifier=EdgeProofVerifier(
+        SECRET, str(tmp_path / "replay.sqlite")))
+    with TestClient(app) as client:
+        assert client.post("/api/chat", headers=signed("POST", "/api/chat", "a" * 32)).status_code == 200
+        assert client.get("/api/conversations?x=1", headers=signed("GET", "/api/conversations", "b" * 32)).status_code == 200
+        assert client.get("/api/conversations", headers=signed("GET", "/api/chat", "c" * 32)).status_code == 403
+        assert client.post("/api/chat").status_code == 403
+
+
+def test_event_stream_passes_through_middleware(tmp_path, monkeypatch):
+    from starlette.responses import StreamingResponse
+    monkeypatch.setattr("com2_edge_proof.time.time", lambda: 1700000000)
+    async def events(request):
+        async def generate():
+            yield b"data: first\n\n"
+            yield b"data: second\n\n"
+        return StreamingResponse(generate(), media_type="text/event-stream")
+    app = Starlette(routes=[Route("/api/events", events)])
+    app.add_middleware(EdgeProofMiddleware, verifier=EdgeProofVerifier(
+        SECRET, str(tmp_path / "replay.sqlite")))
+    with TestClient(app) as client:
+        response = client.get("/api/events", headers=signed("GET", "/api/events", "d" * 32))
+        assert response.status_code == 200
+        assert response.content == b"data: first\n\ndata: second\n\n"
+
+
+def test_connector_websocket_rejects_forged_proof_with_1008(tmp_path, monkeypatch):
+    import pytest
+    from starlette.websockets import WebSocketDisconnect
+    monkeypatch.setattr("com2_edge_proof.time.time", lambda: 1700000000)
+    path = "/api/claw/connector/gateway/session"
+    async def ws(socket):
+        await socket.accept()
+        await socket.send_text("ok")
+        await socket.close()
+    app = Starlette(routes=[WebSocketRoute(path, ws)])
+    app.add_middleware(EdgeProofMiddleware, verifier=EdgeProofVerifier(
+        SECRET, str(tmp_path / "replay.sqlite")))
+    with TestClient(app) as client:
+        with client.websocket_connect(path, headers=signed("GET", path, "e" * 32)) as socket:
+            assert socket.receive_text() == "ok"
+        forged = signed("GET", path, "f" * 32)
+        forged["x-padiem-edge-proof"] = "v1=" + "0" * 64
+        with pytest.raises(WebSocketDisconnect) as exc:
+            with client.websocket_connect(path, headers=forged):
+                pass
+        assert exc.value.code == 1008

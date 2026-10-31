@@ -28,3 +28,9 @@ test("missing TLS or key fails closed", async () => {
   await assert.rejects(signedRequestHeaders(bad, secret, options));
   await assert.rejects(signedRequestHeaders(request(), "short", options));
 });
+
+test("query is excluded from the v1 signature", async () => {
+  const a = await signedRequestHeaders(request("https://chat.padiem.net/api/search?q=1"), secret, options);
+  const b = await signedRequestHeaders(request("https://chat.padiem.net/api/search?q=2"), secret, options);
+  assert.equal(a.get("x-padiem-edge-proof"), b.get("x-padiem-edge-proof"));
+});
