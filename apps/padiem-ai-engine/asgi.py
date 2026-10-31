@@ -1,7 +1,9 @@
 """P01 Engine ASGI entrypoint for a host that has no Cloudflare Workers.
 
-``worker.py`` remains the Cloudflare Python Worker entrypoint and the production
-binding authority. This module is the second door for the same application:
+``worker_identity.py`` is the Cloudflare Python Worker entrypoint
+(``wrangler.toml`` ``main``) and the production binding authority. This module is
+the second door for the same application and dispatches through that same
+canonical entry:
 
     python3 -m uvicorn asgi:app --host 127.0.0.1 --port 8811
 
