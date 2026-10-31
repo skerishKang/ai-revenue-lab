@@ -17,7 +17,14 @@ class StagingConfigTest(unittest.TestCase):
         self.assertEqual(config["d1_databases"][0]["database_id"], DB)
         self.assertEqual(config["vars"]["PADIEM_CHAT_SHARED_LOGIN_ENABLED"], "true")
         self.assertEqual(config["vars"]["PC_QUEUE_BACKEND"], "d1")
-        self.assertFalse({"routes", "services", "r2_buckets", "secrets_store_secrets"} & config.keys())
+        self.assertEqual(config["vars"]["PADIEM_CHAT_SHARED_AUTH_CLIENT_ID"], "b62-staging")
+        self.assertEqual(config["vars"]["PADIEM_CHAT_PUBLIC_BASE_URL"], CHAT)
+        auth = tomllib.loads((Path(__file__).parents[2] / "padiem-auth/wrangler.toml").read_text(encoding="utf-8"))
+        import json
+        key = json.loads(auth["vars"]["PADIEM_AUTH_CLIENTS"])["b62-staging"]["jwks"]["keys"][0]
+        self.assertEqual(config["vars"]["PADIEM_CHAT_SHARED_AUTH_CLIENT_KID"], key["kid"])
+        self.assertEqual(config["services"], [{"binding": "IDENTITY_AUTHORITY_SERVICE", "service": "padiem-control-plane-identity"}])
+        self.assertFalse({"routes", "r2_buckets", "secrets_store_secrets"} & config.keys())
 
     def test_production_config_is_unchanged_and_login_defaults_off(self):
         manifest = Path(__file__).parents[1] / "wrangler.toml"

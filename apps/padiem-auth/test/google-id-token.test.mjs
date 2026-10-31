@@ -30,3 +30,16 @@ test('rejects altered signature and ambiguous keys', async () => {
   await assert.rejects(() => verifyGoogleIdToken({ ...args, token: parts.join('.') }));
   await assert.rejects(() => verifyGoogleIdToken({ ...args, jwks: { keys: [args.jwks.keys[0], args.jwks.keys[0]] } }));
 });
+
+test('profile is released only after signature and claim verification', async () => {
+  const claims = { email: 'test@example.invalid', email_verified: true, name: 'Test', picture: '' };
+  const args = await fixture(claims);
+  assert.deepEqual(await verifyGoogleIdToken({ ...args, profile: true }), {
+    sub: 'synthetic-sub', profile: claims,
+  });
+  assert.deepEqual(await verifyGoogleIdToken(args), { sub: 'synthetic-sub' });
+  const bad = await fixture({ ...claims, email_verified: false });
+  await assert.rejects(() => verifyGoogleIdToken({ ...bad, profile: true }));
+  const wrongNonce = await fixture({ ...claims, nonce: 'wrong' });
+  await assert.rejects(() => verifyGoogleIdToken({ ...wrongNonce, profile: true }));
+});

@@ -20,6 +20,10 @@ import secrets
 import sqlite3
 from datetime import datetime, timezone
 from pathlib import Path
+from types import SimpleNamespace
+from typing import Any
+
+import httpx
 
 from .app_factory import create_app
 from .b66_b14_free_first_resolver import B66ExplicitQuoteModelResolver
@@ -33,8 +37,17 @@ from .local_service_bridge import (
     LocalB66PdfRendererClient,
     compose_local_b14_transports,
 )
-from .maintenance_mode import MaintenanceModeMiddleware
+from .local_p01_engine import build_local_engine_client
+from .maintenance_mode import apply_write_freeze
+from .orchestration_composition import compose_orchestration_bridge
+from .orchestration_routes import install_orchestration_routes
 from .project_files import D1ProjectFileStore
+from .queue_store_proxy import (
+    QueueBackedPairingStore,
+    QueueBackedPresenceStore,
+    QueueForwardingHistoryStore,
+    build_queue_client,
+)
 from .saved_outputs import D1SavedOutputStore
 from .usage_gate import D1UsageCounterStore
 
@@ -93,6 +106,35 @@ def _ensure_session_secret(data_dir: Path) -> None:
     data_dir.mkdir(parents=True, exist_ok=True)
     secret_file.write_text(generated, encoding="utf-8")
     os.environ["PADIEM_CHAT_SESSION_SECRET"] = generated
+
+
+def compose_host_orchestration(
+    app: Any,
+    *,
+    env: Any,
+    settings: Settings,
+    db_binding: Any,
+    client: httpx.AsyncClient | None = None,
+) -> Any | None:
+    """Attach the Engine orchestration bridge to the CPython host.
+
+    This is the Worker's own composition (``orchestration_composition``); the
+    host's loopback transport is the only difference. It stays off unless all
+    three server-owned prerequisites are present, and its routes are installed
+    only together with a real bridge, so a host without them keeps today's
+    direct-B14 behaviour and its existing 404s.
+    """
+
+    bridge = compose_orchestration_bridge(
+        env=env,
+        settings=settings,
+        db_binding=db_binding,
+        build_client=lambda: build_local_engine_client(env, client=client)[0],
+    )
+    if bridge is None:
+        return None
+    install_orchestration_routes(app, bridge)
+    return bridge
 
 
 def build_app():
@@ -157,7 +199,16 @@ def build_app():
         LocalB66PdfRendererClient(pdf_origin, pdf_secret) if pdf_origin else None
     )
 
+    shared_login_flow = None
+    if os.getenv("PADIEM_CHAT_SHARED_LOGIN_ENABLED", "").strip().lower() == "true":
+        from .control_plane_identity_worker import CloudflareControlPlaneIdentityAuthority
+        from .cpython_shared_login import create_host_shared_login_flow
+        shared_authority = (CloudflareControlPlaneIdentityAuthority(identity_authority)
+                            if identity_authority is not None else None)
+        shared_login_flow = create_host_shared_login_flow(os.environ, shared_authority, settings.public_base_url)
+
     app = create_app(
+        shared_login_flow=shared_login_flow,
         settings=settings,
         history_store=D1HistoryStore(db, full_context_bucket=r2),
         d1_binding=db,
@@ -168,6 +219,17 @@ def build_app():
         control_plane_identity_authority=identity_authority,
         b66_pdf_renderer_client=pdf_renderer,
     )
+
+    queue_client = build_queue_client(_queue_env())
+    if queue_client is not None:
+        # The same three replacements worker.py performs when its env selects
+        # the queue. Production still defaults to D1; only a deployment that
+        # explicitly sets PC_QUEUE_BACKEND=com2 takes this path.
+        app.state.pc_device_pairing_store = QueueBackedPairingStore(queue_client)
+        app.state.mesh_device_presence_store = QueueBackedPresenceStore(queue_client)
+        app.state.history_store = QueueForwardingHistoryStore(
+            app.state.history_store, queue_client
+        )
 
     if settings.runtime_mode == "b14":
         # The same replacement worker.py performs when it composes the B14
@@ -186,12 +248,58 @@ def build_app():
         app.state.b66_quote_model_resolver = quote_model_resolver
         app.state.b14_model_choice_resolver = quote_model_resolver
 
-    sentinel = os.getenv("PADIEM_CHAT_MAINTENANCE_SENTINEL", "").strip()
-    if sentinel:
-        # Stage-3 window: reads keep working, mutations answer 503 until the
-        # sentinel file is removed. Wrapped outermost so the answer is the same
-        # whatever the request's origin or cookie state is.
-        app = MaintenanceModeMiddleware(app, sentinel_path=sentinel)
+    # This route is a separate, explicit COM2 staging activation. Cloudflare
+    # composition does not import this host-only module.
+    if os.getenv("PADIEM_COM2_CONNECTOR_GATEWAY_ENABLED", "").strip().lower() in {"1", "true"}:
+        if not host_flag:
+            raise ConfigError("COM2 connector gateway requires the CPython host")
+        from starlette.routing import WebSocketRoute
+        from com2_edge_proof import EdgeProofVerifier
+        from .com2_connector_websocket import (
+            LoopbackRpcBinding, _BROKER_METHODS, _IDENTITY_METHODS,
+            create_com2_gateway,
+        )
+        from .canonical_connector_gateway_source_composition import CONNECTOR_GATEWAY_WSS_PATH
+
+        def secret_file(name):
+            filename = os.getenv(name, "").strip()
+            if not filename:
+                raise ConfigError(f"{name} is required")
+            try:
+                return Path(filename).read_text(encoding="utf-8").strip()
+            except OSError as exc:
+                raise ConfigError(f"{name} is unreadable") from exc
+
+        replay_db = os.getenv("PADIEM_COM2_EDGE_REPLAY_DB", "").strip()
+        verifier = EdgeProofVerifier(secret_file("PADIEM_COM2_EDGE_SECRET_FILE"), replay_db)
+        identity = LoopbackRpcBinding(
+            port=8802, secret=secret_file("PADIEM_COM2_IDENTITY_RPC_SECRET_FILE"),
+            methods=_IDENTITY_METHODS,
+        )
+        broker = LoopbackRpcBinding(
+            port=8799, secret=secret_file("PADIEM_COM2_BROKER_RPC_SECRET_FILE"),
+            methods=_BROKER_METHODS,
+        )
+        gateway = create_com2_gateway(verifier=verifier, identity_binding=identity, broker_binding=broker)
+
+        async def connector_gateway(websocket):
+            await gateway(websocket.scope, websocket.receive, websocket.send)
+
+        app.router.routes.insert(0, WebSocketRoute(CONNECTOR_GATEWAY_WSS_PATH, connector_gateway))
+
+    # The Worker's orchestration bridge, over this host's loopback Engine
+    # transport (#5115 step ②). Off unless the same three server-owned switches
+    # are present; without them every chat route keeps the direct B14 path.
+    compose_host_orchestration(
+        app, env=os.environ, settings=settings, db_binding=db,
+    )
+
+    # The write window (#5573, #5115 step ③): reads keep working, mutations
+    # answer 503 while the sentinel file exists or the environment switch is on.
+    # Wrapped outermost so the answer never depends on origin or cookie state,
+    # and applied after every ``app.state`` assignment above so callers keep a
+    # Starlette application to attach state to.
+    app = apply_write_freeze(app)
     return app
 
 
@@ -203,3 +311,35 @@ def _optional_pair(origin_env: str, secret_env: str) -> tuple[str | None, str | 
     if not origin or not secret:
         raise ConfigError(f"{origin_env} and {secret_env} must be set together")
     return origin, secret
+
+
+def _queue_service_secret() -> str:
+    """The queue secret value, preferably read from the staging file path.
+
+    The COM2 staging queue keeps its service secret in a root-owned file. The
+    deployment names that path, not the value; this reads it only when the
+    queue is switched on. The value is never logged or written back out.
+    """
+
+    direct = os.getenv("PC_QUEUE_SERVICE_SECRET", "").strip()
+    if direct:
+        return direct
+    path = os.getenv("PC_QUEUE_SERVICE_SECRET_FILE", "").strip()
+    if not path:
+        return ""
+    try:
+        return Path(path).read_text(encoding="utf-8").strip()
+    except OSError as exc:
+        raise ConfigError("PC_QUEUE_SERVICE_SECRET_FILE is unreadable") from exc
+
+
+def _queue_env() -> SimpleNamespace:
+    backend = os.getenv("PC_QUEUE_BACKEND", "").strip().lower()
+    return SimpleNamespace(
+        PC_QUEUE_BACKEND=backend,
+        PC_QUEUE_ORIGIN=os.getenv("PC_QUEUE_ORIGIN"),
+        PC_QUEUE_SERVICE_SECRET=_queue_service_secret() if backend == "com2" else "",
+        PADIEM_CHAT_QUEUE_ALLOW_LOOPBACK_HTTP=os.getenv(
+            "PADIEM_CHAT_QUEUE_ALLOW_LOOPBACK_HTTP"
+        ),
+    )

@@ -325,8 +325,8 @@ def test_identity_fetch_is_absent_without_the_secret_and_gated_with_it():
     assert json.loads(response.body)["ok"] is True
     assert stub.calls and stub.calls[0][0] == "resolve_or_create_product_link"
 
-    # The unlisted and tenant methods stay unreachable through HTTPS.
-    for name in ("create_tenant", "issue_google_connect_ticket", "install_connector_enrollment_schema"):
+    # The two methods with no identified COM2 caller remain unreachable.
+    for name in ("get_tenant", "revoke_tenant_membership"):
         denied = _run(default.fetch(_signed_request(method=name, at=int(__import__("time").time()))))
         assert denied.status == 404, name
 
@@ -358,3 +358,36 @@ def test_google_state_fetch_exposes_only_workspace_connector_state():
     for name in ("begin_connect", "complete_callback", "issue_access_lease", "disconnect_drive"):
         assert _run(default.fetch(_signed_request(method=name, at=int(__import__("time").time())))).status == 404, name
     assert isinstance(_run(default.workspace_connector_state({"workspace_ref": "w"})), dict)
+
+
+def test_com2_required_identity_methods_require_valid_service_proof():
+    module = _load_worker(
+        ADAPTER_ROOT / "identity_authority_worker.py", "identity_worker_com2_ingress_test"
+    )
+    stub = _Stub({"ok": True})
+    env = _env(CONTROL_PLANE_IDENTITY=_Namespace(stub),
+               PADIEM_IDENTITY_RPC_INGRESS_SECRET=SECRET)
+    worker = module.Default(env=env)
+    methods = {
+        "issue_google_connect_ticket", "create_tenant",
+        "assign_tenant_membership", "resolve_active_memberships",
+        "resolve_active_tenant_membership", "install_connector_enrollment_schema",
+        "resolve_connector_owner_scope", "grant_connector_enrollment_consent",
+        "revoke_connector_enrollment_consent",
+        "resolve_connector_enrollment_consent_for_device",
+        "bind_connector_enrollment_challenge",
+        "authorize_connector_enrollment_redeem",
+    }
+    assert methods <= module.IDENTITY_RPC_INGRESS_METHODS
+    for name in sorted(methods):
+        now = int(__import__("time").time())
+        path = "/internal/rpc/" + name
+        before = len(stub.calls)
+        missing = _Request("https://identity.invalid" + path, headers={}, body=b"{}")
+        assert _run(worker.fetch(missing)).status == 403
+        wrong = _signed_request(method=name, body=b"{}", at=now, secret="wrong-secret")
+        assert _run(worker.fetch(wrong)).status == 403
+        assert len(stub.calls) == before
+        valid = _signed_request(method=name, body=b"{}", at=now)
+        assert _run(worker.fetch(valid)).status == 200
+        assert stub.calls[-1] == (name, {})
