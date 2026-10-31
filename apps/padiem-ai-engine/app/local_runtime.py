@@ -24,6 +24,7 @@ is absent, the composition is the unbound one, and every model route refuses.
 
 from __future__ import annotations
 
+import asyncio
 import os
 import sys
 import types
@@ -33,11 +34,18 @@ from urllib.parse import urlsplit
 
 import httpx
 
+from app.local_sqlite_d1 import (
+    LocalSqliteD1,
+    apply_engine_migrations,
+    connect_local_database,
+)
+
 LOCAL_DEV_ENV = "PADIEM_LOCAL_DEV"
 HOST_ENV = "PADIEM_ENGINE_CPYTHON_HOST"
 BIND_HOST_ENV = "P01_HOST"
 BIND_PORT_ENV = "P01_PORT"
 B14_ORIGIN_ENV = "PADIEM_ENGINE_LOCAL_B14_ORIGIN"
+DB_PATH_ENV = "PADIEM_ENGINE_LOCAL_DB"
 DEFAULT_HOST = "127.0.0.1"
 DEFAULT_PORT = 8811
 LOOPBACK_HOSTS = frozenset({"127.0.0.1", "localhost", "::1"})
@@ -117,6 +125,12 @@ class LocalResponse:
     """``workers.Response`` stand-in: one status, headers and a byte body."""
 
     def __init__(self, body: Any = b"", *, status: int = 200, headers: Mapping[str, str] | None = None) -> None:
+        if isinstance(body, LocalReadableStream):
+            # The NDJSON builder hands a stream, not a frame; keep it opaque.
+            self.body = body
+            self.status = int(status)
+            self.headers = dict(headers or {})
+            return
         if isinstance(body, str):
             body = body.encode("utf-8")
         elif not isinstance(body, (bytes, bytearray)):
@@ -134,6 +148,80 @@ class WorkerEntrypoint:
         self.env = env
 
 
+class _StreamController:
+    """The ``controller`` the Worker's ``pull`` callback receives."""
+
+    def __init__(self) -> None:
+        self.chunks: list[bytes] = []
+        self.closed = False
+        self.failed = False
+
+    def enqueue(self, chunk: Any) -> None:
+        if isinstance(chunk, str):
+            chunk = chunk.encode("utf-8")
+        self.chunks.append(bytes(chunk))
+
+    def close(self) -> None:
+        self.closed = True
+
+    def error(self, _reason: Any = None) -> None:
+        self.failed = True
+        self.closed = True
+
+
+class LocalReadableStream:
+    """``js.ReadableStream`` stand-in the Worker's NDJSON adapter fills.
+
+    ``worker._ndjson_response`` is reused unchanged: it builds this object with
+    its own ``pull``/``cancel`` callbacks, and the ASGI adapter below pumps it
+    one chunk at a time. Nothing is buffered, so a client sees each line as the
+    Core produced it.
+    """
+
+    def __init__(self, source: Any = None) -> None:
+        self._source = source if isinstance(source, dict) else {}
+        self._finished = False
+
+    async def pump(self, emit: Any) -> None:
+        while True:
+            controller = _StreamController()
+            await self._source["pull"](controller)
+            if controller.failed:
+                raise LocalRuntimeError("stream_adapter_failed")
+            for chunk in controller.chunks:
+                await emit(chunk)
+            if controller.closed:
+                self._finished = True
+                return
+
+    async def cancel(self, reason: Any = None) -> None:
+        self._finished = True
+        cancel = self._source.get("cancel")
+        if callable(cancel):
+            await cancel(reason)
+
+
+class _TextEncoder:
+    def encode(self, text: Any) -> bytes:
+        return str(text).encode("utf-8")
+
+
+class _TextEncoderFactory:
+    """``js.TextEncoder``: the Worker calls ``TextEncoder.new()``."""
+
+    @staticmethod
+    def new() -> _TextEncoder:
+        return _TextEncoder()
+
+
+class _ReadableStreamFactory:
+    """``js.ReadableStream``: the Worker calls ``ReadableStream.new(source)``."""
+
+    @staticmethod
+    def new(source: Any = None) -> LocalReadableStream:
+        return LocalReadableStream(source)
+
+
 def install_worker_shims() -> None:
     """Register the Cloudflare runtime stand-in only when it is not installed."""
 
@@ -149,6 +237,25 @@ def install_worker_shims() -> None:
     module.WorkerEntrypoint = WorkerEntrypoint
     module.__doc__ = "Local CPython stand-in for the Cloudflare Workers runtime."
     sys.modules["workers"] = module
+    # ``worker._ndjson_response`` reaches for the JavaScript stream primitives so
+    # the Worker can return a ReadableStream. On the host the same function is
+    # reused with a pull/pump stream and identity proxies; no NDJSON logic is
+    # restated, and a Worker response is never buffered into one body.
+    js = sys.modules.get("js")
+    if js is None:
+        js = types.ModuleType("js")
+        js.__doc__ = "Local CPython stand-in for the JavaScript globals."
+        sys.modules["js"] = js
+    js.TextEncoder = _TextEncoderFactory
+    js.ReadableStream = _ReadableStreamFactory
+    if "pyodide" not in sys.modules:
+        pyodide = types.ModuleType("pyodide")
+        ffi = types.ModuleType("pyodide.ffi")
+        ffi.create_proxy = lambda value: value
+        ffi.to_js = lambda value: value
+        pyodide.ffi = ffi
+        sys.modules["pyodide"] = pyodide
+        sys.modules["pyodide.ffi"] = ffi
 
 
 class _EnvironmentMap:
@@ -245,9 +352,28 @@ def _local_bindings(values: Mapping[str, str]) -> dict[str, Any]:
     origin = str(values.get(B14_ORIGIN_ENV, "")).strip()
     if origin:
         bindings["B14_SERVICE"] = LocalB14Binding(origin)
-    # ENGINE_IDEMPOTENCY stays absent: the durable replay lane requires a real
-    # store, and the Worker's unbound shape is the truthful host answer.
+    path = str(values.get(DB_PATH_ENV, "")).strip()
+    if path:
+        bindings["ENGINE_IDEMPOTENCY"] = _local_database(path)
+    # Without a configured path the binding stays absent, so every durable lane
+    # keeps the Worker's own fail-closed answer instead of a process-local fake.
     return bindings
+
+
+_DATABASES: dict[str, LocalSqliteD1] = {}
+
+
+def _local_database(path: str) -> LocalSqliteD1:
+    """One migrated Engine database per process, keyed by its own path."""
+
+    existing = _DATABASES.get(path)
+    if existing is not None:
+        return existing
+    connection = connect_local_database(path)
+    apply_engine_migrations(connection)
+    binding = LocalSqliteD1(connection)
+    _DATABASES[path] = binding
+    return binding
 
 
 def _env_view(values: Mapping[str, str]) -> Any:
@@ -290,25 +416,28 @@ class LocalEngineApp:
         request = LocalRequest(url, method=method, headers=headers, body=body)
         response = await self.entry.fetch(request)
         raw = getattr(response, "body", None)
+        status = int(getattr(response, "status", 200))
+        headers = {
+            str(name).lower(): str(value)
+            for name, value in dict(getattr(response, "headers", {}) or {}).items()
+        }
+        if isinstance(raw, LocalReadableStream):
+            # The Worker's own ``_ndjson_response`` produced this stream; forward
+            # each line the moment it exists instead of collecting the body.
+            await _send_stream(send, receive, status, headers, raw)
+            return
         if not isinstance(raw, (bytes, bytearray)):
-            # An NDJSON stream lives on the Workers runtime; the host refuses it
-            # rather than pretending a buffered body is a stream.
             await _send_response(
                 send,
                 503,
                 {"content-type": "application/json; charset=utf-8"},
                 b'{"ok":false,"error":{"code":"engine_stream_not_supported_on_host",'
-                b'"message":"Engine streaming is not available on the CPython host.",'
+                b'"message":"Engine response body is not a host-readable frame.",'
                 b'"retryable":false,"metadata":null}}',
             )
             return
         _check_response_size(len(raw))
-        await _send_response(
-            send,
-            int(getattr(response, "status", 200)),
-            {str(k).lower(): str(v) for k, v in dict(getattr(response, "headers", {}) or {}).items()},
-            bytes(raw),
-        )
+        await _send_response(send, status, headers, bytes(raw))
 
 
 def _check_response_size(size: int) -> None:
@@ -330,6 +459,54 @@ async def _read_asgi_body(receive: Any) -> tuple[bytes, bool]:
         if not message.get("more_body", False):
             break
     return bytes(chunks), False
+
+
+async def _send_stream(
+    send: Any,
+    receive: Any,
+    status: int,
+    headers: Mapping[str, str],
+    stream: LocalReadableStream,
+) -> None:
+    """Pump one Worker ReadableStream into ASGI, one chunk at a time."""
+
+    encoded = [
+        (str(name).lower().encode("latin-1"), str(value).encode("latin-1"))
+        for name, value in headers.items()
+    ]
+    if not any(name == b"content-length" for name, _ in encoded):
+        encoded.append((b"transfer-encoding", b"chunked"))
+    await send({"type": "http.response.start", "status": status, "headers": encoded})
+    disconnected = asyncio.Event()
+
+    async def watch_disconnect() -> None:
+        while True:
+            message = await receive()
+            if message.get("type") == "http.disconnect":
+                disconnected.set()
+                return
+
+    async def emit(chunk: bytes) -> None:
+        if disconnected.is_set():
+            raise LocalRuntimeError("client_disconnected")
+        await send({"type": "http.response.body", "body": chunk, "more_body": True})
+
+    watcher = asyncio.create_task(watch_disconnect())
+    try:
+        await stream.pump(emit)
+    except BaseException:
+        # Close the Core generator so a broken or abandoned response leaves no
+        # work running; a real failure is re-raised so the connection aborts
+        # instead of looking like a complete answer.
+        await stream.cancel()
+        if disconnected.is_set():
+            return
+        raise
+    else:
+        if not disconnected.is_set():
+            await send({"type": "http.response.body", "body": b"", "more_body": False})
+    finally:
+        watcher.cancel()
 
 
 async def _send_response(send: Any, status: int, headers: Mapping[str, str], body: bytes) -> None:
@@ -374,8 +551,10 @@ __all__ = [
     "HOST_ENV",
     "LOCAL_DEV_ENV",
     "LOOPBACK_HOSTS",
+    "DB_PATH_ENV",
     "LocalB14Binding",
     "LocalEngineApp",
+    "LocalReadableStream",
     "LocalRequest",
     "LocalResponse",
     "LocalRuntimeError",
