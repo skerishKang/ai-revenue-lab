@@ -204,6 +204,45 @@ def build_app():
         app.state.b66_quote_model_resolver = quote_model_resolver
         app.state.b14_model_choice_resolver = quote_model_resolver
 
+    # This route is a separate, explicit COM2 staging activation. Cloudflare
+    # composition does not import this host-only module.
+    if os.getenv("PADIEM_COM2_CONNECTOR_GATEWAY_ENABLED", "").strip().lower() in {"1", "true"}:
+        if not host_flag:
+            raise ConfigError("COM2 connector gateway requires the CPython host")
+        from starlette.routing import WebSocketRoute
+        from com2_edge_proof import EdgeProofVerifier
+        from .com2_connector_websocket import (
+            LoopbackRpcBinding, _BROKER_METHODS, _IDENTITY_METHODS,
+            create_com2_gateway,
+        )
+        from .canonical_connector_gateway_source_composition import CONNECTOR_GATEWAY_WSS_PATH
+
+        def secret_file(name):
+            filename = os.getenv(name, "").strip()
+            if not filename:
+                raise ConfigError(f"{name} is required")
+            try:
+                return Path(filename).read_text(encoding="utf-8").strip()
+            except OSError as exc:
+                raise ConfigError(f"{name} is unreadable") from exc
+
+        replay_db = os.getenv("PADIEM_COM2_EDGE_REPLAY_DB", "").strip()
+        verifier = EdgeProofVerifier(secret_file("PADIEM_COM2_EDGE_SECRET_FILE"), replay_db)
+        identity = LoopbackRpcBinding(
+            port=8802, secret=secret_file("PADIEM_COM2_IDENTITY_RPC_SECRET_FILE"),
+            methods=_IDENTITY_METHODS,
+        )
+        broker = LoopbackRpcBinding(
+            port=8799, secret=secret_file("PADIEM_COM2_BROKER_RPC_SECRET_FILE"),
+            methods=_BROKER_METHODS,
+        )
+        gateway = create_com2_gateway(verifier=verifier, identity_binding=identity, broker_binding=broker)
+
+        async def connector_gateway(websocket):
+            await gateway(websocket.scope, websocket.receive, websocket.send)
+
+        app.router.routes.insert(0, WebSocketRoute(CONNECTOR_GATEWAY_WSS_PATH, connector_gateway))
+
     # The write window (#5573, #5115 step ③): reads keep working, mutations
     # answer 503 while the sentinel file exists or the environment switch is on.
     # Wrapped outermost so the answer never depends on origin or cookie state,

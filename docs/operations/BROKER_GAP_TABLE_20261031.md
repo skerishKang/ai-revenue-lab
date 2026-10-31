@@ -12,3 +12,20 @@ Scope: broker Stage 2-C at main 094d9430f. These classifications concern impleme
 | 24h shadow comparison record | MISSING | apps/padiem-broker has no shadow runner or 24-hour discrepancy ledger | Existing test_differential_parity.py:143 is local synthetic comparison; no live 100% read-shadow result or 24-hour evidence. |
 
 Counts: PRESENT 1 (local implementation/test scope) / PARTIAL 4 / MISSING 1. Earlier synthetic differential tests instantiate BrokerComposition on both sides (test_differential_parity.py:94); the new test exercises LocalAgentBrokerDurableObject with fake Workers base and storage. Neither is a running Cloudflare DO. Stage A/B deployment, production writes and live traffic are outside this PR.
+
+
+## COM2 WebSocket and identity evidence (follow-up)
+
+The COM2-only, default-off Chat host gateway verifies the edge HMAC and durable
+replay ID before treating a loopback socket as WSS. Its private service-proof
+RPC bindings are restricted to 127.0.0.1 ports 8799 (broker) and 8802 (identity)
+and the pairing method allowlists. The edge signer is still a separate release
+dependency: the trusted edge must strip client proof headers before signing.
+
+A real loopback socket test exercises begin/finish, a disconnect, a
+security-hold terminal close, and missing, forged and replayed proofs. It does
+not establish a complete successful credential install or live-device pairing.
+The identity differential suite now exercises the twelve allowed methods'
+successful results as well as rejected envelopes against the DO class and the
+COM2 SQLite-backed HTTP ingress. This is local test evidence; no live COM2
+service, Cloudflare runtime, edge signer or real device was operated.
