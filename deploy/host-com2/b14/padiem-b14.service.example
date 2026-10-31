@@ -29,7 +29,8 @@ EnvironmentFile=-/opt/padiem/b14/env/b14.env
 Environment=B14_HOST=127.0.0.1
 Environment=B14_PORT=8789
 Environment=B14_CALL_LEDGER_PATH=/opt/padiem/b14/ledger/b14-call-ledger.db
-Environment=B14_SECRET_DIR=/opt/padiem/b14/secrets
+Environment=B14_SECRET_DIR=/var/lib/padiem-b14/b14-secrets
+Environment=B14_REGISTRY_PATH=/var/lib/padiem-b14/b14-registry/b14_models.json
 # Structure logs go to stdout and are collected by journald. To keep a rotated
 # file as well, install 20-log-to-file.conf.example as a drop-in; the matching
 # rotation policy is logrotate.conf.example. This unit declares no log path the
@@ -45,6 +46,10 @@ PrivateTmp=yes
 ProtectSystem=strict
 ProtectHome=yes
 ReadWritePaths=/opt/padiem/b14/ledger /opt/padiem/b14/logs
+# b14-secrets holds one 0600 file per credential name; b14-registry holds the
+# one registry file this deployment reads. The checkout stays read-only.
+StateDirectory=padiem-b14/b14-secrets padiem-b14/b14-registry
+StateDirectoryMode=0700
 LimitNOFILE=8192
 UMask=0077
 

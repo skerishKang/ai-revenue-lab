@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>새 공급사 등록 — COM2</title>
+<link rel="stylesheet" href="/static/com2-admin.css?v=2107-1">
+</head>
+<body class="com2-admin">
+<header>
+  <h1>새 공급사 등록</h1>
+  <p class="admin-sub">
+    순서대로 ① 공급사 ② Base URL ③ 시크릿 이름 ④ 키 값 ⑤ 모델과 가격 ⑥ 연결 테스트 ⑦ 저장합니다.
+    하나의 시크릿 이름을 그 공급사의 여러 모델이 함께 씁니다. Python 코드 수정은 필요 없습니다.
+    <a href="{{ secrets_path }}">시크릿 목록</a>
+  </p>
+</header>
+
+{% if notice == "provider_saved" %}
+<div class="admin-callout ok" role="status"><strong>저장했습니다.</strong> <code>{{ models }}</code></div>
+{% elif notice == "test" %}
+  {% if test == "connection_ok" %}
+  <div class="admin-callout ok" role="status"><strong>연결 성공.</strong> 공급사가 보고한 모델 id: <code>{{ models }}</code></div>
+  {% elif test == "key_rejected" %}
+  <div class="admin-callout bad" role="alert"><strong>키가 거부되었습니다(401/403).</strong> 값·시크릿 이름·과금 상태를 확인하세요. 원인은 저장된 값 자체이며 이 화면은 값을 보여주지 않습니다.</div>
+  {% elif test == "no_credential" %}
+  <div class="admin-callout warn" role="alert"><strong>쓸 수 있는 값이 없습니다.</strong> 시크릿 이름과 값을 먼저 저장하세요.</div>
+  {% elif test == "unreachable" %}
+  <div class="admin-callout bad" role="alert"><strong>공급사에 도달하지 못했습니다.</strong> Base URL·네트워크·TLS를 확인하세요.</div>
+  {% elif test == "unexpected_response" %}
+  <div class="admin-callout bad" role="alert"><strong>예상 못 한 응답.</strong> <code>/models</code>가 200과 모델 목록을 돌려주지 않았습니다. OpenAI 호환 엔드포인트인지 확인하세요.</div>
+  {% elif test == "unknown_provider" %}
+  <div class="admin-callout warn" role="alert"><strong>등록되지 않은 공급사 id입니다.</strong> 저장을 먼저 하거나, 직접 입력한 Base URL로 테스트하세요.</div>
+  {% endif %}
+{% elif reason %}
+<div class="admin-callout bad" role="alert"><strong>저장하지 않았습니다.</strong> {{ reason_text }} <code>{{ reason }}</code></div>
+{% endif %}
+
+<h2>1 · 공급사와 자격증명</h2>
+<form class="admin-panel" method="post" action="{{ provider_save_path }}">
+  <input type="hidden" name="csrf_token" value="{{ request.state.csrf_token }}">
+  <div class="admin-grid">
+    <div>
+      <label for="provider_id">공급사 id</label>
+      <input id="provider_id" name="provider_id" required pattern="[a-z0-9][a-z0-9._:/-]{0,63}"
+             autocapitalize="none" spellcheck="false" placeholder="yeta">
+      <span class="admin-hint">모델 id 앞에 붙는 이름입니다(예: <code>yeta/deepseek-v4.1-flash</code>).</span>
+    </div>
+    <div>
+      <label for="provider_name">표시 이름</label>
+      <input id="provider_name" name="provider_name" required placeholder="Yeta">
+    </div>
+    <div>
+      <label for="base_origin">API Base URL</label>
+      <input id="base_origin" name="base_origin" required
+             inputmode="url" spellcheck="false" placeholder="https://platform.yeta.ai/v1">
+      <span class="admin-hint">https, 계정·쿼리·프래그먼트 없음, 사내 주소 거부. 어댑터는 이 고정 출처로만 호출합니다.</span>
+    </div>
+    <div>
+      <label for="allowed_hosts">허용 호스트(선택)</label>
+      <input id="allowed_hosts" name="allowed_hosts" spellcheck="false"
+             placeholder="platform.yeta.ai">
+      <span class="admin-hint">비워 두면 Base URL의 호스트가 그대로 허용 목록이 됩니다.</span>
+    </div>
+    <div>
+      <label for="credential_binding_name">시크릿 이름</label>
+      <input id="credential_binding_name" name="credential_binding_name" required
+             pattern="[A-Z][A-Z0-9_]{2,63}" autocapitalize="characters" spellcheck="false"
+             placeholder="YETA_API_KEY">
+      <span class="admin-hint">Cloudflare에 이미 선언된 이름은 새 공급사에 쓸 수 없습니다(같은 이름 다른 값 방지).</span>
+    </div>
+    <div>
+      <label for="value">API 키 값(이 호스트에만 저장)</label>
+      <input id="value" name="value" type="password"
+             spellcheck="false" autocomplete="off" autocorrect="off">
+      <span class="admin-hint">비워 두면 이미 저장된 같은 이름을 그대로 사용합니다. 값은 다시 표시되지 않습니다.</span>
+    </div>
+  </div>
+
+  <h2>2 · 모델과 가격</h2>
+  <div class="admin-grid">
+    <div>
+      <label for="upstream_models">모델 id(쉼표로 여러 개)</label>
+      <textarea id="upstream_models" name="upstream_models" rows="3" required
+                spellcheck="false" placeholder="deepseek-v4.1-flash,glm-5.3-flash"></textarea>
+      <span class="admin-hint">위 시크릿 이름 하나를 이 목록 전체가 공유합니다.</span>
+    </div>
+    <div>
+      <label for="prices">가격 USD / 1M 토큰 (입력,출력,캐시입력)</label>
+      <input id="prices" name="input_price_usd_per_1m" placeholder="0.08,0.08">
+      <input class="spaced" name="output_price_usd_per_1m" placeholder="0.35,0.42">
+      <input class="spaced" name="cached_input_price_usd_per_1m" placeholder="0.01,0.03">
+      <span class="admin-hint">모델 순서대로 쉼표로 나열합니다. 캐시 입력은 현재 레지스트리에 열이 없어 출처 기록에 함께 남습니다.</span>
+    </div>
+    <div>
+      <label for="context_window">컨텍스트 창</label>
+      <input id="context_window" name="context_window" placeholder="1000000,262000">
+      <span class="admin-hint">화면에 표시된 값을 적습니다. 이 값은 카탈로그 표시용이며 요청 크기를 제한하지 않습니다.</span>
+    </div>
+    <div>
+      <label for="capabilities">capability(쉼표)</label>
+      <input id="capabilities" name="capabilities" value="chat">
+      <span class="admin-hint">chat은 필수. tool·image는 공급사에서 확인된 뒤 추가하세요(미확인 표기는 도구 호출을 조용히 끄지 않습니다).</span>
+    </div>
+    <div>
+      <label for="source">출처 URL</label>
+      <input id="source" name="source" required inputmode="url" spellcheck="false"
+             placeholder="https://platform.yeta.ai/ 계정 Models 화면">
+    </div>
+    <div>
+      <label for="source_checked_at">확인일</label>
+      <input id="source_checked_at" name="source_checked_at" required pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}"
+             placeholder="2026-10-27">
+      <span class="admin-hint">통화·과금 단위는 USD·1M 토큰으로 고정 기록됩니다.</span>
+    </div>
+  </div>
+
+  <div class="admin-row-actions">
+    <input type="submit" value="저장 완료">
+  </div>
+</form>
+
+<h2>연결 테스트</h2>
+<form class="admin-panel" method="post" action="{{ provider_test_path }}">
+  <input type="hidden" name="csrf_token" value="{{ request.state.csrf_token }}">
+  <div class="admin-grid">
+    <div>
+      <label for="test_provider_id">이미 등록한 공급사 id</label>
+      <input id="test_provider_id" name="provider_id" list="known_providers" spellcheck="false"
+             placeholder="yeta">
+      <datalist id="known_providers">
+        {% for provider in providers %}<option value="{{ provider.id }}">{% endfor %}
+      </datalist>
+    </div>
+    <div>
+      <label for="test_origin">또는 저장하기 전 Base URL 직접 확인</label>
+      <input id="test_origin" name="base_origin" inputmode="url" spellcheck="false"
+             placeholder="https://platform.yeta.ai/v1">
+      <span class="admin-hint">직접 입력한 주소는 공급사 주소와 같은 규칙(https·비공개 주소 거부)으로 검증한 뒤 <code>/models</code>만 호출합니다.</span>
+    </div>
+    <div>
+      <label for="test_name">직접 입력 시 사용할 시크릿 이름</label>
+      <input id="test_name" name="credential_binding_name" pattern="[A-Z][A-Z0-9_]{2,63}"
+             autocapitalize="characters" spellcheck="false" placeholder="YETA_API_KEY">
+    </div>
+  </div>
+  <p><button type="submit">테스트</button></p>
+</form>
+
+<h2>현재 공급사</h2>
+<div class="admin-panel">
+<table>
+  <thead><tr><th scope="col">id</th><th scope="col">시크릿 이름</th><th scope="col">Base URL</th><th scope="col">연결 모델</th></tr></thead>
+  <tbody>
+  {% for provider in providers %}
+    <tr>
+      <td data-label="id"><code>{{ provider.id }}</code></td>
+      <td data-label="시크릿 이름"><code>{{ provider.credential }}</code></td>
+      <td data-label="Base URL"><code>{{ provider.origin }}</code></td>
+      <td data-label="연결 모델"><span class="models">{{ provider.models|length }}개</span></td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+</body>
+</html>
