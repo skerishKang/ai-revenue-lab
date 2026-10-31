@@ -29,6 +29,8 @@ from pathlib import Path
 import pytest
 import uvicorn
 
+from _host_b14_proof import TEST_SECRET, reject_invalid_proof
+
 REPO = Path(__file__).resolve().parents[3]
 ENGINE_DIR = REPO / "apps" / "padiem-ai-engine"
 CALLER_ID = "b62-chat"
@@ -37,7 +39,7 @@ ANSWER = "합성 답변"
 
 
 def _child_path() -> str:
-    return ";".join(
+    return os.pathsep.join(
         str(path)
         for path in (
             ENGINE_DIR,
@@ -94,6 +96,8 @@ class _B14:
             body += message.get("body", b"")
             if not message.get("more_body"):
                 break
+        if await reject_invalid_proof(scope, body, send):
+            return
         self.calls.append(scope["path"])
         streaming = scope["path"].endswith("stream-preview")
         if streaming:
@@ -196,8 +200,10 @@ def engine_host(tmp_path_factory):
     _serve(b14, b14_port)
     engine_port = _free_port()
     env = dict(os.environ)
+    env.pop("B14_SECRET_DIR", None)
     env.update(
         {
+            "PADIEM_B14_SERVICE_PROOF_SECRET": TEST_SECRET,
             "PADIEM_ENGINE_CPYTHON_HOST": "1",
             "P01_HOST": "127.0.0.1",
             "P01_PORT": str(engine_port),
