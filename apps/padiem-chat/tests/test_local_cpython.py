@@ -314,3 +314,90 @@ def test_local_boot_signed_in_chat_lane_end_to_end(local_client):
     assert detail.status_code == 200
     contents = [row["content"] for row in detail.json()["conversation"]["messages"]]
     assert any("로컬 CPython 기동 확인" in text for text in contents)
+
+
+@pytest.mark.asyncio
+async def test_cpython_shared_login_es256_wire_and_existing_verifier(monkeypatch):
+    import base64
+    from pathlib import Path
+    from cryptography.hazmat.primitives import hashes
+    from cryptography.hazmat.primitives.asymmetric import ec
+    from cryptography.hazmat.primitives.asymmetric.utils import encode_dss_signature
+    from app.cpython_shared_login import NativeES256Signer, NativeTokenVerifier
+    from app.shared_auth_compare_flow import ComparisonFlow
+    def b64num(value):
+        return base64.urlsafe_b64encode(value.to_bytes(32, 'big')).rstrip(b'=').decode()
+    # Well-known P-256 generator is a synthetic test key, not an installed credential.
+    jwk = {'kty':'EC', 'crv':'P-256', 'd':b64num(1),
+           'x':b64num(0x6b17d1f2e12c4247f8bce6e563a440f277037d812deb33a0f4a13945d898c296),
+           'y':b64num(0x4fe342e2fe1a7f9b8ee7eb4a7c0f9e162bce33576b315ececbb6406837bf51f5)}
+    signer = NativeES256Signer()
+    flow = ComparisonFlow(state_key=b'x'*32, client_id='b62-staging', client_jwk=jwk, kid='synthetic',
+        operator_guard=lambda r:True, legacy_user=lambda r:None, comparator=lambda *a:None,
+        exchange=lambda *a:None, crypto=signer, clock=lambda:1000)
+    assertion = await flow._assertion(1000)
+    head, body, sig = assertion.split('.')
+    decode = lambda x: base64.urlsafe_b64decode(x + '=' * (-len(x) % 4))
+    assert json.loads(decode(head)) == {'alg':'ES256','kid':'synthetic'}
+    assert json.loads(decode(body))['iss'] == 'b62-staging'
+    raw = decode(sig)
+    assert len(raw) == 64
+    with pytest.raises(ValueError):
+        await signer.sign({**jwk, 'x': b64num(2)}, b'test')
+    public = ec.EllipticCurvePublicNumbers(int.from_bytes(decode(jwk['x']),'big'), int.from_bytes(decode(jwk['y']),'big'), ec.SECP256R1()).public_key()
+    public.verify(encode_dss_signature(int.from_bytes(raw[:32],'big'), int.from_bytes(raw[32:],'big')), (head+'.'+body).encode(), ec.ECDSA(hashes.SHA256()))
+    monkeypatch.syspath_prepend(str(Path(__file__).resolve().parents[3] / 'packages/padiem-auth-verify'))
+    import importlib.util, sys
+    spec = importlib.util.spec_from_file_location('padiem_auth_verify', Path(__file__).resolve().parents[3] / 'packages/padiem-auth-verify/verify.py')
+    module = importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
+    monkeypatch.setitem(sys.modules, 'padiem_auth_verify', module)
+    vector = json.loads((Path(__file__).resolve().parents[3] / 'packages/padiem-auth-verify/tests/vectors.json').read_text(encoding='utf-8'))
+    verifier = NativeTokenVerifier(vector['audience'])
+    verifier._verifier.fetcher = lambda: vector['jwks']
+    verifier._verifier.clock = lambda: vector['now']
+    assert (await verifier.verify(vector['tokens']['valid']))['accountId'] == 'sub_existing'
+    with pytest.raises(Exception):
+        await verifier.verify(vector['tokens']['forged'])
+
+
+def test_shared_login_host_switch_and_real_configuration(staging_host_env, monkeypatch, capsys):
+    import base64, sys, importlib.util
+    from pathlib import Path
+    monkeypatch.delenv('PADIEM_CHAT_SHARED_LOGIN_ENABLED', raising=False)
+    app = build_app()
+    assert '/auth/shared/start' not in [getattr(r, 'path', None) for r in app.routes]
+    monkeypatch.setenv('PADIEM_CHAT_SHARED_LOGIN_ENABLED', 'true')
+    monkeypatch.setenv('PADIEM_CHAT_LOCAL_IDENTITY_RPC_ORIGIN', 'https://identity.example')
+    monkeypatch.setenv('PADIEM_CHAT_LOCAL_IDENTITY_RPC_SECRET', 'synthetic-identity-secret-0123456789')
+    monkeypatch.setenv('PADIEM_CHAT_SHARED_AUTH_CLIENT_ID', 'b62-staging')
+    monkeypatch.setenv('PADIEM_CHAT_SHARED_AUTH_CLIENT_KID', 'synthetic')
+    key = staging_host_env / 'jwk.json'
+    state = staging_host_env / 'state.txt'
+    key.write_text(json.dumps({'kty':'EC','crv':'P-256','x':'x','y':'y','d':'d'}), encoding='utf-8')
+    state.write_text(base64.urlsafe_b64encode(b'x'*32).rstrip(b'=').decode(), encoding='utf-8')
+    monkeypatch.setenv('PADIEM_CHAT_SHARED_AUTH_CLIENT_PRIVATE_JWK_FILE', str(key))
+    monkeypatch.setenv('PADIEM_CHAT_SHARED_AUTH_COMPARE_STATE_KEY_FILE', str(state))
+    spec = importlib.util.spec_from_file_location('padiem_auth_verify', Path(__file__).resolve().parents[3] / 'packages/padiem-auth-verify/verify.py')
+    module = importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
+    monkeypatch.setitem(sys.modules, 'padiem_auth_verify', module)
+    app = build_app()
+    assert '/auth/shared/start' in [getattr(r, 'path', None) for r in app.routes]
+    assert app.state.shared_login_flow.client_id == 'b62-staging'
+    with TestClient(app, base_url='https://chat-com2-staging.padiem.net') as client:
+        response = client.get('/auth/shared/start', follow_redirects=False)
+        assert response.status_code == 302
+        from urllib.parse import parse_qs, urlsplit
+        query = parse_qs(urlsplit(response.headers['location']).query)
+        assert query['client_id'] == ['b62-staging']
+        assert query['redirect_uri'] == ['https://chat-com2-staging.padiem.net/auth/shared/callback']
+    key.unlink()
+    app = build_app()
+    assert '/auth/shared/start' not in [getattr(r, 'path', None) for r in app.routes]
+    assert 'PADIEM_CHAT_SHARED_AUTH_CLIENT_PRIVATE_JWK' in capsys.readouterr().out
+
+
+def test_worker_dependency_lock_excludes_native_cryptography():
+    import tomllib
+    from pathlib import Path
+    lock = tomllib.loads((Path(__file__).resolve().parents[1] / 'pylock.toml').read_text(encoding='utf-8'))
+    assert all(package.get('name') != 'cryptography' for package in lock['packages'])

@@ -199,7 +199,16 @@ def build_app():
         LocalB66PdfRendererClient(pdf_origin, pdf_secret) if pdf_origin else None
     )
 
+    shared_login_flow = None
+    if os.getenv("PADIEM_CHAT_SHARED_LOGIN_ENABLED", "").strip().lower() == "true":
+        from .control_plane_identity_worker import CloudflareControlPlaneIdentityAuthority
+        from .cpython_shared_login import create_host_shared_login_flow
+        shared_authority = (CloudflareControlPlaneIdentityAuthority(identity_authority)
+                            if identity_authority is not None else None)
+        shared_login_flow = create_host_shared_login_flow(os.environ, shared_authority, settings.public_base_url)
+
     app = create_app(
+        shared_login_flow=shared_login_flow,
         settings=settings,
         history_store=D1HistoryStore(db, full_context_bucket=r2),
         d1_binding=db,
