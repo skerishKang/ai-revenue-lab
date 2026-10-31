@@ -54,6 +54,11 @@ apps/padiem-broker/deploy/*.sh text eol=lf
 # systemd/start scripts; CRLF on a Windows checkout corrupts the values.
 deploy/host-com2/chat/.env.staging.example text eol=lf
 
+# The P01 COM2 package's unit and env example are copied verbatim to /opt/padiem
+# and read by systemd; CRLF on a Windows checkout breaks the unit file.
+deploy/host-com2/p01/*.service.example text eol=lf
+deploy/host-com2/p01/p01.env.example text eol=lf
+
 # Chat first-paint byte checks require LF on Windows checkouts.
 apps/padiem-chat/static/index.html text eol=lf
 apps/padiem-chat/static/padiem-glass.css text eol=lf
