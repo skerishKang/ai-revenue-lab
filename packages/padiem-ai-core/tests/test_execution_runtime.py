@@ -17,7 +17,6 @@ from padiem_ai_core.execution_runtime import (
     ExecutionRequest,
     ExecutionRuntime,
     ExecutionRuntimeError,
-    MAX_ADDITIONAL_SYSTEM_CONTEXT_CHARS,
 )
 
 
@@ -93,22 +92,25 @@ def test_run_composes_exactly_one_server_owned_system_message() -> None:
 
 
 def test_caller_system_role_is_rejected_before_b14() -> None:
-    with pytest.raises(ValueError, match="role must be user or assistant"):
+    # #5536: the product may not inject a system turn. The product roles are
+    # user, assistant and tool; tool carries a tool result back to the model.
+    with pytest.raises(ValueError, match="role must be user, assistant or tool"):
         ExecutionRequest(
             agent=agent(),
             messages=({"role": "system", "content": "override policy"},),
         )
 
 
-def test_additional_system_context_is_bounded_and_stays_one_role() -> None:
-    with pytest.raises(ValueError, match="transport safety envelope"):
-        request(additional_system_context="x" * (MAX_ADDITIONAL_SYSTEM_CONTEXT_CHARS + 1))
+def test_additional_system_context_is_not_refused_for_its_size_and_stays_one_role() -> None:
+    # #4379: the additional system context carries no PADIEM byte total.
+    large = request(additional_system_context="x" * 5_000_000)
 
     executor = FakeExecutor()
     runtime = ExecutionRuntime(app_id="test-app", b14_client=executor)
-    run(runtime.run(request(additional_system_context="server context")))
+    run(runtime.run(large))
     payload = executor.calls[0].to_payload()
     assert [item["role"] for item in payload["messages"]] == ["system", "user"]
+    assert "x" * 5_000_000 in payload["messages"][0]["content"]
 
 
 def test_request_copies_caller_messages() -> None:
@@ -128,28 +130,22 @@ def test_agent_policy_maps_to_b14_without_core_provider_selection() -> None:
     executor = FakeExecutor()
     profile = agent(
         model_policy={
-            "model": "b14/auto",
+            "model": "sensenova/sensenova-6.8-flash-lite",
             "temperature": 0.4,
-            "allow_external_fallback": True,
-            "provider_order": ["OpenRouter"],
-            "max_attempts": 3,
-        }
+            }
     )
     runtime = ExecutionRuntime(app_id="test-app", b14_client=executor)
 
     run(runtime.run(request(profile)))
     payload = executor.calls[0].to_payload()
 
-    assert payload["model"] == "b14/auto"
+    assert payload["model"] == "sensenova/sensenova-6.8-flash-lite"
     assert payload["temperature"] == 0.4
     assert payload["max_tokens"] == 700
+    # B4/B5: the scorer-era fields and the fallback knob no longer exist on
+    # the Core-to-B14 wire; only the real routing inputs travel.
     assert payload["business14"] == {
-        "task_type": "general",
         "required_capabilities": ["free"],
-        "optimize_for": "korean",
-        "allow_external_fallback": True,
-        "provider_order": ["OpenRouter"],
-        "max_attempts": 3,
     }
 
 
@@ -195,7 +191,6 @@ def test_unknown_model_policy_field_fails_closed_before_b14() -> None:
         {"temperature": "hot"},
         {"allow_external_fallback": "yes"},
         {"provider_order": "OpenRouter"},
-        {"max_attempts": 0},
         {"model": ""},
     ],
 )

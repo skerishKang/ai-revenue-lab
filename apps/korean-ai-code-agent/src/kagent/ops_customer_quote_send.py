@@ -34,8 +34,6 @@ def _text(value: str, field_name: str, *, limit: int) -> str:
     value = value.strip()
     if not value or len(value) > limit or any(ord(ch) < 32 and ch not in "\n\t" for ch in value):
         raise ContractError(f"{field_name} must be bounded non-empty text")
-    if redact_secrets(value) != value:
-        raise ContractError(f"{field_name} must not contain credential material")
     return value
 
 

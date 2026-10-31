@@ -18,6 +18,7 @@ from padiem_ai_core.b14_execution import (
     MAX_B14_RESPONSE_BYTES,
     MAX_CONFIGURED_B14_RESPONSE_BYTES,
 )
+from app.b14_service_proof import service_proof_headers
 from app.service_binding_response import (
     ServiceBindingResponseError,
     ServiceBindingResponseTooLarge,
@@ -180,6 +181,7 @@ def _load_worker_completed_type():
         "MAX_B14_RESPONSE_BYTES": MAX_B14_RESPONSE_BYTES,
         "MAX_CONFIGURED_B14_RESPONSE_BYTES": MAX_CONFIGURED_B14_RESPONSE_BYTES,
         "read_bounded_service_binding_body": read_bounded_service_binding_body,
+        "service_proof_headers": service_proof_headers,
         "ServiceBindingResponseTooLarge": ServiceBindingResponseTooLarge,
         "ServiceBindingResponseError": ServiceBindingResponseError,
     }
@@ -220,6 +222,7 @@ def _load_worker_streaming_types():
         "Request": FakeRequest,
         "httpx": httpx,
         "cloudflare_chunk_bytes": cloudflare_chunk_bytes,
+        "service_proof_headers": service_proof_headers,
         "ServiceBindingResponseError": ServiceBindingResponseError,
     }
     exec(compile(ast.fix_missing_locations(module), str(WORKER_PATH), "exec"), namespace)
@@ -291,10 +294,7 @@ def _request() -> B14ChatRequest:
     return B14ChatRequest(
         messages=({"role": "user", "content": "안녕하세요"},),
         model=MODEL,
-        routing=B14RoutingOptions(
-            allow_external_fallback=False,
-            max_attempts=1,
-        ),
+        routing=B14RoutingOptions(),
     )
 
 
@@ -357,8 +357,6 @@ def _runtime_request() -> ExecutionRequest:
             required_capabilities=("free",),
             model_policy={
                 "model": MODEL,
-                "allow_external_fallback": False,
-                "max_attempts": 1,
             },
         ),
         messages=({"role": "user", "content": "안녕하세요"},),
@@ -417,8 +415,10 @@ def test_service_binding_stream_delivers_first_event_before_final_chunk():
         payload = json.loads(request.options["body"])
         assert payload["stream"] is True
         assert payload["model"] == MODEL
-        assert payload["business14"]["allow_external_fallback"] is False
-        assert payload["business14"]["max_attempts"] == 1
+        # B5/B4: the retired knob and attempt cap no longer travel; the compat
+        # stream request now sends no business14 block at all.
+        assert "allow_external_fallback" not in (payload.get("business14") or {})
+        assert "max_attempts" not in (payload.get("business14") or {})
         assert "authorization" not in {key.lower() for key in request.options["headers"]}
         assert body.get_reader_count == 1
         assert reader.cancel_count == 1
@@ -733,9 +733,16 @@ def test_completed_json_bridge_is_preserved_and_streaming_bridge_never_buffers_r
     assert "await response.text()" not in completed
     assert "read_bounded_service_binding_body" in completed
     assert "MAX_CONFIGURED_B14_RESPONSE_BYTES" in completed
-    assert "CloudflareB14ServiceTransport(b14_binding)" in WORKER_PATH.read_text(
-        encoding="utf-8"
-    )
+    # #5784: the Worker now hands the transport types to one composer instead of
+    # constructing them inline, so the composition point is what is pinned here.
+    worker = WORKER_PATH.read_text(encoding="utf-8")
+    wired = " ".join(worker.split())
+    assert (
+        "service_transport, stream_transport = _compose_b14_transports( "
+        "settings=settings, binding=b14_binding, proof_secret=b14_proof_secret, )"
+    ) in wired
+    assert "service_binding_factory=CloudflareB14ServiceTransport," in worker
+    assert "stream_binding_factory=CloudflareB14StreamingServiceTransport," in worker
     for forbidden in (".text()", ".json()", ".arrayBuffer()"):
         assert forbidden not in streaming
         assert forbidden not in byte_stream
@@ -781,7 +788,7 @@ def test_completed_bridge_does_not_reject_healthy_two_mib_response():
     from padiem_ai_core.b14_execution import MAX_CONFIGURED_B14_RESPONSE_BYTES
     completed_type = _load_worker_completed_type()
     expected = b"z" * (2 * 1024 * 1024)
-    assert MAX_B14_RESPONSE_BYTES < len(expected) < MAX_CONFIGURED_B14_RESPONSE_BYTES
+    assert 1_048_576 < len(expected) < MAX_CONFIGURED_B14_RESPONSE_BYTES
     reader = FakeReader([expected[:300_000], expected[300_000:]])
     status, payload = asyncio.run(completed_type(FakeBinding(
         FakeResponse(200, FakeBody(reader), content_type="application/json"),
@@ -790,3 +797,6 @@ def test_completed_bridge_does_not_reject_healthy_two_mib_response():
     assert payload == expected
     assert reader.cancel_count == 0
     assert reader.release_count == 1
+
+
+

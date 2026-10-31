@@ -361,6 +361,32 @@ async def test_authorized_execution_completes_via_core(fx: Fixture):
     assert fx.total(RUNTIME_SEARCH) == 1
 
 
+async def test_deadline_free_tool_reaches_core_without_a_hidden_engine_timeout(monkeypatch):
+    from dataclasses import replace
+
+    class NoDeadlineFixture(Fixture):
+        def _make_specs(self):
+            specs = super()._make_specs()
+            specs[RUNTIME_SEARCH] = replace(specs[RUNTIME_SEARCH], timeout_seconds=None)
+            return specs
+
+    fx = NoDeadlineFixture()
+    original = asyncio.wait_for
+    observed = []
+
+    async def observe(awaitable, timeout):
+        observed.append(timeout)
+        return await original(awaitable, timeout=timeout)
+
+    monkeypatch.setattr(asyncio, "wait_for", observe)
+    response = await fx.service.execute_payload(execute_payload())
+    assert response.status_code == 200
+    assert response.body["tool"]["status"] == "completed"
+    assert fx.total(RUNTIME_SEARCH) == 1
+    assert len(observed) >= 2  # Engine wrapper and the real Core handler.
+    assert all(timeout is None for timeout in observed)
+
+
 async def test_private_arguments_never_echo(fx: Fixture):
     response = await fx.service.execute_payload(execute_payload())
     assert SECRET_QUERY not in json.dumps(response.body)
@@ -390,17 +416,17 @@ async def test_unregistered_tool_fails_closed(fx: Fixture):
 OVERSIZED_TOOL_ARGUMENTS = {"query": "a11-smoke-" + ("0" * 70_000)}
 
 
-async def test_oversized_arguments_unregistered_tool_fails_at_parse_ceiling(
+async def test_large_arguments_reach_the_tool_authority_gate(
     fx: Fixture,
 ):
+    # #4379: a large tool argument payload is not refused for its size. The
+    # unregistered tool is still refused by the authority gate, and no tool
+    # executes.
     response = await fx.service.execute_payload(
         execute_payload("tool:acme:ghost@1", OVERSIZED_TOOL_ARGUMENTS)
     )
-    assert response.status_code == 400
-    assert response.body["error"]["code"] == "tool_arguments_too_large"
-    assert response.body["error"]["message"] == (
-        "Tool arguments exceed the bounded Core argument ceiling."
-    )
+    assert response.status_code == 403
+    assert response.body["error"]["code"] == "tool_not_registered"
     assert fx.total() == 0
 
 
@@ -717,7 +743,7 @@ class _CapturedRequest(Exception):
 class _FakeRunner:
     captured: list = []
 
-    def __init__(self, runtime=None, idempotency=None):
+    def __init__(self, runtime=None, idempotency=None, **_kwargs):
         pass
 
     async def run(self, request):

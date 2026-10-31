@@ -16,15 +16,8 @@ from starlette.testclient import TestClient
 from app.factory import create_app
 from app.pilot.b14_runtime_config import runtime_config as rcfg
 
-URL = "/api/pilot/v1/chat/completions/auto-stream-preview"
+URL = "/api/pilot/v1/chat/completions/stream-preview"
 UPSTREAM = "agnes-3.0-flash"
-
-
-@pytest.fixture(autouse=True)
-def _enable_archived_auto_route_tests(monkeypatch):
-    """Historical protocol tests explicitly enable future generic auto in test only."""
-    monkeypatch.setenv("B14_ENABLE_FUTURE_AUTO", "1")
-
 
 
 @pytest.fixture
@@ -42,15 +35,11 @@ def live_fake_provider(monkeypatch):
 
 def _request():
     return {
-        "model": "b14/auto",
+        # B7: the retired auto id is gone; the same SSE commit contract is
+        # pinned on the manual stream preview with a catalog model.
+        "model": "agnes-ai/agnes-3.0-flash",
         "messages": [{"role": "user", "content": "synthetic whitespace only"}],
         "stream": True,
-        "business14": {
-            "task_type": "general",
-            "required_capabilities": ["free"],
-            "allow_external_fallback": False,
-            "max_attempts": 1,
-        },
     }
 
 
@@ -129,7 +118,11 @@ def test_whitespace_is_buffered_until_first_real_text_then_sse_200():
     assert [event["choices"][0]["delta"]["content"] for event in text_events] == [
         " \n\t", "정상 출력"
     ]
-    assert text_events[0]["business14"]["committed"] is False
-    assert text_events[1]["business14"]["committed"] is True
+    # The manual preview does not re-publish the router's internal commit
+    # flag (that frame shape belonged to the retired auto surface); the
+    # whitespace commit ordering stays pinned at the router level by
+    # test_streaming_router's empty-answer/committed coverage.
+    assert "committed" not in text_events[0]["business14"]
+    assert "committed" not in text_events[1]["business14"]
     assert response.text.count("data: [DONE]") == 1
     assert "event: error" not in response.text

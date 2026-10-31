@@ -3,7 +3,7 @@
 Original Plus-hold tests predated the shared per-tier route declarations.
 Assertions pin the currently declared executable route; this file does not
 set the owner model policy.
-Do not re-enable historical Space Bunny or image execution.
+Do not re-enable historical Space Bunny; capabilities follow the selected model.
 """
 from __future__ import annotations
 
@@ -31,33 +31,35 @@ def _active_model(label: ProductTierLabel) -> str:
     return route.model_id
 
 
-BEAM = _active_model(ProductTierLabel.FREE)
-MUSE = _active_model(ProductTierLabel.PLUS)
+FREE_MODEL = _active_model(ProductTierLabel.FREE)
+PAID_PRIMARY = _active_model(ProductTierLabel.PLUS)
 
 
 def test_plus_identity_is_executable_route_and_space_bunny_is_historical_only() -> None:
     plus = active_route_for(ProductTierLabel.PLUS)
     assert plus is not None
     assert plus.status is ProductRouteStatus.EXECUTABLE
-    assert plus.model_id == LOW_B14_MODEL_ID == MUSE
-    assert DEFAULT_B14_MODEL_ID == BEAM
-    assert EXECUTABLE_B14_MODEL_IDS == frozenset({BEAM, MUSE})
-    bunny = next(
-        route for route in get_tier(ProductTierLabel.PLUS).routes
-        if route.model_id == "kilo/stealth-space-bunny-alpha"
+    assert plus.model_id == LOW_B14_MODEL_ID == PAID_PRIMARY
+    assert DEFAULT_B14_MODEL_ID == FREE_MODEL
+    assert EXECUTABLE_B14_MODEL_IDS == frozenset({FREE_MODEL, PAID_PRIMARY})
+    assert all(
+        route.model_id != "kilo/stealth-space-bunny-alpha"
+        for route in get_tier(ProductTierLabel.PLUS).routes
     )
-    assert bunny.status is ProductRouteStatus.HOLD_AS_DATA_ONLY
-    assert bunny.hold_reason and "#3568" in bunny.hold_reason
 
 
-def test_plus_chat_executes_declared_route_and_image_remains_unavailable() -> None:
-    assert MODEL_CAPABILITIES[LOW_B14_MODEL_ID] == frozenset({"chat", "coding"})
-    assert model_supports(LOW_B14_MODEL_ID, "chat")
-    assert not model_supports(LOW_B14_MODEL_ID, "image")
+def test_plus_chat_executes_declared_google_route_without_a_provider_capability_row() -> None:
+    # B8: the paid route model is a raw provider id, not a capability catalog
+    # row. Only tier-keyed rows and the fallback row remain.
+    assert LOW_B14_MODEL_ID not in MODEL_CAPABILITIES
+    assert model_supports(LOW_B14_MODEL_ID, "chat") is False
+    assert model_supports(LOW_B14_MODEL_ID, "image") is False
+    assert MODEL_CAPABILITIES[FREE_MODEL] == frozenset({"chat", "coding"})
+    assert model_supports(FREE_MODEL, "chat")
     default = resolve_model_policy([{"role": "user", "content": "hello"}])
     plus = resolve_tier_policy([{"role": "user", "content": "hello"}], "plus")
-    assert default.model_id == BEAM and default.profile == "free"
-    assert plus.model_id == MUSE and plus.profile == "low"
+    assert default.model_id == FREE_MODEL and default.profile == "free"
+    assert plus.model_id == PAID_PRIMARY and plus.profile == "low"
 
 
 def test_plus_product_identity_matches_current_executable_route() -> None:
@@ -65,5 +67,5 @@ def test_plus_product_identity_matches_current_executable_route() -> None:
         [{"role": "user", "content": "hello"}],
         require_executable=False,
     )
-    assert policy.model_id == BEAM
+    assert policy.model_id == FREE_MODEL
     assert model_policy_is_executable(policy.model_id)

@@ -66,10 +66,21 @@ class StreamNotSupported(PilotError):
 
 
 class ToolsNotSupported(PilotError):
-    def __init__(self) -> None:
+    """Tool calling was requested for a route that cannot serve it (#5536).
+
+    The gateway serves tool calls only for a registered model that declares the
+    tool-calling capability in ``b14_models.json``. A request that declares a
+    tool for any other route is refused before execution.
+    """
+
+    def __init__(self, model_id: str | None = None) -> None:
+        detail = f" ({model_id})" if model_id else ""
         super().__init__(
             code="tools_not_supported",
-            message="tools/function calling은 현재 Pilot에서 지원하지 않습니다.",
+            message=(
+                "tools/function calling은 tool 지원 capability를 선언한 "
+                f"B14 등록 모델에서만 제공됩니다{detail}."
+            ),
             status_code=400,
         )
 
@@ -147,7 +158,8 @@ class UpstreamServerError(PilotError):
 
 
 class MalformedUpstreamResponse(PilotError):
-    def __init__(self) -> None:
+    def __init__(self, reason: str = "unspecified") -> None:
+        self.reason = reason
         super().__init__(
             code="malformed_upstream_response",
             message="Provider 응답 형식이 올바르지 않습니다.",
@@ -188,6 +200,57 @@ class InvalidRequest(PilotError):
         super().__init__(
             code="invalid_request",
             message=detail,
+            status_code=400,
+        )
+
+
+class InvalidUserCredential(PilotError):
+    """#5824 PR-3a: the request-carried credential is not a usable document.
+
+    The message names no field value. A malformed credential can contain a real
+    provider key, and an error body is not a place to repeat it.
+    """
+
+    def __init__(self) -> None:
+        super().__init__(
+            code="user_credential_invalid",
+            message=(
+                "user_credential은 provider·endpoint·model·key를 담은 JSON "
+                "객체 또는 같은 형태의 JSON 문자열이어야 합니다."
+            ),
+            status_code=422,
+        )
+
+
+class UnsupportedUserCredentialWire(PilotError):
+    """The key is for a wire B14 does not speak, so this route cannot serve it.
+
+    Chat keeps its own direct path for these providers; the refusal is a route
+    statement, never a verdict on the customer's key.
+    """
+
+    def __init__(self) -> None:
+        super().__init__(
+            code="user_credential_unsupported_via_b14",
+            message="이 공급자 wire은 B14 경유로 지원하지 않습니다. 기존 직행 경로를 사용하십시오.",
+            status_code=400,
+        )
+
+
+class UnsupportedUserCredentialEndpoint(PilotError):
+    """The presented endpoint is not the provider's fixed official origin.
+
+    B14 dials only its own approved address per provider, so an arbitrary
+    endpoint is refused instead of being contacted with the caller's key.
+    """
+
+    def __init__(self) -> None:
+        super().__init__(
+            code="user_credential_endpoint_unsupported",
+            message=(
+                "등록된 공식 엔드포인트가 아니므로 B14가 해당 주소로 요청을 보내지 않습니다. "
+                "키를 다시 등록하십시오."
+            ),
             status_code=400,
         )
 

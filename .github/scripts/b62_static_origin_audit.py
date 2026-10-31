@@ -27,6 +27,12 @@ ADMIN_HUB_NAVIGATION_HOSTS = {
     "apps/padiem-chat/static/admin-config.js": frozenset({"quick-quote-kr.pages.dev"}),
 }
 
+# C10 owner decision: the Drive OFF message links to Google Account security so the
+# user can revoke the grant where revocation actually lives. Navigation only, one file.
+DRIVE_REVOKE_NAVIGATION_HOSTS = {
+    "apps/padiem-chat/static/claw-connection-chips.js": frozenset({"myaccount.google.com"}),
+}
+
 
 URL_RE = re.compile(r"https?://[^\s\"'<>)}]+", re.IGNORECASE)
 
@@ -69,6 +75,7 @@ def main() -> None:
             seen_hosts.add(host)
             feature_hosts = MEETING_DIRECT_DRIVE_HOSTS.get(relative.as_posix(), frozenset())
             feature_hosts |= ADMIN_HUB_NAVIGATION_HOSTS.get(relative.as_posix(), frozenset())
+            feature_hosts |= DRIVE_REVOKE_NAVIGATION_HOSTS.get(relative.as_posix(), frozenset())
             if host not in ALLOWED_LITERAL_HTTP_HOSTS and host not in feature_hosts:
                 violations.append(f"{relative}: unapproved external host {host}: {url}")
 

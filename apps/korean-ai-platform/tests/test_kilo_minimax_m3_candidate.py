@@ -51,14 +51,17 @@ def test_retired_lane_manual_resolve_fails_closed(
     assert exc_info.value.reason_code == "model_not_in_catalog"
 
 
-def test_retired_lane_is_never_in_b14_auto_pool() -> None:
+def test_retired_lane_is_never_in_any_route_pool() -> None:
     from app.pilot.catalog import CATALOG_MODELS, CATALOG_BY_ID
     assert not CATALOG_MODELS
     for model_id, _ in RETIRED_LANES:
         assert model_id not in CATALOG_BY_ID
-    from app.pilot.routing_policy import B14_AUTO_CHAIN, chain_models
-    assert all(model_id not in B14_AUTO_CHAIN for model_id, _ in RETIRED_LANES)
-    assert all(m.model_id not in {mid for mid, _ in RETIRED_LANES} for m in chain_models())
+    # B7: the fixed auto chain is retired entirely, so there is no auto pool
+    # a retired lane could rejoin.
+    import importlib
+
+    with pytest.raises(ModuleNotFoundError):
+        importlib.import_module("app.pilot.routing_policy")
 
 @pytest.mark.asyncio
 async def test_retired_kilo_laguna_never_calls_transport(monkeypatch) -> None:

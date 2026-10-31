@@ -414,21 +414,28 @@ async def build_item_detail_projection(
     link_backs: tuple[CalendarLinkBack, ...] = ()
     item: CalendarItemProjection | None = None
 
+    # #2952: native calendar rows are read with the caller as their owner. Without
+    # a verified owner there is no row to project: the detail fails closed to
+    # "not found" instead of falling back to workspace-wide visibility.
     match = _LOG_CALENDAR_ITEM_ID_RE.fullmatch(calendar_item_id)
-    if match:
+    if match and user_id is not None:
         record = await _safe_call(
-            getattr(calendar_store, "get_work_log", None), workspace_id, match.group(1)
+            getattr(calendar_store, "get_work_log", None),
+            workspace_id,
+            match.group(1),
+            owner_id=user_id,
         )
         if isinstance(record, CalendarWorkLog) and record.workspace_id == workspace_id:
             item = project_work_log(record)
 
     if item is None:
         match = _APPOINTMENT_CALENDAR_ITEM_ID_RE.fullmatch(calendar_item_id)
-        if match:
+        if match and user_id is not None:
             record = await _safe_call(
                 getattr(calendar_store, "get_appointment", None),
                 workspace_id,
                 match.group(1),
+                owner_id=user_id,
             )
             if (
                 isinstance(record, CalendarAppointment)
@@ -444,6 +451,7 @@ async def build_item_detail_projection(
                 getattr(task_alert_store, "get_task", None),
                 task_id,
                 workspace_id=workspace_id,
+                member_id=user_id,
             )
             if record is not None and getattr(record, "member_id", None) == user_id:
                 try:
@@ -558,26 +566,39 @@ async def build_range_projection(
     bounded_limit = max(1, min(limit, MAX_CALENDAR_LIST_LIMIT))
     items: list[CalendarItemProjection] = []
 
-    # 1. Native work logs
-    logs = await calendar_store.list_work_logs(
-        workspace_id, start_date=start_date, end_date=end_date, limit=bounded_limit
-    )
-    for log in logs:
-        items.append(project_work_log(log))
+    # 1. Native work logs — owner-scoped (#2952). A workspace is a tenant, and a
+    # tenant holds more than one product user, so workspace scope alone would
+    # project a tenant-mate's records. No verified owner means no row.
+    if user_id is not None:
+        logs = await calendar_store.list_work_logs(
+            workspace_id,
+            owner_id=user_id,
+            start_date=start_date,
+            end_date=end_date,
+            limit=bounded_limit,
+        )
+        for log in logs:
+            items.append(project_work_log(log))
 
-    # 2. Native appointments
-    apts = await calendar_store.list_appointments(
-        workspace_id, start_date=start_date, end_date=end_date, limit=bounded_limit
-    )
-    for apt in apts:
-        items.append(project_appointment(apt, tz=tz))
+        # 2. Native appointments — owner-scoped for the same reason.
+        apts = await calendar_store.list_appointments(
+            workspace_id,
+            owner_id=user_id,
+            start_date=start_date,
+            end_date=end_date,
+            limit=bounded_limit,
+        )
+        for apt in apts:
+            items.append(project_appointment(apt, tz=tz))
 
     # 3. Existing Tasks (read-only projection, no duplicate storage)
     # Parity with claw_inbox_routes: only tasks owned by member_id/user_id are visible.
     # If user_id is None, fail closed (0 tasks projected).
     if task_alert_store is not None and user_id is not None:
         list_tasks = getattr(task_alert_store, "list_tasks", None)
-        raw_tasks = await _safe_call(list_tasks, workspace_id, limit=bounded_limit)
+        raw_tasks = await _safe_call(
+            list_tasks, workspace_id, member_id=user_id, limit=bounded_limit
+        )
         if raw_tasks:
             for t in raw_tasks:
                 if getattr(t, "member_id", None) == user_id:
@@ -747,9 +768,16 @@ async def build_upcoming_projection(
 
     items: list[CalendarItemProjection] = []
 
-    # 1. Native appointments starting on or after current_date
-    raw_apts = await calendar_store.list_appointments(
-        workspace_id, start_date=current_date_in_tz, limit=bounded_limit * 2
+    # 1. Native appointments starting on or after current_date (owner-scoped, #2952)
+    raw_apts = (
+        await calendar_store.list_appointments(
+            workspace_id,
+            owner_id=user_id,
+            start_date=current_date_in_tz,
+            limit=bounded_limit * 2,
+        )
+        if user_id is not None
+        else ()
     )
     for apt in raw_apts:
         if apt.appointment_type == AppointmentType.TIMED:
@@ -768,7 +796,9 @@ async def build_upcoming_projection(
     # If user_id is None, fail closed (0 tasks projected).
     if task_alert_store is not None and user_id is not None:
         list_tasks = getattr(task_alert_store, "list_tasks", None)
-        raw_tasks = await _safe_call(list_tasks, workspace_id, limit=bounded_limit * 2)
+        raw_tasks = await _safe_call(
+            list_tasks, workspace_id, member_id=user_id, limit=bounded_limit * 2
+        )
         if raw_tasks:
             for t in raw_tasks:
                 if getattr(t, "member_id", None) != user_id:

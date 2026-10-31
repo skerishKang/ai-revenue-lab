@@ -87,10 +87,24 @@
   outline-offset: 2px;
 }
 
-/* Keep the end of a long answer clear of an expanded multiline composer.
- * The JS value is bounded to at least the historical 230px clearance. */
-.app-shell[data-state="chat"] .conversation {
-  padding-bottom: var(--padiem-composer-clearance, 230px) !important;
+/* The fixed composer area owns the bottom of the viewport.
+ *
+ * Every document-scrolling content block that sits above the input reserves
+ * the composer's MEASURED height at its own end, so the last turn, a home
+ * card, an answer error card or the Claw connection status cell can never
+ * end under the fixed input. The JS value tracks the composer's real height,
+ * so a taller composer (model row, attachment tray, the shared "My computers"
+ * row) or the mobile software keyboard can never cover the content above it.
+ *
+ * The home state is included because its first-use cards used a fixed
+ * 218px/230px inset that was smaller than the real composer. */
+.app-shell:is([data-state="home"], [data-state="chat"], [data-state="claw"]) .conversation {
+  padding-bottom: calc(
+    var(--padiem-composer-clearance, 230px) + var(--padiem-visual-keyboard-inset, 0px)
+  ) !important;
+  scroll-padding-bottom: calc(
+    var(--padiem-composer-clearance, 230px) + var(--padiem-visual-keyboard-inset, 0px) + 16px
+  );
 }
 
 /* JS resolves the actual textarea scroll height so multiline prompts grow in
@@ -131,44 +145,59 @@
 }
 
 
-/* #5014: Chat phone home should leave room for the composer above the fold.
- * Scope to Chat only; Claw has its own compact 2x2 connection layout. */
+/* #5014: the phone first screen leaves room for the composer above the fold.
+ * This is one compaction for every product that opts into the conversation
+ * layout, not a Chat-only exception: the Claw landing used to fall through to
+ * the theme sheet's 30px start with no block padding and a 25px card gap, so
+ * the same brand line began 14px lower on one phone and 6px lower on the other
+ * for no product reason (measured at 390x844). Claw keeps its own card sizes —
+ * those are its content — and shares only the composition decisions here.
+ * The first screen runs in the "home" state, so the compaction has to cover
+ * it as well: the phone landing was rendered with the desktop card sizes and
+ * the last card row ended under the fixed input. */
 @media (max-width: 620px) {
-  .app-shell[data-state="chat"] .conversation:has(#emptyState:not([hidden])) {
+  .app-shell[data-layout-variant="conversation"] .conversation:has(#emptyState:not([hidden])) {
     min-height: auto !important;
     padding-top: 16px !important;
-    padding-bottom: var(--padiem-composer-clearance, 230px) !important;
+    /* #5014: the reserved bottom space and the scroll padding stay owned by
+     * the shared rule above, so the software keyboard inset is included. */
   }
-  .app-shell[data-state="chat"] #emptyState:not([hidden]) {
+  .app-shell[data-layout-variant="conversation"] #emptyState:not([hidden]) {
     min-height: 0 !important;
     height: auto !important;
     padding-block: 8px 16px !important;
     margin-block: 0 !important;
     align-content: start;
   }
-  .app-shell[data-state="chat"] #emptyState:not([hidden]) h1 {
+  .app-shell[data-layout-variant="conversation"] #emptyState:not([hidden]) h1 {
     font-size: clamp(25px, 7vw, 34px) !important;
     line-height: 1.22 !important;
   }
-  .app-shell[data-state="chat"] #emptyState:not([hidden]) .empty-copy {
+  .app-shell[data-layout-variant="conversation"] #emptyState:not([hidden]) .empty-copy {
     margin-top: 8px !important;
+  }
+  /* The explanatory copy of a live thread keeps its existing phone size. The
+   * first screen keeps the accessible 15px floor, so the compact landing never
+   * shrinks the sentence that explains the surface below 15px. */
+  .app-shell[data-state="chat"] #emptyState:not([hidden]) .empty-copy {
     font-size: 13px !important;
   }
-  .app-shell[data-state="chat"] #emptyState:not([hidden]) .starter-grid {
+  .app-shell[data-layout-variant="conversation"] #emptyState:not([hidden]) .starter-grid {
     margin-top: 16px !important;
     gap: 8px !important;
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
   }
-  .app-shell[data-state="chat"] #emptyState:not([hidden]) .starter {
+  .app-shell[data-layout-variant="conversation"] #emptyState:not([hidden]) .starter {
     min-height: 84px !important;
     padding: 11px !important;
   }
-  .app-shell[data-state="chat"] #emptyState:not([hidden]) .starter small {
+  .app-shell[data-layout-variant="conversation"] #emptyState:not([hidden]) .starter small {
     display: none;
   }
-  .app-shell[data-state="chat"] .conversation {
-    scroll-padding-bottom: calc(var(--padiem-composer-clearance, 230px) + 16px);
-  }
+  /* #5014: the shared scroll padding above already carries the composer
+   * clearance and the software keyboard inset. A second copy here would drop
+   * the keyboard inset on a phone, so the landing scrolls behind a raised
+   * input with less room than it actually needs. */
 }
 
 /* Phase 1 turn parity: the manual Claw result card keeps its DOM and execution
@@ -192,5 +221,90 @@
   .conversation .claw-request-echo .message-bubble {
     font-size: 16px;
     line-height: 27.52px;
+  }
+}
+
+/* Mobile browser chrome: the menu must not scroll out of the visual viewport.
+   The previous sticky header could leave the screen entirely on Android Edge
+   when the document and conversation scroll offsets diverged. This is shared
+   by Chat and Claw; no JS routing/side-effect behavior changes. */
+@media (max-width: 920px) {
+  .app-shell .main-panel {
+    height: 100dvh;
+    min-height: 0;
+    overflow: hidden;
+  }
+  /* Keep the header in flow: its real height reserves the conversation edge.
+     Only the conversation scrolls, so the menu stays at viewport top. */
+  .app-shell .main-panel > .topbar {
+    position: sticky !important;
+    flex-shrink: 0;
+    inset: auto !important;
+    top: 0 !important;
+    min-height: 56px;
+    padding: 6px 10px;
+    /* #5805: a phone browser's own chrome covers the top of the page, so the
+     * safe-area inset keeps the one control below it on a notched screen. */
+    padding-top: calc(6px + env(safe-area-inset-top, 0px));
+    box-sizing: border-box;
+    width: 100%;
+    /* #5805: the bar stops being a surface. Nothing scrolls under it (the
+     * conversation is the only scroller), so the page tone shows through and
+     * the glass lives on the menu control alone — the bordered, shadowed
+     * full-width band that read as heavy on a phone is gone. */
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    z-index: 100 !important;
+  }
+  .app-shell .main-panel .conversation {
+    min-height: 0 !important;
+    overflow-y: auto !important;
+    overscroll-behavior-y: contain;
+  }
+  .app-shell .main-panel > .topbar #mobileMenu {
+    display: inline-grid !important;
+    place-items: center;
+    flex: 0 0 44px;
+    width: 44px !important;
+    min-height: 44px;
+    height: 44px !important;
+    visibility: visible !important;
+    border: 1px solid rgba(45, 69, 87, .16) !important;
+    border-radius: 50% !important;
+    background: rgba(255, 255, 255, .58) !important;
+    color: #25333e !important;
+    box-shadow: 0 6px 18px rgba(28, 38, 49, .12), inset 0 1px 0 rgba(255, 255, 255, .72);
+    backdrop-filter: blur(14px) saturate(140%);
+    -webkit-backdrop-filter: blur(14px) saturate(140%);
+    font-size: 18px;
+    line-height: 1;
+  }
+  .app-shell .main-panel > .topbar #mobileMenu:focus-visible {
+    outline: 3px solid rgba(79, 134, 173, .55);
+    outline-offset: 2px;
+  }
+  /* A translucent control has to stay readable on the dark themes too, where
+   * the page behind it is near-black. */
+  html[data-theme="dark"] .app-shell .main-panel > .topbar #mobileMenu,
+  html[data-theme="cinematic"] .app-shell .main-panel > .topbar #mobileMenu {
+    border-color: rgba(226, 238, 248, .28) !important;
+    background: rgba(255, 255, 255, .16) !important;
+    color: #eef6fb !important;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, .35), inset 0 1px 0 rgba(255, 255, 255, .18);
+  }
+  .app-shell.sidebar-open .sidebar {
+    z-index: 120;
+  }
+  .app-shell .sidebar-scrim {
+    z-index: 110;
+  }
+}
+@media (max-width: 620px) {
+  /* Preserve current input controls while avoiding surplus vertical space. */
+  .app-shell .composer-wrap .composer textarea {
+    min-height: 44px;
   }
 }

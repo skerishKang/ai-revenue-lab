@@ -1,7 +1,7 @@
 """#5009: B66 CGI grade -> model map, single truth for the three B66 lanes.
 
-Free stays Beam Free; Plus/Pro/Max use Muse Spark; a centrally verified
-Google admin is offered the administrator option on the same Muse model.
+Grade models follow the shared executable product-tier declarations.
+The test-phase Google decision (2026-10-25) therefore reaches every B66 lane.
 Labels are B66 product names. The raw B14 catalog is untouched.
 
 The browser never chooses the model freely: each lane matches the requested
@@ -12,17 +12,19 @@ from __future__ import annotations
 from starlette.requests import Request
 
 from padiem_control_plane.product_tier_routes import (
-    FREE_PRIMARY_B14_MODEL_ID,
-    MUSE_B14_MODEL_ID,
+    ProductTierLabel,
+    active_route_for,
 )
 
 B66_GRADES = ("free", "plus", "pro", "max")
 
 B66_GRADE_MODEL_IDS = {
-    "free": FREE_PRIMARY_B14_MODEL_ID,
-    "plus": MUSE_B14_MODEL_ID,
-    "pro": MUSE_B14_MODEL_ID,
-    "max": MUSE_B14_MODEL_ID,
+    tier: route.model_id
+    for tier, label in (
+        ("free", ProductTierLabel.FREE), ("plus", ProductTierLabel.PLUS),
+        ("pro", ProductTierLabel.PRO), ("max", ProductTierLabel.MAX),
+    )
+    if (route := active_route_for(label)) is not None and route.model_id
 }
 
 B66_GRADE_NAMES = {
@@ -74,6 +76,29 @@ async def b66_verified_admin(request: Request, user_id: str) -> bool:
     return False
 
 
+def b66_tier_grant_permits(
+    access: object, model_id: object, grade_model_id: object = None,
+) -> bool:
+    """Whether the product-local per-grade grant list permits this model.
+
+    The selected grade's own model is the administrator's approved route for
+    that product/grade, so the product-local grant list never silently removes
+    it from the grade it belongs to. Every other member-chosen model keeps the
+    existing product grant restriction, and the global model OFF list is
+    enforced separately before this check.
+    """
+    if not isinstance(access, dict) or access.get("active_policy") is not True:
+        return True
+    allowed = access.get("model_ids")
+    if not isinstance(allowed, list):
+        return True
+    if not isinstance(model_id, str) or not model_id:
+        return False
+    if model_id in allowed:
+        return True
+    return isinstance(grade_model_id, str) and model_id == grade_model_id
+
+
 __all__ = [
     "B66_ADMIN_GRADE",
     "B66_ADMIN_NAME",
@@ -82,5 +107,6 @@ __all__ = [
     "B66_GRADES",
     "b66_grade_model_id",
     "b66_grade_model_id_for_request",
+    "b66_tier_grant_permits",
     "b66_verified_admin",
 ]

@@ -46,7 +46,7 @@ SNAPSHOT = {
     "issueDate": "2022-06-21",
     "vatRate": 0.1,
     "items": [{"name": "통신공사", "qty": 1, "unitPrice": 88200000}],
-    "sender": {"company": "(주) 시지아이", "representative": "김범신"},
+    "sender": {"company": "(주) 예시회사", "representative": "홍길동"},
 }
 
 
@@ -162,7 +162,7 @@ def test_snapshot_normalization_is_deterministic_and_server_minted():
     assert first.quote_no == "CGI-2-20220621-07"
     assert first.sender_json is not None
     # sender snapshot is preserved for historical stability
-    assert json.loads(first.sender_json)["company"] == "(주) 시지아이"
+    assert json.loads(first.sender_json)["company"] == "(주) 예시회사"
 
 
 def test_computed_totals_are_never_persisted_as_authority():
@@ -198,10 +198,12 @@ def test_malformed_snapshot_rejected():
         normalize_quote_draft_snapshot(["not", "an", "object"])
     with pytest.raises(QuoteHistoryStoreError):
         normalize_quote_draft_snapshot({"items": "not-a-list"})
+    # #4379: a stored quote snapshot carries no PADIEM byte total, so a
+    # large memo is stored instead of being refused for its size.
     huge = dict(SNAPSHOT)
     huge["memo"] = "가" * (MAX_SNAPSHOT_JSON_BYTES)
-    with pytest.raises(QuoteHistoryStoreError):
-        normalize_quote_draft_snapshot(huge)
+    stored = normalize_quote_draft_snapshot(huge)
+    assert "가" * (MAX_SNAPSHOT_JSON_BYTES) in stored.serialized_json
 
 
 def test_row_id_shape_is_bounded():

@@ -140,11 +140,7 @@ def serialize_hwpx_package(content: HwpxPackageContent) -> bytes:
         for section in content.sections
     ]
     payload = _package_bytes(section_payloads)
-    if len(payload) > MAX_BINARY_DOCUMENT_BYTES:
-        raise DocumentNormalizationError(
-            "hwpx_serialize_output_size",
-            "Serialized HWPX package exceeds the output size limit.",
-        )
+    # #4379: a serialized package carries no PADIEM byte total.
     return payload
 
 
@@ -642,11 +638,6 @@ def _assemble_hwpx_package_members(members: tuple[tuple[str, bytes], ...]) -> by
             "hwpx_assemble_model",
             "HWPX package assembly requires a non-empty tuple of members.",
         )
-    if len(members) > MAX_OOXML_ENTRIES:
-        raise DocumentNormalizationError(
-            "hwpx_assemble_member_count",
-            "HWPX package assembly exceeds the archive entry budget.",
-        )
     names: list[str] = []
     for member in members:
         if not isinstance(member, tuple) or len(member) != 2:
@@ -672,11 +663,7 @@ def _assemble_hwpx_package_members(members: tuple[tuple[str, bytes], ...]) -> by
         for name, member_payload in members:
             archive.writestr(_fixed_member(name), member_payload)
     payload = buffer.getvalue()
-    if len(payload) > MAX_BINARY_DOCUMENT_BYTES:
-        raise DocumentNormalizationError(
-            "hwpx_assemble_output_size",
-            "HWPX package assembly exceeds the output size limit.",
-        )
+    # #4379: an assembled package carries no PADIEM byte total.
     return payload
 
 

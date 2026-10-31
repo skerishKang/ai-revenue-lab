@@ -94,6 +94,18 @@
   height: 23px;
   display: block;
 }
+/* #5561: the primary action slot has two faces. Only the active face is
+   shown, and the slot itself never changes size, so the composer does not
+   move when the composer turns from empty to filled. */
+#composerForm .send-button .send-arrow-icon[hidden],
+#composerForm .send-button .send-waveform-icon[hidden] {
+  display: none !important;
+}
+#composerForm .send-button .send-waveform-icon {
+  width: 23px;
+  height: 23px;
+  display: block;
+}
 #composerForm .send-button:not(:disabled):hover {
   color: #fff;
   background: #2e4d67;

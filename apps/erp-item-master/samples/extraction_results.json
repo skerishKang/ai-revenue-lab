@@ -1,0 +1,22 @@
+{
+  "CAL-0150-00": {
+    "fields": {
+      "supplier": {
+        "value": "정밀계측",
+        "confidence": 0.72
+      },
+      "sales_price": {
+        "value": "39500",
+        "confidence": 0.9
+      }
+    }
+  },
+  "BLT-A45-000": {
+    "fields": {
+      "purchase_price": {
+        "value": "12000",
+        "confidence": 0.85
+      }
+    }
+  }
+}

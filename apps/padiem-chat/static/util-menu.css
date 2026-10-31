@@ -1,0 +1,573 @@
+/* #5608: the util page is a top-level view owned by its own shell state, the
+ * same way Calendar/Connectors/Automation/Meeting/Library are gated. Hidden
+ * everywhere else; the shared conversation column and bottom composer stay
+ * hidden while the util page is open. Layout contract mirrors .standalone-view
+ * (#5028); surfaces and controls reuse the shared theme tokens — same family
+ * as .meeting-panel and the .pdfmd-shell block below. No new tokens. */
+.util-view { display: none; padding: 28px clamp(18px, 4vw, 44px) 40px; max-width: 960px; margin: 0 auto; width: 100%; box-sizing: border-box; }
+.app-shell[data-state="util"] .util-view { display: block; flex: 1 1 auto; min-height: 0; overflow-y: auto; position: relative; z-index: 2; }
+.app-shell[data-state="util"] .conversation, .app-shell[data-state="util"] .composer-wrap { display: none !important; }
+/* Shared standalone-view header contract (kicker/title scale from #5028). */
+/* #5608: the util header joins the shared page-title contract
+ * (standalone-views.css 34px/770 title + 12px kicker). Only the local spacing
+ * stays here; the typography comes from the shared lists. */
+.util-header h2 { margin: 0 0 4px; }
+.util-header .standalone-view-tagline { margin: 0 0 14px; }
+.util-tabs { display: flex; gap: 8px; margin-bottom: 16px; }
+.util-tab { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 14px; border: 1px solid var(--line, rgba(26, 34, 48, .12)); border-radius: 10px; background: var(--panel, #ffffff); color: var(--text, #17202a); font: inherit; font-size: 13px; font-weight: 650; cursor: pointer; }
+.util-tab:hover { background: var(--accent-soft); border-color: var(--accent); }
+.util-tab.active { background: var(--accent, #6557e8); color: var(--accent-contrast, #ffffff); border-color: var(--accent, #6557e8); }
+/* #5908: the quick-run toolbox — one glanceable card row above the panels.
+ * Entry surface only: every card button drives the existing activateUtilTab
+ * switch or the existing Claw entry; no new tokens. The card border reads
+ * --input-border-strong so the glass-theme contrast stays at the measured
+ * 6.33:1 (util-capture #6317) instead of --line's 1.03:1 that report flagged
+ * for the .pdfmd-* controls. */
+.util-tool-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 12px; margin: 0 0 18px; }
+.util-tool-card { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; padding: 14px; border: 1px solid var(--input-border-strong, var(--line, rgba(26, 34, 48, .12))); border-radius: var(--radius-md, 16px); background: var(--glass-card-surface, var(--panel, #ffffff)); box-sizing: border-box; }
+.util-tool-icon { font-size: 16px; line-height: 1; color: var(--accent, #6557e8); }
+.util-tool-name { font-size: 15px; font-weight: 750; color: var(--text, #17202a); }
+.util-tool-desc { font-size: 12.5px; line-height: 1.45; color: var(--text, #17202a); }
+.util-tool-note { font-size: 11.5px; color: var(--muted, #5b6672); }
+.util-tool-open { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 14px; margin-top: auto; border: none; border-radius: 10px; background: var(--accent, #6557e8); color: var(--accent-contrast, #ffffff); cursor: pointer; font: inherit; font-size: 13px; font-weight: 650; }
+.util-tool-open:hover:not(:disabled) { filter: brightness(.96); }
+.util-tool-paused .util-tool-icon { color: var(--muted, #5b6672); }
+.util-tab:focus-visible,
+.util-generate:focus-visible,
+.util-tool-open:focus-visible,
+.util-form input:focus-visible,
+.util-form textarea:focus-visible,
+.util-form select:focus-visible,
+.util-form-actions button:focus-visible,
+.util-actions button:focus-visible,
+.util-saved-list button:focus-visible,
+.util-archive button:focus-visible {
+  outline: 3px solid var(--focus-ring, rgba(101, 87, 232, .24));
+  outline-offset: 2px;
+}
+.util-soon { font-size: 11px; color: var(--muted, #5b6672); margin-left: 4px; }
+/* Glass surface for the three form panels — the pdfmd panel keeps its own
+ * .pdfmd-shell below, so it is excluded here to avoid stacking two surfaces. */
+#utilSpeechPanel, #utilSnsPanel, #utilMeetingPanel {
+  padding: clamp(18px, 3.5vw, 34px);
+  border: 1px solid var(--glass-chat-border, var(--card-border, rgba(255, 255, 255, .42)));
+  border-radius: var(--radius-md, 16px);
+  background: var(--glass-card-surface, var(--card-bg, rgba(239, 243, 246, .48)));
+  box-shadow: var(--card-shadow, var(--shadow, 0 18px 48px rgba(28, 38, 49, .14)));
+  color: var(--text, #17202a);
+  backdrop-filter: blur(24px) saturate(108%);
+  -webkit-backdrop-filter: blur(24px) saturate(108%);
+  box-sizing: border-box;
+}
+.util-panel { display: block; }
+.util-form { display: flex; flex-direction: column; gap: 12px; }
+.util-form label { display: flex; flex-direction: column; gap: 6px; font-size: 13px; color: var(--text, #17202a); }
+.util-form input, .util-form textarea, .util-form select { min-height: 44px; padding: 8px 10px; border: 1px solid var(--input-border-strong, var(--line, rgba(26, 34, 48, .12))); border-radius: 10px; background: var(--panel, #ffffff); color: var(--text, #17202a); font: inherit; font-size: 14px; }
+.util-generate { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 16px; border: none; border-radius: 10px; background: var(--accent, #6557e8); color: var(--accent-contrast, #ffffff); cursor: pointer; font: inherit; font-size: 14px; font-weight: 650; }
+.util-generate:hover:not(:disabled) { filter: brightness(.96); }
+.util-generate:disabled { opacity: .5; cursor: not-allowed; }
+/* #5608: the primary action color matches the Chat/Claw composer's send
+ * button (voice-composer.css #355977 on padiem-glass) instead of the lighter
+ * selection accent, so every product's main CTA reads as the same control.
+ * Selection states (tabs, chips) keep the light accent. */
+html[data-theme="padiem-glass"] .util-generate,
+html[data-theme="padiem-glass"] .util-tool-open,
+html[data-theme="padiem-glass"] .pdfmd-btn-primary {
+  background: #355977;
+}
+.util-result { margin-top: 16px; }
+.util-result textarea { width: 100%; min-height: 44px; padding: 8px 10px; border: 1px solid var(--input-border-strong, var(--line, rgba(26, 34, 48, .12))); border-radius: 10px; background: var(--panel, #ffffff); color: var(--text, #17202a); font: inherit; font-size: 14px; box-sizing: border-box; }
+/* #5727: the form area carries the two authoring actions — generate (the
+ * shared primary CTA) and save. Same secondary surface as the result-area
+ * buttons, so both rows read as one control family. */
+.util-form-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 2px; }
+.util-form-actions .util-save,
+.util-form-actions button:not(.util-generate) { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 14px; border: 1px solid var(--line, rgba(26, 34, 48, .12)); border-radius: 10px; background: var(--panel, #ffffff); color: var(--text, #17202a); font: inherit; cursor: pointer; }
+.util-form-actions button:hover:not(:disabled):not(.util-generate) { background: var(--accent-soft); border-color: var(--accent); }
+.util-form-actions button:disabled { opacity: .5; cursor: not-allowed; }
+.util-form-actions .util-generate { align-self: flex-start; }
+
+/* #5799: the speech template — meeting-header parity and readable controls.
+ * Every rule here is scoped to #utilSpeechPanel so the other tools keep their
+ * current presentation until their own pass. The brand ink #334a5b is the
+ * eyebrow ink from standalone-views.css; no new palette. */
+#utilSpeechPanel .util-form { gap: 16px; }
+.util-fieldset { display: flex; flex-direction: column; gap: 12px; margin: 0; padding: 14px 16px 16px; border: 1px solid var(--glass-chat-border, rgba(51, 74, 91, .18)); border-radius: 12px; background: transparent; }
+.util-fieldset legend { padding: 0 6px; font-size: 13px; font-weight: 650; color: #334a5b; }
+#utilSpeechPanel .util-form label { gap: 6px; font-size: 13px; font-weight: 600; color: #334a5b; }
+/* The glass --line token is a white hairline meant for dark chrome; on the
+ * light form card it read as no outline at all. The speech controls draw a
+ * real ink border on a solid surface instead. */
+#utilSpeechPanel .util-form input,
+#utilSpeechPanel .util-form textarea,
+#utilSpeechPanel .util-form select { border: 1px solid var(--input-border-strong, rgba(51, 74, 91, .34)); background: #ffffff; }
+#utilSpeechPanel .util-form input:hover, #utilSpeechPanel .util-form textarea:hover, #utilSpeechPanel .util-form select:hover { border-color: rgba(51, 74, 91, .58); }
+#utilSpeechPanel .util-form input:focus, #utilSpeechPanel .util-form textarea:focus, #utilSpeechPanel .util-form select:focus { border-color: var(--accent, #79bce7); }
+/* The speech primary action joins the light PADIEM blue the brand dot and the
+ * selection states already use; dark ink keeps the contrast the old navy
+ * carried. Other tools keep the composer-matched navy until their pass. */
+html[data-theme="padiem-glass"] #utilSpeechPanel .util-generate { background: var(--accent, #79bce7); color: #10202e; }
+html[data-theme="padiem-glass"] #utilSpeechPanel .util-generate:hover:not(:disabled) { filter: none; background: #8cc8ee; }
+#utilSpeechPanel .util-form-actions .util-save { border-color: rgba(51, 74, 91, .34); }
+
+/* #5728: SNS photo composition — pick, preview, reorder, remove. Same token
+ * family as the form surfaces; no new palette. */
+.util-photos { display: flex; flex-direction: column; gap: 10px; padding: 14px; border: 1px solid var(--line, rgba(26, 34, 48, .12)); border-radius: 12px; background: var(--panel, #ffffff); }
+.util-photos-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.util-photos-title { font-size: 13px; font-weight: 650; color: var(--text, #17202a); }
+.util-photos-count { font-size: 12px; color: var(--muted, #5b6672); margin-left: auto; }
+.util-photo-add { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 14px; border: 1px solid var(--accent, #6557e8); border-radius: 10px; background: var(--accent-soft, #efedff); color: var(--text, #17202a); font: inherit; font-size: 13px; font-weight: 650; cursor: pointer; }
+.util-photo-add:hover { filter: brightness(.97); }
+.util-photo-list { list-style: none; display: flex; flex-direction: column; gap: 8px; margin: 0; padding: 0; }
+.util-photo-item { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.util-photo-thumb { width: 72px; height: 72px; object-fit: cover; border-radius: 8px; border: 1px solid var(--line, rgba(26, 34, 48, .12)); flex: 0 0 72px; }
+.util-photo-name { font-size: 13px; color: var(--text, #17202a); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 220px; flex: 1 1 140px; }
+.util-photo-controls { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.util-photo-controls button { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; min-width: 44px; padding: 0 10px; border: 1px solid var(--line, rgba(26, 34, 48, .12)); border-radius: 10px; background: var(--panel, #ffffff); color: var(--text, #17202a); font: inherit; cursor: pointer; }
+.util-photo-controls button:hover { background: var(--accent-soft); border-color: var(--accent); }
+.util-photo-pos { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted, #5b6672); }
+.util-photo-pos-select { min-height: 44px; padding: 6px 8px; border: 1px solid var(--line, rgba(26, 34, 48, .12)); border-radius: 10px; background: var(--panel, #ffffff); color: var(--text, #17202a); font: inherit; font-size: 13px; }
+.util-photo-note { margin: 0; font-size: 12px; color: var(--muted, #5b6672); line-height: 1.5; }
+/* Draft preview — composition check only, never a publishing claim. */
+.util-sns-preview { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; padding: 14px; border: 1px solid var(--line, rgba(26, 34, 48, .12)); border-radius: 12px; background: var(--panel, #ffffff); }
+.util-sns-preview[hidden] { display: none; }
+.util-preview-para { margin: 0; font-size: 14px; line-height: 1.6; color: var(--text, #17202a); white-space: pre-wrap; }
+.util-preview-photo { display: block; width: min(100%, 420px); border-radius: 10px; border: 1px solid var(--line, rgba(26, 34, 48, .12)); margin: 4px 0; }
+.util-sns-media-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 8px; }
+.util-sns-media-grid img { width: 100%; height: auto; border-radius: 10px; border: 1px solid var(--line, rgba(26, 34, 48, .12)); }
+.util-sns-media-grid.insta img { aspect-ratio: 1 / 1; object-fit: cover; height: 100%; }
+.util-photo-controls button:focus-visible,
+.util-photo-add:focus-visible,
+.util-photo-pos-select:focus-visible { outline: 3px solid var(--focus-ring, rgba(101, 87, 232, .24)); outline-offset: 2px; }
+.util-save { min-width: 72px; }
+.util-actions { display: flex; gap: 8px; margin-top: 8px; }
+.util-actions button { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 14px; border: 1px solid var(--line, rgba(26, 34, 48, .12)); border-radius: 10px; background: var(--panel, #ffffff); color: var(--text, #17202a); font: inherit; cursor: pointer; }
+.util-actions button:hover { background: var(--accent-soft); border-color: var(--accent); }
+.util-saved-list, .util-archive { margin-top: 16px; }
+.util-saved-list ul, .util-archive ul { list-style: none; padding: 0; }
+.util-saved-list li, .util-archive li { margin: 4px 0; }
+.util-saved-list button, .util-archive button { display: inline-flex; align-items: center; min-height: 44px; padding: 6px 10px; border: 1px solid var(--line, rgba(26, 34, 48, .12)); border-radius: 10px; background: var(--panel, #ffffff); color: var(--text, #17202a); cursor: pointer; width: 100%; text-align: left; }
+.util-saved-list button:hover, .util-archive button:hover { background: var(--accent-soft); border-color: var(--accent); }
+.util-empty { color: var(--muted, #5b6672); font-size: 13px; }
+/* #6199: 고쳐 쓰기 opens a stored piece in the draft editor; the line above the
+ * draft names it and states what saving will ask about the same name. */
+.util-edit-state {
+  margin: 6px 0 8px;
+  padding: 8px 10px;
+  border-left: 3px solid var(--accent, #6557e8);
+  border-radius: 8px;
+  background: var(--accent-soft, rgba(101, 87, 232, .08));
+  color: var(--text, #17202a);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+/* #5783: a save that stored nothing says so in the tab — this polite live
+ * line, never a browser modal. The 다시 시도 button only rides the statuses
+ * that can actually change by pressing again. */
+.util-save-status {
+  margin: 6px 0 8px;
+  padding: 8px 10px;
+  border-left: 3px solid var(--danger, #b3261e);
+  border-radius: 8px;
+  background: var(--danger-soft, rgba(179, 38, 30, .08));
+  color: var(--text, #17202a);
+  font-size: 12px;
+  line-height: 1.5;
+}
+.util-save-status .util-retry {
+  min-height: 32px;
+  margin-left: 4px;
+  padding: 4px 10px;
+  border: 1px solid var(--line, rgba(26, 34, 48, .16));
+  border-radius: 8px;
+  background: var(--panel, #ffffff);
+  color: var(--text, #17202a);
+  font-size: 12px;
+  cursor: pointer;
+}
+.util-save-status .util-retry:focus-visible {
+  outline: 3px solid var(--focus-ring, rgba(101, 87, 232, .32));
+  outline-offset: 2px;
+}
+
+/* #5731: a same-name save asks instead of stacking a second row. The safe
+ * answer (new name) is the first control; overwriting states what it keeps. */
+.util-save-choice {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--line, rgba(26, 34, 48, .16));
+  border-radius: 12px;
+  background: var(--panel, #ffffff);
+}
+.util-save-choice-text {
+  flex: 1 1 100%;
+  margin: 0;
+  color: var(--text, #17202a);
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.45;
+}
+.util-save-choice button {
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 1px solid var(--line, rgba(26, 34, 48, .16));
+  border-radius: 10px;
+  background: var(--panel, #ffffff);
+  color: var(--text, #17202a);
+  font-size: 13px;
+  cursor: pointer;
+}
+.util-save-choice .util-save-as-new {
+  border-color: var(--accent, #6557e8);
+  font-weight: 700;
+}
+.util-save-choice button:focus-visible {
+  outline: 3px solid var(--focus-ring, rgba(101, 87, 232, .32));
+  outline-offset: 2px;
+}
+.util-saved-group {
+  margin: 12px 0 4px;
+  color: var(--muted, #5b6672);
+  font-size: 12px;
+  font-weight: 700;
+}
+.util-soon-msg { color: var(--muted, #5b6672); padding: 20px; text-align: center; }
+/* Glass theme below 921px: the util page sits outside the six-panel frame, so
+ * the same opaque-page contract as the meeting view applies — hide the shell
+ * portrait fragments and give the page its own opaque surface. */
+@media (max-width: 920px) {
+  html[data-theme="padiem-glass"] body .app-shell[data-state="util"] .glass-shell-portrait,
+  html[data-theme="padiem-glass"] body .app-shell[data-state="util"] .glass-shell-frag { opacity: 0 !important; }
+  html[data-theme="padiem-glass"] body .app-shell[data-state="util"] .util-view { background: #f2f5f7; position: relative; z-index: 2; }
+}
+@media (max-width: 600px) {
+  .util-view { padding: 12px 10px 28px; }
+  .util-tabs { flex-wrap: wrap; }
+  .util-tabs[hidden] { display: none; }
+}
+/* #5608 follow-up: the sidebar Util entry expands into its four tools and the
+ * in-page tab row is the duplicate — hidden everywhere, not only on phones.
+ * Submenu rows reuse the sidebar's own row language (radius, hover, focus). */
+.util-tabs[hidden] { display: none; }
+.util-submenu[hidden] { display: none; }
+.util-nav-group { display: grid; gap: 2px; }
+/* The util parent mirrors the Claw row's unmistakable active treatment while
+ * any of its tools is open (claw-workspace.css #clawNavButton contract). */
+#utilNavButton[aria-current="page"] {
+  background: var(--accent-soft, rgba(101, 87, 232, .12));
+  box-shadow: inset 3px 0 0 var(--accent, #6557e8);
+}
+.side-item .side-chevron { margin-left: auto; color: var(--muted, #5b6672); font-size: 15px; line-height: 1; }
+.util-submenu { display: grid; gap: 2px; padding-left: 30px; }
+.util-submenu-item {
+  display: flex; align-items: center; min-height: 44px; padding: 0 10px;
+  border: none; border-radius: 10px; background: transparent;
+  color: var(--muted, #5b6672); font: inherit; font-size: 13px; font-weight: 650;
+  text-align: left; cursor: pointer;
+}
+.util-submenu-item:hover { background: rgba(255, 255, 255, .72); color: var(--text, #17202a); }
+.util-submenu-item:focus-visible {
+  outline: 3px solid var(--focus-ring, rgba(101, 87, 232, .24));
+  outline-offset: 2px;
+}
+.util-submenu-item.active {
+  background: var(--accent-soft, rgba(101, 87, 232, .12));
+  color: var(--accent-strong, var(--accent, #6557e8));
+  font-weight: 750;
+}
+html[data-theme="padiem-glass"] .util-submenu-item { color: rgba(255, 255, 255, .78); }
+html[data-theme="padiem-glass"] .util-submenu-item:hover { background: rgba(248, 250, 252, .16); color: rgba(255, 255, 255, .95); }
+html[data-theme="padiem-glass"] .util-submenu-item.active { background: rgba(248, 250, 252, .22); color: #ffffff; }
+html[data-theme="padiem-glass"] .side-item .side-chevron { color: rgba(255, 255, 255, .66); }
+
+/* #5028/#5608: inside the shared six-panel frame the .util-view itself is the
+ * glass card (shared-six-panel-frame.css ≥921px list), so the per-tool panels
+ * would double-inset the content. They flatten exactly like .meeting-panel
+ * does in meeting-capture.css, and their fields sit on the shared surface. */
+@media (min-width: 921px) {
+  html[data-theme="padiem-glass"] body .app-shell[data-state="util"] :is(
+    #utilSpeechPanel, #utilSnsPanel, #utilMeetingPanel, .pdfmd-shell
+  ) {
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+/* Long single-column forms measured as one endless wall in the captures.
+ * Short fields pair up; textareas keep the full lane so long drafting input
+ * stays one readable line length. */
+@media (min-width: 700px) {
+  .util-form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 14px; }
+  .util-form label:has(textarea) { grid-column: 1 / -1; }
+  /* #5895 beta UX: the form's section rows are not fields — the 참고 글 block,
+   * the platform switcher, the photo composer and the action row own the full
+   * lane so they never land in one cell beside a field. */
+  .util-form > .util-fieldset,
+  .util-form > .util-sns-tabs,
+  .util-form > .util-photos,
+  .util-form > .util-form-actions { grid-column: 1 / -1; }
+  /* #5799: the speech sections keep the same two-lane rhythm inside each
+   * fieldset, and the action row owns a full-width lane at the bottom so it
+   * never lands in a cell stretched to a tall section's height. */
+  #utilSpeechPanel .util-fieldset { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 14px; }
+  #utilSpeechPanel .util-fieldset label:has(textarea) { grid-column: 1 / -1; }
+  #utilSpeechPanel .util-form-actions { grid-column: 1 / -1; }
+  #utilSpeechPanel .util-form-actions .util-save { height: 44px; }
+}
+/* Below the two-lane breakpoint the speech action row still pins its buttons
+ * to 44px instead of stretching with the stacked column. */
+#utilSpeechPanel .util-form-actions .util-save { height: 44px; }
+/* The platform switcher shipped markup without skin, so blog/facebook/instagram
+ * rendered as raw browser buttons. Same row language as .util-tab. */
+.util-sns-tabs { display: flex; flex-wrap: wrap; gap: 8px; }
+.util-sns-tab {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-height: 44px; padding: 0 14px;
+  border: 1px solid var(--line, rgba(26, 34, 48, .12)); border-radius: 10px;
+  background: var(--panel, #ffffff); color: var(--text, #17202a);
+  font: inherit; font-size: 13px; font-weight: 650; cursor: pointer;
+}
+.util-sns-tab:hover { background: var(--accent-soft, rgba(101, 87, 232, .12)); border-color: var(--accent, #6557e8); }
+.util-sns-tab:focus-visible {
+  outline: 3px solid var(--focus-ring, rgba(101, 87, 232, .24));
+  outline-offset: 2px;
+}
+.util-sns-tab.active {
+  border-color: transparent;
+  background: var(--accent, #6557e8);
+  color: var(--accent-contrast, #ffffff);
+}
+
+
+/* #5568 P1: one glass surface keeps the utility readable over the theme image
+ * without adding per-field cards. Tokens come from the active Chat theme. */
+.pdfmd-shell {
+  padding: 18px;
+  border: 1px solid var(--card-border, rgba(255, 255, 255, .42));
+  border-radius: var(--radius-md, 16px);
+  background: var(--card-bg, rgba(239, 243, 246, .48));
+  box-shadow: var(--shadow, 0 18px 48px rgba(28, 38, 49, .14));
+  color: var(--text, #17202a);
+  backdrop-filter: blur(24px) saturate(108%);
+  -webkit-backdrop-filter: blur(24px) saturate(108%);
+}
+.pdfmd-header h3 { margin: 0 0 4px; color: var(--text, #17202a); font-size: 18px; }
+.pdfmd-desc { color: var(--muted, #53606c); font-size: 13px; line-height: 1.55; margin: 0 0 14px; }
+.pdfmd-controls { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 8px; }
+.pdfmd-mode-help { margin: 0 0 12px; color: var(--muted, #53606c); font-size: 12px; line-height: 1.5; }
+.pdfmd-controls label { display: inline-flex; align-items: center; gap: 8px; color: var(--muted, #53606c); font-size: 13px; }
+.pdfmd-controls select {
+  min-height: 44px; padding: 0 10px;
+  border: 1px solid var(--line, rgba(26, 34, 48, .12)); border-radius: 10px;
+  background: var(--panel, #ffffff); color: var(--text, #17202a);
+  font: inherit; font-size: 13px;
+}
+.pdfmd-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-height: 44px; padding: 0 14px;
+  border: 1px solid var(--line, rgba(26, 34, 48, .12)); border-radius: 10px;
+  background: var(--panel, #ffffff); color: var(--text, #17202a);
+  font: inherit; font-size: 13px; font-weight: 650;
+  cursor: pointer;
+}
+.pdfmd-btn:hover:not(:disabled) { background: var(--accent-soft); border-color: var(--accent); }
+.pdfmd-btn:focus-visible,
+.pdfmd-controls select:focus-visible,
+.pdfmd-drop:focus-visible,
+.pdfmd-history-search:focus-visible,
+.pdfmd-history-list button:focus-visible {
+  outline: 3px solid var(--focus-ring, rgba(101, 87, 232, .24));
+  outline-offset: 2px;
+}
+.pdfmd-btn-primary {
+  border-color: transparent;
+  background: var(--accent, #6557e8);
+  color: var(--accent-contrast, #ffffff);
+}
+.pdfmd-btn-primary:hover:not(:disabled) { filter: brightness(.96); border-color: transparent; }
+.pdfmd-btn:disabled { opacity: .5; cursor: not-allowed; }
+.pdfmd-jobid { color: var(--muted, #53606c); font-size: 12px; }
+.pdfmd-drop {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+  min-height: 150px; padding: 22px 18px;
+  border: 1.5px dashed var(--line, rgba(26, 34, 48, .18)); border-radius: 14px;
+  background: var(--panel, #ffffff); color: var(--text, #17202a);
+  text-align: center; cursor: pointer;
+  transition: background-color .16s ease, border-color .16s ease;
+}
+.pdfmd-drop:hover,
+.pdfmd-drop.dragover { background: var(--accent-soft); border-color: var(--accent); }
+.pdfmd-drop-title { font-size: 15px; font-weight: 700; line-height: 1.4; }
+.pdfmd-drop-sub { color: var(--muted, #53606c); font-size: 13px; line-height: 1.5; }
+.pdfmd-drop-cta {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-height: 44px; margin-top: 8px; padding: 0 18px;
+  border-radius: 999px; background: var(--accent, #6557e8);
+  color: var(--accent-contrast, #ffffff); font-size: 14px; font-weight: 700;
+}
+.pdfmd-status { min-height: 0; margin: 8px 0 10px; color: var(--muted, #53606c); font-size: 13px; line-height: 1.5; }
+.pdfmd-status:empty { display: none; }
+.pdfmd-empty { color: var(--muted, #53606c); font-size: 13px; line-height: 1.6; }
+.pdfmd-empty strong { display: block; margin-bottom: 2px; color: var(--text, #17202a); font-size: 14px; }
+.pdfmd-empty p { margin: 2px 0 0; }
+.pdfmd-empty ol { margin: 6px 0 0; padding-left: 20px; }
+.pdfmd-empty li { margin: 2px 0; }
+.pdfmd-itemlist { display: flex; flex-direction: column; gap: 10px; }
+.pdfmd-item {
+  padding: 12px; border: 1px solid var(--line, rgba(26, 34, 48, .12)); border-radius: 12px;
+  background: var(--panel, #ffffff); color: var(--text, #17202a);
+}
+.pdfmd-item-title { margin-bottom: 6px; color: var(--text, #17202a); font-weight: 650; overflow-wrap: anywhere; }
+.pdfmd-item-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
+.pdfmd-item-count { color: var(--muted, #53606c); font-size: 12px; }
+.pdfmd-status-chip {
+  display: inline-flex; align-items: center; min-height: 24px; padding: 0 9px;
+  border: 1px solid var(--line, rgba(26, 34, 48, .12)); border-radius: 999px;
+  background: transparent; color: var(--muted, #53606c);
+  font-size: 12px; font-weight: 700; white-space: nowrap;
+}
+.pdfmd-status-chip[data-status="working"] { background: var(--gold-soft); color: var(--text, #17202a); border-color: var(--gold); }
+.pdfmd-status-chip[data-status="reviewed"] { background: var(--accent-soft); color: var(--accent-strong); border-color: var(--accent); }
+.pdfmd-status-chip[data-status="done"] { background: var(--success-surface); color: var(--success); border-color: var(--success-border); }
+.pdfmd-status-chip[data-status="failed"] { background: var(--danger-surface); color: var(--danger); border-color: var(--danger-border); }
+.pdfmd-item-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.pdfmd-agreement { margin-top: 8px; color: var(--success); font-size: 12px; font-weight: 650; }
+.pdfmd-warn { margin-top: 4px; color: #8a4b0f; font-size: 12px; line-height: 1.5; }
+html[data-theme="dark"] .pdfmd-warn,
+html[data-theme="cinematic"] .pdfmd-warn { color: #f0c48a; }
+.pdfmd-preview { margin-top: 18px; }
+.pdfmd-preview h4 { margin: 0 0 10px; color: var(--text, #17202a); font-size: 14px; }
+.pdfmd-preview-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.pdfmd-pane { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.pdfmd-pane-label { color: var(--muted, #53606c); font-size: 12px; font-weight: 700; letter-spacing: .02em; }
+.pdfmd-iframe {
+  width: 100%; height: clamp(480px, 62vh, 760px);
+  border: 1px solid var(--line, rgba(26, 34, 48, .12)); border-radius: 10px;
+  background: #ffffff;
+}
+.pdfmd-md {
+  height: clamp(480px, 62vh, 760px); margin: 0; padding: 14px;
+  border: 1px solid var(--line, rgba(26, 34, 48, .12)); border-radius: 10px;
+  background: var(--panel, #ffffff); color: var(--text, #17202a);
+  overflow: auto; font-size: 13px; line-height: 1.65; white-space: pre-wrap;
+}
+.pdfmd-history-head { margin: 18px 0 8px; color: var(--text, #17202a); font-size: 14px; }
+.pdfmd-history-tools { margin: 0 0 10px; }
+.pdfmd-history-search {
+  width: 100%; min-height: 44px; padding: 0 12px;
+  border: 1px solid var(--line, rgba(26, 34, 48, .12)); border-radius: 10px;
+  background: var(--panel, #ffffff); color: var(--text, #17202a);
+  font: inherit; font-size: 13px;
+}
+.pdfmd-history-search::placeholder { color: var(--muted, #53606c); }
+.pdfmd-history-group { margin: 14px 0 6px; color: var(--muted, #53606c); font-size: 12px; font-weight: 700; letter-spacing: .02em; }
+.pdfmd-history-group:first-child { margin-top: 0; }
+.pdfmd-history-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; }
+.pdfmd-history-list li { margin: 0; }
+.pdfmd-history-list button {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  width: 100%; min-height: 56px; padding: 10px 12px;
+  border: 1px solid var(--line, rgba(26, 34, 48, .12)); border-radius: 12px;
+  background: var(--panel, #ffffff); color: var(--text, #17202a);
+  text-align: left; font: inherit; cursor: pointer;
+}
+.pdfmd-history-list button:hover { background: var(--accent-soft); border-color: var(--accent); }
+.pdfmd-history-list button[aria-current="true"] { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+.pdfmd-history-main { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.pdfmd-history-when { overflow: hidden; font-size: 13px; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; }
+.pdfmd-history-meta { color: var(--muted, #53606c); font-size: 12px; }
+@media (max-width: 768px) {
+  .pdfmd-preview-grid { grid-template-columns: 1fr; gap: 14px; }
+  .pdfmd-iframe, .pdfmd-md { height: 70vh; min-height: 420px; max-height: 720px; }
+}
+@media (max-width: 600px) {
+  .pdfmd-shell { padding: 14px; border-radius: 14px; }
+  .pdfmd-drop { min-height: 170px; padding: 20px 12px; }
+  .pdfmd-drop-title { font-size: 16px; }
+  .pdfmd-item { padding: 12px; }
+  .pdfmd-history-list button { align-items: flex-start; }
+  .pdfmd-history-list button .pdfmd-status-chip { flex: 0 0 auto; }
+}
+
+/* #5895: the shared "from my PC" part inside the authoring forms. The picker itself
+   is its own dialog; this only lays out the button, the preview of what came over,
+   and the one-line notice a screen shows when no PC is linked yet. */
+.util-pc-ref {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.util-pc-ref-mount:empty { display: none; }
+
+.util-pc-ref-pick,
+.util-pc-ref-connect,
+.util-pc-ref-remove {
+  font: inherit;
+  min-height: 44px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--line, rgba(66, 106, 135, 0.28));
+  background: var(--surface, rgba(255, 255, 255, 0.8));
+  color: inherit;
+  cursor: pointer;
+  align-self: flex-start;
+}
+
+.util-pc-ref-note {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--muted, #5a7488);
+}
+
+.util-pc-ref-status {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--danger, #a1303f);
+}
+
+.util-pc-ref-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.util-pc-ref-item {
+  border: 1px solid var(--line, rgba(66, 106, 135, 0.22));
+  border-radius: 12px;
+  padding: 8px 10px;
+  background: var(--surface, rgba(255, 255, 255, 0.6));
+}
+
+.util-pc-ref-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.util-pc-ref-name { font-size: 0.92rem; }
+.util-pc-ref-chars { font-size: 0.8rem; color: var(--muted, #5a7488); }
+
+.util-pc-ref-preview {
+  margin: 6px 0 0;
+  max-height: 140px;
+  overflow: auto;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: 0.82rem;
+  color: var(--muted, #4a6a80);
+}

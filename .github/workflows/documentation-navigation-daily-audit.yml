@@ -1,0 +1,98 @@
+name: Documentation Navigation Daily Audit
+
+# Read-only daily check of the instruction index that AGENTS.md describes:
+#   1. the existing operating-policy guard suite still passes (reused command);
+#   2. every path the entry point and the navigation indexes reference exists;
+#   3. the navigation hubs, their markers and the entry point's canonical
+#      pointers are still present;
+#   4. the entry point is still small enough for an agent runtime to load whole.
+#
+# Silence is the contract: nothing is created, posted or rewritten when the
+# index is healthy. A finding appends one comment to the existing maintenance
+# issue #5002. This workflow never creates a branch, pull request or document
+# and never mutates product source, deployment or credentials.
+
+on:
+  schedule:
+    - cron: "20 0 * * *"   # 09:20 Asia/Seoul, once per day
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: documentation-navigation-daily-audit
+  cancel-in-progress: false
+
+jobs:
+  audit:
+    name: Instruction index audit
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      DOCUMENTATION_AUDIT_ISSUE: "5002"
+      GH_REPO: ${{ github.repository }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Check out the default branch revision
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          filter: blob:none
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install test dependencies
+        run: python -m pip install --disable-pip-version-check 'pytest>=8,<10' 'PyYAML>=6,<7'
+
+      - name: Verify the audit contract itself
+        run: python -m unittest discover -s .github/tests -p test_documentation_navigation_daily_audit.py -v
+
+      - name: Run the existing operating policy consistency tests
+        id: guards
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          python -m pytest -q docs/operations/tests 2>&1 | tee "$RUNNER_TEMP/guards.log"
+
+      - name: Accumulate a policy-guard failure on the maintenance issue
+        if: steps.guards.outcome == 'failure'
+        run: |
+          {
+            echo '## Daily documentation-navigation audit'
+            echo
+            echo "Run: $GITHUB_SHA on $GITHUB_REF_NAME. Read-only check; no branch,"
+            echo 'pull request or file was created or modified.'
+            echo
+            echo 'FAIL: the operating-policy guard suite reported:'
+            echo '```text'
+            tail -n 40 "$RUNNER_TEMP/guards.log"
+            echo '```'
+            echo
+            echo 'Next action: correct the index through the normal branch/pull-request'
+            echo 'path, or record why the finding is expected.'
+          } > "$RUNNER_TEMP/guards-body.md"
+          gh issue comment "$DOCUMENTATION_AUDIT_ISSUE" --body-file "$RUNNER_TEMP/guards-body.md"
+
+      - name: Audit the instruction index (read-only, posts only on findings)
+        id: audit
+        run: python .github/scripts/documentation_navigation_daily_audit.py
+
+      - name: Report the bounded outcome
+        if: always()
+        run: |
+          echo 'AUDIT_SCOPE=DOCUMENTATION_INDEX_READ_ONLY'
+          echo 'PRODUCT_SOURCE_MUTATION=NO'
+          echo 'PULL_REQUEST_CREATED=NO'
+          echo 'ISSUE_COMMENT_ON_HEALTHY_INDEX=NO'
+          echo 'OPERATING_POLICY_GUARD_OUTCOME=${{ steps.guards.outcome }}'
+          echo 'NAVIGATION_AUDIT_OUTCOME=${{ steps.audit.outcome }}'
+          # Keep the run red when a check found something, so the daily watch
+          # cannot fail silently behind a green scheduled job.
+          if [ "${{ steps.guards.outcome }}" = "failure" ] || [ "${{ steps.audit.outcome }}" = "failure" ]; then
+            exit 1
+          fi

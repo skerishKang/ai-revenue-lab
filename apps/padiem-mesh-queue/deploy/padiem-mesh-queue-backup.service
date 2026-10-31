@@ -1,0 +1,8 @@
+[Unit]
+Description=Padiem #5881 daily PC queue database backup
+
+[Service]
+Type=oneshot
+User=padiem-mesh
+Group=padiem-mesh
+ExecStart=/opt/padiem/mesh-queue/backup.sh

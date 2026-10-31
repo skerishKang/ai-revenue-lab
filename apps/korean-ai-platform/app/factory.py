@@ -96,6 +96,8 @@ def create_app() -> Starlette:
 
     app = Starlette(routes=routes, on_startup=None)
     app.state.jinja_env = jinja_env
+    from app.pilot.deferred_writes import DeferredWritesMiddleware
+    app.add_middleware(DeferredWritesMiddleware)
 
     if _STATIC_DIR.is_dir():
         app.mount("/static", StaticFiles(directory=str(_STATIC_DIR)), name="static")
@@ -127,13 +129,13 @@ def create_app() -> Starlette:
     # observes the same installed validation authority as the main gateway.
     from app.pilot.stream_gateway import router as pilot_stream_router
 
-    # Slice 16: staged Router-owned b14/auto streaming preview. Keep this
-    # separate from both the manual preview and canonical endpoint promotion.
-    from app.pilot.auto_stream_gateway import router as pilot_auto_stream_router
-
     # Provider-neutral readiness truth for deployment gates. This endpoint is
     # read-only and never performs an upstream Provider call.
     from app.pilot.provider_readiness import router as provider_readiness_router
+
+    # #5318: owner read access to the durable call ledger. Reachable only by a
+    # proven server-to-server caller, so it mounts with the other JSON lanes.
+    from app.pilot.call_ledger_admin import router as call_ledger_admin_router
 
     from app.pilot.ui import router as pilot_ui_router
     from starlette.routing import Route as StarletteRoute
@@ -141,8 +143,8 @@ def create_app() -> Starlette:
     for route in [
         *pilot_api_router.routes,
         *pilot_stream_router.routes,
-        *pilot_auto_stream_router.routes,
         *provider_readiness_router.routes,
+        *call_ledger_admin_router.routes,
     ]:
         new_route = StarletteRoute(
             path="/api/pilot" + route.path,

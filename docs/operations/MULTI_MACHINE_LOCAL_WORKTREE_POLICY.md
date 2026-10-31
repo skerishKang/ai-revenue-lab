@@ -39,6 +39,9 @@ LOCAL_NUMBER_MACHINE_BINDING=NO
 | --- | --- | --- |
 | `COMP1` | Owner workstation (`PADIEM-COMMAND-`, owner user `limone`); hosts the `E:` / `G:` working drives and most long-lived lane worktrees | `G:\Ddrive\BatangD\task\workdiary\ai-revenue-lab` |
 | `COMP2` | Secondary development machine (owner user `user`); drives `C:` and `D:` only | `C:\ai-revenue-lab` |
+| `CGI-1` | CENTRAL CTO seat since 2026-10-23 (user `sji`); runs the CTO session and a local implementation worker. `C:\Users\sji\cgi-work\kbs261022` and its `wt-*` worktrees belong to the separate CGI PoC repository and are never used for this repository. 로컬 작업자 복수 운용(아스트라·강철원·B64 등), 보고 머리말 `[이름@기기]` | `C:\Users\sji\cgi-work\ai-revenue-lab` |
+
+`CGI-1` has no remote-device access to `COMP1`/`COMP2` and no Cloudflare or GitHub CLI credentials of its own; it reaches GitHub only through the implementation worker's Git credentials. Private Governance on `COMP1` is `NOT_READ` from this seat until an authorized read path exists; a CTO session there records that limitation instead of inferring the business policy.
 
 `COMP1` may be reached from `COMP2` only through its network share:
 

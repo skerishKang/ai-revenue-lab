@@ -57,7 +57,11 @@ from .agent_planner import (
     AgentPlanStep,
     validate_agent_plan,
 )
-from .agent_profile_adapter import CompiledAgentProfile
+from .agent_profile_adapter import (
+    CompiledAgentProfile,
+    effective_max_steps,
+    effective_max_tokens,
+)
 from .agent_runtime import AgentRuntimeError
 from .b14_execution import B14RouteMetadata
 from .tool_runtime import ToolAuthorizationContext, ToolExecutionResult, ToolRuntime
@@ -101,6 +105,23 @@ from .tool_registry import ToolRegistrySnapshot
 from .tool_resource_policy import EffectiveToolResources, ToolResourcePolicy, resolve_tool_resources
 
 _SAFE_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@-]{0,127}$")
+
+
+def _agent_idle_window(request: Any) -> float:
+    """The agent lane's inactivity window.
+
+    #4379: the declared execution budget no longer defaults to a PADIEM total,
+    so the inactivity window comes from the agent's own budget. The window
+    still fails a run that produces no verified progress; it never caps the
+    total elapsed time of a progressing run.
+    """
+
+    definition = getattr(request, "agent_definition", None)
+    budget = getattr(definition, "execution_budget", None)
+    window = getattr(budget, "max_wall_seconds", None)
+    if isinstance(window, bool) or not isinstance(window, (int, float)):
+        return 900.0
+    return float(window)
 
 
 class OrchestrationError(ValueError):
@@ -822,6 +843,7 @@ class OrchestrationRunner:
         event_sink: Callable[[OrchestrationEvent], Any] | None = None,
         agent_run_guard: Callable[[], bool | Awaitable[bool]] | None = None,
         agent_checkpoint_hook: Callable[[int], bool | Awaitable[bool]] | None = None,
+        agent_result_ledger: ToolResultLedger | None = None,
     ) -> None:
         if not hasattr(runtime, "run") or not callable(getattr(runtime, "run", None)):
             raise OrchestrationError("invalid_runtime", "runtime must provide a callable run method")
@@ -836,6 +858,11 @@ class OrchestrationRunner:
         if agent_checkpoint_hook is not None and not callable(agent_checkpoint_hook):
             raise OrchestrationError("invalid_agent_checkpoint", "trusted checkpoint hook must be callable")
         self._agent_checkpoint_hook = agent_checkpoint_hook
+        if agent_result_ledger is not None and not hasattr(agent_result_ledger, "resolve"):
+            raise OrchestrationError("invalid_agent_result_ledger", "trusted result ledger must be callable")
+        # #4379: the ledger owns the tool payloads so a long run does not retain
+        # every tool output in the Worker.
+        self._agent_result_ledger = agent_result_ledger
 
     def _deliver_event(self, evt: OrchestrationEvent) -> None:
         """Deliver one emitted event to the optional synchronous event sink.
@@ -1065,9 +1092,14 @@ class OrchestrationRunner:
                         run_guard=self._agent_run_guard,
                         checkpoint_hook=self._agent_checkpoint_hook,
                         progress=agent_progress,
+                        result_ledger=self._agent_result_ledger,
                     ),
                     tracker=agent_progress,
-                    idle_seconds=request.context.timeout_seconds,
+                    # #4379: the declared execution budget no longer defaults
+                    # to a PADIEM total. The agent lane's inactivity window is
+                    # the agent's own budget window, so the liveness watchdog
+                    # stays.
+                    idle_seconds=request.context.timeout_seconds or _agent_idle_window(request),
                 )
 
                 if bridge_res.terminal_reason is AgentTerminalReason.APPROVAL_REQUIRED:
@@ -1200,11 +1232,17 @@ class OrchestrationRunner:
                         system_instruction=effective_agent.system_instruction,
                         task_type=activated_skill.compiled.runtime_profile.task_type,
                         optimize_for=activated_skill.compiled.runtime_profile.optimize_for,
-                        max_tokens=min(effective_agent.max_tokens, activated_skill.compiled.runtime_profile.max_tokens),
+                        max_tokens=effective_max_tokens(
+                            effective_agent.max_tokens,
+                            activated_skill.compiled.runtime_profile.max_tokens,
+                        ),
                         allowed_tools=resolved_tools,
                         required_capabilities=effective_agent.required_capabilities,
                         model_policy=effective_agent.model_policy,
-                        max_steps=min(effective_agent.max_steps, activated_skill.compiled.runtime_profile.max_steps),
+                        max_steps=effective_max_steps(
+                            effective_agent.max_steps,
+                            activated_skill.compiled.runtime_profile.max_steps,
+                        ),
                     )
 
                 exec_req = ExecutionRequest(
@@ -1217,7 +1255,7 @@ class OrchestrationRunner:
 
                 mark_execution_dispatch_started()
                 # Single-shot model lane: this keeps the caller-declared
-                # ExecutionContext budget (default 900s, max 3600s) unchanged.
+                # ExecutionContext budget unchanged; the Engine wire default is None.
                 # The model transport owns its own 600s per-event read idle
                 # watchdog; no new short cap is introduced here (#4194).
                 result = await asyncio.wait_for(
@@ -1605,15 +1643,21 @@ class OrchestrationRunner:
                         step_driver=getattr(request, "agent_step_driver", None),
                         initial_step_index=pause.step_index,
                         initial_tool_results=request.initial_tool_results,
+                        initial_tool_result_refs=getattr(
+                            request, "initial_tool_result_refs", ()
+                        ),
                         initial_tool_events=request.initial_tool_events,
                         trace_id=trace_id,
                         plan_id=request.agent_plan.agent_id,
                         run_guard=self._agent_run_guard,
                         checkpoint_hook=self._agent_checkpoint_hook,
                         progress=resume_progress,
+                        result_ledger=self._agent_result_ledger,
                     ),
                     tracker=resume_progress,
-                    idle_seconds=request.context.timeout_seconds,
+                    # #4379: the agent lane's inactivity window is the agent's
+                    # own budget window, not a declared total.
+                    idle_seconds=request.context.timeout_seconds or _agent_idle_window(request),
                 )
 
                 if bridge_res.terminal_reason is AgentTerminalReason.MAX_WALL_TIME:

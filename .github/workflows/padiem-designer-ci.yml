@@ -1,0 +1,64 @@
+name: PADIEM Designer CI
+
+# Focused contract test lane for the PADIEM Designer preview app (#5513).
+#
+# It proves only what it executes: the app's own unit and contract tests. The
+# live proof needs a real model route and a real browser, so it is a separate
+# run and is skipped here — this lane never depends on a provider.
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'apps/padiem-designer/**'
+      - '.github/workflows/padiem-designer-ci.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'apps/padiem-designer/**'
+      - '.github/workflows/padiem-designer-ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: padiem-designer-ci-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  designer-contracts:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact event head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Assert exact head
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected='${{ github.event.pull_request.head.sha || github.sha }}'
+          actual="$(git rev-parse HEAD)"
+          echo "expected=$expected"
+          echo "actual=$actual"
+          test "$expected" = "$actual"
+
+      - name: Install the Designer app with its test extras
+        run: |
+          python -m pip install --disable-pip-version-check -e 'apps/padiem-designer[dev]'
+          python -m pip check
+
+      - name: Test the Designer contracts
+        run: python -m pytest apps/padiem-designer/tests -q

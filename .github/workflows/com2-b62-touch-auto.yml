@@ -1,0 +1,163 @@
+name: COM2 B62 Touch Auto Canary
+# Trusted default-branch follow-up to the existing hosted browser lane.
+# Does not change the 16 hosted QA jobs or any required status context.
+on:
+  workflow_dispatch:
+    inputs:
+      sha:
+        description: Exact open same-repository PR head SHA (40 lowercase hex)
+        required: true
+        type: string
+permissions:
+  contents: read
+  pull-requests: read
+  statuses: write
+  actions: write
+concurrency:
+  group: com2-b62-touch-auto-${{ inputs.sha }}
+  cancel-in-progress: true
+jobs:
+  touch:
+    if: >-
+      github.event_name == 'workflow_dispatch'
+    runs-on: [self-hosted, linux, x64, padiem-com2-ci]
+    timeout-minutes: 10
+    steps:
+      - name: Resolve open same-repository PR and select touch scope
+        id: target
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EXPECTED: ${{ inputs.sha }}
+
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$EXPECTED" =~ ^[0-9a-f]{40}$ ]]
+          url="https://api.github.com/repos/${GITHUB_REPOSITORY}"
+          response="$(curl --fail --silent --show-error -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "$url/commits/$EXPECTED/pulls?per_page=100")"
+          PR="$(RESPONSE="$response" python3 - <<'PY'
+          import json,os
+          repo=os.environ["GITHUB_REPOSITORY"]
+          sha=os.environ["EXPECTED"]
+          valid=[p for p in json.loads(os.environ["RESPONSE"]) if p["state"]=="open" and p["head"]["sha"]==sha and p["head"]["repo"]["full_name"]==repo]
+          if len(valid)!=1:
+              print("skip")
+              raise SystemExit(0)
+          print(valid[0]["number"])
+          PY
+          )"
+          if [[ "$PR" == skip ]]; then
+            echo "selected=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          # Trusted API metadata only; never run PR-provided planner on the host.
+          files="$(curl --fail --silent --show-error -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "$url/pulls/$PR/files?per_page=100")"
+          selected="$(FILES="$files" python3 - <<'PY'
+          import json,os
+          rows=json.loads(os.environ['FILES'])
+          # For PRs beyond first-page capacity run conservatively. Every uncertain
+          # source change selects the isolated canary rather than silently skipping.
+          paths={p.get('filename','') for p in rows} | {p.get('previous_filename','') for p in rows}
+          chosen=len(rows)>=100 or any(
+              (p.startswith('apps/padiem-chat/') and not p.startswith('apps/padiem-chat/tests/'))
+              or p=='.github/scripts/b62_mobile_touch_target_qa.py'
+              for p in paths
+          )
+          print('true' if chosen else 'false')
+          PY
+          )"
+          echo "selected=$selected" >> "$GITHUB_OUTPUT"
+          echo "sha=$EXPECTED" >> "$GITHUB_OUTPUT"
+      - name: Checkout exact PR source without persisted credentials
+        if: steps.target.outputs.selected == 'true'
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.target.outputs.sha }}
+          persist-credentials: false
+          clean: true
+          path: sandbox-input
+      - name: Run offline read-only COM2 Chromium touch lane
+        id: run_touch
+        if: steps.target.outputs.selected == 'true'
+        shell: bash
+        env:
+          SHA: ${{ steps.target.outputs.sha }}
+        run: |
+          set -euo pipefail
+          sudo -n /usr/local/sbin/padiem-ci-b62-touch-check "$SHA" | tee "$RUNNER_TEMP/b62-touch-auto.log"
+          grep -q '^CI_5210_QA_OK$' "$RUNNER_TEMP/b62-touch-auto.log"
+      - name: Publish COM2 mobile touch result on exact PR HEAD
+        if: ${{ always() && steps.target.outputs.sha != '' && steps.target.outputs.selected == 'true' }}
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SHA: ${{ steps.target.outputs.sha }}
+          RESULT: ${{ steps.run_touch.outcome }}
+        run: |
+          set -euo pipefail
+          # Derive the result from the recorded step status, never from PR input.
+          if [[ "$RESULT" == success ]]; then state=success; else state=failure; fi
+          export STATE="$state"
+          payload="$(python3 - <<'PY'
+          import json,os
+          print(json.dumps({"state":os.environ["STATE"],"context":"COM2 B62 mobile touch", "description":"COM2 isolated Chromium mobile QA: "+os.environ["STATE"], "target_url": "https://github.com/"+os.environ["GITHUB_REPOSITORY"]+"/actions/runs/"+os.environ["GITHUB_RUN_ID"]}))
+          PY
+          )"
+          curl --fail --silent --show-error -X POST \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/statuses/${SHA}" --data "$payload"
+      - name: Publish final mobile gate on COM2 success
+        if: ${{ success() && steps.target.outputs.selected == 'true' && steps.run_touch.outcome == 'success' }}
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SHA: ${{ steps.target.outputs.sha }}
+        run: |
+          set -euo pipefail
+          [[ "$SHA" =~ ^[0-9a-f]{40}$ ]]
+          payload="$(python3 - <<'PY'
+          import json,os
+          print(json.dumps({"context":"B62 mobile QA final","state":"success","description":"COM2 isolated mobile Chromium PASS","target_url":"https://github.com/"+os.environ["GITHUB_REPOSITORY"]+"/actions/runs/"+os.environ["GITHUB_RUN_ID"]}))
+          PY
+          )"
+          curl --fail --silent --show-error -X POST -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/${GITHUB_REPOSITORY}/statuses/$SHA" --data "$payload"
+      - name: Dispatch exact-HEAD hosted fallback when COM2 mobile QA fails
+        if: ${{ failure() && steps.target.outputs.selected == 'true' && steps.target.outputs.sha != '' && steps.run_touch.outcome == 'failure' }}
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EXPECTED: ${{ steps.target.outputs.sha }}
+        run: |
+          set -euo pipefail
+          [[ "$EXPECTED" =~ ^[0-9a-f]{40}$ ]]
+          base="https://api.github.com/repos/${GITHUB_REPOSITORY}"
+          response="$(curl --fail --silent --show-error -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "$base/commits/$EXPECTED/pulls?per_page=100")"
+          PR="$(RESPONSE="$response" python3 - <<'PY'
+          import json,os
+          matches=[p for p in json.loads(os.environ["RESPONSE"]) if p["state"]=="open" and p["head"]["sha"]==os.environ["EXPECTED"] and p["head"]["repo"]["full_name"]==os.environ["GITHUB_REPOSITORY"]]
+          if len(matches)!=1:
+              print("skip")
+          else:
+              print(matches[0]["number"])
+          PY
+          )"
+          if [[ "$PR" == skip ]]; then
+            echo "Fallback not dispatched: PR no longer open at exact head"
+            exit 0
+          fi
+          payload="$(PR="$PR" python3 - <<'PY'
+          import json,os
+          print(json.dumps({"ref":"main","inputs":{"pr_number":os.environ["PR"],"expected_sha":os.environ["EXPECTED"]}}))
+          PY
+          )"
+          curl --fail --silent --show-error -X POST -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "$base/actions/workflows/b62-mobile-touch-hosted-fallback.yml/dispatches" --data "$payload"
+          echo "COM2_TOUCH_HOSTED_FALLBACK_DISPATCHED=$PR"
+      - name: Save bounded evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: com2-b62-touch-auto
+          path: ${{ runner.temp }}/b62-touch-auto.log
+          if-no-files-found: ignore
+          retention-days: 7

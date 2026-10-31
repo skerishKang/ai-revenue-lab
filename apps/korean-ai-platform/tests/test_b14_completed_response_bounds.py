@@ -27,7 +27,7 @@ from app.pilot.errors import (
 
 import tracemalloc
 
-CAP = plat.MAX_RESPONSE_BYTES  # 1MiB error/SSE frame guard (not a token ceiling)
+CAP = plat.MAX_RESPONSE_BYTES  # 10MiB error/SSE frame guard (not a token ceiling)
 COMPLETED_CAP = plat.MAX_COMPLETED_RESPONSE_BYTES  # finite Worker JSON resource budget
 CHUNK = 64 * 1024
 OVER_TAIL = 16 * 1024
@@ -624,9 +624,11 @@ async def test_runtime_config_max_response_bytes_is_not_wired(monkeypatch):
     # Policy truth (#4379): the legacy 1MiB config field is declared-only.
     # It does not change the error/SSE guard OR completed JSON memory budget;
     # widening it must not become a backdoor to unbounded Worker allocations.
+    # #5734 stage 2 moved the real guard to 10MiB and left this field alone, so
+    # the two numbers are visibly different and only one of them decides anything.
     from app.pilot.b14_runtime_config import runtime_config
 
-    assert plat.MAX_RESPONSE_BYTES == 1024 * 1024
+    assert plat.MAX_RESPONSE_BYTES == 10 * 1024 * 1024
     assert runtime_config.max_response_bytes == 1024 * 1024
     monkeypatch.setattr(runtime_config, "max_response_bytes", 64 * 1024 * 1024)
     with pytest.raises(UpstreamResponseTooLarge):

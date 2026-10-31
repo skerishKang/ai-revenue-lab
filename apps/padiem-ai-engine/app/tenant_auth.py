@@ -41,6 +41,7 @@ from app.execution_admission import (
     ExecutionAdmissionRequest,
     TrustedExecutionAdmission,
     TrustedUsageReservation,
+    permission_product_id_for_execution_app,
 )
 
 _SAFE_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@/-]{0,127}$")
@@ -83,11 +84,21 @@ class ControlPlaneTrustClient(Protocol):
 
 @dataclass(frozen=True, slots=True)
 class TenantIdentity:
-    """Server-derived tenant scope for one admission or usage submission."""
+    """Server-derived tenant scope for one admission or usage submission.
+
+    ``execution_app_id`` is the Engine's own app identity: the caller/app
+    namespace the caller registry authorizes and the Engine admission binds.
+    ``product_id`` is the Control Plane permission product: the entitlement and
+    usage namespace the Control Plane resolves a session, a grant and a
+    reservation for. The two are different vocabularies connected by the
+    server-owned mapping in ``app.execution_admission``; a request chooses
+    neither.
+    """
 
     product_id: str
     subject_type: str
     subject_id: str
+    execution_app_id: str
 
     def subject_ref(self) -> dict[str, str]:
         return {"subject_type": self.subject_type, "subject_id": self.subject_id}
@@ -96,20 +107,26 @@ class TenantIdentity:
 def identify_tenant(request: ExecutionAdmissionRequest) -> TenantIdentity:
     """Derive the canonical tenant scope from server-owned request fields only.
 
-    A present subject maps to a user subject; an app-level request maps to the
-    account subject for that product. Nothing client-asserted participates.
+    The execution app id names the Engine app that runs; the permission
+    product id names the Control Plane product whose entitlement governs the
+    run. A present subject maps to a user subject; an app-level request maps
+    to the account subject of that permission product. Nothing client-asserted
+    participates in either choice.
     """
 
+    product_id = permission_product_id_for_execution_app(request.app_id)
     if request.subject_id is not None:
         return TenantIdentity(
-            product_id=request.app_id,
+            product_id=product_id,
             subject_type=SUBJECT_TYPE_USER,
             subject_id=request.subject_id,
+            execution_app_id=request.app_id,
         )
     return TenantIdentity(
-        product_id=request.app_id,
+        product_id=product_id,
         subject_type=SUBJECT_TYPE_ACCOUNT,
-        subject_id=request.app_id,
+        subject_id=product_id,
+        execution_app_id=request.app_id,
     )
 
 
@@ -431,6 +448,7 @@ class ControlPlaneTenantAdmissionAdapter:
             expires_at=expires_at,
             request_fingerprint=request.request_fingerprint,
             usage_reservation=usage_reservation,
+            permission_product_id=tenant.product_id,
         )
 
     async def record_usage_receipt(self, receipt: UsageReceipt) -> dict[str, Any]:

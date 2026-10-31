@@ -1,0 +1,137 @@
+{
+  "measurement_note": "화면의 시간·횟수는 각 워크스트림이 자체 저장한 샘플 실행 기록입니다. 실제 운영 실측값이 아니며 기준선 비교도 계산하지 않았습니다.",
+  "recent_runs": [
+    {
+      "detail": "가상 상품 1건 기준 4개 채널 초안 생성, 차단 0건. 실제 게시 없음.",
+      "evidence": "6264a77a2bef7ed3",
+      "id": "run-product-listing-sample",
+      "issue": "#5446",
+      "result": "준비 완료",
+      "result_code": "prepared",
+      "workflow": "상품등록"
+    },
+    {
+      "detail": "10건 정규화, 7건 검토 필요.",
+      "evidence": "apps/erp-item-master/samples/out/pipeline_report.json",
+      "id": "run-erp-item-master-sample",
+      "issue": "#5447",
+      "result": "준비 완료",
+      "result_code": "prepared",
+      "workflow": "ERP 품목관리"
+    },
+    {
+      "detail": "가상 주문 1건 기준 발주 초안·배송 4단계·예외 2건 준비. 실제 발주·결제 없음.",
+      "evidence": "apps/korean-ai-code-agent/pilots/order-supply-fulfillment/out",
+      "id": "run-order-supply-fulfillment-sample",
+      "issue": "#5448",
+      "result": "준비 완료",
+      "result_code": "prepared",
+      "workflow": "주문·배송"
+    }
+  ],
+  "site": {
+    "subtitle": "온라인몰 업무 3종 통합 대시보드",
+    "title": "B71 AI Operations"
+  },
+  "source_issues": [
+    "#5446",
+    "#5447",
+    "#5448"
+  ],
+  "synthetic_data": true,
+  "synthetic_notice": "가상 샘플 데이터입니다. 실제 고객 계정·판매채널·ERP에 연결되지 않았습니다.",
+  "workflows": [
+    {
+      "follow_ups": [
+        "검수 전 필드 34건을 사람이 확정해야 합니다."
+      ],
+      "href": "#/product",
+      "id": "product_listing",
+      "issue": "#5446",
+      "metrics": [
+        {
+          "label": "판매채널 초안",
+          "value": "4건"
+        },
+        {
+          "label": "자동 입력 단계",
+          "value": "70건"
+        },
+        {
+          "label": "사람 수행 단계",
+          "value": "13건"
+        }
+      ],
+      "notes": [
+        "공급처 자료의 상품명·모델명·품번이 실제 제품과 일치하는지 확인",
+        "판매가와 정가가 가격 정책에 맞는지 확인",
+        "카테고리가 실제 노출 카테고리와 일치하는지 확인",
+        "상세설명에 표시 이미지와 대체 텍스트가 포함되었는지 확인"
+      ],
+      "status_code": "prepared",
+      "status_label": "등록 준비 완료",
+      "summary": "공급 자료에서 표준 속성·판매채널별 등록 초안·검수표까지 생성했습니다. 실제 판매채널 계정 게시는 수행하지 않았습니다.",
+      "title": "상품등록"
+    },
+    {
+      "follow_ups": [
+        "제3자 보고 근거인 서식은 업로드 가능으로 표시하지 않습니다."
+      ],
+      "href": "#/erp",
+      "id": "erp_items",
+      "issue": "#5447",
+      "metrics": [
+        {
+          "label": "건수",
+          "value": "10건"
+        },
+        {
+          "label": "자동 통과",
+          "value": "3건"
+        },
+        {
+          "label": "검토 필요",
+          "value": "7건"
+        }
+      ],
+      "notes": [
+        "중복 그룹 판정과 오류 건수를 분리해 표시합니다.",
+        "서식 바인딩 확인 상태를 프로필별로 표시합니다."
+      ],
+      "status_code": "prepared",
+      "status_label": "일괄입력 준비 완료",
+      "summary": "품목 정규화·중복 판정·검토 필요 분류와 서식 바인딩 결과를 준비했습니다. 공식 ERP 서식이 확인된 프로필만 업로드 가능으로 표시합니다.",
+      "title": "ERP 품목관리"
+    },
+    {
+      "follow_ups": [
+        "실제 운영 시계 기준 측정으로 교체해야 합니다."
+      ],
+      "href": "#/orders",
+      "id": "order_fulfillment",
+      "issue": "#5448",
+      "metrics": [
+        {
+          "label": "자동 가능 단계",
+          "value": "2단계"
+        },
+        {
+          "label": "사람 확인 필요",
+          "value": "3단계"
+        },
+        {
+          "label": "수동 단계",
+          "value": "3단계"
+        }
+      ],
+      "notes": [
+        "가드 점검 5건이 모두 의도대로 차단됐습니다.",
+        "실측 소요시간은 사람이 측정한 값이 아닙니다."
+      ],
+      "status_code": "prepared",
+      "status_label": "상태 흐름 준비 완료",
+      "summary": "주문 접수부터 발주 초안·배송 진행·예외 처리까지 가상 사례로 준비했습니다. 실제 발주와 결제는 수행하지 않았습니다.",
+      "title": "주문·배송"
+    }
+  ]
+}

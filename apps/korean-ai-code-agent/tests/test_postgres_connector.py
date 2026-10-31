@@ -201,6 +201,21 @@ class PostgresContractTests(unittest.TestCase):
                         **kwargs,
                     )
 
+    def test_query_result_carries_the_owner_cell_value_unchanged(self):
+        result = PostgresQueryResult(
+            query_ref="query_1",
+            columns=("id", "note"),
+            rows=((1, "token=supersecretvalue"),),
+            total_rows_observed=1,
+            total_bytes_observed=64,
+            truncated=False,
+            masked_columns=(),
+            transaction_read_only=True,
+            statement_timeout_applied=True,
+        )
+        self.assertEqual(result.rows[0][1], "token=supersecretvalue")
+        self.assertEqual(result.safe_dict()["row_count"], 1)
+
     def test_unconfigured_live_port_fails_closed(self):
         port = UnconfiguredPostgresReadPort()
         request = PostgresReadRequest(

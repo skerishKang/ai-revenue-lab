@@ -24,31 +24,30 @@ from .contracts import (
     RunStatus,
     UsageMetadata,
 )
+from .tool_channel import (
+    TOOL_COMPLETED_STATUS,
+    ToolCall,
+    ToolDefinition,
+    ToolResult,
+    normalize_execution_event,
+    normalize_tool_choice,
+    normalize_tool_definitions,
+    normalize_tool_results,
+    normalize_turn_signature,
+    parse_tool_calls,
+    tool_result_messages,
+)
 from .dispatch_preinstruction import (
     render_dispatch_preinstruction,
     server_wall_clock,
 )
 
-# Execution messages are provider-native; trusted injected system context
-# retains separate bounds for tool/instruction safety.
-# Deprecated legacy model-prompt constants stay importable, but do not gate AI text.
-MAX_EXECUTION_MESSAGES: int | None = None
-MAX_EXECUTION_MESSAGE_CHARS: int | None = None
-# Model/reference context is provider-native within the existing Engine 6MB
-# request transport. These are byte memory guards, not model token caps.
-MAX_SYSTEM_CONTEXT_BYTES = 5_500_000
-MAX_ADDITIONAL_SYSTEM_CONTEXT_CHARS = MAX_SYSTEM_CONTEXT_BYTES  # import compatibility
-MAX_COMPOSED_SYSTEM_CHARS = MAX_SYSTEM_CONTEXT_BYTES  # import compatibility
-
 _IDENTIFIER_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$")
-_MESSAGE_ROLES = frozenset({"user", "assistant"})
+_MESSAGE_ROLES = frozenset({"user", "assistant", "tool"})
 _MODEL_POLICY_FIELDS = frozenset(
     {
         "model",
         "temperature",
-        "allow_external_fallback",
-        "provider_order",
-        "max_attempts",
         "max_retries",
         "product_tier",  # trusted product-side grade carried through Core to B14
         # #3977: explicitly requested provider-native overrides. Absent means
@@ -70,33 +69,120 @@ def _safe_identifier(name: str, value: str) -> str:
 
 def _normalize_messages(
     messages: Sequence[Mapping[str, Any]],
-) -> tuple[Mapping[str, str], ...]:
+) -> tuple[Mapping[str, Any], ...]:
     if isinstance(messages, (str, bytes)):
         raise ValueError("messages must be a sequence of message objects")
     items = tuple(messages)
     if not items:
         raise ValueError("messages must contain at least one item")
 
-    normalized: list[Mapping[str, str]] = []
+    normalized: list[Mapping[str, Any]] = []
     for index, message in enumerate(items):
         if not isinstance(message, Mapping):
             raise ValueError(f"messages[{index}] must be a mapping")
-        if set(message) != {"role", "content"}:
-            raise ValueError(
-                f"messages[{index}] must contain only role and content"
-            )
         role = message.get("role")
         if role not in _MESSAGE_ROLES:
             raise ValueError(
-                f"messages[{index}].role must be user or assistant"
+                f"messages[{index}].role must be user, assistant or tool"
             )
+        fields = set(message)
+
+        if role == "user":
+            if fields != {"role", "content"}:
+                raise ValueError(
+                    f"messages[{index}] must contain only role and content"
+                )
+            content = message.get("content")
+            if not isinstance(content, str) or not content.strip():
+                raise ValueError(
+                    f"messages[{index}].content must be a non-empty string"
+                )
+            normalized.append(
+                MappingProxyType({"role": role, "content": content.strip()})
+            )
+            continue
+
+        if role == "assistant":
+            # #5536: an assistant turn may carry the tool calls the model
+            # requested, so the round trip can be replayed to the model.
+            extra = fields - {"role", "content", "tool_calls", "signature"}
+            if extra:
+                raise ValueError(
+                    f"messages[{index}] has unexpected fields: "
+                    f"{', '.join(sorted(extra))}"
+                )
+            content = message.get("content")
+            if content is not None and (
+                not isinstance(content, str) or not content.strip()
+            ):
+                raise ValueError(
+                    f"messages[{index}].content must be a non-empty string"
+                )
+            # #4727: the token a provider attached to this turn's answer text.
+            signature = message.get("signature")
+            if signature is not None:
+                if content is None:
+                    raise ValueError(
+                        f"messages[{index}] signature needs the answer text it belongs to"
+                    )
+                signature = normalize_turn_signature(signature)
+            turn: dict[str, Any] = {"role": "assistant"}
+            if content is not None:
+                turn["content"] = content.strip()
+            if signature is not None:
+                turn["signature"] = signature
+            if "tool_calls" in message:
+                calls = parse_tool_calls(message.get("tool_calls"))
+                if not calls:
+                    raise ValueError(
+                        f"messages[{index}].tool_calls must not be empty"
+                    )
+                turn["tool_calls"] = [
+                    call.to_provider_payload() for call in calls
+                ]
+            elif content is None:
+                raise ValueError(
+                    f"messages[{index}] must carry content or tool calls"
+                )
+            normalized.append(MappingProxyType(turn))
+            continue
+
+        # role == "tool": the result of one earlier tool call.
+        extra = fields - {"role", "content", "tool_call_id", "name", "execution"}
+        if extra:
+            raise ValueError(
+                f"messages[{index}] has unexpected fields: "
+                f"{', '.join(sorted(extra))}"
+            )
+        call_id = message.get("tool_call_id")
+        if not isinstance(call_id, str) or not call_id.strip():
+            raise ValueError(
+                f"messages[{index}].tool_call_id must be a non-empty string"
+            )
+        # #4727: the executor's own outcome travels with its result.
+        execution = message.get("execution")
+        if execution is not None:
+            execution = dict(normalize_execution_event(execution))
         content = message.get("content")
-        if not isinstance(content, str) or not content.strip():
+        if not isinstance(content, str):
+            raise ValueError(f"messages[{index}].content must be a string")
+        if not content.strip() and (
+            execution is None or execution["status"] == TOOL_COMPLETED_STATUS
+        ):
             raise ValueError(
                 f"messages[{index}].content must be a non-empty string"
             )
-        text = content.strip()
-        normalized.append(MappingProxyType({"role": role, "content": text}))
+        result_message: dict[str, Any] = {
+            "role": "tool",
+            "tool_call_id": call_id.strip(),
+            "content": content.strip(),
+        }
+        name = message.get("name")
+        if isinstance(name, str) and name.strip():
+            result_message["name"] = name.strip()
+        if execution is not None:
+            result_message["execution"] = execution
+        normalized.append(MappingProxyType(result_message))
     return tuple(normalized)
 
 
@@ -108,10 +194,7 @@ def _normalize_additional_system_context(value: str | None) -> str | None:
     text = value.strip()
     if not text:
         return None
-    if len(text.encode("utf-8")) > MAX_SYSTEM_CONTEXT_BYTES:
-        raise ValueError(
-            "additional_system_context exceeds transport safety envelope"
-        )
+    # #4379: the additional system context is not refused for its size.
     return text
 
 
@@ -127,10 +210,7 @@ def _compose_system_instruction(request: "ExecutionRequest") -> str | None:
     if request.additional_system_context is not None:
         parts.append(request.additional_system_context)
     content = "\n\n".join(parts)
-    # The mandatory context is counted inside the same transport envelope as
-    # every other part, so it can never push the request past the guard.
-    if len(content.encode("utf-8")) > MAX_SYSTEM_CONTEXT_BYTES:
-        raise ValueError("composed system instruction exceeds transport safety envelope")
+    # #4379: the composed system instruction carries no PADIEM byte total.
     return content
 
 
@@ -160,16 +240,6 @@ def _normalize_model_policy(
     ):
         raise ValueError("model_policy.temperature must be numeric")
 
-    provider_order_value = policy.get("provider_order")
-    if provider_order_value is None:
-        provider_order = None
-    elif isinstance(provider_order_value, (tuple, list)):
-        provider_order = tuple(provider_order_value)
-    else:
-        raise ValueError("model_policy.provider_order must be a sequence")
-
-    allow_external_fallback = policy.get("allow_external_fallback")
-    max_attempts = policy.get("max_attempts")
     max_retries = policy.get("max_retries")
     if max_retries is not None and (
         isinstance(max_retries, bool) or not isinstance(max_retries, int)
@@ -177,14 +247,9 @@ def _normalize_model_policy(
         raise ValueError("model_policy.max_retries must be an integer or None")
 
     routing = B14RoutingOptions(
-        task_type=agent.task_type,
         required_capabilities=(
             agent.required_capabilities if agent.required_capabilities else None
         ),
-        optimize_for=agent.optimize_for,
-        allow_external_fallback=allow_external_fallback,
-        provider_order=provider_order,
-        max_attempts=max_attempts,
         max_retries=max_retries,
         product_tier=policy.get("product_tier"),
     )
@@ -261,10 +326,19 @@ def _selected_provider(route: B14RouteMetadata) -> str | None:
 @dataclass(frozen=True, slots=True)
 class ExecutionRequest:
     agent: AgentProfile
-    messages: tuple[Mapping[str, str], ...]
+    messages: tuple[Mapping[str, Any], ...]
     session_id: str | None = None
     additional_system_context: str | None = None
     trace_id: str | None = None
+    # #5536: the model-native tool channel. The declaration is empty for a
+    # caller that does not use the channel, and then the request keeps its
+    # exact pre-#5536 shape.
+    tools: tuple[ToolDefinition, ...] = ()
+    tool_choice: Mapping[str, Any] | str | None = None
+    # The results of the tool calls the model requested in an earlier turn.
+    # They travel back to the model as tool messages, so the model can answer
+    # from the tool's outcome instead of from the call alone.
+    tool_results: tuple[ToolResult, ...] = ()
 
     def __post_init__(self) -> None:
         if not isinstance(self.agent, AgentProfile):
@@ -287,6 +361,52 @@ class ExecutionRequest:
                 "trace_id",
                 _safe_identifier("trace_id", self.trace_id),
             )
+        # #5536: the tool declaration and the tool choice are normalized before
+        # anything is written to the wire.
+        tools = normalize_tool_definitions(self.tools)
+        object.__setattr__(self, "tools", tools)
+        if self.tool_choice is not None and not tools:
+            raise ValueError("tool_choice requires a declared tool")
+        object.__setattr__(
+            self,
+            "tool_choice",
+            normalize_tool_choice(self.tool_choice, declared=tools),
+        )
+        tool_results = normalize_tool_results(self.tool_results)
+        object.__setattr__(self, "tool_results", tool_results)
+        # A tool result is an answer to one specific call. A result whose call
+        # is not in this conversation would leave the model with a result it
+        # cannot read, so it is refused here rather than at the provider.
+        declared_names = {tool.name for tool in tools}
+        call_ids: set[str] = set()
+        called_names: set[str] = set()
+        carried_results: set[str] = set()
+        for message in self.messages:
+            if message.get("role") == "assistant":
+                for call in message.get("tool_calls", ()):
+                    call_ids.add(call["id"])
+                    called_names.add(call["function"]["name"])
+            elif message.get("role") == "tool":
+                carried_results.add(str(message.get("tool_call_id")))
+                call_ids.add(str(message.get("tool_call_id")))
+        if called_names and not declared_names:
+            raise ValueError(
+                "messages carry a tool call but no tool was declared"
+            )
+        undeclared = sorted(called_names - declared_names)
+        if undeclared:
+            raise ValueError(
+                f"messages carry a tool call for an undeclared tool: {undeclared[0]}"
+            )
+        for result in tool_results:
+            if result.tool_call_id in carried_results:
+                raise ValueError(
+                    "tool_results duplicate a tool result carried in messages"
+                )
+            if result.tool_call_id not in call_ids:
+                raise ValueError(
+                    "tool_results must answer a tool call carried in messages"
+                )
 
 
 @dataclass(frozen=True, slots=True)
@@ -294,9 +414,22 @@ class ExecutionResult:
     answer: str
     route: B14RouteMetadata
     metadata: RunMetadata
+    # #5536: the tool calls the model requested. When this is non-empty the
+    # model answered with a call rather than with prose, so ``answer`` may be
+    # empty. The empty tuple is the unchanged pre-#5536 result.
+    tool_calls: tuple[ToolCall, ...] = ()
 
     def __post_init__(self) -> None:
-        if not isinstance(self.answer, str) or not self.answer.strip():
+        tool_calls = tuple(self.tool_calls or ())
+        for call in tool_calls:
+            if not isinstance(call, ToolCall):
+                raise ValueError("tool_calls must carry ToolCall items")
+        object.__setattr__(self, "tool_calls", tool_calls)
+        if not isinstance(self.answer, str):
+            raise ValueError("answer must be a non-empty string")
+        # #5536: a tool call is a complete answer of its own, so the text may
+        # be empty when the model answered with a call.
+        if not self.answer.strip() and not tool_calls:
             raise ValueError("answer must be a non-empty string")
         object.__setattr__(self, "answer", self.answer.strip())
         if not isinstance(self.route, B14RouteMetadata):
@@ -309,6 +442,7 @@ class ExecutionResult:
             "answer": self.answer,
             "route": self.route.to_public_dict(),
             "metadata": self.metadata.to_public_dict(),
+            "tool_calls": [call.to_public_dict() for call in self.tool_calls],
         }
 
 
@@ -416,7 +550,11 @@ class ExecutionRuntime:
         started_at = self._clock()
         trace_id = self._trace_id(request)
 
-        if request.agent.allowed_tools:
+        if request.agent.allowed_tools and not request.tools:
+            # #5536: the tool channel is now available. An agent profile that
+            # still declares tools while the request declares none is asking
+            # for native tool execution this contract cannot serve, so it is
+            # refused before B14 is called.
             metadata = self._metadata(
                 request=request,
                 trace_id=trace_id,
@@ -430,6 +568,27 @@ class ExecutionRuntime:
                 metadata=metadata,
             )
 
+        if request.agent.allowed_tools and request.tools:
+            # A declared agent allowlist narrows what the model may be told to
+            # call. A tool outside it is refused before B14 is called.
+            allowed = set(request.agent.allowed_tools)
+            outside = sorted(
+                tool.name for tool in request.tools if tool.name not in allowed
+            )
+            if outside:
+                metadata = self._metadata(
+                    request=request,
+                    trace_id=trace_id,
+                    status=RunStatus.POLICY_BLOCKED,
+                    duration_ms=self._duration_ms(started_at),
+                    error_class=ErrorClass.POLICY_BLOCKED,
+                )
+                raise ExecutionRuntimeError(
+                    "tool_not_allowed",
+                    "A declared tool is outside the agent tool allowlist.",
+                    metadata=metadata,
+                )
+
         try:
             system_instruction = _compose_system_instruction(request)
             model, temperature, routing = _normalize_model_policy(request.agent)
@@ -440,6 +599,11 @@ class ExecutionRuntime:
                     {"role": "system", "content": system_instruction},
                     *messages,
                 )
+            # #5536: the tool results travel back to the model as tool
+            # messages, so the model's next answer can read the tool's
+            # outcome instead of the call alone.
+            if request.tool_results:
+                messages = (*messages, *tool_result_messages(request.tool_results))
             b14_request = B14ChatRequest(
                 messages=messages,
                 model=model,
@@ -447,6 +611,8 @@ class ExecutionRuntime:
                 max_tokens=request.agent.max_tokens,
                 routing=routing,
                 model_parameters=model_parameters,
+                tools=request.tools,
+                tool_choice=request.tool_choice,
             )
         except ValueError:
             metadata = self._metadata(
@@ -525,4 +691,7 @@ class ExecutionRuntime:
             answer=result.answer,
             route=result.route,
             metadata=metadata,
+            # #5536: a tool call is carried to the caller, which runs the tool
+            # and returns its result through the same channel.
+            tool_calls=result.tool_calls,
         )

@@ -258,7 +258,6 @@ def test_core_runtime_preserves_sensenova_fields_in_selected_exact_route() -> No
     profile = agent(model_policy={
         "model": "sensenova/sensenova-6.8-flash-lite",
         "model_parameters": SENSENOVA_NATIVE_EXPLICIT,
-        "allow_external_fallback": False,
     })
     run(runtime.run(execution_request(profile=profile)))
     assert len(executor.requests) == 1
@@ -399,7 +398,6 @@ def test_sensenova_explicit_numeric_fields_have_stream_and_nonstream_parity() ->
     profile = agent(model_policy={
         "model": model_id,
         "model_parameters": SENSENOVA_NATIVE_EXPLICIT,
-        "allow_external_fallback": False,
     })
     run(
         ExecutionRuntime(
@@ -509,8 +507,10 @@ def test_multimodal_runtime_still_runs_without_a_native_parameter() -> None:
     [
         {"model": "test/route"},
         {"model": "test/route", "temperature": 0.7},
-        {"model": "test/route", "max_attempts": 1, "max_retries": 0},
-        {"model": "b14/auto", "allow_external_fallback": True},
+        {"model": "test/route", "max_retries": 0},
+        # B4/B5: the retired auto id and the fallback knob are no longer
+        # policy vocabulary; only explicit real routes and real inputs remain.
+        {"model": "test/route", "product_tier": "free"},
     ],
 )
 def test_policies_without_native_parameters_are_unchanged(policy) -> None:
@@ -546,32 +546,25 @@ def test_positional_construction_still_works() -> None:
     }
 
 
-def test_auto_route_consumer_shape_is_unchanged() -> None:
-    # The Router auto lane (B62 chat and engine auto execution) never sets the
-    # native field, so its body stays exactly the pre-#3977 shape.
+def test_routing_consumer_shape_carries_only_real_inputs() -> None:
+    # B4/B5: the retired auto lane and its scorer-era options are gone, so the
+    # routing block carries only the real inputs, in the pre-#3977 native-field
+    # shape.
     from padiem_ai_core.b14_execution import B14RoutingOptions
 
     request = B14ChatRequest(
         messages=({"role": "user", "content": "안녕하세요"},),
-        model="b14/auto",
+        model="test/route",
         temperature=0.3,
         max_tokens=128,
         routing=B14RoutingOptions(
-            task_type="general",
             required_capabilities=("free",),
-            optimize_for="balanced",
-            allow_external_fallback=True,
-            max_attempts=2,
-        ),
+            ),
     )
     payload = request.to_payload()
     assert "reasoning_effort" not in payload
     assert payload["business14"] == {
-        "task_type": "general",
         "required_capabilities": ["free"],
-        "optimize_for": "balanced",
-        "allow_external_fallback": True,
-        "max_attempts": 2,
     }
 
 

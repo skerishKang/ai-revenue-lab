@@ -9,6 +9,11 @@
   /* populated per theme; keep declarations here minimal so data-theme wins */
 }
 
+/* #6100: input borders have their own floor. The shared --line doubles as
+   the card hairline the connection screen is being rebuilt on, so its
+   value stays put; input controls take --input-border-strong instead,
+   defined per theme to clear the 3:1 non-text floor against each theme's
+   own fill (numbers: padiem-reports/2026-10-29). */
 /* ---- LIGHT — historical Phase 1 restrained light/violet (PR #714, 6c9f1a4) ---- */
 html[data-theme="light"] {
   color-scheme: light;
@@ -20,6 +25,7 @@ html[data-theme="light"] {
   --text: #19191d;
   --muted: #6f7079;
   --line: #e3e3e9;
+  --input-border-strong: #767e8a;
   --accent: #6557e8;
   --accent-contrast: #ffffff;
   --accent-soft: #efedff;
@@ -118,7 +124,7 @@ html[data-theme="light"] .composer-note { color: var(--muted) !important; }
 html[data-theme="light"] .app-shell[data-state="chat"] .message-bubble { background: var(--user-bubble-bg) !important; color: var(--user-bubble-text) !important; border-color: var(--user-bubble-border) !important; box-shadow: 0 2px 10px rgba(101,87,232,.06) !important; backdrop-filter: none !important; }
 html[data-theme="light"] .app-shell[data-state="chat"] .assistant-avatar { background: linear-gradient(135deg, #7768ee, #4f40ce) !important; border: none !important; color: #fff !important; box-shadow: 0 6px 18px rgba(85,70,214,.12) !important; }
 html[data-theme="light"] .app-shell[data-state="chat"] .assistant-meta { color: var(--muted) !important; }
-html[data-theme="light"] .app-shell[data-state="chat"] .demo-label { background: var(--accent-soft) !important; border-color: var(--line) !important; color: var(--muted) !important; }
+html[data-theme="light"] .app-shell:is([data-state="chat"],[data-state="claw"]) .demo-label { background: var(--accent-soft) !important; border-color: var(--line) !important; color: var(--muted) !important; }
 html[data-theme="light"] .app-shell[data-state="chat"] .assistant-content { color: #1e1e22 !important; }
 html[data-theme="light"] .app-shell[data-state="chat"] .assistant-message::before { background: linear-gradient(to bottom, rgba(101,87,232,.18), rgba(0,0,0,.04), transparent) !important; }
 html[data-theme="light"] .app-shell[data-state="chat"] .composer { background: var(--composer-bg) !important; border-color: var(--composer-border) !important; box-shadow: var(--composer-shadow) !important; backdrop-filter: none !important; }
@@ -159,6 +165,7 @@ html[data-theme="dark"] {
   --text: #e9eaec;
   --muted: rgba(255,255,255,.56);
   --line: rgba(255,255,255,.10);
+  --input-border-strong: rgba(255,255,255,.45);
   --accent: #9fc0dd;
   --accent-contrast: #131417;
   --accent-soft: rgba(159,192,221,.08);
@@ -277,6 +284,7 @@ html[data-theme="cinematic"] {
   --text: #f7f8fa;
   --muted: rgba(255,255,255,.68);
   --line: rgba(255,255,255,.14);
+  --input-border-strong: rgba(255,255,255,.45);
   --accent: #88c9ff;
   --accent-contrast: #04070d;
   --accent-soft: rgba(136,201,255,.10);
@@ -396,6 +404,7 @@ html[data-theme="padiem-home"] {
   --text: #1a2230;
   --muted: #5a6578;
   --line: rgba(26,34,48,.12);
+  --input-border-strong: #767e8a;
   --accent: #3a7bd5;
   --accent-contrast: #0b0f14;
   --accent-soft: rgba(58,123,213,.10);
@@ -512,7 +521,7 @@ html[data-theme="padiem-home"] .composer-note { color: var(--muted) !important; 
 html[data-theme="padiem-home"] .app-shell[data-state="chat"] .message-bubble { background: var(--user-bubble-bg) !important; color: var(--user-bubble-text) !important; border-color: transparent !important; box-shadow: 0 4px 16px rgba(26,34,48,.10) !important; }
 html[data-theme="padiem-home"] .app-shell[data-state="chat"] .assistant-avatar { background: rgba(255,255,255,.72) !important; border: 1px solid rgba(26,34,48,.12) !important; color: #1a2230 !important; box-shadow: 0 6px 18px rgba(26,34,48,.08) !important; }
 html[data-theme="padiem-home"] .app-shell[data-state="chat"] .assistant-meta { color: var(--muted) !important; }
-html[data-theme="padiem-home"] .app-shell[data-state="chat"] .demo-label { background: rgba(255,255,255,.62) !important; border-color: rgba(26,34,48,.10) !important; color: var(--muted) !important; }
+html[data-theme="padiem-home"] .app-shell:is([data-state="chat"],[data-state="claw"]) .demo-label { background: rgba(255,255,255,.62) !important; border-color: rgba(26,34,48,.10) !important; color: var(--muted) !important; }
 html[data-theme="padiem-home"] .app-shell[data-state="chat"] .assistant-content { color: #1e2a3a !important; }
 html[data-theme="padiem-home"] .app-shell[data-state="chat"] .assistant-message::before { background: linear-gradient(to bottom, rgba(26,34,48,.12), rgba(26,34,48,.04), transparent) !important; }
 html[data-theme="padiem-home"] .app-shell[data-state="chat"] .composer { background: linear-gradient(180deg, rgba(255,255,255,.88), rgba(250,252,255,.78)) !important; border-color: rgba(26,34,48,.10) !important; box-shadow: 0 14px 40px rgba(26,34,48,.09), inset 0 1px 0 rgba(255,255,255,.85) !important; backdrop-filter: blur(18px) !important; }

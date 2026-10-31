@@ -11,7 +11,7 @@ from app.b14_client import PADIEM_IDENTITY_INSTRUCTION
 from app.auth import SESSION_COOKIE, create_session_token
 from app.config import Settings
 from app.main import create_app
-from app.model_policy import HIGH_B14_MODEL_ID, LOW_B14_MODEL_ID, MEDIUM_B14_MODEL_ID
+from app.model_policy import DEFAULT_B14_MODEL_ID, LOW_B14_MODEL_ID
 
 
 _SETTINGS_KWARGS = dict(
@@ -51,9 +51,9 @@ def _login(client, settings, user_id="usr_identity_test"):
 @pytest.mark.parametrize(
     ("prompt", "tier", "expected"),
     [
-        ("/plus 너 무슨 모델이야?", "plus", "저는 Padiem Plus입니다."),
-        ("/pro 어떤 AI 모델이야?", "pro", "저는 Padiem Pro입니다."),
-        ("/max what model are you?", "max", "저는 Padiem Max입니다."),
+        ("/plus 너 무슨 모델이야?", "plus", "저는 PADIEM Chat의 PADIEM Plus 모드입니다."),
+        ("/pro 어떤 AI 모델이야?", "pro", "저는 PADIEM Chat의 PADIEM Pro 모드입니다."),
+        ("/max what model are you?", "max", "저는 PADIEM Chat의 PADIEM Max 모드입니다."),
     ],
 )
 async def test_identity_questions_answer_with_padiem_tier_without_provider_call(prompt: str, tier: str, expected: str):
@@ -74,11 +74,11 @@ async def test_identity_questions_answer_with_padiem_tier_without_provider_call(
         # Auth-mocked member session (no real login): the verified member
         # grade authorizes the tier, the identity answer itself stays local.
         _login(client, settings)
-        # The grade follows the validated browser tier field, never a bare
-        # message alias: an alias alone cannot grant a paid tier.
+        # The grade follows the validated browser tier field, never bare
+        # prompt text: slash-prefixed text cannot grant a paid tier.
         response = await client.post(
             "/api/chat",
-            json={"messages": [{"role": "user", "content": prompt}], "mode": "auto", "tier": tier},
+            json={"messages": [{"role": "user", "content": prompt}], "tier": tier},
             headers=_BROWSER_ORIGIN,
         )
 
@@ -110,14 +110,14 @@ async def test_underlying_model_question_declines_internal_route_details_without
         _login(client, settings)
         response = await client.post(
             "/api/chat",
-            json={"messages": [{"role": "user", "content": "/max 실제 기반 모델이 뭐야?"}], "mode": "auto", "tier": "max"},
+            json={"messages": [{"role": "user", "content": "/max 실제 기반 모델이 뭐야?"}], "tier": "max"},
             headers=_BROWSER_ORIGIN,
         )
 
     assert response.status_code == 200
     answer = response.json()["answer"]
-    assert answer.startswith("저는 Padiem Max입니다.")
-    assert "내부 라우팅" in answer
+    assert answer.startswith("저는 PADIEM Chat의 PADIEM Max 모드입니다.")
+    assert "기반 모델과 공급자 정보는 안내하지 않습니다" in answer
     assert calls == 0
     lowered = answer.lower()
     for hidden in ("kilo", "poolside", "laguna", "nvidia", "nemotron", "tencent", "hy3", "minimax"):
@@ -125,7 +125,7 @@ async def test_underlying_model_question_declines_internal_route_details_without
 
 
 @pytest.mark.asyncio
-async def test_executable_tier_selectors_survive_browser_validation_then_strip_before_b14_dispatch():
+async def test_executable_tier_selectors_survive_browser_validation_then_forward_before_b14_dispatch():
     seen: list[dict] = []
 
     async def handler(request: httpx.Request) -> httpx.Response:
@@ -151,8 +151,8 @@ async def test_executable_tier_selectors_survive_browser_validation_then_strip_b
     )
     app.state.b66_member_admin_store = _grade_members("plus")
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
-        # The browser tier field decides the dispatch model; the request
-        # alias is stripped before B14 and never grants a tier by itself.
+        # The browser tier field decides the dispatch model; prompt text is
+        # forwarded unchanged and never grants a tier by itself.
         _login(client, settings)
         response = await client.post(
             "/api/chat",
@@ -166,27 +166,28 @@ async def test_executable_tier_selectors_survive_browser_validation_then_strip_b
             item for item in seen[-1]["messages"] if item["role"] == "system"
         ]
         assert len(system_messages) == 1
-        assert PADIEM_IDENTITY_INSTRUCTION in system_messages[0]["content"]
+        # #5347 (owner 2026-10-23): identity is the product brand plus the
+        # server-authorized tier; the underlying model/provider stays hidden.
+        system = system_messages[0]["content"]
+        assert "PADIEM Chat의 PADIEM Plus 모드" in system
+        for hidden in ("Muse", "MiniMax", "Gemini", "provider"):
+            assert hidden.lower() not in system.lower()
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize(
-    ("alias", "expected_hold_model"),
-    [
-        ("/pro", MEDIUM_B14_MODEL_ID),
-        ("/max", HIGH_B14_MODEL_ID),
-    ],
-)
-async def test_held_tiers_reject_ordinary_execution_before_b14_provider_call(
-    alias: str,
-    expected_hold_model: str,
+@pytest.mark.parametrize("slash_text", ["/pro", "/max"])
+async def test_slash_prefixed_question_is_ordinary_text_and_keeps_free_dispatch(
+    slash_text: str,
 ):
     calls = 0
+    content = f"{slash_text} 테스트 질문"
+    seen: list[dict] = []
 
     async def handler(request: httpx.Request) -> httpx.Response:
         nonlocal calls
         calls += 1
         body = json.loads(request.content)
+        seen.append(body)
         return httpx.Response(
             200,
             json={
@@ -207,12 +208,13 @@ async def test_held_tiers_reject_ordinary_execution_before_b14_provider_call(
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
         response = await client.post(
             "/api/chat",
-            json={"messages": [{"role": "user", "content": f"{alias} 테스트 질문"}], "mode": "auto"},
+            json={"messages": [{"role": "user", "content": content}]},
         )
 
     assert response.status_code == 200
     assert calls == 1
-    assert expected_hold_model in {MEDIUM_B14_MODEL_ID, HIGH_B14_MODEL_ID}
+    assert seen[-1]["model"] == DEFAULT_B14_MODEL_ID
+    assert seen[-1]["messages"][-1] == {"role": "user", "content": content}
 
 
 @pytest.mark.asyncio
@@ -235,10 +237,83 @@ async def test_stream_identity_is_local_and_uses_selected_tier():
         _login(client, settings)
         response = await client.post(
             "/api/chat/stream",
-            json={"messages": [{"role": "user", "content": "/plus 너 어떤 AI야?"}], "mode": "auto", "tier": "plus"},
+            json={"messages": [{"role": "user", "content": "/plus 너 어떤 AI야?"}], "tier": "plus"},
             headers=_BROWSER_ORIGIN,
         )
 
     assert response.status_code == 200
-    assert "Padiem Plus" in response.text
+    assert "PADIEM Chat의 PADIEM Plus 모드" in response.text
     assert calls == 0
+
+
+_IDENTITY_MATRIX_QUESTIONS = (
+    "너는 누구야?",
+    "어떤 AI야?",
+    "무슨 언어모델이야?",
+    "어떤 회사 모델을 쓰니?",
+)
+_TIER_EXPECTED_LABEL = {
+    "free": "PADIEM Free",
+    "plus": "PADIEM Plus",
+    "pro": "PADIEM Pro",
+    "max": "PADIEM Max",
+}
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("tier", ["free", "plus", "pro", "max"])
+@pytest.mark.parametrize("question", _IDENTITY_MATRIX_QUESTIONS)
+async def test_identity_matrix_matches_the_verified_member_grade(tier: str, question: str):
+    calls = 0
+
+    async def handler(request: httpx.Request) -> httpx.Response:
+        nonlocal calls
+        calls += 1
+        raise AssertionError("identity questions must not call B14/provider")
+
+    app = create_app(
+        settings := Settings(**_SETTINGS_KWARGS),
+        transport=httpx.MockTransport(handler),
+        history_store=MagicMock(),
+    )
+    app.state.b66_member_admin_store = _grade_members(tier)
+    async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
+        _login(client, settings)
+        response = await client.post(
+            "/api/chat",
+            json={"messages": [{"role": "user", "content": question}], "tier": tier},
+            headers=_BROWSER_ORIGIN,
+        )
+
+    assert response.status_code == 200
+    answer = response.json()["answer"]
+    assert _TIER_EXPECTED_LABEL[tier] in answer
+    assert "PADIEM Chat" in answer
+    assert calls == 0
+    lowered = answer.lower()
+    for hidden in ("muse", "minimax", "gemini", "kilo", "poolside", "laguna", "nvidia", "nemotron", "tencent", "hy3"):
+        assert hidden not in lowered
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("tier", ["free", "plus", "pro", "max"])
+async def test_member_grade_question_reports_the_server_grade(tier: str):
+    async def handler(request: httpx.Request) -> httpx.Response:
+        raise AssertionError("grade questions must not call B14/provider")
+
+    app = create_app(
+        settings := Settings(**_SETTINGS_KWARGS),
+        transport=httpx.MockTransport(handler),
+        history_store=MagicMock(),
+    )
+    app.state.b66_member_admin_store = _grade_members(tier)
+    async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
+        _login(client, settings)
+        response = await client.post(
+            "/api/chat",
+            json={"messages": [{"role": "user", "content": "나는 어떤 등급이야?"}], "tier": tier},
+            headers=_BROWSER_ORIGIN,
+        )
+
+    assert response.status_code == 200
+    assert response.json()["answer"] == f"현재 회원 등급은 {_TIER_EXPECTED_LABEL[tier]}입니다."

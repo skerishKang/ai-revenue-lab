@@ -47,12 +47,13 @@ from .b66_grade_models import (
     B66_GRADES,
     b66_grade_model_id,
     b66_grade_model_id_for_request,
+    b66_tier_grant_permits,
     b66_verified_admin,
 )
 from padiem_control_plane.product_tier_routes import (
     FREE_PRIMARY_B14_MODEL_ID,
-    MUSE_B14_MODEL_ID,
 )
+from .model_policy import ADMIN_B14_MODEL_ID
 from .claw_memory_routes import _resolve_memory_workspace
 from .dispatch_quota import _clear_reservation, _refund_active_reservation
 
@@ -332,7 +333,7 @@ def _company_profile_store(request: Request) -> Any | None:
 
 
 async def _json(
-    request: Request, *, max_body_bytes: int = MAX_BODY_BYTES
+    request: Request, *, max_body_bytes: int | None = MAX_BODY_BYTES
 ) -> dict[str, Any] | JSONResponse:
     # The quote interpreter carries a model-bound user prompt. Do not apply
     # the 16KiB B66 metadata/administration request limit to that payload.
@@ -396,7 +397,17 @@ async def b66_saved_skills(request: Request) -> JSONResponse:
         return _error(400, "invalid_limit", "limit 형식이 올바르지 않습니다.")
     if limit < 1:
         return _error(400, "invalid_limit", "limit 형식이 올바르지 않습니다.")
-    workspace_id = await _resolve_memory_workspace(request, uid)
+    # #4316: the workspace is server-owned. A half-configured identity
+    # authority must stop the read here, exactly as the certified PDF and
+    # native-sol routes do, instead of handing a None scope to the store: the
+    # store's own validation is a second fence, not the one that decides.
+    try:
+        workspace_id = await _resolve_memory_workspace(request, uid)
+    except Exception:
+        workspace_id = None
+    if workspace_id is None:
+        return _error(503, "workspace_authority_unavailable",
+                      "계정 범위를 확인할 수 없습니다. 잠시 후 다시 시도해 주세요.")
     try:
         value = list_fn(user_id=uid, workspace_id=workspace_id, limit=min(limit, MAX_LIST_LIMIT))
         skills = await value if inspect.isawaitable(value) else value
@@ -416,7 +427,14 @@ async def b66_saved_skill_detail(request: Request) -> JSONResponse:
     get_fn = getattr(store, "get_skill", None) if store is not None else None
     if not callable(get_fn):
         return _error(503, "saved_quote_skill_unavailable", "내 견적서를 사용할 수 없습니다.")
-    workspace_id = await _resolve_memory_workspace(request, uid)
+    # #4316: same rule as the list route — no data read on an unresolved scope.
+    try:
+        workspace_id = await _resolve_memory_workspace(request, uid)
+    except Exception:
+        workspace_id = None
+    if workspace_id is None:
+        return _error(503, "workspace_authority_unavailable",
+                      "계정 범위를 확인할 수 없습니다. 잠시 후 다시 시도해 주세요.")
     try:
         value = get_fn(
             user_id=uid,
@@ -449,9 +467,12 @@ async def b66_quote_models(request: Request) -> JSONResponse:
         return _error(503, "quote_model_unavailable", "AI 모델 목록을 확인할 수 없습니다.")
     # Enforce global OFF first, then the authenticated member's tier grants.
     # Both switches are server-side, not merely hidden options in the browser.
+    disabled = set(access["disabled_models"]) if access is not None else set()
+    # B14 live-ready options for this product, before the product-local grant
+    # list narrows the free-choice models.
+    live_ready_ids = {row["model_id"] for row in models}
+    models = [row for row in models if row["model_id"] not in disabled]
     if access is not None:
-        disabled = set(access["disabled_models"])
-        models = [row for row in models if row["model_id"] not in disabled]
         if access["active_policy"]:
             allowed_ids = set(access["model_ids"])
             models = [row for row in models if row["model_id"] in allowed_ids]
@@ -460,11 +481,17 @@ async def b66_quote_models(request: Request) -> JSONResponse:
     grade_order = ("free", "plus", "pro", "max")
     member_grade = await verified_member_grade(request, uid, access)
     permitted = grade_order[:grade_order.index(member_grade)+1]
-    available_ids = {row["model_id"] for row in models}
     grade_choices = []
     for grade in permitted:
         grade_model = await b66_grade_model_id_for_request(request, grade)
-        if grade_model is None or grade_model not in available_ids:
+        if grade_model is None:
+            continue
+        # The grade's model is the administrator's approved route for this
+        # product/grade. It stays selectable while B14 lists it and it is not
+        # globally OFF. The product-local per-grade grant list narrows only the
+        # additional free-choice models, so a central grade change is never
+        # silently dropped from the picker.
+        if grade_model in disabled or grade_model not in live_ready_ids:
             continue
         grade_choices.append({
             "tier": grade, "name": B66_GRADE_NAMES[grade],
@@ -472,12 +499,14 @@ async def b66_quote_models(request: Request) -> JSONResponse:
             "reasoning_levels": reasoning_options_for_model(
                 grade_model, transport_supported=_reasoning_transport_supported(request)),
         })
-    if await b66_verified_admin(request, uid) and MUSE_B14_MODEL_ID in available_ids:
+    if (await b66_verified_admin(request, uid)
+            and ADMIN_B14_MODEL_ID in live_ready_ids
+            and ADMIN_B14_MODEL_ID not in disabled):
         grade_choices.append(
             {"tier": B66_ADMIN_GRADE, "name": B66_ADMIN_NAME,
-             "model_id": MUSE_B14_MODEL_ID,
+             "model_id": ADMIN_B14_MODEL_ID,
              "reasoning_levels": reasoning_options_for_model(
-                 MUSE_B14_MODEL_ID, transport_supported=_reasoning_transport_supported(request))}
+                 ADMIN_B14_MODEL_ID, transport_supported=_reasoning_transport_supported(request))}
         )
     # A configured default can only be offered if it remains permitted.
     proposed_default = getattr(request.app.state, "b66_quote_default_model_id", None)
@@ -534,6 +563,7 @@ async def b66_quote_interpret(request: Request) -> JSONResponse:
         except BrowserRequestError as exc:
             return _error(422, "custom_provider_invalid", str(exc))
     selected_grade = data.get("tier") if custom is None else None
+    grade_model_id: str | None = None
     if selected_grade is not None:
         grade_order = ("free", "plus", "pro", "max")
         if not isinstance(selected_grade, str) or selected_grade not in grade_order + (B66_ADMIN_GRADE,):
@@ -541,7 +571,7 @@ async def b66_quote_interpret(request: Request) -> JSONResponse:
         if selected_grade == B66_ADMIN_GRADE:
             if not await b66_verified_admin(request, uid):
                 return _error(403, "admin_forbidden", "관리자 전용 기능입니다.")
-            expected_model = MUSE_B14_MODEL_ID
+            expected_model = ADMIN_B14_MODEL_ID
         else:
             member_grade = await verified_member_grade(request, uid, access)
             if grade_order.index(selected_grade) > grade_order.index(member_grade):
@@ -549,6 +579,9 @@ async def b66_quote_interpret(request: Request) -> JSONResponse:
             expected_model = await b66_grade_model_id_for_request(request, selected_grade)
             if expected_model is None:
                 return _error(503, "tier_unavailable", "선택한 AI 등급은 현재 준비 중입니다. 다른 등급을 선택해 주세요.")
+            # Only a centrally routed grade is exempt from the product-local
+            # grant list; the administrator lane keeps its own restriction.
+            grade_model_id = expected_model
         if data.get("model_id") not in (None, expected_model):
             return _error(400, "invalid_model_id", "선택한 등급의 AI 모델과 일치하지 않습니다.")
         model_id = expected_model
@@ -561,7 +594,9 @@ async def b66_quote_interpret(request: Request) -> JSONResponse:
         return _error(400, "model_selection_required", "사용할 AI 모델을 선택해 주세요.")
     if custom is None and access is not None and model_id in access["disabled_models"]:
         return _error(403, "model_disabled", "관리자가 이 AI 모델을 사용 중지했습니다.")
-    if custom is None and access is not None and access["active_policy"] and model_id not in access["model_ids"]:
+    if custom is None and access is not None and not b66_tier_grant_permits(
+        access, model_id, grade_model_id
+    ):
         return _error(403, "model_tier_forbidden", "이용 등급에서 허용하지 않는 AI 모델입니다.")
     # Explicit reasoning level is validated against the SAME exact model the
     # user chose (#3906). An unsupported level is rejected with an explainable
@@ -611,7 +646,14 @@ async def b66_quote_interpret(request: Request) -> JSONResponse:
     if not callable(get_fn) or not callable(interpret_fn):
         return _error(503, "quote_runtime_unavailable", "견적 대화 기능을 사용할 수 없습니다.")
 
-    workspace_id = await _resolve_memory_workspace(request, uid)
+    # #4316: same rule as the list route — no data read on an unresolved scope.
+    try:
+        workspace_id = await _resolve_memory_workspace(request, uid)
+    except Exception:
+        workspace_id = None
+    if workspace_id is None:
+        return _error(503, "workspace_authority_unavailable",
+                      "계정 범위를 확인할 수 없습니다. 잠시 후 다시 시도해 주세요.")
     try:
         value = get_fn(
             user_id=uid,

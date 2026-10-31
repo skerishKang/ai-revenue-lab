@@ -487,7 +487,7 @@ class _ProfileStore:
         return _Profile()
 
 
-async def _run_callback(authority, identity, *, query=None, state_ok=True):
+async def _run_callback(authority, identity, *, query=None, state_ok=True, return_to=None):
     from app.auth_routes import google_callback
     import app.auth_routes as auth_routes_module
 
@@ -498,7 +498,7 @@ async def _run_callback(authority, identity, *, query=None, state_ok=True):
     if state_ok:
         from app.auth import create_oauth_state
 
-        state_value, state_token = create_oauth_state(settings)
+        state_value, state_token = create_oauth_state(settings, return_to=return_to)
         state["cookies"]["padiem_oauth_state"] = state_token
         state["query_params"].setdefault("state", state_value)
     state["query_params"].setdefault("code", "auth-code")
@@ -512,6 +512,10 @@ async def _run_callback(authority, identity, *, query=None, state_ok=True):
             self.app.state.identity_shadow_store = None
             self.query_params = state["query_params"]
             self.cookies = state["cookies"]
+            # #6114: the callback now branches on Accept. A plain stub request
+            # carries no text/html, so it keeps the JSON contract like the app's
+            # own fetches; the assertions below stay exactly as they were.
+            self.headers = {}
 
     request = _Request()
     response = await google_callback(request)
@@ -522,6 +526,7 @@ class _GoogleSettings:
     auth_mode = "google"
     session_secret = "google-parity-session-secret-not-real-0000"
     session_max_age_seconds = 3600
+    cookie_secure = True  # #5115: session_cookie_kwargs reads the deployment flag
     google_client_id = "parity-client.apps.googleusercontent.com"
     google_client_secret = "parity-client-secret"
     public_base_url = "https://chat.example.test"

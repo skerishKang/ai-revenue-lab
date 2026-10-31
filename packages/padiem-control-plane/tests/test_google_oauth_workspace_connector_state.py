@@ -24,6 +24,11 @@ from google_oauth_durable_store import (
 from padiem_control_plane.contracts import ControlPlaneContractError
 
 
+# Time anchor: the fixtures below are read with an explicit `now=` (see _read),
+# and credentials default to expires_at=None, so the fixed NOW is data rather
+# than a wall-clock comparison. A credential that DOES expire must derive its
+# expires_at from NOW+delta and be read with now=NOW — never with the real
+# clock (docs/operations/TEST_TIME_ANCHOR_AUDIT_20261029.md §4).
 NOW = datetime(2026, 9, 20, 5, 0, tzinfo=timezone.utc)
 SEALED_REFRESH = "sealed:v1:BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB"
 WORKSPACE_A = "workspace.a.reviewed"

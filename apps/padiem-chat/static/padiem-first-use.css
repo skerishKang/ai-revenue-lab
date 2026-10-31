@@ -52,7 +52,27 @@
   display: none !important;
 }
 
-/* Give the composer slightly stronger first-use hierarchy without changing hooks. */
+/* #5634: the greeting plus the four entry cards sit in the upper part of the
+ * first screen instead of its middle, so the top : bottom spacing of the screen
+ * is about 1 : 2 — the block takes the top third of the band between the top of
+ * the content column and the fixed composer, and the floor keeps it readable in
+ * a very short window where the ratio cannot hold at all.
+ *
+ * That composition is declared once, in shared-six-panel-frame.css, for the
+ * layout variant `conversation`. It used to be divided here per product (747px
+ * for Chat, 836px for Claw, because the Claw hero block measures 565px against
+ * Chat's 476px), which let a content difference move the shared origin and put
+ * the Claw brand line ~30px below the Chat one on the same screen. The phone
+ * compaction — 16px start, its own block padding and card gap, because there
+ * the block is taller than the screen and the page scrolls instead of the ratio
+ * holding — is one rule for every product in interaction-polish.css. */
+
+/* Give the composer slightly stronger first-use hierarchy without changing hooks.
+ * The first screen is the authority for the Glass input box: the Glass chat
+ * state carries the same border, shadow and text size in
+ * padiem-glass-brand-polish.css, so sending a message does not restyle the
+ * input. This rule stays scoped to the home state so the other themes keep
+ * their own first-use treatment. */
 .app-shell[data-state="home"] .composer {
   border-color: rgba(255, 255, 255, .22);
   box-shadow:

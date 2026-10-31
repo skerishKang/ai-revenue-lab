@@ -5,9 +5,9 @@ deadline. Align its 600-second default with ZCode's documented stream idle
 policy. HTTPX resets read timeout whenever more response data arrives; it
 does not impose a fixed 600-second limit on a healthy generating response.
 
-The 45-second GATEWAY_WALL_SECONDS is a separate **retry/fallback chain**
-budget. It caps *additional* automatic fallbacks and manual retries, but not
-the initial attempt (manual or automatic) when inference exceeds 45s.
+The retry/fallback chain budget follows the provider's 600-second idle
+window, rather than imposing a separate 45-second cumulative ceiling.
+The initial attempt still has its own per-chunk idle watchdog.
 Callers (Core, Chat, Engine) retain their own deadlines until updated by
 their owners. Do not interpret this source change as end-to-end support.
 
@@ -26,13 +26,13 @@ READ_SECONDS = 600.0  # model first response / per-chunk inactivity ceiling
 # headers, not just a native TCP handshake. It must not silently impose a
 # second 30/55s wall on otherwise healthy 600s model inference.
 CONNECT_SECONDS = READ_SECONDS  # Fetch first-response watchdog (not 30s)
-WRITE_SECONDS = 20.0
-POOL_SECONDS = 10.0
-GATEWAY_WALL_SECONDS = 45.0
-ENGINE_MAX_WALL_SECONDS = 60.0  # Core ceiling, NOT its 20s default
+WRITE_SECONDS = 120.0
+POOL_SECONDS = 60.0
+GATEWAY_WALL_SECONDS = READ_SECONDS  # retry chain may use the provider's full idle window
+ENGINE_MAX_WALL_SECONDS = 60.0  # legacy Engine setting; not a B14 inference limit
 
 assert 0 < POOL_SECONDS <= WRITE_SECONDS < CONNECT_SECONDS
-assert 0 < GATEWAY_WALL_SECONDS < ENGINE_MAX_WALL_SECONDS
+assert GATEWAY_WALL_SECONDS == READ_SECONDS
 assert CONNECT_SECONDS == READ_SECONDS  # same first-response/stream idle budget
 
 

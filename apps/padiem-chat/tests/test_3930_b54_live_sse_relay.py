@@ -289,3 +289,21 @@ def test_unverified_error_never_emits_previous_completed_terminal():
     assert '"kind":"run_completed"' not in response.text
     assert "event: done" not in response.text
     assert "private incomplete completion" not in response.text
+
+
+def test_live_more_than_128_events_reaches_answer_and_one_done():
+    adapter = _streaming_adapter()
+
+    async def long_run(run, *, on_event, **kwargs):
+        await on_event(_event(1, OrchestrationEventKind.RUN_STARTED))
+        for index in range(2, 258):
+            await on_event(_event(index, OrchestrationEventKind.TOOL_STARTED))
+        await on_event(_event(258, OrchestrationEventKind.RUN_COMPLETED))
+        return _make_outcome(status="completed", answer="검증된 답변")
+
+    adapter.execute = AsyncMock(side_effect=long_run)
+    response = _call(adapter)
+    assert response.text.count("event: p01_event") == 258
+    assert response.text.count("event: done") == 1
+    assert "검증된 답변" in response.text
+    assert "event: error" not in response.text

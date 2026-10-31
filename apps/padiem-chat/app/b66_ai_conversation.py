@@ -48,12 +48,16 @@ ACTIONS = frozenset({"message", "choose_method", "confirm", "cancel_staged", ACT
 
 TAX_MODES = frozenset({"EXCLUSIVE", "INCLUSIVE", "EXEMPT"})
 
-# Bounded conversation limits. Message/reply size is provider-owned; this module
-# bounds the *persisted* state so one turn can never grow the slot without end.
-MAX_MESSAGE_CHARS = 2_000
-MAX_REPLY_CHARS = 2_000
+# Conversation shape limits. #4379 removed the character ceilings on the
+# customer message, the model answer, the replayed history and the assembled
+# prompt; no PADIEM character ceiling is enforced here. The remaining bounds
+# are the product's own quote shape (item count, field lengths) and the
+# persisted-state size guard.
 MAX_HISTORY_TURNS = 8
-MAX_STATE_BYTES = 32_768
+# B6: 32 KiB was a self-declared ceiling with no platform basis, and it refused
+# long quoted conversations. Align with the sibling guided-draft store (1 MiB);
+# the guard remains a storage sanity bound, not a product character ceiling.
+MAX_STATE_BYTES = 1024 * 1024
 MAX_ITEMS = 20
 MAX_ITEM_NAME_CHARS = 240
 MAX_TEXT_CHARS = 240
@@ -154,6 +158,27 @@ def _bounded_text(value: Any, *, limit: int, path: str) -> str:
         )
     if len(value) > limit:
         raise B66ConversationError("text_too_long", path=path, observed_type="string")
+    try:
+        value.encode("utf-8")
+    except UnicodeEncodeError as exc:
+        raise B66ConversationError(
+            "invalid_text", path=path, observed_type="string"
+        ) from exc
+    return value
+
+
+def _full_text(value: Any, *, path: str) -> str:
+    """Accept any well-formed text without a length ceiling.
+
+    #4379: the customer message, the model answer and the replayed history
+    used to be refused with ``text_too_long`` once they passed 2,000
+    characters, so a valid long answer failed the whole turn. Only the type
+    and the UTF-8 shape are still checked here.
+    """
+    if not isinstance(value, str):
+        raise B66ConversationError(
+            "invalid_text", path=path, observed_type=_json_type_name(value)
+        )
     try:
         value.encode("utf-8")
     except UnicodeEncodeError as exc:
@@ -457,11 +482,11 @@ def normalize_conversation_state(payload: Any) -> dict:
     if not isinstance(missing, list) or not all(isinstance(token, str) for token in missing):
         raise B66ConversationError("invalid_missing", path="missing", observed_type=_json_type_name(missing))
     state["missing"] = [token[:64] for token in missing][:16]
-    state["last_user_message"] = _bounded_text(
-        payload.get("last_user_message") or "", limit=MAX_MESSAGE_CHARS, path="last_user_message"
+    state["last_user_message"] = _full_text(
+        payload.get("last_user_message") or "", path="last_user_message"
     )
-    state["last_answer"] = _bounded_text(
-        payload.get("last_answer") or "", limit=MAX_REPLY_CHARS, path="last_answer"
+    state["last_answer"] = _full_text(
+        payload.get("last_answer") or "", path="last_answer"
     )
     origin = payload.get("answer_origin")
     if origin not in {"server_state", "registered_model_completion"}:
@@ -475,7 +500,7 @@ def normalize_conversation_state(payload: Any) -> dict:
             "invalid_history", path="history", observed_type=_json_type_name(history)
         )
     bounded_history = []
-    for item in history[-MAX_HISTORY_TURNS:]:
+    for item in history:
         if (
             not isinstance(item, dict)
             or set(item) != {"role", "content"}
@@ -485,8 +510,8 @@ def normalize_conversation_state(payload: Any) -> dict:
         bounded_history.append(
             {
                 "role": item["role"],
-                "content": _bounded_text(
-                    item.get("content") or "", limit=MAX_REPLY_CHARS, path="history.content"
+                "content": _full_text(
+                    item.get("content") or "", path="history.content"
                 ),
             }
         )
@@ -537,8 +562,6 @@ def parse_model_output(text: Any) -> tuple[str, str, dict]:
             "invalid_reply", path="reply", observed_type=_json_type_name(reply)
         )
     reply = reply.strip()
-    if len(reply) > MAX_REPLY_CHARS:
-        raise B66ConversationError("reply_too_long", path="reply", observed_type="string")
     intent = payload.get("intent")
     if intent not in INTENTS:
         raise B66ConversationError(
@@ -562,7 +585,7 @@ def conversation_prompt(state: dict) -> str:
         )
     history_lines = [
         f"{'고객' if turn['role'] == 'user' else 'AI'}: {turn['content']}"
-        for turn in data["history"][-6:]
+        for turn in data["history"]
     ]
     prompt = (
         "당신은 B66 견적 상담 AI입니다. 한국어로만 답변하세요.\n"
@@ -590,7 +613,9 @@ def conversation_prompt(state: dict) -> str:
         f"아직 필요한 항목: {', '.join(data['missing']) if data['missing'] else '없음'}\n"
         + ("최근 대화:\n" + "\n".join(history_lines) if history_lines else "")
     )
-    return prompt[:MAX_PROMPT_CHARS]
+    # #4379: the assembled system prompt is never cut. A truncated prompt
+    # silently removed the known facts and the earlier conversation.
+    return prompt
 
 
 def delta_overwrites_known_facts(facts: Any, delta: Any) -> bool:
@@ -863,14 +888,17 @@ def state_summary(state: dict) -> dict:
 
 
 def append_history(state: dict, user_message: str, reply: str) -> dict:
+    """Append this turn to the conversation without shortening it.
+
+    #4379: the customer message and the model answer used to be cut at 2,000
+    characters and only the last eight turns were kept, so the next turn
+    answered from a partial conversation.
+    """
     data = normalize_conversation_state(state)
-    data["history"] = (
-        data["history"]
-        + [
-            {"role": "user", "content": user_message[:MAX_MESSAGE_CHARS]},
-            {"role": "assistant", "content": reply[:MAX_REPLY_CHARS]},
-        ]
-    )[-MAX_HISTORY_TURNS:]
+    data["history"] = data["history"] + [
+        {"role": "user", "content": user_message},
+        {"role": "assistant", "content": reply},
+    ]
     return data
 
 
@@ -896,8 +924,6 @@ __all__ = [
     "ConversationRevisionConflict",
     "INTENTS",
     "MAX_HISTORY_TURNS",
-    "MAX_MESSAGE_CHARS",
-    "MAX_REPLY_CHARS",
     "MAX_STATE_BYTES",
     "METHOD_FLEXIBLE",
     "METHOD_GUIDED",

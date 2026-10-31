@@ -75,10 +75,12 @@ MAX_SLACK_FILE_BYTES = 10 * 1024 * 1024
 MAX_SLACK_FILES_PER_ACTION = 8
 SLACK_SIGNATURE_MAX_AGE_SECONDS = 300
 
-REQUEST_TIMEOUT_SECONDS = 30
+# #4379: a provider request carries no PADIEM client deadline. None
+# means the provider's own timeout applies.
+REQUEST_TIMEOUT_SECONDS: int | None = None
 
 # Core-side output bounds (analogous to the Gmail/Drive/Telegram promotions).
-MAX_PROVIDER_METADATA_BYTES = 128_000
+MAX_PROVIDER_METADATA_BYTES = 1024 * 1024
 MAX_NAME_CHARS = 512
 MAX_SLACK_PROJECTION_ITEMS = 100
 
@@ -147,7 +149,7 @@ class SlackReadPort(Protocol):
         base_url: str,
         path: str,
         query: dict[str, str],
-        timeout_seconds: int,
+        timeout_seconds: int | None,
         max_response_bytes: int,
     ) -> dict[str, Any] | Awaitable[dict[str, Any]]:
         ...
@@ -170,7 +172,6 @@ def slack_read_tool_specs() -> tuple[ToolSpec, ...]:
             approval_policy=ApprovalPolicy.NOT_REQUIRED,
             input_schema={"type": "object", "properties": {}, "additionalProperties": False},
             auth_scope=(SLACK_READONLY_AUTH_SCOPE,),
-            timeout_seconds=30.0,
         ),
         ToolSpec(
             id=SLACK_LIST_CHANNELS_TOOL_ID,
@@ -186,7 +187,6 @@ def slack_read_tool_specs() -> tuple[ToolSpec, ...]:
             approval_policy=ApprovalPolicy.NOT_REQUIRED,
             input_schema={"type": "object", "properties": {}, "additionalProperties": False},
             auth_scope=(SLACK_READONLY_AUTH_SCOPE,),
-            timeout_seconds=30.0,
         ),
         ToolSpec(
             id=SLACK_GET_CHANNEL_HISTORY_TOOL_ID,
@@ -214,7 +214,6 @@ def slack_read_tool_specs() -> tuple[ToolSpec, ...]:
                 "additionalProperties": False,
             },
             auth_scope=(SLACK_READONLY_AUTH_SCOPE,),
-            timeout_seconds=30.0,
         ),
         ToolSpec(
             id=SLACK_GET_THREAD_REPLIES_TOOL_ID,
@@ -246,7 +245,6 @@ def slack_read_tool_specs() -> tuple[ToolSpec, ...]:
                 "additionalProperties": False,
             },
             auth_scope=(SLACK_READONLY_AUTH_SCOPE,),
-            timeout_seconds=30.0,
         ),
         ToolSpec(
             id=SLACK_GET_USER_INFO_TOOL_ID,
@@ -268,7 +266,6 @@ def slack_read_tool_specs() -> tuple[ToolSpec, ...]:
                 "additionalProperties": False,
             },
             auth_scope=(SLACK_READONLY_AUTH_SCOPE,),
-            timeout_seconds=30.0,
         ),
         ToolSpec(
             id=SLACK_GET_FILE_INFO_TOOL_ID,
@@ -290,7 +287,6 @@ def slack_read_tool_specs() -> tuple[ToolSpec, ...]:
                 "additionalProperties": False,
             },
             auth_scope=(SLACK_READONLY_AUTH_SCOPE,),
-            timeout_seconds=30.0,
         ),
     )
 

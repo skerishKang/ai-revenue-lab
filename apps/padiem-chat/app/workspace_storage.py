@@ -12,7 +12,6 @@ from zipfile import BadZipFile, ZipFile
 
 from padiem_ai_core.document_normalization import DocumentNormalizationError, validate_ooxml_archive
 
-SINGLE_FILE_MAX_BYTES = 10 * 1024 * 1024
 GENERATED_DOCUMENT_RETENTION_DAYS = 30
 DOCX_MEDIA_TYPE = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
 XLSX_MEDIA_TYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -244,8 +243,8 @@ class WorkspaceDocumentStore:
         if not isinstance(body, (bytes, bytearray, memoryview)):
             raise ValueError("document body must be bytes")
         payload = bytes(body)
-        if not payload or len(payload) > SINGLE_FILE_MAX_BYTES:
-            raise ValueError("generated document exceeds workspace storage file limit")
+        if not payload:
+            raise ValueError("generated document body is empty")
         clean_filename = _safe_filename(filename)
         document_id = _document_id()
         object_key = _object_key(tenant, document_id, clean_filename)

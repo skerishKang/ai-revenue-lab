@@ -144,17 +144,33 @@ The browser does not supply Provider keys or arbitrary upstream origins. Ordinar
 
 Composer attachments are request-scoped product inputs and are distinct from persistent Project files. Browser capability truth is centralized in `static/attachment-capabilities.js`.
 
-Current bounded composer contract:
+Current composer contract:
 
 ```text
-Images:      JPEG / PNG / WebP, one attachment, up to 4 MiB
-Text docs:   TXT / Markdown / CSV / JSON, one attachment,
-             up to 96 KiB and 40,000 decoded text characters
+Images:      JPEG / PNG / WebP, one attachment, no PADIEM byte total
+Text docs:   TXT / Markdown / CSV / JSON, one attachment, no PADIEM byte total
+             or character limit
 Binary docs: PDF / DOCX / PPTX / XLSX, one attachment,
-             raw binary payload up to 2 MiB
+             raw binary payload with no PADIEM byte total
 ```
 
+#4379 removed the product-side byte total for images and binary documents, and
+#5734 removed the ones that counted a document's own length: the 96 KiB and
+40,000-character text bounds, the PDF page and per-page text bounds, the XLSX
+row, column and cell ceilings, and the OOXML per-entry and total uncompressed
+bounds. The platform request limit and the selected Provider's own limit are the
+real ceilings, and a payload beyond them fails with that true platform or Provider
+error instead of a PADIEM maximum. What stays enforced is the shape and safety
+set: one attachment, the media-type and magic-byte checks, the base64 rules, the
+name rules, the empty-payload rule, the NUL and control-character rules, the
+OOXML member-path, encryption and DTD rules, and the archive inflation-ratio
+guard that stops a decompression bomb.
+
 Binary extraction remains server-side behind the existing completed `/api/chat` attachment contract; the frontend does not reimplement document extraction.
+
+The runtime reports binary parser readiness in `/health` as `binary_document_attachment_ready`, and the composer derives its accepted formats from that value. CPython runs the reviewed in-process Core parser. The production Worker keeps binary parsing fail-closed until trusted composition installs an isolated parser authority, so the composer does not promise parsing that the active runtime would refuse.
+
+Extraction keeps source provenance for the model: PDF segments carry the exact page number, PPTX segments carry the slide number, DOCX table rows are grouped as table/row, and XLSX cells keep their sheet/cell coordinate plus the formula text next to the cached value. These labels are reference metadata and do not grant instruction authority.
 
 Project files are a distinct persistence capability. They are validated UTF-8 text files only and remain separate from ephemeral composer attachments. PDF/DOCX/PPTX/XLSX composer support therefore does not imply those binary documents can be persisted as Project files.
 
@@ -213,9 +229,12 @@ When configured, the product may expose owner-scoped:
 - Projects and project instructions;
 - bounded project files;
 - Saved Outputs;
-- signed server-owned sessions.
+- signed server-owned sessions;
+- the account's last explicitly selected AI tier.
 
 Saved Outputs are user-selected library records. They are not automatically injected into later chats or treated as hidden model memory.
+
+The last selected AI tier is a UI preference, not model authority. It is stored per signed account on the server (the browser never names the account, and the browser-persistence privacy contract keeps it out of `localStorage` / `sessionStorage`), and the server re-verifies the member grade and the administrator gate on every read and on every model request. A stored tier the account may no longer use is not applied, and a temporarily unavailable authority is never treated as a denial.
 
 Browser-supplied product identifiers never bypass server-side ownership checks.
 

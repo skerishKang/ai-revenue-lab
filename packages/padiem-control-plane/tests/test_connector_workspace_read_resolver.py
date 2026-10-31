@@ -144,7 +144,7 @@ class _FakeNamespace:
 
 class _FakeEnv:
     def __init__(self, stub) -> None:
-        self.CONTROL_PLANE_ALLOWED_PRODUCTS = "b62,b54-padiem-claw"
+        self.CONTROL_PLANE_ALLOWED_PRODUCTS = "b62,b54-padiem-claw,lovetree-4-0"
         self.CONTROL_PLANE_IDENTITY = _FakeNamespace(stub)
 
 

@@ -30,6 +30,15 @@ secret_name = "CLAW_ENGINE_DESKTOP_SECRET"
 binding = "B14_SERVICE"
 service = "ai-revenue-korean-ai-platform"
 
+# Deployment-owned server-to-server proof secret for the B14 platform-credential
+# execution lane. B14 spends platform-owned Provider credentials there, so this
+# Worker proves it is an approved PADIEM caller before the dispatch is built.
+# The value lives only in Cloudflare Secrets Store and never reaches a browser.
+[[secrets_store_secrets]]
+binding = "PADIEM_B14_SERVICE_PROOF_SECRET"
+store_id = "f0b09ca04a7b43248154c773704a5616"
+secret_name = "PADIEM_B14_SERVICE_PROOF_SECRET"
+
 [[services]]
 binding = "CONTROL_PLANE_IDENTITY"
 service = "padiem-control-plane-identity"
@@ -118,6 +127,13 @@ database_id = "6b77ad02-bc27-488f-bb97-6325f6750cba"
 # previous served Worker version to disable if acceptance checks fail.
 [vars]
 PADIEM_ENGINE_AGENT_DURABLE_ENABLED = "true"
+
+[observability]
+enabled = true
+head_sampling_rate = 1
+[observability.logs]
+enabled = true
+invocation_logs = true
 
 # #2786 Stage 11-C M3-2: preview-only Agent pilot lane.
 #

@@ -307,6 +307,8 @@ The owner has confirmed that this repository is operated predominantly by one pe
 
 `RELEASE_AUTHORITY=SINGLE_OWNER` · `SECOND_PERSONAL_ACCOUNT_REQUIRED=NO` · `EXISTING_GITHUB_PROTECTIONS_BYPASSED=NO` · `D1_040_REAPPLY=NO` · `PRODUCTION_MUTATION_BEFORE_PREFLIGHT=NO`.
 
+**Canonical identity authority (2026-10-28):** its reviewed product boundary lives twice — the code pin `_ALLOWED_PRODUCTS` in `packages/padiem-control-plane/identity_authority_worker.py` and the `CONTROL_PLANE_ALLOWED_PRODUCTS` var in `packages/padiem-control-plane/wrangler.identity-authority.jsonc` — and the Worker closes at startup (`RuntimeError: identity authority product boundary does not match the reviewed product set`) whenever the two disagree, so that Worker's code and vars must go up in **one** `wrangler deploy`, never one before the other. Production currently runs the older matching pair and is not part of this bundle.
+
 **Technical exception:** The file `b62-current-main-production-deploy-trigger.yml` has a separate path-scoped `push` trigger when **that workflow file itself** is changed. Do not edit/merge it as a casual documentation change; review its deployment-dispatch effect separately. This policy amendment does not modify either deployment workflow.
 
 **Historical evidence at adoption (2026-10-13):** D1 040 was proven EXACT in #4522; at the time, the new Worker served status and authenticated owner P01 E2E were not yet verified. For the **current** live served version and remaining E2E, consult [#3936](https://github.com/skerishKang/ai-revenue-lab/issues/3936) and fresh workflow readback, not this historical snapshot. The single-owner decision does not imply deployment or user acceptance.

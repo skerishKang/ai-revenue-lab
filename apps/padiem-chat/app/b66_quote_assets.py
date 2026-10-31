@@ -19,7 +19,6 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Any
 
-MAX_B66_QUOTE_ASSET_BYTES = 256 * 1024
 ASSET_KINDS = frozenset({"logo", "stamp"})
 ASSET_MEDIA_TYPES = frozenset({"image/png", "image/jpeg", "image/webp"})
 
@@ -113,7 +112,7 @@ def _payload(value: object, *, media_type: str) -> bytes:
     if not isinstance(value, (bytes, bytearray, memoryview)):
         raise B66QuoteAssetError("asset body must be bytes")
     body = bytes(value)
-    if not body or len(body) > MAX_B66_QUOTE_ASSET_BYTES:
+    if not body:
         raise B66QuoteAssetError("asset body size is invalid")
     if not _magic_matches(media_type, body):
         raise B66QuoteAssetError("asset media type does not match bytes")
@@ -156,7 +155,6 @@ def _metadata(row: dict[str, Any]) -> B66QuoteAssetMetadata:
     if (
         meta.object_key != _object_key(meta.asset_id, meta.media_type)
         or meta.byte_length < 1
-        or meta.byte_length > MAX_B66_QUOTE_ASSET_BYTES
         or not _SHA256_RE.fullmatch(meta.sha256)
         or meta.status != "approved"
     ):
@@ -328,6 +326,5 @@ __all__ = [
     "B66QuoteAssetMetadata",
     "B66QuoteAssetStore",
     "D1B66QuoteAssetMetadataStore",
-    "MAX_B66_QUOTE_ASSET_BYTES",
     "validate_asset_id",
 ]

@@ -1,0 +1,4 @@
+# Local build and test residue for the council apps entry. Never source.
+*.egg-info/
+.pytest_cache/
+.venv/

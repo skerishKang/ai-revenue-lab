@@ -10,6 +10,8 @@ from urllib.parse import urlparse
 
 from playwright.async_api import Page, Route, async_playwright
 
+from b62_settings_actions import sign_out_via_settings
+
 
 BASE_URL = os.environ.get("B62_AUTH_HISTORY_QA_BASE_URL", "http://127.0.0.1:8769")
 OUT_DIR = Path(os.environ.get("B62_AUTH_HISTORY_QA_OUT_DIR", ".tmp/b62-auth-history-browser-qa"))
@@ -203,11 +205,35 @@ async def _install_fixtures(page: Page, state: FixtureState) -> None:
             headers={"Cache-Control": "no-store"},
         )
 
+    async def no_paired_pc(route: Route) -> None:
+        # #5573/#5917: the PC card reads /api/pc/pairings when an account opens
+        # the sidebar, and #5573 also reads below that path for a link's roots.
+        # Left unmocked, such a request only ends when the card's own
+        # AbortController fires, and this harness counts the abort as a browser
+        # failure. #5895 answers the whole pairing surface in every fixture, so
+        # no case depends on the local server behind it: an account with no
+        # paired PC has no link to read, so a sub-path is truthfully 404.
+        path = route.request.url.split("?", 1)[0].rstrip("/")
+        if path.endswith("/pairings"):
+            await _fulfill_json(route, {"links": []})
+            return
+        await _fulfill_json(route, {"error": {"code": "not_found"}}, status=404)
+
+    async def no_runs(route: Route) -> None:
+        # #5895: opening a saved conversation also reads the owner's run history
+        # once, to continue a PC turn that is still running server-side. Left
+        # unmocked it becomes a real request to the local server on every
+        # conversation open, competing for the same connections the PC card
+        # reads. An account with no runs has nothing to continue.
+        await _fulfill_json(route, {"ok": True, "runs": []})
+
     await page.route("**/api/auth/status", auth_status)
+    await page.route("**/api/pc/pairings**", no_paired_pc)
     await page.route("**/api/auth/logout", logout)
     await page.route("**/api/projects", projects)
     await page.route("**/api/conversations", conversations)
     await page.route("**/api/conversations/*", conversation_detail)
+    await page.route("**/api/claw/runs**", no_runs)
     await page.route("**/api/chat/stream", stream)
 
 
@@ -336,7 +362,9 @@ async def _run_view(page: Page, *, name: str, width: int, height: int, mobile: b
     await page.screenshot(path=str(OUT_DIR / f"{name}-history-new-chat.png"), full_page=True)
 
     await _open_sidebar_if_mobile(page, mobile)
-    await page.locator("#loginButton").click()
+    # #5560: the sign-out control moved into Settings > Account. The session
+    # invalidation and the guest projection are the same.
+    await sign_out_via_settings(page, label=f"{name}-logout")
     await page.wait_for_function(
         "() => document.getElementById('loginButton')?.textContent.trim() === '로그인' && document.getElementById('historySection')?.hidden === true",
         timeout=5_000,

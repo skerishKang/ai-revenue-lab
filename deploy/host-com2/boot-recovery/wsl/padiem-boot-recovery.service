@@ -1,0 +1,18 @@
+[Unit]
+Description=PADIEM COM2 boot self-check (#4953): units, health, tunnel, alert
+Wants=network-online.target
+After=multi-user.target network-online.target
+ConditionFileIsExecutable=/opt/padiem/boot-recovery/boot-recovery.sh
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+Environment=BOOT_RECOVERY_WAIT_SECONDS=240
+EnvironmentFile=-/opt/padiem/boot-recovery/.env
+ExecStart=/opt/padiem/boot-recovery/boot-recovery.sh
+TimeoutStartSec=420
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

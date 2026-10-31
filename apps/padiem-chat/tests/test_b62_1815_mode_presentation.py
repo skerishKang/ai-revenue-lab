@@ -32,7 +32,10 @@ def test_plus_is_default_and_selection_is_shared_by_chat_and_claw() -> None:
     assert 'let selectedTier = "free";' in CAPABILITIES
     assert 'window.PadiemTierSelection = Object.freeze({' in CAPABILITIES
     assert 'tier: selectedProductTier()' in APP
-    assert 'const payload = { messages: outboundMessages, mode: "auto", tier: selectedProductTier(), skill };' in APP
+    assert 'const payload = { messages: outboundMessages, tier: selectedProductTier(), skill };' in APP
+    # The chat `mode` request key is gone with the remnant it came from: no client
+    # sends it, and the contract refuses it as an unknown item.
+    assert 'mode: "auto"' not in APP
 
 
 def test_tier_copy_contains_no_provider_or_model_authority() -> None:
@@ -128,3 +131,17 @@ def test_glass_tier_popover_uses_bright_frosted_surface_not_dark_group() -> None
     assert "blur(28px)" in glass_block
     dark_group = CSS.split('html[data-theme="dark"] .mode-presentation-panel,', 1)[1].split("{", 1)[0]
     assert 'padiem-glass' not in dark_group
+
+
+def test_tier_pill_copy_owns_the_tier_key_instead_of_the_legacy_mode_label() -> None:
+    ko, en = LOCALE.split("en: {", 1)
+    for table in (ko, en):
+        assert '"mode"' not in table
+        assert '"tier"' in table
+    assert '"tier": "AI 등급"' in ko
+    assert '"tier": "AI tier"' in en
+    assert '[".model-pill span:last-child", "mode"]' not in LOCALE
+    assert '[".model-pill", "aria-label", "mode"]' not in LOCALE
+    assert '[".model-pill", "aria-label", "tier"]' in LOCALE
+    assert 'data-locale-aria-label="mode"' not in INDEX
+    assert 'data-locale-aria-label="tier"' in INDEX

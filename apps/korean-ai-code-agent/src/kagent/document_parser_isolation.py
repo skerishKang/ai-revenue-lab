@@ -132,8 +132,12 @@ __all__ = [
 
 #: CENTRAL decision for this slice. Bounded on both sides: the default is the
 #: largest value a policy may request, so no caller can widen the ceiling.
-DOCUMENT_PARSER_TIMEOUT_SECONDS = 30.0
-DOCUMENT_PARSER_TIMEOUT_MAX_SECONDS = 30.0
+# #4379: the parser isolation carries no PADIEM wall-clock ceiling. The
+# default is no wait ceiling at all, and a policy may request any
+# positive timeout. The terminate/kill/drain grace ceilings below stay:
+# they bound the termination ladder, not the work budget.
+DOCUMENT_PARSER_TIMEOUT_SECONDS: float | None = None
+DOCUMENT_PARSER_TIMEOUT_MAX_SECONDS: float | None = None
 
 #: Canonical grace/join ceilings. ``PARSER_TIMEOUT_LIFECYCLE_BOUNDED=YES`` only
 #: holds if *every* stage of the ladder is bounded, not just the parse wait:
@@ -152,7 +156,6 @@ PARSER_TIMEOUT_ACTION = "kill"
 #: ``0 < value <= ceiling`` is refused at construction, so no caller can convert
 #: the bounded ladder into an unbounded wait.
 _BOUNDED_SECONDS_CEILINGS = (
-    ("timeout_seconds", DOCUMENT_PARSER_TIMEOUT_MAX_SECONDS),
     ("terminate_grace_seconds", DOCUMENT_PARSER_TERMINATE_GRACE_MAX_SECONDS),
     ("kill_grace_seconds", DOCUMENT_PARSER_KILL_GRACE_MAX_SECONDS),
     ("drain_join_seconds", DOCUMENT_PARSER_DRAIN_JOIN_MAX_SECONDS),
@@ -212,7 +215,7 @@ class ParserOutcome(str, Enum):
 class ParserIsolationPolicy:
     """Bounded parser-isolation policy, validated on construction."""
 
-    timeout_seconds: float = DOCUMENT_PARSER_TIMEOUT_SECONDS
+    timeout_seconds: float | None = DOCUMENT_PARSER_TIMEOUT_SECONDS
     terminate_grace_seconds: float = DOCUMENT_PARSER_TERMINATE_GRACE_MAX_SECONDS
     kill_grace_seconds: float = DOCUMENT_PARSER_KILL_GRACE_MAX_SECONDS
     drain_join_seconds: float = DOCUMENT_PARSER_DRAIN_JOIN_MAX_SECONDS
@@ -225,6 +228,15 @@ class ParserIsolationPolicy:
         # Positive-only validation is not enough: it would leave every knob
         # unbounded in practice. Each value is checked against its canonical
         # ceiling as well as its floor.
+        # #4379: the work timeout carries no PADIEM ceiling. None means no
+        # wait ceiling at all, and any positive finite timeout is accepted.
+        if self.timeout_seconds is not None and (
+            isinstance(self.timeout_seconds, bool)
+            or not isinstance(self.timeout_seconds, (int, float))
+            or not math.isfinite(float(self.timeout_seconds))
+            or float(self.timeout_seconds) <= 0
+        ):
+            raise ParserIsolationError("timeout_seconds must be a positive finite number or None")
         for name, ceiling in _BOUNDED_SECONDS_CEILINGS:
             value = getattr(self, name)
             if (

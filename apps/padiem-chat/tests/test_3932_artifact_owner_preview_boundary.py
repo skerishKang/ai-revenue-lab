@@ -25,30 +25,41 @@ DOCX_MIME = "application/vnd.openxmlformats-officedocument.wordprocessingml.docu
 
 
 def _client(*, mime=PDF_MIME, payload=PDF, owner="tenant_a", identity="tenant_a",
-            missing=False, failure=None, filename="safe.pdf"):
+            missing=False, failure=None, filename="safe.pdf", run_owner="owner_a"):
     meta = SimpleNamespace(document_id=ID, tenant_id=owner, filename=filename, media_type=mime)
     store = SimpleNamespace(get_for_tenant=AsyncMock(
         side_effect=failure if failure else None,
         return_value=None if missing else (meta, payload),
     ))
+    # #2952 follow-up: the byte and preview routes ask the owner-scoped run row
+    # first. run_owner=None means no user minted this document for the caller.
+    history = SimpleNamespace(
+        get_claw_run_for_artifact_document=AsyncMock(
+            return_value={"run_id": "run-1", "artifact_document_id": ID}
+            if run_owner is not None else None,
+        )
+    )
     app = Starlette(routes=[Route(
         "/api/claw/manual-intake/artifact/{document_id}/preview",
         claw_artifact_inline_preview,
         methods=["GET"],
     )])
     app.state.workspace_document_store = store
-    return app, store, AsyncMock(return_value=identity)
+    app.state.history_store = history
+    caller = run_owner if run_owner is not None else "owner_a"
+    resolved = None if identity is None else (caller, identity)
+    return app, store, AsyncMock(return_value=resolved)
 
 
 def _get(**kwargs):
     app, store, resolver = _client(**kwargs)
-    with patch("app.claw_artifact_preview_routes._resolve_canonical_tenant", new=resolver):
+    with patch("app.claw_artifact_preview_routes._resolve_canonical_owner", new=resolver):
         with TestClient(app, base_url="https://chat.example.test") as client:
             result = client.get(PATH)
     return result, store, resolver
 
 
-def test_real_pdf_bytes_are_inline_only_after_tenant_verified_read():
+def test_real_pdf_bytes_are_inline_only_after_owner_verified_read():
     resp, store, resolver = _get()
     assert resp.status_code == 200
     assert resp.content == PDF
@@ -98,10 +109,22 @@ def test_mime_and_bytes_must_both_match_before_inline():
         assert resp.headers["x-content-type-options"] == "nosniff"
 
 
-def test_oversized_pdf_cannot_be_inlined():
-    resp, _, _ = _get(payload=b"%PDF-1.4\n" + b"A" * (10 * 1024 * 1024) + b"%%EOF")
+def test_a_pdf_past_the_released_ceiling_is_still_inlined():
+    # #4379: the 10 MiB total was a PADIEM capacity claim, not a platform
+    # request limit, and the D1 metadata column no longer carries it. The
+    # container proof is what still decides, so a real PDF is inlined.
+    payload = b"%PDF-1.4\n" + b"A" * (10 * 1024 * 1024) + b"%%EOF"
+    resp, _, _ = _get(payload=payload)
+    assert resp.status_code == 200
+    assert resp.content == payload
+    assert resp.headers["content-type"] == PDF_MIME
+
+
+def test_a_pdf_below_the_floor_is_not_inlined():
+    resp, _, _ = _get(payload=b"%PDF-1.4")
     assert resp.status_code == 200
     assert resp.json()["preview"]["available"] is False
+    assert resp.json()["preview"]["kind"] == "download_only"
 
 
 def test_untrusted_filename_is_encoded_not_raw_header():
@@ -114,7 +137,7 @@ def test_untrusted_filename_is_encoded_not_raw_header():
 
 def test_invalid_artifact_id_fails_before_storage():
     app, store, resolver = _client()
-    with patch("app.claw_artifact_preview_routes._resolve_canonical_tenant", new=resolver):
+    with patch("app.claw_artifact_preview_routes._resolve_canonical_owner", new=resolver):
         with TestClient(app) as client:
             resp = client.get("/api/claw/manual-intake/artifact/../../etc/passwd/preview")
             # Starlette may normalize ..; any such path must be refused.
@@ -126,10 +149,18 @@ def test_no_new_storage_authority_and_download_route_unchanged():
     root = Path(__file__).resolve().parents[1] / "app"
     preview = (root / "claw_artifact_preview_routes.py").read_text(encoding="utf-8")
     app = (root / "app_factory.py").read_text(encoding="utf-8")
-    assert 'from .claw_routes import _resolve_canonical_tenant' in preview
+    assert 'from .claw_routes import _owns_generated_document, _resolve_canonical_owner' in preview
     assert 'store.get_for_tenant(tenant_id=tenant, document_id=document_id)' in preview
     assert 'Route("/api/claw/manual-intake/artifact/{document_id}", claw_manual_intake_artifact' in app
     assert 'claw_artifact_inline_preview' in app
     assert "put_generated_docx" not in preview
     assert "URL.createObjectURL" not in preview
     assert "artifacts://" not in preview
+
+
+def test_a_tenant_mate_without_the_minting_run_reads_nothing():
+    """#2952: the same company is not ownership. No run row for the caller → 404, no read."""
+    resp, store, _ = _get(run_owner=None)
+    assert resp.status_code == 404
+    assert resp.json()["error"]["code"] == "artifact_not_found"
+    store.get_for_tenant.assert_not_awaited()

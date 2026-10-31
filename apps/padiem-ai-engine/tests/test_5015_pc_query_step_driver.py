@@ -11,9 +11,18 @@ from app.claw_pc_query_step_driver import (
     CLAW_ENGINE_PC_DRIVE_URL,
     PC_DRIVES_CANONICAL_TOOL_ID,
     PC_DRIVES_TOOL_ID,
+    PC_DELETE_FILE_CANONICAL_TOOL_ID,
     PC_LIST_FILES_CANONICAL_TOOL_ID,
+    PC_MOVE_FILE_CANONICAL_TOOL_ID,
     PC_LIST_FILES_SCOPE,
     PC_LIST_FILES_TOOL_ID,
+    PC_DELETE_FILE_SCOPE,
+    PC_DELETE_FILE_TOOL_ID,
+    PC_MOVE_FILE_SCOPE,
+    PC_MOVE_FILE_TOOL_ID,
+    PC_WRITE_FILE_CANONICAL_TOOL_ID,
+    PC_WRITE_FILE_SCOPE,
+    PC_WRITE_FILE_TOOL_ID,
     PC_QUERY_SCOPE,
     PC_READ_FILE_CANONICAL_TOOL_ID,
     PC_READ_FILE_SCOPE,
@@ -67,13 +76,13 @@ def test_model_selects_drive_tool_as_first_step_then_sees_result():
         return {"action": "complete", "answer": "실행 계정에서 C: 드라이브를 확인했습니다."}
 
     driver = StructuredPCQueryStepDriver(select_step=select_step)
-    context = AgentStepContext(run_id="run_5015", step_index=1, input_text="내 PC 드라이브 목록을 알려줘", tool_results=())
+    context = AgentStepContext.with_results(run_id="run_5015", step_index=1, input_text="내 PC 드라이브 목록을 알려줘", results=())
     decision = asyncio.run(driver.next_step(context, object()))
     assert decision.invocation == ToolInvocation(tool_id=PC_DRIVES_TOOL_ID, arguments={})
     result = ToolExecutionResult(tool_id=PC_DRIVES_TOOL_ID,
         output={"output": "drive inventory observed", "exit_code": None},
         event=ToolEvent(tool_id=PC_DRIVES_TOOL_ID, status=RunStatus.COMPLETED))
-    context2 = AgentStepContext(run_id="run_5015", step_index=2, input_text="내 PC 드라이브 목록을 알려줘", tool_results=(result,))
+    context2 = AgentStepContext.with_results(run_id="run_5015", step_index=2, input_text="내 PC 드라이브 목록을 알려줘", results=(result,))
     final = asyncio.run(driver.next_step(context2, object()))
     assert final.answer == "실행 계정에서 C: 드라이브를 확인했습니다."
     assert seen[1][0]["output"]["output"] == "drive inventory observed"
@@ -84,7 +93,7 @@ def test_model_cannot_select_unauthorized_tool():
         return {"action": "tool", "tool_id": "claw.desktop.click", "arguments": {}}
 
     driver = StructuredPCQueryStepDriver(select_step=select_step)
-    context = AgentStepContext(run_id="run_5015", step_index=1, input_text="list drives", tool_results=())
+    context = AgentStepContext.with_results(run_id="run_5015", step_index=1, input_text="list drives", results=())
     with pytest.raises(PCQueryStepError):
         asyncio.run(driver.next_step(context, object()))
 
@@ -146,7 +155,7 @@ def test_model_lists_then_reads_the_selected_file_in_one_run():
         if not observations:
             return {
                 "action": "tool", "tool_id": PC_LIST_FILES_TOOL_ID,
-                "arguments": {"path": "."},
+                "arguments": {"path": ".", "intent": "read"},
             }
         if len(observations) == 1:
             listed = json.loads(observations[0]["output"]["output"])
@@ -160,10 +169,15 @@ def test_model_lists_then_reads_the_selected_file_in_one_run():
             "answer": "읽은 내용: " + observations[-1]["output"]["content"],
         }
 
-    driver = StructuredPCQueryStepDriver(select_step=select_step)
+    # #5573/#5574: the Chat lane ships the trusted list+read ceiling for every
+    # PC files turn; the model's explicit read intent opens the per-turn gate.
+    driver = StructuredPCQueryStepDriver(
+        select_step=select_step,
+        allowed_tool_ids=frozenset({PC_LIST_FILES_TOOL_ID, PC_READ_FILE_TOOL_ID}),
+    )
     first = asyncio.run(driver.next_step(
-        AgentStepContext(run_id="run_5015", step_index=1,
-                         input_text="폴더 목록을 보고 TXT를 읽어줘", tool_results=()),
+        AgentStepContext.with_results(run_id="run_5015", step_index=1,
+                         input_text="폴더 목록을 보고 TXT를 읽어줘", results=()),
         object(),
     ))
     assert first.invocation == ToolInvocation(
@@ -180,9 +194,8 @@ def test_model_lists_then_reads_the_selected_file_in_one_run():
         event=ToolEvent(tool_id=PC_LIST_FILES_TOOL_ID, status=RunStatus.COMPLETED),
     )
     second = asyncio.run(driver.next_step(
-        AgentStepContext(run_id="run_5015", step_index=2,
-                         input_text="폴더 목록을 보고 TXT를 읽어줘",
-                         tool_results=(list_result,)),
+        AgentStepContext.with_results(run_id="run_5015", step_index=2,
+                         input_text="폴더 목록을 보고 TXT를 읽어줘", results=(list_result,)),
         object(),
     ))
     assert second.invocation == ToolInvocation(
@@ -195,9 +208,8 @@ def test_model_lists_then_reads_the_selected_file_in_one_run():
         event=ToolEvent(tool_id=PC_READ_FILE_TOOL_ID, status=RunStatus.COMPLETED),
     )
     final = asyncio.run(driver.next_step(
-        AgentStepContext(run_id="run_5015", step_index=3,
-                         input_text="폴더 목록을 보고 TXT를 읽어줘",
-                         tool_results=(list_result, read_result)),
+        AgentStepContext.with_results(run_id="run_5015", step_index=3,
+                         input_text="폴더 목록을 보고 TXT를 읽어줘", results=(list_result, read_result)),
         object(),
     ))
     assert final.answer == "읽은 내용: PADIEM TEST CONTENT"
@@ -212,9 +224,8 @@ def test_file_tool_arguments_are_closed():
         }
 
     driver = StructuredPCQueryStepDriver(select_step=select_step)
-    context = AgentStepContext(
-        run_id="run_5015", step_index=1, input_text="read", tool_results=(),
-    )
+    context = AgentStepContext.with_results(
+        run_id="run_5015", step_index=1, input_text="read", results=())
     with pytest.raises(PCQueryStepError):
         asyncio.run(driver.next_step(context, object()))
 
@@ -227,9 +238,13 @@ def test_drive_binding_registers_core_toolruntime_contract():
         PC_DRIVES_CANONICAL_TOOL_ID,
         PC_LIST_FILES_CANONICAL_TOOL_ID,
         PC_READ_FILE_CANONICAL_TOOL_ID,
+        PC_WRITE_FILE_CANONICAL_TOOL_ID,
+        PC_MOVE_FILE_CANONICAL_TOOL_ID,
+        PC_DELETE_FILE_CANONICAL_TOOL_ID,
     }
     assert set(binding.tool_runtime.registered_tool_ids) == {
         PC_DRIVES_TOOL_ID, PC_LIST_FILES_TOOL_ID, PC_READ_FILE_TOOL_ID,
+        PC_WRITE_FILE_TOOL_ID, PC_MOVE_FILE_TOOL_ID, PC_DELETE_FILE_TOOL_ID,
     }
 
 
@@ -245,9 +260,13 @@ def test_chat_binding_shares_contract_under_chat_product_only():
         PC_DRIVES_CANONICAL_TOOL_ID,
         PC_LIST_FILES_CANONICAL_TOOL_ID,
         PC_READ_FILE_CANONICAL_TOOL_ID,
+        PC_WRITE_FILE_CANONICAL_TOOL_ID,
+        PC_MOVE_FILE_CANONICAL_TOOL_ID,
+        PC_DELETE_FILE_CANONICAL_TOOL_ID,
     }
     assert set(chat.tool_runtime.registered_tool_ids) == set(claw.tool_runtime.registered_tool_ids) == {
         PC_DRIVES_TOOL_ID, PC_LIST_FILES_TOOL_ID, PC_READ_FILE_TOOL_ID,
+        PC_WRITE_FILE_TOOL_ID, PC_MOVE_FILE_TOOL_ID, PC_DELETE_FILE_TOOL_ID,
     }
     # Distinct product authority: Chat binding never carries the Claw app or
     # agent identity, and Claw never carries the Chat one.
@@ -259,6 +278,7 @@ def test_chat_binding_shares_contract_under_chat_product_only():
     assert chat_auth.app_id == CHAT_APP_ID
     assert chat_auth.granted_auth_scopes == (
         PC_QUERY_SCOPE, PC_LIST_FILES_SCOPE, PC_READ_FILE_SCOPE,
+        PC_WRITE_FILE_SCOPE, PC_MOVE_FILE_SCOPE, PC_DELETE_FILE_SCOPE,
     )
     assert CLAW_ENGINE_PC_DRIVE_URL != CHAT_ENGINE_PC_DRIVE_URL
     assert CHAT_ENGINE_PC_DRIVE_URL.endswith("/internal/chat/engine-pc-drive")
@@ -365,7 +385,7 @@ def test_plan_target_is_injected_into_the_selected_tool():
     driver = StructuredPCQueryStepDriver(
         select_step=select_step, static_arguments={"device_id": "office-pc"},
     )
-    context = AgentStepContext(run_id="run_5015", step_index=1, input_text="list drives", tool_results=())
+    context = AgentStepContext.with_results(run_id="run_5015", step_index=1, input_text="list drives", results=())
     decision = asyncio.run(driver.next_step(context, object()))
     assert decision.invocation == ToolInvocation(
         tool_id=PC_DRIVES_TOOL_ID, arguments={"device_id": "office-pc"},
@@ -382,7 +402,7 @@ def test_model_cannot_choose_or_change_the_execution_target():
     driver = StructuredPCQueryStepDriver(
         select_step=select_step, static_arguments={"device_id": "office-pc"},
     )
-    context = AgentStepContext(run_id="run_5015", step_index=1, input_text="list drives", tool_results=())
+    context = AgentStepContext.with_results(run_id="run_5015", step_index=1, input_text="list drives", results=())
     with pytest.raises(PCQueryStepError):
         asyncio.run(driver.next_step(context, object()))
 
@@ -602,6 +622,7 @@ def test_files_target_alias_cannot_authorize_a_different_pc_plan():
     assert caught.value.code == "invalid_tool_arguments"
 
 
+@pytest.mark.parametrize("status", [422, 503])
 @pytest.mark.parametrize("upstream_code,expected_stage", (
     ("oracle_mesh_file_path_invalid", "pc_files_path_invalid"),
     ("oracle_mesh_file_call_invalid", "pc_files_call_invalid"),
@@ -610,7 +631,7 @@ def test_files_target_alias_cannot_authorize_a_different_pc_plan():
     ("PRIVATE_DOWNSTREAM_ERROR_FROM_UNTRUSTED_SOURCE", "pc_files_denied"),
 ))
 def test_signed_pc_files_callback_retains_only_reviewed_failure_stage(
-    upstream_code, expected_stage, capsys,
+    upstream_code, expected_stage, capsys, status,
 ):
     """No command replay, error-message disclosure or generic tool_failed."""
     import json
@@ -618,7 +639,6 @@ def test_signed_pc_files_callback_retains_only_reviewed_failure_stage(
     from padiem_ai_core.tool_runtime import ToolHandlerError
 
     class DeniedResponse:
-        status = 422
 
         async def text(self):
             return json.dumps({
@@ -635,7 +655,9 @@ def test_signed_pc_files_callback_retains_only_reviewed_failure_stage(
 
         async def fetch(self, js_object):
             self.calls += 1
-            return DeniedResponse()
+            response = DeniedResponse()
+            response.status = status
+            return response
 
     service = DeniedService()
     with pytest.raises(ToolHandlerError) as caught:
@@ -653,5 +675,101 @@ def test_signed_pc_files_callback_retains_only_reviewed_failure_stage(
     assert service.calls == 1
     log = capsys.readouterr().out
     assert "stage=" + expected_stage in log
+    expected_code = upstream_code if not upstream_code.startswith("PRIVATE_") else "unavailable"
+    assert f"status={status} code={expected_code}" in log
     assert "PRIVATE_" not in log
     assert "sample.txt" not in log
+
+
+
+@pytest.mark.parametrize("kind", ["drive", "files"])
+@pytest.mark.parametrize("code", ["oracle_mesh_run_unavailable", "private value\nSECRET", {"secret": "SECRET"}, None])
+def test_pc_callbacks_log_only_bounded_refusal_code(kind, code, capsys):
+    import json
+    from kagent.pc_query_adapter import signed_chat_call
+    from app.claw_pc_query_step_driver import _signed_files_call
+    from padiem_ai_core.tool_runtime import ToolHandlerError
+
+    class Response:
+        status = 503
+        async def text(self):
+            return json.dumps({"ok": "SECRET", "error": {"code": code, "message": "SECRET"}})
+
+    class Service:
+        async def fetch(self, request):
+            return Response()
+
+    kwargs = dict(service=Service(), secret="s" * 32,
+                  request_factory=lambda *a, **kw: SimpleNamespace(js_object=None), mode="dispatch")
+    with pytest.raises(ToolHandlerError):
+        if kind == "drive":
+            asyncio.run(signed_chat_call(**kwargs, subject_id="subject", run_id="run"))
+        else:
+            asyncio.run(_signed_files_call(**kwargs, owner=("subject", "run", CHAT_APP_ID, None),
+                                          payload={"op": "list", "path": ".", "tool_call_ref": "call"}))
+    log = capsys.readouterr().out
+    expected = code if code == "oracle_mesh_run_unavailable" else "unavailable"
+    assert f"status=503 code={expected}" in log
+    assert "SECRET" not in log and "private value" not in log
+
+
+def test_external_drive_plan_is_admitted_once_without_a_model_plan():
+    from padiem_ai_core.tool_runtime import ToolAuthorizationContext
+    observed = []
+    recorded = []
+
+    async def select_step(**kwargs):
+        observed.append(dict(driver.scope_state["claim"]))
+        if len(observed) == 1:
+            return {"plan": "files", "action": "tool", "tool_id": PC_DRIVES_TOOL_ID, "arguments": {}}
+        return {"plan": "files", "action": "complete", "answer": "done"}
+
+    async def record_scope():
+        recorded.append(dict(driver.scope_state["claim"]))
+
+    driver = StructuredPCQueryStepDriver(
+        select_step=select_step, allowed_tool_ids=frozenset({PC_DRIVES_TOOL_ID}),
+        record_scope=record_scope,
+    )
+    driver.configure_request_scope(
+        ToolAuthorizationContext(app_id=CLAW_APP_ID, agent_id="pc-test",
+            granted_auth_scopes=(PC_QUERY_SCOPE,),
+            externally_authorized_tools=frozenset({PC_DRIVES_TOOL_ID})),
+        declared_plan="query_drives",
+    )
+    context = AgentStepContext.with_results(
+        run_id="run_declared_drive", step_index=1, input_text="drives", results=(),
+    )
+    first = asyncio.run(driver.next_step(context, object()))
+    final = asyncio.run(driver.next_step(context, object()))
+    assert first.invocation.tool_id == PC_DRIVES_TOOL_ID and final.answer == "done"
+    assert len(recorded) == 1 and len(observed) == 2
+    assert all(c["requested"] == c["admitted"] == "query_drives" for c in observed)
+    assert all(c["ops"] == ["drives"] for c in observed)
+
+
+@pytest.mark.parametrize("argument_form", ["none", "missing", "empty_string", "empty_object"])
+def test_live_drive_step_normalizes_argumentless_decisions_and_keeps_plan_target(argument_form):
+    import json
+    from app.claw_pc_query_step_driver import build_live_pc_query_driver, _plan_step_arguments
+
+    decision = {"action": "tool", "tool_id": PC_DRIVES_TOOL_ID}
+    raw = {"none": None, "missing": None, "empty_string": "", "empty_object": {}}[argument_form]
+    if argument_form != "missing":
+        decision["arguments"] = raw
+
+    class Model:
+        async def execute(self, request):
+            return SimpleNamespace(answer=json.dumps(decision))
+
+    plan = {} if argument_form == "missing" else {"query_drives": raw}
+    assert _plan_step_arguments(plan, "query_drives") == {}
+    assert _plan_step_arguments({"query_drives": {"device_id": "office-pc"}}, "query_drives") == {"device_id": "office-pc"}
+    driver = build_live_pc_query_driver(
+        b14_client=Model(), model_id="test/route", model_policy={},
+        task_type=None, optimize_for=None,
+        tool_arguments={"query_drives": {"device_id": "office-pc"}})
+    context = AgentStepContext.with_results(run_id="run_arguments", step_index=1, input_text="drive inventory", results=())
+    result = asyncio.run(driver.next_step(context, object()))
+    assert result.invocation == ToolInvocation(
+        tool_id=PC_DRIVES_TOOL_ID, arguments={"device_id": "office-pc"})

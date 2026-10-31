@@ -26,6 +26,7 @@ MID = "modelscope/deepseek-ai/DeepSeek-V4.1-Flash"
 UPSTREAM = "deepseek-ai/DeepSeek-V4.1-Flash"
 ORIGIN = "https://api-inference.modelscope.cn/v1"
 BINDING = "PADIEM_B14_CREDENTIAL_10"
+SECRET_NAME = "PADIEM_B14_CREDENTIAL_10"
 SYNTHETIC_KEY = "synthetic-modelscope-private-token-no-real-api"
 
 
@@ -83,7 +84,7 @@ def test_source_wrangler_worker_binding_metadata_unique_only():
     bindings = wr["secrets_store_secrets"]
     ours = [x for x in bindings if x["binding"] == BINDING]
     assert len(ours) == 1
-    assert ours[0]["secret_name"] == BINDING
+    assert ours[0]["secret_name"] == SECRET_NAME
     assert ours[0]["store_id"] == "f0b09ca04a7b43248154c773704a5616"
     assert len({x["binding"] for x in bindings}) == len(bindings)
     assert BINDING in (root / "worker.py").read_text(encoding="utf8")
@@ -112,7 +113,7 @@ def test_missing_modelscope_secret_denied_before_network(monkeypatch):
 
 
 def test_manual_identity_route_no_fallback(isolated_provider):
-    d = resolve_manual_route(MID, allow_external_fallback=False)
+    d = resolve_manual_route(MID)
     assert d.selected_model == MID
     assert d.platform_provider_id == "modelscope"
     assert d.selected_upstream_model == UPSTREAM

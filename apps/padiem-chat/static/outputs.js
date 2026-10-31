@@ -187,8 +187,18 @@
   }
 
   function flashTitle(button, key, fallback) {
-    const original = button.title;
-    button.title = localeText(key, fallback);
+    const tooltip = window.PadiemSharedTooltip;
+    const original = button.getAttribute("data-padiem-tooltip") || button.title || "";
+    const next = localeText(key, fallback);
+    if (tooltip && typeof tooltip.label === "function") {
+      // The confirmation rides the shared chip, not a native browser title.
+      tooltip.label(button, next);
+      window.setTimeout(() => {
+        if (button.isConnected) tooltip.label(button, original);
+      }, 1200);
+      return;
+    }
+    button.title = next;
     window.setTimeout(() => {
       if (button.isConnected) button.title = original;
     }, 1200);
@@ -198,11 +208,13 @@
     const button = document.createElement("button");
     button.type = "button";
     button.className = cls;
-    const label = localeText(labelKey, labelFallback);
-    button.setAttribute("aria-label", label);
-    button.title = label;
-    button.dataset.localeAriaLabel = labelKey;
-    button.dataset.localeTitle = labelKey;
+      const label = localeText(labelKey, labelFallback);
+      button.setAttribute("aria-label", label);
+      // Owner 2026-10-20: the hint uses the shared PADIEM chip tooltip, so
+      // the browser's own dark popup never appears beside it.
+      button.setAttribute("data-padiem-tooltip", label);
+      button.dataset.localeAriaLabel = labelKey;
+      button.dataset.localeTitle = labelKey;
     const icon = document.createElement("span");
     icon.className = "answer-action-glyph";
     icon.setAttribute("aria-hidden", "true");
@@ -236,6 +248,7 @@
   }
 
   function stopArticleTts(article) {
+    if (article && article.dataset) article.dataset.ttsSpeaking = "false";
     const waiting = article && article._ttsWaiting ? article._ttsWaiting : null;
     if (waiting) {
       waiting.active = false;
@@ -253,13 +266,21 @@
       button.setAttribute("aria-pressed", "false");
       const label = localeText("answer-listen", "음성 듣기");
       button.setAttribute("aria-label", label);
-      button.title = label;
+      window.PadiemSharedTooltip?.label?.(button, label);
     }
   }
 
   function toggleArticleTts(article, button, text) {
     if (article._ttsPlayer) {
       stopArticleTts(article);
+      return;
+    }
+    // #5559: the answer carries one playback control. The M3 auto-speech has
+    // no button of its own, so this action stops it instead of starting a
+    // second reading of the same answer.
+    if (article && article.dataset && article.dataset.ttsSpeaking === "true") {
+      window.PadiemVoiceAnswer?.stop?.();
+      article.dataset.ttsSpeaking = "false";
       return;
     }
     const lib = ttsApi();
@@ -290,7 +311,7 @@
       const label = localeText("answer-listen-stop", "?? ??");
       button.setAttribute("aria-pressed", "true");
       button.setAttribute("aria-label", label);
-      button.title = label;
+      window.PadiemSharedTooltip?.label?.(button, label);
     }
     if (matchingVoiceReady()) {
       playWhenReady();
@@ -328,7 +349,7 @@
     }, 3000);
     button.setAttribute("aria-pressed", "false");
     button.setAttribute("aria-label", "?? ?? ?, ?? ??? ??");
-    button.title = "?? ?? ?, ?? ??? ??";
+    window.PadiemSharedTooltip?.label?.(button, "?? ?? ?, ?? ??? ??");
     // Close the race in which getVoices() becomes populated immediately
     // before the voiceschanged handler was attached.
     wait.onVoices();
@@ -363,6 +384,23 @@
     const actions = document.createElement("div");
     actions.className = "answer-actions";
     actions.setAttribute("aria-label", localeText("answer-actions", "답변 작업"));
+
+    // Owner 2026-10-20: the answer shows the moment it completed, with the
+    // same format, size and colour as the user turn time. A turn with no
+    // known completion time shows no time at all; none is invented.
+    const completedAt = article.dataset.completedAt || "";
+    if (completedAt) {
+      const completed = new Date(completedAt);
+      if (!Number.isNaN(completed.getTime())) {
+        const clock = document.createElement("time");
+        clock.className = "answer-action-time";
+        const stamp = `${String(completed.getHours()).padStart(2, "0")}:${String(completed.getMinutes()).padStart(2, "0")}`;
+        clock.textContent = stamp;
+        clock.setAttribute("datetime", completed.toISOString());
+        clock.setAttribute("data-padiem-tooltip", stamp);
+        actions.appendChild(clock);
+      }
+    }
 
     // Exactly five functions in Glass icon style. No rating controls.
     // A button is rendered only when its capability actually exists.
@@ -571,15 +609,21 @@
     const locale = window.__padiemLocale;
     if (locale && typeof locale.text === "function") {
       const expired = accountState === "expired";
+      // #5479: an unreachable auth status is not "login not configured"; the
+      // button stays reachable and says that the status could not be read.
+      const unreachable = accountState === "unreachable";
+      const unavailable = accountState === "unavailable" || loginButton.disabled;
       const nextText = locale.text(expired ? "sign-in-again" : authenticated ? "logout" : "login");
       const nextTitle = locale.text(
         expired
           ? "expired-title"
-          : loginButton.disabled
-            ? "login-unavailable-title"
-            : authenticated
-              ? "logout-title"
-              : "login-title"
+          : unreachable
+            ? "login-unreachable-title"
+            : unavailable
+              ? "login-unavailable-title"
+              : authenticated
+                ? "logout-title"
+                : "login-title"
       );
       if (loginButton.textContent !== nextText) loginButton.textContent = nextText;
       if (loginButton.title !== nextTitle) loginButton.title = nextTitle;

@@ -21,7 +21,6 @@ from padiem_ai_core.orchestration_events import OrchestrationEvent
 from .claw_general_routes import _MODEL_HOLD_ERROR_CODES, _MODEL_HOLD_USER_MESSAGE
 from .dispatch_quota import _clear_reservation, _refund_active_reservation
 
-MAX_RELAY_EVENTS = 128
 _ALLOWED_FIELDS = (
     "event_id", "run_id", "trace_id", "app_id",
     "kind", "sequence", "timestamp_iso",
@@ -99,7 +98,6 @@ def live_claw_sse(
 
     async def events():
         queue: asyncio.Queue[tuple[str, Any]] = asyncio.Queue(maxsize=16)
-        seen = 0
         last_sequence = 0
         stream_identity: tuple[str, str, str] | None = None
         seen_event_ids: set[str] = set()
@@ -107,10 +105,7 @@ def live_claw_sse(
         terminal_kinds = {"run_completed", "run_failed", "run_cancelled", "approval_paused"}
 
         async def report(event: OrchestrationEvent) -> None:
-            nonlocal seen, last_sequence, stream_identity, verified_terminal
-            seen += 1
-            if seen > MAX_RELAY_EVENTS:
-                raise ValueError("P01 stream event budget exceeded")
+            nonlocal last_sequence, stream_identity, verified_terminal
             projected = _event_projection(event)
             sequence = projected["sequence"]
             if (
@@ -296,3 +291,228 @@ def live_claw_sse(
         events(), media_type="text/event-stream",
         headers={"Cache-Control": "no-cache, no-store", "X-Accel-Buffering": "no"},
     )
+
+
+_PC_PROGRESS_FIELDS = frozenset({"pc_run_id", "dispatch_id", "kind", "stage", "sequence", "elapsed_ms"})
+_PC_HEARTBEAT_FIELDS = frozenset({"run_id", "trace_id", "elapsed_ms"})
+_PC_PROGRESS_STAGES = ("accepted", "picked_up", "executing", "result")
+
+
+def project_pc_stream_record(record: Any, *, pc_run_id: str) -> tuple[str, dict]:
+    """Closed display projection; no tool args, paths, outputs or authority."""
+    import re
+    if not isinstance(record, dict) or len(record) != 1:
+        raise ValueError("invalid PC display record")
+    kind = next(iter(record))
+    value = record[kind]
+    expected = _PC_PROGRESS_FIELDS if kind == "pc_progress" else _PC_HEARTBEAT_FIELDS
+    if kind not in ("pc_progress", "heartbeat") or not isinstance(value, dict) or set(value) != expected:
+        raise ValueError("invalid PC display fields")
+    ids = ("pc_run_id", "dispatch_id") if kind == "pc_progress" else ("run_id", "trace_id")
+    if any(not isinstance(value[k], str) or re.fullmatch(r"[A-Za-z0-9_.:-]{1,128}", value[k]) is None for k in ids):
+        raise ValueError("invalid PC display identity")
+    numbers = ("sequence", "elapsed_ms") if kind == "pc_progress" else ("elapsed_ms",)
+    if any(type(value[k]) is not int or value[k] < (1 if k == "sequence" else 0) for k in numbers):
+        raise ValueError("invalid PC display sequence")
+    if kind == "pc_progress" and (
+        value["pc_run_id"] != pc_run_id or value["kind"] not in ("command", "read")
+        or value["stage"] not in _PC_PROGRESS_STAGES
+    ):
+        raise ValueError("PC display correlation failed")
+    return kind, dict(value)
+
+
+def _engine_stream_record_kind(record) -> str:
+    if isinstance(record, dict):
+        kinds = set(record) & {"event", "pc_progress", "heartbeat", "text_delta", "result", "orchestration", "error"}
+        if len(kinds) == 1:
+            return next(iter(kinds))
+    return "unknown"
+
+
+def _engine_stream_cause(exc: Exception, record_kind: str) -> dict[str, str]:
+    # Class names and a closed record-kind vocabulary only: never exception
+    # messages, untrusted keys, payloads, credentials or provider response text.
+    current = exc
+    seen = set()
+    while current.__cause__ is not None and id(current) not in seen:
+        seen.add(id(current))
+        current = current.__cause__
+    kind = getattr(current, "record_kind", record_kind)
+    if kind not in {"event", "pc_progress", "heartbeat", "text_delta", "result", "orchestration", "error"}:
+        kind = "unknown"
+    return {"exception_class": type(current).__name__, "record_kind": kind}
+
+
+def chat_pc_orchestration_sse(
+    stream, *, pc_run_id: str, on_completed, on_scope=None, done_fields=None, on_failed=None,
+    pending_fields=None,
+) -> StreamingResponse:
+    """Relay one verified Engine stream; heartbeats are presentation only.
+
+    ``pending_fields`` names the run the caller already opened (its id and the
+    conversation it belongs to). When the Engine stream stops without a verified
+    result while that run is still executing, the relay hands the browser the
+    same pending continuation a normal ``done`` frame uses instead of a terminal
+    error: the run may still be stored, and an error frame reads as a refusal on
+    every client, including the ones already open before a fix ships.
+    """
+    from .orchestration_bridge import B62OrchestrationError, _safe_events
+    async def settle_failure():
+        if on_failed is not None:
+            try:
+                await on_failed()
+            except Exception:
+                # Preserve the original terminal error; never expose storage details.
+                import logging
+                logging.getLogger(__name__).warning("chat_pc_run_settle_unavailable")
+
+    async def events():
+        text_seen = False
+        pc_seen = False
+        scope_sent = False
+        progress = {}
+        identity = None
+        last_sequence = 0
+        observed_events = []
+        terminal = None
+        settled = False
+        record_kind = "unknown"
+        iterator = aiter(stream)
+        try:
+            while True:
+                # An iterator failure has no current record: do not attribute
+                # it to the preceding valid event.
+                record_kind = "unknown"
+                try:
+                    item = await anext(iterator)
+                except StopAsyncIteration:
+                    break
+                record_kind = _engine_stream_record_kind(item)
+                if "event" in item:
+                    event = _safe_events([item["event"]])[0]
+                    current = (event["run_id"], event["trace_id"], event["app_id"])
+                    if ((identity is not None and identity != current)
+                            or event["sequence"] <= last_sequence or terminal is not None):
+                        raise ValueError("Engine lifecycle correlation failed")
+                    identity, last_sequence = current, event["sequence"]
+                    observed_events.append(event)
+                    if event["kind"] in ("run_completed", "run_failed", "run_cancelled", "approval_paused"):
+                        terminal = event["kind"]
+                    # The final result, not a partial terminal, commits UI truth.
+                    continue
+                if "pc_progress" in item or "heartbeat" in item:
+                    kind, value = project_pc_stream_record(item, pc_run_id=pc_run_id)
+                    if kind == "heartbeat":
+                        if identity is None or (value["run_id"], value["trace_id"]) != identity[:2]:
+                            raise ValueError("Heartbeat correlation failed")
+                    else:
+                        pc_seen = True
+                        prior = progress.get(value["dispatch_id"])
+                        stage_index = _PC_PROGRESS_STAGES.index(value["stage"])
+                        if (prior is None and stage_index != 0) or (
+                            prior is not None and (value["sequence"] <= prior[0] or stage_index <= prior[1])
+                        ):
+                            raise ValueError("PC progress replay or regression")
+                        progress[value["dispatch_id"]] = (value["sequence"], stage_index)
+                        if not scope_sent and on_scope is not None:
+                            notice = await on_scope()
+                            from .history import PC_SCOPE_NOTICE_LABELS
+                            if notice in PC_SCOPE_NOTICE_LABELS.values():
+                                yield _frame("scope_notice", {"scope_notice": notice})
+                                scope_sent = True
+                    yield _frame(kind, value)
+                    continue
+                if "text_delta" in item:
+                    value = item["text_delta"]
+                    if not isinstance(value, dict) or set(value) != {"delta"} or not isinstance(value["delta"], str):
+                        raise ValueError("Invalid text delta")
+                    if terminal is not None:
+                        raise ValueError("Text after terminal")
+                    text_seen = True
+                    yield _frame("delta", value)
+                    continue
+                if set(item) != {"result"} or settled:
+                    raise ValueError("Invalid Engine result")
+                result = item["result"]
+                result_events = result.orchestration.get("events", [])
+                if not result_events or result_events != observed_events or terminal != result_events[-1]["kind"]:
+                    raise ValueError("Unverified Engine terminal")
+                if result.orchestration.get("approval_pause") is not None:
+                    yield _frame("orchestration_pause", {"orchestration": dict(result.orchestration)})
+                    settled = True
+                    return
+                if terminal != "run_completed" or not isinstance(result.answer, str) or not result.answer:
+                    raise B62OrchestrationError("engine_execution_failed", "Engine 실행이 완료되지 않았습니다.", status_code=502)
+                # The final PC answer is additional to a model's pre-tool text;
+                # ordinary streamed answers must never be emitted twice.
+                if pc_seen or not text_seen:
+                    yield _frame("delta", {"delta": result.answer})
+                fields = await on_completed(result)
+                done = {"done": True, **dict(done_fields or {}), **dict(fields or {})}
+                yield _frame("done", done)
+                settled = True
+            if not settled:
+                raise ValueError("Engine stream ended without a result")
+        except B62OrchestrationError as exc:
+            if pending_fields is not None and exc.code == "invalid_engine_stream":
+                yield _frame("done", {"done": True, "pc_pending": True, **dict(pending_fields)})
+                return
+            await settle_failure()
+            error = {"code": exc.code, "message": exc.user_message}
+            if exc.code == "invalid_engine_stream":
+                error["cause"] = _engine_stream_cause(exc, record_kind)
+            yield _frame("error", {"error": error})
+        except Exception as exc:
+            # #5895: any unclassified stop of a started Engine stream — a
+            # transport cut included — leaves the run running on the server. The
+            # pending frame keeps the screen on "still processing" and lets the
+            # existing owner-scoped read-back deliver the stored answer.
+            if pending_fields is not None:
+                yield _frame("done", {"done": True, "pc_pending": True, **dict(pending_fields)})
+                return
+            await settle_failure()
+            yield _frame("error", {"error": {
+                "cause": _engine_stream_cause(exc, record_kind),
+                "code": "invalid_engine_stream", "message": "AI 작업 스트림을 확인할 수 없습니다.",
+            }})
+        finally:
+            close = getattr(stream, "aclose", None)
+            if callable(close):
+                await close()
+    async def traced_events():
+        import asyncio
+        import logging
+        from .pc_correlation import run_hash
+        trace_run = run_hash(pc_run_id) or "none"
+        log = logging.getLogger("padiem_chat.pc_correlation")
+        log.setLevel(logging.INFO)
+        reason = "closed"
+        source = events()
+        log.info("pc_chat stage=stream_started run_hash=%s", trace_run)
+        try:
+            async for frame in source:
+                if frame.startswith(b"event: error"):
+                    reason = "error_record"
+                elif frame.startswith(b"event: done"):
+                    reason = "pending" if b'"pc_pending":true' in frame else "completed"
+                elif frame.startswith(b"event: orchestration_pause"):
+                    reason = "paused"
+                yield frame
+        except asyncio.CancelledError:
+            reason = "cancelled"
+            raise
+        except GeneratorExit:
+            reason = "closed"
+            raise
+        except Exception:
+            reason = "exception"
+            raise
+        finally:
+            try:
+                await source.aclose()
+            finally:
+                log.info("pc_chat stage=stream_ended run_hash=%s reason=%s", trace_run, reason)
+
+    return StreamingResponse(traced_events(), media_type="text/event-stream",
+        headers={"Cache-Control": "no-cache, no-store", "X-Accel-Buffering": "no"})

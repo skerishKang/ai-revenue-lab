@@ -18,6 +18,11 @@ from padiem_ai_core.agent_durable_lease import AgentDurableLeaseError, AgentRunL
 _TABLE = "padiem_engine_agent_runs_v1"
 _SERVER_RUN_ID = re.compile(r"arun_[0-9a-f]{32}\Z")
 _OWNER_SCOPE = re.compile(r"scope_[0-9a-f]{64}\Z")
+# The durable run row was created with a 0..64 checkpoint range. That range is
+# a storage bound, not a run bound (#4379): a longer run keeps going and the
+# recorded progress falls back to what the column can hold. Migration 0013
+# removes the duplicated range from the schema itself.
+_MAX_PERSISTED_CHECKPOINT_STEP = 64
 _STATES = frozenset(
     {"running", "paused", "awaiting_approval", "completed", "failed", "cancelled", "needs_review"}
 )
@@ -248,17 +253,36 @@ class D1AgentRunLedger:
         self, handle: AgentRunLease, *, completed_step: int,
         side_effect_uncertain: bool = True,
     ) -> bool:
-        if type(completed_step) is not int or not 0 <= completed_step <= 64:
+        # #4379: the recorded checkpoint step is not a PADIEM ceiling. The true
+        # step is written first; a schema that still carries the old 0..64
+        # range cannot hold it, and only then is the range-capped value
+        # recorded so the run continues instead of failing at step 65.
+        # Migration 0013 removes that duplicated range from the schema itself.
+        if type(completed_step) is not int or completed_step < 0:
             raise AgentDurableLeaseError("invalid checkpoint step")
         if type(side_effect_uncertain) is not bool:
             raise AgentDurableLeaseError("invalid side effect marker")
         now = self._now()
+        try:
+            return await self._write_checkpoint(
+                handle, completed_step, side_effect_uncertain, now,
+            )
+        except AgentDurableLeaseError:
+            if completed_step <= _MAX_PERSISTED_CHECKPOINT_STEP:
+                raise
+        return await self._write_checkpoint(
+            handle, _MAX_PERSISTED_CHECKPOINT_STEP, side_effect_uncertain, now,
+        )
+
+    async def _write_checkpoint(
+        self, handle: AgentRunLease, step: int, side_effect_uncertain: bool, now: float,
+    ) -> bool:
         return await self._run(
             f"UPDATE {_TABLE} SET checkpoint_step=?, "
             "side_effect_uncertain=MAX(side_effect_uncertain,?) WHERE "
             + self._where() + " AND checkpoint_step<=?",
-            completed_step, int(side_effect_uncertain), *self._args(handle, now),
-            completed_step,
+            step, int(side_effect_uncertain), *self._args(handle, now),
+            step,
         )
 
     async def finish(self, handle: AgentRunLease, *, state: str) -> bool:
@@ -382,7 +406,7 @@ class D1AgentRunLedger:
             or type(epoch) is not int
             or epoch < 1
             or type(step) is not int
-            or not 0 <= step <= 64
+            or step < 0
             or type(uncertain) is not int
             or uncertain not in (0, 1)
             or not isinstance(lease_until, (int, float))

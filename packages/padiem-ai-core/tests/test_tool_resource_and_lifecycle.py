@@ -54,21 +54,37 @@ def test_resource_policy_does_not_widen_lower_tool_spec_timeout() -> None:
     assert effective.narrowed is False
 
 
-def test_default_policy_preserves_existing_runtime_ceilings() -> None:
+def test_default_policy_carries_no_padiem_size_ceiling() -> None:
+    # #4379: the default policy declares no aggregate byte ceiling, so a tool
+    # is not refused for the size of its arguments or result.
     effective = resolve_tool_resources(spec(timeout=30.0))
-    assert effective.argument_bytes == 65_536
-    assert effective.output_bytes == 262_144
+    assert effective.argument_bytes is None
+    assert effective.output_bytes is None
     assert effective.timeout_seconds == 30.0
     assert effective.narrowed is False
+
+
+def test_default_policy_does_not_reintroduce_a_tool_deadline() -> None:
+    effective = resolve_tool_resources(spec(timeout=None))
+    assert effective.timeout_seconds is None
+    assert effective.narrowed is False
+    assert effective.to_public_dict()["timeout_seconds"] is None
+    # Explicit server narrowing remains effective and cannot widen a spec.
+    assert resolve_tool_resources(
+        spec(timeout=None), ToolResourcePolicy(max_timeout_seconds=30)
+    ).timeout_seconds == 30
 
 
 def test_invalid_server_policy_fails_closed() -> None:
     with pytest.raises(ToolResourcePolicyError):
         ToolResourcePolicy(max_argument_bytes=0)
     with pytest.raises(ToolResourcePolicyError):
-        ToolResourcePolicy(max_output_bytes=262_145)
+        ToolResourcePolicy(max_output_bytes=0)
     with pytest.raises(ToolResourcePolicyError):
-        ToolResourcePolicy(max_timeout_seconds=301)
+        ToolResourcePolicy(max_timeout_seconds=0)
+    # #5895: there is no upper bound on the timeout anymore — a long-running
+    # tool is a caller choice, so 301 is accepted, not refused.
+    assert ToolResourcePolicy(max_timeout_seconds=301).max_timeout_seconds == 301
 
 
 def test_effective_resource_projection_has_no_credentials_or_handlers() -> None:

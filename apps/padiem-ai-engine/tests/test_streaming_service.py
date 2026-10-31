@@ -5,9 +5,11 @@ import json
 import pytest
 
 from padiem_ai_core import (
+    AgentProfile,
     B14RouteMetadata,
     B14StreamEvent,
     ErrorClass,
+    ExecutionRequest,
     ExecutionRuntimeError,
     RunMetadata,
     RunStatus,
@@ -19,8 +21,13 @@ from padiem_ai_core import (
 from app.service import MAX_REQUEST_BODY_BYTES, ServiceResponse
 from app.streaming_service import PreparedStream, STREAM_PATH, StreamingEngineService
 
+# #5002: an inert, syntactically valid model route. The suspended Router auto
+# route is never a valid model on an Engine product route, so a fixture may
+# not use it as an ordinary default. B14 stays the availability authority.
+_INERT_MODEL_ID = "testowner/example-model.v1"
 
-def valid_payload(model: str = "b14/auto") -> dict:
+
+def valid_payload(model: str = _INERT_MODEL_ID) -> dict:
     return {
         "app_id": "lovebud",
         "agent": {
@@ -34,8 +41,6 @@ def valid_payload(model: str = "b14/auto") -> dict:
             "required_capabilities": ["free"],
             "model_policy": {
                 "model": model,
-                "allow_external_fallback": False,
-                "max_attempts": 1,
             },
         },
         "messages": [{"role": "user", "content": "안녕"}],
@@ -174,7 +179,7 @@ async def test_prepare_reuses_exact_completed_request_builder_and_streams_ndjson
     assert request.agent.allowed_tools == ()
     assert request.agent.max_steps == 1
     assert request.agent.system_instruction == valid_payload()["agent"]["system_instruction"]
-    assert request.agent.model_policy["model"] == "b14/auto"
+    assert request.agent.model_policy["model"] == _INERT_MODEL_ID
     assert request.messages == ({"role": "user", "content": "안녕"},)
 
     lines = [line async for line in service.iter_ndjson(prepared)]
@@ -464,16 +469,7 @@ class FakeB14StreamingClient:
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize(
-    ("model", "expected_manual", "expected_auto"),
-    [
-        ("openrouter/free", 1, 0),
-        ("b14/auto", 0, 1),
-    ],
-)
-async def test_actual_core_streaming_runtime_owns_manual_vs_auto_selection(
-    model, expected_manual, expected_auto
-) -> None:
+async def test_actual_core_streaming_runtime_owns_the_manual_selection() -> None:
     b14 = FakeB14StreamingClient()
     service = StreamingEngineService(
         runtime_factory=lambda app_id: StreamingExecutionRuntime(
@@ -487,14 +483,47 @@ async def test_actual_core_streaming_runtime_owns_manual_vs_auto_selection(
         method="POST",
         path=STREAM_PATH,
         content_type="application/json",
-        body=json.dumps(valid_payload(model)).encode(),
+        body=json.dumps(valid_payload(_INERT_MODEL_ID)).encode(),
     )
     assert isinstance(prepared, PreparedStream)
     lines = [json.loads(line) async for line in service.iter_ndjson(prepared)]
 
-    assert len(b14.manual_calls) == expected_manual
-    assert len(b14.auto_calls) == expected_auto
+    assert len(b14.manual_calls) == 1
+    assert len(b14.auto_calls) == 0
     assert lines[0]["event"]["delta_content"] == "hello"
     assert lines[-1]["event"]["done"] is True
     assert lines[-1]["event"]["answer"] == "hello"
     assert lines[-1]["event"]["metadata"]["usage"]["total_tokens"] == 3
+
+
+@pytest.mark.asyncio
+async def test_the_core_stream_runtime_has_a_single_lane_without_the_auto_branch() -> None:
+    """B7: the Core manual-vs-auto branch is gone.
+
+    Every streamed route — including the retired auto id — dispatches through
+    the one manual surface; the B14 gateway refuses that id before any routing
+    (pinned platform-side), so no auto lane remains to reach. The old
+    Engine-level denial test covered the surface that no longer exists."""
+    b14 = FakeB14StreamingClient()
+    runtime = StreamingExecutionRuntime(app_id="lovebud", b14_stream_client=b14)
+    request = ExecutionRequest(
+        agent=AgentProfile(
+            id="core-auto-owner",
+            title="Core auto owner",
+            description="Core-level auto branch coverage.",
+            system_instruction="Answer plainly.",
+            task_type="general",
+            optimize_for="balanced",
+            max_tokens=None,
+            model_policy={"model": "b14/auto"},
+            max_steps=1,
+        ),
+        messages=({"role": "user", "content": "hi"},),
+    )
+
+    events = [event async for event in runtime.stream(request)]
+
+    # B7: the single lane takes the retired id too; the auto branch is gone.
+    assert len(b14.manual_calls) == 1
+    assert len(b14.auto_calls) == 0
+    assert events[-1].done is True

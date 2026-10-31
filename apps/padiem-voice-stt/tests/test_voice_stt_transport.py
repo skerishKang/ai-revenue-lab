@@ -156,12 +156,20 @@ def test_live_token_request_uses_rfc3339_absolute_timestamps():
     assert body["uses"] == 1
 
 
-def test_live_token_locks_the_stt_model_via_live_connect_constraints():
-    """The model is bound to ``liveConnectConstraints``, never sent top-level."""
+def test_live_token_locks_the_stt_model_via_bidi_generate_content_setup():
+    """The model is bound by ``bidiGenerateContentSetup``, the provider's field.
+
+    The provider's ``auth_tokens`` endpoint names the model constraint
+    ``bidiGenerateContentSetup`` and rejects any other spelling with
+    ``Unknown name "liveConnectConstraints" at 'auth_token'``. The model id is
+    the resource form ``models/<model>``, and the constraint is never sent
+    top-level.
+    """
     body = c.build_live_token_request_body(model="gemini-3.5-transcribe-live", now_epoch_ms=1_800_000_000_000)
-    assert body["liveConnectConstraints"] == {"model": "gemini-3.5-transcribe-live"}
+    assert body["bidiGenerateContentSetup"] == {"model": "models/gemini-3.5-transcribe-live"}
     assert "model" not in body
-    assert set(body) == {"uses", "expireTime", "newSessionExpireTime", "liveConnectConstraints"}
+    assert "liveConnectConstraints" not in body
+    assert set(body) == {"uses", "expireTime", "newSessionExpireTime", "bidiGenerateContentSetup"}
 
 
 def test_token_lifetimes_match_documented_defaults():

@@ -68,6 +68,7 @@ from .b66_grade_models import (
     B66_GRADES,
     b66_grade_model_id,
     b66_grade_model_id_for_request,
+    b66_tier_grant_permits,
     b66_verified_admin,
 )
 from .b66_reasoning_level import (
@@ -89,6 +90,7 @@ from .final_dispatch_guard_wiring import (
 )
 from .request_contract import MAX_BROWSER_BODY_BYTES
 from .member_grade_access import verified_member_grade, GRADES
+from .model_policy import current_verified_member_grade
 from padiem_control_plane.product_tier_routes import FREE_PRIMARY_B14_MODEL_ID
 
 _MODEL_ID_RE = re.compile(r"[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}")
@@ -195,6 +197,7 @@ async def conversation_turn(request: Request) -> JSONResponse:
         return _error(400, "unsupported_field", "지원하지 않는 대화 필드입니다.")
     model_id = data.get("model_id") or FREE_PRIMARY_B14_MODEL_ID
     requested_tier = data.get("tier")
+    grade_model_id: str | None = None
     if requested_tier is not None:
         if not isinstance(requested_tier, str) or requested_tier not in B66_GRADES + (B66_ADMIN_GRADE,):
             return _error(400, "invalid_tier", "지원하지 않는 AI 등급입니다.")
@@ -209,6 +212,9 @@ async def conversation_turn(request: Request) -> JSONResponse:
             expected_model = await b66_grade_model_id_for_request(request, requested_tier)
             if expected_model is None:
                 return _error(503, "tier_unavailable", "선택한 AI 등급은 현재 준비 중입니다. 다른 등급을 선택해 주세요.")
+            # Only a centrally routed grade is exempt from the product-local
+            # grant list; the administrator lane keeps its own restriction.
+            grade_model_id = expected_model
         if model_id != expected_model:
             return _error(400, "invalid_model_id", "등급 선택은 기본 모델을 사용합니다.")
     if (
@@ -221,7 +227,7 @@ async def conversation_turn(request: Request) -> JSONResponse:
     if access is not None:
         if model_id in access["disabled_models"]:
             return _error(403, "model_disabled", "관리자가 이 AI 모델을 사용 중지했습니다.")
-        if access["active_policy"] and model_id not in access["model_ids"]:
+        if not b66_tier_grant_permits(access, model_id, grade_model_id):
             return _error(403, "model_tier_forbidden", "이용 등급에서 허용하지 않는 AI 모델입니다.")
     reasoning_level = data.get("reasoning_level")
     try:
@@ -397,6 +403,7 @@ async def conversation_turn(request: Request) -> JSONResponse:
             [{"role": "user", "content": message}],
             model=route.model_id,
             **({"product_tier": product_tier} if product_tier is not None else {}),
+            verified_identity_tier=current_verified_member_grade(),
             additional_system_context=conversation_prompt(state),
             model_parameters=parameters,
         )
@@ -426,6 +433,7 @@ async def conversation_turn(request: Request) -> JSONResponse:
                 [{"role": "user", "content": message}],
                 model=route.model_id,
                 **({"product_tier": product_tier} if product_tier is not None else {}),
+                verified_identity_tier=current_verified_member_grade(),
                 additional_system_context=(
                     conversation_prompt(state)
                     + "\n이전 형식이 유효하지 않았습니다. 고객의 마지막 요청을 다시 "

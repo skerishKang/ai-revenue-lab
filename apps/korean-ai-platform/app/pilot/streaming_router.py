@@ -195,12 +195,14 @@ async def stream_routed_chat_completions(
         raise ValueError("stream_call must be callable")
 
     candidates = _decision_candidates(decision)
-    max_attempts = min(decision.max_attempts, len(candidates))
-    if max_attempts < 1:
-        raise ValueError("RouteDecision must allow at least one attempt")
+    # #4317: the candidate list is the whole budget. Every candidate the
+    # declared product grade allows is tried, in order, and nothing narrows
+    # that list.
+    if not candidates:
+        raise ValueError("RouteDecision must allow at least one candidate")
 
     committed = False
-    for index, candidate in enumerate(candidates[:max_attempts], start=1):
+    for index, candidate in enumerate(candidates, start=1):
         iterator = stream_call(
             messages=[dict(message) for message in messages],
             temperature=temperature,
@@ -299,7 +301,9 @@ async def stream_routed_chat_completions(
             can_fallback = (
                 _is_precommit_fallback_error(exc)
                 and decision.fallback_allowed
-                and index < max_attempts
+                # The last candidate has no successor, so its failure is the
+                # terminal error instead of a silent walk-out.
+                and index < len(candidates)
             )
             if can_fallback:
                 continue

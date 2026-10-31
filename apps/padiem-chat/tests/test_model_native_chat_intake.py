@@ -16,11 +16,12 @@ def test_browser_contract_forwards_messages_past_old_count_and_character_caps():
     long_text = "긴 입력 " * 10_000 + "끝"
     messages = [{"role": "user" if i % 2 == 0 else "assistant", "content": f"turn-{i}"} for i in range(40)]
     messages.append({"role": "user", "content": long_text})
-    validated, *_ = _validate_payload({"messages": messages, "mode": "auto"})
+    validated, *_ = _validate_payload({"messages": messages})
     assert validated == messages
     assert len(validated) == 41
     assert validated[-1]["content"] == long_text
-    assert MAX_BROWSER_BODY_BYTES == 6_000_000
+    # #4379: the browser request carries no PADIEM byte total.
+    assert MAX_BROWSER_BODY_BYTES is None
 
 
 def test_browser_contract_retains_role_field_and_empty_message_guards():

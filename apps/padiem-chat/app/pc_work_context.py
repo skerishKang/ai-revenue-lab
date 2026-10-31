@@ -25,6 +25,8 @@ from dataclasses import dataclass, replace
 from datetime import datetime, timezone
 from typing import Any, Mapping
 
+from padiem_ai_core.pc_device_identity import is_pc_device_id
+
 PC_WORK_CONTEXT_VERSION = "padiem-pc-work-context.v1"
 PC_DRIVE_TOOL_ID = "claw.pc.query_drives"
 PC_LIST_FILES_TOOL_ID = "claw.pc.list_files"
@@ -34,13 +36,19 @@ PC_TOOL_SUMMARY = (
     f"{PC_DRIVE_TOOL_ID} (드라이브 목록), {PC_LIST_FILES_TOOL_ID} "
     f"(승인된 폴더 목록), {PC_READ_FILE_TOOL_ID} (UTF-8 텍스트 파일 읽기)"
 )
-MAX_RENDERED_CHARS = 1800
+# #5895-D: the rendering is bounded by structure - 24 directory rows with
+# 60-char names plus fixed guidance lines - not by a text slice: a hard
+# [:1800] cut silently dropped the closing guidance lines exactly when many
+# devices made the broker line long.
 MAX_DEVICE_NAME_CHARS = 60
-_MAX_RENDERED_DEVICES = 6
+_MAX_RENDERED_DEVICES = 6  # summary shape: the total count is always named, the first 6 labels shown
 _DEVICE_LIMIT = 24
-_DEVICE_ID_PATTERN = re.compile(r"^[A-Za-z0-9_.:-]{1,128}$")
 #: Same closed grammar the Mesh ownership map accepts for device/node refs.
-_EXEC_REF_PATTERN = re.compile(r"^[A-Za-z0-9_.:@+\-\\/]{1,1024}$")
+#: ``$`` is in the class because MeshCentral composes its node keys from an
+#: alphabet that uses ``$`` and ``@`` where base64 uses ``/`` and ``+``: a real
+#: ``id@domain`` reference can carry it, and refusing it here dropped the
+#: device from every list that depended on the execution target.
+_EXEC_REF_PATTERN = re.compile(r"^[A-Za-z0-9_.$:@+\-\\/]{1,1024}$")
 _STATES = ("CONNECTED", "OFFLINE", "REVOKED")
 _MESH_EXECUTION_MODE = "mesh"
 
@@ -337,7 +345,7 @@ async def resolve_pc_connector_scope(
 
 async def resolve_pc_mesh_target(
     request: Any, *, owner_id: str, workspace_id: str,
-    connector: PcConnectorScope | None = None,
+    connector: PcConnectorScope | None = None, device_id: str | None = None,
 ) -> PcExecutionTarget:
     """Read the existing owner-authorized Mesh target without inventing heartbeat."""
     scope = connector if connector is not None else await resolve_pc_connector_scope(
@@ -346,7 +354,7 @@ async def resolve_pc_mesh_target(
     if not scope.ready:
         return PcExecutionTarget(status=_EXEC_OWNER_UNAVAILABLE)
     return await _resolve_execution_target(
-        request, session_id=scope.session_id, selected_device_id=None,
+        request, session_id=scope.session_id, selected_device_id=device_id,
         account_ref=scope.account_ref,
     )
 
@@ -367,8 +375,7 @@ def _broker_devices(
         state = row.get("state")
         usable = row.get("usable")
         if (
-            not isinstance(device_id, str)
-            or not _DEVICE_ID_PATTERN.fullmatch(device_id)
+            not is_pc_device_id(device_id)
             or device_id in seen
             or state not in _STATES
             or type(usable) is not bool
@@ -416,6 +423,78 @@ def _mapping_for(
             else _MAPPING_IDENTITY_UNCONFIRMED
         )
     return _MAPPING_UNMAPPED
+
+
+async def linked_pc_targets(request: Any, owner_id: str) -> list[dict[str, Any]] | None:
+    """This account's linked PCs, from #5573's directory, or ``None``.
+
+    ``None`` means the directory could not be asked at all (no store, migration
+    072 not applied, a failed read), which is different from an empty list: only
+    the empty list says "this account has no linked PC", and only that lets the
+    deployment ownership map answer as it did before links existed.
+    """
+    state = getattr(getattr(request, "app", None), "state", None)
+    store = getattr(state, "pc_device_pairing_store", None)
+    reader = getattr(store, "links_for_owner", None)
+    if not callable(reader):
+        return None
+    try:
+        links = reader(user_id=owner_id)
+        if inspect.isawaitable(links):
+            links = await links
+    except Exception:
+        return None
+    return links if isinstance(links, list) else None
+
+
+def _link_devices(links: list[dict[str, Any]]) -> list[PcWorkDevice]:
+    """Directory rows for linked PCs, named the way the owner named them.
+
+    The name is what the answer and the browser call the machine by, so a link
+    contributes a row even before anything has proved it online - it is simply
+    not usable, which is the honest reading of "linked, not yet seen".
+    """
+    devices: list[PcWorkDevice] = []
+    for link in links:
+        if not isinstance(link, Mapping):
+            continue
+        node_ref = link.get("mesh_node_id")
+        if not is_pc_device_id(node_ref):
+            continue
+        label = link.get("label")
+        devices.append(PcWorkDevice(
+            device_id=node_ref,
+            name=label if isinstance(label, str) and label else None,
+            state="OFFLINE", usable=False,
+        ))
+    return devices
+
+
+def _link_execution_target(
+    links: list[dict[str, Any]], selected_device_id: str | None,
+) -> PcExecutionTarget | None:
+    """The command target this account's own links name, or ``None``.
+
+    Same rule the file lane applies (R4, directory first): the link the owner
+    chose - or the one link they have - is the target, and two links with no
+    choice made is a question, not a guess. A linked PC is pinned by nothing in
+    the deployment map, so the composed node identity travels unpinned.
+    """
+    candidates = [
+        link.get("mesh_node_id") for link in links
+        if isinstance(link, Mapping) and is_pc_device_id(link.get("mesh_node_id"))
+    ]
+    if not candidates:
+        return None
+    if selected_device_id is not None:
+        chosen = [node for node in candidates if node == selected_device_id]
+        if len(chosen) != 1:
+            return None
+    elif len(candidates) == 1:
+        chosen = candidates
+    else:
+        return None
+    return PcExecutionTarget(status=_EXEC_READY, device_id=chosen[0], pinned=False)
 
 
 async def resolve_pc_work_context(
@@ -484,12 +563,25 @@ async def resolve_pc_work_context(
                 else:
                     broker_status = _READY
 
+    # #5573: a PC this account linked is its own machine, named by this account.
+    # The directory answers before the deployment map, and only for an account
+    # that has links - an account with none behaves exactly as it did before.
+    links = await linked_pc_targets(request, owner)
+    if links:
+        known = {device.device_id for device in devices}
+        devices.extend(
+            device for device in _link_devices(links) if device.device_id not in known
+        )
     execution = await _resolve_execution_target(
         request,
         session_id=connector.session_id if connector.ready else session,
         selected_device_id=selected_device_id,
         account_ref=connector.account_ref if connector.ready else None,
     )
+    if links:
+        linked = _link_execution_target(links, selected_device_id)
+        if linked is not None:
+            execution = linked
     usable = [device for device in devices if device.usable]
     # A paused owner has no execution target even though a PC is online.
     broker_target = (
@@ -611,7 +703,7 @@ def render_pc_work_context(context: PcWorkContext) -> str:
         "Google Drive와 로컬 PC 드라이브는 서로 다른 대상입니다. 실제 도구 결과 없이 "
         "드라이브·파일·PC 상태를 확인했다고 주장하지 마세요."
     )
-    return "\n".join(lines)[:MAX_RENDERED_CHARS]
+    return "\n".join(lines)
 
 
 async def _read_saved_device_selection(
@@ -641,7 +733,7 @@ async def _read_saved_device_selection(
         return SavedDeviceSelection(status=SAVED_SELECTION_UNAVAILABLE)
     if value is None:
         return SavedDeviceSelection(status=SAVED_SELECTION_NONE)
-    if not isinstance(value, str) or not _DEVICE_ID_PATTERN.fullmatch(value):
+    if not is_pc_device_id(value):
         return SavedDeviceSelection(status=SAVED_SELECTION_UNAVAILABLE)
     return SavedDeviceSelection(status=SAVED_SELECTION_SELECTED, device_id=value)
 
@@ -701,7 +793,6 @@ async def build_pc_work_context_text(
 __all__ = [
     "PC_WORK_CONTEXT_VERSION",
     "PC_DRIVE_TOOL_ID",
-    "MAX_RENDERED_CHARS",
     "PC_SCOPE_OWNER_UNAVAILABLE",
     "PcConnectorScope",
     "PcExecutionTarget",

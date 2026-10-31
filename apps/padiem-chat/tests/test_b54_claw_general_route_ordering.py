@@ -56,8 +56,18 @@ def _harness() -> str:
     # the routed functions, so this harness keeps the browser's scope chain.
     map_start = SOURCE.index("  const CLAW_BOUNDED_REFUSAL_COPY")
     map_end = SOURCE.index("\n  function buildRetryBox(", map_start)
+    # #2505: the routed functions consult the shared turn store, so its constants
+    # and the product switch helper travel with them.
+    product_start = SOURCE.index('  const PRODUCT_CHAT = "chat";')
+    product_end = SOURCE.index("  const MESSAGE_LIFECYCLE =", product_start)
+    switch_start = SOURCE.index("  function switchConversationProduct(nextProduct) {")
+    switch_end = SOURCE.index(
+        "  // The first user turn extends the original landing panel.", switch_start
+    )
     extracted = "\n\n".join(
-        [SOURCE[map_start:map_end]]
+        [SOURCE[product_start:product_end]]
+        + [SOURCE[switch_start:switch_end]]
+        + [SOURCE[map_start:map_end]]
         + [_js_function(SOURCE, name) for name in ROUTING_FUNCTIONS]
     )
     return r"""
@@ -66,7 +76,7 @@ const trace = [];
 const window = {}; // Browser global; optional #3930 event projection is absent here.
 const shell = { dataset: {} };
 const emptyState = { hidden: false };
-const messageList = { hidden: true, childElementCount: 0, closest: () => null };
+const messageList = { hidden: true, childElementCount: 0, children: [], replaceChildren() {}, appendChild() {}, closest: () => null };
 const setNavActive = () => {};
 // #4833 made showConversation hide the Claw disclosures through the DOM when it
 // leaves for Chat, so this harness needs the same minimal document surface.
@@ -102,6 +112,8 @@ const conversationState = {
   commitAssistant() {},
   setConversationId() {},
 };
+// Chat/Claw separation: the Claw artifact index is absent in this routing harness.
+const conversationArtifactContext = null;
 const uiT = (key) => key;
 const updateComposer = () => {};
 const renderTyping = () => {};

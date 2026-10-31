@@ -21,30 +21,114 @@ from app.chat_pc_drive import (
     CHAT_PC_QUERY_TOOL_ID,
     ChatPCDriveError,
     build_chat_pc_agent_plan,
+    chat_pc_plan_for_tool,
     execute_chat_pc_drive_lane,
-    is_chat_pc_drive_query,
-    parse_chat_pc_tool_decision,
 )
 from app.orchestration_bridge import B62EngineOrchestrationBridge
 
 
-def test_chat_file_detector_and_two_step_plan():
-    """#4976: Chat routes a folder/file task to the shared list/read plan."""
-    from app.chat_pc_drive import (
-        build_chat_pc_files_agent_plan,
-        is_chat_pc_files_query,
+def test_model_tool_names_select_the_canonical_plans():
+    """#5573 (3-C-2): the selected tool, not the wording, picks the plan."""
+    assert [
+        step["tool_id"]
+        for step in chat_pc_plan_for_tool("files")["steps"]
+    ] == ["claw.pc.list_files", "claw.pc.read_file"]
+    assert [
+        step["tool_id"]
+        for step in chat_pc_plan_for_tool("files_list")["steps"]
+    ] == ["claw.pc.list_files"]
+    assert [
+        step["tool_id"]
+        for step in chat_pc_plan_for_tool("query_drives")["steps"]
+    ] == ["claw.pc.query_drives"]
+    # A name outside the closed PC tool set selects nothing: the model cannot
+    # invent a plan, a tool or a target here.
+    assert chat_pc_plan_for_tool("claw.desktop.capture") is None
+    assert chat_pc_plan_for_tool("") is None
+    for plan in (
+        chat_pc_plan_for_tool("files"),
+        chat_pc_plan_for_tool("files_list"),
+        chat_pc_plan_for_tool("query_drives"),
+    ):
+        assert plan["agent_id"] == "agent:padiem:chat-pc-query@1"
+
+
+def test_chat_pc_plans_survive_the_engine_client_authority_gate():
+    """#5015: both real plan builders must reach the transport intact.
+
+    The client's closed trusted-PC check only accepts a list ``steps``, so a
+    tuple plan was refused before transport even though the wire JSON is
+    identical. Drive the real builders through the real bridge request and
+    the real client into a recording fake transport; no request leaves.
+    """
+    from padiem_ai_engine_client import (
+        EngineTransportResponse,
+        PadiemAiEngineClient,
     )
 
-    assert is_chat_pc_files_query(
-        "내 PC의 테스트 폴더에서 파일 목록을 보고, TXT를 읽어서 내용을 설명해 주세요"
+    from app.chat_pc_drive import build_chat_pc_files_agent_plan
+
+    device_id = "node/meshdomain1/owner-pc"
+    cases = (
+        (build_chat_pc_agent_plan(), {"query_drives": {"device_id": device_id}}),
+        (
+            build_chat_pc_files_agent_plan(),
+            {"files": {"device_id": device_id}},
+        ),
     )
-    assert not is_chat_pc_files_query("내 PC에 어떤 드라이브가 있어?")
-    assert not is_chat_pc_files_query("내 PC에서 `cmd /c hostname` 실행해줘")
-    plan = build_chat_pc_files_agent_plan()
-    assert plan["agent_id"] == "agent:padiem:chat-pc-query@1"
-    assert [step["tool_id"] for step in plan["steps"]] == [
-        "claw.pc.list_files", "claw.pc.read_file",
-    ]
+    skill = SimpleNamespace(
+        id="auto",
+        title="Padiem Chat",
+        description="Padiem Chat request",
+        system_instruction=None,
+        task_type="general",
+        optimize_for="balanced",
+        max_tokens=None,
+    )
+
+    class RecordingTransport:
+        def __init__(self):
+            self.calls = []
+
+        async def request(self, **kwargs):
+            self.calls.append(kwargs)
+            return EngineTransportResponse(
+                status=200,
+                body=json.dumps(
+                    {"ok": True, "orchestration": {"status": "queued"}}
+                ).encode("utf-8"),
+                headers={"content-type": "application/json"},
+            )
+
+    async def exercise():
+        for plan, tool_arguments in cases:
+            transport = RecordingTransport()
+            client = PadiemAiEngineClient(
+                transport=transport,
+                app_id="padiem-chat",
+                caller_id="padiem-chat",
+                credential="x" * 64,
+            )
+            engine_request = B62EngineOrchestrationBridge.build_engine_request(
+                user_id="usr_5015",
+                messages=({"role": "user", "content": "내 PC 파일을 읽어 줘"},),
+                skill=skill,
+                model_id="unused",
+                conversation_id=None,
+                subject_id="sub_" + "a" * 32,
+                agent_plan=plan,
+                tool_arguments=tool_arguments,
+                session_id="chat_pcq_5015",
+            )
+            await client.orchestrate(engine_request)
+            assert len(transport.calls) == 1
+            sent = json.loads(transport.calls[0]["body"])
+            assert sent["agent_plan"]["steps"] == [
+                dict(step) for step in plan["steps"]
+            ]
+            assert sent["tool_arguments"] == tool_arguments
+
+    asyncio.run(exercise())
 
 
 def test_chat_owner_uses_the_canonical_b62_session(monkeypatch):
@@ -133,38 +217,53 @@ def test_chat_owner_refuses_an_inactive_session():
         asyncio.run(_resolve_chat_owner(request, "usr_1"))
 
 
-def test_detector_matches_only_drive_questions():
-    assert is_chat_pc_drive_query("내 PC 드라이브 목록을 알려줘") is True
-    assert is_chat_pc_drive_query("내 컴퓨터 디스크 용량 확인해줘") is True
-    assert is_chat_pc_drive_query("my pc drive 확인해줘") is True
-    # Explicit command lane stays explicit.
-    assert is_chat_pc_drive_query("내 PC에서 `Get-PSDrive` 실행해줘") is False
-    # Other nouns are out of scope for this lane.
-    assert is_chat_pc_drive_query("내 PC에 데이터베이스가 있나?") is False
-    assert is_chat_pc_drive_query("내 PC 호스트네임을 알려줘") is False
-    # Screen/desktop verbs are a different lane.
-    assert is_chat_pc_drive_query("내 PC 화면을 보여줘") is False
-    assert is_chat_pc_drive_query("오늘 날씨 어때?") is False
-    assert is_chat_pc_drive_query("") is False
+def test_no_wording_selects_the_lane_without_a_model_tool_call():
+    """#5573: the deleted keyword gate must not come back in any shape.
+
+    Every phrasing below reaches the lane only through a tool call the model
+    made. With no tool call the lane returns None, so the text the Owner listed
+    as previously missed ("PC의", a pronoun follow-up, a paraphrase) and the
+    text that must never execute (a quoted or negated command) are handled by
+    the same rule: no model tool call, no PC run.
+    """
+    import app.chat_pc_drive as lane
+
+    request, _, _, _ = _request(model_answers=["unused"])
+    old_ready, old_uid = lane.auth_ready, lane.current_user_id
+    lane.auth_ready = lambda req: True
+    lane.current_user_id = lambda req: "usr_chat_1"
+    try:
+        for text in (
+            "PC의 문서 폴더에 뭐가 있어?",
+            "그 폴더 목록만 보여줘",
+            "제 컴퓨터 저장 공간 확인해 주세요",
+            "mypc 드라이브 알려줘",
+            "내 PC에서 `cmd /c hostname` 실행해줘",
+            "\"내 PC 파일 목록\"이라고 써 봐",
+            "내 PC 파일 읽지 말고 그냥 설명만 해줘",
+            "오늘 날씨 어때?",
+            "",
+        ):
+            assert asyncio.run(lane.execute_chat_pc_drive_lane(
+                request, user_text=text, skill=None,
+                model_id="m", conversation_id=None,
+            )) is None
+    finally:
+        lane.auth_ready, lane.current_user_id = old_ready, old_uid
 
 
-def test_tool_decision_validation_mirrors_shared_contract():
-    tool = json.dumps({
-        "action": "tool", "tool_id": CHAT_PC_QUERY_TOOL_ID, "arguments": {},
-    })
-    assert parse_chat_pc_tool_decision(tool)["action"] == "tool"
-    complete = json.dumps({"action": "complete", "answer": "연결된 PC가 없습니다."})
-    assert parse_chat_pc_tool_decision(complete)["action"] == "complete"
-    for bad in (
-        "not json",
-        json.dumps({"action": "tool"}),
-        json.dumps({"action": "tool", "tool_id": "claw.desktop.capture", "arguments": {}}),
-        json.dumps({"action": "tool", "tool_id": CHAT_PC_QUERY_TOOL_ID, "arguments": {"x": 1}}),
-        json.dumps({"action": "complete", "answer": 42}),
-        json.dumps(["tool"]),
-    ):
-        with pytest.raises(ChatPCDriveError):
-            parse_chat_pc_tool_decision(bad)
+def test_pc_error_cause_rejects_unbounded_provider_material():
+    """The browser error carries one internal code, never provider material."""
+    error = ChatPCDriveError(
+        "chat_pc_engine_unavailable", "failed", 400,
+        cause="private-provider-response: " + "x" * 100,
+    )
+    assert error.public_error() == {
+        "code": "chat_pc_engine_unavailable", "message": "failed",
+    }
+    kept = ChatPCDriveError("chat_pc_engine_unavailable", "failed", 400,
+                            cause="upstream_auth_error")
+    assert kept.public_error()["cause"] == "upstream_auth_error"
 
 
 def test_chat_command_matches_shared_mesh_contract():
@@ -246,9 +345,9 @@ class _History:
         self.pairs.append((user_text, answer))
         return conversation_id or ("chat_" + "n" * 32)
 
-    async def record_chat_pc_drive_run(self, *, user_id, run_id, workspace_id, user_text, conversation_id):
+    async def record_chat_pc_drive_run(self, *, user_id, run_id, workspace_id, user_text, conversation_id, **extra):
         assert run_id.startswith("chat_pcq_")
-        self.staged = {"run_id": run_id, "workspace_id": workspace_id}
+        self.staged = {"run_id": run_id, "workspace_id": workspace_id, **extra}
         return conversation_id or ("chat_" + "s" * 32)
 
     async def get_claw_run(self, user_id, run_id):
@@ -279,7 +378,7 @@ def _request(*, user="usr_chat_1", model_answers, engine_answer="C: 드라이브
     return request, b14, bridge, history
 
 
-def test_lane_falls_through_for_anonymous_or_non_drive():
+def test_lane_falls_through_without_a_user_or_a_tool_call():
     import app.chat_pc_drive as lane
 
     async def run():
@@ -288,33 +387,60 @@ def test_lane_falls_through_for_anonymous_or_non_drive():
         lane.current_user_id = lambda req: None
         try:
             anon = SimpleNamespace(app=SimpleNamespace(state=SimpleNamespace()))
-            # No signed-in user falls through.
+            # No signed-in user falls through, tool call or not.
             assert await lane.execute_chat_pc_drive_lane(
                 anon, user_text="내 PC 드라이브 알려줘", skill=None,
-                model_id="m", conversation_id=None, tier="free",
+                model_id="m", conversation_id=None, selected_tool="files_list",
             ) is None
         finally:
             lane.auth_ready, lane.current_user_id = old_ready, old_uid
-        # A signed-in user asking something else falls through too.
+        # A signed-in turn with no model tool call falls through too.
         request, _, _, _ = _request(model_answers=["unused"])
         lane.auth_ready = lambda req: True
         lane.current_user_id = lambda req: "usr_chat_1"
         try:
             assert await lane.execute_chat_pc_drive_lane(
                 request, user_text="오늘 날씨 어때?", skill=None,
-                model_id="m", conversation_id=None, tier="free",
+                model_id="m", conversation_id=None,
             ) is None
         finally:
             lane.auth_ready, lane.current_user_id = old_ready, old_uid
     asyncio.run(run())
 
 
-def test_lane_tool_path_stages_chat_run_and_records_answer():
+def _wire_selection(monkeypatch):
+    """A server-verified selected PC for the unified scope decision (#5573)."""
+    import app.pc_work_context as pc_work_context
+
+    device = "node/meshdomain1/owner-pc"
+    state = SimpleNamespace(
+        devices=[SimpleNamespace(device_id=device, state="READY")],
+        selected_confirmed=True,
+        execution=SimpleNamespace(ready=True),
+    )
+
+    async def _read(request, *, owner_id, workspace_id):
+        return SimpleNamespace(
+            status=pc_work_context.SAVED_SELECTION_SELECTED, device_id=device,
+        )
+
+    async def _resolve(request, **kwargs):
+        return state
+
+    monkeypatch.setattr(pc_work_context, "read_saved_device_selection", _read)
+    monkeypatch.setattr(pc_work_context, "resolve_pc_work_context", _resolve)
+    monkeypatch.setattr(
+        pc_work_context, "render_pc_work_context", lambda ctx: "selected PC",
+    )
+
+
+def test_lane_tool_path_stages_chat_run_and_records_answer(monkeypatch):
     import app.chat_pc_drive as lane
 
     tool_decision = json.dumps({
         "action": "tool", "tool_id": CHAT_PC_QUERY_TOOL_ID, "arguments": {},
     })
+    _wire_selection(monkeypatch)
     request, b14, bridge, history = _request(model_answers=[tool_decision])
 
     async def fake_owner(req, uid):
@@ -333,23 +459,31 @@ def test_lane_tool_path_stages_chat_run_and_records_answer():
     try:
         result = asyncio.run(lane.execute_chat_pc_drive_lane(
             request, user_text="내 PC 드라이브 목록 알려줘", skill=None,
-            model_id="model-x", conversation_id=None, tier="free",
+            model_id="model-x", conversation_id=None,
+            selected_tool="query_drives",
         ))
     finally:
         lane.auth_ready, lane.current_user_id = old_ready, old_uid
         lane._resolve_chat_owner, lane._check_mesh_grant = old_owner, old_grant
     assert result is not None
     answer, conversation_id = result
-    assert "C:" in answer
+    assert answer == "C: 드라이브가 있습니다."
     assert conversation_id == "chat_" + "s" * 32
     # Engine got the Chat product lane: chat agent, chat session, canonical subject.
     sent = bridge.requests[0]
     assert sent["agent_plan"]["agent_id"] == CHAT_PC_QUERY_AGENT_ID
     assert sent["subject_id"] == "sub_" + "a" * 32
     assert sent["session_id"].startswith("chat_pcq_")
+    assert sent["tool_arguments"] == {"query_drives": {"device_id": "node/meshdomain1/owner-pc"}}
+    assert [step["tool_id"] for step in sent["agent_plan"]["steps"]] == [
+        "claw.pc.query_drives",
+    ]
     assert sent["user_id"] == "usr_chat_1"
     # Staged run is a Chat run, and the final answer reused the stored summary.
     assert history.staged["run_id"].startswith("chat_pcq_")
+    # A drive turn is staged and titled as the drive run it actually is.
+    assert history.staged["action"] == "pc_drive_query"
+    assert history.staged["title_prefix"] == "PC 드라이브 조회: "
     assert history.appended and history.appended[0]["run_id"] == history.staged["run_id"]
 
 
@@ -386,6 +520,88 @@ _CHAT_SECRET = "s" * 32
 _CHAT_CHANNEL_SECRET = "deployment-channel-secret-value-chat"
 
 
+def test_chat_drive_dispatch_uses_connector_session_with_history_only_run(monkeypatch):
+    """Real D1 SQL: pending history alone is sufficient; no automation row.
+
+    The connector authority deliberately accepts only its canonical B54
+    session, unlike the old double which accepted the B62 session too.
+    A swallowed lookup exception is retained in the assertion diagnostic.
+    """
+    import test_5015_multi_tool_result_storage as db
+    import app.chat_pc_drive as lane
+    from app import oracle_mesh_read_return_routes as routes
+    from padiem_control_plane.auth_sessions import AuthSessionSnapshot
+    from padiem_control_plane.contracts import CanonicalSubjectRef, SubjectType
+    from datetime import datetime, timedelta, timezone
+
+    seen = []
+    now = datetime.now(timezone.utc)
+
+    class Identity:
+        async def resolve_product_user_for_subject(self, *, product_id, canonical_subject_id):
+            assert product_id == "b62" and canonical_subject_id == _CHAT_SUBJECT
+            return db.OWNER
+
+        async def resolve_current_auth_session(self, *, product_id, product_user_id):
+            assert product_user_id == db.OWNER
+            return AuthSessionSnapshot(
+                session_id="session." + product_id, product_id=product_id,
+                subject=CanonicalSubjectRef(subject_id=_CHAT_SUBJECT, subject_type=SubjectType.USER),
+                issued_at=now - timedelta(minutes=1), expires_at=now + timedelta(hours=1),
+                tenant_id=db.WORKSPACE,
+            )
+
+        async def resolve_connector_owner_scope(self, *, session_id):
+            seen.append(session_id)
+            if session_id != "session.b54-padiem-claw":
+                raise ValueError("connector requires its own product session")
+            return {"account_ref": _CHAT_ACCOUNT, "workspace_ref": _CHAT_WORKSPACE}
+
+    async def workspace(request, uid):
+        assert uid == db.OWNER
+        return db.WORKSPACE
+
+    async def no_promotion(*args, **kwargs):
+        raise AssertionError("an existing history run must not be promoted again")
+
+    connection = db._database()
+    try:
+        db._stage_run(connection, action="pc_files_query", status="pending")
+        assert connection.execute("SELECT COUNT(*) FROM claw_runs").fetchone()[0] == 0
+        state, _ = _chat_state()
+        state.history_store = db._store(connection)
+        state.control_plane_identity_authority = Identity()
+        monkeypatch.setattr(routes, "_resolve_memory_workspace", workspace)
+        monkeypatch.setattr(lane, "promote_chat_pc_stream_run", no_promotion)
+        status, body = _signed_chat_call(state, routes, {
+            "subject_id": _CHAT_SUBJECT, "run_id": db.RUN, "device_id": None,
+            "command": CHAT_PC_DRIVE_COMMAND, "mode": "dispatch",
+        })
+        assert status == 200, {"response": body, "connector_sessions": seen}
+        row = connection.execute("SELECT run_id,kind,state FROM oracle_mesh_dispatch").fetchone()
+        assert tuple(row) == (db.RUN, "command", "pending")
+        assert seen == ["session.b54-padiem-claw"]
+        # The file tools and the Claw recovery view resolve the very same
+        # history origin, without manufacturing a scheduled automation run.
+        for op, path in (("list", "."), ("read", "notes.txt")):
+            response = asyncio.run(routes.oracle_mesh_engine_chat_files_call(_SignedRequest(state, {
+                "subject_id": _CHAT_SUBJECT, "run_id": db.RUN, "device_id": None,
+                "mode": "dispatch", "op": op, "path": path,
+                "tool_call_ref": db.RUN + ":" + op,
+            }, secret=_CHAT_SECRET)))
+            assert response.status_code == 200, json.loads(response.body)
+        import app.claw_routes as claw_routes
+        monkeypatch.setattr(claw_routes, "auth_ready", lambda request: True)
+        monkeypatch.setattr(claw_routes, "current_user_id", lambda request: db.OWNER)
+        response = asyncio.run(claw_routes.claw_pending_result(db._pending_request(db.RUN, state.history_store)))
+        assert response.status_code == 200, json.loads(response.body)
+        assert connection.execute("SELECT COUNT(*) FROM claw_run_history WHERE run_id=?", (db.RUN,)).fetchone()[0] == 1
+        assert {r[0] for r in connection.execute("SELECT run_id FROM oracle_mesh_dispatch")} == {db.RUN}
+        assert connection.execute("SELECT COUNT(*) FROM claw_runs").fetchone()[0] == 0
+    finally:
+        connection.close()
+
+
 class _ChatIdentity:
     async def resolve_product_user_for_subject(self, *, product_id, canonical_subject_id):
         assert product_id == "b62"
@@ -393,18 +609,21 @@ class _ChatIdentity:
         return _CHAT_OWNER
 
     async def resolve_current_auth_session(self, *, product_id, product_user_id):
-        assert product_id == "b62"
+        from datetime import datetime, timedelta, timezone
+        from padiem_control_plane.auth_sessions import AuthSessionSnapshot
+        from padiem_control_plane.contracts import CanonicalSubjectRef, SubjectType
+        assert product_id in {"b62", "b54-padiem-claw"}
         assert product_user_id == _CHAT_OWNER
-        return SimpleNamespace(
-            session_id="sess-chat-9",
-            product_id="b62",
-            subject=SimpleNamespace(subject_id=_CHAT_SUBJECT),
+        now = datetime.now(timezone.utc)
+        return AuthSessionSnapshot(
+            session_id="sess-" + product_id, product_id=product_id,
+            subject=CanonicalSubjectRef(subject_id=_CHAT_SUBJECT, subject_type=SubjectType.USER),
+            issued_at=now - timedelta(minutes=1), expires_at=now + timedelta(hours=1),
             tenant_id=_CHAT_WORKSPACE,
-            is_active=lambda *, now: True,
         )
 
     async def resolve_connector_owner_scope(self, *, session_id):
-        assert session_id == "sess-chat-9"
+        assert session_id == "sess-b54-padiem-claw"
         return {"account_ref": _CHAT_ACCOUNT, "workspace_ref": _CHAT_WORKSPACE}
 
 
@@ -621,14 +840,14 @@ def test_chat_signed_endpoint_rejects_claw_product_and_wrong_command(monkeypatch
     assert status == 400
 
 
-def test_lane_complete_decision_answers_without_engine():
+def test_selected_pc_always_uses_the_single_engine_lane(monkeypatch):
     import app.chat_pc_drive as lane
 
+    _wire_selection(monkeypatch)
     request, b14, bridge, history = _request(
-        model_answers=[json.dumps({"action": "complete", "answer": "연결된 PC가 없습니다."})],
-        engine_answer="unused",
+        model_answers=[],
+        engine_answer="ok",
     )
-
     async def fake_owner(req, uid):
         session = SimpleNamespace(session_id="sess-b62-1", tenant_id="tenant-1",
                                   subject=SimpleNamespace(subject_id="sub_" + "a" * 32))
@@ -645,15 +864,17 @@ def test_lane_complete_decision_answers_without_engine():
     try:
         result = asyncio.run(lane.execute_chat_pc_drive_lane(
             request, user_text="내 PC 드라이브 알려줘", skill=None,
-            model_id="model-x", conversation_id=None, tier="free",
+            model_id="model-x", conversation_id=None,
+            selected_tool="files",
         ))
     finally:
         lane.auth_ready, lane.current_user_id = old_ready, old_uid
         lane._resolve_chat_owner, lane._check_mesh_grant = old_owner, old_grant
     assert result is not None
-    assert result[0] == "연결된 PC가 없습니다."
-    assert bridge.requests == []
-    assert history.staged is None
+    assert len(bridge.requests) == 1
+    assert bridge.requests[0]["tool_arguments"] == {
+        "files": {"device_id": "node/meshdomain1/owner-pc"},
+    }
 
 def test_5015_mesh_grant_internal_diagnostics_are_fixed_codes_only(caplog):
     """Observe which existing gate refused, without exposing account/session values."""

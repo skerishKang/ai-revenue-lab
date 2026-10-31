@@ -21,7 +21,6 @@ from .history import validate_conversation_id
 _ARTIFACT_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_-]{5,127}$")
 _PDF = "application/pdf"
 _XLSX = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-_MAX_BYTES = 10 * 1024 * 1024
 _HEADERS = {
     "Cache-Control": "private, no-store, max-age=0",
     "Pragma": "no-cache",
@@ -78,7 +77,6 @@ async def _deliver(request: Request, *, preview: bool) -> Response:
         if (record.artifact_id != artifact_id
                 or record.workspace_ref != workspace
                 or record.media_type not in (_PDF, _XLSX)
-                or record.size_bytes > _MAX_BYTES
                 or record.durable_location is None
                 or record.durable_location.location_kind != "google_drive"):
             return _error(503, "artifact_index_invalid")
@@ -104,7 +102,7 @@ async def _deliver(request: Request, *, preview: bool) -> Response:
     except Exception:
         return _error(503, "drive_read_unavailable")
     if (type(data) is not bytes or not data
-            or len(data) != record.size_bytes or len(data) > _MAX_BYTES
+            or len(data) != record.size_bytes
             or hashlib.sha256(data).hexdigest() != record.integrity_ref):
         return _error(503, "artifact_integrity_failed")
     if record.media_type == _PDF and (

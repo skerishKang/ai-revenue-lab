@@ -19,7 +19,11 @@ def test_interaction_polish_is_presentation_only_and_public_safe() -> None:
     assert 'STREAMING: "streaming"' in source
     assert 'CANCELLING: "cancelling"' in source
     assert 'new Set(["completed", "failed", "cancelled", "timed_out"])' in source
-    assert "요청을 준비하고 있습니다." in source
+    # #5559: the waiting state is the status card above the answer, so the
+    # composer no longer repeats it under the input. The phase itself stays:
+    # it still drives the busy state and the cancel affordance.
+    assert "요청을 준비하고 있습니다." not in source
+    assert 'if (next === phases.PREPARING) return "";' in source
     assert "답변을 전달하고 있습니다." in source
     assert "답변 생성을 취소하고 있습니다." in source
     assert "파일을 안전하게 확인하고 있습니다." in source

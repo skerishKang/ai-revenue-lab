@@ -215,6 +215,12 @@ PLAN_FILES = frozenset(
         ".github/scripts/b62_browser_qa_tail_parallel.py",
         ".github/tests/test_3989_b62_browser_tail_parallel.py",
         ".github/scripts/b62_glass_shell_visual_qa.py",
+        # The remaining visual-tail suites and the lane's first suite are lane
+        # scripts that no manifest entry covers, so a change to them must
+        # still select every lane.
+        ".github/scripts/b62_glass_zoom_visual_qa.py",
+        ".github/scripts/b62_chat_gutter_visual_qa.py",
+        ".github/scripts/b62_browser_visual_qa.py",
         ".github/workflows/b62-glass-animation-timing-certification.yml",
         ".github/tests/test_3989_b62_glass_timing_ownership.py",
         ".github/tests/test_3989_b62_owner_leaf_browser_base.py",
@@ -399,6 +405,29 @@ def choose_lanes(
         changed_paths = changed_paths - {B66_QUOTE_CSS}
     if changed_paths is None:
         return {job: True for job in patterns_by_job}
+    # A B14 outbound policy-only edit cannot change a browser journey.
+    # Only this exact source and its previously reviewed contract-test leaves
+    # qualify; mixed source/UI or uncertain metadata retains normal QA.
+    b14_attempt_contract = {
+        "apps/padiem-chat/app/b14_client.py",
+        "apps/padiem-chat/tests/test_3977_provider_default_temperature_bridge.py",
+        "apps/padiem-chat/tests/test_owner_tier_fallback_dispatch_261015.py",
+        "apps/padiem-chat/tests/test_attachments.py",
+        "apps/padiem-chat/tests/test_dispatch_quota_refund.py",
+        "apps/padiem-chat/tests/test_documents.py",
+        "apps/padiem-chat/tests/test_grounding.py",
+        "apps/padiem-chat/tests/test_service_binding.py",
+        "apps/padiem-chat/tests/test_skills.py",
+    }
+    if (
+        "apps/padiem-chat/app/b14_client.py" in changed_paths
+        and changed_paths <= b14_attempt_contract
+        and statuses is not None
+        and set(statuses) == changed_paths
+        and all(statuses[p] == "modified" for p in changed_paths)
+        and expected_files == len(changed_paths)
+    ):
+        return {job: False for job in patterns_by_job}
     if changed_paths & PLAN_FILES:
         return {job: True for job in patterns_by_job}
     # #4459: proven CSS-only UI changes keep the presentation smoke set and

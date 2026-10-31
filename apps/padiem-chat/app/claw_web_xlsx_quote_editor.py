@@ -22,7 +22,10 @@ MAIN_NS = "http://schemas.openxmlformats.org/spreadsheetml/2006/main"
 MAIN = "{" + MAIN_NS + "}"
 ET.register_namespace("", MAIN_NS)
 _SOURCE_MAX = 1_048_576
-_PACKAGE_MAX = 8_388_608
+# Archive-bomb and memory bound (#5895-C): the declared member sizes are
+# summed before any extraction, so a package that inflates past the Worker
+# budget is refused instead of expanded.
+_PACKAGE_MAX = 32 * 1024 * 1024
 _SHEET = "xl/worksheets/sheet1.xml"
 _REQUIRED = frozenset({"A1", "B4", "B5", "B6", "B7"})
 _ALLOWED_PART = re.compile(

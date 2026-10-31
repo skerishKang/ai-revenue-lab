@@ -20,9 +20,26 @@
   gap: 14px;
   box-sizing: border-box;
   width: 100%;
-  max-width: 860px;
+  max-width: 960px;
   margin: 0 auto;
   padding: 28px clamp(18px, 4vw, 44px) 40px;
+}
+
+/* At <=920px the library view is not inside the six-panel frame, so it has no
+   opaque surface of its own. The z-index above keeps it over the portrait, but
+   without a background the portrait still renders through the whole page.
+   Hide the shell portrait fragments and give the view an opaque surface so the
+   library reads as its own page at the narrow breakpoint. */
+@media (max-width: 920px) {
+  html[data-theme="padiem-glass"] body .app-shell[data-state="library"] .glass-shell-portrait,
+  html[data-theme="padiem-glass"] body .app-shell[data-state="library"] .glass-shell-frag {
+    opacity: 0 !important;
+  }
+  html[data-theme="padiem-glass"] body .app-shell[data-state="library"] .library-view {
+    background: #f2f5f7;
+    position: relative;
+    z-index: 2;
+  }
 }
 
 .app-shell[data-state="library"] .library-view {
@@ -48,7 +65,7 @@
 }
 
 .library-kicker {
-  margin: 0 0 6px;
+  margin: 0 0 4px;
   font-size: 12px;
   letter-spacing: 0.14em;
   color: var(--muted, #8a8f98);
@@ -61,59 +78,65 @@
 }
 
 .library-subtitle {
-  margin: 6px 0 0;
-  font-size: 13px;
-  line-height: 1.55;
+  margin: 4px 0 0;
+  font-size: 12px;
+  line-height: 1.5;
   color: var(--muted, #8a8f98);
+  opacity: 0.75;
 }
 
+/* The sidebar handles leaving the library, so the header carries no second
+   control; the element stays in the DOM for the contract test. */
 .library-close {
-  flex: 0 0 44px;
-  width: 44px;
-  min-width: 44px;
-  height: 44px;
-  border: 1px solid rgba(127, 127, 127, 0.26);
-  border-radius: 12px;
-  background: rgba(127, 127, 127, 0.08);
-  color: inherit;
-  font: inherit;
-  font-size: 18px;
-  line-height: 1;
-  cursor: pointer;
-}
-
-.library-close:hover {
-  background: rgba(127, 127, 127, 0.16);
+  display: none;
 }
 
 /* ── Tabs ────────────────────────────────────────────────────────────── */
 
 .library-tabs {
   display: flex;
-  gap: 6px;
-  border-bottom: 1px solid rgba(127, 127, 127, 0.22);
+  gap: 7px;
+  padding: 4px 0 9px;
+  border-bottom: 1px solid var(--line, #e3e3e9);
 }
 
 .library-tab {
+  min-width: 49px;
   min-height: 44px;
-  padding: 0 14px;
-  border: 0;
-  border-bottom: 2px solid transparent;
+  padding: 8px 14px;
+  border: 1px solid transparent;
+  border-radius: 10px;
   background: transparent;
-  color: var(--muted, #8a8f98);
+  color: var(--muted, #586b7b);
   font: inherit;
   font-size: 14px;
   font-weight: 650;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 1;
 }
 
 .library-tab[aria-selected="true"] {
-  color: inherit;
-  border-bottom-color: var(--accent-strong, #2f6f99);
+  border-color: rgba(47, 111, 153, 0.24);
+  background: rgba(47, 111, 153, 0.08);
+  color: var(--accent-strong, #2f6f99);
+  font-weight: 700;
 }
 
-html[data-theme="padiem-glass"] .library-tab[aria-selected="true"] {
-  border-bottom-color: var(--accent, #79bce7);
+html[data-theme="padiem-glass"] body .app-shell[data-state="library"] .library-tabs {
+  border-bottom-color: #d0dce5;
+}
+
+html[data-theme="padiem-glass"] body .app-shell[data-state="library"] .library-tab {
+  color: #586b7b;
+}
+
+html[data-theme="padiem-glass"] body .app-shell[data-state="library"] .library-tab[aria-selected="true"] {
+  border-color: #bfd5e4;
+  background: #e3edf5;
+  color: #315c7a;
 }
 
 /* ── Status note ─────────────────────────────────────────────────────── */
@@ -248,5 +271,18 @@ html[data-theme="padiem-glass"] #filesNavButton[aria-current="page"] {
 
   .library-item-action {
     width: 100%;
+  }
+}
+
+@media (max-width: 360px) {
+  .library-view {
+    padding: 16px 12px 24px;
+  }
+  .library-tabs {
+    gap: 4px;
+  }
+  .library-tab {
+    min-width: 44px;
+    padding-inline: 8px;
   }
 }

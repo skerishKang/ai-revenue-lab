@@ -2,20 +2,24 @@ const EXECUTE_PATH = "/internal/v1/execute";
 // This ingress fronts exactly one Engine route: the model /execute path. Its
 // request budget is therefore the Engine's own existing model budget
 // (app/service.py MAX_MODEL_EXECUTE_REQUEST_BODY_BYTES, published in
-// openapi.json as x-engine-max-body-bytes), not the 128 KiB guard that the
+// openapi.json as x-engine-max-body-bytes), not the 1 MiB guard that the
 // non-model Engine routes keep. At 128 KiB a first-party model request between
 // the two values was refused here, before the Engine could ever admit it.
 // tests/test_ingress_budget_source_contract.py pins these literals to the
 // Python constants, so the two sides cannot drift apart again.
-const MAX_REQUEST_BODY_BYTES = 6_000_000;
+// #4379: the model request carries no PADIEM byte total. null means the
+// platform's own request limit is the only ceiling. The read stays
+// incremental, so the body is never materialized past that limit.
+const MAX_REQUEST_BODY_BYTES = null;
 const MAX_INGRESS_CREDENTIAL_CHARS = 512;
 // One completed Engine answer is collected under the same finite Worker memory
 // budget as the B14/Core completed-JSON contract
-// (padiem_ai_core.b14_execution.MAX_CONFIGURED_B14_RESPONSE_BYTES = 8 MiB). The
+// (padiem_ai_core.b14_execution.MAX_CONFIGURED_B14_RESPONSE_BYTES = 32 MiB). The
 // former 1 MiB default rejected healthy large answers as
 // engine_response_too_large before the caller could read them. This is not a
 // model token or output limit, and streaming is not collected here.
-const MAX_RESPONSE_BYTES = 8 * 1024 * 1024;
+// Owner rules 2026-10-26: whole-body buffering uses 32MiB, not 80MiB.
+const MAX_RESPONSE_BYTES = 32 * 1024 * 1024;
 // Hard ceiling on Engine attempts per ingress request: the initial attempt
 // plus, during the dual-credential migration window only, exactly one
 // CURRENT-credential retry. Never raised, never looped.
@@ -107,7 +111,7 @@ async function readBoundedBytes(stream, maxBytes) {
       const { done, value } = await reader.read();
       if (done) break;
       const chunk = value instanceof Uint8Array ? value : new Uint8Array(value);
-      if (total + chunk.byteLength > maxBytes) {
+      if (maxBytes !== null && total + chunk.byteLength > maxBytes) {
         try {
           await reader.cancel();
         } catch {
@@ -239,7 +243,7 @@ export async function handleIngress(request, env) {
     if (!Number.isFinite(parsed) || parsed < 0) {
       return jsonError(400, "invalid_request", "Request body length is invalid.");
     }
-    if (parsed > MAX_REQUEST_BODY_BYTES) {
+    if (MAX_REQUEST_BODY_BYTES !== null && parsed > MAX_REQUEST_BODY_BYTES) {
       return jsonError(413, "request_too_large", "Request body exceeds the ingress safety limit.");
     }
   }

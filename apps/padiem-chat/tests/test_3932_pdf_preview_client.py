@@ -45,7 +45,8 @@ const ctrl=P.create({mount,doc,fetcher,onError:msg=>errors.push(msg),
  assert(mount.children.length===0,"DOCX has no extra preview action");
  assert(!ctrl.set({...artifact,media_type:"text/html"}),"wrong MIME blocked");
  assert(!ctrl.set({...artifact,document_id:"../../abc"}),"path forged");
- assert(!ctrl.set({...artifact,byte_length:11000000}),"too large");
+ assert(!ctrl.set({...artifact,byte_length:0}),"empty length blocked");
+ assert(!ctrl.set({...artifact,byte_length:1.5}),"fractional length blocked");
  assert(ctrl.set(artifact),"real PDF should be eligible");
  assert(requested.length===0,"never fetch before user asks");
  assert(mount.children.length===1&&mount.children[0].textContent==="PDF 미리보기","KO label");

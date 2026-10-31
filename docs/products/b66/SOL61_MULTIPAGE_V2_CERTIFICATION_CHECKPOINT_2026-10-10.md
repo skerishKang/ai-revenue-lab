@@ -108,7 +108,7 @@ ORIGINAL_RESOURCES_PDF=0bc1197cc2d424606e824d15288b9bc16c2d8bfb5755b314cd02f7b0e
 
 1. **Owner 최종 v2 레이아웃 승인:** 위 6항목과 실제 수정 전/후 대표 페이지에 대한 동의 또는 제한 범위 결정. #4010은 별도 스타일 변경으로 이미 제외.
 2. **별도 버전 신규 v2 인증서/식별자 발행:** Sol v1 package 18개 보호; 원본 보존형 다중 페이지 엔진·QuoteCore·렌더러 SHA·원본 SHA·인수 범위·허용 오차/참조 이미지·독립 재생성 증거를 연결. v1 원본 `certificate.json` 덮어쓰기 금지. 제품 runtime은 인증서/버전·지원 범위가 맞지 않으면 4+ 출력 활성화 **fail-closed**.
-3. **#4076 실제 계정 E2E:** 김범신 대표 승인 Saved Quote Skill→Guided/Free-form→QuoteCore→**새 인증 Sol PDF의 실제 바이트**→D1 저장/재열기/타계정 차단을 운영에서 검증. 기존 #4088 오프라인 모의 PDF·모의 D1은 이 증거를 대체하지 않는다.
+3. **#4076 실제 계정 E2E:** 고객A 대표 승인 Saved Quote Skill→Guided/Free-form→QuoteCore→**새 인증 Sol PDF의 실제 바이트**→D1 저장/재열기/타계정 차단을 운영에서 검증. 기존 #4088 오프라인 모의 PDF·모의 D1은 이 증거를 대체하지 않는다.
 4. **운영 배포:** 필요할 경우 최신 exact-main과 변경 파일/CI 확인 후 **별도의 Owner 승인**으로 한 번 배포. 이 문서 승인·코드 병합 자체로 자동 Production dispatch 금지.
 
 결론: **실제 다중 페이지 PDF 기술 증거 PASS, 신규 v2 release certificate 및 고객 인수는 아직 미완료**. #3839와 #4076은 계속 OPEN.

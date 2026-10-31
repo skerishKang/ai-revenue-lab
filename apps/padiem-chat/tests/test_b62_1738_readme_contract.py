@@ -9,15 +9,18 @@ STATIC = ROOT / "static"
 APP = ROOT / "app"
 
 
-def test_readme_matches_ephemeral_and_persistent_document_boundaries() -> None:
+def test_readme_matches_ephemeral_and_persistent_document_rules() -> None:
     capabilities = (STATIC / "attachment-capabilities.js").read_text(encoding="utf-8")
     assert "JPEG / PNG / WebP" in README
     assert "TXT / Markdown / CSV / JSON" in README
     assert "PDF / DOCX / PPTX / XLSX" in README
-    assert "4 MiB" in README and "96 KiB" in README and "40,000" in README and "2 MiB" in README
+    assert "no PADIEM byte total" in README and "or character limit" in README
+    assert "up to 96 KiB" not in README
     assert "Project files are a distinct persistence capability" in README
-    for token in ("imageBytes: 4 * 1024 * 1024", "textBytes: 96 * 1024", "textChars: 40000", "binaryBytes: 2 * 1024 * 1024"):
-        assert token in capabilities
+    for retired in ("textBytes: 96 * 1024", "textChars: 40000"):
+        assert retired not in capabilities
+    for removed in ("imageBytes", "binaryBytes", "1 GiB"):
+        assert removed not in capabilities
 
 
 def test_readme_matches_streaming_and_completed_transport_boundary() -> None:

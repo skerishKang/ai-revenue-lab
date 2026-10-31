@@ -10,7 +10,12 @@ from .config import ConfigError, Settings
 
 WORKER_BINDING_NAMES = frozenset({
     "PADIEM_CHAT_RUNTIME_MODE",
+    "BYOK_VIA_B14",
     "PADIEM_CHAT_B14_BASE_URL",
+    # #5784: the upstream switch. Plain vars on both platforms — a Worker binding
+    # here, an environment variable on a host — so the same names read everywhere.
+    "B14_UPSTREAM_MODE",
+    "B14_UPSTREAM_URL",
     "PADIEM_CHAT_B66_QUOTE_BASE_URL",
     "PADIEM_CHAT_TIMEOUT_SECONDS",
     "PADIEM_CHAT_LIVE_ENABLED",
@@ -37,6 +42,10 @@ WORKER_BINDING_NAMES = frozenset({
 })
 D1_BINDING_NAME = "PADIEM_CHAT_DB"
 B14_SERVICE_BINDING_NAME = "B14_SERVICE"
+# Deployment-owned server-to-server proof secret for the B14 platform-credential
+# execution lane. The value lives only in Cloudflare Secrets Store; the browser
+# never holds it and it is never part of a request body.
+B14_SERVICE_PROOF_SECRET_BINDING_NAME = "PADIEM_B14_SERVICE_PROOF_SECRET"
 # #4643: the Service Binding this Chat Worker uses to reach the private
 # `padiem-voice-stt` Worker. The browser never holds this binding; it posts to
 # /api/voice/transcribe and this Worker forwards. No entry exists in
@@ -44,6 +53,10 @@ B14_SERVICE_BINDING_NAME = "B14_SERVICE"
 # to None and every voice route fails closed with `voice_stt_unavailable`.
 VOICE_STT_SERVICE_BINDING_NAME = "VOICE_STT_SERVICE"
 B66_PDF_RENDERER_SERVICE_BINDING_NAME = "B66_PDF_RENDERER_SERVICE"
+# #2824: the private isolated Parser Authority Worker. Chat forwards the bounded
+# Core request envelope over this Service Binding; absent binding keeps the
+# async parser authority uninstalled, so binary parsing fails closed.
+DOCUMENT_PARSER_SERVICE_BINDING_NAME = "DOCUMENT_PARSER_SERVICE"
 IDENTITY_AUTHORITY_SERVICE_BINDING_NAME = "IDENTITY_AUTHORITY_SERVICE"
 WORKSPACE_R2_BINDING_NAME = "PADIEM_WORKSPACE_FILES"
 # #2830 B-1B private Google OAuth workspace-truth Service Binding. Resolved from
@@ -131,6 +144,76 @@ def binding_value(env: Any, key: str) -> Any:
     return getattr(env, key, None)
 
 
+async def resolve_secret_binding(env: Any, name: str) -> str | None:
+    """Resolve one trusted Worker secret binding without exposing its value.
+
+    A missing, unreadable, or empty binding resolves to None so the caller
+    fails closed on its own boundary instead of crashing the Worker. The
+    resolved value is returned to the caller only; it is never logged.
+    """
+    bound = binding_value(env, name)
+    if bound is None:
+        return None
+    if isinstance(bound, str):
+        return bound or None
+    try:
+        getter = getattr(bound, "get", None)
+    except Exception:
+        # A binding whose own attribute access raises is unreadable, not
+        # fatal: the documented contract is that the caller fails closed on
+        # its own boundary instead of the Worker crashing at composition time.
+        return None
+    if not callable(getter):
+        return None
+    try:
+        pending = getter()
+        if inspect.isawaitable(pending):
+            pending = await pending
+    except Exception:
+        # Never chain or publish the binding exception: it may carry secret
+        # material, account identifiers, or internal endpoints.
+        return None
+    if isinstance(pending, str) and pending:
+        return pending
+    return None
+
+
+#: #5441: the transactional-mail credential is ONE channel credential, reused.
+#:
+#: The order is reuse-first. The already provisioned owner-side channel names
+#: come first, so a deployment never has to mint a second credential for the
+#: lost-password reset mail, and the account Secrets Store (where every other
+#: PADIEM credential of this account lives) is a valid home for the very same
+#: value. A Secrets Store binding is an async ``.get()`` capability, not a
+#: string, so every one of these names is resolved through
+#: :func:`resolve_secret_binding` and never read raw.
+MAIL_API_KEY_BINDING_NAMES: tuple[str, ...] = (
+    "B66_ALERT_RESEND_API_KEY",
+    "PADIEM_CHAT_PASSWORD_RESET_RESEND_API_KEY",
+    "PADIEM_RESEND_API_KEY",
+)
+MAIL_FROM_BINDING_NAMES: tuple[str, ...] = (
+    "B66_ALERT_EMAIL_FROM",
+    "PADIEM_CHAT_PASSWORD_RESET_EMAIL_FROM",
+    "PADIEM_RESEND_EMAIL_FROM",
+)
+
+
+async def resolve_first_secret_binding(env: Any, names: tuple[str, ...]) -> str | None:
+    """Resolve the first readable secret among ``names``.
+
+    Every candidate is resolved through :func:`resolve_secret_binding`, so a
+    plain Worker secret and an account Secrets Store secret are both accepted
+    and a missing or unreadable binding never raises. The first name that
+    resolves wins, which keeps the reuse order explicit and auditable.
+    """
+    for name in names:
+        value = await resolve_secret_binding(env, name)
+        if value:
+            return value
+    return None
+
+
 async def resolve_web_secrets_store_keys(env: Any) -> dict[str, str]:
     """Resolve only the selected public Search keys from trusted Worker bindings.
 
@@ -197,7 +280,11 @@ def settings_from_worker_bindings(
     )
     return Settings.from_values(
         runtime_mode=runtime_mode,
+        file_lane_origin=binding_value(env, "PADIEM_CHAT_FILE_LANE_ORIGIN"),
         b14_base_url=binding_value(env, "PADIEM_CHAT_B14_BASE_URL"),
+        b14_upstream_mode=binding_value(env, "B14_UPSTREAM_MODE"),
+        b14_upstream_url=binding_value(env, "B14_UPSTREAM_URL"),
+        byok_via_b14=binding_value(env, "BYOK_VIA_B14") or "false",
         b66_quote_base_url=binding_value(env, "PADIEM_CHAT_B66_QUOTE_BASE_URL"),
         timeout_seconds=binding_value(env, "PADIEM_CHAT_TIMEOUT_SECONDS") or "600",
         completed_timeout_seconds=binding_value(env, "PADIEM_CHAT_COMPLETED_TIMEOUT_SECONDS") or "600",
@@ -214,7 +301,7 @@ def settings_from_worker_bindings(
             if resolved_web_keys is None
             else resolved_web_keys.get("TINYFISH_API_KEY")
         ),
-        web_timeout_seconds=binding_value(env, "PADIEM_CHAT_WEB_TIMEOUT_SECONDS") or "15",
+        web_timeout_seconds=binding_value(env, "PADIEM_CHAT_WEB_TIMEOUT_SECONDS") or "30",
         auth_mode=binding_value(env, "PADIEM_CHAT_AUTH_MODE") or "off",
         public_base_url=binding_value(env, "PADIEM_CHAT_PUBLIC_BASE_URL"),
         google_client_id=binding_value(env, "PADIEM_CHAT_GOOGLE_CLIENT_ID"),
@@ -269,6 +356,26 @@ def p01_engine_binding_diagnostic(env: Any) -> str | None:
     return diagnostic
 
 
+def validate_p01_caller_and_credential(caller_id: str, credential: str) -> str | None:
+    """The single P01 caller-identity validation (#2229), shared by both hosts.
+
+    The deployed Worker projects these values from bindings and the CPython host
+    reads them from its own environment; both must accept exactly the same
+    shape, so the rule lives here once and returns one bounded constant or
+    ``None``. No value, length or hash is returned.
+    """
+    if (
+        not caller_id
+        or len(caller_id) > _P01_CALLER_ID_MAX
+        or not _P01_SAFE_ID_RE.fullmatch(caller_id)
+    ):
+        return P01_DIAG_CALLER_ID_SHAPE_INVALID
+    credential_bytes = len(credential.encode("utf-8"))
+    if not _P01_CREDENTIAL_MIN_BYTES <= credential_bytes <= _P01_CREDENTIAL_MAX_BYTES:
+        return P01_DIAG_CREDENTIAL_LENGTH_INVALID
+    return None
+
+
 def _p01_engine_config_and_diagnostic(
     env: Any,
 ) -> tuple[P01EngineWorkerConfig | None, str | None]:
@@ -282,15 +389,9 @@ def _p01_engine_config_and_diagnostic(
         return None, P01_DIAG_ENGINE_SERVICE_MISSING
     if service_binding is None:
         return None, P01_DIAG_ENGINE_SERVICE_MISSING
-    if (
-        not caller_id
-        or len(caller_id) > _P01_CALLER_ID_MAX
-        or not _P01_SAFE_ID_RE.fullmatch(caller_id)
-    ):
-        return None, P01_DIAG_CALLER_ID_SHAPE_INVALID
-    credential_bytes = len(credential.encode("utf-8"))
-    if not _P01_CREDENTIAL_MIN_BYTES <= credential_bytes <= _P01_CREDENTIAL_MAX_BYTES:
-        return None, P01_DIAG_CREDENTIAL_LENGTH_INVALID
+    diagnostic = validate_p01_caller_and_credential(caller_id, credential)
+    if diagnostic is not None:
+        return None, diagnostic
     return (
         P01EngineWorkerConfig(
             service_binding=service_binding,
@@ -313,6 +414,19 @@ def apply_live_deadman_switch(settings: Settings) -> Settings:
     return settings
 
 
+# #5568: the PDF→Markdown util page previews the owner's original PDF by
+# framing this exact path. The default policy denies all framing, so the frame
+# was refused even same-origin and the preview pane could never render the
+# document. This is the one inline-preview exception, the same SAMEORIGIN
+# contract the Drive case PDF preview ships; the query string is not part of
+# `path`, so both display modes of this one owner-scoped route share it.
+# Cross-origin framing stays denied and every other path keeps the strict
+# default.
+_DOCUMENT_CONVERT_ORIGINAL_RE = re.compile(
+    r"^/api/document-conversions/items/[A-Za-z0-9_-]{1,128}/original$"
+)
+
+
 def response_headers_for_path(
     path: str,
     *,
@@ -326,6 +440,12 @@ def response_headers_for_path(
         headers["Content-Security-Policy"] = CONTENT_SECURITY_POLICY.replace(
             "frame-src blob:;",
             f"frame-src blob: {b66_quote_base_url};",
+        )
+    if _DOCUMENT_CONVERT_ORIGINAL_RE.match(path):
+        headers["X-Frame-Options"] = "SAMEORIGIN"
+        headers["Content-Security-Policy"] = CONTENT_SECURITY_POLICY.replace(
+            "frame-ancestors 'none';",
+            "frame-ancestors 'self';",
         )
     if path == "/health" or path.startswith("/api/") or path.startswith("/auth/"):
         headers["Cache-Control"] = "no-store"

@@ -62,5 +62,5 @@ def test_trusted_worker_seam_uses_only_server_binding():
     factory = (root / "app" / "app_factory.py").read_text(encoding="utf-8")
     assert 'binding_value(self.env, "PADIEM_CLAW_PUBLIC_WEB_SEARCH_ENABLED")' in worker
     assert "app.state.claw_web_search_enabled = False" in factory
-    assert "usage_gate=_worker_app.state.usage_gate" in worker
-    assert "adapter=_worker_app.state.claw_p01_adapter" in worker
+    assert "usage_gate=worker_app.state.usage_gate" in worker
+    assert "adapter=worker_app.state.claw_p01_adapter" in worker

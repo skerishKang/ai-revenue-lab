@@ -56,11 +56,6 @@ def _objective(value: str) -> str:
             "plan step objective must be a non-empty string",
         )
     result = value.strip()
-    if len(result) > MAX_AGENT_PLAN_OBJECTIVE_CHARS:
-        raise AgentPlannerError(
-            "agent_plan_budget_exceeded",
-            "plan step objective exceeds the bounded planner limit",
-        )
     return result
 
 
@@ -86,11 +81,6 @@ class AgentPlanStep:
         dependencies = tuple(
             _identifier("dependency step id", item) for item in self.depends_on
         )
-        if len(dependencies) > MAX_AGENT_PLAN_DEPENDENCIES:
-            raise AgentPlannerError(
-                "agent_plan_budget_exceeded",
-                "plan step has too many dependencies",
-            )
         if len(set(dependencies)) != len(dependencies):
             raise AgentPlannerError(
                 "invalid_agent_plan",
@@ -130,10 +120,10 @@ class AgentPlan:
                 "invalid_agent_plan",
                 "steps must be a tuple",
             )
-        if not 1 <= len(self.steps) <= MAX_AGENT_PLAN_STEPS:
+        if not self.steps:
             raise AgentPlannerError(
                 "agent_plan_budget_exceeded",
-                f"plan must contain 1 to {MAX_AGENT_PLAN_STEPS} steps",
+                "plan must contain at least one step",
             )
         if any(not isinstance(step, AgentPlanStep) for step in self.steps):
             raise AgentPlannerError(
@@ -214,12 +204,17 @@ def validate_agent_plan(
             "compiled profile does not belong to the requested Agent",
         )
 
-    max_steps = min(
-        MAX_AGENT_PLAN_STEPS,
-        definition.execution_budget.max_steps,
-        compiled_profile.runtime_profile.max_steps,
-    )
-    if len(plan.steps) > max_steps:
+    # #4379: a plan is not refused because of a PADIEM step ceiling. The
+    # planner's own dependency bound stays; a stored step budget, when a
+    # caller set one explicitly, still applies.
+    step_caps = [
+        cap for cap in (
+            definition.execution_budget.max_steps,
+            compiled_profile.runtime_profile.max_steps,
+        ) if cap is not None
+    ]
+    max_steps = min(step_caps) if step_caps else None
+    if max_steps is not None and len(plan.steps) > max_steps:
         raise AgentPlannerError(
             "agent_plan_budget_exceeded",
             "plan exceeds the trusted Agent step budget",
@@ -237,7 +232,10 @@ def validate_agent_plan(
                 "plan references a tool outside the trusted compiled profile",
             )
 
-    if planned_tool_calls > definition.execution_budget.max_tool_calls:
+    max_tool_calls = definition.execution_budget.max_tool_calls
+    if max_tool_calls is not None and planned_tool_calls > max_tool_calls:
+        # #4379: a tool-call count is no longer a PADIEM ceiling unless a
+        # caller opts into one.
         raise AgentPlannerError(
             "agent_plan_budget_exceeded",
             "plan exceeds the trusted Agent tool-call budget",
@@ -255,9 +253,4 @@ def validate_agent_plan_input(input_text: str) -> str:
             "planner input must be a non-empty string",
         )
     result = input_text.strip()
-    if len(result) > MAX_AGENT_PLAN_INPUT_CHARS:
-        raise AgentPlannerError(
-            "agent_plan_budget_exceeded",
-            "planner input exceeds the bounded input limit",
-        )
     return result

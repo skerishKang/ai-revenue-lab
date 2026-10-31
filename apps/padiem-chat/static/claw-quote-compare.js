@@ -2,8 +2,8 @@
   "use strict";
 
   const ROUTE = "/api/claw/manual-intake/quote-compare";
-  const ARTIFACT_ROUTE = "/api/claw/manual-intake/artifact/";
-  const DOCUMENT_ID = /^doc_[A-Za-z0-9]{32}$/;
+  const DOCX_MEDIA_TYPE = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+  const DOCX_FALLBACK_NAME = "quote-comparison.docx";
   const INTEGER = /^[0-9]{1,15}$/;
   const MIN_SUPPLIERS = 2;
   const MAX_SUPPLIERS = 10;
@@ -271,6 +271,24 @@
 
     function money(value) { return formatMoney(value, lastComparison?.currency || currency.value); }
 
+    function dispositionName(response) {
+      const header = response.headers.get("content-disposition") || "";
+      const match = /filename\*=UTF-8''([^;]+)/i.exec(header);
+      if (!match) return DOCX_FALLBACK_NAME;
+      try { return decodeURIComponent(match[1]) || DOCX_FALLBACK_NAME; }
+      catch (_) { return DOCX_FALLBACK_NAME; }
+    }
+
+    // #2952 follow-up: the document comes back as these response bytes. Nothing
+    // is stored server-side, so there is no artifact id to fetch a second time.
+    async function postDocx(body) {
+      const response = await fetch(ROUTE, { method: "POST", headers: { "Content-Type": "application/json", Accept: DOCX_MEDIA_TYPE }, body: JSON.stringify(body), cache: "no-store" });
+      if (!response.ok) { const data = await response.json().catch(() => null); const error = new Error(errorKey(data, response)); error.key = errorKey(data, response); throw error; }
+      const blob = await response.blob();
+      if (!blob || !blob.size) { const error = new Error("claw-qc-error-storage"); error.key = "claw-qc-error-storage"; throw error; }
+      return { blob, filename: dispositionName(response) };
+    }
+
     function render(comparison) {
       result.replaceChildren(); result.hidden = false;
       const heading = el("h3", "claw-qc-result-title", text("claw-qc-recommendation"));
@@ -326,18 +344,16 @@
     async function saveDocx() {
       if (!lastPayload || busy || !isAuthenticated()) { setStatus("claw-qc-error-auth", "error"); return; }
       busy = true; docx.disabled = true; setStatus("claw-qc-status-running", "running");
-      try { const data = await post({ ...lastPayload, artifact: "docx" }); artifact = data.artifact || null; lastComparison = data.comparison; render(lastComparison); if (artifact?.document_id) { download.disabled = false; download.setAttribute("aria-disabled", "false"); } setStatus("claw-qc-status-saved", "success"); }
+      try { const saved = await postDocx({ ...lastPayload, artifact: "docx" }); artifact = saved; download.disabled = false; download.setAttribute("aria-disabled", "false"); setStatus("claw-qc-status-saved", "success"); }
       catch (error) { setStatus(error.key || "claw-qc-error-storage", "error"); }
       finally { busy = false; syncAuth(); }
     }
 
     async function downloadDocx() {
-      if (!artifact || !DOCUMENT_ID.test(String(artifact.document_id))) return;
+      if (!artifact || !artifact.blob) return;
       try {
-        const response = await fetch(`${ARTIFACT_ROUTE}${encodeURIComponent(artifact.document_id)}`, { cache: "no-store" });
-        if (!response.ok) throw new Error("download");
-        const blob = await response.blob(); const url = URL.createObjectURL(blob); const anchor = document.createElement("a");
-        anchor.href = url; anchor.download = artifact.filename || "quote-comparison.docx"; anchor.rel = "noopener"; document.body.append(anchor); anchor.click(); anchor.remove(); URL.revokeObjectURL(url);
+        const url = URL.createObjectURL(artifact.blob); const anchor = document.createElement("a");
+        anchor.href = url; anchor.download = artifact.filename || DOCX_FALLBACK_NAME; anchor.rel = "noopener"; document.body.append(anchor); anchor.click(); anchor.remove(); URL.revokeObjectURL(url);
       } catch (_) { setStatus("claw-qc-error-download", "error"); }
     }
 

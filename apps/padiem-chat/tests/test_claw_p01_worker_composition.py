@@ -219,7 +219,9 @@ def test_plus_production_composition_reaches_engine_service_binding_once() -> No
     assert payload["agent"]["task_type"] == "coding"
     assert payload["agent"]["required_capabilities"] == []
     assert payload["agent"]["max_tokens"] is None
-    assert payload["execution_context"]["timeout_seconds"] == 900.0
+    # #4379: the production composition carries no PADIEM execution deadline,
+    # so the wire sends an explicit null instead of the old 900s default.
+    assert payload["execution_context"]["timeout_seconds"] is None
     serialized = json.dumps(payload, ensure_ascii=False)
     assert VALID_CREDENTIAL not in serialized
     assert "provider" not in payload["agent"]
@@ -473,7 +475,7 @@ def test_engine_service_transport_cancels_oversized_stream_before_full_buffering
 
 def test_engine_completed_orchestration_healthy_long_json_from_single_binding_post():
     payload = b'{"ok":true,"orchestration":{"answer":"' + b"A" * 1_300_000 + b'"}}'
-    assert _MAX_ENGINE_RESPONSE_BYTES < len(payload) < _MAX_ENGINE_ORCHESTRATION_RESPONSE_BYTES
+    assert 1_048_576 < len(payload) < _MAX_ENGINE_ORCHESTRATION_RESPONSE_BYTES
     response = _BoundedEngineResponse([payload[:300_000], payload[300_000:]])
     transport = CloudflareEngineServiceTransport(
         _BoundedEngineBinding(response), request_factory=_FakeWorkerRequest,

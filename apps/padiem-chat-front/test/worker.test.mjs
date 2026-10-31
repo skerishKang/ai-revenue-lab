@@ -1,0 +1,208 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
+
+import { createFront, MAINTENANCE_HTML } from "../worker.mjs";
+
+const HERE = dirname(fileURLToPath(import.meta.url));
+const ORIGIN = "https://chat-com2.padiem.net";
+
+function baseEnv(overrides = {}) {
+  return {
+    FRONT_ORIGIN: ORIGIN,
+    FALLBACK_MODE: "static",
+    COM2_CANONICAL: "off",
+    HEALTH_TTL_MS: "10000",
+    UPSTREAM_TIMEOUT_MS: "8000",
+    ...overrides,
+  };
+}
+
+function recordingFetch(respond) {
+  const calls = [];
+  const impl = async (input) => {
+    calls.push(input);
+    return respond(input, calls.length);
+  };
+  impl.calls = calls;
+  return impl;
+}
+
+const reader = () => new Request("https://chat.padiem.net/api/conversations", {
+  headers: { cookie: "padiem_session=abc", "cf-connecting-ip": "203.0.113.9" },
+});
+
+test("normal GET proxies to the tunnel origin with the exact response object", async () => {
+  const upstream = new Response("{\"conversations\":[]}", {
+    status: 200,
+    headers: { "content-type": "application/json" },
+  });
+  const fetchImpl = recordingFetch(() => upstream);
+  const handle = createFront({ fetchImpl });
+  const response = await handle(reader(), baseEnv());
+
+  assert.equal(response, upstream); // untouched body/status/headers object
+  assert.equal(fetchImpl.calls.length, 1);
+  const forwarded = fetchImpl.calls[0];
+  assert.equal(forwarded.url, `${ORIGIN}/api/conversations`);
+  assert.equal(forwarded.method, "GET");
+  assert.equal(forwarded.headers.get("cookie"), "padiem_session=abc");
+  assert.equal(forwarded.headers.get("x-forwarded-host"), "chat.padiem.net");
+  assert.equal(forwarded.headers.get("x-forwarded-proto"), "https");
+  assert.equal(forwarded.headers.get("x-forwarded-for"), "203.0.113.9");
+  assert.equal(forwarded.headers.get("host"), null);
+});
+
+test("multiple Set-Cookie headers survive the proxy unchanged", async () => {
+  const headers = new Headers();
+  headers.append("set-cookie", "a=1; Path=/; HttpOnly");
+  headers.append("set-cookie", "b=2; Path=/");
+  const upstream = new Response("ok", { status: 200, headers });
+  const handle = createFront({ fetchImpl: recordingFetch(() => upstream) });
+  const response = await handle(reader(), baseEnv());
+  assert.deepEqual(response.headers.getSetCookie(), [
+    "a=1; Path=/; HttpOnly",
+    "b=2; Path=/",
+  ]);
+});
+
+test("SSE POST streams through without buffering", async () => {
+  const encoder = new TextEncoder();
+  const upstream = new Response(new ReadableStream({
+    start(controller) {
+      controller.enqueue(encoder.encode("event: delta\ndata: {\"d\":1}\n\n"));
+      controller.enqueue(encoder.encode("event: done\ndata: {\"done\":true}\n\n"));
+      controller.close();
+    },
+  }), { status: 200, headers: { "content-type": "text/event-stream" } });
+  const fetchImpl = recordingFetch(() => upstream);
+  const handle = createFront({ fetchImpl });
+  const request = new Request("https://chat.padiem.net/api/chat/stream", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ messages: [{ role: "user", content: "hi" }] }),
+  });
+
+  const response = await handle(request, baseEnv());
+  assert.equal(response.status, 200);
+  assert.equal(response.headers.get("content-type"), "text/event-stream");
+  const text = await response.text();
+  assert.match(text, /event: delta/);
+  assert.match(text, /event: done/);
+  assert.equal(fetchImpl.calls.length, 1);
+  assert.equal(await fetchImpl.calls[0].text(), JSON.stringify({ messages: [{ role: "user", content: "hi" }] }));
+});
+
+test("a redirect reaches the browser instead of being followed", async () => {
+  const upstream = new Response(null, {
+    status: 302,
+    headers: { location: "https://accounts.google.com/o/oauth2/auth" },
+  });
+  const handle = createFront({ fetchImpl: recordingFetch(() => upstream) });
+  const response = await handle(
+    new Request("https://chat.padiem.net/auth/google/start"), baseEnv(),
+  );
+  assert.equal(response.status, 302);
+  assert.equal(response.headers.get("location"), "https://accounts.google.com/o/oauth2/auth");
+});
+
+test("a WebSocket upgrade response is passed through as-is", async () => {
+  const marker = { status: 101, webSocket: { accept() {} }, headers: new Headers() };
+  const fetchImpl = recordingFetch(() => marker);
+  const handle = createFront({ fetchImpl });
+  const request = new Request("https://chat.padiem.net/api/connector/ws", {
+    headers: { upgrade: "websocket", connection: "Upgrade", "sec-websocket-key": "abc" },
+  });
+  const response = await handle(request, baseEnv());
+  assert.equal(response, marker);
+  const forwarded = fetchImpl.calls[0];
+  assert.equal(forwarded.headers.get("upgrade"), "websocket");
+  assert.equal(forwarded.headers.get("sec-websocket-key"), "abc");
+});
+
+test("com2 down: reads fall back to the Python Worker in service mode", async () => {
+  const fallbackResponse = new Response("python", { status: 200 });
+  const chatWorker = { calls: 0, async fetch(request) { this.calls += 1; return fallbackResponse; } };
+  const fetchImpl = recordingFetch(() => { throw new Error("connect failed"); });
+  const handle = createFront({ fetchImpl });
+  const response = await handle(reader(), baseEnv({ FALLBACK_MODE: "service", CHAT_WORKER: chatWorker }));
+  assert.equal(response, fallbackResponse);
+  assert.equal(chatWorker.calls, 1);
+});
+
+test("com2 down: reads get the maintenance page in static mode", async () => {
+  const fetchImpl = recordingFetch(() => { throw new Error("connect failed"); });
+  const handle = createFront({ fetchImpl });
+  const response = await handle(reader(), baseEnv({ FALLBACK_MODE: "static" }));
+  assert.equal(response.status, 503);
+  assert.equal(response.headers.get("retry-after"), "120");
+  assert.equal(await response.text(), MAINTENANCE_HTML);
+});
+
+test("a 5xx read also falls back, and the short health cache skips com2 next time", async () => {
+  let now = 1_000;
+  const fetchImpl = recordingFetch(() => new Response("bad", { status: 502 }));
+  const chatWorker = { calls: 0, async fetch() { this.calls += 1; return new Response("python"); } };
+  const handle = createFront({ fetchImpl, now: () => now });
+  const env = baseEnv({ FALLBACK_MODE: "service", CHAT_WORKER: chatWorker, HEALTH_TTL_MS: "10000" });
+
+  await handle(reader(), env);
+  assert.equal(fetchImpl.calls.length, 1);
+  assert.equal(chatWorker.calls, 1);
+
+  now += 5_000; // inside the cache window
+  await handle(reader(), env);
+  assert.equal(fetchImpl.calls.length, 1, "com2 must be skipped while unhealthy");
+  assert.equal(chatWorker.calls, 2);
+
+  now += 10_000; // cache expired → try com2 again
+  await handle(reader(), env);
+  assert.equal(fetchImpl.calls.length, 2);
+});
+
+test("writes before canonical may fall back; after canonical they never reach Python", async () => {
+  const writeRequest = () => new Request("https://chat.padiem.net/api/chat/stream", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: "{}",
+  });
+  const chatWorker = { calls: 0, async fetch() { this.calls += 1; return new Response("python"); } };
+  const downFetch = () => { throw new Error("connect failed"); };
+
+  const preCanonical = createFront({ fetchImpl: recordingFetch(downFetch) });
+  const pre = await preCanonical(writeRequest(), baseEnv({
+    FALLBACK_MODE: "service", COM2_CANONICAL: "off", CHAT_WORKER: chatWorker,
+  }));
+  assert.equal(pre.status, 200);
+  assert.equal(chatWorker.calls, 1);
+
+  const postCanonical = createFront({ fetchImpl: recordingFetch(downFetch) });
+  const post = await postCanonical(writeRequest(), baseEnv({
+    FALLBACK_MODE: "service", COM2_CANONICAL: "writes", CHAT_WORKER: chatWorker,
+  }));
+  assert.equal(post.status, 503);
+  assert.equal(post.headers.get("x-padiem-front"), "write_com2_canonical_refused");
+  assert.equal(chatWorker.calls, 1, "a canonical write must never fall back to the Python Worker");
+});
+
+test("a canonical write that gets a 5xx is refused, not passed through", async () => {
+  const fetchImpl = recordingFetch(() => new Response("bad", { status: 500 }));
+  const handle = createFront({ fetchImpl });
+  const response = await handle(new Request("https://chat.padiem.net/api/chat/stream", {
+    method: "POST", body: "{}",
+  }), baseEnv({ COM2_CANONICAL: "writes", FALLBACK_MODE: "service" }));
+  assert.equal(response.status, 503);
+  assert.equal(response.headers.get("x-padiem-front"), "write_com2_canonical_refused");
+});
+
+test("the worker stays inside a proxy-only CPU shape", () => {
+  const source = readFileSync(join(HERE, "..", "worker.mjs"), "utf8");
+  for (const forbidden of [".text()", ".json(", ".arrayBuffer(", "crypto.", "atob(", "btoa(", "TextDecoder", "TextEncoder"]) {
+    assert.equal(source.includes(forbidden), false, `proxy must not use ${forbidden}`);
+  }
+  // One upstream fetch call site; the service fallback has its own binding call.
+  assert.equal((source.match(/await fetchImpl\(/g) || []).length, 1);
+  assert.equal((source.match(/await env\.CHAT_WORKER\.fetch\(/g) || []).length, 1);
+});

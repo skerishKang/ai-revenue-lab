@@ -23,6 +23,33 @@ MAX_SELECTED_SOURCES = 10
 
 _TOKEN_RE = re.compile(r"[0-9A-Za-z가-힣][0-9A-Za-z가-힣._+-]*", re.UNICODE)
 
+# #4469: a Korean request fuses its postposition onto the entity ("Meta의",
+# "결과를"). The exact token comparison then compares "meta의" with the page
+# token "meta" and never matches, so every retrieved source scores relevance 0
+# and the turn fails closed even though the sources are on topic. Splitting a
+# mixed script token at its script boundary and removing a trailing Korean
+# postposition restores the subject of the request on both sides of the
+# comparison.
+#
+# This is a normalisation step only. No substring matching is introduced: a
+# query token still has to equal a page token, so a Korean entity such as
+# `파디엠` never becomes relevant through the shorter `디엠`.
+_SCRIPT_RUN_RE = re.compile(r"[0-9A-Za-z][0-9A-Za-z._+-]*|[가-힣]+")
+_HANGUL_RE = re.compile(r"[가-힣]")
+
+# Closed-class Korean postpositions (조사), longest first so that a compound
+# form is removed before its shorter suffix.
+_KOREAN_POSTPOSITIONS = (
+    "에서는", "에게서", "한테서", "께서는", "이라고", "라고", "이라는", "라는",
+    "까지", "부터", "에게", "한테", "께서", "에서", "으로", "로서", "처럼",
+    "보다", "하고", "이나", "나마", "라도", "에는", "에도", "이라",
+    "은", "는", "이", "가", "을", "를", "의", "에", "도", "만", "로", "와", "과",
+)
+
+# A stripped token keeps at least two characters, so a real word that merely
+# ends like a postposition ("추가", "마을", "수도", "있다") is never truncated.
+_MIN_STRIPPED_TOKEN_LEN = 2
+
 # These are retrieval-language/freshness cues rather than subject-matter terms.
 # Keeping them out of relevance scoring prevents a result from passing merely
 # because both the query and page say e.g. "current" or "latest".
@@ -37,18 +64,46 @@ _QUERY_STOPWORDS = frozenset(
         "검색",
         "검색해",
         "검색해서",
+        "검색결과",
         "찾아봐",
         "찾아줘",
+        "찾아서",
         "확인",
+        "확인해",
         "확인해줘",
+        "검증해",
+        "검증해줘",
         "알려줘",
         "알려주세요",
+        "알려",
         "뭐야",
         "무엇",
         "맞아",
         "맞지",
         "웹에서",
         "인터넷에서",
+        "온라인에서",
+        "출처",
+        "제목",
+        "제목과",
+        "결과",
+        "함께",
+        "적어줘",
+        "적어",
+        "보여줘",
+        "보여",
+        "어떻게",
+        "얼마",
+        "얼마인지",
+        "기준",
+        "기준일",
+        "날짜",
+        "년",
+        "월",
+        "일",
+        "url",
+        "링크",
+        "주소",
         "current",
         "latest",
         "recent",
@@ -61,6 +116,11 @@ _QUERY_STOPWORDS = frozenset(
         "tell",
         "me",
         "please",
+        "source",
+        "title",
+        "result",
+        "results",
+        "date",
     }
 )
 
@@ -253,6 +313,35 @@ def _tokens(value: str) -> tuple[str, ...]:
     return tuple(match.group(0).casefold() for match in _TOKEN_RE.finditer(value))
 
 
+def _strip_korean_postposition(token: str) -> str:
+    """Remove one trailing Korean postposition from a Hangul token."""
+
+    if not token or not _HANGUL_RE.search(token):
+        return token
+    for particle in _KOREAN_POSTPOSITIONS:
+        if token.endswith(particle) and len(token) - len(particle) >= _MIN_STRIPPED_TOKEN_LEN:
+            return token[: -len(particle)]
+    return token
+
+
+def _normalized_tokens(value: str) -> tuple[str, ...]:
+    """Script-aware, postposition-aware tokens for both sides of a match.
+
+    Used for the query terms and for the retrieved page text alike, so a
+    subject written in either side's spelling reaches the other side.
+    """
+
+    if not isinstance(value, str):
+        return ()
+    result: list[str] = []
+    for token in _tokens(value):
+        for run in _SCRIPT_RUN_RE.findall(token):
+            normalized = _strip_korean_postposition(run)
+            if normalized:
+                result.append(normalized)
+    return tuple(result)
+
+
 # Navigation intent boilerplate is not topical evidence. Suppress these terms
 # only when the query actually requests a website and still has a topical
 # entity to match. Never make an unrelated source relevant on a substring.
@@ -266,17 +355,30 @@ _NAVIGATION_CUES = ("누리집", "홈페이지", "웹사이트", "공식 사이�
 def _significant_query_tokens(query: str) -> tuple[str, ...]:
     seen: set[str] = set()
     navigation = any(cue in query.casefold() for cue in _NAVIGATION_CUES)
+    originals = _tokens(query)
+    normalized = tuple(_normalized_tokens(original) for original in originals)
     topical = (
-        tuple(token for token in _tokens(query) if token not in _NAVIGATION_TOKENS and token not in _QUERY_STOPWORDS and len(token) >= 2)
+        tuple(
+            token
+            for original, tokens in zip(originals, normalized)
+            if original not in _NAVIGATION_TOKENS and original not in _QUERY_STOPWORDS
+            for token in tokens
+            if token not in _NAVIGATION_TOKENS and token not in _QUERY_STOPWORDS and len(token) >= 2
+        )
         if navigation else ()
     )
     ignored = _NAVIGATION_TOKENS if navigation and topical else frozenset()
     result: list[str] = []
-    for token in _tokens(query):
-        if token in _QUERY_STOPWORDS or token in ignored or len(token) < 2 or token in seen:
+    for original, tokens in zip(originals, normalized):
+        # A fused function word ("웹에서", "인터넷에서") stays one stopword
+        # token; it must not leak a subject-like fragment into the query.
+        if original in _QUERY_STOPWORDS:
             continue
-        seen.add(token)
-        result.append(token)
+        for token in tokens:
+            if token in _QUERY_STOPWORDS or token in ignored or len(token) < 2 or token in seen:
+                continue
+            seen.add(token)
+            result.append(token)
     if result:
         return tuple(result)
     return tuple(dict.fromkeys(token for token in _tokens(query) if len(token) >= 2))
@@ -295,9 +397,9 @@ def _relevance(query: str, evidence: Evidence) -> tuple[float, tuple[str, ...]]:
     if not query_terms:
         return 0.0, ("no_significant_query_terms",)
 
-    title_tokens = set(_tokens(evidence.title))
-    snippet_tokens = set(_tokens(evidence.snippet))
-    host_tokens = set(_tokens(_host_for(evidence).replace(".", " ")))
+    title_tokens = set(_normalized_tokens(evidence.title))
+    snippet_tokens = set(_normalized_tokens(evidence.snippet))
+    host_tokens = set(_normalized_tokens(_host_for(evidence).replace(".", " ")))
 
     title_matches = tuple(term for term in query_terms if term in title_tokens)
     snippet_matches = tuple(term for term in query_terms if term in snippet_tokens)
@@ -306,23 +408,30 @@ def _relevance(query: str, evidence: Evidence) -> tuple[float, tuple[str, ...]]:
 
     # Exact token matching is intentional: a Korean entity such as `파디엠` must
     # not become relevant merely because a result contains the shorter token `디엠`.
+    # Both sides are normalised the same way first (script runs, one trailing
+    # Korean postposition), so the comparison stays exact.
     if not any_matches:
         return 0.0, ("no_exact_query_token_match",)
 
-    count = len(query_terms)
-    title_coverage = len(set(title_matches)) / count
-    snippet_coverage = len(set(snippet_matches)) / count
-    host_coverage = len(set(host_matches)) / count
+    # Score by the number of distinct query terms that actually match the
+    # retrieved source instead of their coverage over the whole query. A long
+    # natural-language question carries many non-topical words (dates, source
+    # display instructions, answer format requests) that are already filtered
+    # above, but any residual ones must not dilute the score of an on-topic
+    # result: the denominator no longer grows with the question length.
+    title_match_count = len(set(title_matches))
+    snippet_match_count = len(set(snippet_matches))
+    host_match_count = len(set(host_matches))
 
     normalized_query = " ".join(query_terms)
-    normalized_title = " ".join(_tokens(evidence.title))
+    normalized_title = " ".join(_normalized_tokens(evidence.title))
     phrase_bonus = 0.15 if normalized_query and normalized_query in normalized_title else 0.0
 
     score = min(
         1.0,
-        (0.5 * title_coverage)
-        + (0.3 * snippet_coverage)
-        + (0.05 * host_coverage)
+        (0.2 * title_match_count)
+        + (0.2 * snippet_match_count)
+        + (0.05 * host_match_count)
         + phrase_bonus,
     )
     reasons: list[str] = []

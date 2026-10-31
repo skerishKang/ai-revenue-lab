@@ -46,7 +46,9 @@ _CONTROL_RE = re.compile(r"[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]")
 _MAX_EVENTS = 4096
 _MAX_POLL_EVENTS = 1000
 _MAX_MESSAGE_CHARS = 1000
-_MAX_TIMEOUT_SECONDS = 3600
+# #4379: the external runner carries no PADIEM wall-clock ceiling. The
+# approval pause, the lease and the cancellation stay the real limits.
+_MAX_TIMEOUT_SECONDS: int | None = None
 _DEFAULT_CLOCK = datetime(2026, 9, 24, 0, 0, tzinfo=timezone.utc)
 
 
@@ -473,8 +475,9 @@ class ExternalCodingAgentStartRequest:
                 raise ExternalCodingAgentError("approval_binding_required", "approval_pause must be canonical ApprovalPause")
             if self.approval_pause.run_id != self.claw_run_id:
                 raise ExternalCodingAgentError("approval_mismatch", "approval pause does not match canonical Claw run")
-        if isinstance(self.timeout_seconds, bool) or not isinstance(self.timeout_seconds, int) or not 60 <= self.timeout_seconds <= _MAX_TIMEOUT_SECONDS:
-            raise ExternalCodingAgentError("invalid_timeout", "timeout_seconds must be between 60 and 3600")
+        # #4379: no PADIEM wall-clock ceiling. The positive lower bound stays.
+        if isinstance(self.timeout_seconds, bool) or not isinstance(self.timeout_seconds, int) or self.timeout_seconds < 60:
+            raise ExternalCodingAgentError("invalid_timeout", "timeout_seconds must be at least 60 seconds")
 
     @property
     def binding(self) -> ExternalCodingAgentBinding:

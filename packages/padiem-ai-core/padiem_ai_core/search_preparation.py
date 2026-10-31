@@ -44,12 +44,22 @@ async def prepare_search_grounding(
     except WebRuntimeError as exc:
         raise GroundingRuntimeError(exc.code, exc.message, exc.status_code) from exc
 
+    # #4469: the automatic grounding lane has no bounded marker, so a production
+    # "no evidence" failure was indistinguishable from an empty provider result.
+    # The marker names the failing stage without any user content.
     selection = select_grounding_evidence(
         safe_query,
         found,
         policy=resolved_policy.source_quality_policy,
         limit=resolved_policy.max_simple_sources,
     )
+    if not found:
+        marker = "PROVIDER_EMPTY"
+    elif not selection.evidence:
+        marker = "QUALITY_FILTER_REJECTED"
+    else:
+        marker = "QUALITY_SELECTED"
+    print("GROUNDING_SEARCH_EVIDENCE=" + marker)
     return prepare_combined_grounding_context(
         selection.evidence,
         additional_system_context=additional_system_context,

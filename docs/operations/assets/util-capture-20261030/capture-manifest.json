@@ -1,0 +1,137 @@
+{
+  "live-util-speech-1920.png": {
+    "stored": "live-util-speech-1920.jpg",
+    "driverPNG_KB": 1272,
+    "storedKB": 123
+  },
+  "live-util-speech-1440.png": {
+    "stored": "live-util-speech-1440.jpg",
+    "driverPNG_KB": 1021,
+    "storedKB": 103
+  },
+  "live-util-speech-820.png": {
+    "stored": "live-util-speech-820.png",
+    "driverPNG_KB": 91,
+    "storedKB": 91
+  },
+  "live-util-speech-390.png": {
+    "stored": "live-util-speech-390.png",
+    "driverPNG_KB": 56,
+    "storedKB": 56
+  },
+  "live-util-pdfmd-1920.png": {
+    "stored": "live-util-pdfmd-1920.jpg",
+    "driverPNG_KB": 1375,
+    "storedKB": 120
+  },
+  "live-util-pdfmd-1440.png": {
+    "stored": "live-util-pdfmd-1440.jpg",
+    "driverPNG_KB": 1102,
+    "storedKB": 107
+  },
+  "live-util-pdfmd-820.png": {
+    "stored": "live-util-pdfmd-820.png",
+    "driverPNG_KB": 116,
+    "storedKB": 116
+  },
+  "live-util-pdfmd-390.png": {
+    "stored": "live-util-pdfmd-390.png",
+    "driverPNG_KB": 89,
+    "storedKB": 89
+  },
+  "live-util-sns-1920.png": {
+    "stored": "live-util-sns-1920.jpg",
+    "driverPNG_KB": 1324,
+    "storedKB": 95
+  },
+  "live-util-sns-1440.png": {
+    "stored": "live-util-sns-1440.jpg",
+    "driverPNG_KB": 1047,
+    "storedKB": 84
+  },
+  "live-util-sns-820.png": {
+    "stored": "live-util-sns-820.png",
+    "driverPNG_KB": 62,
+    "storedKB": 62
+  },
+  "live-util-sns-390.png": {
+    "stored": "live-util-sns-390.png",
+    "driverPNG_KB": 42,
+    "storedKB": 42
+  },
+  "live-util-meeting-1920.png": {
+    "stored": "live-util-meeting-1920.jpg",
+    "driverPNG_KB": 1327,
+    "storedKB": 97
+  },
+  "live-util-meeting-1440.png": {
+    "stored": "live-util-meeting-1440.jpg",
+    "driverPNG_KB": 1050,
+    "storedKB": 85
+  },
+  "live-util-meeting-820.png": {
+    "stored": "live-util-meeting-820.png",
+    "driverPNG_KB": 64,
+    "storedKB": 64
+  },
+  "live-util-meeting-390.png": {
+    "stored": "live-util-meeting-390.png",
+    "driverPNG_KB": 43,
+    "storedKB": 43
+  },
+  "live-util-speech-actions-1920.png": {
+    "stored": "live-util-speech-actions-1920.jpg",
+    "driverPNG_KB": 1232,
+    "storedKB": 125
+  },
+  "live-util-speech-actions-1440.png": {
+    "stored": "live-util-speech-actions-1440.jpg",
+    "driverPNG_KB": 996,
+    "storedKB": 104
+  },
+  "live-util-speech-actions-820.png": {
+    "stored": "live-util-speech-actions-820.png",
+    "driverPNG_KB": 87,
+    "storedKB": 87
+  },
+  "live-util-speech-actions-390.png": {
+    "stored": "live-util-speech-actions-390.png",
+    "driverPNG_KB": 50,
+    "storedKB": 50
+  },
+  "live-util-pdfmd-actions-1920.png": {
+    "stored": "live-util-pdfmd-actions-1920.jpg",
+    "driverPNG_KB": 1375,
+    "storedKB": 120
+  },
+  "live-util-pdfmd-actions-1440.png": {
+    "stored": "live-util-pdfmd-actions-1440.jpg",
+    "driverPNG_KB": 1102,
+    "storedKB": 107
+  },
+  "live-util-pdfmd-actions-820.png": {
+    "stored": "live-util-pdfmd-actions-820.png",
+    "driverPNG_KB": 116,
+    "storedKB": 116
+  },
+  "live-util-pdfmd-actions-390.png": {
+    "stored": "live-util-pdfmd-actions-390.png",
+    "driverPNG_KB": 89,
+    "storedKB": 89
+  },
+  "live-util-speech-focus-1440.png": {
+    "stored": "live-util-speech-focus-1440.jpg",
+    "driverPNG_KB": 996,
+    "storedKB": 104
+  },
+  "live-util-speech-focus-390.png": {
+    "stored": "live-util-speech-focus-390.png",
+    "driverPNG_KB": 51,
+    "storedKB": 51
+  },
+  "live-util-speech-savefocus-1440.png": {
+    "stored": "live-util-speech-savefocus-1440.jpg",
+    "driverPNG_KB": 996,
+    "storedKB": 105
+  }
+}

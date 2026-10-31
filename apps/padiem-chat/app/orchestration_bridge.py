@@ -51,6 +51,7 @@ class B62OrchestrationResult:
     user_text: str
     conversation_id: str | None
     decision_status: str | None = None
+    stream_run_id: str | None = None
 
 
 class OrchestrationStateStore(Protocol):
@@ -361,17 +362,37 @@ def project_cancel_result(raw: Any) -> dict[str, Any]:
     return {"events": events, "approval_pause": None, "continuation_ref": None, "answer": None}
 
 
+# #5568: the Chat composer may show one reason line for a failed orchestration
+# turn. A code crosses only as a well-formed identifier; anything else becomes
+# unknown_error. The copy is authored here and never copied from the Engine
+# response, so provider text and route/stack fragments cannot project.
+_ENGINE_ERROR_CODE_RE = re.compile(r"^[a-z][a-z0-9_]{0,63}$")
+_ENGINE_ERROR_MESSAGES: dict[str, str] = {
+    "upstream_auth_error": "AI 서비스 인증 확인에 실패했습니다. 잠시 후 다시 시도해 주세요.",
+    "upstream_request_error": "현재 AI 모델이 요청을 처리할 수 없습니다. 잠시 후 다시 시도해 주세요.",
+    "upstream_server_error": "AI 모델 제공자 측에서 일시적 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.",
+    "upstream_timeout": "AI 응답 시간이 초과되었습니다. 잠시 후 다시 시도해 주세요.",
+    "timeout": "AI 응답 시간이 초과되었습니다. 잠시 후 다시 시도해 주세요.",
+    "upstream_rate_limited": "AI 사용량이 잠시 많습니다. 잠시 후 다시 시도해 주세요.",
+    "upstream_unavailable": "AI 연결이 잠시 불안정합니다. 다시 시도해 주세요.",
+    "upstream_response_too_large": "답변이 너무 커서 안전하게 표시할 수 없습니다.",
+    "tier_not_available": "현재 이용 등급 이하의 AI 등급을 선택해 주세요.",
+    "pc_scope_denied": "선택한 PC에 접근할 수 없습니다. 연결을 확인해 주세요.",
+    "continuation_identity_mismatch": "이전 작업과 현재 확인 요청이 일치하지 않습니다.",
+    "continuation_expired": "확인 가능한 시간이 지나 작업을 이어갈 수 없습니다.",
+    "approval_decision_expired": "확인 가능한 시간이 지나 작업을 이어갈 수 없습니다.",
+}
+_UNKNOWN_ENGINE_ERROR_MESSAGE = "AI 작업을 처리하지 못했습니다. 다시 시도해 주세요."
+
+
 def _engine_error(exc: PadiemAiEngineClientError) -> B62OrchestrationError:
-    code = exc.code if isinstance(exc.code, str) else "engine_request_failed"
+    code = exc.code if isinstance(exc.code, str) and _ENGINE_ERROR_CODE_RE.match(exc.code) else "unknown_error"
     status = exc.status if isinstance(exc.status, int) and 400 <= exc.status <= 599 else 502
-    messages = {
-        "continuation_identity_mismatch": "이전 작업과 현재 확인 요청이 일치하지 않습니다.",
-        "continuation_expired": "확인 가능한 시간이 지나 작업을 이어갈 수 없습니다.",
-        "approval_decision_expired": "확인 가능한 시간이 지나 작업을 이어갈 수 없습니다.",
-        "upstream_timeout": "AI 응답 시간이 초과되었습니다. 다시 시도해 주세요.",
-        "upstream_rate_limited": "AI 사용량이 잠시 많습니다. 잠시 후 다시 시도해 주세요.",
-    }
-    return B62OrchestrationError(code, messages.get(code, "AI 작업을 처리하지 못했습니다. 다시 시도해 주세요."), status_code=status)
+    return B62OrchestrationError(
+        code,
+        _ENGINE_ERROR_MESSAGES.get(code, _UNKNOWN_ENGINE_ERROR_MESSAGE),
+        status_code=status,
+    )
 
 
 class B62EngineOrchestrationBridge:
@@ -395,6 +416,9 @@ class B62EngineOrchestrationBridge:
         agent_plan: Mapping[str, Any] | None = None,
         tool_arguments: Mapping[str, Any] | None = None,
         session_id: str | None = None,
+        product_identity: str | None = None,
+        pc_tools: Mapping[str, Any] | None = None,
+        byok_selection: Mapping[str, str] | None = None,
     ) -> dict[str, Any]:
         _safe_id("user_id", user_id)
         trace_id = f"b62_orch_{uuid.uuid4().hex[:24]}"
@@ -413,12 +437,19 @@ class B62EngineOrchestrationBridge:
                     "AI 작업 요청 형식이 올바르지 않습니다.",
                     status_code=500,
                 )
+        skill_instruction = getattr(skill, "system_instruction", None)
+        # #5347: same composition arithmetic the Chat stream route applies in
+        # b14_client._execution_request: product identity first, skill after.
+        if product_identity is not None and skill_instruction:
+            system_instruction = f"{product_identity} {skill_instruction}"
+        else:
+            system_instruction = product_identity or skill_instruction
         request: dict[str, Any] = {
             "agent": {
                 "id": _safe_id("agent_id", agent_id),
                 "title": str(getattr(skill, "title", "Padiem Chat")),
                 "description": str(getattr(skill, "description", "Padiem Chat request")),
-                "system_instruction": getattr(skill, "system_instruction", None),
+                "system_instruction": system_instruction,
                 "task_type": str(getattr(skill, "task_type", "general")),
                 "optimize_for": str(getattr(skill, "optimize_for", "balanced")),
                 "max_tokens": getattr(skill, "max_tokens", None),
@@ -432,8 +463,19 @@ class B62EngineOrchestrationBridge:
             "require_evidence": False,
             "require_verification": False,
         }
+        if byok_selection is not None:
+            request["agent"]["model_policy"].update(
+                user_credential_required=True, byok_selection=dict(byok_selection))
+            request["max_retries"] = 0
         if agent_plan is not None:
             request["agent_plan"] = dict(agent_plan)
+            # #5573 Owner decision: PC tool turns have no execution deadline.
+            # Match the server-authored PC plan, including tool-call entry;
+            # ordinary requests retain their exact existing wire shape.
+            from .chat_pc_drive import CHAT_PC_QUERY_AGENT_ID
+
+            if agent_plan.get("agent_id") == CHAT_PC_QUERY_AGENT_ID:
+                request["execution_context"]["timeout_seconds"] = None
         if tool_arguments is not None:
             request["tool_arguments"] = dict(tool_arguments)
         if session_id is not None:
@@ -443,6 +485,19 @@ class B62EngineOrchestrationBridge:
             request["session_id"] = conversation_id
         if additional_system_context:
             request["additional_system_context"] = additional_system_context
+        if pc_tools is not None:
+            from padiem_ai_core.pc_device_identity import is_pc_device_id
+            scopes = pc_tools.get("allowed_scopes") if isinstance(pc_tools, Mapping) else None
+            if (agent_plan is not None or tool_arguments is not None
+                    or not isinstance(pc_tools, Mapping)
+                    or set(pc_tools) != {"device_id", "allowed_scopes"}
+                    or not is_pc_device_id(pc_tools.get("device_id"))
+                    or not isinstance(scopes, list) or not scopes
+                    or any(v not in ("query_drives", "files_list", "files", "files_write") for v in scopes)
+                    or len(set(scopes)) != len(scopes)
+                    or not request.get("subject_id") or not request.get("session_id")):
+                raise B62OrchestrationError("invalid_engine_request", "PC 도구 요청을 확인할 수 없습니다.", status_code=500)
+            request["pc_tools"] = {"device_id": pc_tools["device_id"], "allowed_scopes": list(scopes)}
         return request
 
     async def _persist_pause(
@@ -483,6 +538,7 @@ class B62EngineOrchestrationBridge:
         agent_plan: Mapping[str, Any] | None = None,
         tool_arguments: Mapping[str, Any] | None = None,
         session_id: str | None = None,
+        product_identity: str | None = None,
     ) -> B62OrchestrationResult:
         engine_request = self.build_engine_request(
             user_id=user_id,
@@ -495,6 +551,7 @@ class B62EngineOrchestrationBridge:
             agent_plan=agent_plan,
             tool_arguments=tool_arguments,
             session_id=session_id,
+            product_identity=product_identity,
         )
         try:
             raw = await self._client.orchestrate(engine_request)
@@ -511,6 +568,42 @@ class B62EngineOrchestrationBridge:
         answer = public.get("answer") if isinstance(public.get("answer"), str) else None
         return B62OrchestrationResult(public, answer, user_text, conversation_id)
 
+    async def start_stream(
+        self, *, user_id: str, messages: Sequence[Mapping[str, str]], skill: Any,
+        model_id: str, user_text: str, conversation_id: str | None,
+        pc_tools: Mapping[str, Any] | None, subject_id: str | None, session_id: str,
+        user_credential_ref: str | None = None, byok_selection: Mapping[str, str] | None = None,
+        additional_system_context: str | None = None, product_identity: str | None = None,
+    ):
+        request = self.build_engine_request(
+            user_id=user_id, messages=messages, skill=skill, model_id=model_id,
+            conversation_id=conversation_id, pc_tools=pc_tools,
+            subject_id=subject_id, session_id=session_id,
+            additional_system_context=additional_system_context, product_identity=product_identity,
+            **({"byok_selection": byok_selection} if byok_selection is not None else {}),
+        )
+        wire = request if user_credential_ref is None else {**request, "user_credential_ref": user_credential_ref}
+        iterator = self._client.stream_orchestration(wire, pc_progress=pc_tools is not None)
+        try:
+            async for record in iterator:
+                if "orchestration" not in record:
+                    yield record
+                    continue
+                public = project_public_orchestration(record["orchestration"])
+                await self._persist_pause(
+                    public=public, engine_request=request, user_id=user_id,
+                    user_text=user_text, conversation_id=conversation_id,
+                )
+                yield {"result": B62OrchestrationResult(
+                    public, public.get("answer"), user_text, conversation_id,
+                )}
+        except PadiemAiEngineClientError as exc:
+            raise _engine_error(exc) from exc
+        finally:
+            close = getattr(iterator, "aclose", None)
+            if callable(close):
+                await close()
+
     async def resume(
         self,
         *,
@@ -518,6 +611,7 @@ class B62EngineOrchestrationBridge:
         continuation_ref: str,
         pause_id: str,
         outcome: str,
+        user_credential_resolver: Any = None,
     ) -> B62OrchestrationResult:
         snapshot = await self._store.load_active(user_id=user_id, continuation_ref=continuation_ref)
         if snapshot.pause_id != pause_id:
@@ -554,6 +648,14 @@ class B62EngineOrchestrationBridge:
             "evidence_ref": evidence_ref,
             "decided_at": decided_at,
         }
+        selection = resume_request.get("agent", {}).get("model_policy", {}).get("byok_selection")
+        if selection is not None:
+            if not callable(user_credential_resolver):
+                raise B62OrchestrationError("byok_credential_required", "사용자 키를 다시 확인해 주세요.", status_code=409)
+            resolved = await user_credential_resolver(selection)
+            if resolved is None:
+                raise B62OrchestrationError("byok_credential_required", "사용자 키를 다시 확인해 주세요.", status_code=409)
+            resume_request["user_credential_ref"] = resolved[1]
         try:
             raw = await self._client.resume_orchestration(resume_request)
         except PadiemAiEngineClientError as exc:
@@ -585,7 +687,11 @@ class B62EngineOrchestrationBridge:
                 conversation_id=snapshot.conversation_id,
             )
         answer = public.get("answer") if isinstance(public.get("answer"), str) else None
-        return B62OrchestrationResult(public, answer, snapshot.user_text, snapshot.conversation_id)
+        return B62OrchestrationResult(
+            public, answer, snapshot.user_text, snapshot.conversation_id,
+            stream_run_id=(snapshot.engine_request.get("session_id")
+                if "pc_tools" in snapshot.engine_request else None),
+        )
 
     async def cancel(self, *, user_id: str, continuation_ref: str) -> B62OrchestrationResult:
         snapshot = await self._store.load_active(user_id=user_id, continuation_ref=continuation_ref)

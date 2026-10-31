@@ -1,8 +1,28 @@
 # Cloudflare Credential Operations
 
-**정본:** 로컬 운영 조회와 GitHub Actions 인증 문제의 공통 진입점. 최종 정리일: **2026-10-19 KST**.
+**정본:** 로컬 운영 조회와 GitHub Actions 인증 문제의 공통 진입점. 최종 정리일: **2026-10-21 KST**.
 
 이 문서는 인증 경로 선택·진단 절차입니다. 새 토큰 발급, 권한 확대, 운영 설정 변경, 다른 계정 사용을 승인하지 않습니다. 실제 조회·변경은 해당 작업의 기존 승인 범위를 따릅니다. 비공개 값과 현재 계정별 설정은 승인된 비공개 저장소에 둡니다.
+
+## 0. Padiem AI Cloudflare 계정 구분 — Owner 결정 2026-10-21
+
+현재 Padiem AI 작업의 운영 계정은 **`Charliekant`(찰리칸트)**입니다. 제품 이름 `Padiem`과 Cloudflare 계정 이름 `Padiem`을 같은 대상으로 해석하지 않습니다.
+
+| Cloudflare 계정 표시 이름 | 역할 | 이번 Padiem AI 작업 |
+| --- | --- | --- |
+| **`Charliekant`** | 현재 Padiem AI의 운영 계정 | Chat·Engine Worker의 기존 배포·진단·로그 조회에 사용 |
+| **`Padiem`** | 별도 비즈니스용 계정 | 현재 Padiem AI 작업 대상에서 제외 |
+
+이 구분은 2026-10-21 Owner의 명시적 작업 범위 결정입니다. 두 계정의 리소스 목록이나 현재 권한을 이 문서에서 실측했다고 주장하지 않습니다. 다른 비즈니스 작업에 `Charliekant`를 일괄 적용하는 규칙도 아닙니다.
+
+실행 전 기준:
+
+1. Padiem AI 작업이면 기대 계정 이름을 먼저 `Charliekant`로 고정합니다. `wrangler whoami`의 첫 계정이나 제품·도메인 이름으로 선택하지 않습니다.
+2. 기존 승인된 계정 설정과 해당 작업의 인증 출처를 통해 계정 ID가 `Charliekant`에 대응하는지 확인합니다. 로컬 프로세스/`.env`/OAuth와 GitHub Actions의 `CLOUDFLARE_ACCOUNT_ID`·인증 출처를 구분합니다. 계정 ID와 자격증명 원문은 공개 문서·로그에 추가하지 않습니다.
+3. 현재 설정이 `Padiem`을 가리키면 **이번 작업의 계정 범위 불일치**로 보고합니다. 문서 수정만으로 전역 환경·워크플로 Secret·운영 바인딩을 변경하거나 다른 계정 권한을 사용하는 승인이 생기지 않습니다. 기존 승인 범위의 `Charliekant` 인증 경로로 작업을 이어갑니다.
+4. `Charliekant`에서 목적 API가 실패하면 HTTP 상태·Cloudflare 오류 코드와 실제 인증 출처를 확인합니다. 일반 API 실패만으로 “워커가 없다” 또는 “다른 계정으로 가야 한다”고 결론 내리지 않습니다. 계정 선택의 기준은 이 표이며, 실제 로그/리소스 권한 판정은 아래 절차를 따릅니다.
+
+간결한 진단 기록에는 `EXPECTED_ACCOUNT=Charliekant`, 실제 확인한 계정 이름, `ACCOUNT_MATCH`, 인증 출처, 대상 API와 오류 코드를 남깁니다. 확인하지 않은 실제 계정이나 권한은 `UNKNOWN`으로 표시합니다.
 
 ## 1. 같은 이름이어도 서로 다른 인증 경로
 
@@ -107,6 +127,16 @@ NEXT=<최소 다음 동작 또는 필요한 사용자 조치 1개>
 과거 `urllib.request` in-process patch 설명은 토큰 감사 테스트의 mock 격리 기록입니다. 모든 로컬/배포 요청이 해당 방식으로 보호된다는 운영 보장은 아닙니다. 배포는 [정식 배포·롤백 절차](DIRECT_PRODUCTION_DEPLOYMENT_AND_ROLLBACK_POLICY.md)를 따릅니다.
 
 관련 역사 자료: 비공개 운영 저장소 `skerishKang/ai-revenue-operations`의 `incidents/2026-07-31-cloudflare-pages-credential-401.md`. [2026-10-15 read-only run](https://github.com/skerishKang/ai-revenue-lab/actions/runs/38693899424)은 당시 B66 스키마 성공 기록입니다.
+
+## 8. 운영 Worker secret·binding 변경 — Owner 결정 선행 (2026-10-23)
+
+운영 Worker의 secret/binding 추가·삭제(`wrangler secret put`/`delete`, 대시보드 변경 포함)는 D3 운영 변경입니다.
+
+1. 실행 전에 Owner 결정을 해당 이슈 코멘트로 기록합니다(바인딩 이름·타입, 목적). 결정 기록이 없으면 실행하지 않습니다.
+2. 같은 변경은 reviewed baseline(`.github/binding_baselines/<worker>.json`) PR을 동반합니다. baseline과 live 집합이 다르면 `b62-production-code-deploy-gate.yml`의 `cloudflare_readonly`가 drift로 fail-closed되어 이후 모든 Chat 코드 배포가 막힙니다.
+3. 실행 후 이슈에 남기는 기록: 바인딩 이름·타입, 실행 기기, KST 시각, wrangler 로그 파일명. 값·토큰·계정 ID는 기록하지 않습니다.
+4. 운영 기기에 저장된 `wrangler login` 세션으로는 어느 로컬 모델이든 Owner 계정 이름으로 이 변경을 실행할 수 있습니다. 로그의 계정 이름은 실행 주체나 승인의 증거가 아니며, 이슈의 결정 기록만 승인의 증거입니다.
+5. 기준 사례 2026-10-23: `PADIEM_PUSH_VAPID_PRIVATE_KEY`·`PADIEM_PUSH_VAPID_PUBLIC_KEY`·`PADIEM_PUSH_VAPID_SUBJECT`(모두 `secret_text`)가 07:55 KST COMP1에서 사전 결정 없이 설정됨 → 게이트 run 39869329825·39869577820 binding drift 실패 → Owner 사후 승인([#5034 코멘트](https://github.com/skerishKang/ai-revenue-lab/issues/5034#issuecomment-6354398761)) → baseline 정합화 #5609 → 정식 배포 run 39878432983. 사후 승인은 이 건에 한하며 결정 생략의 선례가 아닙니다.
 
 ## 공식 참고
 

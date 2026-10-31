@@ -27,7 +27,6 @@ from app.config import Settings
 from app.main import create_app
 from app.orchestration_bridge import B62EngineOrchestrationBridge
 from app.pc_work_context import (
-    MAX_RENDERED_CHARS,
     PC_DRIVE_TOOL_ID,
     PC_WORK_CONTEXT_VERSION,
     SAVED_SELECTION_NONE,
@@ -518,7 +517,8 @@ def test_render_is_bounded_and_carries_no_secret_identifier():
     rendered = render_pc_work_context(resolve(
         Directory(rows), mesh=Mesh([mesh_row("target", node_ref="target")]), identity=Identity(),
     ))
-    assert len(rendered) <= MAX_RENDERED_CHARS
+    # #5895-D: no text slice - the closing guidance survives the worst case.
+    assert "Google Drive와 로컬 PC 드라이브는 서로 다른 대상" in rendered
     assert "Target" in rendered
     assert OWNER not in rendered and WORKSPACE not in rendered
     assert CONNECTOR_ACCOUNT not in rendered and SESSION not in rendered
@@ -643,16 +643,17 @@ class _CaptureClient:
     def __init__(self):
         self.calls = []
 
-    async def complete(self, messages, **kwargs):
+    async def complete(self, messages, skill=None, **kwargs):
         self.calls.append(dict(kwargs))
         return {"answer": "확인했습니다.", "runtime": "test"}
 
 
 class _NoopAutoGrounding:
-    def decide(self, messages, *, skill):
+    def decide(self, messages, *, skill, explicit_search=False, util_scope=None):
         return None
 
-    async def prepare(self, messages, *, skill, additional_system_context):
+    async def prepare(self, messages, *, skill, additional_system_context=None,
+                    explicit_search=False, util_scope=None):
         return None
 
 
@@ -676,7 +677,6 @@ def test_chat_model_call_carries_the_verified_pc_context():
                 domain="chat.example.test", path="/",
             )
             return await client.post("/api/chat", json={
-                "mode": "auto",
                 "messages": [{"role": "user", "content": "드라이브 연결됨?"}],
             })
 
@@ -684,7 +684,8 @@ def test_chat_model_call_carries_the_verified_pc_context():
     assert response.status_code == 200, response.text
     model = app.state.b14_client
     assert model.calls, "the model must actually be called"
-    context = model.calls[0]["additional_system_context"]
+    # calls[0] is the #5573 scope step; the ordinary answer is the last call.
+    context = model.calls[-1]["additional_system_context"]
     assert PC_WORK_CONTEXT_VERSION in context
     assert "등록 기기 목록" in context
     # In this harness the canonical session resolves to owner:<uid>, so the
@@ -711,11 +712,13 @@ class _ChatHistory:
         self.pairs.append((user_text, answer))
         return conversation_id or ("chat_" + "n" * 32)
 
-    async def record_chat_pc_drive_run(self, *, user_id, run_id, workspace_id, user_text, conversation_id):
+    async def record_chat_pc_drive_run(self, *, user_id, run_id, workspace_id, user_text, conversation_id, action=None, title_prefix=None):
         self.staged = {"run_id": run_id, "workspace_id": workspace_id}
         return conversation_id or ("chat_" + "s" * 32)
 
     async def get_claw_run(self, user_id, run_id):
+        if not self.staged or self.staged.get("run_id") != run_id:
+            return None
         return {
             "run_id": run_id, "conversation_id": "chat_" + "s" * 32,
             "result_summary": "no_exit_code", "workspace_id": WORKSPACE,
@@ -737,9 +740,9 @@ class _ChatBridge(B62EngineOrchestrationBridge):
         return SimpleNamespace(answer=self.answer, public={"answer": self.answer})
 
 
-def _chat_pc_request(*, answer, mesh=None, identity=None, bridge=None,
+def _chat_pc_request(*, answer, scope="drives", mesh=None, identity=None, bridge=None,
                      selection_store=None, directory=None):
-    b14 = _ChatB14([answer])
+    b14 = _ChatB14([json.dumps({"action": scope}), answer])
     history = _ChatHistory()
     state = SimpleNamespace(
         b14_client=b14, history_store=history,
@@ -756,7 +759,7 @@ def _chat_pc_request(*, answer, mesh=None, identity=None, bridge=None,
     )
 
 
-def _run_chat_lane(request, *, device_id=None):
+def _run_chat_lane(request, *, device_id=None, user_text="내 PC 드라이브 정보 알려줘", run_id=None, selected_tool="files"):
     import app.chat_pc_drive as lane
 
     async def fake_owner(req, uid):
@@ -769,9 +772,10 @@ def _run_chat_lane(request, *, device_id=None):
     lane._resolve_chat_owner = fake_owner
     try:
         return asyncio.run(execute_chat_pc_drive_lane(
-            request, user_text="내 PC 드라이브 목록 알려줘", skill=None,
-            model_id="model-x", conversation_id=None, tier="free",
-            device_id=device_id,
+            request, user_text=user_text, skill=None,
+            model_id="model-x", conversation_id=None,
+            device_id=device_id, run_id=run_id,
+            selected_tool=selected_tool,
         ))
     finally:
         lane.auth_ready, lane.current_user_id = old_ready, old_uid
@@ -786,16 +790,52 @@ def test_chat_pc_decision_model_receives_context_and_selection_reaches_the_plan(
     )
     result = _run_chat_lane(request, device_id="office-pc")
     assert result is not None
-    decision_context = request.app.state.b14_client.calls[0]
+    decision_context = bridge.requests[0]["additional_system_context"]
     assert PC_WORK_CONTEXT_VERSION in decision_context
     assert "현재 작업 대상 PC: Office PC" in decision_context
-    assert CHAT_PC_QUERY_TOOL_ID in decision_context
     # The SAME selected id travels to the Engine plan, not a server guess.
     assert bridge.requests[0]["tool_arguments"] == {
-        "query_drives": {"device_id": "office-pc"},
+        "files": {"device_id": "office-pc"},
     }
     assert bridge.requests[0]["agent_plan"]["agent_id"] == "agent:padiem:chat-pc-query@1"
     assert PC_WORK_CONTEXT_VERSION in bridge.requests[0]["additional_system_context"]
+
+
+def test_chat_pc_files_lane_uses_the_client_recovery_run_handle():
+    client_run_id = "chat_pcq_" + "d" * 32
+    bridge = _ChatBridge("파일 내용을 읽었습니다.")
+    request = _chat_pc_request(
+        answer="unused",
+        scope="files_read",
+        mesh=Mesh([mesh_row("office-pc", node_ref="mesh-node")]),
+        identity=Identity(),
+        bridge=bridge,
+    )
+    result = _run_chat_lane(
+        request,
+        device_id="office-pc",
+        user_text=(
+            "내 PC의 테스트 폴더에서 파일 목록을 보고, "
+            "sample.txt 파일 내용을 읽어줘"
+        ),
+        run_id=client_run_id,
+    )
+    assert result is not None
+    assert request.app.state.history_store.staged["run_id"] == client_run_id
+    assert bridge.requests[0]["session_id"] == client_run_id
+    assert bridge.requests[0]["agent_plan"]["agent_id"] == "agent:padiem:chat-pc-query@1"
+
+
+def test_chat_pc_lane_refuses_a_malformed_client_recovery_handle():
+    from app.chat_pc_drive import _client_lane_run_id
+
+    try:
+        _client_lane_run_id("chat_pcq_not-hex")
+    except ChatPCDriveError as exc:
+        assert exc.code == "chat_pc_run_id_invalid"
+        assert exc.status_code == 422
+    else:
+        raise AssertionError("a malformed client run id must be refused")
 
 
 def test_chat_pc_lane_refuses_a_selected_device_mismatch():
@@ -901,9 +941,9 @@ def test_chat_lane_uses_the_saved_target_when_the_browser_sends_none():
     assert result is not None
     assert store.calls == [{"owner_id": OWNER, "workspace_id": WORKSPACE}]
     assert bridge.requests[0]["tool_arguments"] == {
-        "query_drives": {"device_id": "office-pc"},
+        "files": {"device_id": "office-pc"},
     }
-    assert "현재 작업 대상 PC: Office PC" in request.app.state.b14_client.calls[0]
+    assert "현재 작업 대상 PC: Office PC" in bridge.requests[0]["additional_system_context"]
 
 
 def test_chat_lane_refuses_a_stale_saved_target():

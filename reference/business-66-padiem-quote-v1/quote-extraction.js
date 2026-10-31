@@ -17,8 +17,8 @@
   var MAX_TEXT = 2000;
   var MAX_MEMO = 8000;
   var MAX_FILENAME = 255;
-  var MAX_EVIDENCE = 200;
-  var MAX_EVIDENCE_SNIPPET = 1000;
+  // #4379: the evidence carries no PADIEM item-count total and no per-item
+  // character total. The evidence the caller supplies is kept as it is.
   var MAX_WARNINGS = 50;
 
   var SOURCE_KINDS = Object.freeze({
@@ -48,7 +48,9 @@
     if (value == null) return null;
     if (typeof value !== "string") fail(code || "invalid_text");
     var text = value.trim();
-    if (text.length > maxLength) fail(code || "text_too_long");
+    // #4379: a null maxLength means the field carries no PADIEM character
+    // total, so the caller's own text is kept.
+    if (maxLength != null && text.length > maxLength) fail(code || "text_too_long");
     return text === "" ? null : text;
   }
 
@@ -185,7 +187,6 @@
   function normalizeEvidence(raw) {
     if (raw == null) return [];
     if (!Array.isArray(raw)) fail("invalid_evidence");
-    if (raw.length > MAX_EVIDENCE) fail("too_much_evidence");
 
     return raw.map(function (entry, index) {
       if (!isObject(entry)) fail("invalid_evidence_" + index);
@@ -193,7 +194,8 @@
       if (!field) fail("invalid_evidence_field");
 
       var page = entry.page == null ? null : optionalPositiveInteger(entry.page, "invalid_evidence_page");
-      var snippet = optionalText(entry.snippet, MAX_EVIDENCE_SNIPPET, "invalid_evidence_snippet");
+      // #4379: the evidence snippet carries no character total.
+      var snippet = optionalText(entry.snippet, null, "invalid_evidence_snippet");
       var confidence = null;
       if (entry.confidence != null) {
         if (
@@ -409,7 +411,6 @@
     MAX_DETAIL_ITEMS: MAX_DETAIL_ITEMS,
     MAX_TEXT: MAX_TEXT,
     MAX_MEMO: MAX_MEMO,
-    MAX_EVIDENCE: MAX_EVIDENCE,
     SOURCE_KINDS: SOURCE_KINDS,
     TAX_MODES: TAX_MODES,
     normalizeExtraction: normalizeExtraction,

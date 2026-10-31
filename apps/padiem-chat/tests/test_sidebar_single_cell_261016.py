@@ -14,13 +14,26 @@ APP = (STATIC / "app.js").read_text(encoding="utf-8")
 SEARCH = (STATIC / "conversation-search.js").read_text(encoding="utf-8")
 
 
-def test_one_visual_row_has_two_distinct_keyboard_actions():
+def test_one_visual_row_has_three_distinct_keyboard_actions():
     start = HTML.index('class="sidebar-actions-row sidebar-unified-row"')
     end = HTML.index("</div>", start)
     region = HTML[start:end]
-    assert region.count("<button") == 2
+    # #5654 added the notification bell as a third row action, so the group now
+    # carries three instead of two.
+    assert region.count("<button") == 3
+    # Every action stays keyboard-activatable: real buttons, never a div or link.
+    assert region.count('type="button"') == 3
     assert region.index('id="newChatButton"') < region.index('id="sidebarSearchButton"')
+    assert region.index('id="sidebarSearchButton"') < region.index('id="notificationsBellButton"')
     assert 'class="visually-hidden" data-locale-key="search"' in region
+    # The bell keeps its dialog semantics rather than borrowing the search label.
+    assert 'id="notificationsBellButton" type="button"' in region
+    assert 'data-locale-aria-label="notification-inbox-bell"' in region
+    assert 'aria-label="알림함"' in region
+    assert 'aria-haspopup="dialog"' in region
+    assert 'aria-controls="notificationInbox"' in region
+    # The group announcement names all three actions it now contains.
+    assert 'aria-label="새 채팅, 대화 검색, 알림함"' in region
     assert re.search(r"sidebar-unified-row\s*\{[^}]*gap:\s*0", CSS)
     assert ".sidebar-actions-row.sidebar-unified-row > .sidebar-search-item" in CSS
 

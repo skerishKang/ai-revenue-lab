@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import asyncio
 import base64
+from collections.abc import Mapping
 from contextvars import ContextVar
 import json
 import re
@@ -15,6 +16,12 @@ import uuid
 
 SAFE_ID = re.compile(r"^[A-Za-z0-9._:-]{8,64}$")
 SAFE_STAGE = re.compile(r"^[a-z][a-z0-9_.-]{0,47}$")
+# #5015: the Engine already answers with a bounded machine-readable refusal
+# code inside the HTTP body. Retaining that one identifier is what makes a
+# rejected run attributable; the message, metadata and request content stay
+# out of the event. The charset matches Core's own orchestration code grammar
+# (OrchestrationError/ServiceContractError) with a hard 64-char ceiling.
+SAFE_REFUSAL_CODE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@-]{0,63}$")
 OTLP_ENDPOINT = "https://otlp-gateway-prod-ap-northeast-0.grafana.net/otlp/v1/logs"
 OTLP_USER = "1876517"
 _CURRENT = ContextVar("padiem_worker_telemetry", default=None)
@@ -78,6 +85,31 @@ def record_stage(stage: str, success: bool, milliseconds: float, code: str = "no
     })
 
 
+def record_refusal(status: int, body: object) -> None:
+    """Retain the response's own bounded refusal code on this request event.
+
+    Until #5015 the exported ``http_request`` event carried only the status, so
+    a repeated 4xx could be described as ``client_error`` and nothing more even
+    though the body already named the exact branch. This records the single
+    ``error.code`` identifier and nothing else - no message, no metadata, no
+    request text. An unrecognized or unbounded code is dropped rather than
+    truncated or rewritten.
+    """
+    state = _CURRENT.get()
+    if not isinstance(state, dict):
+        return
+    if isinstance(status, bool) or not isinstance(status, int) or status < 400:
+        return
+    if not isinstance(body, Mapping):
+        return
+    error = body.get("error")
+    if not isinstance(error, Mapping):
+        return
+    code = error.get("code")
+    if isinstance(code, str) and SAFE_REFUSAL_CODE.fullmatch(code):
+        state["error_code"] = code
+
+
 def make_events(state: dict, status: int) -> list[dict]:
     status = status if isinstance(status, int) and 100 <= status <= 599 else 500
     elapsed = round(max(0, min((time.perf_counter()-state["start"])*1000, 3600000)), 2)
@@ -89,6 +121,9 @@ def make_events(state: dict, status: int) -> list[dict]:
                    "client_error" if status >= 400 else "ok",
         "duration_ms": elapsed,
     }
+    refusal_code = state.get("error_code")
+    if status >= 400 and isinstance(refusal_code, str) and SAFE_REFUSAL_CODE.fullmatch(refusal_code):
+        event["error_code"] = refusal_code
     stages = state["stages"]
     # Normal read-only GET polling is intentionally not exported. Capture all
     # POST executions so the error-rate denominator remains reliable, plus

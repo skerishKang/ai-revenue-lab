@@ -172,8 +172,7 @@ async def ensure_all_platform_secrets() -> None:
 
 
 async def ensure_route_secrets(
-    model_id: str, *, allow_external_fallback: bool = False,
-    product_tier: str = "free",
+    model_id: str, *, product_tier: str = "free",
 ) -> None:
     """Load only the permitted candidates' keys ahead of synchronous routing.
 
@@ -181,29 +180,15 @@ async def ensure_route_secrets(
     Preparing the actual candidate set retains that fail-closed contract and
     prevents unrelated Provider bindings from being fetched for one model.
     """
-    from .catalog import get_catalog_by_id, get_catalog_models
-    from .owner_model_exclusions import excluded_from_owner_customer_selection
-    from .routing_policy import B14_AUTO_CHAIN
+    from .catalog import get_catalog_by_id
     from .worker_env import load_request_secret
 
-    if model_id == "opencode-go/beam-free":
-        from .tier_fallback import TIER_FALLBACK_B14_MODELS
+    from .tier_fallback import TIER_DEFAULT_B14_MODEL, TIER_FALLBACK_B14_MODELS
+    if product_tier == "free" and model_id == TIER_DEFAULT_B14_MODEL:
         if product_tier not in TIER_FALLBACK_B14_MODELS:
             from .errors import InvalidRequest
             raise InvalidRequest("Unsupported product tier.")
         candidates = [model_id, *TIER_FALLBACK_B14_MODELS[product_tier]]
-    elif model_id == "b14/auto":
-        # Even without fallback, the fixed chain selects the first *ready*
-        # provider. Check subsequent positions only if predecessors lack keys.
-        candidates = B14_AUTO_CHAIN
-    elif allow_external_fallback:
-        candidates = [model_id] + [
-            model.model_id
-            for model in get_catalog_models()
-            if model.model_id != model_id
-            and not excluded_from_owner_customer_selection(model.model_id)
-            and model.model_id != "experiential/qwen3.8-flash-next-uncensored"
-        ][:3]
     else:
         candidates = [model_id]
 
@@ -219,14 +204,6 @@ async def ensure_route_secrets(
         if binding not in seen:
             seen.add(binding)
             await load_request_secret(binding)
-        # With fallback disabled, a fixed auto-chain needs only the first
-        # credential-ready position; later positions are not attempted.
-        # If the first is revoked, continue until one is actually available.
-        if model_id == "b14/auto" and not allow_external_fallback:
-            from .b14_runtime_config import runtime_config
-
-            if runtime_config.is_mock or is_secret_present(spec):
-                break
 
 
 def is_secret_present(spec: PlatformProviderSpec) -> bool:

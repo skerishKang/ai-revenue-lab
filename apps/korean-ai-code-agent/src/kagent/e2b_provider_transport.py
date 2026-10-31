@@ -108,14 +108,14 @@ E2B_STATUS_SERVER_ERRORS = (500, 503, 504)
 
 E2B_MAX_REQUEST_BYTES = 16 * 1024
 E2B_MAX_RESPONSE_BYTES = 256 * 1024
-E2B_TRANSPORT_TIMEOUT_SECONDS = 30
+# #4379: an E2B provider request carries no PADIEM client deadline. None
+# means the request waits for the provider's own answer.
+E2B_TRANSPORT_TIMEOUT_SECONDS: int | None = None
 E2B_MAX_PROVIDER_REASON_CHARS = 256
 E2B_CREDENTIAL_MIN_BYTES = 16
 E2B_CREDENTIAL_MAX_BYTES = 512
 
 #: Documented defaults, kept as data so a provider change is visible instead of inherited.
-E2B_DOCUMENTED_CREATE_TIMEOUT_SECONDS = 15
-E2B_PROTOTYPE_RECORDED_TIMEOUT_DEFAULT_SECONDS = 300
 E2B_DOCUMENTED_ALLOW_INTERNET_ACCESS_DEFAULT = True
 E2B_DOCUMENTED_UPDATE_NETWORK_SEMANTICS = "REPLACES_NOT_MERGES"
 #: E2B's docs state no position on the link-local metadata address; recorded as a question.
@@ -401,7 +401,7 @@ class E2BHttpRequestPort(Protocol):
         path: str,
         credential: bytes,
         body: bytes | None,
-        timeout_seconds: int,
+        timeout_seconds: int | None,
     ) -> E2BHttpResponse:
         ...
 
@@ -420,7 +420,7 @@ class UnconfiguredE2BHttpRequestPort:
         path: str,
         credential: bytes,
         body: bytes | None,
-        timeout_seconds: int,
+        timeout_seconds: int | None,
     ) -> E2BHttpResponse:
         raise SandboxUnavailableError(
             "E2B request port is not configured; no provider request was made"
@@ -451,7 +451,7 @@ class StdlibE2BHttpRequestPort:
         path: str,
         credential: bytes,
         body: bytes | None,
-        timeout_seconds: int,
+        timeout_seconds: int | None,
     ) -> E2BHttpResponse:
         if method not in E2B_ALLOWED_METHODS:
             raise E2BWireError("only the documented E2B methods may be issued")
@@ -465,7 +465,7 @@ class StdlibE2BHttpRequestPort:
         if body is not None and len(body) > E2B_MAX_REQUEST_BYTES:
             raise E2BWireError("E2B request body exceeds the bounded write limit")
         timeout = _bounded_int(
-            timeout_seconds, "timeout_seconds", minimum=1, maximum=120
+            timeout_seconds, "timeout_seconds", minimum=1, maximum=120  # None: no client deadline
         )
 
         # Loading the default TLS trust store can touch local files. Defer that local I/O

@@ -17,6 +17,7 @@ const expectedSourceIds = [
   'SRC-TOSS', 'SRC-NPAY', 'SRC-TMEM', 'SRC-CJONE', 'SRC-KB', 'SRC-SHINHAN',
   'SRC-LINKPRICE', 'SRC-AYET', 'SRC-ADISON', 'SRC-TNK', 'SRC-ADPOPCORN', 'SRC-CPX',
   'SRC-PROLIFIC', 'SRC-OUTLIER', 'SRC-CROWDGEN', 'SRC-TELUS', 'SRC-ONEFORMA',
+  'SRC-DATAANNOTATION',
   'SRC-CLICKWORKER', 'SRC-UTEST', 'SRC-USERTESTING', 'SRC-RESPONDENT', 'SRC-TOLOKA',
 ];
 
@@ -28,14 +29,14 @@ const review = (sourceId: string, overrides: Partial<SourcePolicyReview> = {}): 
 const clearedGates = (sourceId: string): SourceCollectionGate[] =>
   gatesBySourceId(sourceId).map((gate) => ({ ...gate, status: 'PASS' }));
 
-test('fresh registry represents exactly the 22 current source identities once', () => {
+test('fresh registry represents exactly the 23 current source identities once', () => {
   assert.deepEqual(CURRENT_SOURCE_IDS, expectedSourceIds);
-  assert.equal(CURRENT_SOURCE_REGISTRY.length, 22);
-  assert.equal(new Set(CURRENT_SOURCE_IDS).size, 22);
-  assert.equal(CURRENT_SOURCE_POLICY_REVIEWS.length, 22);
-  assert.equal(new Set(CURRENT_SOURCE_POLICY_REVIEWS.map((item) => item.sourceId)).size, 22);
-  assert.equal(CURRENT_SOURCE_COLLECTION_GATES.length, 22 * 8);
-  assert.equal(new Set(CURRENT_SOURCE_COLLECTION_GATES.map((item) => item.sourceId)).size, 22);
+  assert.equal(CURRENT_SOURCE_REGISTRY.length, 23);
+  assert.equal(new Set(CURRENT_SOURCE_IDS).size, 23);
+  assert.equal(CURRENT_SOURCE_POLICY_REVIEWS.length, 23);
+  assert.equal(new Set(CURRENT_SOURCE_POLICY_REVIEWS.map((item) => item.sourceId)).size, 23);
+  assert.equal(CURRENT_SOURCE_COLLECTION_GATES.length, 23 * 8);
+  assert.equal(new Set(CURRENT_SOURCE_COLLECTION_GATES.map((item) => item.sourceId)).size, 23);
 });
 
 test('acquisition modes and opportunity hints are preserved as source metadata', () => {
@@ -52,7 +53,7 @@ test('acquisition modes and opportunity hints are preserved as source metadata',
 
 test('fresh policy state has zero PASS decisions and unknown permission facts', () => {
   assert.equal(CURRENT_SOURCE_POLICY_REVIEWS.filter((item) => item.decision === 'PASS').length, 0);
-  assert.equal(CURRENT_SOURCE_POLICY_REVIEWS.filter((item) => item.decision === 'PENDING').length, 22);
+  assert.equal(CURRENT_SOURCE_POLICY_REVIEWS.filter((item) => item.decision === 'PENDING').length, 23);
   for (const policy of CURRENT_SOURCE_POLICY_REVIEWS) {
     assert.equal(policy.automationPermission, 'UNKNOWN');
   }

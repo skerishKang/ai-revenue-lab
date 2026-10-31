@@ -158,9 +158,10 @@ def _agent() -> dict[str, object]:
         "optimize_for": "balanced",
         "max_tokens": 256,
         "model_policy": {
-            "model": "b14/auto",
+            # #5002: an inert explicit route; the suspended Router auto route
+            # is never a valid Engine product-route model.
+            "model": "testowner/example-model.v1",
             "allow_external_fallback": False,
-            "max_attempts": 1,
         },
     }
 

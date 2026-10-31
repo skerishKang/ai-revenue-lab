@@ -381,3 +381,46 @@ async def test_core_success_uses_observed_binding_response() -> None:
     assert result.route.selected_model == "openrouter/free"
     assert result.usage.total_tokens == 3
     assert len(binding.calls) == 1
+
+
+@pytest.mark.asyncio
+async def test_byok_reference_is_opaque_body_only_and_off_preserves_exact_bytes():
+    from app.byok_passthrough import credential_scope, b14_body
+    raw = b'{ "model": "google/model", "messages": [] }'
+    ref = 'opaque-reference-not-json-unit-only'
+    assert b14_body(raw) == raw
+    transport, binding, factory = transport_for(response=FakeResponse(chunks=[b'{}']))
+    with credential_scope(ref):
+        async with httpx.AsyncClient(transport=transport) as client:
+            await client.post(B14_INTERNAL_ORIGIN + '/api/pilot/v1/chat/completions', content=raw)
+    sent = factory.calls[0].kwargs
+    assert json.loads(sent['body'])['user_credential_ref'] == ref
+    assert not any(ref in str(v) for v in sent['headers'].values())
+    assert b14_body(raw) == raw
+    assert len(binding.calls) == 1
+
+
+@pytest.mark.asyncio
+async def test_byok_binding_failure_does_not_expose_credential_in_exception_chain(caplog):
+    import traceback
+    from app.byok_passthrough import credential_scope
+    ref = 'unit-user-credential-do-not-log'
+    transport, binding, factory = transport_for(error=RuntimeError(ref))
+    with credential_scope(ref):
+        with pytest.raises(httpx.ConnectError) as caught:
+            async with httpx.AsyncClient(transport=transport) as client:
+                await client.post(B14_INTERNAL_ORIGIN + '/api/pilot/v1/chat/completions', json={'model':'google/unit'})
+    assert ref not in ''.join(traceback.format_exception(caught.value))
+    assert ref not in caplog.text
+    assert len(binding.calls) == 1
+
+
+@pytest.mark.asyncio
+async def test_byok_concurrent_scopes_do_not_share_user_credentials():
+    import asyncio
+    from app.byok_passthrough import credential_scope, b14_body
+    async def one(ref):
+        with credential_scope(ref):
+            await asyncio.sleep(0)
+            return json.loads(b14_body(b'{}')).get('user_credential_ref')
+    assert await asyncio.gather(one('unit-owner-a'), one('unit-owner-b'), one(None)) == ['unit-owner-a','unit-owner-b',None]

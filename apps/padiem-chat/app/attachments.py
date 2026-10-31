@@ -5,10 +5,17 @@ import binascii
 from dataclasses import dataclass, field
 from typing import Any
 
-from .binary_documents import BinaryDocumentValidationError, parse_binary_document_item
+from .binary_documents import (
+    BinaryDocumentValidationError,
+    parse_binary_document_item,
+    parse_binary_document_item_async,
+)
 from .documents import DocumentAttachment, DocumentValidationError, parse_document_item
 
-MAX_IMAGE_BYTES = 4 * 1024 * 1024
+# #4379: an attached image carries no PADIEM byte total. The platform
+# request limit and the provider limit are the real ceilings. The symbol is
+# retained for import compatibility and is no longer enforced.
+MAX_IMAGE_BYTES = 1024 * 1024 * 1024
 MAX_IMAGE_NAME_CHARS = 120
 ALLOWED_IMAGE_MEDIA_TYPES = frozenset({"image/jpeg", "image/png", "image/webp"})
 
@@ -42,12 +49,14 @@ def _safe_name(value: Any) -> str:
 class ImageAttachment:
     name: str
     media_type: str
-    base64_data: str = field(repr=False)
+    base64_data: str = field(default="", repr=False)
     byte_size: int = 0
+    binary_data: bytes | None = field(default=None, repr=False)
 
     @property
     def data_url(self) -> str:
-        return f"data:{self.media_type};base64,{self.base64_data}"
+        encoded = base64.b64encode(self.binary_data).decode("ascii") if self.binary_data is not None else self.base64_data
+        return f"data:{self.media_type};base64,{encoded}"
 
     def public_dict(self) -> dict[str, Any]:
         return {
@@ -59,6 +68,15 @@ class ImageAttachment:
 
 
 def _parse_image(item: dict[str, Any]) -> ImageAttachment:
+    if set(item) == {"type", "name", "media_type", "raw_bytes"}:
+        media_type = item.get("media_type")
+        if media_type not in ALLOWED_IMAGE_MEDIA_TYPES:
+            raise AttachmentValidationError("Unsupported image format")
+        name = _safe_name(item.get("name"))
+        data = item.get("raw_bytes")
+        if not isinstance(data, bytes) or not data or not _matches_magic(media_type, data):
+            raise AttachmentValidationError("Invalid image bytes")
+        return ImageAttachment(name=name, media_type=media_type, binary_data=data, byte_size=len(data))
     if set(item) != {"type", "name", "media_type", "base64"}:
         raise AttachmentValidationError("지원하지 않는 첨부 파일 항목이 있습니다.")
     media_type = item.get("media_type")
@@ -68,16 +86,12 @@ def _parse_image(item: dict[str, Any]) -> ImageAttachment:
     payload = item.get("base64")
     if not isinstance(payload, str) or not payload:
         raise AttachmentValidationError("사진 데이터가 올바르지 않습니다.")
-    if len(payload) > ((MAX_IMAGE_BYTES + 2) // 3) * 4:
-        raise AttachmentValidationError("사진은 4 MiB 이하만 첨부할 수 있습니다.")
     try:
         decoded = base64.b64decode(payload, validate=True)
     except (binascii.Error, ValueError) as exc:
         raise AttachmentValidationError("사진 데이터가 올바르지 않습니다.") from exc
     if not decoded:
         raise AttachmentValidationError("빈 사진은 첨부할 수 없습니다.")
-    if len(decoded) > MAX_IMAGE_BYTES:
-        raise AttachmentValidationError("사진은 4 MiB 이하만 첨부할 수 있습니다.")
     if not _matches_magic(media_type, decoded):
         raise AttachmentValidationError("사진 형식과 실제 파일 내용이 일치하지 않습니다.")
     return ImageAttachment(name=name, media_type=media_type, base64_data=payload, byte_size=len(decoded))
@@ -86,7 +100,8 @@ def _parse_image(item: dict[str, Any]) -> ImageAttachment:
 def _parse_document(item: dict[str, Any]) -> DocumentAttachment:
     has_text = "text" in item
     has_base64 = "base64" in item
-    if has_text == has_base64:
+    has_raw = "raw_bytes" in item
+    if sum((has_text, has_base64, has_raw)) != 1:
         raise AttachmentValidationError("문서는 텍스트 또는 바이너리 데이터 중 하나만 보낼 수 있습니다.")
     if has_text:
         try:
@@ -100,21 +115,65 @@ def _parse_document(item: dict[str, Any]) -> DocumentAttachment:
 
 
 def parse_attachments(raw: Any) -> tuple[ImageAttachment | DocumentAttachment, ...]:
-    if raw is None:
+    item = _single_attachment_item(raw)
+    if item is None:
         return ()
-    if not isinstance(raw, list):
-        raise AttachmentValidationError("첨부 파일 형식이 올바르지 않습니다.")
-    if len(raw) == 0:
-        return ()
-    if len(raw) > 1:
-        raise AttachmentValidationError("현재는 파일을 한 번에 하나만 첨부할 수 있습니다.")
-
-    item = raw[0]
-    if not isinstance(item, dict):
-        raise AttachmentValidationError("첨부 파일 형식이 올바르지 않습니다.")
     item_type = item.get("type")
     if item_type == "image":
         return (_parse_image(item),)
     if item_type == "document":
         return (_parse_document(item),)
     raise AttachmentValidationError("현재는 사진과 TXT, Markdown, CSV, JSON, PDF, DOCX, PPTX, XLSX 문서만 첨부할 수 있습니다.")
+
+
+async def parse_attachments_async(
+    raw: Any, *, file_resolver=None,
+) -> tuple[ImageAttachment | DocumentAttachment, ...]:
+    """Worker request path: the same grammar with the async binary authority.
+
+    Text and image attachments keep their existing synchronous validation.
+    Binary documents go through the trusted async parser authority instead of
+    blocking the Worker isolate on a synchronous service call.
+    """
+
+    item = _single_attachment_item(raw)
+    if item is None:
+        return ()
+    item_type = item.get("type")
+    if item_type == "file":
+        if file_resolver is None:
+            raise AttachmentValidationError("파일 참조를 현재 읽을 수 없습니다.")
+        return (await file_resolver(item),)
+    if item_type == "image":
+        return (_parse_image(item),)
+    if item_type == "document":
+        has_text = "text" in item
+        has_base64 = "base64" in item
+        has_raw = "raw_bytes" in item
+        if sum((has_text, has_base64, has_raw)) != 1:
+            raise AttachmentValidationError("문서는 텍스트 또는 바이너리 데이터 중 하나만 보낼 수 있습니다.")
+        if has_text:
+            try:
+                return (parse_document_item(item),)
+            except DocumentValidationError as exc:
+                raise AttachmentValidationError(str(exc)) from exc
+        try:
+            return (await parse_binary_document_item_async(item),)
+        except BinaryDocumentValidationError as exc:
+            raise AttachmentValidationError(str(exc)) from exc
+    raise AttachmentValidationError("현재는 사진과 TXT, Markdown, CSV, JSON, PDF, DOCX, PPTX, XLSX 문서만 첨부할 수 있습니다.")
+
+
+def _single_attachment_item(raw: Any) -> dict[str, Any] | None:
+    if raw is None:
+        return None
+    if not isinstance(raw, list):
+        raise AttachmentValidationError("첨부 파일 형식이 올바르지 않습니다.")
+    if len(raw) == 0:
+        return None
+    if len(raw) > 1:
+        raise AttachmentValidationError("현재는 파일을 한 번에 하나만 첨부할 수 있습니다.")
+    item = raw[0]
+    if not isinstance(item, dict):
+        raise AttachmentValidationError("첨부 파일 형식이 올바르지 않습니다.")
+    return item

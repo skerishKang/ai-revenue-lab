@@ -574,6 +574,8 @@ async def test_overwrite_and_delete_remain_owner_scoped():
     assert rotated == {
         "provider": PROVIDER_ID,
         "key_last4": ROTATED_KEY[-4:],
+        "endpoint": "https://opencode.ai/inference/go/v1",
+        "endpoint_is_default": True,
         "updated_at": 200,
     }
     assert await credential_store.api_key(OWNER, PROVIDER_ID) == ROTATED_KEY

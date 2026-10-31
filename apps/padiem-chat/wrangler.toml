@@ -1,9 +1,34 @@
 name = "padiem-chat"
 main = "worker.py"
+# #5479: the Chat Worker stays on the Pyodide 3.13 snapshot (CPython 3.13.2).
+#
+# The 3.14 snapshot (compatibility date 2026-09-08 or later) is the runtime
+# Cloudflare published for the `NoGilError` initialization race
+# (cloudflare/workerd#6624). The password-KDF half of that move is solved and
+# unit-proven in app/password_kdf.py (bundled cryptography, stored
+# pbkdf2_sha512$220000$ credential byte-identical), and it was deployed to the
+# real edge on 2026-10-24 and measured:
+#
+#   sequential GET /health         3.14: 6 of 25 failed   | 3.13: 0 of 25
+#   concurrent /api/auth/status    3.14: 3 of 8  failed   | 3.13: 0 of 8
+#   concurrent password login      3.14: 2 of 8  failed   | 3.13: 0 of 8
+#
+# Every 3.14 failure was HTTP 500 (one 503 exceededCpu) with
+# `SystemError: Cannot enter a promising task from inside another running
+# promising task. This is a bug in Pyodide.` — the NoGilError is gone and a
+# broader Python-async-bridge failure replaced it. Production was rolled back
+# to the recorded 3.13 version and verified clean, so this date stays here
+# until the platform fixes that path. Evidence: docs/operations/
+# 5479-py314-runtime-incident-20261024.md §8.
 compatibility_date = "2026-08-25"
 compatibility_flags = ["python_workers"]
 workers_dev = true
 base_dir = ".b66-worker-src"
+preview_urls = true
+
+[[routes]]
+pattern = "chat.padiem.net"
+custom_domain = true
 
 # #3933 WEB-FIRST opt-in Browser Run standard quote summary PDF.
 # A browser binding does not authorize XLSX READ/WRITE, trigger a PDF,
@@ -18,13 +43,19 @@ binding = "BROWSER"
 command = "uv run python scripts/build_b66_worker_dependencies.py"
 
 [assets]
-directory = "static"
+# The release uploads the bundle the [build] hook generates under base_dir, not the
+# source directory: base_dir applies to `main` but is NOT applied to [assets], so the
+# path is written from this config file's directory. Measured on the 2026-10-27
+# deploy: with `directory = "static"` wrangler read 162 entries (158 files + 4
+# directories) from apps/padiem-chat/static and an app entry staged into the
+# generated bundle never reached the Assets set.
+directory = ".b66-worker-src/static"
 binding = "ASSETS"
 
 # #3252 source declaration: the served Worker exposes its own version provenance
 # so a server-side lane can read the exact deployed git revision. This is a
 # runtime provenance binding, not a cron trigger, and it is NOT live Production
-# activation — live settings remain the production authority.
+# activation. Repository declarations are the binding authority.
 [version_metadata]
 binding = "CF_VERSION_METADATA"
 
@@ -35,9 +66,27 @@ binding = "CLAW_ENGINE_DESKTOP_SECRET"
 store_id = "f0b09ca04a7b43248154c773704a5616"
 secret_name = "CLAW_ENGINE_DESKTOP_SECRET"
 
+# #5441: the Owner-registered transactional-mail credential. The account
+# Secrets Store holds the value; the Worker only ever sees this reference. The
+# lost-password reset mail and the operator signup-notification channel read
+# this ONE credential through the reuse-first lookup path of #5516.
+[[secrets_store_secrets]]
+binding = "B66_ALERT_RESEND_API_KEY"
+store_id = "f0b09ca04a7b43248154c773704a5616"
+secret_name = "B66_ALERT_RESEND_API_KEY"
+
 [[services]]
 binding = "B14_SERVICE"
 service = "ai-revenue-korean-ai-platform"
+
+# Deployment-owned server-to-server proof secret for the B14 platform-credential
+# execution lane. B14 spends platform-owned Provider credentials there, so this
+# Worker proves it is an approved PADIEM caller before the dispatch is built.
+# The value lives only in Cloudflare Secrets Store and never reaches a browser.
+[[secrets_store_secrets]]
+binding = "PADIEM_B14_SERVICE_PROOF_SECRET"
+store_id = "f0b09ca04a7b43248154c773704a5616"
+secret_name = "PADIEM_B14_SERVICE_PROOF_SECRET"
 
 # #4139: one existing PADIEM Identity and canonical Broker for Chat/Claw.
 # The Connector's product route is ON by default. Account/device ownership
@@ -54,6 +103,16 @@ service = "padiem-local-agent-broker-state"
 [[services]]
 binding = "VOICE_STT_SERVICE"
 service = "padiem-voice-stt"
+
+# #2824 isolated Parser Authority. Chat forwards the bounded Core request
+# envelope over this binding; the private parser Worker runs the reviewed
+# pypdf/openpyxl extraction, so Chat never parses a binary document in its own
+# isolate. Deployment order: deploy padiem-document-parser first, then Chat;
+# the target Worker must exist or the Chat deploy fails.
+# Deferred: parser Worker is not ready; source declaration is the deploy authority.
+# [[services]]
+# binding = "DOCUMENT_PARSER_SERVICE"
+# service = "padiem-document-parser"
 
 # B66-only one-model direct execution pilot; account-managed secret reference.
 # Never pass the key to the browser, B62 chat or Claw.
@@ -97,8 +156,21 @@ binding = "ORACLE_MESH_OWNERSHIP_MAP"
 store_id = "f0b09ca04a7b43248154c773704a5616"
 secret_name = "ORACLE_MESH_OWNERSHIP_MAP"
 
+[[secrets_store_secrets]]
+binding = "PADIEM_CHAT_SHARED_AUTH_CLIENT_PRIVATE_JWK"
+store_id = "f0b09ca04a7b43248154c773704a5616"
+secret_name = "PADIEM_CHAT_SHARED_AUTH_CLIENT_PRIVATE_JWK"
+
+[[secrets_store_secrets]]
+binding = "PADIEM_CHAT_SHARED_AUTH_COMPARE_STATE_KEY"
+store_id = "f0b09ca04a7b43248154c773704a5616"
+secret_name = "PADIEM_CHAT_SHARED_AUTH_COMPARE_STATE_KEY"
+
 # Public endpoint and numeric OTLP username. Never put token values in [vars].
 [vars]
+PADIEM_CHAT_SHARED_AUTH_COMPARE_ENABLED = "false"
+PADIEM_CHAT_SHARED_LOGIN_ENABLED = "false"
+PADIEM_CHAT_SHARED_AUTH_CLIENT_KID = "b62-42c57a6725c907f7f3cf"
 PADIEM_GRAFANA_OTLP_ENDPOINT = "https://otlp-gateway-prod-ap-northeast-0.grafana.net/otlp/v1/logs"
 PADIEM_GRAFANA_OTLP_USERNAME = "1876517"
 
@@ -106,10 +178,24 @@ PADIEM_GRAFANA_OTLP_USERNAME = "1876517"
 # run on the management host over the Secrets Store ownership map above.
 ORACLE_MESH_EXECUTION_MODE = "off"
 
+# #5573 PC pairing: the ONE Windows agent installer the pairing flow hands out.
+# An empty value means not configured, and the handoff route then answers 503
+# "준비 중" instead of inventing a link anywhere. Only an https URL is accepted;
+# the value itself is injected at deploy time, never committed.
+PC_AGENT_INSTALL_URL = ""
+
+# #5881 COM2 file lane origin. An empty value means not configured: the file-lane
+# client then answers every upload and read ticket with "파일 서버가 아직 연결되지
+# 않았습니다" instead of pointing attachments at a host that is not serving them.
+# Only an https origin is accepted, and the value is injected at deploy time, never
+# committed - it pairs with the PADIEM_CHAT_FILE_LANE_TICKET_SECRET binding.
+PADIEM_CHAT_FILE_LANE_ORIGIN = ""
+
 PADIEM_CHAT_RUNTIME_MODE = "mock"
 PADIEM_CHAT_TIMEOUT_SECONDS = "600"
 PADIEM_CHAT_LIVE_ENABLED = "false"
-PADIEM_CHAT_AUTOMATION_SCHEDULER_ENABLED = "false"
+# Default remains false; no new runtime variable/cron activation in this change.
+# PADIEM_CHAT_AUTOMATION_SCHEDULER_ENABLED = "false"
 # #4469 Claw public research: owner-approved opt-in. The Worker requires
 # live B14 + canonical identity/Engine client + a durable D1 quota in addition
 # to this flag; no unauthenticated or unmetered invocation can use it.
@@ -124,3 +210,65 @@ PADIEM_CONNECTOR_OWNER_PRODUCTION_ENABLED = "enabled"
 PADIEM_CONNECTOR_OWNER_ONE_CLICK_ENABLED = "enabled"
 PADIEM_CONNECTOR_OWNER_PC_IDENTITY_PREFLIGHT_ENABLED = "enabled"
 PADIEM_CONNECTOR_OWNER_PC_NATIVE_DELIVERY_ENABLED = "enabled"
+
+# #5573 PC 작업 대기열 전환(COM2). "com2"이면 페어링·presence·history 상태가
+# 컴2 큐로 이동하고, 그 외의 값은 지금처럼 이 Worker의 D1을 유지한다. 전환
+# 코드(#6121/#6132)는 이미 배포돼 있고 이 플래그가 스위치다. 병합은 전환 배포
+# 창에서만: PC_QUEUE_SERVICE_SECRET 시크릿이 live에 먼저 있어야 하고, 없는 채로
+# 배포하면 워커 기동이 QueueUnavailable로 실패한다(fail-closed, 절반 전환 없음).
+# 되돌리기는 이 값을 "d1"로 되돌려 배포한다.
+PC_QUEUE_BACKEND = "com2"
+PC_QUEUE_ORIGIN = "https://queue.padiem.net"
+
+[observability]
+enabled = true
+head_sampling_rate = 1
+[observability.logs]
+enabled = true
+invocation_logs = true
+
+[[services]]
+binding = "B66_PDF_RENDERER_SERVICE"
+service = "padiem-b66-pdf-renderer"
+
+[[services]]
+binding = "GOOGLE_OAUTH_STATE_SERVICE"
+service = "padiem-google-oauth-state"
+
+[[services]]
+binding = "P01_ENGINE_SERVICE"
+service = "padiem-ai-engine"
+
+[[secrets_store_secrets]]
+binding = "PADIEM_CHAT_DAUM_REST_API_KEY"
+store_id = "f0b09ca04a7b43248154c773704a5616"
+secret_name = "PADIEM_KAKAO_API_KEY"
+
+[[d1_databases]]
+binding = "PADIEM_CHAT_DB"
+database_name = "padiem-chat-db"
+database_id = "702bb62b-36f5-41a0-973f-c4f663ee01e6"
+
+[[r2_buckets]]
+binding = "PADIEM_WORKSPACE_FILES"
+bucket_name = "padiem-workspace-files"
+
+[[secrets_store_secrets]]
+binding = "TINYFISH_API_KEY"
+store_id = "f0b09ca04a7b43248154c773704a5616"
+secret_name = "PADIEM_TINY_FISH_API_KEY"
+
+# #5881 COM2 file lane ticket signature key. Declaration only: name, store
+# reference and secret name. The value is entered by the OWNER in the Cloudflare
+# dashboard (and on the COM2 host .env for the file-lane service), never in source.
+# The Worker reads it as PADIEM_CHAT_FILE_LANE_TICKET_SECRET, and the binding goes
+# live with the exact-main deploy that follows the value entry.
+[[secrets_store_secrets]]
+binding = "PADIEM_CHAT_FILE_LANE_TICKET_SECRET"
+store_id = "f0b09ca04a7b43248154c773704a5616"
+secret_name = "PADIEM_CHAT_FILE_LANE_TICKET_SECRET"
+
+# Platform-managed secret_text: names only; values are never source data.
+[secrets]
+required = ["B66_ADMIN_GOOGLE_EMAIL", "B66_ALERT_EMAIL_FROM", "B66_ALERT_EMAIL_TO", "B66_MEMBERSHIP_ENFORCED", "P01_ENGINE_CREDENTIAL", "PADIEM_CENTRAL_MODEL_ADMIN_GOOGLE_EMAIL", "PADIEM_CENTRAL_MODEL_POLICY_SIGNING_KEY", "PADIEM_CHAT_CUSTOM_KEY_SECRET", "PADIEM_CHAT_GOOGLE_CLIENT_SECRET", "PADIEM_CHAT_QUOTA_SALT", "PADIEM_CHAT_SESSION_SECRET", "PADIEM_PUSH_VAPID_PRIVATE_KEY", "PADIEM_PUSH_VAPID_PUBLIC_KEY", "PADIEM_PUSH_VAPID_SUBJECT", "PC_QUEUE_SERVICE_SECRET"]
+

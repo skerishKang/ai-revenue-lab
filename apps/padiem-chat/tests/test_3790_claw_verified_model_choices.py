@@ -53,7 +53,7 @@ def test_free_member_sees_only_registered_free_choices(monkeypatch):
     assert second.json()["scope"] == "b14_owner_allowed_live_ready"
     assert second.json()["automatic_default"] is False
     assert [x["model_id"] for x in second.json()["model_choices"]] == [
-        "opencode-go/beam-free"]
+        "google/gemini-3.1-flash-lite"]
     assert all(x["product_name_prefix"] == "파디엠프리" for x in second.json()["model_choices"])
     assert refused.status_code == 403
     assert refused.json()["error"]["code"] == "tier_not_available"
@@ -114,3 +114,52 @@ def test_login_refresh_and_logout_clear_stale_model_choice():
     assert 'new CustomEvent("padiem:auth-state"' in app
     assert 'window.addEventListener("padiem:auth-state"' in js
     assert 'manual.value=""; // session revoked' in js
+
+
+def test_admin_model_choices_require_server_verified_admin(monkeypatch):
+    from app.model_policy import ADMIN_B14_MODEL_ID
+
+    class AdminStore:
+        def __init__(self, approved):
+            self.approved = approved
+
+        async def is_google_admin(self, user_id):
+            assert user_id == "usr_fixture"
+            return self.approved
+
+    assert ADMIN_B14_MODEL_ID == "google/gemini-3.5-flash-lite"
+    catalog = Catalog([
+        {"model_id": ADMIN_B14_MODEL_ID, "name": "Admin model"},
+        {"model_id": "opencode-go/beam-free", "name": "Free model"},
+    ])
+    with client_with(monkeypatch, catalog=catalog) as client:
+        client.app.state.b66_member_admin_store = AdminStore(False)
+        denied = client.get("/choices?tier=admin")
+        assert denied.status_code == 403
+        assert catalog.calls == 0
+
+        client.app.state.b66_member_admin_store = AdminStore(True)
+        approved = client.get("/choices?tier=admin")
+    assert approved.status_code == 200
+    assert [row["model_id"] for row in approved.json()["model_choices"]] == [ADMIN_B14_MODEL_ID]
+    assert approved.json()["route_revision"] == 0
+
+
+def test_claw_admin_exact_model_is_server_owned():
+    root = Path(__file__).resolve().parents[1] / "app"
+    source = (root / "claw_general_routes.py").read_text(encoding="utf-8")
+    # #5223: the administrator lane and its denial are resolved by the ONE
+    # shared grade authority, so the lane's own copy of the admin comparison
+    # and the admin denial moved to that authority.  The ownership properties
+    # are unchanged: the lane is still selected on the server, the admin
+    # denial is still the operator admin authority, and the browser still
+    # cannot pick the administrator model.
+    assert 'admin_lane = grade.admin_lane' in source
+    assert 'await claw_execution_tier_denial(request, user_id, grade)' in source
+    assert 'selected_model_id != ADMIN_B14_MODEL_ID' in source
+    assert 'if admin_lane else await resolve_claw_tier_model' in source
+
+    # The shared authority is the one that still refuses a forged admin.
+    shared = (root / "member_grade_access.py").read_text(encoding="utf-8")
+    assert 'if grade.admin_lane' in shared
+    assert 'await selected_admin_denial(request, user_id)' in shared

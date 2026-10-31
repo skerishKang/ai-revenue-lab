@@ -295,6 +295,14 @@ def _emitted(capsys) -> list[dict]:
     ]
 
 
+# The two ``main`` tests below drive the Resident's own startup decision, and
+# ``main`` has no injectable port: it composes the real current-user Windows
+# DPAPI port. The first test says so in its own comment ("not a stand-in"), and
+# the second reaches the same port through that composition. Both are therefore
+# Windows-only by design, the same precondition this package already declares
+# for its other real-DPAPI test in
+# ``tests/test_4139_meshcentral_resident_lane.py``.
+@pytest.mark.skipif(sys.platform != "win32", reason="requires Windows DPAPI")
 def test_main_resumes_instead_of_refusing_when_already_registered(
     tmp_path, monkeypatch, capsys
 ):
@@ -326,6 +334,9 @@ def test_main_resumes_instead_of_refusing_when_already_registered(
     assert not [event for event in events if event.get("reason") == "handoff_refused"]
 
 
+# See the note above ``test_main_resumes_instead_of_refusing_when_already_registered``:
+# ``main`` composes the real Windows DPAPI port, so this decision is Windows-only too.
+@pytest.mark.skipif(sys.platform != "win32", reason="requires Windows DPAPI")
 def test_main_still_refuses_a_device_that_was_never_registered(
     tmp_path, monkeypatch, capsys
 ):

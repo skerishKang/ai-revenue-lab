@@ -32,6 +32,15 @@ _deploy_config = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(_deploy_config)
 parse_live_bindings = _deploy_config.parse_live_bindings
 
+_served_version_spec = importlib.util.spec_from_file_location(
+    "b62_cloudflare_served_version", _HERE / "cloudflare_served_version.py"
+)
+assert _served_version_spec is not None and _served_version_spec.loader is not None
+_served_version = importlib.util.module_from_spec(_served_version_spec)
+_served_version_spec.loader.exec_module(_served_version)
+canonical_served_version_id = _served_version.resolve_served_version_id
+is_safe_version_id = _served_version.is_safe_version_id
+
 _guard_spec = importlib.util.spec_from_file_location(
     "b62_binding_state_guard", _HERE / "b62_binding_state_guard.py"
 )
@@ -76,6 +85,18 @@ P01_SSE_OPTIN_FLAG = "PADIEM_CLAW_P01_LIVE_SSE_ENABLED"
 # absent, retyped, or holds any other value is never silently overwritten.
 ORACLE_MESH_MODE_NAME = "ORACLE_MESH_EXECUTION_MODE"
 ORACLE_MESH_MODE_VALUES = ("off", "mesh")
+
+# #5015: the single Chat orchestration activation variable. The Chat product's
+# PC-file lane is composed only when this one deployment-owned plain-text
+# variable is present and true (see
+# apps/padiem-chat/app/worker_orchestration.py::build_orchestration_bridge).
+# It is a live-settings authority, never a source declaration: the Chat
+# wrangler.toml must not carry it
+# (apps/padiem-chat/tests/test_engine_orchestration_bridge_contract.py).
+# Only the exact value "true" is admitted; a live binding that exists with
+# another type or value is never silently overwritten.
+CHAT_ORCHESTRATION_ENABLED_NAME = "PADIEM_CHAT_ORCHESTRATION_ENABLED"
+CHAT_ORCHESTRATION_ENABLED_VALUE = "true"
 
 # Bounded source-credential replacement gate (#2428). These thresholds mirror
 # the runtime authority in apps/padiem-chat/app/worker_config.py
@@ -364,6 +385,160 @@ def verify_oracle_mesh_mode(
         )
 
 
+def chat_orchestration_state(settings_payload: object) -> str:
+    """Bounded pre-mutation state of the single Chat orchestration variable.
+
+    Returns one of ``absent``/``wrong_type``/``unexpected_value``/``enabled``.
+    Nothing else about the live configuration is inspected, and no secret value
+    is read.
+    """
+    by_name = {binding["name"]: binding for binding in _raw_bindings(settings_payload)}
+    binding = by_name.get(CHAT_ORCHESTRATION_ENABLED_NAME)
+    if binding is None:
+        return "absent"
+    if binding.get("type") != "plain_text":
+        return "wrong_type"
+    text = binding.get("text")
+    if text == CHAT_ORCHESTRATION_ENABLED_VALUE:
+        return "enabled"
+    return "unexpected_value"
+
+
+def build_chat_orchestration_patch(
+    settings_payload: object, *, target_sha: str
+) -> dict:
+    """Build the one-variable Chat orchestration activation patch.
+
+    Every other live binding is carried as an ``inherit``/``latest`` reference,
+    so no binding, secret or unrelated plain-text value can be dropped, retyped,
+    or rewritten by this activation. A live binding that exists but is not the
+    exact admitted value fails closed instead of being overwritten.
+    """
+    state = chat_orchestration_state(settings_payload)
+    if state in {"wrong_type", "unexpected_value"}:
+        raise ActivationPlanError(
+            f"refusing to overwrite the live {CHAT_ORCHESTRATION_ENABLED_NAME} binding ({state})"
+        )
+
+    bindings = _raw_bindings(settings_payload)
+    patch_bindings = [
+        _inherit(binding["name"])
+        for binding in bindings
+        if binding["name"] != CHAT_ORCHESTRATION_ENABLED_NAME
+    ]
+    patch_bindings.append({
+        "name": CHAT_ORCHESTRATION_ENABLED_NAME,
+        "type": "plain_text",
+        "text": CHAT_ORCHESTRATION_ENABLED_VALUE,
+    })
+
+    payload = {
+        "bindings": patch_bindings,
+        "annotations": {
+            "workers/message": f"B62 Claw Chat orchestration activation {target_sha}",
+            "workers/triggered_by": "b62-claw-live-config-activation-gate",
+        },
+    }
+    return {
+        "payload": payload,
+        "state": state,
+        "no_op": state == "enabled",
+        "changes": (
+            [] if state == "enabled"
+            else ["CHAT_ORCHESTRATION_ENABLED_SET_TRUE"]
+        ),
+        "preserved_bindings": sum(1 for b in patch_bindings if b["type"] == "inherit"),
+    }
+
+
+def verify_chat_orchestration(
+    settings_payload: object, *, pre_payload: object | None = None
+) -> None:
+    """Prove the Chat orchestration variable is live and that nothing else moved.
+
+    When the pre-mutation settings are supplied, the canonical binding state is
+    compared and exactly one differing name is accepted: the orchestration
+    variable itself. Any other addition, removal, retype or value drift fails
+    closed.
+    """
+    state = chat_orchestration_state(settings_payload)
+    if state != "enabled":
+        raise ActivationPlanError(
+            f"{CHAT_ORCHESTRATION_ENABLED_NAME} is {state}, expected enabled"
+        )
+    if pre_payload is None:
+        return
+    before = {binding["name"]: canonical_binding(binding) for binding in _raw_bindings(pre_payload)}
+    after = {
+        binding["name"]: canonical_binding(binding) for binding in _raw_bindings(settings_payload)
+    }
+    changed = sorted(
+        name for name in set(before) | set(after) if before.get(name) != after.get(name)
+    )
+    expected_changed = (
+        [] if before.get(CHAT_ORCHESTRATION_ENABLED_NAME) == after.get(CHAT_ORCHESTRATION_ENABLED_NAME)
+        else [CHAT_ORCHESTRATION_ENABLED_NAME]
+    )
+    if changed != expected_changed:
+        raise ActivationPlanError(
+            "unexpected live configuration change: " + (", ".join(changed) or "none")
+        )
+
+
+def latest_published_version_id(versions_payload: object) -> str | None:
+    """The id of the newest published Worker version, or ``None``.
+
+    The Cloudflare versions endpoint returns the newest version first. A
+    payload that does not carry exactly one usable id is refused rather than
+    guessed, so a check can never compare against an invented version.
+    """
+    if not isinstance(versions_payload, dict) or versions_payload.get("success") is not True:
+        return None
+    result = versions_payload.get("result")
+    if not isinstance(result, dict):
+        return None
+    items = result.get("items")
+    if not isinstance(items, list) or not items:
+        return None
+    first = items[0]
+    if not isinstance(first, dict):
+        return None
+    value = first.get("id")
+    if not isinstance(value, str) or not value:
+        return None
+    return value
+
+
+def verify_latest_served_version(
+    *, deployments: object, versions_payload: object
+) -> str:
+    """Refuse the activation unless the live active version is the latest one.
+
+    A settings PATCH mutates the script the current deployment serves. When the
+    newest published version is not the served one, live traffic runs a
+    different version than the one the activation would become, so the check
+    fails closed before any mutation. It also refuses when the served version
+    cannot be resolved or the latest id is unusable, because an unconfirmed
+    comparison is not a confirmation.
+
+    Returns the served version id when the two agree.
+    """
+    try:
+        active = canonical_served_version_id(deployments)
+    except _served_version.ServedVersionResolutionError as exc:
+        raise ActivationPlanError(
+            "the live served version could not be resolved (" + exc.reason + ")"
+        ) from exc
+    latest = latest_published_version_id(versions_payload)
+    if not is_safe_version_id(latest):
+        raise ActivationPlanError("the latest Worker version id is missing or unusable")
+    if active != latest:
+        raise ActivationPlanError(
+            "the live served version is not the latest published version"
+        )
+    return active
+
+
 def source_credential_quality(value: object) -> bool:
     """Bounded UTF-8 byte-quality gate for the replacement source credential.
 
@@ -554,6 +729,7 @@ def build_rollback_plan(
     target_sha: str,
     sse_optin_rollback: bool = False,
     oracle_mesh_mode_rollback: bool = False,
+    chat_orchestration_rollback: bool = False,
 ) -> dict:
     """Plan a settings restore bounded to the pre-activation snapshot.
 
@@ -567,7 +743,9 @@ def build_rollback_plan(
         # or removed; everything else must be unchanged since the snapshot.
         return name in TARGET_NAMES or (
             sse_optin_rollback and name == P01_SSE_OPTIN_FLAG
-        ) or (oracle_mesh_mode_rollback and name == ORACLE_MESH_MODE_NAME)
+        ) or (oracle_mesh_mode_rollback and name == ORACLE_MESH_MODE_NAME) or (
+            chat_orchestration_rollback and name == CHAT_ORCHESTRATION_ENABLED_NAME
+        )
 
     snapshot_bindings = _raw_bindings(snapshot_payload)
     current_bindings = _raw_bindings(current_payload)
@@ -655,6 +833,9 @@ def main(argv: list[str] | None = None) -> int:
             "replacement-served-version-final",
             "plan-oracle-mesh-mode",
             "verify-oracle-mesh-mode",
+            "plan-chat-orchestration",
+            "verify-chat-orchestration",
+            "verify-latest-served",
         ),
     )
     parser.add_argument("--settings", type=Path)
@@ -667,8 +848,10 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--credential-created-by-activation", default="false")
     parser.add_argument("--sse-optin-rollback", default="false")
     parser.add_argument("--oracle-mesh-mode-rollback", default="false")
+    parser.add_argument("--chat-orchestration-rollback", default="false")
     parser.add_argument("--mode", default="")
     parser.add_argument("--deployments", type=Path)
+    parser.add_argument("--versions", type=Path)
     parser.add_argument("--pre-version", default="")
     parser.add_argument("--observations-file", type=Path)
     args = parser.parse_args(args_in)
@@ -683,6 +866,8 @@ def main(argv: list[str] | None = None) -> int:
         return _main_replacement_served_version_read(args)
     if args.command == "replacement-served-version-final":
         return _main_replacement_served_version_final(args)
+    if args.command == "verify-latest-served":
+        return _main_verify_latest_served(args)
     if not args.settings:
         print(f"usage: {args.command} requires --settings", file=sys.stderr)
         return 2
@@ -693,6 +878,10 @@ def main(argv: list[str] | None = None) -> int:
         return _main_plan_oracle_mesh_mode(args)
     if args.command == "verify-oracle-mesh-mode":
         return _main_verify_oracle_mesh_mode(args)
+    if args.command == "plan-chat-orchestration":
+        return _main_plan_chat_orchestration(args)
+    if args.command == "verify-chat-orchestration":
+        return _main_verify_chat_orchestration(args)
 
     if not args.engine_service or not args.r2_bucket:
         print(f"usage: {args.command} requires --engine-service and --r2-bucket", file=sys.stderr)
@@ -785,6 +974,9 @@ def _main_rollback_plan(args: argparse.Namespace) -> int:
     if args.oracle_mesh_mode_rollback not in {"true", "false"}:
         print("--oracle-mesh-mode-rollback must be true or false", file=sys.stderr)
         return 2
+    if args.chat_orchestration_rollback not in {"true", "false"}:
+        print("--chat-orchestration-rollback must be true or false", file=sys.stderr)
+        return 2
     try:
         current_payload = json.loads(args.settings.read_text(encoding="utf-8"))
         snapshot_payload = json.loads(args.snapshot.read_text(encoding="utf-8"))
@@ -799,6 +991,7 @@ def _main_rollback_plan(args: argparse.Namespace) -> int:
             target_sha=args.target_sha,
             sse_optin_rollback=args.sse_optin_rollback == "true",
             oracle_mesh_mode_rollback=args.oracle_mesh_mode_rollback == "true",
+            chat_orchestration_rollback=args.chat_orchestration_rollback == "true",
         )
     except ManualConfigRecoveryRequired as exc:
         print(
@@ -894,6 +1087,86 @@ def _main_verify_oracle_mesh_mode(args: argparse.Namespace) -> int:
     print("ORACLE_MESH_MODE_ONLY_VARIABLE_CHANGED=YES")
     print("SECRET_VALUES_READ=0")
     print("SECRET_VALUES_EMITTED=0")
+    return 0
+
+
+def _main_plan_chat_orchestration(args: argparse.Namespace) -> int:
+    if not args.output or not args.target_sha:
+        print(
+            "usage: plan-chat-orchestration requires --output and --target-sha",
+            file=sys.stderr,
+        )
+        return 2
+    try:
+        payload = json.loads(args.settings.read_text(encoding="utf-8"))
+        plan = build_chat_orchestration_patch(payload, target_sha=args.target_sha)
+    except (OSError, json.JSONDecodeError, ActivationPlanError, _deploy_config.ProductionConfigError) as exc:
+        print(f"B62_CLAW_CHAT_ORCHESTRATION_PLAN=FAIL\nREASON={exc}", file=sys.stderr)
+        return 1
+    if args.output.exists():
+        print(
+            "B62_CLAW_CHAT_ORCHESTRATION_PLAN=FAIL\nREASON=output path already exists",
+            file=sys.stderr,
+        )
+        return 1
+    args.output.write_text(json.dumps(plan["payload"], separators=(",", ":")), encoding="utf-8")
+    for change in plan["changes"]:
+        print(f"CONFIG_CHANGE {change}")
+    print("B62_CLAW_CHAT_ORCHESTRATION_PLAN=PASS")
+    print(f"CHAT_ORCHESTRATION_PREVIOUS={plan['state']}")
+    print(f"B62_CLAW_CHAT_ORCHESTRATION_NO_OP={'1' if plan['no_op'] else '0'}")
+    print(f"CHAT_ORCHESTRATION_PRESERVED_BINDINGS={plan['preserved_bindings']}")
+    print("SECRET_VALUES_READ=0")
+    print("PRODUCTION_MUTATION=0")
+    return 0
+
+
+def _main_verify_chat_orchestration(args: argparse.Namespace) -> int:
+    try:
+        payload = json.loads(args.settings.read_text(encoding="utf-8"))
+        pre_payload = (
+            json.loads(args.pre_settings.read_text(encoding="utf-8"))
+            if args.pre_settings
+            else None
+        )
+        verify_chat_orchestration(payload, pre_payload=pre_payload)
+    except (OSError, json.JSONDecodeError, ActivationPlanError, _deploy_config.ProductionConfigError) as exc:
+        print(f"B62_CLAW_CHAT_ORCHESTRATION_VERIFY=FAIL\nREASON={exc}", file=sys.stderr)
+        return 1
+    print("B62_CLAW_CHAT_ORCHESTRATION_VERIFY=EXACT")
+    print("CHAT_ORCHESTRATION_LIVE=true")
+    print("CHAT_ORCHESTRATION_ONLY_VARIABLE_CHANGED=YES")
+    print("SECRET_VALUES_READ=0")
+    print("SECRET_VALUES_EMITTED=0")
+    return 0
+
+
+def _main_verify_latest_served(args: argparse.Namespace) -> int:
+    if not args.deployments or not args.versions:
+        print(
+            "usage: verify-latest-served requires --deployments and --versions",
+            file=sys.stderr,
+        )
+        return 2
+    try:
+        deployments = json.loads(args.deployments.read_text(encoding="utf-8"))
+        versions = json.loads(args.versions.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        print(
+            f"B62_CLAW_LATEST_SERVED=FAIL\nREASON={exc}", file=sys.stderr
+        )
+        return 1
+    try:
+        active = verify_latest_served_version(
+            deployments=deployments, versions_payload=versions
+        )
+    except ActivationPlanError as exc:
+        print(f"B62_CLAW_LATEST_SERVED=FAIL\nREASON={exc}", file=sys.stderr)
+        return 1
+    print("B62_CLAW_LATEST_SERVED=PASS")
+    print(f"ACTIVE_VERSION_ID={active}")
+    print("LATEST_EQUALS_ACTIVE=YES")
+    print("SECRET_VALUES_READ=0")
     return 0
 
 

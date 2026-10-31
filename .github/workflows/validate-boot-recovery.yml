@@ -1,0 +1,24 @@
+name: Validate COM2 boot recovery
+on:
+  pull_request:
+    paths:
+      - 'deploy/host-com2/boot-recovery/**'
+      - 'docs/operations/COM2_BOOT_RECOVERY_RUNBOOK.md'
+      - '.github/workflows/validate-boot-recovery.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  boot-recovery:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verdict units (normal, inactive, health, tunnel)
+        run: python -m unittest deploy/host-com2/boot-recovery/tests/test_boot_recovery.py -q
+      - name: Packaging (dry-run gates, unit order, notifier names)
+        run: python -m unittest deploy/host-com2/boot-recovery/tests/test_packaging.py -q

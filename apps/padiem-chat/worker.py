@@ -8,6 +8,11 @@ Provider/model execution remains Business 14 authority.
 from __future__ import annotations
 
 import json
+import asyncio
+import builtins
+import re
+import time
+from dataclasses import replace
 from datetime import datetime, timezone
 from typing import Any
 from urllib.parse import urlparse
@@ -17,6 +22,16 @@ from urllib.parse import urlparse
 # type family; app.httpx_compat is only for app-owned JS-fetch clients.
 import httpx
 from padiem_ai_core.b14_execution import MAX_CONFIGURED_B14_RESPONSE_BYTES
+from app.maintenance_mode import apply_write_freeze
+from app.b14_upstream_composition import (
+    compose_b14_transports,
+    request_correlation_headers,
+)
+from padiem_ai_core.isolated_parser_composition import (
+    compose_worker_isolated_parser_authority_async,
+    reset_worker_isolated_parser_async_composition,
+)
+from app.document_parser_transport import CloudflareDocumentParserServiceTransport
 from app.padiem_super_admin_bootstrap import resolve_super_admin_bootstrap
 from app.service_binding_response import (
     ServiceBindingResponseError,
@@ -38,8 +53,17 @@ from app.platform_admin_roles import D1PlatformAdminRoleStore
 from app.central_model_route_runtime import resolve_claw_tier_model_from_stores
 from app.claw_local_access_composition import (
     build_claw_local_access_source_with_diagnostic,
+    build_mesh_presence_generation_resolver,
 )
 from app.claw_device_directory_routes import build_broker_device_directory_source
+from app.mesh_device_presence_store import D1MeshDevicePresenceStore
+from app.pc_device_pairing_store import D1PcPairingStore
+from app.queue_store_proxy import (
+    QueueBackedPairingStore,
+    QueueBackedPresenceStore,
+    QueueForwardingHistoryStore,
+    build_queue_client,
+)
 from app.desktop_conversation_authority import (
     build_desktop_device_session_authority_with_diagnostic,
 )
@@ -57,7 +81,10 @@ from app.claw_artifact_delivery_receipt_store import (
     D1ArtifactDeliveryReceiptStore,
 )
 from app.claw_task_alert_store import D1ClawTaskAlertStore
+from app.claw_push_subscriptions import D1ClawPushSubscriptionStore
+from app.claw_web_push_sender import VapidAuthority, WebPushSender
 from app.b66_quote_conversation import B66QuoteConversationInterpreter
+from app.b14_service_proof import service_proof_headers
 from app.b66_search_boundary import authorized_b66_fact_search_binding
 from app.b66_registered_model_boundary import (
     B14QuoteExactModelExecutor,
@@ -73,7 +100,10 @@ from app.connector_owner_runtime_mount import compose_owner_enrollment_from_work
 from app.connector_workspace_truth import CloudflareGoogleOAuthWorkspaceTruth
 from app.calendar_read_activation_engine import CloudflareCalendarReadActivationEngineClient
 from app.calendar_read_state_engine import CloudflareCalendarReadStateEngineClient
-from app.control_plane_identity_shadow import D1IdentityShadowStore
+from app.control_plane_identity_shadow import (
+    D1IdentityShadowStore,
+    RefreshingCanonicalSubjectResolver,
+)
 from app.control_plane_identity_worker import CloudflareControlPlaneIdentityAuthority
 from app.dispatch_quota import (
     DispatchAwareB14Client,
@@ -83,6 +113,8 @@ from app.dispatch_quota import (
 from app.grounding import GroundedChatService
 from app.history import D1HistoryStore
 from app.b66_signup_notifications import B66SignupNotifier
+from app.password_reset_delivery import build_email_delivery
+from app.password_reset_store import D1PasswordResetStore
 from app.claw_local_task_result_composition import (
     build_local_task_result_source_with_diagnostic,
 )
@@ -93,15 +125,21 @@ from app.saved_outputs import D1SavedOutputStore
 from app.usage_gate import D1UsageCounterStore, UsageGate
 from app.worker_config import (
     B14_SERVICE_BINDING_NAME,
+    B14_SERVICE_PROOF_SECRET_BINDING_NAME,
     B66_PDF_RENDERER_SERVICE_BINDING_NAME,
     D1_BINDING_NAME,
+    DOCUMENT_PARSER_SERVICE_BINDING_NAME,
     GOOGLE_OAUTH_SERVICE_BINDING_NAME,
     IDENTITY_AUTHORITY_SERVICE_BINDING_NAME,
+    MAIL_API_KEY_BINDING_NAMES,
+    MAIL_FROM_BINDING_NAMES,
     WORKSPACE_R2_BINDING_NAME,
     VOICE_STT_SERVICE_BINDING_NAME,
     apply_live_deadman_switch,
     binding_value,
     response_headers_for_path,
+    resolve_first_secret_binding,
+    resolve_secret_binding,
     resolve_web_secrets_store_keys,
     settings_from_worker_bindings,
     p01_engine_config_from_worker_bindings,
@@ -116,7 +154,26 @@ from kagent.claw_automation import ClawAutomationTickRuntime
 from kagent.claw_automation_trigger import ClawAutomationTriggerBoundary
 from workers import Request, Response, WorkerEntrypoint
 
+class ChatInitUnavailableError(RuntimeError):
+    """The shared app initialization did not finish inside its bound.
+
+    Raised to a waiting request so it can answer a controlled 503 instead of
+    hanging until the runtime reaps it — a hung build must cost a retryable
+    refusal, never a runtime cancellation storm.
+    """
+
+
+#: #6225 follow-up: a waiting request must answer before the runtime's own
+#: hung-request reaper fires. Healthy cold starts finish well inside this; a
+#: window that outlasts it says "still starting" honestly and retryably.
+CHAT_INIT_WAIT_SECONDS = 10
+#: The init task bounds itself, so one hung build cannot brick the isolate:
+#: past this ceiling the attempt is cancelled, the state resets, and the next
+#: request starts a fresh initialization instead of waiting forever.
+CHAT_INIT_TASK_SECONDS = 45
+
 _worker_app = None
+_worker_app_initialization = None
 _AUTOMATION_SCHEDULER_ENABLED_ENV = "PADIEM_CHAT_AUTOMATION_SCHEDULER_ENABLED"
 BACKGROUND_SCHEDULER_SOURCE_READY = True
 CRON_SOURCE_DECLARATION = False
@@ -131,77 +188,158 @@ def _automation_source_enabled(env: Any) -> bool:
     return value is True
 
 
+_PUSH_SCOPE_ORIGIN_ENV = "PADIEM_CHAT_PUBLIC_BASE_URL"
+
+
+def _push_delivery_parts(env: Any, db_binding: Any) -> tuple[Any, Any, str]:
+    """Build the existing #5034 delivery parts for the background automation lane.
+
+    The scheduled lane runs outside the request app, so it reads the same
+    reviewed Worker bindings the request app already reads: the device registry
+    from the existing Chat D1 binding, the VAPID authority from the three push
+    secrets and the subscription scope from the reviewed public origin. A
+    missing part is reported honestly through the existing ``not_configured``
+    state; the inbox record and the automation run itself are never affected.
+    """
+    origin = binding_value(env, _PUSH_SCOPE_ORIGIN_ENV)
+    if db_binding is None or not isinstance(origin, str) or not origin.strip():
+        return None, None, ""
+    try:
+        store = D1ClawPushSubscriptionStore(db_binding)
+    except Exception:
+        return None, None, ""
+    private = str(binding_value(env, "PADIEM_PUSH_VAPID_PRIVATE_KEY") or "").strip()
+    public = str(binding_value(env, "PADIEM_PUSH_VAPID_PUBLIC_KEY") or "").strip()
+    subject = str(binding_value(env, "PADIEM_PUSH_VAPID_SUBJECT") or "").strip()
+    transport = build_push_transport()
+    sender = None
+    if private and public and subject and transport is not None:
+        try:
+            sender = WebPushSender(
+                authority=VapidAuthority(
+                    private_key=private, public_key=public, subject=subject,
+                ),
+                transport=transport,
+            )
+        except Exception:
+            sender = None
+    return store, sender, origin.rstrip("/") + "/"
+
+
 async def run_scheduled_automation_source(
-    env: Any, *, now: datetime | None = None, execution_ports: Any | None = None
+    env: Any,
+    *,
+    now: datetime | None = None,
+    execution_ports: Any | None = None,
+    automation_store: Any | None = None,
+    identity_authority: Any | None = None,
+    discovery: Any | None = None,
 ) -> Any:
+    """One cron tick of the Claw automation lane.
+
+    In production every authority is read from the reviewed Worker bindings. The
+    ``automation_store`` / ``identity_authority`` / ``discovery`` keywords are the
+    injection seam: an injected value replaces the one that would be built from a
+    binding, and an injected store or identity means the matching binding is not
+    required at all. The default path — no keyword injected — builds exactly the
+    objects it built before, so the deployed lane is unchanged.
+    """
+
     if not _automation_source_enabled(env):
         return None
     db_binding = binding_value(env, D1_BINDING_NAME)
     identity_binding = binding_value(env, IDENTITY_AUTHORITY_SERVICE_BINDING_NAME)
-    if db_binding is None or identity_binding is None:
+    if automation_store is None and db_binding is None:
+        return None
+    if identity_authority is None and identity_binding is None:
         return None
     try:
-        store = D1ClawAutomationStore(db_binding)
+        store = automation_store if automation_store is not None else D1ClawAutomationStore(db_binding)
         # Background automation executes at the default Claw product tier. A
         # stored central route supplies the exact model; without one the
         # existing adapter contract is untouched. A stored row that resolves to
         # nothing (disabled, or every candidate blocked) fails the pass closed
         # rather than silently reusing the historical static route.
-        try:
-            route_store = D1CentralModelRouteStore(db_binding)
-            policy_store = D1CentralModelPolicyStore(db_binding)
-        except Exception:
-            route_store = None
-            policy_store = None
-        claw_route = await resolve_claw_tier_model_from_stores(
-            route_store, policy_store, "plus"
+        #
+        # The route stores live beside the automation rows in the same D1
+        # binding. An injected store has no binding of its own, and inventing a
+        # route authority for it would be a different lane — so the central
+        # resolve only runs when the binding is present.
+        central_route_model_id: str | None = None
+        if db_binding is not None:
+            try:
+                route_store = D1CentralModelRouteStore(db_binding)
+                policy_store = D1CentralModelPolicyStore(db_binding)
+            except Exception:
+                route_store = None
+                policy_store = None
+            claw_route = await resolve_claw_tier_model_from_stores(
+                route_store, policy_store, "plus"
+            )
+            if not claw_route.ok:
+                return None
+            central_route_model_id = (
+                claw_route.model_id if claw_route.source == "central" else None
+            )
+        resolved_identity = (
+            identity_authority if identity_authority is not None
+            else CloudflareControlPlaneIdentityAuthority(identity_binding)
         )
-        if not claw_route.ok:
-            return None
-        central_route_model_id = (
-            claw_route.model_id if claw_route.source == "central" else None
-        )
-        identity_authority = CloudflareControlPlaneIdentityAuthority(identity_binding)
         boundary = ClawAutomationTriggerBoundary(ClawAutomationTickRuntime(store))
-        discovery = compose_canonical_due_workspace_discovery(
+        # The default discovery is the canonical one over these exact authorities;
+        # an injected discovery runs instead of it, over the same boundary and
+        # store, so the claim/dedup authority never moves.
+        due_discovery = discovery if discovery is not None else compose_canonical_due_workspace_discovery(
             automation_store=store,
-            control_plane_identity_authority=identity_authority,
+            control_plane_identity_authority=resolved_identity,
             trigger_boundary=boundary,
         )
         if execution_ports is None:
+            # The execution ports (adapter, owner resolution, history, Task-Alert,
+            # push) are D1/service-bound in production; without the D1 binding
+            # they cannot be built, so a fully injected tick must inject them.
+            if db_binding is None:
+                return None
             adapter = build_claw_p01_adapter(env, request_factory=Request)
             if adapter is None:
                 return None
             shadow_store = D1IdentityShadowStore(db_binding)
             owner_resolver = ClawAutomationOwnerResolver(
-                owner_authority=identity_authority,
-                session_authority=identity_authority,
+                owner_authority=resolved_identity,
+                session_authority=resolved_identity,
                 shadow_store=shadow_store,
                 # #3247: the production owner identity source. Background rules
                 # carry a canonical subject, so resolution derives identity from
                 # Control Plane canonical facts through this authority.
-                canonical_owner_authority=identity_authority,
+                canonical_owner_authority=resolved_identity,
             )
             history_store = D1HistoryStore(db_binding)
             task_alert_store = D1ClawTaskAlertStore(db_binding)
+            push_store, push_sender, push_scope = _push_delivery_parts(env, db_binding)
         else:
             adapter = getattr(execution_ports, "adapter", None)
             owner_resolver = getattr(execution_ports, "owner_resolver", None)
             history_store = getattr(execution_ports, "history_store", None)
             task_alert_store = getattr(execution_ports, "task_alert_store", None)
+            push_store = getattr(execution_ports, "push_store", None)
+            push_sender = getattr(execution_ports, "push_sender", None)
+            push_scope = getattr(execution_ports, "push_scope", "")
             if any(
                 value is None
                 for value in (adapter, owner_resolver, history_store, task_alert_store)
             ):
                 return None
         return await compose_scheduled_automation_execution(
-            discovery=discovery,
+            discovery=due_discovery,
             boundary=boundary,
             store=store,
             adapter=adapter,
             owner_resolver=owner_resolver,
             history_store=history_store,
             task_alert_store=task_alert_store,
+            push_store=push_store,
+            push_sender=push_sender,
+            push_scope=push_scope,
             central_route_model_id=central_route_model_id,
             now=now or datetime.now(timezone.utc),
         )
@@ -264,10 +402,11 @@ class CloudflareB14ServiceTransport:
     configuration — not the hostname — selects the target Worker.
     """
 
-    def __init__(self, binding: Any):
+    def __init__(self, binding: Any, proof_secret: str | None = None):
         if binding is None:
             raise ValueError("B14 service binding is required")
         self.binding = binding
+        self.proof_secret = proof_secret
 
     async def get_json(self, path: str) -> tuple[int, bytes]:
         """Read only two fixed B14 model authority endpoints over Service Binding."""
@@ -284,7 +423,7 @@ class CloudflareB14ServiceTransport:
         status = int(response.status)
         try:
             body = await read_bounded_service_binding_body(
-                response, max_bytes=131072,
+                response, max_bytes=1024 * 1024,
             )
         except (ServiceBindingResponseTooLarge, ServiceBindingResponseError):
             raise RuntimeError("bounded B14 model authority read unavailable") from None
@@ -299,14 +438,18 @@ class CloudflareB14ServiceTransport:
                 trace_headers["X-Request-Id"] = value
         except ImportError:
             pass
+        raw_body = json.dumps(payload, ensure_ascii=False)
         request = Request(
             url,
             method="POST",
             headers={
                 "Content-Type": "application/json",
                 **trace_headers,
+                # B14 spends platform-owned Provider credentials on this lane.
+                # The proof binds this exact body to this deployment.
+                **service_proof_headers(self.proof_secret, raw_body.encode("utf-8")),
             },
-            body=json.dumps(payload, ensure_ascii=False),
+            body=raw_body,
         )
         response = await self.binding.fetch(request.js_object)
         status = int(response.status)
@@ -407,10 +550,11 @@ class _CloudflareReadableByteStream(httpx.AsyncByteStream):
 class CloudflareB14StreamingServiceTransport(httpx.AsyncBaseTransport):
     """Progressive httpx transport backed by the fixed B14 Service Binding."""
 
-    def __init__(self, binding: Any):
+    def __init__(self, binding: Any, proof_secret: str | None = None):
         if binding is None:
             raise ValueError("B14 service binding is required")
         self.binding = binding
+        self.proof_secret = proof_secret
 
     async def handle_async_request(self, request: httpx.Request) -> httpx.Response:
         try:
@@ -434,7 +578,14 @@ class CloudflareB14StreamingServiceTransport(httpx.AsyncBaseTransport):
             service_request = Request(
                 str(request.url),
                 method="POST",
-                headers={"Content-Type": "application/json", **trace_headers},
+                headers={
+                    "Content-Type": "application/json",
+                    **trace_headers,
+                    # B14 spends platform-owned Provider credentials on this lane.
+                    **service_proof_headers(
+                        self.proof_secret, body_text.encode("utf-8"),
+                    ),
+                },
                 body=body_text,
             )
         except Exception as exc:
@@ -576,6 +727,74 @@ class _CloudflareEmptyAsyncByteStream(httpx.AsyncByteStream):
 
     async def aclose(self) -> None:
         return None
+
+
+class _PushHttpTransport:
+    """#5034 — the bounded HTTP surface the Web Push sender needs.
+
+    The sender only ever performs one POST to a push endpoint, so this adapter
+    exposes exactly ``post()`` over the existing Workers-fetch transport instead
+    of handing the sender a general-purpose client. The endpoint is a device
+    capability URL: it is never logged here, and only the status code is
+    returned.
+    """
+
+    def __init__(self, transport: Any, *, timeout_seconds: float = 10.0) -> None:
+        self._transport = transport
+        self._timeout_seconds = timeout_seconds
+
+    async def post(
+        self, url: str, *, content: bytes, headers: dict[str, str]
+    ) -> Any:
+        request = httpx.Request(
+            "POST",
+            url,
+            content=content,
+            headers=headers,
+            extensions={"timeout": {"read": self._timeout_seconds}},
+        )
+        response = await self._transport.handle_async_request(request)
+        try:
+            await response.aread()
+        finally:
+            await response.aclose()
+        return response
+
+
+def build_push_transport() -> Any:
+    """Build the Web Push transport, or None when the runtime cannot fetch.
+
+    A missing transport is reported honestly as ``not_configured`` by the
+    sender; it never becomes a false delivery claim.
+    """
+
+    try:
+        return _PushHttpTransport(CloudflareExternalHttpTransport())
+    except Exception:
+        return None
+
+
+def _compose_b14_transports(*, settings, binding, proof_secret):
+    """Compose the B14 transports for the upstream this deployment chose (#5784).
+
+    Default is the fixed ``B14_SERVICE`` binding, or nothing at all when the
+    binding is absent — which leaves every platform-credential route failing
+    closed exactly as it does today.
+    """
+    return compose_b14_transports(
+        upstream_mode=settings.b14_upstream_mode,
+        origin=settings.b14_base_url,
+        binding=binding,
+        proof_secret=proof_secret,
+        service_binding_factory=CloudflareB14ServiceTransport,
+        stream_binding_factory=CloudflareB14StreamingServiceTransport,
+        https_client_factory=lambda: httpx.AsyncClient(
+            transport=CloudflareExternalHttpTransport(),
+            timeout=None,
+            follow_redirects=False,
+        ),
+        correlation_headers=request_correlation_headers,
+    )
 
 
 class CloudflareExternalHttpTransport(httpx.AsyncBaseTransport):
@@ -781,562 +1000,834 @@ class CloudflareExternalHttpTransport(httpx.AsyncBaseTransport):
         )
 
 
+_FETCH_STATIC_ROUTES = frozenset({"/health", "/api/auth/status", "/api/admin/session"})
+_FETCH_VERSION_RE = re.compile(r"[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}\Z")
+_FETCH_EXCEPTION_NAMES = frozenset(
+    name for name, value in vars(builtins).items()
+    if isinstance(value, type) and issubclass(value, BaseException)
+) | {"JsException"}
+
+
+def _log_fetch_exception(stage: str, exc: Exception, env: Any, path: Any,
+                         method: Any, app: Any, started: float) -> None:
+    """Best-effort, bounded diagnostic; never render exception or request data."""
+    try:
+        name = type(exc).__name__
+        if name not in _FETCH_EXCEPTION_NAMES:
+            name = "OtherException"
+        version = "unknown"
+        metadata = getattr(env, "CF_VERSION_METADATA", None)
+        if metadata is not None:
+            candidate = metadata.get("id") if isinstance(metadata, dict) else getattr(metadata, "id", None)
+            if isinstance(candidate, str) and _FETCH_VERSION_RE.fullmatch(candidate):
+                version = candidate.lower()
+        route = path if path in _FETCH_STATIC_ROUTES else "<unmatched>"
+        if app is not None and isinstance(path, str):
+            from app.request_telemetry import resolve_route_template
+            scope = {"type": "http", "path": path, "method": method if isinstance(method, str) else "GET"}
+            route = resolve_route_template(app, scope)
+        # A resolver must never accidentally turn request data into a log.
+        if not isinstance(route, str) or len(route) > 160 or not re.fullmatch(r"[A-Za-z0-9_/{}/:.<>-]+", route):
+            route = "<unmatched>"
+        elapsed_ms = max(0, int((time.monotonic() - started) * 1000))
+        print(f"chat_fetch_exception stage={stage} exception={name} version={version} route={route} elapsed_ms={elapsed_ms}")
+    except Exception:
+        # A diagnostics failure must never change the original exception.
+        pass
+
+
+def _log_fetch_exception_safe(stage: str, exc: Exception, worker: Any, request: Any,
+                              path: Any, app: Any, started: float) -> None:
+    try:
+        _log_fetch_exception(stage, exc, worker.env, path,
+                             getattr(request, "method", None), app, started)
+    except Exception:
+        pass
+
+
 class Default(WorkerEntrypoint):
     async def scheduled(self, event: Any, env: Any, ctx: Any) -> None:
         del event, ctx
         await run_scheduled_automation_source(env)
 
-    async def fetch(self, request: Any) -> Any:
-        import asgi
-
-        global _worker_app
-        path = urlparse(request.url).path
-
-        connector_wss_response = await maybe_dispatch_connector_gateway(
-            request=request, worker_env=self.env, response_factory=Response,
+    async def _build_worker_app(self) -> Any:
+        # Resolve Cloudflare same-account Secrets Store bindings only
+        # for an explicitly selected or live-armed public Search route.
+        # Values stay server-side; no user input can name a binding.
+        web_keys = await resolve_web_secrets_store_keys(self.env)
+        settings = apply_live_deadman_switch(
+            settings_from_worker_bindings(self.env, resolved_web_keys=web_keys)
         )
-        if connector_wss_response is not None:
-            return connector_wss_response
+        settings = replace(settings, file_lane_ticket_secret=await resolve_secret_binding(
+            self.env, "PADIEM_CHAT_FILE_LANE_TICKET_SECRET"))
+        db_binding = binding_value(self.env, D1_BINDING_NAME)
+        b14_binding = binding_value(self.env, B14_SERVICE_BINDING_NAME)
+        # B14 spends platform-owned Provider credentials on its catalog
+        # execution lane. The deployment-owned proof secret lets B14
+        # verify this server-to-server caller before it resolves one.
+        b14_proof_secret = await resolve_secret_binding(
+            self.env, B14_SERVICE_PROOF_SECRET_BINDING_NAME,
+        )
+        b66_pdf_binding = binding_value(self.env, B66_PDF_RENDERER_SERVICE_BINDING_NAME)
+        # #4643: private STT Worker Service Binding. Absent until CENTRAL
+        # adds it, which keeps every /api/voice/* route fail-closed.
+        voice_stt_binding = binding_value(self.env, VOICE_STT_SERVICE_BINDING_NAME)
+        identity_binding = binding_value(self.env, IDENTITY_AUTHORITY_SERVICE_BINDING_NAME)
+        google_oauth_binding = binding_value(self.env, GOOGLE_OAUTH_SERVICE_BINDING_NAME)
+        # Private Claw workspace bytes (#2266). Resolved from trusted
+        # Worker bindings only; absent until #2259/#2246 activation, in
+        # which case WorkspaceDocumentStore stays None (fail closed).
+        r2_binding = binding_value(self.env, WORKSPACE_R2_BINDING_NAME)
+        # #2824: the private isolated Parser Authority. Chat forwards
+        # the bounded Core envelope over this fixed binding; the parser
+        # Worker runs the reviewed extraction. Composition happens
+        # before create_app so the async attachment path resolves the
+        # authority on its first request. Absent binding => the async
+        # slot is cleared and binary parsing fails closed.
+        document_parser_binding = binding_value(
+            self.env, DOCUMENT_PARSER_SERVICE_BINDING_NAME
+        )
+        document_parser_transport = (
+            CloudflareDocumentParserServiceTransport(
+                document_parser_binding, Request,
+            )
+            if document_parser_binding is not None
+            else None
+        )
+        if document_parser_transport is not None:
+            compose_worker_isolated_parser_authority_async(
+                transport=document_parser_transport
+            )
+        else:
+            reset_worker_isolated_parser_async_composition()
 
-        if _worker_app is None:
+        history_store = D1HistoryStore(db_binding, full_context_bucket=r2_binding) if db_binding is not None else None
+        project_file_store = D1ProjectFileStore(db_binding) if db_binding is not None else None
+        saved_output_store = D1SavedOutputStore(db_binding) if db_binding is not None else None
+        identity_shadow_store = D1IdentityShadowStore(db_binding) if db_binding is not None else None
+        identity_authority = (
+            CloudflareControlPlaneIdentityAuthority(identity_binding)
+            if identity_binding is not None
+            else None
+        )
+        comparison_flow = None
+        if str(binding_value(self.env, "PADIEM_CHAT_SHARED_AUTH_COMPARE_ENABLED") or "").strip().lower() == "true":
+            from app.shared_auth_compare_flow import create_worker_comparison_flow
+            comparison_flow = await create_worker_comparison_flow(self.env, identity_authority)
+        shared_login_flow = None
+        if str(binding_value(self.env, "PADIEM_CHAT_SHARED_LOGIN_ENABLED") or "").strip().lower() == "true":
+            from app.shared_login_flow import create_worker_shared_login_flow
+            shared_login_flow = await create_worker_shared_login_flow(self.env, identity_authority)
+        # #5484: the Engine admission authority resolves the engine
+        # entitlement by CANONICAL subject. The B62 product-local
+        # ``usr_*`` id is not a canonical subject id, so the Control
+        # Plane reverse product-user lookup fails closed and the whole
+        # Engine orchestration lane answers 503 ``entitlement_unavailable``.
+        # The canonical subject resolver already exists (#1617) and is
+        # composed from the same authority and shadow projection the
+        # Chat PC lane uses; only the Production composition was missing
+        # it. Absent either dependency the resolver stays None and the
+        # bridge keeps its previous (unbound) behaviour.
+        canonical_subject_resolver = (
+            RefreshingCanonicalSubjectResolver(
+                authority=identity_authority,
+                store=identity_shadow_store,
+            )
+            if identity_authority is not None and identity_shadow_store is not None
+            else None
+        )
+        google_oauth_workspace_truth = (
+            CloudflareGoogleOAuthWorkspaceTruth(google_oauth_binding)
+            if google_oauth_binding is not None
+            else None
+        )
+        base_usage_store = D1UsageCounterStore(db_binding) if db_binding is not None else None
+        usage_store = (
+            DispatchAwareUsageCounterStore(base_usage_store)
+            if base_usage_store is not None
+            else None
+        )
+        service_transport, stream_transport = _compose_b14_transports(
+            settings=settings,
+            binding=b14_binding,
+            proof_secret=b14_proof_secret,
+        )
+        web_transport = CloudflareExternalHttpTransport()
+        b66_pdf_renderer_client = (
+            CloudflareB66PdfRendererClient(b66_pdf_binding)
+            if b66_pdf_binding is not None
+            else None
+        )
+        # #3580: the Claw Drive WRITE host injection boundary. No trusted
+        # input exists in this build — the Control Plane Drive grant is
+        # READ-only (#2010), and there is no run/workspace-scoped artifact
+        # material resolver, authorized folder-proof port or approval
+        # authority composed for the Worker — so this fails closed to
+        # None and the Drive routes stay unbound. Supplying the inputs in
+        # app.claw_drive_upload_host_composition is the whole change.
+        claw_drive_artifact_uploader = build_claw_drive_artifact_uploader()
+        # #3580: the Claw Telegram SEND host injection boundary, the
+        # outbound counterpart of the Drive boundary above. No trusted
+        # authority exists in this build — the Control Plane Telegram
+        # grant is READ-only (#2010), and there is no trusted outbound
+        # binding (bot token / provider chat id), scoped artifact
+        # material resolver, current-channel context or approval
+        # authority composed for the Worker — so this fails closed to
+        # None. The bot token and chat id are never Worker settings.
+        claw_telegram_artifact_delivery = build_claw_telegram_artifact_delivery()
+        # #3580: the delivery consumer's one-attempt-per-artifact receipt
+        # record, under the existing Claw history D1 owner. Creating the
+        # adapter still needs the CP SEND grant and the trusted outbound
+        # binding, so the route answers 403 before this store is ever
+        # consulted. Applying migration 036 is a separate owner-run gate.
+        claw_artifact_delivery_receipt_store = (
+            D1ArtifactDeliveryReceiptStore(db_binding)
+            if db_binding is not None
+            else None
+        )
+        # #3580: the host's server-derived channel + approval binding for
+        # one delivery. No host approval source is composed in this
+        # build, so this stays None and the route refuses with 403
+        # rather than inventing an approval.
+        claw_telegram_delivery_request_builder = None
+        # Single trusted PADIEM operator bootstrap. Existing product
+        # authorizers still check the Google provider subject in D1.
+        # A conflicting legacy binding fails closed for BOTH products.
+        b66_operator_email, central_operator_email = resolve_super_admin_bootstrap(
+            shared=binding_value(self.env, "PADIEM_SUPER_ADMIN_GOOGLE_EMAIL"),
+            legacy_b66=binding_value(self.env, "B66_ADMIN_GOOGLE_EMAIL"),
+            legacy_central=binding_value(self.env, "PADIEM_CENTRAL_MODEL_ADMIN_GOOGLE_EMAIL"),
+        )
+        try:
+            connector_owner_ports = compose_owner_enrollment_from_worker(self.env)
+        except ValueError:
+            return _apply_headers(Response(
+                "Connector owner enrollment unavailable.", status=503,
+                headers={"Content-Type": "text/plain; charset=utf-8"},
+            ), path)
+        github_secret_binding = binding_value(self.env, "PADIEM_GITHUB_APP_CLIENT_SECRET")
+        github_client_secret = None
+        if github_secret_binding is not None:
             try:
-                # Resolve Cloudflare same-account Secrets Store bindings only
-                # for an explicitly selected or live-armed public Search route.
-                # Values stay server-side; no user input can name a binding.
-                web_keys = await resolve_web_secrets_store_keys(self.env)
-                settings = apply_live_deadman_switch(
-                    settings_from_worker_bindings(self.env, resolved_web_keys=web_keys)
-                )
-                db_binding = binding_value(self.env, D1_BINDING_NAME)
-                b14_binding = binding_value(self.env, B14_SERVICE_BINDING_NAME)
-                b66_pdf_binding = binding_value(self.env, B66_PDF_RENDERER_SERVICE_BINDING_NAME)
-                # #4643: private STT Worker Service Binding. Absent until CENTRAL
-                # adds it, which keeps every /api/voice/* route fail-closed.
-                voice_stt_binding = binding_value(self.env, VOICE_STT_SERVICE_BINDING_NAME)
-                identity_binding = binding_value(self.env, IDENTITY_AUTHORITY_SERVICE_BINDING_NAME)
-                google_oauth_binding = binding_value(self.env, GOOGLE_OAUTH_SERVICE_BINDING_NAME)
-                # Private Claw workspace bytes (#2266). Resolved from trusted
-                # Worker bindings only; absent until #2259/#2246 activation, in
-                # which case WorkspaceDocumentStore stays None (fail closed).
-                r2_binding = binding_value(self.env, WORKSPACE_R2_BINDING_NAME)
-
-                history_store = D1HistoryStore(db_binding, full_context_bucket=r2_binding) if db_binding is not None else None
-                project_file_store = D1ProjectFileStore(db_binding) if db_binding is not None else None
-                saved_output_store = D1SavedOutputStore(db_binding) if db_binding is not None else None
-                identity_shadow_store = D1IdentityShadowStore(db_binding) if db_binding is not None else None
-                identity_authority = (
-                    CloudflareControlPlaneIdentityAuthority(identity_binding)
-                    if identity_binding is not None
-                    else None
-                )
-                google_oauth_workspace_truth = (
-                    CloudflareGoogleOAuthWorkspaceTruth(google_oauth_binding)
-                    if google_oauth_binding is not None
-                    else None
-                )
-                base_usage_store = D1UsageCounterStore(db_binding) if db_binding is not None else None
-                usage_store = (
-                    DispatchAwareUsageCounterStore(base_usage_store)
-                    if base_usage_store is not None
-                    else None
-                )
-                service_transport = (
-                    CloudflareB14ServiceTransport(b14_binding)
-                    if b14_binding is not None
-                    else None
-                )
-                stream_transport = (
-                    CloudflareB14StreamingServiceTransport(b14_binding)
-                    if b14_binding is not None
-                    else None
-                )
-                web_transport = CloudflareExternalHttpTransport()
-                b66_pdf_renderer_client = (
-                    CloudflareB66PdfRendererClient(b66_pdf_binding)
-                    if b66_pdf_binding is not None
-                    else None
-                )
-                # #3580: the Claw Drive WRITE host injection boundary. No trusted
-                # input exists in this build — the Control Plane Drive grant is
-                # READ-only (#2010), and there is no run/workspace-scoped artifact
-                # material resolver, authorized folder-proof port or approval
-                # authority composed for the Worker — so this fails closed to
-                # None and the Drive routes stay unbound. Supplying the inputs in
-                # app.claw_drive_upload_host_composition is the whole change.
-                claw_drive_artifact_uploader = build_claw_drive_artifact_uploader()
-                # #3580: the Claw Telegram SEND host injection boundary, the
-                # outbound counterpart of the Drive boundary above. No trusted
-                # authority exists in this build — the Control Plane Telegram
-                # grant is READ-only (#2010), and there is no trusted outbound
-                # binding (bot token / provider chat id), scoped artifact
-                # material resolver, current-channel context or approval
-                # authority composed for the Worker — so this fails closed to
-                # None. The bot token and chat id are never Worker settings.
-                claw_telegram_artifact_delivery = build_claw_telegram_artifact_delivery()
-                # #3580: the delivery consumer's one-attempt-per-artifact receipt
-                # record, under the existing Claw history D1 owner. Creating the
-                # adapter still needs the CP SEND grant and the trusted outbound
-                # binding, so the route answers 403 before this store is ever
-                # consulted. Applying migration 036 is a separate owner-run gate.
-                claw_artifact_delivery_receipt_store = (
-                    D1ArtifactDeliveryReceiptStore(db_binding)
-                    if db_binding is not None
-                    else None
-                )
-                # #3580: the host's server-derived channel + approval binding for
-                # one delivery. No host approval source is composed in this
-                # build, so this stays None and the route refuses with 403
-                # rather than inventing an approval.
-                claw_telegram_delivery_request_builder = None
-                # Single trusted PADIEM operator bootstrap. Existing product
-                # authorizers still check the Google provider subject in D1.
-                # A conflicting legacy binding fails closed for BOTH products.
-                b66_operator_email, central_operator_email = resolve_super_admin_bootstrap(
-                    shared=binding_value(self.env, "PADIEM_SUPER_ADMIN_GOOGLE_EMAIL"),
-                    legacy_b66=binding_value(self.env, "B66_ADMIN_GOOGLE_EMAIL"),
-                    legacy_central=binding_value(self.env, "PADIEM_CENTRAL_MODEL_ADMIN_GOOGLE_EMAIL"),
-                )
-                try:
-                    connector_owner_ports = compose_owner_enrollment_from_worker(self.env)
-                except ValueError:
-                    return _apply_headers(Response(
-                        "Connector owner enrollment unavailable.", status=503,
-                        headers={"Content-Type": "text/plain; charset=utf-8"},
-                    ), path)
-                github_secret_binding = binding_value(self.env, "PADIEM_GITHUB_APP_CLIENT_SECRET")
+                if isinstance(github_secret_binding, str):
+                    github_client_secret = github_secret_binding
+                else:
+                    getter = getattr(github_secret_binding, "get", None)
+                    if callable(getter):
+                        pending_secret = getter()
+                        if hasattr(pending_secret, "__await__"):
+                            github_client_secret = await pending_secret
+            except Exception:
+                # No provider exception, binding material or secret enters logs.
                 github_client_secret = None
-                if github_secret_binding is not None:
-                    try:
-                        if isinstance(github_secret_binding, str):
-                            github_client_secret = github_secret_binding
-                        else:
-                            getter = getattr(github_secret_binding, "get", None)
-                            if callable(getter):
-                                pending_secret = getter()
-                                if hasattr(pending_secret, "__await__"):
-                                    github_client_secret = await pending_secret
-                    except Exception:
-                        # No provider exception, binding material or secret enters logs.
-                        github_client_secret = None
-                github_store = None
-                github_provider = None
-                if (db_binding is not None and isinstance(github_client_secret, str)
-                        and github_client_secret and settings.session_secret):
-                    from app.github_oauth_store import D1GitHubOAuthStore
-                    from app.github_oauth_provider import GitHubAppOAuthProvider
-                    github_store = D1GitHubOAuthStore(db_binding, session_secret=settings.session_secret)
-                    github_provider = GitHubAppOAuthProvider(client_secret=github_client_secret,
-                                                               transport=CloudflareExternalHttpTransport())
-                # Grafana ingest remains OFF until a server-only credential
-                # and validated Japan-region OTLP endpoint are provisioned.
-                # No browser-controlled or prompt-controlled settings.
-                from app.grafana_otlp_exporter import GrafanaOtlpExporter
+        github_store = None
+        github_provider = None
+        if (db_binding is not None and isinstance(github_client_secret, str)
+                and github_client_secret and settings.session_secret):
+            from app.github_oauth_store import D1GitHubOAuthStore
+            from app.github_oauth_provider import GitHubAppOAuthProvider
+            github_store = D1GitHubOAuthStore(db_binding, session_secret=settings.session_secret)
+            github_provider = GitHubAppOAuthProvider(client_secret=github_client_secret,
+                                                       transport=CloudflareExternalHttpTransport())
+        # Grafana ingest remains OFF until a server-only credential
+        # and validated Japan-region OTLP endpoint are provisioned.
+        # No browser-controlled or prompt-controlled settings.
+        from app.grafana_otlp_exporter import GrafanaOtlpExporter
+        _grafana_exporter = None
+        _grafana_endpoint = binding_value(self.env, "PADIEM_GRAFANA_OTLP_ENDPOINT")
+        _grafana_user = binding_value(self.env, "PADIEM_GRAFANA_OTLP_USERNAME")
+        # Secret Store bindings use an async .get(), plain Worker
+        # secrets are strings. Never log or persist the resolved value.
+        _grafana_token_binding = binding_value(
+            self.env, "PADIEM_GRAFANA_OTLP_TOKEN"
+        )
+        _grafana_token = None
+        try:
+            if isinstance(_grafana_token_binding, str):
+                _grafana_token = _grafana_token_binding
+            elif _grafana_token_binding is not None:
+                _getter = getattr(_grafana_token_binding, "get", None)
+                if callable(_getter):
+                    _pending = _getter()
+                    _grafana_token = (
+                        await _pending
+                        if hasattr(_pending, "__await__") else _pending
+                    )
+        except Exception:
+            _grafana_token = None
+        if all(isinstance(v, str) and v for v in
+               (_grafana_endpoint, _grafana_user, _grafana_token)):
+            try:
+                _grafana_exporter = GrafanaOtlpExporter(
+                    _grafana_endpoint, _grafana_user, _grafana_token
+                )
+            except (TypeError, ValueError):
                 _grafana_exporter = None
-                _grafana_endpoint = binding_value(self.env, "PADIEM_GRAFANA_OTLP_ENDPOINT")
-                _grafana_user = binding_value(self.env, "PADIEM_GRAFANA_OTLP_USERNAME")
-                # Secret Store bindings use an async .get(), plain Worker
-                # secrets are strings. Never log or persist the resolved value.
-                _grafana_token_binding = binding_value(
-                    self.env, "PADIEM_GRAFANA_OTLP_TOKEN"
-                )
-                _grafana_token = None
+        # #4139 Oracle management-host return leg: deployment-owned
+        # (account, device, Mesh node) map from Worker env. Absent or
+        # invalid keeps the fail-closed unconfigured source: the route
+        # stays unmounted and every return is refused.
+        from app.oracle_mesh_read_return_routes import (
+            build_oracle_mesh_return_source_from_env, legacy_map_lane_enabled,
+        )
+        _oracle_mesh_return_source = await (
+            build_oracle_mesh_return_source_from_env(self.env)
+        )
+        _claw_desktop_secret = binding_value(
+            self.env, "CLAW_ENGINE_DESKTOP_SECRET"
+        )
+        if _claw_desktop_secret is not None and not isinstance(_claw_desktop_secret, str):
+            _secret_get = getattr(_claw_desktop_secret, "get", None)
+            if callable(_secret_get):
                 try:
-                    if isinstance(_grafana_token_binding, str):
-                        _grafana_token = _grafana_token_binding
-                    elif _grafana_token_binding is not None:
-                        _getter = getattr(_grafana_token_binding, "get", None)
-                        if callable(_getter):
-                            _pending = _getter()
-                            _grafana_token = (
-                                await _pending
-                                if hasattr(_pending, "__await__") else _pending
-                            )
+                    _claw_desktop_secret = _secret_get()
+                    if hasattr(_claw_desktop_secret, "__await__"):
+                        _claw_desktop_secret = await _claw_desktop_secret
                 except Exception:
-                    _grafana_token = None
-                if all(isinstance(v, str) and v for v in
-                       (_grafana_endpoint, _grafana_user, _grafana_token)):
-                    try:
-                        _grafana_exporter = GrafanaOtlpExporter(
-                            _grafana_endpoint, _grafana_user, _grafana_token
-                        )
-                    except (TypeError, ValueError):
-                        _grafana_exporter = None
-                # #4139 Oracle management-host return leg: deployment-owned
-                # (account, device, Mesh node) map from Worker env. Absent or
-                # invalid keeps the fail-closed unconfigured source: the route
-                # stays unmounted and every return is refused.
-                from app.oracle_mesh_read_return_routes import (
-                    build_oracle_mesh_return_source_from_env,
-                )
-                _oracle_mesh_return_source = await (
-                    build_oracle_mesh_return_source_from_env(self.env)
-                )
-                _claw_desktop_secret = binding_value(
-                    self.env, "CLAW_ENGINE_DESKTOP_SECRET"
-                )
-                if _claw_desktop_secret is not None and not isinstance(_claw_desktop_secret, str):
-                    _secret_get = getattr(_claw_desktop_secret, "get", None)
-                    if callable(_secret_get):
-                        try:
-                            _claw_desktop_secret = _secret_get()
-                            if hasattr(_claw_desktop_secret, "__await__"):
-                                _claw_desktop_secret = await _claw_desktop_secret
-                        except Exception:
-                            _claw_desktop_secret = None
-                _worker_app = create_app(
-                    settings=settings,
-                    telemetry_exporter=_grafana_exporter,
-                    github_oauth_store=github_store,
-                    github_oauth_provider=github_provider,
-                    oracle_mesh_return_source=_oracle_mesh_return_source,
-                    claw_engine_desktop_secret=(
-                        _claw_desktop_secret if isinstance(_claw_desktop_secret, str)
-                        and len(_claw_desktop_secret) >= 32 else None
-                    ),
-                    connector_owner_enrollment=connector_owner_ports,
-                    history_store=history_store,
-                    d1_binding=db_binding,
-                    b66_admin_google_email=b66_operator_email,
-                    central_model_admin_google_email=central_operator_email,
-                    platform_admin_role_store=(
-                        D1PlatformAdminRoleStore(db_binding)
-                        if db_binding is not None else None
-                    ),
-                    # #4434 follow-up: B66 product PC policy from the
-                    # owner-managed Worker env; absent/malformed stays
-                    # default-off, identical to today's production.
-                    b66_pc_access_policy=build_b66_pc_operator_policy(self.env),
-                    central_model_policy_signing_key=(
-                        binding_value(self.env, "PADIEM_CENTRAL_MODEL_POLICY_SIGNING_KEY") or ""
-                    ),
-                    r2_binding=r2_binding,
-                    web_transport=web_transport,
-                    b66_pdf_renderer_client=b66_pdf_renderer_client,
-                    claw_drive_artifact_uploader=claw_drive_artifact_uploader,
-                    claw_telegram_artifact_delivery=claw_telegram_artifact_delivery,
-                    claw_artifact_delivery_receipt_store=(
-                        claw_artifact_delivery_receipt_store
-                    ),
-                    claw_telegram_delivery_request_builder=(
-                        claw_telegram_delivery_request_builder
-                    ),
-                )
-                _worker_app.state.b66_membership_enforced = (
-                    binding_value(self.env, "B66_MEMBERSHIP_ENFORCED") == "enabled"
-                )
-                # Admin ON/OFF must deny production B66 model execution even
-                # when the separate membership/tier rollout is not enabled.
-                # D1 metadata errors fail closed before any provider dispatch.
-                _worker_app.state.b66_global_model_switch_enforced = True
-                # #4469: explicitly approved public-fact lookup only. A client
-                # request, model prompt or a configured provider cannot enable
-                # B66 external web egress. Binding absent/invalid => OFF.
-                _worker_app.state.b66_public_fact_search_authorized = (
-                    authorized_b66_fact_search_binding(
-                        settings,
-                        binding_value(self.env, "B66_PUBLIC_FACT_SEARCH_AUTHORIZED"),
-                    )
-                )
-                # Optional signup notification channels: configuration comes
-                # exclusively from trusted Worker bindings, never browser input.
-                def _b66_notice_value(key):
-                    value = binding_value(self.env, key)
-                    return value if isinstance(value, str) else ""
-                _b66_member_store = _worker_app.state.b66_member_admin_store
-                if _b66_member_store is not None:
-                    _b66_notifier = B66SignupNotifier(
-                        _b66_member_store,
-                        telegram_bot_token=_b66_notice_value("B66_ALERT_TELEGRAM_BOT_TOKEN"),
-                        telegram_chat_id=_b66_notice_value("B66_ALERT_TELEGRAM_CHAT_ID"),
-                        discord_webhook_url=_b66_notice_value("B66_ALERT_DISCORD_WEBHOOK_URL"),
-                        resend_api_key=_b66_notice_value("B66_ALERT_RESEND_API_KEY"),
-                        email_from=_b66_notice_value("B66_ALERT_EMAIL_FROM"),
-                        email_to=_b66_notice_value("B66_ALERT_EMAIL_TO"),
-                    )
-                    _worker_app.state.b66_signup_notifier = (
-                        _b66_notifier if _b66_notifier.channels else None
-                    )
-                _worker_app.state.control_plane_identity_authority = identity_authority
-                _worker_app.state.identity_shadow_store = identity_shadow_store
-                # #3257: the Worker's real runtime env is the execution-target
-                # authority. The Create route resolves the served revision from
-                # this injected env only — never from a request value or the
-                # global process environment. With the live version-metadata
-                # binding not yet activated, resolution fails closed (503) and
-                # no rule is saved. NOTE: this scope only has ``self.env``
-                # (bindings are read from it above); a bare ``env`` name here
-                # would crash the Worker on first initialization.
-                _worker_app.state.claw_automation_execution_target_authority = self.env
-                # #3190: reuse the existing P01_ENGINE_SERVICE binding; no second
-                # Engine binding authority. Missing/malformed binding -> None ->
-                # the Drive case-folder routes fail closed with 503.
-                try:
-                    from app.drive_case_folder_engine import (
-                        CloudflareDriveCaseFolderEngineClient,
-                    )
-                    from app.worker_config import P01_ENGINE_SERVICE_BINDING_NAME
+                    _claw_desktop_secret = None
+        # #5441: the transactional-mail credential is the EXISTING
+        # owner-side channel credential, resolved once and shared with
+        # the B66 signup notifier below. It is read through
+        # ``resolve_secret_binding``, so an account Secrets Store slot
+        # (an async .get() capability, not a string) is accepted too,
+        # and an unreadable binding never crashes the Worker and never
+        # fakes a delivery. Nothing here mints a second credential.
+        mail_api_key = await resolve_first_secret_binding(
+            self.env, MAIL_API_KEY_BINDING_NAMES
+        ) or ""
+        mail_from = await resolve_first_secret_binding(
+            self.env, MAIL_FROM_BINDING_NAMES
+        ) or ""
+        worker_app = create_app(
+            settings=settings,
+            shared_auth_comparison_flow=comparison_flow,
+            shared_login_flow=shared_login_flow,
+            telemetry_exporter=_grafana_exporter,
+            github_oauth_store=github_store,
+            github_oauth_provider=github_provider,
+            oracle_mesh_return_source=_oracle_mesh_return_source,
+            oracle_mesh_legacy_map_lane=legacy_map_lane_enabled(self.env),
+            claw_engine_desktop_secret=(
+                _claw_desktop_secret if isinstance(_claw_desktop_secret, str)
+                and len(_claw_desktop_secret) >= 32 else None
+            ),
+            connector_owner_enrollment=connector_owner_ports,
+            history_store=history_store,
+            d1_binding=db_binding,
+            b66_admin_google_email=b66_operator_email,
+            central_model_admin_google_email=central_operator_email,
+            platform_admin_role_store=(
+                D1PlatformAdminRoleStore(db_binding)
+                if db_binding is not None else None
+            ),
+            # #4434 follow-up: B66 product PC policy from the
+            # owner-managed Worker env; absent/malformed stays
+            # default-off, identical to today's production.
+            b66_pc_access_policy=build_b66_pc_operator_policy(self.env),
+            central_model_policy_signing_key=(
+                binding_value(self.env, "PADIEM_CENTRAL_MODEL_POLICY_SIGNING_KEY") or ""
+            ),
+            r2_binding=r2_binding,
+            web_transport=web_transport,
+            b66_pdf_renderer_client=b66_pdf_renderer_client,
+            claw_drive_artifact_uploader=claw_drive_artifact_uploader,
+            claw_telegram_artifact_delivery=claw_telegram_artifact_delivery,
+            claw_artifact_delivery_receipt_store=(
+                claw_artifact_delivery_receipt_store
+            ),
+            claw_telegram_delivery_request_builder=(
+                claw_telegram_delivery_request_builder
+            ),
+            # #5441 lost-password reset. The store is derived from the
+            # existing Chat D1 binding; the delivery transport is
+            # configured from the trusted Worker bindings only.
+            password_reset_store=(
+                D1PasswordResetStore(db_binding)
+                if db_binding is not None else None
+            ),
+            password_reset_delivery=build_email_delivery(
+                resend_api_key=mail_api_key,
+                email_from=mail_from,
+            ),
+            # #5034 Web Push. The VAPID private key is a Worker secret
+            # binding: it never reaches a browser, a log or [vars]. With
+            # no key the capability route reports enabled=false and the
+            # existing web inbox is unchanged.
+            claw_push_vapid_private_key=binding_value(
+                self.env, "PADIEM_PUSH_VAPID_PRIVATE_KEY"
+            ),
+            claw_push_vapid_public_key=binding_value(
+                self.env, "PADIEM_PUSH_VAPID_PUBLIC_KEY"
+            ),
+            claw_push_vapid_subject=binding_value(
+                self.env, "PADIEM_PUSH_VAPID_SUBJECT"
+            ),
+            claw_push_transport=build_push_transport(),
+        )
+        worker_app.state.document_parser_transport = document_parser_transport
+        worker_app.state.document_parser_service_bound = (
+            document_parser_transport is not None
+        )
+        worker_app.state.b66_membership_enforced = (
+            binding_value(self.env, "B66_MEMBERSHIP_ENFORCED") == "enabled"
+        )
+        # Admin ON/OFF must deny production B66 model execution even
+        # when the separate membership/tier rollout is not enabled.
+        # D1 metadata errors fail closed before any provider dispatch.
+        worker_app.state.b66_global_model_switch_enforced = True
+        # #4469: explicitly approved public-fact lookup only. A client
+        # request, model prompt or a configured provider cannot enable
+        # B66 external web egress. Binding absent/invalid => OFF.
+        worker_app.state.b66_public_fact_search_authorized = (
+            authorized_b66_fact_search_binding(
+                settings,
+                binding_value(self.env, "B66_PUBLIC_FACT_SEARCH_AUTHORIZED"),
+            )
+        )
+        # Optional signup notification channels: configuration comes
+        # exclusively from trusted Worker bindings, never browser input.
+        # #5441: every channel value is resolved as a secret binding, so
+        # a Secrets Store slot is accepted and an unreadable binding
+        # degrades to "this channel is not configured" instead of
+        # breaking the Worker.
+        async def _b66_notice_value(key):
+            value = await resolve_secret_binding(self.env, key)
+            return value if isinstance(value, str) else ""
+        _b66_member_store = worker_app.state.b66_member_admin_store
+        if _b66_member_store is not None:
+            _b66_notifier = B66SignupNotifier(
+                _b66_member_store,
+                telegram_bot_token=await _b66_notice_value("B66_ALERT_TELEGRAM_BOT_TOKEN"),
+                telegram_chat_id=await _b66_notice_value("B66_ALERT_TELEGRAM_CHAT_ID"),
+                discord_webhook_url=await _b66_notice_value("B66_ALERT_DISCORD_WEBHOOK_URL"),
+                # The same resolved mail credential the reset mail
+                # uses. One credential, one source, no second issuance.
+                resend_api_key=mail_api_key,
+                email_from=mail_from,
+                email_to=await _b66_notice_value("B66_ALERT_EMAIL_TO"),
+            )
+            worker_app.state.b66_signup_notifier = (
+                _b66_notifier if _b66_notifier.channels else None
+            )
+        worker_app.state.control_plane_identity_authority = identity_authority
+        worker_app.state.identity_shadow_store = identity_shadow_store
+        # #3257: the Worker's real runtime env is the execution-target
+        # authority. The Create route resolves the served revision from
+        # this injected env only — never from a request value or the
+        # global process environment. With the live version-metadata
+        # binding not yet activated, resolution fails closed (503) and
+        # no rule is saved. NOTE: this scope only has ``self.env``
+        # (bindings are read from it above); a bare ``env`` name here
+        # would crash the Worker on first initialization.
+        worker_app.state.claw_automation_execution_target_authority = self.env
+        # #3190: reuse the existing P01_ENGINE_SERVICE binding; no second
+        # Engine binding authority. Missing/malformed binding -> None ->
+        # the Drive case-folder routes fail closed with 503.
+        # #4379: when the same trusted P01 caller surface is configured,
+        # it is passed through so the PDF read can use the Engine byte
+        # route. A binding without caller values keeps the RPC it always
+        # used instead of half-converting, and no new binding, secret or
+        # app identity is consulted here.
+        try:
+            from app.drive_case_folder_engine import (
+                CloudflareDriveCaseFolderEngineClient,
+            )
+            from app.worker_config import P01_ENGINE_SERVICE_BINDING_NAME
 
-                    engine_binding = binding_value(self.env, P01_ENGINE_SERVICE_BINDING_NAME)
-                    drive_case_folder_engine_client = (
-                        CloudflareDriveCaseFolderEngineClient(engine_binding)
-                        if engine_binding is not None
-                        else None
+            drive_p01_config = p01_engine_config_from_worker_bindings(self.env)
+            if drive_p01_config is not None:
+                drive_case_folder_engine_client = (
+                    CloudflareDriveCaseFolderEngineClient(
+                        drive_p01_config.service_binding,
+                        caller_id=drive_p01_config.caller_id,
+                        credential=drive_p01_config.credential,
+                        request_factory=Request,
                     )
-                except Exception:
-                    drive_case_folder_engine_client = None
-                _worker_app.state.drive_case_folder_engine_client = drive_case_folder_engine_client
-                # #2952: Calendar READ activation reuses the existing P01 Engine
-                # Service Binding and caller credential. No second Engine authority.
-                try:
-                    p01_config = p01_engine_config_from_worker_bindings(self.env)
-                    calendar_read_activation_client = (
-                        CloudflareCalendarReadActivationEngineClient(
-                            p01_config.service_binding,
-                            caller_id=p01_config.caller_id,
-                            credential=p01_config.credential,
-                            request_factory=Request,
-                        )
-                        if p01_config is not None
-                        else None
-                    )
-                except Exception:
-                    calendar_read_activation_client = None
-                _worker_app.state.calendar_read_activation_client = calendar_read_activation_client
-                # Persisted Calendar READ grant state (#2952 follow-up): the
-                # read-only half, over the same P01 Engine Service Binding and
-                # caller credential. No second Engine authority; an
-                # unconfigured binding leaves the state surface absent rather
-                # than inventing a grant answer.
-                try:
-                    p01_config_state = p01_engine_config_from_worker_bindings(self.env)
-                    calendar_read_state_engine_client = (
-                        CloudflareCalendarReadStateEngineClient(
-                            p01_config_state.service_binding,
-                            caller_id=p01_config_state.caller_id,
-                            credential=p01_config_state.credential,
-                            request_factory=Request,
-                        )
-                        if p01_config_state is not None
-                        else None
-                    )
-                except Exception:
-                    calendar_read_state_engine_client = None
-                _worker_app.state.calendar_read_state_engine_client = calendar_read_state_engine_client
-                _worker_app.state.project_file_store = project_file_store
-                _worker_app.state.voice_stt_transport = (
-                    CloudflareVoiceSttServiceTransport(voice_stt_binding, Request)
-                    if voice_stt_binding is not None
+                )
+            else:
+                engine_binding = binding_value(self.env, P01_ENGINE_SERVICE_BINDING_NAME)
+                drive_case_folder_engine_client = (
+                    CloudflareDriveCaseFolderEngineClient(engine_binding)
+                    if engine_binding is not None
                     else None
                 )
-                _worker_app.state.saved_output_store = saved_output_store
-                _worker_app.state.usage_gate = UsageGate(settings, usage_store)
-                _worker_app.state.usage_gate_enforced = True
-                _worker_app.state.b14_client = DispatchAwareB14Client(
-                    settings,
-                    service_transport=service_transport,
-                    stream_transport=stream_transport,
-                    require_service_binding=settings.runtime_mode == "b14",
-                )
-                # #3760 owner correction: quote extraction validates one user-selected,
-                # owner-allowed, chat-capable and live-ready B14 registered
-                # model; pricing and generic B14 auto flags do not qualify it.
-                # Never pass
-                # ordinary quote text into the B62 Plus/Pro/Max HOLD resolver;
-                # never synthesize b14/auto or a hidden retry/fallback.
-                quote_model_resolver = B66ExplicitQuoteModelResolver(service_transport)
-                _worker_app.state.b66_quote_model_resolver = quote_model_resolver
-                # Claw/B66 consume the same B14 owner-allowed/live-ready catalog.
-                _worker_app.state.b14_model_choice_resolver = quote_model_resolver
-                b66_quote_executor = B66ExperientialPilotExecutor(
-                    original_executor=B66KiraPilotExecutor(
-                        original_executor=B14QuoteExactModelExecutor(
-                            _worker_app.state.b14_client
-                        ),
-                        credential_binding=binding_value(self.env, "PADIEM_KIRAAI_API_KEY"),
-                        transport=web_transport,
-                    ),
-                    credential_binding=binding_value(self.env, "PADIEM_EXLAB_API_KEY"),
-                    transport=web_transport,
-                )
-                # #3977: the selectable-level gate is the same measured capability
-                # the dispatch path uses, not a literal. With a Core build that
-                # cannot carry native parameters B66 offers the provider default
-                # only and refuses an explicit level before dispatch.
-                _worker_app.state.b66_reasoning_transport_supported = bool(
-                    b66_quote_executor.supports_native_parameters
-                )
-                _worker_app.state.b66_quote_interpreter = B66QuoteConversationInterpreter(
-                    B66RegisteredModelCompletion(
-                        resolver=quote_model_resolver,
-                        executor=b66_quote_executor,
-                        refund_pre_dispatch=_refund_active_reservation,
-                    )
-                )
-                _worker_app.state.grounded_chat = GroundedChatService(
-                    _worker_app.state.b14_client,
-                    _worker_app.state.web_provider,
-                )
-                _worker_app.state.b14_service_bound = b14_binding is not None
-                _worker_app.state.identity_authority_service_bound = identity_binding is not None
-                _worker_app.state.google_oauth_workspace_truth = google_oauth_workspace_truth
-                _worker_app.state.google_oauth_service_bound = google_oauth_binding is not None
-                (
-                    _worker_app.state.claw_p01_adapter,
-                    _worker_app.state.claw_p01_continuation_client,
-                    _worker_app.state.claw_p01_composition_diagnostic,
-                ) = build_claw_p01_lanes_with_diagnostic(
-                    self.env,
+        except Exception:
+            drive_case_folder_engine_client = None
+        worker_app.state.drive_case_folder_engine_client = drive_case_folder_engine_client
+        # #2952: Calendar READ activation reuses the existing P01 Engine
+        # Service Binding and caller credential. No second Engine authority.
+        try:
+            p01_config = p01_engine_config_from_worker_bindings(self.env)
+            calendar_read_activation_client = (
+                CloudflareCalendarReadActivationEngineClient(
+                    p01_config.service_binding,
+                    caller_id=p01_config.caller_id,
+                    credential=p01_config.credential,
                     request_factory=Request,
                 )
-                # #4469: Owner-requested Claw public web research. An explicit
-                # Worker flag is only a request to activate: the real B14
-                # runtime, canonical member/Engine lane and durable D1 quota
-                # must ALL be present. One accepted Claw turn is already
-                # reserved by _usage_gate_denial before its bounded single
-                # judgement and optional search; no browser input can arm it.
-                _worker_app.state.claw_web_search_enabled = trusted_claw_search_activation(
-                    flag=binding_value(self.env, "PADIEM_CLAW_PUBLIC_WEB_SEARCH_ENABLED"),
-                    runtime_mode=settings.runtime_mode,
-                    adapter=_worker_app.state.claw_p01_adapter,
-                    usage_gate=_worker_app.state.usage_gate,
+                if p01_config is not None
+                else None
+            )
+        except Exception:
+            calendar_read_activation_client = None
+        worker_app.state.calendar_read_activation_client = calendar_read_activation_client
+        # Persisted Calendar READ grant state (#2952 follow-up): the
+        # read-only half, over the same P01 Engine Service Binding and
+        # caller credential. No second Engine authority; an
+        # unconfigured binding leaves the state surface absent rather
+        # than inventing a grant answer.
+        try:
+            p01_config_state = p01_engine_config_from_worker_bindings(self.env)
+            calendar_read_state_engine_client = (
+                CloudflareCalendarReadStateEngineClient(
+                    p01_config_state.service_binding,
+                    caller_id=p01_config_state.caller_id,
+                    credential=p01_config_state.credential,
+                    request_factory=Request,
                 )
-                # #3580 WEB-FIRST: fixed private Engine ToolRuntime endpoint,
-                # authenticated with the pre-existing P01 service caller.
-                # OFF without explicit deployment feature flag + valid P01
-                # binding. Engine must separately verify private source scope;
-                # no browser-provided tool arguments or secret are accepted.
-                _worker_app.state.web_xlsx_p01_pause_client = (
-                    build_web_xlsx_p01_engine_client(
-                        self.env, request_factory=Request,
-                        runtime_mode=settings.runtime_mode,
+                if p01_config_state is not None
+                else None
+            )
+        except Exception:
+            calendar_read_state_engine_client = None
+        worker_app.state.calendar_read_state_engine_client = calendar_read_state_engine_client
+        worker_app.state.project_file_store = project_file_store
+        worker_app.state.voice_stt_transport = (
+            CloudflareVoiceSttServiceTransport(voice_stt_binding, Request)
+            if voice_stt_binding is not None
+            else None
+        )
+        worker_app.state.saved_output_store = saved_output_store
+        worker_app.state.usage_gate = UsageGate(settings, usage_store)
+        worker_app.state.usage_gate_enforced = True
+        worker_app.state.b14_client = DispatchAwareB14Client(
+            settings,
+            service_transport=service_transport,
+            stream_transport=stream_transport,
+            require_service_binding=settings.runtime_mode == "b14",
+        )
+        # #3760 owner correction: quote extraction validates one user-selected,
+        # owner-allowed, chat-capable and live-ready B14 registered
+        # model; pricing and generic B14 auto flags do not qualify it.
+        # Never pass
+        # ordinary quote text into the B62 Plus/Pro/Max HOLD resolver;
+        # never synthesize b14/auto or a hidden retry/fallback.
+        quote_model_resolver = B66ExplicitQuoteModelResolver(service_transport)
+        worker_app.state.b66_quote_model_resolver = quote_model_resolver
+        # Claw/B66 consume the same B14 owner-allowed/live-ready catalog.
+        worker_app.state.b14_model_choice_resolver = quote_model_resolver
+        b66_quote_executor = B66ExperientialPilotExecutor(
+            original_executor=B66KiraPilotExecutor(
+                original_executor=B14QuoteExactModelExecutor(
+                    worker_app.state.b14_client
+                ),
+                credential_binding=binding_value(self.env, "PADIEM_KIRAAI_API_KEY"),
+                transport=web_transport,
+            ),
+            credential_binding=binding_value(self.env, "PADIEM_EXLAB_API_KEY"),
+            transport=web_transport,
+        )
+        # #3977: the selectable-level gate is the same measured capability
+        # the dispatch path uses, not a literal. With a Core build that
+        # cannot carry native parameters B66 offers the provider default
+        # only and refuses an explicit level before dispatch.
+        worker_app.state.b66_reasoning_transport_supported = bool(
+            b66_quote_executor.supports_native_parameters
+        )
+        worker_app.state.b66_quote_interpreter = B66QuoteConversationInterpreter(
+            B66RegisteredModelCompletion(
+                resolver=quote_model_resolver,
+                executor=b66_quote_executor,
+                refund_pre_dispatch=_refund_active_reservation,
+            )
+        )
+        worker_app.state.grounded_chat = GroundedChatService(
+            worker_app.state.b14_client,
+            worker_app.state.web_provider,
+        )
+        worker_app.state.b14_service_bound = b14_binding is not None
+        worker_app.state.identity_authority_service_bound = identity_binding is not None
+        worker_app.state.google_oauth_workspace_truth = google_oauth_workspace_truth
+        worker_app.state.google_oauth_service_bound = google_oauth_binding is not None
+        (
+            worker_app.state.claw_p01_adapter,
+            worker_app.state.claw_p01_continuation_client,
+            worker_app.state.claw_p01_composition_diagnostic,
+        ) = build_claw_p01_lanes_with_diagnostic(
+            self.env,
+            request_factory=Request,
+        )
+        # #4469: Owner-requested Claw public web research. An explicit
+        # Worker flag is only a request to activate: the real B14
+        # runtime, canonical member/Engine lane and durable D1 quota
+        # must ALL be present. One accepted Claw turn is already
+        # reserved by _usage_gate_denial before its bounded single
+        # judgement and optional search; no browser input can arm it.
+        worker_app.state.claw_web_search_enabled = trusted_claw_search_activation(
+            flag=binding_value(self.env, "PADIEM_CLAW_PUBLIC_WEB_SEARCH_ENABLED"),
+            runtime_mode=settings.runtime_mode,
+            adapter=worker_app.state.claw_p01_adapter,
+            usage_gate=worker_app.state.usage_gate,
+        )
+        # #3580 WEB-FIRST: fixed private Engine ToolRuntime endpoint,
+        # authenticated with the pre-existing P01 service caller.
+        # OFF without explicit deployment feature flag + valid P01
+        # binding. Engine must separately verify private source scope;
+        # no browser-provided tool arguments or secret are accepted.
+        worker_app.state.web_xlsx_p01_pause_client = (
+            build_web_xlsx_p01_engine_client(
+                self.env, request_factory=Request,
+                runtime_mode=settings.runtime_mode,
+            )
+        )
+        # Explicit independent gate; no browser decision endpoint
+        # activation merely because XLSX pause dispatch is enabled.
+        worker_app.state.web_xlsx_p01_owner_decision_client = (
+            worker_app.state.web_xlsx_p01_pause_client
+            if getattr(
+                self.env, "PADIEM_WEB_XLSX_P01_OWNER_DECISION_ENABLED", None
+            ) == "true" else None
+        )
+        worker_app.state.web_xlsx_p01_workcopy_after_grant_enabled = (
+            settings.runtime_mode == "b14"
+            and worker_app.state.web_xlsx_p01_owner_decision_client is not None
+            and worker_app.state.workspace_document_store is not None
+            and getattr(
+                self.env, "PADIEM_WEB_XLSX_WORKCOPY_AFTER_P01_ENABLED", None
+            ) == "true"
+        )
+        # The independent WRITE ToolRuntime is OFF unless the
+        # signed-in READ and private workcopy path are both enabled,
+        # plus the explicit separate operator WRITE flag+caller.
+        worker_app.state.web_xlsx_quote_write_client = (
+            build_web_quote_write_engine_client(
+                self.env, request_factory=Request,
+                runtime_mode=settings.runtime_mode,
+            )
+            if worker_app.state.web_xlsx_p01_workcopy_after_grant_enabled
+            else None
+        )
+        worker_app.state.web_xlsx_quote_write_enabled = (
+            worker_app.state.web_xlsx_quote_write_client is not None
+            and worker_app.state.web_xlsx_quote_write_store is not None
+            and worker_app.state.web_xlsx_quote_write_pause_store is not None
+            and worker_app.state.web_xlsx_quote_write_owner_decision_store
+                is not None
+        )
+        # Browser Rendering PDF is independent from WRITE ToolRuntime.
+        # Supported 1-sheet quote summary only; explicit operator opt-in.
+        worker_app.state.web_xlsx_quote_pdf_renderer = None
+        worker_app.state.web_xlsx_quote_pdf_enabled = False
+        if (worker_app.state.web_xlsx_quote_write_enabled
+                and binding_value(
+                    self.env, "PADIEM_WEB_XLSX_QUOTE_PDF_ENABLED"
+                ) == "true"):
+            try:
+                browser = binding_value(self.env, "BROWSER")
+                worker_app.state.web_xlsx_quote_pdf_renderer = (
+                    BrowserQuotePdfRenderer(browser)
+                )
+                worker_app.state.web_xlsx_quote_pdf_enabled = True
+            except (TypeError, ValueError):
+                worker_app.state.web_xlsx_quote_pdf_renderer = None
+        worker_app.state.claw_live_sse_enabled = (
+            settings.runtime_mode == "b14"
+            and getattr(self.env, "PADIEM_CLAW_P01_LIVE_SSE_ENABLED", None) == "true"
+            and getattr(worker_app.state.claw_p01_adapter, "subject_identity_lane", False) is True
+        )
+        # #5553: the server-recorded Mesh presence receipt (migration
+        # 067) is one ONLINE evidence kind for the SAME canonical
+        # source. Absent D1 leaves it unset; the executor poll then
+        # records nothing and every answer stays unchanged.
+        mesh_presence_store = (
+            D1MeshDevicePresenceStore(db_binding)
+            if db_binding is not None
+            else None
+        )
+        if mesh_presence_store is not None:
+            worker_app.state.mesh_device_presence_store = mesh_presence_store
+        # #5573 PC pairing (migration 072): the owner↔PC link table and
+        # its per-link folder approvals. No D1 binding means no state, so
+        # every pairing route answers 503 exactly as before this slice.
+        if db_binding is not None:
+            worker_app.state.pc_device_pairing_store = D1PcPairingStore(db_binding)
+        # #5881 follow-on: the PC-lane state may be answered by the 컴2 queue
+        # instead of this Worker's D1. The switch is off unless the flag says
+        # com2 AND the origin and secret are usable, and it moves only what the
+        # queue declares - dispatch, pairing directory, presence receipts. The
+        # conversation rows, projects and R2 originals stay exactly here.
+        queue_client = build_queue_client(self.env)
+        if queue_client is not None:
+            worker_app.state.pc_device_pairing_store = (
+                QueueBackedPairingStore(queue_client))
+            worker_app.state.mesh_device_presence_store = (
+                QueueBackedPresenceStore(queue_client))
+            worker_app.state.history_store = QueueForwardingHistoryStore(
+                worker_app.state.history_store, queue_client)
+            print("PC_QUEUE_BACKEND=com2")
+        # #5573 PC pairing handoff: the ONE Windows installer value, read
+        # from deployment vars. An empty or non-https value is no value,
+        # and the handoff route answers 503 "준비 중" rather than inventing
+        # a download target.
+        worker_app.state.pc_pairing_install_url = (
+            getattr(self.env, "PC_AGENT_INSTALL_URL", None) or ""
+        ).strip()
+        worker_app.state.mesh_presence_generation_resolver = (
+            build_mesh_presence_generation_resolver(self.env)
+        )
+        # #3094: compose the concrete canonical local-access source
+        # from a trusted broker-authority binding only. When the
+        # trusted runtime is absent (today's deploy) the composition
+        # yields None and the app keeps the fail-closed unconfigured
+        # source installed by create_app.
+        claw_local_access_source, _claw_local_access_diag = (
+            build_claw_local_access_source_with_diagnostic(
+                self.env, presence_store=mesh_presence_store,
+            )
+        )
+        if claw_local_access_source is not None:
+            worker_app.state.claw_local_access_source = claw_local_access_source
+        # #4139: second consumer of the SAME trusted broker service
+        # binding. Never infer a device list from local browser state.
+        device_directory_source = build_broker_device_directory_source(
+            self.env, presence_store=mesh_presence_store,
+        )
+        if device_directory_source is not None:
+            worker_app.state.claw_device_directory_source = device_directory_source
+        # #5015: owner/workspace-scoped preferred PC target. The saved
+        # row is a preference only; execution still re-reads the Broker
+        # directory and the Mesh target. Absent D1 keeps it unset and
+        # the select route fails closed.
+        if db_binding is not None:
+            from app.claw_pc_device_selection_store import (
+                D1PcDeviceSelectionStore,
+            )
+            worker_app.state.claw_pc_device_selection_store = (
+                D1PcDeviceSelectionStore(db_binding)
+            )
+        # #4139: TXT read request leg on the SAME trusted broker
+        # binding (device resolution + atomic command enqueue). Absent
+        # binding keeps the fail-closed unconfigured source: the route
+        # refuses rather than inventing approval material.
+        from app.connector_txt_read_routes import build_connector_txt_read_source
+        txt_read_source = build_connector_txt_read_source(self.env)
+        if txt_read_source is not None:
+            worker_app.state.connector_txt_read_source = txt_read_source
+        # #3436 B2c: compose the canonical device-session authority for
+        # the GET-only Desktop conversation surface from the same
+        # trusted broker binding. When the trusted runtime is absent
+        # (today's deploy) the composition yields None and the app
+        # keeps the fail-closed unconfigured authority installed by
+        # create_app; no browser-cookie or self-asserted fallback
+        # exists on this surface.
+        _desktop_device_session_authority, _desktop_auth_diag = (
+            build_desktop_device_session_authority_with_diagnostic(self.env)
+        )
+        if _desktop_device_session_authority is not None:
+            worker_app.state.desktop_device_session_authority = (
+                _desktop_device_session_authority
+            )
+        # #3139: compose the Local Runner return leg from the same
+        # trusted broker binding and the real D1 history store. Absent
+        # either, the composition yields None and the route keeps the
+        # fail-closed unconfigured source installed by create_app.
+        _local_task_result_source, _local_task_result_diag = (
+            build_local_task_result_source_with_diagnostic(
+                self.env, history_store,
+                office_completion=getattr(
+                    worker_app.state, "claw_office_drive_completion", None
+                ),
+            )
+        )
+        worker_app.state.local_task_result_source = _local_task_result_source
+        worker_app.state.local_task_result_diagnostic = _local_task_result_diag
+        install_orchestration_routes(
+            worker_app,
+            build_orchestration_bridge(
+                self.env,
+                settings=settings,
+                db_binding=db_binding,
+                request_factory=Request,
+                canonical_subject_resolver=canonical_subject_resolver,
+            ),
+        )
+        # The cutover write window (#5115 step ③) applies to this entry too:
+        # the Worker has no filesystem, so only the environment switch can open
+        # it. Wrapped after every ``state`` assignment below/before so callers
+        # keep the Starlette application they attach state to.
+        return apply_write_freeze(worker_app)
+
+    async def _get_worker_app(self) -> Any:
+        global _worker_app, _worker_app_initialization
+        if _worker_app is not None:
+            return _worker_app
+        if _worker_app_initialization is None:
+            async def initialize():
+                global _worker_app, _worker_app_initialization
+                try:
+                    # The attempt bounds itself: one hung build must never
+                    # brick the isolate. Past the ceiling the attempt is
+                    # cancelled, the finally below resets the shared state,
+                    # and the next request starts a fresh initialization. The
+                    # cancellation is delivered but not awaited — an await
+                    # stuck inside a JS bridge cannot block this reset.
+                    build_task = asyncio.ensure_future(self._build_worker_app())
+                    done, pending = await asyncio.wait(
+                        {build_task}, timeout=CHAT_INIT_TASK_SECONDS,
                     )
-                )
-                # Explicit independent gate; no browser decision endpoint
-                # activation merely because XLSX pause dispatch is enabled.
-                _worker_app.state.web_xlsx_p01_owner_decision_client = (
-                    _worker_app.state.web_xlsx_p01_pause_client
-                    if getattr(
-                        self.env, "PADIEM_WEB_XLSX_P01_OWNER_DECISION_ENABLED", None
-                    ) == "true" else None
-                )
-                _worker_app.state.web_xlsx_p01_workcopy_after_grant_enabled = (
-                    settings.runtime_mode == "b14"
-                    and _worker_app.state.web_xlsx_p01_owner_decision_client is not None
-                    and _worker_app.state.workspace_document_store is not None
-                    and getattr(
-                        self.env, "PADIEM_WEB_XLSX_WORKCOPY_AFTER_P01_ENABLED", None
-                    ) == "true"
-                )
-                # The independent WRITE ToolRuntime is OFF unless the
-                # signed-in READ and private workcopy path are both enabled,
-                # plus the explicit separate operator WRITE flag+caller.
-                _worker_app.state.web_xlsx_quote_write_client = (
-                    build_web_quote_write_engine_client(
-                        self.env, request_factory=Request,
-                        runtime_mode=settings.runtime_mode,
-                    )
-                    if _worker_app.state.web_xlsx_p01_workcopy_after_grant_enabled
-                    else None
-                )
-                _worker_app.state.web_xlsx_quote_write_enabled = (
-                    _worker_app.state.web_xlsx_quote_write_client is not None
-                    and _worker_app.state.web_xlsx_quote_write_store is not None
-                    and _worker_app.state.web_xlsx_quote_write_pause_store is not None
-                    and _worker_app.state.web_xlsx_quote_write_owner_decision_store
-                        is not None
-                )
-                # Browser Rendering PDF is independent from WRITE ToolRuntime.
-                # Supported 1-sheet quote summary only; explicit operator opt-in.
-                _worker_app.state.web_xlsx_quote_pdf_renderer = None
-                _worker_app.state.web_xlsx_quote_pdf_enabled = False
-                if (_worker_app.state.web_xlsx_quote_write_enabled
-                        and binding_value(
-                            self.env, "PADIEM_WEB_XLSX_QUOTE_PDF_ENABLED"
-                        ) == "true"):
-                    try:
-                        browser = binding_value(self.env, "BROWSER")
-                        _worker_app.state.web_xlsx_quote_pdf_renderer = (
-                            BrowserQuotePdfRenderer(browser)
-                        )
-                        _worker_app.state.web_xlsx_quote_pdf_enabled = True
-                    except (TypeError, ValueError):
-                        _worker_app.state.web_xlsx_quote_pdf_renderer = None
-                _worker_app.state.claw_live_sse_enabled = (
-                    settings.runtime_mode == "b14"
-                    and getattr(self.env, "PADIEM_CLAW_P01_LIVE_SSE_ENABLED", None) == "true"
-                    and getattr(_worker_app.state.claw_p01_adapter, "subject_identity_lane", False) is True
-                )
-                # #3094: compose the concrete canonical local-access source
-                # from a trusted broker-authority binding only. When the
-                # trusted runtime is absent (today's deploy) the composition
-                # yields None and the app keeps the fail-closed unconfigured
-                # source installed by create_app.
-                claw_local_access_source, _claw_local_access_diag = (
-                    build_claw_local_access_source_with_diagnostic(self.env)
-                )
-                if claw_local_access_source is not None:
-                    _worker_app.state.claw_local_access_source = claw_local_access_source
-                # #4139: second consumer of the SAME trusted broker service
-                # binding. Never infer a device list from local browser state.
-                device_directory_source = build_broker_device_directory_source(self.env)
-                if device_directory_source is not None:
-                    _worker_app.state.claw_device_directory_source = device_directory_source
-                # #5015: owner/workspace-scoped preferred PC target. The saved
-                # row is a preference only; execution still re-reads the Broker
-                # directory and the Mesh target. Absent D1 keeps it unset and
-                # the select route fails closed.
-                if db_binding is not None:
-                    from app.claw_pc_device_selection_store import (
-                        D1PcDeviceSelectionStore,
-                    )
-                    _worker_app.state.claw_pc_device_selection_store = (
-                        D1PcDeviceSelectionStore(db_binding)
-                    )
-                # #4139: TXT read request leg on the SAME trusted broker
-                # binding (device resolution + atomic command enqueue). Absent
-                # binding keeps the fail-closed unconfigured source: the route
-                # refuses rather than inventing approval material.
-                from app.connector_txt_read_routes import build_connector_txt_read_source
-                txt_read_source = build_connector_txt_read_source(self.env)
-                if txt_read_source is not None:
-                    _worker_app.state.connector_txt_read_source = txt_read_source
-                # #3436 B2c: compose the canonical device-session authority for
-                # the GET-only Desktop conversation surface from the same
-                # trusted broker binding. When the trusted runtime is absent
-                # (today's deploy) the composition yields None and the app
-                # keeps the fail-closed unconfigured authority installed by
-                # create_app; no browser-cookie or self-asserted fallback
-                # exists on this surface.
-                _desktop_device_session_authority, _desktop_auth_diag = (
-                    build_desktop_device_session_authority_with_diagnostic(self.env)
-                )
-                if _desktop_device_session_authority is not None:
-                    _worker_app.state.desktop_device_session_authority = (
-                        _desktop_device_session_authority
-                    )
-                # #3139: compose the Local Runner return leg from the same
-                # trusted broker binding and the real D1 history store. Absent
-                # either, the composition yields None and the route keeps the
-                # fail-closed unconfigured source installed by create_app.
-                _local_task_result_source, _local_task_result_diag = (
-                    build_local_task_result_source_with_diagnostic(
-                        self.env, history_store,
-                        office_completion=getattr(
-                            _worker_app.state, "claw_office_drive_completion", None
-                        ),
-                    )
-                )
-                _worker_app.state.local_task_result_source = _local_task_result_source
-                _worker_app.state.local_task_result_diagnostic = _local_task_result_diag
-                install_orchestration_routes(
-                    _worker_app,
-                    build_orchestration_bridge(
-                        self.env,
-                        settings=settings,
-                        db_binding=db_binding,
-                        request_factory=Request,
-                    ),
-                )
+                    if pending:
+                        build_task.cancel()
+                        raise ChatInitUnavailableError(
+                            "chat initialization did not complete in time")
+                    _worker_app = build_task.result()
+                    return _worker_app
+                finally:
+                    if _worker_app_initialization is asyncio.current_task():
+                        _worker_app_initialization = None
+
+            task = asyncio.create_task(initialize())
+            _worker_app_initialization = task
+
+            def finished(completed):
+                global _worker_app_initialization
+                if _worker_app_initialization is completed:
+                    _worker_app_initialization = None
+                # Retrieve the exception even if every waiting request was cancelled.
+                if not completed.cancelled():
+                    completed.exception()
+
+            task.add_done_callback(finished)
+        # One cancelled request must not cancel initialization for other
+        # waiters, and one slow initialization must not hold a request open
+        # until the runtime reaps it: the waiter answers a controlled 503 and
+        # the next request retries, while the shared task keeps running.
+        try:
+            return await asyncio.wait_for(
+                asyncio.shield(_worker_app_initialization), CHAT_INIT_WAIT_SECONDS,
+            )
+        except asyncio.TimeoutError:
+            raise ChatInitUnavailableError(
+                "chat initialization is still running") from None
+
+    async def fetch(self, request: Any) -> Any:
+        started = time.monotonic()
+        stage = "entry"
+        path = None
+        app = None
+        try:
+            import asgi
+
+            path = urlparse(request.url).path
+
+            connector_wss_response = await maybe_dispatch_connector_gateway(
+                request=request, worker_env=self.env, response_factory=Response,
+            )
+            if connector_wss_response is not None:
+                return connector_wss_response
+
+            stage = "init"
+            try:
+                app = await self._get_worker_app()
             except ConfigError:
                 response = Response(
                     "Padiem Chat runtime configuration is invalid.",
@@ -1344,24 +1835,50 @@ class Default(WorkerEntrypoint):
                     headers={"Content-Type": "text/plain; charset=utf-8"},
                 )
                 return _apply_headers(response, path)
+            except ChatInitUnavailableError:
+                # A slow or hung initialization answers a retryable 503 instead of
+                # holding the request open until the runtime reaps it.
+                response = Response(
+                    "Padiem Chat is still starting. Try again shortly.",
+                    status=503,
+                    headers={"Content-Type": "text/plain; charset=utf-8"},
+                )
+                return _apply_headers(response, path)
 
-        # The ASGI app is cached across invocations. Bind waitUntil ONLY while
-        # serving this request, otherwise an old ctx could own new log exports.
-        from app.request_telemetry import (
-            install_export_scheduler, reset_export_scheduler,
-        )
-        from pyodide.ffi import create_proxy
+            stage = "asgi"
+            # The ASGI app is cached across invocations. Bind waitUntil ONLY while
+            # serving this request, otherwise an old ctx could own new log exports.
+            from app.request_telemetry import (
+                install_export_scheduler, reset_export_scheduler,
+            )
+            from pyodide.ffi import create_proxy
 
-        def _schedule_log_export(awaitable):
-            self.ctx.waitUntil(create_proxy(awaitable))
+            def _schedule_log_export(awaitable):
+                # #6225: the handle the runtime receives is released when the
+                # background awaitable settles — a settled PyProxy must not
+                # outlive the request that created it. The awaitable itself is a
+                # pure-Python object, so the export body and its scheduling are
+                # unchanged; only the JS handle's lifetime is bounded here.
+                async def _export_and_release():
+                    try:
+                        await awaitable
+                    finally:
+                        proxy.destroy()
 
-        export_context = install_export_scheduler(_schedule_log_export)
-        try:
-            response = await asgi.fetch(_worker_app, request.js_object, self.env)
-        finally:
-            reset_export_scheduler(export_context)
-        return _apply_headers(
-            response,
-            path,
-            b66_quote_base_url=getattr(_worker_app.state, "b66_quote_base_url", None),
-        )
+                proxy = create_proxy(_export_and_release())
+                self.ctx.waitUntil(proxy)
+
+            export_context = install_export_scheduler(_schedule_log_export)
+            try:
+                response = await asgi.fetch(app, request.js_object, self.env)
+            finally:
+                reset_export_scheduler(export_context)
+            return _apply_headers(
+                response,
+                path,
+                b66_quote_base_url=getattr(app.state, "b66_quote_base_url", None),
+            )
+
+        except Exception as exc:
+            _log_fetch_exception_safe(stage, exc, self, request, path, app, started)
+            raise

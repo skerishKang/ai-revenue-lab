@@ -75,10 +75,16 @@ def test_foreign_spoofed_corrupt_receipts_fail_closed(override):
         verify_broker_file_text(value, origin=ORIGIN, observation=OBS)
 
 
-def test_oversize_or_control_payload_refused():
-    for text in ("가" * 300, "bad\x00data"):
-        with pytest.raises(LocalTaskResultError):
-            verify_broker_file_text(receipt(text), origin=ORIGIN, observation=OBS)
+def test_control_payload_refused_and_a_long_file_text_accepted():
+    # #4379: the 768-byte ceiling is gone, so a real local file result is not
+    # refused for its size. The control-character rule and the sha256
+    # integrity proof still apply.
+    with pytest.raises(LocalTaskResultError):
+        verify_broker_file_text(receipt("bad\x00data"), origin=ORIGIN, observation=OBS)
+    long_text = "가" * 5_000
+    assert verify_broker_file_text(
+        receipt(long_text), origin=ORIGIN, observation=OBS,
+    ) == ("text", long_text)
 
 
 def test_pending_does_not_claim_content():

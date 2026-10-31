@@ -16,6 +16,7 @@ task or alert status; and this slice writes no history and no session.
 from __future__ import annotations
 
 import inspect
+from dataclasses import replace
 from datetime import datetime, timezone, date
 from pathlib import Path
 
@@ -46,7 +47,11 @@ from app.claw_automation_owner_resolution import ResolvedAutomationOwner
 from app.claw_automation_projection_bridge import (
     AutomationProjectionError,
     _deterministic_id,
+    project_scheduled_run_output,
+    project_terminal_run_status_alert,
 )
+from app.workspace_storage import WorkspaceStorageError
+
 from app.claw_automation_task_alert_bridge import (
     ScheduledTaskAlertProjectionError,
     project_terminal_scheduled_run_to_task_alert,
@@ -148,25 +153,32 @@ class MemoryTaskAlertStore:
         if drop is not None:
             setattr(self, drop, None)
 
-    async def get_task(self, task_id: str, *, workspace_id: str) -> ClawFollowupTask | None:
+    async def get_task(
+        self, task_id: str, *, workspace_id: str, member_id: str
+    ) -> ClawFollowupTask | None:
         self.reads += 1
         task = self.tasks.get(task_id)
-        return task if task is not None and task.workspace_id == workspace_id else None
+        if task is None or task.workspace_id != workspace_id:
+            return None
+        return task if task.member_id == member_id else None
 
     async def get_alert(
-        self, alert_id: str, *, workspace_id: str, member_id: str | None = None
+        self, alert_id: str, *, workspace_id: str, member_id: str
     ) -> ClawAlert | None:
         self.reads += 1
         alert = self.alerts.get(alert_id)
         if alert is None or alert.workspace_id != workspace_id:
             return None
-        if member_id is not None and not alert.is_visible_to(member_id):
-            return None
-        return alert
+        return alert if alert.is_visible_to(member_id) else None
 
     async def add_task(self, task: ClawFollowupTask) -> ClawFollowupTask:
         self.writes += 1
         self.add_task_calls += 1
+        if task.task_id in self.tasks:
+            # The durable table's PRIMARY KEY refuses a second row for the same
+            # deterministic id, so a stub that silently overwrote it would hide
+            # exactly the collision this seam must fail closed on.
+            raise WorkspaceStorageError("claw task row already exists")
         self.tasks[task.task_id] = task
         return task
 
@@ -218,6 +230,9 @@ def _seed_alert(*, store: MemoryTaskAlertStore, row, status: ClawAlertStatus) ->
         created_at=NOW,
         status=status,
         visible_to_members=(make_owner().member_id,),
+        # #5034: a seeded row is a row this projection wrote, so it carries the
+        # same result references. A seed without them is a foreign identity.
+        linked_refs=(row.run_id, row.rule_id),
     )
     store.alerts[alert.alert_id] = alert
     return alert
@@ -294,18 +309,36 @@ async def test_report_or_draft_completed_is_a_no_op_with_zero_writes(output_type
     "status",
     [ClawScheduledRunStatus.FAILED, ClawScheduledRunStatus.CANCELLED],
 )
-async def test_failed_and_cancelled_terminal_rows_are_no_ops_with_zero_writes(status):
+async def test_failed_and_cancelled_terminal_rows_record_one_status_alert(status):
+    """#5034 option 1 replaced this row's old "zero writes" expectation.
+
+    What still holds: an output-derived Task/Alert is never created from a
+    non-completed run, and a live run is refused before any store access. What
+    changed: the terminal FAILED/CANCELLED row is itself a result, so exactly one
+    status Alert is recorded for it.
+    """
+
     store = MemoryTaskAlertStore()
     rule = make_rule(output_type=ClawAutomationOutputType.ALERT)
     row = scheduled_run(rule=rule, status=status)
 
     result = await _project(store, rule=rule, row=row)
 
-    assert result.created is False
-    assert result.created_kind is None
+    assert result.created is True
+    assert result.created_kind == "alert"
     assert result.status is status
-    assert store.writes == 0
-    assert store.reads == 0
+    assert store.writes == 1
+    assert store.reads == 1
+    alert = store.alerts[result.record_id]
+    assert alert.kind is ClawAlertKind.AUTOMATION
+    assert alert.severity is (
+        ClawAlertSeverity.WARN
+        if status is ClawScheduledRunStatus.FAILED
+        else ClawAlertSeverity.INFO
+    )
+    # The deterministic identity is the run's own, under a status namespace that
+    # cannot collide with the output alert of the same run.
+    assert result.record_id == _deterministic_id(WORKSPACE, row.run_id, "status")
 
 
 def test_terminal_status_allow_list_is_explicit_and_exhaustive():
@@ -356,19 +389,163 @@ async def test_non_terminal_rows_fail_closed_before_any_store_access(status):
         ClawAutomationOutputType.DRAFT,
     ],
 )
-async def test_no_non_completed_status_ever_records_a_write(status, output_type):
-    """The COMPLETED-only rule holds for every status × output-type combination."""
+async def test_no_non_completed_status_ever_records_an_output_derived_write(status, output_type):
+    """The COMPLETED-only rule holds for every status × output-type combination.
+
+    #5034 option 1 keeps this boundary untouched: an output-derived Task or Alert
+    still requires a COMPLETED run. The execution-status boundary is a separate
+    composition and is proved by its own tests below.
+    """
 
     store = MemoryTaskAlertStore()
     rule = make_rule(output_type=output_type)
     row = scheduled_run(rule=rule, status=status, output=None)
+    owner = make_owner()
 
-    try:
+    result = await project_scheduled_run_output(owner=owner, rule=rule, run=row, store=store)
+
+    assert result.created_kind is None
+    assert result.created is False
+    assert store.writes == 0
+
+
+@pytest.mark.parametrize(
+    "status",
+    [
+        ClawScheduledRunStatus.FAILED,
+        ClawScheduledRunStatus.CANCELLED,
+    ],
+)
+@pytest.mark.parametrize(
+    "output_type",
+    [
+        ClawAutomationOutputType.TASK_PROPOSAL,
+        ClawAutomationOutputType.ALERT,
+        ClawAutomationOutputType.REPORT,
+        ClawAutomationOutputType.DRAFT,
+    ],
+)
+async def test_a_terminal_failure_records_exactly_one_status_alert(status, output_type):
+    """#5034: a FAILED or CANCELLED run is a result the owner must be able to see.
+
+    Exactly one record, for every output type, and its wording never comes from
+    the run's output or error text.
+    """
+
+    store = MemoryTaskAlertStore()
+    rule = make_rule(output_type=output_type)
+    row = scheduled_run(
+        rule=rule,
+        status=status,
+        output=ClawAutomationOutput(
+            output_id="scheduled_output_leak",
+            workspace_id=WORKSPACE,
+            output_type=output_type,
+            title="SECRET-OUTPUT-TITLE",
+            content=RAW_CONTENT,
+        ),
+    )
+    row = replace(row, error_message="credential text must not surface")
+
+    result = await _project(store, rule=rule, row=row)
+
+    assert result.created is True
+    assert result.created_kind == "alert"
+    assert store.writes == 1
+    alert = store.alerts[result.record_id]
+    assert alert.title.startswith("자동화 실패" if status is ClawScheduledRunStatus.FAILED else "자동화 취소")
+    assert "SECRET-OUTPUT-TITLE" not in alert.title
+    assert RAW_CONTENT not in alert.title
+    assert "credential" not in alert.title
+    assert alert.workspace_id == WORKSPACE
+    assert alert.visible_to_members == (make_owner().member_id,)
+
+
+@pytest.mark.parametrize(
+    "status",
+    [
+        ClawScheduledRunStatus.PENDING,
+        ClawScheduledRunStatus.RUNNING,
+    ],
+)
+async def test_a_live_run_records_nothing_at_either_boundary(status):
+    store = MemoryTaskAlertStore()
+    rule = make_rule(output_type=ClawAutomationOutputType.ALERT)
+    row = scheduled_run(rule=rule, status=status, output=None)
+
+    with pytest.raises(ScheduledTaskAlertProjectionError):
         await _project(store, rule=rule, row=row)
-    except ScheduledTaskAlertProjectionError:
-        pass
 
     assert store.writes == 0
+    assert store.reads == 0
+
+
+async def test_a_reprojected_failure_keeps_one_alert_and_no_second_write():
+    store = MemoryTaskAlertStore()
+    rule = make_rule(output_type=ClawAutomationOutputType.ALERT)
+    row = scheduled_run(rule=rule, status=ClawScheduledRunStatus.FAILED)
+
+    first = await _project(store, rule=rule, row=row)
+    second = await _project(store, rule=rule, row=row)
+
+    assert first.created is True
+    assert second.created is False
+    assert second.record_id == first.record_id
+    assert store.writes == 1
+    assert len(store.alerts) == 1
+
+
+async def test_a_user_dismissed_status_alert_is_never_reopened():
+    store = MemoryTaskAlertStore()
+    rule = make_rule(output_type=ClawAutomationOutputType.ALERT)
+    row = scheduled_run(rule=rule, status=ClawScheduledRunStatus.FAILED)
+
+    first = await _project(store, rule=rule, row=row)
+    alert = store.alerts[first.record_id]
+    store.alerts[first.record_id] = ClawAlert(
+        alert_id=alert.alert_id,
+        workspace_id=alert.workspace_id,
+        kind=alert.kind,
+        severity=alert.severity,
+        title=alert.title,
+        created_at=alert.created_at,
+        status=ClawAlertStatus.DISMISSED,
+        visible_to_members=alert.visible_to_members,
+        linked_refs=alert.linked_refs,
+    )
+
+    second = await _project(store, rule=rule, row=row)
+
+    assert second.created is False
+    assert store.writes == 1
+    assert store.alerts[first.record_id].status is ClawAlertStatus.DISMISSED
+
+
+async def test_a_completed_run_never_records_a_status_alert():
+    store = MemoryTaskAlertStore()
+    rule = make_rule(output_type=ClawAutomationOutputType.ALERT)
+    row = scheduled_run(rule=rule, status=ClawScheduledRunStatus.COMPLETED)
+
+    result = await project_terminal_run_status_alert(
+        owner=make_owner(), rule=rule, run=row, store=store
+    )
+
+    assert result.created_kind is None
+    assert store.writes == 0
+    assert store.reads == 0
+
+
+async def test_a_status_alert_for_another_member_is_invisible_here():
+    store = MemoryTaskAlertStore()
+    rule = make_rule(output_type=ClawAutomationOutputType.ALERT)
+    row = scheduled_run(rule=rule, status=ClawScheduledRunStatus.FAILED)
+
+    mine = await _project(store, rule=rule, row=row)
+
+    assert await store.get_alert(
+        mine.record_id, workspace_id=WORKSPACE, member_id="member_other"
+    ) is None
+    assert store.alerts[mine.record_id].visible_to_members == (make_owner().member_id,)
 
 
 # ── authority / fail-closed guards ─────────────────────────────────────────
@@ -566,10 +743,15 @@ async def test_existing_record_with_foreign_identity_fails_closed():
         linked_ref=seeded.linked_ref,
     )
 
-    with pytest.raises(AutomationProjectionError):
+    # #2952 follow-up: the member-scoped read never surfaces another member's row,
+    # so the refusal comes from the durable PRIMARY KEY on the deterministic id.
+    # Either way nothing is overwritten and no second row appears.
+    with pytest.raises(WorkspaceStorageError):
         await _project(store, rule=rule, row=row)
 
-    assert store.add_task_calls == 0
+    assert store.tasks[seeded.task_id].member_id == "member_other"
+    assert store.tasks[seeded.task_id].status is ClawTaskStatus.OPEN
+    assert len(store.tasks) == 1
 
 
 # ── boundary + source contract ─────────────────────────────────────────────

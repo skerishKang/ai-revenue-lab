@@ -100,7 +100,7 @@ def read_response():
         "content_base64": base64.b64encode(PDF_BYTES).decode("ascii"),
         "byte_size": len(PDF_BYTES),
         "version_evidence": {
-            "version": "v-1",
+            "version": 7,
             "modified_time": "2026-10-01T00:00:00Z",
             "md5_checksum": None,
             "sha256_checksum": "a" * 64,
@@ -153,14 +153,14 @@ def test_pdf_candidates_uses_fixed_private_rpc_and_bounded_query():
     ]
 
 
-def test_pdf_read_validates_payload_and_preserves_version_evidence():
+def test_pdf_read_validates_the_payload_and_returns_raw_bytes():
     binding = FakeEngineBinding()
     client = CloudflareDriveCaseFolderEngineClient(binding)
-    body = run(client.read_pdf(workspace_ref=WORKSPACE_REF, project_id=PROJECT_ID, file_id=FILE_ID))
-    assert base64.b64decode(body["content_base64"], validate=True) == PDF_BYTES
-    assert body["byte_size"] == len(PDF_BYTES)
-    assert body["version_evidence"]["sha256_checksum"] == "a" * 64
-    assert body["authorization"] == {"direct_parent_proof": True, "source_type": "drive"}
+    file_body, payload = run(
+        client.read_pdf_bytes(workspace_ref=WORKSPACE_REF, project_id=PROJECT_ID, file_id=FILE_ID)
+    )
+    assert payload == PDF_BYTES
+    assert file_body == file_projection()
     assert binding.calls[-1] == (
         PDF_READ_OPERATION,
         {"workspace_ref": WORKSPACE_REF, "project_id": PROJECT_ID, "file_id": FILE_ID},
@@ -190,7 +190,7 @@ def test_pdf_read_rejects_invalid_base64_and_signature():
     bad["byte_size"] = len(b"not-a-pdf")
     client = CloudflareDriveCaseFolderEngineClient(FakeEngineBinding({PDF_READ_OPERATION: bad}))
     with pytest.raises(DriveCaseFolderEngineError):
-        run(client.read_pdf(workspace_ref=WORKSPACE_REF, project_id=PROJECT_ID, file_id=FILE_ID))
+        run(client.read_pdf_bytes(workspace_ref=WORKSPACE_REF, project_id=PROJECT_ID, file_id=FILE_ID))
 
 
 def test_pdf_engine_error_is_bounded_without_raw_text():
@@ -205,17 +205,21 @@ def test_pdf_engine_error_is_bounded_without_raw_text():
     }
     client = CloudflareDriveCaseFolderEngineClient(FakeEngineBinding({PDF_READ_OPERATION: bad}))
     with pytest.raises(DriveCaseFolderEngineError) as excinfo:
-        run(client.read_pdf(workspace_ref=WORKSPACE_REF, project_id=PROJECT_ID, file_id=FILE_ID))
+        run(client.read_pdf_bytes(workspace_ref=WORKSPACE_REF, project_id=PROJECT_ID, file_id=FILE_ID))
     assert excinfo.value.status_code == 413
     assert "raw provider internal detail" not in str(excinfo.value)
 
 
 def test_pdf_client_never_returns_workspace_or_project_refs():
     client = CloudflareDriveCaseFolderEngineClient(FakeEngineBinding())
-    rendered = json.dumps(run(client.read_pdf(workspace_ref=WORKSPACE_REF, project_id=PROJECT_ID, file_id=FILE_ID)))
+    file_body, payload = run(
+        client.read_pdf_bytes(workspace_ref=WORKSPACE_REF, project_id=PROJECT_ID, file_id=FILE_ID)
+    )
+    rendered = json.dumps(file_body, ensure_ascii=False)
     assert WORKSPACE_REF not in rendered
     assert PROJECT_ID not in rendered
     assert "resource_key" not in rendered
+    assert payload == PDF_BYTES
 
 
 def test_seam_snapshot_declares_pdf_ops_without_second_binding():

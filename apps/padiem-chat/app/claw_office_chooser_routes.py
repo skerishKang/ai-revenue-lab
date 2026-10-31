@@ -60,7 +60,7 @@ def _candidate(item: Any) -> dict[str, Any] | None:
     if (not isinstance(name, str) or not 1 <= len(name) <= 160
             or any(ord(ch) < 32 or ch in "/\\:" for ch in name)
             or kind not in _FORMATS or not name.casefold().endswith("." + kind)
-            or type(size) is not int or not 0 < size <= 1_048_576
+            or type(size) is not int or not 0 < size <= 10 * 1024 * 1024
             or not isinstance(token, str) or not _TOKEN.fullmatch(token)):
         return None
     return {

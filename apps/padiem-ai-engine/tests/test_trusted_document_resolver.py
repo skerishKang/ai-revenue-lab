@@ -75,11 +75,68 @@ CORE_TESTS = REPO_ROOT / "packages" / "padiem-ai-core" / "tests"
 # provider or Production authority is introduced, and no declared-metadata
 # bound, decision or error code changes. Only the two pins for the changed files
 # move; the other two are unchanged.
+# Re-pinned for #4379: the PADIEM self-imposed binary document byte total
+# was removed, so the two pins for the changed files move. No new parser,
+# archive walk, process, network, filesystem, OCR, provider or Production
+# authority is introduced. The OOXML entry count, the per-entry and the total
+# uncompressed bounds stay: they are the decompression-bomb protection and are
+# not a caller's data total. The other two pins are unchanged.
+# Re-pinned for #4379: the Core binary-document byte total was removed, and
+# the main branch then replaced the remaining constant with a very large
+# value. Neither is enforced any more, so the pin for the changed Core
+# document file moves. The OOXML entry count, the per-entry and the total
+# uncompressed bounds stay: they are the decompression-bomb protection and are
+# not a caller's data total. The other two pins are unchanged.
+# Re-pinned for #5447: the Core XLSX authority gained a bounded structured
+# table reader (read_xlsx_table) beside the flat text extraction it already
+# owned. It reuses the same archive gate, the same bounded repackage and the
+# same openpyxl reader, so no new parser, archive walk, process, network,
+# filesystem, OCR, provider or Production authority is introduced and no
+# declared-metadata bound, decision or error code changes. Only the two pins
+# for the changed files move; the other two are unchanged.
+# Proposed re-pin after #5815: PDF/PPTX/DOCX provenance segments and
+# DOCX table-row / XLSX formula-and-cached-value text changed in Core.
+# Only this source pin moves; the other hashes are unchanged. CTO review pending.
+# Re-pinned for #4976: the single Core PDF reader boundary now retries a damaged
+# cross-reference section once through the lenient reader, for document-text reads
+# only. It adds no parser, process, network, filesystem, OCR, provider or
+# Production authority, changes no declared-metadata bound or decision, and keeps
+# the magic, encryption and page gates plus the strict reader for merge, split,
+# markdown and preview. Only this source pin moves; the other hashes are unchanged.
+# Re-pinned for #5734 stage 2: Core stopped refusing a document for its own
+# length. The OOXML archive gate judges a decompression bomb by inflation ratio
+# instead of by size or member count, the XLSX table reader dropped its
+# 500/50/5,000 ceilings, the PDF reader stopped refusing a page count and a
+# per-page text length, and a text document no longer carries a 96 KiB or
+# 40,000-character total. Then #5876 put one absolute number back for a
+# different reason: a single archive member may not claim more than 32MiB of
+# inflated bytes, because a Pyodide Worker isolate owns 128MB -- a memory
+# allocation, not a size preference. All four pinned files moved: two Core
+# sources and their two fixtures. The guards these canaries exist to catch -- the
+# archive path, encryption, DTD and inflation gates, the NUL and
+# control-character rules, and locator provenance -- are untouched, and no
+# parser, process, network, filesystem, OCR, provider or Production authority
+# was added.
+# Re-pinned for #5881 phase 2: an explicit request-local OOXML allocation
+# budget lets the CPython file lane omit the Worker ceiling; default Worker
+# calls still enforce 32MiB. Path/encryption/DTD/inflation guards are unchanged.
+# The Core signature fixture names this additive keyword; file-lane tests prove
+# >32MiB acceptance and default rejection before/after the CPython request.
+# Re-pinned for #2824: the archive authority gained a link-entry refusal, now
+# reads the local file header's copy of the encryption flag (zipfile reports only
+# the central-directory copy), and classifies an OLE-wrapped EncryptedPackage as
+# encrypted instead of malformed. The guards these canaries protect -- archive
+# path, encryption, DTD, inflation, the NUL and control-character rules, and
+# locator provenance -- are unchanged or strengthened, and no parser, process,
+# network, filesystem, OCR, provider or Production authority was added. No bound
+# was introduced or retuned: the entry count and the archive-wide uncompressed
+# total stay unenforced (#5573), and the 1000x ratio and the 32MiB per-member
+# ceiling are untouched.
 PINNED_SHA256 = {
-    CORE_PACKAGE / "document_normalization.py": "1bfaea2fb294d66f2307ee93d2299a05dc17d7e74fc9bcb93b2c7e9253d73978",
-    CORE_PACKAGE / "document_semantics.py": "a9cb2284d538c38aa5e08eb0e0ea4ff792922ae8ce58514e09228288ac57be85",
-    CORE_TESTS / "test_document_semantics.py": "650ca215c9842b6bb4d45faed6707749c3cf2a7c008bb18fc4a567b0487fa7e5",
-    CORE_TESTS / "test_document_normalization.py": "c1de17a7584cfb011e6b9f9351a7bf9c0debbe00fc77e603661f6e63fc7d0cd2",
+    CORE_PACKAGE / "document_normalization.py": "a13344c3a1d86df7b4340ee4bc47c25bf333c17060037b4a0d1ab2204b794b95",
+    CORE_PACKAGE / "document_semantics.py": "336eb0b93605833f30e70ac866f9e22cb2f47f39ea5c5ac0d81a7028ca2bc043",
+    CORE_TESTS / "test_document_semantics.py": "c350dc331d52a3507d23d2fdb370cd41607c468255bdf2bf4d11486885272494",
+    CORE_TESTS / "test_document_normalization.py": "881a3ea5ba15584f6365922302e164d2f7e7f1e75b3e50df7a1822187e0a9d5e",
 }
 
 REF = "doc_r2741resolvertest1"

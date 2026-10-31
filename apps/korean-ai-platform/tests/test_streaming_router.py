@@ -27,7 +27,6 @@ MESSAGES = [{"role": "user", "content": "안녕하세요"}]
 def _decision(
     *,
     fallbacks: list[dict[str, str]] | None = None,
-    max_attempts: int = 3,
     fallback_allowed: bool = True,
 ) -> RouteDecision:
     return RouteDecision(
@@ -62,7 +61,6 @@ def _decision(
         evidence_status="resolved_not_called",
         request_id="b14req_stream_router",
         provider_mode="live",
-        max_attempts=max_attempts,
     )
 
 
@@ -240,7 +238,12 @@ async def test_failure_after_first_content_is_terminal_and_never_falls_back():
 
 
 @pytest.mark.asyncio
-async def test_max_attempts_prevents_third_candidate():
+async def test_the_candidate_list_is_the_whole_budget():
+    """#4317: every candidate the route allows is tried, with no numeric cap.
+
+    The route's candidate list is the budget. A third candidate is visited
+    because the list allows it, not because a ceiling was raised.
+    """
     fallbacks = [
         {
             "model_id": "openrouter/free",
@@ -268,9 +271,9 @@ async def test_max_attempts_prevents_third_candidate():
 
         return stream()
 
-    events = await _collect(_decision(fallbacks=fallbacks, max_attempts=2), stream_call)
-    assert calls == ["stealth/ox-alpha", "openrouter/free"]
-    assert events[-1].attempt == 2
+    events = await _collect(_decision(fallbacks=fallbacks), stream_call)
+    assert calls == ["stealth/ox-alpha", "openrouter/free", "another/free"]
+    assert events[-1].attempt == 3
     assert events[-1].error_code == "upstream_server_error"
 
 
@@ -419,5 +422,6 @@ def test_public_gateway_still_rejects_stream_true_after_router_slice():
             "stream": True,
         },
     )
-    assert response.status_code == 400
-    assert response.json()["error"]["code"] == "stream_not_supported"
+    # B7: the retired id is refused at validation, before any stream handling.
+    assert response.status_code == 422
+    assert response.json()["error"]["code"] == "invalid_body"

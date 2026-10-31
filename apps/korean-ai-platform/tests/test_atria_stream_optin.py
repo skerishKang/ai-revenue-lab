@@ -14,9 +14,9 @@ def test_preview_is_owner_opt_in_and_off_by_default():
     assert "state.externalFallback))" in js
     assert 'endpoint += "/stream-preview"' in js
     assert "payload.stream = true" in js
-    assert "max_attempts: 1" in js
+    assert "max_attempts: 1" not in js  # B4: the retired option is not sent
     assert "max_retries: 0" in js
-    assert "allow_external_fallback: false" in js
+    assert "allow_external_fallback" not in js  # B5: the retired knob is not sent
     assert '"Content-Type": "application/json"' in js
     assert "if (DOM.externalFallback) {" in js
     assert 'DOM.externalFallback.addEventListener("change"' in js

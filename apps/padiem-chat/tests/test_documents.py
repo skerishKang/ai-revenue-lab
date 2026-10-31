@@ -90,12 +90,25 @@ def test_supported_text_documents_validate(name, media_type):
         doc("x.txt", "text/markdown", "x"),
         doc("x.txt", "text/plain", ""),
         doc("x.txt", "text/plain", "abc\x00def"),
-        doc("x.txt", "text/plain", "x" * (MAX_DOCUMENT_CHARS + 1)),
     ],
 )
-def test_unsupported_binary_mismatch_empty_and_oversize_documents_rejected(payload):
+def test_unsupported_binary_mismatch_and_empty_documents_rejected(payload):
     with pytest.raises(DocumentValidationError):
         parse_document_item(payload)
+
+
+def test_a_long_text_document_is_accepted_not_rejected() -> None:
+    """#5734 stage 2: the composer reads the document the owner attached.
+
+    The 40,000-character and 96 KiB refusals were product-side copies of limits
+    no platform or provider imposed; a text document still has to be the type it
+    claims, be non-empty, and carry no NUL.
+    """
+    body = "가나다\n" * 30_000
+    assert len(body) > 2 * MAX_DOCUMENT_CHARS
+    attachment = parse_document_item(doc("long.md", "text/markdown", body))
+    assert len(attachment.text) == len(body)
+    assert attachment.byte_size == len(body.encode("utf-8")) > 96 * 1024
 
 
 @pytest.mark.asyncio
@@ -114,7 +127,6 @@ async def test_ephemeral_document_is_untrusted_single_system_context_and_not_pub
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
         response = await client.post("/api/chat", json={
             "messages": [{"role": "user", "content": "이 문서에서 중요한 내용을 알려줘"}],
-            "mode": "auto",
             "attachments": [doc(text=f"회의 메모\n{marker}\n매출은 42")],
         })
 
@@ -128,8 +140,9 @@ async def test_ephemeral_document_is_untrusted_single_system_context_and_not_pub
     assert upstream["messages"][1] == {"role": "user", "content": "이 문서에서 중요한 내용을 알려줘"}
     assert upstream["model"] == DEFAULT_B14_MODEL_ID
     assert upstream["business14"]["required_capabilities"] == ["chat"]
-    assert upstream["business14"]["allow_external_fallback"] is False
-    assert upstream["business14"]["max_attempts"] == 1
+    # B5: the retired fallback knob no longer travels on the wire.
+    assert "allow_external_fallback" not in upstream["business14"]
+    assert "max_attempts" not in upstream["business14"]
 
     public = response.json()
     assert public["attachments"] == [{
@@ -158,7 +171,6 @@ async def test_document_can_combine_with_web_evidence_inside_context_cap():
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
         response = await client.post("/api/chat", json={
             "messages": [{"role": "user", "content": "문서와 최신 정보를 비교해줘"}],
-            "mode": "auto",
             "tool": "web_search",
             "attachments": [doc("facts.txt", "text/plain", marker + "\n내부 기준 날짜 2026-08-20")],
         })
@@ -227,7 +239,7 @@ class MemoryProjectFiles:
             return next((item for item in self.files if item.id == file_id), None)
         return None
 
-    async def create_file(self, user_id, project_id, name, media_type, text):
+    async def create_file(self, user_id, project_id, name, media_type, text, country="kr"):
         raise NotImplementedError
 
     async def delete_file(self, user_id, project_id, file_id):
@@ -251,7 +263,6 @@ async def test_authenticated_project_chat_uses_project_files_but_history_saves_o
         client.cookies.set(SESSION_COOKIE, token, domain="chat.example.test", path="/")
         response = await client.post("/api/chat", json={
             "messages": [{"role": "user", "content": "자료를 쉽게 정리해줘"}],
-            "mode": "auto",
             "project_id": history.project.id,
         })
 
@@ -282,6 +293,11 @@ class FakeStatement:
         return None
 
     async def run(self):
+        if self.sql.startswith("INSERT INTO project_files"):
+            # #5226: the store writes the row through a statement that returns
+            # the inserted id, so the fake reports the same result the D1
+            # binding does instead of an empty one.
+            return {"results": [{"id": self.values[0]}], "meta": {"changes": 1}}
         return {"results": []}
 
 
@@ -336,7 +352,7 @@ def test_frontend_contract_distinguishes_binary_composer_from_text_only_project_
     assert 'label: "DOCX"' in capabilities
     assert 'label: "PPTX"' in capabilities
     assert 'label: "XLSX"' in capabilities
-    assert "binaryBytes: 2 * 1024 * 1024" in capabilities
+    assert "binaryBytes" not in capabilities
     assert "PDF·Office 문서는 아직 지원하지 않습니다" not in html
     assert "PDF·DOCX는 아직 지원하지 않습니다" not in html
     assert "presentationml" not in html

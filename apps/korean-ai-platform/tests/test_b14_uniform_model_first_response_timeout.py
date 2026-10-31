@@ -52,7 +52,9 @@ async def test_completed_and_stream_adapter_transport_no_early_cut(
 
     def respond(request):
         observed.append((request.extensions["timeout"]["connect"],
-                         request.extensions["timeout"]["read"]))
+                         request.extensions["timeout"]["read"],
+                         request.extensions["timeout"]["write"],
+                         request.extensions["timeout"]["pool"]))
         if stream:
             return httpx.Response(
                 200, content=(
@@ -79,4 +81,4 @@ async def test_completed_and_stream_adapter_transport_no_early_cut(
     else:
         result = await plat.call_platform_chat_completions(**arguments)
         assert result["choices"][0]["message"]["content"] == "OK"
-    assert observed == [(600.0, 600.0)]
+    assert observed == [(600.0, 600.0, 120.0, 60.0)]

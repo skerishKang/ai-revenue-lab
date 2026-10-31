@@ -224,7 +224,7 @@ check(explicitTax.ok === true && explicitTax.draft.tax.mode === "INCLUSIVE",
 const partialProfile = Skill.buildRenderModel(skill, input(), {
   companyProfile: {
     company: "CGI상사",
-    representative: "김범신",
+    representative: "홍길동",
     defaultValidityDays: null,
     defaultTaxMode: null
   }

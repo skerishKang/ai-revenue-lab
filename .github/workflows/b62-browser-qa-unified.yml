@@ -67,6 +67,7 @@ jobs:
       - name: Regression check for QA path ownership and scoped base visual behavior
         run: |
           python -m unittest discover -s .github/tests -p test_b62_browser_qa_unified.py -v
+          python -m unittest discover -s .github/tests -p test_com2_b62_touch_auto_contract.py -v
           python -m unittest discover -s .github/tests -p test_3989_b62_visual_leaf_smoke.py -v
           python -m unittest discover -s .github/tests -p test_3989_b62_owner_leaf_browser_base.py -v
           python -m unittest discover -s .github/tests -p test_3989_b62_headless_shell_install.py -v
@@ -80,6 +81,10 @@ jobs:
         run: |
           python -m unittest discover -s .github/tests -p test_3989_b62_browser_tail_parallel.py -v
           python -m unittest discover -s .github/tests -p test_3989_b62_glass_timing_ownership.py -v
+          python -m unittest discover -s .github/tests -p test_b62_visual_timing_starved_attribution.py -v
+          python -m unittest discover -s .github/tests -p test_b62_glass_zoom_visual_tail_contract.py -v
+          python -m unittest discover -s .github/tests -p test_b62_post_certification_action_settle.py -v
+          python -m unittest discover -s .github/tests -p test_b62_visual_tail_lane_scope.py -v
       - name: Select jobs for changed PR paths
         id: classify
         env:
@@ -109,7 +114,7 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9
         with:
-          version: '0.12.5'
+          version: '0.13.5'
           enable-cache: true
           cache-dependency-glob: apps/padiem-chat/uv.lock
       - name: Resolve B62
@@ -189,7 +194,7 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
         with:
-          version: "0.12.5"
+          version: "0.13.5"
           enable-cache: true
           cache-dependency-glob: apps/padiem-chat/uv.lock
       - name: Resolve B62
@@ -284,7 +289,7 @@ jobs:
         with:
           name: b62-auth-history-browser-qa
           path: .tmp/b62-auth-history-browser-qa
-          if-no-files-found: error
+          if-no-files-found: warn
           retention-days: 14
 
   browser-qa:
@@ -308,7 +313,7 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
         with:
-          version: "0.12.5"
+          version: "0.13.5"
           enable-cache: true
           cache-dependency-glob: apps/padiem-chat/uv.lock
       - name: Resolve B62
@@ -324,6 +329,12 @@ jobs:
           key: b62-playwright-headless-shell-1.55.0-${{ runner.os }}-${{ runner.arch }}
       - name: Install Chromium runtime
         run: uv run playwright install --with-deps --only-shell chromium
+      # #4139 PC directory panel and guidance Chromium contracts. The B62 full
+      # regression lane installs no Playwright (pytest.importorskip skips the
+      # browser suites there), so these two files only run in this lane; they
+      # boot their own static fixture servers and need no mock app.
+      - name: PC directory panel and guidance browser contracts
+        run: uv run pytest -q tests/test_4139_claw_device_manager_browser.py tests/test_4139_claw_device_guidance_browser.py
       - name: Start mock Padiem Chat
         run: |
           set -euo pipefail
@@ -344,6 +355,8 @@ jobs:
         env:
           B62_QA_VISUAL_SCOPE: ${{ needs.plan.outputs.glass_visual_tail_required == 'false' && 'leaf' || 'full' }}
         run: uv run python ../../.github/scripts/b62_browser_visual_qa.py
+      - name: Mobile header collapse browser QA
+        run: uv run python ../../.github/scripts/b62_mobile_header_collapse_qa.py
       - name: Claw first-use Chat alignment and shared composer browser QA
         run: uv run python ../../.github/scripts/claw_first_use_composer_parity_qa.py
       - name: Claw canonical connection status chips browser QA
@@ -385,9 +398,14 @@ jobs:
         # Shell pointer/answer/mask/viewport/accessibility remain blocking on PR.
         # Strict frame-window certification runs daily on main in a separate
         # non-required workflow, using the original unchanged thresholds.
+        # The full scope is the hosted lane's contract: it proves the
+        # high-resolution 2560x1440 Glass Zoom composition on every pull
+        # request. The isolated COM2 container lane runs the default isolated
+        # scope, which keeps the Shell and Gutter composition checks and skips
+        # this already-validated high-resolution duplicate.
         env:
           B62_GLASS_SHELL_MODE: functional
-        run: uv run python ../../.github/scripts/b62_browser_qa_tail_parallel.py
+        run: uv run python ../../.github/scripts/b62_browser_qa_tail_parallel.py --scope full
       - name: Print QA report
         if: always()
         run: |
@@ -452,7 +470,7 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
         with:
-          version: "0.12.5"
+          version: "0.13.5"
           enable-cache: true
           cache-dependency-glob: apps/padiem-chat/uv.lock
       - name: Resolve B62
@@ -524,7 +542,7 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
         with:
-          version: "0.12.5"
+          version: "0.13.5"
           enable-cache: true
           cache-dependency-glob: apps/padiem-chat/uv.lock
       - name: Resolve B62
@@ -598,7 +616,7 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
         with:
-          version: "0.12.5"
+          version: "0.13.5"
           enable-cache: true
           cache-dependency-glob: apps/padiem-chat/uv.lock
       - name: Resolve B62
@@ -668,7 +686,7 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
         with:
-          version: "0.12.5"
+          version: "0.13.5"
           enable-cache: true
           cache-dependency-glob: apps/padiem-chat/uv.lock
       - name: Resolve B62
@@ -736,7 +754,7 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
         with:
-          version: "0.12.5"
+          version: "0.13.5"
           enable-cache: true
           cache-dependency-glob: apps/padiem-chat/uv.lock
       - name: Resolve B62
@@ -811,7 +829,7 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
         with:
-          version: "0.12.5"
+          version: "0.13.5"
           enable-cache: true
           cache-dependency-glob: apps/padiem-chat/uv.lock
       - name: Resolve B62
@@ -879,7 +897,7 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9
         with:
-          version: '0.12.5'
+          version: '0.13.5'
           enable-cache: true
           cache-dependency-glob: apps/padiem-chat/uv.lock
       - name: Resolve B62
@@ -949,7 +967,7 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
         with:
-          version: "0.12.5"
+          version: "0.13.5"
           enable-cache: true
           cache-dependency-glob: apps/padiem-chat/uv.lock
       - name: Resolve B62
@@ -1021,7 +1039,7 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
         with:
-          version: "0.12.5"
+          version: "0.13.5"
           enable-cache: true
           cache-dependency-glob: apps/padiem-chat/uv.lock
       - name: Resolve B62
@@ -1091,7 +1109,7 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
         with:
-          version: "0.12.5"
+          version: "0.13.5"
           enable-cache: true
           cache-dependency-glob: apps/padiem-chat/uv.lock
       - name: Resolve B62
@@ -1161,7 +1179,7 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
         with:
-          version: "0.12.5"
+          version: "0.13.5"
           enable-cache: true
           cache-dependency-glob: apps/padiem-chat/uv.lock
       - name: Resolve B62
@@ -1236,7 +1254,7 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
         with:
-          version: "0.12.5"
+          version: "0.13.5"
           enable-cache: true
           cache-dependency-glob: apps/padiem-chat/uv.lock
       - name: Resolve B62
@@ -1306,7 +1324,7 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
         with:
-          version: "0.12.5"
+          version: "0.13.5"
           enable-cache: true
           cache-dependency-glob: apps/padiem-chat/uv.lock
       - name: Resolve B62

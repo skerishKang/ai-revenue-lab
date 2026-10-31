@@ -15,7 +15,7 @@ canonical enrollment / binding / device credential / session
 -> owner-selected SAF folder declaration (/android-profile)
 -> owner-confirmed TXT read request (Chat API)
 -> canonical approval receipt + enqueue_command_with_material
--> phone poll / material / SAF read / acknowledge
+-> phone poll / material / admission / SAF read / acknowledge
 -> verified text result (/text-result)
 -> existing projection appends the text to the originating conversation
 ```
@@ -83,7 +83,9 @@ Every device call is the same closed envelope, sent through the private service 
 - `tls_verified` must be `true`; the outer edge terminates and verifies TLS.
 - `method` must be `POST`; every route requires a JSON object body carrying `binding_ref` and `credential_b64`.
 - Bodies are bounded; unknown envelope keys, routes or content types fail closed.
-- Routes: `/session`, `/poll`, `/material`, `/heartbeat`, `/acknowledge`, `/reconcile`, `/office-part`, `/text-result`, `/execution-profile`, `/android-profile`.
+- **This envelope is what the private Service Binding carries, not what the phone sends.** The app performs an ordinary `POST https://<ingress>/<route>` with the plain JSON body (§4, §7.1); the broker state worker's private bridge (`local_agent_broker_private_http_bridge.py`) base64s that body into this shape and sets `tls_verified` from the verified HTTPS termination. A client that sends this envelope as its own JSON body is refused.
+- Routes: `/session`, `/poll`, `/material`, `/admission`, `/heartbeat`, `/acknowledge`, `/reconcile`, `/office-part`, `/text-result`, `/execution-profile`, `/android-profile`.
+- `/admission` is the only route on this surface that mints references. The device identifies the exact queued command and fingerprint; the server owns `admission_ref` and `evidence_ref` and returns them in the response. A request body carrying either key is refused by the closed schema.
 
 ## 4. SAF folder declaration — `POST /android-profile`
 
@@ -330,11 +332,70 @@ POST /session       -> live device session (canonical credential)
 POST /poll          -> queued command correlation {command_id, run_id, tool_request_ref, sequence, request_fingerprint, revision_ref}
 POST /material      -> exact material + receipt for that queued command
 verify receipt      -> format/policy/authority constants, command_id, request_id, revision, fingerprint, expires_at, declared root_ref
+POST /admission     -> server-owned admission transition; returns admission_ref, evidence_ref, revision_ref, request_id, sequence
 POST /text-result   -> {"state": "pending"} intent (before the actual read)
 SAF read            -> exact .txt document under root_ref/path_relative, at most 768 UTF-8 bytes
 POST /acknowledge   -> termination "exited", exit_code 0, exact admission/evidence/revision/request refs
 POST /text-result   -> {"state": "content", content_utf8, content_sha256, content_bytes}
 ```
+
+### 7.1 `POST /admission` — where the acknowledgement references come from
+
+`/acknowledge` refuses an acknowledgement that does not echo the `admission_ref` and
+`evidence_ref` the Broker stored, and `/poll` never carries them: a queued command has
+no admission yet. The phone reads both values exclusively from this response.
+
+Request body (inside the envelope, exactly these keys):
+
+```json
+{
+  "session_id": "session.android.1",
+  "binding_ref": "binding.android.1",
+  "credential_b64": "<base64 device credential>",
+  "command_id": "andcmd-...",
+  "request_fingerprint": "<Broker command fingerprint>",
+  "request_id": "andreq-...",
+  "now": "2026-10-19T06:00:00Z"
+}
+```
+
+`command_id`, `request_fingerprint` and `sequence` come from `/poll`; `request_id` comes
+from `/material`. `now` is client evidence only — the server clock owns the acceptance
+time. The canonical Broker remains the sole owner of the queued → admitted transition,
+so an already admitted or acknowledged command is refused with `broker_command_replay`
+and an expired one with `broker_command_expired`.
+
+Response:
+
+```json
+{
+  "ok": true,
+  "admission": {
+    "admission_ref": "admission.<server-minted>",
+    "evidence_ref": "evidence.<server-minted>",
+    "authority_ref": "control-plane.local-agent-broker.production.v1",
+    "command_id": "andcmd-...",
+    "session_id": "session.android.1",
+    "binding_ref": "binding.android.1",
+    "run_id": "run.android.1",
+    "tool_request_ref": "andtool-...",
+    "sequence": 1,
+    "request_fingerprint": "<Broker command fingerprint>",
+    "request_id": "andreq-...",
+    "revision_ref": "rev.<server-owned>",
+    "accepted_at": "2026-10-19T06:00:00Z",
+    "expires_at": "2026-10-19T06:05:00Z",
+    "raw_argv": false,
+    "raw_device_credential": false
+  }
+}
+```
+
+The phone stores `admission_ref`, `evidence_ref`, `revision_ref` and `request_id`
+durably and echoes them unchanged to `/acknowledge` (and to `/reconcile` if the process
+dies before the acknowledgement). Admission is a new-work transition, so it is refused
+with `owner_pc_paused` while the owner has paused device work, exactly like `/poll` and
+`/material`.
 
 Rules the server enforces:
 
@@ -425,20 +486,55 @@ Current shared projection limitation: the message label is the existing PC file-
 4. Read `GET .../android-text-reads/folders` state in the UI; if empty, show the folder-selection action.
 5. On `/poll`, admit only a command whose receipt format is `claw-android-saf-txt-read-approval.v1`; reject any other format for this lane.
 6. Fetch `/material`, verify the receipt constants, command/request/revision correlation, expiry and the SAF fingerprint vector implementation.
-7. Resolve `root_ref` through the persisted SAF tree and read only the exact `.txt` document; never enumerate directories and never leave the selected root.
-8. Send the `pending` intent, perform the bounded read, acknowledge with `exited`/`0`, then send the `content` body with SHA-256 and byte count.
-9. Retry by resending the exact byte-identical acknowledgement or enqueue; do not mint a new command for a retry.
-10. On withdrawal, send `/android-profile` with `folders: []` and stop dispatching reads.
+7. Post `/admission` for that exact command and persist the returned `admission_ref`, `evidence_ref`, `revision_ref` and `request_id` before touching a document; the app never mints or guesses either reference.
+8. Resolve `root_ref` through the persisted SAF tree and read only the exact `.txt` document; never enumerate directories and never leave the selected root.
+9. Send the `pending` intent, perform the bounded read, acknowledge with `exited`/`0`, then send the `content` body with SHA-256 and byte count.
+10. Retry by resending the exact byte-identical acknowledgement or enqueue; do not mint a new command for a retry. After a process death, recover with `/reconcile` using the durably stored admission references.
+11. On withdrawal, send `/android-profile` with `folders: []` and stop dispatching reads.
 
 ## 12. Verification status
 
 - **Mock Android agent over ASGI + real SQLite D1/Broker storage:** PASS (see the focused tests listed in the PR).
+- **Server-owned admission over the real private device edge:** PASS — `session → poll → material → admission → acknowledge` is driven from `handle_private_device_fetch` in `packages/padiem-control-plane/tests/test_local_agent_broker_device_admission_reachability.py`, which is the test that fails with `404 local_agent_http_route_not_found` when `/admission` is not in `DEVICE_HTTP_ROUTES`.
 - **Real Android phone / APK:** NOT VERIFIED. No APK build or signing was performed.
-- **Production Worker / D1 / Secret / DNS:** NOT CHANGED.
-- **Production routing/live flag:** this PR does not enable or deploy the private device route.
+- **Production Worker / D1 / Secret / DNS:** NOT CHANGED, and not re-read live in this change. The served `padiem-local-agent-broker-state` / `-edge` versions were built from source where `/admission` was absent from `DEVICE_HTTP_ROUTES`, and both edges derive their allowlist from that list, so the mounted route is not live until CENTRAL deploys this source. `B54_LOCAL_AGENT_ACTIVATION_RUNBOOK.md` is the activation procedure and records the pin the gate checks.
+- **Production routing/live flag:** this change does not enable or deploy the private device route.
 
 Focused evidence lives in:
 
 - `packages/padiem-control-plane/tests/test_local_agent_broker_android_profile_5080.py`
+- `packages/padiem-control-plane/tests/test_local_agent_broker_device_admission_reachability.py`
 - `apps/padiem-chat/tests/test_5080_connector_android_read.py`
 - `apps/padiem-chat/tests/test_5080_android_connector_e2e.py`
+
+## 13. Device integration point (what the Android app calls)
+
+The approved device endpoint is the existing Local Agent broker ingress; Android adds no
+host, no second credential and no manual device-ID entry step:
+
+```text
+public HTTPS ingress   https://local-agent.padiem.net            (worker padiem-local-agent-broker-edge)
+                       -> private Service Binding LOCAL_AGENT_BROKER_SERVICE
+                       -> padiem-local-agent-broker-state / LocalAgentBrokerDurableObject
+                       -> the canonical broker authority named by LOCAL_AGENT_BROKER_AUTHORITY_REF
+```
+
+```text
+POST https://local-agent.padiem.net/session
+POST https://local-agent.padiem.net/poll
+POST https://local-agent.padiem.net/material
+POST https://local-agent.padiem.net/admission
+POST https://local-agent.padiem.net/acknowledge
+POST https://local-agent.padiem.net/text-result
+POST https://local-agent.padiem.net/android-profile
+```
+
+Each call is `POST` with `Content-Type: application/json` and the §3.1 envelope-equivalent
+body carrying the `binding_ref` plus the `credential_b64` that the existing enrollment
+redeem installed through the canonical handoff. TLS is terminated and verified at the
+edge; the app never sends an account, workspace, consent, command or approval reference
+and never receives a raw credential from the server.
+
+Owner-side registration stays on the existing Chat API
+(`POST /api/claw/connector/enrollments/issue` → `…/redeem` → `…/consent/grant`), which is
+mounted whenever the Chat Worker composes the canonical Identity + Broker ports.

@@ -9,7 +9,6 @@ All scans are read-only text parsing — no cross-app runtime imports.
 from __future__ import annotations
 
 import ast
-import re
 from pathlib import Path
 
 import pytest
@@ -36,7 +35,6 @@ PACKAGE_ROOT = Path(__file__).resolve().parents[1]
 REPO_ROOT = PACKAGE_ROOT.parents[1]
 CONTRACT_PATH = PACKAGE_ROOT / "padiem_control_plane" / "product_tier_routes.py"
 CHAT_MODEL_POLICY_PATH = REPO_ROOT / "apps" / "padiem-chat" / "app" / "model_policy.py"
-REGISTRY_PATH = REPO_ROOT / "apps" / "korean-ai-platform" / "app" / "pilot" / "tier_registry_v1.py"
 KILO_PROVIDER_PATH = REPO_ROOT / "apps" / "korean-ai-platform" / "app" / "pilot" / "kilo_provider.py"
 AGNES_PROVIDER_PATH = REPO_ROOT / "apps" / "korean-ai-platform" / "app" / "pilot" / "agnes_provider.py"
 BAI_PROVIDER_PATH = REPO_ROOT / "apps" / "korean-ai-platform" / "app" / "pilot" / "bai_provider.py"
@@ -49,33 +47,37 @@ def _executables() -> dict[ProductTierLabel, ProductTierRoute]:
             found[tier.label] = route
     return found
 
-def test_contract_defines_exactly_four_padiem_tiers() -> None:
+def test_contract_defines_exactly_all_padiem_tiers() -> None:
     assert [tier.label for tier in PRODUCT_TIER_ROUTES] == list(ProductTierLabel)
     assert PRODUCT_TIER_POLICY_VERSION == "padiem.product_tier_routes.v1"
 
-def test_current_truth_free_beam_plus_pro_max_muse_with_history_data_only() -> None:
-    from padiem_control_plane.product_tier_routes import MUSE_B14_MODEL_ID, FREE_PRIMARY_B14_MODEL_ID
+def test_admin_tier_runs_on_google_per_owner_test_phase_decision_2026_10_25() -> None:
+    from padiem_control_plane.product_tier_routes import TIER_FALLBACK_B14_MODELS
+    max_route = active_route_for(ProductTierLabel.MAX)
+    admin = active_route_for(ProductTierLabel.ADMIN)
+    assert max_route is not None and admin is not None
+    assert admin.route_id == "admin.gemini-3.5-flash-lite.v1"
+    assert admin.status is max_route.status
+    assert admin.model_family == max_route.model_family
+    assert admin.provider_id == max_route.provider_id
+    assert admin.model_id == max_route.model_id
+    assert admin.upstream_model == max_route.upstream_model
+    assert admin.credential_mode is max_route.credential_mode
+    assert admin.credential_binding == max_route.credential_binding
+    assert TIER_FALLBACK_B14_MODELS["admin"] == TIER_FALLBACK_B14_MODELS["max"]
+
+def test_current_tiers_contain_only_active_models() -> None:
+    from padiem_control_plane.product_tier_routes import TEST_PHASE_PRIMARY_B14_MODEL_ID, FREE_PRIMARY_B14_MODEL_ID, TIER_FALLBACK_B14_MODELS
     routes = _executables()
     assert set(routes) == set(ProductTierLabel)
     assert routes[ProductTierLabel.FREE].model_id == FREE_PRIMARY_B14_MODEL_ID
-    assert routes[ProductTierLabel.FREE].route_id == "free.beam.v1"
-    for label in (ProductTierLabel.PLUS, ProductTierLabel.PRO, ProductTierLabel.MAX):
-        assert routes[label].model_id == MUSE_B14_MODEL_ID
-    assert all(route.credential_binding == "PADIEM_B14_CREDENTIAL_11" for route in routes.values())
-    assert all(route.status is ProductRouteStatus.EXECUTABLE for route in routes.values())
-    for label in (ProductTierLabel.PLUS, ProductTierLabel.PRO):
-        beam = next(r for r in get_tier(label).routes if r.route_id.endswith(".beam.v1"))
-        assert beam.model_id == FREE_PRIMARY_B14_MODEL_ID
-        assert beam.status is ProductRouteStatus.HOLD_AS_DATA_ONLY
-        assert "#5009" in (beam.hold_reason or "")
-    max_beam = next(r for r in get_tier(ProductTierLabel.MAX).routes if r.route_id == "max.beam.v1")
-    assert max_beam.status is ProductRouteStatus.HOLD_AS_DATA_ONLY
-    assert max_beam.upstream_model == "beam-free"
-    assert "#5009" in (max_beam.hold_reason or "")
-    plus_routes = get_tier(ProductTierLabel.PLUS).routes
-    assert next(r for r in plus_routes if r.model_id == PLUS_HOLD_MODEL_ID).status is ProductRouteStatus.HOLD_AS_DATA_ONLY
-    assert next(r for r in plus_routes if r.model_id == "kilo/stealth-space-bunny-alpha").status is ProductRouteStatus.HOLD_AS_DATA_ONLY
-    assert any(r.model_id == PRO_HOLD_MODEL_ID and r.status is ProductRouteStatus.HOLD_AS_DATA_ONLY for r in get_tier(ProductTierLabel.PRO).routes)
+    assert routes[ProductTierLabel.FREE].route_id == "free.gemini-3.1-flash-lite.v1"
+    assert routes[ProductTierLabel.FREE].provider_id == "google"
+    assert TIER_FALLBACK_B14_MODELS["free"] == ("google/gemma-4-26b-a4b-it", "google/gemini-3.5-flash-lite", "google/gemma-4-31b-it")
+    for label in (ProductTierLabel.PLUS, ProductTierLabel.PRO, ProductTierLabel.MAX, ProductTierLabel.ADMIN):
+        assert routes[label].model_id == TEST_PHASE_PRIMARY_B14_MODEL_ID
+    assert [len(tier.routes) for tier in PRODUCT_TIER_ROUTES] == [1, 2, 2, 2, 2]
+    assert all(r.status is ProductRouteStatus.EXECUTABLE for r in routes.values())
 
 def test_no_user_visible_auto_or_fallback_anywhere() -> None:
     for tier in PRODUCT_TIER_ROUTES:
@@ -88,34 +90,27 @@ def test_no_user_visible_auto_or_fallback_anywhere() -> None:
 
 def test_executable_routes_are_explicit_secret_bound_and_unretired() -> None:
     executables = _executables()
-    assert len(executables) == 4
+    assert len(executables) == 5
     for tier, route in executables.items():
         assert route.provider_id, f"{tier.value}: explicit provider_id required"
         assert route.model_id, f"{tier.value}: explicit model_id required"
         assert route.model_id.startswith(f"{route.provider_id}/")
         assert route.model_id not in RETIRED_PRODUCT_MODEL_IDS
         assert route.evidence
-def test_retired_lanes_are_declared_data_only_with_reasons() -> None:
-    retired = [
-        route
-        for tier in PRODUCT_TIER_ROUTES
-        for route in tier.routes
-        if route.status is ProductRouteStatus.RETIRED_AS_DATA_ONLY
-    ]
-    # Only lanes that were ever product-relevant are kept as historical route
-    # entries (minimax backed Pro once); every retired model id is declared in
-    # the frozenset and must never appear executable anywhere below.
-    assert {route.model_id for route in retired} == {"kilo/minimax-minimax-m3-free"}
-    assert {route.model_id for route in retired} <= set(RETIRED_PRODUCT_MODEL_IDS)
-    assert all(route.retired_reason and "RETIRED" in route.retired_reason for route in retired)
-    assert "kilo/tencent-hy3-free" in RETIRED_PRODUCT_MODEL_IDS
+def test_only_preserved_muse_routes_are_held_during_the_google_test_phase() -> None:
+    from padiem_control_plane.product_tier_routes import MUSE_B14_MODEL_ID
+    held = [route for tier in PRODUCT_TIER_ROUTES for route in tier.routes
+            if route.status is not ProductRouteStatus.EXECUTABLE]
+    assert len(held) == 4
+    assert all(route.status is ProductRouteStatus.HOLD_AS_DATA_ONLY for route in held)
+    assert all(route.model_id == MUSE_B14_MODEL_ID and route.hold_reason for route in held)
 
-def test_max_holds_qwen_glm_on_sentinel_only() -> None:
-    max_routes = get_tier(ProductTierLabel.MAX).routes
-    assert {r.model_family for r in max_routes} >= {"qwen", "glm"}
-    assert any(r.status is ProductRouteStatus.EXECUTABLE for r in max_routes)
-    assert all(r.status is ProductRouteStatus.HOLD_AS_DATA_ONLY for r in max_routes if r.model_family in {'qwen','glm'})
-    assert all(r.model_id in (None, MAX_HOLD_MODEL_ID) for r in max_routes if r.status is ProductRouteStatus.HOLD_AS_DATA_ONLY)
+def test_max_has_one_google_primary_and_the_preserved_muse_hold() -> None:
+    routes = get_tier(ProductTierLabel.MAX).routes
+    assert [route.route_id for route in routes] == [
+        "max.gemini-3.5-flash-lite.v1", "max.muse-spark.v1"]
+    assert [route.status for route in routes] == [
+        ProductRouteStatus.EXECUTABLE, ProductRouteStatus.HOLD_AS_DATA_ONLY]
 
 def test_two_executable_routes_in_one_tier_fail_closed() -> None:
     plus = get_tier(ProductTierLabel.PLUS)
@@ -142,7 +137,7 @@ def test_two_executable_routes_in_one_tier_fail_closed() -> None:
     )
     with pytest.raises(ProductTierRoutesError, match="at most one executable"):
         validate_product_tier_routes(
-            (get_tier(ProductTierLabel.FREE), duplicate, get_tier(ProductTierLabel.PRO), get_tier(ProductTierLabel.MAX))
+            (get_tier(ProductTierLabel.FREE), duplicate, get_tier(ProductTierLabel.PRO), get_tier(ProductTierLabel.MAX), get_tier(ProductTierLabel.ADMIN))
         )
 
 def test_two_max_executable_routes_fail_closed() -> None:
@@ -153,7 +148,7 @@ def test_two_max_executable_routes_fail_closed() -> None:
     )
     bad = ProductTierDefinition(label=ProductTierLabel.MAX, routes=max_tier.routes + (extra_route,))
     with pytest.raises(ProductTierRoutesError, match="at most one executable"):
-        validate_product_tier_routes((get_tier(ProductTierLabel.FREE), get_tier(ProductTierLabel.PLUS), get_tier(ProductTierLabel.PRO), bad))
+        validate_product_tier_routes((get_tier(ProductTierLabel.FREE), get_tier(ProductTierLabel.PLUS), get_tier(ProductTierLabel.PRO), bad, get_tier(ProductTierLabel.ADMIN)))
 
 def test_retired_model_as_executable_fails_closed() -> None:
     tier = ProductTierDefinition(
@@ -171,7 +166,7 @@ def test_retired_model_as_executable_fails_closed() -> None:
     )
     with pytest.raises(ProductTierRoutesError, match="retired model may never be executable"):
         validate_product_tier_routes(
-            (get_tier(ProductTierLabel.FREE), get_tier(ProductTierLabel.PLUS), tier, get_tier(ProductTierLabel.MAX))
+            (get_tier(ProductTierLabel.FREE), get_tier(ProductTierLabel.PLUS), tier, get_tier(ProductTierLabel.MAX), get_tier(ProductTierLabel.ADMIN))
         )
 
 def test_silent_fallback_serving_is_inexpressible() -> None:
@@ -182,7 +177,7 @@ def test_silent_fallback_serving_is_inexpressible() -> None:
     )
     with pytest.raises(ProductTierRoutesError, match="silent fallback"):
         validate_product_tier_routes(
-            (get_tier(ProductTierLabel.FREE), tier, get_tier(ProductTierLabel.PRO), get_tier(ProductTierLabel.MAX))
+            (get_tier(ProductTierLabel.FREE), tier, get_tier(ProductTierLabel.PRO), get_tier(ProductTierLabel.MAX), get_tier(ProductTierLabel.ADMIN))
         )
 
 def test_unsupported_policy_version_fails_closed() -> None:
@@ -193,7 +188,7 @@ def test_unsupported_policy_version_fails_closed() -> None:
     )
     with pytest.raises(ProductTierRoutesError, match="unsupported policy version"):
         validate_product_tier_routes(
-            (get_tier(ProductTierLabel.FREE), tier, get_tier(ProductTierLabel.PRO), get_tier(ProductTierLabel.MAX))
+            (get_tier(ProductTierLabel.FREE), tier, get_tier(ProductTierLabel.PRO), get_tier(ProductTierLabel.MAX), get_tier(ProductTierLabel.ADMIN))
         )
 
 def test_undocumented_non_executable_route_fails_closed() -> None:
@@ -209,32 +204,18 @@ def test_undocumented_non_executable_route_fails_closed() -> None:
     )
     with pytest.raises(ProductTierRoutesError, match="hold/retirement reason"):
         validate_product_tier_routes(
-            (get_tier(ProductTierLabel.FREE), tier, get_tier(ProductTierLabel.PRO), get_tier(ProductTierLabel.MAX))
+            (get_tier(ProductTierLabel.FREE), tier, get_tier(ProductTierLabel.PRO), get_tier(ProductTierLabel.MAX), get_tier(ProductTierLabel.ADMIN))
         )
-
-
-def _registry_executable_model_ids() -> dict[str, str]:
-    """Parse TierRoute blocks from the B14 registry source (read-only)."""
-    source = REGISTRY_PATH.read_text(encoding="utf-8")
-    found: dict[str, str] = {}
-    for match in re.finditer(r"TierRoute\((.*?)\n\s+\)", source, re.DOTALL):
-        body = match.group(1)
-        status = re.search(r"status=RouteStatus\.(\w+)", body)
-        model = re.search(r'model_id="([^"]+)"', body)
-        route_id = re.search(r'route_id="([^"]+)"', body)
-        if status and model and route_id and status.group(1) == "EXECUTABLE":
-            found[route_id.group(1)] = model.group(1)
-    return found
 
 
 def test_active_tier_routes_match_the_current_b14_model_registry() -> None:
     import json
-    from padiem_control_plane.product_tier_routes import MUSE_B14_MODEL_ID, FREE_PRIMARY_B14_MODEL_ID
+    from padiem_control_plane.product_tier_routes import TEST_PHASE_PRIMARY_B14_MODEL_ID, FREE_PRIMARY_B14_MODEL_ID
     file=REPO_ROOT/"apps"/"korean-ai-platform"/"app"/"pilot"/"b14_models.json"
     models={row["id"]: row for row in json.loads(file.read_text(encoding="utf-8"))["models"]}
-    assert len(_executables())==4
+    assert len(_executables())==5
     for label, route in _executables().items():
-        expected = FREE_PRIMARY_B14_MODEL_ID if label is ProductTierLabel.FREE else MUSE_B14_MODEL_ID
+        expected = FREE_PRIMARY_B14_MODEL_ID if label is ProductTierLabel.FREE else TEST_PHASE_PRIMARY_B14_MODEL_ID
         assert route.model_id == expected
         assert models[route.model_id]["enabled"] is True
 
@@ -249,74 +230,15 @@ def test_parity_with_chat_model_policy_derivation() -> None:
     assert '"kilo/' not in source
     assert "'kilo/" not in source
 
-def test_selected_routes_match_registered_provider_constants() -> None:
+def test_selected_routes_match_the_owner_test_phase_google_registry() -> None:
+    from padiem_control_plane.product_tier_routes import TEST_PHASE_PRIMARY_B14_MODEL_ID, FREE_PRIMARY_B14_MODEL_ID
     executables = _executables()
-    agnes_source = AGNES_PROVIDER_PATH.read_text(encoding="utf-8")
-    bai_source = BAI_PROVIDER_PATH.read_text(encoding="utf-8")
-    kilo_source = KILO_PROVIDER_PATH.read_text(encoding="utf-8")
-
-    agnes_model = re.search(r'^AGNES_MODEL_ID = "([^"]+)"$', agnes_source, re.MULTILINE)
-    bai_model = re.search(r'^BAI_QWEN_MODEL_ID = "([^"]+)"$', bai_source, re.MULTILINE)
-    agnes_binding = re.search(
-        r'^AGNES_CREDENTIAL_BINDING = "([^"]+)"$', agnes_source, re.MULTILINE
-    )
-    bai_binding = re.search(
-        r'^BAI_CREDENTIAL_BINDING = "([^"]+)"$', bai_source, re.MULTILINE
-    )
-    kilo_bunny = re.search(
-        r'^KILO_SPACE_BUNNY_MODEL_ID = "([^"]+)"$', kilo_source, re.MULTILINE
-    )
-    kilo_bunny_upstream = re.search(
-        r'^KILO_SPACE_BUNNY_UPSTREAM_MODEL = "([^"]+)"$', kilo_source, re.MULTILINE
-    )
-
-    assert agnes_model and bai_model and agnes_binding and bai_binding
-    assert kilo_bunny and kilo_bunny_upstream
-    assert set(executables) == set(ProductTierLabel)
-    from padiem_control_plane.product_tier_routes import MUSE_B14_MODEL_ID, FREE_PRIMARY_B14_MODEL_ID
     assert executables[ProductTierLabel.FREE].model_id == FREE_PRIMARY_B14_MODEL_ID
     for label in (ProductTierLabel.PLUS, ProductTierLabel.PRO, ProductTierLabel.MAX):
-        assert executables[label].model_id == MUSE_B14_MODEL_ID
+        assert executables[label].model_id == TEST_PHASE_PRIMARY_B14_MODEL_ID
 
-    plus_routes = get_tier(ProductTierLabel.PLUS).routes
-    plus_hold = next(r for r in plus_routes if r.model_id == PLUS_HOLD_MODEL_ID)
-    assert plus_hold.status is ProductRouteStatus.HOLD_AS_DATA_ONLY
-    bunny_hold = next(r for r in plus_routes if r.model_id == kilo_bunny.group(1))
-    assert bunny_hold.status is ProductRouteStatus.HOLD_AS_DATA_ONLY
-    assert bunny_hold.upstream_model == kilo_bunny_upstream.group(1)
-
-    agnes_hold = next(r for r in plus_routes if r.model_id == agnes_model.group(1))
-    assert agnes_hold.status is ProductRouteStatus.HOLD_AS_DATA_ONLY
-    assert agnes_binding.group(1) == agnes_hold.credential_binding
-
-    pro_routes = get_tier(ProductTierLabel.PRO).routes
-    held_bai = next(r for r in pro_routes if r.provider_id == "b-ai")
-    assert held_bai.status is ProductRouteStatus.HOLD_AS_DATA_ONLY
-    assert bai_model.group(1) == held_bai.model_id
-    assert bai_binding.group(1) == held_bai.credential_binding
-def test_kilo_routes_are_historical_only_and_retirement_stays_pinned() -> None:
-    source = KILO_PROVIDER_PATH.read_text(encoding="utf-8")
-
-    for tier in (ProductTierLabel.PRO,):
-        kilo_routes = [route for route in get_tier(tier).routes if route.provider_id == "kilo"]
-        assert kilo_routes
-        assert all(route.status is not ProductRouteStatus.EXECUTABLE for route in kilo_routes)
-
-    retired_block = re.search(
-        r"RETIRED_KILO_FREE_MODEL_IDS = frozenset\(\s*\{(.*?)\}", source, re.DOTALL
-    )
-    assert retired_block, "B14 retirement block not found"
-    assert "KILO_MINIMAX_M3_MODEL_ID" in retired_block.group(1)
-    assert "KILO_HY3_MODEL_ID" in retired_block.group(1)
-
-    for name, model_id in (
-        ("KILO_MINIMAX_M3_MODEL_ID", "kilo/minimax-minimax-m3-free"),
-        ("KILO_HY3_MODEL_ID", "kilo/tencent-hy3-free"),
-    ):
-        constant = re.search(rf'^{name} = "([^"]+)"$', source, re.MULTILINE)
-        assert constant and constant.group(1) == model_id
-        assert model_id in RETIRED_PRODUCT_MODEL_IDS
-
+def test_retired_kilo_models_are_never_executable() -> None:
+    assert all(route.model_id not in RETIRED_PRODUCT_MODEL_IDS for route in _executables().values())
 
 def test_contract_module_is_stdlib_only_and_side_effect_free() -> None:
     source = CONTRACT_PATH.read_text(encoding="utf-8")
@@ -359,3 +281,25 @@ def test_contract_module_is_stdlib_only_and_side_effect_free() -> None:
     # package-wide CI side-effect assertion cover, tests would fail loudly.
     import padiem_control_plane.product_tier_routes as contract_module
     assert contract_module.PRODUCT_TIER_POLICY_VERSION == PRODUCT_TIER_POLICY_VERSION
+
+
+@pytest.mark.parametrize("label,tier", [
+    (ProductTierLabel.PLUS, "plus"), (ProductTierLabel.PRO, "pro"),
+    (ProductTierLabel.MAX, "max"), (ProductTierLabel.ADMIN, "admin"),
+])
+def test_test_phase_primary_fallback_and_muse_identity_are_exact(label, tier):
+    from padiem_control_plane.product_tier_routes import TIER_FALLBACK_B14_MODELS
+    route, muse = get_tier(label).routes
+    assert route.route_id == f"{tier}.gemini-3.5-flash-lite.v1"
+    assert route.provider_id == "google"
+    assert route.upstream_model == "gemini-3.5-flash-lite"
+    assert route.credential_binding == "PADIEM_B14_CREDENTIAL_05"
+    assert route.status is ProductRouteStatus.EXECUTABLE
+    assert TIER_FALLBACK_B14_MODELS[tier] == (
+        "google/gemini-3.1-flash-lite", "google/gemma-4-31b-it")
+    assert muse.route_id == (
+        "admin.muse-spark-1.3-contributor.v1" if tier == "admin" else f"{tier}.muse-spark.v1")
+    assert muse.provider_id == "opencode-go"
+    assert muse.model_id == "opencode-go/muse-spark-1.3-contributor"
+    assert muse.credential_binding == "PADIEM_B14_CREDENTIAL_11"
+    assert muse.status is ProductRouteStatus.HOLD_AS_DATA_ONLY
