@@ -981,3 +981,39 @@ def test_public_route_returns_after_first_visible_token_and_consumer_close_close
         assert client.closed is True
 
     asyncio.run(scenario())
+
+
+@pytest.mark.parametrize(
+    ("prompt", "answer"),
+    [
+        ("그 파일 열어줘", "어느 파일을 열까요?"),
+        ("지워볼까?", "삭제를 실행할까요?"),
+        ('문장 "이 파일을 삭제해"의 뜻을 설명해 줘', "인용된 문장은 삭제 명령입니다."),
+        ("이 파일을 삭제하지 마", "파일을 삭제하지 않겠습니다."),
+    ],
+    ids=["missing-target", "hypothetical", "quoted-command", "negation"],
+)
+def test_pc_ambiguous_turn_keeps_model_answer_without_dispatch(monkeypatch, prompt, answer):
+    """A model clarification or ordinary answer must not enter the PC lane."""
+    client = ToolScriptedClient([_event(answer), _event(done=True)])
+    app, settings = _tool_lane_app(
+        client, rows=[_catalog_row("chat", "tools")],
+        monkeypatch=monkeypatch, pc_verified=True,
+    )
+    calls = []
+
+    async def pc_lane(request, **kwargs):
+        calls.append(kwargs)
+        return ("unexpected PC dispatch", CHAT_ID)
+
+    monkeypatch.setattr(chat_pc_drive, "execute_chat_pc_drive_lane", pc_lane)
+    payload = _payload(pc_run_id=PC_RUN)
+    payload["messages"] = [{"role": "user", "content": prompt}]
+    response = asyncio.run(_post(app, payload, settings=settings, signed_in=True))
+
+    assert response.status_code == 200
+    assert answer in response.text
+    assert len(client.calls) == 1
+    assert client.calls[0]["messages"][-1]["content"] == prompt
+    assert client.calls[0]["tools"]
+    assert calls == []
