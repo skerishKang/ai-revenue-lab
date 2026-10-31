@@ -1,0 +1,38 @@
+[Unit]
+Description=PADIEM COM2 Chat scheduled lane (staging) — one automation tick
+Documentation=file:C:/Users/limone/AppData/Local/Temp/tmprf67qag0/app/README-cron.md
+Wants=network-online.target
+After=network-online.target
+RequiresMountsFor=/mnt/d/padiem/chat-staging
+ConditionPathIsMountPoint=/mnt/d
+ConditionPathExists=/opt/padiem/chat-staging/.env
+StartLimitIntervalSec=0
+
+[Service]
+Type=oneshot
+User=padiem-chat
+Group=padiem-chat
+WorkingDirectory=C:/Users/limone/AppData/Local/Temp/tmprf67qag0/app
+EnvironmentFile=/opt/padiem/chat-staging/.env
+Environment=CRON_PROFILE=staging
+Environment=CRON_EXPECTED_DATA_ROOT=/mnt/d/padiem/chat-staging
+Environment=CRON_EXPECTED_QUEUE_ORIGIN=http://127.0.0.1:8830
+Environment=CRON_LOCK_FILE=/run/padiem-chat-cron/staging.lock
+RuntimeDirectory=padiem-chat-cron
+RuntimeDirectoryMode=0750
+ExecCondition=C:/Users/limone/AppData/Local/Temp/tmprf67qag0/app/venv/bin/python C:/Users/limone/AppData/Local/Temp/tmprf67qag0/app/check_config_cron.py
+ExecStart=C:/Users/limone/AppData/Local/Temp/tmprf67qag0/app/run-cron.sh
+TimeoutStartSec=300
+TimeoutStopSec=60
+KillMode=control-group
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/mnt/d/padiem/chat-staging /run/padiem-chat-cron
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
