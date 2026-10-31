@@ -115,3 +115,6 @@ body.ai-open .smal-overflow-menu{right:272px}
 .ai-panel .ai-head-compact{height:auto!important;min-height:42px!important;flex-wrap:wrap!important}
 .ai-panel .ai-head-compact .ai-head-actions{flex-wrap:wrap!important;min-width:0!important}
 .ai-panel .ai-head-compact small{white-space:normal!important;overflow:hidden!important}
+
+/* Keep reading settings above the AI panel while open. */
+body.smr-open #reader.active .reader-stage{z-index:100!important}
