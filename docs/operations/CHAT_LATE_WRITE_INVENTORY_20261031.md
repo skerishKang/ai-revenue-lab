@@ -18,7 +18,7 @@ Google callback은 `auth_routes.py:532`, `:558`, `:562`, `:567`, `:575`의 추�
 | 진입점 | 저장소 함수·대상 | 실행 | 근거 및 상태 |
 |---|---|---|---|
 | 요청 텔레메트리 내보내기 | 내보내기 대상 추적 필요 | `waitUntil` 스케줄 | `app/request_telemetry.py:420`-434, `worker.py:1844`-1864. **D1 쓰기로 확인되지 않음** |
-| Worker scheduled / 로컬 cron | `run_scheduled_automation_source` → automation store 등; 개별 SQL·표 추적 필요 | 백그라운드 await | `worker.py:228`, `:256`, `:287`, `:331`, `:1048`-1050; `app/local_cron.py:1`-3 |
+| Worker scheduled / 로컬 cron | `run_scheduled_automation_source` → automation store 등; 개별 SQL·표 추적 필요 | 백그라운드 await | `worker.py:228`, `:256`, `:287`, `:331`, `:1048`-1050; `app/claw_automation_store.py:226`-258; `app/claw_automation_scheduled_execution.py:83`, `:113`-120; `app/claw_automation_projection_bridge.py:285`, `:328`; `app/claw_task_alert_store.py:43`, `:180`, `:240` |
 | WSS connector gateway | 진입과 downstream 저장소·표 추적 필요 | 장시간 연결 | `app/canonical_connector_gateway_source_composition.py:80` |
 | queue / 외부 producer | 진입점·대상·정지 절차 미확인 | 비동기 | 미확인; 별도 권위 queue가 있어 Chat D1 범위와 구분 필요 |
 
@@ -29,6 +29,6 @@ Google callback은 `auth_routes.py:532`, `:558`, `:562`, `:567`, `:575`의 추�
 
 ## 한계와 미완료
 
-스냅숏 비교는 정지 창 안에서 생겼다가 되돌려진 쓰기를 잡지 못한다. 따라서 분류표로 위험 경로를 미리 막는 것이 본 대책이다. `.github/scripts/chat_d1_handback_gate.py:snapshot`은 표별 기본키·행 다이제스트를 제공하나 queue·broker·시스템 표를 제외하므로 그 비교 결과는 제외 범위의 무쓰기를 증명하지 않는다. 두 시점 비교도 독립적인 드레인 증거를 대체하지 못한다.
+스냅숏 비교는 정지 창 안에서 생겼다가 되돌려진 쓰기를 잡지 못한다. 따라서 분류표로 위험 경로를 미리 막는 것이 본 대책이다. `.github/scripts/chat_d1_digest.py:snapshot`은 표별 기본키·행 다이제스트를 제공하나 queue·broker·시스템 표를 제외하므로 그 비교 결과는 제외 범위의 무쓰기를 증명하지 않는다. 두 시점 비교도 독립적인 드레인 증거를 대체하지 못한다.
 
 전체 저장소 SQL을 진입점까지 역추적하는 작업, 4개 GET의 모든 부수 쓰기, 응답 후 실행 경로 및 대상 표의 확인은 미완료다. 수치는 확인된 진입점 수이며 전체 개수가 아니다.
