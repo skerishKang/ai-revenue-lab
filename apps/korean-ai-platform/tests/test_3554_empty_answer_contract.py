@@ -117,6 +117,12 @@ async def test_stream_with_text_has_terminal(monkeypatch):
 
 
 def test_gateway_502_empty_no_retries_and_no_fallback(monkeypatch):
+    from dataclasses import replace
+    from app.pilot import catalog, platform_secrets
+    monkeypatch.setitem(catalog.CATALOG_BY_ID, SENSENOVA_MODEL_ID,
+                        replace(catalog.CATALOG_BY_ID[SENSENOVA_MODEL_ID], enabled=True))
+    monkeypatch.setitem(platform_secrets._PLATFORM_PROVIDERS, SENSENOVA_PROVIDER_ID,
+                        replace(platform_secrets._PLATFORM_PROVIDERS[SENSENOVA_PROVIDER_ID], enabled=True))
     monkeypatch.setenv("B14_PROVIDER_MODE", "live")
     monkeypatch.setenv(SENSENOVA_CREDENTIAL_BINDING, "fake-test-secret")
     calls = []
