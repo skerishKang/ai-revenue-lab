@@ -166,7 +166,8 @@ class Config:
     generations_dir: str
     snapshot_a: str
     snapshot_b: str
-    mirror_inventory: str
+    #: One inventory per storage bucket; the check compares against their union.
+    mirror_inventories: tuple[str, ...]
     migrations_dir: str = ""
     queue_origin: str = ""
     frozen_paths: tuple[str, ...] = DEFAULT_FROZEN_PATHS
@@ -241,6 +242,7 @@ def guard_target(config: Config) -> None:
         config.sentinel,
         config.plan_out,
         config.queue_origin,
+        *config.mirror_inventories,
     )
     if hits:
         raise RehearsalError("production_target")
@@ -266,14 +268,14 @@ def guard_target(config: Config) -> None:
     for name, tool in TOOLS.items():
         if not tool.is_file():
             raise RehearsalError(f"tool_missing:{name}")
-    for name in (
-        "generation_pointer",
-        "snapshot_a",
-        "snapshot_b",
-        "mirror_inventory",
-    ):
+    for name in ("generation_pointer", "snapshot_a", "snapshot_b"):
         if not Path(getattr(config, name)).is_file():
             raise RehearsalError(f"artifact_missing:{name}")
+    if not config.mirror_inventories:
+        raise RehearsalError("artifact_missing:mirror_inventory")
+    for path in config.mirror_inventories:
+        if not Path(path).is_file():
+            raise RehearsalError("artifact_missing:mirror_inventory")
     if not Path(config.generations_dir).is_dir():
         raise RehearsalError("artifact_missing:generations_dir")
 
@@ -470,13 +472,22 @@ class Rehearsal:
             "CHAT_COPY_PARITY=MATCH",
         )
 
+    def _inventory_args(self) -> list[str]:
+        """One ``--inventory`` per bucket; the tool compares against their union."""
+
+        return [
+            token
+            for path in self.config.mirror_inventories
+            for token in ("--inventory", path)
+        ]
+
     def _object_reference(self) -> StageResult:
         return self._child(
             "object_reference",
             [
                 sys.executable, str(TOOLS["object_reference"]),
                 "--db", self.config.snapshot_b,
-                "--inventory", self.config.mirror_inventory,
+                *self._inventory_args(),
             ],
             "CHAT_OBJECT_REFERENCE=MATCH",
         )
@@ -596,7 +607,7 @@ class Rehearsal:
             ]),
             ("object_reference", [sys.executable, str(TOOLS["object_reference"]),
                                   "--db", self.config.snapshot_b,
-                                  "--inventory", self.config.mirror_inventory],
+                                  *self._inventory_args()],
              "CHAT_OBJECT_REFERENCE=MATCH"),
         ]
 
@@ -642,7 +653,9 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument("--generations-dir", required=True, help="snapshots/generations")
     parser.add_argument("--snapshot-a", required=True, help="D1 copy at the window start")
     parser.add_argument("--snapshot-b", required=True, help="D1 copy at the window end")
-    parser.add_argument("--mirror-inventory", required=True, help="R2 mirror inventory JSON")
+    parser.add_argument("--mirror-inventory", action="append", dest="mirror_inventories",
+                        required=True,
+                        help="R2 mirror inventory JSON (repeatable: media, workspace, b66)")
     parser.add_argument("--queue-origin", default="", help="staging queue origin (8830)")
     parser.add_argument("--migrations-dir", default="",
                         help="apps/padiem-chat/migrations (default: the repository set)")
@@ -681,7 +694,7 @@ def config_from_args(args: argparse.Namespace) -> Config:
         generations_dir=args.generations_dir,
         snapshot_a=args.snapshot_a,
         snapshot_b=args.snapshot_b,
-        mirror_inventory=args.mirror_inventory,
+        mirror_inventories=tuple(args.mirror_inventories),
         migrations_dir=args.migrations_dir,
         queue_origin=args.queue_origin,
         frozen_paths=tuple(args.frozen_paths or DEFAULT_FROZEN_PATHS),

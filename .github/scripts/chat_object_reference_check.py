@@ -13,8 +13,12 @@ that, read-only:
 
 * scan a D1 copy (SQLite) for columns that hold object keys,
 * collect every referenced key,
-* compare it with the mirror inventory (``r2_sync.py`` manifest, or a plain
-  ``{"keys": [...]}`` list),
+* compare it with the mirror inventory (``r2_sync.py`` manifest, a plain
+  ``{"keys": [...]}`` list, or ``{"objects": [{"key": ...}]}``; several lists
+  are unioned, because each storage bucket is inventoried on its own),
+* tolerate a UTF-8 BOM, which the Windows-side dumps carry,
+* skip rows the product already soft-deleted (a non-empty ``deleted_at``), which
+  are rows whose object the mirror dropped on purpose,
 * report referenced / missing counts per table and exit 1 on any gap.
 
 Key values are never printed and never written by default: the JSON artifact
@@ -31,6 +35,7 @@ import hashlib
 import json
 import sqlite3
 import sys
+from collections.abc import Iterable
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
 
@@ -62,15 +67,22 @@ class TableReference:
     column: str
     keys: int
     missing: int
+    #: Keys this column held only on soft-deleted rows, so not counted.
+    excluded: int = 0
 
 
 @dataclass(slots=True)
 class ReferenceReport:
     db_sha256: str
+    #: Digest of one inventory file, or of the sorted per-file digests when the
+    #: check was given several buckets. Independent of the argument order.
     inventory_sha256: str
+    inventory_files: int = 1
     tables: list[TableReference] = field(default_factory=list)
     unique_keys: int = 0
     missing_keys: int = 0
+    #: Referenced keys that only a soft-deleted row carried.
+    excluded_keys: int = 0
     missing_digest: str = ""
     #: Populated for the report but stripped from the JSON unless the operator
     #: explicitly asks for it: object paths embed customer identifiers.
@@ -115,11 +127,17 @@ def key_columns(connection: sqlite3.Connection) -> list[tuple[str, str]]:
     return found
 
 
-def load_inventory(path: str | Path) -> set[str]:
-    """Read a mirror inventory: a key list, ``{"keys": [...]}``, or objects."""
+def _read_inventory_file(path: Path) -> set[str]:
+    """Read one inventory file: a key list, ``{"keys": [...]}``, or objects.
+
+    The file is decoded as ``utf-8-sig`` so a BOM (Windows PowerShell exports and
+    several storage tools add one) no longer makes an otherwise valid list
+    unreadable. Each file must contribute at least one key: a bucket that
+    dumped empty is a broken inventory, not a bucket without objects.
+    """
 
     try:
-        payload = json.loads(Path(path).read_text(encoding="utf-8"))
+        payload = json.loads(path.read_text(encoding="utf-8-sig"))
     except (OSError, ValueError):
         raise CheckError("CHAT_OBJECT_INVENTORY_UNREADABLE") from None
 
@@ -141,13 +159,67 @@ def load_inventory(path: str | Path) -> set[str]:
     return keys
 
 
-def check(db_path: str | Path, inventory_path: str | Path) -> ReferenceReport:
-    """Compare referenced object keys with the mirror inventory. Never writes."""
+def has_soft_delete(connection: sqlite3.Connection, table: str) -> bool:
+    """True when the table keeps deleted rows and marks them with ``deleted_at``.
 
-    inventory = load_inventory(inventory_path)
+    The product removes the object from the mirror when it deletes a row, so
+    such a row is not a reference a rollback has to restore. The table name is
+    never assumed: the column is looked up, and a table without it is scanned
+    exactly as before.
+    """
+
+    return any(
+        str(row[1]).lower() == "deleted_at"
+        for row in connection.execute(f'PRAGMA table_info("{table}")')
+    )
+
+
+def load_inventories(paths: Iterable[str | Path]) -> tuple[set[str], str, int]:
+    """Union the key sets of every inventory file, with a file-set digest.
+
+    The R2 mirror holds several buckets (media, workspace, b66) and each one is
+    inventoried separately, so a referenced key only has to appear in one of
+    them. Keys are never modified, renamed or guessed: this is a union, and a
+    key present in none of the lists is still a gap.
+    """
+
+    files = [Path(path) for path in paths]
+    if not files:
+        raise CheckError("CHAT_OBJECT_INVENTORY_UNREADABLE")
+    keys: set[str] = set()
+    digests: list[str] = []
+    for path in files:
+        keys |= _read_inventory_file(path)
+        digests.append(_sha256(path))
+    if len(digests) == 1:
+        digest = digests[0]
+    else:
+        # Sorted, so passing the same buckets in another order is the same run.
+        digest = hashlib.sha256("\n".join(sorted(digests)).encode("utf-8")).hexdigest()
+    return keys, digest, len(files)
+
+
+def load_inventory(path: str | Path) -> set[str]:
+    """Read a single mirror inventory (callers that pass one bucket)."""
+
+    return load_inventories([path])[0]
+
+
+def check(
+    db_path: str | Path, inventory_path: str | Path | Iterable[str | Path]
+) -> ReferenceReport:
+    """Compare referenced keys with one or more mirror inventories. Never writes."""
+
+    paths = (
+        [inventory_path]
+        if isinstance(inventory_path, (str, Path))
+        else list(inventory_path)
+    )
+    inventory, inventory_digest, inventory_files = load_inventories(paths)
     report = ReferenceReport(
         db_sha256=_sha256(db_path),
-        inventory_sha256=_sha256(inventory_path),
+        inventory_sha256=inventory_digest,
+        inventory_files=inventory_files,
     )
 
     connection = _open_read_only(db_path)
@@ -158,20 +230,39 @@ def check(db_path: str | Path, inventory_path: str | Path) -> ReferenceReport:
         referenced: set[str] = set()
         missing_values: set[str] = set()
         for table, column in columns:
-            values = {
-                str(row[0]).strip()
-                for row in connection.execute(f'SELECT "{column}" FROM "{table}"')
-                if row[0] is not None and str(row[0]).strip()
-            }
-            missing = values - inventory
+            soft_deleted = has_soft_delete(connection, table)
+            kept: set[str] = set()
+            dropped: set[str] = set()
+            query = (
+                f'SELECT "{column}", '
+                + ('"deleted_at"' if soft_deleted else "NULL")
+                + f' FROM "{table}"'
+            )
+            for row in connection.execute(query):
+                value = "" if row[0] is None else str(row[0]).strip()
+                if not value:
+                    continue
+                if soft_deleted and row[1] is not None and str(row[1]).strip():
+                    dropped.add(value)
+                else:
+                    kept.add(value)
+            # A key that a live row still carries is a reference even when a
+            # deleted row also pointed at it.
+            excluded = dropped - kept
+            missing = kept - inventory
             report.tables.append(
                 TableReference(
-                    table=table, column=column, keys=len(values), missing=len(missing)
+                    table=table,
+                    column=column,
+                    keys=len(kept),
+                    missing=len(missing),
+                    excluded=len(excluded),
                 )
             )
-            referenced |= values
+            referenced |= kept
             missing_values |= missing
             report.missing_keys += len(missing)
+            report.excluded_keys += len(excluded)
             if missing:
                 report.missing_digest = hashlib.sha256(
                     "\n".join(sorted(missing)).encode("utf-8")
@@ -188,14 +279,25 @@ def _emit(report: ReferenceReport) -> None:
     state = "MATCH" if report.matches else "GAP"
     print(
         f"CHAT_OBJECT_REFERENCE={state} tables={len(report.tables)} "
-        f"keys={report.unique_keys} missing={report.missing_keys}"
+        f"inventories={report.inventory_files} keys={report.unique_keys} "
+        f"missing={report.missing_keys} "
+        f"excluded_soft_deleted={report.excluded_keys}"
     )
     for table in report.tables:
         print(
             f"CHAT_OBJECT_TABLE {table.table}.{table.column} "
-            f"keys={table.keys} missing={table.missing}"
+            f"keys={table.keys} missing={table.missing} "
+            f"excluded_soft_deleted={table.excluded}"
         )
     if report.missing_keys:
+        # Which table and column the gap came from, counts only: the operator
+        # knows what to re-upload while no object path reaches the log.
+        sources = " ".join(
+            f"{table.table}.{table.column}={table.missing}"
+            for table in report.tables
+            if table.missing
+        )
+        print(f"CHAT_OBJECT_MISSING_SOURCES {sources}")
         # The digest lets two runs be compared without publishing object paths.
         print(f"CHAT_OBJECT_MISSING_DIGEST={report.missing_digest}")
 
@@ -203,7 +305,15 @@ def _emit(report: ReferenceReport) -> None:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="D1 object-reference vs mirror inventory")
     parser.add_argument("--db", required=True, help="SQLite copy of the Chat D1 database")
-    parser.add_argument("--inventory", required=True, help="mirror inventory JSON")
+    parser.add_argument(
+        "--inventory",
+        "--mirror-inventory",
+        action="append",
+        dest="inventory",
+        metavar="JSON",
+        required=True,
+        help="mirror inventory JSON, repeatable (one per bucket; keys are unioned)",
+    )
     parser.add_argument("--json", help="write the report as JSON")
     parser.add_argument(
         "--include-keys",
