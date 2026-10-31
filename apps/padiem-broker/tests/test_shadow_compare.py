@@ -80,7 +80,8 @@ async def test_shadow_mismatch_error_and_mutators_are_not_exposed(tmp_path):
     assert calls == ["device_truth", "device_truth"]
     await dispatcher.drain()
     events = [json.loads(line) for line in record.read_text().splitlines()]
-    assert [event["outcome"] for event in events] == ["mismatch", "shadow_error"]
+    # Background comparisons and their recorder threads may finish in either order.
+    assert sorted(event["outcome"] for event in events) == ["mismatch", "shadow_error"]
     assert "secret-value" not in record.read_text()
     assert "private internal detail" not in record.read_text()
 
