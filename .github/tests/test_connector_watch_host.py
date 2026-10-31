@@ -126,6 +126,19 @@ class TestSystemdJudgement(unittest.TestCase):
 
 
 class TestHealthAndCombine(unittest.TestCase):
+    def test_health_request_sends_named_user_agent(self) -> None:
+        from unittest import mock
+
+        response = mock.MagicMock()
+        response.__enter__.return_value.status = 200
+        with mock.patch.object(host.urllib.request, "urlopen", return_value=response) as urlopen:
+            self.assertEqual(host.read_health("https://chat.padiem.net/health"), 200)
+        request = urlopen.call_args.args[0]
+        self.assertEqual(request.get_header("User-agent"), "padiem-boot-recovery/1.0")
+        self.assertEqual(request.get_header("Accept"), "application/json")
+        self.assertEqual(urlopen.call_args.kwargs["timeout"], host.REQUEST_TIMEOUT_SECONDS)
+
+
     def test_health_reads_only_200_or_5xx_as_decided(self) -> None:
         self.assertEqual(host.health_verdict(200), ("ok", "chat_health_200"))
         self.assertEqual(host.health_verdict(503), ("stall", "chat_health_503"))

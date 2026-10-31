@@ -216,7 +216,7 @@ def read_journal(unit: str, minutes: int) -> str:
 def read_health(url: str) -> int | None:
     try:
         with urllib.request.urlopen(
-            urllib.request.Request(url, headers={"Accept": "application/json"}),
+            urllib.request.Request(url, headers={"Accept": "application/json", "User-Agent": "padiem-boot-recovery/1.0"}),
             timeout=REQUEST_TIMEOUT_SECONDS,
         ) as response:
             return response.status
