@@ -8405,7 +8405,13 @@ window.__smV1823EvidenceUXV1={
       const text = await selected.text();
       window.StoryMemoryBackup.restore(localStorage, text);
       location.reload();
-    } catch (_) { alert('백업을 복원하지 못했습니다. 올바른 StoryMemory 백업 파일인지 확인해 주세요.'); }
+    } catch (error) {
+      if (error && error.message === 'backup_rollback_failed') {
+        alert('복원과 기존 기록 되돌리기에 실패했습니다. 이 기기의 저장 공간을 확인하고 백업 파일을 보관해 주세요.');
+      } else {
+        alert('백업을 복원하지 못했습니다. 올바른 StoryMemory 백업 파일인지 확인해 주세요.');
+      }
+    }
   });
 })();
 </script>
