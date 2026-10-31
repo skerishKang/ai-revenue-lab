@@ -209,20 +209,25 @@ def _open_surfaces(browser, server, width, theme, locale):
       document.getElementById('clawWorkspace').hidden = false;
     }""")
     page.locator("#clawWorkspace").wait_for(state="visible", timeout=5000)
-    page.locator("#clawDeviceManagerToggle").wait_for(state="visible", timeout=10000)
+    # #5573 made the composer status the only visible directory entry. The
+    # manager keeps its own hidden toggle as the event-owning disclosure.
+    page.locator("#composerPcStatus").wait_for(state="visible", timeout=10000)
     page.locator("#clawDeviceGuidanceToggle").wait_for(state="visible", timeout=10000)
     body = _directory_fixture()
     page.route("**" + ENDPOINT, lambda route: route.fulfill(
         status=200, content_type="application/json", body=body))
-    page.locator("#clawDeviceManagerToggle").click()
-    page.locator("#clawDeviceManagerList li").first.wait_for(timeout=5000)
     page.evaluate("(t) => document.documentElement.setAttribute('data-theme', t)", theme)
+    # Locale buttons dispatch an outside click that closes the manager. Apply
+    # locale before opening either disclosure, then wait for its rerender.
     page.evaluate("""(loc) => {
       const btn = document.querySelector(`[data-locale-value="${loc}"]`)
         || document.querySelector(`[data-locale-value="${loc.toUpperCase()}"]`);
       if (btn) btn.click();
     }""", locale)
     page.wait_for_timeout(200)
+    assert page.locator("#clawDeviceManagerToggle").is_hidden()
+    page.evaluate("() => document.getElementById('clawDeviceManagerToggle').click()")
+    page.locator("#clawDeviceManagerList li").first.wait_for(timeout=5000)
     page.evaluate("() => document.querySelector('#clawDeviceGuidanceToggle').click()")
     page.locator("#clawDeviceGuidancePanel").wait_for(state="visible")
     return page, errors
@@ -230,7 +235,7 @@ def _open_surfaces(browser, server, width, theme, locale):
 
 BOXES_JS = """() => {
   const families = [
-    ['manager-toggle', '#clawDeviceManagerToggle'],
+    // The old manager toggle is an intentionally hidden duplicate after #5573.
     ['manager-close', '.claw-device-manager-close'],
     ['manager-refresh', '.claw-device-manager-refresh'],
     ['manager-select', '.claw-device-manager-select'],
@@ -263,7 +268,7 @@ def test_measured_hit_areas_are_at_least_44px(browser, server, width, theme) -> 
     page, errors = _open_surfaces(browser, server, width, theme, "ko")
     boxes = page.evaluate(BOXES_JS)
     assert {b["label"] for b in boxes} == {
-        "manager-toggle", "manager-close", "manager-refresh", "manager-select",
+        "manager-close", "manager-refresh", "manager-select",
         "guidance-toggle", "guidance-close",
     }, "a measured control disappeared"
     assert len([b for b in boxes if b["label"] == "manager-select"]) == 3, (
@@ -283,18 +288,22 @@ def test_measured_hit_areas_are_at_least_44px(browser, server, width, theme) -> 
 @requires_browser
 def test_keyboard_access_and_locale_copy(browser, server) -> None:
     page, errors = _open_surfaces(browser, server, 390, "padiem-glass", "en")
-    toggle, panel = "#clawDeviceManagerToggle", "#clawDeviceManagerPanel"
-    page.evaluate("(s) => document.querySelector(s).focus()", toggle)
-    page.keyboard.press("Enter")
+    panel = "#clawDeviceManagerPanel"
+    # The duplicate manager toggle is not a keyboard surface after #5573.
+    # Close and reopen through the same internal disclosure event used by the
+    # current device-manager browser harness, then inspect the panel controls.
+    page.evaluate("() => document.getElementById('clawDeviceManagerToggle').click()")
     page.wait_for_timeout(250)
-    assert page.locator(panel).is_hidden(), "Enter on the focused toggle must close the directory"
-    page.keyboard.press("Enter")
+    assert page.locator(panel).is_hidden()
+    page.evaluate("() => document.getElementById('clawDeviceManagerToggle').click()")
     page.locator(".claw-device-manager-close").wait_for(state="visible")
     # The reopened directory reads the owner directory again, so its device
     # rows must exist before the keyboard order is inspected.
     page.locator("#clawDeviceManagerList li").first.wait_for()
-    assert page.evaluate("(s) => document.querySelector(s).getAttribute('aria-expanded')",
-                         toggle) == "true"
+    assert page.evaluate(
+        "() => document.getElementById('clawDeviceManagerToggle')"
+        ".getAttribute('aria-expanded')"
+    ) == "true"
     # The directory panel is mounted above the composer area, so it is the
     # next element in the reading order. Opening it moves the focus into the
     # panel, and every panel control is then reachable forward with Tab.
@@ -334,8 +343,8 @@ def test_keyboard_access_and_locale_copy(browser, server) -> None:
     page.keyboard.press("Escape")
     page.wait_for_timeout(250)
     assert page.locator(panel).is_hidden(), "Escape must close the directory"
-    assert page.evaluate("(s) => document.activeElement === document.querySelector(s)",
-                         toggle), "closing must return focus to the toggle"
+    assert page.locator("#clawDeviceManagerToggle").is_hidden(), (
+        "the retired duplicate entry must stay hidden")
 
     guidance_toggle, guidance = "#clawDeviceGuidanceToggle", "#clawDeviceGuidancePanel"
     assert page.locator(guidance).is_visible(), "guidance opens from _open_surfaces"
