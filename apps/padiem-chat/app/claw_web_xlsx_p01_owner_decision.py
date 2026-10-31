@@ -43,6 +43,7 @@ class D1WebXlsxP01OwnerDecisionStore:
             "SELECT s.selection_ref,s.document_id,s.source_sha256,s.filename,"
             "s.size_bytes,s.status AS selection_status,s.expires_at AS selection_expiry,"
             "p.status AS request_status,p.run_id,p.pause_expires_at,"
+            "p.engine_run_id AS request_engine_run_id,"
             "p.source_sha256 AS request_sha,p.document_id AS request_doc,"
             "p.pause_id AS request_pause_id,d.pause_id AS decision_pause_id,"
             "d.user_id AS decision_owner,d.workspace_id AS decision_workspace,"
@@ -94,6 +95,13 @@ class D1WebXlsxP01OwnerDecisionStore:
             stage = "decision_unknown"
         elif decision is not None and not released:
             stage = "manual_review"
+        elif (row.get("request_status") == "dispatching"
+              and row.get("request_engine_run_id")
+              and row.get("request_pause_id") is None):
+            # Pre-delegated completion (Owner decision 2026-10-28): the Engine
+            # ran the tool to completion with no pause, so the start response
+            # said 'completed'; the status projects the same truth.
+            stage = "completed"
         elif row.get("request_status") == "dispatching":
             stage = "request_unknown"
         elif row.get("request_status") == "waiting_p01":

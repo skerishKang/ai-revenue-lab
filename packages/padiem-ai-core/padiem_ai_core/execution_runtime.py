@@ -42,26 +42,12 @@ from .dispatch_preinstruction import (
     server_wall_clock,
 )
 
-# Execution messages are provider-native; trusted injected system context
-# retains separate bounds for tool/instruction safety.
-# Deprecated legacy model-prompt constants stay importable, but do not gate AI text.
-MAX_EXECUTION_MESSAGES: int | None = None
-MAX_EXECUTION_MESSAGE_CHARS: int | None = None
-# #4379: the model/reference context carries no PADIEM byte total. The
-# provider and the platform apply their own limits. These symbols are
-# retained for import compatibility and are no longer enforced.
-MAX_SYSTEM_CONTEXT_BYTES: int | None = None
-MAX_ADDITIONAL_SYSTEM_CONTEXT_CHARS = MAX_SYSTEM_CONTEXT_BYTES  # import compatibility
-MAX_COMPOSED_SYSTEM_CHARS = MAX_SYSTEM_CONTEXT_BYTES  # import compatibility
-
 _IDENTIFIER_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$")
 _MESSAGE_ROLES = frozenset({"user", "assistant", "tool"})
 _MODEL_POLICY_FIELDS = frozenset(
     {
         "model",
         "temperature",
-        "allow_external_fallback",
-        "provider_order",
         "max_retries",
         "product_tier",  # trusted product-side grade carried through Core to B14
         # #3977: explicitly requested provider-native overrides. Absent means
@@ -225,11 +211,6 @@ def _compose_system_instruction(request: "ExecutionRequest") -> str | None:
         parts.append(request.additional_system_context)
     content = "\n\n".join(parts)
     # #4379: the composed system instruction carries no PADIEM byte total.
-    if (
-        MAX_SYSTEM_CONTEXT_BYTES is not None
-        and len(content.encode("utf-8")) > MAX_SYSTEM_CONTEXT_BYTES
-    ):
-        raise ValueError("composed system instruction exceeds transport safety envelope")
     return content
 
 
@@ -259,15 +240,6 @@ def _normalize_model_policy(
     ):
         raise ValueError("model_policy.temperature must be numeric")
 
-    provider_order_value = policy.get("provider_order")
-    if provider_order_value is None:
-        provider_order = None
-    elif isinstance(provider_order_value, (tuple, list)):
-        provider_order = tuple(provider_order_value)
-    else:
-        raise ValueError("model_policy.provider_order must be a sequence")
-
-    allow_external_fallback = policy.get("allow_external_fallback")
     max_retries = policy.get("max_retries")
     if max_retries is not None and (
         isinstance(max_retries, bool) or not isinstance(max_retries, int)
@@ -275,13 +247,9 @@ def _normalize_model_policy(
         raise ValueError("model_policy.max_retries must be an integer or None")
 
     routing = B14RoutingOptions(
-        task_type=agent.task_type,
         required_capabilities=(
             agent.required_capabilities if agent.required_capabilities else None
         ),
-        optimize_for=agent.optimize_for,
-        allow_external_fallback=allow_external_fallback,
-        provider_order=provider_order,
         max_retries=max_retries,
         product_tier=policy.get("product_tier"),
     )

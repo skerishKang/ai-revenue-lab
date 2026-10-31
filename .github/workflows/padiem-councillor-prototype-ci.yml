@@ -1,0 +1,67 @@
+name: PADIEM Councillor Prototype CI
+
+# Focused regression lane for the councillor prototype (#5972 design line).
+#
+# #6063 opened as "the hero portrait is cropped at 390px". Measured in a real
+# browser from 240 to 1440px the portrait never leaves the viewport, so no
+# portrait rule was changed here. What did reproduce is the phone navigation:
+# .top-nav is display:none from 900px down and the inner pages carried no other
+# links, leaving a phone visitor stranded on the page they landed on.
+#
+# These tests are static on purpose: they need no browser, no network and no
+# provider, and they fail if either the fix or the CSS premise behind it moves.
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'apps/councillor-prototype/**'
+      - '.github/workflows/padiem-councillor-prototype-ci.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'apps/councillor-prototype/**'
+      - '.github/workflows/padiem-councillor-prototype-ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: padiem-councillor-prototype-ci-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  councillor-prototype-contracts:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact event head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Assert exact head
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected='${{ github.event.pull_request.head.sha || github.sha }}'
+          actual="$(git rev-parse HEAD)"
+          echo "expected=$expected"
+          echo "actual=$actual"
+          test "$expected" = "$actual"
+
+      - name: Install pytest
+        run: python -m pip install --disable-pip-version-check --quiet pytest
+
+      - name: Test the councillor prototype page contracts
+        run: python -m pytest apps/councillor-prototype/tests -q

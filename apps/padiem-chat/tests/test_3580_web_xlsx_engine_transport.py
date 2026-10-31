@@ -116,8 +116,23 @@ async def test_existing_p01_credential_fixed_tool_target_and_source_sha():
 
 
 @pytest.mark.asyncio
+@pytest.mark.asyncio
+async def test_private_adapter_accepts_a_completed_engine_projection():
+    """Owner decision 2026-10-28: the pre-delegated tool completes directly;
+    the adapter must carry the completed 200 projection, not refuse it."""
+    body = {"ok": True, "tool": {
+        "contract_version": "padiem.engine.tools/1.0",
+        "agent_id": "agent:padiem:web-xlsx-confirm@1",
+        "canonical_tool_id": "tool:padiem:web-xlsx-confirm@1",
+        "run_id": "torun:abc123def4567890ab",
+        "status": "completed",
+    }}
+    binding = EngineBinding(result=body, status=200)
+    projection = await client(binding).start_pause(scope())
+    assert projection == body
+
+
 @pytest.mark.parametrize("status,result", [
-    (200, {"ok": True, "tool": {"status": "completed"}}),
     (401, {"ok": False, "error": {"code": "unauthorized"}}),
     (503, {"ok": False, "error": {"code": "tool_runtime_unavailable"}}),
     (202, {"ok": True, "orchestration": {"status": "paused"}}),

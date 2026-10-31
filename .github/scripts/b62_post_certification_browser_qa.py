@@ -84,9 +84,10 @@ async def _install_api(page: Page, request_bodies: list[dict[str, Any]]) -> None
         body = json.loads(raw)
         if not isinstance(body, dict):
             raise AssertionError(f"chat request must be an object: {body!r}")
-        if body.get("mode") != "auto":
-            raise AssertionError(f"browser escaped provider-neutral Auto mode: {body!r}")
-        if any(key in body for key in ("provider", "model", "route", "credential", "max_tokens")):
+        # `mode` joins the hidden-authority list rather than being demanded: the chat
+        # mode key was the leftover of the abolished B14 auto selection (#4844) and the
+        # request contract refuses it now, so a browser still sending it is the failure.
+        if any(key in body for key in ("provider", "model", "route", "credential", "max_tokens", "mode")):
             raise AssertionError(f"browser asserted hidden execution authority: {body!r}")
         request_bodies.append(body)
 

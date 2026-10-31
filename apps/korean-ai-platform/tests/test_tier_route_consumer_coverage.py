@@ -2,7 +2,7 @@
 
 `product_tier_routes.py` declares which provider/model backs Padiem Plus/Pro/Max, and B14
 decides whether that route can actually execute. The drift guard for exactly that risk lives
-here: `test_tier_registry_v1.py::test_executable_registry_routes_exist_in_b14_catalog`.
+in `test_product_tier_routes.py::test_active_tier_routes_match_the_current_b14_model_registry`.
 Before this child, `Validate B14 Alpha` triggered only on `apps/korean-ai-platform/**`, so a
 PR that changed nothing but the declaration shipped without ever running it — the one change
 where the guard matters most.
@@ -20,7 +20,9 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 WORKFLOW = REPO_ROOT / ".github/workflows/validate-b14-alpha.yml"
-REGISTRY_TEST = Path(__file__).resolve().parent / "test_tier_registry_v1.py"
+LIVE_CONTRACT_TEST = (
+    REPO_ROOT / "packages" / "padiem-control-plane" / "tests" / "test_product_tier_routes.py"
+)
 
 DECLARATION_PATH = (
     "packages/padiem-control-plane/padiem_control_plane/product_tier_routes.py"
@@ -91,8 +93,8 @@ def test_workflow_still_pins_its_own_file_so_the_guard_is_self_enforcing() -> No
 
 
 def test_the_drift_guard_this_trigger_exists_to_run_is_still_present() -> None:
-    # The trigger is pointless if the check it protects goes away: this names the B14 catalog
-    # drift guard so deleting it has to pass through this file too.
-    source = REGISTRY_TEST.read_text(encoding="utf-8")
-    assert "def test_executable_registry_routes_exist_in_b14_catalog" in source
-    assert "is not registered in the B14 catalog" in source
+    # The trigger is pointless if the check it protects goes away: this names the live
+    # contract's B14 catalog drift guard so deleting it has to pass through this file too.
+    source = LIVE_CONTRACT_TEST.read_text(encoding="utf-8")
+    assert "def test_active_tier_routes_match_the_current_b14_model_registry" in source
+    assert 'models[route.model_id]["enabled"] is True' in source

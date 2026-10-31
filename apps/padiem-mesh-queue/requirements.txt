@@ -1,0 +1,12 @@
+# #5881 follow-on — what the 컴2 PC queue service needs, and nothing else.
+#
+# The versions the differential tests were run on. A deploy that resolves to a
+# different Starlette than the one that answered the claim-lane tests would make
+# the tested path and the running path two different things.
+#
+# Deliberately absent: pyodide, micropip, wrangler, and every Cloudflare binding.
+# The queue's whole reason for existing is to stop being inside that runtime.
+starlette==0.46.2
+uvicorn==0.51.0
+httpx==0.28.1
+python-multipart==0.0.32

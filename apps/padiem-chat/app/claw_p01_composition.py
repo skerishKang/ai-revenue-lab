@@ -74,6 +74,29 @@ def _claw_engine_client(
         return None, P01_DIAG_COMPOSITION_UNAVAILABLE
 
 
+def compose_p01_lanes(
+    client: PadiemAiEngineClient,
+    *,
+    allow_subject_identity: bool,
+) -> tuple[P01CoreOrchestrationAdapter, P01EngineApprovalContinuationClient]:
+    """Both B54 P01 lanes over one Engine client (#2229, #2961).
+
+    Factored out of ``build_claw_p01_lanes_with_diagnostic`` so the CPython host
+    composes the same two lanes over its own transport instead of restating the
+    lane wiring. A single client still backs both lanes, so the decision lane
+    can never become a second Engine protocol on either host.
+    """
+    return (
+        P01CoreOrchestrationAdapter(
+            P01EngineOrchestrationClient(
+                client, allow_subject_identity=allow_subject_identity
+            ),
+            allow_subject_identity=allow_subject_identity,
+        ),
+        P01EngineApprovalContinuationClient(client),
+    )
+
+
 def build_claw_engine_client_with_diagnostic(
     env: Any,
     *,
@@ -131,16 +154,10 @@ def build_claw_p01_lanes_with_diagnostic(
         identity_authority_bound = (
             binding_value(env, IDENTITY_AUTHORITY_SERVICE_BINDING_NAME) is not None
         )
-        return (
-            P01CoreOrchestrationAdapter(
-                P01EngineOrchestrationClient(
-                    client, allow_subject_identity=identity_authority_bound
-                ),
-                allow_subject_identity=identity_authority_bound,
-            ),
-            P01EngineApprovalContinuationClient(client),
-            None,
+        adapter, continuation = compose_p01_lanes(
+            client, allow_subject_identity=identity_authority_bound
         )
+        return adapter, continuation, None
     except Exception:
         return None, None, P01_DIAG_COMPOSITION_UNAVAILABLE
 
@@ -179,6 +196,7 @@ def build_claw_p01_continuation_client_with_diagnostic(
 
 __all__ = [
     "build_claw_engine_client_with_diagnostic",
+    "compose_p01_lanes",
     "build_claw_p01_adapter",
     "build_claw_p01_adapter_with_diagnostic",
     "build_claw_p01_continuation_client_with_diagnostic",

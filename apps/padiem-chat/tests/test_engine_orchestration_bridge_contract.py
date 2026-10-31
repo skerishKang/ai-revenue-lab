@@ -517,7 +517,8 @@ async def test_verified_pc_bridge_uses_one_progress_opt_in_stream():
     assert records[-1]["result"].answer == "final"
 
 
-async def _pc_sse(records, *, answer="verified PC result"):
+async def _pc_sse(records, *, answer="verified PC result", pending_fields=None,
+                  final_records=None):
     from app.claw_live_events import chat_pc_orchestration_sse
     from app.orchestration_bridge import B62OrchestrationResult
     events = [_event("run_started", 1), _event("run_completed", 2)]
@@ -527,17 +528,55 @@ async def _pc_sse(records, *, answer="verified PC result"):
         yield {"event": events[0]}
         for record in records:
             yield record
-        yield {"event": events[1]}
-        yield {"result": result}
+        if final_records is None:
+            yield {"event": events[1]}
+            yield {"result": result}
+        else:
+            for record in final_records:
+                yield record
     completions = []
     async def complete(value):
         completions.append(value.answer)
         return {"conversation_id": "chat_1"}
     response = chat_pc_orchestration_sse(
         stream(), pc_run_id="chat_pcq_" + "a" * 32, on_completed=complete,
+        pending_fields=pending_fields,
     )
     chunks = [chunk async for chunk in response.body_iterator]
     return b"".join(chunks).decode(), completions
+
+
+async def test_cut_pc_stream_hands_the_run_to_pending_recovery_instead_of_failing():
+    """#5895: a stream that stops mid-turn must not read as a refusal.
+
+    The Engine kept running and stored the answer; the relay used to send one
+    terminal invalid_engine_stream error frame, which every client renders as a
+    connection failure -- including a tab that loaded the page before any fix to
+    the client shipped. The relay now sends the pending continuation naming the
+    run the server already opened, leaves the run row unmarked so the
+    owner-scoped read-back can still deliver the stored result, and never
+    claims the turn completed.
+    """
+    import json
+    run = "chat_pcq_" + "a" * 32
+    pending = {"run_id": run, "conversation_id": "chat_" + "c" * 32}
+    text, completions = await _pc_sse(
+        [{"heartbeat": {"run_id": "run_1", "trace_id": "trace_1", "elapsed_ms": 1000}}],
+        pending_fields=pending, final_records=[],
+    )
+    assert "event: error" not in text
+    assert "event: done" in text
+    values = [json.loads(line[6:]) for line in text.splitlines() if line.startswith("data: ")]
+    final = values[-1]
+    assert final["done"] is True and final["pc_pending"] is True
+    assert final["run_id"] == run and final["conversation_id"] == pending["conversation_id"]
+    assert completions == []
+    # A run that really ended without any opened run still fails closed.
+    text, _ = await _pc_sse(
+        [{"heartbeat": {"run_id": "run_1", "trace_id": "trace_1", "elapsed_ms": 1000}}],
+        final_records=[],
+    )
+    assert "event: error" in text and "event: done" not in text
 
 
 async def test_engine_pc_progress_heartbeat_and_result_relay_is_closed_and_ordered():

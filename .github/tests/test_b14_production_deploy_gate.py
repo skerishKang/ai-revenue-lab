@@ -71,9 +71,11 @@ def test_deploy_job_requires_exact_confirmation_phrase() -> None:
 def test_premutation_assertions_are_fail_closed_and_non_interactive() -> None:
     text = _workflow_text()
     assert "set -euo pipefail" in text
-    # HEAD == TARGET_SHA, origin/main == TARGET_SHA, account id pinned.
+    # HEAD == TARGET_SHA, origin/main == TARGET_SHA (or, since #5895, an
+    # ancestor of it whose B14 paths did not move), account id pinned.
     assert re.search(r'test "\$\(git rev-parse HEAD\)" = "\$\{\{ github\.event\.inputs\.target_sha \}\}"', text)
     assert re.search(r'test "\$\(git rev-parse origin/main\)" = "\$\{\{ github\.event\.inputs\.target_sha \}\}"', text)
+    assert '.github/scripts/main_currency_guard.py --target "${{ github.event.inputs.target_sha }}" --path apps/korean-ai-platform' in text
     assert "9be14bb7b8974e65d0afba647ab16932" in text
     # No interactive constructs in the gate.
     assert "workflow_dispatch" in text
@@ -107,6 +109,38 @@ def test_post_deploy_verification_is_blocking() -> None:
     deploy = _workflow()["jobs"]["deploy-production-b14"]
     step_names = [step.get("name", "") for step in deploy["steps"]]
     assert any("Post-deploy verification" in name for name in step_names)
+
+
+def test_real_model_call_step_runs_after_the_deploy_and_is_not_rolled_back() -> None:
+    # #5895 ④: one real completion proves the promoted version serves traffic.
+    wf = _workflow()
+    deploy = wf["jobs"]["deploy-production-b14"]
+    names = [step.get("name", "") for step in deploy["steps"]]
+    assert "Post-deploy real model call" in names
+    call = names.index("Post-deploy real model call")
+    assert call > next(i for i, n in enumerate(names) if "Post-deploy verification" in n)
+    # The bounded evidence artifact is published before the proof, so a red proof
+    # cannot hide the run's evidence.
+    assert call > next(i for i, n in enumerate(names) if "Publish the bounded" in n)
+    step = deploy["steps"][call]
+    # Default success() semantics only: no condition that would let a provider
+    # limit or a failure be skipped, and no rollback is wired to this job.
+    assert "if" not in step
+    assert ".github/scripts/b14_real_model_call_smoke.py" in step["run"]
+    assert not any("failure()" in str(other.get("if", "")) for other in deploy["steps"])
+    text = _workflow_text()
+    assert text.count("b14_real_model_call_smoke.py") == 1
+
+
+def test_real_model_call_script_names_no_model_and_carries_no_credential() -> None:
+    source = (ROOT / ".github/scripts/b14_real_model_call_smoke.py").read_text(encoding="utf-8")
+    assert 'REQUESTED_ROUTE = "b14/auto"' in source
+    assert '"product_tier": PRODUCT_TIER' in source
+    assert "PROVIDER_LIMIT_STATUSES = frozenset({429, 503})" in source
+    assert 'print(f"REAL_MODEL_CALL={verdict} model={model}")' in source
+    for forbidden in ("Authorization", "api_key", "API_KEY", "secrets.", "X-Padiem-B14-Proof"):
+        assert forbidden not in source, forbidden
+    assert "if __name__" in source
 
 
 def test_rollback_job_is_separately_confirmed() -> None:
@@ -1715,3 +1749,58 @@ def test_post_deploy_matches_owner_json_registry_without_legacy_model_marker() -
     assert "B14_OWNER_JSON_CATALOG_PARITY=PASS" in text
     assert "B14_KILO_CATALOG_MARKER" not in text
     assert "mid.startswith('kilo/')" not in text
+
+
+def _deploy_steps() -> list[dict]:
+    return _workflow()["jobs"]["deploy-production-b14"]["steps"]
+
+
+def _step_index(name_part: str) -> int:
+    names = [step.get("name", "") for step in _deploy_steps()]
+    hits = [i for i, name in enumerate(names) if name_part in name]
+    assert hits, f"no step matching {name_part!r} in {names}"
+    return hits[0]
+
+
+def test_the_binding_baseline_is_checked_before_any_mutation() -> None:
+    """#4318: a reviewed B14 binding set is enforced, not remembered."""
+
+    steps = _deploy_steps()
+    baseline = _step_index("Premutation binding baseline")
+    deploy = _step_index("Deploy B14 via canonical pipeline")
+    assert baseline < deploy, "the baseline check must gate the mutation"
+    run = steps[baseline]["run"]
+    assert "--worker ai-revenue-korean-ai-platform" in run
+    assert "b62_binding_baseline.py" in run
+    assert "/workers/scripts/ai-revenue-korean-ai-platform/settings" in run
+    assert "PRODUCTION_MUTATION=0" in run
+
+
+def test_both_baseline_steps_are_get_only_and_print_no_values() -> None:
+    text = _workflow_text()
+    for step in _deploy_steps():
+        name = step.get("name", "")
+        if "binding baseline" not in name.lower():
+            continue
+        run = step["run"]
+        assert "curl -fsS" in run, name
+        for write in (" -X ", "--data", "-d ", "-o /dev/null"):
+            assert write not in run, f"{name} must not send: {write}"
+        assert "BINDING_BASELINE_VALUES_EMITTED=0" in run, name
+    assert text.count("b62_binding_baseline.py") == 2, "pre-mutation and post-deploy"
+    assert "cat /tmp/b14-baseline-settings.json" not in text
+    assert "cat /tmp/b14-served-version-bindings.json" not in text
+
+
+def test_the_served_version_binding_set_is_verified_after_deploy() -> None:
+    """Settings parity is not enough: the immutable version now serving 100%
+    must carry the reviewed bindings itself."""
+
+    steps = _deploy_steps()
+    post = [step for step in steps if "Post-deploy verification" in step.get("name", "")]
+    assert post
+    run = post[0]["run"]
+    assert "/versions/${VERSION_ID}" in run
+    assert "b14-served-version-bindings.json" in run
+    assert "b62_binding_baseline.py" in run
+    assert "B14_BINDING_BASELINE_POSTDEPLOY=PASS" in run

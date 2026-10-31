@@ -3,7 +3,6 @@ import { useLocale } from "../i18n/LocaleProvider";
 import type { Conversation, ProductMode } from "../data/types";
 
 interface SidebarProps {
-  mode: ProductMode;
   conversations: Conversation[];
   visibleConversations: Conversation[];
   activeConversationId: string | null;
@@ -17,6 +16,9 @@ interface SidebarProps {
   onToggleCollapse: () => void;
   onCloseMobile: () => void;
   onOpenMode: (mode: ProductMode) => void;
+  /** The workspace surface that is open, in the product's own names. */
+  activeView: "chat" | "library" | "automation" | "calendar" | "meeting";
+  onOpenView: (view: "chat" | "library" | "automation" | "calendar" | "meeting") => void;
   /** The API answered and reports a signed-in account. */
   authenticated: boolean;
   /** The API answered, so a sign-in is possible. */
@@ -70,7 +72,6 @@ function TrashIcon() {
  * surfaces stay in the same place they occupy in the product.
  */
 export function Sidebar({
-  mode,
   conversations,
   visibleConversations,
   activeConversationId,
@@ -84,6 +85,8 @@ export function Sidebar({
   onToggleCollapse,
   onCloseMobile,
   onOpenMode,
+  activeView,
+  onOpenView,
   authenticated,
   apiAvailable,
   onOpenLogin,
@@ -148,7 +151,15 @@ export function Sidebar({
           role="group"
           aria-label="새 채팅과 대화 검색"
         >
-          <button className="new-chat" id="newChatButton" type="button" onClick={onNewChat}>
+          <button
+            className="new-chat"
+            id="newChatButton"
+            type="button"
+            onClick={() => {
+              onOpenView("chat");
+              onNewChat();
+            }}
+          >
             <span aria-hidden="true">＋</span>
             <span data-locale-key="new-chat">{t("new-chat")}</span>
           </button>
@@ -174,9 +185,12 @@ export function Sidebar({
             className="side-item"
             id="clawNavButton"
             type="button"
-            aria-current={mode === "claw" ? "page" : "false"}
+            aria-current={activeView === "chat" ? "page" : "false"}
             data-mode-hint="업무·파일"
-            onClick={() => onOpenMode("claw")}
+            onClick={() => {
+              onOpenMode("claw");
+              onOpenView("chat");
+            }}
           >
             <span className="side-icon" aria-hidden="true">
               ◆
@@ -187,25 +201,53 @@ export function Sidebar({
       </div>
 
       <nav className="side-nav" id="workspaceNav" aria-label="워크스페이스 메뉴">
-        <button className="side-item" id="meetingNavButton" type="button" aria-current="false">
+        <button
+          className="side-item"
+          id="meetingNavButton"
+          type="button"
+          aria-controls="meetingView"
+          aria-current={activeView === "meeting" ? "page" : "false"}
+          onClick={() => onOpenView("meeting")}
+        >
           <span className="side-icon" aria-hidden="true">
             ▥
           </span>
           <span data-locale-key="nav-meeting">{t("nav-meeting")}</span>
         </button>
-        <button className="side-item" id="automationNavButton" type="button" aria-current="false">
+        <button
+          className="side-item"
+          id="automationNavButton"
+          type="button"
+          aria-controls="automationView"
+          aria-current={activeView === "automation" ? "page" : "false"}
+          onClick={() => onOpenView("automation")}
+        >
           <span className="side-icon" aria-hidden="true">
             ◷
           </span>
           <span data-locale-key="nav-automation">{t("nav-automation")}</span>
         </button>
-        <button className="side-item" id="filesNavButton" type="button" aria-current="false">
+        <button
+          className="side-item"
+          id="filesNavButton"
+          type="button"
+          aria-controls="libraryView"
+          aria-current={activeView === "library" ? "page" : "false"}
+          onClick={() => onOpenView("library")}
+        >
           <span className="side-icon" aria-hidden="true">
             ▤
           </span>
           <span data-locale-key="nav-files">{t("nav-files")}</span>
         </button>
-        <button className="side-item" id="calendarNavButton" type="button" aria-current="false">
+        <button
+          className="side-item"
+          id="calendarNavButton"
+          type="button"
+          aria-controls="calendarView"
+          aria-current={activeView === "calendar" ? "page" : "false"}
+          onClick={() => onOpenView("calendar")}
+        >
           <span className="side-icon" aria-hidden="true">
             ▨
           </span>
@@ -219,19 +261,6 @@ export function Sidebar({
             ⇄
           </span>
           <span data-locale-key="nav-connectors">{t("nav-connectors")}</span>
-        </button>
-        <button
-          className="side-item"
-          id="skillsNavButton"
-          type="button"
-          disabled
-          aria-disabled="true"
-          aria-haspopup="dialog"
-        >
-          <span className="side-icon" aria-hidden="true">
-            ✦
-          </span>
-          <span data-locale-key="nav-skills">{t("nav-skills")}</span>
         </button>
       </nav>
 

@@ -12,6 +12,8 @@
       generate: "견적서 만들기",
       close: "닫기",
       selectLabel: "견적서 양식",
+      signinHint: "로그인하면 내 양식과 등급을 고를 수 있어요",
+      signinAction: "로그인",
       idle: "내용을 입력하면 배정된 견적서 양식으로 바로 만듭니다.",
       working: "견적 내용을 정리하고 있습니다.",
       missing: "거래처와 품목·수량·단가를 조금 더 알려 주세요.",
@@ -20,7 +22,7 @@
       ready: "견적서가 준비되었습니다. 아래에서 확인하거나 PDF로 저장하세요.",
       failed: "견적서를 만들지 못했습니다. 입력 내용을 확인해 주세요.",
       pcToggle: "내 컴퓨터 · 연결 상태",
-      pcHelp: "Padiem Connect 설치와 같은 계정 로그인 기능은 준비 중입니다. 파일 작업은 별도 승인이 필요합니다.",
+      pcHelp: "Padiem Connect 설치와 같은 계정 로그인 기능은 준비 중입니다. 파일 작업은 바로 진행되고, 덮어쓰기·삭제 전에는 자동으로 백업돼요.",
       pcRefresh: "상태 새로고침",
       pcLoading: "서버에서 연결 상태를 확인하고 있습니다.",
       pcAuth: "Padiem 계정에 로그인한 뒤 확인해 주세요.",
@@ -28,7 +30,7 @@
       pcFailed: "PC 연결 상태를 확인하지 못했습니다.",
       pcEmpty: "현재 계정에 등록된 컴퓨터가 없습니다.",
       pcReady: "확인된 컴퓨터 목록입니다. 이 화면에서는 파일에 접근하거나 작업을 실행하지 않습니다.",
-      pcOnline: "온라인 · 작업 승인 필요",
+      pcOnline: "온라인 · 바로 작업",
       pcOffline: "오프라인",
       pcRevoked: "연결 해제",
       pcTxtTitle: "PC 파일 읽기 (TXT)",
@@ -54,6 +56,8 @@
       generate: "Create quote",
       close: "Close",
       selectLabel: "Quote template",
+      signinHint: "Sign in to pick your template and AI tier.",
+      signinAction: "Sign in",
       idle: "Enter the changing values and your assigned template will be used.",
       working: "Preparing the quote values.",
       missing: "Please add the customer and item, quantity, and unit price.",
@@ -62,7 +66,7 @@
       ready: "Your quote is ready. Review it below or save it as PDF.",
       failed: "The quote could not be created. Check your request and try again.",
       pcToggle: "My computers · connection status",
-      pcHelp: "Padiem Connect installation and same-account sign-in are not ready yet. File operations require separate approval.",
+      pcHelp: "Padiem Connect installation and same-account sign-in are not ready yet. File work runs right away, and overwrites and deletes are backed up automatically first.",
       pcRefresh: "Refresh status",
       pcLoading: "Checking connection status with the server.",
       pcAuth: "Sign in to your Padiem account first.",
@@ -91,6 +95,13 @@
 
   let runtime = null;
   let skills = [];
+  // #5895: an account with a linked PC reaches the quote screen through its own
+  // Excel form even before it has saved a skill.
+  let pcAccountLinked = false;
+  // #6100: the capability event's own word on whether this browser is signed
+  // in. The selects' data belongs to a signed-in account, so the logged-out
+  // dialog says so instead of showing three empty controls.
+  let signedIn = false;
   let modelIds = [];
   let selectedModelByTier = {};
   let reasoningByModel = {};
@@ -105,8 +116,18 @@
   const PC_DIALOGUES_PATH = "/api/b66/ai/dialogues?limit=20";
   const PC_TXT_READ_PATH = "/api/b66/connect/txt-reads/request";
   const PC_RESULT_PATH_PREFIX = "/api/b66/runs/";
+  // #5895: the quote screen's own PC Excel form. Chat exchanges ids and the model's
+  // cell mapping only; the workbook itself is read and filled in COM2.
+  const PC_QUOTE_FILL_PATH = "/api/b66/pc-quote/fill";
+  const PC_SAVE_PATH = "/api/pc/save";
+  const PC_RESULT_PATH = "/api/pc/result";
+  const PC_PAIRINGS_PATH = "/api/pc/pairings";
+  const PC_EXCHANGE_SCRIPT = "./pc-file-exchange.js";
+  const PC_EXCHANGE_CSS = "./pc-file-exchange.css";
   const PC_RESULT_PATH_SUFFIX = "/pc-result";
-  const MAX_PC_DIRECTORY_BYTES = 32768;
+  // #5895-D: no client byte gate on the owner's own same-origin reads. The
+  // closed projection below governs what gets rendered; a raw-length gate
+  // only silently turned real folder lists and run results into "empty".
   const B66_ASSET_ID = /^b66asset_[0-9a-f]{32}$/;
   const PRIVATE_ASSET_MEDIA = new Set(["image/png", "image/jpeg", "image/webp"]);
   const MAX_PRIVATE_ASSET_BYTES = 256 * 1024;
@@ -150,6 +171,18 @@
     )).slice(0, 20);
   }
 
+  // #3180 ③: the saved-quote list holds two kinds. A `pc_form` entry is the
+  // owner's own workbook on their own PC, never a certified skill: the fill
+  // lane writes into a copy of it and the sheet's formulas do the arithmetic.
+  function skillById(savedSkillId) {
+    return skills.find((item) => item && item.saved_skill_id === savedSkillId) || null;
+  }
+
+  function isPcForm(skill) {
+    return Boolean(skill && skill.skill_kind === "pc_form"
+      && typeof skill.form_path === "string" && skill.form_path);
+  }
+
   function companyProfileForRender(profile) {
     if (profile === null || profile === undefined) {
       return { ok: true, code: "absent", profile: null };
@@ -185,6 +218,323 @@
     if (className) node.className = className;
     if (text !== undefined) node.textContent = text;
     return node;
+  }
+
+  let pcExchangePromise = null;
+  // Set once the dialog exists: the saved-form repeat path renders through the
+  // same review list, so it needs the PC form section's own nodes.
+  let pcFormBridge = null;
+
+  function pcCopy() {
+    if (document.documentElement.lang === "en") {
+      return {
+        pick: "Bring an Excel form from my PC", make: "Make a quote from this form",
+        save: "Save to my PC", chosen: "Form:", needRequest: "Write what the quote is for first.",
+        made: "The quote is ready. Save it next to your form.",
+        choosing: "Choose your form on your PC…", filling: "Making the quote from your form…",
+        saving: "Saving to your PC…", saved: "Saved to your PC.",
+        failed: "That did not work. Please try again in a moment.",
+        noPc: "Connect your PC to bring your own form.", connect: "Connect this PC",
+        entry: "Quote from my PC Excel form",
+        reviewClient: "Customer:", reviewTitle: "What was filled into your form",
+        reviewEmpty: "No cell was filled. Check the request and the form.",
+        reviewExtend: "Item rows added by copying the form's own row:",
+        reviewTotals: "Totals and tax come from your form's own formulas. Check each value and cell before saving.",
+        remember: "Save this form as my quote form", remembering: "Saving the form…",
+        remembered: "Saved. Pick it from the quote form list next time.",
+        rememberFailed: "The form could not be saved. Please try again in a moment.",
+        pcFormSuffix: " (my PC form)", repeatFill: "Filling your saved form from the PC…",
+      };
+    }
+    return {
+      pick: "내 PC 엑셀 양식 가져오기", make: "이 양식으로 견적서 만들기",
+      save: "내 PC에 저장", chosen: "양식:", needRequest: "견적 내용을 먼저 적어 주세요.",
+      made: "견적서를 만들었습니다. 양식이 있던 폴더에 저장해 주세요.",
+      choosing: "PC에서 양식을 골라 주세요…", filling: "양식으로 견적서를 만드는 중…",
+      saving: "PC에 저장하는 중…", saved: "PC에 저장했습니다.",
+      failed: "지금은 되지 않았어요. 잠시 후 다시 시도해 주세요.",
+      noPc: "PC를 연결하면 내 양식을 가져올 수 있습니다.", connect: "이 PC 연결",
+      entry: "내 PC 엑셀 양식으로 견적서",
+      reviewClient: "거래처:", reviewTitle: "양식에 채운 값",
+      reviewEmpty: "채운 셀이 없습니다. 요청과 양식을 확인해 주세요.",
+      reviewExtend: "양식의 품목 행 서식을 복사해 늘린 행:",
+      reviewTotals: "합계·세금은 양식의 수식이 계산합니다. 저장 전에 값과 셀 위치를 확인해 주세요.",
+      remember: "이 양식을 내 견적서로 저장", remembering: "양식을 저장하는 중…",
+      remembered: "저장했습니다. 다음부터는 견적서 양식 목록에서 고를 수 있습니다.",
+      rememberFailed: "양식을 저장하지 못했습니다. 잠시 후 다시 시도해 주세요.",
+      pcFormSuffix: " (내 PC 양식)", repeatFill: "저장한 양식을 PC에서 다시 읽어 채우는 중…",
+    };
+  }
+
+  function loadPcExchange() {
+    if (window.PadiemPcFileExchange) return Promise.resolve(window.PadiemPcFileExchange);
+    if (pcExchangePromise) return pcExchangePromise;
+    pcExchangePromise = new Promise((resolve, reject) => {
+      const head = document.head || document.body;
+      if (head && !document.querySelector('link[href="' + PC_EXCHANGE_CSS + '"]')) {
+        const css = document.createElement("link");
+        css.rel = "stylesheet";
+        css.href = PC_EXCHANGE_CSS;
+        head.append(css);
+      }
+      const script = document.createElement("script");
+      script.src = PC_EXCHANGE_SCRIPT;
+      script.addEventListener("load", () => {
+        if (window.PadiemPcFileExchange) resolve(window.PadiemPcFileExchange);
+        else reject(new Error("pc_exchange_unavailable"));
+      }, { once: true });
+      script.addEventListener("error", () => reject(new Error("pc_exchange_unavailable")), { once: true });
+      head.append(script);
+    });
+    return pcExchangePromise;
+  }
+
+  async function pcLinkedNow() {
+    try {
+      const response = await nativeFetch(PC_PAIRINGS_PATH, { credentials: "same-origin", cache: "no-store", headers: { "Accept": "application/json" } });
+      if (!response.ok) return null;
+      const body = await response.json().catch(() => null);
+      const links = body && Array.isArray(body.links) ? body.links : [];
+      return links.some((link) => link && link.state === "active");
+    } catch (_) {
+      return null;
+    }
+  }
+
+  function openPcConnect() {
+    // #5573 step 1: the PC-request guidance connects through the one connect
+    // flow (modal + download + self-closing wait) instead of walking the
+    // person into the Connectors dialog. The dialog path stays as the fallback
+    // for a page where the connect-flow module did not load.
+    const flow = window.PadiemPcConnectFlow;
+    if (flow && typeof flow.open === "function") {
+      void flow.open();
+      return;
+    }
+    const opener = document.getElementById("connectorsNavButton");
+    if (!opener) return;
+    opener.click();
+    const card = document.getElementById("connectorComputerCard");
+    if (!card) return;
+    if (!card.hasAttribute("tabindex")) card.setAttribute("tabindex", "-1");
+    if (typeof card.focus === "function") card.focus({ preventScroll: true });
+    if (typeof card.scrollIntoView === "function") card.scrollIntoView({ block: "nearest" });
+  }
+
+  // #5895: pick → fill → save, all through the shared part and the COM2 lane. The
+  // screen itself never opens a workbook and never guesses a cell.
+  function wirePcForm(nodes) {
+    let template = null;
+    let filled = null;
+    let savedFormId = null;
+    const say = (text) => {
+      nodes.status.textContent = text || "";
+      nodes.status.hidden = !text;
+    };
+    // #3180: the dialog used to go straight from "the model filled it" to
+    // "save to my PC", so the owner never saw which cell received which value.
+    // The fill answer already carries the mapping; showing it is the review
+    // step, and the check belongs before a file lands on someone's disk.
+    const clearReview = () => {
+      if (!nodes.review) return;
+      nodes.review.replaceChildren();
+      nodes.review.hidden = true;
+    };
+    const renderReview = (body) => {
+      const review = nodes.review;
+      if (!review) return;
+      review.replaceChildren();
+      const mapping = body && body.mapping && typeof body.mapping === "object" ? body.mapping : null;
+      const rows = [];
+      Object.keys(mapping || {}).forEach((sheet) => {
+        const cells = mapping[sheet];
+        if (!cells || typeof cells !== "object") return;
+        Object.keys(cells).forEach((address) => {
+          const raw = cells[address];
+          const text = typeof raw === "number" ? String(raw)
+            : String(raw === null || raw === undefined ? "" : raw);
+          rows.push(String(sheet) + "!" + String(address) + " ← "
+            + (text.length > 60 ? text.slice(0, 60) + "…" : text));
+        });
+      });
+      if (body && body.client) {
+        review.append(el("p", "b66-quote-pcform-review-lead",
+          pcCopy().reviewClient + " " + String(body.client)));
+      }
+      if (!rows.length) {
+        review.append(el("p", "b66-quote-pcform-review-empty", pcCopy().reviewEmpty));
+        review.hidden = false;
+        return;
+      }
+      review.append(el("p", "b66-quote-pcform-review-title", pcCopy().reviewTitle));
+      const list = document.createElement("ul");
+      list.className = "b66-quote-pcform-review-list";
+      rows.forEach((text) => list.appendChild(el("li", "", text)));
+      review.append(list);
+      const extend = Array.isArray(body && body.extend) ? body.extend : [];
+      if (extend.length) {
+        const added = extend.reduce((sum, item) => {
+          const count = item && Number(item.count) > 0 ? Math.floor(Number(item.count)) : 0;
+          return sum + count;
+        }, 0);
+        review.append(el("p", "b66-quote-pcform-review-extend",
+          pcCopy().reviewExtend + " " + String(added)));
+      }
+      review.append(el("p", "b66-quote-pcform-review-note", pcCopy().reviewTotals));
+      review.hidden = false;
+    };
+    nodes.pick.addEventListener("click", async () => {
+      say(pcCopy().choosing);
+      let component = null;
+      try {
+        component = await loadPcExchange();
+      } catch (_) {
+        component = null;
+      }
+      if (!component || typeof component.open !== "function") {
+        say(pcCopy().failed);
+        return;
+      }
+      component.open({
+        onSelect: (picked) => {
+          if (!picked || typeof picked.fileId !== "string" || !picked.fileId) {
+            say(pcCopy().failed);
+            return;
+          }
+          template = {
+            name: picked.name || "견적서 양식.xlsx",
+            path: String(picked.path || picked.name || ""),
+            fileId: picked.fileId,
+          };
+          filled = null;
+          savedFormId = null;
+          nodes.save.hidden = true;
+          if (nodes.remember) nodes.remember.hidden = true;
+          clearReview();
+          nodes.chosen.textContent = pcCopy().chosen + " " + template.name;
+          nodes.chosen.hidden = false;
+          nodes.make.hidden = false;
+          say("");
+        },
+      });
+    });
+    nodes.make.addEventListener("click", async () => {
+      if (!template) return;
+      const request = String(nodes.request() || "").trim();
+      if (!request) {
+        say(pcCopy().needRequest);
+        return;
+      }
+      say(pcCopy().filling);
+      clearReview();
+      try {
+        const response = await nativeFetch(PC_QUOTE_FILL_PATH, {
+          method: "POST", credentials: "same-origin", cache: "no-store",
+          headers: { "Content-Type": "application/json", "Accept": "application/json" },
+          body: JSON.stringify({ file_id: template.fileId, request }),
+        });
+        const body = await response.json().catch(() => null);
+        if (!response.ok || !body || body.ok !== true || typeof body.filled_file_id !== "string") {
+          throw new Error("fill_failed");
+        }
+        filled = body;
+        nodes.save.hidden = false;
+        // #3180 ③: the fill this owner just reviewed can become their saved
+        // quote form, so the next quote starts from the list instead of a
+        // fresh picker trip.
+        if (nodes.remember) nodes.remember.hidden = savedFormId !== null;
+        renderReview(body);
+        say(pcCopy().made);
+      } catch (_) {
+        say(pcCopy().failed);
+      }
+    });
+    nodes.save.addEventListener("click", async () => {
+      if (!filled || !template) return;
+      say(pcCopy().saving);
+      const folder = template.path.replace(/\\/g, "/").replace(/\/+[^/]*$/, "");
+      const target = (folder ? folder + "/" : "") + filled.filled_name;
+      try {
+        const response = await nativeFetch(PC_SAVE_PATH, {
+          method: "POST", credentials: "same-origin", cache: "no-store",
+          headers: { "Content-Type": "application/json", "Accept": "application/json" },
+          body: JSON.stringify({ file_id: filled.filled_file_id, path: target }),
+        });
+        const body = await response.json().catch(() => null);
+        if (!response.ok || !body || body.ok !== true) throw new Error("save_failed");
+        const saved = await waitPcResult(body.dispatch_id);
+        say(saved ? pcCopy().saved : pcCopy().failed);
+        if (saved) nodes.save.hidden = true;
+      } catch (_) {
+        say(pcCopy().failed);
+      }
+    });
+    async function waitPcResult(dispatchId) {
+      for (;;) {
+        let response = null;
+        let body = null;
+        try {
+          response = await nativeFetch(PC_RESULT_PATH + "?dispatch_id=" + encodeURIComponent(dispatchId), {
+            credentials: "same-origin", cache: "no-store", headers: { "Accept": "application/json" },
+          });
+          body = await response.json().catch(() => null);
+        } catch (_) {
+          body = null;
+        }
+        if (body && body.state === "ready") return body.ok === true;
+        if (body && body.state === "cancelled") return false;
+        if (response && response.status !== 200) return false;
+        const seconds = body && Number(body.poll_seconds) > 0 ? Number(body.poll_seconds) : 2;
+        await new Promise((resolve) => setTimeout(resolve, seconds * 1000));
+      }
+    }
+    if (nodes.remember) nodes.remember.addEventListener("click", async () => {
+      if (!template || typeof template.fileId !== "string" || !template.fileId) return;
+      say(pcCopy().remembering);
+      try {
+        const saved = await readJson("/api/b66/pc-quote/forms", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "Accept": "application/json" },
+          body: JSON.stringify({ file_id: template.fileId, name: template.name.replace(/\.[^.]+$/, "") }),
+        });
+        if (!saved.response.ok || !saved.data || saved.data.ok !== true) throw new Error("remember_failed");
+        nodes.remember.hidden = true;
+        say(pcCopy().remembered);
+        void refresh();
+      } catch (_) {
+        say(pcCopy().rememberFailed);
+      }
+    });
+    void pcLinkedNow().then((linked) => {
+      if (linked !== false) return;
+      nodes.pick.hidden = true;
+      nodes.note.textContent = pcCopy().noPc + " ";
+      const connect = el("button", "b66-quote-pcform-connect", pcCopy().connect);
+      connect.type = "button";
+      connect.addEventListener("click", openPcConnect);
+      nodes.note.append(connect);
+      nodes.note.hidden = false;
+    });
+
+    return {
+      // A repeat fill already knows its form: no picker, and nothing new to
+      // register — the same review list still runs before saving.
+      repeatFromSavedForm(skill, fileId, body) {
+        savedFormId = skill.saved_skill_id;
+        template = {
+          name: skill.form_filename || "견적서 양식.xlsx",
+          path: skill.form_path, fileId,
+        };
+        filled = body;
+        nodes.chosen.textContent = pcCopy().chosen + " " + template.name;
+        nodes.chosen.hidden = false;
+        nodes.make.hidden = false;
+        nodes.save.hidden = false;
+        if (nodes.remember) nodes.remember.hidden = true;
+        renderReview(body);
+        say(pcCopy().made);
+      },
+    };
   }
 
   function ensureUi() {
@@ -292,6 +642,7 @@
     const form = el("form", "b66-quote-form");
     form.id = "b66QuoteForm";
     const selectLabel = el("label", "b66-quote-field");
+    selectLabel.id = "b66QuoteSkillField";
     const selectText = el("span", "", copy().selectLabel);
     selectText.dataset.b66QuoteSelectLabel = "true";
     const select = document.createElement("select");
@@ -309,6 +660,7 @@
     messageLabel.append(messageText, message);
 
     const modelLabel = el("label", "b66-quote-field");
+    modelLabel.id = "b66QuoteModelField";
     const modelText = el("span", "", document.documentElement.lang === "en" ? "AI tier" : "AI 등급");
     modelText.dataset.b66QuoteModelLabel = "true";
     const modelSelect = document.createElement("select");
@@ -320,12 +672,72 @@
     // /api/b66/quote/models, so the control never offers a level the selected
     // model does not actually support. The provider default is first.
     const reasoningLabel = el("label", "b66-quote-field");
+    reasoningLabel.id = "b66QuoteReasoningField";
     const reasoningText = el("span", "", document.documentElement.lang === "en"
       ? "Reasoning level" : "추론 수준");
     reasoningText.dataset.b66QuoteReasoningLabel = "true";
     const reasoningSelect = document.createElement("select");
     reasoningSelect.id = "b66QuoteReasoningSelect";
     reasoningLabel.append(reasoningText, reasoningSelect);
+
+    // #6100: the logged-out stand-in for the three selects above — one line
+    // and the product's own login entry (#loginButton), which the account
+    // area already owns. On sign-in the same capability event that runs
+    // refresh() brings the selects back; nothing after login changes.
+    const signinHint = el("p", "b66-quote-signin-hint", "");
+    signinHint.id = "b66QuoteSigninHint";
+    signinHint.hidden = true;
+    const signinText = el("span", "b66-quote-signin-text", copy().signinHint);
+    signinText.dataset.b66QuoteSigninText = "true";
+    const signinButton = el("button", "b66-quote-signin-button", copy().signinAction);
+    signinButton.id = "b66QuoteSigninButton";
+    signinButton.type = "button";
+    signinButton.addEventListener("click", () => {
+      document.getElementById("loginButton")?.click();
+    });
+    signinHint.append(signinText, signinButton);
+
+    // #5895: "내 PC 엑셀 양식 가져오기" — the owner's own form, filled as a new quote.
+    const pcForm = el("section", "b66-quote-pcform");
+    const pcPick = el("button", "b66-quote-pcform-pick", pcCopy().pick);
+    pcPick.id = "b66QuotePcPick";
+    pcPick.type = "button";
+    const pcChosen = el("p", "b66-quote-pcform-chosen", "");
+    pcChosen.id = "b66QuotePcChosen";
+    pcChosen.hidden = true;
+    const pcNote = el("p", "b66-quote-pcform-note", "");
+    pcNote.id = "b66QuotePcNote";
+    pcNote.hidden = true;
+    const pcMake = el("button", "b66-quote-pcform-make", pcCopy().make);
+    pcMake.id = "b66QuotePcMake";
+    pcMake.type = "button";
+    pcMake.hidden = true;
+    const pcReview = el("section", "b66-quote-pcform-review");
+    pcReview.id = "b66QuotePcReview";
+    pcReview.setAttribute("aria-live", "polite");
+    pcReview.hidden = true;
+    const pcRemember = el("button", "b66-quote-pcform-remember", pcCopy().remember);
+    pcRemember.id = "b66QuotePcRemember";
+    pcRemember.type = "button";
+    pcRemember.hidden = true;
+    const pcSave = el("button", "b66-quote-pcform-save", pcCopy().save);
+    pcSave.id = "b66QuotePcSave";
+    pcSave.type = "button";
+    pcSave.hidden = true;
+    const pcFormStatus = el("p", "b66-quote-pcform-status", "");
+    pcFormStatus.id = "b66QuotePcFormStatus";
+    pcFormStatus.setAttribute("role", "status");
+    pcFormStatus.setAttribute("aria-live", "polite");
+    pcFormStatus.hidden = true;
+    pcForm.append(pcPick, pcChosen, pcNote, pcMake, pcReview, pcRemember, pcSave, pcFormStatus);
+    // #5895: the section rides the form's own append below. Calling after() on
+    // the still-detached pair was a per-DOM no-op, so the dialog shipped
+    // without the PC form its launcher promises.
+    pcFormBridge = wirePcForm({
+      pick: pcPick, chosen: pcChosen, note: pcNote, make: pcMake, save: pcSave,
+      review: pcReview, remember: pcRemember, status: pcFormStatus,
+      request: () => message.value,
+    });
 
     const submit = el("button", "b66-quote-generate", copy().generate);
     submit.id = "b66QuoteGenerate";
@@ -338,7 +750,7 @@
 
     // Do not construct a hidden iframe on Chat startup. The cross-origin
     // preview is created only after a successful, user-requested quote.
-    form.append(selectLabel, modelLabel, reasoningLabel, messageLabel, submit, status);
+    form.append(selectLabel, modelLabel, reasoningLabel, signinHint, messageLabel, pcForm, submit, status);
     panel.append(header, pcSection, form);
     dialog.append(panel);
     document.body.append(dialog);
@@ -458,7 +870,6 @@
     let data = null;
     try {
       const raw = await response.text();
-      if (raw.length > MAX_PC_DIRECTORY_BYTES) throw new Error("pc_dialogues_oversize");
       data = JSON.parse(raw);
     } catch (_) {
       data = null;
@@ -536,7 +947,7 @@
         body: JSON.stringify(payload)
       });
       const raw = await response.text();
-      if (raw.length <= MAX_PC_DIRECTORY_BYTES) data = JSON.parse(raw);
+      data = JSON.parse(raw);
     } catch (_) {
       data = null;
     }
@@ -575,7 +986,7 @@
           body: "{}"
         });
         const raw = await response.text();
-        if (raw.length <= MAX_PC_DIRECTORY_BYTES) data = JSON.parse(raw);
+        data = JSON.parse(raw);
       } catch (_) {
         data = null;
       }
@@ -643,11 +1054,10 @@
         status.textContent = c.pcFailed;
         return;
       }
-      // Bound raw response and reuse the existing closed, read-only Claw
+      // Parse the whole response and reuse the existing closed, read-only Claw
       // projection, never render raw server HTML/credentials or invent ONLINE.
       const raw = await response.text();
       if (!isCurrent()) return;
-      if (raw.length > MAX_PC_DIRECTORY_BYTES) throw new Error("pc_directory_oversize");
       const payload = JSON.parse(raw);
       if (!payload || payload.ok !== true || payload.available !== true ||
           payload.ownerScoped !== true) {
@@ -705,6 +1115,7 @@
       ["[data-b66-quote-title]", "title"],
       ["[data-b66-quote-description]", "description"],
       ["[data-b66-quote-select-label]", "selectLabel"],
+      ["[data-b66-quote-signin-text]", "signinHint"],
       ["[data-b66-quote-request-label]", "requestLabel"]
     ];
     map.forEach(([selector, key]) => {
@@ -715,8 +1126,13 @@
     const submit = document.getElementById("b66QuoteGenerate");
     const close = document.getElementById("b66QuoteClose");
     const frame = document.getElementById("b66QuoteFrame");
+    const entryOnly = skills.length === 0 && pcAccountLinked;
+    const launcherLabel = document.querySelector('[data-b66-quote-launcher-label="true"]');
+    if (launcherLabel && entryOnly) launcherLabel.textContent = pcCopy().entry;
     if (message) message.placeholder = c.requestPlaceholder;
     if (submit) submit.textContent = c.generate;
+    const signinButton = document.getElementById("b66QuoteSigninButton");
+    if (signinButton) signinButton.textContent = c.signinAction;
     if (close) close.setAttribute("aria-label", c.close);
     if (frame) frame.title = c.title;
     const pcToggle = document.getElementById("b66QuotePcToggle");
@@ -833,11 +1249,37 @@
     skills.forEach((skill) => {
       const option = document.createElement("option");
       option.value = skill.saved_skill_id;
-      option.textContent = skill.skill_name;
+      option.textContent = skill.skill_name + (isPcForm(skill) ? pcCopy().pcFormSuffix : "");
       select.append(option);
     });
-    launcher.hidden = !(runtime && skills.length > 0);
+    // #5895: a linked PC is enough to reach the quote screen; the form itself is the
+    // template, so the saved-skill controls only exist when a skill does.
+    const entryOnly = skills.length === 0 && pcAccountLinked;
+    launcher.hidden = !(runtime && (skills.length > 0 || pcAccountLinked));
     launcher.disabled = launcher.hidden;
+    const launcherLabel = launcher.querySelector('[data-b66-quote-launcher-label="true"]');
+    if (launcherLabel) launcherLabel.textContent = entryOnly ? pcCopy().entry : copy().launcher;
+    const selectLabelNode = document.querySelector('[data-b66-quote-select-label]');
+    if (selectLabelNode) selectLabelNode.hidden = entryOnly;
+    const generateButton = document.getElementById("b66QuoteGenerate");
+    if (generateButton) generateButton.hidden = entryOnly;
+    // #6100: logged out, the selects hide and the one-line hint stands in;
+    // signed in, the fields come back exactly as before (the entry-only span
+    // hiding above is untouched). The capability event flips signedIn, so a
+    // login lands here through the same refresh() that fills the selects.
+    const signinHint = document.getElementById("b66QuoteSigninHint");
+    const quoteFields = [
+      document.getElementById("b66QuoteSkillField"),
+      document.getElementById("b66QuoteModelField"),
+      document.getElementById("b66QuoteReasoningField"),
+    ];
+    if (!signedIn) {
+      quoteFields.forEach((field) => { if (field) field.hidden = true; });
+      if (signinHint) signinHint.hidden = false;
+    } else {
+      quoteFields.forEach((field) => { if (field) field.hidden = false; });
+      if (signinHint) signinHint.hidden = true;
+    }
     launcher.setAttribute("aria-disabled", launcher.hidden ? "true" : "false");
     const pcEnabled = !launcher.hidden && runtime?.pcDirectoryEnabled === true;
     if (pcSection) pcSection.hidden = !pcEnabled;
@@ -914,6 +1356,14 @@
     return assets;
   }
 
+  async function refreshPcAccount() {
+    const linked = await pcLinkedNow();
+    const next = linked === true;
+    if (next === pcAccountLinked) return;
+    pcAccountLinked = next;
+    populateSkills();
+  }
+
   async function refresh() {
     if (refreshPromise) return refreshPromise;
     refreshPromise = (async () => {
@@ -940,6 +1390,7 @@
         }
         skills = safeSkills(listResult.data);
         populateSkills();
+        void refreshPcAccount();
         await refreshModels();
         return skills.length > 0;
       } catch (_) {
@@ -987,6 +1438,57 @@
     });
   }
 
+  // One finished PC file read, polled to its staged result. The same
+  // `/api/pc/fetch` + `/api/pc/result` pair the PC menu already uses; no new PC
+  // authority, and the bytes only ever travel for this one fill.
+  async function waitForPcFile(dispatchId) {
+    for (;;) {
+      let response = null;
+      let body = null;
+      try {
+        const result = await readJson("/api/pc/result?dispatch_id=" + encodeURIComponent(dispatchId));
+        response = result.response;
+        body = result.data;
+      } catch (_) {
+        body = null;
+      }
+      if (body && body.state === "ready") return body.ok === true ? dispatchId : null;
+      if (body && body.state === "cancelled") return null;
+      if (response && response.status !== 200) return null;
+      const seconds = body && Number(body.poll_seconds) > 0 ? Number(body.poll_seconds) : 2;
+      await new Promise((resolve) => window.setTimeout(resolve, seconds * 1000));
+    }
+  }
+
+  async function fillFromSavedForm(skill, requestText) {
+    setStatus(pcCopy().repeatFill, "working");
+    const fetched = await readJson("/api/pc/fetch", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Accept": "application/json" },
+      body: JSON.stringify({ path: skill.form_path }),
+    });
+    if (!fetched.response.ok || !fetched.data || fetched.data.ok !== true
+        || typeof fetched.data.dispatch_id !== "string") {
+      throw new Error("pc_fetch_failed");
+    }
+    const fileId = await waitForPcFile(fetched.data.dispatch_id);
+    if (!fileId) throw new Error("pc_fetch_failed");
+    const filled = await readJson("/api/b66/pc-quote/fill", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Accept": "application/json" },
+      body: JSON.stringify({ file_id: fileId, request: requestText, form_id: skill.saved_skill_id }),
+    });
+    if (!filled.response.ok || !filled.data || filled.data.ok !== true
+        || typeof filled.data.filled_file_id !== "string") {
+      throw new Error("fill_failed");
+    }
+    if (!pcFormBridge || typeof pcFormBridge.repeatFromSavedForm !== "function") {
+      throw new Error("pc_form_missing");
+    }
+    pcFormBridge.repeatFromSavedForm(skill, fileId, filled.data);
+    setStatus(pcCopy().made, "ready");
+  }
+
   async function generate(event) {
     event.preventDefault();
     const c = copy();
@@ -1000,6 +1502,24 @@
     const selectedTier = modelSelect && modelSelect.value;
     const modelId = selectedModelByTier[selectedTier];
     const requestText = message.value.trim();
+    const savedSkill = skillById(savedSkillId);
+    if (isPcForm(savedSkill)) {
+      // #3180 ③: a saved PC form is not interpreted through the model at all;
+      // the PC's own workbook is re-read and filled in the lane.
+      if (!requestText) {
+        setStatus(c.failed, "error");
+        return;
+      }
+      submit.disabled = true;
+      try {
+        await fillFromSavedForm(savedSkill, requestText);
+      } catch (_) {
+        setStatus(c.failed, "error");
+      } finally {
+        submit.disabled = false;
+      }
+      return;
+    }
     if (!/^b66skill_[0-9a-f]{32}$/.test(savedSkillId) || !requestText ||
         !modelId || !modelIds.includes(selectedTier)) {
       setStatus(c.failed, "error");
@@ -1086,7 +1606,10 @@
 
   window.addEventListener("padiem:capabilitychange", (event) => {
     const auth = event && event.detail && event.detail.auth;
-    if (auth && auth.authenticated === true) refresh();
+    // #6100: the event fires at startup too (after /api/auth/status), so the
+    // logged-out hint is decided by the product's own signal, never guessed.
+    signedIn = !!(auth && auth.authenticated === true);
+    if (signedIn) refresh();
     else {
       resetPcDirectory();
       runtime = null;

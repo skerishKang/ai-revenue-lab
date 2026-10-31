@@ -235,13 +235,28 @@ def test_request_echo_is_plain_user_message() -> None:
 # ── R3: disabled capabilities demote to a collapsed disclosure ────────────────
 
 
-def test_disabled_controls_are_collapsed_disclosure() -> None:
-    conv = _conversation_inner()
-    assert "<details" in conv and 'class="claw-disabled-controls"' in conv
-    assert "<summary" in conv
-    assert conv.count('class="claw-disabled-control"') == 5
-    # no longer a top-level block inside the workspace canvas
-    assert 'class="claw-disabled-controls"' not in _workspace_inner()
+def test_disabled_controls_disclosure_is_gone() -> None:
+    # The five never-wired "coming soon" buttons (two of which falsely claimed
+    # Markdown/DOCX downloads were missing) are removed rather than collapsed.
+    assert 'class="claw-disabled-controls"' not in INDEX
+    assert 'class="claw-disabled-control"' not in INDEX
+    assert "준비 중인 기능 5개" not in INDEX
+    locale = (STATIC / "locale.js").read_text(encoding="utf-8")
+    for key in (
+        "claw-disabled-summary",
+        "coming-features-aria",
+        "claw-ctrl-md-title",
+        "claw-ctrl-md-note",
+        "claw-ctrl-docx-title",
+        "claw-ctrl-docx-note",
+        "claw-ctrl-mem-title",
+        "claw-ctrl-mem-note",
+        "claw-ctrl-email-title",
+        "claw-ctrl-email-note",
+        "claw-ctrl-share-title",
+        "claw-ctrl-share-note",
+    ):
+        assert f'"{key}"' not in locale, key
 
 
 # ── R4: auth-unavailable copy is separated from re-login copy ─────────────────

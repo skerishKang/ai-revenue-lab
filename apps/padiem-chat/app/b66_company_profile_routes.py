@@ -71,7 +71,16 @@ async def b66_company_profile_get(request: Request) -> JSONResponse:
     get_fn = getattr(store, "get_profile", None) if store is not None else None
     if not callable(get_fn):
         return _error(503, "company_profile_unavailable", "회사정보 저장소를 사용할 수 없습니다.")
-    workspace_id = await _resolve_memory_workspace(request, uid)
+    # #4316: the workspace is server-owned. An unresolved identity scope stops
+    # the read/write here, before a store can treat a missing scope as its own
+    # decision (the certified PDF and native-sol routes already do this).
+    try:
+        workspace_id = await _resolve_memory_workspace(request, uid)
+    except Exception:
+        workspace_id = None
+    if workspace_id is None:
+        return _error(503, "workspace_authority_unavailable",
+                      "계정 범위를 확인할 수 없습니다. 잠시 후 다시 시도해 주세요.")
     try:
         value = get_fn(user_id=uid, workspace_id=workspace_id)
         profile = await value if inspect.isawaitable(value) else value
@@ -97,7 +106,16 @@ async def b66_company_profile_put(request: Request) -> JSONResponse:
     put_fn = getattr(store, "put_profile", None) if store is not None else None
     if not callable(put_fn):
         return _error(503, "company_profile_unavailable", "회사정보 저장소를 사용할 수 없습니다.")
-    workspace_id = await _resolve_memory_workspace(request, uid)
+    # #4316: the workspace is server-owned. An unresolved identity scope stops
+    # the read/write here, before a store can treat a missing scope as its own
+    # decision (the certified PDF and native-sol routes already do this).
+    try:
+        workspace_id = await _resolve_memory_workspace(request, uid)
+    except Exception:
+        workspace_id = None
+    if workspace_id is None:
+        return _error(503, "workspace_authority_unavailable",
+                      "계정 범위를 확인할 수 없습니다. 잠시 후 다시 시도해 주세요.")
     try:
         value = put_fn(user_id=uid, workspace_id=workspace_id, profile=canonical)
         profile = await value if inspect.isawaitable(value) else value

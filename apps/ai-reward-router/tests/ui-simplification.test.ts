@@ -26,7 +26,7 @@ test('home shows verified public opportunities BEFORE the compact ad-lane status
   const adIndex = html.indexOf('id="available-now"');
   assert.ok(publicIndex >= 0 && adIndex > publicIndex, 'verified supply is the first content a visitor can act on');
   assert.match(html, /data-public-card-count="6"/);
-  assert.match(html, /아래 기회는 각 업체에서 직접 참여하며 PADIEM 수익은 0입니다\./);
+  assert.match(html, /각 업체에 직접 참여하며 B64는 수익을 받지 않습니다\./);
 });
 
 test('home ad lane stays an honest compact status, never a "start now" invitation', async () => {
@@ -59,9 +59,9 @@ test('detail puts the participation CTA at the top and long provenance into a co
   assert.ok(ctaIndex >= 0 && factsIndex > ctaIndex, 'CTA renders above the long fact list');
   assert.match(html, /<details class="detail-more">/);
   assert.match(html, /<summary>상세 정보 · 참여 조건 · 출처<\/summary>/);
-  assert.match(html, /외부 제공자 사이트에서 직접 참여합니다\. PADIEM이 지급을 대행하거나 보장하지 않습니다\./);
-  // truth survives the restructure: the zero-PADIEM-revenue fact is still present
-  assert.match(html, /0 \(이용자 가치 제공용 — PADIEM 제휴 수익 없음\)/);
+  assert.match(html, /외부 제공자 사이트에서 직접 참여합니다\. B64는 지급을 대행하거나 보장하지 않습니다\./);
+  // truth survives the restructure: the no-revenue fact is still present
+  assert.match(html, /없음 · 업체에 직접 참여/);
 });
 
 test('collapsed details are keyboard-accessible (native details/summary, no script)', async () => {
@@ -89,8 +89,27 @@ test('pipeline summary is status-centred with icons and a short login gate', asy
   assert.match(html, /summary-icon/);
 
   const anonymous = renderIncomePipelineWeb(buildIncomePipelineViewModel({ userId: null, records: [] }));
-  assert.match(anonymous, /PADIEM 계정 로그인 후 이용할 수 있습니다\./);
+  assert.match(anonymous, /수익 관리는 B64 계정으로 이용할 수 있습니다\./);
   assert.ok(!anonymous.includes('장황한'), '');
+});
+
+/**
+ * Live 390px capture (#6074): the pipeline screen printed its own name four
+ * times — header trust note, nav item, hero eyebrow and h1. The header slot
+ * carries a state message on every other surface, so it was the one repeating
+ * rather than informing.
+ */
+test('the pipeline screen names itself once and the header slot stays informative (#6074)', () => {
+  const html = renderIncomePipelineWeb(buildIncomePipelineViewModel({ userId: null, records: [] }));
+  const body = html.slice(html.indexOf('<body>'));
+  assert.equal(body.split('내 수익 관리').length - 1, 2, 'nav item and h1 only');
+  assert.match(html, /<span class="trust-note">사용자 직접 기록<\/span>/);
+  assert.match(html, /<p class="eyebrow">B64 계정<\/p>/);
+
+  const hero = html.match(/<section class="hero"[\s\S]*?<\/section>/)?.[0] ?? '';
+  assert.ok(hero.includes('<h1'), 'the hero still owns the page title');
+  assert.equal(hero.replace(/<h1[\s\S]*?<\/h1>/, '').includes('내 수익 관리'), false,
+    'nothing around the h1 restates it');
 });
 
 test('today keeps the honest split between immediate and screening opportunities', async () => {

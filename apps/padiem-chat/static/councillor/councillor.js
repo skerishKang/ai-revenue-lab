@@ -504,11 +504,64 @@
   // ── scroll ──────────────────────────────────────────────────────────
   function wireScroll() {
     const topbar = document.querySelector(".councillor-topbar");
+    const nav = id("councillorNav");
+    const navLinks = nav ? Array.prototype.slice.call(nav.querySelectorAll("a[href^='#']")) : [];
+    // The header is fixed, so "current" means the section sitting under it, not the
+    // one whose top edge passed y=0 - that is the same offset the CSS scroll-margin
+    // uses, and the two must agree or the marked link is one section off.
+    // One measured source for both jobs: the marker below and the CSS scroll-margin
+    // the browser uses when it jumps to #sectionX. The header wraps to extra rows on
+    // phones, so any constant is wrong at one width - and the property has to be set
+    // on the root element, because the sections inherit from there, not from the bar.
+    const anchorOffset = () => {
+      const height = topbar ? topbar.getBoundingClientRect().height : 84;
+      const px = Math.round(height + 8) + "px";
+      if (document.documentElement.style.getPropertyValue("--cine-anchor-offset") !== px) {
+        document.documentElement.style.setProperty("--cine-anchor-offset", px);
+      }
+      return height + 8;
+    };
+    const layoutTop = (el) => {
+      // offsetTop is the layout position and ignores the reveal transform, which
+      // getBoundingClientRect would report while the animation is still running.
+      let y = 0;
+      for (let node = el; node; node = node.offsetParent) y += node.offsetTop;
+      return y;
+    };
+    // The reveal shifts an unvisited section 22px down, and the browser measures the
+    // jump from that shifted box, so a landing is either exactly on the offset or 22px
+    // under it. The last scroll event also fires mid-animation. Reading the animated
+    // rect against a single line therefore marked the PREVIOUS section every time.
+    const revealShift = parseFloat(
+      getComputedStyle(document.documentElement).getPropertyValue("--cine-reveal-shift")) || 0;
+    const markCurrent = () => {
+      if (!navLinks.length) return;
+      const doc = document.scrollingElement;
+      const atEnd = window.scrollY >= doc.scrollHeight - innerHeight - 2;
+      // Under a fixed header "current" means the section at the bar. At the bottom of
+      // the page that is impossible for the last section - the browser cannot scroll
+      // its top past the bar - so there the reference line moves to the viewport floor.
+      const line = atEnd ? window.scrollY + innerHeight - 8
+        : window.scrollY + anchorOffset() + revealShift + 8;
+      let current = null;
+      navLinks.forEach((link) => {
+        const section = id(link.getAttribute("href").slice(1));
+        if (!section) return;
+        const top = layoutTop(section);
+        if (top <= line && (current === null || top > current.top)) current = { link: link, top: top };
+      });
+      navLinks.forEach((link) => {
+        if (current && link === current.link) link.setAttribute("aria-current", "true");
+        else link.removeAttribute("aria-current");
+      });
+    };
     const onScroll = () => {
       if (topbar) topbar.classList.toggle("is-anchored", window.scrollY > 24);
+      markCurrent();
     };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll, { passive: true });
 
     if (refs.heroCue) {
       refs.heroCue.addEventListener("click", () => {
@@ -538,6 +591,10 @@
     if (refs.adminGate) refs.adminGate.hidden = true;
     if (refs.adminTools) refs.adminTools.hidden = false;
     text(refs.adminStatus, name ? "의정3종 · " + name : "의정3종");
+    // The header CTA is the same session answer as the status label. Asking a signed-in
+    // visitor to "로그인" is the page contradicting itself; the work they came for is
+    // one tap away, so the CTA hands it over.
+    text(refs.adminTopLink, name ? "의정3종 열기" : "로그인");
     text(refs.adminNote, "축사·인사말, SNS 홍보, 회의정리·활동집 바로가기");
     const list = refs.toolCards;
     if (!list) return;
@@ -565,6 +622,10 @@
         if (data && data.authenticated === true) {
           const user = data.user || {};
           paintUtilLinks(user.name || user.display_name || user.email || null);
+        } else if (data && data.authenticated === false) {
+          // An explicit "no" is an answer, so the label comes back down with it.
+          // A failed request is not an answer, and leaves the page alone.
+          paintUtilLinks(null);
         }
       } finally {
         window.clearTimeout(timer);
@@ -618,6 +679,13 @@
     wireScroll();
     void readSession();
   }
+
+  // Sign-in and sign-out happen on PADIEM's own screen, so a visitor comes back to this
+  // tab rather than reloading it. Re-reading the same endpoint on return is what keeps
+  // the header CTA telling the truth about the session that exists right now.
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible") void readSession();
+  });
 
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", start, { once: true });

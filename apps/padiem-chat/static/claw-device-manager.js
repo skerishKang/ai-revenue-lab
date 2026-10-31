@@ -15,7 +15,7 @@
       title: "연결된 내 컴퓨터",
       close: "닫기",
       refresh: "새로고침",
-      help: "PC 작업은 별도 승인 후 진행됩니다.",
+      help: "내 PC 작업은 바로 진행되고, 덮어쓰기·삭제 전에는 자동으로 백업돼요. 메일·메시지 보내기는 보내기 전에 한 번 확인해요.",
       entryTitle: "컴퓨터와 연결해 보세요",
       entryDescription: "내 컴퓨터의 파일과 프로그램을 Padiem에서 사용할 수 있어요.",
       connectAction: "컴퓨터 연결하기",
@@ -27,12 +27,12 @@
       failed: "연결 상태를 확인하지 못했습니다. 다시 시도해 주세요.",
       empty: "현재 계정에서 확인된 컴퓨터가 없습니다. Claw Connect 설치·연결을 먼저 완료해 주세요.",
       selection: "작업할 컴퓨터를 선택하세요. 선택만으로 파일 작업이 시작되지는 않습니다.",
-      selected: "선택됨. 실제 작업은 서버의 권한 확인과 별도 승인 후 진행됩니다.",
-      restored: "저장된 작업 대상을 복원했습니다. 실제 작업은 서버의 권한 확인과 별도 승인 후 진행됩니다.",
+      selected: "선택됨. 실제 작업은 바로 진행되고, 덮어쓰기·삭제 전에는 자동으로 백업돼요.",
+      restored: "저장된 작업 대상을 복원했습니다. 실제 작업은 바로 진행되고, 덮어쓰기·삭제 전에는 자동으로 백업돼요.",
       selectedOffline: "저장된 PC가 오프라인 또는 연결 해제 상태입니다. 다른 PC로 자동 전환하지 않습니다.",
       selectedMissing: "저장된 PC를 현재 목록에서 확인할 수 없습니다. 작업 대상을 다시 선택해 주세요.",
       saveFailed: "작업 대상 저장을 확인하지 못했습니다. 다시 선택해 주세요.",
-      online: "온라인 · 작업 승인 필요",
+      online: "온라인 · 바로 작업",
       offline: "오프라인",
       revoked: "연결 해제",
       expired: "인증이 만료되었습니다 · 다시 연결해 주세요",
@@ -44,7 +44,7 @@
       title: "My connected computers",
       close: "Close",
       refresh: "Refresh",
-      help: "Local PC work still needs separate approval.",
+      help: "Work on your PC runs right away; overwrites and deletes are backed up automatically first. Sending email or messages asks once before sending.",
       entryTitle: "Connect your computer",
       entryDescription: "Use the files and programs on your computer in Padiem.",
       connectAction: "Connect a computer",
@@ -56,12 +56,12 @@
       failed: "Could not verify device status. Please retry.",
       empty: "No computers confirmed for this account. Install and pair Claw Connect first.",
       selection: "Choose a computer. Selecting it does not start a local task.",
-      selected: "Selected. Any work still requires server authorization and separate approval.",
-      restored: "Restored the saved target. Any work still requires server authorization and separate approval.",
+      selected: "Selected. Work runs right away; overwrites and deletes are backed up automatically first.",
+      restored: "Restored the saved target. Work runs right away; overwrites and deletes are backed up automatically first.",
       selectedOffline: "The saved PC is offline or disconnected. No other PC is substituted automatically.",
       selectedMissing: "The saved PC is not in the current list. Choose a target again.",
       saveFailed: "Could not confirm the target selection. Please choose again.",
-      online: "Online · approval required",
+      online: "Online · ready",
       offline: "Offline",
       revoked: "Disconnected",
       expired: "Credential expired · reconnect",
@@ -570,13 +570,14 @@
     });
     close.addEventListener("click", closePanel);
     // Close when clicking outside the panel. The composer status control that
-    // opens it, and the first-screen computer card that reuses the same entry,
-    // are handled separately so the opening click does not close it.
+    // opens it, the first-screen computer card that reuses the same entry, and
+    // the guidance surface that reads this panel's own rendered states are
+    // handled separately so their clicks do not close (and clear) the panel.
     document.addEventListener("click", (event) => {
       if (!opened) return;
       const target = event && event.target;
       if (target && typeof target.closest === "function" &&
-          target.closest("#composerPcStatus, #pcConnectStarter")) return;
+          target.closest("#composerPcStatus, #pcConnectStarter, #clawDeviceGuidance")) return;
       if (root.contains(target)) return;
       closePanel();
     });

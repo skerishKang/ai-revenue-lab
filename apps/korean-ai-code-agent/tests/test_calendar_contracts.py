@@ -102,6 +102,39 @@ class CalendarContractsTests(unittest.TestCase):
         values.update(overrides)
         return CalendarMutationMaterial(**values)
 
+    def test_scope_projection_takes_more_than_32_calendar_ids_and_still_needs_one(self):
+        # #5895-D: no upper bound on an explicit scope grant; still at least one.
+        ids = tuple(f"cal-{index}" for index in range(40))
+        projection = CalendarScopeProjection(
+            binding_ref="binding_calendar_1",
+            workspace_ref="workspace_calendar_1",
+            allowed_calendar_ids=ids,
+        )
+        self.assertEqual(projection.allowed_calendar_ids, ids)
+        self.assertTrue(projection.authorizes(
+            binding_ref="binding_calendar_1", calendar_id="cal-39"))
+        with self.assertRaises(ContractError):
+            CalendarScopeProjection(
+                binding_ref="binding_calendar_1",
+                workspace_ref="workspace_calendar_1",
+                allowed_calendar_ids=(),
+            )
+
+    def test_event_and_material_take_more_than_50_attendees(self):
+        # #5895-D: the 50-address clamp is gone; validity and uniqueness stay.
+        attendees = tuple(f"person{index}@example.com" for index in range(60))
+        event = self.current_event(attendee_emails=attendees)
+        material = self.material(attendee_emails=attendees)
+        self.assertEqual(len(event.attendee_emails), 60)
+        self.assertEqual(len(material.attendee_emails), 60)
+
+    def test_the_reminder_count_is_not_capped(self):
+        """#5895-C: 8 was an arbitrary count; only each reminder's minutes are bounded."""
+        material = self.material(
+            reminders=tuple(CalendarReminder("popup", 10) for _ in range(12)),
+        )
+        assert len(material.reminders) == 12
+
     def approval(self, material=None, **overrides):
         material = material or self.material()
         values = dict(

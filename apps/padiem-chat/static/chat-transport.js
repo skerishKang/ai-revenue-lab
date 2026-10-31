@@ -5,12 +5,22 @@
   const orchestrationRequests = new WeakMap();
   const calendarTurnIdsByRequest = new WeakMap();
 
-  function errorFor(data, fallback) {
-    const message = data && data.error && typeof data.error.message === "string" && data.error.message.trim() ? data.error.message : fallback;
+  function errorFor(data, fallback, status) {
+    const message = data?.error?.code === "stale_chat_client" ? '화면이 오래되었습니다. 새로고침이 필요합니다.' : data && data.error && typeof data.error.message === "string" && data.error.message.trim() ? data.error.message : fallback;
     const error = new Error(message);
     if (data && data.error && typeof data.error.code === "string") error.code = data.error.code;
-    if (data && data.ok === false && data.error) error.terminalRecord = true;
+    if (status === 422 || (data && data.ok === false && data.error)) error.terminalRecord = true;
     return error;
+  }
+
+  // #5895: these two codes are produced when an Engine stream stops without a
+  // verified result — the run itself keeps going and its answer is stored. A
+  // refusal (authorization, tier, cancellation, execution failure) never uses
+  // them, so only these may hand the turn to the pending-result recovery.
+  const STREAM_LOSS_CODES = new Set(["invalid_engine_stream", "invalid_engine_stream_event"]);
+
+  function isStreamLoss(data) {
+    return STREAM_LOSS_CODES.has(data?.error?.code);
   }
 
   function streamErrorMessage(data) {
@@ -190,7 +200,7 @@
     });
     const data = await response.json().catch(() => null);
     if (!response.ok || !data || typeof data.answer !== "string") {
-      throw errorFor(data, "AI 연결이 잠시 불안정합니다. 다시 시도해 주세요.");
+      throw errorFor(data, "AI 연결이 잠시 불안정합니다. 다시 시도해 주세요.", response.status);
     }
     return data;
   }
@@ -225,7 +235,7 @@
     }
     const data = await response.json().catch(() => null);
     if (!response.ok || !data || data.ok === false) {
-      throw errorFor(data, streamErrorMessage(data));
+      throw errorFor(data, streamErrorMessage(data), response.status);
     }
     return data;
   }
@@ -371,7 +381,7 @@
     const contentType = (response.headers.get("content-type") || "").toLowerCase();
     if (!response.ok || !contentType.startsWith("text/event-stream")) {
       const data = await response.json().catch(() => null);
-      throw errorFor(data, "AI 연결이 잠시 불안정합니다. 다시 시도해 주세요.");
+      throw errorFor(data, "AI 연결이 잠시 불안정합니다. 다시 시도해 주세요.", response.status);
     }
     return response;
   }
@@ -381,6 +391,7 @@
     createChatPcRunId,
     errorFor,
     streamErrorMessage,
+    isStreamLoss,
     parseSseFrame,
     readSseEvents,
     requestCompleted,

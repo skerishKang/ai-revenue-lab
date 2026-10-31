@@ -70,6 +70,7 @@ EXTRA_MIGRATIONS = (
     "014_claw_run_history_conversation.sql",
     "015_claw_run_history_workspace.sql",
     "021_b66_saved_quote_skill.sql",
+    "079_b66_saved_quote_skill_kind.sql",
     "023_b66_company_profile.sql",
     "044_b66_ai_turn_attempt.sql",
 )

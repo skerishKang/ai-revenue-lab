@@ -9,13 +9,37 @@ class ConfigError(ValueError):
     pass
 
 
-def _normalize_base_url(value: str, *, https_only: bool = False, root_only: bool = False) -> str:
+#: Hosts the explicit local-development flag may serve over plain loopback
+#: HTTP (#5573 stage 2). Nothing else ever reaches this set: production
+#: validation stays https-only, and the Worker binding path never sets
+#: `local_dev` (see app/worker_config.py — it calls Settings.from_values
+#: without the flag, so the default False holds on Cloudflare).
+LOCAL_DEV_LOOPBACK_HOSTS = frozenset({"127.0.0.1", "localhost", "::1"})
+
+
+def _normalize_base_url(
+    value: str,
+    *,
+    https_only: bool = False,
+    root_only: bool = False,
+    allow_loopback_http: bool = False,
+) -> str:
     raw = value.strip()
     parsed = urlsplit(raw)
     allowed = {"https"} if https_only else {"http", "https"}
     if parsed.scheme not in allowed:
-        scheme_label = "https" if https_only else "http or https"
-        raise ConfigError(f"base URL must use {scheme_label}")
+        # The one exception: a loopback HTTP base the caller explicitly opted
+        # into via PADIEM_LOCAL_DEV=1. Same strictness otherwise — a non-
+        # loopback http:// base is still refused even with the flag set.
+        if (
+            allow_loopback_http
+            and parsed.scheme == "http"
+            and (parsed.hostname or "") in LOCAL_DEV_LOOPBACK_HOSTS
+        ):
+            pass
+        else:
+            scheme_label = "https" if https_only else "http or https"
+            raise ConfigError(f"base URL must use {scheme_label}")
     if not parsed.hostname:
         raise ConfigError("base URL must include a host")
     if parsed.username or parsed.password:
@@ -122,6 +146,10 @@ class Settings:
     user_burst_limit: int = 8
     user_daily_limit: int = 100
     global_daily_limit: int = 1000
+    # #5573 stage 2: explicit local-run opt-in (PADIEM_LOCAL_DEV=1). Enables
+    # loopback HTTP for the public base URL and the same-origin expectation.
+    # Default False — every production deployment keeps the https-only rules.
+    local_dev: bool = False
 
     @classmethod
     def from_values(
@@ -159,10 +187,23 @@ class Settings:
         # #5784: appended last so every existing positional caller is untouched.
         b14_upstream_mode: object = None,
         b14_upstream_url: object = None,
+        # #5573 stage 2: also appended last — the local-run opt-in.
+        local_dev: object = None,
     ) -> "Settings":
         mode = str(runtime_mode or "mock").strip().lower()
         if mode not in {"mock", "b14"}:
             raise ConfigError("PADIEM_CHAT_RUNTIME_MODE must be mock or b14")
+
+        # The flag is deliberately narrow: "1"/"true" enable, "0"/"false"/unset
+        # disable, and anything else raises so a typo never silently flips a
+        # production run into the loopback allowance (or a local run off it).
+        raw_local_dev = "" if local_dev is None else str(local_dev).strip().lower()
+        if raw_local_dev in {"", "0", "false"}:
+            local = False
+        elif raw_local_dev in {"1", "true"}:
+            local = True
+        else:
+            raise ConfigError("PADIEM_LOCAL_DEV must be 1 or 0")
 
         raw_base = "" if b14_base_url is None else str(b14_base_url).strip()
         base = _normalize_base_url(raw_base) if raw_base else None
@@ -246,7 +287,13 @@ class Settings:
         if auth not in {"off", "google", "password", "hybrid"}:
             raise ConfigError("PADIEM_CHAT_AUTH_MODE must be off, google, password, or hybrid")
         raw_public = "" if public_base_url is None else str(public_base_url).strip()
-        public = _normalize_base_url(raw_public, https_only=True, root_only=True) if raw_public else None
+        public = (
+            _normalize_base_url(
+                raw_public, https_only=True, root_only=True, allow_loopback_http=local
+            )
+            if raw_public
+            else None
+        )
         client_id = str(google_client_id or "").strip() or None
         client_secret = str(google_client_secret or "").strip() or None
         secret = str(session_secret or "").strip() or None
@@ -353,6 +400,7 @@ class Settings:
             user_burst_limit=signed_burst,
             user_daily_limit=signed_daily,
             global_daily_limit=global_daily,
+            local_dev=local,
         )
 
     @classmethod
@@ -406,4 +454,5 @@ class Settings:
             user_burst_limit=os.getenv("PADIEM_CHAT_USER_BURST_LIMIT", "8"),
             user_daily_limit=os.getenv("PADIEM_CHAT_USER_DAILY_LIMIT", "100"),
             global_daily_limit=os.getenv("PADIEM_CHAT_GLOBAL_DAILY_LIMIT", "1000"),
+            local_dev=os.getenv("PADIEM_LOCAL_DEV"),
         )

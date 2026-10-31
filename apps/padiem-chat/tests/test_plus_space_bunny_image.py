@@ -48,10 +48,14 @@ def test_plus_identity_is_executable_route_and_space_bunny_is_historical_only() 
     )
 
 
-def test_plus_chat_executes_declared_google_route_with_its_existing_image_capability() -> None:
-    assert MODEL_CAPABILITIES[LOW_B14_MODEL_ID] == frozenset({"chat", "image"})
-    assert model_supports(LOW_B14_MODEL_ID, "chat")
-    assert model_supports(LOW_B14_MODEL_ID, "image")
+def test_plus_chat_executes_declared_google_route_without_a_provider_capability_row() -> None:
+    # B8: the paid route model is a raw provider id, not a capability catalog
+    # row. Only tier-keyed rows and the fallback row remain.
+    assert LOW_B14_MODEL_ID not in MODEL_CAPABILITIES
+    assert model_supports(LOW_B14_MODEL_ID, "chat") is False
+    assert model_supports(LOW_B14_MODEL_ID, "image") is False
+    assert MODEL_CAPABILITIES[FREE_MODEL] == frozenset({"chat", "coding"})
+    assert model_supports(FREE_MODEL, "chat")
     default = resolve_model_policy([{"role": "user", "content": "hello"}])
     plus = resolve_tier_policy([{"role": "user", "content": "hello"}], "plus")
     assert default.model_id == FREE_MODEL and default.profile == "free"

@@ -9,7 +9,6 @@ from starlette.responses import JSONResponse
 from starlette.routing import Mount, Route
 from starlette.staticfiles import StaticFiles
 
-from padiem_ai_core.document_parser_boundary import binary_document_parser_ready_async
 
 from .android_auth_routes import (
     android_handoff_claim,
@@ -24,6 +23,8 @@ from .account_model_selection_routes import (
 )
 from .account_model_selection_store import D1AccountModelSelectionStore
 from .android_auth_store import D1AndroidAuthHandoffStore
+from .lovetree_auth_routes import lovetree_handoff_start
+from .lovetree_auth_store import D1LoveTreeLoginHandoffStore
 from .auth import GoogleOAuthClient
 from .auth_abuse import AuthAbuseGate, AuthAbuseStore, D1AuthAbuseStore
 from .b66_quote_conversation import B66QuoteConversationInterpreter
@@ -86,6 +87,8 @@ from .b66_certified_quote_bundle import B66CertifiedQuoteBundleStore
 from .b66_certified_preview import B66CertifiedPreviewStore
 from .b66_certified_pdf_routes import b66_certified_pdf, b66_certified_preview_base
 from .b66_native_sol_routes import b66_native_sol_pdf, b66_native_sol_scope
+from .b66_pc_template_routes import PC_QUOTE_FILL_PATH, pc_quote_fill
+from .b66_pc_form_routes import PC_QUOTE_FORMS_PATH, pc_quote_form_register
 from .b66_pc_directory_routes import B66_PC_DIRECTORY_PATH, b66_pc_directory
 from .b66_pc_txt_read_routes import (
     B66_PC_RESULT_PATH,
@@ -313,18 +316,52 @@ from .grounding import GroundedChatService
 from .history import HistoryStore
 from .pc_device_pairing_routes import (
     PC_PAIRING_CLAIM_PATH,
+    PC_PAIRING_ADOPT_PATH,
     PC_PAIRING_HANDOFF_PATH,
+    PC_PAIRING_INSTALL_FILE_PATH,
+    PC_PAIRING_INSTALL_EXE_PATH,
+    PC_PAIRING_LABEL_PATH,
     PC_PAIRING_LINK_PATH,
+    PC_PAIRING_PAUSE_PATH,
+    PC_PAIRING_RESUME_PATH,
     PC_PAIRING_PATH,
     PC_PAIRING_ROOT_PATH,
     PC_PAIRING_ROOTS_PATH,
     pc_pairing_approve_root,
+    pc_pairing_adopt,
     pc_pairing_claim,
     pc_pairing_handoff,
+    pc_pairing_install_file,
+    pc_pairing_install_exe,
     pc_pairing_issue,
+    pc_pairing_label,
     pc_pairing_list,
+    pc_pairing_pause,
+    pc_pairing_resume,
     pc_pairing_revoke,
     pc_pairing_revoke_root,
+)
+from .pc_file_exchange_routes import (
+    PC_BROWSE_PATH,
+    PC_CANCEL_PATH,
+    PC_DELETE_PATH,
+    PC_FETCH_PATH,
+    PC_FILE_PATH,
+    PC_FIND_PATH,
+    PC_MOVE_PATH,
+    PC_REFERENCE_PATH,
+    PC_RESULT_PATH,
+    PC_SAVE_PATH,
+    pc_file_exchange_browse,
+    pc_file_exchange_cancel,
+    pc_file_exchange_delete,
+    pc_file_exchange_fetch,
+    pc_file_exchange_file,
+    pc_file_exchange_find,
+    pc_file_exchange_move,
+    pc_file_exchange_reference,
+    pc_file_exchange_result,
+    pc_file_exchange_save,
 )
 from .password_reset import PasswordResetService
 from .password_reset_store import D1PasswordResetStore
@@ -361,7 +398,7 @@ from .drive_case_pdf_routes import (
 from .project_files import ProjectFileStore
 from .project_routes import project_detail, projects_collection
 from .request_telemetry import RequestTelemetryMiddleware
-from .file_lane import FileLaneClient, file_upload_ticket, file_capabilities
+from .file_lane import BINARY_KINDS, KINDS, FileLaneClient, file_upload_ticket, file_capabilities
 from .same_origin_guard import SameOriginGuardMiddleware
 from .session_revocation_guard import SessionRevocationGuardMiddleware
 from .saved_output_routes import output_detail, outputs_collection
@@ -393,8 +430,8 @@ async def health(request: Request) -> JSONResponse:
         "deep_research_ready": research_ready,
         "image_attachment_ready": True,
         "text_document_attachment_ready": True,
-        "binary_document_attachment_ready": binary_document_parser_ready_async(),
-        "auth_configured": settings.auth_mode != "off",
+        "binary_document_attachment_ready": bool(request.app.state.file_lane_client.ready and BINARY_KINDS <= KINDS.keys()),
+        "auth_configured": settings.auth_mode != "off" or getattr(request.app.state, "shared_login_flow", None) is not None,
         "history_store_bound": request.app.state.history_store is not None,
         "projects_code_ready": True,
         "project_files_code_ready": True,
@@ -482,12 +519,14 @@ def create_app(
     local_task_result_source=None,
     connector_txt_read_source=None,
     oracle_mesh_return_source=None,
+    oracle_mesh_legacy_map_lane=True,
     claw_engine_desktop_secret=None,
     desktop_device_session_authority=None,
     auth_abuse_store: AuthAbuseStore | None = None,
     password_reset_store=None,
     password_reset_delivery=None,
     android_handoff_store=None,
+    lovetree_handoff_store=None,
     connector_owner_enrollment=None,
     github_oauth_store=None,
     github_oauth_provider=None,
@@ -496,6 +535,8 @@ def create_app(
     custom_provider_client=None,
     file_lane_client=None,
     account_model_selection_store=None,
+    shared_auth_comparison_flow=None,
+    shared_login_flow=None,
 ) -> Starlette:
     resolved = settings or Settings.from_env()
     routes = [
@@ -533,6 +574,8 @@ def create_app(
         Route("/auth/android/handoff/{handoff_id}", android_handoff_status, methods=["GET"]),
         Route("/auth/android/handoff/{handoff_id}/claim", android_handoff_claim, methods=["POST"]),
         Route("/auth/android/confirm", android_handoff_confirm, methods=["POST"]),
+        # LoveTree 4.0 starts a login here; the callback above returns the one-time ticket.
+        Route("/auth/lovetree/start", lovetree_handoff_start, methods=["GET"]),
         Route("/api/auth/password/register", password_register, methods=["POST"]),
         Route("/api/auth/password/login", password_login, methods=["POST"]),
         Route("/api/auth/password/change", password_change, methods=["POST"]),
@@ -572,7 +615,7 @@ def create_app(
         Route("/api/projects/{project_id}", project_detail, methods=["GET", "PATCH", "DELETE"]),
         Route("/api/projects/{project_id}/files", project_files_collection, methods=["GET", "POST"]),
         Route("/api/projects/{project_id}/files/{file_id}/original", project_file_original, methods=["GET"]),
-        Route("/api/projects/{project_id}/files/{file_id}", project_file_detail, methods=["GET", "DELETE"]),
+        Route("/api/projects/{project_id}/files/{file_id}", project_file_detail, methods=["GET", "DELETE", "PUT"]),
         # #5568 PDF→Markdown utility: a work ledger per upload session, one conversion
         # per item, and owner-scoped reads of both the original and the result.
         Route("/api/document-conversions", convert_jobs_collection, methods=["GET", "POST"]),
@@ -720,6 +763,12 @@ def create_app(
             methods=["GET"],
         ),
         Route("/api/b66/quote/interpret", b66_quote_interpret, methods=["POST"]),
+        # #5895: the quote screen's "my PC Excel form" lane. Chat exchanges ids and the
+        # model's cell mapping only; reading and filling the workbook happen in COM2.
+        Route(PC_QUOTE_FILL_PATH, pc_quote_fill, methods=["POST"]),
+        # #3180 ③: register the owner's own PC form into the same saved-quote asset
+        # table the skill list already reads; the workbook itself stays on the PC.
+        Route(PC_QUOTE_FORMS_PATH, pc_quote_form_register, methods=["POST"]),
         Route("/api/b66/ai/chat", b66_ai_chat, methods=["POST"]),
         Route("/api/b66/ai/conversation", conversation_turn, methods=["POST"]),
         Route("/api/b66/ai/conversation", conversation_state, methods=["GET"]),
@@ -877,9 +926,29 @@ def create_app(
         Route(PC_PAIRING_PATH, pc_pairing_list, methods=["GET"]),
         Route(PC_PAIRING_CLAIM_PATH, pc_pairing_claim, methods=["POST"]),
         Route(PC_PAIRING_HANDOFF_PATH, pc_pairing_handoff, methods=["POST"]),
+        Route(PC_PAIRING_INSTALL_FILE_PATH, pc_pairing_install_file, methods=["POST"]),
+        Route(PC_PAIRING_INSTALL_EXE_PATH, pc_pairing_install_exe, methods=["POST"]),
+        Route(PC_PAIRING_ADOPT_PATH, pc_pairing_adopt, methods=["POST"]),
         Route(PC_PAIRING_LINK_PATH, pc_pairing_revoke, methods=["DELETE"]),
+        Route(PC_PAIRING_LABEL_PATH, pc_pairing_label, methods=["POST"]),
+        Route(PC_PAIRING_PAUSE_PATH, pc_pairing_pause, methods=["POST"]),
+        Route(PC_PAIRING_RESUME_PATH, pc_pairing_resume, methods=["POST"]),
         Route(PC_PAIRING_ROOTS_PATH, pc_pairing_approve_root, methods=["POST"]),
         Route(PC_PAIRING_ROOT_PATH, pc_pairing_revoke_root, methods=["DELETE"]),
+        # #5895: the shared "from my PC / to my PC" part the menus will use. The
+        # owner session and this account's own PC links are the only authority, and
+        # no model turn is involved. The pairing store refuses 503 when it is not
+        # composed, exactly as the pairing routes above do.
+        Route(PC_BROWSE_PATH, pc_file_exchange_browse, methods=["POST"]),
+        Route(PC_FIND_PATH, pc_file_exchange_find, methods=["POST"]),
+        Route(PC_FETCH_PATH, pc_file_exchange_fetch, methods=["POST"]),
+        Route(PC_SAVE_PATH, pc_file_exchange_save, methods=["POST"]),
+        Route(PC_MOVE_PATH, pc_file_exchange_move, methods=["POST"]),
+        Route(PC_DELETE_PATH, pc_file_exchange_delete, methods=["POST"]),
+        Route(PC_CANCEL_PATH, pc_file_exchange_cancel, methods=["POST"]),
+        Route(PC_REFERENCE_PATH, pc_file_exchange_reference, methods=["POST"]),
+        Route(PC_RESULT_PATH, pc_file_exchange_result, methods=["GET"]),
+        Route(PC_FILE_PATH, pc_file_exchange_file, methods=["GET"]),
         Mount("/", app=StaticFiles(directory=str(STATIC_DIR), html=True), name="static"),
     ]
     # #4139: append the owner-only consent/challenge routes before the catch-all
@@ -931,6 +1000,9 @@ def create_app(
         # no such routes.
         if oracle_mesh_return_source is not None:
             from .oracle_mesh_read_return_routes import (
+                ORACLE_MESH_READ_BUSY_PATH,
+                ORACLE_MESH_READ_LANE_STATUS_PATH,
+                ORACLE_MESH_READ_CANCEL_PATH,
                 ORACLE_MESH_READ_ORIGINAL_PATH,
                 ORACLE_MESH_READ_POLL_PATH,
                 ORACLE_MESH_READ_REQUEST_PATH,
@@ -938,11 +1010,19 @@ def create_app(
                 oracle_chat_engine_pc_drive_call,
                 oracle_mesh_engine_chat_files_call,
                 oracle_mesh_engine_claw_files_call,
+                oracle_mesh_read_busy_check,
+                oracle_mesh_read_lane_status,
+                oracle_mesh_read_cancel_check,
                 oracle_mesh_read_original,
                 oracle_mesh_read_poll,
                 oracle_mesh_read_request,
                 oracle_mesh_engine_desktop_call,
                 oracle_mesh_read_result,
+            )
+            # #5997: the executor renews a live claim while a long command runs.
+            from .oracle_mesh_lease_renew_routes import (
+                ORACLE_MESH_READ_RENEW_PATH,
+                oracle_mesh_read_renew,
             )
             routes[-1:-1] = [
                 Route(ORACLE_MESH_READ_REQUEST_PATH, oracle_mesh_read_request, methods=["POST"]),
@@ -953,15 +1033,28 @@ def create_app(
                 Route("/internal/chat/engine-pc-files", oracle_mesh_engine_chat_files_call, methods=["POST"]),
                 Route(ORACLE_MESH_READ_POLL_PATH, oracle_mesh_read_poll, methods=["POST"]),
                 Route(ORACLE_MESH_READ_RESULT_PATH, oracle_mesh_read_result, methods=["POST"]),
+                Route(ORACLE_MESH_READ_CANCEL_PATH, oracle_mesh_read_cancel_check, methods=["POST"]),
+                Route(ORACLE_MESH_READ_BUSY_PATH, oracle_mesh_read_busy_check, methods=["POST"]),
+                Route(ORACLE_MESH_READ_LANE_STATUS_PATH, oracle_mesh_read_lane_status, methods=["POST"]),
+                Route(ORACLE_MESH_READ_RENEW_PATH, oracle_mesh_read_renew, methods=["POST"]),
                 Route(ORACLE_MESH_READ_ORIGINAL_PATH, oracle_mesh_read_original, methods=["GET"]),
             ]
+    # Only explicitly injected test flows expose comparison routes.
+    if shared_auth_comparison_flow is not None:
+        routes[0:0] = shared_auth_comparison_flow.routes(enabled=True)
+    if shared_login_flow is not None:
+        routes[0:0] = shared_login_flow.login_routes()
     app = Starlette(routes=routes)
+    app.state.shared_login_flow = shared_login_flow
     # #5225: the canonical session guard resolves the Control Plane session
     # behind the session cookie once per request. It is added first so it stays
     # the innermost of the three layers: the same-origin guard refuses a
     # cross-origin mutation before any canonical authority read happens, and
     # the telemetry layer stays outermost so it still records guard rejections.
     app.add_middleware(SessionRevocationGuardMiddleware)
+    if shared_login_flow is not None:
+        from .shared_session_middleware import SharedSessionMiddleware
+        app.add_middleware(SharedSessionMiddleware, flow=shared_login_flow)
     # #3476: added before telemetry deliberately — Starlette prepends each
     # middleware, so the later-added telemetry layer stays outermost and keeps
     # recording guard rejections.
@@ -1021,6 +1114,18 @@ def create_app(
     ):
         resolved_handoff_store = D1AndroidAuthHandoffStore(d1_binding)
     app.state.android_handoff_store = resolved_handoff_store
+    # LoveTree 4.0 signs in through the Google flow above and receives one single-use
+    # ticket from this table (migration 073). Same D1, no second account authority, and
+    # never a session minted here — without D1/session material the route fails closed.
+    resolved_lovetree_store = lovetree_handoff_store
+    if (
+        resolved_lovetree_store is None
+        and d1_binding is not None
+        and isinstance(resolved.session_secret, str)
+        and resolved.session_secret
+    ):
+        resolved_lovetree_store = D1LoveTreeLoginHandoffStore(d1_binding)
+    app.state.lovetree_handoff_store = resolved_lovetree_store
     # #4657: the B66 customer dialogue surface reuses the canonical history
     # store behind the owner+PRODUCT_SCOPE_B66 adapter. It is the same D1/R2 the
     # Chat/Claw surfaces read — no second database, table or migration. Without
@@ -1391,6 +1496,10 @@ def create_app(
     # unmounted and every return fail-closed until the Worker root composes it.
     from .oracle_mesh_read_return_routes import UnconfiguredOracleMeshReturnSource
     app.state.claw_engine_desktop_secret = claw_engine_desktop_secret
+    # #5573 follow-up: the legacy map lane's switch travels with the app, so a request
+    # that names a file for the deployment map can be told about the retirement instead
+    # of being judged by a map that no longer holds authority.
+    app.state.oracle_mesh_legacy_map_lane = bool(oracle_mesh_legacy_map_lane)
     app.state.oracle_mesh_return_source = (
         oracle_mesh_return_source
         if oracle_mesh_return_source is not None
@@ -1664,3 +1773,4 @@ def create_app(
             _claw_automation_store = None
     app.state.claw_automation_store = _claw_automation_store
     return app
+

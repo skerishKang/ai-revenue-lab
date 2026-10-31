@@ -1,6 +1,12 @@
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
 import { ClawApprovalDialog } from "./components/ClawApprovalDialog";
 import { ClawWorkspace } from "./components/ClawWorkspace";
+import {
+  AutomationView,
+  CalendarView,
+  LibraryView,
+  MeetingView,
+} from "./components/WorkspaceViews";
 import { SettingsDialog } from "./components/SettingsDialog";
 import { Composer } from "./components/Composer";
 import { ConversationView } from "./components/ConversationView";
@@ -53,6 +59,9 @@ function nextId(prefix: string): string {
   return `${prefix}_${Date.now().toString(36)}_${idCounter}`;
 }
 
+/** The workspace surfaces the product offers beside the conversation. */
+export type WorkspaceView = "chat" | "library" | "automation" | "calendar" | "meeting";
+
 /**
  * #5298 — React clone root.
  *
@@ -75,6 +84,7 @@ export function App() {
   const [authenticated, setAuthenticated] = useState(false);
   const [loginOpen, setLoginOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [view, setView] = useState<WorkspaceView>("chat");
 
   const [state, dispatch] = useReducer(
     chatReducer,
@@ -585,13 +595,15 @@ export function App() {
   }, [state.approvalPause]);
 
   // The operational product publishes the shell state: "home" on the empty
-  // first screen, "chat" once a conversation is active and "claw" in the Claw
-  // product. The stylesheets select on it, so the clone keeps the same names.
+  // first screen, "chat" once a conversation is active, "claw" in the Claw
+  // product and the workspace name for the standalone views. The stylesheets
+  // select on it, so the clone keeps the same names.
   const shellState = useMemo<string>(() => {
+    if (view !== "chat") return view;
     if (state.mode === "claw") return "claw";
     const hasTurns = (activeConversation?.messages.length ?? 0) > 0;
     return hasTurns ? "chat" : "home";
-  }, [state.mode, activeConversation]);
+  }, [state.mode, activeConversation, view]);
 
   return (
     <div
@@ -606,7 +618,6 @@ export function App() {
       data-state={shellState}
     >
       <Sidebar
-        mode={state.mode}
         conversations={state.conversations}
         visibleConversations={visibleConversations}
         activeConversationId={state.activeConversationId}
@@ -620,6 +631,11 @@ export function App() {
         onToggleCollapse={() => setCollapsed((value) => !value)}
         onCloseMobile={() => setMobileOpen(false)}
         onOpenMode={(mode) => dispatch({ type: "set-mode", mode })}
+        activeView={view}
+        onOpenView={(next) => {
+          setView(next);
+          setMobileOpen(false);
+        }}
         authenticated={authenticated}
         apiAvailable={state.apiMode === "api"}
         onOpenLogin={() => setLoginOpen(true)}
@@ -640,7 +656,11 @@ export function App() {
           onRestoreSidebar={() => setCollapsed(false)}
           onOpenSettings={() => setSettingsOpen(true)}
         />
-        <ClawWorkspace visible={state.mode === "claw"} />
+        <ClawWorkspace visible={state.mode === "claw" && view === "chat"} />
+        {view === "library" ? <LibraryView /> : null}
+        {view === "automation" ? <AutomationView /> : null}
+        {view === "calendar" ? <CalendarView /> : null}
+        {view === "meeting" ? <MeetingView /> : null}
         <ConversationView
           conversation={activeConversation}
           mode={state.mode}

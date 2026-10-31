@@ -773,7 +773,7 @@ async def test_cancel_rejects_blank_reason_preserves_continuation(reason) -> Non
     assert service._continuation_store._records[ref].state == "active"
 
 
-@pytest.mark.parametrize("reason", ["x" * 257, 123, {"a": 1}])
+@pytest.mark.parametrize("reason", [123, {"a": 1}])
 async def test_cancel_rejects_invalid_reason_values(reason) -> None:
     service = OrchestrationEngineService(
         runtime_factory=lambda app_id: MockEngineRuntime(),
@@ -788,6 +788,20 @@ async def test_cancel_rejects_invalid_reason_values(reason) -> None:
     response = await service.cancel_payload(payload)
     assert response.status_code == 400
     assert response.body["error"]["code"] == "invalid_cancel_reason"
+
+
+async def test_cancel_accepts_a_reason_over_the_old_length_ceiling() -> None:
+    service = OrchestrationEngineService(
+        runtime_factory=lambda app_id: MockEngineRuntime(),
+        b14_service_bound=True,
+        continuation_store=InMemoryContinuationStore(),
+    )
+    ref = make_server_continuation(service)
+    reason = "x" * 257
+    payload = {"app_id": "b62", "continuation_ref": ref, "reason": reason}
+    response = await service.cancel_payload(payload)
+    assert response.status_code == 200
+    assert service._continuation_store._records[ref].cancel_reason == reason
 
 
 # ==============================================================================
@@ -1187,7 +1201,45 @@ async def test_pc_stream_heartbeat_does_not_extend_the_real_idle_watchdog(monkey
 
 
 @pytest.mark.asyncio
-async def test_non_pc_ndjson_and_legacy_json_bytes_are_unchanged(monkeypatch):
+async def test_long_silent_gap_on_a_non_opt_in_stream_completes_without_error(monkeypatch):
+    """#5895: a turn that waits must not be reported as a failure.
+
+    Before the liveness fix a stream without the PC opt-in produced no record at
+    all while the run thought, so a silent connection could be dropped and Chat
+    relayed that drop as invalid_engine_stream while the Engine went on to finish
+    and store the answer. The same stream now stays warm on the existing
+    heartbeat window and still ends with the verified result line.
+    """
+    import app.orchestration_service as module
+    from padiem_ai_core.orchestration_events import OrchestrationEvent, OrchestrationEventKind
+    first = OrchestrationEvent(
+        event_id="evt_gap", run_id="run_gap", trace_id="tr_gap", app_id="b62",
+        kind=OrchestrationEventKind.RUN_STARTED, sequence=1,
+        timestamp_iso="2026-10-27T00:00:00Z",
+    )
+
+    async def slow_result():
+        await asyncio.sleep(0.02)
+        return object()
+
+    async def project(*_a, **_kw):
+        return {"execution": {"answer": "long wait answer"}}
+
+    service = OrchestrationEngineService(runtime_factory=lambda _: object(), b14_service_bound=True)
+    monkeypatch.setattr(service, "_orchestration_body", project)
+    monkeypatch.setattr(module, "PC_STREAM_HEARTBEAT_SECONDS", 0.002)
+    prepared = PreparedOrchestrationStream(
+        first_event=first, queue=asyncio.Queue(), task=asyncio.create_task(slow_result()),
+        app_id="b62",
+    )
+    records = [json.loads(line) async for line in service.iter_ndjson(prepared)]
+    assert any("heartbeat" in record for record in records)
+    assert not any(record.get("ok") is False for record in records)
+    assert records[-1]["orchestration"]["execution"]["answer"] == "long wait answer"
+
+
+@pytest.mark.asyncio
+async def test_non_pc_stream_gains_liveness_and_legacy_json_bytes_are_unchanged(monkeypatch):
     import app.orchestration_service as module
     from padiem_ai_core.orchestration_events import OrchestrationEvent, OrchestrationEventKind
     first = OrchestrationEvent(
@@ -1207,10 +1259,13 @@ async def test_non_pc_ndjson_and_legacy_json_bytes_are_unchanged(monkeypatch):
     prepared = PreparedOrchestrationStream(
         first_event=first, queue=asyncio.Queue(), task=asyncio.create_task(result()), app_id="b62",
     )
-    actual = "".join([line async for line in service.iter_ndjson(prepared)])
-    expected = json.dumps({"ok": True, "event": first.to_public_dict()}, ensure_ascii=False, separators=(",", ":"))+"\n"
-    expected += '{"ok":true,"orchestration":{"execution":{"answer":"legacy"}}}\n'
-    assert actual.encode() == expected.encode()
+    records = [json.loads(line) async for line in service.iter_ndjson(prepared)]
+    # #5895: the first and terminal lines stay byte-exact for a non-PC stream;
+    # what may now sit between them is liveness only. Heartbeat records are
+    # presentation and never counted as execution progress.
+    assert records[0]["event"]["event_id"] == "evt_legacy"
+    assert records[-1] == {"ok": True, "orchestration": {"execution": {"answer": "legacy"}}}
+    assert all("heartbeat" in item for item in records[1:-1])
     payload = make_valid_payload()
     response = await OrchestrationEngineService(
         runtime_factory=lambda _: MockEngineRuntime(), b14_service_bound=True,
@@ -2060,7 +2115,7 @@ async def test_drives_decision_invokes_real_handler_and_finishes(
                      for stage, state in stages]
         assert positions == sorted(positions), output
         assert "state=enter guard_injected=false" in output
-        assert "stage=handler_wait_for tool=claw.pc.query_drives state=enter timeout=300.0" in output
+        assert "stage=handler_wait_for tool=claw.pc.query_drives state=enter timeout=None" in output
         outer = next(line for line in output.splitlines() if "stage=tool_runtime_wait_for" in line and "state=enter" in line)
         assert " timeout=" in outer
         assert device_id not in output
@@ -2202,7 +2257,8 @@ async def test_pc_turn_classification_keeps_heartbeat_opt_in(monkeypatch, pc_pro
         app_id="padiem-chat", pc_progress=pc_progress, pc_turn=True)
     service = OrchestrationEngineService(runtime_factory=lambda _: object(), b14_service_bound=True)
     records = [json.loads(line) async for line in service.iter_ndjson(prepared)]
-    assert timeouts == [module.PC_STREAM_HEARTBEAT_SECONDS if pc_progress else None]
+    # #5895: the wait is bounded on every stream, not only the PC opt-in one.
+    assert timeouts == [module.PC_STREAM_HEARTBEAT_SECONDS]
     assert records[-1]["error"]["metadata"]["stage"] == "pc_stream_run"
 
 
@@ -2249,7 +2305,7 @@ async def test_byok_missing_reference_is_refused_without_company_runtime_fallbac
 @pytest.mark.asyncio
 async def test_byok_real_core_runtime_and_binding_receive_one_user_attempt():
     from padiem_ai_core import B14ExecutionClient, B14ExecutionConfig, ExecutionRuntime
-    from test_cloudflare_transport import transport_for, FakeResponse, valid_b14_json, B14_INTERNAL_ORIGIN
+    from tests.test_cloudflare_transport import transport_for, FakeResponse, valid_b14_json, B14_INTERNAL_ORIGIN
     ref = 'unit-opaque-request-credential'
     transport, binding, factory = transport_for(response=FakeResponse(chunks=[valid_b14_json('user answer')]))
     client = B14ExecutionClient(B14ExecutionConfig(base_url=B14_INTERNAL_ORIGIN), transport=transport)
@@ -2263,7 +2319,8 @@ async def test_byok_real_core_runtime_and_binding_receive_one_user_attempt():
     assert len(binding.calls) == 1
     sent = json.loads(factory.calls[0].kwargs['body'])
     assert sent['user_credential_ref'] == ref
-    assert sent['business14']['allow_external_fallback'] is False
+    # B5: the retired fallback knob no longer travels on the wire.
+    assert 'allow_external_fallback' not in sent['business14']
     assert sent['business14']['max_retries'] == 0
     assert 'byok_selection' not in json.dumps(sent)
     assert ref not in json.dumps(response.body)

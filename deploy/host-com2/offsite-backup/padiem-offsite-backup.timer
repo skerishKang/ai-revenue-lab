@@ -1,0 +1,10 @@
+[Unit]
+Description=PADIEM COM2 offsite backup daily at 05:10 UTC
+
+[Timer]
+OnCalendar=*-*-* 05:10:00
+Persistent=true
+Unit=padiem-offsite-backup.service
+
+[Install]
+WantedBy=timers.target

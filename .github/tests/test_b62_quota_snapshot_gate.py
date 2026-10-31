@@ -211,14 +211,26 @@ def test_snapshot_job_is_dispatch_only() -> None:
 
 def test_exact_main_guard_is_mandatory() -> None:
     text = _workflow_text()
-    assert 'test "$(git rev-parse HEAD)" = "${{ github.event.inputs.target_sha }}"' in text
-    assert 'test "$(git rev-parse origin/main)" = "${{ github.event.inputs.target_sha }}"' in text
+    # The snapshot job checks out and compares the normalized value the target_sha
+    # guard publishes in the contract job, never the raw dispatch input.
+    normalized = '${{ needs.source-contract.outputs.target_sha }}'
+    assert 'test "$(git rev-parse HEAD)" = "' + normalized + '"' in text
+    assert 'test "$(git rev-parse origin/main)" = "' + normalized + '"' in text
     assert "EXACT_MAIN_SNAPSHOT=PASS" in text
     assert "git fetch" in text
 
 
 def test_workflow_has_no_deploy_or_mutation_command() -> None:
     text = _workflow_text()
+    # The shared target_sha guard is an offline input-shape check: its body names
+    # the Actions output files, not the Cloudflare API. Its exact text is pinned by
+    # test_b62_verify_target_sha.py, so this scan cuts it out instead of loosening.
+    text = re.sub(
+        r"      # The body below is copied.*?\n          B62_TARGET_SHA_GUARD\n",
+        "",
+        text,
+        flags=re.S,
+    )
     for forbidden in (
         "pywrangler",
         "wrangler",

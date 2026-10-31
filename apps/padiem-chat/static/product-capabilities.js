@@ -68,11 +68,11 @@
       unavailable: "사용 불가",
       upgrade: "업그레이드",
       adminNote: "관리자 전용 모델로 호출합니다.",
-      free: ["Padiem Free", ""],
-      plus: ["Padiem Plus", ""],
-      pro: ["Padiem Pro", ""],
-      max: ["Padiem Max", ""],
-      admin: ["Padiem 관리자", ""],
+      free: "Padiem Free",
+      plus: "Padiem Plus",
+      pro: "Padiem Pro",
+      max: "Padiem Max",
+      admin: "Padiem 관리자",
     }),
     en: Object.freeze({
       label: "AI tier",
@@ -83,11 +83,11 @@
       unavailable: "Unavailable",
       upgrade: "Upgrade",
       adminNote: "Calls the admin-only model.",
-      free: ["Padiem Free", ""],
-      plus: ["Padiem Plus", ""],
-      pro: ["Padiem Pro", ""],
-      max: ["Padiem Max", ""],
-      admin: ["Padiem 관리자", ""],
+      free: "Padiem Free",
+      plus: "Padiem Plus",
+      pro: "Padiem Pro",
+      max: "Padiem Max",
+      admin: "Padiem Admin",
     }),
   });
 
@@ -1686,7 +1686,7 @@
     button.setAttribute("aria-pressed", tier === selectedTier && available ? "true" : "false");
 
     const title = document.createElement("strong");
-    title.textContent = copy[tier][0];
+    title.textContent = copy[tier];
     const state = document.createElement("span");
     state.className = "mode-option-state mode-option-state--" + status;
     const icon = document.createElement("span");
@@ -1727,7 +1727,7 @@
     syncAdminOption();
     const copy = currentModeCopy();
     const custom = customSelection ? customCopy() : null;
-    const activeLabel = custom ? custom.option : copy[selectedTier][0];
+    const activeLabel = custom ? custom.option : copy[selectedTier];
     const label = modePill.querySelector("span:last-child");
     if (label) label.textContent = activeLabel;
     modePill.setAttribute("aria-label", `${copy.label}: ${activeLabel}`);
@@ -1751,7 +1751,7 @@
       button.setAttribute("aria-pressed", tier === selectedTier && available && !custom ? "true" : "false");
       const optionTitle = button.querySelector("strong");
       const stateEl = button.querySelector(".mode-option-state");
-      if (optionTitle) optionTitle.textContent = copy[tier][0];
+      if (optionTitle) optionTitle.textContent = copy[tier];
       if (stateEl) {
         stateEl.className = "mode-option-state mode-option-state--" + status;
         stateEl.textContent = "";
@@ -1993,15 +1993,34 @@
     return deployment;
   }
 
+  async function readAuthStatusOnce() {
+    const response = await nativeFetch("/api/auth/status", {
+      headers: { "Accept": "application/json" },
+      cache: "no-store",
+    });
+    const data = await response.json().catch(() => null);
+    return { ok: response.ok, data };
+  }
+
+  async function readAuthStatusWithRetry() {
+    // #6114: a Python Worker restart can eat one status read (1101/1102). A
+    // request that produced NO answer never counts as signed-out: ask once
+    // more before the projection reports unreachable. A definitive guest
+    // answer (a 200 that says ready and not authenticated) is not re-asked.
+    for (let attempt = 0; attempt < 2; attempt += 1) {
+      try {
+        const answer = await readAuthStatusOnce();
+        if (answer.ok) return answer;
+      } catch (_) { /* no answer yet; one more ask */ }
+    }
+    return { ok: false, data: null };
+  }
+
   async function readAuthFresh() {
     let nextAuth = EMPTY_AUTH;
     try {
-      const response = await nativeFetch("/api/auth/status", {
-        headers: { "Accept": "application/json" },
-        cache: "no-store",
-      });
-      const data = await response.json().catch(() => null);
-      nextAuth = response.ok ? projectAuth(data) : UNREACHABLE_AUTH;
+      const answer = await readAuthStatusWithRetry();
+      nextAuth = answer.ok ? projectAuth(answer.data) : UNREACHABLE_AUTH;
     } catch (_) {
       nextAuth = UNREACHABLE_AUTH;
     }

@@ -7,23 +7,21 @@
   that belongs to that class, and verifies the result with a real HTTP 200.
 
   Failure classes
-    healthy                 - the MeshCentral HTTP probe answered 200.
+    healthy                 - the COM2-side remote probe answered HTTP 200.
     com2_ssh_unreachable    - the COM2 host did not answer on the SSH port.
-    tunnel_listener_down    - the COM1 loopback forward port is not accepting.
-    tunnel_broken           - COM2 answers 200 on its own loopback, but the
-                              COM1 forward does not deliver it.
-    com2_mesh_down          - COM2 itself does not serve MeshCentral.
+    com2_mesh_down          - COM2 is reachable but does not serve MeshCentral.
     remote_probe_failed     - COM2 is reachable but the remote probe failed.
                               The cause is recorded (ssh_timeout, ssh_auth_failed,
                               ssh_connect_failed, probe_no_verdict, ...), and the
                               COM2 service state is marked unverified. HTTP 000
                               alone never plans a COM2 unit restart.
 
+  The legacy COM1 tunnel classes (tunnel_listener_down, tunnel_broken) and the
+  restart_tunnel action were removed with #5643: the agent reaches COM2 through
+  its own ingress (mesh.padiem.net), not through a COM1 forward. The local HTTP
+  probe now targets the direct COM2 path and is recorded as evidence only.
+
   Recovery actions (one per class, never combined)
-    restart_tunnel          - stop the detached forward transport (only when it
-                              is the ssh process that owns the configured
-                              loopback port), restart the forward task, wait
-                              for the listener, then verify HTTP 200.
     start_keeper            - start the COM2 WSL keeper process only.
     restart_mesh_service    - restart the COM2 WSL MeshCentral unit only.
     record_only             - record the state and wait for the next check.
@@ -91,15 +89,16 @@ function Get-Config {
     $cfg = $raw | ConvertFrom-Json
 
     foreach ($name in @('com2_host', 'com2_ssh_port', 'com2_ssh_user', 'com2_ssh_key',
-            'com2_probe_script', 'tunnel_local_host', 'tunnel_local_port', 'tunnel_task',
-            'health_log', 'recovery_log', 'lock_file', 'state_file', 'status_file')) {
+            'com2_probe_script', 'health_log', 'recovery_log', 'lock_file', 'state_file',
+            'status_file')) {
         if (-not $cfg.PSObject.Properties[$name]) { throw "config key missing: $name" }
     }
 
     Set-ConfigDefault -Cfg $cfg -Name 'mesh_scheme' -Value 'https'
+    Set-ConfigDefault -Cfg $cfg -Name 'com2_mesh_port' -Value 4443
     if (-not $cfg.PSObject.Properties['mesh_url']) {
         $cfg | Add-Member -NotePropertyName 'mesh_url' -NotePropertyValue (
-            "{0}://{1}:{2}/" -f $cfg.mesh_scheme, $cfg.tunnel_local_host, $cfg.tunnel_local_port)
+            "{0}://{1}:{2}/" -f $cfg.mesh_scheme, $cfg.com2_host, $cfg.com2_mesh_port)
     }
     Set-ConfigDefault -Cfg $cfg -Name 'recovery_lock_seconds' -Value 600
     Set-ConfigDefault -Cfg $cfg -Name 'recovery_max_attempts' -Value 3
@@ -111,10 +110,8 @@ function Get-Config {
     # be observed before the deadline.
     Set-ConfigDefault -Cfg $cfg -Name 'max_pending_seconds' -Value 900
     Set-ConfigDefault -Cfg $cfg -Name 'ssh_timeout_seconds' -Value 15
-    Set-ConfigDefault -Cfg $cfg -Name 'tunnel_restart_wait_seconds' -Value 20
     Set-ConfigDefault -Cfg $cfg -Name 'verify_timeout_seconds' -Value 30
     Set-ConfigDefault -Cfg $cfg -Name 'tcp_timeout_ms' -Value 3000
-    Set-ConfigDefault -Cfg $cfg -Name 'tunnel_process_name' -Value 'ssh.exe'
     Set-ConfigDefault -Cfg $cfg -Name 'com2_wsl_distro' -Value 'Ubuntu'
     Set-ConfigDefault -Cfg $cfg -Name 'com2_mesh_unit' -Value 'padiem-meshcentral.service'
     Set-ConfigDefault -Cfg $cfg -Name 'com2_keeper_pattern' -Value '[p]adiem-wsl-keepalive'
@@ -148,7 +145,6 @@ function Write-HealthLine {
         "mode=$($Record.mode)",
         "class=$($Record.class)",
         "com2_ssh=$($Record.com2_ssh)",
-        "tunnel_tcp=$($Record.tunnel_tcp)",
         "mesh_http=$($Record.mesh_http)",
         "remote_http=$($Record.remote_http)",
         "remote_keeper=$($Record.remote_keeper)",
@@ -347,14 +343,12 @@ function Invoke-RemoteProbe {
 function Get-LiveProbes {
     param($Cfg)
     $com2Ssh = Test-TcpPort -TargetHost $Cfg.com2_host -Port ([int]$Cfg.com2_ssh_port) -TimeoutMs ([int]$Cfg.tcp_timeout_ms)
-    $tunnel = Test-TcpPort -TargetHost $Cfg.tunnel_local_host -Port ([int]$Cfg.tunnel_local_port) -TimeoutMs ([int]$Cfg.tcp_timeout_ms)
     $mesh = Get-MeshHttpCode -Url $Cfg.mesh_url -TimeoutSeconds 8
     $remote = @{ ok = $false; http = '000'; keeper = 'unknown'; unit = 'unknown';
         error = 'not probed'; error_kind = 'not_probed' }
     if ($com2Ssh) { $remote = Invoke-RemoteProbe -Cfg $Cfg }
     return @{
         com2_ssh = $com2Ssh
-        tunnel_tcp = $tunnel
         mesh_http = $mesh.code
         mesh_exit = $mesh.exit
         remote_ok = $remote.ok
@@ -375,7 +369,6 @@ function Get-SimulatedProbes {
     if (-not $remoteOk -and -not $cause) { $cause = 'fixture_remote_probe_failed' }
     return @{
         com2_ssh = [bool]$fx.com2_ssh
-        tunnel_tcp = [bool]$fx.tunnel_tcp
         mesh_http = if ($fx.PSObject.Properties['mesh_http']) { [string]$fx.mesh_http } else { '000' }
         mesh_exit = 0
         remote_ok = $remoteOk
@@ -399,13 +392,14 @@ function Get-Com2StateSource {
 
 # --- classification -------------------------------------------------------
 
+# The remote probe is the authority after the tunnel retirement: it is COM2's
+# own loopback answer, read over SSH. The local mesh_http probe records the
+# direct-path view and is evidence only; it does not decide the class.
 function Get-FailureClass {
     param($Probes)
-    if ($Probes.mesh_http -eq '200') { return 'healthy' }
     if (-not $Probes.com2_ssh) { return 'com2_ssh_unreachable' }
-    if (-not $Probes.tunnel_tcp) { return 'tunnel_listener_down' }
     if (-not $Probes.remote_ok) { return 'remote_probe_failed' }
-    if ($Probes.remote_http -eq '200') { return 'tunnel_broken' }
+    if ($Probes.remote_http -eq '200') { return 'healthy' }
     return 'com2_mesh_down'
 }
 
@@ -413,8 +407,6 @@ function Get-PlannedAction {
     param([string]$FailureClass, $Probes)
     switch ($FailureClass) {
         'healthy' { return 'none' }
-        'tunnel_listener_down' { return 'restart_tunnel' }
-        'tunnel_broken' { return 'restart_tunnel' }
         'com2_mesh_down' {
             # Only a directly observed keeper/unit state may plan an action.
             # An unknown unit state or HTTP 000 by itself is never enough.
@@ -432,7 +424,7 @@ function Get-PlannedAction {
 function Get-RecordOnlyDetail {
     param([string]$FailureClass, $Probes)
     switch ($FailureClass) {
-        'healthy' { return 'no action: MeshCentral HTTP 200' }
+        'healthy' { return 'no action: the COM2 remote probe answered HTTP 200' }
         'com2_ssh_unreachable' { return 'record only: COM2 SSH TCP probe failed' }
         'remote_probe_failed' {
             $why = if ($Probes.remote_error) { $Probes.remote_error } else { 'unknown' }
@@ -456,78 +448,6 @@ function Get-RecordOnlyDetail {
 }
 
 # --- actions --------------------------------------------------------------
-
-function Get-ListenerProcessId {
-    param([string]$TargetHost, [int]$Port)
-    $getNet = Get-Command Get-NetTCPConnection -ErrorAction SilentlyContinue
-    if ($getNet) {
-        $conn = Get-NetTCPConnection -LocalAddress $TargetHost -LocalPort $Port -State Listen -ErrorAction SilentlyContinue |
-            Select-Object -First 1
-        if ($conn) { return [int]$conn.OwningProcess }
-    }
-    $lines = & netstat.exe -ano -p tcp 2>$null
-    foreach ($line in $lines) {
-        if ($line -match ("^\s*TCP\s+" + [regex]::Escape($TargetHost) + ":" + $Port + "\s+\S+\s+LISTENING\s+(\d+)\s*$")) {
-            return [int]$Matches[1]
-        }
-    }
-    return 0
-}
-
-function Stop-StaleTunnelProcess {
-    param($Cfg)
-    $listenerPid = Get-ListenerProcessId -TargetHost $Cfg.tunnel_local_host -Port ([int]$Cfg.tunnel_local_port)
-    if (-not $listenerPid) { return @{ ok = $true; detail = 'no listener to stop' } }
-    $proc = Get-CimInstance Win32_Process -Filter ("ProcessId={0}" -f $listenerPid) -ErrorAction SilentlyContinue
-    if (-not $proc) { return @{ ok = $false; detail = ('listener pid {0} is not inspectable' -f $listenerPid) } }
-    if ([string]$proc.Name -ne [string]$Cfg.tunnel_process_name) {
-        return @{ ok = $false; detail = ('port is held by {0} (pid {1}), not by the configured forward transport' -f $proc.Name, $listenerPid) }
-    }
-    $cmd = [string]$proc.CommandLine
-    if ($cmd -notmatch '-L' -or $cmd -notmatch ([regex]::Escape([string]$Cfg.tunnel_local_port))) {
-        return @{ ok = $false; detail = ('listener pid {0} does not match the configured forward' -f $listenerPid) }
-    }
-    try {
-        Stop-Process -Id $listenerPid -Force -ErrorAction Stop
-    } catch {
-        return @{ ok = $false; detail = ('could not stop stale forward pid {0}: {1}' -f $listenerPid, $_.Exception.Message) }
-    }
-    $deadline = (Get-Date).AddSeconds(5)
-    while ((Get-Date) -lt $deadline) {
-        if (-not (Get-ListenerProcessId -TargetHost $Cfg.tunnel_local_host -Port ([int]$Cfg.tunnel_local_port))) {
-            return @{ ok = $true; detail = ('stopped stale forward pid {0}' -f $listenerPid) }
-        }
-        Start-Sleep -Milliseconds 500
-    }
-    return @{ ok = $false; detail = ('stopped forward pid {0} but the port is still held' -f $listenerPid) }
-}
-
-function Restart-Tunnel {
-    param($Cfg, [switch]$Execute)
-    if (-not $Execute) { return @{ ok = $true; detail = 'planned: restart the COM1 SSH forward task only' } }
-    $details = @()
-    try { Stop-ScheduledTask -TaskName $Cfg.tunnel_task -ErrorAction SilentlyContinue } catch { }
-    $stale = Stop-StaleTunnelProcess -Cfg $Cfg
-    if (-not $stale.ok) { return @{ ok = $false; detail = $stale.detail } }
-    $details += $stale.detail
-    Start-Sleep -Seconds 2
-    try {
-        Start-ScheduledTask -TaskName $Cfg.tunnel_task -ErrorAction Stop
-        $details += ('started task {0}' -f $Cfg.tunnel_task)
-    } catch {
-        return @{ ok = $false; detail = ('restart of task {0} failed: {1}' -f $Cfg.tunnel_task, $_.Exception.Message) }
-    }
-    $deadline = (Get-Date).AddSeconds([int]$Cfg.tunnel_restart_wait_seconds)
-    while ((Get-Date) -lt $deadline) {
-        if (Test-TcpPort -TargetHost $Cfg.tunnel_local_host -Port ([int]$Cfg.tunnel_local_port) -TimeoutMs 1000) {
-            $details += 'forward listener is up'
-            return @{ ok = $true; detail = ($details -join '; ') }
-        }
-        Start-Sleep -Seconds 2
-    }
-    $details += 'forward listener did not come up in time'
-    return @{ ok = $false; detail = ($details -join '; ') }
-}
 
 function Invoke-RemoteCommand {
     param($Cfg, [string]$Command, [switch]$Execute)
@@ -571,7 +491,6 @@ function Restart-Com2MeshService {
 function Invoke-RecoveryAction {
     param([string]$Action, $Probes, $Cfg, [switch]$Execute)
     switch ($Action) {
-        'restart_tunnel' { return Restart-Tunnel -Cfg $Cfg -Execute:$Execute }
         'start_keeper' { return Start-Com2Keeper -Cfg $Cfg -Execute:$Execute }
         'restart_mesh_service' { return Restart-Com2MeshService -Cfg $Cfg -Execute:$Execute }
         default { return @{ ok = $true; detail = (Get-RecordOnlyDetail -FailureClass (Get-FailureClass -Probes $Probes) -Probes $Probes) } }
@@ -804,8 +723,7 @@ try {
     $http200ObservedSec = ''
 
     $execute = ($Mode -eq 'Live') -and (-not $DryRun) -and
-        ($plannedAction -eq 'restart_tunnel' -or $plannedAction -eq 'start_keeper' -or
-         $plannedAction -eq 'restart_mesh_service')
+        ($plannedAction -eq 'start_keeper' -or $plannedAction -eq 'restart_mesh_service')
 
     if ($failureClass -eq 'healthy') {
         $action = 'none'
@@ -1061,7 +979,6 @@ try {
         executed = [bool]$executed
         class = $failureClass
         com2_ssh = $(if ($probes.com2_ssh) { 'OK' } else { 'FAIL' })
-        tunnel_tcp = $(if ($probes.tunnel_tcp) { 'OK' } else { 'FAIL' })
         mesh_http = $probes.mesh_http
         remote_ok = [bool]$probes.remote_ok
         remote_http = $probes.remote_http
@@ -1141,7 +1058,6 @@ try {
                 executed = $false
                 class = 'engine_error'
                 com2_ssh = 'UNKNOWN'
-                tunnel_tcp = 'UNKNOWN'
                 mesh_http = '000'
                 remote_ok = $false
                 remote_http = '000'

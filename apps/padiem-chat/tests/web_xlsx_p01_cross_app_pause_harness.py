@@ -67,6 +67,10 @@ def _load_b62_app():
 
 
 _load_b62_app()
+# The Engine owns the app package in this subprocess. Chat also has a small
+# number of absolute app imports; resolve those missing modules from Chat.
+# Engine modules already imported above keep their original identities.
+sys.modules["app"].__path__.append(str(CHAT / "app"))
 
 import httpx  # noqa: E402
 from chatapp.app_factory import create_app  # noqa: E402
@@ -386,35 +390,36 @@ async def run() -> int:
         path=f"/api/claw/office/web-selections/{ref}/start-p01", payload={},
     )
     check(started.status_code == 202,
-          f"start {started.status_code} {started.text[:200]}")
-    check(started.json()["status"] == "waiting_p01", "start status")
+          f"start {started.status_code} {started.text[:200]} "
+          f"stages={[event.get('stage') for event in events]}")
+    # Owner decision 2026-10-28: the lane is pre-delegated, so the Engine
+    # completes the tool directly and B62 commits a completion, not a pause.
+    check(started.json()["status"] == "completed", "start status")
     check(started.json()["processing_started"] is False, "no processing")
     check(started.json()["workcopy_created"] is False, "no workcopy at READ consent")
-    check(binding.calls and binding.calls[0]["engine_status"] == 202,
-          "Engine must answer the real pause contract")
+    check(binding.calls and binding.calls[0]["engine_status"] == 200,
+          "Engine must answer the real completed contract")
     check(binding.calls[0]["payload"]["app_id"] == "padiem-web-xlsx-p01",
           "the lane's app id must be dispatched")
-    print("CROSS_APP_ENGINE_PAUSE_ISSUED=PASS")
+    print("CROSS_APP_ENGINE_COMPLETED=PASS")
 
     after = await call(
         app, settings, path=f"/api/claw/office/web-selections/{ref}/p01-status",
     )
-    check(after.json()["status"] == "waiting_p01", "post-start status")
+    check(after.json()["status"] == "completed", "post-start status")
     check(after.json()["owner_decision_enabled"] in (True, False),
           "owner decision projection must be boolean")
 
     rows = conn.execute(
         "SELECT status, continuation_ref, pause_id FROM claw_web_xlsx_p01_requests"
     ).fetchall()
-    check(len(rows) == 1 and rows[0]["status"] == "waiting_p01",
-          "exactly one committed B62 request")
-    check(bool(rows[0]["continuation_ref"]) and bool(rows[0]["pause_id"]),
-          "Engine continuation must be recorded")
-    continuations = conn.execute(
-        "SELECT app_id, state FROM padiem_web_xlsx_tool_continuations"
-    ).fetchall()
-    check(len(continuations) == 1 and continuations[0]["state"] == "active",
-          "exactly one durable Engine continuation")
+    check(len(rows) == 1 and rows[0]["status"] == "dispatching",
+          "exactly one committed B62 request (one-shot reservation consumed)")
+    # The pause/continuation shape is unreachable for this lane now (Owner
+    # decision 2026-10-28): no approval pause is issued, so no continuation is
+    # recorded and nothing is waiting for an owner decision.
+    check(rows[0]["continuation_ref"] in (None, "") and rows[0]["pause_id"] in (None, ""),
+          "a completed pre-delegated request carries no continuation")
 
     # Read consent is not a workcopy/edit grant, and the original stays intact.
     workcopies = conn.execute(
@@ -435,10 +440,9 @@ async def run() -> int:
     conn.close()
 
     print("CROSS_APP_B62_REQUEST_COMMITTED=PASS")
-    print("CROSS_APP_ENGINE_CONTINUATION_DURABLE=PASS")
     print("CROSS_APP_DIAGNOSTIC_NO_LEAK=PASS")
     print("READ_IS_NOT_WRITE=PASS")
-    print("WEB_XLSX_P01_CROSS_APP_PAUSE=PASS")
+    print("WEB_XLSX_P01_CROSS_APP_COMPLETED=PASS")
     return 0
 
 
@@ -446,7 +450,7 @@ def main() -> int:
     try:
         return asyncio.run(run())
     except HarnessFailure as exc:
-        print("WEB_XLSX_P01_CROSS_APP_PAUSE=FAIL", file=sys.stderr)
+        print("WEB_XLSX_P01_CROSS_APP_COMPLETED=FAIL", file=sys.stderr)
         print(f"REASON={exc}", file=sys.stderr)
         return 1
 

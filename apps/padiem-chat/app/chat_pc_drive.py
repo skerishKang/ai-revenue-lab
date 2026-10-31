@@ -197,6 +197,36 @@ def build_chat_pc_files_agent_plan(*, list_only: bool = False) -> dict[str, Any]
     return {"agent_id": CHAT_PC_QUERY_AGENT_ID, "steps": steps}
 
 
+def build_chat_pc_files_write_agent_plan() -> dict[str, Any]:
+    """The write plan the Claw product sends when the owner asks to change a file.
+
+    The three steps are the canonical write shape the Engine admits as
+    ``files_write``. The owner's request is the authority: no confirmation step
+    is staged here, and each step's own command copies what it replaces before
+    anything changes.
+    """
+    return {
+        "agent_id": CHAT_PC_QUERY_AGENT_ID,
+        "steps": [
+            {
+                "step_id": "write_file",
+                "objective": "Create or replace one file inside the approved folder",
+                "tool_id": "claw.pc.write_file",
+            },
+            {
+                "step_id": "move_file",
+                "objective": "Move or rename one file inside the approved folder",
+                "tool_id": "claw.pc.move_file",
+            },
+            {
+                "step_id": "delete_file",
+                "objective": "Delete one file already copied to the backup folder",
+                "tool_id": "claw.pc.delete_file",
+            },
+        ],
+    }
+
+
 # #5573 (3-B-2): the closed PC tool set offered to a model on the streaming
 # lane. These names mirror the canonical Engine plan keys; the model's
 # arguments carry no authority, and the lane re-verifies the PC on entry.
@@ -224,6 +254,39 @@ CHAT_PC_TOOL_DEFINITIONS: tuple[ToolDefinition, ...] = (
     ),
 )
 
+#: The one extra tool a turn that asks for a change is offered. It is kept out
+#: of the read set above, so a turn that only asks what is there can never
+#: select a write.
+PC_WRITE_TOOL_DEFINITION = ToolDefinition(
+    name="files_write",
+    description=(
+        "Save, change, fix, move, rename or delete a file on the user's "
+        "verified PC when the user asks to write one. The previous contents "
+        "are kept as a backup, and the answer says which file changed and "
+        "where the backup is."
+    ),
+)
+
+#: The owner's own words that ask for a change. A request that only reads
+#: never matches, so opening the write lane is the request's own decision.
+_PC_WRITE_INTENT = re.compile(
+    r"(저장|써\s*줘|작성|고쳐|수정|바꿔|변경|옮겨|이동|이름.{0,6}바|지워|삭제"
+    r"|\b(save|write|fix|edit|rename|move|delete|remove)\b)",
+    re.IGNORECASE,
+)
+
+
+def pc_write_intent(user_text: Any) -> bool:
+    """True only when this turn's own words asked for a change."""
+    return isinstance(user_text, str) and bool(_PC_WRITE_INTENT.search(user_text))
+
+
+def pc_tools_for_turn(user_text: Any) -> tuple[ToolDefinition, ...]:
+    """The declared PC tools: always the read set, plus write when asked."""
+    return CHAT_PC_TOOL_DEFINITIONS + (
+        (PC_WRITE_TOOL_DEFINITION,) if pc_write_intent(user_text) else ()
+    )
+
 
 def chat_pc_plan_for_tool(tool_name: str) -> dict[str, Any] | None:
     """The canonical Engine plan a model-requested PC tool selects."""
@@ -233,6 +296,8 @@ def chat_pc_plan_for_tool(tool_name: str) -> dict[str, Any] | None:
         return build_chat_pc_files_agent_plan(list_only=True)
     if tool_name == "files":
         return build_chat_pc_files_agent_plan(list_only=False)
+    if tool_name == "files_write":
+        return build_chat_pc_files_write_agent_plan()
     return None
 
 
@@ -280,6 +345,8 @@ def _tool_arguments_for_plan(
         key = "files"
     elif "claw.pc.list_files" in tool_ids:
         key = "files_list"
+    elif "claw.pc.write_file" in tool_ids:
+        key = "files_write"
     else:
         return None
     return {key: {"device_id": device_id}}
@@ -454,12 +521,21 @@ async def chat_pc_tools_available(request: Request, *, uid: str | None) -> bool:
 
 async def resolve_chat_pc_stream_context(
     request: Request, *, uid: str, requested_device_id: str | None = None,
+    user_text: str | None = None,
 ) -> dict | None:
-    """Server-authored context only; no browser field or Broker registration grants it."""
+    """Server-authored context only; no browser field or Broker registration grants it.
+
+    #5573: the PC this turn *names* is the PC this turn runs on. The composer
+    attaches the last-chosen device id to every request, so that id is the
+    screen's memory rather than this sentence's choice - when the words answer
+    "which PC", the stale id neither picks the machine nor withholds the tools.
+    A turn that names nothing keeps the browser's choice exactly as before.
+    """
     from .pc_work_context import (
         SAVED_SELECTION_SELECTED, SAVED_SELECTION_UNAVAILABLE,
-        read_saved_device_selection, resolve_pc_work_context,
+        linked_pc_targets, read_saved_device_selection, resolve_pc_work_context,
     )
+    from .pc_device_pairing_store import link_named_in
     try:
         session, subject_id, workspace_id = await _resolve_chat_owner(request, uid)
         if session is None or not subject_id:
@@ -468,6 +544,13 @@ async def resolve_chat_pc_stream_context(
         if selection.status == SAVED_SELECTION_UNAVAILABLE:
             return None
         selected = selection.device_id if selection.status == SAVED_SELECTION_SELECTED else None
+        named_device_id = None
+        if isinstance(user_text, str) and user_text.strip():
+            links = await linked_pc_targets(request, uid)
+            if links:
+                named_device_id = link_named_in(user_text, links)
+        if named_device_id is not None:
+            selected = named_device_id
         context = await resolve_pc_work_context(
             request, owner_id=uid, workspace_id=workspace_id,
             session_id=session.session_id, selected_device_id=selected,
@@ -477,7 +560,11 @@ async def resolve_chat_pc_stream_context(
         device_id = context.execution_device_id
         if not is_pc_device_id(device_id):
             return None
-        if requested_device_id is not None and requested_device_id != device_id:
+        if (
+            named_device_id is None
+            and requested_device_id is not None
+            and requested_device_id != device_id
+        ):
             return None
         if not await _check_mesh_grant(request, session, device_id=device_id):
             return None
@@ -490,6 +577,10 @@ async def resolve_chat_pc_stream_context(
         scopes = ["query_drives"]
         if error is None and target is not None:
             scopes.extend(["files_list", "files"])
+            # The owner asked to change something: the same turn may write,
+            # move or delete, and each step's command backs up first.
+            if pc_write_intent(user_text):
+                scopes.append("files_write")
         return {"pc_tools": {"device_id": device_id, "allowed_scopes": scopes},
                 "subject_id": subject_id, "workspace_id": workspace_id}
     except Exception:
@@ -654,9 +745,8 @@ async def execute_chat_pc_drive_lane(
     here, so both the JSON and the SSE call sites share them.
 
     ``user_text`` remains the stored user turn. ``execution_user_text`` is the
-    resolved policy text used for model and Engine prompts, so a hidden alias
-    removed by the policy never reaches the model; absent, it falls back to
-    ``user_text`` for existing callers.
+    resolved policy text used for model and Engine prompts; absent, it falls
+    back to ``user_text`` for existing callers.
 
     ``selected_tool`` is the tool name the model requested — the only entry
     this lane has (#5573 3-C-2). The plan is derived from the name and
@@ -709,14 +799,29 @@ async def execute_chat_pc_drive_lane(
         raise
     from .pc_work_context import (
         SAVED_SELECTION_SELECTED, SAVED_SELECTION_UNAVAILABLE,
-        read_saved_device_selection, render_pc_work_context,
+        linked_pc_targets, read_saved_device_selection, render_pc_work_context,
         resolve_pc_work_context,
     )
+    from .pc_device_pairing_store import link_named_in
 
     saved_selection = await read_saved_device_selection(
         request, owner_id=uid, workspace_id=workspace_id,
     )
-    if device_id is not None:
+    # #5573: the words of this turn pick the machine ahead of anything carried
+    # over. The composer sends the last-chosen PC on every request, so a request
+    # that says "컴2" while the screen still points at 컴1 has to run on 컴2 -
+    # otherwise a name can never choose anything, which is the whole reason an
+    # owner is allowed to name their PCs. A turn that names nothing keeps the
+    # browser's choice, and a new session keeps the saved preference ("the last
+    # PC I used"). Exactly one match decides; two names in one request decide
+    # nothing, and the ordinary ambiguity refusal is left to stand.
+    named_device_id = None
+    linked = await linked_pc_targets(request, uid)
+    if linked:
+        named_device_id = link_named_in(execution_user_text or user_text, linked)
+    if named_device_id is not None:
+        device_id = named_device_id
+    elif device_id is not None:
         if (
             saved_selection.status == SAVED_SELECTION_SELECTED
             and saved_selection.device_id != device_id

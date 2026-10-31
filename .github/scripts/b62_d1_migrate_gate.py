@@ -44,6 +44,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 from pathlib import Path
 import re
 import sqlite3
@@ -278,49 +279,112 @@ def binding_id(settings: Any, name: str) -> str:
     return database_id
 
 
-def _rows(payload: Any, expect: str) -> list[dict[str, Any]]:
+BOOKMARK_RE = re.compile(r"\A[A-Za-z0-9_-]{12,130}\Z")
+
+
+def bookmark_value(payload: Any) -> str:
+    """The time-travel bookmark from the Cloudflare GET .../time_travel/bookmark.
+
+    The real answer carries it under `result.bookmark`; the older shape used
+    `result.id`. A refusal prints only the key NAMES of the top level and of
+    `result` — never the bookmark, never a token value. The name pattern
+    includes hyphens (the Production form is four hyphen-separated groups).
+    """
+
+    if not isinstance(payload, dict):
+        raise GateError("D1_TIME_TRAVEL_BOOKMARK_UNAVAILABLE")
+    result = payload.get("result")
+    candidate = ""
+    if isinstance(result, dict):
+        candidate = str(result.get("bookmark") or result.get("id") or "")
+    if not BOOKMARK_RE.fullmatch(candidate):
+        top_keys = ",".join(sorted(str(key) for key in payload))
+        result_keys = (
+            ",".join(sorted(str(key) for key in result)) if isinstance(result, dict) else "-"
+        )
+        print(
+            f"B62_D1_GATE_BOOKMARK_KEYS top={top_keys} result={result_keys}",
+            file=sys.stderr,
+        )
+        raise GateError("D1_TIME_TRAVEL_BOOKMARK_UNAVAILABLE")
+    return candidate
+
+
+def cmd_bookmark(argv: argparse.Namespace) -> int:
+    bookmark_value(read_json(argv.response))
+    print("B62_D1_GATE_BOOKMARK=VALID_SHAPE")
+    print("PRODUCTION_MUTATION=0")
+    return 0
+
+
+def _rows(payload: Any, expect: str) -> list[list[dict[str, Any]]]:
     """Unwrap a `wrangler d1 execute --json` envelope into statement result blocks.
 
     Accepted shapes: the list-of-blocks wrangler prints, a single block, or the
-    Cloudflare `/query` result the older gates used.
+    Cloudflare `/query` result the older gates used. A block whose rows are
+    import statistics rather than query results is refused by name: the
+    `--file` path runs an import and answers with a count of statements, and
+    that would read as a schema with zero tables.
     """
 
     if isinstance(payload, dict) and isinstance(payload.get("result"), list):
         payload = payload["result"]
     if isinstance(payload, dict) and isinstance(payload.get("results"), list):
-        return [{str(key).lower(): value for key, value in row.items()}
-                for row in payload["results"]]
+        payload = [payload]
     if not isinstance(payload, list):
         raise GateError(f"B62_D1_GATE_{expect}_ENVELOPE_UNEXPECTED")
     blocks = []
     for item in payload:
         if not isinstance(item, dict) or not isinstance(item.get("results"), list):
             raise GateError(f"B62_D1_GATE_{expect}_ENVELOPE_UNEXPECTED")
-        blocks.append(
-            [{str(key).lower(): value for key, value in row.items()} for row in item["results"]]
-        )
+        rows = [
+            {str(key).lower(): value for key, value in row.items()} for row in item["results"]
+        ]
+        for row in rows:
+            if any("queries executed" in key for key in row):
+                raise GateError("B62_D1_GATE_IMPORT_STATS_NOT_ROWS")
+        blocks.append(rows)
     return blocks
 
 
-def snapshot_rows(payload: Any) -> tuple[set[str], set[str], set[str], bool]:
-    """(tables, columns, other, ledger_present) from one snapshot response."""
+def _single_block(payload: Any, expect: str) -> list[dict[str, Any]]:
+    """One statement per execute: the response must carry exactly one block.
 
-    blocks = _rows(payload, "SNAPSHOT")
-    if len(blocks) < 2:
-        raise GateError("B62_D1_GATE_SNAPSHOT_BLOCKS_UNEXPECTED")
-    schema, probe = blocks[0], blocks[1]
+    The first Production run proved that a two-statement file does not come
+    back as two blocks, so every read now sends one query and unwraps one
+    block here instead of guessing where a statement boundary fell.
+    """
+
+    blocks = _rows(payload, expect)
+    if len(blocks) != 1:
+        raise GateError(f"B62_D1_GATE_{expect}_BLOCKS_UNEXPECTED")
+    return blocks[0]
+
+
+def _schema_sets(schema_payload: Any) -> tuple[set[str], set[str], set[str]]:
     tables: set[str] = set()
     columns: set[str] = set()
     other: set[str] = set()
-    for row in schema:
-        kind, name, table = row.get("type"), row.get("name"), row.get("tbl_name")
+    for row in _single_block(schema_payload, "SNAPSHOT"):
+        kind, name = row.get("type"), row.get("name")
         if kind == "table":
             tables.add(str(name))
         elif kind == "index":
             other.add(str(name))
         elif kind in ("view", "trigger"):
             other.add(f"{kind}:{name}")
-    return tables, columns, other, len(probe) == 1
+    return tables, columns, other
+
+
+def snapshot_rows(schema_payload: Any, probe_payload: Any) -> tuple[set[str], set[str], set[str], bool]:
+    """(tables, columns, other, ledger_present) from the two split responses."""
+
+    tables, columns, other = _schema_sets(schema_payload)
+    return tables, columns, other, len(_single_block(probe_payload, "PROBE")) == 1
+
+
+def snapshot_tables(schema_payload: Any) -> set[str]:
+    return _schema_sets(schema_payload)[0]
 
 
 def ledger_rows(payload: Any) -> list[dict[str, Any]]:
@@ -473,7 +537,7 @@ def cmd_binding_id(argv: argparse.Namespace) -> int:
 
 
 def cmd_probe(argv: argparse.Namespace) -> int:
-    present = snapshot_rows(read_json(argv.snapshot))[3]
+    present = len(_single_block(read_json(argv.probe), "PROBE")) == 1
     print("yes" if present else "no")
     return 0
 
@@ -494,16 +558,20 @@ def cmd_inventory(argv: argparse.Namespace) -> int:
 
 
 def cmd_snapshot_sql(argv: argparse.Namespace) -> int:
-    # Two statements, both safe on a database with no ledger yet: the probe is
-    # what decides whether the ledger query may run at all, so a read-only pass
-    # never asks wrangler to create anything.
-    sql = (
+    # Two files, one statement each. Both are safe on a database with no ledger
+    # yet: the probe is what decides whether the ledger query may run at all, so
+    # a read-only pass never asks wrangler to create anything. One statement per
+    # execute because a two-statement file does not come back as two blocks.
+    schema_sql = (
         "SELECT type, name, tbl_name FROM sqlite_master "
         "WHERE type IN ('table','index','view','trigger') AND name NOT LIKE 'sqlite_%' "
         "ORDER BY type, name;\n"
+    )
+    probe_sql = (
         f"SELECT name FROM sqlite_master WHERE type = 'table' AND name = '{LEDGER_TABLE}';\n"
     )
-    Path(argv.out).write_text(sql, encoding="utf-8")
+    Path(argv.out).write_text(schema_sql, encoding="utf-8")
+    Path(argv.probe_out).write_text(probe_sql, encoding="utf-8")
     print("B62_D1_SNAPSHOT_QUERY=SCHEMA_AND_LEDGER_PROBE")
     print("PRODUCTION_MUTATION=0")
     return 0
@@ -519,7 +587,7 @@ def cmd_ledger_sql(argv: argparse.Namespace) -> int:
 
 def cmd_detail_sql(argv: argparse.Namespace) -> int:
     inventory = read_json(argv.inventory)
-    live_tables = snapshot_rows(read_json(argv.snapshot))[0]
+    live_tables = snapshot_tables(read_json(argv.snapshot))
     up_to = resolve_up_to(inventory, argv.up_to)
     extra = tuple(json.loads(Path(argv.plan).read_text(encoding="utf-8"))["apply"]) if argv.plan else ()
     tables = [
@@ -542,10 +610,32 @@ def cmd_detail_sql(argv: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_detail_merge(argv: argparse.Namespace) -> int:
+    """Join one-block-per-execute detail answers into the block list detail_rows reads.
+
+    Every detail statement runs as its own `--command` execute, so each part
+    file answers with exactly one block. Ordering is by the numeric part name
+    the workflow wrote, and a missing part is a refusal rather than a short
+    block list.
+    """
+
+    directory = Path(argv.dir)
+    parts = sorted(directory.glob("*.json"), key=lambda path: int(path.stem))
+    if not parts:
+        raise GateError("B62_D1_GATE_DETAIL_PARTS_MISSING")
+    blocks = [{"results": _single_block(read_json(path), "DETAIL")} for path in parts]
+    Path(argv.out).write_text(json.dumps(blocks, ensure_ascii=False), encoding="utf-8")
+    print(f"B62_D1_DETAIL_MERGED={len(blocks)}")
+    print("PRODUCTION_MUTATION=0")
+    return 0
+
+
 def cmd_classify(argv: argparse.Namespace) -> int:
     inventory = read_json(argv.inventory)
     up_to = resolve_up_to(inventory, argv.up_to)
-    tables, columns, _, ledger_present = snapshot_rows(read_json(argv.snapshot))
+    tables, columns, _, ledger_present = snapshot_rows(
+        read_json(argv.snapshot), read_json(argv.probe)
+    )
     if ledger_present:
         if not argv.ledger:
             # Reading the ledger is the whole point of a recorded run; a missing
@@ -575,6 +665,27 @@ def cmd_classify(argv: argparse.Namespace) -> int:
     print(f"B62_D1_PLAN_SEED={len(result['seed'])}")
     print(f"B62_D1_PLAN_APPLY={len(result['apply'])}")
     print(f"B62_D1_PLAN_BASELINE_FIRST_RUN={'YES' if result['baseline_first_run'] else 'NO'}")
+    # The plan by name, before any refusal: an operator reading the run needs
+    # the file list, not only the counts. Names only — never SQL text. The wide
+    # keyword scan here is report-only; the drop guard's own classification
+    # above is what gates execution.
+    migrations = Path(_app(argv.app)["migrations"])
+    wide_destructive = []
+    for name in result["apply"]:
+        text = strip_comments((migrations / name).read_text(encoding="utf-8")).upper()
+        if any(re.search(rf"\b{token}\b", text) for token in ("DROP", "ALTER", "DELETE", "UPDATE")):
+            wide_destructive.append(name)
+    report_lines = [
+        "B62_D1_PLAN_APPLY_FILES=" + ",".join(result["apply"]),
+        "B62_D1_PLAN_SEED_FILES=" + ",".join(result["seed"]),
+        "B62_D1_PLAN_APPLY_DESTRUCTIVE=" + ",".join(wide_destructive),
+    ]
+    for line in report_lines:
+        print(line)
+    step_summary = os.environ.get("GITHUB_STEP_SUMMARY")
+    if step_summary:
+        with open(step_summary, "a", encoding="utf-8") as handle:
+            handle.write("\n".join(report_lines) + "\n")
     if result["seed_without_object_proof"]:
         print("B62_D1_SEED_WITHOUT_OBJECT_PROOF=" + ",".join(result["seed_without_object_proof"]))
     for key, marker in (
@@ -649,10 +760,10 @@ def cmd_window(argv: argparse.Namespace) -> int:
 
 def cmd_report(argv: argparse.Namespace) -> int:
     before_tables, before_columns, before_other, before_ledger_present = snapshot_rows(
-        read_json(argv.before)
+        read_json(argv.before), read_json(argv.before_probe)
     )
     after_tables, after_columns, after_other, after_ledger_present = snapshot_rows(
-        read_json(argv.after)
+        read_json(argv.after), read_json(argv.after_probe)
     )
     delta = schema_diff(
         {"tables": before_tables, "columns": before_columns, "other": before_other},
@@ -701,10 +812,12 @@ def cmd_report(argv: argparse.Namespace) -> int:
 COMMANDS = {
     "inventory": cmd_inventory,
     "binding-id": cmd_binding_id,
+    "bookmark": cmd_bookmark,
     "probe": cmd_probe,
     "snapshot-sql": cmd_snapshot_sql,
     "ledger-sql": cmd_ledger_sql,
     "detail-sql": cmd_detail_sql,
+    "detail-merge": cmd_detail_merge,
     "classify": cmd_classify,
     "seed-sql": cmd_seed_sql,
     "window": cmd_window,
@@ -727,11 +840,15 @@ def build_parser() -> argparse.ArgumentParser:
     handle.add_argument("--settings", required=True)
     handle.add_argument("--binding", required=True)
 
+    handle = add("bookmark")
+    handle.add_argument("--response", required=True)
+
     handle = add("probe")
-    handle.add_argument("--snapshot", required=True)
+    handle.add_argument("--probe", required=True)
 
     handle = add("snapshot-sql")
     handle.add_argument("--out", required=True)
+    handle.add_argument("--probe-out", required=True)
 
     handle = add("ledger-sql")
     handle.add_argument("--out", required=True)
@@ -743,10 +860,15 @@ def build_parser() -> argparse.ArgumentParser:
     handle.add_argument("--up-to", default="")
     handle.add_argument("--plan")
 
+    handle = add("detail-merge")
+    handle.add_argument("--dir", required=True)
+    handle.add_argument("--out", required=True)
+
     handle = add("classify")
     handle.add_argument("--app", required=True, choices=sorted(APPS))
     handle.add_argument("--inventory", required=True)
     handle.add_argument("--snapshot", required=True)
+    handle.add_argument("--probe", required=True)
     handle.add_argument("--ledger")
     handle.add_argument("--detail")
     handle.add_argument("--up-to", default="", help="empty means the newest file in this checkout")
@@ -767,7 +889,9 @@ def build_parser() -> argparse.ArgumentParser:
 
     handle = add("report")
     handle.add_argument("--before", required=True)
+    handle.add_argument("--before-probe", required=True)
     handle.add_argument("--after", required=True)
+    handle.add_argument("--after-probe", required=True)
     handle.add_argument("--detail-before")
     handle.add_argument("--detail-after")
     handle.add_argument("--inventory")

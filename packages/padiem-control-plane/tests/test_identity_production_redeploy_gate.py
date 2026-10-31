@@ -46,8 +46,10 @@ EXPECTED_PR_PATHS = [
     "packages/padiem-control-plane/tests/test_identity_production_redeploy_gate.py",
     ".github/scripts/connector_bundle_fingerprint.py",
     ".github/tests/test_connector_bundle_fingerprint.py",
+    ".github/scripts/identity_rollback_contract.py",
+    ".github/tests/test_identity_rollback_contract.py",
 ]
-EXPECTED_MODES = ["repository_preflight", "cloudflare_readonly", "redeploy_identity_worker"]
+EXPECTED_MODES = ["repository_preflight", "cloudflare_readonly", "redeploy_identity_worker", "rollback_identity_worker"]
 
 
 def _gate() -> str:

@@ -23,9 +23,11 @@ from __future__ import annotations
 
 from contextvars import ContextVar
 import asyncio
+import base64
 import hashlib
 import hmac
 import json
+import re
 import time
 from typing import Any, Mapping
 
@@ -52,16 +54,29 @@ from kagent.pc_query_adapter import (
     PC_QUERY_OWNER,
     PC_QUERY_RUN_SCOPE,
     PC_QUERY_SCOPE,
+    PC_DELETE_FILE_CANONICAL_TOOL_ID,
+    PC_DELETE_FILE_SCOPE,
+    PC_DELETE_FILE_TOOL_ID,
+    PC_FILE_WRITE_TOOL_IDS,
+    PC_MOVE_FILE_CANONICAL_TOOL_ID,
+    PC_MOVE_FILE_SCOPE,
+    PC_MOVE_FILE_TOOL_ID,
     PC_READ_FILE_CANONICAL_TOOL_ID,
     PC_READ_FILE_SCOPE,
     PC_READ_FILE_TOOL_ID,
+    PC_WRITE_FILE_CANONICAL_TOOL_ID,
+    PC_WRITE_FILE_SCOPE,
+    PC_WRITE_FILE_TOOL_ID,
     PCQueryStepError,
     StructuredPCQueryStepDriver,
     build_pc_query_product_contract,
     make_query_drives_handler,
     pc_drives_tool_spec,
+    pc_delete_file_tool_spec,
     pc_list_files_tool_spec,
+    pc_move_file_tool_spec,
     pc_read_file_tool_spec,
+    pc_write_file_tool_spec,
     plan_step_arguments,
     register_pc_query_drives_tool,
     selected_device_id,
@@ -73,9 +88,23 @@ from app.tool_projection import EngineToolBinding, TrustedToolAuthority
 CLAW_ENGINE_PC_FILES_URL = "https://padiem-chat.internal/internal/claw/engine-pc-files"
 CHAT_ENGINE_PC_FILES_URL = "https://padiem-chat.internal/internal/chat/engine-pc-files"
 PC_FILE_ERROR_PREFIX = "PADIEM_PC_FILE_ERROR:"
-#: Owner rules 2026-10-26: 20MB defensive read bound. Chat enforces its own
-#: bound; the 3/3 Chat slice must raise that bound before release verification.
+#: One line the write, move and delete commands print: the machine-readable
+#: account of what happened, including where the original was backed up to.
+PC_WRITE_ACCOUNT_PREFIX = "PADIEM_PC_ACCOUNT="
+#: The closed reason namespace one change may report. Anything else is the
+#: generic failure, so a PC-side message never becomes part of a refusal code.
+PC_WRITE_REASONS = frozenset({"backup_failed", "target_exists", "path_invalid", "failed"})
+#: 플랫폼 메모리 보호(2026-10-28 소유자 결정): Chat 읽기 레인 자체의 읽기
+#: 상한(oracle_mesh_read_return_routes.PC_FILES_READ_MAX_BYTES = 20MB,
+#: history.ORACLE_MESH_PC_READ_ORIGINAL_MAX_BYTES = 20MB)과 같은 숫자다.
+#: Engine은 읽기 본문을 텍스트 + UTF-8 사본으로 통째로 메모리에 두므로
+#: (read 검증의 ``output.encode("utf-8")`` 참조) 이보다 큰 본문은 이 경로의
+#: 정당한 읽기가 아니고, 큰 파일은 컴2 파일 레인 처리 예정(경로 미구현).
 PC_FILES_READ_MAX_BYTES = 20_000_000
+#: One whole drive, in any spelling the model repeats back: `C:`, `C:\`, `C:/Users`.
+#: It became a granted root shape when the Owner made a connected PC work over its
+#: local drives by default (#5573).
+_DRIVE_ROOT_SHAPE = re.compile(r"([A-Za-z]:)(?:/(?P<rest>.*))?\Z")
 
 # Stream-local presentation only: never authorizes tools or refreshes Core idle.
 _PC_PROGRESS_SINK: ContextVar[Any] = ContextVar("pc_progress_sink", default=None)
@@ -293,17 +322,102 @@ def _validate_pc_file_arguments(arguments):
     return path
 
 
-def _pc_list_folder_prefix(list_path: str) -> str | None:
+_PC_STEP_ARGUMENT_KEYS: dict[str, set[str]] = {
+    "list": {"path"},
+    "read": {"path"},
+    "delete": {"path"},
+    "write": {"path", "content"},
+    "move": {"path", "destination"},
+}
+
+
+def _validate_pc_step_arguments(op: str, arguments) -> tuple[str, dict[str, str]]:
+    """The path plus whatever else this operation has to name.
+
+    A write carries bytes, a move carries where the file lands, a delete carries
+    only the path it is removing. Nothing else crosses this boundary, and no
+    field here is a size or time ceiling: what one command can carry is decided
+    by the transport that already exists.
+    """
+    allowed = _PC_STEP_ARGUMENT_KEYS.get(op)
+    if not isinstance(arguments, Mapping) or allowed is None or set(arguments) != allowed:
+        raise ToolHandlerError(
+            "pc_file_arguments_invalid", "A relative path is required",
+        )
+    path = _validate_pc_file_arguments({"path": arguments.get("path")})
+    extra: dict[str, str] = {}
+    if op == "write":
+        content = arguments.get("content")
+        if not isinstance(content, str):
+            raise ToolHandlerError(
+                "pc_file_arguments_invalid", "File content must be text",
+            )
+        extra["content"] = content
+    if op == "move":
+        destination = arguments.get("destination")
+        if (
+            not isinstance(destination, str) or not destination or len(destination) > 2048
+            or any(ord(ch) < 32 for ch in destination)
+        ):
+            raise ToolHandlerError(
+                "pc_file_arguments_invalid", "A relative destination path is required",
+            )
+        extra["destination"] = destination
+    return path, extra
+
+
+def _pc_write_result(output: str) -> dict | None:
+    """Parse the one account line the write lane prints, or ``None``.
+
+    The PC base64-encodes its account so that no console code page, quoting rule
+    or character the customer named can change what was reported. A line that is
+    not valid Base64, not UTF-8, or not one JSON object is no account at all.
+    """
+    marker = None
+    for line in str(output or "").splitlines():
+        stripped = line.strip()
+        if stripped.startswith(PC_WRITE_ACCOUNT_PREFIX):
+            marker = stripped[len(PC_WRITE_ACCOUNT_PREFIX):]
+    if marker is None:
+        return None
+    try:
+        decoded = base64.b64decode(marker.encode("ascii"), validate=True).decode("utf-8")
+        parsed = json.loads(decoded)
+    except Exception:
+        return None
+    return parsed if isinstance(parsed, dict) else None
+
+
+def _pc_list_folder_prefix(
+    list_path: str, granted_drives: tuple[str, ...] = (),
+) -> str | None:
     """Normalize the listed folder the way the Chat PC-files endpoint does.
 
     The projection below may only hand the next step a path the endpoint will
     accept, so the segment rules here mirror ``_pc_files_relative_path`` in
     ``oracle_mesh_read_return_routes.py`` exactly. ``None`` means this folder
     shape is refused there, so no row may be given an invented path.
+
+    A whole drive became a granted root in #5573, so ``C:``, ``C:\\`` and
+    ``C:\\Users`` are one accepted shape — but only for a drive in
+    ``granted_drives``. Without that qualifier this layer would be accepting any
+    volume the model named, and the refusal the endpoint still owes them would
+    arrive too late to be trusted. Rows listed from a drive are bound to
+    ``C:/Name`` so a follow-up read names the same volume rather than guessing
+    which of the account's drives was meant.
     """
     text = str(list_path or "").strip().replace("\\", "/")
     if text in ("", "."):
         return ""
+    drive = _DRIVE_ROOT_SHAPE.fullmatch(text.rstrip("/"))
+    if drive is not None and drive.group(1).upper() in granted_drives:
+        rest = drive.group("rest") or ""
+        parts = [part for part in rest.split("/") if part]
+        if any(part in {".", ".."} or ":" in part for part in parts):
+            return None
+        if rest and (rest.startswith("/") or rest.endswith("/")):
+            return None
+        return drive.group(1).upper() + ("/" + "/".join(parts) + "/" if parts else "/")
     if text.startswith("/") or (len(text) >= 2 and text[1] == ":"):
         return None
     parts = text.split("/")
@@ -312,7 +426,43 @@ def _pc_list_folder_prefix(list_path: str) -> str | None:
     return "/".join(parts) + "/"
 
 
-def _pc_list_entries_with_paths(list_path: str, entries):
+def _pc_granted_drives(context: Any) -> tuple[str, ...]:
+    """The whole-drive roots this account holds, as ``C:`` labels."""
+    roots = context.get("roots") if isinstance(context, Mapping) else None
+    drives: list[str] = []
+    if isinstance(roots, list):
+        for row in roots:
+            label = row.get("label") if isinstance(row, Mapping) else row
+            match = _DRIVE_ROOT_SHAPE.fullmatch(str(label or "").strip().rstrip("/"))
+            if match is not None and not (match.group("rest") or ""):
+                # Only a bare drive is a whole-drive grant. `C:/app/data` names a
+                # folder on a drive, and treating it as the drive would widen the
+                # operator's grant to the volume.
+                drive = match.group(1).upper()
+                if drive not in drives:
+                    drives.append(drive)
+    return tuple(drives)
+
+
+def _pc_path_against_granted_drive(path: str, context: Any) -> str | None:
+    """Canonicalise a path that names a granted drive, or ``None``.
+
+    Only the drive-root spelling is rewritten here. Folder labels are left for the
+    endpoint to resolve, because an account with two approved folders must still
+    say which one it means.
+    """
+    match = _DRIVE_ROOT_SHAPE.fullmatch(
+        str(path or "").strip().replace("\\", "/").rstrip("/"))
+    if match is None:
+        return None
+    drive = match.group(1).upper()
+    if drive not in _pc_granted_drives(context):
+        return None
+    rest = (match.group("rest") or "").strip("/")
+    return drive + ("/" + rest if rest else "")
+
+
+def _pc_list_entries_with_paths(list_path: str, entries, granted_drives: tuple[str, ...] = ()):
     """Bind every listed row to the exact path string read_file accepts.
 
     The PC listing command returns Select-Object rows that carry only ``Name``,
@@ -321,7 +471,7 @@ def _pc_list_entries_with_paths(list_path: str, entries):
     both name that field. The read step then re-sent the folder root, which the
     Chat endpoint refuses, and no read dispatch was ever created.
     """
-    prefix = _pc_list_folder_prefix(list_path)
+    prefix = _pc_list_folder_prefix(list_path, granted_drives)
     rows = []
     for entry in entries:
         if not isinstance(entry, Mapping):
@@ -345,6 +495,22 @@ def _pc_list_entries_with_paths(list_path: str, entries):
     return rows
 
 
+def _pc_write_account(output: str) -> dict:
+    """The write lane's one account line, or a bounded refusal.
+
+    A change that printed no account is not a completed change: nobody may be
+    told a file was written when nothing says where the original went.
+    """
+    account = _pc_write_result(output)
+    if account is None or account.get("ok") is not True:
+        reason = account.get("reason") if isinstance(account, dict) else None
+        code = "pc_write_" + (
+            reason if isinstance(reason, str) and reason in PC_WRITE_REASONS else "failed"
+        )
+        raise ToolHandlerError(code, "PC file change did not complete")
+    return account
+
+
 def _pc_file_call_ref(run_id: str, tool_id: str, path: str) -> str:
     """Stable per-call correlation: same run+tool+path is the same call."""
     digest = hashlib.sha256(
@@ -365,26 +531,54 @@ def _make_pc_file_handler(*, tool_id: str, op: str, service, request_factory, se
                 "pc_files_admission_required", "Verified owner run is required",
             )
         try:
-            path = _validate_pc_file_arguments(arguments)
+            path, extra = _validate_pc_step_arguments(op, arguments)
         except ToolHandlerError:
             print("pc_files_chat_call mode=arguments stage=pc_file_arguments_invalid", flush=True)
             raise
-        text = path.strip().replace("\\", "/")
-        if text.startswith("/") or (len(text) >= 2 and text[1] == ":"):
-            ctx = await _signed_files_call(
-                service=service, request_factory=request_factory, secret=secret,
-                owner=owner, mode="context", payload={},
-            )
-            path = _pc_path_against_verified_roots(path, ctx)
-        if _pc_list_folder_prefix(path) is None:
+        granted: tuple[str, ...] = ()
+        context_box: dict[str, dict] = {}
+
+        async def _resolve(value: str) -> tuple[str, tuple[str, ...]]:
+            text = value.strip().replace("\\", "/")
+            if not (text.startswith("/") or (len(text) >= 2 and text[1] == ":")):
+                return value, granted
+            # One context read per step, shared by the path and the destination:
+            # two granted-drive lookups would let a move address a drive the
+            # first lookup never saw.
+            if "context" not in context_box:
+                context_box["context"] = await _signed_files_call(
+                    service=service, request_factory=request_factory, secret=secret,
+                    owner=owner, mode="context", payload={},
+                )
+            ctx = context_box["context"]
+            current = _pc_granted_drives(ctx)
+            drive = _pc_path_against_granted_drive(value, ctx)
+            # A granted drive is the root itself, in whatever spelling the model
+            # repeated; a granted folder keeps the existing absolute-prefix strip.
+            return (drive if drive is not None else
+                    _pc_path_against_verified_roots(value, ctx)), current
+
+        path, granted = await _resolve(path)
+        if "destination" in extra:
+            extra["destination"], _ = await _resolve(extra["destination"])
+        if _pc_list_folder_prefix(path, granted) is None:
             print("pc_files_chat_call mode=arguments stage=pc_file_arguments_invalid", flush=True)
             raise ToolHandlerError("pc_files_path_invalid", "A registered relative path is required")
         expected_kind = "read" if op == "read" else "command"
-        tool_call_ref = _pc_file_call_ref(owner[1], tool_id, path)
+        # The reference is what makes a repeated identical step the same call.
+        # A move or a write is only identical when its destination or bytes match,
+        # so those are folded into the digest and never sent again as data.
+        identity = path
+        if "destination" in extra:
+            identity = path + "\n" + extra["destination"]
+        if "content" in extra:
+            identity = (identity + "\n" + hashlib.sha256(
+                extra["content"].encode("utf-8")).hexdigest())
+        tool_call_ref = _pc_file_call_ref(owner[1], tool_id, identity)
         dispatched = await _signed_files_call(
             service=service, request_factory=request_factory, secret=secret,
             owner=owner, mode="dispatch",
-            payload={"op": op, "path": path, "tool_call_ref": tool_call_ref},
+            payload={"op": op, "path": path, "tool_call_ref": tool_call_ref, **extra},
         )
         dispatch = dispatched.get("dispatch")
         if (
@@ -464,6 +658,23 @@ def _make_pc_file_handler(*, tool_id: str, op: str, service, request_factory, se
                 # Owner-approved presentation: received means PC processing
                 # in flight, not independently verified OS process creation.
                 emit_progress("executing")
+            if row.get("state") == "failed" and op in ("write", "move", "delete"):
+                # The refusal reason lives in the account line the command
+                # printed, so a backup that failed is answered as such instead of
+                # as an anonymous execution failure.
+                try:
+                    _pc_write_account((await _final_result())["output"])
+                except ToolHandlerError:
+                    raise
+                except Exception:
+                    raise ToolHandlerError(
+                        "pc_files_execution_failed",
+                        "PC executor reported failure",
+                    ) from None
+                raise ToolHandlerError(
+                    "pc_files_execution_failed",
+                    "PC executor reported failure",
+                )
             if row.get("state") == "failed":
                 if op == "read":
                     # A failed read keeps its verified marker body in the same
@@ -508,9 +719,14 @@ def _make_pc_file_handler(*, tool_id: str, op: str, service, request_factory, se
                         content_bytes > PC_FILES_READ_MAX_BYTES
                         or len(encoded) > PC_FILES_READ_MAX_BYTES
                     ):
+                        # 플랫폼 메모리 보호(임의 상한 아님): Worker 메모리는 128MB,
+                        # 이 본문은 base64(4/3) + Chat 텍스트 + Engine의 UTF-8 사본 +
+                        # JSON 오버헤드로 동시에 메모리에 있고, Chat 읽기 레인이 요청하는
+                        # 최대치가 20MB라 더 큰 본문은 정당한 PC 파일 읽기가 아니다.
+                        # 64MB 이상 파일은 컴2 파일 레인으로 넘길 예정(경로 미구현).
                         raise ToolHandlerError(
                             "pc_files_output_too_large",
-                            "PC file output exceeds the read bound",
+                            "파일이 커서 이 경로로 읽지 못했습니다 — 컴2 파일 처리 예정",
                         )
                 else:
                     if termination not in (
@@ -531,6 +747,17 @@ def _make_pc_file_handler(*, tool_id: str, op: str, service, request_factory, se
                             "pc_files_output_missing",
                             "Verified PC outcome is incomplete",
                         )
+                if op in ("write", "move", "delete"):
+                    account = _pc_write_account(output)
+                    # The account is what the record and the rollback depend on:
+                    # where the change landed and where the original now lives.
+                    output = json.dumps({
+                        "ok": True,
+                        "op": op,
+                        "target": account.get("target"),
+                        "backup": account.get("backup"),
+                        "bytes": account.get("bytes"),
+                    }, ensure_ascii=False, separators=(",", ":"))
                 common = {
                     "dispatch_id": dispatch_id,
                     "output": output,
@@ -576,7 +803,7 @@ def _make_pc_file_handler(*, tool_id: str, op: str, service, request_factory, se
                         {
                             "ok": True,
                             "path": path,
-                            "entries": _pc_list_entries_with_paths(path, entries),
+                            "entries": _pc_list_entries_with_paths(path, entries, granted),
                             "truncated": truncated,
                         },
                         ensure_ascii=False,
@@ -617,6 +844,14 @@ def _build_pc_query_binding(*, service, request_factory, secret, runtime: ToolRu
     runtime.register(pc_read_file_tool_spec(), _pc_observing_handler(_make_pc_file_handler(
         tool_id=PC_READ_FILE_TOOL_ID, op="read", service=service,
         request_factory=request_factory, secret=secret), tool_id=PC_READ_FILE_TOOL_ID))
+    for tool_id, op, spec in (
+        (PC_WRITE_FILE_TOOL_ID, "write", pc_write_file_tool_spec),
+        (PC_MOVE_FILE_TOOL_ID, "move", pc_move_file_tool_spec),
+        (PC_DELETE_FILE_TOOL_ID, "delete", pc_delete_file_tool_spec),
+    ):
+        runtime.register(spec(), _pc_observing_handler(_make_pc_file_handler(
+            tool_id=tool_id, op=op, service=service,
+            request_factory=request_factory, secret=secret), tool_id=tool_id))
     return EngineToolBinding(app_id=app_id, tool_runtime=runtime,
         registry=ToolRegistrySnapshot.from_entries(contract.registry_entries),
         authorities={agent_id: TrustedToolAuthority(canonical_agent_id=agent_id,
@@ -774,6 +1009,9 @@ def build_live_pc_query_driver(*, b14_client, model_id, model_policy=None, task_
             "- claw.pc.query_drives {}: filesystem drives visible to the agent execution account.\n"
             "- claw.pc.list_files {\"path\":\"<relative path inside the approved folder; . is the folder root>\"}: list a folder.\n"
             "- claw.pc.read_file {\"path\":\"<relative_path of one list_files entry>\"}: read one UTF-8 text file.\n"
+            "- claw.pc.write_file {\"path\":\"<relative path>\",\"content\":\"<file text>\"}: create a file, or replace one that exists; the previous contents are kept as a backup and its location is reported.\n"
+            "- claw.pc.move_file {\"path\":\"<relative path>\",\"destination\":\"<relative path>\"}: move or rename a file; anything the move would replace is backed up first and its location is reported.\n"
+            "- claw.pc.delete_file {\"path\":\"<relative path>\"}: delete a file after copying it to a backup, whose location is reported.\n"
             + scope_instruction
             + "A pc_scope_denied observation means no tool ran; complete truthfully or stay inside that ceiling. "
             "Rules: For a folder or file request, first call claw.pc.list_files with path \".\" "
@@ -807,8 +1045,7 @@ def build_live_pc_query_driver(*, b14_client, model_id, model_policy=None, task_
         )
         request = B14ChatRequest(model=model_id, messages=({"role": "user", "content": prompt},), max_tokens=None,
             routing=B14RoutingOptions(product_tier=model_policy.get("product_tier") if model_policy else None,
-                max_retries=model_policy.get("max_retries") if model_policy else None,
-                task_type=task_type, optimize_for=optimize_for))
+                max_retries=model_policy.get("max_retries") if model_policy else None))
         print("pc_step_model_call stage=start", flush=True)
         try:
             response = await b14_client.execute(request)

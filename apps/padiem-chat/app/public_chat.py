@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import Any
 
+from .web_tools import SEARCH_QUERY_TOO_LONG_CODE, SEARCH_QUERY_TOO_LONG_MESSAGE
+
 # Browser-facing chat responses are an explicit product contract. Anything not
 # allowlisted here remains server-side by default so future routing metadata
 # cannot become public merely because an internal result dict grows a new key.
@@ -79,10 +81,18 @@ def public_chat_result(result: dict[str, Any]) -> dict[str, Any]:
     if notice in (
         "웹 검색을 사용할 수 없어 근거 없이 답변합니다",
         "웹 근거를 찾지 못해 근거 없이 답변합니다",
+        # #6090: the length-driven skip is actionable guidance, so the browser
+        # must receive it; an unnamed notice stays server-side by default.
+        SEARCH_QUERY_TOO_LONG_MESSAGE,
     ):
         public["notice"] = notice
     metadata = result.get("metadata")
     code = metadata.get("web_grounding_error") if isinstance(metadata, dict) else None
-    if code in ("web_grounding_auth_error", "web_grounding_unavailable", "web_grounding_no_evidence"):
+    if code in (
+        "web_grounding_auth_error",
+        "web_grounding_unavailable",
+        "web_grounding_no_evidence",
+        SEARCH_QUERY_TOO_LONG_CODE,
+    ):
         public["metadata"] = {"web_grounding_error": code}
     return public

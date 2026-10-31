@@ -51,7 +51,7 @@ def live_only(monkeypatch):
 def test_owner_excluded_manual_resolver_refuses_before_secret_and_network(mid, provider):
     assert excluded_from_owner_customer_selection(mid)
     with pytest.raises(NoSafeRoute) as exc:
-        resolve_manual_route(mid, allow_external_fallback=True)
+        resolve_manual_route(mid)
     assert exc.value.reason_code == "owner_model_excluded"
     assert exc.value.upstream_called is False
 
@@ -96,11 +96,12 @@ def test_provider_stream_egress_denied_before_secret_and_transport(mid, provider
 def test_live_manual_fallback_never_advertises_excluded_candidates(monkeypatch):
     monkeypatch.setenv("PADIEM_B14_CREDENTIAL_12","synthetic_poolside_key_abcdefghij")
     assert excluded_from_owner_customer_selection(POOLSIDE_MODEL_ID) is False
-    decision=resolve_manual_route(POOLSIDE_MODEL_ID, allow_external_fallback=True)
+    decision=resolve_manual_route(POOLSIDE_MODEL_ID)
     assert decision.selected_model == POOLSIDE_MODEL_ID
-    assert all(not excluded_from_owner_customer_selection(
-        candidate["model_id"]) for candidate in decision.eligible_fallback)
-    assert decision.fallback_allowed is True
+    # B5: a manual route outside the owner roster advertises no candidates at
+    # all, so an excluded candidate cannot be advertised either.
+    assert decision.eligible_fallback == []
+    assert decision.fallback_allowed is False
 
 
 

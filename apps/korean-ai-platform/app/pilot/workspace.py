@@ -90,7 +90,6 @@ async def workspace_page(request: Request):
         "b14HasKey": any_platform_secret_present(),
         "b14SiteName": PLATFORM_SITE_NAME,
         "b14CatalogModels": _workspace_catalog_models(),
-        "b14AutoModelId": "b14/auto",
     }
 
     # Invalid registry

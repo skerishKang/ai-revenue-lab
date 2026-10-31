@@ -8,6 +8,7 @@ import type { AdClickConsumerCard } from './consumer-card.js';
 import type { PublicOpportunityCard, PublicOpportunityDetail } from '../public-supply/domain.js';
 import { koreaEligibilityLabel, publicRewardNote } from '../public-supply/domain.js';
 import {
+  B64_FONT_STYLESHEET_HREF,
   CATEGORY_ICON_CSS,
   THEME_CSS_SHELL_INSET,
   THEME_CSS_TOGGLE,
@@ -171,7 +172,7 @@ function renderPublicDetail(detail: PublicOpportunityDetail): string {
         ${applyHref ? `<a class="reward-cta detail-cta" href="${applyHref}" target="_blank" rel="noopener noreferrer nofollow">${escapeHtml(card.ctaLabel)}<span aria-hidden="true"> ↗</span></a>` : ''}
         <a class="ghost-btn" href="/browse">다른 기회 둘러보기</a>
       </div>
-      <p class="detail-cta-note">${applyHref ? '외부 제공자 사이트에서 직접 참여합니다. PADIEM이 지급을 대행하거나 보장하지 않습니다.' : ''}</p>
+      <p class="detail-cta-note">${applyHref ? '외부 제공자 사이트에서 직접 참여합니다. B64는 지급을 대행하거나 보장하지 않습니다.' : ''}</p>
       <details class="detail-more">
         <summary>상세 정보 · 참여 조건 · 출처</summary>
         <div class="detail-facts">
@@ -196,8 +197,8 @@ function renderPublicDetail(detail: PublicOpportunityDetail): string {
             <span class="detail-fact__value">${escapeHtml(stageValue)}</span>
           </div>
           <div class="detail-fact">
-            <span class="detail-fact__label">PADIEM 수익</span>
-            <span class="detail-fact__value">0 (이용자 가치 제공용 — PADIEM 제휴 수익 없음)</span>
+            <span class="detail-fact__label">B64 수익</span>
+            <span class="detail-fact__value">없음 · 업체에 직접 참여</span>
           </div>
         </div>
         <div class="detail-meta">
@@ -223,36 +224,19 @@ function renderEmptyNotice(): string {
   return `<p class="later-tier-notice" data-empty-state="NO_LIVE_REWARD_SUPPLY">아직 확인된 적립이 없습니다. 검증된 공급자가 연결되면 이곳에 표시됩니다.</p>`;
 }
 
-function renderHowItWorks(): string {
-  return `<section class="how-it-works" aria-labelledby="how-title">
-    <div class="section-head">
-      <h2 id="how-title">참여 방식</h2>
-      <span>짧은 행동부터</span>
-    </div>
-    <ol class="how-steps">
-      <li class="how-step">
-        <span class="how-step__num" aria-hidden="true">1</span>
-        <div class="how-step__body">
-          <h3>짧은 적립 선택</h3>
-          <p>광고 보기, 클릭, 방문처럼 짧게 끝나는 항목만 먼저 준비돼요.</p>
-        </div>
-      </li>
-      <li class="how-step">
-        <span class="how-step__num" aria-hidden="true">2</span>
-        <div class="how-step__body">
-          <h3>조건과 보상 확인</h3>
-          <p>보상 단가, 소요 시간, 참여 조건을 참여 전에 확인해요.</p>
-        </div>
-      </li>
-      <li class="how-step">
-        <span class="how-step__num" aria-hidden="true">3</span>
-        <div class="how-step__body">
-          <h3>외부 페이지에서 적립</h3>
-          <p>공급자 공식 페이지에서 완료하면 보상이 적립돼요.</p>
-        </div>
-      </li>
-    </ol>
-  </section>`;
+/**
+ * A filter that matches nothing is the visitor's own condition, not missing
+ * supply (#6074). Answering it with the supply notice told a visitor who typed
+ * a word that B64 has no verified rewards at all, so the browse page now names
+ * the condition and offers the way out.
+ */
+function renderNoFilterResults(): string {
+  return `<div class="empty-state" role="status" data-empty-state="NO_FILTER_MATCH">
+    <div class="empty-state__mark" aria-hidden="true">${renderBrandMark('empty-state__mark-svg')}</div>
+    <h3>조건에 맞는 기회가 없습니다</h3>
+    <p>검색어나 소요 시간 조건을 바꾸거나 전체 기회를 보세요.</p>
+    <a class="ghost-btn" href="/browse">전체 기회 보기 →</a>
+  </div>`;
 }
 
 function renderShell(
@@ -260,7 +244,6 @@ function renderShell(
   navItems: string,
   hero: string,
   content: string,
-  options: { howItWorks?: boolean } = {},
   themeInfo: ConsumerRenderTheme = {},
 ): string {
   const theme = themeInfo.theme ?? 'light';
@@ -272,7 +255,8 @@ function renderShell(
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="color-scheme" content="${theme}" />
-  <title>AI Reward Router | PADIEM</title>
+  <title>B64 AI Reward Router</title>
+  <link rel="stylesheet" href="${B64_FONT_STYLESHEET_HREF}" />
   <style>
 ${THEME_CSS_VARIABLES}
     * { box-sizing: border-box; }
@@ -281,6 +265,7 @@ ${THEME_CSS_VARIABLES}
       min-width: 320px;
       background: var(--bg-glow) var(--bg);
       color: var(--text);
+      font-size: var(--fs-body); line-height: var(--lh-body); font-weight: var(--fw-body);
     }
     a { color: inherit; text-decoration: none; }
 
@@ -313,19 +298,19 @@ ${THEME_CSS_SHELL_INSET}
     .eyebrow { margin: 0 0 12px; color: var(--accent); font-size: 11px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
     .hero h1 {
       margin: 0; max-width: 720px;
-      font-size: clamp(27px, 5.6vw, 56px);
-      line-height: 1.06; letter-spacing: -.045em; font-weight: 640;
+      font-size: var(--fs-display);
+      line-height: var(--lh-display); letter-spacing: var(--ls-display); font-weight: var(--fw-display);
       text-wrap: balance;
     }
-    .hero p { margin: 14px 0 0; max-width: 560px; color: var(--muted); font-size: 15px; line-height: 1.6; }
+    .hero p { margin: 14px 0 0; max-width: 560px; color: var(--muted); font-size: var(--fs-body); line-height: var(--lh-body); }
 
     .section-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 20px 0 14px; flex-wrap: wrap; }
-    .section-head h2 { margin: 0; font-size: 19px; letter-spacing: -.025em; font-weight: 650; }
+    .section-head h2 { margin: 0; font-size: var(--fs-title); line-height: var(--lh-title); letter-spacing: -.018em; font-weight: var(--fw-title); }
     .section-head > span { display: inline-flex; align-items: center; min-height: 24px; padding: 0 10px; border-radius: 999px; background: var(--surface); border: 1px solid var(--line-soft); color: var(--muted); font-size: 12px; }
 
     .home-intro { margin: 18px 0 8px; }
     .intro-desc { margin: 8px 0 0; color: var(--muted); font-size: 14px; line-height: 1.55; }
-    .cta-link { color: var(--accent); font-size: 13px; font-weight: 700; white-space: nowrap; }
+    .cta-link { display: inline-flex; align-items: center; min-height: 24px; color: var(--accent); font-size: 13px; font-weight: 700; white-space: nowrap; }
     .cta-link:hover { text-decoration: underline; }
     .home-actions { display: flex; flex-direction: column; gap: 10px; margin: 24px 0 10px; }
     .home-cta { display: flex; align-items: center; justify-content: center; min-height: 48px; border-radius: var(--radius-btn); font-size: 15px; font-weight: 700; letter-spacing: -.01em; transition: background .16s ease, transform .16s ease; }
@@ -349,12 +334,12 @@ ${THEME_CSS_SHELL_INSET}
     .action-chip { display: inline-flex; align-items: center; gap: 5px; min-height: 24px; padding: 0 10px; border-radius: 999px; background: var(--accent-dim); color: var(--accent); font-size: 12px; font-weight: 700; border: 1px solid var(--accent-border); }
     .action-chip--public { background: var(--gold-dim); color: var(--gold); border: 1px solid var(--gold-border); }
     .tier-chip { display: inline-flex; align-items: center; min-height: 20px; padding: 0 8px; border-radius: 999px; font-size: 11px; font-weight: 700; }
-    .tier-chip--immediate { background: var(--accent-dim); color: var(--accent); }
+    .tier-chip--immediate { background: var(--accent-dim); color: var(--accent-strong); }
     .tier-chip--screening { background: var(--surface); color: var(--muted); border: 1px solid var(--line-soft); }
     .public-note { margin: 0 0 12px; color: var(--faint); font-size: 12px; line-height: 1.55; }
     .tier-note { margin: 12px 0 18px; color: var(--faint); font-size: 12px; line-height: 1.5; }
     .freshness { color: var(--faint); font-size: 11px; white-space: nowrap; }
-    .reward-card h3 { margin: 13px 0 10px; font-size: 16px; line-height: 1.4; letter-spacing: -.015em; font-weight: 650; overflow-wrap: anywhere; }
+    .reward-card h3 { margin: 13px 0 10px; font-size: var(--fs-subtitle); line-height: 1.42; letter-spacing: -.012em; font-weight: var(--fw-title); overflow-wrap: anywhere; }
     .reward-card__reward { display: flex; align-items: baseline; gap: 8px; }
     .reward-card__reward strong { color: var(--gold); font-size: 23px; letter-spacing: -.03em; font-weight: 700; }
     .reward-card__reward span { color: var(--faint); font-size: 12px; font-weight: 600; }
@@ -372,7 +357,7 @@ ${THEME_CSS_SHELL_INSET}
       margin-top: auto;
     }
     .reward-cta:hover { background: var(--accent-strong); transform: translateY(-1px); }
-    .detail-link { display: inline-flex; align-items: center; gap: 4px; align-self: flex-start; margin-top: 11px; font-size: 13px; color: var(--accent); font-weight: 600; }
+    .detail-link { display: inline-flex; align-items: center; min-height: 24px; gap: 4px; align-self: flex-start; margin-top: 11px; font-size: 13px; color: var(--accent); font-weight: 600; }
     .detail-link:hover { text-decoration: underline; }
     .reward-cta:focus-visible, .nav-item:focus-visible, .brand:focus-visible, .detail-link:focus-visible, .filter-bar input:focus-visible, .filter-bar select:focus-visible, .filter-bar button:focus-visible, .back-link:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 
@@ -384,25 +369,19 @@ ${THEME_CSS_SHELL_INSET}
     }
     .empty-state__mark { display: grid; place-items: center; width: 56px; height: 56px; border-radius: 50%; background: var(--accent-dim); border: 1px solid var(--accent-border); color: var(--accent); }
     .empty-state__mark-svg { width: 28px; height: 28px; }
-    .empty-state h3 { margin: 16px 0 8px; font-size: 17px; letter-spacing: -.02em; font-weight: 650; }
+    .empty-state h3 { margin: 16px 0 8px; font-size: 17.5px; letter-spacing: -.015em; font-weight: var(--fw-title); line-height: var(--lh-title); }
     .empty-state p { margin: 0; max-width: 380px; color: var(--muted); font-size: 14px; line-height: 1.6; }
     .empty-steps { list-style: none; padding: 0; margin: 20px 0 0; max-width: 420px; display: grid; gap: 9px; text-align: left; }
     .empty-steps li { position: relative; padding-left: 18px; font-size: 13px; color: var(--muted); line-height: 1.55; }
     .empty-steps li::before { content: ""; position: absolute; left: 0; top: 7px; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); opacity: .8; }
     .empty-state .ghost-btn { margin-top: 20px; min-width: 220px; }
 
-    .how-it-works { padding: 28px 0 0; }
-    .how-steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; grid-template-columns: 1fr; }
-    .how-step { display: flex; align-items: flex-start; gap: 13px; padding: 16px; border: 1px solid var(--line-soft); border-radius: var(--radius-card); background: var(--surface); }
-    .how-step__num { flex: 0 0 auto; display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: var(--accent-dim); color: var(--accent); font-weight: 700; font-size: 13px; }
-    .how-step__body h3 { margin: 2px 0 4px; font-size: 14.5px; font-weight: 650; letter-spacing: -.01em; }
-    .how-step__body p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.55; }
 
     .later-tier-notice { margin: 14px 0 0; color: var(--muted); font-size: 12px; text-align: center; }
     .footer-note { margin: 40px auto 0; max-width: 560px; color: var(--faint); font-size: 11.5px; line-height: 1.65; text-align: center; }
 
     .filter-bar { display: grid; grid-template-columns: 1fr; gap: 10px; align-items: end; padding: 12px 0 2px; }
-    .filter-bar label { display: flex; flex-direction: column; gap: 5px; font-size: 11px; color: var(--muted); font-weight: 600; letter-spacing: .04em; min-width: 0; }
+    .filter-bar label { display: flex; flex-direction: column; gap: 6px; font-size: var(--fs-label); color: var(--muted); font-weight: var(--fw-label); letter-spacing: .02em; min-width: 0; }
     .filter-bar input, .filter-bar select {
       width: 100%; min-height: 44px; padding: 9px 12px; border-radius: var(--radius-btn);
       border: 1px solid var(--line-soft); background: var(--surface); color: var(--text);
@@ -411,9 +390,9 @@ ${THEME_CSS_SHELL_INSET}
     .filter-bar input::placeholder { color: var(--faint); }
     .filter-bar select { height: 44px; }
     .filter-bar button {
-      grid-column: 1 / -1; min-height: 46px; padding: 0 22px; border-radius: var(--radius-btn);
+      grid-column: 1 / -1; min-height: var(--control-height); padding: 0 22px; border-radius: var(--radius-btn);
       border: 1px solid var(--accent); background: var(--accent); color: var(--on-accent);
-      font-size: 14px; font-weight: 700; cursor: pointer; letter-spacing: -.01em;
+      font-size: var(--fs-ui); font-weight: var(--fw-display); cursor: pointer; letter-spacing: 0;
       transition: background .16s ease;
     }
     .filter-bar button:hover { background: var(--accent-strong); }
@@ -424,7 +403,7 @@ ${THEME_CSS_SHELL_INSET}
     .nav-item[aria-disabled="true"] { color: var(--faint); cursor: default; }
 
     .hero--browse { padding-bottom: 8px; }
-    .hero--browse h1 { font-size: clamp(30px, 4.5vw, 48px); }
+    .hero--browse h1 { font-size: var(--fs-display); }
     .hero--browse p { margin-top: 10px; }
     .browse-toolbar { padding: 4px 0 8px; }
     .browse-toolbar .category-tabs { padding-top: 8px; }
@@ -437,14 +416,14 @@ ${THEME_CSS_SHELL_INSET}
     .back-link:hover { color: var(--text); }
 
     .detail-card { padding: 22px 18px 20px; border: 1px solid var(--line-soft); border-radius: var(--radius-card); background: var(--card-bg); }
-    .detail-card h2 { margin: 12px 0 16px; font-size: 24px; line-height: 1.25; letter-spacing: -.03em; font-weight: 660; overflow-wrap: anywhere; }
+    .detail-card h2 { margin: 12px 0 16px; font-size: 26px; line-height: 1.28; letter-spacing: var(--ls-display); font-weight: var(--fw-display); overflow-wrap: anywhere; }
     .detail-reward { display: flex; align-items: baseline; gap: 10px; padding-bottom: 18px; border-bottom: 1px solid var(--line-soft); }
-    .detail-reward strong { color: var(--gold); font-size: 32px; line-height: 1; letter-spacing: -.03em; font-weight: 700; }
-    .detail-reward span { color: var(--faint); font-size: 12px; font-weight: 600; }
+    .detail-reward strong { color: var(--gold); font-size: 32px; line-height: 1.1; letter-spacing: -.02em; font-weight: var(--fw-display); font-variant-numeric: tabular-nums; }
+    .detail-reward span { color: var(--faint); font-size: var(--fs-meta); font-weight: var(--fw-label); }
     .detail-facts { display: grid; gap: 0; padding: 6px 0 14px; }
     .detail-fact { display: grid; grid-template-columns: 116px 1fr; gap: 12px; padding: 13px 0; border-bottom: 1px dashed var(--line-soft); }
     .detail-fact:last-child { border-bottom: 0; }
-    .detail-fact__label { color: var(--faint); font-size: 11px; font-weight: 650; letter-spacing: .07em; text-transform: uppercase; padding-top: 2px; }
+    .detail-fact__label { color: var(--faint); font-size: var(--fs-meta); font-weight: var(--fw-label); letter-spacing: .04em; text-transform: uppercase; padding-top: 2px; }
     .detail-fact__value { font-size: 14.5px; line-height: 1.55; overflow-wrap: anywhere; }
     .detail-meta { display: flex; flex-wrap: wrap; gap: 6px 14px; padding: 4px 0 18px; color: var(--faint); font-size: 11.5px; }
     .detail-meta a { color: var(--accent); text-decoration: underline; }
@@ -465,7 +444,6 @@ ${THEME_CSS_SHELL_INSET}
 
     @media (min-width: 680px) {
       .reward-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
-      .how-steps { grid-template-columns: repeat(3, minmax(0, 1fr)); }
       .filter-bar { grid-template-columns: 1fr 1fr auto; }
       .filter-bar button { grid-column: auto; }
       .detail-actions { grid-template-columns: 1fr 1fr; align-items: stretch; }
@@ -481,11 +459,10 @@ ${THEME_CSS_SHELL_INSET}
       .hero { padding: 64px 0 32px; }
       .hero p { font-size: 16px; }
       .reward-card { padding: 20px; }
-      .how-it-works { padding-top: 40px; }
     }
     @media (min-width: 1280px) {
       .hero { padding: 76px 0 36px; }
-      .hero h1 { font-size: 60px; }
+      .hero h1 { font-size: 48px; }
       .reward-card { padding: 22px; }
       .section-head { margin: 26px 0 16px; }
       .detail-card { padding: 32px 32px 28px; }
@@ -507,7 +484,6 @@ ${THEME_CSS_SHELL_INSET}
       .reward-card h3 { font-size: 15.5px; margin: 11px 0 8px; }
       .reward-card__reward strong { font-size: 21px; }
       .empty-state { padding: 36px 18px; }
-      .how-step { padding: 14px; }
       .detail-card { padding: 18px 16px; }
       .detail-card h2 { font-size: 21px; margin: 10px 0 14px; }
       .detail-fact { grid-template-columns: 96px 1fr; gap: 10px; }
@@ -537,9 +513,9 @@ ${THEME_CSS_SHELL_INSET}
   <div class="shell" data-consumer-mode="${viewModel.mode}" data-issue="${viewModel.issueNumber}">
     <header class="topbar">
       <div class="topbar-inner">
-        <a class="brand" href="#top" aria-label="PADIEM AI Reward Router">
+        <a class="brand" href="#top" aria-label="B64 AI Reward Router">
           ${renderBrandMark('brand-mark')}
-          <span class="brand-wordmark">PADIEM</span>
+          <span class="brand-wordmark">B64</span>
           <span class="brand-divider" aria-hidden="true"></span>
           <span class="brand-product">AI Reward Router</span>
         </a>
@@ -551,7 +527,6 @@ ${THEME_CSS_SHELL_INSET}
     <main id="top">
       ${hero}
       ${content}
-      ${options.howItWorks ? renderHowItWorks() : ''}
       <p class="footer-note">보상과 참여 조건은 제공처의 최신 기준을 따릅니다. 참여 전 외부 페이지의 조건을 다시 확인해 주세요.</p>
     </main>
   </div>
@@ -589,7 +564,7 @@ export function renderAdClickFirstConsumerWeb(viewModel: AdClickFirstConsumerHom
         <h2 id="home-public-title">검증된 공개 기회</h2>
         <span>${publicCards.length}개 확인됨</span>
       </div>
-      <p class="public-note">아래 기회는 각 업체에서 직접 참여하며 PADIEM 수익은 0입니다.</p>
+      <p class="public-note">각 업체에 직접 참여하며 B64는 수익을 받지 않습니다.</p>
       <div class="reward-grid" data-public-card-count="${publicCards.length}">${renderPublicCardGrid(publicCards)}</div>
     </section>`
     : '';
@@ -612,7 +587,7 @@ export function renderAdClickFirstConsumerWeb(viewModel: AdClickFirstConsumerHom
 
   const navItems = renderPrimaryNav('HOME');
 
-  return renderShell({ mode: viewModel.mode, issueNumber: viewModel.issueNumber }, navItems, hero, `${publicSection}${adLaneContent}`, { howItWorks: false }, themeInfo);
+  return renderShell({ mode: viewModel.mode, issueNumber: viewModel.issueNumber }, navItems, hero, `${publicSection}${adLaneContent}`, themeInfo);
 }
 
 // Backwards/alias exports for compatibility with alternate naming used by tests/CTO contracts.
@@ -663,7 +638,7 @@ export function renderAdClickFirstTodayRouteWeb(viewModel: AdClickFirstTodayRout
         <h2 id="today-public-immediate-title">참가자 등록 가능</h2>
         <span>${(viewModel.publicImmediateCards ?? []).length}개 확인됨</span>
       </div>
-      <p class="public-note">선발 없이 참여할 수 있는 공개 기회입니다. 각 업체에서 직접 참여하며 PADIEM 수익은 0입니다.</p>
+      <p class="public-note">선발 없이 참여할 수 있습니다. 각 업체에 직접 참여하며 B64는 수익을 받지 않습니다.</p>
       <div class="reward-grid" data-public-card-count="${(viewModel.publicImmediateCards ?? []).length}">${renderPublicCardGrid(viewModel.publicImmediateCards ?? [])}</div>
     </section>`);
     }
@@ -689,7 +664,7 @@ export function renderAdClickFirstTodayRouteWeb(viewModel: AdClickFirstTodayRout
         <p>확인된 광고·클릭 적립과 공개 참여 기회를 함께 보여드립니다. 신청·심사가 필요한 프로젝트는 별도 구분됩니다.</p>
       </section>`;
 
-  return renderShell({ mode: viewModel.mode, issueNumber: null }, navItems, hero, content, {}, themeInfo);
+  return renderShell({ mode: viewModel.mode, issueNumber: null }, navItems, hero, content, themeInfo);
 }
 
 export function renderAdClickFirstBrowseWeb(viewModel: AdClickFirstBrowseViewModel, themeInfo: ConsumerRenderTheme = {}): string {
@@ -719,14 +694,17 @@ export function renderAdClickFirstBrowseWeb(viewModel: AdClickFirstBrowseViewMod
   </form>`;
 
   let content: string;
+  const filterActive = viewModel.filters.query.trim() !== ''
+    || viewModel.filters.maxSeconds !== null
+    || viewModel.filters.category !== 'ALL';
   if (!hasPublic && renderedCards.length === 0) {
     content = `<section id="available-now" aria-labelledby="available-title">
       <div class="section-head">
         <h2 id="available-title">수익 기회 탐색</h2>
         <span>실시간 확인</span>
       </div>
-      ${renderEmptyState()}
-      <p class="later-tier-notice">${escapeHtml(viewModel.laterTierNotice)}</p>
+      ${filterActive ? renderNoFilterResults() : `${renderEmptyState()}
+      <p class="later-tier-notice">${escapeHtml(viewModel.laterTierNotice)}</p>`}
     </section>`;
   } else if (!hasPublic) {
     content = `<section id="available-now" aria-labelledby="available-title">
@@ -780,7 +758,7 @@ export function renderAdClickFirstBrowseWeb(viewModel: AdClickFirstBrowseViewMod
 
   const hero = `
       <section class="hero hero--browse" aria-labelledby="hero-title">
-        <p class="eyebrow">PADIEM · REWARD OPPORTUNITIES</p>
+        <p class="eyebrow">B64 · REWARD OPPORTUNITIES</p>
         <h1 id="hero-title">수익 기회 찾기</h1>
         <p>참여 조건과 보상이 확인된 기회를 탐색하세요.</p>
       </section>
@@ -789,7 +767,7 @@ export function renderAdClickFirstBrowseWeb(viewModel: AdClickFirstBrowseViewMod
         ${filterForm}
       </div>`;
 
-  return renderShell({ mode: viewModel.mode, issueNumber: null }, navItems, hero, content, { howItWorks: false }, themeInfo);
+  return renderShell({ mode: viewModel.mode, issueNumber: null }, navItems, hero, content, themeInfo);
 }
 
 export function renderAdClickFirstOpportunityDetailWeb(viewModel: AdClickFirstOpportunityDetailViewModel, themeInfo: ConsumerRenderTheme = {}): string {
@@ -810,7 +788,7 @@ export function renderAdClickFirstOpportunityDetailWeb(viewModel: AdClickFirstOp
           ${safeOutboundHref(card.canonicalDestinationUrl) ? `<a class="reward-cta detail-cta" href="${safeOutboundHref(card.canonicalDestinationUrl)}" target="_blank" rel="noopener noreferrer nofollow">공식 제공처에서 참여하기<span aria-hidden="true"> ↗</span></a>` : ''}
           <a class="ghost-btn" href="/browse">다른 기회 둘러보기</a>
         </div>
-        <p class="detail-cta-note">외부 제공자 사이트에서 직접 참여합니다. PADIEM이 지급을 대행하거나 보장하지 않습니다.</p>
+        <p class="detail-cta-note">외부 제공자 사이트에서 직접 참여합니다. B64는 지급을 대행하거나 보장하지 않습니다.</p>
         <details class="detail-more">
           <summary>상세 정보 · 참여 조건 · 출처</summary>
           <div class="detail-facts">
@@ -852,5 +830,5 @@ export function renderAdClickFirstOpportunityDetailWeb(viewModel: AdClickFirstOp
 
   // Keep one semantic title within the detail card; the hero previously repeated it.
   const hero = '<h1 class="visually-hidden">수익 기회 상세</h1>';
-  return renderShell({ mode: viewModel.mode, issueNumber: null }, navItems, hero, `<div class="detail-page">${content}</div>`, {}, themeInfo);
+  return renderShell({ mode: viewModel.mode, issueNumber: null }, navItems, hero, `<div class="detail-page">${content}</div>`, themeInfo);
 }

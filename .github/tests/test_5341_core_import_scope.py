@@ -87,7 +87,6 @@ class CoreImportScopeProof(unittest.TestCase):
         closure, _edges, names = scope._product_closure(ROOT, "b62")
         for independent in (
             "pdf_authoring",
-            "template_cloner_skill",
             "workspace_storage",
         ):
             with self.subTest(independent=independent):
@@ -99,11 +98,17 @@ class CoreImportScopeProof(unittest.TestCase):
         for independent in (
             "isolated_parser_client",
             "pdf_authoring",
-            "template_cloner_skill",
+            "workspace_storage",
         ):
             with self.subTest(independent=independent):
                 self.assertIn(independent, names)
                 self.assertNotIn(independent, closure)
+
+    def test_removed_template_cloner_skill_is_not_a_core_module(self):
+        for product in ("b62", "engine"):
+            with self.subTest(product=product):
+                _closure, _edges, names = scope._product_closure(ROOT, product)
+                self.assertNotIn("template_cloner_skill", names)
 
     def test_engine_shared_core_modules_stay_inside_the_engine_closure(self):
         closure, _edges, _names = scope._product_closure(ROOT, "engine")

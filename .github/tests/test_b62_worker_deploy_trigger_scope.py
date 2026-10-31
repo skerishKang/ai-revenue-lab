@@ -12,8 +12,10 @@ mock-smoke steps. Every step consumes one of:
 
 * `worker.py`            — `wrangler.toml` declares `main = "worker.py"`
 * `app/**`               — imported by the Worker
-* `static/**`            — `wrangler.toml` declares `[assets] directory = "static"`,
-                           and `b62_cloudflare_deployed_parity.py` compares
+* `static/**`            — a change there reaches the deployed bundle through the
+                           `[build]` hook's copy, and `[assets] directory` points at
+                           that generated copy (`.b66-worker-src/static`).
+                           `b62_cloudflare_deployed_parity.py` compares
                            `apps/padiem-chat/static/*.js` against the live site
 * `wrangler.toml`        — read directly by `b62_cloudflare_mock_config_guard.py`
 * `pyproject.toml` / `uv.lock` / `pylock.toml` — consumed by `uvx pywrangler deploy`
@@ -278,7 +280,9 @@ class TestPreservedScopeIsJustified:
         text = WRANGLER.read_text(encoding="utf-8")
         assert re.search(r'^main\s*=\s*"worker\.py"', text, re.M), "worker.py entrypoint"
         assert re.search(r"^\[assets\]", text, re.M), "assets binding"
-        assert re.search(r'^directory\s*=\s*"static"', text, re.M), "static asset directory"
+        # The release uploads the bundle the [build] hook generates; base_dir is not
+        # applied to [assets], so the generated path is declared explicitly.
+        assert re.search(r'^directory\s*=\s*"\.b66-worker-src/static"', text, re.M), "asset directory"
 
     def test_no_cloudflare_guard_script_reads_the_tests_subtree(self) -> None:
         scripts = sorted((ROOT / ".github" / "scripts").glob("b62_cloudflare_*.py"))

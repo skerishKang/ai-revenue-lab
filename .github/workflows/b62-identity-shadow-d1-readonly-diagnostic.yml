@@ -31,11 +31,63 @@ jobs:
   source-contract:
     runs-on: ubuntu-24.04
     timeout-minutes: 10
+    outputs:
+      target_sha: ${{ steps.b62_target_sha.outputs.target_sha }}
     steps:
+      # The body below is copied verbatim from the marked region of
+      # .github/scripts/b62_verify_target_sha.py, which stays the rule's only authority:
+      # a step that runs before any checkout has no repository to read a script from.
+      - name: Verify target_sha shape before any checkout
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        id: b62_target_sha
+        env:
+          B62_TARGET_SHA_RAW: ${{ inputs.target_sha }}
+        shell: bash
+        run: |
+          python3 - <<'B62_TARGET_SHA_GUARD'
+          import os
+          import re
+          import sys
+
+          _SHA = re.compile(r"^[0-9a-f]{40}$")
+
+
+          def canonical_target_sha(raw):
+              # Case is the only forgiveness: a short or non-hex value is not a commit.
+              value = (raw or "").strip()
+              if len(value) != 40:
+                  return None
+              candidate = value.lower()
+              return candidate if _SHA.match(candidate) else None
+
+
+          def failure_message(raw):
+              return f"target_sha는 40자리 전체 SHA여야 합니다(입력: {len((raw or '').strip())}자리). git rev-parse origin/main 값을 넣으세요"
+
+
+          def main():
+              raw = os.environ.get("B62_TARGET_SHA_RAW", "")
+              canonical = canonical_target_sha(raw)
+              if canonical is None:
+                  sys.stdout.write("::error::" + failure_message(raw) + "\n")
+                  return 1
+              for key, name in (("GITHUB_OUTPUT", "target_sha"), ("GITHUB_ENV", "TARGET_SHA")):
+                  path = os.environ.get(key)
+                  if path:
+                      with open(path, "a", encoding="utf-8") as handle:
+                          handle.write(f"{name}={canonical}\n")
+              sys.stdout.write("B62_TARGET_SHA_INPUT_SHAPE=PASS\n")
+              return 0
+
+
+          if __name__ == "__main__":
+              raise SystemExit(main())
+          B62_TARGET_SHA_GUARD
+
       - name: Checkout exact event revision
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.target_sha || github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+          ref: ${{ github.event_name == 'workflow_dispatch' && steps.b62_target_sha.outputs.target_sha || github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 1
           persist-credentials: false
 
@@ -68,7 +120,7 @@ jobs:
               "PRODUCTION_MUTATION=0",
               "workflow_dispatch:",
               "target_sha:",
-              "inputs.target_sha",
+              "B62_TARGET_SHA_RAW",
               "github.event_name == 'workflow_dispatch'",
               "READONLY_EXACT_MAIN_SHA=PASS",
           ]
@@ -104,13 +156,14 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 12
     env:
+      TARGET_SHA: ${{ needs.source-contract.outputs.target_sha }}
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
     steps:
       - name: Checkout exact current main candidate
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.target_sha || github.sha }}
+          ref: ${{ github.event_name == 'workflow_dispatch' && needs.source-contract.outputs.target_sha || github.sha }}
           fetch-depth: 1
           persist-credentials: false
 
@@ -118,7 +171,6 @@ jobs:
         shell: bash
         env:
           EVENT_NAME: ${{ github.event_name }}
-          TARGET_SHA: ${{ inputs.target_sha }}
         run: |
           set -euo pipefail
           expected="${GITHUB_SHA}"

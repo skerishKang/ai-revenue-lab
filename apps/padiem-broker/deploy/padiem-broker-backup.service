@@ -1,0 +1,8 @@
+[Unit]
+Description=PADIEM COM2 broker daily SQLite snapshot
+RequiresMountsFor=/mnt/d/padiem/broker
+
+[Service]
+Type=oneshot
+User=padiem-broker
+ExecStart=/opt/padiem/broker/venv/bin/python /opt/padiem/broker/backup.py --db /mnt/d/padiem/broker/broker.sqlite3 --dest /mnt/d/padiem/broker/backups --keep 7

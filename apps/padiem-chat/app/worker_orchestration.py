@@ -25,6 +25,11 @@ from padiem_ai_engine_client.orchestration_stream import MAX_NDJSON_TERMINAL_LIN
 
 from .canonical_orchestration_bridge import CanonicalSubjectB62EngineOrchestrationBridge
 from .orchestration_bridge import B62EngineOrchestrationBridge, D1OrchestrationStateStore
+from .orchestration_composition import (
+    CHAT_ENGINE_APP_ID,
+    ORCHESTRATION_ENABLED_ENV,
+    compose_orchestration_bridge,
+)
 from .service_binding_response import (
     ServiceBindingResponseError,
     ServiceBindingResponseTooLarge,
@@ -33,7 +38,6 @@ from .service_binding_response import (
 )
 from .worker_config import binding_value, p01_engine_config_from_worker_bindings
 
-ORCHESTRATION_ENABLED_ENV = "PADIEM_CHAT_ORCHESTRATION_ENABLED"
 _MAX_ENGINE_RESPONSE_BYTES = 10 * 1024 * 1024  # small non-model Engine contracts
 _MAX_ENGINE_ORCHESTRATION_RESPONSE_BYTES = MAX_NDJSON_TERMINAL_LINE_BYTES
 # Match the Engine's *existing* 6MB model execute ingress safety envelope.
@@ -259,37 +263,27 @@ def build_orchestration_bridge(
     #1228 Control Plane identity path. Ordinary Worker composition currently does
     not supply one, so Production behavior is unchanged until separately activated.
     """
-    if _server_text(env, ORCHESTRATION_ENABLED_ENV).lower() != "true":
-        return None
-    if getattr(settings, "runtime_mode", "mock") != "b14":
-        return None
-    if db_binding is None:
-        return None
-    # One Engine authority only. The Worker already presents the deployment-owned
-    # P01 Engine binding for every Engine call, so the bridge composes from that
-    # same validated surface. Requiring a second caller id/credential pair that
-    # no activation authority provisions kept this bridge permanently None, which
-    # is the failure the Chat PC file lane reported before any run was staged.
-    engine = p01_engine_config_from_worker_bindings(env)
-    if engine is None:
-        return None
-    try:
-        client = PadiemAiEngineClient(
-            transport=CloudflareEngineServiceTransport(
-                engine.service_binding,
-                request_factory=request_factory,
-            ),
-            app_id="padiem-chat",
-            caller_id=engine.caller_id,
-            credential=engine.credential,
-        )
-    except (TypeError, ValueError):
-        return None
-    store = D1OrchestrationStateStore(db_binding)
-    if canonical_subject_resolver is not None:
-        return CanonicalSubjectB62EngineOrchestrationBridge(
-            client=client,
-            store=store,
-            canonical_subject_resolver=canonical_subject_resolver,
-        )
-    return B62EngineOrchestrationBridge(client=client, store=store)
+    def build_client() -> PadiemAiEngineClient | None:
+        engine = p01_engine_config_from_worker_bindings(env)
+        if engine is None:
+            return None
+        try:
+            return PadiemAiEngineClient(
+                transport=CloudflareEngineServiceTransport(
+                    engine.service_binding,
+                    request_factory=request_factory,
+                ),
+                app_id=CHAT_ENGINE_APP_ID,
+                caller_id=engine.caller_id,
+                credential=engine.credential,
+            )
+        except (TypeError, ValueError):
+            return None
+
+    return compose_orchestration_bridge(
+        env=env,
+        settings=settings,
+        db_binding=db_binding,
+        build_client=build_client,
+        canonical_subject_resolver=canonical_subject_resolver,
+    )

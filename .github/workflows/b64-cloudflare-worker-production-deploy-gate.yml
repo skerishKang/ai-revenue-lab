@@ -1,0 +1,438 @@
+name: B64 AI Reward Router Production Deploy Gate
+
+# Issue #987 — deploys the integrated b64-ai-reward-router Worker from one exact
+# main SHA, verifies what the public host actually serves, and rolls the anchor
+# back automatically when the verification fails. Dispatch-only: an ordinary
+# pull request can never mutate the running Worker.
+#
+# WHY THIS EXISTS (measured on 2026-10-27 against the live host): the deployed
+# Worker is still the 2026-10-23 P0 shell recorded in
+# .github/binding_baselines/b64-ai-reward-router.json. /pipeline and /income
+# answer 404, /detail?id=pub-* answers 404, the CSP still carries
+# `form-action 'none'` (so the income form could not submit even if the route
+# existed), and no screen carries the #5822 theme system. Everything merged
+# since — #5816 #5819 #5820 #5825 #5831 #5946 — is invisible in a real browser.
+# The repository had no B64 deploy path at all: only CI, a D1 provision gate, a
+# session-secret activation gate and a read-only route probe.
+#
+# WHAT THIS GATE DOES NOT DO:
+# - No DNS or zone-route change. chat.padiem.net routing for the B64 paths stays
+#   a separate owner action read by b64-cloudflare-zone-route-readonly-probe.yml;
+#   wrangler.jsonc declares the workers.dev target only, and this gate asserts
+#   that it still does before deploying.
+# - No D1 provisioning or migration (b64-d1-provision-gate.yml owns that).
+# - No secret values, ever. Bindings are read back by NAME and TYPE only; the
+#   session secret is registered by b64-session-secret-activation-gate.yml.
+#
+# CENTRAL STEPS: merge the reviewed PR, then dispatch this gate with
+# confirmation=DEPLOY_B64_AI_REWARD_ROUTER and target_sha=<exact merged main SHA>.
+# To undo a deploy: dispatch again with confirmation=ROLLBACK_B64_TO_EXACT_VERSION
+# and rollback_version_id=<the version id printed as PREVIOUS_VERSION_ID>.
+
+on:
+  workflow_dispatch:
+    inputs:
+      target_sha:
+        description: 'Exact main SHA to deploy'
+        required: true
+      confirmation:
+        description: 'Type DEPLOY_B64_AI_REWARD_ROUTER, or ROLLBACK_B64_TO_EXACT_VERSION with a version id'
+        required: true
+      rollback_version_id:
+        description: 'Version id to roll back to (rollback branch only)'
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: b64-production-deploy
+  cancel-in-progress: false
+
+env:
+  B64_WORKER: b64-ai-reward-router
+  B64_URL: https://b64-ai-reward-router.charliekant.workers.dev
+  CHARLIEKANT_ACCOUNT_ID: 9be14bb7b8974e65d0afba647ab16932
+
+jobs:
+  deploy-production-b64:
+    if: >-
+      github.event.inputs.confirmation == 'DEPLOY_B64_AI_REWARD_ROUTER' &&
+      github.event.inputs.rollback_version_id == ''
+    name: Deploy exact main SHA to the B64 Worker
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    environment: production
+    defaults:
+      run:
+        working-directory: apps/ai-reward-router
+    steps:
+      - name: Checkout exact target SHA
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.target_sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Premutation exact-main and account assertions
+        shell: bash
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = '${{ github.event.inputs.target_sha }}'
+          git fetch --depth=1 origin main
+          test "$(git rev-parse origin/main)" = '${{ github.event.inputs.target_sha }}'
+          test "${CLOUDFLARE_ACCOUNT_ID}" = "${CHARLIEKANT_ACCOUNT_ID}" || {
+            echo 'ACCOUNT_SCOPE_MISMATCH=YES - expected Charliekant'
+            exit 1
+          }
+          echo 'PREMUTATION_EXACT_MAIN_SHA=PASS'
+          echo 'PREMUTATION_TARGET_ACCOUNT=PASS'
+
+      - name: Assert the reviewed deployment target before any mutation
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json, re, sys
+          from pathlib import Path
+
+          # wrangler.jsonc carries // comments, so strip line comments the same
+          # way tests/worker-deployment.test.ts does before parsing.
+          text = Path('wrangler.jsonc').read_text(encoding='utf-8')
+          config = json.loads(re.sub(r'^\s*//.*$', '', text, flags=re.MULTILINE))
+
+          assert config['name'] == 'b64-ai-reward-router', config['name']
+          # The product guard is that B64 declares no route or DNS mutation of
+          # its own; chat.padiem.net routing is a separate owner action.
+          for forbidden in ('routes', 'domain', 'custom_domains', 'zone_name'):
+              assert forbidden not in config, f'wrangler.jsonc must not declare {forbidden}'
+          assert config.get('workers_dev') is True, 'the workers.dev target must stay enabled'
+          # B64 authenticates its own members (owner decision 2026-10-27), so it
+          # binds no other product's Worker. A service here would mean a B64
+          # login depends on another product staying up.
+          assert 'services' not in config, 'wrangler.jsonc must declare no service bindings'
+
+          database = next(
+              (db for db in config.get('d1_databases', []) if db.get('binding') == 'B64_INCOME_DB'),
+              None,
+          )
+          assert database is not None, 'B64_INCOME_DB binding missing'
+          database_id = database['database_id']
+          assert re.fullmatch(r'[0-9a-fA-F-]{36}', database_id), f'unparsable database_id: {database_id}'
+          # #5840 replaced the all-zero placeholder with the provisioned id; a
+          # revert to it would deploy a Worker whose income storage silently
+          # fails closed on every request.
+          assert set(database_id.replace('-', '')) != {'0'}, 'database_id is still the zero placeholder'
+          print(f'D1_BINDING=PASS (database_id ends {database_id[-9:]})')
+
+          origin = config.get('vars', {}).get('B64_PUBLIC_BASE_URL')
+          assert isinstance(origin, str) and origin.startswith('https://'), origin
+          print(f'PUBLIC_BASE_URL=PASS ({origin})')
+          PY
+
+      - name: Build and test the exact revision being deployed
+        run: |
+          set -euo pipefail
+          npm ci
+          npm run build
+          npm run typecheck
+          npm test
+
+      - name: Require Cloudflare credentials (values never printed)
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          test -n "${CLOUDFLARE_API_TOKEN}" || { echo 'CLOUDFLARE_API_TOKEN_MISSING=YES'; exit 1; }
+          test -n "${CLOUDFLARE_ACCOUNT_ID}" || { echo 'CLOUDFLARE_ACCOUNT_ID_MISSING=YES'; exit 1; }
+          echo 'CLOUDFLARE_CREDENTIALS_PRESENT=YES'
+
+      - name: Dry-run the deployment without uploading
+        run: |
+          set -euo pipefail
+          npx --yes wrangler@4 deploy --dry-run --outdir "${RUNNER_TEMP}/b64-dry-run" \
+            | tee "${RUNNER_TEMP}/b64-dry-run.log"
+          echo 'B64_DEPLOY_DRY_RUN=PASS'
+
+      - name: Read the rollback anchor and deploy the exact SHA
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          TARGET_SHA: ${{ github.event.inputs.target_sha }}
+          SERVED_VERSION_SCRIPTS: ${{ github.workspace }}/.github/scripts
+        run: |
+          set -euo pipefail
+          cd "${GITHUB_WORKSPACE}/apps/ai-reward-router"
+          work="${RUNNER_TEMP}/b64-deploy"
+          mkdir -p "${work}"
+          base="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B64_WORKER}"
+
+          # The served-version rules are the repository's canonical ones
+          # (#3656): result.deployments[0] must carry exactly one version at
+          # 100%. They are not reimplemented here and `wrangler deployments
+          # list` is not consulted, because every superseded deployment keeps
+          # recording percentage 100 in its own history.
+          curl -fsS --max-time 30 -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            "${base}/deployments" -o "${work}/previous.json"
+          PREVIOUS_VERSION_ID="$(
+            python3 "${SERVED_VERSION_SCRIPTS}/cloudflare_served_version_cli.py" \
+              resolve-active --deployments="${work}/previous.json"
+          )"
+          test -n "${PREVIOUS_VERSION_ID}"
+          echo "PREVIOUS_VERSION_ID=${PREVIOUS_VERSION_ID}"
+          echo 'B64_ROLLBACK_ANCHOR=PASS'
+
+          restore() {
+            if npx --yes wrangler@4 rollback "${PREVIOUS_VERSION_ID}" --yes \
+                 --name "${B64_WORKER}" \
+                 --message 'B64 deploy gate automatic guarded rollback' > "${work}/rollback.log" 2>&1; then
+              echo 'B64_GUARDED_ROLLBACK=EXECUTED'
+              echo 'B64_RESTORED_VERSION_ID='"${PREVIOUS_VERSION_ID}"
+            else
+              echo 'B64_GUARDED_ROLLBACK=FAILED' >&2
+              tail -n 20 "${work}/rollback.log" >&2 || true
+            fi
+          }
+
+          if ! npx --yes wrangler@4 deploy --tag "git-${TARGET_SHA}" \
+                 --message "B64 exact main deploy ${TARGET_SHA}" > "${work}/deploy.log" 2>&1; then
+            tail -n 25 "${work}/deploy.log" >&2
+            echo 'B64_DEPLOY=FAILED (nothing uploaded, no rollback needed)'
+            exit 1
+          fi
+          NEW_VERSION_ID="$(grep -oE 'Current Version ID:\s*[0-9a-fA-F-]+' "${work}/deploy.log" | tail -n 1 | awk '{print $NF}')"
+          test -n "${NEW_VERSION_ID}" || { echo 'B64_DEPLOY_VERSION_ID_MISSING=YES' >&2; restore; exit 1; }
+          echo "DEPLOYED_VERSION_ID=${NEW_VERSION_ID}"
+          echo "${NEW_VERSION_ID}" > "${work}/new-version-id"
+          echo 'B64_DEPLOY=UPLOADED'
+
+          # A deploy that is not serving 100% is a failure, not a success with a
+          # caveat: the whole point of this gate is that a browser can reach the
+          # merged revision.
+          sleep 15
+          if ! curl -fsS --max-time 30 -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+               "${base}/deployments" -o "${work}/served.json"; then
+            restore
+            exit 1
+          fi
+          if ! SERVED="$(
+               python3 "${SERVED_VERSION_SCRIPTS}/cloudflare_served_version_cli.py" \
+                 resolve-active --deployments="${work}/served.json"
+             )"; then
+            restore
+            exit 1
+          fi
+          if [ "${SERVED}" != "${NEW_VERSION_ID}" ]; then
+            echo "B64_SERVED_VERSION_MISMATCH=served:${SERVED} expected:${NEW_VERSION_ID}" >&2
+            restore
+            exit 1
+          fi
+          echo "B64_SERVED_VERSION_ID=${SERVED}"
+          echo 'B64_SERVED_100_PERCENT=PASS'
+
+      - name: Verify the public host answers with the merged revision
+        shell: bash
+        env:
+          TARGET_SHA: ${{ github.event.inputs.target_sha }}
+          # The parity step's rollback path needs the same credentials as the
+          # deploy step: a verification failure has to be able to undo itself
+          # without an operator in the loop.
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          restore() {
+            new="$(cat "${RUNNER_TEMP}/b64-deploy/new-version-id" 2>/dev/null || true)"
+            previous="$(python3 "${GITHUB_WORKSPACE}/.github/scripts/cloudflare_served_version_cli.py" \
+              resolve-active --deployments="${RUNNER_TEMP}/b64-deploy/previous.json" 2>/dev/null || true)"
+            if [ -n "${previous}" ] && [ "${previous}" != "${new}" ]; then
+              npx --yes wrangler@4 rollback "${previous}" --yes --name "${B64_WORKER}" \
+                --message 'B64 post-deploy parity failure guarded rollback' \
+                && echo 'B64_GUARDED_ROLLBACK=EXECUTED'
+            fi
+          }
+          trap restore ERR
+
+          fetch() {
+            for _ in 1 2 3 4 5; do
+              body="$(curl -fsS --max-time 20 "${B64_URL}$1" 2>/dev/null)" && { printf '%s' "${body}"; return 0; }
+              sleep 4
+            done
+            return 1
+          }
+
+          health="$(fetch /healthz)"
+          python3 -c '
+          import json, sys
+          payload = json.loads(sys.argv[1])
+          assert payload["service"] == "b64-ai-reward-router", payload
+          assert payload["status"] == "ok", payload
+          # No provider is approved yet, so a live answer that claims otherwise
+          # would be the defect this product is built to prevent.
+          assert payload["providerPermissionGranted"] is False, payload
+          assert payload["supplyActivation"] == "OWNER_ACTION_PENDING", payload
+          print("HEALTHZ=PASS (no provider authority claimed)")
+          ' "${health}"
+
+          # Each check names the merged work it proves, so a red run points at the
+          # revision that failed to land rather than at a generic "500".
+          home="$(fetch /)"
+          printf '%s' "${home}" | grep 'data-theme' >/dev/null || { echo 'B64_THEME_ATTRIBUTE=MISSING (#5822)'; false; }
+          printf '%s' "${home}" | grep 'theme-toggle' >/dev/null || { echo 'B64_THEME_TOGGLE=MISSING (#5822)'; false; }
+          printf '%s' "${home}" | grep '수익 기회 보기' >/dev/null || { echo 'B64_HOME_CTA=MISSING (#5830)'; false; }
+          echo 'B64_HOME=PASS (light default, theme toggle, CTA)'
+
+          browse="$(fetch /browse)"
+          printf '%s' "${browse}" | grep '2026\.10\.' >/dev/null || { echo 'B64_PUBLIC_SUPPLY_DATES=MISSING (#5794)'; false; }
+          echo 'B64_BROWSE=PASS (verified public supply rendered)'
+
+          printf '%s' "$(fetch /today)" | grep 'data-theme' >/dev/null || { echo 'B64_TODAY=DEGRADED'; false; }
+          fetch '/detail?id=pub-prolific-participate' | grep 'Prolific' >/dev/null \
+            || { echo 'B64_DETAIL=DEGRADED (#5794 public detail)'; false; }
+          echo 'B64_DETAIL=PASS'
+
+          pipeline="$(fetch /pipeline)"
+          printf '%s' "${pipeline}" | grep 'INCOME_PIPELINE' >/dev/null \
+            || { echo 'B64_PIPELINE=MISSING (#5816)'; false; }
+          income_status="$(curl -fsS -o /dev/null -w '%{http_code}' --max-time 20 "${B64_URL}/income")"
+          test "${income_status}" = '200' || { echo "B64_INCOME_STATUS=${income_status}"; false; }
+          echo 'B64_PIPELINE=PASS (/pipeline and /income serve the dashboard)'
+
+          csp="$(curl -fsS --max-time 20 -D - -o /dev/null "${B64_URL}/" | grep -i '^content-security-policy:')"
+          printf '%s' "${csp}" | grep "form-action 'self'" >/dev/null \
+            || { echo "B64_CSP_FORM_ACTION=WRONG (${csp}) — #5819 not live"; false; }
+          printf '%s' "${csp}" | grep "script-src 'none'" >/dev/null || { echo 'B64_CSP_SCRIPT=WRONG'; false; }
+          echo 'B64_CSP=PASS (same-origin forms allowed, scripts still none)'
+
+          # The unauthenticated dashboard must stay reachable and must not show
+          # anyone's records: an anonymous visitor gets the login prompt.
+          anon="$(fetch /pipeline)"
+          printf '%s' "${anon}" | grep 'B64 계정으로 이용할 수 있습니다' >/dev/null \
+            || { echo 'B64_ANON_PIPELINE=UNEXPECTED'; false; }
+          printf '%s' "${anon}" | grep 'action="/join"' >/dev/null \
+            || { echo 'B64_JOIN_FORM=MISSING (#987 independent account entry)'; false; }
+          echo 'B64_ANON_PIPELINE=PASS (B64 own account entry, no user data without a session)'
+          echo "B64_DEPLOYED_FROM_SHA=${TARGET_SHA}"
+          echo 'B64_POST_DEPLOY_PARITY=PASS'
+
+      - name: Read back live bindings against the reviewed baseline (names and types only)
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          cd "${GITHUB_WORKSPACE}"
+          settings="${RUNNER_TEMP}/b64-settings.json"
+          curl -fsS --max-time 30 \
+            -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            -H "Content-Type: application/json" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B64_WORKER}/settings" \
+            -o "${settings}"
+          python3 - "${settings}" .github/binding_baselines/b64-ai-reward-router.json <<'PY'
+          import json, sys
+
+          payload = json.load(open(sys.argv[1], encoding='utf-8'))
+          assert payload.get('success') is True, 'settings readback failed'
+          live = {b.get('name'): b.get('type') for b in payload['result'].get('bindings', [])}
+          baseline = json.load(open(sys.argv[2], encoding='utf-8'))['bindings']
+
+          # Values are never printed: secret_text bindings cannot be read back
+          # anyway, and a plain_text value would leak the reviewed origin.
+          missing = []
+          for entry in baseline:
+              name, wanted = entry['name'], entry['type']
+              got = live.get(name)
+              if got is None:
+                  missing.append(name)
+                  print(f'BINDING {name}: ABSENT (baseline wants {wanted})')
+              elif got != wanted:
+                  missing.append(name)
+                  print(f'BINDING {name}: TYPE {got} != baseline {wanted}')
+              else:
+                  print(f'BINDING {name}: {got} MATCHES_BASELINE')
+
+          print('LIVE_BINDING_NAMES=' + ','.join(sorted(live)))
+          # B64 signs its own session cookies with its own key. That key is
+          # minted by the owner, not copied from another product, so it is
+          # reported here rather than being a hard baseline entry: the deploy
+          # itself is valid without it, and nothing authenticates until it is
+          # registered as a Worker secret.
+          print('B64_SESSION_SECRET_BINDING=' + (
+              'PRESENT' if live.get('B64_SESSION_SECRET') == 'secret_text'
+              else 'ABSENT (owner must register B64_SESSION_SECRET before login works; every /pipeline request stays anonymous)'
+          ))
+          # Every binding the reviewed baseline declares is required: the income
+          # path denies all authentication when its storage is missing, and
+          # answers 503 for storage without the D1. A missing entry means the
+          # deployment did not take, so it fails the gate rather than being
+          # reported as a note.
+          print('B64_BINDING_PARITY=' + ('PASS' if not missing else 'INCOMPLETE:' + ','.join(missing)))
+          if missing:
+              sys.exit(1)
+          # Binding-baseline contract (docs/operations/
+          # CLOUDFLARE_CREDENTIAL_OPERATIONS.md section 8): this readback is
+          # EVIDENCE. Amending .github/binding_baselines/ travels with its own
+          # reviewed PR, so printing it here does not change the baseline.
+          print('BINDING_BASELINE=EVIDENCE_ONLY')
+          PY
+
+      - name: Record what this run did and did not prove
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo 'B64_DEPLOYED=YES (workers.dev target from the exact main SHA)'
+          echo 'B64_ZONE_ROUTE_CREATED=NO (chat.padiem.net routing is a separate owner action)'
+          echo 'B64_D1_PROVISIONED_BY_THIS_GATE=NO (b64-d1-provision-gate.yml owns it)'
+          echo 'B64_SESSION_SECRET_REGISTERED_BY_THIS_GATE=NO'
+          echo 'B64_SIGNED_SESSION_E2E=NOT_RUN (needs a chat-issued cookie on the routed origin)'
+
+  rollback-b64:
+    if: >-
+      github.event.inputs.confirmation == 'ROLLBACK_B64_TO_EXACT_VERSION' &&
+      github.event.inputs.rollback_version_id != ''
+    name: Roll the B64 Worker back to one named version
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    environment: production
+    steps:
+      - name: Checkout the gate definition
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Validate the version id and roll back
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          ROLLBACK_VERSION_ID: ${{ github.event.inputs.rollback_version_id }}
+        run: |
+          set -euo pipefail
+          test "${CLOUDFLARE_ACCOUNT_ID}" = "${CHARLIEKANT_ACCOUNT_ID}" || {
+            echo 'ACCOUNT_SCOPE_MISMATCH=YES - expected Charliekant'
+            exit 1
+          }
+          python3 .github/scripts/cloudflare_served_version_cli.py \
+            validate-version-id --version-id "${ROLLBACK_VERSION_ID}"
+          npx --yes wrangler@4 rollback "${ROLLBACK_VERSION_ID}" --yes \
+            --name "${B64_WORKER}" --message 'B64 operator-confirmed rollback'
+          sleep 15
+          base="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B64_WORKER}"
+          curl -fsS --max-time 30 -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            "${base}/deployments" -o "${RUNNER_TEMP}/b64-served-after-rollback.json"
+          served="$(python3 .github/scripts/cloudflare_served_version_cli.py \
+            resolve-active --deployments="${RUNNER_TEMP}/b64-served-after-rollback.json")"
+          test "${served}" = "${ROLLBACK_VERSION_ID}" || {
+            echo "B64_ROLLBACK_SERVED_MISMATCH=served:${served} requested:${ROLLBACK_VERSION_ID}" >&2
+            exit 1
+          }
+          echo "B64_ROLLBACK=PASS (serving ${served})"
+          status="$(curl -fsS -o /dev/null -w '%{http_code}' --max-time 20 "${B64_URL}/healthz")"
+          echo "B64_ROLLBACK_HEALTHZ_STATUS=${status}"

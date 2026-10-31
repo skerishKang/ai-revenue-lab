@@ -18,7 +18,6 @@ from padiem_ai_core.execution_runtime import (
     ExecutionRequest,
     ExecutionResult,
     ExecutionRuntimeError,
-    MAX_ADDITIONAL_SYSTEM_CONTEXT_CHARS,
 )
 from padiem_ai_core.grounding_runtime import (
     GroundedResearchResult,
@@ -219,14 +218,6 @@ def _additional_system_context(value: Any) -> str | None:
     if not text:
         return None
     # #4379: the additional system context carries no PADIEM character total.
-    if (
-        MAX_ADDITIONAL_SYSTEM_CONTEXT_CHARS is not None
-        and len(text) > MAX_ADDITIONAL_SYSTEM_CONTEXT_CHARS
-    ):
-        raise ResearchContractError(
-            "invalid_research_request",
-            "additional_system_context exceeds the bounded context limit.",
-        )
     return text
 
 
@@ -482,7 +473,7 @@ class WebResearchEngineService:
                     request.query,
                     synthesizer=synthesize,
                     additional_system_context=request.additional_system_context,
-                    max_total_context_chars=MAX_ADDITIONAL_SYSTEM_CONTEXT_CHARS,
+                    max_total_context_chars=None,
                 )
             elif request.operation == "fetch":
                 assert request.url is not None
@@ -490,7 +481,7 @@ class WebResearchEngineService:
                     request.url,
                     synthesizer=synthesize,
                     additional_system_context=request.additional_system_context,
-                    max_total_context_chars=MAX_ADDITIONAL_SYSTEM_CONTEXT_CHARS,
+                    max_total_context_chars=None,
                 )
             else:
                 result = await research_runtime.run_deep_research(
@@ -498,7 +489,7 @@ class WebResearchEngineService:
                     planner=plan,
                     synthesizer=synthesize,
                     additional_system_context=request.additional_system_context,
-                    max_total_context_chars=MAX_ADDITIONAL_SYSTEM_CONTEXT_CHARS,
+                    max_total_context_chars=None,
                 )
         except GroundingRuntimeError as exc:
             return _research_runtime_error(exc)

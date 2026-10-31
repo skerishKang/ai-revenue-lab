@@ -10,8 +10,32 @@ import re
 import shutil
 import uuid
 
+from padiem_ai_core.document_normalization import DocumentNormalizationError
+
 FILE_PATTERN = re.compile(r"file_[a-f0-9]{32}\Z")
 KINDS = {".txt": "txt", ".md": "md", ".csv": "csv", ".pdf": "pdf", ".docx": "docx", ".pptx": "pptx", ".xlsx": "xlsx"}
+
+# Core parser refusals of an uploaded document, by constant reason code from
+# padiem_ai_core.document_normalization. Chat keeps per-code guidance for
+# these (#6316), so the code alone crosses the lane boundary; a parser
+# exception's message can carry document content and is never passed or
+# logged. Codes outside this list stay parse_failed.
+PARSER_REASON_CODES = frozenset({
+    # Archive gate (validate_ooxml_archive) and bounded member reads.
+    "ooxml_archive_size", "ooxml_encrypted", "ooxml_unsafe_path", "ooxml_link_entry",
+    "ooxml_dtd_rejected", "ooxml_entry_size", "ooxml_total_inflation", "ooxml_malformed",
+    "ooxml_invalid_xml",
+    # DOCX / PPTX / XLSX extraction.
+    "docx_missing_part", "docx_empty", "pptx_missing_slides", "pptx_empty",
+    "xlsx_invalid", "xlsx_no_sheets", "xlsx_empty",
+    # PDF reader and page text.
+    "pdf_magic_mismatch", "pdf_encrypted", "pdf_invalid", "pdf_no_pages",
+    "pdf_empty_text", "pdf_page_text_invalid", "pdf_page_geometry_unavailable",
+    # Text documents (txt/md/csv) after upload.
+    "empty_document", "binary_text_rejected", "excessive_control_characters", "invalid_text",
+    # Extraction dependency missing in this runtime.
+    "document_dependency_unavailable",
+})
 
 
 class FileError(Exception):
@@ -91,6 +115,12 @@ class Store:
             raise disk_error(exc) from None
         except FileError:
             raise
+        except DocumentNormalizationError as exc:
+            # The constant reason code carries no document content; the
+            # message text never crosses this boundary.
+            if exc.code in PARSER_REASON_CODES:
+                raise FileError(exc.code, 422) from None
+            raise FileError("parse_failed", 422) from None
         except Exception:
             # Parser exceptions can include document content. Never log/echo.
             raise FileError("parse_failed", 422) from None

@@ -33,6 +33,20 @@ from .config import Settings
 from .evidence import Evidence
 
 
+# #6090: MAX_QUERY_CHARS is the web-search provider's own query contract
+# (web_runtime.py), not a PADIEM ceiling on what a user may type. A chat body
+# longer than a search query is a document, so it must never be refused as a
+# turn and never be forwarded as a query. When a user explicitly asks for a
+# search with text that cannot be a query, this is the Korean answer, and it
+# names the two ways forward instead of reporting a number.
+SEARCH_QUERY_TOO_LONG_CODE = "web_search_query_too_long"
+SEARCH_QUERY_TOO_LONG_MESSAGE = (
+    "글이 너무 길어 웹 검색어로는 보낼 수 없어요. "
+    "최신 정보를 찾으려면 핵심만 나눠서 보내 주시고, "
+    "긴 글 자체를 분석하려면 '파일 첨부'로 문서를 올려 주세요."
+)
+
+
 class WebToolError(RuntimeError):
     def __init__(self, code: str, user_message: str, status_code: int = 502):
         super().__init__(user_message)

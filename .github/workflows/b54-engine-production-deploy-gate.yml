@@ -61,11 +61,18 @@ jobs:
         shell: bash
         env:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "${{ github.event.inputs.target_sha }}"
           git fetch origin main
-          test "$(git rev-parse origin/main)" = "${{ github.event.inputs.target_sha }}"
+          if ! test "$(git rev-parse origin/main)" = "${{ github.event.inputs.target_sha }}"; then
+            # #5895: main moved ahead while this run was starting. The target
+            # still ships when it is an ancestor of main and nothing under
+            # apps/padiem-ai-engine moved between the two -- that directory is the
+            # whole surface this gate deploys.
+            python3 .github/scripts/main_currency_guard.py --target "${{ github.event.inputs.target_sha }}" --path apps/padiem-ai-engine --path packages
+          fi
           test "$CLOUDFLARE_ACCOUNT_ID" = '9be14bb7b8974e65d0afba647ab16932'
           echo 'PREMUTATION_EXACT_MAIN_SHA=PASS'
           echo 'PREMUTATION_TARGET_ACCOUNT=PASS'
@@ -425,6 +432,10 @@ jobs:
           fi
           echo "PRE_DEPLOY_SERVED_VERSION_ID=${pre_version}"
           echo "POST_DEPLOY_SERVED_VERSION_ID=${active_version}"
+          # #5895: stdout and the step summary both name the promoted version,
+          # so a run log says which Engine version is serving without opening
+          # the evidence artifact. The id is not a secret.
+          echo "DEPLOYED_VERSION_ID=${active_version}" | tee -a "${GITHUB_STEP_SUMMARY}"
           echo 'SERVED_VERSION_CHANGED_BY_CODE_DEPLOY=YES'
           echo "POST_DEPLOY_CONVERGENCE_READS=${convergence_reads}"
           echo 'POST_DEPLOY_SERVED_VERSION_CONVERGED=PASS'
@@ -487,6 +498,24 @@ jobs:
           grep -q '"b14_service_bound":true' /tmp/health.json
           grep -q 'orchestration_run' /tmp/health.json
           echo 'B54_ENGINE_PRODUCTION_SMOKE=PASS'
+
+      # #5895 item 4: one ordinary chat turn that the promoted Engine actually
+      # answers. The health smoke above never dispatches a model, so a person
+      # used to send a message by hand after this deploy. The signed-in
+      # composer lane (Chat /api/orchestration -> Engine, #4469) is the route
+      # the browser tries first, so it is the Engine's own proof. It reuses the
+      # QA identity the long-context canary already signs in with: no new
+      # credential is created, and only the names below are referenced. No
+      # model is named or checked. This job has no failure()-based rollback
+      # and none is added here, so a failed proof leaves the gate red to read.
+      - name: Post-deploy real chat
+        shell: bash
+        env:
+          B66_CGI_ALPHA_USERNAME: ${{ vars.B66_CGI_ALPHA_USERNAME }}
+          B66_CGI_ALPHA_PASSWORD: ${{ secrets.B66_CGI_ALPHA_PASSWORD }}
+        run: |
+          set -euo pipefail
+          python3 .github/scripts/post_deploy_real_chat_smoke.py --lane engine
 
       # #3758 round 2 (CENTRAL review): publish the bounded run-outcome
       # evidence. `if: always()` is the #3704/#3742 precedent -- a run that
@@ -755,6 +784,7 @@ jobs:
           printf '%s\n' "${final_out}"
           served_version="$(printf '%s\n' "${final_out}" | sed -n 's/^POST_MUTATION_SERVED_VERSION_ID=//p')"
           echo "POST_ROLLBACK_SERVED_VERSION_ID=${served_version}"
+          echo "DEPLOYED_VERSION_ID=${served_version}" | tee -a "${GITHUB_STEP_SUMMARY}"
           echo 'POST_ROLLBACK_SERVED_EQUALS_TARGET=PASS'
           echo 'ROLLBACK_COMMAND_EXIT_ZERO_AS_FINAL_PASS=NO'
           echo 'B54_ENGINE_PRODUCTION_ROLLBACK=PASS'

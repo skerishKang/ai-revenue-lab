@@ -1,0 +1,31 @@
+[Unit]
+Description=PADIEM COM2 Local Agent broker (CPython)
+Wants=network-online.target
+After=network-online.target
+RequiresMountsFor=/mnt/d/padiem/broker
+ConditionPathIsMountPoint=/mnt/d
+ConditionPathExists=/opt/padiem/broker/.env
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+User=padiem-broker
+Group=padiem-broker
+WorkingDirectory=/opt/padiem/broker
+EnvironmentFile=/opt/padiem/broker/.env
+Environment=PYTHONPATH=/opt/padiem/broker:/opt/padiem/broker/src
+ExecCondition=/opt/padiem/broker/venv/bin/python /opt/padiem/broker/check_config.py
+ExecStart=/opt/padiem/broker/venv/bin/python -m uvicorn --factory service:build_app --host 127.0.0.1 --port 8799 --no-server-header
+Restart=always
+RestartSec=5
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/mnt/d/padiem/broker
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

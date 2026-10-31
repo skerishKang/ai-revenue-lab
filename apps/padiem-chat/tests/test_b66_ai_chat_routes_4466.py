@@ -250,7 +250,8 @@ def test_live_fact_search_is_unavailable_without_server_approval_even_when_provi
     sign_in(settings, client)
 
     class NoProviderIO:
-        async def prepare(self, messages, *, skill, additional_system_context):
+        async def prepare(self, messages, *, skill, additional_system_context=None,
+                        explicit_search=False, util_scope=None):
             raise AssertionError("unapproved web search must never execute")
 
     client.app.state.auto_grounding = NoProviderIO()
@@ -273,7 +274,8 @@ def test_a_public_freshness_turn_reaches_the_model_with_the_server_search_envelo
         def __init__(self):
             self.seen = []
 
-        async def prepare(self, messages, *, skill, additional_system_context):
+        async def prepare(self, messages, *, skill, additional_system_context=None,
+                        explicit_search=False, util_scope=None):
             self.seen.append(messages[0]["content"])
             return SimpleNamespace(
                 decision=SimpleNamespace(reason="freshness_sensitive"),
@@ -331,7 +333,8 @@ def test_a_withheld_private_turn_sends_no_query_and_tells_the_model_it_did_not_s
     sign_in(settings, client)
 
     class RefusingGrounding:
-        async def prepare(self, messages, *, skill, additional_system_context):
+        async def prepare(self, messages, *, skill, additional_system_context=None,
+                        explicit_search=False, util_scope=None):
             raise AssertionError("a withheld turn must never reach the provider")
 
     client.app.state.auto_grounding = RefusingGrounding()
@@ -351,7 +354,8 @@ def test_dialogue_reaches_b14_with_prior_turns_exact_model_and_zero_fallback():
     sent = dialogue_request(binding)
     assert sent["model"] == WIRE_MODEL
     # Exact one-shot: no substitution and no retry widening the customer's cost.
-    assert sent["business14"]["allow_external_fallback"] is False
+    # B5: the retired fallback knob no longer travels on the wire.
+    assert "allow_external_fallback" not in sent["business14"]
     assert sent["business14"]["max_retries"] == 0
     # #5362 removed the default one-step agent execution ceiling, so no
     # attempt ceiling is sent. The one-shot contract is the pinned retry
@@ -367,7 +371,8 @@ def test_dialogue_reaches_b14_with_prior_turns_exact_model_and_zero_fallback():
 def test_dialogue_prompt_declares_real_quote_boundaries_not_extraction():
     sent = dialogue_request(RecordingBinding("네."))
     system = sent["messages"][0]["content"]
-    assert sent["business14"]["task_type"] == "general"
+    # B4: the scorer-era task_type no longer travels on the wire.
+    assert "task_type" not in sent["business14"]
     for boundary in ("견적서 저장", "PDF", "조회하지 못합니다", "완료됐다고"):
         assert boundary in system, boundary
     # Dialogue is consultation, never the CGI quote field extractor.

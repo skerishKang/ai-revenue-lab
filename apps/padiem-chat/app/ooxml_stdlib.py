@@ -31,6 +31,7 @@ _MESSAGES = {
     "ooxml_archive_size": "archive size out of bounds",
     "ooxml_unsafe_path": "unsafe OOXML archive member path",
     "ooxml_encrypted": "encrypted OOXML entries are not supported",
+    "ooxml_link_entry": "link entries are not permitted in OOXML archives",
     "ooxml_entry_size": "entry exceeds size limit",
     "ooxml_dtd_rejected": "DTDs are not supported",
     "ooxml_malformed": "malformed OOXML ZIP archive",

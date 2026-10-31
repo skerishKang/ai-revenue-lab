@@ -1,0 +1,72 @@
+name: COM2 Mesh Queue Contract Tests
+
+# #5881 follow-on — the lane that decides whether the 컴2 PC queue may be switched on.
+#
+# The claim lane, the store door, the state copy and the differential parity between the
+# two authorities are the whole of `apps/padiem-mesh-queue/tests` (38 at the time of
+# writing), and until this file existed none of them ran on GitHub: PR-A and PR-B were
+# verified on a workstation only, which is how a cutover gate ends up resting on a
+# laptop. This is the same code the service runs, so it is executed here the way it runs
+# there — the real route functions, the real stores, a real SQLite file.
+#
+# Offline and read-only: no Cloudflare credential, no network, no D1, no deploy. The
+# dependency set is exactly `apps/padiem-mesh-queue/requirements.txt` plus pytest — that
+# was checked against a clean virtualenv before this file was written, so the lane cannot
+# pass here by borrowing a package some other lane installed.
+#
+# `packages/padiem-ai-core/**` and `packages/padiem-control-plane/**` are NOT triggers:
+# they are imported transitively, and the Chat CI lane already runs on them. A change
+# that breaks the queue's view of them breaks that lane first.
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/com2-mesh-queue-contract-tests.yml"
+      - "apps/padiem-mesh-queue/**"
+      - "apps/padiem-chat/app/d1_sqlite.py"
+      - "apps/padiem-chat/app/history.py"
+      - "apps/padiem-chat/app/mesh_device_presence_store.py"
+      - "apps/padiem-chat/app/oracle_mesh_lease_renew_routes.py"
+      - "apps/padiem-chat/app/oracle_mesh_read_return_routes.py"
+      - "apps/padiem-chat/app/pc_device_pairing_store.py"
+      - "apps/padiem-chat/app/queue_store_proxy.py"
+      - "apps/padiem-chat/migrations/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: com2-mesh-queue-contract-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  contract:
+    name: Claim lane, store door, state copy and both-path parity (offline)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      PYTHONPATH: apps/padiem-chat:packages/padiem-ai-core:packages/padiem-control-plane
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install the service's own dependency set, plus pytest
+        run: |
+          set -euo pipefail
+          python -m pip install --quiet --disable-pip-version-check \
+            -r apps/padiem-mesh-queue/requirements.txt pytest
+          python -m pip freeze \
+            | sed -n 's/^\(starlette\|uvicorn\|httpx\|python-multipart\)==/MESH_QUEUE_PINNED=\0/p'
+
+      - name: The claim lane, the store door, the state copy and both-path parity
+        run: |
+          set -euo pipefail
+          python -m pytest -q apps/padiem-mesh-queue/tests
+          echo 'MESH_QUEUE_CONTRACT=PASS'
+          echo 'CLOUDFLARE_CALLS=0'
+          echo 'PRODUCTION_MUTATION=0'
+          echo 'D1_MUTATION=0'

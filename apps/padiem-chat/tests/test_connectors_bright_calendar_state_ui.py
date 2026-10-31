@@ -222,6 +222,21 @@ def test_small_text_uses_solid_aa_colors_instead_of_opacity_mutting() -> None:
 def test_claw_and_skills_dialogs_gain_no_new_rescoping() -> None:
     css = _css()
     assert "#skillsDialog" not in css, "Skills dialog must not be touched"
+    # The permanently disabled Skills dialog is gone from the DOM, and its
+    # locale keys are gone from both tables, rather than only absent from CSS.
+    html = INDEX_HTML.read_text(encoding="utf-8")
+    locale = LOCALE_JS.read_text(encoding="utf-8")
+    assert "skillsDialog" not in html
+    assert "skillsNavButton" not in html
+    for key in (
+        "nav-skills",
+        "skills-kicker",
+        "skills-title",
+        "skills-note",
+        "skill-custom",
+        "skills-grid-aria",
+    ):
+        assert f'"{key}"' not in locale, key
     assert css.count('html[data-theme="padiem-glass"] #clawDialog {') == 1, (
         "the existing Claw override must stay exactly as it was"
     )

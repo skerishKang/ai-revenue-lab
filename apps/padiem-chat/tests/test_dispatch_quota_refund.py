@@ -78,7 +78,8 @@ class FakeServiceTransport:
         assert url.endswith("/api/pilot/v1/chat/completions")
         assert payload["model"] == DEFAULT_B14_MODEL_ID
         assert payload["business14"]["required_capabilities"] == ["chat"]
-        assert payload["business14"]["allow_external_fallback"] is False
+        # B5: the retired fallback knob no longer travels on the wire.
+        assert "allow_external_fallback" not in payload["business14"]
         assert "max_attempts" not in payload["business14"]
         if self.error is not None:
             raise self.error
@@ -103,7 +104,7 @@ async def test_missing_required_service_binding_refunds_exact_authorization_once
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
         response = await client.post(
             "/api/chat",
-            json={"messages": MESSAGES, "mode": "auto"},
+            json={"messages": MESSAGES},
             headers={"cf-connecting-ip": IP},
         )
 
@@ -131,7 +132,7 @@ async def test_successful_dispatch_consumes_exactly_one_quota_operation():
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
         response = await client.post(
             "/api/chat",
-            json={"messages": MESSAGES, "mode": "auto"},
+            json={"messages": MESSAGES},
             headers={"cf-connecting-ip": IP},
         )
 
@@ -157,7 +158,7 @@ async def test_ambiguous_transport_failure_is_not_refunded():
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
         response = await client.post(
             "/api/chat",
-            json={"messages": MESSAGES, "mode": "auto"},
+            json={"messages": MESSAGES},
             headers={"cf-connecting-ip": IP},
         )
 
@@ -184,7 +185,7 @@ async def test_b14_server_failure_is_not_refunded():
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
         response = await client.post(
             "/api/chat",
-            json={"messages": MESSAGES, "mode": "auto"},
+            json={"messages": MESSAGES},
             headers={"cf-connecting-ip": IP},
         )
 

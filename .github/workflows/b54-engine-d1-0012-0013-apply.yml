@@ -1,0 +1,97 @@
+name: B54 Engine D1 0012-0013 Apply Gate
+
+on:
+  workflow_dispatch:
+    inputs:
+      target_sha:
+        description: Exact 40-character current main SHA
+        required: true
+        type: string
+      confirmation:
+        description: APPLY_ENGINE_D1_0012_0013_<target_sha>
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: b54-engine-d1-0012-0013-apply
+  cancel-in-progress: false
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: production
+    env:
+      TARGET_SHA: ${{ inputs.target_sha }}
+      CONFIRMATION: ${{ inputs.confirmation }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      DB_ID: 6b77ad02-bc27-488f-bb97-6325f6750cba
+    steps:
+      - name: Validate dispatch before checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF" = refs/heads/main
+          [[ "$TARGET_SHA" =~ ^[0-9a-f]{40}$ ]]
+          test "$CONFIRMATION" = "APPLY_ENGINE_D1_0012_0013_${TARGET_SHA}"
+          test "$CLOUDFLARE_ACCOUNT_ID" = 9be14bb7b8974e65d0afba647ab16932
+          test -n "$CLOUDFLARE_API_TOKEN"
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.target_sha }}
+          persist-credentials: false
+      - name: Verify main and binding before export
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$TARGET_SHA"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse FETCH_HEAD)" = "$TARGET_SHA"
+          curl -fsS --max-time 30 -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+            "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/workers/scripts/padiem-ai-engine/settings" -o "$RUNNER_TEMP/engine-settings.json"
+          python3 .github/scripts/b54_engine_d1_0012_0013_verify_binding.py "$RUNNER_TEMP/engine-settings.json"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Export entire database
+        shell: bash
+        run: |
+          set -euo pipefail
+          npx --yes wrangler@4 d1 export "$DB_ID" --remote --output="$RUNNER_TEMP/engine-full-export.sql" --config apps/padiem-ai-engine/wrangler.toml
+          test -s "$RUNNER_TEMP/engine-full-export.sql"
+      - name: Store full export for 7 days
+        uses: actions/upload-artifact@v4
+        with:
+          name: engine-d1-before-0012-0013-${{ github.run_id }}
+          path: ${{ runner.temp }}/engine-full-export.sql
+          retention-days: 7
+          if-no-files-found: error
+      - name: Reconfirm main and binding then inspect immediately before apply
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse FETCH_HEAD)" = "$TARGET_SHA"
+          curl -fsS --max-time 30 -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+            "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/workers/scripts/padiem-ai-engine/settings" -o "$RUNNER_TEMP/engine-settings-final.json"
+          python3 .github/scripts/b54_engine_d1_0012_0013_verify_binding.py "$RUNNER_TEMP/engine-settings-final.json"
+          python3 .github/scripts/b54_engine_d1_0012_0013_inspect.py before "$RUNNER_TEMP/baseline.json"
+      - name: Apply 0012 then guarded 0013
+        shell: bash
+        run: |
+          set -euo pipefail
+          api="https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/d1/database/$DB_ID/query"
+          for migration in 0012 0013; do
+            python3 .github/scripts/b54_engine_d1_0012_0013_payload.py "$migration" "$RUNNER_TEMP/payload.json"
+            curl -fsS --max-time 90 -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" -H 'Content-Type: application/json' \
+              --data-binary @"$RUNNER_TEMP/payload.json" "$api" -o "$RUNNER_TEMP/apply-response.json"
+            python3 .github/scripts/b54_engine_d1_0012_0013_verify_response.py "$RUNNER_TEMP/apply-response.json" "$RUNNER_TEMP/payload.json"
+            echo "ENGINE_MIGRATION_${migration}=APPLIED"
+          done
+      - name: Verify exact schema, indexes and preserved row counts
+        shell: bash
+        run: python3 .github/scripts/b54_engine_d1_0012_0013_inspect.py after "$RUNNER_TEMP/baseline.json"

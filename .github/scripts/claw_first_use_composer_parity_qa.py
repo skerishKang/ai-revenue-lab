@@ -48,6 +48,8 @@ with sync_playwright() as p:
       cellH:(()=>{const n=document.querySelector('.starter-grid > .starter');return n&&n.getClientRects().length?Math.round(n.getBoundingClientRect().height):null})(),
       cardH:(()=>{const n=[...document.querySelectorAll('.claw-home-card')].find(e=>e.getClientRects().length);return n?Math.round(n.getBoundingClientRect().height):null})(),
       inlineLabels:[...document.querySelectorAll('.claw-home-card .claw-connection-label')].filter(e=>getComputedStyle(e).display!=='none').length,
+      statusInFlow:[...document.querySelectorAll('.claw-home-card .claw-card-status')].filter(s=>{const c=s.closest('.claw-home-card');return c&&c.getClientRects().length&&getComputedStyle(s).position==='static'}).length,
+      toggleInFlow:[...document.querySelectorAll('.claw-home-card .claw-connection-toggle')].filter(t=>{const c=t.closest('.claw-home-card');return c&&c.getClientRects().length&&getComputedStyle(t).position==='static'}).length,
       statusTopRight:[...document.querySelectorAll('.claw-home-card')].filter(c=>{
         const s=c.querySelector('.claw-card-status');if(!s||!c.getClientRects().length)return false;
         const cr=c.getBoundingClientRect(),sr=s.getBoundingClientRect();
@@ -56,6 +58,9 @@ with sync_playwright() as p:
         const card=t.closest('.claw-home-card');if(!card||!t.getClientRects().length)return false;
         const cr=card.getBoundingClientRect(),tr=t.getBoundingClientRect();
         return cr.bottom-tr.bottom<26 && cr.right-tr.right<26}).length,
+      toggleReady:[...document.querySelectorAll('.claw-home-card')].filter(c=>{const t=c.querySelector('.claw-connection-toggle');if(!t||!c.getClientRects().length)return false;const r=t.getBoundingClientRect();const hit=document.elementFromPoint(r.x+r.width/2,r.y+r.height/2);return r.width>0&&r.height>=24&&hit&&(hit===t||t.contains(hit))}).length,
+      toggleTouch:[...document.querySelectorAll(".claw-home-card .claw-connection-toggle")].filter(t=>{const c=t.closest(".claw-home-card");if(!c||!t.getClientRects().length)return false;return t.getBoundingClientRect().height>=44}).length,
+      statusInside:[...document.querySelectorAll('.claw-home-card')].filter(c=>{const s=c.querySelector('.claw-card-status');if(!s||!c.getClientRects().length)return false;const cr=c.getBoundingClientRect(),sr=s.getBoundingClientRect();return sr.top>=cr.top-1&&sr.bottom<=cr.bottom+1&&sr.left>=cr.left-1&&sr.right<=cr.right+1}).length,
       title:document.querySelector('#emptyState h1').innerText,
       scroll:Math.round(document.documentElement.scrollWidth-window.innerWidth),
       variant:document.querySelector('.app-shell').dataset.layoutVariant}
@@ -88,11 +93,25 @@ with sync_playwright() as p:
   # row must resolve to the same height in both, the truthful headline sits in
   # the top-right of every card, and the bottom-right holds the ON/OFF switch
   # alone (no inline "확인 불가" row stretching the card).
-  assert chat["cellH"] is not None and claw["cardH"] is not None,(width,"row-height",chat,claw)
-  assert abs(chat["cellH"]-claw["cardH"])<=2,(width,"row-height",chat["cellH"],claw["cardH"])
+  # Phone widths stack the four lines (name/state/description/switch) inside
+  # the tile, so the desktop row-height parity applies above 390 only.
+  if width > 390:
+    assert chat["cellH"] is not None and claw["cardH"] is not None,(width,"row-height",chat,claw)
+    assert abs(chat["cellH"]-claw["cardH"])<=2,(width,"row-height",chat["cellH"],claw["cardH"])
   assert claw["inlineLabels"]==0,(width,"inline-label",claw)
-  assert claw["statusTopRight"]==3,(width,"status-placement",claw)
-  assert claw["toggleBottomRight"]==3,(width,"toggle-placement",claw)
+  if width <= 390:
+    # Phone widths: the state sits in the tile's own flow under the name and
+    # the ON/OFF row follows the description; nothing is pinned to the corners.
+    assert claw["statusInFlow"]==3,(width,"status-placement",claw)
+    assert claw["toggleInFlow"]==3,(width,"toggle-placement",claw)
+    assert claw["toggleReady"]==3,(width,"toggle-touch",claw)
+    assert claw["toggleTouch"]==3,(width,"toggle-touch-44",claw)
+    assert claw["statusInside"]==3,(width,"status-inside-tile",claw)
+  else:
+    assert claw["statusTopRight"]==3,(width,"status-placement",claw)
+    assert claw["toggleBottomRight"]==3,(width,"toggle-placement",claw)
+    assert claw["toggleReady"]==3,(width,"toggle-touch",claw)
+    assert claw["statusInside"]==3,(width,"status-inside-tile",claw)
   assert "\uD074\uB85C" in claw["title"],(width,claw["title"])
   print(f"CLAW_FIRST_USE_COMPOSER_PARITY_{width}x{height}=PASS "
         f"eyebrowTopDelta={round(abs(chat['eyebrow'][2]-claw['eyebrow'][2]),2)} "

@@ -1,0 +1,8 @@
+[Unit]
+Description=PADIEM COM2 Chat daily SQLite snapshot
+RequiresMountsFor=/mnt/d/padiem/chat-com2
+
+[Service]
+Type=oneshot
+User=padiem-chat
+ExecStart=/opt/padiem/chat-com2/venv/bin/python /opt/padiem/chat-com2/backup.py --db /mnt/d/padiem/chat-com2/chat.sqlite3 --dest /mnt/d/padiem/chat-com2/backups --keep 7

@@ -130,6 +130,13 @@ class CloudflareWebXlsxP01EngineClient:
                 engine_status=status if 100 <= status <= 599 else None,
                 engine_code=parse_engine_error_code(body),
             )
+        # Owner decision 2026-10-28: the pre-delegated tool completes without a
+        # pause, so a 200 completed projection is a real Engine answer too.
+        if (status == 200 and isinstance(body, dict)
+                and set(body) == {"ok", "tool"} and body.get("ok") is True
+                and isinstance(body.get("tool"), dict)
+                and body["tool"].get("status") == "completed"):
+            return body
         if (status != 202 or not isinstance(body, dict)
                 or set(body) != {"ok", "tool"} or body.get("ok") is not True
                 or not isinstance(body.get("tool"), dict)

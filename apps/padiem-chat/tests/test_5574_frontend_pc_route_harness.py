@@ -636,10 +636,11 @@ class _PcHarness:
 
 
 class _NoopAutoGrounding:
-    def decide(self, messages, *, skill):  # noqa: ANN201
+    def decide(self, messages, *, skill, explicit_search=False, util_scope=None):  # noqa: ANN201
         return None
 
-    async def prepare(self, messages, *, skill, additional_system_context):  # noqa: ANN201
+    async def prepare(self, messages, *, skill, additional_system_context,
+                    explicit_search=False, util_scope=None):  # noqa: ANN201
         return None
 
 
@@ -739,7 +740,7 @@ if (!transport) {
     const before = calls.length;
     // claw-device-manager.js wires the same hint; false mirrors no selection.
     deviceHint = step.selectedDevice === false ? null : "office-pc";
-    const payload = { messages: step.messages, mode: "auto", skill: "auto" };
+    const payload = { messages: step.messages, skill: "auto" };
     let pcRunId = null;
     if (step.mint === true) {
       pcRunId = transport.createChatPcRunId();

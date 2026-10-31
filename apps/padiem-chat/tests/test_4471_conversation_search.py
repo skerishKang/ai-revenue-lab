@@ -2,7 +2,9 @@
 
 Contract under test:
   - search is owner-scoped with bound parameters (no interpolation);
-  - the user query is a literal substring (LIKE wildcards escaped);
+  - the user query is a literal substring (no wildcard can take effect);
+  - no bound value is ever handed to D1 as a LIKE/GLOB pattern longer than the
+    platform's documented 50-byte limit;
   - result rows and scanned rows are bounded; stored text is never truncated;
   - the sidebar entry is fail-closed and never touches web-search state.
 """
@@ -10,8 +12,11 @@ Contract under test:
 from __future__ import annotations
 
 import asyncio
+import re
 import sys
 from pathlib import Path
+
+import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
@@ -23,13 +28,42 @@ from app.history import (  # noqa: E402
     MAX_CONVERSATION_SEARCH_SCAN_ROWS,
     MAX_CONVERSATION_SEARCH_SNIPPET_CHARS,
     D1HistoryStore,
-    _escape_like,
     _normalize_search_query,
     _search_snippet,
+)
+from test_b66_conversation_isolation_4657 import (  # noqa: E402
+    D1Sqlite,
+    OWNER as REAL_OWNER,
+    setup_database,
 )
 
 STATIC = ROOT / "static"
 SEARCH_JS = STATIC / "conversation-search.js"
+
+# Cloudflare documents this ceiling; a longer pattern is refused as "too
+# complex". https://developers.cloudflare.com/d1/platform/limits/ (2026-10-30)
+D1_LIKE_PATTERN_MAX_BYTES = 50
+
+# The store accepts a query up to MAX_CONVERSATION_SEARCH_QUERY_CHARS *characters*.
+# Korean is 3 bytes and emoji 4 bytes per character in UTF-8, so these are the
+# queries that used to turn into an illegal pattern.
+LONG_QUERIES = {
+    "korean17": "가" * 17,
+    "korean40": "가" * 40,
+    "korean80": "가" * 80,
+    "english80": "community budget review notes " * 4,
+    "emoji": "마을 축제 🎉 안전 점검 🚧 안내",
+}
+
+
+def _like_pattern_operands(sql: str, values: tuple) -> list[str]:
+    """The bound values SQL will use as LIKE/GLOB patterns, by ? ordinal."""
+    operands = []
+    for match in re.finditer(r"\b(?:LIKE|GLOB)\s+\?", sql, re.IGNORECASE):
+        ordinal = sql.count("?", 0, match.start()) + 1
+        if ordinal <= len(values):
+            operands.append(values[ordinal - 1])
+    return operands
 
 
 # --- pure helpers -----------------------------------------------------------
@@ -40,13 +74,11 @@ def test_query_is_trimmed_collapsed_and_bounded():
     assert len(_normalize_search_query("가" * 500)) == MAX_CONVERSATION_SEARCH_QUERY_CHARS
 
 
-def test_like_wildcards_and_escape_char_are_escaped_to_literals():
-    # `%` and `_` must not behave as LIKE wildcards in a user query.
-    assert _escape_like("50%") == "50\\%"
-    assert _escape_like("a_b") == "a\\_b"
-    # The escape character is escaped first so it stays literal.
-    assert _escape_like("x\\y") == "x\\\\y"
-    assert _escape_like("   ") == ""
+def test_a_long_korean_query_is_already_over_the_d1_pattern_ceiling():
+    # Documents the arithmetic the store has to survive: the old `%needle%`
+    # shape for 17 Korean characters is 53 bytes, before any user thought they
+    # had typed anything unusual.
+    assert len(("%" + "가" * 17 + "%").encode("utf-8")) > D1_LIKE_PATTERN_MAX_BYTES
 
 
 def test_snippet_is_bounded_and_centred_on_the_literal_match():
@@ -60,6 +92,7 @@ def test_snippet_is_bounded_and_centred_on_the_literal_match():
 def test_snippet_empty_without_a_body_hit():
     assert _search_snippet(None, "x") == ""
     assert _search_snippet("", "x") == ""
+
 
 
 # --- store behaviour against a recording fake D1 ----------------------------
@@ -133,13 +166,77 @@ def test_empty_or_whitespace_query_runs_no_search_statement():
     assert not any("FROM conversations c" in sql for sql, _ in db.bound)
 
 
-def test_like_escape_clause_is_declared_for_every_pattern_match():
+@pytest.mark.parametrize("label", sorted(LONG_QUERIES))
+def test_a_long_query_never_reaches_d1_as_an_oversized_like_pattern(label: str) -> None:
+    """The load-bearing guard: whatever shape the predicate takes, no bound value
+    may arrive as a LIKE/GLOB pattern over D1's documented 50-byte ceiling — and
+    the query still has to reach the statement, so this cannot be satisfied by
+    dropping the search."""
     db = _RecordingD1()
     store = D1HistoryStore(db)
-    asyncio.run(store.search_conversations("usr_owner", "a_b%c", product_scope=PRODUCT_SCOPE_CHAT))
-    sql, _ = _search_bound(db)
-    # Each LIKE must declare the same escape character used by _escape_like.
-    assert sql.count("ESCAPE '\\'") >= 3
+    asyncio.run(store.search_conversations(
+        "usr_owner", LONG_QUERIES[label], product_scope=PRODUCT_SCOPE_CHAT))
+    sql, values = _search_bound(db)
+    patterns = _like_pattern_operands(sql, values)
+    oversized = [len(str(p).encode("utf-8")) for p in patterns
+                 if len(str(p).encode("utf-8")) > D1_LIKE_PATTERN_MAX_BYTES]
+    assert not oversized, f"{label}: LIKE pattern byte lengths {oversized}"
+    needle = _normalize_search_query(LONG_QUERIES[label])
+    assert needle in values, "the query must still be searched"
+
+
+# --- real SQLite: the search itself must keep working ------------------------
+class TestSearchOnRealSqlite:
+    """The fake D1 above records statements; this runs them.
+
+    Local SQLite has no 50-byte pattern ceiling, so these tests cannot prove the
+    platform limit — they prove the fix did not change what a user gets back.
+    """
+
+    def setup_method(self):
+        self.db = setup_database()
+        self.store = D1HistoryStore(D1Sqlite(self.db))
+
+    def teardown_method(self):
+        self.db.close()
+
+    def seed(self, text):
+        return asyncio.run(self.store.append_exchange(
+            REAL_OWNER, None, text, "합성 응답", product_scope=PRODUCT_SCOPE_CHAT))
+
+    def search(self, query):
+        return asyncio.run(self.store.search_conversations(
+            REAL_OWNER, query, product_scope=PRODUCT_SCOPE_CHAT))
+
+    def test_a_long_korean_query_finds_the_conversation(self):
+        needle = "마을" + "가" * 20 + "축제"
+        cid = self.seed(f"합성 기록 {needle} 끝")
+        assert [hit["id"] for hit in self.search(needle)] == [cid]
+
+    def test_an_80_character_query_still_returns_results(self):
+        needle = "예산" + "나" * 76 + "심사"
+        cid = self.seed(f"합성 기록 {needle}")
+        assert [hit["id"] for hit in self.search(needle)] == [cid]
+
+    def test_wildcard_characters_in_a_query_stay_literal(self):
+        self.seed("합성 기록 axb 본문")
+        assert self.search("a_b") == [], "_ must not act as a single-character wildcard"
+        wildcard_free = self.seed("합성 기록 두 번째 본문")
+        percent = self.seed("합성 기록 50% 할인 본문")
+        # A literal % matches only the row that carries the character, so it is
+        # not behaving as "anything" — and it still finds the row that has one.
+        hits = [hit["id"] for hit in self.search("%")]
+        assert hits == [percent]
+        assert wildcard_free not in hits
+        assert [hit["id"] for hit in self.search("50%")] == [percent]
+
+    def test_ascii_search_stays_case_insensitive(self):
+        cid = self.seed("합성 기록 Padiem Community Budget")
+        assert [hit["id"] for hit in self.search("community budget")] == [cid]
+
+    def test_emoji_query_matches_the_record_that_carries_it(self):
+        cid = self.seed("합성 기록 축제 🎉 안전 점검")
+        assert [hit["id"] for hit in self.search("축제 🎉 안전")] == [cid]
 
 
 # --- route -------------------------------------------------------------------

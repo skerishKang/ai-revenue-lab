@@ -160,6 +160,58 @@ def test_a_rollback_still_refuses_anything_the_history_never_served(tmp_path, ca
     assert "BLOCKED:no-predecessor-record" in capsys.readouterr().err
 
 
+def test_a_staged_rollout_record_does_not_lock_the_rollback(tmp_path, capsys):
+    """A promotion leaves a 10/90 entry in the history; the stable row below it answers.
+
+    This is the lock that happened for real on 2026-10-28: the guard read position
+    one of the deployment history, found the two versions of the rollout it had just
+    promoted, refused with ``predecessor-version-count``, and the rollback the owner
+    was owed could not run while session traffic was still failing. A rollout record
+    is stepped over, not treated as an answer, and a Worker that never had a stable
+    predecessor below it still refuses.
+    """
+    staged = {
+        "success": True,
+        "result": {"deployments": [
+            {"id": "deployment-0",
+             "versions": [{"version_id": SERVED, "percentage": 100}]},
+            {"id": "deployment-1", "versions": [
+                {"version_id": SERVED, "percentage": 10},
+                {"version_id": OLDER_RECORDED, "percentage": 90},
+            ]},
+            {"id": "deployment-2",
+             "versions": [{"version_id": OLDER_RECORDED, "percentage": 100}]},
+        ]},
+    }
+    doc = write(tmp_path, staged, "staged.json")
+
+    proceed = guard.main([
+        "--deployments", doc,
+        "--newest-upload-version", SERVED,
+        "--previous-version-id", OLDER_RECORDED,
+    ])
+    assert proceed == 0, capsys.readouterr().err
+    assert "B62_ROLLBACK_RECORDED_VERSION=PREDECESSOR" in capsys.readouterr().out
+
+    rollout_only = {
+        "success": True,
+        "result": {"deployments": [
+            {"id": "deployment-0",
+             "versions": [{"version_id": SERVED, "percentage": 100}]},
+            {"id": "deployment-1", "versions": [
+                {"version_id": SERVED, "percentage": 10},
+                {"version_id": OLDER_RECORDED, "percentage": 90},
+            ]},
+        ]},
+    }
+    assert guard.main([
+        "--deployments", write(tmp_path, rollout_only, "rollout-only.json"),
+        "--newest-upload-version", SERVED,
+        "--previous-version-id", OLDER_RECORDED,
+    ]) == 1
+    assert "BLOCKED:no-predecessor-record" in capsys.readouterr().err
+
+
 def test_preserved_bindings_are_taken_from_the_served_version(tmp_path):
     """The refused upload's plane is not allowed to become the next deploy's live state."""
 

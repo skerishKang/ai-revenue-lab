@@ -14,7 +14,7 @@ from app.main import create_app
 from app.model_policy import DEFAULT_B14_MODEL_ID, EXECUTABLE_B14_MODEL_IDS
 from app.saved_outputs import (
     D1SavedOutputStore,
-    MAX_OUTPUT_CONTENT_CHARS,
+    MAX_OUTPUT_ROW_BYTES,
     SavedOutputRecord,
     validate_output_content,
     validate_output_id,
@@ -130,15 +130,21 @@ def test_output_id_is_strict_hex(value, ok):
             validate_output_id(value)
 
 
-def test_output_title_and_content_are_bounded():
+def test_output_title_is_bounded_and_content_is_kept_whole():
     assert validate_output_title("  제주   여행 일정  ") == "제주 여행 일정"
     assert validate_output_content("  답변 내용  ") == "답변 내용"
     with pytest.raises(ValueError):
         validate_output_title("")
     with pytest.raises(ValueError):
         validate_output_title("x" * 101)
+    # #5895-C: a saved answer keeps its whole text; there is no character
+    # ceiling, only the store's own row bound.
+    assert validate_output_content("x" * 200_000) == "x" * 200_000
+    with pytest.raises(ValueError) as row_bound:
+        validate_output_content("x" * (MAX_OUTPUT_ROW_BYTES + 1))
+    assert "파일로 내려받아" in str(row_bound.value)
     with pytest.raises(ValueError):
-        validate_output_content("x" * (MAX_OUTPUT_CONTENT_CHARS + 1))
+        validate_output_content("   ")
     with pytest.raises(ValueError):
         validate_output_content("bad\x00text")
 
@@ -278,7 +284,7 @@ async def test_saved_output_is_not_automatic_chat_context():
         saved_output_store=store,
     )
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
-        response = await client.post("/api/chat", json={"messages": [{"role": "user", "content": "새 질문"}], "mode": "auto"})
+        response = await client.post("/api/chat", json={"messages": [{"role": "user", "content": "새 질문"}]})
     if DEFAULT_B14_MODEL_ID in EXECUTABLE_B14_MODEL_IDS:
         assert response.status_code == 200
         assert secret not in json.dumps(seen["body"], ensure_ascii=False)
@@ -299,7 +305,6 @@ async def test_document_chat_does_not_create_saved_output_implicitly():
             "/api/chat",
             json={
                 "messages": [{"role": "user", "content": "이 문서를 요약해줘"}],
-                "mode": "auto",
                 "attachments": [{
                     "type": "document",
                     "name": "private.txt",
@@ -386,7 +391,7 @@ def test_saved_outputs_ui_is_additive_and_truthful():
     assert 'dialog.id = "confirmDialog"' in a11y
     assert "innerHTML" not in js
     assert "D1SavedOutputStore" in worker
-    assert "_worker_app = create_app(" in worker
+    assert "worker_app = create_app(" in worker
     for required_arg in (
         "settings=settings",
         "history_store=history_store",

@@ -12,13 +12,13 @@ ROOT = Path(__file__).resolve().parents[1]
 
 def test_the_core_context_carries_no_padiem_byte_total() -> None:
     # C6: the model context and the grounded evidence carry no PADIEM total.
-    from padiem_ai_core.execution_runtime import MAX_SYSTEM_CONTEXT_BYTES
+    import padiem_ai_core.execution_runtime as execution_runtime
     from padiem_ai_core.grounding_runtime import (
         MAX_GROUNDED_EVIDENCE_CONTEXT_CHARS,
         GroundingPolicy,
     )
 
-    assert MAX_SYSTEM_CONTEXT_BYTES is None
+    assert not hasattr(execution_runtime, "MAX_SYSTEM_CONTEXT_BYTES")
     assert MAX_GROUNDED_EVIDENCE_CONTEXT_CHARS is None
     assert GroundingPolicy().max_context_chars is None
 

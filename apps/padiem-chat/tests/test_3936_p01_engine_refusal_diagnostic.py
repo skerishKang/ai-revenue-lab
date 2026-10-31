@@ -14,6 +14,7 @@ proves that:
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 import sys
 from types import SimpleNamespace
@@ -393,7 +394,19 @@ def test_emitter_shape_and_default_logging_never_raise():
         captured.append(event)
 
     emit_dispatch_event(stage=STAGE_DISPATCH_UNKNOWN, emitter=emitter)
-    assert captured == [build_dispatch_event(stage=STAGE_DISPATCH_UNKNOWN)]
+    expected = build_dispatch_event(stage=STAGE_DISPATCH_UNKNOWN)
+    assert len(captured) == 1
+    # "ts" is stamped from the wall clock to millisecond precision, so it is
+    # asserted as a fact about each event rather than compared between two
+    # separate builds: comparing whole dicts made this test fail whenever the two
+    # now() calls straddled a millisecond, which is a clock artifact, not a
+    # contract. Every bounded field is still compared exactly.
+    emitted = dict(captured[0])
+    emitted_ts = emitted.pop("ts")
+    expected_ts = expected.pop("ts")
+    assert emitted == expected
+    for stamp in (emitted_ts, expected_ts):
+        assert re.fullmatch(r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z", stamp), stamp
 
     def broken(_event):
         raise ValueError("no log sink")

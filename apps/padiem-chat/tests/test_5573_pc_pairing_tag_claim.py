@@ -122,14 +122,24 @@ def test_a_name_without_a_tag_claims_nothing_and_names_are_not_stored() -> None:
     RUN(store.complete_claim_from_observation(
         agent_name=f"PADIEM-PC {tag} (견적 작업실)", mesh_node_id=NODE, now=pairing._now(),
     ))
-    rows = store.db.conn.execute(
-        "SELECT * FROM pc_device_links"
-    ).fetchall()
+    rows = store.db.conn.execute("SELECT * FROM pc_device_links").fetchall()
     stored = " ".join(str(value) for row in rows for value in tuple(row))
-    # The node identity is the link; the human-readable name is not kept, and
-    # neither is the plaintext code behind the tag.
-    assert "견적 작업실" not in stored and "PADIEM-PC" not in stored
+    # The node identity is the link. The one word the machine called itself may
+    # be kept as this account's own name for it (#5573, Owner decision); what a
+    # person appended after it is annotation and is not kept, and neither is the
+    # proof: the tag or the plaintext code behind it.
     assert tag not in stored
+    assert issued["code"] not in stored
+    assert "견적 작업실" not in stored
+    link = RUN(store.links_for_owner(user_id=lane.OWNER))[0]
+    assert link["label"] == "PADIEM-PC"
+    # A name that is only the decoration carries no machine name at all.
+    second = RUN(store.issue_code(user_id=lane.OWNER, issued_at=pairing._now()))
+    other = RUN(store.complete_claim_from_observation(
+        agent_name=derive_install_tag(second["code"]), mesh_node_id=MESHCTRL_NODE,
+        now=pairing._now(),
+    ))
+    assert other["label"] is None
 
 
 def test_the_tag_is_found_as_a_token_and_never_guessed() -> None:

@@ -266,7 +266,7 @@ async def _post(app: Any, endpoint: str, payload: dict[str, Any], *, user: str =
 
 
 def _payload(conversation_id: str | None = None, follow_up: str = FOLLOW_UP) -> dict[str, Any]:
-    body: dict[str, Any] = {"mode": "auto", "messages": [{"role": "user", "content": follow_up}]}
+    body: dict[str, Any] = {"messages": [{"role": "user", "content": follow_up}]}
     if conversation_id is not None:
         body["conversation_id"] = conversation_id
     return body

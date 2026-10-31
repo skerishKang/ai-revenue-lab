@@ -115,7 +115,6 @@ export async function streamClawGeneral(
 ): Promise<void> {
   const payload: Record<string, unknown> = {
     messages: request.messages,
-    mode: "auto",
   };
   if (request.tier) payload.tier = request.tier;
   if (request.skill) payload.skill = request.skill;

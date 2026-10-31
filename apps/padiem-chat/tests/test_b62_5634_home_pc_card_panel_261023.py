@@ -180,20 +180,27 @@ def test_the_first_card_is_the_computer_connection_entry():
     assert 'class="starter"' in card
     assert 'data-pc-connect-starter="true"' in card
     assert 'data-locale-key="pc-connect-title"' in card
-    assert 'data-locale-key="pc-connect-copy"' in card
-    assert "컴퓨터 연결" in card
+    # #5573 step 1: the status line on the card belongs to the connect flow's
+    # own PC-list state, so the locale key for the old static copy is gone.
+    assert 'data-locale-key="pc-connect-copy"' not in card
+    assert "내 컴퓨터" in card
     # The card the first screen used to open with is gone for good.
     assert 'data-skill="explain"' not in INDEX
     assert "AI를 처음 쓰는 사람에게" not in INDEX
     assert "쉽게 설명해줘" not in INDEX
 
 
-def test_the_card_points_at_the_same_panel_as_the_composer_control():
+def test_the_card_opens_the_one_connect_flow():
+    """#5573 step 1 (2026-10-29): the card no longer walks the owner into the
+    device directory panel; it opens the ONE connect flow (modal, download,
+    self-closing wait), like every other entry."""
     card = _button_with_id(INDEX, "pcConnectStarter")
     assert 'type="button"' in card
-    assert 'aria-controls="clawDeviceManagerPanel"' in card
-    assert 'aria-expanded="false"' in card
     assert 'aria-haspopup="dialog"' in card
+    assert 'aria-expanded="false"' in card
+    assert 'aria-controls="clawDeviceManagerPanel"' not in card
+    # The PC-list status line the connect flow paints lives on the card.
+    assert "data-pc-connect-state" in card
     # The card is the first entry card, so it must come before the others.
     assert INDEX.index('id="pcConnectStarter"') < INDEX.index('id="documentStarterButton"')
 
@@ -206,24 +213,34 @@ def test_the_starter_grid_keeps_four_cards_without_a_duplicate_prompt():
 
 
 def test_the_locale_covers_the_new_card_in_both_languages():
-    assert '"pc-connect-title": "컴퓨터 연결", "pc-connect-copy": "컴퓨터 연결 패널 열기"' in LOCALE_JS
-    assert '"pc-connect-title": "Connect computer", "pc-connect-copy": "Open the connection panel"' in LOCALE_JS
+    assert '"pc-connect-title": "내 컴퓨터"' in LOCALE_JS
+    assert '"pc-connect-title": "My computer"' in LOCALE_JS
     assert '["#pcConnectStarter strong", "pc-connect-title"]' in LOCALE_JS
-    assert '["#pcConnectStarter small", "pc-connect-copy"]' in LOCALE_JS
+    # #5573 step 1: the card's status line is the connect flow's own PC-list
+    # state, so the locale sheet no longer owns (or clobbers) it.
+    assert "pc-connect-copy" not in LOCALE_JS
+    assert '["#pcConnectStarter small"' not in LOCALE_JS
     # The card is a real control now: nothing may bind the first starter slot
     # as a prompt again.
     assert ".starter:nth-child(1)" not in LOCALE_JS
 
 
-def test_the_card_reuses_the_existing_panel_open_path():
-    assert 'getElementById("pcConnectStarter")' in CLAW_STATUS_JS
-    assert "starterCard.addEventListener(\"click\", openExistingPanel)" in CLAW_STATUS_JS
-    # Both visible entries into the panel report the same expanded state.
-    assert 'card.setAttribute("aria-controls", PANEL_ID)' in CLAW_STATUS_JS
-    assert 'card.setAttribute("aria-expanded"' in CLAW_STATUS_JS
+def test_the_entries_route_through_the_one_connect_flow():
+    """#5573 step 1: the composer control and the first-screen card both go
+    through the one connect flow; the directory panel keeps its own path."""
+    flow_js = (STATIC / "pc-connect-flow.js").read_text(encoding="utf-8")
+    assert 'STARTER_ID = "pcConnectStarter"' in flow_js
+    assert "function wireStarter" in flow_js
+    assert 'getElementById("pcConnectStarter")' not in CLAW_STATUS_JS
+    # The composer control connects through the flow: popover when a PC is
+    # connected, the modal otherwise; the panel path is only the fallback.
+    assert "PadiemPcConnectFlow" in CLAW_STATUS_JS
+    assert "flow.togglePopover(button)" in CLAW_STATUS_JS
     # An opening click on the card must not immediately close the panel it
-    # opened, so the card is excluded from the outside-click guard.
-    assert 'target.closest("#composerPcStatus, #pcConnectStarter")' in CLAW_JS
+    # opened, so the card is excluded from the outside-click guard. The
+    # guidance surface joins the exclusion: it reads the panel's own rendered
+    # states, so its clicks keep the directory open (#4139 summary contract).
+    assert 'target.closest("#composerPcStatus, #pcConnectStarter, #clawDeviceGuidance")' in CLAW_JS
     assert "root.append(toggle, panel)" in CLAW_JS
 
 
@@ -383,7 +400,9 @@ def _measure(page):
 
 
 def _open_panel(page):
-    page.click("#pcConnectStarter")
+    # #5573 step 1: the panel's first-screen entries no longer open it; the
+    # tests drive the panel through its own toggle directly.
+    page.evaluate("document.getElementById('clawDeviceManagerToggle').click()")
     page.wait_for_function("() => !document.getElementById('clawDeviceManagerPanel').hidden")
 
 
@@ -396,7 +415,7 @@ def _ready(page):
 
 @pytest.mark.parametrize("window", WINDOWS)
 @requires_browser
-def test_the_first_card_opens_the_panel_at_each_size(static_url, window):
+def test_the_first_card_opens_the_modal_and_the_panel_keeps_its_shape(static_url, window):
     width, height = window
     with sync_playwright() as p:
         browser = p.chromium.launch()
@@ -407,13 +426,23 @@ def test_the_first_card_opens_the_panel_at_each_size(static_url, window):
 
             before = _measure(page)
             labels = [item["strong"] for item in before["cardLabels"] if item["visible"]]
-            assert "컴퓨터 연결" in labels
+            assert "내 컴퓨터" in labels
             assert "쉽게 설명해줘" not in labels
             assert len(labels) == 4
             assert before["card"]["height"] > 2
             assert before["panelOpen"] is False
             assert before["cardExpanded"] == "false"
             assert before["scrollWidth"] == before["clientWidth"]
+
+            # #5573 step 1: the first card opens the ONE connect flow — the
+            # modal — and Escape closes it; the panel keeps its own toggle path.
+            page.click("#pcConnectStarter")
+            page.wait_for_function(
+                "() => !!document.querySelector('.pc-connect-backdrop') && "
+                "!document.querySelector('.pc-connect-backdrop').hidden"
+            )
+            page.keyboard.press("Escape")
+            page.wait_for_function("() => document.querySelector('.pc-connect-backdrop').hidden")
 
             _open_panel(page)
             after = _measure(page)
@@ -422,7 +451,7 @@ def test_the_first_card_opens_the_panel_at_each_size(static_url, window):
             composer, composer_wrap = after["composer"], after["composerWrap"]
 
             assert after["panelOpen"] is True
-            assert after["cardExpanded"] == "true"
+            assert after["cardExpanded"] == "false"
             assert panel["height"] > 2 and head["height"] > 2
             assert title["width"] > 2 and refresh["width"] > 2 and close["width"] > 2
             title_center = title["top"] + title["height"] / 2
@@ -461,15 +490,24 @@ def test_the_panel_closes_and_the_composer_controls_stay_clickable(static_url, w
             _open_panel(page)
             opened = _measure(page)
             assert opened["panelOpen"] is True
-            assert opened["cardExpanded"] == "true"
+            assert opened["cardExpanded"] == "false"
 
-            # The second visible entry into the same panel is the composer PC
-            # status control; clicking it toggles the panel the card opened.
+            # #5573 step 1: the composer PC control no longer toggles the
+            # panel. The directory fixture here reports connected devices, so
+            # the control opens the PC-list popover; Escape closes it while
+            # the panel stays as it was. The panel open above started the
+            # directory read; wait for its snapshot to reach the control
+            # before clicking, so the popover path is deterministic.
+            page.wait_for_function(
+                "() => document.getElementById('composerPcStatus').dataset.state === 'connected'"
+            )
             page.click("#composerPcStatus")
-            page.wait_for_function("() => document.getElementById('clawDeviceManagerPanel').hidden")
-            toggled = _measure(page)
-            assert toggled["panelOpen"] is False
-            assert toggled["cardExpanded"] == "false"
+            page.wait_for_function(
+                "() => !!document.querySelector('.pc-connect-popover') && "
+                "!document.querySelector('.pc-connect-popover').hidden"
+            )
+            page.keyboard.press("Escape")
+            page.wait_for_function("() => document.querySelector('.pc-connect-popover').hidden")
 
             # Its own close button.
             _open_panel(page)
@@ -579,7 +617,7 @@ def test_the_device_rows_lead_with_the_name_and_the_id_stays_readable(static_url
             )
             assert len(rows) == 12
             assert rows[0]["name"] == "내 데스크톱"
-            assert rows[0]["state"] == "온라인 · 작업 승인 필요"
+            assert rows[0]["state"] == "온라인 · 바로 작업"
             assert rows[1]["state"] == "오프라인"
             assert rows[0]["choose"] == "작업 대상 후보로 선택"
             assert rows[0]["chooseEnabled"] is True
