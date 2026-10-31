@@ -189,9 +189,9 @@ async def api_orchestration(request: Request) -> JSONResponse:
             from .chat_pc_drive import _new_lane_run_id
             trace_run_id = _new_lane_run_id()
         trace_run = run_hash(trace_run_id)
-        _PC_TRACE_LOG.info("pc_chat stage=request_received run_hash=%s", trace_run or "none")
+        _PC_TRACE_LOG.info("pc_chat stage=request_received run_hash=%s dispatch_id=none", trace_run or "none")
         messages, skill, tool_request, attachments, conversation_id, project_id, custom = await _validate_payload_async(raw, file_resolver=file_resolver(request))
-        _PC_TRACE_LOG.info("pc_chat stage=contract_accepted run_hash=%s", trace_run or "none")
+        _PC_TRACE_LOG.info("pc_chat stage=contract_accepted run_hash=%s dispatch_id=none", trace_run or "none")
         user_credential_ref = None
         if custom is not None:
             from .byok_bridge import resolve_reference

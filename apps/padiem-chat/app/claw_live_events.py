@@ -489,7 +489,7 @@ def chat_pc_orchestration_sse(
         log.setLevel(logging.INFO)
         reason = "closed"
         source = events()
-        log.info("pc_chat stage=stream_started run_hash=%s", trace_run)
+        log.info("pc_chat stage=stream_started run_hash=%s dispatch_id=none", trace_run)
         try:
             async for frame in source:
                 if frame.startswith(b"event: error"):
@@ -512,7 +512,7 @@ def chat_pc_orchestration_sse(
             try:
                 await source.aclose()
             finally:
-                log.info("pc_chat stage=stream_ended run_hash=%s reason=%s", trace_run, reason)
+                log.info("pc_chat stage=stream_ended run_hash=%s dispatch_id=none reason=%s", trace_run, reason)
 
     return StreamingResponse(traced_events(), media_type="text/event-stream",
         headers={"Cache-Control": "no-cache, no-store", "X-Accel-Buffering": "no"})
