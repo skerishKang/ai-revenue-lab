@@ -30,7 +30,10 @@ _BROKER_METHODS = frozenset({
 class LoopbackRpcBinding(HttpRpcBinding):
     """Binding-shaped service-proof RPC, restricted to a fixed COM2 port."""
 
-    def __init__(self, *, port: int, secret: str, methods: frozenset[str], client=None):
+    def __init__(
+        self, *, port: int, secret: str, methods: frozenset[str], client=None,
+        sign_request_id: bool = True,
+    ):
         if port not in (8799, 8802):
             raise ValueError("unapproved COM2 RPC port")
         self._origin = f"http://127.0.0.1:{port}"
@@ -38,6 +41,7 @@ class LoopbackRpcBinding(HttpRpcBinding):
         self._client = client
         self._timeout = 8.0
         self._methods = methods
+        self._sign_request_id = bool(sign_request_id)
 
     def __getattr__(self, method):
         if method not in self._methods:

@@ -6,8 +6,9 @@ Service Binding ``CONTROL_PLANE_ENGINE_ADMISSION``. This host has no binding, so
 env. These tests prove three things and nothing more:
 
 * the proof the host signs is the one the Control Plane ingress already
-  verifies (#5573 A2), recomputed here independently rather than by importing
-  the same helper;
+  verifies (#5573 A2, #6417), recomputed here independently rather than by
+  importing the same helper — including the signed request id the ingress
+  consumes to refuse a replay;
 * an allowed snapshot plus reservation runs the turn through the reviewed
   adapter and the Engine gate unchanged;
 * a denied grant, a bad proof, an unreachable authority or a missing/partial
@@ -32,6 +33,7 @@ from app.local_admission_binding import (
     ADMISSION_ORIGIN_ENV,
     ADMISSION_SECRET_ENV,
     HttpsAdmissionBinding,
+    RPC_MAX_ATTEMPTS,
     admission_binding_for,
 )
 from app.tenant_auth import ControlPlaneTenantAdmissionAdapter
@@ -84,27 +86,44 @@ class _ControlPlaneIngress:
         snapshot: dict[str, object] | None = None,
         secret: str = SECRET,
         unreserved: bool = False,
+        replay_refusals: int = 0,
     ) -> None:
         self.secret = secret
         self.snapshot = _snapshot() if snapshot is None else snapshot
         self.unreserved = unreserved
+        self.replay_refusals = replay_refusals
         self.calls: list[str] = []
+        self.service_ids: list[str] = []
 
     def __call__(self, request: httpx.Request) -> httpx.Response:
         path = request.url.path
         method_name = path.rsplit("/", 1)[-1]
         body = request.content
         at = request.headers.get("x-padiem-service-at", "")
+        service_id = request.headers.get("x-padiem-service-id", "")
         provided = request.headers.get("x-padiem-service-proof", "")
         signed = b"\n".join(
-            (b"v1", b"POST", path.encode("utf-8"), at.encode("ascii"), body)
+            (
+                b"v2",
+                b"POST",
+                path.encode("utf-8"),
+                at.encode("ascii"),
+                service_id.encode("utf-8"),
+                body,
+            )
         )
-        expected = "v1=" + hmac.new(
+        expected = "v2=" + hmac.new(
             self.secret.encode("utf-8"), signed, hashlib.sha256
         ).hexdigest()
-        if provided != expected:
+        if not service_id or provided != expected:
             return httpx.Response(
                 401, json={"ok": False, "error": {"code": "proof_invalid"}}
+            )
+        self.service_ids.append(service_id)
+        if self.replay_refusals > 0:
+            self.replay_refusals -= 1
+            return httpx.Response(
+                409, json={"ok": False, "error": {"code": "rpc_replay_detected"}}
             )
         self.calls.append(method_name)
         if method_name == "fetch_entitlement_snapshot":
@@ -173,6 +192,55 @@ def test_allowed_snapshot_and_reservation_run_the_turn() -> None:
     assert admission.usage_reservation is not None
     assert admission.usage_reservation.reservation_ref == RESERVATION_REF
     assert ingress.calls == ["fetch_entitlement_snapshot", "reserve_usage"]
+
+    # Two calls are two requests; the ingress would refuse a repeated id.
+    assert len(ingress.service_ids) == 2
+    assert len(set(ingress.service_ids)) == 2
+
+
+def test_a_replay_refusal_is_retried_under_a_new_id() -> None:
+    ingress = _ControlPlaneIngress(replay_refusals=1)
+    admission = _resolve(_adapter(ingress))
+
+    assert admission.allowed is True
+    assert ingress.calls == ["fetch_entitlement_snapshot", "reserve_usage"]
+    # The refused attempt, its retry, and the reservation: all different ids.
+    assert len(ingress.service_ids) == 3
+    assert len(set(ingress.service_ids)) == 3
+
+
+def test_a_target_that_keeps_refusing_is_bounded_and_stays_closed() -> None:
+    ingress = _ControlPlaneIngress(replay_refusals=99)
+    binding = HttpsAdmissionBinding(
+        ORIGIN, SECRET,
+        client=httpx.AsyncClient(transport=httpx.MockTransport(ingress)),
+    )
+    with pytest.raises(RuntimeError):
+        asyncio.run(binding.fetch_entitlement_snapshot({"product_id": PRODUCT}))
+    assert len(ingress.service_ids) == RPC_MAX_ATTEMPTS
+    assert len(set(ingress.service_ids)) == RPC_MAX_ATTEMPTS
+
+    # Through the reviewed adapter the same cap is a fail-closed 503.
+    with pytest.raises(ExecutionAdmissionError) as refused:
+        _resolve(_adapter(_ControlPlaneIngress(replay_refusals=99)))
+    assert refused.value.code == "entitlement_unavailable"
+    assert refused.value.status_code == 503
+
+
+def test_a_plain_failure_is_not_retried() -> None:
+    calls: list[int] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        calls.append(1)
+        return httpx.Response(500, json={"ok": False})
+
+    binding = HttpsAdmissionBinding(
+        ORIGIN, SECRET,
+        client=httpx.AsyncClient(transport=httpx.MockTransport(handler)),
+    )
+    with pytest.raises(RuntimeError):
+        asyncio.run(binding.fetch_entitlement_snapshot({"product_id": PRODUCT}))
+    assert calls == [1]
 
 
 def test_denied_grant_is_a_403_and_never_reserves() -> None:
