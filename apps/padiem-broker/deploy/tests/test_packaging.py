@@ -92,7 +92,7 @@ class CheckConfig(unittest.TestCase):
     def _env(self, data):
         return {
             "PADIEM_BROKER_RPC_INGRESS_SECRET": "x" * 40,
-            "LOCAL_AGENT_BROKER_PEPPER": "y" * 40,
+            "LOCAL_AGENT_BROKER_PEPPER_FILE": str(data.parent / "pepper-test-file"),
             "LOCAL_AGENT_BROKER_AUTHORITY_REF": "control-plane.local-agent-broker.test.v1",
             "PADIEM_BROKER_DB_PATH": str(data / "broker.sqlite3"),
         }
@@ -100,13 +100,18 @@ class CheckConfig(unittest.TestCase):
     def test_ready_requires_both_secrets_and_a_writable_data_dir(self):
         module = load("check_config")
         with tempfile.TemporaryDirectory() as tmp:
-            data = Path(tmp)
+            data = Path(tmp) / "data"
+            data.mkdir()
+            (data.parent / "pepper-test-file").write_text("y" * 40)
+            (data.parent / "pepper-test-file").chmod(0o600)
             module.DATA = data
             with unittest.mock.patch.dict(os.environ, self._env(data), clear=True):
                 self.assertTrue(module.ready())
             for broken in (
                 {"PADIEM_BROKER_RPC_INGRESS_SECRET": "short"},
-                {"LOCAL_AGENT_BROKER_PEPPER": ""},
+                {"LOCAL_AGENT_BROKER_PEPPER_FILE": ""},
+                {"LOCAL_AGENT_BROKER_PEPPER": "y" * 40},
+                {"LOCAL_AGENT_BROKER_PEPPER_FILE": str(data / "broker.sqlite3")},
                 {"LOCAL_AGENT_BROKER_AUTHORITY_REF": ""},
                 {"PADIEM_BROKER_DB_PATH": "/tmp/elsewhere.sqlite3"},
             ):
@@ -152,8 +157,12 @@ class Backup(unittest.TestCase):
             db_path = root / "broker.sqlite3"
             db = sqlite3.connect(db_path)
             for table in module.TABLES:
-                db.execute(f"CREATE TABLE {table} (id TEXT PRIMARY KEY, value TEXT)")
-                db.execute(f"INSERT INTO {table} VALUES ('one', 'private row text')")
+                if table == "local_agent_command_material":
+                    db.execute(f"CREATE TABLE {table} (id TEXT PRIMARY KEY, value TEXT, expires_at TEXT)")
+                    db.execute(f"INSERT INTO {table} VALUES ('one', 'private row text', '2000-01-01T00:00:00Z')")
+                else:
+                    db.execute(f"CREATE TABLE {table} (id TEXT PRIMARY KEY, value TEXT)")
+                    db.execute(f"INSERT INTO {table} VALUES ('one', 'private row text')")
             db.commit()
             db.close()
             dest = root / "backups"
@@ -167,6 +176,16 @@ class Backup(unittest.TestCase):
             self.assertNotIn("private row text", printed)
             kept = sorted(path.name for path in dest.glob("broker-*.sqlite3"))
             self.assertEqual(len(kept), 2)
+            snapshot = sqlite3.connect(dest / kept[-1])
+            try:
+                self.assertEqual(snapshot.execute("SELECT COUNT(*) FROM local_agent_command_material").fetchone()[0], 0)
+            finally:
+                snapshot.close()
+            live = sqlite3.connect(db_path)
+            try:
+                self.assertEqual(live.execute("SELECT COUNT(*) FROM local_agent_command_material").fetchone()[0], 1)
+            finally:
+                live.close()
 
 
 if __name__ == "__main__":

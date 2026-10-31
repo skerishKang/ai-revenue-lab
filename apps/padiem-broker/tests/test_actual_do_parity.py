@@ -134,3 +134,51 @@ def test_shared_sqlite_connection_serializes_competing_transactions(tmp_path):
         assert store.sql.exec("SELECT generation FROM versions").toArray() == [{"generation": 2}]
     finally:
         store.close()
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("action", ["rotate_credential", "revoke_binding"])
+async def test_real_do_and_broker_purge_material_on_binding_change(monkeypatch, tmp_path, action):
+    from test_differential_parity import _material
+
+    class DurableObject:
+        def __init__(self, ctx, env):
+            self.ctx, self.env = ctx, env
+    workers = types.ModuleType("workers")
+    workers.DurableObject = DurableObject
+    workers.WorkerEntrypoint = type("WorkerEntrypoint", (), {})
+    workers.Response = type("Response", (), {})
+    monkeypatch.setitem(sys.modules, "workers", workers)
+    monkeypatch.delitem(sys.modules, "local_agent_broker_worker", raising=False)
+    worker = importlib.import_module("local_agent_broker_worker")
+    storage = _DoStorage()
+    env = types.SimpleNamespace(LOCAL_AGENT_BROKER_AUTHORITY_REF=h.AUTHORITY, LOCAL_AGENT_BROKER_PEPPER=h.PEPPER)
+    do = worker.LocalAgentBrokerDurableObject(types.SimpleNamespace(storage=storage), env)
+    app = h.build_app(tmp_path)
+    try:
+        data = h.register_payload()
+        assert (await do.register_binding(data))["ok"]
+        assert app.state.broker._runtime.register_binding(data)["ok"]
+        payload = h.enqueue_payload(command="cmd.purge.test")
+        material = _material("cmd.purge.test")
+        expected = await do.enqueue_command_with_material(payload, material)
+        async with h.client_for(app) as client:
+            result = await h.rpc(client, "enqueue_command_with_material", {"payload": payload, "material": material})
+            assert _normalize(expected) == _normalize(result.json())
+            assert expected["ok"]
+            if action == "rotate_credential":
+                change = {"binding_ref": h.BINDING, "expected_generation": 1,
+                          "new_credential_b64": base64.b64encode(b"synthetic-new-credential").decode(),
+                          "now": h.now_iso()}
+            else:
+                change = h.revoke_payload()
+            expected = await getattr(do, action)(change)
+            result = await h.rpc(client, action, change)
+            assert _normalize(expected) == _normalize(result.json())
+            assert expected["ok"]
+        for connection in (storage._connection, app.state.broker_storage._connection):
+            assert connection.execute("SELECT COUNT(*) FROM local_agent_command_material").fetchone()[0] == 0
+    finally:
+        app.state.broker_storage.close()
+        storage.close()
+        sys.modules.pop("local_agent_broker_worker", None)
