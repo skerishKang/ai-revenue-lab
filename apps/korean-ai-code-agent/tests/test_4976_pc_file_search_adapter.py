@@ -858,3 +858,48 @@ def test_server_drive_label_is_preserved(tmp_path):
 def test_server_bare_drive_is_absolute_root():
     scope = PcFileSearchScope(root="C:", device_id=DEVICE_ID, local_device_id=DEVICE_ID, label="C:", multiple_roots=True)
     assert scope.root == "C:" + os.sep
+
+
+
+def test_first_request_finishing_all_roots_is_complete(tmp_path):
+    scopes, rows = [], {}
+    for label in ("One", "Two"):
+        root = tmp_path / label
+        root.mkdir()
+        file = root / "result.txt"
+        file.write_text("x", encoding="utf8")
+        rows[str(root)] = [str(file)]
+        scopes.append(PcFileSearchScope(root=str(root), device_id=DEVICE_ID, local_device_id=DEVICE_ID, label=label, multiple_roots=True))
+
+    class Port:
+        def search_page(self, *, root, offset, limit, **kwargs):
+            return rows[root][offset:offset + limit]
+
+    page = adapter.search_pc_files_page(scopes=scopes, query="x", port=Port(), limit=5)
+    assert [item["read"]["path"] for item in page["entries"]] == ["One/result.txt", "Two/result.txt"]
+    assert page["complete"] is True
+    assert page["reason"] == "done"
+    assert page["cursor"] is None
+
+
+def test_first_request_limit_returns_incomplete_with_cursor(tmp_path):
+    root = tmp_path / "drive"
+    root.mkdir()
+    files = [root / "a.txt", root / "b.txt"]
+    for file in files:
+        file.write_text("x", encoding="utf8")
+    scope = PcFileSearchScope(root=str(root), device_id=DEVICE_ID, local_device_id=DEVICE_ID, label="One", multiple_roots=True)
+
+    class Port:
+        def search_page(self, *, offset, limit, **kwargs):
+            return [str(file) for file in files][offset:offset + limit]
+
+    page = adapter.search_pc_files_page(scopes=[scope], query="x", port=Port(), limit=1)
+    assert page["complete"] is False
+    assert page["reason"] == "limit"
+    assert page["cursor"] == {"label": "One", "offset": 1}
+    final = adapter.search_pc_files_page(scopes=[scope], query="x", port=Port(), cursor=page["cursor"], limit=5)
+    assert [item["read"]["path"] for item in final["entries"]] == ["One/b.txt"]
+    assert final["complete"] is False
+    assert final["reason"] == "index_unverified"
+    assert final["cursor"] is None
