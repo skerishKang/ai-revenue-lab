@@ -128,6 +128,14 @@ function renderTodayHome(){
   document.getElementById('todayContinueMeta').textContent=cont.updatedAt?'최근 읽은 곳 · 진행상태 복원':'최근 읽은 곳';
   document.getElementById('todayContinueProgress').style.width=vis.pct+'%';
   document.getElementById('todayContinueProgressText').textContent=vis.label;
+  if(cont.recommendation){
+    document.getElementById('todayContinueMeta').textContent='추천 본문';
+    document.getElementById('todayContinueNote').textContent='첫 본문을 열어 읽기를 시작해 보세요.';
+    document.getElementById('todayContinueBtn').textContent='본문 읽기 →';
+    document.getElementById('todayContinueProgress').style.width='0%';
+    document.getElementById('todayContinueProgressText').textContent='읽기 전';
+  }
+
 
   const due=todayRecallItems();
   document.getElementById('todayRecallCount').textContent=String(due.length);
