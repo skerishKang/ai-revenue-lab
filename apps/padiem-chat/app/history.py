@@ -1060,11 +1060,33 @@ class D1HistoryStore:
             statement = statement.bind(*values)
         return _rows_from_result(await statement.run())
 
+    async def upsert_shared_user(self, user_id: str, account_id: str, email: str, name: str, picture: str) -> UserProfile:
+        if not re.fullmatch(r'usr_[0-9a-f]{32}', user_id) or not re.fullmatch(r'sub_[A-Za-z0-9_-]+', account_id):
+            raise HistoryError('invalid shared identity')
+        now = _now_iso()
+        display = (name.strip() or email.split('@', 1)[0])[:160]
+        pic = picture.strip()[:1000]
+        marker = 'shared:' + account_id
+        rows = await self._all(
+            "INSERT INTO users (id, auth_provider, provider_subject, email, display_name, picture_url, created_at, updated_at) "
+            "VALUES (?, 'google', ?, ?, ?, ?, ?, ?) "
+            "ON CONFLICT(id) DO UPDATE SET email=excluded.email, display_name=excluded.display_name, "
+            "picture_url=excluded.picture_url, updated_at=excluded.updated_at "
+            "WHERE users.provider_subject NOT LIKE 'shared:%' OR users.provider_subject=excluded.provider_subject RETURNING id",
+            user_id, marker, email, display, pic, now, now,
+        )
+        if len(rows) != 1:
+            raise HistoryConflict('shared identity conflict')
+        return UserProfile(user_id, email, display, pic)
+
     async def upsert_google_user(self, subject: str, email: str, name: str, picture: str) -> UserProfile:
         uid = _user_id(subject)
         now = _now_iso()
         display = (name.strip() or email.split("@", 1)[0])[:160]
         pic = picture.strip()[:1000]
+        # The user ID derives from the verified Google subject, so only its
+        # own shared placeholder may be replaced when rolling back login.
+        await self._run("UPDATE users SET provider_subject=? WHERE id=? AND provider_subject LIKE 'shared:%'", subject, uid)
         await self._run(
             "INSERT INTO users (id, auth_provider, provider_subject, email, display_name, picture_url, created_at, updated_at) "
             "VALUES (?, 'google', ?, ?, ?, ?, ?, ?) "

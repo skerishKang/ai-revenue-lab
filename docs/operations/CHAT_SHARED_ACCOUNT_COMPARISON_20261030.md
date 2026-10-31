@@ -21,3 +21,10 @@
 - 러브트리 #93은 미머지로 닫았다. 운영 main에 미리보기 전용 라우트 예외와 진단 코드는 없다.
 - 인증 서버 `PADIEM_AUTH_CLIENTS`에 러브트리 미리보기 콜백과 미리보기 공개키가 아직 있다. 운영 키와 같은 클라이언트 ID에 함께 연결돼 있으므로, 미리보기 시험 종료를 확인한 뒤 별도 변경으로 제거한다. 그때 운영 콜백과 운영 공개키는 유지하고 `--keep-vars`로 배포해 운영 로그인을 재검증한다.
 - 러브트리 시험 미리보기 환경의 전용 개인키·상태 키·기타 비밀은 삭제하지 않았다. 실제 제거 여부와 시점은 별도 결정한다.
+
+## Comparison switch deployment procedure (prepared, not executed)
+
+- After #6267 is merged, confirm the current main SHA and that `apps/padiem-chat/wrangler.toml` declares `PADIEM_CHAT_SHARED_AUTH_COMPARE_ENABLED = "false"` under `[vars]`. The production config generator accepts `set_var` only for a live or repository-declared variable. It preserves existing live variables unless explicitly overridden; the repository default alone does not turn an already enabled live value off.
+- Coordinate with the Chat deployment owner and keep the active queue setting unchanged. Dispatch `b62-production-code-deploy-gate.yml` from `main`, with `mode=deploy_production_code`, the exact current 40-character `target_sha`, and `confirmation=DEPLOY_B62_PRODUCTION_CODE_FROM_EXACT_MAIN`. For the comparison window, set `set_var` to `{"PADIEM_CHAT_SHARED_AUTH_COMPARE_ENABLED":"true"}`; `allow_binding_removal=false`. Check the gate's served-variable and binding verification and record the deployment version. Do not print secret values.
+- With the operator's existing authenticated Chat session and super-admin role, open `https://chat.padiem.net/_test/auth/account-comparison/start` and complete the common login using the intended account. The response is `MATCH`, `MISMATCH`, or `UNKNOWN`. Do not treat UNKNOWN or MISMATCH as permission to switch Chat login.
+- At the end of the comparison window, dispatch the same gate against the then-current exact main SHA and confirmation, with `set_var` set to `{"PADIEM_CHAT_SHARED_AUTH_COMPARE_ENABLED":"false"}` and `allow_binding_removal=false`. Preserve the active queue mode and all other variables. Verify the served configuration and that the comparison start route is no longer mounted. Disabling is a deployment, not merely restoring the repository default.

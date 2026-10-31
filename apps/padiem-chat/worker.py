@@ -1113,6 +1113,10 @@ class Default(WorkerEntrypoint):
         if str(binding_value(self.env, "PADIEM_CHAT_SHARED_AUTH_COMPARE_ENABLED") or "").strip().lower() == "true":
             from app.shared_auth_compare_flow import create_worker_comparison_flow
             comparison_flow = await create_worker_comparison_flow(self.env, identity_authority)
+        shared_login_flow = None
+        if str(binding_value(self.env, "PADIEM_CHAT_SHARED_LOGIN_ENABLED") or "").strip().lower() == "true":
+            from app.shared_login_flow import create_worker_shared_login_flow
+            shared_login_flow = await create_worker_shared_login_flow(self.env, identity_authority)
         # #5484: the Engine admission authority resolves the engine
         # entitlement by CANONICAL subject. The B62 product-local
         # ``usr_*`` id is not a canonical subject id, so the Control
@@ -1296,6 +1300,7 @@ class Default(WorkerEntrypoint):
         worker_app = create_app(
             settings=settings,
             shared_auth_comparison_flow=comparison_flow,
+            shared_login_flow=shared_login_flow,
             telemetry_exporter=_grafana_exporter,
             github_oauth_store=github_store,
             github_oauth_provider=github_provider,
