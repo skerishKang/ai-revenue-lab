@@ -14,18 +14,20 @@ session with history enabled. It does not create credentials or log in.
 
 Set `STAGING_CHAT_COOKIE` privately to the complete session Cookie header
 (e.g. `padiem_session=<value>`) in the process environment, never in a
-command line, source file, log, or shared shell history. Run on the machine
-hosting staging:
+command line, source file, log, or shared shell history. Without the variable
+the suite runs the two guest checks only and reports the six login-dependent
+checks as `SKIP` (no requests, no writes). Run on the machine hosting staging:
 
 ```sh
 python apps/padiem-chat/scripts/staging_com2_e2e.py http://127.0.0.1:8801
 ```
 
-Use another loopback port if needed. Exit 0 means eight checks passed; exit 1
-means a check or request failed. Output contains check names and exception
-class only. Remove the environment variable after use using your shell's normal
-mechanism. This verifies response contracts, not data parity or real model
-behavior. The disposable conversation remains in staging.
+Use another loopback port if needed. Exit 0 means every check that could run
+passed (`PASS 8 checks` signed in, `PASS 2 checks` + `SKIP 6 checks` guest
+only); exit 1 means a check or request failed. Output contains check names and
+exception class only. Remove the environment variable after use using your
+shell's normal mechanism. This verifies response contracts, not data parity or
+real model behavior. The disposable conversation remains in staging.
 
 Project files: the auth status `project_files_ready` field determines whether
 the suite expects a 200 list or 503 `project_files_unavailable`. PC status:

@@ -50,7 +50,8 @@ def test_suite_over_loopback(files_ready, pc_ready):
             time.sleep(0.05)
         assert server.started
         cookie = SESSION_COOKIE + "=" + create_session_token(settings, profile.id)
-        assert suite.run(f"http://127.0.0.1:{port}", cookie) == 8
+        assert suite.run(f"http://127.0.0.1:{port}", cookie) == (8, 0)
+        assert suite.run(f"http://127.0.0.1:{port}", "") == (2, 6)
     finally:
         server.should_exit = True
         thread.join(timeout=10)
