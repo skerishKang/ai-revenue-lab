@@ -20,6 +20,7 @@ $logPath = (Join-Path $PSScriptRoot "com2-mesh-alert.log")
 $pendingPath = (Join-Path $PSScriptRoot "com2-mesh-alert-pending.txt")
 $msgPath = (Join-Path $PSScriptRoot "com2-mesh-alert-message.txt")
 $notifier = (Join-Path $PSScriptRoot "com2-mesh-notifier.cmd")
+$telegramNotifier = (Join-Path $PSScriptRoot "com2-mesh-telegram.py")
 
 $status = $null
 if ($statusPath -and (Test-Path -LiteralPath $statusPath)) {
@@ -62,7 +63,20 @@ if ($shouldAlert) {
     $msg = "Target: COM2 Mesh (K_LIPVOICE)" + "`n" + "Type: " + $alertType + "`n" + "Check time: " + $now + "`n" + "Failed checks: " + $failedStr + "`n" + "Last normal: " + $lastNormalTime + "`n" + "Status screen: $statusPath"
     $msg | Set-Content -Path $msgPath -Encoding UTF8
     $delivered = $false
-    if (Test-Path $notifier) {
+    $telegramReason = 'TELEGRAM_NOTIFIER_MISSING'
+    if (Test-Path -LiteralPath $telegramNotifier) {
+        $python = Get-Command python.exe -ErrorAction SilentlyContinue
+        if ($python) {
+            try {
+                $result = @(& $python.Source $telegramNotifier --file $msgPath 2>$null)
+                $exitCode = $LASTEXITCODE
+                $reason = @($result | Where-Object { $_ -match '^TELEGRAM_[A-Z0-9_]+$' } | Select-Object -Last 1)
+                $telegramReason = if ($reason.Count) { [string]$reason[0] } else { 'TELEGRAM_NO_REASON' }
+                if ($exitCode -eq 0 -and $telegramReason -eq 'TELEGRAM_OK') { $delivered = $true }
+            } catch { $telegramReason = 'TELEGRAM_LAUNCH_ERROR' }
+        } else { $telegramReason = 'TELEGRAM_PYTHON_MISSING' }
+    }
+    if (-not $delivered -and (Test-Path $notifier)) {
         try {
             $p = Start-Process -FilePath $notifier -ArgumentList "`"$msgPath`"" -Wait -PassThru -WindowStyle Hidden
             if ($p.ExitCode -eq 0) { $delivered = $true }
@@ -78,7 +92,7 @@ try {
     } else {
         if (Test-Path $pendingPath) { Remove-Item $pendingPath -Force }
     }
-    "$now $alertType delivered=$delivered :: $msg" | Add-Content -Path $logPath -Encoding UTF8
+    "$now $alertType delivered=$delivered telegram=$telegramReason :: $msg" | Add-Content -Path $logPath -Encoding UTF8
     $lastAlertType = $alertType
     $lastAlertTime = $now
 }
