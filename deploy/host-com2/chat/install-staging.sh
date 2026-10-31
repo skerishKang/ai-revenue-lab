@@ -28,6 +28,7 @@ for required in \
   apps/padiem-chat/app/local_cpython.py \
   apps/padiem-chat/migrations \
   packages/padiem-ai-core/padiem_ai_core \
+  packages/padiem-auth-verify/verify.py \
   packages/padiem-control-plane/padiem_control_plane \
   apps/korean-ai-code-agent/src/kagent \
   apps/padiem-ai-engine/clients/python/padiem_ai_engine_client; do
@@ -51,6 +52,7 @@ for pair in \
   "app:$source_root/apps/padiem-chat/app" \
   "padiem_ai_core:$source_root/packages/padiem-ai-core/padiem_ai_core" \
   "padiem_control_plane:$source_root/packages/padiem-control-plane/padiem_control_plane" \
+  "padiem_auth_verify.py:$source_root/packages/padiem-auth-verify/verify.py" \
   "com2_edge_proof.py:$source_root/packages/padiem-control-plane/com2_edge_proof.py" \
   "kagent:$source_root/apps/korean-ai-code-agent/src/kagent" \
   "padiem_ai_engine_client:$source_root/apps/padiem-ai-engine/clients/python/padiem_ai_engine_client"; do

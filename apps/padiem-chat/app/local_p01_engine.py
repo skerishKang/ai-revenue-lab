@@ -23,6 +23,7 @@ from kagent.p01_orchestration_client import P01EngineOrchestrationClient
 from padiem_ai_engine_client import PadiemAiEngineClient
 
 from .claw_p01_composition import compose_p01_lanes
+from .orchestration_composition import CHAT_ENGINE_APP_ID
 from .local_engine_transport import (
     LocalEngineHttpTransport,
     LocalEngineTransportError,
@@ -75,6 +76,49 @@ def local_p01_engine_config_from_env(
     return LocalP01EngineConfig(origin=origin, caller_id=caller_id, credential=credential), None
 
 
+def _engine_client(
+    config: LocalP01EngineConfig,
+    *,
+    client: httpx.AsyncClient | None,
+    app_id: str,
+) -> tuple[PadiemAiEngineClient | None, str | None]:
+    """The one Engine client constructor both host lanes use."""
+
+    try:
+        return (
+            PadiemAiEngineClient(
+                transport=LocalEngineHttpTransport(config.origin, client=client),
+                app_id=app_id,
+                caller_id=config.caller_id,
+                credential=config.credential,
+            ),
+            None,
+        )
+    except (TypeError, ValueError):
+        return None, P01_DIAG_CLIENT_CONSTRUCTOR_ERROR
+    except Exception:
+        return None, P01_DIAG_COMPOSITION_UNAVAILABLE
+
+
+def build_local_engine_client(
+    env: Any,
+    *,
+    client: httpx.AsyncClient | None = None,
+) -> tuple[PadiemAiEngineClient | None, str | None]:
+    """One loopback Engine client for the host, or a bounded diagnostic.
+
+    The chat orchestration bridge submits turns as ``padiem-chat`` and the claw
+    lanes as ``P01_APP_ID``. Both travel the same validated caller surface, so
+    the transport and identity checks live here once and the app id is the only
+    difference a caller supplies.
+    """
+
+    config, diagnostic = local_p01_engine_config_from_env(env)
+    if config is None:
+        return None, diagnostic
+    return _engine_client(config, client=client, app_id=CHAT_ENGINE_APP_ID)
+
+
 def build_local_p01_lanes(
     env: Any,
     *,
@@ -89,17 +133,11 @@ def build_local_p01_lanes(
     config, diagnostic = local_p01_engine_config_from_env(env)
     if config is None:
         return None, None, diagnostic
-    try:
-        engine_client = PadiemAiEngineClient(
-            transport=LocalEngineHttpTransport(config.origin, client=client),
-            app_id=P01_APP_ID,
-            caller_id=config.caller_id,
-            credential=config.credential,
-        )
-    except (TypeError, ValueError):
-        return None, None, P01_DIAG_CLIENT_CONSTRUCTOR_ERROR
-    except Exception:
-        return None, None, P01_DIAG_COMPOSITION_UNAVAILABLE
+    engine_client, diagnostic = _engine_client(
+        config, client=client, app_id=P01_APP_ID
+    )
+    if engine_client is None:
+        return None, None, diagnostic
     try:
         # The host has no Control Plane identity authority bound, so the
         # canonical USER lane stays off exactly as it does in a Worker without
@@ -125,12 +163,14 @@ def build_local_p01_adapter(
 
 
 __all__ = [
+    "CHAT_ENGINE_APP_ID",
     "LOCAL_P01_CALLER_ID_ENV",
     "LOCAL_P01_CREDENTIAL_ENV",
     "LOCAL_P01_ORIGIN_ENV",
     "LOCAL_P01_ORIGIN_INVALID_DIAGNOSTIC",
     "LOCAL_P01_UNBOUND_DIAGNOSTIC",
     "LocalP01EngineConfig",
+    "build_local_engine_client",
     "build_local_p01_adapter",
     "build_local_p01_lanes",
     "local_p01_engine_config_from_env",
