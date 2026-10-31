@@ -191,8 +191,10 @@ def test_queue_wiring_stays_off_by_default(local_env, monkeypatch):
     monkeypatch.delenv("PC_QUEUE_SERVICE_SECRET_FILE", raising=False)
     app = build_app()
     assert not isinstance(app.state.history_store, QueueForwardingHistoryStore)
-    assert getattr(app.state, "pc_device_pairing_store", None) is None
-    assert getattr(app.state, "mesh_device_presence_store", None) is None
+    from app.pc_device_pairing_store import D1PcPairingStore
+    from app.mesh_device_presence_store import D1MeshDevicePresenceStore
+    assert isinstance(app.state.pc_device_pairing_store, D1PcPairingStore)
+    assert isinstance(app.state.mesh_device_presence_store, D1MeshDevicePresenceStore)
 
 
 def test_staging_queue_wiring_reads_the_secret_from_a_file(staging_host_env, monkeypatch):
@@ -405,3 +407,85 @@ def test_worker_dependency_lock_excludes_native_cryptography():
     from pathlib import Path
     lock = tomllib.loads((Path(__file__).resolve().parents[1] / 'pylock.toml').read_text(encoding='utf-8'))
     assert all(package.get('name') != 'cryptography' for package in lock['packages'])
+
+
+def test_host_missing_routes_are_owner_scoped_and_use_existing_stores(staging_host_env, monkeypatch):
+    import httpx
+    from app.auth import SESSION_COOKIE, create_session_token
+
+    monkeypatch.setenv("PADIEM_CHAT_AUTH_MODE", "password")
+    monkeypatch.setenv("PADIEM_CHAT_CUSTOM_KEY_SECRET", "synthetic-custom-key-secret-1234567890")
+    broker_file = staging_host_env / "broker-test-secret"
+    broker_file.write_text("synthetic-broker-secret-0123456789abcdef", encoding="utf-8")
+    monkeypatch.setenv("PADIEM_COM2_BROKER_RPC_SECRET_FILE", str(broker_file))
+    calls = []
+
+    def broker_reply(request):
+        calls.append(request)
+        assert "x-padiem-service-id" in request.headers
+        assert request.url.path == "/internal/rpc/device_directory"
+        return httpx.Response(200, json={"ok": True, "available": False, "reason": "no_device_binding"})
+
+    from app.com2_connector_websocket import LoopbackRpcBinding
+    original_init = LoopbackRpcBinding.__init__
+    def recording_init(self, **kwargs):
+        original_init(self, **kwargs)
+        assert self._sign_request_id is True
+        self._client = httpx.AsyncClient(transport=httpx.MockTransport(broker_reply))
+    monkeypatch.setattr(LoopbackRpcBinding, "__init__", recording_init)
+    app = build_app()
+    # No canonical authority is configured in this local-only fixture.
+    app.state.identity_shadow_store = None
+    assert app.state.claw_device_directory_source.configured is True
+    paths = ("/api/claw/local-access/devices", "/api/claw/inbox/tasks",
+             "/api/claw/inbox/alerts", "/api/pc/pairings", "/api/chat/custom/credential")
+    with TestClient(app, base_url="https://chat-com2-staging.padiem.net") as client:
+        for path in paths:
+            assert client.get(path).status_code == 401, path
+        registration = client.post(
+            "/api/auth/password/register",
+            headers={"Origin": "https://chat-com2-staging.padiem.net"},
+            json={"email": "route-owner@example.test", "password": "test-password-012345"},
+        )
+        assert registration.status_code == 200, registration.text
+        for path in paths:
+            response = client.get(path)
+            assert response.status_code == 200, (path, response.status_code, response.text)
+        assert calls
+
+
+def test_host_directory_uses_existing_broker_secret_and_fails_closed(staging_host_env, monkeypatch):
+    from app.config import ConfigError
+    monkeypatch.setenv("PADIEM_COM2_BROKER_RPC_SECRET_FILE", str(staging_host_env / "missing"))
+    with pytest.raises(ConfigError, match="PADIEM_COM2_BROKER_RPC_SECRET_FILE"):
+        build_app()
+
+
+@pytest.mark.parametrize("reason,shared,expected", [
+    ("control_plane_identity_not_linked", True, "tenant:verified"),
+    ("control_plane_session_mismatch", True, None),
+    ("control_plane_session_inactive", True, None),
+    ("control_plane_identity_not_linked", False, None),
+])
+def test_shared_workspace_fallback_only_for_missing_shadow(reason, shared, expected, monkeypatch):
+    import asyncio
+    from types import SimpleNamespace
+    from app import claw_memory_routes, chat_pc_drive
+    from app.control_plane_identity import IdentityBridgeError
+    user = "usr_" + "a" * 32
+    request = SimpleNamespace(
+        app=SimpleNamespace(state=SimpleNamespace(identity_shadow_store=object(),
+                                                   control_plane_identity_authority=object())),
+        state=SimpleNamespace(padiem_shared_user_id=user if shared else None),
+    )
+    monkeypatch.setattr(claw_memory_routes, "auth_ready", lambda request: True)
+    async def missing(**kwargs):
+        raise IdentityBridgeError(503, reason, "unavailable")
+    calls = []
+    async def verified(request, uid):
+        calls.append(uid)
+        return object(), "subject:verified", "tenant:verified"
+    monkeypatch.setattr(claw_memory_routes, "resolve_refreshed_session", missing)
+    monkeypatch.setattr(chat_pc_drive, "_resolve_chat_owner", verified)
+    assert asyncio.run(claw_memory_routes._resolve_memory_workspace(request, user)) == expected
+    assert calls == ([user] if expected else [])
