@@ -2,9 +2,11 @@
 
 from __future__ import annotations
 
+import json
 from datetime import UTC, datetime
 from typing import Any
 
+from internal_rpc_ingress import handle_internal_rpc, resolve_ingress_secret
 from workers import DurableObject, Response, WorkerEntrypoint
 
 from padiem_control_plane.contracts import ControlPlaneContractError
@@ -30,6 +32,24 @@ _FETCH_KEYS = frozenset({"product_id", "subject"})
 _RESERVE_KEYS = frozenset({"reservation"})
 _RECORD_KEYS = frozenset({"usage_event"})
 _INSTALL_KEYS = frozenset({"snapshot"})
+
+# #5573 A2: default-off HTTPS ingress for the COM2 Engine host. Only the three
+# calls the Engine actually makes are reachable, the proof is the same v1
+# contract and the same verifier the identity ingress uses (clock window and
+# constant-time compare included), and nothing is registered at all without the
+# secret binding. ``install_entitlement_snapshot`` is deliberately absent:
+# installing entitlement is a CP-owned producer step the Engine gateway has
+# never been able to call, and it stays binding-only.
+ENGINE_ADMISSION_RPC_INGRESS_SECRET_BINDING = (
+    "PADIEM_ENGINE_ADMISSION_RPC_INGRESS_SECRET"
+)
+ENGINE_ADMISSION_RPC_INGRESS_METHODS: frozenset[str] = frozenset(
+    {
+        "fetch_entitlement_snapshot",
+        "reserve_usage",
+        "record_usage",
+    }
+)
 
 
 def _closed(
@@ -311,6 +331,31 @@ class Default(WorkerEntrypoint):
         )
 
     async def fetch(self, request):
+        secret = await resolve_ingress_secret(
+            getattr(
+                self.env,
+                ENGINE_ADMISSION_RPC_INGRESS_SECRET_BINDING,
+                None,
+            )
+        )
+        if secret is not None:
+            handled = await handle_internal_rpc(
+                request,
+                secret=secret,
+                allowed_methods=ENGINE_ADMISSION_RPC_INGRESS_METHODS,
+                dispatcher=self,
+            )
+            if handled is not None:
+                status, payload, headers = handled
+                return Response(
+                    json.dumps(
+                        payload,
+                        separators=(",", ":"),
+                        ensure_ascii=False,
+                    ),
+                    status=status,
+                    headers=headers,
+                )
         del request
         return Response(
             "Not Found",
@@ -320,6 +365,10 @@ class Default(WorkerEntrypoint):
 
 
 CANONICAL_ENGINE_ADMISSION_AUTHORITY_WORKER_SOURCE = True
+INTERNAL_RPC_HTTPS_INGRESS = True
+INTERNAL_RPC_HTTPS_INGRESS_DEFAULT_OFF = True
+INTERNAL_RPC_HTTPS_INGRESS_PROOF = "v1"
+ENGINE_GATEWAY_CAN_INSTALL_ENTITLEMENTS_OVER_HTTPS = False
 PRIVATE_SERVICE_BINDING_RPC = True
 PUBLIC_ROUTE_CONFIGURED = False
 ENGINE_GATEWAY_CAN_INSTALL_ENTITLEMENTS = False

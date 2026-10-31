@@ -1,0 +1,63 @@
+{
+  "record_type": "chat-domain-move-trial/operator-record/v1",
+  "status": "NOT_EXECUTED",
+  "approval_reference": null,
+  "operator_lane": null,
+  "approved_main_sha": null,
+  "execution_location": null,
+  "resolver_description": null,
+  "trial_host": "chat-cutover-test.padiem.net",
+  "worker_a": "padiem-chat-cutover-trial-a",
+  "worker_b": "padiem-chat-cutover-trial-b",
+  "initial_provisioning": {
+    "separate_from_movement_measurement": true,
+    "dns_ready_seconds": "NOT_MEASURED",
+    "certificate_ready_seconds": "NOT_MEASURED",
+    "evidence_reference": null
+  },
+  "switch": {
+    "result_json_reference": null,
+    "put_attempts": "NOT_MEASURED",
+    "put_seconds": "NOT_MEASURED",
+    "owner_immediate_matches": "NOT_MEASURED",
+    "first_target_response_seconds": "NOT_MEASURED",
+    "http_failed_samples": "NOT_MEASURED",
+    "http_sample_gap_max_seconds": "NOT_MEASURED"
+  },
+  "rollback": {
+    "result_json_reference": null,
+    "put_attempts": "NOT_MEASURED",
+    "put_seconds": "NOT_MEASURED",
+    "owner_immediate_matches": "NOT_MEASURED",
+    "first_target_response_seconds": "NOT_MEASURED",
+    "http_failed_samples": "NOT_MEASURED",
+    "http_sample_gap_max_seconds": "NOT_MEASURED"
+  },
+  "dns_ttl_or_multi_location_evidence": "NOT_MEASURED",
+  "certificate_issuance_event_evidence": "NOT_MEASURED",
+  "certificate_timing_comparison": {
+    "direction": "switch_or_rollback",
+    "cloudflare_source": "dashboard Edge Certificates / actual listed certificate pack / Audit Logs",
+    "before_observed_utc": "NOT_MEASURED",
+    "after_observed_utc": "NOT_MEASURED",
+    "cloudflare_uploaded_on_utc": "NOT_MEASURED",
+    "cloudflare_modified_on_utc": "NOT_MEASURED",
+    "actual_event_kind": "NOT_MEASURED",
+    "actual_event_utc": "NOT_MEASURED",
+    "issuance_event_utc": "NOT_MEASURED_OR_NOT_OBSERVABLE",
+    "event_to_served_certificate_correlation": "NOT_MEASURED",
+    "tls_first_success_after_put_utc": "NOT_MEASURED",
+    "tls_first_observed_certificate_change_utc": "NOT_MEASURED",
+    "tls_first_observed_newer_not_before_utc": "NOT_MEASURED",
+    "baseline_certificate_not_before_utc": "NOT_MEASURED",
+    "observed_certificate_not_before_utc": "NOT_MEASURED",
+    "observed_certificate_not_after_utc": "NOT_MEASURED",
+    "issuance_to_served_observation_seconds": "NOT_MEASURED_OR_NOT_OBSERVABLE",
+    "evidence_reference": null,
+    "notes": "notBefore, uploaded_on, modified_on and audit action time are distinct; do not relabel them as CA issuance. Do not assume domain cert_id equals certificate pack ID."
+  },
+  "final_owner_confirmed_a": "NOT_MEASURED",
+  "single_put_reassignment_observed": "NOT_MEASURED",
+  "production_decision": "CTO_REVIEW_REQUIRED",
+  "limitations_and_notes": "Sampling does not prove zero interruption, global propagation, or certificate reissuance. Never include secrets or raw API responses."
+}
