@@ -1,0 +1,18 @@
+[Unit]
+Description=PADIEM COM2 identity RPC (template, not installed)
+After=network.target
+
+[Service]
+User=padiem-identity
+Group=padiem-identity
+WorkingDirectory=/opt/padiem/identity
+EnvironmentFile=/opt/padiem/identity/identity.env
+ExecStart=/opt/padiem/identity/venv/bin/python -m uvicorn --factory com2_identity_entrypoint:build_app --host 127.0.0.1 --port 8802 --no-server-header
+UMask=0077
+NoNewPrivileges=true
+ProtectSystem=strict
+PrivateTmp=true
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
