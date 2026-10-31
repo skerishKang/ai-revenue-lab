@@ -695,7 +695,7 @@ def test_single_root_read_keeps_existing_path(tmp_path):
     assert result.entries[0].read_payload() == {"op": "read", "path": "document.txt"}
 
 
-@pytest.mark.parametrize("label", [None, "", ".", "..", "C:", "a/b", "a\\b", "a\n"])
+@pytest.mark.parametrize("label", [None, "", ".", "..", "a/b", "a\\b", "a\n", " leading", "x\x7f"])
 def test_multi_root_rejects_invalid_label(tmp_path, label):
     with pytest.raises(PcFileSearchError):
         PcFileSearchScope(root=str(tmp_path), device_id=DEVICE_ID, local_device_id=DEVICE_ID, label=label, multiple_roots=True)
@@ -842,3 +842,19 @@ def test_timeout_keeps_complete_unicode_rows_before_cut_character(monkeypatch):
     with pytest.raises(adapter.PcFileSearchTimeout) as caught:
         adapter._default_process_runner(["fake"], timeout=0.1)
     assert caught.value.rows == ("한글.txt",)
+
+
+def test_server_drive_label_is_preserved(tmp_path):
+    root = tmp_path / "drive"
+    root.mkdir()
+    file = root / "document.txt"
+    file.write_text("x", encoding="utf8")
+    scope = PcFileSearchScope(root=str(root), device_id=DEVICE_ID, local_device_id=DEVICE_ID, label="C:", multiple_roots=True)
+    result = search_pc_files(scope=scope, query="document", port=_FixtureIndexPort([str(file)]))
+    assert result.entries[0].read_payload() == {"op": "read", "path": "C:/document.txt"}
+
+
+@pytest.mark.skipif(os.name != "nt", reason="Windows drive syntax")
+def test_server_bare_drive_is_absolute_root():
+    scope = PcFileSearchScope(root="C:", device_id=DEVICE_ID, local_device_id=DEVICE_ID, label="C:", multiple_roots=True)
+    assert scope.root == "C:" + os.sep

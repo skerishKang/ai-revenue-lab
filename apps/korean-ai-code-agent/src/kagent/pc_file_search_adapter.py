@@ -174,8 +174,12 @@ class PcFileSearchScope:
                 raise PcFileSearchError(f"{name} must be a non-empty string")
         if type(self.multiple_roots) is not bool:
             raise PcFileSearchError("multiple_roots must be boolean")
-        if self.multiple_roots and (not isinstance(self.label, str) or not self.label or self.label in (".", "..") or any(ch in self.label for ch in "/\\:") or any(ord(ch) < 32 for ch in self.label)):
+        if self.multiple_roots and (not isinstance(self.label, str) or not self.label or self.label in (".", "..") or self.label != self.label.strip() or any(ch in self.label for ch in "/\\") or any(ord(ch) < 32 or ord(ch) == 127 for ch in self.label)):
             raise PcFileSearchError("server folder label required")
+        # Server's whole-drive grant is stored as C:; Windows needs C:\
+        # to mean a drive root rather than the per-drive current directory.
+        if os.name == "nt" and re.fullmatch(r"[A-Za-z]:", self.root):
+            object.__setattr__(self, "root", self.root + "\\")
         if not os.path.isabs(self.root):
             raise PcFileSearchError("root must be an absolute folder path")
         if self.device_id != self.local_device_id:
