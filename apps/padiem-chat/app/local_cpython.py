@@ -24,10 +24,14 @@ from types import SimpleNamespace
 from typing import Any
 
 import httpx
+from padiem_control_plane import AuthSessionSnapshot, SubjectType
 
 from .app_factory import create_app
 from .b66_b14_free_first_resolver import B66ExplicitQuoteModelResolver
 from .config import ConfigError, Settings
+from .control_plane_identity import IdentityBridgeError, PADIEM_CHAT_PRODUCT_ID
+from .control_plane_identity_shadow import D1IdentityShadowStore
+from .control_plane_identity_worker import CloudflareControlPlaneIdentityAuthority
 from .d1_sqlite import SqliteD1
 from .dispatch_quota import DispatchAwareB14Client
 from .history import D1HistoryStore
@@ -108,6 +112,39 @@ def _ensure_session_secret(data_dir: Path) -> None:
     os.environ["PADIEM_CHAT_SESSION_SECRET"] = generated
 
 
+class CurrentCanonicalSubjectResolver:
+    """Read the same current canonical session as the admission authority.
+
+    Shared-login sessions need no product-local shadow row. The existing
+    identity RPC resolves the authenticated product user to its active session;
+    neither this adapter nor a browser supplies or creates a canonical subject.
+    """
+
+    def __init__(self, authority: Any) -> None:
+        self._authority = authority
+
+    async def resolve_subject_id(self, *, product_user_id: str) -> str:
+        session = await self._authority.resolve_current_auth_session(
+            product_id=PADIEM_CHAT_PRODUCT_ID, product_user_id=product_user_id,
+        )
+        if not isinstance(session, AuthSessionSnapshot):
+            raise IdentityBridgeError(
+                503, "control_plane_session_invalid", "Canonical auth session is invalid."
+            )
+        if (
+            session.product_id != PADIEM_CHAT_PRODUCT_ID
+            or session.subject.subject_type is not SubjectType.USER
+        ):
+            raise IdentityBridgeError(
+                403, "control_plane_session_mismatch", "Canonical auth session does not match Chat."
+            )
+        if not session.is_active(now=datetime.now(timezone.utc)):
+            raise IdentityBridgeError(
+                401, "control_plane_session_inactive", "Canonical auth session is inactive."
+            )
+        return session.subject.subject_id
+
+
 def compose_host_orchestration(
     app: Any,
     *,
@@ -125,11 +162,16 @@ def compose_host_orchestration(
     direct-B14 behaviour and its existing 404s.
     """
 
+    authority = getattr(app.state, "control_plane_identity_authority", None)
+    canonical_subject_resolver = (
+        CurrentCanonicalSubjectResolver(authority) if authority is not None else None
+    )
     bridge = compose_orchestration_bridge(
         env=env,
         settings=settings,
         db_binding=db_binding,
         build_client=lambda: build_local_engine_client(env, client=client)[0],
+        canonical_subject_resolver=canonical_subject_resolver,
     )
     if bridge is None:
         return None
@@ -192,20 +234,22 @@ def build_app():
     pdf_origin, pdf_secret = _optional_pair(
         "PADIEM_CHAT_LOCAL_B66_PDF_ORIGIN", "PADIEM_CHAT_LOCAL_B66_PDF_SECRET"
     )
-    identity_authority = (
+    identity_binding = (
         HttpRpcBinding(identity_origin, identity_secret) if identity_origin else None
     )
+    identity_authority = (
+        CloudflareControlPlaneIdentityAuthority(identity_binding)
+        if identity_binding is not None else None
+    )
+    identity_shadow_store = D1IdentityShadowStore(db)
     pdf_renderer = (
         LocalB66PdfRendererClient(pdf_origin, pdf_secret) if pdf_origin else None
     )
 
     shared_login_flow = None
     if os.getenv("PADIEM_CHAT_SHARED_LOGIN_ENABLED", "").strip().lower() == "true":
-        from .control_plane_identity_worker import CloudflareControlPlaneIdentityAuthority
         from .cpython_shared_login import create_host_shared_login_flow
-        shared_authority = (CloudflareControlPlaneIdentityAuthority(identity_authority)
-                            if identity_authority is not None else None)
-        shared_login_flow = create_host_shared_login_flow(os.environ, shared_authority, settings.public_base_url)
+        shared_login_flow = create_host_shared_login_flow(os.environ, identity_authority, settings.public_base_url)
 
     app = create_app(
         shared_login_flow=shared_login_flow,
@@ -217,6 +261,7 @@ def build_app():
         saved_output_store=D1SavedOutputStore(db),
         usage_store=D1UsageCounterStore(db),
         control_plane_identity_authority=identity_authority,
+        identity_shadow_store=identity_shadow_store,
         b66_pdf_renderer_client=pdf_renderer,
     )
 
@@ -293,9 +338,9 @@ def build_app():
         broker = LoopbackRpcBinding(
             port=8799, secret=secret_file("PADIEM_COM2_BROKER_RPC_SECRET_FILE"),
             methods=_BROKER_METHODS,
-            # The broker ingress has no replay memory yet, so it would answer
-            # every v2 request 503. It keeps the v1 proof until it has a guard.
-            sign_request_id=False,
+            # The broker ingress consumes the signed id (#6424), so this lane
+            # signs one exactly like the identity lane does.
+            sign_request_id=True,
         )
         gateway = create_com2_gateway(verifier=verifier, identity_binding=identity, broker_binding=broker)
 
