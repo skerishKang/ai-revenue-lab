@@ -34,7 +34,10 @@ import os
 import time
 from dataclasses import dataclass
 
-from starlette.requests import Request
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from starlette.requests import Request
 
 # Deployment-owned proof secret. The value lives only in Cloudflare Secrets
 # Store; the binding name is the only thing that appears in source.
