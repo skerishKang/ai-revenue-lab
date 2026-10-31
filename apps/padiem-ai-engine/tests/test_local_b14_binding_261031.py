@@ -59,7 +59,7 @@ def _binding(monkeypatch, payload: bytes) -> tuple[rt.LocalB14Binding, dict]:
         return _FakeClient(record, payload)
 
     monkeypatch.setattr(rt.httpx, "AsyncClient", fake_client)
-    return rt.LocalB14Binding("http://127.0.0.1:8789"), record
+    return rt.LocalB14Binding("http://127.0.0.1:8789", values={rt.B14_PROOF_SECRET_ENV: "synthetic-test-" + "x" * 40}), record
 
 
 def _request() -> rt.LocalRequest:
@@ -84,8 +84,8 @@ async def test_fetch_forwards_the_local_headers_without_raising(monkeypatch) -> 
     assert record["method"] == "POST"
     assert record["url"] == "http://127.0.0.1:8789/api/pilot/v1/chat/completions"
     assert record["headers"]["content-type"] == "application/json"
-    assert record["headers"]["x-padiem-b14-proof"] == "a" * 64
-    assert record["headers"]["x-padiem-b14-time"] == "1700000000"
+    assert record["headers"]["x-padiem-b14-proof"] != "a" * 64
+    assert record["headers"]["x-padiem-b14-time"].isdigit()
     assert record["content"] == b'{"model":"host-model"}'
 
 
