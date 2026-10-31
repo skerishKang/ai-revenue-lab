@@ -9,6 +9,8 @@ answered by resending the bytes it already holds.
 """
 from __future__ import annotations
 
+from .pc_correlation import run_hash as _pc_run_hash
+
 import hashlib
 import json
 import re
@@ -780,7 +782,7 @@ class OracleMeshExecutor:
                 f" dispatch_id={dispatch.dispatch_id}"
                 f" request_id={dispatch.request_id or '-'}"
                 f" command_id={dispatch.command_id}"
-                f" run_id={dispatch.run_id}"
+                f" run_hash={_pc_run_hash(dispatch.run_id) or 'none'}"
                 + (f" {safe}" if safe else ""),
                 file=sys.stderr,
                 flush=True,
@@ -813,7 +815,7 @@ class OracleMeshExecutor:
                 f" ts={datetime.now(timezone.utc).isoformat()}"
                 f" elapsed_ms={elapsed_ms}"
                 f" dispatch_id={dispatch.dispatch_id}"
-                f" run_id={dispatch.run_id}"
+                f" run_hash={_pc_run_hash(dispatch.run_id) or 'none'}"
                 + (f" {safe}" if safe else ""),
                 file=sys.stderr,
                 flush=True,

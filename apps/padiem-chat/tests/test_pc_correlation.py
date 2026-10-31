@@ -78,7 +78,7 @@ async def test_cancelled_stream_reports_reason_and_closes(caplog):
     with pytest.raises(asyncio.CancelledError):
         await task
     assert closed.is_set()
-    assert "stage=stream_ended run_hash=" + run_hash(RUN) + " reason=cancelled" in caplog.text
+    assert "stage=stream_ended run_hash=" + run_hash(RUN) + " dispatch_id=none reason=cancelled" in caplog.text
 
 @pytest.mark.asyncio
 async def test_missing_browser_run_id_is_assigned_once(monkeypatch, caplog):

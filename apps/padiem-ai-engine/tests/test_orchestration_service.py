@@ -2324,3 +2324,45 @@ async def test_byok_real_core_runtime_and_binding_receive_one_user_attempt():
     assert sent['business14']['max_retries'] == 0
     assert 'byok_selection' not in json.dumps(sent)
     assert ref not in json.dumps(response.body)
+
+
+@pytest.mark.asyncio
+async def test_pc_run_correlation_log_uses_hash_not_raw_run(caplog):
+    import hashlib
+    import logging
+    run = "chat_pcq_" + "a" * 32
+    payload = make_valid_payload()
+    payload["session_id"] = run
+    service = OrchestrationEngineService(
+        runtime_factory=lambda app_id: MockEngineRuntime(answer="answer"),
+        b14_service_bound=True,
+    )
+    with caplog.at_level(logging.INFO, logger="app.orchestration_service"):
+        await _collect_orchestration_stream_lines(service, json.dumps(payload).encode())
+    token = hashlib.sha256(run.encode()).hexdigest()[:16]
+    assert "pc_engine stage=start run_hash=" + token + " dispatch_id=none trace_id=" in caplog.text
+    assert "pc_engine stage=end run_hash=" + token + " dispatch_id=none trace_id=tr_orch_test" in caplog.text
+    assert run not in caplog.text
+
+
+@pytest.mark.asyncio
+async def test_pc_run_correlation_logs_runner_error_without_run_id(caplog, monkeypatch):
+    import hashlib
+    import logging
+    import app.orchestration_service as module
+    run = "chat_pcq_" + "c" * 32
+    payload = make_valid_payload()
+    payload["session_id"] = run
+    async def fail(_self, _request):
+        raise ValueError("not logged")
+    monkeypatch.setattr(module.OrchestrationRunner, "run", fail)
+    service = OrchestrationEngineService(
+        runtime_factory=lambda app_id: MockEngineRuntime(),
+        b14_service_bound=True,
+    )
+    with caplog.at_level(logging.INFO, logger="app.orchestration_service"):
+        await service.prepare_stream(method="POST", path=ORCHESTRATION_STREAM_PATH,
+            content_type="application/json", body=json.dumps(payload).encode())
+    token = hashlib.sha256(run.encode()).hexdigest()[:16]
+    assert "pc_engine stage=error run_hash=" + token + " dispatch_id=none trace_id=" in caplog.text
+    assert run not in caplog.text and "not logged" not in caplog.text

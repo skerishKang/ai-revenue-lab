@@ -15,6 +15,7 @@ ever reach a log or an error body.
 from __future__ import annotations
 
 import hashlib
+import re
 import json
 import time
 from typing import Any, Callable
@@ -114,16 +115,16 @@ def log_mode(value: Any) -> str:
     return text if text in LOG_MODES else LOG_OFF
 
 
-def log_line(path: str, rpc: str, status: int, elapsed_ms: int, proof: str) -> str:
-    """One line, five fields, no spaces inside a value.
+def log_line(path: str, rpc: str, status: int, elapsed_ms: int, proof: str, run_hash: str = "none", dispatch_id: str = "none") -> str:
+    """One line with fixed bounded fields, no spaces inside a value.
 
-    This is the whole surface. The secret, the header, the body, every argument (one of
+    This is the whole surface. The secret, raw headers, the body, every argument (one of
     which can name a customer's path), the caller's address and the method name when it
     was not ours are all absent by construction: `rpc` is only ever filled from the
     allowlist, and an unknown name stays `none`.
     """
-    return "MESH_QUEUE_REQUEST path=%s rpc=%s status=%d ms=%d proof=%s" % (
-        path, rpc, status, elapsed_ms, proof)
+    return "MESH_QUEUE_REQUEST path=%s rpc=%s status=%d ms=%d proof=%s run_hash=%s dispatch_id=%s" % (
+        path, rpc, status, elapsed_ms, proof, run_hash, dispatch_id)
 
 __all__ = [
     "DISPATCH_METHODS", "MOMENT_ARGUMENTS", "INTERNAL_STORE_PATH", "PAIRING_METHODS",
@@ -203,19 +204,28 @@ def make_internal_handler(*, state: Any, service_secret: str,
         started = time.monotonic()
         facts = {"rpc": "none", "proof": "absent", "fail": "none", "txn": "none"}
         response = await _answered(request, facts)
+        # Accept bounded correlation only from the authenticated internal caller.
+        run_hash = dispatch_id = "none"
+        if facts["proof"] == "ok":
+            candidate = request.headers.get("X-Padiem-PC-Run-Hash", "")
+            if re.fullmatch(r"[0-9a-f]{16}", candidate):
+                run_hash = candidate
+            candidate = request.headers.get("X-Padiem-PC-Dispatch-ID", "")
+            if re.fullmatch(r"dsp_[0-9a-f]{32}", candidate):
+                dispatch_id = candidate
         if mode != LOG_OFF and (mode == LOG_ALL or response.status_code >= 400):
             print(log_line(INTERNAL_STORE_PATH, facts["rpc"], response.status_code,
-                           int((time.monotonic() - started) * 1000), facts["proof"]),
+                           int((time.monotonic() - started) * 1000), facts["proof"], run_hash, dispatch_id),
                   flush=True)
             if facts["fail"] != "none":
-                print("%s path=%s rpc=%s fail=%s" % (
-                    STORE_FAILURE_PREFIX, INTERNAL_STORE_PATH, facts["rpc"], facts["fail"]),
+                print("%s path=%s rpc=%s fail=%s run_hash=%s dispatch_id=%s" % (
+                    STORE_FAILURE_PREFIX, INTERNAL_STORE_PATH, facts["rpc"], facts["fail"], run_hash, dispatch_id),
                     flush=True)
         if mode != LOG_OFF and facts["txn"] != "none":
             # Printed even when the call answered 200: the door had to repair the
             # connection to get there, and a success that needed that is not a normal lane.
-            print("%s path=%s rpc=%s" % (
-                TXN_RECOVERY_PREFIX, INTERNAL_STORE_PATH, facts["rpc"]), flush=True)
+            print("%s path=%s rpc=%s run_hash=%s dispatch_id=%s" % (
+                TXN_RECOVERY_PREFIX, INTERNAL_STORE_PATH, facts["rpc"], run_hash, dispatch_id), flush=True)
         return response
 
     async def _answered(request: Request, facts: dict[str, str]) -> JSONResponse:
