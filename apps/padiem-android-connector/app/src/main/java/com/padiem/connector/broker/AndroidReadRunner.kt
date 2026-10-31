@@ -32,7 +32,7 @@ data class PassResult(val outcome: RunnerOutcome, val lastSequence: Long, val ex
  * The #5163 §7 device state machine, in exactly this order:
  *
  * ```text
- * /poll -> /material -> verify receipt -> /text-result{pending}
+ * /poll -> /material -> verify receipt -> /admission -> /text-result{pending}
  *       -> SAF read (<= 768 UTF-8 bytes) -> /acknowledge{exited,0}
  *       -> /text-result{content, sha256, bytes}
  * ```
@@ -98,11 +98,11 @@ class AndroidReadRunner(
         var executed = 0
         var outcome: RunnerOutcome = RunnerOutcome.Idle
         for (command in actionable) {
-            if (command.sequence > lastSequence) lastSequence = command.sequence
             val handled = handle(sessionId, command)
             outcome = handled
             if (handled is RunnerOutcome.Executed) executed += 1
             if (handled is RunnerOutcome.Offline || handled is RunnerOutcome.Refused) break
+            if (command.sequence > lastSequence) lastSequence = command.sequence
         }
         return PassResult(outcome, lastSequence, executed)
     }
@@ -121,16 +121,21 @@ class AndroidReadRunner(
         if (prepared is PreparedOutcome.Failed) return prepared.outcome
         val approved = (prepared as PreparedOutcome.Ready).approved
 
-        // Pulling the material is what admits the command; the acknowledgement must then carry
-        // the admission and evidence refs the broker published, not values this phone invented.
-        val admitted = try {
-            client.admittedCorrelation(sessionId, command)
-        } catch (error: DeviceOfflineException) {
-            return RunnerOutcome.Offline("admission readback unreachable")
-        } ?: return RunnerOutcome.Refused(command.commandId, "command_not_admitted")
-        if (admitted.requestFingerprint != command.requestFingerprint) {
-            return RunnerOutcome.Refused(command.commandId, "admission_fingerprint_mismatch")
+        if (command.requestId.isNotEmpty() && command.requestId != approved.requestId) {
+            return RunnerOutcome.Refused(command.commandId, "request_id_mismatch")
         }
+        val admission = try {
+            client.admit(sessionId, command.copy(requestId = approved.requestId))
+        } catch (error: DeviceOfflineException) {
+            return RunnerOutcome.Offline("admission unreachable")
+        } catch (error: DeviceProtocolException) {
+            return RunnerOutcome.Refused(command.commandId, "admission_protocol_error")
+        }
+        if (admission.first is DeviceReply.Refused) {
+            return RunnerOutcome.Refused(command.commandId, (admission.first as DeviceReply.Refused).code)
+        }
+        val admitted = admission.second
+            ?: return RunnerOutcome.Refused(command.commandId, "command_not_admitted")
 
         if (recorded == null || recorded < ReadStage.PENDING_SENT) {
             val failure = send(command.commandId, "pending intent") { client.pendingIntent(admitted) }

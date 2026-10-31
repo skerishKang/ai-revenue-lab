@@ -27,7 +27,7 @@ class ReadCommandFlowTest {
 
         assertEquals(
             listOf(
-                "/session", "/android-profile", "/poll", "/material", "/poll",
+                "/session", "/android-profile", "/poll", "/material", "/admission",
                 "/text-result", "/acknowledge", "/text-result",
             ),
             surface.calls,

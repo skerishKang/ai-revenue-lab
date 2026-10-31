@@ -38,6 +38,8 @@ class MockBrokerSurface(
     var enrollmentGatewayTrusts = true
     var lastAndroidProfile: Map<String, Any?>? = null
     var lastTextResult: Map<String, Any?>? = null
+    var admissionDenied = false
+    var admissionNoResponse = false
     var acknowledgeFailuresLeft = 0
     var contentFailuresLeft = 0
 
@@ -207,6 +209,7 @@ class MockBrokerSurface(
             "/android-profile" -> androidProfile(payload)
             "/poll" -> poll(payload)
             "/material" -> material(payload)
+            "/admission" -> admission(payload)
             "/acknowledge" -> acknowledge(payload)
             "/text-result" -> textResult(payload)
             else -> 404 to errorBody("local_agent_http_route_not_found")
@@ -298,11 +301,6 @@ class MockBrokerSurface(
         if (payload["request_fingerprint"] != pinnedFingerprint || command.state == STATE_DONE) {
             return 409 to errorBody("local_agent_material_command_mismatch")
         }
-        // The owner already confirmed this read, so the broker admits it when the phone pulls the
-        // material. The device never mints an admission or evidence reference of its own.
-        command.admissionRef = "admission.android.1"
-        command.evidenceRef = "evidence.android.1"
-        if (command.state == STATE_QUEUED) command.state = STATE_ADMITTED
         return 200 to linkedMapOf(
             "ok" to true,
             "material" to linkedMapOf<String, Any?>(
@@ -315,6 +313,25 @@ class MockBrokerSurface(
                 "material" to command.material,
             ),
         )
+    }
+
+    private fun admission(payload: Map<String, Any?>): Pair<Int, Map<String, Any?>> {
+        if (admissionNoResponse) throw com.padiem.connector.net.DeviceOfflineException("admission unavailable")
+        if (!exact(payload, ADMISSION_KEYS)) return 400 to errorBody("local_agent_http_invalid_request")
+        val command = commands[payload["command_id"]] ?: return 409 to errorBody("command_missing")
+        if (admissionDenied || command.state != STATE_QUEUED || payload["session_id"] != sessionId ||
+            payload["request_id"] != command.requestId || payload["request_fingerprint"] != pinnedFingerprint
+        ) return 409 to errorBody("admission_denied")
+        command.admissionRef = "admission.android.1"
+        command.evidenceRef = "evidence.android.1"
+        command.state = STATE_ADMITTED
+        return 200 to linkedMapOf("ok" to true, "admission" to linkedMapOf<String, Any?>(
+            "command_id" to command.commandId, "session_id" to sessionId, "binding_ref" to bindingRef,
+            "run_id" to command.runId, "tool_request_ref" to "andtool-mock-1", "sequence" to command.sequence,
+            "request_fingerprint" to pinnedFingerprint, "revision_ref" to command.revisionRef,
+            "request_id" to command.requestId, "admission_ref" to command.admissionRef,
+            "evidence_ref" to command.evidenceRef, "raw_argv" to false, "raw_device_credential" to false,
+        ))
     }
 
     private fun acknowledge(payload: Map<String, Any?>): Pair<Int, Map<String, Any?>> {
@@ -458,7 +475,7 @@ class MockBrokerSurface(
         "acknowledged_at" to if (command.state == STATE_ACKNOWLEDGED) pinnedExpiresAt else null,
         "revision_ref" to command.revisionRef,
         "termination" to if (command.state == STATE_ACKNOWLEDGED) "exited" else null,
-        "request_id" to command.requestId,
+        "request_id" to if (command.state == STATE_QUEUED) null else command.requestId,
         "exit_code" to if (command.state == STATE_ACKNOWLEDGED) 0L else null,
         "raw_argv" to false,
         "raw_file_content" to false,
@@ -498,7 +515,7 @@ class MockBrokerSurface(
         val OPAQUE_REF = Regex("^[A-Za-z0-9][A-Za-z0-9._:@+-]{0,255}$")
         val ROOT_REF = Regex("^[A-Za-z0-9][A-Za-z0-9._:@+-]{0,255}$")
         val ROUTES = setOf(
-            "/session", "/poll", "/material", "/heartbeat", "/acknowledge",
+            "/session", "/poll", "/material", "/admission", "/heartbeat", "/acknowledge",
             "/text-result", "/android-profile",
         )
         val SESSION_KEYS = setOf(
@@ -512,6 +529,7 @@ class MockBrokerSurface(
             "request_ref", "session_id", "binding_ref", "credential_b64",
             "command_id", "request_fingerprint", "now",
         )
+        val ADMISSION_KEYS = setOf("session_id", "binding_ref", "credential_b64", "command_id", "request_fingerprint", "request_id", "now")
         val ACK_KEYS = setOf(
             "session_id", "binding_ref", "credential_b64", "command_id", "admission_ref",
             "evidence_ref", "revision_ref", "termination", "request_id", "exit_code", "now",

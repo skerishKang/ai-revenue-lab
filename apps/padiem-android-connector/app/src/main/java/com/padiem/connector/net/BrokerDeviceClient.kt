@@ -97,20 +97,28 @@ class BrokerDeviceClient(
         return reply to commands.mapNotNull { row -> parseCommand(row as? Map<String, Any?>) }
     }
 
-    /**
-     * Reads back the same command at its exact sequence so the phone can see the admission
-     * correlation the broker attached when the material was pulled.
-     *
-     * #5163 §7 hands the phone only `{command_id, run_id, tool_request_ref, sequence,
-     * request_fingerprint, revision_ref}` at first poll, while `/acknowledge` requires
-     * `admission_ref` and `evidence_ref`. Re-reading `/poll` is the only documented surface that
-     * can supply them, so the phone echoes what the server published and mints nothing.
-     */
-    fun admittedCorrelation(sessionId: String, command: QueuedCommand): QueuedCommand? {
-        val before = if (command.sequence > 0) command.sequence - 1 else 0
-        val (reply, commands) = poll(sessionId, before, 1)
-        if (reply !is DeviceReply.Accepted) return null
-        return commands.firstOrNull { it.commandId == command.commandId && it.admitted }
+    fun admit(sessionId: String, command: QueuedCommand): Pair<DeviceReply, QueuedCommand?> {
+        if (command.state != "queued") {
+            if (!command.admitted) throw DeviceProtocolException("missing admission references")
+            return DeviceReply.Accepted(emptyMap()) to command
+        }
+        val reply = post("/admission", linkedMapOf(
+            "session_id" to sessionId, "command_id" to command.commandId,
+            "request_fingerprint" to command.requestFingerprint,
+            "request_id" to command.requestId, "now" to clock(),
+        ))
+        if (reply !is DeviceReply.Accepted) return reply to null
+        val a = reply.body["admission"] as? Map<*, *>
+            ?: throw DeviceProtocolException("admission missing")
+        if (a["command_id"] != command.commandId || a["session_id"] != sessionId ||
+            a["binding_ref"] != identity.bindingRef || a["run_id"] != command.runId ||
+            a["tool_request_ref"] != command.toolRequestRef || a["sequence"] != command.sequence ||
+            a["request_fingerprint"] != command.requestFingerprint || a["revision_ref"] != command.revisionRef ||
+            a["request_id"] != command.requestId || a["raw_argv"] != false || a["raw_device_credential"] != false
+        ) throw DeviceProtocolException("admission correlation mismatch")
+        val admitted = command.copy(admissionRef = a["admission_ref"] as? String, evidenceRef = a["evidence_ref"] as? String)
+        if (!admitted.admitted || admitted.admissionRef == admitted.evidenceRef) throw DeviceProtocolException("invalid admission references")
+        return reply to admitted
     }
 
     fun material(sessionId: String, requestRef: String, command: QueuedCommand): DeviceReply = post(
@@ -144,12 +152,16 @@ class BrokerDeviceClient(
         )
     }
 
-    fun pendingIntent(command: QueuedCommand): DeviceReply = post(
+    fun pendingIntent(command: QueuedCommand): DeviceReply {
+        if (!command.admitted) throw DeviceProtocolException("missing admission references")
+        return post(
         AndroidConnectorContract.ROUTE_TEXT_RESULT,
         textResultBase(command) + linkOf("state" to AndroidConnectorContract.STATE_PENDING),
-    )
+        )
+    }
 
     fun contentResult(command: QueuedCommand, contentUtf8: String, contentBytes: ByteArray): DeviceReply {
+        if (!command.admitted) throw DeviceProtocolException("missing admission references")
         if (contentBytes.size > AndroidConnectorContract.MAX_TEXT_RESULT_BYTES) {
             throw DeviceProtocolException("verified text exceeds the 768-byte bound")
         }
@@ -200,7 +212,7 @@ class BrokerDeviceClient(
         val sequence = row["sequence"] as? Long ?: return null
         val state = row["state"] as? String ?: return null
         val revisionRef = row["revision_ref"] as? String ?: return null
-        val requestId = row["request_id"] as? String ?: return null
+        val requestId = row["request_id"] as? String ?: ""
         val admissionRef = row["admission_ref"]
         val evidenceRef = row["evidence_ref"]
         return QueuedCommand(
