@@ -4,7 +4,7 @@
   "main": "identity_authority_worker.py",
   "compatibility_date": "2026-09-04",
   "compatibility_flags": ["python_workers", "disable_python_external_sdk"],
-  "workers_dev": false,
+  "workers_dev": true,
   "preview_urls": false,
   "vars": {
     "CONTROL_PLANE_ALLOWED_PRODUCTS": "b62,b54-padiem-claw,lovetree-4-0",
@@ -35,5 +35,44 @@
   },
   "observability": {
     "enabled": false
+  },
+  "env": {
+    "staging": {
+      "name": "padiem-control-plane-identity-staging",
+      "workers_dev": true,
+      "preview_urls": false,
+      "vars": {
+        "CONTROL_PLANE_ALLOWED_PRODUCTS": "b62,b54-padiem-claw,lovetree-4-0",
+        "CONTROL_PLANE_CONNECTOR_ENROLLMENT_RPC_ENABLED": "true",
+        "CONTROL_PLANE_CONNECTOR_ENROLLMENT_SCOPE_APPROVED": "true",
+        "CONTROL_PLANE_CONNECTOR_ENROLLMENT_SCHEMA_INSTALLED": "true",
+        "CONTROL_PLANE_CONNECTOR_ENROLLMENT_SCHEMA_INSTALL_ENABLED": "true",
+        "PADIEM_RPC_SERVICE_ID_POLICY": "required"
+      },
+      "secrets": {
+        "required": [
+          "CONTROL_PLANE_IDENTITY_LOOKUP_KEY",
+          "GOOGLE_CONNECT_TICKET_KEY",
+          "PADIEM_IDENTITY_RPC_INGRESS_SECRET"
+        ]
+      },
+      "durable_objects": {
+        "bindings": [
+          {
+            "name": "CONTROL_PLANE_IDENTITY",
+            "class_name": "CanonicalIdentityDurableObject"
+          }
+        ]
+      },
+      "exports": {
+        "CanonicalIdentityDurableObject": {
+          "type": "durable-object",
+          "storage": "sqlite"
+        }
+      },
+      "observability": {
+        "enabled": false
+      }
+    }
   }
 }

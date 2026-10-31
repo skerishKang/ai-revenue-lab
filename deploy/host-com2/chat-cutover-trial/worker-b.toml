@@ -1,0 +1,8 @@
+name = "padiem-chat-cutover-trial-b"
+main = "worker.mjs"
+compatibility_date = "2026-10-01"
+workers_dev = false
+preview_urls = false
+# No routes: only the trial script moves the already attached test hostname.
+[vars]
+TRIAL_WORKER = "B"

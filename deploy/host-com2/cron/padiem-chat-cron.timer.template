@@ -6,6 +6,11 @@ Requires=@UNIT_NAME@.service
 # Rendered from CRON_SCHEDULE at install time. Production must equal the deployed
 # Cloudflare cron trigger; nothing in the repository declares that value.
 OnCalendar=@CRON_SCHEDULE@
+# Cloudflare cron expressions are UTC, and the deployed trigger this value is
+# copied from is UTC too. Without this line systemd would read the same
+# expression in the host's local time (KST, +9h) and tick at the wrong hour.
+# systemd >= 240 (Ubuntu 20.04+).
+Timezone=UTC
 AccuracySec=30s
 RandomizedDelaySec=0
 # A missed tick is not replayed: a catch-up burst after downtime would look like

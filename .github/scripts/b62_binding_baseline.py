@@ -39,7 +39,7 @@ from pathlib import Path
 BASELINE_DIR = Path(__file__).resolve().parents[1] / "binding_baselines"
 
 # The Workers this baseline covers.  The key is the Worker script name.
-SUPPORTED_WORKERS = ("padiem-ai-engine", "padiem-chat")
+SUPPORTED_WORKERS = ("ai-revenue-korean-ai-platform", "padiem-ai-engine", "padiem-chat")
 
 
 class BindingBaselineError(RuntimeError):
@@ -149,7 +149,7 @@ def compare_entries(
     return missing, unexpected
 
 
-def assert_matches_baseline(worker: str, payload: object) -> int:
+def assert_matches_baseline(worker: str, payload: object, *, allow_target_additions: bool = False) -> int:
     """Fail closed unless the live payload matches the reviewed baseline.
 
     Returns the live binding count.  Raises :class:`BindingBaselineError` with
@@ -159,14 +159,22 @@ def assert_matches_baseline(worker: str, payload: object) -> int:
     expected = load_baseline(worker)
     live = extract_entries(payload)
     missing, unexpected = compare_entries(live, expected)
-    if missing or unexpected:
+    live_map = dict(live)
+    retyped = any(name in live_map and live_map[name] != kind
+                  for name, kind in expected.items())
+    if unexpected or retyped or (missing and not allow_target_additions):
         raise BindingBaselineError("BINDING_SET_DRIFT")
+    # Pre-deploy only: the target may add reviewed bindings that the current
+    # settings do not yet carry. Existing names/kinds must still match.
+    # The post-deploy immutable-version check is always strict.
     return len(live)
 
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--worker", required=True, choices=list(SUPPORTED_WORKERS))
+    parser.add_argument("--allow-target-additions", action="store_true",
+                        help="Pre-deploy only: permit target-baseline bindings not yet live.")
     parser.add_argument(
         "--payload", required=True, type=Path,
         help="A Cloudflare Worker settings or version payload (JSON).",
@@ -178,7 +186,7 @@ def main(argv: list[str] | None = None) -> int:
         print("BINDING_BASELINE=BLOCKED;REASON=PAYLOAD_UNREADABLE", file=sys.stderr)
         return 2
     try:
-        count = assert_matches_baseline(args.worker, payload)
+        count = assert_matches_baseline(args.worker, payload, allow_target_additions=args.allow_target_additions)
     except BindingBaselineError as exc:
         # Bounded code and counts only: never the binding names, never a value.
         missing, unexpected = 0, 0

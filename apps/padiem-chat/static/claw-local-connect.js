@@ -185,7 +185,9 @@
     const anchor = host.document.getElementById("clawLocalHandoff");
     if (!anchor || !anchor.parentNode) return;
     const existing = host.document.querySelector(".claw-local-connect");
+    if (host.PadiemAuthGate?.authenticated() === false) { render(existing, false); return; }
     const available = await probeAvailability();
+    if (host.PadiemAuthGate?.authenticated() === false) { render(existing, false); return; }
     if (!available) {
       render(existing, false);
       return;
@@ -205,6 +207,7 @@
     } else {
       start();
     }
+    host.addEventListener("padiem:auth-state", start);
     // Coming back from the desktop app is exactly when the affordance state
     // may have changed. An event, not a timer.
     host.document.addEventListener("visibilitychange", () => {

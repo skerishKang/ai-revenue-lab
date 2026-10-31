@@ -30,11 +30,18 @@ bash /opt/padiem/b14/deploy/host-com2/b14/install.sh --reload
 
 ## Step 2 — 키 입력 — Owner
 
-`/opt/padiem/b14/secrets/` 아래에 **바인딩 이름 그대로** 파일 하나씩(0600), 또는 Unit이 읽는 `/opt/padiem/b14/env/b14.env`에 직접 기입. 대상 이름은 §2.2 목록과 동일:
+`/var/lib/padiem-b14/b14-secrets/` 아래에 **바인딩 이름 그대로** 파일 하나씩(0600), 또는 Unit이 읽는 `/opt/padiem/b14/env/b14.env`에 직접 기입. §2.2 목록의 이름:
 
 `PADIEM_B14_CREDENTIAL_01` … `PADIEM_B14_CREDENTIAL_14`, `PADIEM_B14_SERVICE_PROOF_SECRET`, `PADIEM_GRAFANA_OTLP_TOKEN`.
 
-- 값 복사·스크린샷·PR 게시 금지. 확인은 존재·권한만으로: `stat -c '%a %n' /opt/padiem/b14/secrets/*`.
+- systemd는 정적 서비스 계정 padiem-b14로 실행하며 StateDirectory=padiem-b14/b14-secrets padiem-b14/b14-registry, StateDirectoryMode=0700으로 저장 디렉터리를 준비한다.
+- 관리 화면은 별도 서비스 padiem-b14-admin, 주소 http://127.0.0.1:8781/login 에만 있다. 컴2의 브라우저에서 사용하고 cloudflared에 이 포트를 연결하지 않는다. 공개 B14 앱(8789)과 Worker에는 관리 경로가 없다.
+- 실행 전 /var/lib/padiem-b14/admin-token 파일에 충분히 긴 무작위 토큰을 준비하고 소유자를 padiem-b14, 권한을 0600으로 지정한다. 토큰 파일이 없거나 권한·소유자가 다르면 관리 앱은 기동하지 않는다. 토큰을 브라우저에 입력하면 세션이 열리며 서비스 재시작 시 다시 로그인한다. 토큰·키를 로그나 저장소에 남기지 않는다.
+
+- 신규 공급사는 이 목록을 늘리지 않는다. `apps/korean-ai-platform/app/pilot/b14_models.json`의 공급사 항목이 선언한 `credential_binding_name`이 곧 이 PC의 파일 이름이고, 앱은 그 이름으로 env → `$B14_SECRET_DIR/<이름>` 순서로 읽는다(#2107). 등록은 (1) 레지스트리에 공급사·모델 항목 추가, (2) 그 이름으로 값 입력 — 이 두 단계이며 어느 쪽 엔트리포인트도 손보지 않는다.
+- 그 이름을 Worker가 바인딩하지 않으면 해당 배포에서 공급사 라인은 값이 없어 닫힌 채로 동작한다. 복제 키를 만들거나 §2.2의 기존 Cloudflare 시크릿을 재사용하지 않는다.
+
+- 값 복사·스크린샷·PR 게시 금지. 확인은 존재·권한만으로: `stat -c '%a %n' /var/lib/padiem-b14/b14-secrets/*`.
 - 그룹·타인 읽기 가능한 파일은 앱이 **거부**하고 그 라인은 실패로 닫힌다(값 노출 대신).
 - Cloudflare 자격증명을 이 PC로 옮기지 않는다. Owner가 새 값을 입력한다.
 

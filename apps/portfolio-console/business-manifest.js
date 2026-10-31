@@ -115,6 +115,9 @@
     identity({ n:61, s:"storymemory", t:"StoryMemory", k:"스토리메모리", a:NA.CANONICAL, l:"active", st:"running", p:89, su:"https://storymemory-padiem.pages.dev/" }),
     // ═══ 64 ═══
     identity({ n:64, s:"ai-reward-router", t:"AI Reward Router", k:"AI 수익 기회 라우터", a:NA.PROPOSED, l:"incubation", st:"review", p:90, w:"apps/ai-reward-router/" }),
+    // Owner-approved concepts: #5601 and #5702; registration creates no workspace.
+    identity({ n:72, s:"padiem-speech-coach", t:"PADIEM Speech Coach", k:"PADIEM 말하기 코치", a:NA.PROPOSED, l:"concept", st:"planned", w:"apps/padiem-speech-coach/" }),
+    identity({ n:73, s:"padiem-electronic-bidding", t:"PADIEM Electronic Bidding", k:"PADIEM 전자입찰 플랫폼", a:NA.PROPOSED, l:"concept", st:"planned", w:"apps/padiem-electronic-bidding/" }),
   ];
 
   (function () {

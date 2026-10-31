@@ -4,7 +4,7 @@
   "main": "engine_admission_authority_worker.py",
   "compatibility_date": "2026-09-04",
   "compatibility_flags": ["python_workers", "disable_python_external_sdk"],
-  "workers_dev": false,
+  "workers_dev": true,
   "preview_urls": false,
   "vars": {
     "CONTROL_PLANE_ALLOWED_PRODUCTS": "b62,b54-padiem-claw",
@@ -33,5 +33,40 @@
   },
   "observability": {
     "enabled": false
+  },
+  "env": {
+    "staging": {
+      "name": "padiem-control-plane-engine-admission-staging",
+      "workers_dev": true,
+      "preview_urls": false,
+      "vars": {
+        "CONTROL_PLANE_ALLOWED_PRODUCTS": "b62,b54-padiem-claw",
+        "PADIEM_VOICE_MODE1_ALL_PLANS_ENABLED": "true",
+        "PADIEM_VOICE_LIVE_TOKEN_ALL_PLANS_ENABLED": "true"
+      },
+      "services": [
+        {
+          "binding": "CONTROL_PLANE_IDENTITY",
+          "service": "padiem-control-plane-identity-staging"
+        }
+      ],
+      "durable_objects": {
+        "bindings": [
+          {
+            "name": "CONTROL_PLANE_ENGINE_ADMISSION",
+            "class_name": "CanonicalEngineAdmissionDurableObject"
+          }
+        ]
+      },
+      "exports": {
+        "CanonicalEngineAdmissionDurableObject": {
+          "type": "durable-object",
+          "storage": "sqlite"
+        }
+      },
+      "observability": {
+        "enabled": false
+      }
+    }
   }
 }

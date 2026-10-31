@@ -24,6 +24,10 @@ on:
   pull_request:
     paths:
       - "apps/claw-connect/**"
+      # #6265 retroactive guard: the contract tests install the shared Core
+      # with pip install -e, so a Core source change is a claw-connect
+      # surface change even when no claw-connect file moves.
+      - "packages/padiem-ai-core/**"
       - ".github/workflows/claw-connect-contract-tests.yml"
   workflow_dispatch:
 

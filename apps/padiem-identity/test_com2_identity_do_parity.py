@@ -44,7 +44,19 @@ async def test_twelve_rpc_envelopes_match_actual_do_entrypoint(monkeypatch, tmp_
     try:
         app = create_app(authority=authority, secret=SECRET)
         async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://local") as client:
-            for method in sorted(COM2_IDENTITY_RPC_METHODS):
+            # Preserve the original 12-method DO/SQLite comparison. The
+            # additional 11 include create_tenant, whose empty input is valid
+            # and mints a random row; relay coverage is in test_com2_do_proxy.
+            original_methods = {
+                "resolve_or_create_product_link", "establish_auth_session",
+                "resolve_auth_session", "resolve_current_auth_session",
+                "revoke_auth_session", "revoke_all_auth_sessions",
+                "resolve_product_user_for_subject", "resolve_connector_workspace",
+                "resolve_connector_context", "resolve_connector_enrollment_consent_for_device",
+                "bind_connector_enrollment_challenge", "authorize_connector_enrollment_redeem",
+            }
+            assert original_methods <= COM2_IDENTITY_RPC_METHODS
+            for method in sorted(original_methods):
                 path = "/internal/rpc/" + method
                 body = b"{}"
                 at = int(time.time())

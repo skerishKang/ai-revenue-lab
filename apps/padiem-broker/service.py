@@ -22,13 +22,14 @@ from pathlib import Path
 from starlette.applications import Starlette
 from starlette.requests import Request
 from starlette.responses import JSONResponse
-from starlette.routing import Route
+from starlette.routing import Route, WebSocketRoute
 
 from canonical_broker_pairing_rpc import (
     CanonicalBrokerPairingRPC,
     armed_durable_pairing_authority,
 )
 from internal_rpc_ingress import handle_internal_rpc
+from canonical_broker_pending_pc_private_rpc import CanonicalBrokerPendingPcLiveRPC
 from local_agent_broker_android_profile import (
     BrokerAndroidSafProfileStore,
     android_saf_profile_rpc,
@@ -83,6 +84,11 @@ BROKER_RPC_METHODS: frozenset[str] = frozenset({
     "resolve_command_material",
     "acknowledge",
     "set_owner_usage",
+    "reserve_pending_pc_link", "reserve_pending_pc_owner_intent", "deliver_pending_pc_link",
+    "pending_pc_identity_status", "claim_pending_pc_identity_proof",
+    "reserve_native_pc_gateway", "authenticate_native_pc_gateway",
+    "transfer_native_pc_credential_once", "receive_native_pc_install_ack",
+    "authenticate_native_pc_install_ack", "complete_native_pc_enrollment",
 })
 
 _PROOF_SECRET_ENV = "PADIEM_BROKER_RPC_INGRESS_SECRET"
@@ -128,7 +134,7 @@ def _broker_env(environ: dict[str, str], *, pepper: str, authority_ref: str) -> 
     return types.SimpleNamespace(**values)
 
 
-class BrokerComposition(CanonicalBrokerPairingRPC):
+class BrokerComposition(CanonicalBrokerPairingRPC, CanonicalBrokerPendingPcLiveRPC):
     """The DO entrypoint's composition, without the Workers classes.
 
     Every method below is the same delegation `local_agent_broker_worker.py`
@@ -279,6 +285,9 @@ def build_app(
         Route("/health", health, methods=["GET"]),
         Route("/internal/rpc/{method}", rpc_endpoint, methods=["POST"]),
     ])
+    if envs.get("LOCAL_AGENT_BROKER_PENDING_PC_WSS_ENABLED") == "enabled":
+        from pc_offer_asgi import PATH, make_route
+        app.router.routes.append(WebSocketRoute(PATH, make_route(owner=composition, secret=secret)))
     app.state.broker = composition
     app.state.broker_storage = storage
     return app

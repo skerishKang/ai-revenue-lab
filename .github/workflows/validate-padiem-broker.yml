@@ -19,7 +19,7 @@ jobs:
         with:
           python-version: '3.12'
       - name: Install test dependencies
-        run: python -m pip install --disable-pip-version-check pytest pytest-asyncio httpx starlette uvicorn
+        run: python -m pip install --disable-pip-version-check pytest pytest-asyncio httpx starlette uvicorn cryptography "websockets>=10,<16"
       - name: Skeleton contracts (storage CAS, proof door, session lane)
         run: PYTHONPATH=apps/padiem-broker:packages/padiem-control-plane python -m pytest apps/padiem-broker/tests -q
       - name: Offline installer, units, health, backup and lock contracts

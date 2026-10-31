@@ -84,7 +84,7 @@ def verify_identity_source_rpc_contract(
         type(config) is not dict
         or config.get("name") != CONNECTOR_IDENTITY_TARGET
         or config.get("main") != identity_worker.name
-        or config.get("workers_dev") is not False
+        or config.get("workers_dev") is not True
         or config.get("preview_urls") is not False
     ):
         raise ProductionConfigError("Canonical Identity Worker target drift")

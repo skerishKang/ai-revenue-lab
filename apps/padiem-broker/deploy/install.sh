@@ -41,6 +41,7 @@ if [[ ! -x "$app/venv/bin/python" ]]; then (umask 022; python3 -m venv "$app/ven
 (umask 022; "$app/venv/bin/python" -m pip --isolated install --index-url https://pypi.org/simple --disable-pip-version-check --require-hashes -r "$here/requirements.txt")
 install -m 0644 "$source_root/apps/padiem-broker/service.py" "$app/service.py"
 install -m 0644 "$source_root/apps/padiem-broker/storage.py" "$app/storage.py"
+install -m 0644 "$source_root/apps/padiem-broker/pc_offer_asgi.py" "$app/pc_offer_asgi.py"
 # Single-source modules: the service imports THIS checkout's broker code, not a copy.
 ln -sfn "$source_root/packages/padiem-control-plane" "$app/src"
 install -m 0644 "$here/check_config.py" "$app/check_config.py"

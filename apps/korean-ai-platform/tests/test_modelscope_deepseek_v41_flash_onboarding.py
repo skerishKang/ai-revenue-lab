@@ -87,7 +87,10 @@ def test_source_wrangler_worker_binding_metadata_unique_only():
     assert ours[0]["secret_name"] == SECRET_NAME
     assert ours[0]["store_id"] == "f0b09ca04a7b43248154c773704a5616"
     assert len({x["binding"] for x in bindings}) == len(bindings)
-    assert BINDING in (root / "worker.py").read_text(encoding="utf8")
+    # Membership in the registry-derived scope is what puts this binding in the
+    # Worker's request scope; worker.py no longer hand-lists a Provider credential.
+    from app.pilot.model_registry_file import credential_binding_names
+    assert BINDING in credential_binding_names()
     assert all(set(x) == {"binding", "store_id", "secret_name"} for x in bindings)
     spec = get_platform_provider("modelscope")
     assert spec is not None and spec.credential_binding_name == BINDING

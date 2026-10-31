@@ -1,0 +1,26 @@
+# Template only: no service is installed or started by adding this file.
+[Unit]
+Description=PADIEM B14 local administration
+After=network-online.target
+
+[Service]
+Type=simple
+User=padiem-b14
+Group=padiem-b14
+WorkingDirectory=/opt/padiem/b14/app
+EnvironmentFile=-/opt/padiem/b14/env/b14.env
+Environment=B14_SECRET_DIR=/var/lib/padiem-b14/b14-secrets
+Environment=B14_REGISTRY_PATH=/var/lib/padiem-b14/b14-registry/b14_models.json
+Environment=B14_ADMIN_TOKEN_FILE=/var/lib/padiem-b14/admin-token
+ExecStart=/opt/padiem/b14/venv/bin/python /opt/padiem/b14/app/admin_asgi.py
+Restart=on-failure
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectSystem=strict
+ProtectHome=yes
+StateDirectory=padiem-b14/b14-secrets padiem-b14/b14-registry
+StateDirectoryMode=0700
+UMask=0077
+
+[Install]
+WantedBy=multi-user.target

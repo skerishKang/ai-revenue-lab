@@ -16,6 +16,7 @@ import re
 import sys
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, build_opener, HTTPCookieProcessor
+from urllib.parse import urlsplit
 
 ORIGIN = "https://chat.padiem.net"
 LOGIN = "/api/auth/password/login"
@@ -66,12 +67,18 @@ def bounded_call(opener, path: str, *, method: str = "GET", payload=None, timeou
     if _version_header and _version_id:
         # #5895 staged rollout: pin these probes to the version under test.
         headers[_version_header] = _version_id
+    if method.upper() in {"POST", "PUT", "PATCH", "DELETE"}:
+        base = urlsplit(ORIGIN)
+        if base.scheme not in {"http", "https"} or not base.netloc or base.username or base.password:
+            raise CanaryError("invalid_chat_origin")
+        origin = f"{base.scheme}://{base.netloc}"
+        headers.update({"Origin": origin, "Referer": ORIGIN.rstrip("/") + "/"})
     data = None
     if payload is not None:
         data = json.dumps(payload, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
         if len(data) > QA_BYTES_CAP:
             raise CanaryError("client_qa_transport_guard")
-        headers.update({"Content-Type": "application/json", "Origin": ORIGIN, "Referer": ORIGIN + "/"})
+        headers["Content-Type"] = "application/json"
     req = Request(ORIGIN + path, method=method, data=data, headers=headers)
     try:
         with opener.open(req, timeout=timeout) as response:

@@ -11,12 +11,16 @@ Every call carries the same service-to-service proof the COM2 lanes already use
 log or an exception)::
 
     x-padiem-service-at:     <unix seconds>
-    x-padiem-service-proof:  v1=<hex(hmac_sha256(secret, "v1\\n" + method + "\\n" + path + "\\n" + at + "\\n" + body))>
+    x-padiem-service-id:     <fresh random id, one per attempt>
+    x-padiem-service-proof:  v2=<hex(hmac_sha256(secret,
+        "v2\\n" + method + "\\n" + path + "\\n" + at + "\\n" + service_id + "\\n" + body))>
 
-A target accepts the call only when the proof verifies and the timestamp is
-inside its own window. The target-side endpoint is a separate PR: until a
-target exposes it, the matching port here is simply never constructed, and the
-lane keeps failing closed exactly as it does today.
+A target accepts the call only when the proof verifies, the timestamp is inside
+its own window, and it has not already consumed that id (#6417) — which is why
+the id is signed: an id outside the signature is a label, not an identity.
+
+The B66 PDF renderer is not the RPC ingress and does not verify a v2 proof, so
+its stand-in keeps signing v1.
 """
 from __future__ import annotations
 
@@ -25,6 +29,7 @@ import hmac
 import json
 import re
 import time
+import uuid
 from typing import Any, Callable
 
 import httpx
@@ -37,12 +42,19 @@ __all__ = [
     "LocalB66PdfRendererClient",
     "ServiceProofConfigError",
     "compose_local_b14_transports",
+    "new_service_id",
     "service_proof_headers",
 ]
 
 PROOF_HEADER = "x-padiem-service-proof"
 PROOF_AT_HEADER = "x-padiem-service-at"
+SERVICE_ID_HEADER = "x-padiem-service-id"
 PROOF_VERSION = b"v1"
+PROOF_VERSION_V2 = b"v2"
+# The ingress answers 409 rpc_replay_detected before dispatching the handler, so
+# a refusal is not a half-applied call: retrying it under a new id is safe.
+RPC_REPLAY_STATUS = 409
+RPC_MAX_ATTEMPTS = 3
 PDF_RENDER_PATH = "/internal/v1/render"
 PDF_RESPONSE_MAX_BYTES = 32 * 1024 * 1024
 _RPC_PATH_PREFIX = "/internal/rpc/"
@@ -71,18 +83,56 @@ def _require_secret(value: str | None, *, name: str) -> str:
     return raw
 
 
+def new_service_id() -> str:
+    """One fresh request identity, never reused across attempts.
+
+    The ingress keeps every id for the life of its clock window, so a repeated
+    id is a replay it refuses however carefully this side signed it.
+    """
+
+    return str(uuid.uuid4())
+
+
 def service_proof_headers(
-    secret: str, *, method: str, path: str, body: bytes, at: int | None = None
+    secret: str,
+    *,
+    method: str,
+    path: str,
+    body: bytes,
+    at: int | None = None,
+    service_id: str | None = None,
 ) -> dict[str, str]:
-    """The exact proof a target verifies: v1 over method, path, time and body."""
+    """The exact proof a target verifies.
+
+    With a ``service_id`` the proof is v2 and binds that id, which is what makes
+    a captured request impossible to replay. Without one it stays the v1 proof
+    that only the B66 PDF renderer verifies.
+    """
 
     timestamp = str(int(time.time()) if at is None else int(at)).encode("ascii")
+    if service_id is None:
+        signed = b"\n".join(
+            (PROOF_VERSION, method.upper().encode("ascii"), path.encode("utf-8"),
+             timestamp, bytes(body))
+        )
+        proof = hmac.new(secret.encode("utf-8"), signed, hashlib.sha256).hexdigest()
+        return {PROOF_AT_HEADER: timestamp.decode("ascii"), PROOF_HEADER: "v1=" + proof}
     signed = b"\n".join(
-        (PROOF_VERSION, method.upper().encode("ascii"), path.encode("utf-8"),
-         timestamp, bytes(body))
+        (
+            PROOF_VERSION_V2,
+            method.upper().encode("ascii"),
+            path.encode("utf-8"),
+            timestamp,
+            service_id.encode("utf-8"),
+            bytes(body),
+        )
     )
     proof = hmac.new(secret.encode("utf-8"), signed, hashlib.sha256).hexdigest()
-    return {PROOF_AT_HEADER: timestamp.decode("ascii"), PROOF_HEADER: "v1=" + proof}
+    return {
+        PROOF_AT_HEADER: timestamp.decode("ascii"),
+        SERVICE_ID_HEADER: service_id,
+        PROOF_HEADER: "v2=" + proof,
+    }
 
 
 class HttpRpcBinding:
@@ -102,11 +152,15 @@ class HttpRpcBinding:
         *,
         client: httpx.AsyncClient | None = None,
         timeout_seconds: float = 30.0,
+        sign_request_id: bool = True,
     ):
         self._origin = _require_https_origin(origin, name="RPC origin")
         self._secret = _require_secret(secret, name="RPC service secret")
         self._client = client
         self._timeout = timeout_seconds
+        # A target without a replay memory refuses every v2 request, so a
+        # caller bound to one keeps the v1 proof until that target has a guard.
+        self._sign_request_id = bool(sign_request_id)
 
     def __getattr__(self, method: str):
         if method.startswith("_") or not _METHOD_RE.fullmatch(method):
@@ -117,14 +171,28 @@ class HttpRpcBinding:
                 raise TypeError("RPC payload must be an object")
             body = json.dumps(payload, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
             path = _RPC_PATH_PREFIX + method
-            headers = {"Content-Type": "application/json", "Accept": "application/json"}
-            headers.update(service_proof_headers(self._secret, method="POST", path=path, body=body))
             client = self._client
-            if client is None:
-                async with httpx.AsyncClient(timeout=self._timeout, follow_redirects=False) as fresh:
-                    response = await fresh.post(self._origin + path, content=body, headers=headers)
-            else:
-                response = await client.post(self._origin + path, content=body, headers=headers)
+            response = None
+            attempts = RPC_MAX_ATTEMPTS if self._sign_request_id else 1
+            for _ in range(attempts):
+                headers = {"Content-Type": "application/json", "Accept": "application/json"}
+                headers.update(service_proof_headers(
+                    self._secret, method="POST", path=path, body=body,
+                    service_id=new_service_id() if self._sign_request_id else None,
+                ))
+                if client is None:
+                    async with httpx.AsyncClient(timeout=self._timeout, follow_redirects=False) as fresh:
+                        response = await fresh.post(
+                            self._origin + path, content=body, headers=headers
+                        )
+                else:
+                    response = await client.post(
+                        self._origin + path, content=body, headers=headers
+                    )
+                if response.status_code != RPC_REPLAY_STATUS:
+                    break
+            # A target that keeps refusing the id means this side is sending the
+            # same request more than it is allowed to; the cap is what stops it.
             if response.status_code != 200:
                 raise RuntimeError("service RPC answered a non-success status")
             data = response.json()

@@ -29,7 +29,8 @@ for required in \
   packages/padiem-ai-core/padiem_ai_core \
   packages/padiem-auth-verify/verify.py \
   packages/padiem-control-plane/padiem_control_plane \
-  apps/korean-ai-code-agent/src/kagent; do
+  apps/korean-ai-code-agent/src/kagent \
+  apps/padiem-ai-engine/clients/python/padiem_ai_engine_client; do
   [[ -e "$source_root/$required" ]] || fail SOURCE_MISSING
 done
 mountpoint -q /mnt/d || fail HDD_NOT_MOUNTED
@@ -49,7 +50,8 @@ for pair in \
   "padiem_control_plane:$source_root/packages/padiem-control-plane/padiem_control_plane" \
   "padiem_auth_verify.py:$source_root/packages/padiem-auth-verify/verify.py" \
   "com2_edge_proof.py:$source_root/packages/padiem-control-plane/com2_edge_proof.py" \
-  "kagent:$source_root/apps/korean-ai-code-agent/src/kagent"; do
+  "kagent:$source_root/apps/korean-ai-code-agent/src/kagent" \
+  "padiem_ai_engine_client:$source_root/apps/padiem-ai-engine/clients/python/padiem_ai_engine_client"; do
   link=${pair%%:*}; target=${pair#*:}
   ln -sfn "$target" "$app/$link"
 done

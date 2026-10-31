@@ -35,6 +35,7 @@ if [[ ! -x "$app/venv/bin/python" ]]; then (umask 022; python3 -m venv "$app/ven
 ln -sfn "$source_root/packages/padiem-control-plane" "$app/src"
 install -m 0644 "$source_root/apps/padiem-broker/service.py" "$app/service.py"
 install -m 0644 "$source_root/apps/padiem-broker/storage.py" "$app/storage.py"
+install -m 0644 "$source_root/apps/padiem-broker/pc_offer_asgi.py" "$app/pc_offer_asgi.py"
 install -m 0644 "$here/check_config.py" "$app/check_config.py"
 if [[ ! -e "$app/.env" ]]; then install -m 0600 "$here/broker.env.example" "$app/.env"; fi
 chown root:root "$app/.env"
