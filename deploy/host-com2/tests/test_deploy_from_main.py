@@ -64,6 +64,7 @@ b14_app=$B14_APP
 systemctl_bin=$SYSTEMCTL_BIN
 python_bin=$PYTHON_BIN
 git_bin=git
+ai_check=${FAKE_AI_MODE:-warn}
 run_deploy "$1"
 """
 
@@ -157,6 +158,13 @@ class DeployHarness(unittest.TestCase):
         target = self.ops / "deploy/host-com2"
         target.mkdir(parents=True, exist_ok=True)
         shutil.copy2(SCRIPT, target / "deploy_from_main.sh")
+        self._write(".github/scripts/post_deploy_ai_answer_check.py", """
+import os
+import sys
+code = os.getenv("FAKE_AI_CODE", "none")
+print("ai:PASS" if code == "none" else "ai:FAIL error_code=" + code)
+sys.exit(0 if code == "none" else 1)
+""")
         for service in ("chat", "p01", "b14"):
             install = self.ops / f"deploy/host-com2/{service}/install.sh"
             install.parent.mkdir(parents=True, exist_ok=True)
@@ -254,6 +262,27 @@ class ChatScenarioTest(DeployHarness):
         self.assertIn("systemctl start padiem-chat-com2.service", calls)
         previous = self.state / "previous" / self.first
         self.assertTrue((previous / "apps/padiem-chat/app/chat_marker.py").is_file())
+
+    def test_ai_503_warn_leaves_deploy_in_place(self) -> None:
+        self.env["FAKE_AI_CODE"] = "entitlement_unavailable"
+        result = self._run_apply()
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("ai:FAIL error_code=entitlement_unavailable", result.stdout)
+        self.assertEqual(len([x for x in self._calls() if x.startswith("install chat")]), 1)
+
+    def test_ai_401_required_rolls_back(self) -> None:
+        self.env["FAKE_AI_CODE"] = "qa_login_refused"
+        self.env["FAKE_AI_MODE"] = "required"
+        result = self._run_apply()
+        self.assertEqual(result.returncode, 1, result.stderr)
+        self.assertIn("chat:ROLLBACK", result.stdout)
+        self.assertIn("ai:FAIL error_code=qa_login_refused", result.stdout)
+        self.assertEqual(len([x for x in self._calls() if x.startswith("install chat")]), 2)
+
+    def test_ai_pass_has_no_error_code(self) -> None:
+        result = self._run_apply()
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("ai:PASS", result.stdout)
 
     def test_a_failed_health_check_rolls_the_service_back(self) -> None:
         self._fail_health_once("chat")
