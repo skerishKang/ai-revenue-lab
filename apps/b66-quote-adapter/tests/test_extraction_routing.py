@@ -958,9 +958,13 @@ class B66CanonicalIntegrationTests(unittest.TestCase):
         self.assertIn("messages", allowed_chat)
         self.assertIn("stream", allowed_chat)
         self.assertIn("business14", allowed_chat)
-        self.assertIn("allow_external_fallback", allowed_b14)
-        self.assertIn("max_attempts", allowed_b14)
-        self.assertIn("required_capabilities", allowed_b14)
+        # B14 auto routing and fallback controls were retired in #6265.
+        self.assertEqual(
+            allowed_b14,
+            frozenset({"required_capabilities", "max_retries", "product_tier"}),
+        )
+        self.assertNotIn("allow_external_fallback", allowed_b14)
+        self.assertNotIn("max_attempts", allowed_b14)
 
     def test_builders_emit_no_space_bunny_request_and_fail_closed(self) -> None:
         # B66_TEXT_REQUEST_EMITS_SPACE_BUNNY=NO,
