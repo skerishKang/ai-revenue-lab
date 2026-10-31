@@ -64,6 +64,9 @@ install -m 0755 "$here/status-staging.sh" "$app/status-staging.sh"
 if [[ ! -e "$app/.env" ]]; then install -m 0600 "$here/.env.staging.example" "$app/.env"; fi
 chown root:root "$app/.env"
 chmod 0600 "$app/.env"
+# The checkout lives on the Windows HDD; autocrlf can materialize .env with CRLF and
+# systemd/grep would carry the trailing \r into values (paths included).
+sed -i 's/\r$//' "$app/.env"
 if ! runuser -u padiem-chat -- env "PADIEM_CHAT_LOCAL_DATA_DIR=$data" "$app/venv/bin/python" -c \
   "import os, pathlib, tempfile, uvicorn; fd, name=tempfile.mkstemp(dir=os.environ['PADIEM_CHAT_LOCAL_DATA_DIR']); os.close(fd); pathlib.Path(name).unlink()" >/dev/null 2>&1; then
   fail RUNTIME_OR_HDD_PERMISSION_FAILED

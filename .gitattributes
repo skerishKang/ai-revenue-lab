@@ -50,6 +50,10 @@ apps/padiem-mesh-queue/requirements.txt text eol=lf
 deploy/host-com2/**/*.sh text eol=lf
 apps/padiem-broker/deploy/*.sh text eol=lf
 
+# The staging .env example is copied verbatim to /opt/padiem and sourced by
+# systemd/start scripts; CRLF on a Windows checkout corrupts the values.
+deploy/host-com2/chat/.env.staging.example text eol=lf
+
 # Chat first-paint byte checks require LF on Windows checkouts.
 apps/padiem-chat/static/index.html text eol=lf
 apps/padiem-chat/static/padiem-glass.css text eol=lf
