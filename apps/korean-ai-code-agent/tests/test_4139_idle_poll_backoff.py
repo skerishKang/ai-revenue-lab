@@ -187,6 +187,35 @@ class TestTheIdleWaitGrows(unittest.TestCase):
         self.assertEqual(clock.gaps[10], IDLE_POLL_BASE_SECONDS,
                          "the ask right after work waits one second, as before")
 
+    def test_com2_origin_uses_ten_second_ceiling_and_resets_after_work(self):
+        def answer(round_number):
+            return ROUND_WORKED if round_number == 7 else ROUND_IDLE
+        clock, executor = _run_loop(answer, stop_at=180.0,
+                                    environ={"ORACLE_MESH_QUEUE_ORIGIN": "http://127.0.0.1:8797"})
+        self.assertEqual(executor.idle_poll_max_seconds, 10)
+        self.assertEqual(clock.gaps[:7], [1, 2, 4, 8, 10, 10, 1])
+
+    def test_d1_default_and_com2_override(self):
+        clock, executor = _run_loop(lambda _: ROUND_IDLE, stop_at=600.0)
+        self.assertEqual(executor.idle_poll_max_seconds, 60)
+        self.assertEqual(clock.gaps[:7], [1, 2, 4, 8, 16, 32, 60])
+        clock, executor = _run_loop(
+            lambda _: ROUND_IDLE, stop_at=120.0,
+            environ={"ORACLE_MESH_QUEUE_ORIGIN": "http://127.0.0.1:8797",
+                     "ORACLE_MESH_IDLE_POLL_MAX_SECONDS": "8"})
+        self.assertEqual(executor.idle_poll_max_seconds, 8)
+        self.assertEqual(clock.gaps[:5], [1, 2, 4, 8, 8])
+
+    def test_com2_invalid_override_uses_ten_and_logs(self):
+        with patch("sys.stderr") as stderr:
+            clock, executor = _run_loop(
+                lambda _: ROUND_IDLE, stop_at=120.0,
+                environ={"ORACLE_MESH_QUEUE_ORIGIN": "http://127.0.0.1:8797",
+                         "ORACLE_MESH_IDLE_POLL_MAX_SECONDS": "bad"})
+        self.assertEqual(executor.idle_poll_max_seconds, 10)
+        self.assertEqual(clock.gaps[:5], [1, 2, 4, 8, 10])
+        self.assertIn("using default 10", stderr.write.call_args_list[0].args[0])
+
     def test_eight_second_setting_caps_actual_idle_loop(self):
         clock, _ = _run_loop(lambda _round: ROUND_IDLE, stop_at=160.0,
                              environ={"ORACLE_MESH_IDLE_POLL_MAX_SECONDS": "8"})
