@@ -124,13 +124,29 @@ def _runner(*, staged, returncode=0, capture):
 
 
 class _ReadPort:
+    """Recording stand-in for the real MeshCentralFileReadPort protocol.
+
+    The contract audit (test_fake_port_contract_261031) rejects ``**kwargs``
+    fakes: the fake must refuse arguments the real port does not accept, or a
+    renamed port argument passes tests and fails in production (#6327's shape).
+    The sentinel defaults keep the omission observable — the assertions below
+    rely on ``"max_bytes" not in calls[0]`` seeing only what the executor sent.
+    """
+
+    _NOT_SENT = object()
+
     def __init__(self, *, result=None, error=None):
         self.result = result
         self.error = error
         self.calls: list[dict] = []
 
-    def read_bytes(self, **kwargs):
-        self.calls.append(dict(kwargs))
+    def read_bytes(self, *, node_ref, file_path, timeout_seconds=_NOT_SENT, max_bytes=_NOT_SENT):
+        recorded = {"node_ref": node_ref, "file_path": file_path}
+        if timeout_seconds is not self._NOT_SENT:
+            recorded["timeout_seconds"] = timeout_seconds
+        if max_bytes is not self._NOT_SENT:
+            recorded["max_bytes"] = max_bytes
+        self.calls.append(recorded)
         if self.error is not None:
             raise self.error
         return self.result

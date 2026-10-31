@@ -92,6 +92,14 @@ def test_malformed_engine_error_is_a_contract_failure(error):
 
 
 class FakeTransport:
+    """Records the stream calls with the REAL protocol's fixed shape.
+
+    The contract audit (test_fake_stream_transport_contract_261031) rejects
+    ``**kwargs`` fakes: the real ``stream_request`` takes four mandatory
+    keyword arguments, and a swallowing fake would pass a renamed or missing
+    argument straight through to production (#6327's failure shape).
+    """
+
     def __init__(self, *, status=200, mime="application/x-ndjson", body=None):
         self.calls = []
         self.body = body if body is not None else wire("event") + wire("orchestration", {"done": True})
@@ -101,8 +109,8 @@ class FakeTransport:
     async def request(self, **kwargs):
         raise AssertionError("must not use old buffered request route")
 
-    async def stream_request(self, **kwargs):
-        self.calls.append(kwargs)
+    async def stream_request(self, *, method, url, headers, body):
+        self.calls.append({"method": method, "url": url, "headers": headers, "body": body})
         return EngineStreamTransportResponse(
             status=self.status, chunks=chunks_of(self.body[:9], self.body[9:]),
             headers={"content-type": self.mime},

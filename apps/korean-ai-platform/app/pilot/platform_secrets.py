@@ -120,6 +120,15 @@ def _looks_like_placeholder(value: str) -> bool:
     return False
 
 
+def looks_like_placeholder(value: str) -> bool:
+    """Public shape test, shared with the COM2 secret manager.
+
+    A slot saved with a template value resolves to nothing at call time, so the
+    surface that accepts the value must reject it where the Owner can see why.
+    """
+    return _looks_like_placeholder(value)
+
+
 def resolve_secret(spec: PlatformProviderSpec) -> str:
     """Return the platform secret for ``spec``, or ``""`` when none is used.
 

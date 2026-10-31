@@ -162,7 +162,19 @@ def test_worker_entrypoint_guards_scoped_binding_and_global_secret():
     assert "token = bind_request_env(env_overrides)" in contents
     assert "finally:\n            reset_request_env(token)" in contents
     assert "if _env_key in _NON_SECRET_ENV_KEYS:" in contents
-    assert "PADIEM_B14_CREDENTIAL_04" in contents  # stable account binding name
+    # The stable neutral slot is what the request scope must carry. It reaches
+    # the entrypoint through the registry now instead of a hand-listed key, so
+    # the name is pinned at the authority that owns it — and the legacy
+    # provider-named key must not come back through either door.
+    from app.pilot.model_registry_file import (
+        credential_binding_names, read_registry,
+    )
+
+    assert read_registry()["providers"]["experiential"][
+        "credential_binding_name"
+    ] == "PADIEM_B14_CREDENTIAL_04"
+    assert "PADIEM_B14_CREDENTIAL_04" in credential_binding_names()
+    assert "PADIEM_EXPERIENTIAL_API_KEY" not in contents
     assert 'if _env_key in _NON_SECRET_ENV_KEYS:\n            _os.environ' in contents
 
 @pytest.mark.asyncio
@@ -427,13 +439,33 @@ def test_every_neutral_wrangler_secret_is_collected_by_worker():
     import tomllib
 
     root = Path(__file__).resolve().parents[1]
-    tree = ast.parse((root / "worker.py").read_text(encoding="utf-8"))
-    assignment = next(
-        node for node in tree.body
-        if isinstance(node, ast.Assign)
-        and any(isinstance(target, ast.Name) and target.id == "_ENV_KEYS" for target in node.targets)
+    worker_src = (root / "worker.py").read_text(encoding="utf-8")
+    tree = ast.parse(worker_src)
+
+    def _assignment(target_id: str):
+        return next(
+            node for node in tree.body
+            if isinstance(node, ast.Assign)
+            and any(
+                isinstance(target, ast.Name) and target.id == target_id
+                for target in node.targets
+            )
+        )
+
+    from app.pilot.model_registry_file import (
+        credential_binding_names as registry_credential_names,
     )
-    collected = set(ast.literal_eval(assignment.value.args[0]))
+
+    # Evaluated from the entrypoint's own expression, so this stays true to what
+    # the Worker actually collects rather than what a test unions here.
+    scope: dict[str, object] = {}
+    for node in (_assignment("_FIXED_ENV_KEYS"), _assignment("_ENV_KEYS")):
+        exec(
+            compile(ast.Module(body=[node], type_ignores=[]), "worker.py", "exec"),
+            {"credential_binding_names": registry_credential_names},
+            scope,
+        )
+    collected = set(scope["_ENV_KEYS"])
     wrangler = tomllib.loads((root / "wrangler.toml").read_text(encoding="utf-8"))
     declared = {
         entry["binding"] for entry in wrangler["secrets_store_secrets"]

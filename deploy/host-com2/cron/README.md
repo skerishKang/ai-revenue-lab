@@ -33,6 +33,7 @@ preparing: it is the only moving part of step ⑥ that does not depend on the en
 | `install-cron.sh` | dry-run by default; `--apply` writes units and copies the scripts. Never starts or enables |
 | `status-cron.sh` | read-only timer/service/last-tick status |
 | `cron.env.example` | names only; the values live in the host env file |
+| `cron_parity.json` | the 1:1 job ↔ unit manifest the parity test reads (today: one job, the automation tick) |
 
 ## Profiles
 
@@ -56,6 +57,12 @@ deployed trigger read from the dashboard at cutover. Without it the installer re
 `CRON_INSTALL=REFUSED reason=CRON_SCHEDULE_REQUIRED`.
 
 A staging timer may run faster than production; only the production value has to match Cloudflare.
+
+Cloudflare cron expressions are UTC. The timer therefore carries `Timezone=UTC`, so the expression
+copied from the dashboard keeps the same wall clock instead of shifting by the host's KST offset
+(+9h). `Timezone=` needs systemd ≥ 240 (Ubuntu 20.04+). `cron_parity.json` keeps the Worker's
+scheduled lane and this package 1:1, and `.github/tests/test_com2_cron_parity_261031.py` fails when
+they drift.
 
 ## Overlap
 

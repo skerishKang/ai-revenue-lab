@@ -69,7 +69,7 @@ def create_com2_gateway(*, verifier, identity_binding, broker_binding):
         proof_names = (b"x-padiem-edge-at", b"x-padiem-edge-id",
                        b"x-padiem-edge-tls", b"x-padiem-edge-proof")
         if (scope.get("query_string") or any(names.count(name) != 1 for name in proof_names)
-            or not verifier.verify(method="GET", path=scope["path"], headers=websocket.headers)):
+            or (scope.get("com2_edge_verified_verifier") is not verifier and not verifier.verify(method="GET", path=scope["path"], headers=websocket.headers))):
             await websocket.close(code=1008)
             return
         # The opt-in relay requires the broker's authenticated PC-offer

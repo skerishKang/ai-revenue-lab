@@ -43,12 +43,20 @@ generation *before* it is advanced:
 An unknown ledger name still refuses, and a hole in the pending set (079 applied
 while 050 is missing) refuses instead of guessing: only the tail of the expected
 order is ever applied. Without the flag the historical refusal is unchanged.
+
+Replacing an existing staging database keeps that file's own owner and mode, so a
+root run cannot leave a ``root``-owned copy the service account cannot open in WAL
+mode. A fresh target needs ``--owner`` (and optionally ``--mode``) because a root
+process cannot infer the service account; if the metadata cannot be applied, the
+new file is removed and the run refuses instead of leaving one behind.
 """
 from __future__ import annotations
 
 import argparse
 import json
+import os
 import sqlite3
+import stat
 import sys
 from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
@@ -86,11 +94,32 @@ USAGE_REASONS = frozenset({
     "staging_out_is_source",
     "staging_out_inside_generations",
     "staging_migrations_dir_missing",
+    "staging_owner_required",
+    "staging_owner_invalid",
 })
+
+#: Default mode for a *new* staging database. 0600 because a Chat row holds a
+#: person's text and the file belongs to one service account, not a group.
+DEFAULT_OWNER_MODE = 0o600
 
 
 class StagingError(Exception):
     """A fixed, public-safe refusal. Never carries row data or SQL bodies."""
+
+
+@dataclass(slots=True)
+class FileOwnership:
+    """The owner and mode the staging database must carry after creation.
+
+    ``existing`` keeps exactly what the replaced file had, ``argument`` comes
+    from ``--owner``/``--mode`` when there is nothing to inherit, and
+    ``caller`` means a non-root process created the file and already owns it.
+    """
+
+    uid: int
+    gid: int
+    mode: int
+    source: str
 
 
 @dataclass(slots=True)
@@ -111,6 +140,10 @@ class StagingReport:
     staging_tables: int = 0
     staging_rows: int = 0
     staging_bytes: int = 0
+    ownership_source: str = ""
+    owner_uid: int = -1
+    owner_gid: int = -1
+    owner_mode: int = 0
     parity_exit: int | None = None
     ready: bool = False
 
@@ -314,6 +347,98 @@ def apply_pending_migrations(
         connection.close()
 
 
+def _effective_uid() -> int:
+    """The process euid, or -1 on a platform without POSIX ids."""
+
+    getter = getattr(os, "geteuid", None)
+    return int(getter()) if callable(getter) else -1
+
+
+def _chown(path: Path, uid: int, gid: int) -> None:
+    os.chown(path, uid, gid)
+
+
+def _chmod(path: Path, mode: int) -> None:
+    os.chmod(path, mode)
+
+
+def parse_mode(text: str) -> int:
+    """An octal mode argument (``0600``), never a decimal surprise."""
+
+    try:
+        value = int(str(text).strip(), 8)
+    except (TypeError, ValueError):
+        raise StagingError("staging_owner_invalid") from None
+    if not 0o000 <= value <= 0o777:
+        raise StagingError("staging_owner_invalid")
+    return value
+
+
+def resolve_owner(text: str) -> tuple[int, int]:
+    """``user`` or ``user:group``, numeric or by name."""
+
+    name, _separator, group = str(text).strip().partition(":")
+    if not name:
+        raise StagingError("staging_owner_invalid")
+    if name.isdigit() and (not group or group.isdigit()):
+        uid = int(name)
+        return uid, int(group) if group else uid
+    try:
+        import grp
+        import pwd
+    except ImportError:  # pragma: no cover - Windows has neither module
+        raise StagingError("staging_owner_invalid") from None
+    try:
+        record = pwd.getpwnam(name)
+        gid = grp.getgrnam(group).gr_gid if group else record.pw_gid
+    except KeyError:
+        raise StagingError("staging_owner_invalid") from None
+    return record.pw_uid, gid
+
+
+def _target_ownership(
+    destination: Path, owner: str | None, mode: str | None
+) -> FileOwnership:
+    """Decide the metadata a replaced file keeps, before it is unlinked.
+
+    A root run used to leave a root-owned ``chat.sqlite3`` behind and the
+    service account could no longer open it in WAL mode. The replaced file's
+    own owner/mode is the answer whenever there is one; a fresh file needs
+    ``--owner`` because a root process cannot infer the service account.
+    """
+
+    if destination.exists():
+        info = destination.stat()
+        return FileOwnership(
+            info.st_uid, info.st_gid, stat.S_IMODE(info.st_mode), "existing"
+        )
+    requested = parse_mode(mode) if mode else DEFAULT_OWNER_MODE
+    if owner:
+        uid, gid = resolve_owner(owner)
+        return FileOwnership(uid, gid, requested, "argument")
+    if _effective_uid() == 0:
+        raise StagingError("staging_owner_required")
+    return FileOwnership(-1, -1, requested, "caller")
+
+
+def _apply_metadata(path: Path, ownership: FileOwnership) -> None:
+    """Apply the ownership; refuse rather than leave a database nobody opens."""
+
+    if ownership.source == "caller":
+        return
+    chown = getattr(os, "chown", None)
+    try:
+        if callable(chown):
+            _chown(path, ownership.uid, ownership.gid)
+        elif ownership.source == "argument":
+            # An explicit owner that cannot be applied is a refusal, not a
+            # silent root-owned file.
+            raise OSError("chown unavailable")
+        _chmod(path, ownership.mode)
+    except OSError:
+        raise StagingError("staging_owner_unapplied") from None
+
+
 def _check_out_path(out: Path, source: Path, generations_dir: Path, force: bool) -> None:
     if out.resolve() == source.resolve():
         raise StagingError("staging_out_is_source")
@@ -336,6 +461,8 @@ def build_staging_db(
     migrations_dir: str | Path = DEFAULT_MIGRATIONS_DIR,
     force: bool = False,
     apply_pending: bool = False,
+    owner: str | None = None,
+    mode: str | None = None,
 ) -> StagingReport:
     """Copy the current generation into ``out`` and verify it; never touch D1.
 
@@ -352,6 +479,9 @@ def build_staging_db(
 
     destination = Path(out)
     _check_out_path(destination, source, Path(generations_dir), force)
+    # Read before anything is unlinked: the replaced file is the only source of
+    # the service account that must keep opening it.
+    ownership = _target_ownership(destination, owner, mode)
 
     report.generation = generation
     report.source = str(source)
@@ -404,6 +534,16 @@ def build_staging_db(
                 raise StagingError("staging_target_integrity_failed")
         finally:
             target.close()
+        try:
+            _apply_metadata(destination, ownership)
+        except StagingError:
+            # A database the service account cannot open is worse than none.
+            _discard(destination)
+            raise
+        report.ownership_source = ownership.source
+        report.owner_uid = ownership.uid
+        report.owner_gid = ownership.gid
+        report.owner_mode = ownership.mode
     finally:
         handle.close()
 
@@ -465,6 +605,11 @@ def _emit(report: StagingReport) -> None:
     print(
         f"STAGING_DB_SOURCE_UNCHANGED={'YES' if report.source_unchanged else 'NO'}"
     )
+    print(
+        f"STAGING_DB_OWNERSHIP source={report.ownership_source} "
+        f"uid={report.owner_uid} gid={report.owner_gid} "
+        f"mode={report.owner_mode:04o}"
+    )
     pending_names = ",".join(report.pending_applied) or "none"
     print(
         f"STAGING_DB_PENDING_APPLIED count={len(report.pending_applied)} "
@@ -504,6 +649,14 @@ def main(argv: list[str] | None = None) -> int:
         "--apply-pending", action="store_true",
         help="apply the repository migrations the generation is still missing",
     )
+    parser.add_argument(
+        "--owner",
+        help="owner for a NEW database (user[:group]); an existing target keeps its own",
+    )
+    parser.add_argument(
+        "--mode",
+        help=f"octal mode for a NEW database (default: {DEFAULT_OWNER_MODE:04o})",
+    )
     parser.add_argument("--json", help="write the counts-only report as JSON")
     args = parser.parse_args(argv)
 
@@ -516,6 +669,8 @@ def main(argv: list[str] | None = None) -> int:
             migrations_dir=args.migrations_dir,
             force=args.force,
             apply_pending=args.apply_pending,
+            owner=args.owner,
+            mode=args.mode,
         )
     except StagingError as exc:
         print(f"STAGING_DB_REFUSED reason={exc}")

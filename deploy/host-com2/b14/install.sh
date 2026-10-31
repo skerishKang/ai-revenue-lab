@@ -19,6 +19,7 @@ umask 077
 SRC_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 APP_ROOT=/opt/padiem/b14
 UNIT_TARGET=/etc/systemd/system/padiem-b14.service
+ADMIN_UNIT_TARGET=/etc/systemd/system/padiem-b14-admin.service
 DROPIN_TARGET_DIR=/etc/systemd/system/padiem-b14.service.d
 LOGROTATE_TARGET=/etc/logrotate.d/padiem-b14
 INGRESS_TARGET=/opt/padiem/cloudflared/config.yml
@@ -64,6 +65,7 @@ write_staged() {
 }
 
 write_staged "$SRC_DIR/padiem-b14.service.example" "$UNIT_TARGET" unit
+write_staged "$SRC_DIR/padiem-b14-admin.service.example" "$ADMIN_UNIT_TARGET" admin_unit
 
 if ! $DRY_RUN; then install -d -o root -g root -m 0755 "$DROPIN_TARGET_DIR"; fi
 write_staged "$SRC_DIR/20-log-to-file.conf.example" "$DROPIN_TARGET_DIR/20-log-to-file.conf" dropin
@@ -86,11 +88,24 @@ else
 fi
 
 if ! $DRY_RUN; then
-  install -d -o root -g root -m 0700 "$APP_ROOT/env" "$APP_ROOT/secrets"
+  install -d -o root -g root -m 0700 "$APP_ROOT/env"
   install -d -o padiem-b14 -g padiem-b14 -m 0700 "$APP_ROOT/ledger" "$APP_ROOT/logs" 2>/dev/null \
     || note "data_dirs_need_runtime_identity"
   cp -f "$SRC_DIR/../../../apps/korean-ai-platform/b14.env.example" "$APP_ROOT/env/b14.env.example" 2>/dev/null \
     || note "env_example_copy_skipped"
+  # The secret and registry directories belong to systemd (StateDirectory), so
+  # this script neither creates them nor touches their ownership: systemd assigns
+  # them to the static padiem-b14 account at start. The registry is seeded from the
+  # checkout only when the host has none, and never overwritten — what the
+  # Owner registers on this machine survives the next deploy.
+  REGISTRY_STATE="/var/lib/padiem-b14/b14-registry/b14_models.json"
+  if [ -f "$REGISTRY_STATE" ]; then
+    note "registry_seed_present"
+  elif [ -f "$APP_ROOT/app/app/pilot/b14_models.json" ]; then
+    note "registry_seed_manual:cp -n $APP_ROOT/app/app/pilot/b14_models.json $REGISTRY_STATE"
+  else
+    note "registry_seed_source_missing"
+  fi
 fi
 
 if $RELOAD && ! $DRY_RUN; then

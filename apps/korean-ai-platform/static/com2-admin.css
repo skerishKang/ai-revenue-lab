@@ -1,0 +1,102 @@
+/* #2107 COM2 관리자 화면 — 시크릿·공급사 등록.
+   앱의 토큰을 그대로 쓰되, 관리자 도구는 제품 내비게이션을 갖지 않는다.
+   Light/Dark는 OS 설정을 따르고, 폭이 좁으면 표가 카드처럼 세로로 풀린다. */
+.com2-admin {
+  --admin-bg: #f6f7fb;
+  --admin-panel: #ffffff;
+  --admin-ink: #14213d;
+  --admin-muted: #5a6478;
+  --admin-line: #dfe3ec;
+  --admin-accent: #4361ee;
+  --admin-ok: #178753;
+  --admin-warn: #9a6700;
+  --admin-bad: #b42318;
+  box-sizing: border-box;
+  margin: 0 auto;
+  max-width: 1080px;
+  padding: 24px 20px 64px;
+  color: var(--admin-ink);
+  background: var(--admin-bg);
+  font: 15px/1.55 "Inter", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+}
+.com2-admin a { color: var(--admin-accent); }
+.com2-admin h1 { margin: 0 0 4px; font-size: 22px; }
+.com2-admin h2 { margin: 28px 0 10px; font-size: 16px; }
+.com2-admin .admin-sub { margin: 0 0 20px; color: var(--admin-muted); }
+.com2-admin .admin-panel {
+  background: var(--admin-panel);
+  border: 1px solid var(--admin-line);
+  border-radius: 12px;
+  padding: 16px;
+}
+.com2-admin .admin-callout {
+  border-radius: 10px;
+  border: 1px solid var(--admin-line);
+  padding: 10px 14px;
+  margin: 0 0 16px;
+  background: var(--admin-panel);
+}
+.com2-admin .admin-callout.ok { border-color: var(--admin-ok); }
+.com2-admin .admin-callout.bad { border-color: var(--admin-bad); }
+.com2-admin .admin-callout.warn { border-color: var(--admin-warn); }
+.com2-admin .admin-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 12px;
+}
+.com2-admin label { display: block; font-weight: 600; margin-bottom: 4px; }
+.com2-admin .admin-hint { display: block; margin-top: 4px; color: var(--admin-muted); font-size: 13px; }
+.com2-admin input, .com2-admin textarea {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid var(--admin-line);
+  border-radius: 8px;
+  background: var(--admin-panel);
+  color: var(--admin-ink);
+  font: inherit;
+}
+.com2-admin input[type="submit"], .com2-admin button {
+  width: auto;
+  padding: 8px 14px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--admin-accent);
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+}
+.com2-admin button.danger { background: var(--admin-bad); }
+.com2-admin button.ghost { background: transparent; color: var(--admin-accent); border: 1px solid var(--admin-line); }
+.com2-admin .admin-row-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.com2-admin .spaced { margin-top: 8px; }
+.com2-admin table { width: 100%; border-collapse: collapse; }
+.com2-admin th, .com2-admin td {
+  text-align: left;
+  padding: 10px 8px;
+  border-bottom: 1px solid var(--admin-line);
+  vertical-align: top;
+}
+.com2-admin code { font-family: "IBM Plex Mono", ui-monospace, monospace; }
+.com2-admin .state { font-weight: 600; }
+.com2-admin .state.set { color: var(--admin-ok); }
+.com2-admin .state.unset { color: var(--admin-muted); }
+.com2-admin .state.refused { color: var(--admin-bad); }
+.com2-admin .models { color: var(--admin-muted); font-size: 13px; }
+.com2-admin .admin-tabs { display: flex; gap: 10px; margin-bottom: 18px; }
+@media (prefers-color-scheme: dark) {
+  .com2-admin {
+    --admin-bg: #10131a;
+    --admin-panel: #171b25;
+    --admin-ink: #e8ebf5;
+    --admin-muted: #9aa5bd;
+    --admin-line: #2a3142;
+  }
+}
+@media (max-width: 720px) {
+  .com2-admin { padding: 16px 12px 48px; }
+  .com2-admin thead { display: none; }
+  .com2-admin tbody, .com2-admin tr, .com2-admin td { display: block; width: 100%; }
+  .com2-admin tr { border: 1px solid var(--admin-line); border-radius: 10px; margin-bottom: 12px; padding: 6px 8px; }
+  .com2-admin td { border-bottom: 0; padding: 4px 0; }
+  .com2-admin td::before { content: attr(data-label) " "; color: var(--admin-muted); font-weight: 600; }
+}

@@ -47,7 +47,12 @@ class B14Com2Bundle(unittest.TestCase):
         self.assertIn("Environment=B14_HOST=127.0.0.1", self.unit)
         self.assertIn("EnvironmentFile=-/opt/padiem/b14/env/b14.env", self.unit)
         self.assertIn("WorkingDirectory=/opt/padiem/b14/app", self.unit)
-        self.assertIn("DynamicUser=yes", self.unit)
+        # Static account, not DynamicUser: the COM2 host rejected the
+        # DynamicUser + SupplementaryGroups pair with 216/217.
+        self.assertIn("User=padiem-b14", self.unit)
+        self.assertIn("Group=padiem-b14", self.unit)
+        self.assertNotIn("\nDynamicUser=", self.unit)
+        self.assertNotIn("\nSupplementaryGroups=", self.unit)
         self.assertIn("Restart=always", self.unit)
         self.assertIn("ProtectSystem=strict", self.unit)
         # The ledger and logs stay on the declared host paths, not on C:.

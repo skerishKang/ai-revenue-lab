@@ -35,6 +35,7 @@ from urllib.parse import urlsplit
 
 import httpx
 
+from app.local_admission_binding import admission_binding_for
 from app.local_sqlite_d1 import (
     LocalSqliteD1,
     apply_engine_migrations,
@@ -414,6 +415,11 @@ def _local_bindings(values: Mapping[str, str]) -> dict[str, Any]:
     path = str(values.get(DB_PATH_ENV, "")).strip()
     if path:
         bindings["ENGINE_IDEMPOTENCY"] = _local_database(path)
+    # The admission authority stays in Cloudflare. A configured https origin and
+    # service secret give this host a binding-shaped stand-in, so the reviewed
+    # adapter composes unchanged; without them the binding is absent and every
+    # model route keeps the Worker's 503 `entitlement_unavailable`.
+    bindings.update(admission_binding_for(values))
     # Without a configured path the binding stays absent, so every durable lane
     # keeps the Worker's own fail-closed answer instead of a process-local fake.
     return bindings
