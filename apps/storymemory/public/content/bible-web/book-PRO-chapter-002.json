@@ -1,0 +1,717 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PRO:chapter:002",
+  "unit_ordinal": 630,
+  "unit_label": "PRO 2",
+  "book_code": "PRO",
+  "chapter_number": 2,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PRO:2:1",
+      "sequence": 16435,
+      "chapter_label": "PRO 2",
+      "verse_label": "1",
+      "locator": {
+        "book": "PRO",
+        "chapter": 2,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 2,
+          "verse": 1
+        }
+      ],
+      "en": "My son, if you will receive my words, and store up my commandments within you,",
+      "ko": "내 아들아 네가 만일 나의 말을 받으며 나의 계명을 네게 간직하며",
+      "source_text_hash": "65c4fecd5ea66cfc595174e594f59c242eda312641fba7526fc29753006f2ce5",
+      "translation_text_hash": "9b123692305b496dafb25fb32fb4681849b6a78010c00f8bb45714436490ae07",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 아들아 네가 만일 나의 말을 받으며 나의 계명을 네게 간직하며"
+      ],
+      "raw_text_hashes": [
+        "9b123692305b496dafb25fb32fb4681849b6a78010c00f8bb45714436490ae07"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:2:2",
+      "sequence": 16436,
+      "chapter_label": "PRO 2",
+      "verse_label": "2",
+      "locator": {
+        "book": "PRO",
+        "chapter": 2,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 2,
+          "verse": 2
+        }
+      ],
+      "en": "so as to turn your ear to wisdom, and apply your heart to understanding;",
+      "ko": "네 귀를 지혜에 기울이며 네 마음을 명철에 두며",
+      "source_text_hash": "19c54d2596973bbb55c946cd9dd1b1eb1a688117777eaa69099141ee27d852ce",
+      "translation_text_hash": "80d9d1f3aab89bb6b8ea4924fbac0796015c55ec05e16e2af27346a0f835ac50",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 귀를 지혜에 기울이며 네 마음을 명철에 두며"
+      ],
+      "raw_text_hashes": [
+        "80d9d1f3aab89bb6b8ea4924fbac0796015c55ec05e16e2af27346a0f835ac50"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:2:3",
+      "sequence": 16437,
+      "chapter_label": "PRO 2",
+      "verse_label": "3",
+      "locator": {
+        "book": "PRO",
+        "chapter": 2,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 2,
+          "verse": 3
+        }
+      ],
+      "en": "yes, if you call out for discernment, and lift up your voice for understanding;",
+      "ko": "지식을 불러 구하며 명철을 얻으려고 소리를 높이며",
+      "source_text_hash": "a3157924351b68948fd4a2cb1aa2ba0d0012e60aaa29ba25d101b80871739a43",
+      "translation_text_hash": "949f68004e3f4ec72a4808a9910f57f7c65088192d01cb2dbf8d2f2156574e68",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "지식을 불러 구하며 명철을 얻으려고 소리를 높이며"
+      ],
+      "raw_text_hashes": [
+        "949f68004e3f4ec72a4808a9910f57f7c65088192d01cb2dbf8d2f2156574e68"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:2:4",
+      "sequence": 16438,
+      "chapter_label": "PRO 2",
+      "verse_label": "4",
+      "locator": {
+        "book": "PRO",
+        "chapter": 2,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 2,
+          "verse": 4
+        }
+      ],
+      "en": "if you seek her as silver, and search for her as for hidden treasures;",
+      "ko": "은을 구하는 것 같이 그것을 구하며 감추인 보배를 찾는 것 같이 그것을 찾으면",
+      "source_text_hash": "d3b85f5f36e863f1982884986afdf3bc46dcd4764ee2b49c78db9932ffa7a721",
+      "translation_text_hash": "e4bf9c8aa40489129734ad5dbf1f989ff2c85fca05d4901fdb1d1a72c5d266e0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "은을 구하는 것 같이 그것을 구하며 감추인 보배를 찾는 것 같이 그것을 찾으면"
+      ],
+      "raw_text_hashes": [
+        "e4bf9c8aa40489129734ad5dbf1f989ff2c85fca05d4901fdb1d1a72c5d266e0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:2:5",
+      "sequence": 16439,
+      "chapter_label": "PRO 2",
+      "verse_label": "5",
+      "locator": {
+        "book": "PRO",
+        "chapter": 2,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 2,
+          "verse": 5
+        }
+      ],
+      "en": "then you will understand the fear of the LORD, and find the knowledge of God.",
+      "ko": "여호와 경외하기를 깨달으며 하나님을 알게 되리니",
+      "source_text_hash": "3ba5f812f6dfc2869defa91b609722e7ecac57069eb3a9494cac14b6831fd65c",
+      "translation_text_hash": "ba715e742032ab6d87a034ceb142308c4ff7acd51148298c16db6bc00dd3139e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와 경외하기를 깨달으며 하나님을 알게 되리니"
+      ],
+      "raw_text_hashes": [
+        "ba715e742032ab6d87a034ceb142308c4ff7acd51148298c16db6bc00dd3139e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:2:6",
+      "sequence": 16440,
+      "chapter_label": "PRO 2",
+      "verse_label": "6",
+      "locator": {
+        "book": "PRO",
+        "chapter": 2,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 2,
+          "verse": 6
+        }
+      ],
+      "en": "For the LORD gives wisdom. Out of his mouth comes knowledge and understanding.",
+      "ko": "대저 여호와는 지혜를 주시며 지식과 명철을 그 입에서 내심이며",
+      "source_text_hash": "7f636e216930fa8528f9496835e0e0dd0f6a17326ba7960b72a6bb9d2933b21e",
+      "translation_text_hash": "04eca56d2ce04412e35a073013209ec142adc41bddc5506ecbab49ebb541aa2c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대저 여호와는 지혜를 주시며 지식과 명철을 그 입에서 내심이며"
+      ],
+      "raw_text_hashes": [
+        "04eca56d2ce04412e35a073013209ec142adc41bddc5506ecbab49ebb541aa2c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:2:7",
+      "sequence": 16441,
+      "chapter_label": "PRO 2",
+      "verse_label": "7",
+      "locator": {
+        "book": "PRO",
+        "chapter": 2,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 2,
+          "verse": 7
+        }
+      ],
+      "en": "He lays up sound wisdom for the upright. He is a shield to those who walk in integrity,",
+      "ko": "그는 정직한 자를 위하여 완전한 지혜를 예비하시며 행실이 온전한 자에게 방패가 되시나니",
+      "source_text_hash": "51435f0e67322f8bd62218110194880980c93affb422e5a71ecddc1f23c71d1e",
+      "translation_text_hash": "8272edde2aedfb2df826d1279993af48158ed37f0a04c0a408a85f45195f3921",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그는 정직한 자를 위하여 완전한 지혜를 예비하시며 행실이 온전한 자에게 방패가 되시나니"
+      ],
+      "raw_text_hashes": [
+        "8272edde2aedfb2df826d1279993af48158ed37f0a04c0a408a85f45195f3921"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:2:8",
+      "sequence": 16442,
+      "chapter_label": "PRO 2",
+      "verse_label": "8",
+      "locator": {
+        "book": "PRO",
+        "chapter": 2,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 2,
+          "verse": 8
+        }
+      ],
+      "en": "that he may guard the paths of justice, and preserve the way of his saints.",
+      "ko": "대저 그는 공평의 길을 보호하시며 그 성도들의 길을 보전하려 하심이니라",
+      "source_text_hash": "4a166824c2eef385b29575260bd13ab7adf49415bd697dbc936cc6763a9f47f5",
+      "translation_text_hash": "d0f7016b93d2816737bc4f22099d6945316c47d00ba4cc8aab4d584f3912dcea",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대저 그는 공평의 길을 보호하시며 그 성도들의 길을 보전하려 하심이니라"
+      ],
+      "raw_text_hashes": [
+        "d0f7016b93d2816737bc4f22099d6945316c47d00ba4cc8aab4d584f3912dcea"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:2:9",
+      "sequence": 16443,
+      "chapter_label": "PRO 2",
+      "verse_label": "9",
+      "locator": {
+        "book": "PRO",
+        "chapter": 2,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 2,
+          "verse": 9
+        }
+      ],
+      "en": "Then you will understand righteousness and justice, equity and every good path.",
+      "ko": "그런즉 네가 공의와 공평과 정직 곧 모든 선한 길을 깨달을 것이라",
+      "source_text_hash": "2adac08d715157cf98689b32e360012a480de05e56229d954d7d9d39dc2f764e",
+      "translation_text_hash": "880f01c959ed82877b5dbc09cb9a4392dfcef1d5d73250477a2ec626475c9e60",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 네가 공의와 공평과 정직 곧 모든 선한 길을 깨달을 것이라"
+      ],
+      "raw_text_hashes": [
+        "880f01c959ed82877b5dbc09cb9a4392dfcef1d5d73250477a2ec626475c9e60"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:2:10",
+      "sequence": 16444,
+      "chapter_label": "PRO 2",
+      "verse_label": "10",
+      "locator": {
+        "book": "PRO",
+        "chapter": 2,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 2,
+          "verse": 10
+        }
+      ],
+      "en": "For wisdom will enter into your heart. Knowledge will be pleasant to your soul.",
+      "ko": "곧 지혜가 네 마음에 들어가며 지식이 네 영혼에 즐겁게 될 것이요",
+      "source_text_hash": "ce143048c94ac7eae781aac65ce33737b0506e41e83ad89444c5afbccc5ba39f",
+      "translation_text_hash": "93ffb43f5b5caa54649153df38cddc600ff91fec9c4c16cb549e8dabbb0bbcda",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 지혜가 네 마음에 들어가며 지식이 네 영혼에 즐겁게 될 것이요"
+      ],
+      "raw_text_hashes": [
+        "93ffb43f5b5caa54649153df38cddc600ff91fec9c4c16cb549e8dabbb0bbcda"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:2:11",
+      "sequence": 16445,
+      "chapter_label": "PRO 2",
+      "verse_label": "11",
+      "locator": {
+        "book": "PRO",
+        "chapter": 2,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 2,
+          "verse": 11
+        }
+      ],
+      "en": "Discretion will watch over you. Understanding will keep you,",
+      "ko": "근신이 너를 지키며 명철이 너를 보호하여",
+      "source_text_hash": "e80913e31976c500cac2bec62747f65047588cad36ca7ca7afbc7abbe4cf497f",
+      "translation_text_hash": "5309c904c32508714a01b15725f2b6ed167a9d31d8aa64e35cff8a7120beb419",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "근신이 너를 지키며 명철이 너를 보호하여"
+      ],
+      "raw_text_hashes": [
+        "5309c904c32508714a01b15725f2b6ed167a9d31d8aa64e35cff8a7120beb419"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:2:12",
+      "sequence": 16446,
+      "chapter_label": "PRO 2",
+      "verse_label": "12",
+      "locator": {
+        "book": "PRO",
+        "chapter": 2,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 2,
+          "verse": 12
+        }
+      ],
+      "en": "to deliver you from the way of evil, from the men who speak perverse things,",
+      "ko": "악한 자의 길과 패역을 말하는 자에게서 건져내리라",
+      "source_text_hash": "7c67c2d84f34bc86410e5066605c0b5946edf621cf39774d1409602cb88c4529",
+      "translation_text_hash": "afcf80dbde917fc935fa5a5e49fd01a447c9d0b3d07b17db27c2860d9497b240",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "악한 자의 길과 패역을 말하는 자에게서 건져내리라"
+      ],
+      "raw_text_hashes": [
+        "afcf80dbde917fc935fa5a5e49fd01a447c9d0b3d07b17db27c2860d9497b240"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:2:13",
+      "sequence": 16447,
+      "chapter_label": "PRO 2",
+      "verse_label": "13",
+      "locator": {
+        "book": "PRO",
+        "chapter": 2,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 2,
+          "verse": 13
+        }
+      ],
+      "en": "who forsake the paths of uprightness, to walk in the ways of darkness,",
+      "ko": "이 무리는 정직한 길을 떠나 어두운 길로 행하며",
+      "source_text_hash": "d9457afc1e0e890b0c28d2621e1e50559d70ea97fa36cd51fa40db33d2d2d01c",
+      "translation_text_hash": "0a6cfcf8258b0dd25cca7e8ed1e190913b4dd0e5ae8738e77b5fc1ebb668f272",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 무리는 정직한 길을 떠나 어두운 길로 행하며"
+      ],
+      "raw_text_hashes": [
+        "0a6cfcf8258b0dd25cca7e8ed1e190913b4dd0e5ae8738e77b5fc1ebb668f272"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:2:14",
+      "sequence": 16448,
+      "chapter_label": "PRO 2",
+      "verse_label": "14",
+      "locator": {
+        "book": "PRO",
+        "chapter": 2,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 2,
+          "verse": 14
+        }
+      ],
+      "en": "who rejoice to do evil, and delight in the perverseness of evil,",
+      "ko": "행악하기를 기뻐하며 악인의 패역을 즐거워하나니",
+      "source_text_hash": "fa6f59f98a3863519b29f58b11fbf64aff0247db63184e6091a7e72c033040d3",
+      "translation_text_hash": "670d5727efdea7e75c1b04ed89faa29cf82fdc3373c51e0f358eaf0aae8f0fd8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "행악하기를 기뻐하며 악인의 패역을 즐거워하나니"
+      ],
+      "raw_text_hashes": [
+        "670d5727efdea7e75c1b04ed89faa29cf82fdc3373c51e0f358eaf0aae8f0fd8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:2:15",
+      "sequence": 16449,
+      "chapter_label": "PRO 2",
+      "verse_label": "15",
+      "locator": {
+        "book": "PRO",
+        "chapter": 2,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 2,
+          "verse": 15
+        }
+      ],
+      "en": "who are crooked in their ways, and wayward in their paths,",
+      "ko": "그 길은 구부러지고 그 행위는 패역하니라",
+      "source_text_hash": "656e858dd2498d56c00bc4f7a15c0c892202ff23fde1584929d3b59d16e5691e",
+      "translation_text_hash": "525b2cb1e0d7bb05fc45437258fbf9b8ac53d117c583ec21c077794ce5ec4505",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 길은 구부러지고 그 행위는 패역하니라"
+      ],
+      "raw_text_hashes": [
+        "525b2cb1e0d7bb05fc45437258fbf9b8ac53d117c583ec21c077794ce5ec4505"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:2:16",
+      "sequence": 16450,
+      "chapter_label": "PRO 2",
+      "verse_label": "16",
+      "locator": {
+        "book": "PRO",
+        "chapter": 2,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 2,
+          "verse": 16
+        }
+      ],
+      "en": "to deliver you from the strange woman, even from the foreigner who flatters with her words,",
+      "ko": "지혜가 또 너를 음녀에게서, 말로 호리는 이방 계집에게서 구원하리니",
+      "source_text_hash": "60f5036b7606656deb1e06fe4573264ebd5ad0628ca2c48a1fb78dbdac2469b2",
+      "translation_text_hash": "943b05005379f2d823be65f1fb5590e99f3754f0188de3481578e2d4c94b89fd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "지혜가 또 너를 음녀에게서, 말로 호리는 이방 계집에게서 구원하리니"
+      ],
+      "raw_text_hashes": [
+        "943b05005379f2d823be65f1fb5590e99f3754f0188de3481578e2d4c94b89fd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:2:17",
+      "sequence": 16451,
+      "chapter_label": "PRO 2",
+      "verse_label": "17",
+      "locator": {
+        "book": "PRO",
+        "chapter": 2,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 2,
+          "verse": 17
+        }
+      ],
+      "en": "who forsakes the friend of her youth, and forgets the covenant of her God;",
+      "ko": "그는 소시의 짝을 버리며 그 하나님의 언약을 잊어버린 자라",
+      "source_text_hash": "eb02924bb2434bc21a29c7002ee4cbc6b4d8dfae3ac398478e337b28182988fc",
+      "translation_text_hash": "c6957ea49a60114f2f224cc18fba3852330e27b6cf1a2e0dd4b31dd808fd38f2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그는 소시의 짝을 버리며 그 하나님의 언약을 잊어버린 자라"
+      ],
+      "raw_text_hashes": [
+        "c6957ea49a60114f2f224cc18fba3852330e27b6cf1a2e0dd4b31dd808fd38f2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:2:18",
+      "sequence": 16452,
+      "chapter_label": "PRO 2",
+      "verse_label": "18",
+      "locator": {
+        "book": "PRO",
+        "chapter": 2,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 2,
+          "verse": 18
+        }
+      ],
+      "en": "for her house leads down to death, her paths to the departed spirits.",
+      "ko": "그 집은 사망으로, 그 길은 음부로 기울어졌나니",
+      "source_text_hash": "66b8a630bdce02d6cebed3afc4bab1530fa0a7be39bf97308abbdf3b120a2089",
+      "translation_text_hash": "125c2f6546676997c0bb096c34513d54859ac073871ada535152d246787cc1d3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 집은 사망으로, 그 길은 음부로 기울어졌나니"
+      ],
+      "raw_text_hashes": [
+        "125c2f6546676997c0bb096c34513d54859ac073871ada535152d246787cc1d3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:2:19",
+      "sequence": 16453,
+      "chapter_label": "PRO 2",
+      "verse_label": "19",
+      "locator": {
+        "book": "PRO",
+        "chapter": 2,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 2,
+          "verse": 19
+        }
+      ],
+      "en": "None who go to her return again, neither do they attain to the paths of life.",
+      "ko": "누구든지 그에게로 가는 자는 돌아오지 못하며 또 생명길을 얻지 못하느니라",
+      "source_text_hash": "1d2196554605d52dc0b5283fe9f6f521c612b6a77303cff3e8859d9e42a164b7",
+      "translation_text_hash": "5f70426c9f12a1305d757b77e3f1f0cc494fb096e31bb3bfdd038f4c698cebf4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누구든지 그에게로 가는 자는 돌아오지 못하며 또 생명길을 얻지 못하느니라"
+      ],
+      "raw_text_hashes": [
+        "5f70426c9f12a1305d757b77e3f1f0cc494fb096e31bb3bfdd038f4c698cebf4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:2:20",
+      "sequence": 16454,
+      "chapter_label": "PRO 2",
+      "verse_label": "20",
+      "locator": {
+        "book": "PRO",
+        "chapter": 2,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 2,
+          "verse": 20
+        }
+      ],
+      "en": "Therefore walk in the way of good men, and keep the paths of the righteous.",
+      "ko": "지혜가 너로 선한 자의 길로 행하게 하며 또 의인의 길을 지키게 하리니",
+      "source_text_hash": "6d46f3320521bfc48b62edd0cd9e04102824dbaf72decae66930d59b77fdfb1c",
+      "translation_text_hash": "e461126f6080f4641133d85cd00063a53356ffb75ae87b0d8fab1d11ea395626",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "지혜가 너로 선한 자의 길로 행하게 하며 또 의인의 길을 지키게 하리니"
+      ],
+      "raw_text_hashes": [
+        "e461126f6080f4641133d85cd00063a53356ffb75ae87b0d8fab1d11ea395626"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:2:21",
+      "sequence": 16455,
+      "chapter_label": "PRO 2",
+      "verse_label": "21",
+      "locator": {
+        "book": "PRO",
+        "chapter": 2,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 2,
+          "verse": 21
+        }
+      ],
+      "en": "For the upright will dwell in the land. The perfect will remain in it.",
+      "ko": "대저 정직한 자는 땅에 거하며 완전한 자는 땅에 남아 있으리라",
+      "source_text_hash": "04c7964cfc8bc6a5326c9558d8c9980693d9771335dd3665312233bb14504569",
+      "translation_text_hash": "934b6b24fd744d09dc5da12e204eb13657e510b88f62f9bf47cf6146f8a59f51",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대저 정직한 자는 땅에 거하며 완전한 자는 땅에 남아 있으리라"
+      ],
+      "raw_text_hashes": [
+        "934b6b24fd744d09dc5da12e204eb13657e510b88f62f9bf47cf6146f8a59f51"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:2:22",
+      "sequence": 16456,
+      "chapter_label": "PRO 2",
+      "verse_label": "22",
+      "locator": {
+        "book": "PRO",
+        "chapter": 2,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 2,
+          "verse": 22
+        }
+      ],
+      "en": "But the wicked will be cut off from the land. The treacherous will be rooted out of it.",
+      "ko": "그러나 악인은 땅에서 끊어지겠고 궤휼한 자는 땅에서 뽑히리라",
+      "source_text_hash": "cd3777b6529722a3204a3fc1387a1805df5fe2f2653c222fda77968d32c566dc",
+      "translation_text_hash": "ef1fe469f59258109a3a5ba57d525e038f27ae04e82acf2e33cae04bbc6627ba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 악인은 땅에서 끊어지겠고 궤휼한 자는 땅에서 뽑히리라"
+      ],
+      "raw_text_hashes": [
+        "ef1fe469f59258109a3a5ba57d525e038f27ae04e82acf2e33cae04bbc6627ba"
+      ]
+    }
+  ]
+}

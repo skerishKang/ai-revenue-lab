@@ -1,0 +1,909 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JER:chapter:046",
+  "unit_ordinal": 791,
+  "unit_label": "JER 46",
+  "book_code": "JER",
+  "chapter_number": 46,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JER:46:1",
+      "sequence": 20047,
+      "chapter_label": "JER 46",
+      "verse_label": "1",
+      "locator": {
+        "book": "JER",
+        "chapter": 46,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 46,
+          "verse": 1
+        }
+      ],
+      "en": "The LORD’s word which came to Jeremiah the prophet concerning the nations.",
+      "ko": "열국에 대하여 선지자 예레미야에게 임한 여호와의 말씀이라",
+      "source_text_hash": "c6a606657abfb04e91430372aa6d694e0d3790b99eb9f5a5254b7bf31b6f77c8",
+      "translation_text_hash": "fd1162d052ce7c8b3ae544e77a269a58f708b6ccec4b006421a0ef6c3908a7f2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "열국에 대하여 선지자 예레미야에게 임한 여호와의 말씀이라"
+      ],
+      "raw_text_hashes": [
+        "fd1162d052ce7c8b3ae544e77a269a58f708b6ccec4b006421a0ef6c3908a7f2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:46:2",
+      "sequence": 20048,
+      "chapter_label": "JER 46",
+      "verse_label": "2",
+      "locator": {
+        "book": "JER",
+        "chapter": 46,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 46,
+          "verse": 2
+        }
+      ],
+      "en": "Of Egypt: concerning the army of Pharaoh Necoh king of Egypt, which was by the river Euphrates in Carchemish, which Nebuchadnezzar king of Babylon struck in the fourth year of Jehoiakim the son of Josiah, king of Judah.",
+      "ko": "애굽을 논한 것이니 곧 유다 왕 요시야의 아들 여호야김 제 사년에 유브라데 하숫가 갈그미스에서 바벨론왕 느부갓네살에게 패한 애굽 왕 바로느고의 군대에 대한 말씀이라",
+      "source_text_hash": "d1e7cc9a5d3f23cbabc4d5b920e78022d4ab2a387f59f18c77c831d471c3c503",
+      "translation_text_hash": "cafea207336db6c0cfc46c183e594eced1e7b835a2abd5108e2658ff5b507057",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "애굽을 논한 것이니 곧 유다 왕 요시야의 아들 여호야김 제 사년에 유브라데 하숫가 갈그미스에서 바벨론왕 느부갓네살에게 패한 애굽 왕 바로느고의 군대에 대한 말씀이라"
+      ],
+      "raw_text_hashes": [
+        "cafea207336db6c0cfc46c183e594eced1e7b835a2abd5108e2658ff5b507057"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:46:3",
+      "sequence": 20049,
+      "chapter_label": "JER 46",
+      "verse_label": "3",
+      "locator": {
+        "book": "JER",
+        "chapter": 46,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 46,
+          "verse": 3
+        }
+      ],
+      "en": "“Prepare the buckler and shield, and draw near to battle!",
+      "ko": "너희는 큰 방패, 작은 방패를 예비하고 나가서 싸우라",
+      "source_text_hash": "4a21e6293cabcf1a02c4a414d3738d40780f6ebb4a91b2e27ab6161480a464d7",
+      "translation_text_hash": "a03f6c60024de2e15ae4e1868b9a278b948b1aa97ded8dcdbf26a907710767d5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 큰 방패, 작은 방패를 예비하고 나가서 싸우라"
+      ],
+      "raw_text_hashes": [
+        "a03f6c60024de2e15ae4e1868b9a278b948b1aa97ded8dcdbf26a907710767d5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:46:4",
+      "sequence": 20050,
+      "chapter_label": "JER 46",
+      "verse_label": "4",
+      "locator": {
+        "book": "JER",
+        "chapter": 46,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 46,
+          "verse": 4
+        }
+      ],
+      "en": "Harness the horses, and get up, you horsemen, and stand up with your helmets. Polish the spears, put on the coats of mail.",
+      "ko": "너희 기병이여 말에 안장을 지워 타며 투구를 쓰고 나서며 창을 갈며 갑옷을 입으라",
+      "source_text_hash": "b83c975b06556509750034f69a110dd5f30a06025f2297f9f766f3a4536e456a",
+      "translation_text_hash": "ff888c599607bf20a5c4a9d2a53f6438f3da7394ddb5c9880042a8bef5314901",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 기병이여 말에 안장을 지워 타며 투구를 쓰고 나서며 창을 갈며 갑옷을 입으라"
+      ],
+      "raw_text_hashes": [
+        "ff888c599607bf20a5c4a9d2a53f6438f3da7394ddb5c9880042a8bef5314901"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:46:5",
+      "sequence": 20051,
+      "chapter_label": "JER 46",
+      "verse_label": "5",
+      "locator": {
+        "book": "JER",
+        "chapter": 46,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 46,
+          "verse": 5
+        }
+      ],
+      "en": "Why have I seen it? They are dismayed and are turned backward. Their mighty ones are beaten down, have fled in haste, and don’t look back. Terror is on every side,” says the LORD.",
+      "ko": "여호와께서 가라사대 내가 본즉 그들이 놀라 물러가며 그들의 용사는 패하여 급히 도망하며 뒤를 돌아보지 아니함은 어찜인고 두려움이 그들의 사방에 있음이로다 하셨나니",
+      "source_text_hash": "34b56e12c5dda468a96612e3c86f372cf78f66fd6d1eb95ba9e85ba7a20fd821",
+      "translation_text_hash": "8d76fb7f0320a64d36c773606b0f8fa6ccf4bb2d0fa6639a13299686167da8e0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 가라사대 내가 본즉 그들이 놀라 물러가며 그들의 용사는 패하여 급히 도망하며 뒤를 돌아보지 아니함은 어찜인고 두려움이 그들의 사방에 있음이로다 하셨나니"
+      ],
+      "raw_text_hashes": [
+        "8d76fb7f0320a64d36c773606b0f8fa6ccf4bb2d0fa6639a13299686167da8e0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:46:6",
+      "sequence": 20052,
+      "chapter_label": "JER 46",
+      "verse_label": "6",
+      "locator": {
+        "book": "JER",
+        "chapter": 46,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 46,
+          "verse": 6
+        }
+      ],
+      "en": "“Don’t let the swift flee away, nor the mighty man escape. In the north by the river Euphrates they have stumbled and fallen.",
+      "ko": "발이 빠른 자도 도망하지 못하며 용맹이 있는 자도 피하지 못하고 그들이 다 북방에서 유브라데 하숫가에 넘어지며 엎드러지는도다",
+      "source_text_hash": "91e7cab9844ea7bcba83809facda06230104cb25ef13b20df24701897fbaaa33",
+      "translation_text_hash": "abb2ac5261440802236a4f097fa4953171a1d4559c22b1cfe40bead2066fa111",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "발이 빠른 자도 도망하지 못하며 용맹이 있는 자도 피하지 못하고 그들이 다 북방에서 유브라데 하숫가에 넘어지며 엎드러지는도다"
+      ],
+      "raw_text_hashes": [
+        "abb2ac5261440802236a4f097fa4953171a1d4559c22b1cfe40bead2066fa111"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:46:7",
+      "sequence": 20053,
+      "chapter_label": "JER 46",
+      "verse_label": "7",
+      "locator": {
+        "book": "JER",
+        "chapter": 46,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 46,
+          "verse": 7
+        }
+      ],
+      "en": "“Who is this who rises up like the Nile, like rivers whose waters surge?",
+      "ko": "저 나일의 창일함과 강물의 흉용함 같은 자 누구뇨",
+      "source_text_hash": "606f29814a5952fa7b0c903c501a7bc35fcb45f05d2d5c54985c050d537585a8",
+      "translation_text_hash": "1b2eac54c692699a5f0f042aeab35832d470147590b05b1cd2c9430c1b520361",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저 나일의 창일함과 강물의 흉용함 같은 자 누구뇨"
+      ],
+      "raw_text_hashes": [
+        "1b2eac54c692699a5f0f042aeab35832d470147590b05b1cd2c9430c1b520361"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:46:8",
+      "sequence": 20054,
+      "chapter_label": "JER 46",
+      "verse_label": "8",
+      "locator": {
+        "book": "JER",
+        "chapter": 46,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 46,
+          "verse": 8
+        }
+      ],
+      "en": "Egypt rises up like the Nile, like rivers whose waters surge. He says, ‘I will rise up. I will cover the earth. I will destroy cities and its inhabitants.’",
+      "ko": "애굽이 나일의 창일함과 강물의 흉용함 같도다 그가 가로되 내가 일어나 땅을 덮어 성읍들과 그 거민을 멸할 것이라",
+      "source_text_hash": "dab0eac9de25913e923ad2f5abf37857a6cf3fde34bfeb0bf3afa5e8f491149d",
+      "translation_text_hash": "eb9bf4724cd2ff5fa31e6d5165f6f7acc04235e91a52b37e6fbb7f5e3c83419d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "애굽이 나일의 창일함과 강물의 흉용함 같도다 그가 가로되 내가 일어나 땅을 덮어 성읍들과 그 거민을 멸할 것이라"
+      ],
+      "raw_text_hashes": [
+        "eb9bf4724cd2ff5fa31e6d5165f6f7acc04235e91a52b37e6fbb7f5e3c83419d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:46:9",
+      "sequence": 20055,
+      "chapter_label": "JER 46",
+      "verse_label": "9",
+      "locator": {
+        "book": "JER",
+        "chapter": 46,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 46,
+          "verse": 9
+        }
+      ],
+      "en": "Go up, you horses! Rage, you chariots! Let the mighty men go out: Cush and Put, who handle the shield; and the Ludim, who handle and bend the bow.",
+      "ko": "말들아 달리라 병거들아 급히 동하라 용사여 나오라 방패 잡은 구스인과 붓인과 활을 당기는 루딤인이여 나올찌니라 하거니와",
+      "source_text_hash": "9f8ad60b6e70ddbbf6b0746a811f5110fb6d1fe713b07639d691681a3482cdbe",
+      "translation_text_hash": "99abf0a3e169e69c602dead9b1daaad5858d998ad9f78f6e0adf0be87f116ad5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "말들아 달리라 병거들아 급히 동하라 용사여 나오라 방패 잡은 구스인과 붓인과 활을 당기는 루딤인이여 나올찌니라 하거니와"
+      ],
+      "raw_text_hashes": [
+        "99abf0a3e169e69c602dead9b1daaad5858d998ad9f78f6e0adf0be87f116ad5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:46:10",
+      "sequence": 20056,
+      "chapter_label": "JER 46",
+      "verse_label": "10",
+      "locator": {
+        "book": "JER",
+        "chapter": 46,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 46,
+          "verse": 10
+        }
+      ],
+      "en": "For that day is of the Lord, GOD of Armies, a day of vengeance, that he may avenge himself of his adversaries. The sword will devour and be satiated, and will drink its fill of their blood; for the Lord, GOD of Armies, has a sacrifice in the north country by the river Euphrates.",
+      "ko": "그날은 주 만군의 여호와께서 그 대적에게 원수 갚는 보수일이라 칼이 배부르게 삼키며 그들의 피를 가득히 마시리니 주 만군의 여호와께서 북편 유브라데 하숫가에서 희생을 내실 것임이로다",
+      "source_text_hash": "a0c6e1db6e8f19907cba4ebebc6e71bd1049276c9aa2e78ce805f20d706e0bce",
+      "translation_text_hash": "6a16b8237da3ecf2dc34617f5b70c162d158bf26b8f4ddf1eb0e3acb3175ef19",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그날은 주 만군의 여호와께서 그 대적에게 원수 갚는 보수일이라 칼이 배부르게 삼키며 그들의 피를 가득히 마시리니 주 만군의 여호와께서 북편 유브라데 하숫가에서 희생을 내실 것임이로다"
+      ],
+      "raw_text_hashes": [
+        "6a16b8237da3ecf2dc34617f5b70c162d158bf26b8f4ddf1eb0e3acb3175ef19"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:46:11",
+      "sequence": 20057,
+      "chapter_label": "JER 46",
+      "verse_label": "11",
+      "locator": {
+        "book": "JER",
+        "chapter": 46,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 46,
+          "verse": 11
+        }
+      ],
+      "en": "Go up into Gilead, and take balm, virgin daughter of Egypt. You use many medicines in vain. There is no healing for you.",
+      "ko": "처녀 딸 애굽이여 길르앗으로 올라가서 유향을 취하라 네가 많은 의약을 쓸찌라도 무효하여 낫지 못하리라",
+      "source_text_hash": "899ec4e5f3de979b9b4cf57f75eba9b3e1117a9eddc21643090e196f5f012028",
+      "translation_text_hash": "0067fd7df02342b46148813991fb0cee8ab5d71a9bd7aea211ab5a4de58abbb1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "처녀 딸 애굽이여 길르앗으로 올라가서 유향을 취하라 네가 많은 의약을 쓸찌라도 무효하여 낫지 못하리라"
+      ],
+      "raw_text_hashes": [
+        "0067fd7df02342b46148813991fb0cee8ab5d71a9bd7aea211ab5a4de58abbb1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:46:12",
+      "sequence": 20058,
+      "chapter_label": "JER 46",
+      "verse_label": "12",
+      "locator": {
+        "book": "JER",
+        "chapter": 46,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 46,
+          "verse": 12
+        }
+      ],
+      "en": "The nations have heard of your shame, and the earth is full of your cry; for the mighty man has stumbled against the mighty, they both fall together.”",
+      "ko": "네 수치가 열방에 들렸고 네 부르짖음은 땅에 가득하였나니 용사가 용사에게 부딪쳐 둘이 함께 엎드러졌음이니라",
+      "source_text_hash": "5e89bbffa5adc5fcabfad74913a7a07114cc079ce626e91244fcfa5d0916ffbb",
+      "translation_text_hash": "7220b95963959bb0813232f7b02434a3a44b540f1754d5574c5d43404e04f774",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 수치가 열방에 들렸고 네 부르짖음은 땅에 가득하였나니 용사가 용사에게 부딪쳐 둘이 함께 엎드러졌음이니라"
+      ],
+      "raw_text_hashes": [
+        "7220b95963959bb0813232f7b02434a3a44b540f1754d5574c5d43404e04f774"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:46:13",
+      "sequence": 20059,
+      "chapter_label": "JER 46",
+      "verse_label": "13",
+      "locator": {
+        "book": "JER",
+        "chapter": 46,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 46,
+          "verse": 13
+        }
+      ],
+      "en": "The word that the LORD spoke to Jeremiah the prophet, how that Nebuchadnezzar king of Babylon should come and strike the land of Egypt:",
+      "ko": "바벨론 왕 느부갓네살이 와서 애굽 땅을 칠 일에 대하여 선지자 예레미야에게 이르신 여호와의 말씀이라",
+      "source_text_hash": "881e935edeabd8632c83daa2015fd5e993fbd62b8eddc52caecf273c4f20a217",
+      "translation_text_hash": "d0e05b730502306497d6877c4357eeed94c23b6c436cadd037f64f4f8079ae0e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바벨론 왕 느부갓네살이 와서 애굽 땅을 칠 일에 대하여 선지자 예레미야에게 이르신 여호와의 말씀이라"
+      ],
+      "raw_text_hashes": [
+        "d0e05b730502306497d6877c4357eeed94c23b6c436cadd037f64f4f8079ae0e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:46:14",
+      "sequence": 20060,
+      "chapter_label": "JER 46",
+      "verse_label": "14",
+      "locator": {
+        "book": "JER",
+        "chapter": 46,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 46,
+          "verse": 14
+        }
+      ],
+      "en": "“Declare in Egypt, publish in Migdol, and publish in Memphis and in Tahpanhes; say, ‘Stand up, and prepare, for the sword has devoured around you.’",
+      "ko": "너희는 애굽에 선포하며 믹돌과 놉과 다바네스에 선포하여 말하기를 너희는 굳게 서서 예비하라 네 사방이 칼에 삼키웠느니라",
+      "source_text_hash": "0338b1b51c21c8c691b9a5e37d983dc2ad5bcb9322f2c9004b0667cc10bc90d9",
+      "translation_text_hash": "de6e9c4e8124c1f4a72e9c0c4109365fd1e7f465152763e13a20b9e995486ce6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 애굽에 선포하며 믹돌과 놉과 다바네스에 선포하여 말하기를 너희는 굳게 서서 예비하라 네 사방이 칼에 삼키웠느니라"
+      ],
+      "raw_text_hashes": [
+        "de6e9c4e8124c1f4a72e9c0c4109365fd1e7f465152763e13a20b9e995486ce6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:46:15",
+      "sequence": 20061,
+      "chapter_label": "JER 46",
+      "verse_label": "15",
+      "locator": {
+        "book": "JER",
+        "chapter": 46,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 46,
+          "verse": 15
+        }
+      ],
+      "en": "Why are your strong ones swept away? They didn’t stand, because the LORD pushed them.",
+      "ko": "너희 장사들이 쓰러짐은 어찜이뇨 그들의 서지 못함은 여호와께서 그들을 몰아내신 연고니라",
+      "source_text_hash": "f525d45549760a20436e7bf1ee0612341412edbf63a5091aa23b31066a9b96c6",
+      "translation_text_hash": "1e4a5d4783f1eabcc3f937a5ead85a123dd6d71ac714a67a1afd332c2dc27a6d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 장사들이 쓰러짐은 어찜이뇨 그들의 서지 못함은 여호와께서 그들을 몰아내신 연고니라"
+      ],
+      "raw_text_hashes": [
+        "1e4a5d4783f1eabcc3f937a5ead85a123dd6d71ac714a67a1afd332c2dc27a6d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:46:16",
+      "sequence": 20062,
+      "chapter_label": "JER 46",
+      "verse_label": "16",
+      "locator": {
+        "book": "JER",
+        "chapter": 46,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 46,
+          "verse": 16
+        }
+      ],
+      "en": "He made many to stumble. Yes, they fell on one another. They said, ‘Arise! Let’s go again to our own people, and to the land of our birth, from the oppressing sword.’",
+      "ko": "그가 많은 자로 넘어지게 하시매 사람이 사람 위에 엎드러지며 이르되 일어나라 우리가 포악한 칼을 피하여 우리 민족에게로, 우리 고토로 돌아가자 하며",
+      "source_text_hash": "1dc58c4ea53769b1df7ac5f4fa0ea4e974b4ccfa03454db46abce755fee0487f",
+      "translation_text_hash": "5c7fcbeb2ac42c7d2ffb9d8b1ccd232c87dbbb4c22fce3097e175f6b2eef042c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 많은 자로 넘어지게 하시매 사람이 사람 위에 엎드러지며 이르되 일어나라 우리가 포악한 칼을 피하여 우리 민족에게로, 우리 고토로 돌아가자 하며"
+      ],
+      "raw_text_hashes": [
+        "5c7fcbeb2ac42c7d2ffb9d8b1ccd232c87dbbb4c22fce3097e175f6b2eef042c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:46:17",
+      "sequence": 20063,
+      "chapter_label": "JER 46",
+      "verse_label": "17",
+      "locator": {
+        "book": "JER",
+        "chapter": 46,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 46,
+          "verse": 17
+        }
+      ],
+      "en": "They cried there, ‘Pharaoh king of Egypt is but a noise; he has let the appointed time pass by.’",
+      "ko": "거기서 부르짖기를 애굽 왕 바로가 망하였도다 그가 시기를 잃었도다",
+      "source_text_hash": "8967f46317506e54c2e57bd0b6a0ec3be2f674a81752cfc799f7a3656c6b58c2",
+      "translation_text_hash": "4f3aab8a7a45f202f57ba55944156a2c5b833857a17b2d0a5120f362111e6197",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거기서 부르짖기를 애굽 왕 바로가 망하였도다 그가 시기를 잃었도다"
+      ],
+      "raw_text_hashes": [
+        "4f3aab8a7a45f202f57ba55944156a2c5b833857a17b2d0a5120f362111e6197"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:46:18",
+      "sequence": 20064,
+      "chapter_label": "JER 46",
+      "verse_label": "18",
+      "locator": {
+        "book": "JER",
+        "chapter": 46,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 46,
+          "verse": 18
+        }
+      ],
+      "en": "“As I live,” says the King, whose name is the LORD of Armies, “surely like Tabor among the mountains, and like Carmel by the sea, so he will come.",
+      "ko": "만군의 여호와라 일컫는 왕이 가라사대 나의 삶으로 맹세하노니 그가 과연 산들 중의 다볼 같이, 해변의 갈멜 같이 오리라",
+      "source_text_hash": "4007c319267b832f4cbb71c33aa8ef22363ec4eac254b10bb5657b3994b338b3",
+      "translation_text_hash": "256d664d5aad4c010fa459e7ec1dfcf688781eee2e274be7e782b0b7c5c2aa2c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만군의 여호와라 일컫는 왕이 가라사대 나의 삶으로 맹세하노니 그가 과연 산들 중의 다볼 같이, 해변의 갈멜 같이 오리라"
+      ],
+      "raw_text_hashes": [
+        "256d664d5aad4c010fa459e7ec1dfcf688781eee2e274be7e782b0b7c5c2aa2c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:46:19",
+      "sequence": 20065,
+      "chapter_label": "JER 46",
+      "verse_label": "19",
+      "locator": {
+        "book": "JER",
+        "chapter": 46,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 46,
+          "verse": 19
+        }
+      ],
+      "en": "You daughter who dwells in Egypt, furnish yourself to go into captivity; for Memphis will become a desolation, and will be burned up, without inhabitant.",
+      "ko": "애굽에 사는 딸이여 너는 너를 위하여 포로의 행리를 준비하라 놉이 황무하며 불에 타서 거민이 없을 것임이니라",
+      "source_text_hash": "a430cc1a84464548bb6c19be72ee5a4907e0d9d379e88e0c7be99c9fb4600e99",
+      "translation_text_hash": "ffaf06a154a307696a2305b9828baf6802cb7f2ab4cd46c8480bcbb7a5cca0f7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "애굽에 사는 딸이여 너는 너를 위하여 포로의 행리를 준비하라 놉이 황무하며 불에 타서 거민이 없을 것임이니라"
+      ],
+      "raw_text_hashes": [
+        "ffaf06a154a307696a2305b9828baf6802cb7f2ab4cd46c8480bcbb7a5cca0f7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:46:20",
+      "sequence": 20066,
+      "chapter_label": "JER 46",
+      "verse_label": "20",
+      "locator": {
+        "book": "JER",
+        "chapter": 46,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 46,
+          "verse": 20
+        }
+      ],
+      "en": "“Egypt is a very beautiful heifer; but destruction out of the north has come. It has come.",
+      "ko": "애굽은 심히 아름다운 암송아지라도 북에서부터 멸망이 이르렀고 이르렀느니라",
+      "source_text_hash": "79d9fcdff0004e9b68e55cc97a076956cfece238c4c80e60abed380fd08d565c",
+      "translation_text_hash": "3a27a1e426f566c972a9eecb3cbcda220e2d48fae7f0545b4e3a0ccda41d632a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "애굽은 심히 아름다운 암송아지라도 북에서부터 멸망이 이르렀고 이르렀느니라"
+      ],
+      "raw_text_hashes": [
+        "3a27a1e426f566c972a9eecb3cbcda220e2d48fae7f0545b4e3a0ccda41d632a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:46:21",
+      "sequence": 20067,
+      "chapter_label": "JER 46",
+      "verse_label": "21",
+      "locator": {
+        "book": "JER",
+        "chapter": 46,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 46,
+          "verse": 21
+        }
+      ],
+      "en": "Also her hired men in the middle of her are like calves of the stall, for they also are turned back. They have fled away together. They didn’t stand, for the day of their calamity has come on them, the time of their visitation.",
+      "ko": "또 그 중의 고용군은 외양간의 송아지 같아서 돌이켜 함께 도망하고 서지 못하였나니 재난의 날이 이르렀고 벌 받는 때가 왔음이라",
+      "source_text_hash": "da9e4e69fd6952225cf06e4b3fa9574109eeb1fae0ea55a3733a03cfbeec7f21",
+      "translation_text_hash": "5d3dd2ac3490737fc2c01289f669f0183957083446ee74e2b9ff21fa65f29bfd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 그 중의 고용군은 외양간의 송아지 같아서 돌이켜 함께 도망하고 서지 못하였나니 재난의 날이 이르렀고 벌 받는 때가 왔음이라"
+      ],
+      "raw_text_hashes": [
+        "5d3dd2ac3490737fc2c01289f669f0183957083446ee74e2b9ff21fa65f29bfd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:46:22",
+      "sequence": 20068,
+      "chapter_label": "JER 46",
+      "verse_label": "22",
+      "locator": {
+        "book": "JER",
+        "chapter": 46,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 46,
+          "verse": 22
+        }
+      ],
+      "en": "Its sound will go like the serpent, for they will march with an army, and come against her with axes, as wood cutters.",
+      "ko": "애굽의 소리가 뱀의 소리 같으리니 이는 그들의 군대가 벌목하는 자 같이 도끼를 가지고 올 것임이니라",
+      "source_text_hash": "bcc86604fda46d6fb4bbc2a73bb3782276cc44484ec7515136f8f1ba78399433",
+      "translation_text_hash": "54dc3a4285793998a8e176ea17f48c2722a89353528ab62a528ec19947077f26",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "애굽의 소리가 뱀의 소리 같으리니 이는 그들의 군대가 벌목하는 자 같이 도끼를 가지고 올 것임이니라"
+      ],
+      "raw_text_hashes": [
+        "54dc3a4285793998a8e176ea17f48c2722a89353528ab62a528ec19947077f26"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:46:23",
+      "sequence": 20069,
+      "chapter_label": "JER 46",
+      "verse_label": "23",
+      "locator": {
+        "book": "JER",
+        "chapter": 46,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 46,
+          "verse": 23
+        }
+      ],
+      "en": "They will cut down her forest,” says the LORD, “though it can’t be searched; because they are more than the locusts, and are innumerable.",
+      "ko": "나 여호와가 말하노라 그들이 황충보다 많고 계수할 수 없으므로 조사할 수 없는 그의 수풀을 찍을 것이라",
+      "source_text_hash": "383786cdf6775e6b1f5b66497aa84e9bb2a663c764f3c05c7ec2ffc927733ccb",
+      "translation_text_hash": "33c0ea018028c9e8d676eb54ed405cb09dd0fae3c125b604dbfec5387ca1abaa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와가 말하노라 그들이 황충보다 많고 계수할 수 없으므로 조사할 수 없는 그의 수풀을 찍을 것이라"
+      ],
+      "raw_text_hashes": [
+        "33c0ea018028c9e8d676eb54ed405cb09dd0fae3c125b604dbfec5387ca1abaa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:46:24",
+      "sequence": 20070,
+      "chapter_label": "JER 46",
+      "verse_label": "24",
+      "locator": {
+        "book": "JER",
+        "chapter": 46,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 46,
+          "verse": 24
+        }
+      ],
+      "en": "The daughter of Egypt will be disappointed; she will be delivered into the hand of the people of the north.”",
+      "ko": "딸 애굽이 수치를 당하여 북방 백성의 손에 붙임을 입으리로다",
+      "source_text_hash": "c97b6b68c15d80c58f79b837f795f5079cb381c881849c2a6883591a80a49a2b",
+      "translation_text_hash": "5ab8a1c7c36a048d0716211e9f2b23922375dd700c9fb80861c95e6f13652ae6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "딸 애굽이 수치를 당하여 북방 백성의 손에 붙임을 입으리로다"
+      ],
+      "raw_text_hashes": [
+        "5ab8a1c7c36a048d0716211e9f2b23922375dd700c9fb80861c95e6f13652ae6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:46:25",
+      "sequence": 20071,
+      "chapter_label": "JER 46",
+      "verse_label": "25",
+      "locator": {
+        "book": "JER",
+        "chapter": 46,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 46,
+          "verse": 25
+        }
+      ],
+      "en": "The LORD of Armies, the God of Israel, says: “Behold, I will punish Amon of No, and Pharaoh, and Egypt, with her gods and her kings, even Pharaoh, and those who trust in him.",
+      "ko": "나 만군의 여호와 이스라엘의 하나님이 말하노라 보라 내가 노의 아몬과 바로와 애굽과 애굽 신들과 왕들 곧 바로와 및 그를 의지하는 자들을 벌할 것이라",
+      "source_text_hash": "115e4347c7f616ddcdf313c5b49aa4e07f2981558bcfafd7437e647d1ae4b118",
+      "translation_text_hash": "af7416679f113cdc6eaebc7a336e292600eeb85eff47b4e548d49551bc0655e9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 만군의 여호와 이스라엘의 하나님이 말하노라 보라 내가 노의 아몬과 바로와 애굽과 애굽 신들과 왕들 곧 바로와 및 그를 의지하는 자들을 벌할 것이라"
+      ],
+      "raw_text_hashes": [
+        "af7416679f113cdc6eaebc7a336e292600eeb85eff47b4e548d49551bc0655e9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:46:26",
+      "sequence": 20072,
+      "chapter_label": "JER 46",
+      "verse_label": "26",
+      "locator": {
+        "book": "JER",
+        "chapter": 46,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 46,
+          "verse": 26
+        }
+      ],
+      "en": "I will deliver them into the hand of those who seek their lives, and into the hand of Nebuchadnezzar king of Babylon, and into the hand of his servants. Afterwards it will be inhabited, as in the days of old,” says the LORD.",
+      "ko": "내가 그들의 생명을 찾는 자의 손 곧 바벨론 왕 느부갓네살의 손과 그 신하들의 손에 붙이리라 그럴찌라도 그 후에는 그 땅이 여전히 사람 살 곳이 되리라 여호와의 말이니라",
+      "source_text_hash": "20d1c5541fb20447bf643e89ec554b222733bb6e3a350a21cb8fa4460306ca2b",
+      "translation_text_hash": "71a30de29168396da385002f52d274571c9d49416b78afa93e57eb07f71487fa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 그들의 생명을 찾는 자의 손 곧 바벨론 왕 느부갓네살의 손과 그 신하들의 손에 붙이리라 그럴찌라도 그 후에는 그 땅이 여전히 사람 살 곳이 되리라 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "71a30de29168396da385002f52d274571c9d49416b78afa93e57eb07f71487fa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:46:27",
+      "sequence": 20073,
+      "chapter_label": "JER 46",
+      "verse_label": "27",
+      "locator": {
+        "book": "JER",
+        "chapter": 46,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 46,
+          "verse": 27
+        }
+      ],
+      "en": "“But don’t you be afraid, Jacob my servant. Don’t be dismayed, Israel; for, behold, I will save you from afar, and your offspring from the land of their captivity. Jacob will return, and will be quiet and at ease. No one will make him afraid.",
+      "ko": "내 종 야곱아 두려워 말라 이스라엘아 놀라지 말라 보라 내가 너를 원방에서 구원하며 네 자손을 포로 된 땅에서 구원하리니 야곱이 돌아와서 평안히, 정온히 거할 것이라 그를 두렵게 할 자 없으리라",
+      "source_text_hash": "a3cdb7d27e1913fa2ec3bf692e5bb335d20b30f42af98d0fd71e512977dd8462",
+      "translation_text_hash": "48a4a6b6eef9f5a49326094a63cc60126c6029962dd32407e5ab5c2341184d20",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 종 야곱아 두려워 말라 이스라엘아 놀라지 말라 보라 내가 너를 원방에서 구원하며 네 자손을 포로 된 땅에서 구원하리니 야곱이 돌아와서 평안히, 정온히 거할 것이라 그를 두렵게 할 자 없으리라"
+      ],
+      "raw_text_hashes": [
+        "48a4a6b6eef9f5a49326094a63cc60126c6029962dd32407e5ab5c2341184d20"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:46:28",
+      "sequence": 20074,
+      "chapter_label": "JER 46",
+      "verse_label": "28",
+      "locator": {
+        "book": "JER",
+        "chapter": 46,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 46,
+          "verse": 28
+        }
+      ],
+      "en": "Don’t be afraid, O Jacob my servant,” says the LORD, “for I am with you; for I will make a full end of all the nations where I have driven you, but I will not make a full end of you, but I will correct you in measure, and will in no way leave you unpunished.”",
+      "ko": "나 여호와가 말하노라 내 종 야곱아 내가 너와 함께하나니 두려워 말라 내가 너를 흩었던 그 열방은 다 멸할찌라도 너는 아주 멸하지 아니하리라 내가 너를 공도로 징책할 것이요 결코 무죄한 자로 여기지 아니하리라",
+      "source_text_hash": "8aa9bbaf40833764653e61f28d3b18436b6277d0e79e0f21b5936ccea156d171",
+      "translation_text_hash": "4cca6da410f4b0a3e1ba14b260329896fca724045a6d65c9def09639d01bd5b9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와가 말하노라 내 종 야곱아 내가 너와 함께하나니 두려워 말라 내가 너를 흩었던 그 열방은 다 멸할찌라도 너는 아주 멸하지 아니하리라 내가 너를 공도로 징책할 것이요 결코 무죄한 자로 여기지 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "4cca6da410f4b0a3e1ba14b260329896fca724045a6d65c9def09639d01bd5b9"
+      ]
+    }
+  ]
+}

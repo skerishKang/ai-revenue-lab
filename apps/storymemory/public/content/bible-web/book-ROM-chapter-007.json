@@ -1,0 +1,813 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ROM:chapter:007",
+  "unit_ordinal": 1053,
+  "unit_label": "ROM 7",
+  "book_code": "ROM",
+  "chapter_number": 7,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ROM:7:1",
+      "sequence": 28089,
+      "chapter_label": "ROM 7",
+      "verse_label": "1",
+      "locator": {
+        "book": "ROM",
+        "chapter": 7,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 7,
+          "verse": 1
+        }
+      ],
+      "en": "Or don’t you know, brothers (for I speak to men who know the law), that the law has dominion over a man for as long as he lives?",
+      "ko": "형제들아 내가 법 아는 자들에게 말하노니 너희는 율법이 사람의 살 동안만 그를 주관하는줄 알지 못하느냐",
+      "source_text_hash": "dd07bedbba15d105648edc83b8d5329ced45bc4f9207dbc2014abd0100171c3f",
+      "translation_text_hash": "650788d18ee9f796c84141316f5abd30d8dc7219850863604a013a2c6450999b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "형제들아 내가 법 아는 자들에게 말하노니 너희는 율법이 사람의 살 동안만 그를 주관하는줄 알지 못하느냐"
+      ],
+      "raw_text_hashes": [
+        "650788d18ee9f796c84141316f5abd30d8dc7219850863604a013a2c6450999b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:7:2",
+      "sequence": 28090,
+      "chapter_label": "ROM 7",
+      "verse_label": "2",
+      "locator": {
+        "book": "ROM",
+        "chapter": 7,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 7,
+          "verse": 2
+        }
+      ],
+      "en": "For the woman that has a husband is bound by law to the husband while he lives, but if the husband dies, she is discharged from the law of the husband.",
+      "ko": "남편 있는 여인이 그 남편 생전에는 법으로 그에게 매인바 되나 만일 그 남편이 죽으면 남편의 법에서 벗어났느니라",
+      "source_text_hash": "d1b9baa9acaea65ab7865fc1431a37fb7e88f2a4b625e5a385923d308652360a",
+      "translation_text_hash": "e01b363c8951d430c53ce8db725ebf8e5619848db77e3932ffec17b9ee64a65d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "남편 있는 여인이 그 남편 생전에는 법으로 그에게 매인바 되나 만일 그 남편이 죽으면 남편의 법에서 벗어났느니라"
+      ],
+      "raw_text_hashes": [
+        "e01b363c8951d430c53ce8db725ebf8e5619848db77e3932ffec17b9ee64a65d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:7:3",
+      "sequence": 28091,
+      "chapter_label": "ROM 7",
+      "verse_label": "3",
+      "locator": {
+        "book": "ROM",
+        "chapter": 7,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 7,
+          "verse": 3
+        }
+      ],
+      "en": "So then if, while the husband lives, she is joined to another man, she would be called an adulteress. But if the husband dies, she is free from the law, so that she is no adulteress, though she is joined to another man.",
+      "ko": "그러므로 만일 그 남편 생전에 다른 남자에게 가면 음부라 이르되 남편이 죽으면 그 법에서 자유케 되나니 다른 남자에게 갈찌라도 음부가 되지 아니하느니라",
+      "source_text_hash": "dc632e44063dae501a3698e0def7412b2092271ba2d059f0a18186ce7c63bc17",
+      "translation_text_hash": "11cd3bd516ba34cf41225406aaf5ded62d29f8fcf4f4d854b2b23cd1dfd18bfa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 만일 그 남편 생전에 다른 남자에게 가면 음부라 이르되 남편이 죽으면 그 법에서 자유케 되나니 다른 남자에게 갈찌라도 음부가 되지 아니하느니라"
+      ],
+      "raw_text_hashes": [
+        "11cd3bd516ba34cf41225406aaf5ded62d29f8fcf4f4d854b2b23cd1dfd18bfa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:7:4",
+      "sequence": 28092,
+      "chapter_label": "ROM 7",
+      "verse_label": "4",
+      "locator": {
+        "book": "ROM",
+        "chapter": 7,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 7,
+          "verse": 4
+        }
+      ],
+      "en": "Therefore, my brothers, you also were made dead to the law through the body of Christ, that you would be joined to another, to him who was raised from the dead, that we might produce fruit to God.",
+      "ko": "그러므로 내 형제들아 너희도 그리스도의 몸으로 말미암아 율법에 대하여 죽임을 당하였으니 이는 다른이 곧 죽은 자 가운데서 살아나신 이에게 가서 우리로 하나님을 위하여 열매를 맺히게 하려 함이니라",
+      "source_text_hash": "8f9d2eaec52e0eef835af55c4128df641fcc2b1bf362bc49333395af9eb42403",
+      "translation_text_hash": "39bcdbc373c68e1b9904c0874a9d21302f5d3b90e0e01a7c7fd25a277e4ddc9b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 내 형제들아 너희도 그리스도의 몸으로 말미암아 율법에 대하여 죽임을 당하였으니 이는 다른이 곧 죽은 자 가운데서 살아나신 이에게 가서 우리로 하나님을 위하여 열매를 맺히게 하려 함이니라"
+      ],
+      "raw_text_hashes": [
+        "39bcdbc373c68e1b9904c0874a9d21302f5d3b90e0e01a7c7fd25a277e4ddc9b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:7:5",
+      "sequence": 28093,
+      "chapter_label": "ROM 7",
+      "verse_label": "5",
+      "locator": {
+        "book": "ROM",
+        "chapter": 7,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 7,
+          "verse": 5
+        }
+      ],
+      "en": "For when we were in the flesh, the sinful passions which were through the law worked in our members to bring out fruit to death.",
+      "ko": "우리가 육신에 있을 때에는 율법으로 말미암는 죄의 정욕이 우리 지체 중에 역사하여 우리로 사망을 위하여 열매를 맺게 하였더니",
+      "source_text_hash": "55021d3560313253a79b6e96d15bfdbfef0fb8683cf2ebc5d615e654d7e67fde",
+      "translation_text_hash": "464a29b079b6dc9bafbf72d95ba70d3bc7efc6cb84358c10642e0e4bfcb6343d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 육신에 있을 때에는 율법으로 말미암는 죄의 정욕이 우리 지체 중에 역사하여 우리로 사망을 위하여 열매를 맺게 하였더니"
+      ],
+      "raw_text_hashes": [
+        "464a29b079b6dc9bafbf72d95ba70d3bc7efc6cb84358c10642e0e4bfcb6343d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:7:6",
+      "sequence": 28094,
+      "chapter_label": "ROM 7",
+      "verse_label": "6",
+      "locator": {
+        "book": "ROM",
+        "chapter": 7,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 7,
+          "verse": 6
+        }
+      ],
+      "en": "But now we have been discharged from the law, having died to that in which we were held; so that we serve in newness of the spirit, and not in oldness of the letter.",
+      "ko": "이제는 우리가 얽매였던 것에 대하여 죽었으므로 율법에서 벗어났으니 이러므로 우리가 영의 새로운 것으로 섬길 것이요 의문의 묵은 것으로 아니할찌니라",
+      "source_text_hash": "70f676f0088894028647471fc6fa00db59ac5ee52e398b6d6bce1a404358364e",
+      "translation_text_hash": "3abef5bb2a7cc341125d72e5a309546edf909851d803776228989c51dae29a6d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제는 우리가 얽매였던 것에 대하여 죽었으므로 율법에서 벗어났으니 이러므로 우리가 영의 새로운 것으로 섬길 것이요 의문의 묵은 것으로 아니할찌니라"
+      ],
+      "raw_text_hashes": [
+        "3abef5bb2a7cc341125d72e5a309546edf909851d803776228989c51dae29a6d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:7:7",
+      "sequence": 28095,
+      "chapter_label": "ROM 7",
+      "verse_label": "7",
+      "locator": {
+        "book": "ROM",
+        "chapter": 7,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 7,
+          "verse": 7
+        }
+      ],
+      "en": "What shall we say then? Is the law sin? May it never be! However, I wouldn’t have known sin except through the law. For I wouldn’t have known coveting unless the law had said, “You shall not covet.”",
+      "ko": "그런즉 우리가 무슨 말 하리요 율법이 죄냐 그럴 수 없느니라 율법으로 말미암지 않고는 내가 죄를 알지 못하였으니 곧 율법이 탐내지 말라 하지 아니하였더면 내가 탐심을 알지 못하였으리라",
+      "source_text_hash": "dc4721463840d7f04bf6136544ae643323d73f923e03c8d5e96821e5d200c4ce",
+      "translation_text_hash": "ce28c97065a220b1a618044a0a2088f72a5df51470deff25b3222420e8fe451e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 우리가 무슨 말 하리요 율법이 죄냐 그럴 수 없느니라 율법으로 말미암지 않고는 내가 죄를 알지 못하였으니 곧 율법이 탐내지 말라 하지 아니하였더면 내가 탐심을 알지 못하였으리라"
+      ],
+      "raw_text_hashes": [
+        "ce28c97065a220b1a618044a0a2088f72a5df51470deff25b3222420e8fe451e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:7:8",
+      "sequence": 28096,
+      "chapter_label": "ROM 7",
+      "verse_label": "8",
+      "locator": {
+        "book": "ROM",
+        "chapter": 7,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 7,
+          "verse": 8
+        }
+      ],
+      "en": "But sin, finding occasion through the commandment, produced in me all kinds of coveting. For apart from the law, sin is dead.",
+      "ko": "그러나 죄가 기회를 타서 계명으로 말미암아 내 속에서 각양 탐심을 이루었나니 이는 법이 없으면 죄가 죽은 것임이니라",
+      "source_text_hash": "4e613152c3ce1203ac8f31d61b34d6c9080994bd027743fdb4850e163f1036f2",
+      "translation_text_hash": "657ecc2052750c3a880e5fdd1eb5f6ec6e27651f0df4eeb786204a433f94e94e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 죄가 기회를 타서 계명으로 말미암아 내 속에서 각양 탐심을 이루었나니 이는 법이 없으면 죄가 죽은 것임이니라"
+      ],
+      "raw_text_hashes": [
+        "657ecc2052750c3a880e5fdd1eb5f6ec6e27651f0df4eeb786204a433f94e94e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:7:9",
+      "sequence": 28097,
+      "chapter_label": "ROM 7",
+      "verse_label": "9",
+      "locator": {
+        "book": "ROM",
+        "chapter": 7,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 7,
+          "verse": 9
+        }
+      ],
+      "en": "I was alive apart from the law once, but when the commandment came, sin revived and I died.",
+      "ko": "전에 법을 깨닫지 못할 때에는 내가 살았더니 계명이 이르매 죄는 살아나고 나는 죽었도다",
+      "source_text_hash": "b9885aa9171c8b3e372be3c070259e5946d6c1c0e5465091040421ee19e67263",
+      "translation_text_hash": "4f80d1025a820ed99f3d9713d2e9621089cede81705eb92a494aae0ee3dd4283",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "전에 법을 깨닫지 못할 때에는 내가 살았더니 계명이 이르매 죄는 살아나고 나는 죽었도다"
+      ],
+      "raw_text_hashes": [
+        "4f80d1025a820ed99f3d9713d2e9621089cede81705eb92a494aae0ee3dd4283"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:7:10",
+      "sequence": 28098,
+      "chapter_label": "ROM 7",
+      "verse_label": "10",
+      "locator": {
+        "book": "ROM",
+        "chapter": 7,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 7,
+          "verse": 10
+        }
+      ],
+      "en": "The commandment which was for life, this I found to be for death;",
+      "ko": "생명에 이르게 할 그 계명이 내게 대하여 도리어 사망에 이르게 하는 것이 되었도다",
+      "source_text_hash": "cf3b5f7702e749ef8c2119d372bb4984de1941adee6e7fe2efa39604bb18337f",
+      "translation_text_hash": "0d71effc50f8220674e1d89130cbe412fda94ca76daec2bec6b8db61558d8c01",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "생명에 이르게 할 그 계명이 내게 대하여 도리어 사망에 이르게 하는 것이 되었도다"
+      ],
+      "raw_text_hashes": [
+        "0d71effc50f8220674e1d89130cbe412fda94ca76daec2bec6b8db61558d8c01"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:7:11",
+      "sequence": 28099,
+      "chapter_label": "ROM 7",
+      "verse_label": "11",
+      "locator": {
+        "book": "ROM",
+        "chapter": 7,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 7,
+          "verse": 11
+        }
+      ],
+      "en": "for sin, finding occasion through the commandment, deceived me, and through it killed me.",
+      "ko": "죄가 기회를 타서 계명으로 말미암아 나를 속이고 그것으로 나를 죽였는지라",
+      "source_text_hash": "8ff3df2553eb64d326255e1d9761b2e419ca469c26a1de2216c5d63529de2649",
+      "translation_text_hash": "b1e32daa1222cf64600374972bd34a088ff8e7dc61a28231394ced73c2e44b91",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "죄가 기회를 타서 계명으로 말미암아 나를 속이고 그것으로 나를 죽였는지라"
+      ],
+      "raw_text_hashes": [
+        "b1e32daa1222cf64600374972bd34a088ff8e7dc61a28231394ced73c2e44b91"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:7:12",
+      "sequence": 28100,
+      "chapter_label": "ROM 7",
+      "verse_label": "12",
+      "locator": {
+        "book": "ROM",
+        "chapter": 7,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 7,
+          "verse": 12
+        }
+      ],
+      "en": "Therefore the law indeed is holy, and the commandment holy, righteous, and good.",
+      "ko": "이로 보건대 율법도 거룩하며 계명도 거룩하며 의로우며 선하도다",
+      "source_text_hash": "3f369da84f91b608e0f15c9f915a88c6405539234e6c9408e10c1c94501d24ab",
+      "translation_text_hash": "db2c14f775753856efff9bcd06ef7f2f39d2c41e551e506d6b81d65d0038be12",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이로 보건대 율법도 거룩하며 계명도 거룩하며 의로우며 선하도다"
+      ],
+      "raw_text_hashes": [
+        "db2c14f775753856efff9bcd06ef7f2f39d2c41e551e506d6b81d65d0038be12"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:7:13",
+      "sequence": 28101,
+      "chapter_label": "ROM 7",
+      "verse_label": "13",
+      "locator": {
+        "book": "ROM",
+        "chapter": 7,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 7,
+          "verse": 13
+        }
+      ],
+      "en": "Did then that which is good become death to me? May it never be! But sin, that it might be shown to be sin, was producing death in me through that which is good; that through the commandment sin might become exceedingly sinful.",
+      "ko": "그런즉 선한 것이 내게 사망이 되었느뇨 그럴 수 없느니라 오직 죄가 죄로 드러나기 위하여 선한 그것으로 말미암아 나를 죽게 만들었으니 이는 계명으로 말미암아 죄로 심히 죄되게 하려함이니라",
+      "source_text_hash": "fbcc01d3c493bcdde18064519964e8a41680a8eb0e2ec5c50bc790777c2a7638",
+      "translation_text_hash": "bde558bc3f0d87218a3ccdbc31895b984c8f58b7d8a44bdf4fa648e0f72b315b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 선한 것이 내게 사망이 되었느뇨 그럴 수 없느니라 오직 죄가 죄로 드러나기 위하여 선한 그것으로 말미암아 나를 죽게 만들었으니 이는 계명으로 말미암아 죄로 심히 죄되게 하려함이니라"
+      ],
+      "raw_text_hashes": [
+        "bde558bc3f0d87218a3ccdbc31895b984c8f58b7d8a44bdf4fa648e0f72b315b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:7:14",
+      "sequence": 28102,
+      "chapter_label": "ROM 7",
+      "verse_label": "14",
+      "locator": {
+        "book": "ROM",
+        "chapter": 7,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 7,
+          "verse": 14
+        }
+      ],
+      "en": "For we know that the law is spiritual, but I am fleshly, sold under sin.",
+      "ko": "우리가 율법은 신령한줄 알거니와 나는 육신에 속하여 죄 아래 팔렸도다",
+      "source_text_hash": "67c1813f5d87bc2925389569bc2ec6ffe6935c7c113fd1c7049f0f398a190456",
+      "translation_text_hash": "1e88c20f32a98e9c257d3ce3e4f010c573145b582992c23226bbded9cc02e22f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 율법은 신령한줄 알거니와 나는 육신에 속하여 죄 아래 팔렸도다"
+      ],
+      "raw_text_hashes": [
+        "1e88c20f32a98e9c257d3ce3e4f010c573145b582992c23226bbded9cc02e22f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:7:15",
+      "sequence": 28103,
+      "chapter_label": "ROM 7",
+      "verse_label": "15",
+      "locator": {
+        "book": "ROM",
+        "chapter": 7,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 7,
+          "verse": 15
+        }
+      ],
+      "en": "For I don’t understand what I am doing. For I don’t practice what I desire to do; but what I hate, that I do.",
+      "ko": "나의 행하는 것을 내가 알지 못하노니 곧 원하는 이것은 행하지 아니하고 도리어 미워하는 그것을 함이라",
+      "source_text_hash": "3d2816df43bf1c106ee5f2f71367b8e7a116c629110a4c0b824a03ed88b3b289",
+      "translation_text_hash": "5ea222cfa56074b84ac269be2596f4c7a6481f902cce047129e567a5981f4257",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 행하는 것을 내가 알지 못하노니 곧 원하는 이것은 행하지 아니하고 도리어 미워하는 그것을 함이라"
+      ],
+      "raw_text_hashes": [
+        "5ea222cfa56074b84ac269be2596f4c7a6481f902cce047129e567a5981f4257"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:7:16",
+      "sequence": 28104,
+      "chapter_label": "ROM 7",
+      "verse_label": "16",
+      "locator": {
+        "book": "ROM",
+        "chapter": 7,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 7,
+          "verse": 16
+        }
+      ],
+      "en": "But if what I don’t desire, that I do, I consent to the law that it is good.",
+      "ko": "만일 내가 원치 아니하는 그것을 하면 내가 이로 율법의 선한 것을 시인하노니",
+      "source_text_hash": "1f0661ac31ed4fdf0e51e1a3e89adbc8a56e2b596312b54342666ad989ded1b2",
+      "translation_text_hash": "c6906f12ace369e8dcc9d8eaa2fb3b61217899e99a3559f9dcdf1b6f4a8b867d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 내가 원치 아니하는 그것을 하면 내가 이로 율법의 선한 것을 시인하노니"
+      ],
+      "raw_text_hashes": [
+        "c6906f12ace369e8dcc9d8eaa2fb3b61217899e99a3559f9dcdf1b6f4a8b867d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:7:17",
+      "sequence": 28105,
+      "chapter_label": "ROM 7",
+      "verse_label": "17",
+      "locator": {
+        "book": "ROM",
+        "chapter": 7,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 7,
+          "verse": 17
+        }
+      ],
+      "en": "So now it is no more I that do it, but sin which dwells in me.",
+      "ko": "이제는 이것을 행하는 자가 내가 아니요 내 속에 거하는 죄니라",
+      "source_text_hash": "019eec24eaaa970faeb316e685b6ae0fa9421de24abef8c4c43c89f198e0ef6d",
+      "translation_text_hash": "d569221f98e413181f0a27322247f75e9323d77b118564aeb9a0609a94b912a1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제는 이것을 행하는 자가 내가 아니요 내 속에 거하는 죄니라"
+      ],
+      "raw_text_hashes": [
+        "d569221f98e413181f0a27322247f75e9323d77b118564aeb9a0609a94b912a1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:7:18",
+      "sequence": 28106,
+      "chapter_label": "ROM 7",
+      "verse_label": "18",
+      "locator": {
+        "book": "ROM",
+        "chapter": 7,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 7,
+          "verse": 18
+        }
+      ],
+      "en": "For I know that in me, that is, in my flesh, dwells no good thing. For desire is present with me, but I don’t find it doing that which is good.",
+      "ko": "내 속 곧 내 육신에 선한 것이 거하지 아니하는 줄을 아노니 원함은 내게 있으나 선을 행하는 것은 없노라",
+      "source_text_hash": "b20b5891b7b990cb60b08261b351dfe084afe3db554fd84c3d46daa6580fc6fa",
+      "translation_text_hash": "be4f6b33c742ed9cccd7ef5017cbb65e16d4674eef92d80b997dccb9fa98adb5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 속 곧 내 육신에 선한 것이 거하지 아니하는 줄을 아노니 원함은 내게 있으나 선을 행하는 것은 없노라"
+      ],
+      "raw_text_hashes": [
+        "be4f6b33c742ed9cccd7ef5017cbb65e16d4674eef92d80b997dccb9fa98adb5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:7:19",
+      "sequence": 28107,
+      "chapter_label": "ROM 7",
+      "verse_label": "19",
+      "locator": {
+        "book": "ROM",
+        "chapter": 7,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 7,
+          "verse": 19
+        }
+      ],
+      "en": "For the good which I desire, I don’t do; but the evil which I don’t desire, that I practice.",
+      "ko": "내가 원하는 바 선은 하지 아니하고 도리어 원치 아니하는 바 악은 행하는도다",
+      "source_text_hash": "4c4a7de0c9a4274442f36bca98665b399ad86d1b00301241a97f24719437ec00",
+      "translation_text_hash": "3ddcd6165a22649174168a5b5013fa2c34a5878d17c6ebdd27879f57585c6424",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 원하는 바 선은 하지 아니하고 도리어 원치 아니하는 바 악은 행하는도다"
+      ],
+      "raw_text_hashes": [
+        "3ddcd6165a22649174168a5b5013fa2c34a5878d17c6ebdd27879f57585c6424"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:7:20",
+      "sequence": 28108,
+      "chapter_label": "ROM 7",
+      "verse_label": "20",
+      "locator": {
+        "book": "ROM",
+        "chapter": 7,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 7,
+          "verse": 20
+        }
+      ],
+      "en": "But if what I don’t desire, that I do, it is no more I that do it, but sin which dwells in me.",
+      "ko": "만일 내가 원치 아니하는 그것을 하면 이를 행하는 자가 내가 아니요 내 속에 거하는 죄니라",
+      "source_text_hash": "3ffe1c6b4000a8fe9b88002cfc82a86c9c62f2ed5e646ac71b15ab1c60b3df9a",
+      "translation_text_hash": "683abab8ad0a6ceaefbff4eb3f022afcd8e7ea3f50ea8d641c030a81f567e2b4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 내가 원치 아니하는 그것을 하면 이를 행하는 자가 내가 아니요 내 속에 거하는 죄니라"
+      ],
+      "raw_text_hashes": [
+        "683abab8ad0a6ceaefbff4eb3f022afcd8e7ea3f50ea8d641c030a81f567e2b4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:7:21",
+      "sequence": 28109,
+      "chapter_label": "ROM 7",
+      "verse_label": "21",
+      "locator": {
+        "book": "ROM",
+        "chapter": 7,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 7,
+          "verse": 21
+        }
+      ],
+      "en": "I find then the law that, while I desire to do good, evil is present.",
+      "ko": "그러므로 내가 한 법을 깨달았노니 곧 선을 행하기 원하는 나에게 악이 함께 있는 것이로다",
+      "source_text_hash": "1f4688a57392bdeef1be88287010577cd9663a15233779d7d0b97fc3ee19e1e8",
+      "translation_text_hash": "9e6a3cdbf1788b54c1665ce7bc3b70b804d9656ec62e1f3a9baf8ff91ac4584b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 내가 한 법을 깨달았노니 곧 선을 행하기 원하는 나에게 악이 함께 있는 것이로다"
+      ],
+      "raw_text_hashes": [
+        "9e6a3cdbf1788b54c1665ce7bc3b70b804d9656ec62e1f3a9baf8ff91ac4584b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:7:22",
+      "sequence": 28110,
+      "chapter_label": "ROM 7",
+      "verse_label": "22",
+      "locator": {
+        "book": "ROM",
+        "chapter": 7,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 7,
+          "verse": 22
+        }
+      ],
+      "en": "For I delight in God’s law after the inward person,",
+      "ko": "내 속 사람으로는 하나님의 법을 즐거워하되",
+      "source_text_hash": "ecdef4e8985260e612f879671c27df6efb4cf42839e96262b8835bb0d1282f0a",
+      "translation_text_hash": "82b4eaadba6f0abec3c97bf26b107bafdccd5f107e9d7f93b104964294b8623e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 속 사람으로는 하나님의 법을 즐거워하되"
+      ],
+      "raw_text_hashes": [
+        "82b4eaadba6f0abec3c97bf26b107bafdccd5f107e9d7f93b104964294b8623e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:7:23",
+      "sequence": 28111,
+      "chapter_label": "ROM 7",
+      "verse_label": "23",
+      "locator": {
+        "book": "ROM",
+        "chapter": 7,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 7,
+          "verse": 23
+        }
+      ],
+      "en": "but I see a different law in my members, warring against the law of my mind, and bringing me into captivity under the law of sin which is in my members.",
+      "ko": "내 지체 속에서 한 다른 법이 내 마음의 법과 싸워 내 지체 속에 있는 죄의 법 아래로 나를 사로잡아 오는 것을 보는도다",
+      "source_text_hash": "1027cf70660b7089fd475b61e60561eedd790dd2723d3694441a5b808b1bf268",
+      "translation_text_hash": "40ed421ea2a98e0732a30c7199d8473c0a3eae54f473792ffd53026742a00f50",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 지체 속에서 한 다른 법이 내 마음의 법과 싸워 내 지체 속에 있는 죄의 법 아래로 나를 사로잡아 오는 것을 보는도다"
+      ],
+      "raw_text_hashes": [
+        "40ed421ea2a98e0732a30c7199d8473c0a3eae54f473792ffd53026742a00f50"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:7:24",
+      "sequence": 28112,
+      "chapter_label": "ROM 7",
+      "verse_label": "24",
+      "locator": {
+        "book": "ROM",
+        "chapter": 7,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 7,
+          "verse": 24
+        }
+      ],
+      "en": "What a wretched man I am! Who will deliver me out of the body of this death?",
+      "ko": "오호라 나는 곤고한 사람이로다 이 사망의 몸에서 누가 나를 건져 내랴",
+      "source_text_hash": "e28b674bc384397f79d8fb23ddfd5994c4d4ed08d28b551b457e1e5f2532de8f",
+      "translation_text_hash": "5c044defb191690f8d29cdbc85649c6aa6ac0b527d7df56a423a851f61be9d7e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오호라 나는 곤고한 사람이로다 이 사망의 몸에서 누가 나를 건져 내랴"
+      ],
+      "raw_text_hashes": [
+        "5c044defb191690f8d29cdbc85649c6aa6ac0b527d7df56a423a851f61be9d7e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:7:25",
+      "sequence": 28113,
+      "chapter_label": "ROM 7",
+      "verse_label": "25",
+      "locator": {
+        "book": "ROM",
+        "chapter": 7,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 7,
+          "verse": 25
+        }
+      ],
+      "en": "I thank God through Jesus Christ, our Lord! So then with the mind, I myself serve God’s law, but with the flesh, sin’s law.",
+      "ko": "우리 주 예수 그리스도로 말미암아 하나님께 감사하리로다 그런즉 내 자신이 마음으로는 하나님의 법을, 육신으로는 죄의 법을 섬기노라",
+      "source_text_hash": "8c985ccbde415c3aa2ceb02f26cb48402d7d020068ec978cf7cfdc01bdfc358c",
+      "translation_text_hash": "f8898885e75ae692b10a29bb3eaf70cd82df172c5b2a8263fbdbcc3c459cf0e6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리 주 예수 그리스도로 말미암아 하나님께 감사하리로다 그런즉 내 자신이 마음으로는 하나님의 법을, 육신으로는 죄의 법을 섬기노라"
+      ],
+      "raw_text_hashes": [
+        "f8898885e75ae692b10a29bb3eaf70cd82df172c5b2a8263fbdbcc3c459cf0e6"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1869 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:MAT:chapter:013",
+  "unit_ordinal": 942,
+  "unit_label": "MAT 13",
+  "book_code": "MAT",
+  "chapter_number": 13,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:MAT:13:1",
+      "sequence": 23541,
+      "chapter_label": "MAT 13",
+      "verse_label": "1",
+      "locator": {
+        "book": "MAT",
+        "chapter": 13,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 13,
+          "verse": 1
+        }
+      ],
+      "en": "On that day Jesus went out of the house and sat by the seaside.",
+      "ko": "그 날에 예수께서 집에서 나가사 바닷가에 앉으시매",
+      "source_text_hash": "61a751b2bb4e71a5ec6e5b7d0cd740fa812cd372eacef879589fafd39002825c",
+      "translation_text_hash": "b8c3c55845d19d584b77dd21a0ff474942af17911be7540d031ae84cbb44a31c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날에 예수께서 집에서 나가사 바닷가에 앉으시매"
+      ],
+      "raw_text_hashes": [
+        "b8c3c55845d19d584b77dd21a0ff474942af17911be7540d031ae84cbb44a31c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:13:2",
+      "sequence": 23542,
+      "chapter_label": "MAT 13",
+      "verse_label": "2",
+      "locator": {
+        "book": "MAT",
+        "chapter": 13,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 13,
+          "verse": 2
+        }
+      ],
+      "en": "Great multitudes gathered to him, so that he entered into a boat and sat; and all the multitude stood on the beach.",
+      "ko": "큰 무리가 그에게로 모여 들거늘 예수께서 배에 올라가 앉으시고 온 무리는 해변에 섰더니",
+      "source_text_hash": "518d4f3d54250184d38a56706397ee623bdf742cdfaf12ce3ab5e0ef0be0f2b8",
+      "translation_text_hash": "6e9f4c84b29af3dd76e35e6daab21b6b67fcbc018f7a79199cc671c58e23a0c0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "큰 무리가 그에게로 모여 들거늘 예수께서 배에 올라가 앉으시고 온 무리는 해변에 섰더니"
+      ],
+      "raw_text_hashes": [
+        "6e9f4c84b29af3dd76e35e6daab21b6b67fcbc018f7a79199cc671c58e23a0c0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:13:3",
+      "sequence": 23543,
+      "chapter_label": "MAT 13",
+      "verse_label": "3",
+      "locator": {
+        "book": "MAT",
+        "chapter": 13,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 13,
+          "verse": 3
+        }
+      ],
+      "en": "He spoke to them many things in parables, saying, “Behold, a farmer went out to sow.",
+      "ko": "예수께서 비유로 여러가지를 저희에게 말씀하여 가라사대 씨를 뿌리는 자가 뿌리러 나가서",
+      "source_text_hash": "dae5873af12b042a07cefbba7cc221e20eabcd08ad1d0b94dafd3f6e98c95f0e",
+      "translation_text_hash": "425c2b9aa8cda57715e087f9a24f3d5d8512dae094fd71bbf0a2a432331ac81d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 비유로 여러가지를 저희에게 말씀하여 가라사대 씨를 뿌리는 자가 뿌리러 나가서"
+      ],
+      "raw_text_hashes": [
+        "425c2b9aa8cda57715e087f9a24f3d5d8512dae094fd71bbf0a2a432331ac81d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:13:4",
+      "sequence": 23544,
+      "chapter_label": "MAT 13",
+      "verse_label": "4",
+      "locator": {
+        "book": "MAT",
+        "chapter": 13,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 13,
+          "verse": 4
+        }
+      ],
+      "en": "As he sowed, some seeds fell by the roadside, and the birds came and devoured them.",
+      "ko": "뿌릴쌔 더러는 길 가에 떨어지매 새들이 와서 먹어버렸고",
+      "source_text_hash": "0a30c4ada1daf1d88318bcd32960415a8eee1c47475e661b5a4f6dfa5896d768",
+      "translation_text_hash": "2684b9c32cf87c2352d782fec58a21413020fc9b6b9ccde3fc873a79a9d6348a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "뿌릴쌔 더러는 길 가에 떨어지매 새들이 와서 먹어버렸고"
+      ],
+      "raw_text_hashes": [
+        "2684b9c32cf87c2352d782fec58a21413020fc9b6b9ccde3fc873a79a9d6348a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:13:5",
+      "sequence": 23545,
+      "chapter_label": "MAT 13",
+      "verse_label": "5",
+      "locator": {
+        "book": "MAT",
+        "chapter": 13,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 13,
+          "verse": 5
+        }
+      ],
+      "en": "Others fell on rocky ground, where they didn’t have much soil, and immediately they sprang up, because they had no depth of earth.",
+      "ko": "더러는 흙이 얇은 돌밭에 떨어지매 흙이 깊지 아니하므로 곧 싹이 나오나",
+      "source_text_hash": "30e1cb36eab816a5008dffddeaca9b8727880e0d5c41ae94dac9aba7f450d39f",
+      "translation_text_hash": "e4f620e7e23e1a5fc8e6134afc417f3a352433dea8de9080a1227f6f2d15e4d0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "더러는 흙이 얇은 돌밭에 떨어지매 흙이 깊지 아니하므로 곧 싹이 나오나"
+      ],
+      "raw_text_hashes": [
+        "e4f620e7e23e1a5fc8e6134afc417f3a352433dea8de9080a1227f6f2d15e4d0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:13:6",
+      "sequence": 23546,
+      "chapter_label": "MAT 13",
+      "verse_label": "6",
+      "locator": {
+        "book": "MAT",
+        "chapter": 13,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 13,
+          "verse": 6
+        }
+      ],
+      "en": "When the sun had risen, they were scorched. Because they had no root, they withered away.",
+      "ko": "해가 돋은 후에 타져서 뿌리가 없으므로 말랐고",
+      "source_text_hash": "378ce5baff21c55fadc234387d4ccaa15ac4ffd57f8559d680e135e30216cd4c",
+      "translation_text_hash": "b0e25a7d3e8889b2d85ef482a6b1a26547ee35a54a4e192e241524870657d703",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "해가 돋은 후에 타져서 뿌리가 없으므로 말랐고"
+      ],
+      "raw_text_hashes": [
+        "b0e25a7d3e8889b2d85ef482a6b1a26547ee35a54a4e192e241524870657d703"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:13:7",
+      "sequence": 23547,
+      "chapter_label": "MAT 13",
+      "verse_label": "7",
+      "locator": {
+        "book": "MAT",
+        "chapter": 13,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 13,
+          "verse": 7
+        }
+      ],
+      "en": "Others fell among thorns. The thorns grew up and choked them.",
+      "ko": "더러는 가시떨기 위에 떨어지매 가시가 자라서 기운을 막았고",
+      "source_text_hash": "82d9c205edf419b2d05d31f17b4561d91837d979b074f7f7c75289611e93ad28",
+      "translation_text_hash": "036eaf2f168d9f79b4c31064c22569ffadafd08b84d28016a112b75b1b44988e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "더러는 가시떨기 위에 떨어지매 가시가 자라서 기운을 막았고"
+      ],
+      "raw_text_hashes": [
+        "036eaf2f168d9f79b4c31064c22569ffadafd08b84d28016a112b75b1b44988e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:13:8",
+      "sequence": 23548,
+      "chapter_label": "MAT 13",
+      "verse_label": "8",
+      "locator": {
+        "book": "MAT",
+        "chapter": 13,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 13,
+          "verse": 8
+        }
+      ],
+      "en": "Others fell on good soil and yielded fruit: some one hundred times as much, some sixty, and some thirty.",
+      "ko": "더러는 좋은 땅에 떨어지매 혹 백배, 혹 육십배, 혹 삼십배의 결실을 하였느니라",
+      "source_text_hash": "c9953dbc3260cb73d52e7658db5ee468e1407256c3237f4c89cd0bf539313c1e",
+      "translation_text_hash": "8aef5fec9307b90c208ef6cbdaba27c7ffc45df90f60873746e9c224eaa02fa2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "더러는 좋은 땅에 떨어지매 혹 백배, 혹 육십배, 혹 삼십배의 결실을 하였느니라"
+      ],
+      "raw_text_hashes": [
+        "8aef5fec9307b90c208ef6cbdaba27c7ffc45df90f60873746e9c224eaa02fa2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:13:9",
+      "sequence": 23549,
+      "chapter_label": "MAT 13",
+      "verse_label": "9",
+      "locator": {
+        "book": "MAT",
+        "chapter": 13,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 13,
+          "verse": 9
+        }
+      ],
+      "en": "He who has ears to hear, let him hear.”",
+      "ko": "귀 있는 자는 들으라 하시니라",
+      "source_text_hash": "a24306dbf1b6db387dcf218eee8f7b45b89cd0f08dc157838b2712395cab4a03",
+      "translation_text_hash": "4efc055225668735a00f31293cd9be63c986295efe49c06e9b0e81f9e1caf899",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "귀 있는 자는 들으라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "4efc055225668735a00f31293cd9be63c986295efe49c06e9b0e81f9e1caf899"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:13:10",
+      "sequence": 23550,
+      "chapter_label": "MAT 13",
+      "verse_label": "10",
+      "locator": {
+        "book": "MAT",
+        "chapter": 13,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 13,
+          "verse": 10
+        }
+      ],
+      "en": "The disciples came, and said to him, “Why do you speak to them in parables?”",
+      "ko": "제자들이 예수께 나아와 가로되 어찌하여 저희에게 비유로 말씀하시나이까",
+      "source_text_hash": "e43c490ac49479d3b66c9018d36ace0d6400b28b8b4b855343a357bc3e544cdf",
+      "translation_text_hash": "0249fece564fdf7d4d1015fde86390e1e7fa2dd225a7dbace96ee028ac528ab2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제자들이 예수께 나아와 가로되 어찌하여 저희에게 비유로 말씀하시나이까"
+      ],
+      "raw_text_hashes": [
+        "0249fece564fdf7d4d1015fde86390e1e7fa2dd225a7dbace96ee028ac528ab2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:13:11",
+      "sequence": 23551,
+      "chapter_label": "MAT 13",
+      "verse_label": "11",
+      "locator": {
+        "book": "MAT",
+        "chapter": 13,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 13,
+          "verse": 11
+        }
+      ],
+      "en": "He answered them, “To you it is given to know the mysteries of the Kingdom of Heaven, but it is not given to them.",
+      "ko": "대답하여 가라사대 천국의 비밀을 아는 것이 너희에게는 허락되었으나 저희에게는 아니되었나니",
+      "source_text_hash": "8d8210a105c4b5f466d7a50bd711d36758a4d8bd428c90c6d22050540f42eb28",
+      "translation_text_hash": "07ada6e195423c2bfa11453bec5d8014e2ce35c3379d97a7e7c8ee126e13d185",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대답하여 가라사대 천국의 비밀을 아는 것이 너희에게는 허락되었으나 저희에게는 아니되었나니"
+      ],
+      "raw_text_hashes": [
+        "07ada6e195423c2bfa11453bec5d8014e2ce35c3379d97a7e7c8ee126e13d185"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:13:12",
+      "sequence": 23552,
+      "chapter_label": "MAT 13",
+      "verse_label": "12",
+      "locator": {
+        "book": "MAT",
+        "chapter": 13,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 13,
+          "verse": 12
+        }
+      ],
+      "en": "For whoever has, to him will be given, and he will have abundance; but whoever doesn’t have, from him will be taken away even that which he has.",
+      "ko": "무릇 있는 자는 받아 넉넉하게 되되 무릇 없는 자는 그 있는 것도 빼앗기리라",
+      "source_text_hash": "45941415847dcdb5e09faf155be185b7a69d43718e3c603021245185c4b99b2d",
+      "translation_text_hash": "95226125f28666c81ca427c45ffdf5a0a0d5ba9ba77ad400a68c2fdb030d4cc5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 있는 자는 받아 넉넉하게 되되 무릇 없는 자는 그 있는 것도 빼앗기리라"
+      ],
+      "raw_text_hashes": [
+        "95226125f28666c81ca427c45ffdf5a0a0d5ba9ba77ad400a68c2fdb030d4cc5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:13:13",
+      "sequence": 23553,
+      "chapter_label": "MAT 13",
+      "verse_label": "13",
+      "locator": {
+        "book": "MAT",
+        "chapter": 13,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 13,
+          "verse": 13
+        }
+      ],
+      "en": "Therefore I speak to them in parables, because seeing they don’t see, and hearing, they don’t hear, neither do they understand.",
+      "ko": "그러므로 내가 저희에게 비유로 말하기는 저희가 보아도 보지 못하며 들어도 듣지 못하며 깨닫지 못함이니라",
+      "source_text_hash": "39beb431c5caaa7c18f8ad9856c10f743e4e93d13b1dc83e42736f4bef2ab433",
+      "translation_text_hash": "2b6697ec938f61434b21e878c020d230cd82eb00a110def4de1e671c354d9a93",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 내가 저희에게 비유로 말하기는 저희가 보아도 보지 못하며 들어도 듣지 못하며 깨닫지 못함이니라"
+      ],
+      "raw_text_hashes": [
+        "2b6697ec938f61434b21e878c020d230cd82eb00a110def4de1e671c354d9a93"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:13:14",
+      "sequence": 23554,
+      "chapter_label": "MAT 13",
+      "verse_label": "14",
+      "locator": {
+        "book": "MAT",
+        "chapter": 13,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 13,
+          "verse": 14
+        }
+      ],
+      "en": "In them the prophecy of Isaiah is fulfilled, which says, ‘By hearing you will hear, and will in no way understand; Seeing you will see, and will in no way perceive;",
+      "ko": "이사야의 예언이 저희에게 이루었으니 일렀으되 너희가 듣기는 들어도 깨닫지 못할 것이요 보기는 보아도 알지 못하리라",
+      "source_text_hash": "93a10ad4cf725aec413e423bce619e7c667b6a76a6ecaf059486170ec074759d",
+      "translation_text_hash": "55c3ac719c71a8a62f88794adf6ab6c096d9a2652d3992a5719436e3b87fc971",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이사야의 예언이 저희에게 이루었으니 일렀으되 너희가 듣기는 들어도 깨닫지 못할 것이요 보기는 보아도 알지 못하리라"
+      ],
+      "raw_text_hashes": [
+        "55c3ac719c71a8a62f88794adf6ab6c096d9a2652d3992a5719436e3b87fc971"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:13:15",
+      "sequence": 23555,
+      "chapter_label": "MAT 13",
+      "verse_label": "15",
+      "locator": {
+        "book": "MAT",
+        "chapter": 13,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 13,
+          "verse": 15
+        }
+      ],
+      "en": "for this people’s heart has grown callous,their ears are dull of hearing, and they have closed their eyes; or else perhaps they might perceive with their eyes, hear with their ears, understand with their heart, and would turn again, and I would heal them.’",
+      "ko": "이 백성들의 마음이 완악하여져서 그 귀는 듣기에 둔하고 눈은 감았으니 이는 눈으로 보고 귀로 듣고 마음으로 깨달아 돌이켜 내게 고침을 받을까 두려워함이라 하였느니라",
+      "source_text_hash": "9697f49420c07682bddc602e9f7fac8b70202798672b202c01038b99502a3ae1",
+      "translation_text_hash": "ea37cae42f44d37fe1a89fb36fd905b17033bd8aea5ca9a1faf9f18849abe4a8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 백성들의 마음이 완악하여져서 그 귀는 듣기에 둔하고 눈은 감았으니 이는 눈으로 보고 귀로 듣고 마음으로 깨달아 돌이켜 내게 고침을 받을까 두려워함이라 하였느니라"
+      ],
+      "raw_text_hashes": [
+        "ea37cae42f44d37fe1a89fb36fd905b17033bd8aea5ca9a1faf9f18849abe4a8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:13:16",
+      "sequence": 23556,
+      "chapter_label": "MAT 13",
+      "verse_label": "16",
+      "locator": {
+        "book": "MAT",
+        "chapter": 13,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 13,
+          "verse": 16
+        }
+      ],
+      "en": "“But blessed are your eyes, for they see; and your ears, for they hear.",
+      "ko": "그러나 너희 눈은 봄으로, 너희 귀는 들음으로 복이 있도다",
+      "source_text_hash": "a49da017887b2de3c01648c339f41a707d9eeae03511f05e258a0ffd095d1341",
+      "translation_text_hash": "71d69718230bb207096038c2f3cbbec5eb5acf29c81d495752938aacaf8380f2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 너희 눈은 봄으로, 너희 귀는 들음으로 복이 있도다"
+      ],
+      "raw_text_hashes": [
+        "71d69718230bb207096038c2f3cbbec5eb5acf29c81d495752938aacaf8380f2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:13:17",
+      "sequence": 23557,
+      "chapter_label": "MAT 13",
+      "verse_label": "17",
+      "locator": {
+        "book": "MAT",
+        "chapter": 13,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 13,
+          "verse": 17
+        }
+      ],
+      "en": "For most certainly I tell you that many prophets and righteous men desired to see the things which you see, and didn’t see them; and to hear the things which you hear, and didn’t hear them.",
+      "ko": "내가 진실로 너희에게 이르노니 많은 선지자와 의인이 너희 보는 것들을 보고자 하여도 보지 못하였고 너희 듣는 것들을 듣고자 하여도 듣지 못하였느니라",
+      "source_text_hash": "71ce20012614665a868cc71682aa481092371b88c29a225ec285c62247f8358e",
+      "translation_text_hash": "8368c1a2efda014d5a11abae9146522fe336096a488ce21c59f25ebaf16bbd14",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 진실로 너희에게 이르노니 많은 선지자와 의인이 너희 보는 것들을 보고자 하여도 보지 못하였고 너희 듣는 것들을 듣고자 하여도 듣지 못하였느니라"
+      ],
+      "raw_text_hashes": [
+        "8368c1a2efda014d5a11abae9146522fe336096a488ce21c59f25ebaf16bbd14"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:13:18",
+      "sequence": 23558,
+      "chapter_label": "MAT 13",
+      "verse_label": "18",
+      "locator": {
+        "book": "MAT",
+        "chapter": 13,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 13,
+          "verse": 18
+        }
+      ],
+      "en": "“Hear, then, the parable of the farmer.",
+      "ko": "그런즉 씨 뿌리는 비유를 들으라",
+      "source_text_hash": "877451f65a5edbd743760cd8835dc0dc04563d52a2589b6319fab3e1d9f8c0ce",
+      "translation_text_hash": "0f805a5d8bcfe097454acb3db4ae95b162271dda111afa5f9955f7683350c2dd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 씨 뿌리는 비유를 들으라"
+      ],
+      "raw_text_hashes": [
+        "0f805a5d8bcfe097454acb3db4ae95b162271dda111afa5f9955f7683350c2dd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:13:19",
+      "sequence": 23559,
+      "chapter_label": "MAT 13",
+      "verse_label": "19",
+      "locator": {
+        "book": "MAT",
+        "chapter": 13,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 13,
+          "verse": 19
+        }
+      ],
+      "en": "When anyone hears the word of the Kingdom and doesn’t understand it, the evil one comes and snatches away that which has been sown in his heart. This is what was sown by the roadside.",
+      "ko": "아무나 천국 말씀을 듣고 깨닫지 못할 때는 악한 자가 와서 그 마음에 뿌리운 것을 빼앗나니 이는 곧 길 가에 뿌리운 자요",
+      "source_text_hash": "ae3ce148278cb8e84961855444643859e0012c87c945d67d5d907cf3e7014075",
+      "translation_text_hash": "c79ac73b50df51c2d7546a199b674a081653d8694787c7c8ed7f9516fe4d34d1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아무나 천국 말씀을 듣고 깨닫지 못할 때는 악한 자가 와서 그 마음에 뿌리운 것을 빼앗나니 이는 곧 길 가에 뿌리운 자요"
+      ],
+      "raw_text_hashes": [
+        "c79ac73b50df51c2d7546a199b674a081653d8694787c7c8ed7f9516fe4d34d1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:13:20",
+      "sequence": 23560,
+      "chapter_label": "MAT 13",
+      "verse_label": "20",
+      "locator": {
+        "book": "MAT",
+        "chapter": 13,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 13,
+          "verse": 20
+        }
+      ],
+      "en": "What was sown on the rocky places, this is he who hears the word and immediately with joy receives it;",
+      "ko": "돌밭에 뿌리웠다는 것은 말씀을 듣고 즉시 기쁨으로 받되",
+      "source_text_hash": "cc7378cce195a0f09f51ca43a31a5f24c8d89816ef7f3314e7f748331d9b340c",
+      "translation_text_hash": "992d25ad9b15350376c9f78bac2977cdf05efffbc04fde6f40ec18c13b561d1e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "돌밭에 뿌리웠다는 것은 말씀을 듣고 즉시 기쁨으로 받되"
+      ],
+      "raw_text_hashes": [
+        "992d25ad9b15350376c9f78bac2977cdf05efffbc04fde6f40ec18c13b561d1e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:13:21",
+      "sequence": 23561,
+      "chapter_label": "MAT 13",
+      "verse_label": "21",
+      "locator": {
+        "book": "MAT",
+        "chapter": 13,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 13,
+          "verse": 21
+        }
+      ],
+      "en": "yet he has no root in himself, but endures for a while. When oppression or persecution arises because of the word, immediately he stumbles.",
+      "ko": "그 속에 뿌리가 없어 잠시 견디다가 말씀을 인하여 환난이나 핍박이 일어나는 때에는 곧 넘어지는 자요",
+      "source_text_hash": "0b4a5c647fbdd1b7f542ae37123443289bd3d721e2ba62f9f4bef0bc9ab18332",
+      "translation_text_hash": "14f90d9d6d0984e01e10c2a3d6b55f5d5c44825657f94239ee01ce1e5cb3b49e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 속에 뿌리가 없어 잠시 견디다가 말씀을 인하여 환난이나 핍박이 일어나는 때에는 곧 넘어지는 자요"
+      ],
+      "raw_text_hashes": [
+        "14f90d9d6d0984e01e10c2a3d6b55f5d5c44825657f94239ee01ce1e5cb3b49e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:13:22",
+      "sequence": 23562,
+      "chapter_label": "MAT 13",
+      "verse_label": "22",
+      "locator": {
+        "book": "MAT",
+        "chapter": 13,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 13,
+          "verse": 22
+        }
+      ],
+      "en": "What was sown among the thorns, this is he who hears the word, but the cares of this age and the deceitfulness of riches choke the word, and he becomes unfruitful.",
+      "ko": "가시떨기에 뿌리웠다는 것은 말씀을 들으나 세상의 염려와 재리의 유혹에 말씀이 막혀 결실치 못하는 자요",
+      "source_text_hash": "d91e6a40ac1fe9f7cd8959ad3270d0b1731027af2f5ead2c5c95f9f938723ff1",
+      "translation_text_hash": "754bf16c71372d169830cb96e0424e4c83249895720b45f73f2e87de28c024c2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가시떨기에 뿌리웠다는 것은 말씀을 들으나 세상의 염려와 재리의 유혹에 말씀이 막혀 결실치 못하는 자요"
+      ],
+      "raw_text_hashes": [
+        "754bf16c71372d169830cb96e0424e4c83249895720b45f73f2e87de28c024c2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:13:23",
+      "sequence": 23563,
+      "chapter_label": "MAT 13",
+      "verse_label": "23",
+      "locator": {
+        "book": "MAT",
+        "chapter": 13,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 13,
+          "verse": 23
+        }
+      ],
+      "en": "What was sown on the good ground, this is he who hears the word and understands it, who most certainly bears fruit and produces, some one hundred times as much, some sixty, and some thirty.”",
+      "ko": "좋은 땅에 뿌리웠다는 것은 말씀을 듣고 깨닫는 자니 결실하여 혹 백배, 혹 육십배, 혹 삼십배가 되느니라 하시더라",
+      "source_text_hash": "eda35a543628fdf6704361281bd998c0abcb6730259b013a9824aa41d96bf646",
+      "translation_text_hash": "4a0977701ec5224babc1ed342adf3001496f9982e841b6064ffc1be523b668ee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "좋은 땅에 뿌리웠다는 것은 말씀을 듣고 깨닫는 자니 결실하여 혹 백배, 혹 육십배, 혹 삼십배가 되느니라 하시더라"
+      ],
+      "raw_text_hashes": [
+        "4a0977701ec5224babc1ed342adf3001496f9982e841b6064ffc1be523b668ee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:13:24",
+      "sequence": 23564,
+      "chapter_label": "MAT 13",
+      "verse_label": "24",
+      "locator": {
+        "book": "MAT",
+        "chapter": 13,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 13,
+          "verse": 24
+        }
+      ],
+      "en": "He set another parable before them, saying, “The Kingdom of Heaven is like a man who sowed good seed in his field,",
+      "ko": "예수께서 그들 앞에 또 비유를 베풀어 가라사대 천국은 좋은 씨를 제 밭에 뿌린 사람과 같으니",
+      "source_text_hash": "a015d932c6f12e4fa1b1ed82e452c921a3605f8d5214434d4ca54ea9c090d0e8",
+      "translation_text_hash": "97a93e114bdff569b72c1c3db60465f3b1947904909e0ee57b8bd6c764c7a6a6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 그들 앞에 또 비유를 베풀어 가라사대 천국은 좋은 씨를 제 밭에 뿌린 사람과 같으니"
+      ],
+      "raw_text_hashes": [
+        "97a93e114bdff569b72c1c3db60465f3b1947904909e0ee57b8bd6c764c7a6a6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:13:25",
+      "sequence": 23565,
+      "chapter_label": "MAT 13",
+      "verse_label": "25",
+      "locator": {
+        "book": "MAT",
+        "chapter": 13,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 13,
+          "verse": 25
+        }
+      ],
+      "en": "but while people slept, his enemy came and sowed darnel weedsalso among the wheat, and went away.",
+      "ko": "사람들이 잘 때에 그 원수가 와서 곡식 가운데 가라지를 덧뿌리고 갔더니",
+      "source_text_hash": "2de88516837240d187d623e918de35799d45f411a454f364fe6f39891f603917",
+      "translation_text_hash": "85669642d7b1d8d85075a0a2e91383c521f610a456fba0a2d46db034c3e4d5a4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람들이 잘 때에 그 원수가 와서 곡식 가운데 가라지를 덧뿌리고 갔더니"
+      ],
+      "raw_text_hashes": [
+        "85669642d7b1d8d85075a0a2e91383c521f610a456fba0a2d46db034c3e4d5a4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:13:26",
+      "sequence": 23566,
+      "chapter_label": "MAT 13",
+      "verse_label": "26",
+      "locator": {
+        "book": "MAT",
+        "chapter": 13,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 13,
+          "verse": 26
+        }
+      ],
+      "en": "But when the blade sprang up and produced grain, then the darnel weeds appeared also.",
+      "ko": "싹이 나고 결실할 때에 가라지도 보이거늘",
+      "source_text_hash": "08c556d3499cd018d5c3df6511baee28f7201056cacda910cc2d715cd4f121d6",
+      "translation_text_hash": "85ce2a87f8100b4d6017a2d9b8e034c8c17da7cc341532f7c7bfb4d9c197ddbc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "싹이 나고 결실할 때에 가라지도 보이거늘"
+      ],
+      "raw_text_hashes": [
+        "85ce2a87f8100b4d6017a2d9b8e034c8c17da7cc341532f7c7bfb4d9c197ddbc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:13:27",
+      "sequence": 23567,
+      "chapter_label": "MAT 13",
+      "verse_label": "27",
+      "locator": {
+        "book": "MAT",
+        "chapter": 13,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 13,
+          "verse": 27
+        }
+      ],
+      "en": "The servants of the householder came and said to him, ‘Sir, didn’t you sow good seed in your field? Where did these darnel weeds come from?’",
+      "ko": "집 주인의 종들이 와서 말하되 주여 밭에 좋은 씨를 심지 아니하였나이까 그러면 가라지가 어디서 생겼나이까",
+      "source_text_hash": "8fe93adc3e92017b3161d71b4716d7afda032c9b16dab66bb1f288c33ea6561f",
+      "translation_text_hash": "13824c5322f93cadb2e06993446a143a10935eee4ab53c10576d5cbeef07dfd6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "집 주인의 종들이 와서 말하되 주여 밭에 좋은 씨를 심지 아니하였나이까 그러면 가라지가 어디서 생겼나이까"
+      ],
+      "raw_text_hashes": [
+        "13824c5322f93cadb2e06993446a143a10935eee4ab53c10576d5cbeef07dfd6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:13:28",
+      "sequence": 23568,
+      "chapter_label": "MAT 13",
+      "verse_label": "28",
+      "locator": {
+        "book": "MAT",
+        "chapter": 13,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 13,
+          "verse": 28
+        }
+      ],
+      "en": "“He said to them, ‘An enemy has done this.’“The servants asked him, ‘Do you want us to go and gather them up?’",
+      "ko": "주인이 가로되 원수가 이렇게 하였구나 종들이 말하되 그러면 우리가 가서 이것을 뽑기를 원하시나이까",
+      "source_text_hash": "9682f82c32876f06dd067143bb05249621a2b5336d08fc6341e1ef2c74ed13d9",
+      "translation_text_hash": "4d292f5626a06163eee63b95847599e1a95656cab40076d5d7c3dc9f3152cd2b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주인이 가로되 원수가 이렇게 하였구나 종들이 말하되 그러면 우리가 가서 이것을 뽑기를 원하시나이까"
+      ],
+      "raw_text_hashes": [
+        "4d292f5626a06163eee63b95847599e1a95656cab40076d5d7c3dc9f3152cd2b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:13:29",
+      "sequence": 23569,
+      "chapter_label": "MAT 13",
+      "verse_label": "29",
+      "locator": {
+        "book": "MAT",
+        "chapter": 13,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 13,
+          "verse": 29
+        }
+      ],
+      "en": "“But he said, ‘No, lest perhaps while you gather up the darnel weeds, you root up the wheat with them.",
+      "ko": "주인이 가로되 가만 두어라 가라지를 뽑다가 곡식까지 뽑을까 염려하노라",
+      "source_text_hash": "74d19d1b6f0d59da7870addcefda615c6a38c7f38bbe4c67e796254ccfe3c3bf",
+      "translation_text_hash": "464d8521b506de63e78e9b96670a61bee6f5ad142ccbb2a55dc3300fd8571a8d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주인이 가로되 가만 두어라 가라지를 뽑다가 곡식까지 뽑을까 염려하노라"
+      ],
+      "raw_text_hashes": [
+        "464d8521b506de63e78e9b96670a61bee6f5ad142ccbb2a55dc3300fd8571a8d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:13:30",
+      "sequence": 23570,
+      "chapter_label": "MAT 13",
+      "verse_label": "30",
+      "locator": {
+        "book": "MAT",
+        "chapter": 13,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 13,
+          "verse": 30
+        }
+      ],
+      "en": "Let both grow together until the harvest, and in the harvest time I will tell the reapers, “First, gather up the darnel weeds, and bind them in bundles to burn them; but gather the wheat into my barn.”’”",
+      "ko": "둘 다 추수 때까지 함께 자라게 두어라 추수 때에 내가 추숫군들에게 말하기를 가라지는 먼저 거두어 불사르게 단으로 묶고 곡식은 모아 내 곳간에 넣으라 하리라",
+      "source_text_hash": "4a990baf429e2fe3a220a22e63cf565d0d142091a59a77bd15f1687f9b35bf73",
+      "translation_text_hash": "8abde73d9e6c97219424a20697e767f3d27cc4e3b05915e820d3d8cf6b135caf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "둘 다 추수 때까지 함께 자라게 두어라 추수 때에 내가 추숫군들에게 말하기를 가라지는 먼저 거두어 불사르게 단으로 묶고 곡식은 모아 내 곳간에 넣으라 하리라"
+      ],
+      "raw_text_hashes": [
+        "8abde73d9e6c97219424a20697e767f3d27cc4e3b05915e820d3d8cf6b135caf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:13:31",
+      "sequence": 23571,
+      "chapter_label": "MAT 13",
+      "verse_label": "31",
+      "locator": {
+        "book": "MAT",
+        "chapter": 13,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 13,
+          "verse": 31
+        }
+      ],
+      "en": "He set another parable before them, saying, “The Kingdom of Heaven is like a grain of mustard seed which a man took, and sowed in his field,",
+      "ko": "또 비유를 베풀어 가라사대 천국은 마치 사람이 자기 밭에 갖다 심은 겨자씨 한 알 같으니",
+      "source_text_hash": "888c9e19bd2d266fc86f52e3b226e7690ed25236c553ebf66b9265c87d8173c4",
+      "translation_text_hash": "5695dff4aafd5dc0ffcb1296f12c1e2aecca97af4f3676fcc32c7d6f9554b826",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 비유를 베풀어 가라사대 천국은 마치 사람이 자기 밭에 갖다 심은 겨자씨 한 알 같으니"
+      ],
+      "raw_text_hashes": [
+        "5695dff4aafd5dc0ffcb1296f12c1e2aecca97af4f3676fcc32c7d6f9554b826"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:13:32",
+      "sequence": 23572,
+      "chapter_label": "MAT 13",
+      "verse_label": "32",
+      "locator": {
+        "book": "MAT",
+        "chapter": 13,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 13,
+          "verse": 32
+        }
+      ],
+      "en": "which indeed is smaller than all seeds. But when it is grown, it is greater than the herbs and becomes a tree, so that the birds of the air come and lodge in its branches.”",
+      "ko": "이는 모든 씨보다 작은 것이로되 자란 후에는 나물보다 커서 나무가 되매 공중의 새들이 와서 그 가지에 깃들이느니라",
+      "source_text_hash": "35b0c949c0bcc0bc8ed32d77869d137e296b7051decba8fa68f6f0e9f40132a8",
+      "translation_text_hash": "a4246b6e4f07219df9fdc1065b2292f30e82b3a627627759b131e4275ef2f4b4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 모든 씨보다 작은 것이로되 자란 후에는 나물보다 커서 나무가 되매 공중의 새들이 와서 그 가지에 깃들이느니라"
+      ],
+      "raw_text_hashes": [
+        "a4246b6e4f07219df9fdc1065b2292f30e82b3a627627759b131e4275ef2f4b4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:13:33",
+      "sequence": 23573,
+      "chapter_label": "MAT 13",
+      "verse_label": "33",
+      "locator": {
+        "book": "MAT",
+        "chapter": 13,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 13,
+          "verse": 33
+        }
+      ],
+      "en": "He spoke another parable to them. “The Kingdom of Heaven is like yeast which a woman took and hid in three measuresof meal, until it was all leavened.”",
+      "ko": "또 비유로 말씀하시되 천국은 마치 여자가 가루 서말 속에 갖다 넣어 전부 부풀게 한 누룩과 같으니라",
+      "source_text_hash": "ed393d830f0de1e688c0a05504edaacfeef6b6797eb845c9f175f6970b91529f",
+      "translation_text_hash": "368855eb22f93542f899620965dd3d506cc208116d59fac966dcaf949e59878c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 비유로 말씀하시되 천국은 마치 여자가 가루 서말 속에 갖다 넣어 전부 부풀게 한 누룩과 같으니라"
+      ],
+      "raw_text_hashes": [
+        "368855eb22f93542f899620965dd3d506cc208116d59fac966dcaf949e59878c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:13:34",
+      "sequence": 23574,
+      "chapter_label": "MAT 13",
+      "verse_label": "34",
+      "locator": {
+        "book": "MAT",
+        "chapter": 13,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 13,
+          "verse": 34
+        }
+      ],
+      "en": "Jesus spoke all these things in parables to the multitudes; and without a parable, he didn’t speak to them,",
+      "ko": "예수께서 이 모든 것을 무리에게 비유로 말씀하시고 비유가 아니면 아무 것도 말씀하지 아니하셨으니",
+      "source_text_hash": "58686eb75a927566f761bcb81cfaff1132677e228eff971e82051217162a5ba3",
+      "translation_text_hash": "e3498b2e6ba4ab6ff82686ecd622990a97611f068b6e7067e3e7396bc84c93e9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 이 모든 것을 무리에게 비유로 말씀하시고 비유가 아니면 아무 것도 말씀하지 아니하셨으니"
+      ],
+      "raw_text_hashes": [
+        "e3498b2e6ba4ab6ff82686ecd622990a97611f068b6e7067e3e7396bc84c93e9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:13:35",
+      "sequence": 23575,
+      "chapter_label": "MAT 13",
+      "verse_label": "35",
+      "locator": {
+        "book": "MAT",
+        "chapter": 13,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 13,
+          "verse": 35
+        }
+      ],
+      "en": "that it might be fulfilled which was spoken through the prophet, saying, “I will open my mouth in parables; I will utter things hidden from the foundation of the world.”",
+      "ko": "이는 선지자로 말씀하신바 내가 입을 열어 비유로 말하고 창세부터 감추인 것들을 드러내리라 함을 이루려 하심이니라",
+      "source_text_hash": "82205c6f1d691447af0ac353e1fdf99afc40d903965d3551440555f9aba5f3de",
+      "translation_text_hash": "a3f3ee86ef2bc7536b24923e7ab52051f512ac0a82e97769c4d1c65c938b253b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 선지자로 말씀하신바 내가 입을 열어 비유로 말하고 창세부터 감추인 것들을 드러내리라 함을 이루려 하심이니라"
+      ],
+      "raw_text_hashes": [
+        "a3f3ee86ef2bc7536b24923e7ab52051f512ac0a82e97769c4d1c65c938b253b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:13:36",
+      "sequence": 23576,
+      "chapter_label": "MAT 13",
+      "verse_label": "36",
+      "locator": {
+        "book": "MAT",
+        "chapter": 13,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 13,
+          "verse": 36
+        }
+      ],
+      "en": "Then Jesus sent the multitudes away, and went into the house. His disciples came to him, saying, “Explain to us the parable of the darnel weeds of the field.”",
+      "ko": "이에 예수께서 무리를 떠나사 집에 들어가시니 제자들이 나아와 가로되 밭의 가라지의 비유를 우리에게 설명하여 주소서",
+      "source_text_hash": "403375890000d01b6ec13ed36ee8dd973e5652c13e69ae7de85f632254336866",
+      "translation_text_hash": "3c4841bbeb132a7ff9fb2366d9173b3b4eb5c6cf9197303ecfd9f7388982b48f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 예수께서 무리를 떠나사 집에 들어가시니 제자들이 나아와 가로되 밭의 가라지의 비유를 우리에게 설명하여 주소서"
+      ],
+      "raw_text_hashes": [
+        "3c4841bbeb132a7ff9fb2366d9173b3b4eb5c6cf9197303ecfd9f7388982b48f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:13:37",
+      "sequence": 23577,
+      "chapter_label": "MAT 13",
+      "verse_label": "37",
+      "locator": {
+        "book": "MAT",
+        "chapter": 13,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 13,
+          "verse": 37
+        }
+      ],
+      "en": "He answered them, “He who sows the good seed is the Son of Man,",
+      "ko": "대답하여 가라사대 좋은 씨를 뿌리는 이는 인자요",
+      "source_text_hash": "a6c057bfae53f11287087ff781590037f4c7fe2fc2c65a9ba7f80243280424ea",
+      "translation_text_hash": "baa3d3eb90241414a8aefcdc948d7028469b8e82d56a06a0d0b665260a87f6ab",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대답하여 가라사대 좋은 씨를 뿌리는 이는 인자요"
+      ],
+      "raw_text_hashes": [
+        "baa3d3eb90241414a8aefcdc948d7028469b8e82d56a06a0d0b665260a87f6ab"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:13:38",
+      "sequence": 23578,
+      "chapter_label": "MAT 13",
+      "verse_label": "38",
+      "locator": {
+        "book": "MAT",
+        "chapter": 13,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 13,
+          "verse": 38
+        }
+      ],
+      "en": "the field is the world, the good seeds are the children of the Kingdom, and the darnel weeds are the children of the evil one.",
+      "ko": "밭은 세상이요 좋은 씨는 천국의 아들들이요 가라지는 악한 자의 아들들이요",
+      "source_text_hash": "3439bf024bc8021ab2a22486f0e0c8ff4cddd9a5b2ebbff052e3eb111d3d79f9",
+      "translation_text_hash": "c3b1deab61271c725577f9f1bf9894fa72c36301730bbe42f581e02c9454b30d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "밭은 세상이요 좋은 씨는 천국의 아들들이요 가라지는 악한 자의 아들들이요"
+      ],
+      "raw_text_hashes": [
+        "c3b1deab61271c725577f9f1bf9894fa72c36301730bbe42f581e02c9454b30d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:13:39",
+      "sequence": 23579,
+      "chapter_label": "MAT 13",
+      "verse_label": "39",
+      "locator": {
+        "book": "MAT",
+        "chapter": 13,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 13,
+          "verse": 39
+        }
+      ],
+      "en": "The enemy who sowed them is the devil. The harvest is the end of the age, and the reapers are angels.",
+      "ko": "가라지를 심은 원수는 마귀요 추수때는 세상 끝이요 추숫군은 천사들이니",
+      "source_text_hash": "dc7c07a730a0e06e03d1fe5669b8606dc35461305c52084b6de0b8ba464eab21",
+      "translation_text_hash": "4dc0e57882c7dc9f0e45e30e4f0061b7c99aefa99b71fc201c4e7ba4149b24dd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가라지를 심은 원수는 마귀요 추수때는 세상 끝이요 추숫군은 천사들이니"
+      ],
+      "raw_text_hashes": [
+        "4dc0e57882c7dc9f0e45e30e4f0061b7c99aefa99b71fc201c4e7ba4149b24dd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:13:40",
+      "sequence": 23580,
+      "chapter_label": "MAT 13",
+      "verse_label": "40",
+      "locator": {
+        "book": "MAT",
+        "chapter": 13,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 13,
+          "verse": 40
+        }
+      ],
+      "en": "As therefore the darnel weeds are gathered up and burned with fire; so will it be at the end of this age.",
+      "ko": "그런즉 가라지를 거두어 불에 사르는것 같이 세상끝에도 그러하리라",
+      "source_text_hash": "7f51e97ddc6637eae3194e28a2e419ea7db9458985a290b62fe2906bc0d07fac",
+      "translation_text_hash": "026b1f5ff82bc0b306d67e2936e9889a23d263c03aa18a59d110048fbf337e31",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 가라지를 거두어 불에 사르는것 같이 세상끝에도 그러하리라"
+      ],
+      "raw_text_hashes": [
+        "026b1f5ff82bc0b306d67e2936e9889a23d263c03aa18a59d110048fbf337e31"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:13:41",
+      "sequence": 23581,
+      "chapter_label": "MAT 13",
+      "verse_label": "41",
+      "locator": {
+        "book": "MAT",
+        "chapter": 13,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 13,
+          "verse": 41
+        }
+      ],
+      "en": "The Son of Man will send out his angels, and they will gather out of his Kingdom all things that cause stumbling and those who do iniquity,",
+      "ko": "인자가 그 천사들을 보내리니 저희가 그 나라에서 모든 넘어지게 하는 것과 또 불법을 행하는 자들을 거두어 내어",
+      "source_text_hash": "9594efef258e4ae2aacdd623377a658980132cc6697cfaf1ce9cec4f4ae7c022",
+      "translation_text_hash": "7bdbf37702de5b89bf5d53c6381f2ca0fa4147aef41d6d103aba1936512e461e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "인자가 그 천사들을 보내리니 저희가 그 나라에서 모든 넘어지게 하는 것과 또 불법을 행하는 자들을 거두어 내어"
+      ],
+      "raw_text_hashes": [
+        "7bdbf37702de5b89bf5d53c6381f2ca0fa4147aef41d6d103aba1936512e461e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:13:42",
+      "sequence": 23582,
+      "chapter_label": "MAT 13",
+      "verse_label": "42",
+      "locator": {
+        "book": "MAT",
+        "chapter": 13,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 13,
+          "verse": 42
+        }
+      ],
+      "en": "and will cast them into the furnace of fire. There will be weeping and gnashing of teeth.",
+      "ko": "풀무 불에 던져 넣으리니 거기서 울며 이를 갊이 있으리라",
+      "source_text_hash": "8159031c00e28258eea6bed343ba3b3595f00011e9c4287efb1549616c17514e",
+      "translation_text_hash": "07f207a6356e8af6d12e7e347f6c1fbbac16d2cc4a1492bc48055154a9f29a35",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "풀무 불에 던져 넣으리니 거기서 울며 이를 갊이 있으리라"
+      ],
+      "raw_text_hashes": [
+        "07f207a6356e8af6d12e7e347f6c1fbbac16d2cc4a1492bc48055154a9f29a35"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:13:43",
+      "sequence": 23583,
+      "chapter_label": "MAT 13",
+      "verse_label": "43",
+      "locator": {
+        "book": "MAT",
+        "chapter": 13,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 13,
+          "verse": 43
+        }
+      ],
+      "en": "Then the righteous will shine like the sun in the Kingdom of their Father. He who has ears to hear, let him hear.",
+      "ko": "그 때에 의인들은 자기 아버지 나라에서 해와 같이 빛나리라 귀 있는 자는 들으라",
+      "source_text_hash": "38b1e7fd7ecc13b62b187ceb91b7c6f04a9655a909e2ea62083a1e9967dcadf6",
+      "translation_text_hash": "af16251af6a832192f6550150b2ddbda8a80f76dbf169cb2ea36e14aa83faa7f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 의인들은 자기 아버지 나라에서 해와 같이 빛나리라 귀 있는 자는 들으라"
+      ],
+      "raw_text_hashes": [
+        "af16251af6a832192f6550150b2ddbda8a80f76dbf169cb2ea36e14aa83faa7f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:13:44",
+      "sequence": 23584,
+      "chapter_label": "MAT 13",
+      "verse_label": "44",
+      "locator": {
+        "book": "MAT",
+        "chapter": 13,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 13,
+          "verse": 44
+        }
+      ],
+      "en": "“Again, the Kingdom of Heaven is like treasure hidden in the field, which a man found and hid. In his joy, he goes and sells all that he has and buys that field.",
+      "ko": "천국은 마치 밭에 감추인 보화와 같으니 사람이 이를 발견한 후 숨겨 두고 기뻐하여 돌아가서 자기의 소유를 다 팔아 그 밭을 샀느니라",
+      "source_text_hash": "b1e2c4fd9f4a9df3d973b192f9cb39fe12cf51a7b7737d40ef53b16ac3d229de",
+      "translation_text_hash": "53bcaeb47b4bf2c7362b09d6cc0b958c38afc95d92bb87f4294ba28ccedc48a8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "천국은 마치 밭에 감추인 보화와 같으니 사람이 이를 발견한 후 숨겨 두고 기뻐하여 돌아가서 자기의 소유를 다 팔아 그 밭을 샀느니라"
+      ],
+      "raw_text_hashes": [
+        "53bcaeb47b4bf2c7362b09d6cc0b958c38afc95d92bb87f4294ba28ccedc48a8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:13:45",
+      "sequence": 23585,
+      "chapter_label": "MAT 13",
+      "verse_label": "45",
+      "locator": {
+        "book": "MAT",
+        "chapter": 13,
+        "verse": 45
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 13,
+          "verse": 45
+        }
+      ],
+      "en": "“Again, the Kingdom of Heaven is like a man who is a merchant seeking fine pearls,",
+      "ko": "또 천국은 마치 좋은 진주를 구하는 장사와 같으니",
+      "source_text_hash": "6ff75e78f0f40778ec969b8a6827a1c4daa3da54d2cd350f2063688e7e2fd50b",
+      "translation_text_hash": "501719c91e608e466055cfc0448b95d8d982a4c93dca8f1f10b544b803e96924",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 천국은 마치 좋은 진주를 구하는 장사와 같으니"
+      ],
+      "raw_text_hashes": [
+        "501719c91e608e466055cfc0448b95d8d982a4c93dca8f1f10b544b803e96924"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:13:46",
+      "sequence": 23586,
+      "chapter_label": "MAT 13",
+      "verse_label": "46",
+      "locator": {
+        "book": "MAT",
+        "chapter": 13,
+        "verse": 46
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 13,
+          "verse": 46
+        }
+      ],
+      "en": "who having found one pearl of great price, he went and sold all that he had and bought it.",
+      "ko": "극히 값진 진주 하나를 만나매 가서 자기의 소유를 다 팔아 그 진주를 샀느니라",
+      "source_text_hash": "b7cf4f1c060ce955f5ab7c0a05d18834f69c4327f2d4d9508d830f356563c4e8",
+      "translation_text_hash": "7cd4976f86b3fa22f0eb57d654796e1894fa873f5e541c98f2b2a68285e8df85",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "극히 값진 진주 하나를 만나매 가서 자기의 소유를 다 팔아 그 진주를 샀느니라"
+      ],
+      "raw_text_hashes": [
+        "7cd4976f86b3fa22f0eb57d654796e1894fa873f5e541c98f2b2a68285e8df85"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:13:47",
+      "sequence": 23587,
+      "chapter_label": "MAT 13",
+      "verse_label": "47",
+      "locator": {
+        "book": "MAT",
+        "chapter": 13,
+        "verse": 47
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 13,
+          "verse": 47
+        }
+      ],
+      "en": "“Again, the Kingdom of Heaven is like a dragnet that was cast into the sea and gathered some fish of every kind,",
+      "ko": "또 천국은 마치 바다에 치고 각종 물고기를 모는 그물과 같으니",
+      "source_text_hash": "fbe118907108dbb53b56f2fe1fffdac841fcef65bfcb692978b60bae5c2fe594",
+      "translation_text_hash": "2e3ab39974d55a2c624b73cb6bf468a650049be73a2d64538633ae797367eb19",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 천국은 마치 바다에 치고 각종 물고기를 모는 그물과 같으니"
+      ],
+      "raw_text_hashes": [
+        "2e3ab39974d55a2c624b73cb6bf468a650049be73a2d64538633ae797367eb19"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:13:48",
+      "sequence": 23588,
+      "chapter_label": "MAT 13",
+      "verse_label": "48",
+      "locator": {
+        "book": "MAT",
+        "chapter": 13,
+        "verse": 48
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 13,
+          "verse": 48
+        }
+      ],
+      "en": "which, when it was filled, fishermen drew up on the beach. They sat down and gathered the good into containers, but the bad they threw away.",
+      "ko": "그물에 가득하매 물 가로 끌어 내고 앉아서 좋은 것은 그릇에 담고 못된 것은 내어 버리느니라",
+      "source_text_hash": "78c3d7b3e57a3a21fd648df58f25bfd5f28e93aade5db09921636ba0ff3e9659",
+      "translation_text_hash": "b3f6a9bf2bacf9baa9c6e11fafc369a2563520cdefa06db0f067680a7f45648b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그물에 가득하매 물 가로 끌어 내고 앉아서 좋은 것은 그릇에 담고 못된 것은 내어 버리느니라"
+      ],
+      "raw_text_hashes": [
+        "b3f6a9bf2bacf9baa9c6e11fafc369a2563520cdefa06db0f067680a7f45648b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:13:49",
+      "sequence": 23589,
+      "chapter_label": "MAT 13",
+      "verse_label": "49",
+      "locator": {
+        "book": "MAT",
+        "chapter": 13,
+        "verse": 49
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 13,
+          "verse": 49
+        }
+      ],
+      "en": "So it will be in the end of the world.The angels will come and separate the wicked from among the righteous,",
+      "ko": "세상 끝에도 이러하리라 천사들이 와서 의인 중에서 악인을 갈라 내어",
+      "source_text_hash": "d3ad6156aa85f27b6df7d78cd3a1d2e67b777a3b8d4eed465286ca86886b917b",
+      "translation_text_hash": "9f34bf5bf2e9ba3633b6fd11b66cb467b29d7587a9b906dd8a2bc06fe76eb82c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "세상 끝에도 이러하리라 천사들이 와서 의인 중에서 악인을 갈라 내어"
+      ],
+      "raw_text_hashes": [
+        "9f34bf5bf2e9ba3633b6fd11b66cb467b29d7587a9b906dd8a2bc06fe76eb82c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:13:50",
+      "sequence": 23590,
+      "chapter_label": "MAT 13",
+      "verse_label": "50",
+      "locator": {
+        "book": "MAT",
+        "chapter": 13,
+        "verse": 50
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 13,
+          "verse": 50
+        }
+      ],
+      "en": "and will cast them into the furnace of fire. There will be weeping and gnashing of teeth.”",
+      "ko": "풀무 불에 던져 넣으리니 거기서 울며 이를 갊이 있으리라",
+      "source_text_hash": "f83d2cabca4dc36de5755c0bc240bb74842d24a79b1fa46ac203a6cc5a426900",
+      "translation_text_hash": "07f207a6356e8af6d12e7e347f6c1fbbac16d2cc4a1492bc48055154a9f29a35",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "풀무 불에 던져 넣으리니 거기서 울며 이를 갊이 있으리라"
+      ],
+      "raw_text_hashes": [
+        "07f207a6356e8af6d12e7e347f6c1fbbac16d2cc4a1492bc48055154a9f29a35"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:13:51",
+      "sequence": 23591,
+      "chapter_label": "MAT 13",
+      "verse_label": "51",
+      "locator": {
+        "book": "MAT",
+        "chapter": 13,
+        "verse": 51
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 13,
+          "verse": 51
+        }
+      ],
+      "en": "Jesus said to them, “Have you understood all these things?” They answered him, “Yes, Lord.”",
+      "ko": "이 모든 것을 깨달았느냐 하시니 대답하되 그러하오이다",
+      "source_text_hash": "0a90c08f4c7b168592ef06c08fd200beb009de7bdd4e0dec6470018085552c1a",
+      "translation_text_hash": "326beeef84a569b3a9302723c995102c7b801b97dc86072d595d26d0110750e3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 모든 것을 깨달았느냐 하시니 대답하되 그러하오이다"
+      ],
+      "raw_text_hashes": [
+        "326beeef84a569b3a9302723c995102c7b801b97dc86072d595d26d0110750e3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:13:52",
+      "sequence": 23592,
+      "chapter_label": "MAT 13",
+      "verse_label": "52",
+      "locator": {
+        "book": "MAT",
+        "chapter": 13,
+        "verse": 52
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 13,
+          "verse": 52
+        }
+      ],
+      "en": "He said to them, “Therefore every scribe who has been made a disciple in the Kingdom of Heaven is like a man who is a householder, who brings out of his treasure new and old things.”",
+      "ko": "예수께서 가라사대 그러므로 천국의 제자된 서기관마다 마치 새것과 옛것을 그 곳간에서 내어오는 집주인과 같으니라",
+      "source_text_hash": "a4d1446841b21eeb195070fc45b8425700c2f4b94acaf20be25268ddd34c9d06",
+      "translation_text_hash": "38a8f5360d710068d64b5ec7f165f9b7e10ec1f653cebedc2a73d7cd92b9acc4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 가라사대 그러므로 천국의 제자된 서기관마다 마치 새것과 옛것을 그 곳간에서 내어오는 집주인과 같으니라"
+      ],
+      "raw_text_hashes": [
+        "38a8f5360d710068d64b5ec7f165f9b7e10ec1f653cebedc2a73d7cd92b9acc4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:13:53",
+      "sequence": 23593,
+      "chapter_label": "MAT 13",
+      "verse_label": "53",
+      "locator": {
+        "book": "MAT",
+        "chapter": 13,
+        "verse": 53
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 13,
+          "verse": 53
+        }
+      ],
+      "en": "When Jesus had finished these parables, he departed from there.",
+      "ko": "예수께서 이 모든 비유를 마치신 후에 거기를 떠나서",
+      "source_text_hash": "55450ed04367883d7c0cd77b5340638eb5ffb6ac8759b45671feb052e56cf67a",
+      "translation_text_hash": "935310c4efeb39be6bc60e1b648fb0e69edf62db441cf71cea56bdddaa1bacba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 이 모든 비유를 마치신 후에 거기를 떠나서"
+      ],
+      "raw_text_hashes": [
+        "935310c4efeb39be6bc60e1b648fb0e69edf62db441cf71cea56bdddaa1bacba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:13:54",
+      "sequence": 23594,
+      "chapter_label": "MAT 13",
+      "verse_label": "54",
+      "locator": {
+        "book": "MAT",
+        "chapter": 13,
+        "verse": 54
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 13,
+          "verse": 54
+        }
+      ],
+      "en": "Coming into his own country, he taught them in their synagogue, so that they were astonished and said, “Where did this man get this wisdom and these mighty works?",
+      "ko": "고향으로 돌아가사 저희 회당에서 가르치시니 저희가 놀라 가로되 이 사람의 이 지혜와 이런 능력이 어디서 났느뇨",
+      "source_text_hash": "aff77bbcd04d4a15ac77d472b2cee48a208fd31d983a8e4591b81ab6d43f71b1",
+      "translation_text_hash": "b8bdccb17ac7bfe5a2af5cc3f200d8443aa9c2271d80298c4e9be156acde655a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "고향으로 돌아가사 저희 회당에서 가르치시니 저희가 놀라 가로되 이 사람의 이 지혜와 이런 능력이 어디서 났느뇨"
+      ],
+      "raw_text_hashes": [
+        "b8bdccb17ac7bfe5a2af5cc3f200d8443aa9c2271d80298c4e9be156acde655a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:13:55",
+      "sequence": 23595,
+      "chapter_label": "MAT 13",
+      "verse_label": "55",
+      "locator": {
+        "book": "MAT",
+        "chapter": 13,
+        "verse": 55
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 13,
+          "verse": 55
+        }
+      ],
+      "en": "Isn’t this the carpenter’s son? Isn’t his mother called Mary, and his brothers James, Joses, Simon, and Judas?",
+      "ko": "이는 그 목수의 아들이 아니냐 그 모친은 마리아, 그 형제들은 야고보, 요셉, 시몬, 유다라 하지 않느냐",
+      "source_text_hash": "bc0fd7b9d3c615d56ad8dd157d25f65dea3de54731e87998b5b34b85e35cf07b",
+      "translation_text_hash": "4880ea0c918752da886c9bc900b6551b51c8a263918699ba8395d068d30f8430",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 그 목수의 아들이 아니냐 그 모친은 마리아, 그 형제들은 야고보, 요셉, 시몬, 유다라 하지 않느냐"
+      ],
+      "raw_text_hashes": [
+        "4880ea0c918752da886c9bc900b6551b51c8a263918699ba8395d068d30f8430"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:13:56",
+      "sequence": 23596,
+      "chapter_label": "MAT 13",
+      "verse_label": "56",
+      "locator": {
+        "book": "MAT",
+        "chapter": 13,
+        "verse": 56
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 13,
+          "verse": 56
+        }
+      ],
+      "en": "Aren’t all of his sisters with us? Where then did this man get all of these things?”",
+      "ko": "그 누이들은 다 우리와 함께 있지 아니하냐 그런즉 이 사람의 이 모든 것이 어디서 났느뇨 하고",
+      "source_text_hash": "cbce84fd5deaf49e0496feb250d536c5980d0ccee6aa0f408ef5bbb9fc48a5e3",
+      "translation_text_hash": "4695b750dc5830a4c5e6d9fffd19b01707138554122775232d563dbe54dc1d03",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 누이들은 다 우리와 함께 있지 아니하냐 그런즉 이 사람의 이 모든 것이 어디서 났느뇨 하고"
+      ],
+      "raw_text_hashes": [
+        "4695b750dc5830a4c5e6d9fffd19b01707138554122775232d563dbe54dc1d03"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:13:57",
+      "sequence": 23597,
+      "chapter_label": "MAT 13",
+      "verse_label": "57",
+      "locator": {
+        "book": "MAT",
+        "chapter": 13,
+        "verse": 57
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 13,
+          "verse": 57
+        }
+      ],
+      "en": "They were offended by him. But Jesus said to them, “A prophet is not without honor, except in his own country and in his own house.”",
+      "ko": "예수를 배척한지라 예수께서 저희에게 말씀하시되 선지자가 자기 고향과 자기 집 외에서는 존경을 받지 않음이 없느니라 하시고",
+      "source_text_hash": "357d9cd1e735232b8786916404d2cd1ab2bcc7a92f68f84a5ca948f4b852794e",
+      "translation_text_hash": "e9f095c0077f2068f1e77c2456bfda6a4b9e9cc3f84328d11e812a72e4577eff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수를 배척한지라 예수께서 저희에게 말씀하시되 선지자가 자기 고향과 자기 집 외에서는 존경을 받지 않음이 없느니라 하시고"
+      ],
+      "raw_text_hashes": [
+        "e9f095c0077f2068f1e77c2456bfda6a4b9e9cc3f84328d11e812a72e4577eff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:13:58",
+      "sequence": 23598,
+      "chapter_label": "MAT 13",
+      "verse_label": "58",
+      "locator": {
+        "book": "MAT",
+        "chapter": 13,
+        "verse": 58
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 13,
+          "verse": 58
+        }
+      ],
+      "en": "He didn’t do many mighty works there because of their unbelief.",
+      "ko": "저희의 믿지 않음을 인하여 거기서 많은 능력을 행치 아니하시니라",
+      "source_text_hash": "efd63f2228e24edbaf7bac5be92f584973590c60d0fdf10d404726c4553b1e24",
+      "translation_text_hash": "cdb2b748ad46701692776f8fc3ea700d5fbde6ee2f073857fbce5aeea357e0e8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희의 믿지 않음을 인하여 거기서 많은 능력을 행치 아니하시니라"
+      ],
+      "raw_text_hashes": [
+        "cdb2b748ad46701692776f8fc3ea700d5fbde6ee2f073857fbce5aeea357e0e8"
+      ]
+    }
+  ]
+}

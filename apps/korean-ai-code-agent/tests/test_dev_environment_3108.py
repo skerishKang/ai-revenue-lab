@@ -351,7 +351,7 @@ class RequiredModuleTests(unittest.TestCase):
 
     def test_the_checked_modules_match_the_ci_install_list(self) -> None:
         # If CI grows a sibling and this set does not, a local run can silently
-        # consume a foreign copy of the new one. Read the workflow rather than
+        # consume a foreign copy of the new one. Read the action used by the workflow rather than
         # restating it, so the two cannot drift apart silently.
         workflow = (
             REPO_ROOT / ".github" / "workflows" / "validate-b54-kagent.yml"
@@ -359,6 +359,10 @@ class RequiredModuleTests(unittest.TestCase):
         if not workflow.exists():
             self.skipTest("canonical KAgent workflow not present")
         text = workflow.read_text(encoding="utf-8")
+        action_path = ".github/actions/shared-python-install"
+        self.assertIn(f"uses: ./{action_path}", text)
+        self.assertIn("lane: kagent", text)
+        text = (REPO_ROOT / action_path / "action.yml").read_text(encoding="utf-8")
         for distribution in (
             "packages/padiem-ai-core",
             "packages/padiem-control-plane",

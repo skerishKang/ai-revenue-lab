@@ -267,3 +267,40 @@ def test_chat_allowlist_matches_the_lane_allowlist_source():
     lane_codes = set(re.findall(r'"([a-z_]+)"', lane_storage[start:end]))
     assert lane_codes == set(REASON_CODES)
     assert "ooxml_encrypted" in REASON_CODES and "parse_failed" not in REASON_CODES
+
+
+
+@pytest.mark.parametrize("encrypted", [True, False], ids=["encrypted-docx", "ordinary-parser-failure"])
+def test_lane_refusal_survives_browser_transport(chat_client, encrypted):
+    """Pass a real lane/Chat refusal through the actual browser transport."""
+    import shutil
+    import subprocess
+
+    node = shutil.which("node")
+    if not node:
+        pytest.skip("Node.js is needed to exercise the browser transport")
+    name, data = ("secret.docx", _encrypted_docx()) if encrypted else ("bytes.txt", b"\xff\xfeinvalid")
+    file_id = _upload_to_lane(chat_client.padiem_user, name, data)
+    response = _chat_with_attachment(chat_client, file_id)
+    assert response.status_code == 422
+    script = r"""
+      const fs = require("fs");
+      global.window = {};
+      const payload = JSON.parse(fs.readFileSync(0, "utf8"));
+      global.fetch = async () => ({ok: false, status: 422, json: async () => payload});
+      require(process.argv[1]);
+      window.PadiemChatTransport.requestCompleted({messages: []})
+        .then(() => { process.exitCode = 1; })
+        .catch(error => { process.stdout.write(JSON.stringify({message: error.message, code: error.code})); });
+    """
+    result = subprocess.run(
+        [node, "-e", script, str(ROOT / "static" / "chat-transport.js")],
+        input=response.text, text=True, encoding="utf-8", capture_output=True, check=True,
+    )
+    error = json.loads(result.stdout)
+    assert error == {
+        "message": ENCRYPTED_DOCX_WORDING if encrypted else GENERAL_WORDING,
+        "code": "invalid_request",
+    }
+    assert "EncryptedPackage" not in result.stdout
+    assert "ooxml_encrypted" not in result.stdout

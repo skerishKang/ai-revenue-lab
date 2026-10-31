@@ -1,0 +1,1197 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:2KI:chapter:019",
+  "unit_ordinal": 332,
+  "unit_label": "2KI 19",
+  "book_code": "2KI",
+  "chapter_number": 19,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:2KI:19:1",
+      "sequence": 10063,
+      "chapter_label": "2KI 19",
+      "verse_label": "1",
+      "locator": {
+        "book": "2KI",
+        "chapter": 19,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 19,
+          "verse": 1
+        }
+      ],
+      "en": "When King Hezekiah heard it, he tore his clothes, covered himself with sackcloth, and went into the LORD’s house.",
+      "ko": "히스기야왕이 듣고 그 옷을 찢고 굵은 베를 입고 여호와의 전에 들어가서",
+      "source_text_hash": "e271162620eff4737128c86f0e916e0f9daf0570da24ae5b8bff10d75a3aa1cf",
+      "translation_text_hash": "bc871cc16c414d991e110fc2457c6b564b66f40418f2b299a03f0e33fbd7eed3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "히스기야왕이 듣고 그 옷을 찢고 굵은 베를 입고 여호와의 전에 들어가서"
+      ],
+      "raw_text_hashes": [
+        "bc871cc16c414d991e110fc2457c6b564b66f40418f2b299a03f0e33fbd7eed3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:19:2",
+      "sequence": 10064,
+      "chapter_label": "2KI 19",
+      "verse_label": "2",
+      "locator": {
+        "book": "2KI",
+        "chapter": 19,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 19,
+          "verse": 2
+        }
+      ],
+      "en": "He sent Eliakim, who was over the household, Shebna the scribe, and the elders of the priests, covered with sackcloth, to Isaiah the prophet the son of Amoz.",
+      "ko": "궁내대신 엘리야김과 서기관 셉나와 제사장 중 장로들에게 굵은 베를 입혀서 아모스의 아들 선지자 이사야에게로 보내매",
+      "source_text_hash": "b2f9c6f3817f8150af9726613721b85cf172c0bed8af761a454cae094f31fb0c",
+      "translation_text_hash": "72c19734d89a38d88840cf4d05a7f58d094bdd22ab4e0ba8987c0a44c3c50f69",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "궁내대신 엘리야김과 서기관 셉나와 제사장 중 장로들에게 굵은 베를 입혀서 아모스의 아들 선지자 이사야에게로 보내매"
+      ],
+      "raw_text_hashes": [
+        "72c19734d89a38d88840cf4d05a7f58d094bdd22ab4e0ba8987c0a44c3c50f69"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:19:3",
+      "sequence": 10065,
+      "chapter_label": "2KI 19",
+      "verse_label": "3",
+      "locator": {
+        "book": "2KI",
+        "chapter": 19,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 19,
+          "verse": 3
+        }
+      ],
+      "en": "They said to him, “Hezekiah says, ‘Today is a day of trouble, of rebuke, and of rejection; for the children have come to the point of birth, and there is no strength to deliver them.",
+      "ko": "저희가 이사야에게 이르되 히스기야의 말씀이 오늘은 곤란과 책벌과 능욕의 날이라 아이가 임산하였으나 해산할 힘이 없도다",
+      "source_text_hash": "1f64fafe969b9b378cc9370f2a173729f4a03e09716833480bd13ee7330ec428",
+      "translation_text_hash": "435463ceb3b8197f1479f2f1c52005e9adb0fd124b00655743cf788f96e3e8e4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 이사야에게 이르되 히스기야의 말씀이 오늘은 곤란과 책벌과 능욕의 날이라 아이가 임산하였으나 해산할 힘이 없도다"
+      ],
+      "raw_text_hashes": [
+        "435463ceb3b8197f1479f2f1c52005e9adb0fd124b00655743cf788f96e3e8e4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:19:4",
+      "sequence": 10066,
+      "chapter_label": "2KI 19",
+      "verse_label": "4",
+      "locator": {
+        "book": "2KI",
+        "chapter": 19,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 19,
+          "verse": 4
+        }
+      ],
+      "en": "It may be the LORD your God will hear all the words of Rabshakeh, whom the king of Assyria his master has sent to defy the living God, and will rebuke the words which the LORD your God has heard. Therefore lift up your prayer for the remnant that is left.’”",
+      "ko": "랍사게가 그 주 앗수르 왕의 보냄을 받고 와서 사신 하나님을 훼방하였으니 당신의 하나님 여호와께서 혹시 저의 말을 들으셨을지라 당신의 하나님 여호와께서 그 들으신 말을 인하여 꾸짖으실듯하니 당신은 이 남아 있는 자를 위하여 기도하소서 하더이다",
+      "source_text_hash": "f00dfea1a3780c93e83bd8f9748bca1d57e9f515b293608fccabf8e30154f2dc",
+      "translation_text_hash": "9cc0a57f5909e4a34be40a54ebffcd7ef56254f57ac3b52fb4cacbeb85748b4a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "랍사게가 그 주 앗수르 왕의 보냄을 받고 와서 사신 하나님을 훼방하였으니 당신의 하나님 여호와께서 혹시 저의 말을 들으셨을지라 당신의 하나님 여호와께서 그 들으신 말을 인하여 꾸짖으실듯하니 당신은 이 남아 있는 자를 위하여 기도하소서 하더이다"
+      ],
+      "raw_text_hashes": [
+        "9cc0a57f5909e4a34be40a54ebffcd7ef56254f57ac3b52fb4cacbeb85748b4a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:19:5",
+      "sequence": 10067,
+      "chapter_label": "2KI 19",
+      "verse_label": "5",
+      "locator": {
+        "book": "2KI",
+        "chapter": 19,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 19,
+          "verse": 5
+        }
+      ],
+      "en": "So the servants of King Hezekiah came to Isaiah.",
+      "ko": "이와 같이 히스기야왕의 신복이 이사야에게 나아가니",
+      "source_text_hash": "63894251e995a2c776deef4f963468016b924b3ecc1dea5ddfb76e202fb9d864",
+      "translation_text_hash": "3bbecf623fc21e11aa63996506dc0fef0a9c46e9de09e410f5a60e4177da03de",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이와 같이 히스기야왕의 신복이 이사야에게 나아가니"
+      ],
+      "raw_text_hashes": [
+        "3bbecf623fc21e11aa63996506dc0fef0a9c46e9de09e410f5a60e4177da03de"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:19:6",
+      "sequence": 10068,
+      "chapter_label": "2KI 19",
+      "verse_label": "6",
+      "locator": {
+        "book": "2KI",
+        "chapter": 19,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 19,
+          "verse": 6
+        }
+      ],
+      "en": "Isaiah said to them, “Tell your master this: ‘The LORD says, “Don’t be afraid of the words that you have heard, with which the servants of the king of Assyria have blasphemed me.",
+      "ko": "이사야가 저희에게 이르되 너희는 너희 주에게 이렇게 고하라 여호와의 말씀이 너는 앗수르 왕의 신복에게 들은바 나를 능욕하는 말을 인하여 두려워하지 말라",
+      "source_text_hash": "0880f2547a453d90448e1860145a0375584cc2b830cd7c642db0dc8c4e98f564",
+      "translation_text_hash": "1b029a3910ee24304aa898176fd2a0192c36f7ea16fe5276e2889fbbe5ca4e6d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이사야가 저희에게 이르되 너희는 너희 주에게 이렇게 고하라 여호와의 말씀이 너는 앗수르 왕의 신복에게 들은바 나를 능욕하는 말을 인하여 두려워하지 말라"
+      ],
+      "raw_text_hashes": [
+        "1b029a3910ee24304aa898176fd2a0192c36f7ea16fe5276e2889fbbe5ca4e6d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:19:7",
+      "sequence": 10069,
+      "chapter_label": "2KI 19",
+      "verse_label": "7",
+      "locator": {
+        "book": "2KI",
+        "chapter": 19,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 19,
+          "verse": 7
+        }
+      ],
+      "en": "Behold, I will put a spirit in him, and he will hear news, and will return to his own land. I will cause him to fall by the sword in his own land.”’”",
+      "ko": "내가 한 영을 저의 속에 두어 저로 풍문을 듣고 그 본국으로 돌아가게 하고 또 그 본국에서 저로 칼에 죽게 하리라 하셨느니라",
+      "source_text_hash": "929d818c039f781e26b1de35dd42dd4ab6ccd3d5c1f4dbe000a0661e4278578e",
+      "translation_text_hash": "9249f4828b93185785a0648b8ab4aaffad66af6e90b3d6d1231f46ca015c29ae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 한 영을 저의 속에 두어 저로 풍문을 듣고 그 본국으로 돌아가게 하고 또 그 본국에서 저로 칼에 죽게 하리라 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "9249f4828b93185785a0648b8ab4aaffad66af6e90b3d6d1231f46ca015c29ae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:19:8",
+      "sequence": 10070,
+      "chapter_label": "2KI 19",
+      "verse_label": "8",
+      "locator": {
+        "book": "2KI",
+        "chapter": 19,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 19,
+          "verse": 8
+        }
+      ],
+      "en": "So Rabshakeh returned and found the king of Assyria warring against Libnah; for he had heard that he had departed from Lachish.",
+      "ko": "랍사게가 돌아 가다가 앗수르 왕이 이미 라기스에서 떠났다 함을 듣고 립나로 가서 왕을 만났으니 왕이 거기서 싸우는 중이더라",
+      "source_text_hash": "e37036294f276dfca296d68fee5089a11fd4a882ddecbae19fe18c17666c3359",
+      "translation_text_hash": "79804fb977576aed28fb5b0f57d629da3126b0789aaa982617c5b79bd398715a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "랍사게가 돌아 가다가 앗수르 왕이 이미 라기스에서 떠났다 함을 듣고 립나로 가서 왕을 만났으니 왕이 거기서 싸우는 중이더라"
+      ],
+      "raw_text_hashes": [
+        "79804fb977576aed28fb5b0f57d629da3126b0789aaa982617c5b79bd398715a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:19:9",
+      "sequence": 10071,
+      "chapter_label": "2KI 19",
+      "verse_label": "9",
+      "locator": {
+        "book": "2KI",
+        "chapter": 19,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 19,
+          "verse": 9
+        }
+      ],
+      "en": "When he heard it said of Tirhakah king of Ethiopia, “Behold, he has come out to fight against you,” he sent messengers again to Hezekiah, saying,",
+      "ko": "앗수르 왕이 구스 왕 디르하가가 나와서 더불어 싸우고자 한다 함을 듣고 다시 히스기야에게 사자를 보내며 가로되",
+      "source_text_hash": "f4a0dba6b43017b23d932e0c2de5335c811c961741145aec0c4af40ae8f5906e",
+      "translation_text_hash": "1fa31a53852d94850b5f925f58a6d84a340212861953e191b29c2f1b3f1d2843",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "앗수르 왕이 구스 왕 디르하가가 나와서 더불어 싸우고자 한다 함을 듣고 다시 히스기야에게 사자를 보내며 가로되"
+      ],
+      "raw_text_hashes": [
+        "1fa31a53852d94850b5f925f58a6d84a340212861953e191b29c2f1b3f1d2843"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:19:10",
+      "sequence": 10072,
+      "chapter_label": "2KI 19",
+      "verse_label": "10",
+      "locator": {
+        "book": "2KI",
+        "chapter": 19,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 19,
+          "verse": 10
+        }
+      ],
+      "en": "“Tell Hezekiah king of Judah this: ‘Don’t let your God in whom you trust deceive you, saying, Jerusalem will not be given into the hand of the king of Assyria.",
+      "ko": "너희는 유다 왕 히스기야에게 이같이 말하여 이르기를 너의 의뢰하는 네 하나님이 예루살렘을 앗수르 왕의 손에 붙이지 않겠다 하는 말에 속지 말라",
+      "source_text_hash": "77f3c143320d08d48a625047f3d7326b58729ffa079e1526396cf1e28b6a455b",
+      "translation_text_hash": "168e99cdf8f343b3bd4672057ef1138e7c20d27ce8e817c4653af09b46b9b1c4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 유다 왕 히스기야에게 이같이 말하여 이르기를 너의 의뢰하는 네 하나님이 예루살렘을 앗수르 왕의 손에 붙이지 않겠다 하는 말에 속지 말라"
+      ],
+      "raw_text_hashes": [
+        "168e99cdf8f343b3bd4672057ef1138e7c20d27ce8e817c4653af09b46b9b1c4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:19:11",
+      "sequence": 10073,
+      "chapter_label": "2KI 19",
+      "verse_label": "11",
+      "locator": {
+        "book": "2KI",
+        "chapter": 19,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 19,
+          "verse": 11
+        }
+      ],
+      "en": "Behold, you have heard what the kings of Assyria have done to all lands, by destroying them utterly. Will you be delivered?",
+      "ko": "앗수르의 열왕이 열방에 행한바 진멸한 일을 네가 들었나니 네가 어찌 구원을 얻겠느냐",
+      "source_text_hash": "fd5e17fc89cbe5823f57a42531d21d9b9ad079a362e1d468b9ac9035dd08914a",
+      "translation_text_hash": "3074b655e5f4209b00cd3f413dd78e424ab3fe546c11a6aca1c3723411281d5f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "앗수르의 열왕이 열방에 행한바 진멸한 일을 네가 들었나니 네가 어찌 구원을 얻겠느냐"
+      ],
+      "raw_text_hashes": [
+        "3074b655e5f4209b00cd3f413dd78e424ab3fe546c11a6aca1c3723411281d5f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:19:12",
+      "sequence": 10074,
+      "chapter_label": "2KI 19",
+      "verse_label": "12",
+      "locator": {
+        "book": "2KI",
+        "chapter": 19,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 19,
+          "verse": 12
+        }
+      ],
+      "en": "Have the gods of the nations delivered them, which my fathers have destroyed—Gozan, Haran, Rezeph, and the children of Eden who were in Telassar?",
+      "ko": "내 열조가 멸하신 열방 곧 고산과 하란과 레셉과 들라살에 있는 에덴 족속을 그 나라의 신들이 건졌느냐",
+      "source_text_hash": "c85c8e3cd92b4e24f8a15b3d00ef63741c5bec6cb9ec3d579d626ebf1cef4037",
+      "translation_text_hash": "07302796fac9516cf4d570102a1fde2368dd0e6f447b8cc6df423a11d9e208ea",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 열조가 멸하신 열방 곧 고산과 하란과 레셉과 들라살에 있는 에덴 족속을 그 나라의 신들이 건졌느냐"
+      ],
+      "raw_text_hashes": [
+        "07302796fac9516cf4d570102a1fde2368dd0e6f447b8cc6df423a11d9e208ea"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:19:13",
+      "sequence": 10075,
+      "chapter_label": "2KI 19",
+      "verse_label": "13",
+      "locator": {
+        "book": "2KI",
+        "chapter": 19,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 19,
+          "verse": 13
+        }
+      ],
+      "en": "Where is the king of Hamath, the king of Arpad, and the king of the city of Sepharvaim, of Hena, and Ivvah?’”",
+      "ko": "하맛 왕과 아르밧 왕과 스발와임성의 왕과 헤나와 아와의 왕들이 다 어디 있느냐 하라 하니라",
+      "source_text_hash": "ee7843bb8b0ae6213e43df4090ed7ef97e1dacbcdc5ae03650c545e6ffed592a",
+      "translation_text_hash": "18b2be77d1615665dbac11a66840791412255946fd59d2c8537f65e9c988b383",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하맛 왕과 아르밧 왕과 스발와임성의 왕과 헤나와 아와의 왕들이 다 어디 있느냐 하라 하니라"
+      ],
+      "raw_text_hashes": [
+        "18b2be77d1615665dbac11a66840791412255946fd59d2c8537f65e9c988b383"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:19:14",
+      "sequence": 10076,
+      "chapter_label": "2KI 19",
+      "verse_label": "14",
+      "locator": {
+        "book": "2KI",
+        "chapter": 19,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 19,
+          "verse": 14
+        }
+      ],
+      "en": "Hezekiah received the letter from the hand of the messengers and read it. Then Hezekiah went up to the LORD’s house, and spread it before the LORD.",
+      "ko": "히스기야가 사자의 손에서 편지를 받아보고 여호와의 전에 올라가서 그 편지를 여호와 앞에 펴 놓고",
+      "source_text_hash": "7dec084568e1c833f90de67ae5ce8b4d9cea48b31e69922ba4fd127acb48bceb",
+      "translation_text_hash": "fbfba409160a08016bda258aaa60b828bbdbc16f3e7e29caec9352cdcbfc91bf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "히스기야가 사자의 손에서 편지를 받아보고 여호와의 전에 올라가서 그 편지를 여호와 앞에 펴 놓고"
+      ],
+      "raw_text_hashes": [
+        "fbfba409160a08016bda258aaa60b828bbdbc16f3e7e29caec9352cdcbfc91bf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:19:15",
+      "sequence": 10077,
+      "chapter_label": "2KI 19",
+      "verse_label": "15",
+      "locator": {
+        "book": "2KI",
+        "chapter": 19,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 19,
+          "verse": 15
+        }
+      ],
+      "en": "Hezekiah prayed before the LORD, and said, “LORD, the God of Israel, enthroned above the cherubim, you are the God, even you alone, of all the kingdoms of the earth. You have made heaven and earth.",
+      "ko": "그 앞에서 기도하여 가로되 그룹들 위에 계신 이스라엘의 하나님 여호와여 주는 천하 만국에 홀로 하나님이시라 주께서 천지를 조성하셨나이다",
+      "source_text_hash": "e41322cd3bb4de738191994a4e27cb4b094783f357961ab3fc83bdf9283de99f",
+      "translation_text_hash": "1bd72035d0d22a6feb97769b4730dd31b7d346bc896294e4b38761781b033937",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 앞에서 기도하여 가로되 그룹들 위에 계신 이스라엘의 하나님 여호와여 주는 천하 만국에 홀로 하나님이시라 주께서 천지를 조성하셨나이다"
+      ],
+      "raw_text_hashes": [
+        "1bd72035d0d22a6feb97769b4730dd31b7d346bc896294e4b38761781b033937"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:19:16",
+      "sequence": 10078,
+      "chapter_label": "2KI 19",
+      "verse_label": "16",
+      "locator": {
+        "book": "2KI",
+        "chapter": 19,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 19,
+          "verse": 16
+        }
+      ],
+      "en": "Incline your ear, LORD, and hear. Open your eyes, LORD, and see. Hear the words of Sennacherib, which he has sent to defy the living God.",
+      "ko": "여호와여 귀를 기울여 들으소서 여호와여 눈을 떠서 보시옵소서 산헤립이 사신 하나님을 훼방하러 보낸 말을 들으시옵소서",
+      "source_text_hash": "af2ec9ffec5b6122e01a772504fa223e85849f74950ac47f0d269d3aa4de338c",
+      "translation_text_hash": "9e873caf2d6d4b10fa3fe8a2ea8dffbb0e63a9ce937f1afa2f5643f9da0d8d51",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 귀를 기울여 들으소서 여호와여 눈을 떠서 보시옵소서 산헤립이 사신 하나님을 훼방하러 보낸 말을 들으시옵소서"
+      ],
+      "raw_text_hashes": [
+        "9e873caf2d6d4b10fa3fe8a2ea8dffbb0e63a9ce937f1afa2f5643f9da0d8d51"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:19:17",
+      "sequence": 10079,
+      "chapter_label": "2KI 19",
+      "verse_label": "17",
+      "locator": {
+        "book": "2KI",
+        "chapter": 19,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 19,
+          "verse": 17
+        }
+      ],
+      "en": "Truly, LORD, the kings of Assyria have laid waste the nations and their lands,",
+      "ko": "여호와여 앗수르 열왕이 과연 열방과 그 땅을 황폐케 하고",
+      "source_text_hash": "5c1b090e531748106ec89068e0a0c7e2da0ce52e6f7231a3dc123b701341a178",
+      "translation_text_hash": "a8873a9cfb5eb91814b3305994b05fc8ace425e21f639fe69284faf6b5e1f3cd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 앗수르 열왕이 과연 열방과 그 땅을 황폐케 하고"
+      ],
+      "raw_text_hashes": [
+        "a8873a9cfb5eb91814b3305994b05fc8ace425e21f639fe69284faf6b5e1f3cd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:19:18",
+      "sequence": 10080,
+      "chapter_label": "2KI 19",
+      "verse_label": "18",
+      "locator": {
+        "book": "2KI",
+        "chapter": 19,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 19,
+          "verse": 18
+        }
+      ],
+      "en": "and have cast their gods into the fire; for they were no gods, but the work of men’s hands, wood and stone. Therefore they have destroyed them.",
+      "ko": "또 그 신들을 불에 던졌사오니 이는 저희가 신이 아니요 사람의 손으로 지은 것 곧 나무와 돌 뿐이므로 멸하였나이다",
+      "source_text_hash": "c618e5217962588985bda9bdb012dac02e207e2f5ec6397e5f7a74f4d6f45bee",
+      "translation_text_hash": "f0cc88ebc8ee02e8b24ad068f6782ced7ad2431d08dde7030c0935395a9e60ee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 그 신들을 불에 던졌사오니 이는 저희가 신이 아니요 사람의 손으로 지은 것 곧 나무와 돌 뿐이므로 멸하였나이다"
+      ],
+      "raw_text_hashes": [
+        "f0cc88ebc8ee02e8b24ad068f6782ced7ad2431d08dde7030c0935395a9e60ee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:19:19",
+      "sequence": 10081,
+      "chapter_label": "2KI 19",
+      "verse_label": "19",
+      "locator": {
+        "book": "2KI",
+        "chapter": 19,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 19,
+          "verse": 19
+        }
+      ],
+      "en": "Now therefore, LORD our God, save us, I beg you, out of his hand, that all the kingdoms of the earth may know that you, LORD, are God alone.”",
+      "ko": "우리 하나님 여호와여 원컨대 이제 우리를 그 손에서 구원하옵소서 그리하시면 천하 만국이 주 여호와는 홀로 하나님이신줄 알리이다 하니라",
+      "source_text_hash": "38f058dd139d68a7e43183f1c14739288ab28c683f372498f781f3ab7af1b353",
+      "translation_text_hash": "cebe0f31899142078d4149a903668096f279ad1c2fe7e887cdd4f33852c0bf85",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리 하나님 여호와여 원컨대 이제 우리를 그 손에서 구원하옵소서 그리하시면 천하 만국이 주 여호와는 홀로 하나님이신줄 알리이다 하니라"
+      ],
+      "raw_text_hashes": [
+        "cebe0f31899142078d4149a903668096f279ad1c2fe7e887cdd4f33852c0bf85"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:19:20",
+      "sequence": 10082,
+      "chapter_label": "2KI 19",
+      "verse_label": "20",
+      "locator": {
+        "book": "2KI",
+        "chapter": 19,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 19,
+          "verse": 20
+        }
+      ],
+      "en": "Then Isaiah the son of Amoz sent to Hezekiah, saying, “The LORD, the God of Israel, says ‘You have prayed to me against Sennacherib king of Assyria, and I have heard you.",
+      "ko": "아모스의 아들 이사야가 히스기야에게 기별하여 가로되 이스라엘 하나님 여호와의 말씀이 네가 앗수르 왕 산헤립 까닭에 내게 기도하는 것을 내가 들었노라 하셨나이다",
+      "source_text_hash": "25d5ddd898b7c1ee3b5742edf03d388d81aff150e11fe2e0453985187f4ae061",
+      "translation_text_hash": "41420d88eec13076eeed2c98133491a95af78e0bdd2531d8362e93272fa00a48",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아모스의 아들 이사야가 히스기야에게 기별하여 가로되 이스라엘 하나님 여호와의 말씀이 네가 앗수르 왕 산헤립 까닭에 내게 기도하는 것을 내가 들었노라 하셨나이다"
+      ],
+      "raw_text_hashes": [
+        "41420d88eec13076eeed2c98133491a95af78e0bdd2531d8362e93272fa00a48"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:19:21",
+      "sequence": 10083,
+      "chapter_label": "2KI 19",
+      "verse_label": "21",
+      "locator": {
+        "book": "2KI",
+        "chapter": 19,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 19,
+          "verse": 21
+        }
+      ],
+      "en": "This is the word that the LORD has spoken concerning him: ‘The virgin daughter of Zion has despised you and ridiculed you. The daughter of Jerusalem has shaken her head at you.",
+      "ko": "여호와께서 앗수르 왕에게 대하여 이같이 말씀하시기를 처녀 딸 시온이 너를 멸시하며 너를 비웃었으며 딸 예루살렘이 너를 향하여 머리를 흔들었느니라",
+      "source_text_hash": "7001e34ee888187d1112849244b5b9518b845432d4d4425641aed0fc149b4b01",
+      "translation_text_hash": "f0f8e7de34134259723fe774bbf66536883aa02d3902813aae42c401a7cf7469",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 앗수르 왕에게 대하여 이같이 말씀하시기를 처녀 딸 시온이 너를 멸시하며 너를 비웃었으며 딸 예루살렘이 너를 향하여 머리를 흔들었느니라"
+      ],
+      "raw_text_hashes": [
+        "f0f8e7de34134259723fe774bbf66536883aa02d3902813aae42c401a7cf7469"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:19:22",
+      "sequence": 10084,
+      "chapter_label": "2KI 19",
+      "verse_label": "22",
+      "locator": {
+        "book": "2KI",
+        "chapter": 19,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 19,
+          "verse": 22
+        }
+      ],
+      "en": "Whom have you defied and blasphemed? Against whom have you exalted your voice and lifted up your eyes on high? Against the Holy One of Israel!",
+      "ko": "네가 누구를 꾸짖었으며 훼방하였느냐 누구를 향하여 소리를 높였으며 눈을 높이 떴느냐 이스라엘의 거룩한 자에게 그리하였도다",
+      "source_text_hash": "6d0d3baed9376d27bbfe992b7923e386ade5c459460b65c98d1786f6950c60a8",
+      "translation_text_hash": "1ee8472dbc6533b3ec5fa8c8874a984326fb72245e7421804b723ba2d1a8f473",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 누구를 꾸짖었으며 훼방하였느냐 누구를 향하여 소리를 높였으며 눈을 높이 떴느냐 이스라엘의 거룩한 자에게 그리하였도다"
+      ],
+      "raw_text_hashes": [
+        "1ee8472dbc6533b3ec5fa8c8874a984326fb72245e7421804b723ba2d1a8f473"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:19:23",
+      "sequence": 10085,
+      "chapter_label": "2KI 19",
+      "verse_label": "23",
+      "locator": {
+        "book": "2KI",
+        "chapter": 19,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 19,
+          "verse": 23
+        }
+      ],
+      "en": "By your messengers, you have defied the Lord, and have said, “With the multitude of my chariots, I have come up to the height of the mountains, to the innermost parts of Lebanon, and I will cut down its tall cedars and its choice cypress trees; and I will enter into his farthest lodging place, the forest of his fruitful field.",
+      "ko": "네가 사자로 주를 훼방하여 이르기를 내가 많은 병거를 거느리고 여러 산꼭대기에 올라가며 레바논 깊은 곳에 이르러 높은 백향목과 아름다운 잣나무를 베고 내가 그 지경 끝에 들어가며 그 동산의 무성한 수풀에 이르리라",
+      "source_text_hash": "dc0b685b4bee30b95d54edb8d4fd1312114319daf44b539f6f4602d27df9e66b",
+      "translation_text_hash": "289fa1287de0e38ed28bd3f1f9b66563b10888601545f805e5552e63d1ad63c7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 사자로 주를 훼방하여 이르기를 내가 많은 병거를 거느리고 여러 산꼭대기에 올라가며 레바논 깊은 곳에 이르러 높은 백향목과 아름다운 잣나무를 베고 내가 그 지경 끝에 들어가며 그 동산의 무성한 수풀에 이르리라"
+      ],
+      "raw_text_hashes": [
+        "289fa1287de0e38ed28bd3f1f9b66563b10888601545f805e5552e63d1ad63c7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:19:24",
+      "sequence": 10086,
+      "chapter_label": "2KI 19",
+      "verse_label": "24",
+      "locator": {
+        "book": "2KI",
+        "chapter": 19,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 19,
+          "verse": 24
+        }
+      ],
+      "en": "I have dug and drunk strange waters, and I will dry up all the rivers of Egypt with the sole of my feet.”",
+      "ko": "내가 땅을 파서 이방의 물을 마셨고 나의 발바닥으로 애굽의 모든 하수를 말렸노라 하였도다",
+      "source_text_hash": "a2e20a83c77901cae4643843953112ecb628d2c65253814531805deec6ffe3fb",
+      "translation_text_hash": "757c4e51eb525c8d7a35387d9488c4e7ae5e391c79099dcffcc6219f5ee05bba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 땅을 파서 이방의 물을 마셨고 나의 발바닥으로 애굽의 모든 하수를 말렸노라 하였도다"
+      ],
+      "raw_text_hashes": [
+        "757c4e51eb525c8d7a35387d9488c4e7ae5e391c79099dcffcc6219f5ee05bba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:19:25",
+      "sequence": 10087,
+      "chapter_label": "2KI 19",
+      "verse_label": "25",
+      "locator": {
+        "book": "2KI",
+        "chapter": 19,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 19,
+          "verse": 25
+        }
+      ],
+      "en": "Haven’t you heard how I have done it long ago, and formed it of ancient times? Now I have brought it to pass, that it should be yours to lay waste fortified cities into ruinous heaps.",
+      "ko": "네가 듣지 못하였느냐 이 일은 내가 태초부터 행하였고 상고부터 정한바라 이제 내가 이루어 너로 견고한 성들을 멸하여 돌무더기가 되게 함이니라",
+      "source_text_hash": "4b1a746af7c360334ed4293b67b71de1533b50207678f062fddf8b20cc22dc77",
+      "translation_text_hash": "4847903edc1c9bb103009505a80c597adf7019eeddfaf5f819ce53a163951b29",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 듣지 못하였느냐 이 일은 내가 태초부터 행하였고 상고부터 정한바라 이제 내가 이루어 너로 견고한 성들을 멸하여 돌무더기가 되게 함이니라"
+      ],
+      "raw_text_hashes": [
+        "4847903edc1c9bb103009505a80c597adf7019eeddfaf5f819ce53a163951b29"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:19:26",
+      "sequence": 10088,
+      "chapter_label": "2KI 19",
+      "verse_label": "26",
+      "locator": {
+        "book": "2KI",
+        "chapter": 19,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 19,
+          "verse": 26
+        }
+      ],
+      "en": "Therefore their inhabitants had little power. They were dismayed and confounded. They were like the grass of the field and like the green herb, like the grass on the housetops and like grain blasted before it has grown up.",
+      "ko": "그러므로 그 거한 백성의 힘이 약하여 두려워하며 놀랐나니 저희는 마치 들의 풀 같고 나물 같고 지붕의 풀 같고 자라기 전에 마른 곡초 같으니라",
+      "source_text_hash": "0e1ce71628cca7c823721ca797c4d83550697f00be905ce46dcfbd12cca6e3d0",
+      "translation_text_hash": "0f0832cd3f8d68ca747c786c9dfb36c16a77e006204750ab4900110f90be6936",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 그 거한 백성의 힘이 약하여 두려워하며 놀랐나니 저희는 마치 들의 풀 같고 나물 같고 지붕의 풀 같고 자라기 전에 마른 곡초 같으니라"
+      ],
+      "raw_text_hashes": [
+        "0f0832cd3f8d68ca747c786c9dfb36c16a77e006204750ab4900110f90be6936"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:19:27",
+      "sequence": 10089,
+      "chapter_label": "2KI 19",
+      "verse_label": "27",
+      "locator": {
+        "book": "2KI",
+        "chapter": 19,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 19,
+          "verse": 27
+        }
+      ],
+      "en": "But I know your sitting down, your going out, your coming in, and your raging against me.",
+      "ko": "네 거처와 네 출입과 네가 내게 향한 분노를 내가 다 아노니",
+      "source_text_hash": "9e2858945d4f20faa9b7c622e86adc9bfc0d58507531a57c7bc5025a47b42f44",
+      "translation_text_hash": "8a33cfcc80a088e525b6dc0a26d4b2a4d1d18e87dfa860719cf865fefa75a22b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 거처와 네 출입과 네가 내게 향한 분노를 내가 다 아노니"
+      ],
+      "raw_text_hashes": [
+        "8a33cfcc80a088e525b6dc0a26d4b2a4d1d18e87dfa860719cf865fefa75a22b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:19:28",
+      "sequence": 10090,
+      "chapter_label": "2KI 19",
+      "verse_label": "28",
+      "locator": {
+        "book": "2KI",
+        "chapter": 19,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 19,
+          "verse": 28
+        }
+      ],
+      "en": "Because of your raging against me, and because your arrogance has come up into my ears, therefore I will put my hook in your nose, and my bridle in your lips, and I will turn you back by the way by which you came.’",
+      "ko": "네가 내게 향한 분노와 네 교만한 말이 내 귀에 들렸도다 그러므로 내가 갈고리로 네 코에 꿰고 자갈을 네 입에 먹여 너를 오던 길로 끌어 돌이키리라 하셨나이다",
+      "source_text_hash": "9973e4d7bb9cf2fe1376dd7add63e69277c156671cf9d6b417a79a37fa9cf174",
+      "translation_text_hash": "c5b84ebc373cfa982ff6014be4db2605bf00f7807de0c1e3e0b7ee556a03616e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 내게 향한 분노와 네 교만한 말이 내 귀에 들렸도다 그러므로 내가 갈고리로 네 코에 꿰고 자갈을 네 입에 먹여 너를 오던 길로 끌어 돌이키리라 하셨나이다"
+      ],
+      "raw_text_hashes": [
+        "c5b84ebc373cfa982ff6014be4db2605bf00f7807de0c1e3e0b7ee556a03616e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:19:29",
+      "sequence": 10091,
+      "chapter_label": "2KI 19",
+      "verse_label": "29",
+      "locator": {
+        "book": "2KI",
+        "chapter": 19,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 19,
+          "verse": 29
+        }
+      ],
+      "en": "“This will be the sign to you: This year, you will eat that which grows of itself, and in the second year that which springs from that; and in the third year sow and reap, and plant vineyards and eat their fruit.",
+      "ko": "또 네게 보일 징조가 이러하니 너희가 금년에는 스스로 자라난 것을 먹고 명년에는 그것에서 난 것을 먹되 제 삼년에는 심고 거두며 포도원을 심고 그 열매를 먹으리라",
+      "source_text_hash": "607547e718e96de7894b97a497898cc2c3c866f571370a2c055e4b60895123e3",
+      "translation_text_hash": "d683840d707909a45a1eb805ae7fb4c4eba16fab41f176a56b799673236c2fc3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 네게 보일 징조가 이러하니 너희가 금년에는 스스로 자라난 것을 먹고 명년에는 그것에서 난 것을 먹되 제 삼년에는 심고 거두며 포도원을 심고 그 열매를 먹으리라"
+      ],
+      "raw_text_hashes": [
+        "d683840d707909a45a1eb805ae7fb4c4eba16fab41f176a56b799673236c2fc3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:19:30",
+      "sequence": 10092,
+      "chapter_label": "2KI 19",
+      "verse_label": "30",
+      "locator": {
+        "book": "2KI",
+        "chapter": 19,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 19,
+          "verse": 30
+        }
+      ],
+      "en": "The remnant that has escaped of the house of Judah will again take root downward, and bear fruit upward.",
+      "ko": "유다 족속의 피하고 남은 자는 다시 아래로 뿌리가 서리고 위로 열매를 맺을찌라",
+      "source_text_hash": "c924a2d2cd1d9bead94da132af6fa9079c80408778448ff6565cdaaa8ef99cc6",
+      "translation_text_hash": "5e31efe58ba7dcc0e95a0ff0af84758562b04a8d0035156970883575818d7b14",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다 족속의 피하고 남은 자는 다시 아래로 뿌리가 서리고 위로 열매를 맺을찌라"
+      ],
+      "raw_text_hashes": [
+        "5e31efe58ba7dcc0e95a0ff0af84758562b04a8d0035156970883575818d7b14"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:19:31",
+      "sequence": 10093,
+      "chapter_label": "2KI 19",
+      "verse_label": "31",
+      "locator": {
+        "book": "2KI",
+        "chapter": 19,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 19,
+          "verse": 31
+        }
+      ],
+      "en": "For out of Jerusalem a remnant will go out, and out of Mount Zion those who shall escape. The LORD’s zeal will perform this.",
+      "ko": "남은 자는 예루살렘에서부터 나올 것이요 피하는 자는 시온산에서부터 나오리니 여호와의 열심이 이 일을 이루리라 하셨나이다",
+      "source_text_hash": "e6ef0d26451455569a0949ec8a15530ef20866b0375c314bbb36118a8b15b367",
+      "translation_text_hash": "9a83a923e731ac98b64291b1439a89fc31570fa1ca5bbfc656b9244afff6786d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "남은 자는 예루살렘에서부터 나올 것이요 피하는 자는 시온산에서부터 나오리니 여호와의 열심이 이 일을 이루리라 하셨나이다"
+      ],
+      "raw_text_hashes": [
+        "9a83a923e731ac98b64291b1439a89fc31570fa1ca5bbfc656b9244afff6786d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:19:32",
+      "sequence": 10094,
+      "chapter_label": "2KI 19",
+      "verse_label": "32",
+      "locator": {
+        "book": "2KI",
+        "chapter": 19,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 19,
+          "verse": 32
+        }
+      ],
+      "en": "“Therefore the LORD says concerning the king of Assyria, ‘He will not come to this city, nor shoot an arrow there. He will not come before it with shield, nor cast up a mound against it.",
+      "ko": "그러므로 여호와께서 앗수르 왕을 가리켜 이르시기를 저가 이 성에 이르지 못하며 이리로 살을 쏘지 못하며 방패를 성을 향하여 세우지 못하며 치려고 토성을 쌓지도 못하고",
+      "source_text_hash": "e1ccab5e58d1d775e05874a3dc01bfb95c6d8035d1fafdd58e5a595c02a85d6d",
+      "translation_text_hash": "ffa00303afdd0046ff94e0fa85154290b3e051a26b62adc538f92971e7dc9ebc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 여호와께서 앗수르 왕을 가리켜 이르시기를 저가 이 성에 이르지 못하며 이리로 살을 쏘지 못하며 방패를 성을 향하여 세우지 못하며 치려고 토성을 쌓지도 못하고"
+      ],
+      "raw_text_hashes": [
+        "ffa00303afdd0046ff94e0fa85154290b3e051a26b62adc538f92971e7dc9ebc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:19:33",
+      "sequence": 10095,
+      "chapter_label": "2KI 19",
+      "verse_label": "33",
+      "locator": {
+        "book": "2KI",
+        "chapter": 19,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 19,
+          "verse": 33
+        }
+      ],
+      "en": "He will return the same way that he came, and he will not come to this city,’ says the LORD.",
+      "ko": "오던 길로 돌아가고 이 성에 이르지 못하리라 하셨으니 이는 여호와의 말씀이시라",
+      "source_text_hash": "03373367bb7149c5901bf12f0e80bc4a0f2d12002f2cdeb94ef45fd76b49bf54",
+      "translation_text_hash": "b1b5d2fb24c828204068ca696c1b07d672c82f25d01ce32fc3f26fb7a679cee0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오던 길로 돌아가고 이 성에 이르지 못하리라 하셨으니 이는 여호와의 말씀이시라"
+      ],
+      "raw_text_hashes": [
+        "b1b5d2fb24c828204068ca696c1b07d672c82f25d01ce32fc3f26fb7a679cee0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:19:34",
+      "sequence": 10096,
+      "chapter_label": "2KI 19",
+      "verse_label": "34",
+      "locator": {
+        "book": "2KI",
+        "chapter": 19,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 19,
+          "verse": 34
+        }
+      ],
+      "en": "‘For I will defend this city to save it, for my own sake and for my servant David’s sake.’”",
+      "ko": "내가 나와 나의 종 다윗을 위하여 이 성을 보호하여 구원하리라 하셨나이다 하였더라",
+      "source_text_hash": "6fbc5ea8581614630985066158994be91781bf6622b1bcf97f283350079cac1d",
+      "translation_text_hash": "9231aafef2ad0c1342130c951c87657753d5db0b310201bf5a8508b8b8ab07e3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 나와 나의 종 다윗을 위하여 이 성을 보호하여 구원하리라 하셨나이다 하였더라"
+      ],
+      "raw_text_hashes": [
+        "9231aafef2ad0c1342130c951c87657753d5db0b310201bf5a8508b8b8ab07e3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:19:35",
+      "sequence": 10097,
+      "chapter_label": "2KI 19",
+      "verse_label": "35",
+      "locator": {
+        "book": "2KI",
+        "chapter": 19,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 19,
+          "verse": 35
+        }
+      ],
+      "en": "That night, the LORD’s angel went out and struck one hundred eighty-five thousand in the camp of the Assyrians. When men arose early in the morning, behold, these were all dead bodies.",
+      "ko": "이 밤에 여호와의 사자가 나와서 앗수르 진에서 군사 십 팔만 오천을 친지라 아침에 일찌기 일어나 보니 다 송장이 되었더라",
+      "source_text_hash": "3c97481cdc2c037d10fffcbb9a989647de6322eacd708d21d03bf30b3913136b",
+      "translation_text_hash": "acd3dc30826cb241e9bfcd21ad0cb6bf7582044de63262165cff01b11da59b14",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 밤에 여호와의 사자가 나와서 앗수르 진에서 군사 십 팔만 오천을 친지라 아침에 일찌기 일어나 보니 다 송장이 되었더라"
+      ],
+      "raw_text_hashes": [
+        "acd3dc30826cb241e9bfcd21ad0cb6bf7582044de63262165cff01b11da59b14"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:19:36",
+      "sequence": 10098,
+      "chapter_label": "2KI 19",
+      "verse_label": "36",
+      "locator": {
+        "book": "2KI",
+        "chapter": 19,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 19,
+          "verse": 36
+        }
+      ],
+      "en": "So Sennacherib king of Assyria departed, went home, and lived at Nineveh.",
+      "ko": "앗수르 왕 산헤립이 떠나 돌아가서 니느웨에 거하더니",
+      "source_text_hash": "ca9faf92bde9a2cd62b758c1de63f07bb4347aa16f7a348e34fe4404a929e824",
+      "translation_text_hash": "7783aee53657095769b1ada57a3b6d6a872c9c1c34b6d66c1ca36209e904f09f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "앗수르 왕 산헤립이 떠나 돌아가서 니느웨에 거하더니"
+      ],
+      "raw_text_hashes": [
+        "7783aee53657095769b1ada57a3b6d6a872c9c1c34b6d66c1ca36209e904f09f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:19:37",
+      "sequence": 10099,
+      "chapter_label": "2KI 19",
+      "verse_label": "37",
+      "locator": {
+        "book": "2KI",
+        "chapter": 19,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 19,
+          "verse": 37
+        }
+      ],
+      "en": "As he was worshiping in the house of Nisroch his god, Adrammelech and Sharezer struck him with the sword; and they escaped into the land of Ararat. Esar Haddon his son reigned in his place.",
+      "ko": "그 신 니스록의 묘에 경배할 때에 아드람멜렉과 사레셀이 저를 칼로 쳐 죽이고 아라랏 땅으로 도망하매 그 아들 에살핫돈이 대신하여 왕이 되니라",
+      "source_text_hash": "756aab8f2cf656e01e8aeb8f6bdb872eef3dd1d4c94ad660fc5caaafbe470edc",
+      "translation_text_hash": "9ebafe03e439767a30bf11940ef8acdd4859f43f7ed7f5d46ee55e88f2bdf564",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 신 니스록의 묘에 경배할 때에 아드람멜렉과 사레셀이 저를 칼로 쳐 죽이고 아라랏 땅으로 도망하매 그 아들 에살핫돈이 대신하여 왕이 되니라"
+      ],
+      "raw_text_hashes": [
+        "9ebafe03e439767a30bf11940ef8acdd4859f43f7ed7f5d46ee55e88f2bdf564"
+      ]
+    }
+  ]
+}

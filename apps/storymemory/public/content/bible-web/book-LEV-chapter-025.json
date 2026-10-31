@@ -1,0 +1,1773 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:LEV:chapter:025",
+  "unit_ordinal": 115,
+  "unit_label": "LEV 25",
+  "book_code": "LEV",
+  "chapter_number": 25,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:LEV:25:1",
+      "sequence": 3471,
+      "chapter_label": "LEV 25",
+      "verse_label": "1",
+      "locator": {
+        "book": "LEV",
+        "chapter": 25,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 25,
+          "verse": 1
+        }
+      ],
+      "en": "The LORD said to Moses on Mount Sinai,",
+      "ko": "여호와께서 시내산에서 모세에게 일러 가라사대",
+      "source_text_hash": "b6ad78bb65b41c1fecd53ff0515862dd89086995d01eb71f02a32da838b03964",
+      "translation_text_hash": "b827f50516b22ccf558e8bf95d537ed584a334d14b7f1ed347a8bdbb083d2f90",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 시내산에서 모세에게 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "b827f50516b22ccf558e8bf95d537ed584a334d14b7f1ed347a8bdbb083d2f90"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:25:2",
+      "sequence": 3472,
+      "chapter_label": "LEV 25",
+      "verse_label": "2",
+      "locator": {
+        "book": "LEV",
+        "chapter": 25,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 25,
+          "verse": 2
+        }
+      ],
+      "en": "“Speak to the children of Israel, and tell them, ‘When you come into the land which I give you, then the land shall keep a Sabbath to the LORD.",
+      "ko": "이스라엘 자손에게 고하여 이르라 너희는 내가 너희에게 주는 땅에 들어간 후에 그 땅으로 여호와 앞에 안식하게 하라",
+      "source_text_hash": "1a03bc87b969bc33df2b99f09614a7054bcce96f3409f5dd41f595b830875c1a",
+      "translation_text_hash": "7d24308c5a30574040d0ded7d32e1bb7b646c874e9098d1ff235d14b866b534c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손에게 고하여 이르라 너희는 내가 너희에게 주는 땅에 들어간 후에 그 땅으로 여호와 앞에 안식하게 하라"
+      ],
+      "raw_text_hashes": [
+        "7d24308c5a30574040d0ded7d32e1bb7b646c874e9098d1ff235d14b866b534c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:25:3",
+      "sequence": 3473,
+      "chapter_label": "LEV 25",
+      "verse_label": "3",
+      "locator": {
+        "book": "LEV",
+        "chapter": 25,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 25,
+          "verse": 3
+        }
+      ],
+      "en": "You shall sow your field six years, and you shall prune your vineyard six years, and gather in its fruits;",
+      "ko": "너는 육년 동안 그 밭에 파종하며 육년 동안 그 포도원을 다스려 그 열매를 거둘 것이나",
+      "source_text_hash": "92d0c5c655dc338113d206460c5f4570b1c970a65f05e162a4f8c80c6183aa08",
+      "translation_text_hash": "5f4948d629e86635cbc11ea2931b74c8aa19fc2d28f51189caf14c8e70d72d73",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 육년 동안 그 밭에 파종하며 육년 동안 그 포도원을 다스려 그 열매를 거둘 것이나"
+      ],
+      "raw_text_hashes": [
+        "5f4948d629e86635cbc11ea2931b74c8aa19fc2d28f51189caf14c8e70d72d73"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:25:4",
+      "sequence": 3474,
+      "chapter_label": "LEV 25",
+      "verse_label": "4",
+      "locator": {
+        "book": "LEV",
+        "chapter": 25,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 25,
+          "verse": 4
+        }
+      ],
+      "en": "but in the seventh year there shall be a Sabbath of solemn rest for the land, a Sabbath to the LORD. You shall not sow your field or prune your vineyard.",
+      "ko": "제 칠년에는 땅으로 쉬어 안식하게 할찌니 여호와께 대한 안식이라 너는 그 밭에 파종하거나 포도원을 다스리지 말며",
+      "source_text_hash": "4bd68df6a52fe940fca95335c2a9c40cfc267a7b9818a9b71be525d6d36dc5c4",
+      "translation_text_hash": "fd0145b848c35bded3d83f08e262261f6b5bb93bd1581e8b5ae13339d8ecb21f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제 칠년에는 땅으로 쉬어 안식하게 할찌니 여호와께 대한 안식이라 너는 그 밭에 파종하거나 포도원을 다스리지 말며"
+      ],
+      "raw_text_hashes": [
+        "fd0145b848c35bded3d83f08e262261f6b5bb93bd1581e8b5ae13339d8ecb21f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:25:5",
+      "sequence": 3475,
+      "chapter_label": "LEV 25",
+      "verse_label": "5",
+      "locator": {
+        "book": "LEV",
+        "chapter": 25,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 25,
+          "verse": 5
+        }
+      ],
+      "en": "What grows of itself in your harvest you shall not reap, and you shall not gather the grapes of your undressed vine. It shall be a year of solemn rest for the land.",
+      "ko": "너의 곡물의 스스로 난 것을 거두지 말고 다스리지 아니한 포도나무의 맺은 열매를 거두지 말라 이는 땅의 안식년임이니라",
+      "source_text_hash": "11a1aff50ad8fe96f905a86a0ea4eb05581b9000e016cb07bc6e7cae60eb191e",
+      "translation_text_hash": "e31b0e59c8a000963964d4a41640c691ec6c01c01795109984420d0dedeaecf5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너의 곡물의 스스로 난 것을 거두지 말고 다스리지 아니한 포도나무의 맺은 열매를 거두지 말라 이는 땅의 안식년임이니라"
+      ],
+      "raw_text_hashes": [
+        "e31b0e59c8a000963964d4a41640c691ec6c01c01795109984420d0dedeaecf5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:25:6",
+      "sequence": 3476,
+      "chapter_label": "LEV 25",
+      "verse_label": "6",
+      "locator": {
+        "book": "LEV",
+        "chapter": 25,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 25,
+          "verse": 6
+        }
+      ],
+      "en": "The Sabbath of the land shall be for food for you; for yourself, for your servant, for your maid, for your hired servant, and for your stranger, who lives as a foreigner with you.",
+      "ko": "안식년의 소출은 너희의 먹을 것이니 너와 네 남종과 네 여종과 네 품군과 너와 함께 거하는 객과",
+      "source_text_hash": "8aac25c9b208bb1b8ed052c00cadc635777d093ab188f0a8d646246eaa5606da",
+      "translation_text_hash": "b83bd3be1d97ab6fac6bbe8fabf7f1c3b56ef6497ce785759b2a091fbab3042a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "안식년의 소출은 너희의 먹을 것이니 너와 네 남종과 네 여종과 네 품군과 너와 함께 거하는 객과"
+      ],
+      "raw_text_hashes": [
+        "b83bd3be1d97ab6fac6bbe8fabf7f1c3b56ef6497ce785759b2a091fbab3042a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:25:7",
+      "sequence": 3477,
+      "chapter_label": "LEV 25",
+      "verse_label": "7",
+      "locator": {
+        "book": "LEV",
+        "chapter": 25,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 25,
+          "verse": 7
+        }
+      ],
+      "en": "For your livestock also, and for the animals that are in your land, shall all its increase be for food.",
+      "ko": "네 육축과 네 땅에 있는 들짐승들이 다 그 소산으로 식물을 삼을찌니라",
+      "source_text_hash": "48f15800eec5aa3eb99b8c0ba972ad4dd60e1ae1f15d67f95fbcef8718eb5552",
+      "translation_text_hash": "5796fde2042510010527e01453cd239f124a2e3b99e08d0a6b0037a393068822",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 육축과 네 땅에 있는 들짐승들이 다 그 소산으로 식물을 삼을찌니라"
+      ],
+      "raw_text_hashes": [
+        "5796fde2042510010527e01453cd239f124a2e3b99e08d0a6b0037a393068822"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:25:8",
+      "sequence": 3478,
+      "chapter_label": "LEV 25",
+      "verse_label": "8",
+      "locator": {
+        "book": "LEV",
+        "chapter": 25,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 25,
+          "verse": 8
+        }
+      ],
+      "en": "“‘You shall count off seven Sabbaths of years, seven times seven years; and there shall be to you the days of seven Sabbaths of years, even forty-nine years.",
+      "ko": "너는 일곱 안식년을 계수할찌니 이는 칠년이 일곱번인즉 안식년 일곱번 동안 곧 사십 구년이라",
+      "source_text_hash": "a49b56bcbcc98020f24e47398733825dd64f5360664313f86a15033ccfe10cba",
+      "translation_text_hash": "6b82b2d7b11eab94c43e3a23b4a31a808625deace3198465ba73624f9a5b6f13",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 일곱 안식년을 계수할찌니 이는 칠년이 일곱번인즉 안식년 일곱번 동안 곧 사십 구년이라"
+      ],
+      "raw_text_hashes": [
+        "6b82b2d7b11eab94c43e3a23b4a31a808625deace3198465ba73624f9a5b6f13"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:25:9",
+      "sequence": 3479,
+      "chapter_label": "LEV 25",
+      "verse_label": "9",
+      "locator": {
+        "book": "LEV",
+        "chapter": 25,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 25,
+          "verse": 9
+        }
+      ],
+      "en": "Then you shall sound the loud trumpet on the tenth day of the seventh month. On the Day of Atonement you shall sound the trumpet throughout all your land.",
+      "ko": "칠월 십일은 속죄일이니 너는 나팔 소리를 내되 전국에서 나팔을 크게 불찌며",
+      "source_text_hash": "4625bac355318104500a4ef65ea34a1562da8919ae2699a754ce660d97e6a4e0",
+      "translation_text_hash": "c97dc477ffc1fb0c61d145d2bab284359bdbffe0dbbf40f5042d040257f2c9d6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "칠월 십일은 속죄일이니 너는 나팔 소리를 내되 전국에서 나팔을 크게 불찌며"
+      ],
+      "raw_text_hashes": [
+        "c97dc477ffc1fb0c61d145d2bab284359bdbffe0dbbf40f5042d040257f2c9d6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:25:10",
+      "sequence": 3480,
+      "chapter_label": "LEV 25",
+      "verse_label": "10",
+      "locator": {
+        "book": "LEV",
+        "chapter": 25,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 25,
+          "verse": 10
+        }
+      ],
+      "en": "You shall make the fiftieth year holy, and proclaim liberty throughout the land to all its inhabitants. It shall be a jubilee to you; and each of you shall return to his own property, and each of you shall return to his family.",
+      "ko": "제 오십년을 거룩하게 하여 전국 거민에게 자유를 공포하라 이 해는 너희에게 희년이니 너희는 각각 그 기업으로 돌아가며 각각 그 가족에게로 돌아갈찌며",
+      "source_text_hash": "9f080ce71a529fbb1b900439dd371cf96e3be01863f039b99d70a9a70595380d",
+      "translation_text_hash": "a413e16a7718bcc41a2f989b3db2605c913b990591bebd27ed0641721444c10e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제 오십년을 거룩하게 하여 전국 거민에게 자유를 공포하라 이 해는 너희에게 희년이니 너희는 각각 그 기업으로 돌아가며 각각 그 가족에게로 돌아갈찌며"
+      ],
+      "raw_text_hashes": [
+        "a413e16a7718bcc41a2f989b3db2605c913b990591bebd27ed0641721444c10e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:25:11",
+      "sequence": 3481,
+      "chapter_label": "LEV 25",
+      "verse_label": "11",
+      "locator": {
+        "book": "LEV",
+        "chapter": 25,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 25,
+          "verse": 11
+        }
+      ],
+      "en": "That fiftieth year shall be a jubilee to you. In it you shall not sow, neither reap that which grows of itself, nor gather from the undressed vines.",
+      "ko": "그 오십년은 너희의 희년이니 너희는 파종하지 말며 스스로 난 것을 거두지 말며 다스리지 아니한 포도를 거두지 말라",
+      "source_text_hash": "d2c0116398a2b330f7a5af456b554ed7aba2277c182679bca0c6fea5075f8fba",
+      "translation_text_hash": "b54ad3d6fff2afc533d14a6af0f806f3042e25f2b65b0c907103a34f8a5a79a1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 오십년은 너희의 희년이니 너희는 파종하지 말며 스스로 난 것을 거두지 말며 다스리지 아니한 포도를 거두지 말라"
+      ],
+      "raw_text_hashes": [
+        "b54ad3d6fff2afc533d14a6af0f806f3042e25f2b65b0c907103a34f8a5a79a1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:25:12",
+      "sequence": 3482,
+      "chapter_label": "LEV 25",
+      "verse_label": "12",
+      "locator": {
+        "book": "LEV",
+        "chapter": 25,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 25,
+          "verse": 12
+        }
+      ],
+      "en": "For it is a jubilee; it shall be holy to you. You shall eat of its increase out of the field.",
+      "ko": "이는 희년이니 너희에게 거룩함이니라 너희가 밭의 소산을 먹으리라",
+      "source_text_hash": "670da07f39cab9857bff341c2bdec8e294d5a4475200efd234627aad7536c641",
+      "translation_text_hash": "2ee058031e9ea6ee733710c7d15cd848afa22d1d2c7b680b0a229128e48b78d9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 희년이니 너희에게 거룩함이니라 너희가 밭의 소산을 먹으리라"
+      ],
+      "raw_text_hashes": [
+        "2ee058031e9ea6ee733710c7d15cd848afa22d1d2c7b680b0a229128e48b78d9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:25:13",
+      "sequence": 3483,
+      "chapter_label": "LEV 25",
+      "verse_label": "13",
+      "locator": {
+        "book": "LEV",
+        "chapter": 25,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 25,
+          "verse": 13
+        }
+      ],
+      "en": "“‘In this Year of Jubilee each of you shall return to his property.",
+      "ko": "이 희년에는 너희가 각기 기업으로 돌아갈찌라",
+      "source_text_hash": "4fa3108249a91af5014465a7c143048bafd024cb62091d80550fd829c952642c",
+      "translation_text_hash": "e380abf49c2f5b0cc96c1234e87ecb9e77c32c7e5ea5084dfe25b8589d4d5389",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 희년에는 너희가 각기 기업으로 돌아갈찌라"
+      ],
+      "raw_text_hashes": [
+        "e380abf49c2f5b0cc96c1234e87ecb9e77c32c7e5ea5084dfe25b8589d4d5389"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:25:14",
+      "sequence": 3484,
+      "chapter_label": "LEV 25",
+      "verse_label": "14",
+      "locator": {
+        "book": "LEV",
+        "chapter": 25,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 25,
+          "verse": 14
+        }
+      ],
+      "en": "“‘If you sell anything to your neighbor, or buy from your neighbor, you shall not wrong one another.",
+      "ko": "네 이웃에게 팔든지 네 이웃의 손에서 사거든 너희는 서로 속이지 말라",
+      "source_text_hash": "141e74f644707a24bab55a957733b7d3437f52d5228756a8e0348e93fccaf854",
+      "translation_text_hash": "50840f00112bf16dc27a861711a2d4637c8815d2f9af8477c044e5cf5ff67308",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 이웃에게 팔든지 네 이웃의 손에서 사거든 너희는 서로 속이지 말라"
+      ],
+      "raw_text_hashes": [
+        "50840f00112bf16dc27a861711a2d4637c8815d2f9af8477c044e5cf5ff67308"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:25:15",
+      "sequence": 3485,
+      "chapter_label": "LEV 25",
+      "verse_label": "15",
+      "locator": {
+        "book": "LEV",
+        "chapter": 25,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 25,
+          "verse": 15
+        }
+      ],
+      "en": "According to the number of years after the Jubilee you shall buy from your neighbor. According to the number of years of the crops he shall sell to you.",
+      "ko": "희년 후의 년수를 따라서 너는 이웃에게 살 것이요 그도 그 열매를 얻을 년수를 따라서 네게 팔것인즉",
+      "source_text_hash": "6fa74db9771e6068338efce27fc17a68074f4900e5feb6ba9acc2be536947ab8",
+      "translation_text_hash": "7d46a5ab5e804576d163467855939e31cd0f1d4f7e4dc2cfaee02517aea05c11",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "희년 후의 년수를 따라서 너는 이웃에게 살 것이요 그도 그 열매를 얻을 년수를 따라서 네게 팔것인즉"
+      ],
+      "raw_text_hashes": [
+        "7d46a5ab5e804576d163467855939e31cd0f1d4f7e4dc2cfaee02517aea05c11"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:25:16",
+      "sequence": 3486,
+      "chapter_label": "LEV 25",
+      "verse_label": "16",
+      "locator": {
+        "book": "LEV",
+        "chapter": 25,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 25,
+          "verse": 16
+        }
+      ],
+      "en": "According to the length of the years you shall increase its price, and according to the shortness of the years you shall diminish its price; for he is selling the number of the crops to you.",
+      "ko": "년수가 많으면 너는 그 값을 많게 하고 년수가 적으면 너는 그 값을 적게 할찌니 곧 그가 그 열매의 다소를 따라서 네게 팔것이라",
+      "source_text_hash": "7ccdfcf3486b0eae890dbe9773f6d40908a9cd9b005f6b723c4f5da041e4180b",
+      "translation_text_hash": "f87e62ccce42cb3aeee11b4d1211f038e9c1eb5d7be80e9d894b7f471339b337",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "년수가 많으면 너는 그 값을 많게 하고 년수가 적으면 너는 그 값을 적게 할찌니 곧 그가 그 열매의 다소를 따라서 네게 팔것이라"
+      ],
+      "raw_text_hashes": [
+        "f87e62ccce42cb3aeee11b4d1211f038e9c1eb5d7be80e9d894b7f471339b337"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:25:17",
+      "sequence": 3487,
+      "chapter_label": "LEV 25",
+      "verse_label": "17",
+      "locator": {
+        "book": "LEV",
+        "chapter": 25,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 25,
+          "verse": 17
+        }
+      ],
+      "en": "You shall not wrong one another, but you shall fear your God; for I am the LORD your God.",
+      "ko": "너희는 서로 속이지 말고 너희의 하나님을 경외하라 나는 너희 하나님 여호와니라",
+      "source_text_hash": "c61e4befdc9a51c4d85488eb8963480427c00f6d804105276d089b2fa1c8453f",
+      "translation_text_hash": "3a60fcdd94052ada906ca86ffa36d5cc64f15c86b141075cb8309f05477bb60b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 서로 속이지 말고 너희의 하나님을 경외하라 나는 너희 하나님 여호와니라"
+      ],
+      "raw_text_hashes": [
+        "3a60fcdd94052ada906ca86ffa36d5cc64f15c86b141075cb8309f05477bb60b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:25:18",
+      "sequence": 3488,
+      "chapter_label": "LEV 25",
+      "verse_label": "18",
+      "locator": {
+        "book": "LEV",
+        "chapter": 25,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 25,
+          "verse": 18
+        }
+      ],
+      "en": "“‘Therefore you shall do my statutes, and keep my ordinances and do them; and you shall dwell in the land in safety.",
+      "ko": "너희는 내 법도를 행하며 내 규례를 지켜 행하라 그리하면 너희가 그 땅에 안전히 거할 것이라",
+      "source_text_hash": "dcfc86ce0238a0719f04929f2df226442b548fd57d9497852cf783897c96ec8a",
+      "translation_text_hash": "0bd38e11e90ef9654591a83315ddfb514a7ddcb2cdbf9e735640109d9ad0e485",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 내 법도를 행하며 내 규례를 지켜 행하라 그리하면 너희가 그 땅에 안전히 거할 것이라"
+      ],
+      "raw_text_hashes": [
+        "0bd38e11e90ef9654591a83315ddfb514a7ddcb2cdbf9e735640109d9ad0e485"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:25:19",
+      "sequence": 3489,
+      "chapter_label": "LEV 25",
+      "verse_label": "19",
+      "locator": {
+        "book": "LEV",
+        "chapter": 25,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 25,
+          "verse": 19
+        }
+      ],
+      "en": "The land shall yield its fruit, and you shall eat your fill, and dwell therein in safety.",
+      "ko": "땅은 그 산물을 내리니 너희가 배불리 먹고 거기 안전히 거하리라",
+      "source_text_hash": "386686566c56279eeed061c530ab8b94bad0eb0deeac26e9089ecb9f9c723097",
+      "translation_text_hash": "80e9e4b0c26533a05d6b21299dfc7c13a6fcf15e0de7ff7e43a3aa0a3ef10b36",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "땅은 그 산물을 내리니 너희가 배불리 먹고 거기 안전히 거하리라"
+      ],
+      "raw_text_hashes": [
+        "80e9e4b0c26533a05d6b21299dfc7c13a6fcf15e0de7ff7e43a3aa0a3ef10b36"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:25:20",
+      "sequence": 3490,
+      "chapter_label": "LEV 25",
+      "verse_label": "20",
+      "locator": {
+        "book": "LEV",
+        "chapter": 25,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 25,
+          "verse": 20
+        }
+      ],
+      "en": "If you said, “What shall we eat the seventh year? Behold, we shall not sow, nor gather in our increase;”",
+      "ko": "혹 너희 말이 우리가 만일 제 칠년에 심지도 못하고 그 산물을 거두지도 못하면 무엇을 먹으리요 하겠으나",
+      "source_text_hash": "a5216292582d69e8e59487c4eff8979bb45a4cfa9c58973ca6d826adea8fb2e6",
+      "translation_text_hash": "12a6990dba7117f1870d510c890660d803c42338f2456dfd96f290c5340bcdc4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "혹 너희 말이 우리가 만일 제 칠년에 심지도 못하고 그 산물을 거두지도 못하면 무엇을 먹으리요 하겠으나"
+      ],
+      "raw_text_hashes": [
+        "12a6990dba7117f1870d510c890660d803c42338f2456dfd96f290c5340bcdc4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:25:21",
+      "sequence": 3491,
+      "chapter_label": "LEV 25",
+      "verse_label": "21",
+      "locator": {
+        "book": "LEV",
+        "chapter": 25,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 25,
+          "verse": 21
+        }
+      ],
+      "en": "then I will command my blessing on you in the sixth year, and it shall bear fruit for the three years.",
+      "ko": "내가 명하여 제 육년에 내 복을 너희에게 내려 그 소출이 삼년 쓰기에 족하게 할찌라",
+      "source_text_hash": "c65d5d271755c7cec797b18a27d65b5b36c9a837b5653df0b9c8d11c14b98aec",
+      "translation_text_hash": "19631b3aee787f81515697791a312e3f61b58a0ed84e170c6592585171dc55fc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 명하여 제 육년에 내 복을 너희에게 내려 그 소출이 삼년 쓰기에 족하게 할찌라"
+      ],
+      "raw_text_hashes": [
+        "19631b3aee787f81515697791a312e3f61b58a0ed84e170c6592585171dc55fc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:25:22",
+      "sequence": 3492,
+      "chapter_label": "LEV 25",
+      "verse_label": "22",
+      "locator": {
+        "book": "LEV",
+        "chapter": 25,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 25,
+          "verse": 22
+        }
+      ],
+      "en": "You shall sow the eighth year, and eat of the fruits from the old store until the ninth year. Until its fruits come in, you shall eat the old store.",
+      "ko": "너희가 제 팔년에는 파종하려니와 묵은 곡식을 먹을 것이며 제 구년 곧 추수하기까지 묵은 곡식을 먹으리라",
+      "source_text_hash": "cbc832ffc4d0bff0be473477a767927732249ae31eb5732a5f9bb77551d94697",
+      "translation_text_hash": "c95068116c0136f39b401bf4dbf930b91534ffa1d8ad7949b72e47d1120d1e13",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 제 팔년에는 파종하려니와 묵은 곡식을 먹을 것이며 제 구년 곧 추수하기까지 묵은 곡식을 먹으리라"
+      ],
+      "raw_text_hashes": [
+        "c95068116c0136f39b401bf4dbf930b91534ffa1d8ad7949b72e47d1120d1e13"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:25:23",
+      "sequence": 3493,
+      "chapter_label": "LEV 25",
+      "verse_label": "23",
+      "locator": {
+        "book": "LEV",
+        "chapter": 25,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 25,
+          "verse": 23
+        }
+      ],
+      "en": "“‘The land shall not be sold in perpetuity, for the land is mine; for you are strangers and live as foreigners with me.",
+      "ko": "토지를 영영히 팔지 말것은 토지는 다 내 것임이라 너희는 나그네요 우거하는 자로서 나와 함께 있느니라",
+      "source_text_hash": "a275c84fb05244502eba2311a5fad86641779a28db9e9eb3c9bbb0d4354724c8",
+      "translation_text_hash": "1d33e1c199305e53e6abacb1dfb1fe58ae409f1d79fab9f490581ff293412f64",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "토지를 영영히 팔지 말것은 토지는 다 내 것임이라 너희는 나그네요 우거하는 자로서 나와 함께 있느니라"
+      ],
+      "raw_text_hashes": [
+        "1d33e1c199305e53e6abacb1dfb1fe58ae409f1d79fab9f490581ff293412f64"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:25:24",
+      "sequence": 3494,
+      "chapter_label": "LEV 25",
+      "verse_label": "24",
+      "locator": {
+        "book": "LEV",
+        "chapter": 25,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 25,
+          "verse": 24
+        }
+      ],
+      "en": "In all the land of your possession you shall grant a redemption for the land.",
+      "ko": "너희 기업의 온 땅에서 그 토지 무르기를 허락할찌니",
+      "source_text_hash": "ba73e2b7eb74cf52ff4350dbdd6f6a90f0c46c08791b6bf5ad421028239a9ada",
+      "translation_text_hash": "d99562eab5b6a64384ce8df5dabadb76325bf7fea880ec1e5d0280fe80a93c83",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 기업의 온 땅에서 그 토지 무르기를 허락할찌니"
+      ],
+      "raw_text_hashes": [
+        "d99562eab5b6a64384ce8df5dabadb76325bf7fea880ec1e5d0280fe80a93c83"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:25:25",
+      "sequence": 3495,
+      "chapter_label": "LEV 25",
+      "verse_label": "25",
+      "locator": {
+        "book": "LEV",
+        "chapter": 25,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 25,
+          "verse": 25
+        }
+      ],
+      "en": "“‘If your brother becomes poor, and sells some of his possessions, then his kinsman who is next to him shall come, and redeem that which his brother has sold.",
+      "ko": "만일 너희 형제가 가난하여 그 기업 얼마를 팔았으면 그 근족이 와서 동족의 판 것을 무를 것이요",
+      "source_text_hash": "d04e424654a51654152908b29d813a847d7e5e2243263e618202ed9fafd6c596",
+      "translation_text_hash": "8d408d5a2071af5106f03fd49ca68bee49b4dfc4d347d85cf32d6b9c221695f6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 너희 형제가 가난하여 그 기업 얼마를 팔았으면 그 근족이 와서 동족의 판 것을 무를 것이요"
+      ],
+      "raw_text_hashes": [
+        "8d408d5a2071af5106f03fd49ca68bee49b4dfc4d347d85cf32d6b9c221695f6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:25:26",
+      "sequence": 3496,
+      "chapter_label": "LEV 25",
+      "verse_label": "26",
+      "locator": {
+        "book": "LEV",
+        "chapter": 25,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 25,
+          "verse": 26
+        }
+      ],
+      "en": "If a man has no one to redeem it, and he becomes prosperous and finds sufficient means to redeem it,",
+      "ko": "만일 그것을 무를 사람이 없고 자기가 부요하게 되어 무를 힘이 있거든",
+      "source_text_hash": "c08a771f74f3e9b5db0079611662bf3da21815fb23e560e6985822b4f46b2664",
+      "translation_text_hash": "66537d2531276039082d378202cca6440ca0123ca70005b96382bfa7dbed1150",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 그것을 무를 사람이 없고 자기가 부요하게 되어 무를 힘이 있거든"
+      ],
+      "raw_text_hashes": [
+        "66537d2531276039082d378202cca6440ca0123ca70005b96382bfa7dbed1150"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:25:27",
+      "sequence": 3497,
+      "chapter_label": "LEV 25",
+      "verse_label": "27",
+      "locator": {
+        "book": "LEV",
+        "chapter": 25,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 25,
+          "verse": 27
+        }
+      ],
+      "en": "then let him reckon the years since its sale, and restore the surplus to the man to whom he sold it; and he shall return to his property.",
+      "ko": "그 판 해를 계수하여 그 남은 값을 산 자에게 주고 그 기업으로 돌아갈 것이니라",
+      "source_text_hash": "d868d5f4b4536ddd5785d8e0c425b7340231ed944beac63a2dbafbf2dd79d689",
+      "translation_text_hash": "05cf40ed03cdc603d4e22d2cc5c00ca7beb6adcf68b80534b55c74227d81df69",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 판 해를 계수하여 그 남은 값을 산 자에게 주고 그 기업으로 돌아갈 것이니라"
+      ],
+      "raw_text_hashes": [
+        "05cf40ed03cdc603d4e22d2cc5c00ca7beb6adcf68b80534b55c74227d81df69"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:25:28",
+      "sequence": 3498,
+      "chapter_label": "LEV 25",
+      "verse_label": "28",
+      "locator": {
+        "book": "LEV",
+        "chapter": 25,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 25,
+          "verse": 28
+        }
+      ],
+      "en": "But if he isn’t able to get it back for himself, then what he has sold shall remain in the hand of him who has bought it until the Year of Jubilee. In the Jubilee it shall be released, and he shall return to his property.",
+      "ko": "그러나 자기가 무를 힘이 없으면 그 판것이 희년이 이르기까지 산 자의 손에 있다가 희년에 미쳐 돌아올찌니 그가 곧 그 기업으로 돌아갈 것이니라",
+      "source_text_hash": "221eeaa2eb5cc9079ce39a2f62b00b36cb153bd66a239bded50fc2a9fb7b6fb9",
+      "translation_text_hash": "b7e09f332ab1069c05ab0a566432239f719df6db704d6bd11438e24e2e615d6e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 자기가 무를 힘이 없으면 그 판것이 희년이 이르기까지 산 자의 손에 있다가 희년에 미쳐 돌아올찌니 그가 곧 그 기업으로 돌아갈 것이니라"
+      ],
+      "raw_text_hashes": [
+        "b7e09f332ab1069c05ab0a566432239f719df6db704d6bd11438e24e2e615d6e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:25:29",
+      "sequence": 3499,
+      "chapter_label": "LEV 25",
+      "verse_label": "29",
+      "locator": {
+        "book": "LEV",
+        "chapter": 25,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 25,
+          "verse": 29
+        }
+      ],
+      "en": "“‘If a man sells a dwelling house in a walled city, then he may redeem it within a whole year after it has been sold. For a full year he shall have the right of redemption.",
+      "ko": "성벽 있는 성내의 가옥을 팔았으면 판지 만 일년 안에는 무를 수 있나니 곧 그 기한 안에 무르려니와",
+      "source_text_hash": "c8a9b680547eee40a210adfa3936c265eee990089893d87c661fbd0191d0c2a0",
+      "translation_text_hash": "dd8ade2eb44ace8a07cda2514ec963a25d8ecf5df8ecbf1f37457200121b7d12",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "성벽 있는 성내의 가옥을 팔았으면 판지 만 일년 안에는 무를 수 있나니 곧 그 기한 안에 무르려니와"
+      ],
+      "raw_text_hashes": [
+        "dd8ade2eb44ace8a07cda2514ec963a25d8ecf5df8ecbf1f37457200121b7d12"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:25:30",
+      "sequence": 3500,
+      "chapter_label": "LEV 25",
+      "verse_label": "30",
+      "locator": {
+        "book": "LEV",
+        "chapter": 25,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 25,
+          "verse": 30
+        }
+      ],
+      "en": "If it isn’t redeemed within the space of a full year, then the house that is in the walled city shall be made sure in perpetuity to him who bought it, throughout his generations. It shall not be released in the Jubilee.",
+      "ko": "주년 내에 무르지 못하면 그 성내 가옥은 산 자의 소유로 확정되어 대대로 영영히 그에게 속하고 희년에라도 돌려 보내지 아니할 것이니라",
+      "source_text_hash": "7487dc46c25fa912611b238d6d019afa58f2676e3c60226ecd971ba748759f28",
+      "translation_text_hash": "00a1bdf9011ffe5eccc1d791b0c816257d53f25717182f66524f69808c7f3915",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주년 내에 무르지 못하면 그 성내 가옥은 산 자의 소유로 확정되어 대대로 영영히 그에게 속하고 희년에라도 돌려 보내지 아니할 것이니라"
+      ],
+      "raw_text_hashes": [
+        "00a1bdf9011ffe5eccc1d791b0c816257d53f25717182f66524f69808c7f3915"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:25:31",
+      "sequence": 3501,
+      "chapter_label": "LEV 25",
+      "verse_label": "31",
+      "locator": {
+        "book": "LEV",
+        "chapter": 25,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 25,
+          "verse": 31
+        }
+      ],
+      "en": "But the houses of the villages which have no wall around them shall be accounted for with the fields of the country: they may be redeemed, and they shall be released in the Jubilee.",
+      "ko": "그러나 성벽이 둘리지 아니한 촌락의 가옥은 나라의 전토 일례로 물러주기도 할 것이요 희년에 돌려 보내기도 할것이니라",
+      "source_text_hash": "0108b871020bdb8c8a615c377b50821595a93ce92f8d4a7fb7819c0b551d474d",
+      "translation_text_hash": "30cb756c0cda12c9d839794c318943909238705964c125d63bb074ccfa49730b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 성벽이 둘리지 아니한 촌락의 가옥은 나라의 전토 일례로 물러주기도 할 것이요 희년에 돌려 보내기도 할것이니라"
+      ],
+      "raw_text_hashes": [
+        "30cb756c0cda12c9d839794c318943909238705964c125d63bb074ccfa49730b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:25:32",
+      "sequence": 3502,
+      "chapter_label": "LEV 25",
+      "verse_label": "32",
+      "locator": {
+        "book": "LEV",
+        "chapter": 25,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 25,
+          "verse": 32
+        }
+      ],
+      "en": "“‘Nevertheless, in the cities of the Levites, the Levites may redeem the houses in the cities of their possession at any time.",
+      "ko": "레위 족속의 성읍 곧 그 기업의 성읍의 가옥은 레위 사람이 언제든지 무를 수 있으나",
+      "source_text_hash": "b457d0d64cb982e9327a8c961bdf55d868c9877dfcfb3ceccb5e85b62b33fcfe",
+      "translation_text_hash": "255b987063852db51aa0dbbf7ba362535dbe9adf6a12d4f170171ed5177fcaf1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "레위 족속의 성읍 곧 그 기업의 성읍의 가옥은 레위 사람이 언제든지 무를 수 있으나"
+      ],
+      "raw_text_hashes": [
+        "255b987063852db51aa0dbbf7ba362535dbe9adf6a12d4f170171ed5177fcaf1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:25:33",
+      "sequence": 3503,
+      "chapter_label": "LEV 25",
+      "verse_label": "33",
+      "locator": {
+        "book": "LEV",
+        "chapter": 25,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 25,
+          "verse": 33
+        }
+      ],
+      "en": "The Levites may redeem the house that was sold, and the city of his possession, and it shall be released in the Jubilee; for the houses of the cities of the Levites are their possession among the children of Israel.",
+      "ko": "레위 사람이 만일 무르지 아니하면 그 기업된 성읍의 판 가옥은 희년에 돌려 보낼찌니 대저 레위 사람의 성읍의 가옥은 이스라엘 자손 중에서 얻은 기업이 됨이니라",
+      "source_text_hash": "38fd685f91f612791d1858b6212466dff672c7c92086fe3f95293885bf917e05",
+      "translation_text_hash": "e40a7cd8b26b1a09af5688c5ce56051d503836a9d08c495797fba7bfcff1228d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "레위 사람이 만일 무르지 아니하면 그 기업된 성읍의 판 가옥은 희년에 돌려 보낼찌니 대저 레위 사람의 성읍의 가옥은 이스라엘 자손 중에서 얻은 기업이 됨이니라"
+      ],
+      "raw_text_hashes": [
+        "e40a7cd8b26b1a09af5688c5ce56051d503836a9d08c495797fba7bfcff1228d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:25:34",
+      "sequence": 3504,
+      "chapter_label": "LEV 25",
+      "verse_label": "34",
+      "locator": {
+        "book": "LEV",
+        "chapter": 25,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 25,
+          "verse": 34
+        }
+      ],
+      "en": "But the field of the pasture lands of their cities may not be sold, for it is their perpetual possession.",
+      "ko": "그러나 그 성읍의 들의 사면 밭은 그의 영원한 기업이니 팔지 못할찌니라",
+      "source_text_hash": "fb59cc519077bccf0f934a4873f6fa2390382b7873b3d6b572db6b3fbb6865bd",
+      "translation_text_hash": "569fe6e3941357f884bf51ee413fad8aa3a3968567b42ec98a8995ba63d26c88",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 그 성읍의 들의 사면 밭은 그의 영원한 기업이니 팔지 못할찌니라"
+      ],
+      "raw_text_hashes": [
+        "569fe6e3941357f884bf51ee413fad8aa3a3968567b42ec98a8995ba63d26c88"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:25:35",
+      "sequence": 3505,
+      "chapter_label": "LEV 25",
+      "verse_label": "35",
+      "locator": {
+        "book": "LEV",
+        "chapter": 25,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 25,
+          "verse": 35
+        }
+      ],
+      "en": "“‘If your brother has become poor, and his hand can’t support himself among you, then you shall uphold him. He shall live with you like an alien and a temporary resident.",
+      "ko": "네 동족이 빈한하게 되어 빈손으로 네 곁에 있거든 너는 그를 도와 객이나 우거하는 자처럼 너와 함께 생활하게 하되",
+      "source_text_hash": "7224e60499bfdae38453e832bbd947f7848cef5b70cb65b5b4fc23e65b7e2e55",
+      "translation_text_hash": "55141fdba976ce23b07673a6aa66fe4051595df237841ddcbabc34bf90ee34c7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 동족이 빈한하게 되어 빈손으로 네 곁에 있거든 너는 그를 도와 객이나 우거하는 자처럼 너와 함께 생활하게 하되"
+      ],
+      "raw_text_hashes": [
+        "55141fdba976ce23b07673a6aa66fe4051595df237841ddcbabc34bf90ee34c7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:25:36",
+      "sequence": 3506,
+      "chapter_label": "LEV 25",
+      "verse_label": "36",
+      "locator": {
+        "book": "LEV",
+        "chapter": 25,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 25,
+          "verse": 36
+        }
+      ],
+      "en": "Take no interest from him or profit; but fear your God, that your brother may live among you.",
+      "ko": "너는 그에게 이식을 취하지 말고 네 하나님을 경외하여 네 형제로 너와 함께 생활하게 할것인즉",
+      "source_text_hash": "c2607dd6466e8d4a9faa00ad27a6e28bed40f8846fd152b6c1723c1bcb89d387",
+      "translation_text_hash": "5765fb6c74994336e0b4d02ba452864add25c17ac0fc75b5c1ab34355e5dd878",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 그에게 이식을 취하지 말고 네 하나님을 경외하여 네 형제로 너와 함께 생활하게 할것인즉"
+      ],
+      "raw_text_hashes": [
+        "5765fb6c74994336e0b4d02ba452864add25c17ac0fc75b5c1ab34355e5dd878"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:25:37",
+      "sequence": 3507,
+      "chapter_label": "LEV 25",
+      "verse_label": "37",
+      "locator": {
+        "book": "LEV",
+        "chapter": 25,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 25,
+          "verse": 37
+        }
+      ],
+      "en": "You shall not lend him your money at interest, nor give him your food for profit.",
+      "ko": "너는 그에게 이식을 위하여 돈을 꾸이지 말고 이익을 위하여 식물을 꾸이지 말라",
+      "source_text_hash": "c493f7c94ece092cff4b844910bd82c7d3bc0df0035823639d740db51b2f6f1f",
+      "translation_text_hash": "90df6f51119e9407ca84159b5974a783dadadb0400f9e47c5d784f8fd012fe63",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 그에게 이식을 위하여 돈을 꾸이지 말고 이익을 위하여 식물을 꾸이지 말라"
+      ],
+      "raw_text_hashes": [
+        "90df6f51119e9407ca84159b5974a783dadadb0400f9e47c5d784f8fd012fe63"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:25:38",
+      "sequence": 3508,
+      "chapter_label": "LEV 25",
+      "verse_label": "38",
+      "locator": {
+        "book": "LEV",
+        "chapter": 25,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 25,
+          "verse": 38
+        }
+      ],
+      "en": "I am the LORD your God, who brought you out of the land of Egypt, to give you the land of Canaan, and to be your God.",
+      "ko": "나는 너희 하나님이 되려고 또는 가나안 땅으로 너희에게 주려고 애굽 땅에서 너희를 인도하여 낸 너희 하나님 여호와니라",
+      "source_text_hash": "b9516bbacb6b1b264ca31cf99356afb15c135e434c2a6820a76311edf6ae4164",
+      "translation_text_hash": "f85db4dc706f4591a4c6aef8b6b232533c2ab32ef7ba8940f185c4656ce2fdd8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 너희 하나님이 되려고 또는 가나안 땅으로 너희에게 주려고 애굽 땅에서 너희를 인도하여 낸 너희 하나님 여호와니라"
+      ],
+      "raw_text_hashes": [
+        "f85db4dc706f4591a4c6aef8b6b232533c2ab32ef7ba8940f185c4656ce2fdd8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:25:39",
+      "sequence": 3509,
+      "chapter_label": "LEV 25",
+      "verse_label": "39",
+      "locator": {
+        "book": "LEV",
+        "chapter": 25,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 25,
+          "verse": 39
+        }
+      ],
+      "en": "“‘If your brother has grown poor among you, and sells himself to you, you shall not make him to serve as a slave.",
+      "ko": "네 동족이 빈한하게 되어 네게 몸이 팔리거든 너는 그를 종으로 부리지 말고",
+      "source_text_hash": "dc1ce44d3b0bbae7b5309fbdc3aa5f701935a28215eba0cc3241fd5790be3dc8",
+      "translation_text_hash": "821c11aa20bb7b2ffea86c3145e8f54f41b5671e977a2d2fe6c04f4aebc99f3f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 동족이 빈한하게 되어 네게 몸이 팔리거든 너는 그를 종으로 부리지 말고"
+      ],
+      "raw_text_hashes": [
+        "821c11aa20bb7b2ffea86c3145e8f54f41b5671e977a2d2fe6c04f4aebc99f3f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:25:40",
+      "sequence": 3510,
+      "chapter_label": "LEV 25",
+      "verse_label": "40",
+      "locator": {
+        "book": "LEV",
+        "chapter": 25,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 25,
+          "verse": 40
+        }
+      ],
+      "en": "As a hired servant, and as a temporary resident, he shall be with you; he shall serve with you until the Year of Jubilee.",
+      "ko": "품군이나 우거하는 자 같이 너와 함께 있게 하여 희년까지 너를 섬기게 하라",
+      "source_text_hash": "266a6ff29e2ee01c1ba27ee08a5468e3281afe9656919e28b7ac473bc6ed9f54",
+      "translation_text_hash": "52d2dead5849804a6c28544cfa82d6be7399bb26dc27328a792746c1c2410d5c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "품군이나 우거하는 자 같이 너와 함께 있게 하여 희년까지 너를 섬기게 하라"
+      ],
+      "raw_text_hashes": [
+        "52d2dead5849804a6c28544cfa82d6be7399bb26dc27328a792746c1c2410d5c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:25:41",
+      "sequence": 3511,
+      "chapter_label": "LEV 25",
+      "verse_label": "41",
+      "locator": {
+        "book": "LEV",
+        "chapter": 25,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 25,
+          "verse": 41
+        }
+      ],
+      "en": "Then he shall go out from you, he and his children with him, and shall return to his own family, and to the possession of his fathers.",
+      "ko": "그 때에는 그와 그 자녀가 함께 네게서 떠나 그 본족에게로 돌아가서 조상의 기업을 회복하리라",
+      "source_text_hash": "6ad7b7575370cd7855ec9f46f0062d346131055eee1b6227e951f01ece25d5cd",
+      "translation_text_hash": "eaf0b49c72b32bdd22795eb58f40d1de7c258416995f72723ab8db3feab01727",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에는 그와 그 자녀가 함께 네게서 떠나 그 본족에게로 돌아가서 조상의 기업을 회복하리라"
+      ],
+      "raw_text_hashes": [
+        "eaf0b49c72b32bdd22795eb58f40d1de7c258416995f72723ab8db3feab01727"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:25:42",
+      "sequence": 3512,
+      "chapter_label": "LEV 25",
+      "verse_label": "42",
+      "locator": {
+        "book": "LEV",
+        "chapter": 25,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 25,
+          "verse": 42
+        }
+      ],
+      "en": "For they are my servants, whom I brought out of the land of Egypt. They shall not be sold as slaves.",
+      "ko": "그들은 내가 애굽 땅에서 인도하여 낸바 나의 품군인즉 종으로 팔리지 말 것이라",
+      "source_text_hash": "b797b179a426dc51291437548ca017ef8251618502238b61bfafccaa743faba9",
+      "translation_text_hash": "422fb8c41c3ca46a787f2d5d2375e416d258e202118c8d83092651f647f8635c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들은 내가 애굽 땅에서 인도하여 낸바 나의 품군인즉 종으로 팔리지 말 것이라"
+      ],
+      "raw_text_hashes": [
+        "422fb8c41c3ca46a787f2d5d2375e416d258e202118c8d83092651f647f8635c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:25:43",
+      "sequence": 3513,
+      "chapter_label": "LEV 25",
+      "verse_label": "43",
+      "locator": {
+        "book": "LEV",
+        "chapter": 25,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 25,
+          "verse": 43
+        }
+      ],
+      "en": "You shall not rule over him with harshness, but shall fear your God.",
+      "ko": "너는 그를 엄하게 부리지 말고 너의 하나님을 경외하라",
+      "source_text_hash": "7967d8c12a8ac63b75bdc093571e921f3838ed796f876f65fb60d424c8cac36e",
+      "translation_text_hash": "50d5d15b868023068032c173c806f6428bd10c25a0c9872e100f7ad914be49b1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 그를 엄하게 부리지 말고 너의 하나님을 경외하라"
+      ],
+      "raw_text_hashes": [
+        "50d5d15b868023068032c173c806f6428bd10c25a0c9872e100f7ad914be49b1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:25:44",
+      "sequence": 3514,
+      "chapter_label": "LEV 25",
+      "verse_label": "44",
+      "locator": {
+        "book": "LEV",
+        "chapter": 25,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 25,
+          "verse": 44
+        }
+      ],
+      "en": "“‘As for your male and your female slaves, whom you may have from the nations that are around you, from them you may buy male and female slaves.",
+      "ko": "너의 종은 남녀를 무론하고 너의 사면 이방인 중에서 취할찌니 남녀 종은 이런 자 중에서 살 것이며",
+      "source_text_hash": "9e334e9b6d4397fd744065c6eee125a12e9ece22d5cb44699cda719abdc6d0d1",
+      "translation_text_hash": "6a598a11476ba555a1f813cb858c321f5a076a23d3aa83d87bd29cb1b0cb2263",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너의 종은 남녀를 무론하고 너의 사면 이방인 중에서 취할찌니 남녀 종은 이런 자 중에서 살 것이며"
+      ],
+      "raw_text_hashes": [
+        "6a598a11476ba555a1f813cb858c321f5a076a23d3aa83d87bd29cb1b0cb2263"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:25:45",
+      "sequence": 3515,
+      "chapter_label": "LEV 25",
+      "verse_label": "45",
+      "locator": {
+        "book": "LEV",
+        "chapter": 25,
+        "verse": 45
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 25,
+          "verse": 45
+        }
+      ],
+      "en": "Moreover, of the children of the aliens who live among you, of them you may buy, and of their families who are with you, which they have conceived in your land; and they will be your property.",
+      "ko": "또 너희 중에 우거한 이방인의 자녀 중에서도 너희가 살 수 있고 또 그들이 너희 중에서 살아서 너희 땅에서 가정을 이룬 그 중에서도 그리 할 수 있은즉 그들이 너희 소유가 될찌니",
+      "source_text_hash": "2d05bc3ecfc743ffec07e79275837b8589717a492028d1a5d4dac87d9de60c9c",
+      "translation_text_hash": "d7894b3f2d73ad539fb816eed7e8c228cd3598bb151a2f98cb7b30a0c5eb630d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 너희 중에 우거한 이방인의 자녀 중에서도 너희가 살 수 있고 또 그들이 너희 중에서 살아서 너희 땅에서 가정을 이룬 그 중에서도 그리 할 수 있은즉 그들이 너희 소유가 될찌니"
+      ],
+      "raw_text_hashes": [
+        "d7894b3f2d73ad539fb816eed7e8c228cd3598bb151a2f98cb7b30a0c5eb630d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:25:46",
+      "sequence": 3516,
+      "chapter_label": "LEV 25",
+      "verse_label": "46",
+      "locator": {
+        "book": "LEV",
+        "chapter": 25,
+        "verse": 46
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 25,
+          "verse": 46
+        }
+      ],
+      "en": "You may make them an inheritance for your children after you, to hold for a possession. Of them you may take your slaves forever, but over your brothers the children of Israel you shall not rule, one over another, with harshness.",
+      "ko": "너희는 그들을 너희 후손에게 기업으로 주어 소유가 되게 할것이라 이방인 중에서는 너희가 영원한 종을 삼으려니와 너희 동족 이스라엘 자손은 너희 피차 엄하게 부리지 말찌니라",
+      "source_text_hash": "f33130085751a0e3d4e9305b480ada0064a8146d10813e59be6be07a249f04f1",
+      "translation_text_hash": "542b7675e709301a2705d9243044fd17e868ef0125aa5b267ce7821a051c9430",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 그들을 너희 후손에게 기업으로 주어 소유가 되게 할것이라 이방인 중에서는 너희가 영원한 종을 삼으려니와 너희 동족 이스라엘 자손은 너희 피차 엄하게 부리지 말찌니라"
+      ],
+      "raw_text_hashes": [
+        "542b7675e709301a2705d9243044fd17e868ef0125aa5b267ce7821a051c9430"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:25:47",
+      "sequence": 3517,
+      "chapter_label": "LEV 25",
+      "verse_label": "47",
+      "locator": {
+        "book": "LEV",
+        "chapter": 25,
+        "verse": 47
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 25,
+          "verse": 47
+        }
+      ],
+      "en": "“‘If an alien or temporary resident with you becomes rich, and your brother beside him has grown poor, and sells himself to the stranger or foreigner living among you, or to a member of the stranger’s family,",
+      "ko": "너희 중에 우거하는 이방인은 부요하게 되고 그 곁에 사는 너희 동족은 빈한하게 됨으로 너희 중에 우거하는 그 이방인에게나 그 족속에게 몸이 팔렸으면",
+      "source_text_hash": "dc6ffa6674801177dbe85bc108a7ecf2c52717376a1ee7857d42c376ab5f7abc",
+      "translation_text_hash": "0be13fa994cd9e07927650ffb26688327d08809894a10ab326574a0e21fa50ce",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 중에 우거하는 이방인은 부요하게 되고 그 곁에 사는 너희 동족은 빈한하게 됨으로 너희 중에 우거하는 그 이방인에게나 그 족속에게 몸이 팔렸으면"
+      ],
+      "raw_text_hashes": [
+        "0be13fa994cd9e07927650ffb26688327d08809894a10ab326574a0e21fa50ce"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:25:48",
+      "sequence": 3518,
+      "chapter_label": "LEV 25",
+      "verse_label": "48",
+      "locator": {
+        "book": "LEV",
+        "chapter": 25,
+        "verse": 48
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 25,
+          "verse": 48
+        }
+      ],
+      "en": "after he is sold he may be redeemed. One of his brothers may redeem him;",
+      "ko": "팔린 후에 그를 속량할 수 있나니 그 형제 중 하나가 속하거나",
+      "source_text_hash": "f741ef2610a57aa05cbdfbead364f756adf131289034600aa080a2b4383db174",
+      "translation_text_hash": "e91597a36b05fb248ea00ce08df842bbc8bb098331382e8e084345e02453baee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "팔린 후에 그를 속량할 수 있나니 그 형제 중 하나가 속하거나"
+      ],
+      "raw_text_hashes": [
+        "e91597a36b05fb248ea00ce08df842bbc8bb098331382e8e084345e02453baee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:25:49",
+      "sequence": 3519,
+      "chapter_label": "LEV 25",
+      "verse_label": "49",
+      "locator": {
+        "book": "LEV",
+        "chapter": 25,
+        "verse": 49
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 25,
+          "verse": 49
+        }
+      ],
+      "en": "or his uncle, or his uncle’s son, may redeem him, or any who is a close relative to him of his family may redeem him; or if he has grown rich, he may redeem himself.",
+      "ko": "삼촌이나 사촌이 속하거나 그 근족 중 누구든지 속할 것이요 그가 부요하게 되면 스스로 속하되",
+      "source_text_hash": "1d83a009272a0a5e62cf909bfa71eb799d974808c6533bd7d6f88dbd42283db8",
+      "translation_text_hash": "67c9870efaa77a22d6d34ea15f53698ae23eede70a717c4aee2197036c29e932",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "삼촌이나 사촌이 속하거나 그 근족 중 누구든지 속할 것이요 그가 부요하게 되면 스스로 속하되"
+      ],
+      "raw_text_hashes": [
+        "67c9870efaa77a22d6d34ea15f53698ae23eede70a717c4aee2197036c29e932"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:25:50",
+      "sequence": 3520,
+      "chapter_label": "LEV 25",
+      "verse_label": "50",
+      "locator": {
+        "book": "LEV",
+        "chapter": 25,
+        "verse": 50
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 25,
+          "verse": 50
+        }
+      ],
+      "en": "He shall reckon with him who bought him from the year that he sold himself to him to the Year of Jubilee. The price of his sale shall be according to the number of years; he shall be with him according to the time of a hired servant.",
+      "ko": "자기 몸이 팔린 해로부터 희년까지를 그 산 자와 계산하여 그 년수를 따라서 그 몸의 값을 정할 때에 그 사람을 섬긴 날을 그 사람에게 고용된 날로 여길 것이라",
+      "source_text_hash": "e9cd88cf24f7fe6cd30da65b56f77932d697d458a93ed141d9ca4af9a95a7d86",
+      "translation_text_hash": "a830ad48cfc3fd47ecd9bf7eab5f31bfec774033c02160748f59e727f8ad368f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자기 몸이 팔린 해로부터 희년까지를 그 산 자와 계산하여 그 년수를 따라서 그 몸의 값을 정할 때에 그 사람을 섬긴 날을 그 사람에게 고용된 날로 여길 것이라"
+      ],
+      "raw_text_hashes": [
+        "a830ad48cfc3fd47ecd9bf7eab5f31bfec774033c02160748f59e727f8ad368f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:25:51",
+      "sequence": 3521,
+      "chapter_label": "LEV 25",
+      "verse_label": "51",
+      "locator": {
+        "book": "LEV",
+        "chapter": 25,
+        "verse": 51
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 25,
+          "verse": 51
+        }
+      ],
+      "en": "If there are yet many years, according to them he shall give back the price of his redemption out of the money that he was bought for.",
+      "ko": "만일 남은 해가 많으면 그 년수대로 팔린 값에서 속하는 값을 그 사람에게 도로 주고",
+      "source_text_hash": "4ee4e22e77748e351b2e989f4133455e76617a6d150ba57530b347f635978838",
+      "translation_text_hash": "556b044f4e3c1b9397b37c09c814fa3796e1b8b9ca969877573cd7ece04b1b03",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 남은 해가 많으면 그 년수대로 팔린 값에서 속하는 값을 그 사람에게 도로 주고"
+      ],
+      "raw_text_hashes": [
+        "556b044f4e3c1b9397b37c09c814fa3796e1b8b9ca969877573cd7ece04b1b03"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:25:52",
+      "sequence": 3522,
+      "chapter_label": "LEV 25",
+      "verse_label": "52",
+      "locator": {
+        "book": "LEV",
+        "chapter": 25,
+        "verse": 52
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 25,
+          "verse": 52
+        }
+      ],
+      "en": "If there remain but a few years to the year of jubilee, then he shall reckon with him; according to his years of service he shall give back the price of his redemption.",
+      "ko": "만일 희년까지 남은 해가 적으면 그 사람과 계산하여 그 년수대로 속하는 그 값을 그에게 도로 줄찌며",
+      "source_text_hash": "4f78ef644f0658ac67999af684cda6f00033dd355eace6243419b4a35f47b43e",
+      "translation_text_hash": "1dbfcf4f45c1df74f3d39216e885b9c3d4d4a4a40883134ccf74e03a65177880",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 희년까지 남은 해가 적으면 그 사람과 계산하여 그 년수대로 속하는 그 값을 그에게 도로 줄찌며"
+      ],
+      "raw_text_hashes": [
+        "1dbfcf4f45c1df74f3d39216e885b9c3d4d4a4a40883134ccf74e03a65177880"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:25:53",
+      "sequence": 3523,
+      "chapter_label": "LEV 25",
+      "verse_label": "53",
+      "locator": {
+        "book": "LEV",
+        "chapter": 25,
+        "verse": 53
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 25,
+          "verse": 53
+        }
+      ],
+      "en": "As a servant hired year by year shall he be with him. He shall not rule with harshness over him in your sight.",
+      "ko": "주인은 그를 매년의 삯군과 같이 여기고 너의 목전에서 엄하게 부리지 못하리라",
+      "source_text_hash": "745a1c5aaae566bb68a0a481c66b8374c7e9b969794cd5882890b56212bd6ae6",
+      "translation_text_hash": "0eb9aa3c041e0362360f4229beca7b0ca3a86de0088c614be69b2e6038b2d5b3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주인은 그를 매년의 삯군과 같이 여기고 너의 목전에서 엄하게 부리지 못하리라"
+      ],
+      "raw_text_hashes": [
+        "0eb9aa3c041e0362360f4229beca7b0ca3a86de0088c614be69b2e6038b2d5b3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:25:54",
+      "sequence": 3524,
+      "chapter_label": "LEV 25",
+      "verse_label": "54",
+      "locator": {
+        "book": "LEV",
+        "chapter": 25,
+        "verse": 54
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 25,
+          "verse": 54
+        }
+      ],
+      "en": "If he isn’t redeemed by these means, then he shall be released in the Year of Jubilee: he and his children with him.",
+      "ko": "그가 이같이 속하지 못하면 희년에 이르러 그와 그 자녀가 자유하리니",
+      "source_text_hash": "01f3c96494f2b54b3f03fd576efd268f2dc0c051f3077f00ed3012885bcc8983",
+      "translation_text_hash": "53c5ad7ceffaab60a2b14cf34dd88e51919a31b2d1fc3ca4d62c1f638a634ed7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 이같이 속하지 못하면 희년에 이르러 그와 그 자녀가 자유하리니"
+      ],
+      "raw_text_hashes": [
+        "53c5ad7ceffaab60a2b14cf34dd88e51919a31b2d1fc3ca4d62c1f638a634ed7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:25:55",
+      "sequence": 3525,
+      "chapter_label": "LEV 25",
+      "verse_label": "55",
+      "locator": {
+        "book": "LEV",
+        "chapter": 25,
+        "verse": 55
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 25,
+          "verse": 55
+        }
+      ],
+      "en": "For to me the children of Israel are servants; they are my servants whom I brought out of the land of Egypt. I am the LORD your God.",
+      "ko": "이스라엘 자손은 나의 품군이 됨이라 그들은 내가 애굽 땅에서 인도하여 낸 나의 품군이요 나는 너희 하나님 여호와니라",
+      "source_text_hash": "f8ec2808cd90ed132717090125770fa7cc48020512768a0ab27369d58dee08c0",
+      "translation_text_hash": "2034acf5a819fb8a708f5398826808561eeafa92f77c0a4617d1bffeda5ed323",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손은 나의 품군이 됨이라 그들은 내가 애굽 땅에서 인도하여 낸 나의 품군이요 나는 너희 하나님 여호와니라"
+      ],
+      "raw_text_hashes": [
+        "2034acf5a819fb8a708f5398826808561eeafa92f77c0a4617d1bffeda5ed323"
+      ]
+    }
+  ]
+}

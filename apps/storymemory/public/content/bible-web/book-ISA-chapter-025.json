@@ -1,0 +1,397 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ISA:chapter:025",
+  "unit_ordinal": 704,
+  "unit_label": "ISA 25",
+  "book_code": "ISA",
+  "chapter_number": 25,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ISA:25:1",
+      "sequence": 18120,
+      "chapter_label": "ISA 25",
+      "verse_label": "1",
+      "locator": {
+        "book": "ISA",
+        "chapter": 25,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 25,
+          "verse": 1
+        }
+      ],
+      "en": "The LORD, you are my God. I will exalt you! I will praise your name, for you have done wonderful things, things planned long ago, in complete faithfulness and truth.",
+      "ko": "여호와여 주는 나의 하나님이시라 내가 주를 높이고 주의 이름을 찬송하오리니 주는 기사를 옛적의 정하신 뜻대로 성실함과 진실함으로 행하셨음이라",
+      "source_text_hash": "c963d93c257c986c20958c517714b6dd910001c44fd8c0aadea28bf6df6b15e8",
+      "translation_text_hash": "8f3f0d43fea2fdb3c7e3d63d833ab4f59e0799805a60afe0c15048f2c126ff1a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 주는 나의 하나님이시라 내가 주를 높이고 주의 이름을 찬송하오리니 주는 기사를 옛적의 정하신 뜻대로 성실함과 진실함으로 행하셨음이라"
+      ],
+      "raw_text_hashes": [
+        "8f3f0d43fea2fdb3c7e3d63d833ab4f59e0799805a60afe0c15048f2c126ff1a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:25:2",
+      "sequence": 18121,
+      "chapter_label": "ISA 25",
+      "verse_label": "2",
+      "locator": {
+        "book": "ISA",
+        "chapter": 25,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 25,
+          "verse": 2
+        }
+      ],
+      "en": "For you have made a city into a heap, a fortified city into a ruin, a palace of strangers to be no city. It will never be built.",
+      "ko": "주께서 성읍으로 무더기를 이루시며 견고한 성읍으로 황무케 하시며 외인의 궁성으로 성읍이 되지 못하게 하사 영영히 건설되지 못하게 하셨으므로",
+      "source_text_hash": "4dd15fd81db39d7eece302ae23cf50b858bc1088a49f422222f117d875c96e76",
+      "translation_text_hash": "ca1479f9410ed5097718256c2299d8ce62a409d8c26400dfae41926f3fc069cb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 성읍으로 무더기를 이루시며 견고한 성읍으로 황무케 하시며 외인의 궁성으로 성읍이 되지 못하게 하사 영영히 건설되지 못하게 하셨으므로"
+      ],
+      "raw_text_hashes": [
+        "ca1479f9410ed5097718256c2299d8ce62a409d8c26400dfae41926f3fc069cb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:25:3",
+      "sequence": 18122,
+      "chapter_label": "ISA 25",
+      "verse_label": "3",
+      "locator": {
+        "book": "ISA",
+        "chapter": 25,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 25,
+          "verse": 3
+        }
+      ],
+      "en": "Therefore a strong people will glorify you. A city of awesome nations will fear you.",
+      "ko": "강한 민족이 주를 영화롭게 하며 포학한 나라들의 성읍이 주를 경외하리이다",
+      "source_text_hash": "a0cb09101b11dc68311e7d9bb293282518142ebc3519536e1843fa1c2c02593a",
+      "translation_text_hash": "59bd96de1c100fb0f97bf4ae827623edd5c4eb9794a1338022bbf3dd66fdcb7e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "강한 민족이 주를 영화롭게 하며 포학한 나라들의 성읍이 주를 경외하리이다"
+      ],
+      "raw_text_hashes": [
+        "59bd96de1c100fb0f97bf4ae827623edd5c4eb9794a1338022bbf3dd66fdcb7e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:25:4",
+      "sequence": 18123,
+      "chapter_label": "ISA 25",
+      "verse_label": "4",
+      "locator": {
+        "book": "ISA",
+        "chapter": 25,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 25,
+          "verse": 4
+        }
+      ],
+      "en": "For you have been a stronghold to the poor, a stronghold to the needy in his distress, a refuge from the storm, a shade from the heat, when the blast of the dreaded ones is like a storm against the wall.",
+      "ko": "주는 포학자의 기세가 성벽을 충돌하는 폭풍과 같을 때에 빈궁한 자의 보장이시며 환난 당한 빈핍한 자의 보장이시며 폭풍 중에 피난처시며 폭양을 피하는 그늘이 되셨사오니",
+      "source_text_hash": "9398fce293755e300387e25ae20c44f917a942c048ac8be4b2e9afa2b66c9507",
+      "translation_text_hash": "29186d3713fc148a899fea6146785e3cf34c0b723c744ec44908bc9148c690e4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주는 포학자의 기세가 성벽을 충돌하는 폭풍과 같을 때에 빈궁한 자의 보장이시며 환난 당한 빈핍한 자의 보장이시며 폭풍 중에 피난처시며 폭양을 피하는 그늘이 되셨사오니"
+      ],
+      "raw_text_hashes": [
+        "29186d3713fc148a899fea6146785e3cf34c0b723c744ec44908bc9148c690e4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:25:5",
+      "sequence": 18124,
+      "chapter_label": "ISA 25",
+      "verse_label": "5",
+      "locator": {
+        "book": "ISA",
+        "chapter": 25,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 25,
+          "verse": 5
+        }
+      ],
+      "en": "As the heat in a dry place you will bring down the noise of strangers; as the heat by the shade of a cloud, the song of the dreaded ones will be brought low.",
+      "ko": "마른 땅에 폭양을 제함 같이 주께서 외인의 훤화를 그치게 하시며 폭양을 구름으로 가리움 같이 포학한 자의 노래를 낮추시리이다",
+      "source_text_hash": "ed02133d0ff67c8dd60f642adb5097d313432c2714c310f4cea8c5236af3b714",
+      "translation_text_hash": "2687147c4e54de6630290a9c01d0f94c7eeaeeeebdfe474de1b3cf1f77bcff22",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마른 땅에 폭양을 제함 같이 주께서 외인의 훤화를 그치게 하시며 폭양을 구름으로 가리움 같이 포학한 자의 노래를 낮추시리이다"
+      ],
+      "raw_text_hashes": [
+        "2687147c4e54de6630290a9c01d0f94c7eeaeeeebdfe474de1b3cf1f77bcff22"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:25:6",
+      "sequence": 18125,
+      "chapter_label": "ISA 25",
+      "verse_label": "6",
+      "locator": {
+        "book": "ISA",
+        "chapter": 25,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 25,
+          "verse": 6
+        }
+      ],
+      "en": "In this mountain, the LORD of Armies will make all peoples a feast of choice meat, a feast of choice wines, of choice meat full of marrow, of well refined choice wines.",
+      "ko": "만군의 여호와께서 이 산에서 만민을 위하여 기름진 것과 오래 저장하였던 포도주로 연회를 베푸시리니 곧 골수가 가득한 기름진 것과 오래 저장하였던 맑은 포도주로 하실 것이며",
+      "source_text_hash": "460f495b4b0ede55dd5fe9bb27c80ce00676fc208124299cbdeeb3a4d5e24e18",
+      "translation_text_hash": "f33150d39fac636da504043d61a644c57f76671b85c7cece50bb1c59da4f636d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만군의 여호와께서 이 산에서 만민을 위하여 기름진 것과 오래 저장하였던 포도주로 연회를 베푸시리니 곧 골수가 가득한 기름진 것과 오래 저장하였던 맑은 포도주로 하실 것이며"
+      ],
+      "raw_text_hashes": [
+        "f33150d39fac636da504043d61a644c57f76671b85c7cece50bb1c59da4f636d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:25:7",
+      "sequence": 18126,
+      "chapter_label": "ISA 25",
+      "verse_label": "7",
+      "locator": {
+        "book": "ISA",
+        "chapter": 25,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 25,
+          "verse": 7
+        }
+      ],
+      "en": "He will destroy in this mountain the surface of the covering that covers all peoples, and the veil that is spread over all nations.",
+      "ko": "또 이 산에서 모든 민족의 그 가리워진 면박과 열방의 그 덮인 휘장을 제하시며",
+      "source_text_hash": "71de936b9565105616f66c5024de8525c970afe7b14e83d15ac684b3ab6d39f3",
+      "translation_text_hash": "c9a1703809661892690c4bad28b23ace5bfc035cab68bb443cb2cd71ddc38129",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 이 산에서 모든 민족의 그 가리워진 면박과 열방의 그 덮인 휘장을 제하시며"
+      ],
+      "raw_text_hashes": [
+        "c9a1703809661892690c4bad28b23ace5bfc035cab68bb443cb2cd71ddc38129"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:25:8",
+      "sequence": 18127,
+      "chapter_label": "ISA 25",
+      "verse_label": "8",
+      "locator": {
+        "book": "ISA",
+        "chapter": 25,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 25,
+          "verse": 8
+        }
+      ],
+      "en": "He has swallowed up death forever! The Lord GOD will wipe away tears from off all faces. He will take the reproach of his people away from off all the earth, for the LORD has spoken it.",
+      "ko": "사망을 영원히 멸하실 것이라 주 여호와께서 모든 얼굴에서 눈물을 씻기시며 그 백성의 수치를 온 천하에서 제하시리라 여호와께서 이같이 말씀하셨느니라",
+      "source_text_hash": "c3754a1a540442f4bd0a519ab5ea1ecdb7c2ff822866d1751aea923e08234f88",
+      "translation_text_hash": "550c1f3c6ef3f3b65848d73c43664549bc91137ec101a3b0b6af75363fe83127",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사망을 영원히 멸하실 것이라 주 여호와께서 모든 얼굴에서 눈물을 씻기시며 그 백성의 수치를 온 천하에서 제하시리라 여호와께서 이같이 말씀하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "550c1f3c6ef3f3b65848d73c43664549bc91137ec101a3b0b6af75363fe83127"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:25:9",
+      "sequence": 18128,
+      "chapter_label": "ISA 25",
+      "verse_label": "9",
+      "locator": {
+        "book": "ISA",
+        "chapter": 25,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 25,
+          "verse": 9
+        }
+      ],
+      "en": "It shall be said in that day, “Behold, this is our God! We have waited for him, and he will save us! This is the LORD! We have waited for him. We will be glad and rejoice in his salvation!”",
+      "ko": "그 날에 말하기를 이는 우리의 하나님이시라 우리가 그를 기다렸으니 그가 우리를 구원하시리로다 이는 여호와시라 우리가 그를 기다렸으니 우리는 그 구원을 기뻐하며 즐거워하리라 할 것이며",
+      "source_text_hash": "711dc733e669b39d90320ff9e15951f92db310fb35d971075a25b758a6f3bfe3",
+      "translation_text_hash": "4484c89c228a83d23b24d336d9529d58d46721110a95c48075f9a6d68187fde2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날에 말하기를 이는 우리의 하나님이시라 우리가 그를 기다렸으니 그가 우리를 구원하시리로다 이는 여호와시라 우리가 그를 기다렸으니 우리는 그 구원을 기뻐하며 즐거워하리라 할 것이며"
+      ],
+      "raw_text_hashes": [
+        "4484c89c228a83d23b24d336d9529d58d46721110a95c48075f9a6d68187fde2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:25:10",
+      "sequence": 18129,
+      "chapter_label": "ISA 25",
+      "verse_label": "10",
+      "locator": {
+        "book": "ISA",
+        "chapter": 25,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 25,
+          "verse": 10
+        }
+      ],
+      "en": "For the LORD’s hand will rest in this mountain. Moab will be trodden down in his place, even like straw is trodden down in the water of the dunghill.",
+      "ko": "여호와의 손이 이 산에 나타나시리니 모압이 거름물 속의 초개의 밟힘 같이 자기 처소에서 밟힐 것인즉",
+      "source_text_hash": "21bdbf8f9e56b1e4e56ae1f641ccafbc602fd9443b4ea635e8a77279b12ddde5",
+      "translation_text_hash": "39242c59f6d842112305a282a99be228e101dab5d438ffc2858ffc8b166bd754",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 손이 이 산에 나타나시리니 모압이 거름물 속의 초개의 밟힘 같이 자기 처소에서 밟힐 것인즉"
+      ],
+      "raw_text_hashes": [
+        "39242c59f6d842112305a282a99be228e101dab5d438ffc2858ffc8b166bd754"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:25:11",
+      "sequence": 18130,
+      "chapter_label": "ISA 25",
+      "verse_label": "11",
+      "locator": {
+        "book": "ISA",
+        "chapter": 25,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 25,
+          "verse": 11
+        }
+      ],
+      "en": "He will spread out his hands in the middle of it, like one who swims spreads out hands to swim, but his pride will be humbled together with the craft of his hands.",
+      "ko": "그가 헤엄치는 자의 헤엄치려고 손을 폄 같이 그 속에서 그 손을 펼 것이나 여호와께서 그 교만과 그 손의 교활을 누르실 것이라",
+      "source_text_hash": "9e3ff88218e3097e1d5c008d686701e85fd03dd2aae3943ad492e1ab72e97962",
+      "translation_text_hash": "e0ade81bc24e861f834fc5832d00ab0c9236db41cc7520448d0738036d1375b6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 헤엄치는 자의 헤엄치려고 손을 폄 같이 그 속에서 그 손을 펼 것이나 여호와께서 그 교만과 그 손의 교활을 누르실 것이라"
+      ],
+      "raw_text_hashes": [
+        "e0ade81bc24e861f834fc5832d00ab0c9236db41cc7520448d0738036d1375b6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:25:12",
+      "sequence": 18131,
+      "chapter_label": "ISA 25",
+      "verse_label": "12",
+      "locator": {
+        "book": "ISA",
+        "chapter": 25,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 25,
+          "verse": 12
+        }
+      ],
+      "en": "He has brought the high fortress of your walls down, laid low, and brought to the ground, even to the dust.",
+      "ko": "너의 성벽의 높은 보장을 헐어 땅에 내리시되 진토에 미치게 하시리라",
+      "source_text_hash": "a80f685554bcc034d0d32448e52dd3672631a1a840927a1b592f25ccb9d4c2b9",
+      "translation_text_hash": "616502f01bbb1aee17a682cd3571ce2dae92e63ce167b630791851f83a7faeab",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너의 성벽의 높은 보장을 헐어 땅에 내리시되 진토에 미치게 하시리라"
+      ],
+      "raw_text_hashes": [
+        "616502f01bbb1aee17a682cd3571ce2dae92e63ce167b630791851f83a7faeab"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1325 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:NUM:chapter:022",
+  "unit_ordinal": 139,
+  "unit_label": "NUM 22",
+  "book_code": "NUM",
+  "chapter_number": 22,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:NUM:22:1",
+      "sequence": 4377,
+      "chapter_label": "NUM 22",
+      "verse_label": "1",
+      "locator": {
+        "book": "NUM",
+        "chapter": 22,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 22,
+          "verse": 1
+        }
+      ],
+      "en": "The children of Israel traveled, and encamped in the plains of Moab beyond the Jordan at Jericho.",
+      "ko": "이스라엘 자손이 또 진행하여 모압 평지에 진 쳤으니 요단 건너편 곧 여리고 맞은편이더라",
+      "source_text_hash": "4f66d52437c4cf822442e8e683e14405a644fd716b12f659f795ca171b55536c",
+      "translation_text_hash": "f0b0924e707786f54fa3d3698611a0bf5fdcc576501682df0470bd59eb99e502",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손이 또 진행하여 모압 평지에 진 쳤으니 요단 건너편 곧 여리고 맞은편이더라"
+      ],
+      "raw_text_hashes": [
+        "f0b0924e707786f54fa3d3698611a0bf5fdcc576501682df0470bd59eb99e502"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:22:2",
+      "sequence": 4378,
+      "chapter_label": "NUM 22",
+      "verse_label": "2",
+      "locator": {
+        "book": "NUM",
+        "chapter": 22,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 22,
+          "verse": 2
+        }
+      ],
+      "en": "Balak the son of Zippor saw all that Israel had done to the Amorites.",
+      "ko": "십볼의 아들 발락이 이스라엘이 아모리인에게 행한 모든 일을 보았으므로",
+      "source_text_hash": "3d6967beaad795ba7884dc5c257e77a02fbd3a1e22f4db84ab85e100e3250978",
+      "translation_text_hash": "09393f18975a64db083977f12ab278452380b4004f1e97f30d61d802e62448e5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "십볼의 아들 발락이 이스라엘이 아모리인에게 행한 모든 일을 보았으므로"
+      ],
+      "raw_text_hashes": [
+        "09393f18975a64db083977f12ab278452380b4004f1e97f30d61d802e62448e5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:22:3",
+      "sequence": 4379,
+      "chapter_label": "NUM 22",
+      "verse_label": "3",
+      "locator": {
+        "book": "NUM",
+        "chapter": 22,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 22,
+          "verse": 3
+        }
+      ],
+      "en": "Moab was very afraid of the people, because they were many. Moab was distressed because of the children of Israel.",
+      "ko": "모압이 심히 두려워하였으니 이스라엘 백성의 많음을 인함이라 모압이 이스라엘 자손의 연고로 번민하여",
+      "source_text_hash": "210d185889b6971425d8ed518ff0afc528c751aa6e72fc5f606c63efbb9a1aa8",
+      "translation_text_hash": "a7c4219eb2b5dd567e376f9b5ec80b50a093f9153ecbff12e694c154f5884a7d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모압이 심히 두려워하였으니 이스라엘 백성의 많음을 인함이라 모압이 이스라엘 자손의 연고로 번민하여"
+      ],
+      "raw_text_hashes": [
+        "a7c4219eb2b5dd567e376f9b5ec80b50a093f9153ecbff12e694c154f5884a7d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:22:4",
+      "sequence": 4380,
+      "chapter_label": "NUM 22",
+      "verse_label": "4",
+      "locator": {
+        "book": "NUM",
+        "chapter": 22,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 22,
+          "verse": 4
+        }
+      ],
+      "en": "Moab said to the elders of Midian, “Now this multitude will lick up all that is around us, as the ox licks up the grass of the field.” Balak the son of Zippor was king of Moab at that time.",
+      "ko": "미디안 장로들에게 이르되 이제 이 무리가 소가 밭의 풀을 뜯어먹음 같이 우리 사면에 있는 것을 다 뜯어먹으리로다 하니 때에 십볼의 아들 발락이 모압 왕이었더라",
+      "source_text_hash": "e338787cb7b0d1f611ed1d7004e988e81e3d1e60ef3db7b4de8e601c89e85788",
+      "translation_text_hash": "97e072f8605cfa4e4c181b7eb4e005b307bb9cde2142461c05e0939a11f41995",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "미디안 장로들에게 이르되 이제 이 무리가 소가 밭의 풀을 뜯어먹음 같이 우리 사면에 있는 것을 다 뜯어먹으리로다 하니 때에 십볼의 아들 발락이 모압 왕이었더라"
+      ],
+      "raw_text_hashes": [
+        "97e072f8605cfa4e4c181b7eb4e005b307bb9cde2142461c05e0939a11f41995"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:22:5",
+      "sequence": 4381,
+      "chapter_label": "NUM 22",
+      "verse_label": "5",
+      "locator": {
+        "book": "NUM",
+        "chapter": 22,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 22,
+          "verse": 5
+        }
+      ],
+      "en": "He sent messengers to Balaam the son of Beor, to Pethor, which is by the River, to the land of the children of his people, to call him, saying, “Behold, there is a people who came out of Egypt. Behold, they cover the surface of the earth, and they are staying opposite me.",
+      "ko": "그가 사자를 브올의 아들 발람의 본향 강변 브돌에 보내어 발람을 부르게 하여 가로되 보라 한 민족이 애굽에서 나왔는데 그들이 지면에 덮여서 우리 맞은편에 거하였고",
+      "source_text_hash": "2d33925595fa807893cd7f792581f2beecfda53e4ad708820db6a1983543bc1e",
+      "translation_text_hash": "7481ebd7d4ea218d03472bf8de49c2811272f27abd79cee44822890d1462005a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 사자를 브올의 아들 발람의 본향 강변 브돌에 보내어 발람을 부르게 하여 가로되 보라 한 민족이 애굽에서 나왔는데 그들이 지면에 덮여서 우리 맞은편에 거하였고"
+      ],
+      "raw_text_hashes": [
+        "7481ebd7d4ea218d03472bf8de49c2811272f27abd79cee44822890d1462005a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:22:6",
+      "sequence": 4382,
+      "chapter_label": "NUM 22",
+      "verse_label": "6",
+      "locator": {
+        "book": "NUM",
+        "chapter": 22,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 22,
+          "verse": 6
+        }
+      ],
+      "en": "Please come now therefore, and curse this people for me; for they are too mighty for me. Perhaps I shall prevail, that we may strike them, and that I may drive them out of the land; for I know that he whom you bless is blessed, and he whom you curse is cursed.”",
+      "ko": "우리보다 강하니 청컨대 와서 나를 위하여 이 백성을 저주하라 내가 혹 쳐서 이기어 이 땅에서 몰아내리라 그대가 복을 비는 자는 복을 받고 저주하는 자는 저주를 받을줄을 내가 앎이니라",
+      "source_text_hash": "cedf07b8a15de12e453f0a64e73ae169bf15c156b215425dc0ed845c7fb60139",
+      "translation_text_hash": "a746f752035cd9f888afb8451c74f3e9bf23492302134cdec02c86a699d4528d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리보다 강하니 청컨대 와서 나를 위하여 이 백성을 저주하라 내가 혹 쳐서 이기어 이 땅에서 몰아내리라 그대가 복을 비는 자는 복을 받고 저주하는 자는 저주를 받을줄을 내가 앎이니라"
+      ],
+      "raw_text_hashes": [
+        "a746f752035cd9f888afb8451c74f3e9bf23492302134cdec02c86a699d4528d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:22:7",
+      "sequence": 4383,
+      "chapter_label": "NUM 22",
+      "verse_label": "7",
+      "locator": {
+        "book": "NUM",
+        "chapter": 22,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 22,
+          "verse": 7
+        }
+      ],
+      "en": "The elders of Moab and the elders of Midian departed with the rewards of divination in their hand. They came to Balaam, and spoke to him the words of Balak.",
+      "ko": "모압 장로들과 미디안 장로들이 손에 복술의 예물을 가지고 떠나 발람에게 이르러 발락의 말로 그에게 고하매",
+      "source_text_hash": "67d9df36d0f3a438a4b0bccab250e018b0789ba3776459f371abe0787fa97db5",
+      "translation_text_hash": "a35208b2f1dc9142835ae364368bebce3ff03844825e72bd1d89f7fad20ed67b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모압 장로들과 미디안 장로들이 손에 복술의 예물을 가지고 떠나 발람에게 이르러 발락의 말로 그에게 고하매"
+      ],
+      "raw_text_hashes": [
+        "a35208b2f1dc9142835ae364368bebce3ff03844825e72bd1d89f7fad20ed67b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:22:8",
+      "sequence": 4384,
+      "chapter_label": "NUM 22",
+      "verse_label": "8",
+      "locator": {
+        "book": "NUM",
+        "chapter": 22,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 22,
+          "verse": 8
+        }
+      ],
+      "en": "He said to them, “Lodge here this night, and I will bring you word again, as the LORD shall speak to me.” The princes of Moab stayed with Balaam.",
+      "ko": "발람이 그들에게 이르되 이 밤에 여기서 유숙하라 여호와께서 내게 이르시는대로 너희에게 대답하리라 모압 귀족들이 발람에게서 유하니라",
+      "source_text_hash": "20ab67d45ef3211ab3a00e256845a7207c87c952fbcb9f6832670a44a7a0e010",
+      "translation_text_hash": "05932b60f88ac881843c87430f33605eb68a0e06a23fc87559e205b559f92ebd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "발람이 그들에게 이르되 이 밤에 여기서 유숙하라 여호와께서 내게 이르시는대로 너희에게 대답하리라 모압 귀족들이 발람에게서 유하니라"
+      ],
+      "raw_text_hashes": [
+        "05932b60f88ac881843c87430f33605eb68a0e06a23fc87559e205b559f92ebd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:22:9",
+      "sequence": 4385,
+      "chapter_label": "NUM 22",
+      "verse_label": "9",
+      "locator": {
+        "book": "NUM",
+        "chapter": 22,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 22,
+          "verse": 9
+        }
+      ],
+      "en": "God came to Balaam, and said, “Who are these men with you?”",
+      "ko": "하나님이 발람에게 임하여 가라사대 너와 함께한 이 사람들이 누구냐",
+      "source_text_hash": "d7d62091fc0f4dc8c6670624dbb6bf6a23b896addf7d50bf04fb983174e10b08",
+      "translation_text_hash": "8333f0f5fe33ec1174ede86a00ed59432ee64039c73aaf5f8b6259776d7da93f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 발람에게 임하여 가라사대 너와 함께한 이 사람들이 누구냐"
+      ],
+      "raw_text_hashes": [
+        "8333f0f5fe33ec1174ede86a00ed59432ee64039c73aaf5f8b6259776d7da93f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:22:10",
+      "sequence": 4386,
+      "chapter_label": "NUM 22",
+      "verse_label": "10",
+      "locator": {
+        "book": "NUM",
+        "chapter": 22,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 22,
+          "verse": 10
+        }
+      ],
+      "en": "Balaam said to God, “Balak the son of Zippor, king of Moab, has said to me,",
+      "ko": "발람이 하나님께 고하되 모압 왕 십볼의 아들 발락이 내게 보낸 자라 이르기를",
+      "source_text_hash": "8eb4cbc2d0f81c2468ba2beef66f9ea57b47a04fede9098961cc9dfcfd22b7b4",
+      "translation_text_hash": "b537ff62f52be3fa1f1d0ac7a5b2ee0fbe83f2a114faa813361a134f5d22dadb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "발람이 하나님께 고하되 모압 왕 십볼의 아들 발락이 내게 보낸 자라 이르기를"
+      ],
+      "raw_text_hashes": [
+        "b537ff62f52be3fa1f1d0ac7a5b2ee0fbe83f2a114faa813361a134f5d22dadb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:22:11",
+      "sequence": 4387,
+      "chapter_label": "NUM 22",
+      "verse_label": "11",
+      "locator": {
+        "book": "NUM",
+        "chapter": 22,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 22,
+          "verse": 11
+        }
+      ],
+      "en": "‘Behold, the people that has come out of Egypt covers the surface of the earth. Now, come curse them for me. Perhaps I shall be able to fight against them, and shall drive them out.’”",
+      "ko": "보라 애굽에서 나온 민족이 있어 지면에 덮였으니 이제 와서 나를 위하여 그들을 저주하라 내가 혹 그들을 쳐서 몰아 낼 수 있으리라 하나이다",
+      "source_text_hash": "0bb71f5ed2729f5092733ed6df2f8077547d63827355272e660496b0e7a674a1",
+      "translation_text_hash": "bda7cf3da928544c19f74974070d371d8c3287448bd8a5b65fd038f4fceac49d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보라 애굽에서 나온 민족이 있어 지면에 덮였으니 이제 와서 나를 위하여 그들을 저주하라 내가 혹 그들을 쳐서 몰아 낼 수 있으리라 하나이다"
+      ],
+      "raw_text_hashes": [
+        "bda7cf3da928544c19f74974070d371d8c3287448bd8a5b65fd038f4fceac49d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:22:12",
+      "sequence": 4388,
+      "chapter_label": "NUM 22",
+      "verse_label": "12",
+      "locator": {
+        "book": "NUM",
+        "chapter": 22,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 22,
+          "verse": 12
+        }
+      ],
+      "en": "God said to Balaam, “You shall not go with them. You shall not curse the people, for they are blessed.”",
+      "ko": "하나님이 발람에게 이르시되 너는 그들과 함께 가지도 말고 그 백성을 저주하지도 말라 그들은 복을 받은 자니라",
+      "source_text_hash": "3423ce543807b6c4efcfe24f7a31e979ba76659ef71fd217635a898e382a16b6",
+      "translation_text_hash": "a06380598e443fc6a88c37ac248ffbd7f1f64b529fbbc838f03e74684dc54783",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 발람에게 이르시되 너는 그들과 함께 가지도 말고 그 백성을 저주하지도 말라 그들은 복을 받은 자니라"
+      ],
+      "raw_text_hashes": [
+        "a06380598e443fc6a88c37ac248ffbd7f1f64b529fbbc838f03e74684dc54783"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:22:13",
+      "sequence": 4389,
+      "chapter_label": "NUM 22",
+      "verse_label": "13",
+      "locator": {
+        "book": "NUM",
+        "chapter": 22,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 22,
+          "verse": 13
+        }
+      ],
+      "en": "Balaam rose up in the morning, and said to the princes of Balak, “Go to your land; for the LORD refuses to permit me to go with you.”",
+      "ko": "발람이 아침에 일어나서 발락의 귀족들에게 이르되 너희는 너희의 땅으로 돌아가라 내가 너희와 함께 가기를 여호와께서 허락지 아니하시느니라",
+      "source_text_hash": "7e775f6233582ebdd024f290e8bf988678161256a9da3a7d1fd29a3e8657c217",
+      "translation_text_hash": "81de198d9b5a1baebbac89723b210ef472b155783aa048bb5847dd66ea674186",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "발람이 아침에 일어나서 발락의 귀족들에게 이르되 너희는 너희의 땅으로 돌아가라 내가 너희와 함께 가기를 여호와께서 허락지 아니하시느니라"
+      ],
+      "raw_text_hashes": [
+        "81de198d9b5a1baebbac89723b210ef472b155783aa048bb5847dd66ea674186"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:22:14",
+      "sequence": 4390,
+      "chapter_label": "NUM 22",
+      "verse_label": "14",
+      "locator": {
+        "book": "NUM",
+        "chapter": 22,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 22,
+          "verse": 14
+        }
+      ],
+      "en": "The princes of Moab rose up, and they went to Balak, and said, “Balaam refuses to come with us.”",
+      "ko": "모압 귀족들이 일어나 발락에게로 가서 고하되 발람이 우리와 함께 오기를 거절하더이다",
+      "source_text_hash": "57378457bdfe63fff527c259d91e0e3d4d2daa22a8b61a90a46172e5e79d9cc9",
+      "translation_text_hash": "3c443c8a6ec661767e00db98c8653d17719ba76ae20f5d0fb747891055d171fe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모압 귀족들이 일어나 발락에게로 가서 고하되 발람이 우리와 함께 오기를 거절하더이다"
+      ],
+      "raw_text_hashes": [
+        "3c443c8a6ec661767e00db98c8653d17719ba76ae20f5d0fb747891055d171fe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:22:15",
+      "sequence": 4391,
+      "chapter_label": "NUM 22",
+      "verse_label": "15",
+      "locator": {
+        "book": "NUM",
+        "chapter": 22,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 22,
+          "verse": 15
+        }
+      ],
+      "en": "Balak again sent princes, more, and more honorable than they.",
+      "ko": "발락이 다시 그들보다 더 높은 귀족들을 더 많이 보내매",
+      "source_text_hash": "b6b39b059a55d0aca677356b697af3de4e7f970f195abf0fc9612f863ee83608",
+      "translation_text_hash": "df146eb0c59a7bac2b648c6a27eb74ede00b490a2045269e3733dd5f630ec1ec",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "발락이 다시 그들보다 더 높은 귀족들을 더 많이 보내매"
+      ],
+      "raw_text_hashes": [
+        "df146eb0c59a7bac2b648c6a27eb74ede00b490a2045269e3733dd5f630ec1ec"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:22:16",
+      "sequence": 4392,
+      "chapter_label": "NUM 22",
+      "verse_label": "16",
+      "locator": {
+        "book": "NUM",
+        "chapter": 22,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 22,
+          "verse": 16
+        }
+      ],
+      "en": "They came to Balaam, and said to him, “Balak the son of Zippor says, ‘Please let nothing hinder you from coming to me,",
+      "ko": "그들이 발람에게로 나아가서 그에게 이르되 십볼의 아들 발락의 말씀에 청컨대 아무 것에도 거리끼지 말고 내게로 오라",
+      "source_text_hash": "d48953a9bf39d26a2be45ab52647dcb83b42cf58de5d5b37edc7907555a57d15",
+      "translation_text_hash": "b069aee4d318134d764589776a2426392fe350f45054a6ef6d188dd5b6b39cc7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 발람에게로 나아가서 그에게 이르되 십볼의 아들 발락의 말씀에 청컨대 아무 것에도 거리끼지 말고 내게로 오라"
+      ],
+      "raw_text_hashes": [
+        "b069aee4d318134d764589776a2426392fe350f45054a6ef6d188dd5b6b39cc7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:22:17",
+      "sequence": 4393,
+      "chapter_label": "NUM 22",
+      "verse_label": "17",
+      "locator": {
+        "book": "NUM",
+        "chapter": 22,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 22,
+          "verse": 17
+        }
+      ],
+      "en": "for I will promote you to very great honor, and whatever you say to me I will do. Please come therefore, and curse this people for me.’”",
+      "ko": "내가 그대를 높여 크게 존귀케 하고 그대가 내게 말하는 것은 무엇이든지 시행하리니 청컨대 와서 나를 위하여 이 백성을 저주하라 하시더이다",
+      "source_text_hash": "9a155b0cd7096461650d453f48a7a0ef9cc3ae8e16f9218a27dd52b7f4baf098",
+      "translation_text_hash": "bc84cace30a4a9b9908ab52b5b152b4ca6f4636a71f67e77680c19b052deca95",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 그대를 높여 크게 존귀케 하고 그대가 내게 말하는 것은 무엇이든지 시행하리니 청컨대 와서 나를 위하여 이 백성을 저주하라 하시더이다"
+      ],
+      "raw_text_hashes": [
+        "bc84cace30a4a9b9908ab52b5b152b4ca6f4636a71f67e77680c19b052deca95"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:22:18",
+      "sequence": 4394,
+      "chapter_label": "NUM 22",
+      "verse_label": "18",
+      "locator": {
+        "book": "NUM",
+        "chapter": 22,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 22,
+          "verse": 18
+        }
+      ],
+      "en": "Balaam answered the servants of Balak, “If Balak would give me his house full of silver and gold, I can’t go beyond the word of the LORD my God, to do less or more.",
+      "ko": "발람이 발락의 신하들에게 대답하여 가로되 발락이 그 집에 은, 금을 가득히 채워서 내게 줄찌라도 내가 능히 여호와 내 하나님의 말씀을 어기어 덜하거나 더하지 못하겠노라",
+      "source_text_hash": "0a4ec46b0c525bbbb9f2d261e497ae9ab528ea168ec842bf9657c011ac5067f7",
+      "translation_text_hash": "95a861627b6bf805894d9faec3f3e0a108da86c3c4963767d90eb20114004e48",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "발람이 발락의 신하들에게 대답하여 가로되 발락이 그 집에 은, 금을 가득히 채워서 내게 줄찌라도 내가 능히 여호와 내 하나님의 말씀을 어기어 덜하거나 더하지 못하겠노라"
+      ],
+      "raw_text_hashes": [
+        "95a861627b6bf805894d9faec3f3e0a108da86c3c4963767d90eb20114004e48"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:22:19",
+      "sequence": 4395,
+      "chapter_label": "NUM 22",
+      "verse_label": "19",
+      "locator": {
+        "book": "NUM",
+        "chapter": 22,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 22,
+          "verse": 19
+        }
+      ],
+      "en": "Now therefore please stay here tonight as well, that I may know what else the LORD will speak to me.”",
+      "ko": "그런즉 이제 너희도 이 밤에 여기서 유하라 여호와께서 내게 무슨 말씀을 더하실는지 알아 보리라",
+      "source_text_hash": "073c712dc98111e6e90aaba75330e5c7c1d75c01c1fa2e9ef6f379d5f5eef3b1",
+      "translation_text_hash": "8d13cf60de8adee2809fcf359261b0cbe51097b69318e0257f176b5ddb4e4921",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 이제 너희도 이 밤에 여기서 유하라 여호와께서 내게 무슨 말씀을 더하실는지 알아 보리라"
+      ],
+      "raw_text_hashes": [
+        "8d13cf60de8adee2809fcf359261b0cbe51097b69318e0257f176b5ddb4e4921"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:22:20",
+      "sequence": 4396,
+      "chapter_label": "NUM 22",
+      "verse_label": "20",
+      "locator": {
+        "book": "NUM",
+        "chapter": 22,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 22,
+          "verse": 20
+        }
+      ],
+      "en": "God came to Balaam at night, and said to him, “If the men have come to call you, rise up, go with them; but only the word which I speak to you, that you shall do.”",
+      "ko": "밤에 하나님이 발람에게 임하여 이르시되 그 사람들이 너를 부르러 왔거든 일어나 함께 가라 그러나 내가 네게 이르는 말만 준행할찌니라",
+      "source_text_hash": "d3f7b726e55cecd66189686033ce669b0657724b487f035d24c4108638b00e90",
+      "translation_text_hash": "e869ebe40c09cd2aca2488fba41a8690045f6fa342b779ff2d604ffa2981138d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "밤에 하나님이 발람에게 임하여 이르시되 그 사람들이 너를 부르러 왔거든 일어나 함께 가라 그러나 내가 네게 이르는 말만 준행할찌니라"
+      ],
+      "raw_text_hashes": [
+        "e869ebe40c09cd2aca2488fba41a8690045f6fa342b779ff2d604ffa2981138d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:22:21",
+      "sequence": 4397,
+      "chapter_label": "NUM 22",
+      "verse_label": "21",
+      "locator": {
+        "book": "NUM",
+        "chapter": 22,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 22,
+          "verse": 21
+        }
+      ],
+      "en": "Balaam rose up in the morning, and saddled his donkey, and went with the princes of Moab.",
+      "ko": "발람이 아침에 일어나서 자기 나귀에 안장을 지우고 모압 귀족들과 함께 행하니",
+      "source_text_hash": "2d68c89016bdd9d40d49864f356996e62257e53bfbf6fe9d8d221069fbc46f7b",
+      "translation_text_hash": "2c111e8970cb26a3b5bf9bfd68655ef4a658fc94a0a6cfb76c5abd8701b04e22",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "발람이 아침에 일어나서 자기 나귀에 안장을 지우고 모압 귀족들과 함께 행하니"
+      ],
+      "raw_text_hashes": [
+        "2c111e8970cb26a3b5bf9bfd68655ef4a658fc94a0a6cfb76c5abd8701b04e22"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:22:22",
+      "sequence": 4398,
+      "chapter_label": "NUM 22",
+      "verse_label": "22",
+      "locator": {
+        "book": "NUM",
+        "chapter": 22,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 22,
+          "verse": 22
+        }
+      ],
+      "en": "God’s anger burned because he went; and the LORD’s angel placed himself in the way as an adversary against him. Now he was riding on his donkey, and his two servants were with him.",
+      "ko": "그가 행함을 인하여 하나님이 진노하심으로 여호와의 사자가 그를 막으려고 길에 서니라 발람은 자기 나귀를 타고 그 두 종은 그와 함께 있더니",
+      "source_text_hash": "ed5c6ca28b70e0e43ddddb0dfd78fd9b307ca326dd3b5a936ae66d8c2ae5515f",
+      "translation_text_hash": "435744e17bdf93a78a74cf64bdcd30b2bcc6f572a296dee9068fcb10b2810c7f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 행함을 인하여 하나님이 진노하심으로 여호와의 사자가 그를 막으려고 길에 서니라 발람은 자기 나귀를 타고 그 두 종은 그와 함께 있더니"
+      ],
+      "raw_text_hashes": [
+        "435744e17bdf93a78a74cf64bdcd30b2bcc6f572a296dee9068fcb10b2810c7f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:22:23",
+      "sequence": 4399,
+      "chapter_label": "NUM 22",
+      "verse_label": "23",
+      "locator": {
+        "book": "NUM",
+        "chapter": 22,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 22,
+          "verse": 23
+        }
+      ],
+      "en": "The donkey saw the LORD’s angel standing in the way, with his sword drawn in his hand; and the donkey turned out of the path, and went into the field. Balaam struck the donkey, to turn her into the path.",
+      "ko": "나귀가 여호와의 사자가 칼을 빼어 손에 들고 길에 선 것을 보고 길에서 떠나 밭으로 들어간지라 발람이 나귀를 길로 돌이키려고 채찍질하니",
+      "source_text_hash": "1be6c52676671017e43087f43113601f2f23cd3aa9239a755ea672454878779f",
+      "translation_text_hash": "de0e9076974071817df7982baba9cb7afaf602f1438b722ce19208b362b9c39a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나귀가 여호와의 사자가 칼을 빼어 손에 들고 길에 선 것을 보고 길에서 떠나 밭으로 들어간지라 발람이 나귀를 길로 돌이키려고 채찍질하니"
+      ],
+      "raw_text_hashes": [
+        "de0e9076974071817df7982baba9cb7afaf602f1438b722ce19208b362b9c39a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:22:24",
+      "sequence": 4400,
+      "chapter_label": "NUM 22",
+      "verse_label": "24",
+      "locator": {
+        "book": "NUM",
+        "chapter": 22,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 22,
+          "verse": 24
+        }
+      ],
+      "en": "Then the LORD’s angel stood in a narrow path between the vineyards, a wall being on this side, and a wall on that side.",
+      "ko": "여호와의 사자는 포도원 사이 좁은 길에 섰고 좌우에는 담이 있더라",
+      "source_text_hash": "3a26a108b1adc211428877bddef7c27985fa4e894b1d22232c73597f4b67a497",
+      "translation_text_hash": "f483456ac0e649c77481f58d2a40b79b0d800343ca53fc833995b0ab5079faa4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 사자는 포도원 사이 좁은 길에 섰고 좌우에는 담이 있더라"
+      ],
+      "raw_text_hashes": [
+        "f483456ac0e649c77481f58d2a40b79b0d800343ca53fc833995b0ab5079faa4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:22:25",
+      "sequence": 4401,
+      "chapter_label": "NUM 22",
+      "verse_label": "25",
+      "locator": {
+        "book": "NUM",
+        "chapter": 22,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 22,
+          "verse": 25
+        }
+      ],
+      "en": "The donkey saw the LORD’s angel, and she thrust herself to the wall, and crushed Balaam’s foot against the wall. He struck her again.",
+      "ko": "나귀가 여호와의 사자를 보고 몸을 담에 대고 발람의 발을 그 담에 비비어 상하게 하매 발람이 다시 채찍질하니",
+      "source_text_hash": "cfcab42b1ab3243e55f6fb135d98b77ba4617fe175b73dfb8954a918a00a2a38",
+      "translation_text_hash": "243b6659408041da7a7f858e31f6be4bfb347028e789e6eef41306006541514b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나귀가 여호와의 사자를 보고 몸을 담에 대고 발람의 발을 그 담에 비비어 상하게 하매 발람이 다시 채찍질하니"
+      ],
+      "raw_text_hashes": [
+        "243b6659408041da7a7f858e31f6be4bfb347028e789e6eef41306006541514b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:22:26",
+      "sequence": 4402,
+      "chapter_label": "NUM 22",
+      "verse_label": "26",
+      "locator": {
+        "book": "NUM",
+        "chapter": 22,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 22,
+          "verse": 26
+        }
+      ],
+      "en": "The LORD’s angel went further, and stood in a narrow place, where there was no way to turn either to the right hand or to the left.",
+      "ko": "여호와의 사자가 더 나아가서 좌우로 피할데 없는 좁은 곳에 선지라",
+      "source_text_hash": "a7a7109be7fe7d712aaaa3f4da5973a8f004a1390d277a1bae12293b670b8b51",
+      "translation_text_hash": "31192b517e3573fc748f6442ce5c066eb945a8b125b070d6200f1aa7958d735c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 사자가 더 나아가서 좌우로 피할데 없는 좁은 곳에 선지라"
+      ],
+      "raw_text_hashes": [
+        "31192b517e3573fc748f6442ce5c066eb945a8b125b070d6200f1aa7958d735c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:22:27",
+      "sequence": 4403,
+      "chapter_label": "NUM 22",
+      "verse_label": "27",
+      "locator": {
+        "book": "NUM",
+        "chapter": 22,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 22,
+          "verse": 27
+        }
+      ],
+      "en": "The donkey saw the LORD’s angel, and she lay down under Balaam. Balaam’s anger burned, and he struck the donkey with his staff.",
+      "ko": "나귀가 여호와의 사자를 보고 발람의 밑에 엎드리니 발람이 노하여 자기 지팡이로 나귀를 때리는지라",
+      "source_text_hash": "c423fffc727ac1956616bd58608b9548e55bc63df4913153362a2295a155b97d",
+      "translation_text_hash": "6cc66f9b55075e738cedb7b1e496142ee8b3cd0dbd7f2284cf0dda8337b76319",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나귀가 여호와의 사자를 보고 발람의 밑에 엎드리니 발람이 노하여 자기 지팡이로 나귀를 때리는지라"
+      ],
+      "raw_text_hashes": [
+        "6cc66f9b55075e738cedb7b1e496142ee8b3cd0dbd7f2284cf0dda8337b76319"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:22:28",
+      "sequence": 4404,
+      "chapter_label": "NUM 22",
+      "verse_label": "28",
+      "locator": {
+        "book": "NUM",
+        "chapter": 22,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 22,
+          "verse": 28
+        }
+      ],
+      "en": "The LORD opened the mouth of the donkey, and she said to Balaam, “What have I done to you, that you have struck me these three times?”",
+      "ko": "여호와께서 나귀 입을 여시니 발람에게 이르되 내가 네게 무엇을 하였기에 나를 이같이 세번을 때리느뇨",
+      "source_text_hash": "f3de53c29ddd65809b72becb695ccbb7313377ce73627de00f75d48592999d28",
+      "translation_text_hash": "186ba8bef9cc89546aeb9ee4942b83aff623d60b083cfce333f50fcd0f99de8d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 나귀 입을 여시니 발람에게 이르되 내가 네게 무엇을 하였기에 나를 이같이 세번을 때리느뇨"
+      ],
+      "raw_text_hashes": [
+        "186ba8bef9cc89546aeb9ee4942b83aff623d60b083cfce333f50fcd0f99de8d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:22:29",
+      "sequence": 4405,
+      "chapter_label": "NUM 22",
+      "verse_label": "29",
+      "locator": {
+        "book": "NUM",
+        "chapter": 22,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 22,
+          "verse": 29
+        }
+      ],
+      "en": "Balaam said to the donkey, “Because you have mocked me, I wish there were a sword in my hand, for now I would have killed you.”",
+      "ko": "발람이 나귀에게 말하되 네가 나를 거역하는 연고니 내 손에 칼이 있었더면 곧 너를 죽였으리라",
+      "source_text_hash": "372254746d5b1ec2ee1c06774c166e1d21014e9e1fa075583fa4fa262b6ad7ea",
+      "translation_text_hash": "05918be274fe4c50e201d504235beb76f61697468978e17a97ac81279ceb9c04",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "발람이 나귀에게 말하되 네가 나를 거역하는 연고니 내 손에 칼이 있었더면 곧 너를 죽였으리라"
+      ],
+      "raw_text_hashes": [
+        "05918be274fe4c50e201d504235beb76f61697468978e17a97ac81279ceb9c04"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:22:30",
+      "sequence": 4406,
+      "chapter_label": "NUM 22",
+      "verse_label": "30",
+      "locator": {
+        "book": "NUM",
+        "chapter": 22,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 22,
+          "verse": 30
+        }
+      ],
+      "en": "The donkey said to Balaam, “Am I not your donkey, on which you have ridden all your life long until today? Was I ever in the habit of doing so to you?” He said, “No.”",
+      "ko": "나귀가 발람에게 이르되 나는 네가 오늘까지 네 일생에 타는 나귀가 아니냐 내가 언제든지 네게 이같이 하는 행습이 있더냐 가로되 없었느니라",
+      "source_text_hash": "2bc6e505128a08a72e0117d9f2a7ccc5d6f64bdc8a9c49f901120d41a7d5aeab",
+      "translation_text_hash": "e64a5fa3f0bc99b52b4ff7e0361e43e9b973a6d931b53c32aa4385e476852630",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나귀가 발람에게 이르되 나는 네가 오늘까지 네 일생에 타는 나귀가 아니냐 내가 언제든지 네게 이같이 하는 행습이 있더냐 가로되 없었느니라"
+      ],
+      "raw_text_hashes": [
+        "e64a5fa3f0bc99b52b4ff7e0361e43e9b973a6d931b53c32aa4385e476852630"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:22:31",
+      "sequence": 4407,
+      "chapter_label": "NUM 22",
+      "verse_label": "31",
+      "locator": {
+        "book": "NUM",
+        "chapter": 22,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 22,
+          "verse": 31
+        }
+      ],
+      "en": "Then the LORD opened the eyes of Balaam, and he saw the LORD’s angel standing in the way, with his sword drawn in his hand; and he bowed his head, and fell on his face.",
+      "ko": "때에 여호와께서 발람의 눈을 밝히시매 여호와의 사자가 손에 칼을 빼어들고 길에 선 것을 보고 머리를 숙이고 엎드리니",
+      "source_text_hash": "19208892d83db575339e539930e28f1bad5b2cbad5312c632bac3ee4ca00a0a7",
+      "translation_text_hash": "d48b9107bf8594be919ebc6e6c9158ef759ab55a3bcc0a7e9d8d4f438d0e7afa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "때에 여호와께서 발람의 눈을 밝히시매 여호와의 사자가 손에 칼을 빼어들고 길에 선 것을 보고 머리를 숙이고 엎드리니"
+      ],
+      "raw_text_hashes": [
+        "d48b9107bf8594be919ebc6e6c9158ef759ab55a3bcc0a7e9d8d4f438d0e7afa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:22:32",
+      "sequence": 4408,
+      "chapter_label": "NUM 22",
+      "verse_label": "32",
+      "locator": {
+        "book": "NUM",
+        "chapter": 22,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 22,
+          "verse": 32
+        }
+      ],
+      "en": "The LORD’s angel said to him, “Why have you struck your donkey these three times? Behold, I have come out as an adversary, because your way is perverse before me.",
+      "ko": "여호와의 사자가 그에게 이르되 너는 어찌하여 네 나귀를 이같이 세번 때렸느냐 보라 네 길이 내 앞에 패역하므로 내가 너를 막으려고 나왔더니",
+      "source_text_hash": "a32324e44f82b5754c404576860f33da85961485acc3778ca114c27c1c21ccbd",
+      "translation_text_hash": "7559166967d2ff12af21b717dee257324abe9d47023d5d25b3454bec85744ef7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 사자가 그에게 이르되 너는 어찌하여 네 나귀를 이같이 세번 때렸느냐 보라 네 길이 내 앞에 패역하므로 내가 너를 막으려고 나왔더니"
+      ],
+      "raw_text_hashes": [
+        "7559166967d2ff12af21b717dee257324abe9d47023d5d25b3454bec85744ef7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:22:33",
+      "sequence": 4409,
+      "chapter_label": "NUM 22",
+      "verse_label": "33",
+      "locator": {
+        "book": "NUM",
+        "chapter": 22,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 22,
+          "verse": 33
+        }
+      ],
+      "en": "The donkey saw me, and turned away before me these three times. Unless she had turned away from me, surely now I would have killed you, and saved her alive.”",
+      "ko": "나귀가 나를 보고 이같이 세번을 돌이켜 내 앞에서 피하였느니라 나귀가 만일 돌이켜 나를 피하지 아니하였더면 내가 벌써 너를 죽이고 나귀는 살렸으리라",
+      "source_text_hash": "5a83f7e527c13826de458d22af890b15b3f0f5ca8c70c570d7168e4db876829d",
+      "translation_text_hash": "c175ddc4a158fde2e5141984a4568c47174506c2067a0532a05b28328d65db69",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나귀가 나를 보고 이같이 세번을 돌이켜 내 앞에서 피하였느니라 나귀가 만일 돌이켜 나를 피하지 아니하였더면 내가 벌써 너를 죽이고 나귀는 살렸으리라"
+      ],
+      "raw_text_hashes": [
+        "c175ddc4a158fde2e5141984a4568c47174506c2067a0532a05b28328d65db69"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:22:34",
+      "sequence": 4410,
+      "chapter_label": "NUM 22",
+      "verse_label": "34",
+      "locator": {
+        "book": "NUM",
+        "chapter": 22,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 22,
+          "verse": 34
+        }
+      ],
+      "en": "Balaam said to the LORD’s angel, “I have sinned; for I didn’t know that you stood in the way against me. Now therefore, if it displeases you, I will go back again.”",
+      "ko": "발람이 여호와의 사자에게 말씀하되 내가 범죄하였나이다 당신이 나를 막으려고 길에 서신줄을 내가 알지 못하였나이다 당신이 이를 기뻐하지 아니하시면 나는 돌아가겠나이다",
+      "source_text_hash": "7869c8c4bc528e1e082ccfad67019009113641939590b9b411da021349f7a835",
+      "translation_text_hash": "eb6c87c900a5ae6bd0c492d047f9c30713086b9d769693f0cd176146b35c469b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "발람이 여호와의 사자에게 말씀하되 내가 범죄하였나이다 당신이 나를 막으려고 길에 서신줄을 내가 알지 못하였나이다 당신이 이를 기뻐하지 아니하시면 나는 돌아가겠나이다"
+      ],
+      "raw_text_hashes": [
+        "eb6c87c900a5ae6bd0c492d047f9c30713086b9d769693f0cd176146b35c469b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:22:35",
+      "sequence": 4411,
+      "chapter_label": "NUM 22",
+      "verse_label": "35",
+      "locator": {
+        "book": "NUM",
+        "chapter": 22,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 22,
+          "verse": 35
+        }
+      ],
+      "en": "The LORD’s angel said to Balaam, “Go with the men; but you shall only speak the word that I shall speak to you.” So Balaam went with the princes of Balak.",
+      "ko": "여호와의 사자가 발람에게 이르되 그 사람들과 함께 가라 내가 네게 이르는 말만 말할찌니라 발람이 발락의 귀족들과 함께 가니라",
+      "source_text_hash": "bec7afc99d1292d8b06920e68ca86a568fc8847458aca93a378417d19e10546e",
+      "translation_text_hash": "5eed547ddb94c62341bd683cc35b964d20eda37176b1bc2a090d089a65754916",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 사자가 발람에게 이르되 그 사람들과 함께 가라 내가 네게 이르는 말만 말할찌니라 발람이 발락의 귀족들과 함께 가니라"
+      ],
+      "raw_text_hashes": [
+        "5eed547ddb94c62341bd683cc35b964d20eda37176b1bc2a090d089a65754916"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:22:36",
+      "sequence": 4412,
+      "chapter_label": "NUM 22",
+      "verse_label": "36",
+      "locator": {
+        "book": "NUM",
+        "chapter": 22,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 22,
+          "verse": 36
+        }
+      ],
+      "en": "When Balak heard that Balaam had come, he went out to meet him to the City of Moab, which is on the border of the Arnon, which is in the utmost part of the border.",
+      "ko": "발락이 발람의 온다 함을 듣고 모압 변경의 끝 아르논 가에 있는 성읍까지 가서 그를 영접하고",
+      "source_text_hash": "6cefbdc08dafd1deb78b4282c7dfb236dfd2292965f75bd7a0627d6f2be73d92",
+      "translation_text_hash": "25a91d52cc3ca0409b2c0b4a4c8abfc3698840b9c049f5f83fd7929bf1950325",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "발락이 발람의 온다 함을 듣고 모압 변경의 끝 아르논 가에 있는 성읍까지 가서 그를 영접하고"
+      ],
+      "raw_text_hashes": [
+        "25a91d52cc3ca0409b2c0b4a4c8abfc3698840b9c049f5f83fd7929bf1950325"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:22:37",
+      "sequence": 4413,
+      "chapter_label": "NUM 22",
+      "verse_label": "37",
+      "locator": {
+        "book": "NUM",
+        "chapter": 22,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 22,
+          "verse": 37
+        }
+      ],
+      "en": "Balak said to Balaam, “Didn’t I earnestly send for you to summon you? Why didn’t you come to me? Am I not able indeed to promote you to honor?”",
+      "ko": "발락이 발람에게 이르되 내가 특별히 보내어 그대를 부르지 아니하였느냐 그대가 어찌 내게 오지 아니하였느냐 내가 어찌 그대를 높여 존귀케 하지 못하겠느냐",
+      "source_text_hash": "d8bd65acce0f08539038c7cceed22041cb269e07c7590211742e25bc8c494788",
+      "translation_text_hash": "4653ca3a743949a1f42d3794cd100e9cc1828ff28a91c1a0704bd937b38a7675",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "발락이 발람에게 이르되 내가 특별히 보내어 그대를 부르지 아니하였느냐 그대가 어찌 내게 오지 아니하였느냐 내가 어찌 그대를 높여 존귀케 하지 못하겠느냐"
+      ],
+      "raw_text_hashes": [
+        "4653ca3a743949a1f42d3794cd100e9cc1828ff28a91c1a0704bd937b38a7675"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:22:38",
+      "sequence": 4414,
+      "chapter_label": "NUM 22",
+      "verse_label": "38",
+      "locator": {
+        "book": "NUM",
+        "chapter": 22,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 22,
+          "verse": 38
+        }
+      ],
+      "en": "Balaam said to Balak, “Behold, I have come to you. Have I now any power at all to speak anything? I will speak the word that God puts in my mouth.”",
+      "ko": "발람이 발락에게 이르되 내가 오기는 하였으나 무엇을 임의로 말할 수 있으리이까 하나님이 내 입에 주시는 말씀 그것을 말할 뿐이니이다",
+      "source_text_hash": "4a8c0c7b5e9aed8a2dfde1dd1eade4aa94e677ffece7b35c572889266ec3b5c5",
+      "translation_text_hash": "0493457a499b3e59d8f9f9b61fc004bda441ff99e0eb67def795c7629bba01d9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "발람이 발락에게 이르되 내가 오기는 하였으나 무엇을 임의로 말할 수 있으리이까 하나님이 내 입에 주시는 말씀 그것을 말할 뿐이니이다"
+      ],
+      "raw_text_hashes": [
+        "0493457a499b3e59d8f9f9b61fc004bda441ff99e0eb67def795c7629bba01d9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:22:39",
+      "sequence": 4415,
+      "chapter_label": "NUM 22",
+      "verse_label": "39",
+      "locator": {
+        "book": "NUM",
+        "chapter": 22,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 22,
+          "verse": 39
+        }
+      ],
+      "en": "Balaam went with Balak, and they came to Kiriath Huzoth.",
+      "ko": "발람이 발락과 동행하여 기럇후솟에 이르러서는",
+      "source_text_hash": "f0793f4e158e2e9f03597c527bcc7a5d8db7f13645f218fd05bdfd5bedcc0ecd",
+      "translation_text_hash": "138ff1490de1ff66956b9bc7bdca6a71da64794771f8201b9423ab915e92087f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "발람이 발락과 동행하여 기럇후솟에 이르러서는"
+      ],
+      "raw_text_hashes": [
+        "138ff1490de1ff66956b9bc7bdca6a71da64794771f8201b9423ab915e92087f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:22:40",
+      "sequence": 4416,
+      "chapter_label": "NUM 22",
+      "verse_label": "40",
+      "locator": {
+        "book": "NUM",
+        "chapter": 22,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 22,
+          "verse": 40
+        }
+      ],
+      "en": "Balak sacrificed cattle and sheep, and sent to Balaam, and to the princes who were with him.",
+      "ko": "발락이 우양을 잡아 발람과 그와 함께한 귀족을 대접하였더라",
+      "source_text_hash": "6103de04e40b6b54b18b2b7d50a3a3d72f3e00c4733d917b772e719c32c751e0",
+      "translation_text_hash": "b34ce42e91ce1e059f842f244ab379b88a761a05dd55381f05d1f13383bde4ce",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "발락이 우양을 잡아 발람과 그와 함께한 귀족을 대접하였더라"
+      ],
+      "raw_text_hashes": [
+        "b34ce42e91ce1e059f842f244ab379b88a761a05dd55381f05d1f13383bde4ce"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:22:41",
+      "sequence": 4417,
+      "chapter_label": "NUM 22",
+      "verse_label": "41",
+      "locator": {
+        "book": "NUM",
+        "chapter": 22,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 22,
+          "verse": 41
+        }
+      ],
+      "en": "In the morning, Balak took Balaam, and brought him up into the high places of Baal; and he saw from there part of the people.",
+      "ko": "아침에 발락이 발람과 함께하고 그를 인도하여 바알의 산당에 오르매 발람이 거기서 이스라엘 백성의 진 끝까지 보니라",
+      "source_text_hash": "42c6f2d4d1d5baa9249bb7464ac63dd94cc9ba9c98cd1a39427cd280da802153",
+      "translation_text_hash": "6a0245a9359deef20ed52c75a9187b0d5cb3caa656ea58e8cbd4f9aa3affce3b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아침에 발락이 발람과 함께하고 그를 인도하여 바알의 산당에 오르매 발람이 거기서 이스라엘 백성의 진 끝까지 보니라"
+      ],
+      "raw_text_hashes": [
+        "6a0245a9359deef20ed52c75a9187b0d5cb3caa656ea58e8cbd4f9aa3affce3b"
+      ]
+    }
+  ]
+}

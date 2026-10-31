@@ -1,0 +1,20 @@
+
+#index{--shelf-sans:"Noto Sans KR","Pretendard","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif}
+#index .index-hero .kicker,#index .index-folio,#index .chapter-title,#index .volume-to-paper-guide,#index .chapter-caption,#index .paper-motion-legend,#index .chapter-specimen>span,#index .resume-card>small{display:none!important}
+#index .index-hero h1{font-family:var(--shelf-sans);font-weight:600;letter-spacing:-.015em;line-height:.98;text-shadow:none!important}
+#index .index-hero p{font-family:var(--shelf-sans);color:#6f685f}
+#index .crumb{font-family:var(--shelf-sans);letter-spacing:.04em}
+#index .volume b,#index .volume small{font-family:var(--shelf-sans)}
+#index .volume b{font-weight:500;font-size:12px;letter-spacing:.01em}
+#index .volume small{font-size:9px;letter-spacing:.02em}
+#index .volume.on b{font-weight:600;color:#fff8ee}
+#index .volume.on .volume-band{background:rgba(240,232,218,.30)!important}
+#index .volume-focus{position:relative;display:block!important;margin:22px 0 0!important;padding:16px 20px!important;background:#fffdf9;border:1px solid rgba(54,40,27,.12);border-radius:14px;box-shadow:0 12px 28px rgba(73,52,34,.07)}
+#index .volume-focus::before{display:none!important}
+#index .volume-focus small{display:inline-block!important;margin:0 0 6px!important;color:#8d857c;font-family:var(--shelf-sans);font-size:10px;letter-spacing:.06em}
+#index .volume-focus strong{display:block;font-family:var(--serif);font-weight:500;font-size:24px;letter-spacing:-.01em;color:#2b2722}
+#index .volume-focus p{margin:4px 0 0!important;text-align:left!important;color:#7a736a;font-family:var(--shelf-sans);font-size:11.5px;line-height:1.6}
+#index .chapter-area{margin-top:18px!important}
+#index .chapter-nav button,#index #openChapter,#index .chapter-specimen strong,#index .resume-card strong,#index .resume-card button,#index .resume-card>div{font-family:var(--shelf-sans)}
+#index .resume-card strong{font-weight:600}
+@media(max-width:768px){#index .index-hero h1{font-size:44px!important}#index .volume-focus{padding:13px 15px!important}#index .volume-focus strong{font-size:20px}}

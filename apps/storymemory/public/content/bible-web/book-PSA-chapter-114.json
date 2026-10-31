@@ -1,0 +1,269 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:114",
+  "unit_ordinal": 592,
+  "unit_label": "PSA 114",
+  "book_code": "PSA",
+  "chapter_number": 114,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:114:1",
+      "sequence": 15824,
+      "chapter_label": "PSA 114",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 114,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 114,
+          "verse": 1
+        }
+      ],
+      "en": "When Israel went out of Egypt, the house of Jacob from a people of foreign language,",
+      "ko": "이스라엘이 애굽에서 나오며 야곱의 집이 방언 다른 민족에게서 나올 때에",
+      "source_text_hash": "58b2fcf777941faab5e922f50ba83f742ec9c1345730b76b64874c2af2826b4b",
+      "translation_text_hash": "25922e56c786fe352d317cf766c0766b4a856d2072aa0f047b3a394b4968840b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘이 애굽에서 나오며 야곱의 집이 방언 다른 민족에게서 나올 때에"
+      ],
+      "raw_text_hashes": [
+        "25922e56c786fe352d317cf766c0766b4a856d2072aa0f047b3a394b4968840b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:114:2",
+      "sequence": 15825,
+      "chapter_label": "PSA 114",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 114,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 114,
+          "verse": 2
+        }
+      ],
+      "en": "Judah became his sanctuary, Israel his dominion.",
+      "ko": "유다는 여호와의 성소가 되고 이스라엘은 그의 영토가 되었도다",
+      "source_text_hash": "7d4e27e8aaf0621409b3d7c90e4d8d74671fb8aa7c59fefa2a3b5a258aafee43",
+      "translation_text_hash": "ae1e84ae68bdc2f4545eb9ec1a5ffa059dbf817e9395d6675d95b1ffd30210cf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다는 여호와의 성소가 되고 이스라엘은 그의 영토가 되었도다"
+      ],
+      "raw_text_hashes": [
+        "ae1e84ae68bdc2f4545eb9ec1a5ffa059dbf817e9395d6675d95b1ffd30210cf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:114:3",
+      "sequence": 15826,
+      "chapter_label": "PSA 114",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 114,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 114,
+          "verse": 3
+        }
+      ],
+      "en": "The sea saw it, and fled. The Jordan was driven back.",
+      "ko": "바다는 이를 보고 도망하며 요단은 물러갔으며",
+      "source_text_hash": "9a984e798ab713c869ff1a4963ee373f321fa858109dc281cfa5d6960d038998",
+      "translation_text_hash": "09671cd63032dcbafb31d26a960c6604cc01d8a6ce603c5631783d4560e626d3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바다는 이를 보고 도망하며 요단은 물러갔으며"
+      ],
+      "raw_text_hashes": [
+        "09671cd63032dcbafb31d26a960c6604cc01d8a6ce603c5631783d4560e626d3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:114:4",
+      "sequence": 15827,
+      "chapter_label": "PSA 114",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 114,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 114,
+          "verse": 4
+        }
+      ],
+      "en": "The mountains skipped like rams, the little hills like lambs.",
+      "ko": "산들은 수양 같이 뛰놀며 작은 산들은 어린 양 같이 뛰었도다",
+      "source_text_hash": "78c421dfc309d153ee1d6a94a6ad7077e1635f13ca5f3ea013be710b10c4248f",
+      "translation_text_hash": "ebda7b582e98427c1784d722b1c210d6b16f8ad5b436c4b599a35fa211f29337",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "산들은 수양 같이 뛰놀며 작은 산들은 어린 양 같이 뛰었도다"
+      ],
+      "raw_text_hashes": [
+        "ebda7b582e98427c1784d722b1c210d6b16f8ad5b436c4b599a35fa211f29337"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:114:5",
+      "sequence": 15828,
+      "chapter_label": "PSA 114",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 114,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 114,
+          "verse": 5
+        }
+      ],
+      "en": "What was it, you sea, that you fled? You Jordan, that you turned back?",
+      "ko": "바다야 네가 도망함은 어찜이며 요단아 네가 물러감은 어찜인고",
+      "source_text_hash": "36e118bb1643464f1f1ced25a2580b3a2cd5a3f597c0a41c6856e822d1cc706f",
+      "translation_text_hash": "890b9029ce214301a4a1136b051f26dc78731535cd1afe8004fcb6c88a37645c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바다야 네가 도망함은 어찜이며 요단아 네가 물러감은 어찜인고"
+      ],
+      "raw_text_hashes": [
+        "890b9029ce214301a4a1136b051f26dc78731535cd1afe8004fcb6c88a37645c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:114:6",
+      "sequence": 15829,
+      "chapter_label": "PSA 114",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 114,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 114,
+          "verse": 6
+        }
+      ],
+      "en": "You mountains, that you skipped like rams? You little hills, like lambs?",
+      "ko": "너희 산들아 수양 같이 뛰놀며 작은 산들아 어린 양 같이 뛰놂은 어찜인고",
+      "source_text_hash": "ea201d5fb3c126e768eaeda530a731577db6517309c24b99422407b756fda8ee",
+      "translation_text_hash": "f8028f36f29bd5085489c6df298034af7ccfd77333894d14f43ca8f812e1717e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 산들아 수양 같이 뛰놀며 작은 산들아 어린 양 같이 뛰놂은 어찜인고"
+      ],
+      "raw_text_hashes": [
+        "f8028f36f29bd5085489c6df298034af7ccfd77333894d14f43ca8f812e1717e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:114:7",
+      "sequence": 15830,
+      "chapter_label": "PSA 114",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 114,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 114,
+          "verse": 7
+        }
+      ],
+      "en": "Tremble, you earth, at the presence of the Lord, at the presence of the God of Jacob,",
+      "ko": "땅이여 너는 주 앞 곧 야곱의 하나님 앞에서 떨찌어다",
+      "source_text_hash": "8ef386fb378cf2b861a07b1dba0153ae83b397fee33df306a89d7128e4253d4a",
+      "translation_text_hash": "27245121965a2fa9742d0ec5b315a28908d9c8fffe91f2d1c1572d36d068eba9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "땅이여 너는 주 앞 곧 야곱의 하나님 앞에서 떨찌어다"
+      ],
+      "raw_text_hashes": [
+        "27245121965a2fa9742d0ec5b315a28908d9c8fffe91f2d1c1572d36d068eba9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:114:8",
+      "sequence": 15831,
+      "chapter_label": "PSA 114",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 114,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 114,
+          "verse": 8
+        }
+      ],
+      "en": "who turned the rock into a pool of water, the flint into a spring of waters.",
+      "ko": "저가 반석을 변하여 못이 되게 하시며 차돌로 샘물이 되게 하셨도다",
+      "source_text_hash": "4049c4f6bd043af08773933e3f3c647e19673211fe3cd0d109f02388a796ed10",
+      "translation_text_hash": "05e93ee4f8d61ef6d78234d8a0e6ff38544928626467efb2cba2e1ea5823178e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 반석을 변하여 못이 되게 하시며 차돌로 샘물이 되게 하셨도다"
+      ],
+      "raw_text_hashes": [
+        "05e93ee4f8d61ef6d78234d8a0e6ff38544928626467efb2cba2e1ea5823178e"
+      ]
+    }
+  ]
+}

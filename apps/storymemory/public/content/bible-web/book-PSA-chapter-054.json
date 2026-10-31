@@ -1,0 +1,237 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:054",
+  "unit_ordinal": 532,
+  "unit_label": "PSA 54",
+  "book_code": "PSA",
+  "chapter_number": 54,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:54:1",
+      "sequence": 14727,
+      "chapter_label": "PSA 54",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 54,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 54,
+          "verse": 1
+        }
+      ],
+      "en": "Save me, God, by your name. Vindicate me in your might.",
+      "ko": "하나님이여 주의 이름으로 나를 구원하시고 주의 힘으로 나를 판단하소서",
+      "source_text_hash": "9b3ae012b7a485a07f1f6018052ce4a3ee5bcf732faa306befa25c673f752d5c",
+      "translation_text_hash": "a4de2a9b0e431594b57af8fc80cdd355ca7507600fd74bdc4941fb292a27398c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이여 주의 이름으로 나를 구원하시고 주의 힘으로 나를 판단하소서"
+      ],
+      "raw_text_hashes": [
+        "a4de2a9b0e431594b57af8fc80cdd355ca7507600fd74bdc4941fb292a27398c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:54:2",
+      "sequence": 14728,
+      "chapter_label": "PSA 54",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 54,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 54,
+          "verse": 2
+        }
+      ],
+      "en": "Hear my prayer, God. Listen to the words of my mouth.",
+      "ko": "하나님이여 내 기도를 들으시며 내 입의 말에 귀를 기울이소서",
+      "source_text_hash": "b7d0348cc4bfe558ef3ec08f007ad6bfb1a44c536a2adb50770efd7e0e81be76",
+      "translation_text_hash": "5ab3626b241702ab4e260aa421301cc432aa1028aa07020cba42387aa63f8d8a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이여 내 기도를 들으시며 내 입의 말에 귀를 기울이소서"
+      ],
+      "raw_text_hashes": [
+        "5ab3626b241702ab4e260aa421301cc432aa1028aa07020cba42387aa63f8d8a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:54:3",
+      "sequence": 14729,
+      "chapter_label": "PSA 54",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 54,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 54,
+          "verse": 3
+        }
+      ],
+      "en": "For strangers have risen up against me. Violent men have sought after my soul. They haven’t set God before them. Selah.",
+      "ko": "외인이 일어나 나를 치며 강포한 자가 내 생명을 수색하며 하나님을 자기 앞에 두지 아니하였음이니이다(셀라)",
+      "source_text_hash": "24f679b319049bb2920fc8d5ffae1e2ce07abaaca9c301f6f3f0d16fdf3493d1",
+      "translation_text_hash": "c0ac21821183eb0b4c2be2bd9e122737a335ba622004155eafec0e3b4cf782b6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "외인이 일어나 나를 치며 강포한 자가 내 생명을 수색하며 하나님을 자기 앞에 두지 아니하였음이니이다(셀라)"
+      ],
+      "raw_text_hashes": [
+        "c0ac21821183eb0b4c2be2bd9e122737a335ba622004155eafec0e3b4cf782b6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:54:4",
+      "sequence": 14730,
+      "chapter_label": "PSA 54",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 54,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 54,
+          "verse": 4
+        }
+      ],
+      "en": "Behold, God is my helper. The Lord is the one who sustains my soul.",
+      "ko": "하나님은 나의 돕는 자시라 주께서 내 생명을 붙드는 자와 함께 하시나이다",
+      "source_text_hash": "a8b216806eece8d247974f0dc93137f00fe19a4f12465d7101ad7e790d7f856c",
+      "translation_text_hash": "19db08b92270fb845e82777b970150bdcb637cfcb852ecebddc44e162ea5f95c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님은 나의 돕는 자시라 주께서 내 생명을 붙드는 자와 함께 하시나이다"
+      ],
+      "raw_text_hashes": [
+        "19db08b92270fb845e82777b970150bdcb637cfcb852ecebddc44e162ea5f95c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:54:5",
+      "sequence": 14731,
+      "chapter_label": "PSA 54",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 54,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 54,
+          "verse": 5
+        }
+      ],
+      "en": "He will repay the evil to my enemies. Destroy them in your truth.",
+      "ko": "주께서 내 원수에게 악으로 갚으시리니 주의 성실하심으로 저희를 멸하소서",
+      "source_text_hash": "280c9de6acf460854913f32e4b490a0bf79bf7161cba316ff18fc952a3dbeed6",
+      "translation_text_hash": "cb6d7d12fc85d835c273ec14be0e93923a9b885c837e68f199e4ffce5f213275",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 내 원수에게 악으로 갚으시리니 주의 성실하심으로 저희를 멸하소서"
+      ],
+      "raw_text_hashes": [
+        "cb6d7d12fc85d835c273ec14be0e93923a9b885c837e68f199e4ffce5f213275"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:54:6",
+      "sequence": 14732,
+      "chapter_label": "PSA 54",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 54,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 54,
+          "verse": 6
+        }
+      ],
+      "en": "With a free will offering, I will sacrifice to you. I will give thanks to your name, LORD, for it is good.",
+      "ko": "내가 낙헌제로 주께 제사하리이다 여호와여 주의 이름에 감사하오리니 주의 이름이 선하심이니이다",
+      "source_text_hash": "88d370978cc8d9fb5a596ec02b61c18567a5c6e60968708d871f3f70ea706b79",
+      "translation_text_hash": "8cf54b55c755e4f3f084b9d01a1f912420af349f52aa3ffb77f2407b07a33987",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 낙헌제로 주께 제사하리이다 여호와여 주의 이름에 감사하오리니 주의 이름이 선하심이니이다"
+      ],
+      "raw_text_hashes": [
+        "8cf54b55c755e4f3f084b9d01a1f912420af349f52aa3ffb77f2407b07a33987"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:54:7",
+      "sequence": 14733,
+      "chapter_label": "PSA 54",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 54,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 54,
+          "verse": 7
+        }
+      ],
+      "en": "For he has delivered me out of all trouble. My eye has seen triumph over my enemies.",
+      "ko": "대저 주께서 모든 환난에서 나를 건지시고 내 원수가 보응 받는 것을 나로 목도케 하셨나이다",
+      "source_text_hash": "6d8ad58a3aa5208e5c43fa5ab95e897fab9e1ec9de0667328a7f0b9f13c231f7",
+      "translation_text_hash": "8d2481efd102c56ce646bf844c675a202cac12f74869ca04c75124f6b5850533",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대저 주께서 모든 환난에서 나를 건지시고 내 원수가 보응 받는 것을 나로 목도케 하셨나이다"
+      ],
+      "raw_text_hashes": [
+        "8d2481efd102c56ce646bf844c675a202cac12f74869ca04c75124f6b5850533"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,909 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1KI:chapter:003",
+  "unit_ordinal": 294,
+  "unit_label": "1KI 3",
+  "book_code": "1KI",
+  "chapter_number": 3,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1KI:3:1",
+      "sequence": 8818,
+      "chapter_label": "1KI 3",
+      "verse_label": "1",
+      "locator": {
+        "book": "1KI",
+        "chapter": 3,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 3,
+          "verse": 1
+        }
+      ],
+      "en": "Solomon made a marriage alliance with Pharaoh king of Egypt. He took Pharaoh’s daughter and brought her into David’s city until he had finished building his own house, the LORD’s house, and the wall around Jerusalem.",
+      "ko": "솔로몬이 애굽 왕 바로로 더불어 인연을 맺어 그 딸을 취하고 데려다가 다윗성에 두고 자기의 궁과 여호와의 전과 예루살렘 주위의 성이 필역되기를 기다리니라",
+      "source_text_hash": "ff2382257c41b030a9e5e321b3fdb5aa57e0d0f8bbcf0905488557358b9ab9d5",
+      "translation_text_hash": "1e151028a4216690a128d5f8d3961e510a3d0bdbd2384883af241f6eb6228f13",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "솔로몬이 애굽 왕 바로로 더불어 인연을 맺어 그 딸을 취하고 데려다가 다윗성에 두고 자기의 궁과 여호와의 전과 예루살렘 주위의 성이 필역되기를 기다리니라"
+      ],
+      "raw_text_hashes": [
+        "1e151028a4216690a128d5f8d3961e510a3d0bdbd2384883af241f6eb6228f13"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:3:2",
+      "sequence": 8819,
+      "chapter_label": "1KI 3",
+      "verse_label": "2",
+      "locator": {
+        "book": "1KI",
+        "chapter": 3,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 3,
+          "verse": 2
+        }
+      ],
+      "en": "However, the people sacrificed in the high places, because there was not yet a house built for the LORD’s name.",
+      "ko": "그 때까지 여호와의 이름을 위하여 전을 아직 건축하지 아니하였으므로 백성들이 산당에서 제사하며",
+      "source_text_hash": "f89e718d51a2c8a39fbbb677a054a43f4a382ebaebfb514b81200d65f7451eab",
+      "translation_text_hash": "5009c8c3e6b5b95cbd732abec333f577098f616955de62d30e893cbf958a9e48",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때까지 여호와의 이름을 위하여 전을 아직 건축하지 아니하였으므로 백성들이 산당에서 제사하며"
+      ],
+      "raw_text_hashes": [
+        "5009c8c3e6b5b95cbd732abec333f577098f616955de62d30e893cbf958a9e48"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:3:3",
+      "sequence": 8820,
+      "chapter_label": "1KI 3",
+      "verse_label": "3",
+      "locator": {
+        "book": "1KI",
+        "chapter": 3,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 3,
+          "verse": 3
+        }
+      ],
+      "en": "Solomon loved the LORD, walking in the statutes of David his father, except that he sacrificed and burned incense in the high places.",
+      "ko": "솔로몬이 여호와를 사랑하고 그 부친 다윗의 법도를 행하되 오히려 산당에서 제사하며 분향하더라",
+      "source_text_hash": "936e466c50f89dc433b4550c55375566e94067a51842282aea0fe5c99dd674df",
+      "translation_text_hash": "8adb3a816f8133b74649bc0b4bece413fa8e86af0ed9c42161653d69342f2782",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "솔로몬이 여호와를 사랑하고 그 부친 다윗의 법도를 행하되 오히려 산당에서 제사하며 분향하더라"
+      ],
+      "raw_text_hashes": [
+        "8adb3a816f8133b74649bc0b4bece413fa8e86af0ed9c42161653d69342f2782"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:3:4",
+      "sequence": 8821,
+      "chapter_label": "1KI 3",
+      "verse_label": "4",
+      "locator": {
+        "book": "1KI",
+        "chapter": 3,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 3,
+          "verse": 4
+        }
+      ],
+      "en": "The king went to Gibeon to sacrifice there, for that was the great high place. Solomon offered a thousand burnt offerings on that altar.",
+      "ko": "이에 왕이 제사하러 기브온으로 가니 거기는 산당이 큼이라 솔로몬이 그 단에 일천 번제를 드렸더니",
+      "source_text_hash": "7cdc44e62a5aad7df380087c66d1e527143b049bf92db00e25eab69b81e8256b",
+      "translation_text_hash": "59da1bc69a2f8dfe454674ccabf165b83c4a696d56d494a01a543c8e61f02df5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 왕이 제사하러 기브온으로 가니 거기는 산당이 큼이라 솔로몬이 그 단에 일천 번제를 드렸더니"
+      ],
+      "raw_text_hashes": [
+        "59da1bc69a2f8dfe454674ccabf165b83c4a696d56d494a01a543c8e61f02df5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:3:5",
+      "sequence": 8822,
+      "chapter_label": "1KI 3",
+      "verse_label": "5",
+      "locator": {
+        "book": "1KI",
+        "chapter": 3,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 3,
+          "verse": 5
+        }
+      ],
+      "en": "In Gibeon, the LORD appeared to Solomon in a dream by night; and God said, “Ask for what I should give you.”",
+      "ko": "기브온에서 밤에 여호와께서 솔로몬의 꿈에 나타나시니라 하나님이 이르시되 내가 네게 무엇을 줄꼬 너는 구하라",
+      "source_text_hash": "a7e7910548e8a2fb553a2faf88af4ea99f5602946daf2fb9b5f51dc4220fe876",
+      "translation_text_hash": "c12390aa363e0310e52f94cc45b093792cfb0c92c524560cd01aff52a0e673e4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "기브온에서 밤에 여호와께서 솔로몬의 꿈에 나타나시니라 하나님이 이르시되 내가 네게 무엇을 줄꼬 너는 구하라"
+      ],
+      "raw_text_hashes": [
+        "c12390aa363e0310e52f94cc45b093792cfb0c92c524560cd01aff52a0e673e4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:3:6",
+      "sequence": 8823,
+      "chapter_label": "1KI 3",
+      "verse_label": "6",
+      "locator": {
+        "book": "1KI",
+        "chapter": 3,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 3,
+          "verse": 6
+        }
+      ],
+      "en": "Solomon said, “You have shown to your servant David my father great loving kindness, because he walked before you in truth, in righteousness, and in uprightness of heart with you. You have kept for him this great loving kindness, that you have given him a son to sit on his throne, as it is today.",
+      "ko": "솔로몬이 가로되 주의 종 내 아비 다윗이 성실과 공의와 정직한 마음으로 주와 함께 주의 앞에서 행하므로 주께서 저에게 큰 은혜를 베푸셨고 주께서 또 저를 위하여 이 큰 은혜를 예비하시고 오늘날과 같이 저의 위에 앉을 아들을 저에게 주셨나이다",
+      "source_text_hash": "c636613f278a9a411193cfcdfef3fc2c3e6ae89b9a4877a0758d663bba442637",
+      "translation_text_hash": "57b23c1643310714df66c7e6f910fdafb74c8ebf637fa6a5b71a900f45a9f07b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "솔로몬이 가로되 주의 종 내 아비 다윗이 성실과 공의와 정직한 마음으로 주와 함께 주의 앞에서 행하므로 주께서 저에게 큰 은혜를 베푸셨고 주께서 또 저를 위하여 이 큰 은혜를 예비하시고 오늘날과 같이 저의 위에 앉을 아들을 저에게 주셨나이다"
+      ],
+      "raw_text_hashes": [
+        "57b23c1643310714df66c7e6f910fdafb74c8ebf637fa6a5b71a900f45a9f07b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:3:7",
+      "sequence": 8824,
+      "chapter_label": "1KI 3",
+      "verse_label": "7",
+      "locator": {
+        "book": "1KI",
+        "chapter": 3,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 3,
+          "verse": 7
+        }
+      ],
+      "en": "Now, LORD my God, you have made your servant king instead of David my father. I am just a little child. I don’t know how to go out or come in.",
+      "ko": "나의 하나님 여호와여 주께서 종으로 종의 아비 다윗을 대신하여 왕이 되게 하셨사오나 종은 작은 아이라 출입할줄을 알지 못하고",
+      "source_text_hash": "20eed770df3238de17a025de9eff7fa4ac8c9720add889ade1b4b95aca8b2195",
+      "translation_text_hash": "b29863daa5e8972c3ed6bf149c3ff5d35dc1d25302e76060f04166d18cf026fc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 하나님 여호와여 주께서 종으로 종의 아비 다윗을 대신하여 왕이 되게 하셨사오나 종은 작은 아이라 출입할줄을 알지 못하고"
+      ],
+      "raw_text_hashes": [
+        "b29863daa5e8972c3ed6bf149c3ff5d35dc1d25302e76060f04166d18cf026fc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:3:8",
+      "sequence": 8825,
+      "chapter_label": "1KI 3",
+      "verse_label": "8",
+      "locator": {
+        "book": "1KI",
+        "chapter": 3,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 3,
+          "verse": 8
+        }
+      ],
+      "en": "Your servant is among your people which you have chosen, a great people, that can’t be numbered or counted for multitude.",
+      "ko": "주의 빼신 백성 가운데 있나이다 저희는 큰 백성이라 수효가 많아서 셀 수도 없고 기록할 수도 없사오니",
+      "source_text_hash": "e1a506ac6e9aeafdca81c2c8147c7758771d92d0917b4213fa49985343c10fd2",
+      "translation_text_hash": "1e29ddb527870e62438263343a4186a47fa9b82ddf10f166c2b4d76cf3946c11",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 빼신 백성 가운데 있나이다 저희는 큰 백성이라 수효가 많아서 셀 수도 없고 기록할 수도 없사오니"
+      ],
+      "raw_text_hashes": [
+        "1e29ddb527870e62438263343a4186a47fa9b82ddf10f166c2b4d76cf3946c11"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:3:9",
+      "sequence": 8826,
+      "chapter_label": "1KI 3",
+      "verse_label": "9",
+      "locator": {
+        "book": "1KI",
+        "chapter": 3,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 3,
+          "verse": 9
+        }
+      ],
+      "en": "Give your servant therefore an understanding heart to judge your people, that I may discern between good and evil; for who is able to judge this great people of yours?”",
+      "ko": "누가 주의 이 많은 백성을 재판할 수 있사오리이까 지혜로운 마음을 종에게 주사 주의 백성을 재판하여 선악을 분별하게 하옵소서",
+      "source_text_hash": "988cdfc3035b167983e7a2d2a7bec3501086fe81470b22e4ffb9c2f2135c7cb0",
+      "translation_text_hash": "2f3282a772baca8eb7e77b1c3f4e6ed17abc48d86235d80cdcbf043087d146b1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누가 주의 이 많은 백성을 재판할 수 있사오리이까 지혜로운 마음을 종에게 주사 주의 백성을 재판하여 선악을 분별하게 하옵소서"
+      ],
+      "raw_text_hashes": [
+        "2f3282a772baca8eb7e77b1c3f4e6ed17abc48d86235d80cdcbf043087d146b1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:3:10",
+      "sequence": 8827,
+      "chapter_label": "1KI 3",
+      "verse_label": "10",
+      "locator": {
+        "book": "1KI",
+        "chapter": 3,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 3,
+          "verse": 10
+        }
+      ],
+      "en": "This request pleased the Lord, that Solomon had asked this thing.",
+      "ko": "솔로몬이 이것을 구하매 그 말씀이 주의 마음에 맞은지라",
+      "source_text_hash": "0c184768e376d411f821986ed41f020541d4de48ae53aa33ce6d0e866b14107c",
+      "translation_text_hash": "c2426218336117dafb7a6c03bdf6127d9a65e50e7d2db90c1b0786545be7220d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "솔로몬이 이것을 구하매 그 말씀이 주의 마음에 맞은지라"
+      ],
+      "raw_text_hashes": [
+        "c2426218336117dafb7a6c03bdf6127d9a65e50e7d2db90c1b0786545be7220d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:3:11",
+      "sequence": 8828,
+      "chapter_label": "1KI 3",
+      "verse_label": "11",
+      "locator": {
+        "book": "1KI",
+        "chapter": 3,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 3,
+          "verse": 11
+        }
+      ],
+      "en": "God said to him, “Because you have asked this thing, and have not asked for yourself long life, nor have you asked for riches for yourself, nor have you asked for the life of your enemies, but have asked for yourself understanding to discern justice,",
+      "ko": "이에 하나님이 저에게 이르시되 네가 이것을 구하도다 자기를 위하여 수도 구하지 아니하며 부도 구하지 아니하며 자기의 원수의 생명 멸하기도 구하지 아니하고 오직 송사를 듣고 분별하는 지혜를 구하였은즉",
+      "source_text_hash": "b3aa9223f183d91c82deaf66b2862e706af3d0dca1254b9d609f8b1a119e3c3b",
+      "translation_text_hash": "6baec2ab55e4cd68050f4e5a195e173555fe45f8a6180fc341811eba2bde16d3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 하나님이 저에게 이르시되 네가 이것을 구하도다 자기를 위하여 수도 구하지 아니하며 부도 구하지 아니하며 자기의 원수의 생명 멸하기도 구하지 아니하고 오직 송사를 듣고 분별하는 지혜를 구하였은즉"
+      ],
+      "raw_text_hashes": [
+        "6baec2ab55e4cd68050f4e5a195e173555fe45f8a6180fc341811eba2bde16d3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:3:12",
+      "sequence": 8829,
+      "chapter_label": "1KI 3",
+      "verse_label": "12",
+      "locator": {
+        "book": "1KI",
+        "chapter": 3,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 3,
+          "verse": 12
+        }
+      ],
+      "en": "behold, I have done according to your word. Behold, I have given you a wise and understanding heart, so that there has been no one like you before you, and after you none will arise like you.",
+      "ko": "내가 네 말대로 하여 네게 지혜롭고 총명한 마음을 주노니 너의 전에도 너와 같은 자가 없었거니와 너의 후에도 너와 같은 자가 일어남이 없으리라",
+      "source_text_hash": "39532bdaa8acb8309eb07113f3e63bfb99bb42b0054f3f21d1843772ef5a2275",
+      "translation_text_hash": "5e6cb5cf1b6b31e598c7d9c6d534cbdf283b1c5df1aa7ea09e1f8c062c83b7cd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 네 말대로 하여 네게 지혜롭고 총명한 마음을 주노니 너의 전에도 너와 같은 자가 없었거니와 너의 후에도 너와 같은 자가 일어남이 없으리라"
+      ],
+      "raw_text_hashes": [
+        "5e6cb5cf1b6b31e598c7d9c6d534cbdf283b1c5df1aa7ea09e1f8c062c83b7cd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:3:13",
+      "sequence": 8830,
+      "chapter_label": "1KI 3",
+      "verse_label": "13",
+      "locator": {
+        "book": "1KI",
+        "chapter": 3,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 3,
+          "verse": 13
+        }
+      ],
+      "en": "I have also given you that which you have not asked, both riches and honor, so that there will not be any among the kings like you for all your days.",
+      "ko": "내가 또 너의 구하지 아니한 부와 영광도 네게 주노니 네 평생에 열왕 중에 너와 같은 자가 없을 것이라",
+      "source_text_hash": "b0c830442df8819e979510ef9fec5ece10aa531cf67e8e795a8a8bcfb2066eb8",
+      "translation_text_hash": "52beb062af893ca1da4f3f9030d6d7c52a59e7a1958d9121483d3aa2ac9f844d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 또 너의 구하지 아니한 부와 영광도 네게 주노니 네 평생에 열왕 중에 너와 같은 자가 없을 것이라"
+      ],
+      "raw_text_hashes": [
+        "52beb062af893ca1da4f3f9030d6d7c52a59e7a1958d9121483d3aa2ac9f844d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:3:14",
+      "sequence": 8831,
+      "chapter_label": "1KI 3",
+      "verse_label": "14",
+      "locator": {
+        "book": "1KI",
+        "chapter": 3,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 3,
+          "verse": 14
+        }
+      ],
+      "en": "If you will walk in my ways, to keep my statutes and my commandments, as your father David walked, then I will lengthen your days.”",
+      "ko": "네가 만일 네 아비 다윗의 행함 같이 내 길로 행하며 내 법도와 명령을 지키면 내가 또 네 날을 길게 하리라",
+      "source_text_hash": "9a7088d8f221e898d8dd6379654dae8d0631c98f6c27adaf1f22707b78a626ef",
+      "translation_text_hash": "17a28be084544acbc863325891b342639add11ba0c12e099517ece7ad0d37a10",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 만일 네 아비 다윗의 행함 같이 내 길로 행하며 내 법도와 명령을 지키면 내가 또 네 날을 길게 하리라"
+      ],
+      "raw_text_hashes": [
+        "17a28be084544acbc863325891b342639add11ba0c12e099517ece7ad0d37a10"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:3:15",
+      "sequence": 8832,
+      "chapter_label": "1KI 3",
+      "verse_label": "15",
+      "locator": {
+        "book": "1KI",
+        "chapter": 3,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 3,
+          "verse": 15
+        }
+      ],
+      "en": "Solomon awoke; and behold, it was a dream. Then he came to Jerusalem and stood before the ark of the LORD’s covenant, and offered up burnt offerings, offered peace offerings, and made a feast for all his servants.",
+      "ko": "솔로몬이 깨어보니 꿈이더라 이에 예루살렘에 이르러 여호와의 언약궤 앞에 서서 번제와 수은제를 드리고 모든 신복을 위하여 잔치하였더라",
+      "source_text_hash": "0888283879a988d0f72d342df37b4e97e7da04c8bed0ffde7f2139ad2030c72b",
+      "translation_text_hash": "78c17a52febc8ad80b3265cfc3daeef8f4ee29818438e9cbcab71c20a4eef0a3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "솔로몬이 깨어보니 꿈이더라 이에 예루살렘에 이르러 여호와의 언약궤 앞에 서서 번제와 수은제를 드리고 모든 신복을 위하여 잔치하였더라"
+      ],
+      "raw_text_hashes": [
+        "78c17a52febc8ad80b3265cfc3daeef8f4ee29818438e9cbcab71c20a4eef0a3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:3:16",
+      "sequence": 8833,
+      "chapter_label": "1KI 3",
+      "verse_label": "16",
+      "locator": {
+        "book": "1KI",
+        "chapter": 3,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 3,
+          "verse": 16
+        }
+      ],
+      "en": "Then two women who were prostitutes came to the king, and stood before him.",
+      "ko": "때에 창기 두 계집이 왕에게 와서 그 앞에 서며",
+      "source_text_hash": "d7c0e1139157d926a7d712b0874a624fbe7778a95cdb80f5d964d5b8cbf743ee",
+      "translation_text_hash": "774f6b2bd1a7893f708920cdbcc3ea22b9150976a8e4182827b7d635d0776254",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "때에 창기 두 계집이 왕에게 와서 그 앞에 서며"
+      ],
+      "raw_text_hashes": [
+        "774f6b2bd1a7893f708920cdbcc3ea22b9150976a8e4182827b7d635d0776254"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:3:17",
+      "sequence": 8834,
+      "chapter_label": "1KI 3",
+      "verse_label": "17",
+      "locator": {
+        "book": "1KI",
+        "chapter": 3,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 3,
+          "verse": 17
+        }
+      ],
+      "en": "The one woman said, “Oh, my lord, I and this woman dwell in one house. I delivered a child with her in the house.",
+      "ko": "한 계집은 말하되 내 주여 나와 이 계집이 한 집에서 사는데 내가 저와 함께 집에 있으며 아이를 낳았더니",
+      "source_text_hash": "07610d0f7ad3bd9943636cd86a9767f3fe488a5095a57537af43df1f86739e63",
+      "translation_text_hash": "ccc89c1190ba369b57b223f9677d19e679ecf0ccb8608252d6024c0e728a3c8c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "한 계집은 말하되 내 주여 나와 이 계집이 한 집에서 사는데 내가 저와 함께 집에 있으며 아이를 낳았더니"
+      ],
+      "raw_text_hashes": [
+        "ccc89c1190ba369b57b223f9677d19e679ecf0ccb8608252d6024c0e728a3c8c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:3:18",
+      "sequence": 8835,
+      "chapter_label": "1KI 3",
+      "verse_label": "18",
+      "locator": {
+        "book": "1KI",
+        "chapter": 3,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 3,
+          "verse": 18
+        }
+      ],
+      "en": "The third day after I delivered, this woman delivered also. We were together. There was no stranger with us in the house, just us two in the house.",
+      "ko": "나의 해산한지 삼일에 이 계집도 해산하고 우리가 함께 있었고 우리 둘 외에는 집에 다른 사람이 없었나이다",
+      "source_text_hash": "8c8d10befaa98d8461390fbafd1517937659965533e95cfa0af4602655f1055f",
+      "translation_text_hash": "1459abfef069039ee704140864c46ea139530a17647e16e9a8ad6acf7a071845",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 해산한지 삼일에 이 계집도 해산하고 우리가 함께 있었고 우리 둘 외에는 집에 다른 사람이 없었나이다"
+      ],
+      "raw_text_hashes": [
+        "1459abfef069039ee704140864c46ea139530a17647e16e9a8ad6acf7a071845"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:3:19",
+      "sequence": 8836,
+      "chapter_label": "1KI 3",
+      "verse_label": "19",
+      "locator": {
+        "book": "1KI",
+        "chapter": 3,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 3,
+          "verse": 19
+        }
+      ],
+      "en": "This woman’s child died in the night, because she lay on it.",
+      "ko": "그런데 밤에 저 계집이 그 아들 위에 누우므로 그 아들이 죽으니",
+      "source_text_hash": "e2ae2e555b07a7ecc25e87a53234e3a4605d36474f8cdcdd0d418dd8e12c905e",
+      "translation_text_hash": "5f0bca04e8f0f7404106783abe398af83c89a4ead3ec78c5d9156d2c087319fc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런데 밤에 저 계집이 그 아들 위에 누우므로 그 아들이 죽으니"
+      ],
+      "raw_text_hashes": [
+        "5f0bca04e8f0f7404106783abe398af83c89a4ead3ec78c5d9156d2c087319fc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:3:20",
+      "sequence": 8837,
+      "chapter_label": "1KI 3",
+      "verse_label": "20",
+      "locator": {
+        "book": "1KI",
+        "chapter": 3,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 3,
+          "verse": 20
+        }
+      ],
+      "en": "She arose at midnight, and took my son from beside me while your servant slept, and laid it in her bosom, and laid her dead child in my bosom.",
+      "ko": "저가 밤중에 일어나서 계집종 나의 잠든 사이에 내 아들을 내 곁에서 가져다가 자기의 품에 누이고 자기의 죽은 아들을 내 품에 뉘었나이다",
+      "source_text_hash": "8c557cfce7df2140723abf5bae87e21805755d8288ac537123cdf6cb96c7d861",
+      "translation_text_hash": "5f2a98f401a8e2d3dd51b6ccdd0d1949ab4fca3427bde837b8a8b144fd67011c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 밤중에 일어나서 계집종 나의 잠든 사이에 내 아들을 내 곁에서 가져다가 자기의 품에 누이고 자기의 죽은 아들을 내 품에 뉘었나이다"
+      ],
+      "raw_text_hashes": [
+        "5f2a98f401a8e2d3dd51b6ccdd0d1949ab4fca3427bde837b8a8b144fd67011c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:3:21",
+      "sequence": 8838,
+      "chapter_label": "1KI 3",
+      "verse_label": "21",
+      "locator": {
+        "book": "1KI",
+        "chapter": 3,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 3,
+          "verse": 21
+        }
+      ],
+      "en": "When I rose in the morning to nurse my child, behold, he was dead; but when I had looked at him in the morning, behold, it was not my son whom I bore.”",
+      "ko": "미명에 내가 내 아들을 젖 먹이려고 일어나 본즉 죽었기로 내가 아침에 자세히 보니 내가 낳은 아들이 아니더이다 하매",
+      "source_text_hash": "30cd01c1277aa3bef19d416a7a03556c7e41c4d5748e7a340763d237e13fffd8",
+      "translation_text_hash": "b353e705e19ae67095c8ac7fc8818b97db324047e1e240e3a7c9c8b871f41d08",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "미명에 내가 내 아들을 젖 먹이려고 일어나 본즉 죽었기로 내가 아침에 자세히 보니 내가 낳은 아들이 아니더이다 하매"
+      ],
+      "raw_text_hashes": [
+        "b353e705e19ae67095c8ac7fc8818b97db324047e1e240e3a7c9c8b871f41d08"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:3:22",
+      "sequence": 8839,
+      "chapter_label": "1KI 3",
+      "verse_label": "22",
+      "locator": {
+        "book": "1KI",
+        "chapter": 3,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 3,
+          "verse": 22
+        }
+      ],
+      "en": "The other woman said, “No! But the living one is my son, and the dead one is your son.” The first one said, “No! But the dead one is your son, and the living one is my son.” They argued like this before the king.",
+      "ko": "다른 계집은 이르되 아니라 산 것은 내 아들이요 죽은 것은 네 아들이라 하고 이 계집은 이르되 아니라 죽은 것이 네 아들이요 산 것이 내 아들이라 하며 왕 앞에서 그와 같이 쟁론하는지라",
+      "source_text_hash": "22fa2bfbbdfb36c00ca02948c9f7cf97bc283f833466431e3dde135dc7e64e23",
+      "translation_text_hash": "21acf330056576659f9d886dabc2d02e0bacc0008dc6dcd5fa03520013f10cf6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다른 계집은 이르되 아니라 산 것은 내 아들이요 죽은 것은 네 아들이라 하고 이 계집은 이르되 아니라 죽은 것이 네 아들이요 산 것이 내 아들이라 하며 왕 앞에서 그와 같이 쟁론하는지라"
+      ],
+      "raw_text_hashes": [
+        "21acf330056576659f9d886dabc2d02e0bacc0008dc6dcd5fa03520013f10cf6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:3:23",
+      "sequence": 8840,
+      "chapter_label": "1KI 3",
+      "verse_label": "23",
+      "locator": {
+        "book": "1KI",
+        "chapter": 3,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 3,
+          "verse": 23
+        }
+      ],
+      "en": "Then the king said, “One says, ‘This is my son who lives, and your son is the dead one;’ and the other says, ‘No! But your son is the dead one, and my son is the living one.’”",
+      "ko": "왕이 가로되 이는 말하기를 산 것은 내 아들이요 죽은 것은 네 아들이라 하고 저는 말하기를 아니라 죽은 것이 네 아들이요 산 것이 내 아들이라 하는도다 하고",
+      "source_text_hash": "df848b416290c9509397e47b4b04c64f15ff6df378168bd3ac8e91d5b54201e4",
+      "translation_text_hash": "5a4dc3b279ce7d58ddeacc76d6b357f9ade42c1caecdc977f1f8fbcd4de51e4b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 가로되 이는 말하기를 산 것은 내 아들이요 죽은 것은 네 아들이라 하고 저는 말하기를 아니라 죽은 것이 네 아들이요 산 것이 내 아들이라 하는도다 하고"
+      ],
+      "raw_text_hashes": [
+        "5a4dc3b279ce7d58ddeacc76d6b357f9ade42c1caecdc977f1f8fbcd4de51e4b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:3:24",
+      "sequence": 8841,
+      "chapter_label": "1KI 3",
+      "verse_label": "24",
+      "locator": {
+        "book": "1KI",
+        "chapter": 3,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 3,
+          "verse": 24
+        }
+      ],
+      "en": "The king said, “Get me a sword.” So they brought a sword before the king.",
+      "ko": "또 가로되 칼을 내게로 가져오라 하니 칼을 왕의 앞으로 가져온지라",
+      "source_text_hash": "2dc7a40e19f53bb43b3b737f089d069388f107b341446458b70ede013720a40a",
+      "translation_text_hash": "529c706421a2963ed9df51adb99e3c4ccf82da27843a32d3d4013193431ed559",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 가로되 칼을 내게로 가져오라 하니 칼을 왕의 앞으로 가져온지라"
+      ],
+      "raw_text_hashes": [
+        "529c706421a2963ed9df51adb99e3c4ccf82da27843a32d3d4013193431ed559"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:3:25",
+      "sequence": 8842,
+      "chapter_label": "1KI 3",
+      "verse_label": "25",
+      "locator": {
+        "book": "1KI",
+        "chapter": 3,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 3,
+          "verse": 25
+        }
+      ],
+      "en": "The king said, “Divide the living child in two, and give half to the one, and half to the other.”",
+      "ko": "왕이 이르되 산 아들을 둘에 나눠 반은 이에게 주고 반은 저에게 주라",
+      "source_text_hash": "1bc69feb2a1cb18d73dbb00d514fbc893330773e38a63fa8af0be1961c0852e8",
+      "translation_text_hash": "59ce26386777dfdcf5a5fcf1c6821822cd6a7136e0bd5c8912648cb9a3ce0320",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 이르되 산 아들을 둘에 나눠 반은 이에게 주고 반은 저에게 주라"
+      ],
+      "raw_text_hashes": [
+        "59ce26386777dfdcf5a5fcf1c6821822cd6a7136e0bd5c8912648cb9a3ce0320"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:3:26",
+      "sequence": 8843,
+      "chapter_label": "1KI 3",
+      "verse_label": "26",
+      "locator": {
+        "book": "1KI",
+        "chapter": 3,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 3,
+          "verse": 26
+        }
+      ],
+      "en": "Then the woman whose the living child was spoke to the king, for her heart yearned over her son, and she said, “Oh, my lord, give her the living child, and in no way kill him!” But the other said, “He shall be neither mine nor yours. Divide him.”",
+      "ko": "그 산 아들의 어미되는 계집이 그 아들을 위하여 마음이 불붙는것 같아서 왕께 아뢰어 가로되 청컨대 내 주여 산 아들을 저에게 주시고 아무쪼록 죽이지 마옵소서 하되 한 계집은 말하기를 내 것도 되게 말고 네 것도 되게 말고 나누게 하라 하는지라",
+      "source_text_hash": "189be80809966fb7595961d8d35ff17897b3433d245072d737ff6419e8d162ac",
+      "translation_text_hash": "f699cad90aeaaba53f94784ac34768e26c80206ffa454969bc8e347e44563651",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 산 아들의 어미되는 계집이 그 아들을 위하여 마음이 불붙는것 같아서 왕께 아뢰어 가로되 청컨대 내 주여 산 아들을 저에게 주시고 아무쪼록 죽이지 마옵소서 하되 한 계집은 말하기를 내 것도 되게 말고 네 것도 되게 말고 나누게 하라 하는지라"
+      ],
+      "raw_text_hashes": [
+        "f699cad90aeaaba53f94784ac34768e26c80206ffa454969bc8e347e44563651"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:3:27",
+      "sequence": 8844,
+      "chapter_label": "1KI 3",
+      "verse_label": "27",
+      "locator": {
+        "book": "1KI",
+        "chapter": 3,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 3,
+          "verse": 27
+        }
+      ],
+      "en": "Then the king answered, “Give the first woman the living child, and definitely do not kill him. She is his mother.”",
+      "ko": "왕이 대답하여 가로되 산 아들을 저 계집에게 주고 결코 죽이지 말라 저가 그 어미니라 하매",
+      "source_text_hash": "e79956d35522c3706d47fd2007c4fdcd0a1b7fc19aa992ee13e489c064fd02fe",
+      "translation_text_hash": "e098bd1b3d2a1cb0ed4bae1d0195002da5d4d321c25faa6fdc4091f44d4d880a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 대답하여 가로되 산 아들을 저 계집에게 주고 결코 죽이지 말라 저가 그 어미니라 하매"
+      ],
+      "raw_text_hashes": [
+        "e098bd1b3d2a1cb0ed4bae1d0195002da5d4d321c25faa6fdc4091f44d4d880a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:3:28",
+      "sequence": 8845,
+      "chapter_label": "1KI 3",
+      "verse_label": "28",
+      "locator": {
+        "book": "1KI",
+        "chapter": 3,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 3,
+          "verse": 28
+        }
+      ],
+      "en": "All Israel heard of the judgment which the king had judged; and they feared the king, for they saw that the wisdom of God was in him to do justice.",
+      "ko": "온 이스라엘이 왕의 심리하여 판결함을 듣고 왕을 두려워하였으니 이는 하나님의 지혜가 저의 속에 있어 판결함을 봄이더라",
+      "source_text_hash": "a3648c7b6c1f71abe3c558fa0ff6ee4ab28ecd32babf3d28f86d6f3c5f16eb3a",
+      "translation_text_hash": "ea3ab99770536a7383d651be10e9dda21859066e23dbfb80aac3bac6930d9b3f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "온 이스라엘이 왕의 심리하여 판결함을 듣고 왕을 두려워하였으니 이는 하나님의 지혜가 저의 속에 있어 판결함을 봄이더라"
+      ],
+      "raw_text_hashes": [
+        "ea3ab99770536a7383d651be10e9dda21859066e23dbfb80aac3bac6930d9b3f"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1229 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EXO:chapter:040",
+  "unit_ordinal": 90,
+  "unit_label": "EXO 40",
+  "book_code": "EXO",
+  "chapter_number": 40,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EXO:40:1",
+      "sequence": 2709,
+      "chapter_label": "EXO 40",
+      "verse_label": "1",
+      "locator": {
+        "book": "EXO",
+        "chapter": 40,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 40,
+          "verse": 1
+        }
+      ],
+      "en": "The LORD spoke to Moses, saying,",
+      "ko": "여호와께서 모세에게 일러 가라사대",
+      "source_text_hash": "28219e5da0d26514843495c6edb280f326aa0ccffb0d2bb642d0e1b0f4478ca1",
+      "translation_text_hash": "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:40:2",
+      "sequence": 2710,
+      "chapter_label": "EXO 40",
+      "verse_label": "2",
+      "locator": {
+        "book": "EXO",
+        "chapter": 40,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 40,
+          "verse": 2
+        }
+      ],
+      "en": "“On the first day of the first month you shall raise up the tabernacle of the Tent of Meeting.",
+      "ko": "너는 정월 초일일에 성막 곧 회막을 세우고",
+      "source_text_hash": "8d1015c215dad0c4dc61b91bf9eaa893401cb0015cab2bc12515b0e3b43f2d80",
+      "translation_text_hash": "3b7a02cbdd90e47cb27811df02f32c7cca09b668488c8994b0825c52ed78791f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 정월 초일일에 성막 곧 회막을 세우고"
+      ],
+      "raw_text_hashes": [
+        "3b7a02cbdd90e47cb27811df02f32c7cca09b668488c8994b0825c52ed78791f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:40:3",
+      "sequence": 2711,
+      "chapter_label": "EXO 40",
+      "verse_label": "3",
+      "locator": {
+        "book": "EXO",
+        "chapter": 40,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 40,
+          "verse": 3
+        }
+      ],
+      "en": "You shall put the ark of the covenant in it, and you shall screen the ark with the veil.",
+      "ko": "또 증거궤를 들여 놓고 또 장으로 그 궤를 가리우고",
+      "source_text_hash": "6f249f50ca2bd4f516334bf2d327da33f146593679774344fc91dd24b13a76c6",
+      "translation_text_hash": "9debbab38163e7a81af2586b60a851c67bca7518df6be03bd31092bc990588fc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 증거궤를 들여 놓고 또 장으로 그 궤를 가리우고"
+      ],
+      "raw_text_hashes": [
+        "9debbab38163e7a81af2586b60a851c67bca7518df6be03bd31092bc990588fc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:40:4",
+      "sequence": 2712,
+      "chapter_label": "EXO 40",
+      "verse_label": "4",
+      "locator": {
+        "book": "EXO",
+        "chapter": 40,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 40,
+          "verse": 4
+        }
+      ],
+      "en": "You shall bring in the table, and set in order the things that are on it. You shall bring in the lamp stand, and light its lamps.",
+      "ko": "또 상을 들여 놓고 그 위에 물품을 진설하고 등대를 들여 놓고 불을 켜고",
+      "source_text_hash": "e9d0fd64696d92b16d1f750ffecd1a57140e1a2a67ca386d9541e8d254565ce4",
+      "translation_text_hash": "27d5a6a5edb176a262ebd7bec98ed66e9b72db583b5fa10e158d4e44aae45e5b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 상을 들여 놓고 그 위에 물품을 진설하고 등대를 들여 놓고 불을 켜고"
+      ],
+      "raw_text_hashes": [
+        "27d5a6a5edb176a262ebd7bec98ed66e9b72db583b5fa10e158d4e44aae45e5b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:40:5",
+      "sequence": 2713,
+      "chapter_label": "EXO 40",
+      "verse_label": "5",
+      "locator": {
+        "book": "EXO",
+        "chapter": 40,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 40,
+          "verse": 5
+        }
+      ],
+      "en": "You shall set the golden altar for incense before the ark of the covenant, and put the screen of the door to the tabernacle.",
+      "ko": "또 금 향단을 증거궤 앞에 두고 성막 문에 장을 달고",
+      "source_text_hash": "202da8868ad411c45d735eae580d19d5afcf77b8dadd920f2a5675d2a2d6579d",
+      "translation_text_hash": "f644b1489339f1174a20a080f7c20f26bc69df5becd84c5eaebf2ae8ff4e5a82",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 금 향단을 증거궤 앞에 두고 성막 문에 장을 달고"
+      ],
+      "raw_text_hashes": [
+        "f644b1489339f1174a20a080f7c20f26bc69df5becd84c5eaebf2ae8ff4e5a82"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:40:6",
+      "sequence": 2714,
+      "chapter_label": "EXO 40",
+      "verse_label": "6",
+      "locator": {
+        "book": "EXO",
+        "chapter": 40,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 40,
+          "verse": 6
+        }
+      ],
+      "en": "“You shall set the altar of burnt offering before the door of the tabernacle of the Tent of Meeting.",
+      "ko": "또 번제단을 회막의 성막 문 앞에 놓고",
+      "source_text_hash": "f55f7c80d6f4aefbcd1840d0433247a6c8a9aaa9052ff4a56644357a4dc94e83",
+      "translation_text_hash": "ad96ed005c253959db50336c03efeaa33a0470babf24b123b57854fed5529d5c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 번제단을 회막의 성막 문 앞에 놓고"
+      ],
+      "raw_text_hashes": [
+        "ad96ed005c253959db50336c03efeaa33a0470babf24b123b57854fed5529d5c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:40:7",
+      "sequence": 2715,
+      "chapter_label": "EXO 40",
+      "verse_label": "7",
+      "locator": {
+        "book": "EXO",
+        "chapter": 40,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 40,
+          "verse": 7
+        }
+      ],
+      "en": "You shall set the basin between the Tent of Meeting and the altar, and shall put water therein.",
+      "ko": "또 물두멍을 회막과 단 사이에 놓고 그 속에 물을 담고",
+      "source_text_hash": "6e2b5a8057cd71f20b42afd53ee87183d47f817e8669a70e0946caa3297e56e9",
+      "translation_text_hash": "cee40c323a292beb8c30491cdfcbbcdbc8412e0e9a35eda7cc35499c3fe9b801",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 물두멍을 회막과 단 사이에 놓고 그 속에 물을 담고"
+      ],
+      "raw_text_hashes": [
+        "cee40c323a292beb8c30491cdfcbbcdbc8412e0e9a35eda7cc35499c3fe9b801"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:40:8",
+      "sequence": 2716,
+      "chapter_label": "EXO 40",
+      "verse_label": "8",
+      "locator": {
+        "book": "EXO",
+        "chapter": 40,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 40,
+          "verse": 8
+        }
+      ],
+      "en": "You shall set up the court around it, and hang up the screen of the gate of the court.",
+      "ko": "또 뜰 주위에 포장을 치고 뜰 문에 장을 달고",
+      "source_text_hash": "7ed4ef9ef6fccef5f3f4f22e62cd1f574ffe8bb88750f3ed34b798993668bf53",
+      "translation_text_hash": "beb6ab6ea3936f19c3c305d2264ad449863c2f140cd347b8628570bf2da570c9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 뜰 주위에 포장을 치고 뜰 문에 장을 달고"
+      ],
+      "raw_text_hashes": [
+        "beb6ab6ea3936f19c3c305d2264ad449863c2f140cd347b8628570bf2da570c9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:40:9",
+      "sequence": 2717,
+      "chapter_label": "EXO 40",
+      "verse_label": "9",
+      "locator": {
+        "book": "EXO",
+        "chapter": 40,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 40,
+          "verse": 9
+        }
+      ],
+      "en": "“You shall take the anointing oil, and anoint the tabernacle and all that is in it, and shall make it holy, and all its furniture, and it will be holy.",
+      "ko": "또 관유를 취하여 성막과 그 안에 있는 모든 것에 발라 그것과 그 모든 기구를 거룩하게 하라 그것이 거룩하리라",
+      "source_text_hash": "c57851d79a4777f9b3627bd3df111d703bf75669a54a528daa49f10803a34175",
+      "translation_text_hash": "49978ee52f5165a79273ee69990565fad48299043fc9ac678935bc183c84f4bd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 관유를 취하여 성막과 그 안에 있는 모든 것에 발라 그것과 그 모든 기구를 거룩하게 하라 그것이 거룩하리라"
+      ],
+      "raw_text_hashes": [
+        "49978ee52f5165a79273ee69990565fad48299043fc9ac678935bc183c84f4bd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:40:10",
+      "sequence": 2718,
+      "chapter_label": "EXO 40",
+      "verse_label": "10",
+      "locator": {
+        "book": "EXO",
+        "chapter": 40,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 40,
+          "verse": 10
+        }
+      ],
+      "en": "You shall anoint the altar of burnt offering, with all its vessels, and sanctify the altar, and the altar will be most holy.",
+      "ko": "너는 또 번제단과 그 모든 기구에 발라 그 안을 거룩하게 하라 그 단이 지극히 거룩하리라",
+      "source_text_hash": "8b292fd6de222dab5d311443cab38c84d8952440889bb1e6ce5a3f87c92aa257",
+      "translation_text_hash": "ba8feb7643a1be224a6f1943ce5eb3235ca43d6cb5a5e3d3f32e9a98da7f3be1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 또 번제단과 그 모든 기구에 발라 그 안을 거룩하게 하라 그 단이 지극히 거룩하리라"
+      ],
+      "raw_text_hashes": [
+        "ba8feb7643a1be224a6f1943ce5eb3235ca43d6cb5a5e3d3f32e9a98da7f3be1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:40:11",
+      "sequence": 2719,
+      "chapter_label": "EXO 40",
+      "verse_label": "11",
+      "locator": {
+        "book": "EXO",
+        "chapter": 40,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 40,
+          "verse": 11
+        }
+      ],
+      "en": "You shall anoint the basin and its base, and sanctify it.",
+      "ko": "너는 또 물두멍과 그 받침에 발라 거룩하게 하고",
+      "source_text_hash": "5eba318f8ca03981c08f70e2a547e6ababacdfb4bf858fd504aa1b3b00138a93",
+      "translation_text_hash": "d13cc4eb24ddb05d9bb1257df72560cd36cb88db855dbb35aa51b90685c202e1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 또 물두멍과 그 받침에 발라 거룩하게 하고"
+      ],
+      "raw_text_hashes": [
+        "d13cc4eb24ddb05d9bb1257df72560cd36cb88db855dbb35aa51b90685c202e1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:40:12",
+      "sequence": 2720,
+      "chapter_label": "EXO 40",
+      "verse_label": "12",
+      "locator": {
+        "book": "EXO",
+        "chapter": 40,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 40,
+          "verse": 12
+        }
+      ],
+      "en": "“You shall bring Aaron and his sons to the door of the Tent of Meeting, and shall wash them with water.",
+      "ko": "너는 또 아론과 그 아들들을 회막문으로 데려다가 물로 씻기고",
+      "source_text_hash": "61089671d3b60f6ef65dd6f4a5fe44359848d88e82d2f87992c8d3cf4cde430c",
+      "translation_text_hash": "93320f4a0f844951014665b1821a87c486c56791a17766316a365a08b5196aff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 또 아론과 그 아들들을 회막문으로 데려다가 물로 씻기고"
+      ],
+      "raw_text_hashes": [
+        "93320f4a0f844951014665b1821a87c486c56791a17766316a365a08b5196aff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:40:13",
+      "sequence": 2721,
+      "chapter_label": "EXO 40",
+      "verse_label": "13",
+      "locator": {
+        "book": "EXO",
+        "chapter": 40,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 40,
+          "verse": 13
+        }
+      ],
+      "en": "You shall put on Aaron the holy garments; and you shall anoint him, and sanctify him, that he may minister to me in the priest’s office.",
+      "ko": "아론에게 거룩한 옷을 입히고 그에게 기름을 부어 거룩하게 하여 그로 내게 제사장의 직분을 행하게 하라",
+      "source_text_hash": "69ab3d1c998988ff0476597638410f39b110bf50176eefe74e5fa8d9bf93c476",
+      "translation_text_hash": "dde2f10a5986b533310c7079c1d987b86db246ec8662c32a05c953f8dddb47e5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아론에게 거룩한 옷을 입히고 그에게 기름을 부어 거룩하게 하여 그로 내게 제사장의 직분을 행하게 하라"
+      ],
+      "raw_text_hashes": [
+        "dde2f10a5986b533310c7079c1d987b86db246ec8662c32a05c953f8dddb47e5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:40:14",
+      "sequence": 2722,
+      "chapter_label": "EXO 40",
+      "verse_label": "14",
+      "locator": {
+        "book": "EXO",
+        "chapter": 40,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 40,
+          "verse": 14
+        }
+      ],
+      "en": "You shall bring his sons, and put tunics on them.",
+      "ko": "너는 또 그 아들들을 데려다가 그들에게 겉옷을 입히고",
+      "source_text_hash": "374c2ac038d91b066a999cdc18f14aa366efbea7a7cd4995355938ee7e1353b7",
+      "translation_text_hash": "fdaba6e7c5a6b6512c74da9b75c12b2dcdcf2e78769eaa45c5cb790f3f1371ac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 또 그 아들들을 데려다가 그들에게 겉옷을 입히고"
+      ],
+      "raw_text_hashes": [
+        "fdaba6e7c5a6b6512c74da9b75c12b2dcdcf2e78769eaa45c5cb790f3f1371ac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:40:15",
+      "sequence": 2723,
+      "chapter_label": "EXO 40",
+      "verse_label": "15",
+      "locator": {
+        "book": "EXO",
+        "chapter": 40,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 40,
+          "verse": 15
+        }
+      ],
+      "en": "You shall anoint them, as you anointed their father, that they may minister to me in the priest’s office. Their anointing shall be to them for an everlasting priesthood throughout their generations.”",
+      "ko": "그 아비에게 기름을 부음 같이 그들에게도 부어서 그들로 내게 제사장 직분을 행하게 하라 그들이 기름 부음을 받았은즉 대대로 영영히 제사장이 되리라 하시매",
+      "source_text_hash": "406caf5b963cc2dca29f560c00e72c6740d68fa457dd67d8808828b840ad8357",
+      "translation_text_hash": "15423bf5fa112464f76bf1cf85a1f21f4c264966eb12cdf13311267ae76bd2ab",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 아비에게 기름을 부음 같이 그들에게도 부어서 그들로 내게 제사장 직분을 행하게 하라 그들이 기름 부음을 받았은즉 대대로 영영히 제사장이 되리라 하시매"
+      ],
+      "raw_text_hashes": [
+        "15423bf5fa112464f76bf1cf85a1f21f4c264966eb12cdf13311267ae76bd2ab"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:40:16",
+      "sequence": 2724,
+      "chapter_label": "EXO 40",
+      "verse_label": "16",
+      "locator": {
+        "book": "EXO",
+        "chapter": 40,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 40,
+          "verse": 16
+        }
+      ],
+      "en": "Moses did so. According to all that the LORD commanded him, so he did.",
+      "ko": "모세가 그 같이 행하되 곧 여호와께서 자기에게 명하신대로 다 행하였더라",
+      "source_text_hash": "74d9938c48d20101fedef38a4431b3b08bc8903a9e9e260ac8475a686957e12e",
+      "translation_text_hash": "8f85867ea349190dd272f971bc0edde6e779fea88ffe208cbf13e653676887e8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 그 같이 행하되 곧 여호와께서 자기에게 명하신대로 다 행하였더라"
+      ],
+      "raw_text_hashes": [
+        "8f85867ea349190dd272f971bc0edde6e779fea88ffe208cbf13e653676887e8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:40:17",
+      "sequence": 2725,
+      "chapter_label": "EXO 40",
+      "verse_label": "17",
+      "locator": {
+        "book": "EXO",
+        "chapter": 40,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 40,
+          "verse": 17
+        }
+      ],
+      "en": "In the first month in the second year, on the first day of the month, the tabernacle was raised up.",
+      "ko": "제 이년 정월 곧 그 달 초일일에 성막을 세우니라",
+      "source_text_hash": "6e7aa17031d5787aca0abb7a0d8b97cdcf986565c25c16a4b51a6755b160aaab",
+      "translation_text_hash": "6486c683d2c6b0220f1b42810c5ea57080bcf469b61a53f7e2960c28d489baf5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제 이년 정월 곧 그 달 초일일에 성막을 세우니라"
+      ],
+      "raw_text_hashes": [
+        "6486c683d2c6b0220f1b42810c5ea57080bcf469b61a53f7e2960c28d489baf5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:40:18",
+      "sequence": 2726,
+      "chapter_label": "EXO 40",
+      "verse_label": "18",
+      "locator": {
+        "book": "EXO",
+        "chapter": 40,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 40,
+          "verse": 18
+        }
+      ],
+      "en": "Moses raised up the tabernacle, and laid its sockets, and set up its boards, and put in its bars, and raised up its pillars.",
+      "ko": "모세가 성막을 세우되 그 받침들을 놓고 그 널판들을 세우고 그 띠를 띠우고 그 기둥들을 세우고",
+      "source_text_hash": "2d5856a30773df10e57967bdaabc18d65b7073e07d72ccee949c96f7246c363a",
+      "translation_text_hash": "8b909d7d9585f218069cec204486aee8fb557cb56a19df6997c12b194b43fc2f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 성막을 세우되 그 받침들을 놓고 그 널판들을 세우고 그 띠를 띠우고 그 기둥들을 세우고"
+      ],
+      "raw_text_hashes": [
+        "8b909d7d9585f218069cec204486aee8fb557cb56a19df6997c12b194b43fc2f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:40:19",
+      "sequence": 2727,
+      "chapter_label": "EXO 40",
+      "verse_label": "19",
+      "locator": {
+        "book": "EXO",
+        "chapter": 40,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 40,
+          "verse": 19
+        }
+      ],
+      "en": "He spread the covering over the tent, and put the roof of the tabernacle above on it, as the LORD commanded Moses.",
+      "ko": "또 성막 위에 막을 펴고 그 위에 덮개를 덮으니 여호와께서 모세에게 명하신대로 되니라",
+      "source_text_hash": "8a5b893fa3a819ec079914219b720bdc53cc65bfc7a803ee4e1b06cefa82c506",
+      "translation_text_hash": "f0d7ff05512599c4b74e4d302df8a23ba36dc02d4e6863795be882ffff1b5b9e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 성막 위에 막을 펴고 그 위에 덮개를 덮으니 여호와께서 모세에게 명하신대로 되니라"
+      ],
+      "raw_text_hashes": [
+        "f0d7ff05512599c4b74e4d302df8a23ba36dc02d4e6863795be882ffff1b5b9e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:40:20",
+      "sequence": 2728,
+      "chapter_label": "EXO 40",
+      "verse_label": "20",
+      "locator": {
+        "book": "EXO",
+        "chapter": 40,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 40,
+          "verse": 20
+        }
+      ],
+      "en": "He took and put the covenant into the ark, and set the poles on the ark, and put the mercy seat above on the ark.",
+      "ko": "그가 또 증거판을 궤 속에 넣고 채를 궤에 꿰고 속죄소를 궤 위에 두고",
+      "source_text_hash": "5b74e1ba66792c96ed6b167e78ce40cdc500ea3895011c0a989d342b9465fdc1",
+      "translation_text_hash": "2f8287d543c9e338a8073a873783989ebfae9d78f73482a582765d94e2f7f030",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 또 증거판을 궤 속에 넣고 채를 궤에 꿰고 속죄소를 궤 위에 두고"
+      ],
+      "raw_text_hashes": [
+        "2f8287d543c9e338a8073a873783989ebfae9d78f73482a582765d94e2f7f030"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:40:21",
+      "sequence": 2729,
+      "chapter_label": "EXO 40",
+      "verse_label": "21",
+      "locator": {
+        "book": "EXO",
+        "chapter": 40,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 40,
+          "verse": 21
+        }
+      ],
+      "en": "He brought the ark into the tabernacle, and set up the veil of the screen, and screened the ark of the covenant, as the LORD commanded Moses.",
+      "ko": "또 그 궤를 성막에 들여 놓고 장을 드리워서 그 증거궤를 가리우니 여호와께서 모세에게 명하신대로 되니라",
+      "source_text_hash": "10c75218d8af7ee9ef1d79bfdcfdda1fb91a36ec2cdf3d511da54db6ede95860",
+      "translation_text_hash": "aff2bdb8196ca775952271f34b6a2768d9751b8e0000bbb86f22213be9eb25a0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 그 궤를 성막에 들여 놓고 장을 드리워서 그 증거궤를 가리우니 여호와께서 모세에게 명하신대로 되니라"
+      ],
+      "raw_text_hashes": [
+        "aff2bdb8196ca775952271f34b6a2768d9751b8e0000bbb86f22213be9eb25a0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:40:22",
+      "sequence": 2730,
+      "chapter_label": "EXO 40",
+      "verse_label": "22",
+      "locator": {
+        "book": "EXO",
+        "chapter": 40,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 40,
+          "verse": 22
+        }
+      ],
+      "en": "He put the table in the Tent of Meeting, on the north side of the tabernacle, outside of the veil.",
+      "ko": "그가 또 회막 안 곧 성막 북편으로 장 밖에 상을 놓고",
+      "source_text_hash": "fa22d8afe42cfc8a1af6161cdf6964699beabe6591f11e00c3a5d9eee2566511",
+      "translation_text_hash": "6ce5c3371acd2952a47960ed9a32929925431a0d6bc68ca543500b963a9fe485",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 또 회막 안 곧 성막 북편으로 장 밖에 상을 놓고"
+      ],
+      "raw_text_hashes": [
+        "6ce5c3371acd2952a47960ed9a32929925431a0d6bc68ca543500b963a9fe485"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:40:23",
+      "sequence": 2731,
+      "chapter_label": "EXO 40",
+      "verse_label": "23",
+      "locator": {
+        "book": "EXO",
+        "chapter": 40,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 40,
+          "verse": 23
+        }
+      ],
+      "en": "He set the bread in order on it before the LORD, as the LORD commanded Moses.",
+      "ko": "또 여호와 앞 그 상위에 떡을 진설하니 여호와께서 모세에게 명하신대로 되니라",
+      "source_text_hash": "96fe999474e0c3ca38b97857f35ca00bac135c0a154cc99eb595afab50605c5d",
+      "translation_text_hash": "1b54016fba60832c19c132734cb5b314b23d4fb85bbf5d007318f66dd3bc53a8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 여호와 앞 그 상위에 떡을 진설하니 여호와께서 모세에게 명하신대로 되니라"
+      ],
+      "raw_text_hashes": [
+        "1b54016fba60832c19c132734cb5b314b23d4fb85bbf5d007318f66dd3bc53a8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:40:24",
+      "sequence": 2732,
+      "chapter_label": "EXO 40",
+      "verse_label": "24",
+      "locator": {
+        "book": "EXO",
+        "chapter": 40,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 40,
+          "verse": 24
+        }
+      ],
+      "en": "He put the lamp stand in the Tent of Meeting, opposite the table, on the south side of the tabernacle.",
+      "ko": "그가 또 회막 안 곧 성막 남편에 등대를 놓아 상과 대하게 하고",
+      "source_text_hash": "e63e691905d517e309b177a984b65bc1d115b9d82657607856011cffa82f08da",
+      "translation_text_hash": "ed8d109208cef74cea757ccc8bf0042dda0b3d0ca5f6c9d766bd726efd261bec",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 또 회막 안 곧 성막 남편에 등대를 놓아 상과 대하게 하고"
+      ],
+      "raw_text_hashes": [
+        "ed8d109208cef74cea757ccc8bf0042dda0b3d0ca5f6c9d766bd726efd261bec"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:40:25",
+      "sequence": 2733,
+      "chapter_label": "EXO 40",
+      "verse_label": "25",
+      "locator": {
+        "book": "EXO",
+        "chapter": 40,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 40,
+          "verse": 25
+        }
+      ],
+      "en": "He lit the lamps before the LORD, as the LORD commanded Moses.",
+      "ko": "또 여호와 앞에 등잔에 불을 켜니 여호와께서 모세에게 명하신대로 되니라",
+      "source_text_hash": "598f20bb07cf243ad60c480f18fd3e5103b4c587cf777f545b4e7a66a354d0b5",
+      "translation_text_hash": "3bbed1799238e768c38c44623a837e0d3c2feeff364c4b19864d6ff35cfa92bc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 여호와 앞에 등잔에 불을 켜니 여호와께서 모세에게 명하신대로 되니라"
+      ],
+      "raw_text_hashes": [
+        "3bbed1799238e768c38c44623a837e0d3c2feeff364c4b19864d6ff35cfa92bc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:40:26",
+      "sequence": 2734,
+      "chapter_label": "EXO 40",
+      "verse_label": "26",
+      "locator": {
+        "book": "EXO",
+        "chapter": 40,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 40,
+          "verse": 26
+        }
+      ],
+      "en": "He put the golden altar in the Tent of Meeting before the veil;",
+      "ko": "그가 또 금 향단을 회막 안 장 앞에 두고",
+      "source_text_hash": "f403886dc0d4b96be4d392d53c878d326c2f01def0959430426b979959efcb40",
+      "translation_text_hash": "36d7106887ddc0170b5757e25684c7f98ea2a9f250698a8ea7ae346ccf199673",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 또 금 향단을 회막 안 장 앞에 두고"
+      ],
+      "raw_text_hashes": [
+        "36d7106887ddc0170b5757e25684c7f98ea2a9f250698a8ea7ae346ccf199673"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:40:27",
+      "sequence": 2735,
+      "chapter_label": "EXO 40",
+      "verse_label": "27",
+      "locator": {
+        "book": "EXO",
+        "chapter": 40,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 40,
+          "verse": 27
+        }
+      ],
+      "en": "and he burned incense of sweet spices on it, as the LORD commanded Moses.",
+      "ko": "그 위에 향기로운 향을 사르니 여호와께서 모세에게 명하신대로 되니라",
+      "source_text_hash": "64ab6e9f0f62bdc09a38a222d99e8c29f941db910765ac2206cc5bb412b4f8c8",
+      "translation_text_hash": "7552e26b224a9923a668b40ae8f721d44c8b87c3982e3aa1fcce2e88a434201f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 위에 향기로운 향을 사르니 여호와께서 모세에게 명하신대로 되니라"
+      ],
+      "raw_text_hashes": [
+        "7552e26b224a9923a668b40ae8f721d44c8b87c3982e3aa1fcce2e88a434201f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:40:28",
+      "sequence": 2736,
+      "chapter_label": "EXO 40",
+      "verse_label": "28",
+      "locator": {
+        "book": "EXO",
+        "chapter": 40,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 40,
+          "verse": 28
+        }
+      ],
+      "en": "He put up the screen of the door to the tabernacle.",
+      "ko": "그가 또 성막 문에 장을 달고",
+      "source_text_hash": "ca354a91416ea98f5f5f7fc6b988f088a4e156a3367a75417d25a34468d1e752",
+      "translation_text_hash": "90984f18701f3e67c3278793679d493a12f170aedfa981b9f6493be216d0c980",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 또 성막 문에 장을 달고"
+      ],
+      "raw_text_hashes": [
+        "90984f18701f3e67c3278793679d493a12f170aedfa981b9f6493be216d0c980"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:40:29",
+      "sequence": 2737,
+      "chapter_label": "EXO 40",
+      "verse_label": "29",
+      "locator": {
+        "book": "EXO",
+        "chapter": 40,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 40,
+          "verse": 29
+        }
+      ],
+      "en": "He set the altar of burnt offering at the door of the tabernacle of the Tent of Meeting, and offered on it the burnt offering and the meal offering, as the LORD commanded Moses.",
+      "ko": "또 회막의 성막 문 앞에 번제단을 두고 번제와 소제를 그 위에 드리니 여호와께서 모세에게 명하신대로 되니라",
+      "source_text_hash": "0a7808cfb027debed47afe41b0878ca87d083da2891441678510e323036126c2",
+      "translation_text_hash": "dab7e1e96e2f04f5306ff7977c721be876b69e05d8022d8742f2701e72b73d4a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 회막의 성막 문 앞에 번제단을 두고 번제와 소제를 그 위에 드리니 여호와께서 모세에게 명하신대로 되니라"
+      ],
+      "raw_text_hashes": [
+        "dab7e1e96e2f04f5306ff7977c721be876b69e05d8022d8742f2701e72b73d4a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:40:30",
+      "sequence": 2738,
+      "chapter_label": "EXO 40",
+      "verse_label": "30",
+      "locator": {
+        "book": "EXO",
+        "chapter": 40,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 40,
+          "verse": 30
+        }
+      ],
+      "en": "He set the basin between the Tent of Meeting and the altar, and put water therein, with which to wash.",
+      "ko": "그가 또 물두멍을 회막과 단 사이에 두고 거기 씻을 물을 담고",
+      "source_text_hash": "617b7741c7adfc58158f530b6ab1ffac03d82bf39544d82d5b003bb14d0c7907",
+      "translation_text_hash": "a67e982dabbe9a4bed094e1f4be9e889b9791623166e5c8b86bcd49351fc4111",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 또 물두멍을 회막과 단 사이에 두고 거기 씻을 물을 담고"
+      ],
+      "raw_text_hashes": [
+        "a67e982dabbe9a4bed094e1f4be9e889b9791623166e5c8b86bcd49351fc4111"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:40:31",
+      "sequence": 2739,
+      "chapter_label": "EXO 40",
+      "verse_label": "31",
+      "locator": {
+        "book": "EXO",
+        "chapter": 40,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 40,
+          "verse": 31
+        }
+      ],
+      "en": "Moses, Aaron, and his sons washed their hands and their feet there.",
+      "ko": "자기와 아론과 그 아들들이 거기서 수족을 씻되",
+      "source_text_hash": "b21553fdc632124895b0c7acf73dd9b8d85ad78f05017b0819df9e8bad4bddf8",
+      "translation_text_hash": "d599e47c9afab8e88f0283edc8449f4b08c4e09c247ece7a3f632397e70f9584",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자기와 아론과 그 아들들이 거기서 수족을 씻되"
+      ],
+      "raw_text_hashes": [
+        "d599e47c9afab8e88f0283edc8449f4b08c4e09c247ece7a3f632397e70f9584"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:40:32",
+      "sequence": 2740,
+      "chapter_label": "EXO 40",
+      "verse_label": "32",
+      "locator": {
+        "book": "EXO",
+        "chapter": 40,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 40,
+          "verse": 32
+        }
+      ],
+      "en": "When they went into the Tent of Meeting, and when they came near to the altar, they washed, as the LORD commanded Moses.",
+      "ko": "그들이 회막에 들어갈 때와 단에 가까이 갈 때에 씻었으니 여호와께서 모세에게 명하신대로 되니라",
+      "source_text_hash": "8eb99e5958b5519ca9cb15df809fcc4894b3d2d4d11dfcde6026e9da2c5b2c3e",
+      "translation_text_hash": "35cd7486469f20e6e0949cfd5ec98c0a86e2e574bf0d400f6195c71b78ec6df3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 회막에 들어갈 때와 단에 가까이 갈 때에 씻었으니 여호와께서 모세에게 명하신대로 되니라"
+      ],
+      "raw_text_hashes": [
+        "35cd7486469f20e6e0949cfd5ec98c0a86e2e574bf0d400f6195c71b78ec6df3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:40:33",
+      "sequence": 2741,
+      "chapter_label": "EXO 40",
+      "verse_label": "33",
+      "locator": {
+        "book": "EXO",
+        "chapter": 40,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 40,
+          "verse": 33
+        }
+      ],
+      "en": "He raised up the court around the tabernacle and the altar, and set up the screen of the gate of the court. So Moses finished the work.",
+      "ko": "그가 또 성막과 단 사면 뜰에 포장을 치고 뜰문의 장을 다니라 모세가 이같이 역사를 필하였더라",
+      "source_text_hash": "415e5dbad6284d418fb52f440041f67f237d5f228b8a37ce35d6b3acb0f0be47",
+      "translation_text_hash": "0fc13d86131380c766486ec23af89c198c63e5536d803b19bf5052431c34c37b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 또 성막과 단 사면 뜰에 포장을 치고 뜰문의 장을 다니라 모세가 이같이 역사를 필하였더라"
+      ],
+      "raw_text_hashes": [
+        "0fc13d86131380c766486ec23af89c198c63e5536d803b19bf5052431c34c37b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:40:34",
+      "sequence": 2742,
+      "chapter_label": "EXO 40",
+      "verse_label": "34",
+      "locator": {
+        "book": "EXO",
+        "chapter": 40,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 40,
+          "verse": 34
+        }
+      ],
+      "en": "Then the cloud covered the Tent of Meeting, and the LORD’s glory filled the tabernacle.",
+      "ko": "그 후에 구름이 회막에 덮이고 여호와의 영광이 성막에 충만하매",
+      "source_text_hash": "67dc4f30b904eff8592f5d7d1dbf246527618842af38a344a32e39579debaa52",
+      "translation_text_hash": "756de97c39c3ab3fa3368fb7f5ec38ff58aa36be34180a36dc432c86aca29339",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 후에 구름이 회막에 덮이고 여호와의 영광이 성막에 충만하매"
+      ],
+      "raw_text_hashes": [
+        "756de97c39c3ab3fa3368fb7f5ec38ff58aa36be34180a36dc432c86aca29339"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:40:35",
+      "sequence": 2743,
+      "chapter_label": "EXO 40",
+      "verse_label": "35",
+      "locator": {
+        "book": "EXO",
+        "chapter": 40,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 40,
+          "verse": 35
+        }
+      ],
+      "en": "Moses wasn’t able to enter into the Tent of Meeting, because the cloud stayed on it, and the LORD’s glory filled the tabernacle.",
+      "ko": "모세가 회막에 들어갈 수 없었으니 이는 구름이 회막 위에 덮이고 여호와의 영광이 성막에 충만함이었으며",
+      "source_text_hash": "e500b6dd0608ae6efd5aea34ef1795c2845fbf9a6b156e54630461d05b8169e8",
+      "translation_text_hash": "e686f599a18acbb8b57d7c107135dd00e710a1f3cfa00cef0d817ffd8d93f9a6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 회막에 들어갈 수 없었으니 이는 구름이 회막 위에 덮이고 여호와의 영광이 성막에 충만함이었으며"
+      ],
+      "raw_text_hashes": [
+        "e686f599a18acbb8b57d7c107135dd00e710a1f3cfa00cef0d817ffd8d93f9a6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:40:36",
+      "sequence": 2744,
+      "chapter_label": "EXO 40",
+      "verse_label": "36",
+      "locator": {
+        "book": "EXO",
+        "chapter": 40,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 40,
+          "verse": 36
+        }
+      ],
+      "en": "When the cloud was taken up from over the tabernacle, the children of Israel went onward, throughout all their journeys;",
+      "ko": "구름이 성막 위에서 떠오를 때에는 이스라엘 자손이 그 모든 행하는 길에 앞으로 발행하였고",
+      "source_text_hash": "964c39cf03c83c8693ef11be348812f2253bd0040e02aae5187476758b4dc671",
+      "translation_text_hash": "7103ac97db2490365fc1b7fb7164cbe3ceabb60363b6617d9a0a8ac16e0c94e1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "구름이 성막 위에서 떠오를 때에는 이스라엘 자손이 그 모든 행하는 길에 앞으로 발행하였고"
+      ],
+      "raw_text_hashes": [
+        "7103ac97db2490365fc1b7fb7164cbe3ceabb60363b6617d9a0a8ac16e0c94e1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:40:37",
+      "sequence": 2745,
+      "chapter_label": "EXO 40",
+      "verse_label": "37",
+      "locator": {
+        "book": "EXO",
+        "chapter": 40,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 40,
+          "verse": 37
+        }
+      ],
+      "en": "but if the cloud wasn’t taken up, then they didn’t travel until the day that it was taken up.",
+      "ko": "구름이 떠오르지 않을 때에는 떠오르는 날까지 발행하지 아니하였으며",
+      "source_text_hash": "748e076b5cc7c577ed485cf2caf29467d71d04330ecae7e80a6a8c121a76eaa6",
+      "translation_text_hash": "d3fb7b6d4838e278a58d68091d17cc2cd874a90b837a276a0fd939ee4eb692e9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "구름이 떠오르지 않을 때에는 떠오르는 날까지 발행하지 아니하였으며"
+      ],
+      "raw_text_hashes": [
+        "d3fb7b6d4838e278a58d68091d17cc2cd874a90b837a276a0fd939ee4eb692e9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:40:38",
+      "sequence": 2746,
+      "chapter_label": "EXO 40",
+      "verse_label": "38",
+      "locator": {
+        "book": "EXO",
+        "chapter": 40,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 40,
+          "verse": 38
+        }
+      ],
+      "en": "For the cloud of the LORD was on the tabernacle by day, and there was fire in the cloud by night, in the sight of all the house of Israel, throughout all their journeys.",
+      "ko": "낮에는 여호와의 구름이 성막 위에 있고 밤에는 불이 그 구름 가운데 있음을 이스라엘의 온 족속이 그 모든 행하는 길에서 친히 보았더라",
+      "source_text_hash": "d5d87f0af25ab2a699b625eb5a10b291e4914031b155baef14fad71f8d130c63",
+      "translation_text_hash": "d804d9b9e24f2ead487dd3ed395587b1e28106b4bfecdb4438692bc2a647dbf5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "낮에는 여호와의 구름이 성막 위에 있고 밤에는 불이 그 구름 가운데 있음을 이스라엘의 온 족속이 그 모든 행하는 길에서 친히 보았더라"
+      ],
+      "raw_text_hashes": [
+        "d804d9b9e24f2ead487dd3ed395587b1e28106b4bfecdb4438692bc2a647dbf5"
+      ]
+    }
+  ]
+}

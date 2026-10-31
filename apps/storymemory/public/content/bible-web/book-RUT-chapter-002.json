@@ -1,0 +1,749 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:RUT:chapter:002",
+  "unit_ordinal": 234,
+  "unit_label": "RUT 2",
+  "book_code": "RUT",
+  "chapter_number": 2,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:RUT:2:1",
+      "sequence": 7151,
+      "chapter_label": "RUT 2",
+      "verse_label": "1",
+      "locator": {
+        "book": "RUT",
+        "chapter": 2,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "RUT",
+          "chapter": 2,
+          "verse": 1
+        }
+      ],
+      "en": "Naomi had a relative of her husband’s, a mighty man of wealth, of the family of Elimelech, and his name was Boaz.",
+      "ko": "나오미의 남편 엘리멜렉의 친족 중 유력한 자가 있으니 이름은 보아스더라",
+      "source_text_hash": "e62c0a8049b4ed05234eb8672029467cd544f94cb7c4c696b6335fb5bbaebe3b",
+      "translation_text_hash": "eb00aeeb89d5d7e084dfc9edc03e99ad68e8c520cd54d7ac03943702c0251bca",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나오미의 남편 엘리멜렉의 친족 중 유력한 자가 있으니 이름은 보아스더라"
+      ],
+      "raw_text_hashes": [
+        "eb00aeeb89d5d7e084dfc9edc03e99ad68e8c520cd54d7ac03943702c0251bca"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:RUT:2:2",
+      "sequence": 7152,
+      "chapter_label": "RUT 2",
+      "verse_label": "2",
+      "locator": {
+        "book": "RUT",
+        "chapter": 2,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "RUT",
+          "chapter": 2,
+          "verse": 2
+        }
+      ],
+      "en": "Ruth the Moabitess said to Naomi, “Let me now go to the field, and glean among the ears of grain after him in whose sight I find favor.” She said to her, “Go, my daughter.”",
+      "ko": "모압 여인 룻이 나오미에게 이르되 나로 밭에 가게 하소서 내가 뉘게 은혜를 입으면 그를 따라서 이삭을 줍겠나이다 나오미가 그에게 이르되 내 딸아 갈찌어다 하매",
+      "source_text_hash": "288cb9784f99e807ab51b59b98ca907d516b573de4d1e225c5887ddf9f9807c0",
+      "translation_text_hash": "2755da6203d7eaa1cd6f4abc48c54553202253b43f944fbd85ea874454bb925d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모압 여인 룻이 나오미에게 이르되 나로 밭에 가게 하소서 내가 뉘게 은혜를 입으면 그를 따라서 이삭을 줍겠나이다 나오미가 그에게 이르되 내 딸아 갈찌어다 하매"
+      ],
+      "raw_text_hashes": [
+        "2755da6203d7eaa1cd6f4abc48c54553202253b43f944fbd85ea874454bb925d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:RUT:2:3",
+      "sequence": 7153,
+      "chapter_label": "RUT 2",
+      "verse_label": "3",
+      "locator": {
+        "book": "RUT",
+        "chapter": 2,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "RUT",
+          "chapter": 2,
+          "verse": 3
+        }
+      ],
+      "en": "She went, and came and gleaned in the field after the reapers; and she happened to come to the portion of the field belonging to Boaz, who was of the family of Elimelech.",
+      "ko": "룻이 가서 베는 자를 따라 밭에서 이삭을 줍는데 우연히 엘리멜렉의 친족 보아스에게 속한 밭에 이르렀더라",
+      "source_text_hash": "12dd3ba4539fc66e49bf82070d18af4cd2f310b6d707a54b0a6172ebe925a403",
+      "translation_text_hash": "15334d3d0a68438db40ea3641a40d1a039518213ed5d14183410e0a2529fe390",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "룻이 가서 베는 자를 따라 밭에서 이삭을 줍는데 우연히 엘리멜렉의 친족 보아스에게 속한 밭에 이르렀더라"
+      ],
+      "raw_text_hashes": [
+        "15334d3d0a68438db40ea3641a40d1a039518213ed5d14183410e0a2529fe390"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:RUT:2:4",
+      "sequence": 7154,
+      "chapter_label": "RUT 2",
+      "verse_label": "4",
+      "locator": {
+        "book": "RUT",
+        "chapter": 2,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "RUT",
+          "chapter": 2,
+          "verse": 4
+        }
+      ],
+      "en": "Behold, Boaz came from Bethlehem, and said to the reapers, “May the LORD be with you.” They answered him, “May the LORD bless you.”",
+      "ko": "마침 보아스가 베들레헴에서부터 와서 베는 자들에게 이르되 여호와께서 너희와 함께 하시기를 원하노라 그들이 대답하되 여호와께서 당신에게 복 주시기를 원하나이다",
+      "source_text_hash": "d40a915373bdaef129f040ba80cdb4e02b2bd897177a8a75acef98cecf4039ed",
+      "translation_text_hash": "ca6e0cea72c6f64fa6414777b4e69e2c2ab08393d02e73bfbb86085c4e1de22c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마침 보아스가 베들레헴에서부터 와서 베는 자들에게 이르되 여호와께서 너희와 함께 하시기를 원하노라 그들이 대답하되 여호와께서 당신에게 복 주시기를 원하나이다"
+      ],
+      "raw_text_hashes": [
+        "ca6e0cea72c6f64fa6414777b4e69e2c2ab08393d02e73bfbb86085c4e1de22c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:RUT:2:5",
+      "sequence": 7155,
+      "chapter_label": "RUT 2",
+      "verse_label": "5",
+      "locator": {
+        "book": "RUT",
+        "chapter": 2,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "RUT",
+          "chapter": 2,
+          "verse": 5
+        }
+      ],
+      "en": "Then Boaz said to his servant who was set over the reapers, “Whose young lady is this?”",
+      "ko": "보아스가 베는 자들을 거느린 사환에게 이르되 이는 뉘 소녀냐",
+      "source_text_hash": "5d32a26aa8802bad420191bb903fb6d0e969c9635b8a2759bcf72b424de6320a",
+      "translation_text_hash": "a9e6467d8cd51c3fb5015d44a6a3082d17ca8db87cfb7d211052139d5a97fbd8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보아스가 베는 자들을 거느린 사환에게 이르되 이는 뉘 소녀냐"
+      ],
+      "raw_text_hashes": [
+        "a9e6467d8cd51c3fb5015d44a6a3082d17ca8db87cfb7d211052139d5a97fbd8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:RUT:2:6",
+      "sequence": 7156,
+      "chapter_label": "RUT 2",
+      "verse_label": "6",
+      "locator": {
+        "book": "RUT",
+        "chapter": 2,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "RUT",
+          "chapter": 2,
+          "verse": 6
+        }
+      ],
+      "en": "The servant who was set over the reapers answered, “It is the Moabite lady who came back with Naomi out of the country of Moab.",
+      "ko": "베는 자를 거느린 사환이 대답하여 가로되 이는 나오미와 함께 모압 지방에서 돌아온 모압 소녀인데",
+      "source_text_hash": "369dc86059f2609edb629597797ab32cb4e7a860d6fdf98cfd52923935bb9867",
+      "translation_text_hash": "9dcd4b6fb73740531d4944dbe1154c3c2c2c3468397d5507106e677954c7ab3b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베는 자를 거느린 사환이 대답하여 가로되 이는 나오미와 함께 모압 지방에서 돌아온 모압 소녀인데"
+      ],
+      "raw_text_hashes": [
+        "9dcd4b6fb73740531d4944dbe1154c3c2c2c3468397d5507106e677954c7ab3b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:RUT:2:7",
+      "sequence": 7157,
+      "chapter_label": "RUT 2",
+      "verse_label": "7",
+      "locator": {
+        "book": "RUT",
+        "chapter": 2,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "RUT",
+          "chapter": 2,
+          "verse": 7
+        }
+      ],
+      "en": "She said, ‘Please let me glean and gather after the reapers among the sheaves.’ So she came, and has continued even from the morning until now, except that she rested a little in the house.”",
+      "ko": "그의 말이 나로 베는 자를 따라 단 사이에서 이삭을 줍게 하소서 하였고 아침부터 와서는 잠시 집에서 쉰 외에 지금까지 계속하는 중이니이다",
+      "source_text_hash": "224e8ec7d6c1ad5c830c019ec98cb40fd3c802c5fe49c966d81a9963dc0ac716",
+      "translation_text_hash": "8a00050bd6eb08bcd377fe9f2c9373d0da14f81a24052032ae5440146a8f508b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그의 말이 나로 베는 자를 따라 단 사이에서 이삭을 줍게 하소서 하였고 아침부터 와서는 잠시 집에서 쉰 외에 지금까지 계속하는 중이니이다"
+      ],
+      "raw_text_hashes": [
+        "8a00050bd6eb08bcd377fe9f2c9373d0da14f81a24052032ae5440146a8f508b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:RUT:2:8",
+      "sequence": 7158,
+      "chapter_label": "RUT 2",
+      "verse_label": "8",
+      "locator": {
+        "book": "RUT",
+        "chapter": 2,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "RUT",
+          "chapter": 2,
+          "verse": 8
+        }
+      ],
+      "en": "Then Boaz said to Ruth, “Listen, my daughter. Don’t go to glean in another field, and don’t go from here, but stay here close to my maidens.",
+      "ko": "보아스가 룻에게 이르되 내 딸아 들으라 이삭을 주우러 다른 밭으로 가지 말며 여기서 떠나지 말고 나의 소녀들과 함께 있으라",
+      "source_text_hash": "3f400ef25777acb561bbc65a9ddfcfa9c90dd31a1326dbea7d8957ea46b6afd1",
+      "translation_text_hash": "548c9348d2cad78592c538822ad260faf87496a68eebf6ac90c81bface54d218",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보아스가 룻에게 이르되 내 딸아 들으라 이삭을 주우러 다른 밭으로 가지 말며 여기서 떠나지 말고 나의 소녀들과 함께 있으라"
+      ],
+      "raw_text_hashes": [
+        "548c9348d2cad78592c538822ad260faf87496a68eebf6ac90c81bface54d218"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:RUT:2:9",
+      "sequence": 7159,
+      "chapter_label": "RUT 2",
+      "verse_label": "9",
+      "locator": {
+        "book": "RUT",
+        "chapter": 2,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "RUT",
+          "chapter": 2,
+          "verse": 9
+        }
+      ],
+      "en": "Let your eyes be on the field that they reap, and go after them. Haven’t I commanded the young men not to touch you? When you are thirsty, go to the vessels, and drink from that which the young men have drawn.”",
+      "ko": "그들의 베는 밭을 보고 그들을 따르라 내가 그 소년들에게 명하여 너를 건드리지 말라 하였느니라 목이 마르거든 그릇에 가서 소년들의 길어 온 것을 마실찌니라",
+      "source_text_hash": "e79559a76a157277e2ca1f52e16222cf61ed9e92441f65ec1e9557c2f7ef7aeb",
+      "translation_text_hash": "9c39d4d200a903c9d5d1debdfc2cff5290b30d2236983713f1e4943aaee726ca",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들의 베는 밭을 보고 그들을 따르라 내가 그 소년들에게 명하여 너를 건드리지 말라 하였느니라 목이 마르거든 그릇에 가서 소년들의 길어 온 것을 마실찌니라"
+      ],
+      "raw_text_hashes": [
+        "9c39d4d200a903c9d5d1debdfc2cff5290b30d2236983713f1e4943aaee726ca"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:RUT:2:10",
+      "sequence": 7160,
+      "chapter_label": "RUT 2",
+      "verse_label": "10",
+      "locator": {
+        "book": "RUT",
+        "chapter": 2,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "RUT",
+          "chapter": 2,
+          "verse": 10
+        }
+      ],
+      "en": "Then she fell on her face and bowed herself to the ground, and said to him, “Why have I found favor in your sight, that you should take knowledge of me, since I am a foreigner?”",
+      "ko": "룻이 땅에 엎드려 절하며 그에게 이르되 나는 이방 여인이어늘 당신이 어찌하여 내게 은혜를 베푸시며 나를 돌아보시나이까",
+      "source_text_hash": "bbdf9385391d5e7ccd7e9f531640598de76de8c548badc9b47e2ce4195c30aa6",
+      "translation_text_hash": "442a6aa2959f09ee6f0ff4f8004ac7824d0aaee4272de912cfba0af7f8ed7864",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "룻이 땅에 엎드려 절하며 그에게 이르되 나는 이방 여인이어늘 당신이 어찌하여 내게 은혜를 베푸시며 나를 돌아보시나이까"
+      ],
+      "raw_text_hashes": [
+        "442a6aa2959f09ee6f0ff4f8004ac7824d0aaee4272de912cfba0af7f8ed7864"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:RUT:2:11",
+      "sequence": 7161,
+      "chapter_label": "RUT 2",
+      "verse_label": "11",
+      "locator": {
+        "book": "RUT",
+        "chapter": 2,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "RUT",
+          "chapter": 2,
+          "verse": 11
+        }
+      ],
+      "en": "Boaz answered her, “I have been told all about what you have done for your mother-in-law since the death of your husband, and how you have left your father, your mother, and the land of your birth, and have come to a people that you didn’t know before.",
+      "ko": "보아스가 그에게 대답하여 가로되 네 남편이 죽은 후로 네가 시모에게 행한 모든 것과 네 부모와 고국을 떠나 전에 알지 못하던 백성에게로 온 일이 내게 분명히 들렸느니라",
+      "source_text_hash": "d3763a3d38f38400df16d0004e34ff6d464bc7445a21c4d25bdb726635363828",
+      "translation_text_hash": "7afc3619a60e9033e1c9e0174ce3e7246b44bd62fa25e8d826e0501a5bd056f0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보아스가 그에게 대답하여 가로되 네 남편이 죽은 후로 네가 시모에게 행한 모든 것과 네 부모와 고국을 떠나 전에 알지 못하던 백성에게로 온 일이 내게 분명히 들렸느니라"
+      ],
+      "raw_text_hashes": [
+        "7afc3619a60e9033e1c9e0174ce3e7246b44bd62fa25e8d826e0501a5bd056f0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:RUT:2:12",
+      "sequence": 7162,
+      "chapter_label": "RUT 2",
+      "verse_label": "12",
+      "locator": {
+        "book": "RUT",
+        "chapter": 2,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "RUT",
+          "chapter": 2,
+          "verse": 12
+        }
+      ],
+      "en": "May the LORD repay your work, and a full reward be given to you from the LORD, the God of Israel, under whose wings you have come to take refuge.”",
+      "ko": "여호와께서 네 행한 일을 보응하시기를 원하며 이스라엘의 하나님 여호와께서 그 날개 아래 보호를 받으러 온 네게 온전한 상 주시기를 원하노라",
+      "source_text_hash": "8eaedaed3b6d56fb6dea0ef786ffdbed27c4c62c84f97b0fc6eac7cdd8dbc61f",
+      "translation_text_hash": "d88f624bc28ff4df1a35bb75460c42edc40b68c8150dae1f357505e19e866feb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 네 행한 일을 보응하시기를 원하며 이스라엘의 하나님 여호와께서 그 날개 아래 보호를 받으러 온 네게 온전한 상 주시기를 원하노라"
+      ],
+      "raw_text_hashes": [
+        "d88f624bc28ff4df1a35bb75460c42edc40b68c8150dae1f357505e19e866feb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:RUT:2:13",
+      "sequence": 7163,
+      "chapter_label": "RUT 2",
+      "verse_label": "13",
+      "locator": {
+        "book": "RUT",
+        "chapter": 2,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "RUT",
+          "chapter": 2,
+          "verse": 13
+        }
+      ],
+      "en": "Then she said, “Let me find favor in your sight, my lord, because you have comforted me, and because you have spoken kindly to your servant, though I am not as one of your servants.”",
+      "ko": "룻이 가로되 내 주여 내가 당신께 은혜 입기를 원하나이다 나는 당신의 시녀의 하나와 같지 못하오나 당신이 이 시녀를 위로하시고 마음을 기쁘게 하는 말씀을 하셨나이다",
+      "source_text_hash": "86bbcd1dfdfe4c8ee8417e8042111d36a5d61495a5d000b53a6326fc20d37e14",
+      "translation_text_hash": "de00bd900981e6eebce20e326183005cb8a6e9c594b0e2820b5e969ae19b69eb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "룻이 가로되 내 주여 내가 당신께 은혜 입기를 원하나이다 나는 당신의 시녀의 하나와 같지 못하오나 당신이 이 시녀를 위로하시고 마음을 기쁘게 하는 말씀을 하셨나이다"
+      ],
+      "raw_text_hashes": [
+        "de00bd900981e6eebce20e326183005cb8a6e9c594b0e2820b5e969ae19b69eb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:RUT:2:14",
+      "sequence": 7164,
+      "chapter_label": "RUT 2",
+      "verse_label": "14",
+      "locator": {
+        "book": "RUT",
+        "chapter": 2,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "RUT",
+          "chapter": 2,
+          "verse": 14
+        }
+      ],
+      "en": "At meal time Boaz said to her, “Come here, and eat some bread, and dip your morsel in the vinegar.” She sat beside the reapers, and they passed her parched grain. She ate, was satisfied, and left some of it.",
+      "ko": "식사할 때에 보아스가 룻에게 이르되 이리로 와서 떡을 먹으며 네 떡 조각을 초에 찍으라 룻이 곡식 베는 자 곁에 앉으니 그가 볶은 곡식을 주매 룻이 배불리 먹고 남았더라",
+      "source_text_hash": "b2ac026434dc0c4cc6c62c0a63054cb2aaf3183d38c133041e0d2fb74c93b88d",
+      "translation_text_hash": "03740d9ec03e8aabae9563ecfb0bbf42833d51fe94a3e086837f466e9adcc527",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "식사할 때에 보아스가 룻에게 이르되 이리로 와서 떡을 먹으며 네 떡 조각을 초에 찍으라 룻이 곡식 베는 자 곁에 앉으니 그가 볶은 곡식을 주매 룻이 배불리 먹고 남았더라"
+      ],
+      "raw_text_hashes": [
+        "03740d9ec03e8aabae9563ecfb0bbf42833d51fe94a3e086837f466e9adcc527"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:RUT:2:15",
+      "sequence": 7165,
+      "chapter_label": "RUT 2",
+      "verse_label": "15",
+      "locator": {
+        "book": "RUT",
+        "chapter": 2,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "RUT",
+          "chapter": 2,
+          "verse": 15
+        }
+      ],
+      "en": "When she had risen up to glean, Boaz commanded his young men, saying, “Let her glean even among the sheaves, and don’t reproach her.",
+      "ko": "룻이 이삭을 주우러 일어날 때에 보아스가 자기 소년들에게 명하여 가로되 그로 곡식 단 사이에서 줍게 하고 책망하지 말며",
+      "source_text_hash": "12f92092e74ff0f80e4abd06fb36db01e879ee3eed1845e820166ba7322fb906",
+      "translation_text_hash": "2a51a5b0cb6d3af3c08ee54a3dae53babf549e0e0ae6a3e4027c1be1afdcfa74",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "룻이 이삭을 주우러 일어날 때에 보아스가 자기 소년들에게 명하여 가로되 그로 곡식 단 사이에서 줍게 하고 책망하지 말며"
+      ],
+      "raw_text_hashes": [
+        "2a51a5b0cb6d3af3c08ee54a3dae53babf549e0e0ae6a3e4027c1be1afdcfa74"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:RUT:2:16",
+      "sequence": 7166,
+      "chapter_label": "RUT 2",
+      "verse_label": "16",
+      "locator": {
+        "book": "RUT",
+        "chapter": 2,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "RUT",
+          "chapter": 2,
+          "verse": 16
+        }
+      ],
+      "en": "Also pull out some for her from the bundles, and leave it. Let her glean, and don’t rebuke her.”",
+      "ko": "또 그를 위하여 줌에서 조금씩 뽑아 버려서 그로 줍게 하고 꾸짖지 말라 하니라",
+      "source_text_hash": "f5cb54ff978b6788573b544f95d71f0242408e09a766304df3faaffa1b3b5b87",
+      "translation_text_hash": "8731f61a40f5359d574d2526b8df5afd060beb941a9f7c9c5d42094b7fe05dce",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 그를 위하여 줌에서 조금씩 뽑아 버려서 그로 줍게 하고 꾸짖지 말라 하니라"
+      ],
+      "raw_text_hashes": [
+        "8731f61a40f5359d574d2526b8df5afd060beb941a9f7c9c5d42094b7fe05dce"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:RUT:2:17",
+      "sequence": 7167,
+      "chapter_label": "RUT 2",
+      "verse_label": "17",
+      "locator": {
+        "book": "RUT",
+        "chapter": 2,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "RUT",
+          "chapter": 2,
+          "verse": 17
+        }
+      ],
+      "en": "So she gleaned in the field until evening; and she beat out that which she had gleaned, and it was about an ephah of barley.",
+      "ko": "룻이 밭에서 저녁까지 줍고 그 주운 것을 떠니 보리가 한 에바쯤 되는지라",
+      "source_text_hash": "60260e733335d2151d422a24a6831723b010dd6c914753ba83547fcbe75c02f1",
+      "translation_text_hash": "e5555ffb27449bc3f035adb7efdbdc5ef6564412d929fda4e97088363f47d62c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "룻이 밭에서 저녁까지 줍고 그 주운 것을 떠니 보리가 한 에바쯤 되는지라"
+      ],
+      "raw_text_hashes": [
+        "e5555ffb27449bc3f035adb7efdbdc5ef6564412d929fda4e97088363f47d62c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:RUT:2:18",
+      "sequence": 7168,
+      "chapter_label": "RUT 2",
+      "verse_label": "18",
+      "locator": {
+        "book": "RUT",
+        "chapter": 2,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "RUT",
+          "chapter": 2,
+          "verse": 18
+        }
+      ],
+      "en": "She took it up, and went into the city. Then her mother-in-law saw what she had gleaned; and she brought out and gave to her that which she had left after she had enough.",
+      "ko": "그것을 가지고 성읍에 들어가서 시모에게 그 주운 것을 보이고 그 배불리 먹고 남긴 것을 내어 시모에게 드리매",
+      "source_text_hash": "3f931815b2b3ca499207a3be737dbf59c57668beb049b81f06127e396b70111a",
+      "translation_text_hash": "c87753ba6d0d6ebfe5c00b72a131c597ba8ade775d75358a5d05239f8962812a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그것을 가지고 성읍에 들어가서 시모에게 그 주운 것을 보이고 그 배불리 먹고 남긴 것을 내어 시모에게 드리매"
+      ],
+      "raw_text_hashes": [
+        "c87753ba6d0d6ebfe5c00b72a131c597ba8ade775d75358a5d05239f8962812a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:RUT:2:19",
+      "sequence": 7169,
+      "chapter_label": "RUT 2",
+      "verse_label": "19",
+      "locator": {
+        "book": "RUT",
+        "chapter": 2,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "RUT",
+          "chapter": 2,
+          "verse": 19
+        }
+      ],
+      "en": "Her mother-in-law said to her, “Where have you gleaned today? Where have you worked? Blessed be he who noticed you.” She told her mother-in-law with whom she had worked, “The man’s name with whom I worked today is Boaz.”",
+      "ko": "시모가 그에게 이르되 오늘 어디서 주웠느냐 어디서 일을 하였느냐 너를 돌아본 자에게 복이 있기를 원하노라 룻이 누구에게서 일한 것을 시모에게 알게 하여 가로되 오늘 일하게 한 사람의 이름은 보아스니이다",
+      "source_text_hash": "6c73d950c31cb5cb6e122de2e5e52508c29f879ef16a9ef2d4d4991423488dda",
+      "translation_text_hash": "8df59318afc12c113dad57b52c6387d349bb65a9c0b1fe5574acfe08bdc96635",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시모가 그에게 이르되 오늘 어디서 주웠느냐 어디서 일을 하였느냐 너를 돌아본 자에게 복이 있기를 원하노라 룻이 누구에게서 일한 것을 시모에게 알게 하여 가로되 오늘 일하게 한 사람의 이름은 보아스니이다"
+      ],
+      "raw_text_hashes": [
+        "8df59318afc12c113dad57b52c6387d349bb65a9c0b1fe5574acfe08bdc96635"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:RUT:2:20",
+      "sequence": 7170,
+      "chapter_label": "RUT 2",
+      "verse_label": "20",
+      "locator": {
+        "book": "RUT",
+        "chapter": 2,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "RUT",
+          "chapter": 2,
+          "verse": 20
+        }
+      ],
+      "en": "Naomi said to her daughter-in-law, “May he be blessed by the LORD, who has not abandoned his kindness to the living and to the dead.” Naomi said to her, “The man is a close relative to us, one of our near kinsmen.”",
+      "ko": "나오미가 자부에게 이르되 여호와의 복이 그에게 있기를 원하노라 그가 생존한 자와 사망한 자에게 은혜 베풀기를 그치지 아니하도다 나오미가 또 그에게 이르되 그 사람은 우리의 근족이니 우리 기업을 무를 자 중 하나이니라",
+      "source_text_hash": "e4f7a6623207d22b32b0fbd6378c8c1f5838ed325a71e4cb89e209576564de57",
+      "translation_text_hash": "4461cfe73b6bd2367609c9b06e1bb1edf5866df7b1dc734ed4a871a5fc707b27",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나오미가 자부에게 이르되 여호와의 복이 그에게 있기를 원하노라 그가 생존한 자와 사망한 자에게 은혜 베풀기를 그치지 아니하도다 나오미가 또 그에게 이르되 그 사람은 우리의 근족이니 우리 기업을 무를 자 중 하나이니라"
+      ],
+      "raw_text_hashes": [
+        "4461cfe73b6bd2367609c9b06e1bb1edf5866df7b1dc734ed4a871a5fc707b27"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:RUT:2:21",
+      "sequence": 7171,
+      "chapter_label": "RUT 2",
+      "verse_label": "21",
+      "locator": {
+        "book": "RUT",
+        "chapter": 2,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "RUT",
+          "chapter": 2,
+          "verse": 21
+        }
+      ],
+      "en": "Ruth the Moabitess said, “Yes, he said to me, ‘You shall stay close to my young men until they have finished all my harvest.’”",
+      "ko": "모압 여인 룻이 가로되 그가 내게 또 이르기를 내 추수를 다 마치기까지 너는 내 소년들에게 가까이 있으라 하더이다",
+      "source_text_hash": "259d5ac46302947ef8f2eac3b9deec49e0fd0afcdc12e7799e56a9d2eafc120d",
+      "translation_text_hash": "ed8263bfa29fa24c13fd129fbbeb343c016c2803a4f87a877296b1373ad12e2a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모압 여인 룻이 가로되 그가 내게 또 이르기를 내 추수를 다 마치기까지 너는 내 소년들에게 가까이 있으라 하더이다"
+      ],
+      "raw_text_hashes": [
+        "ed8263bfa29fa24c13fd129fbbeb343c016c2803a4f87a877296b1373ad12e2a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:RUT:2:22",
+      "sequence": 7172,
+      "chapter_label": "RUT 2",
+      "verse_label": "22",
+      "locator": {
+        "book": "RUT",
+        "chapter": 2,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "RUT",
+          "chapter": 2,
+          "verse": 22
+        }
+      ],
+      "en": "Naomi said to Ruth her daughter-in-law, “It is good, my daughter, that you go out with his maidens, and that they not harm you in any other field.”",
+      "ko": "나오미가 자부 룻에게 이르되 내 딸아 너는 그 소녀들과 함께 나가고 다른 밭에서 사람을 만나지 아니하는 것이 좋으니라",
+      "source_text_hash": "0dbe68d6d467787927378c370cca2c05b30dd7ee111690f673c90cbaee43269b",
+      "translation_text_hash": "d7cee419bcee732126332a92424a8024baa7250c2aa36d65498ccda0c2c75f7e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나오미가 자부 룻에게 이르되 내 딸아 너는 그 소녀들과 함께 나가고 다른 밭에서 사람을 만나지 아니하는 것이 좋으니라"
+      ],
+      "raw_text_hashes": [
+        "d7cee419bcee732126332a92424a8024baa7250c2aa36d65498ccda0c2c75f7e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:RUT:2:23",
+      "sequence": 7173,
+      "chapter_label": "RUT 2",
+      "verse_label": "23",
+      "locator": {
+        "book": "RUT",
+        "chapter": 2,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "RUT",
+          "chapter": 2,
+          "verse": 23
+        }
+      ],
+      "en": "So she stayed close to the maidens of Boaz, to glean to the end of barley harvest and of wheat harvest; and she lived with her mother-in-law.",
+      "ko": "이에 룻이 보아스의 소녀들에게 가까이 있어서 보리 추수와 밀 추수를 마치기까지 이삭을 주우며 그 시모와 함께 거하니라",
+      "source_text_hash": "c41a8d77b30a720bf849ba375f9b56f9b35c4e568f51bebf19a513b0f55142cb",
+      "translation_text_hash": "20cc9d408a5e367fd9a0a5b6dc7192a17347fc91ffa4dec71a4e3433a66aefa2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 룻이 보아스의 소녀들에게 가까이 있어서 보리 추수와 밀 추수를 마치기까지 이삭을 주우며 그 시모와 함께 거하니라"
+      ],
+      "raw_text_hashes": [
+        "20cc9d408a5e367fd9a0a5b6dc7192a17347fc91ffa4dec71a4e3433a66aefa2"
+      ]
+    }
+  ]
+}

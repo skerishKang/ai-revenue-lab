@@ -1,0 +1,267 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "paradise-lost",
+  "title": "Paradise Lost",
+  "author": "John Milton",
+  "passage_count": 358,
+  "unit_count": 10,
+  "primary_locator": "canonical_locator",
+  "translation_language": "ko",
+  "units": [
+    {
+      "unit_key": "book:01",
+      "unit_kind": "book",
+      "unit_ordinal": 1,
+      "label": "BOOK 01",
+      "path": "book-01.json",
+      "passage_count": 14,
+      "sha256": "a49c4d2e7f2d4ad17f9568a376a0a568917c57d577766c76f794f4681a42e59c",
+      "first_locator": "paradise-lost:book:01:s1:row:001",
+      "last_locator": "paradise-lost:book:01:s5:row:014"
+    },
+    {
+      "unit_key": "book:02",
+      "unit_kind": "book",
+      "unit_ordinal": 2,
+      "label": "BOOK 02",
+      "path": "book-02.json",
+      "passage_count": 28,
+      "sha256": "59a977a29fa234c1b75aa2261d2263c75925978af34dbbd0c7db4cd07d450d02",
+      "first_locator": "paradise-lost:book:02:s1:row:001",
+      "last_locator": "paradise-lost:book:02:s5:row:028"
+    },
+    {
+      "unit_key": "book:03",
+      "unit_kind": "book",
+      "unit_ordinal": 3,
+      "label": "BOOK 03",
+      "path": "book-03.json",
+      "passage_count": 16,
+      "sha256": "bf755e702de40df8d80298112b8cdfacab051f372e19eb371ecc35b4f8b13bd6",
+      "first_locator": "paradise-lost:book:03:s1:row:001",
+      "last_locator": "paradise-lost:book:03:s6:row:016"
+    },
+    {
+      "unit_key": "book:04",
+      "unit_kind": "book",
+      "unit_ordinal": 4,
+      "label": "BOOK 04",
+      "path": "book-04.json",
+      "passage_count": 39,
+      "sha256": "7388cfa27508f20e7b1af91a072eb0ad1454d48fb1d876baa4f8eeee48dbd55b",
+      "first_locator": "paradise-lost:book:04:s1:row:001",
+      "last_locator": "paradise-lost:book:04:s7:row:039"
+    },
+    {
+      "unit_key": "book:05",
+      "unit_kind": "book",
+      "unit_ordinal": 5,
+      "label": "BOOK 05",
+      "path": "book-05.json",
+      "passage_count": 40,
+      "sha256": "40c01087e9e846c0ca3e4d5c67bb6f90f10752d5213d393ea2d6bf2080c36057",
+      "first_locator": "paradise-lost:book:05:s1:row:001",
+      "last_locator": "paradise-lost:book:05:s6:row:040"
+    },
+    {
+      "unit_key": "book:06",
+      "unit_kind": "book",
+      "unit_ordinal": 6,
+      "label": "BOOK 06",
+      "path": "book-06.json",
+      "passage_count": 31,
+      "sha256": "e91cfb32c2ece7f8c0b62e5f3ceb372b837eefc9c6c06fce0d13b79bb8dbae77",
+      "first_locator": "paradise-lost:book:06:s1:row:001",
+      "last_locator": "paradise-lost:book:06:s5:row:031"
+    },
+    {
+      "unit_key": "book:07",
+      "unit_kind": "book",
+      "unit_ordinal": 7,
+      "label": "BOOK 07",
+      "path": "book-07.json",
+      "passage_count": 38,
+      "sha256": "3273df7a8de1ac9c4a5bb5445b23b2fe522aeaee0886ad537798183052026a99",
+      "first_locator": "paradise-lost:book:07:s1:row:001",
+      "last_locator": "paradise-lost:book:07:s6:row:038"
+    },
+    {
+      "unit_key": "book:08",
+      "unit_kind": "book",
+      "unit_ordinal": 8,
+      "label": "BOOK 08",
+      "path": "book-08.json",
+      "passage_count": 48,
+      "sha256": "365383e1078d30ea567ee1edb0056b03b18e5d0668eb9a95f2abe1f61385951f",
+      "first_locator": "paradise-lost:book:08:s1:row:001",
+      "last_locator": "paradise-lost:book:08:s5:row:048"
+    },
+    {
+      "unit_key": "book:09",
+      "unit_kind": "book",
+      "unit_ordinal": 9,
+      "label": "BOOK 09",
+      "path": "book-09.json",
+      "passage_count": 44,
+      "sha256": "5e420d0d7b9428f694f0058c7d2751b0ed9700be69de86f846ac8d8cfcc8694a",
+      "first_locator": "paradise-lost:book:09:s1:row:001",
+      "last_locator": "paradise-lost:book:09:s5:row:044"
+    },
+    {
+      "unit_key": "book:10",
+      "unit_kind": "book",
+      "unit_ordinal": 10,
+      "label": "BOOK 10",
+      "path": "book-10.json",
+      "passage_count": 60,
+      "sha256": "45f1df621eddff5c93122724d56ce43f40ba8ed047689e96778fe2b5fe39eecd",
+      "first_locator": "paradise-lost:book:10:s1:row:001",
+      "last_locator": "paradise-lost:book:10:s6:row:060"
+    }
+  ],
+  "provenance": {
+    "ingestion_manifest_file": "paradise_lost_ingestion_manifest.json",
+    "ingestion_manifest_sha256": "0fa95cd793e364704d9434f0f6092925d931d55963f43e3247690c73684c7336",
+    "source_jsonl_file": "paradise_lost_source_passages.jsonl",
+    "source_jsonl_sha256": "bc7f392019d9f6a007ebe241b6c9e589f4065958f6377a2ad261a912e8858860",
+    "translation_jsonl_file": "paradise_lost_translations_ko.jsonl",
+    "translation_jsonl_sha256": "b00060188f40aa11efed30a72da2518a93ca027ed8f9948a8121efa94ed594e3",
+    "translation_source_hash_mismatches": 0,
+    "upstream_manifest": {
+      "work_key": "paradise-lost",
+      "title": "Paradise Lost",
+      "canonical_source_drive_id": "1Ru3DyiFatj6jzS0Th3h0JRyN2P0Vzt_w",
+      "source_edition": "John Milton / Project Gutenberg #20 TEN BOOKS / 501-classics canonical",
+      "edition_lock": "Project Gutenberg #20 TEN BOOKS — do not mix with #26 12-book edition",
+      "books_expected": 10,
+      "books_found": 10,
+      "passages": 358,
+      "translations_ko": 358,
+      "empty_korean": 0,
+      "canonical_locator_unique": true,
+      "sequence_unique": true,
+      "book_stats": [
+        {
+          "book": 1,
+          "passages": 14,
+          "sections": 5
+        },
+        {
+          "book": 2,
+          "passages": 28,
+          "sections": 5
+        },
+        {
+          "book": 3,
+          "passages": 16,
+          "sections": 6
+        },
+        {
+          "book": 4,
+          "passages": 39,
+          "sections": 7
+        },
+        {
+          "book": 5,
+          "passages": 40,
+          "sections": 6
+        },
+        {
+          "book": 6,
+          "passages": 31,
+          "sections": 5
+        },
+        {
+          "book": 7,
+          "passages": 38,
+          "sections": 6
+        },
+        {
+          "book": 8,
+          "passages": 48,
+          "sections": 5
+        },
+        {
+          "book": 9,
+          "passages": 44,
+          "sections": 5
+        },
+        {
+          "book": 10,
+          "passages": 60,
+          "sections": 6
+        }
+      ],
+      "source_html_files": {
+        "01": {
+          "file_name": "PARADISE_LOST_BOOK_01.html",
+          "sha256": "02ddb2a815b93d12ef51da219864cebfa34f179370f160476082033dc7d75437",
+          "bytes": 108592
+        },
+        "02": {
+          "file_name": "PARADISE_LOST_BOOK_02.html",
+          "sha256": "d5f9131eba957fd1de0576ce4bcc099e688606009c6059a898979e187df5c567",
+          "bytes": 141254
+        },
+        "03": {
+          "file_name": "PARADISE_LOST_BOOK_03.html",
+          "sha256": "5a5a1313645eca28515b0df1f6cf1fd3dee82c31be8afeb71c2608acf0e560ef",
+          "bytes": 106897
+        },
+        "04": {
+          "file_name": "PARADISE_LOST_BOOK_04.html",
+          "sha256": "00537e36670a742445b853c899a45572ea3f4682aa00185475ce9cd83f9d5951",
+          "bytes": 145547
+        },
+        "05": {
+          "file_name": "PARADISE_LOST_BOOK_05.html",
+          "sha256": "ec244a8b6dc3e0ee72f2a3ae58977b01245d3095c2ab5506b3afd7e0db260363",
+          "bytes": 131127
+        },
+        "06": {
+          "file_name": "PARADISE_LOST_BOOK_06.html",
+          "sha256": "0cacf8be071540ee6a6b35be288ad30498bc18543634128e88c8e24009607012",
+          "bytes": 125582
+        },
+        "07": {
+          "file_name": "PARADISE_LOST_BOOK_07.html",
+          "sha256": "ca2796eccf8c56f81dfdcb9956b3d1388dffeacaa95387013f35c7f03603f9a4",
+          "bytes": 167159
+        },
+        "08": {
+          "file_name": "PARADISE_LOST_BOOK_08.html",
+          "sha256": "a6e2d3331f83824bbd70776e1e9e244c4db903a9872fdf92f8b9d867ddfa0b61",
+          "bytes": 161492
+        },
+        "09": {
+          "file_name": "PARADISE_LOST_BOOK_09.html",
+          "sha256": "c022e5394ace4073156e8c5b71b7b2019e6f5189461866486897571811dabbd2",
+          "bytes": 147211
+        },
+        "10": {
+          "file_name": "PARADISE_LOST_BOOK_10.html",
+          "sha256": "18788eea46ce49b230ec5a1946738160e96591568027b075045bc145b10a1e0d",
+          "bytes": 206532
+        }
+      },
+      "source_jsonl_sha256": "bc7f392019d9f6a007ebe241b6c9e589f4065958f6377a2ad261a912e8858860",
+      "ko_jsonl_sha256": "b00060188f40aa11efed30a72da2518a93ca027ed8f9948a8121efa94ed594e3",
+      "status": "PACKET_READY_NOT_IMPORTED"
+    }
+  },
+  "qa": {
+    "passage_count": 358,
+    "expected_passage_count": 358,
+    "unit_count": 10,
+    "expected_unit_count": 10,
+    "empty_en": 0,
+    "empty_ko": 0,
+    "canonical_locator_duplicates": 0,
+    "sequence_duplicates": 0,
+    "source_hash_recompute_mismatches": 0,
+    "translation_hash_recompute_mismatches": 0,
+    "unit_sequence_formula_failures": 0,
+    "translation_source_hash_mismatches": 0,
+    "pass": true
+  }
+}

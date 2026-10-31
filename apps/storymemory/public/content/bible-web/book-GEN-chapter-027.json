@@ -1,0 +1,1485 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:GEN:chapter:027",
+  "unit_ordinal": 27,
+  "unit_label": "GEN 27",
+  "book_code": "GEN",
+  "chapter_number": 27,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:GEN:27:1",
+      "sequence": 729,
+      "chapter_label": "GEN 27",
+      "verse_label": "1",
+      "locator": {
+        "book": "GEN",
+        "chapter": 27,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 27,
+          "verse": 1
+        }
+      ],
+      "en": "When Isaac was old, and his eyes were dim, so that he could not see, he called Esau his elder son, and said to him, “My son?” He said to him, “Here I am.”",
+      "ko": "이삭이 나이 많아 눈이 어두워 잘 보지 못하더니 맏아들 에서를 불러 가로되 내 아들아 하매 그가 가로되 내가 여기 있나이다 하니",
+      "source_text_hash": "6c5d54092a03760497f9181efe03758409c520706f5d950ec2ab58ff32a20f66",
+      "translation_text_hash": "b230eddc35a2396b6d4aad106032f972877e1407f278fe1a61c708d041bf487d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이삭이 나이 많아 눈이 어두워 잘 보지 못하더니 맏아들 에서를 불러 가로되 내 아들아 하매 그가 가로되 내가 여기 있나이다 하니"
+      ],
+      "raw_text_hashes": [
+        "b230eddc35a2396b6d4aad106032f972877e1407f278fe1a61c708d041bf487d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:27:2",
+      "sequence": 730,
+      "chapter_label": "GEN 27",
+      "verse_label": "2",
+      "locator": {
+        "book": "GEN",
+        "chapter": 27,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 27,
+          "verse": 2
+        }
+      ],
+      "en": "He said, “See now, I am old. I don’t know the day of my death.",
+      "ko": "이삭이 가로되 내가 이제 늙어 어느날 죽을는지 알지못하노니",
+      "source_text_hash": "e100d8aedbde85ff22f900b216769f3de32d456ab91d470313f9541c5f8b42e0",
+      "translation_text_hash": "178b9cd8441b38c180cbe601d87a64371ca64b83100f81c6981853a7baedb9c7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이삭이 가로되 내가 이제 늙어 어느날 죽을는지 알지못하노니"
+      ],
+      "raw_text_hashes": [
+        "178b9cd8441b38c180cbe601d87a64371ca64b83100f81c6981853a7baedb9c7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:27:3",
+      "sequence": 731,
+      "chapter_label": "GEN 27",
+      "verse_label": "3",
+      "locator": {
+        "book": "GEN",
+        "chapter": 27,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 27,
+          "verse": 3
+        }
+      ],
+      "en": "Now therefore, please take your weapons, your quiver and your bow, and go out to the field, and get me venison.",
+      "ko": "그런즉 네 기구 곧 전통과 활을 가지고 들에 가서 나를 위하여 사냥하여",
+      "source_text_hash": "63f6db992d594656cf87c8fda1789845594fcb03aec69c70d45518ca075d306b",
+      "translation_text_hash": "c2970994b039a3029eb7ec7c3465fe766ce1bef11653fcac0ee1c4cdee240012",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 네 기구 곧 전통과 활을 가지고 들에 가서 나를 위하여 사냥하여"
+      ],
+      "raw_text_hashes": [
+        "c2970994b039a3029eb7ec7c3465fe766ce1bef11653fcac0ee1c4cdee240012"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:27:4",
+      "sequence": 732,
+      "chapter_label": "GEN 27",
+      "verse_label": "4",
+      "locator": {
+        "book": "GEN",
+        "chapter": 27,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 27,
+          "verse": 4
+        }
+      ],
+      "en": "Make me savory food, such as I love, and bring it to me, that I may eat, and that my soul may bless you before I die.”",
+      "ko": "나의 즐기는 별미를 만들어 내게로 가져다가 먹게 하여 나로 죽기 전에 내 마음껏 네게 축복하게 하라",
+      "source_text_hash": "6cafd9c4d7339a254be17f663a3e783f35b98cce6ddf420569b3742eef448b0a",
+      "translation_text_hash": "791f17aa8782064186e3bb6fff0c81a660060c70ce8387a7de13279cd6353b23",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 즐기는 별미를 만들어 내게로 가져다가 먹게 하여 나로 죽기 전에 내 마음껏 네게 축복하게 하라"
+      ],
+      "raw_text_hashes": [
+        "791f17aa8782064186e3bb6fff0c81a660060c70ce8387a7de13279cd6353b23"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:27:5",
+      "sequence": 733,
+      "chapter_label": "GEN 27",
+      "verse_label": "5",
+      "locator": {
+        "book": "GEN",
+        "chapter": 27,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 27,
+          "verse": 5
+        }
+      ],
+      "en": "Rebekah heard when Isaac spoke to Esau his son. Esau went to the field to hunt for venison, and to bring it.",
+      "ko": "이삭이 그 아들 에서에게 말할 때에 리브가가 들었더니 에서가 사냥하여 오려고 들로 나가매",
+      "source_text_hash": "c3cc0fc05eca4e8831e6184191e95a3356dc797de31d438286de7275a2b0a71f",
+      "translation_text_hash": "d3b8777b947c718a31796a671498ce2fa3c7a79477303906548a1bfbe67087bb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이삭이 그 아들 에서에게 말할 때에 리브가가 들었더니 에서가 사냥하여 오려고 들로 나가매"
+      ],
+      "raw_text_hashes": [
+        "d3b8777b947c718a31796a671498ce2fa3c7a79477303906548a1bfbe67087bb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:27:6",
+      "sequence": 734,
+      "chapter_label": "GEN 27",
+      "verse_label": "6",
+      "locator": {
+        "book": "GEN",
+        "chapter": 27,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 27,
+          "verse": 6
+        }
+      ],
+      "en": "Rebekah spoke to Jacob her son, saying, “Behold, I heard your father speak to Esau your brother, saying,",
+      "ko": "리브가가 그 아들 야곱에게 일러 가로되 네 부친이 네 형 에서에게 말씀하시는 것을 내가 들으니 이르시기를",
+      "source_text_hash": "23684461063d13f3169931fb6be81e860dd77222eed79e220591ef45b323d1f1",
+      "translation_text_hash": "bb654ca583a84ea3612b514dc142fafe633a0be4d1291d985c549ddf6a429c25",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "리브가가 그 아들 야곱에게 일러 가로되 네 부친이 네 형 에서에게 말씀하시는 것을 내가 들으니 이르시기를"
+      ],
+      "raw_text_hashes": [
+        "bb654ca583a84ea3612b514dc142fafe633a0be4d1291d985c549ddf6a429c25"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:27:7",
+      "sequence": 735,
+      "chapter_label": "GEN 27",
+      "verse_label": "7",
+      "locator": {
+        "book": "GEN",
+        "chapter": 27,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 27,
+          "verse": 7
+        }
+      ],
+      "en": "‘Bring me venison, and make me savory food, that I may eat, and bless you before the LORD before my death.’",
+      "ko": "나를 위하여 사냥하여 가져다가 별미를 만들어 나로 먹게 하여 죽기 전에 여호와 앞에서 네게 축복하게 하라 하셨으니",
+      "source_text_hash": "092cab6e08cfd708456a3e503bebe6e0845dba373cf4a0c5976dcbfbfab87c8d",
+      "translation_text_hash": "74b5fb811417d8b901f5a7db75253e9e5ca1e9d1068e8a329a7068b618ddbf4c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나를 위하여 사냥하여 가져다가 별미를 만들어 나로 먹게 하여 죽기 전에 여호와 앞에서 네게 축복하게 하라 하셨으니"
+      ],
+      "raw_text_hashes": [
+        "74b5fb811417d8b901f5a7db75253e9e5ca1e9d1068e8a329a7068b618ddbf4c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:27:8",
+      "sequence": 736,
+      "chapter_label": "GEN 27",
+      "verse_label": "8",
+      "locator": {
+        "book": "GEN",
+        "chapter": 27,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 27,
+          "verse": 8
+        }
+      ],
+      "en": "Now therefore, my son, obey my voice according to that which I command you.",
+      "ko": "그런즉 내 아들아 내 말을 좇아 내가 네게 명하는대로",
+      "source_text_hash": "86a3c56834eb16f42613750179763211a2ec6dd82ca1a278c1c81affb5ca82ba",
+      "translation_text_hash": "f9514e575e708c64119229154132db1485dd04c583c3dae8575d792ab1495830",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 내 아들아 내 말을 좇아 내가 네게 명하는대로"
+      ],
+      "raw_text_hashes": [
+        "f9514e575e708c64119229154132db1485dd04c583c3dae8575d792ab1495830"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:27:9",
+      "sequence": 737,
+      "chapter_label": "GEN 27",
+      "verse_label": "9",
+      "locator": {
+        "book": "GEN",
+        "chapter": 27,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 27,
+          "verse": 9
+        }
+      ],
+      "en": "Go now to the flock and get me two good young goats from there. I will make them savory food for your father, such as he loves.",
+      "ko": "염소떼에 가서 거기서 염소의 좋은 새끼를 내게로 가져오면 내가 그것으로 네 부친을 위하여 그 즐기시는 별미를 만들리니",
+      "source_text_hash": "3397f4447390fa09c2b744fce7a939c9e558461f497e8ef4dc28a33c32e6e72a",
+      "translation_text_hash": "c7237ce66c34d62bbf5192339efa2011cd9bdaa02479b08ec5aff46c0ab94156",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "염소떼에 가서 거기서 염소의 좋은 새끼를 내게로 가져오면 내가 그것으로 네 부친을 위하여 그 즐기시는 별미를 만들리니"
+      ],
+      "raw_text_hashes": [
+        "c7237ce66c34d62bbf5192339efa2011cd9bdaa02479b08ec5aff46c0ab94156"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:27:10",
+      "sequence": 738,
+      "chapter_label": "GEN 27",
+      "verse_label": "10",
+      "locator": {
+        "book": "GEN",
+        "chapter": 27,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 27,
+          "verse": 10
+        }
+      ],
+      "en": "You shall bring it to your father, that he may eat, so that he may bless you before his death.”",
+      "ko": "네가 그것을 가져 네 부친께 드려서 그로 죽으시기 전에 네게 축복하기 위하여 잡수시게 하라",
+      "source_text_hash": "83fd317e42aec67bf5cfbe07fb538575cb066114fc8f47daa55a0f6961b2b209",
+      "translation_text_hash": "8e7437e3f448bb368ef69b15b2d70cc17326c5d998a80df7b5870675ace83893",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 그것을 가져 네 부친께 드려서 그로 죽으시기 전에 네게 축복하기 위하여 잡수시게 하라"
+      ],
+      "raw_text_hashes": [
+        "8e7437e3f448bb368ef69b15b2d70cc17326c5d998a80df7b5870675ace83893"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:27:11",
+      "sequence": 739,
+      "chapter_label": "GEN 27",
+      "verse_label": "11",
+      "locator": {
+        "book": "GEN",
+        "chapter": 27,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 27,
+          "verse": 11
+        }
+      ],
+      "en": "Jacob said to Rebekah his mother, “Behold, Esau my brother is a hairy man, and I am a smooth man.",
+      "ko": "야곱이 그 모친 리브가에게 이르되 내 형 에서는 털사람이요 나는 매끈매끈한 사람인즉",
+      "source_text_hash": "3c1ec523401bbd823d0444e019db91fc32d5fd37c86eed91ed069577c275e19f",
+      "translation_text_hash": "7dcc12b310b72fff84af57675a49a2dcd39646076d1b8b7be8b4f962e2349822",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야곱이 그 모친 리브가에게 이르되 내 형 에서는 털사람이요 나는 매끈매끈한 사람인즉"
+      ],
+      "raw_text_hashes": [
+        "7dcc12b310b72fff84af57675a49a2dcd39646076d1b8b7be8b4f962e2349822"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:27:12",
+      "sequence": 740,
+      "chapter_label": "GEN 27",
+      "verse_label": "12",
+      "locator": {
+        "book": "GEN",
+        "chapter": 27,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 27,
+          "verse": 12
+        }
+      ],
+      "en": "What if my father touches me? I will seem to him as a deceiver, and I would bring a curse on myself, and not a blessing.”",
+      "ko": "아버지께서 나를 만지실찐대 내가 아버지께 속이는 자로 뵈일찌라 복은 고사하고 저주를 받을까 하나이다",
+      "source_text_hash": "2755cb39d47877fb910bd37dd1c516cf8d9754d9a56859ff283ea83b9cb4e14c",
+      "translation_text_hash": "ae4a32704337cb69a4986d04d934fb2e9f6c30985f0bfb3f9682817b9244644f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아버지께서 나를 만지실찐대 내가 아버지께 속이는 자로 뵈일찌라 복은 고사하고 저주를 받을까 하나이다"
+      ],
+      "raw_text_hashes": [
+        "ae4a32704337cb69a4986d04d934fb2e9f6c30985f0bfb3f9682817b9244644f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:27:13",
+      "sequence": 741,
+      "chapter_label": "GEN 27",
+      "verse_label": "13",
+      "locator": {
+        "book": "GEN",
+        "chapter": 27,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 27,
+          "verse": 13
+        }
+      ],
+      "en": "His mother said to him, “Let your curse be on me, my son. Only obey my voice, and go get them for me.”",
+      "ko": "어미가 그에게 이르되 내 아들아 너의 저주는 내게로 돌리리니 내 말만 좇고 가서 가져오라",
+      "source_text_hash": "bd0f405024c8262d7544932c358b95c96a6127b34ea8a028f89a27c6f0bf0b3c",
+      "translation_text_hash": "f7997f35d2f262693f07c241a269430bcc1cde066511ee4c8407d68e6d8ca144",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어미가 그에게 이르되 내 아들아 너의 저주는 내게로 돌리리니 내 말만 좇고 가서 가져오라"
+      ],
+      "raw_text_hashes": [
+        "f7997f35d2f262693f07c241a269430bcc1cde066511ee4c8407d68e6d8ca144"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:27:14",
+      "sequence": 742,
+      "chapter_label": "GEN 27",
+      "verse_label": "14",
+      "locator": {
+        "book": "GEN",
+        "chapter": 27,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 27,
+          "verse": 14
+        }
+      ],
+      "en": "He went, and got them, and brought them to his mother. His mother made savory food, such as his father loved.",
+      "ko": "그가 가서 취하여 어미에게로 가져왔더니 그 어미가 그 아비의 즐기는 별미를 만들었더라",
+      "source_text_hash": "1676a840112220bc2bcd2b14ac34e39f54c8d3699ac31401a1269de4a750d96a",
+      "translation_text_hash": "fcdc1f4e19a6da9843593c22edac17343133474faf939179c30b8ef4cfbe92ac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 가서 취하여 어미에게로 가져왔더니 그 어미가 그 아비의 즐기는 별미를 만들었더라"
+      ],
+      "raw_text_hashes": [
+        "fcdc1f4e19a6da9843593c22edac17343133474faf939179c30b8ef4cfbe92ac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:27:15",
+      "sequence": 743,
+      "chapter_label": "GEN 27",
+      "verse_label": "15",
+      "locator": {
+        "book": "GEN",
+        "chapter": 27,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 27,
+          "verse": 15
+        }
+      ],
+      "en": "Rebekah took the good clothes of Esau, her elder son, which were with her in the house, and put them on Jacob, her younger son.",
+      "ko": "리브가가 집안 자기 처소에 있는 맏아들 에서의 좋은 의복을 취하여 작은 아들 야곱에게 입히고",
+      "source_text_hash": "fab5d22e97a686abe6ba51d34f57c3df328871f59093bdcc690993f1c86e03bb",
+      "translation_text_hash": "9707670e8227500072f4980c29ffeb9a9509c9e8a4ca3ff78044597af2bbc931",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "리브가가 집안 자기 처소에 있는 맏아들 에서의 좋은 의복을 취하여 작은 아들 야곱에게 입히고"
+      ],
+      "raw_text_hashes": [
+        "9707670e8227500072f4980c29ffeb9a9509c9e8a4ca3ff78044597af2bbc931"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:27:16",
+      "sequence": 744,
+      "chapter_label": "GEN 27",
+      "verse_label": "16",
+      "locator": {
+        "book": "GEN",
+        "chapter": 27,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 27,
+          "verse": 16
+        }
+      ],
+      "en": "She put the skins of the young goats on his hands, and on the smooth of his neck.",
+      "ko": "또 염소 새끼의 가죽으로 그 손과 목의 매끈매끈한 곳에 꾸미고",
+      "source_text_hash": "6f15ca29933b49c8bc1169eb72b15aeefb30c282bf73e5d02e60be2095368a7f",
+      "translation_text_hash": "7bfad5a7d6c1c829c7eba6700e10e043f297118ec86fa045f62a7e52b9c9ffcb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 염소 새끼의 가죽으로 그 손과 목의 매끈매끈한 곳에 꾸미고"
+      ],
+      "raw_text_hashes": [
+        "7bfad5a7d6c1c829c7eba6700e10e043f297118ec86fa045f62a7e52b9c9ffcb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:27:17",
+      "sequence": 745,
+      "chapter_label": "GEN 27",
+      "verse_label": "17",
+      "locator": {
+        "book": "GEN",
+        "chapter": 27,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 27,
+          "verse": 17
+        }
+      ],
+      "en": "She gave the savory food and the bread, which she had prepared, into the hand of her son Jacob.",
+      "ko": "그 만든 별미와 떡을 자기 아들 야곱의 손에 주매",
+      "source_text_hash": "8adaf0b1990b94fa3a45e4f01e805581b2556ccbcb3ed9b855334cb7d88281ae",
+      "translation_text_hash": "8d08ff30809ee419a42d03541ed4dc677c7306d4c3d0b4456cd88dc378c59920",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 만든 별미와 떡을 자기 아들 야곱의 손에 주매"
+      ],
+      "raw_text_hashes": [
+        "8d08ff30809ee419a42d03541ed4dc677c7306d4c3d0b4456cd88dc378c59920"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:27:18",
+      "sequence": 746,
+      "chapter_label": "GEN 27",
+      "verse_label": "18",
+      "locator": {
+        "book": "GEN",
+        "chapter": 27,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 27,
+          "verse": 18
+        }
+      ],
+      "en": "He came to his father, and said, “My father?” He said, “Here I am. Who are you, my son?”",
+      "ko": "야곱이 아버지에게 나아가서 내 아버지여 하고 부른대 가로되 내가 여기 있노라 내 아들아 네가 누구냐",
+      "source_text_hash": "a5e45189201d23767a32cc20d0952249f391c7bb7dd91f46407f63078e40e9d2",
+      "translation_text_hash": "d352622bfb402c637c99893a076424aec6299503eba3e225ff082eec8035021a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야곱이 아버지에게 나아가서 내 아버지여 하고 부른대 가로되 내가 여기 있노라 내 아들아 네가 누구냐"
+      ],
+      "raw_text_hashes": [
+        "d352622bfb402c637c99893a076424aec6299503eba3e225ff082eec8035021a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:27:19",
+      "sequence": 747,
+      "chapter_label": "GEN 27",
+      "verse_label": "19",
+      "locator": {
+        "book": "GEN",
+        "chapter": 27,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 27,
+          "verse": 19
+        }
+      ],
+      "en": "Jacob said to his father, “I am Esau your firstborn. I have done what you asked me to do. Please arise, sit and eat of my venison, that your soul may bless me.”",
+      "ko": "야곱이 아비에게 대답하되 나는 아버지의 맏아들 에서로소이다 아버지께서 내게 명하신대로 내가 하였사오니 청컨대 일어나 앉아서 내 사냥한 고기를 잡수시고 아버지의 마음껏 내게 축복하소서",
+      "source_text_hash": "b0ef76401e1cc97caf9eaacb4aa0ee35c22da8817f91e379edc9d410100f6300",
+      "translation_text_hash": "26dba281f55fc6bdc32542d0fb983f07d7b02cc99349d942d267cf260023893a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야곱이 아비에게 대답하되 나는 아버지의 맏아들 에서로소이다 아버지께서 내게 명하신대로 내가 하였사오니 청컨대 일어나 앉아서 내 사냥한 고기를 잡수시고 아버지의 마음껏 내게 축복하소서"
+      ],
+      "raw_text_hashes": [
+        "26dba281f55fc6bdc32542d0fb983f07d7b02cc99349d942d267cf260023893a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:27:20",
+      "sequence": 748,
+      "chapter_label": "GEN 27",
+      "verse_label": "20",
+      "locator": {
+        "book": "GEN",
+        "chapter": 27,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 27,
+          "verse": 20
+        }
+      ],
+      "en": "Isaac said to his son, “How is it that you have found it so quickly, my son?” He said, “Because the LORD your God gave me success.”",
+      "ko": "이삭이 그 아들에게 이르되 내 아들아 네가 어떻게 이같이 속히 잡았느냐 그가 가로되 아버지의 하나님 여호와께서 나로 순적히 만나게 하셨음이니이다",
+      "source_text_hash": "c05c61e32be6b85c9da86c2ad7a2322081cd2542d6f40ba25d025da3ffc179cc",
+      "translation_text_hash": "d8a4f57609d69efcbb1cbe9bfe85b76bc315eae6a78c3f7b3435585eebf42a5d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이삭이 그 아들에게 이르되 내 아들아 네가 어떻게 이같이 속히 잡았느냐 그가 가로되 아버지의 하나님 여호와께서 나로 순적히 만나게 하셨음이니이다"
+      ],
+      "raw_text_hashes": [
+        "d8a4f57609d69efcbb1cbe9bfe85b76bc315eae6a78c3f7b3435585eebf42a5d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:27:21",
+      "sequence": 749,
+      "chapter_label": "GEN 27",
+      "verse_label": "21",
+      "locator": {
+        "book": "GEN",
+        "chapter": 27,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 27,
+          "verse": 21
+        }
+      ],
+      "en": "Isaac said to Jacob, “Please come near, that I may feel you, my son, whether you are really my son Esau or not.”",
+      "ko": "이삭이 야곱에게 이르되 내 아들아 가까이 오라 네가 과연 내 아들 에서인지 아닌지 내가 너를 만지려 하노라",
+      "source_text_hash": "72806cf0d1101fd91694df3472251d6605e0ef90cac9bd32f5bc9d69578dcb59",
+      "translation_text_hash": "5005f1a781cbad0ce6173c6beac3478fd3d1979a7bac0e30c33611f7507bb11c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이삭이 야곱에게 이르되 내 아들아 가까이 오라 네가 과연 내 아들 에서인지 아닌지 내가 너를 만지려 하노라"
+      ],
+      "raw_text_hashes": [
+        "5005f1a781cbad0ce6173c6beac3478fd3d1979a7bac0e30c33611f7507bb11c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:27:22",
+      "sequence": 750,
+      "chapter_label": "GEN 27",
+      "verse_label": "22",
+      "locator": {
+        "book": "GEN",
+        "chapter": 27,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 27,
+          "verse": 22
+        }
+      ],
+      "en": "Jacob went near to Isaac his father. He felt him, and said, “The voice is Jacob’s voice, but the hands are the hands of Esau.”",
+      "ko": "야곱이 그 아비 이삭에게 가까이 가니 이삭이 만지며 가로되 음성은 야곱의 음성이나 손은 에서의 손이로다 하며",
+      "source_text_hash": "8c6874c7da3fd9096f2c5bd1acb316ac0d830ad822f3b91550a4b88f5a3d374b",
+      "translation_text_hash": "bf3bbdeb2f362be7aee8ca6ebf45c06b89c2c9829e22483ef14cc238aec9fc7f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야곱이 그 아비 이삭에게 가까이 가니 이삭이 만지며 가로되 음성은 야곱의 음성이나 손은 에서의 손이로다 하며"
+      ],
+      "raw_text_hashes": [
+        "bf3bbdeb2f362be7aee8ca6ebf45c06b89c2c9829e22483ef14cc238aec9fc7f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:27:23",
+      "sequence": 751,
+      "chapter_label": "GEN 27",
+      "verse_label": "23",
+      "locator": {
+        "book": "GEN",
+        "chapter": 27,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 27,
+          "verse": 23
+        }
+      ],
+      "en": "He didn’t recognize him, because his hands were hairy, like his brother Esau’s hands. So he blessed him.",
+      "ko": "그 손이 형 에서의 손과 같이 털이 있으므로 능히 분별치 못하고 축복하였더라",
+      "source_text_hash": "d1fc7e6279dfa8c76c1408d9cf5b56be73c6026ef9f9f995082c9e5b94d7ae1d",
+      "translation_text_hash": "eb6674c4a01c743e9fb919f7abd62efcfd236b50349b00002fa62f139787ca8a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 손이 형 에서의 손과 같이 털이 있으므로 능히 분별치 못하고 축복하였더라"
+      ],
+      "raw_text_hashes": [
+        "eb6674c4a01c743e9fb919f7abd62efcfd236b50349b00002fa62f139787ca8a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:27:24",
+      "sequence": 752,
+      "chapter_label": "GEN 27",
+      "verse_label": "24",
+      "locator": {
+        "book": "GEN",
+        "chapter": 27,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 27,
+          "verse": 24
+        }
+      ],
+      "en": "He said, “Are you really my son Esau?” He said, “I am.”",
+      "ko": "이삭이 가로되 네가 참 내 아들 에서냐 그가 대답하되 그러하니이다",
+      "source_text_hash": "903449d47558b81ab93824e890ffa6e9f3c30f5688eee943fd473fc2a36fbf1d",
+      "translation_text_hash": "f35be7276a32c152797d07d04df935e90234ace06adc772b712dc4c36ce6eac5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이삭이 가로되 네가 참 내 아들 에서냐 그가 대답하되 그러하니이다"
+      ],
+      "raw_text_hashes": [
+        "f35be7276a32c152797d07d04df935e90234ace06adc772b712dc4c36ce6eac5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:27:25",
+      "sequence": 753,
+      "chapter_label": "GEN 27",
+      "verse_label": "25",
+      "locator": {
+        "book": "GEN",
+        "chapter": 27,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 27,
+          "verse": 25
+        }
+      ],
+      "en": "He said, “Bring it near to me, and I will eat of my son’s venison, that my soul may bless you.” He brought it near to him, and he ate. He brought him wine, and he drank.",
+      "ko": "이삭이 가로되 내게로 가져오라 내 아들의 사냥한 고기를 먹고 내 마음껏 네게 축복하리라 야곱이 그에게로 가져가매 그가 먹고 또 포도주를 가져가매 그가 마시고",
+      "source_text_hash": "0649b08ca65534f11df4336e5d17fc55da2b0af9d6025fdee3df27fd856229fd",
+      "translation_text_hash": "cea02c680ec882ae132f559d550f1372ca0391f6f001e91d38cffb83e849b924",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이삭이 가로되 내게로 가져오라 내 아들의 사냥한 고기를 먹고 내 마음껏 네게 축복하리라 야곱이 그에게로 가져가매 그가 먹고 또 포도주를 가져가매 그가 마시고"
+      ],
+      "raw_text_hashes": [
+        "cea02c680ec882ae132f559d550f1372ca0391f6f001e91d38cffb83e849b924"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:27:26",
+      "sequence": 754,
+      "chapter_label": "GEN 27",
+      "verse_label": "26",
+      "locator": {
+        "book": "GEN",
+        "chapter": 27,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 27,
+          "verse": 26
+        }
+      ],
+      "en": "His father Isaac said to him, “Come near now, and kiss me, my son.”",
+      "ko": "그 아비 이삭이 그에게 이르되 내 아들아 가까이 와서 내게 입맞추라",
+      "source_text_hash": "7aca1a191c7bc1864b397304fc8b6b84c4668437aea61fbadae8b36ff06aa9ba",
+      "translation_text_hash": "022dcaae5d552c534a9641bea08b8774700fef18e56472bf2a1186ce3a79bbfc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 아비 이삭이 그에게 이르되 내 아들아 가까이 와서 내게 입맞추라"
+      ],
+      "raw_text_hashes": [
+        "022dcaae5d552c534a9641bea08b8774700fef18e56472bf2a1186ce3a79bbfc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:27:27",
+      "sequence": 755,
+      "chapter_label": "GEN 27",
+      "verse_label": "27",
+      "locator": {
+        "book": "GEN",
+        "chapter": 27,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 27,
+          "verse": 27
+        }
+      ],
+      "en": "He came near, and kissed him. He smelled the smell of his clothing, and blessed him, and said, “Behold, the smell of my son is as the smell of a field which the LORD has blessed.",
+      "ko": "그가 가까이 가서 그에게 입맞추니 아비가 그 옷의 향취를 맡고 그에게 축복하여 가로되 내 아들의 향취는 여호와의 복 주신 밭의 향취로다",
+      "source_text_hash": "ea0ffbc56a8808aeee07d4281e28037f395682b58636a0fdb2e92525274eff56",
+      "translation_text_hash": "e280ff448857275296336b630d9cbae4df6c1f972c0c98d5f61e171b59e22956",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 가까이 가서 그에게 입맞추니 아비가 그 옷의 향취를 맡고 그에게 축복하여 가로되 내 아들의 향취는 여호와의 복 주신 밭의 향취로다"
+      ],
+      "raw_text_hashes": [
+        "e280ff448857275296336b630d9cbae4df6c1f972c0c98d5f61e171b59e22956"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:27:28",
+      "sequence": 756,
+      "chapter_label": "GEN 27",
+      "verse_label": "28",
+      "locator": {
+        "book": "GEN",
+        "chapter": 27,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 27,
+          "verse": 28
+        }
+      ],
+      "en": "God give you of the dew of the sky, of the fatness of the earth, and plenty of grain and new wine.",
+      "ko": "하나님은 하늘의 이슬과 땅의 기름짐이며 풍성한 곡식과 포도주로 네게 주시기를 원하노라",
+      "source_text_hash": "174c62b8d5910f7795e84655ec74616eedb563038ec53c4f6ac72f6d56c73d80",
+      "translation_text_hash": "eae01d9385bfbed582252fb27f7b6210d4710c8ff24adee9d51a93003699b787",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님은 하늘의 이슬과 땅의 기름짐이며 풍성한 곡식과 포도주로 네게 주시기를 원하노라"
+      ],
+      "raw_text_hashes": [
+        "eae01d9385bfbed582252fb27f7b6210d4710c8ff24adee9d51a93003699b787"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:27:29",
+      "sequence": 757,
+      "chapter_label": "GEN 27",
+      "verse_label": "29",
+      "locator": {
+        "book": "GEN",
+        "chapter": 27,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 27,
+          "verse": 29
+        }
+      ],
+      "en": "Let peoples serve you, and nations bow down to you. Be lord over your brothers. Let your mother’s sons bow down to you. Cursed be everyone who curses you. Blessed be everyone who blesses you.”",
+      "ko": "만민이 너를 섬기고 열국이 네게 굴복하리니 네가 형제들의 주가 되고 네 어미의 아들들이 네게 굴복하며 네게 저주하는 자는 저주를 받고 네게 축복하는 자는 복을 받기를 원하노라",
+      "source_text_hash": "1bf9dc2d1d58afb46766ffbbde2cdb4be3928738c9cb22d8cb7cbe39a04c04ec",
+      "translation_text_hash": "1da8469529b9871eff9da21aec5196a90157b0c731f581be75333b9babe42bb7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만민이 너를 섬기고 열국이 네게 굴복하리니 네가 형제들의 주가 되고 네 어미의 아들들이 네게 굴복하며 네게 저주하는 자는 저주를 받고 네게 축복하는 자는 복을 받기를 원하노라"
+      ],
+      "raw_text_hashes": [
+        "1da8469529b9871eff9da21aec5196a90157b0c731f581be75333b9babe42bb7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:27:30",
+      "sequence": 758,
+      "chapter_label": "GEN 27",
+      "verse_label": "30",
+      "locator": {
+        "book": "GEN",
+        "chapter": 27,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 27,
+          "verse": 30
+        }
+      ],
+      "en": "As soon as Isaac had finished blessing Jacob, and Jacob had just gone out from the presence of Isaac his father, Esau his brother came in from his hunting.",
+      "ko": "이삭이 야곱에게 축복하기를 마치매 야곱이 그 아비 이삭 앞에서 나가자 곧 그 형 에서가 사냥하여 돌아온지라",
+      "source_text_hash": "dd5d8567ccc3e2c0b73e0f76a8593a1afad26543d3980a55a54f81097be121d3",
+      "translation_text_hash": "bed308961e07b145c664189867d24fb698e22b4a559609f92654b2a98f6ce7e3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이삭이 야곱에게 축복하기를 마치매 야곱이 그 아비 이삭 앞에서 나가자 곧 그 형 에서가 사냥하여 돌아온지라"
+      ],
+      "raw_text_hashes": [
+        "bed308961e07b145c664189867d24fb698e22b4a559609f92654b2a98f6ce7e3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:27:31",
+      "sequence": 759,
+      "chapter_label": "GEN 27",
+      "verse_label": "31",
+      "locator": {
+        "book": "GEN",
+        "chapter": 27,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 27,
+          "verse": 31
+        }
+      ],
+      "en": "He also made savory food, and brought it to his father. He said to his father, “Let my father arise, and eat of his son’s venison, that your soul may bless me.”",
+      "ko": "그가 별미를 만들어 아비에게로 가지고 가서 가로되 아버지여 일어나서 아들의 사냥한 고기를 잡수시고 마음껏 내게 축복하소서",
+      "source_text_hash": "2db5e6bde1c2641a5834943a29fcefa4e6df7e0561dc670fa1b40450c8fb9421",
+      "translation_text_hash": "72823266b85012906d03cd6cc6e5e25823aec46153d30672be6cbc6c9f0e75cd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 별미를 만들어 아비에게로 가지고 가서 가로되 아버지여 일어나서 아들의 사냥한 고기를 잡수시고 마음껏 내게 축복하소서"
+      ],
+      "raw_text_hashes": [
+        "72823266b85012906d03cd6cc6e5e25823aec46153d30672be6cbc6c9f0e75cd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:27:32",
+      "sequence": 760,
+      "chapter_label": "GEN 27",
+      "verse_label": "32",
+      "locator": {
+        "book": "GEN",
+        "chapter": 27,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 27,
+          "verse": 32
+        }
+      ],
+      "en": "Isaac his father said to him, “Who are you?” He said, “I am your son, your firstborn, Esau.”",
+      "ko": "그 아비 이삭이 그에게 이르되 너는 누구냐 그가 대답하되 나는 아버지의 아들 곧 아버지의 맏아들 에서로소이다",
+      "source_text_hash": "ba62b324b910434f5fdf552f5ffb86ef4cb25e88208fe9b6d4dd6eb9b0b4a7ca",
+      "translation_text_hash": "f08896bd3a1af83e24bc30d93b57692aeebe1a8b4653bbdf117e0560445f9b7a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 아비 이삭이 그에게 이르되 너는 누구냐 그가 대답하되 나는 아버지의 아들 곧 아버지의 맏아들 에서로소이다"
+      ],
+      "raw_text_hashes": [
+        "f08896bd3a1af83e24bc30d93b57692aeebe1a8b4653bbdf117e0560445f9b7a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:27:33",
+      "sequence": 761,
+      "chapter_label": "GEN 27",
+      "verse_label": "33",
+      "locator": {
+        "book": "GEN",
+        "chapter": 27,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 27,
+          "verse": 33
+        }
+      ],
+      "en": "Isaac trembled violently, and said, “Who, then, is he who has taken venison, and brought it to me, and I have eaten of all before you came, and have blessed him? Yes, he will be blessed.”",
+      "ko": "이삭이 심히 크게 떨며 가로되 그런즉 사냥한 고기를 내게 가져온 자가 누구냐 너 오기 전에 내가 다 먹고 그를 위하여 축복하였은즉 그가 정녕 복을 받을 것이니라",
+      "source_text_hash": "c451417556d8b09cae3af25d1c48ba46b53a9bd68215c1bde0a4d8ef520e6260",
+      "translation_text_hash": "3754bce6cd9bc6a11836cce2d91b18f78e5763b4352d6dfa67178d5b9fe247bd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이삭이 심히 크게 떨며 가로되 그런즉 사냥한 고기를 내게 가져온 자가 누구냐 너 오기 전에 내가 다 먹고 그를 위하여 축복하였은즉 그가 정녕 복을 받을 것이니라"
+      ],
+      "raw_text_hashes": [
+        "3754bce6cd9bc6a11836cce2d91b18f78e5763b4352d6dfa67178d5b9fe247bd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:27:34",
+      "sequence": 762,
+      "chapter_label": "GEN 27",
+      "verse_label": "34",
+      "locator": {
+        "book": "GEN",
+        "chapter": 27,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 27,
+          "verse": 34
+        }
+      ],
+      "en": "When Esau heard the words of his father, he cried with an exceedingly great and bitter cry, and said to his father, “Bless me, even me also, my father.”",
+      "ko": "에서가 그 아비의 말을 듣고 방성대곡하며 아비에게 이르되 내 아버지여 내게 축복하소서 내게도 그리 하소서",
+      "source_text_hash": "43ec07aa9bcc5f47c09f292ffdc89ca4ebfbe646d51df96e3cbcf38eec5f541e",
+      "translation_text_hash": "b19d169ba1b45a767e8ca4c46ceb282aba826ad3ad58f7db784395d4b3958d45",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에서가 그 아비의 말을 듣고 방성대곡하며 아비에게 이르되 내 아버지여 내게 축복하소서 내게도 그리 하소서"
+      ],
+      "raw_text_hashes": [
+        "b19d169ba1b45a767e8ca4c46ceb282aba826ad3ad58f7db784395d4b3958d45"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:27:35",
+      "sequence": 763,
+      "chapter_label": "GEN 27",
+      "verse_label": "35",
+      "locator": {
+        "book": "GEN",
+        "chapter": 27,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 27,
+          "verse": 35
+        }
+      ],
+      "en": "He said, “Your brother came with deceit, and has taken away your blessing.”",
+      "ko": "이삭이 가로되 네 아우가 간교하게 와서 네 복을 빼앗았도다",
+      "source_text_hash": "cd7d9aa3c3062a635e8c0bf0d28feb5806c952d48d3eb693231aad0cfd5bd948",
+      "translation_text_hash": "a2fd742b5fa21ea8a9f57fe5caccf4c48193956e314d82223f3964f6717934bb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이삭이 가로되 네 아우가 간교하게 와서 네 복을 빼앗았도다"
+      ],
+      "raw_text_hashes": [
+        "a2fd742b5fa21ea8a9f57fe5caccf4c48193956e314d82223f3964f6717934bb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:27:36",
+      "sequence": 764,
+      "chapter_label": "GEN 27",
+      "verse_label": "36",
+      "locator": {
+        "book": "GEN",
+        "chapter": 27,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 27,
+          "verse": 36
+        }
+      ],
+      "en": "He said, “Isn’t he rightly named Jacob? For he has supplanted me these two times. He took away my birthright. See, now he has taken away my blessing.” He said, “Haven’t you reserved a blessing for me?”",
+      "ko": "에서가 가로되 그의 이름을 야곱이라 함이 합당치 아니하니이까 그가 나를 속임이 이것이 두 번째니이다 전에는 나의 장자의 명분을 빼앗고 이제는 내 복을 빼앗았나이다 또 가로되 아버지께서 나를 위하여 빌 복을 남기지 아니하셨나이까",
+      "source_text_hash": "8ec9468785d2e230004878849422a63c8bbb2f531266aa918ff3de912d9f3a7a",
+      "translation_text_hash": "f3c7f03853ec349f9ec860da79fd7dbc85b7f28d94909fdea8dc1d86f1c3da83",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에서가 가로되 그의 이름을 야곱이라 함이 합당치 아니하니이까 그가 나를 속임이 이것이 두 번째니이다 전에는 나의 장자의 명분을 빼앗고 이제는 내 복을 빼앗았나이다 또 가로되 아버지께서 나를 위하여 빌 복을 남기지 아니하셨나이까"
+      ],
+      "raw_text_hashes": [
+        "f3c7f03853ec349f9ec860da79fd7dbc85b7f28d94909fdea8dc1d86f1c3da83"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:27:37",
+      "sequence": 765,
+      "chapter_label": "GEN 27",
+      "verse_label": "37",
+      "locator": {
+        "book": "GEN",
+        "chapter": 27,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 27,
+          "verse": 37
+        }
+      ],
+      "en": "Isaac answered Esau, “Behold, I have made him your lord, and all his brothers I have given to him for servants. I have sustained him with grain and new wine. What then will I do for you, my son?”",
+      "ko": "이삭이 에서에게 대답하여 가로되 내가 그를 너의 주로 세우고 그 모든 형제를 내가 그에게 종으로 주었으며 곡식과 포도주를 그에게 공급하였으니 내 아들아 내가 네게 무엇을 할 수 있으랴",
+      "source_text_hash": "6ea964171eb6a64e6269a396127356691d103ba45b499ae84346b383ff8dfbf7",
+      "translation_text_hash": "649739097b912cbe1e6ae9477a222b9beb9d67f40f155a688731232381b36a91",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이삭이 에서에게 대답하여 가로되 내가 그를 너의 주로 세우고 그 모든 형제를 내가 그에게 종으로 주었으며 곡식과 포도주를 그에게 공급하였으니 내 아들아 내가 네게 무엇을 할 수 있으랴"
+      ],
+      "raw_text_hashes": [
+        "649739097b912cbe1e6ae9477a222b9beb9d67f40f155a688731232381b36a91"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:27:38",
+      "sequence": 766,
+      "chapter_label": "GEN 27",
+      "verse_label": "38",
+      "locator": {
+        "book": "GEN",
+        "chapter": 27,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 27,
+          "verse": 38
+        }
+      ],
+      "en": "Esau said to his father, “Do you have just one blessing, my father? Bless me, even me also, my father.” Esau lifted up his voice, and wept.",
+      "ko": "에서가 아비에게 이르되 내 아버지여 아버지의 빌 복이 이 하나 뿐이리이까 내 아버지여 내게 축복하소서 내게도 그리 하소서 하고 소리를 높여 우니",
+      "source_text_hash": "f35e7dae502d31581bb75d14a6955e81aaf668f49575f81616cc2d1d65a91d15",
+      "translation_text_hash": "361613f5d073c4786344af4e62955d0d1bff43ed68907e8e8451315b1deeee7d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에서가 아비에게 이르되 내 아버지여 아버지의 빌 복이 이 하나 뿐이리이까 내 아버지여 내게 축복하소서 내게도 그리 하소서 하고 소리를 높여 우니"
+      ],
+      "raw_text_hashes": [
+        "361613f5d073c4786344af4e62955d0d1bff43ed68907e8e8451315b1deeee7d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:27:39",
+      "sequence": 767,
+      "chapter_label": "GEN 27",
+      "verse_label": "39",
+      "locator": {
+        "book": "GEN",
+        "chapter": 27,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 27,
+          "verse": 39
+        }
+      ],
+      "en": "Isaac his father answered him, “Behold, your dwelling will be of the fatness of the earth, and of the dew of the sky from above.",
+      "ko": "그 아비 이삭이 그에게 대답하여 가로되 너의 주소는 땅의 기름짐에서 뜨고 내리는 하늘 이슬에서 뜰것이며",
+      "source_text_hash": "2fca639700118d6e02aa69747575b00d9652654f49885f6c812e9b313a9c8ab4",
+      "translation_text_hash": "7e517f3d794699be0852edaf05bc5893414aac146af023e9d9eeb677c2bc826d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 아비 이삭이 그에게 대답하여 가로되 너의 주소는 땅의 기름짐에서 뜨고 내리는 하늘 이슬에서 뜰것이며"
+      ],
+      "raw_text_hashes": [
+        "7e517f3d794699be0852edaf05bc5893414aac146af023e9d9eeb677c2bc826d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:27:40",
+      "sequence": 768,
+      "chapter_label": "GEN 27",
+      "verse_label": "40",
+      "locator": {
+        "book": "GEN",
+        "chapter": 27,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 27,
+          "verse": 40
+        }
+      ],
+      "en": "You will live by your sword, and you will serve your brother. It will happen, when you will break loose, that you will shake his yoke from off your neck.”",
+      "ko": "너는 칼을 믿고 생활하겠고 네 아우를 섬길 것이며 네가 매임을 벗을 때에는 그 멍에를 네 목에서 떨쳐버리리라 하였더라",
+      "source_text_hash": "6aa6e424133feb24d20fb9777fb8d18953c08f6c86d66c072803a55dd83f6b3f",
+      "translation_text_hash": "31a5cd9f858248aa6c25d242b667a30e83a432713b4a7ceee1c1cc8f1458cc70",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 칼을 믿고 생활하겠고 네 아우를 섬길 것이며 네가 매임을 벗을 때에는 그 멍에를 네 목에서 떨쳐버리리라 하였더라"
+      ],
+      "raw_text_hashes": [
+        "31a5cd9f858248aa6c25d242b667a30e83a432713b4a7ceee1c1cc8f1458cc70"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:27:41",
+      "sequence": 769,
+      "chapter_label": "GEN 27",
+      "verse_label": "41",
+      "locator": {
+        "book": "GEN",
+        "chapter": 27,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 27,
+          "verse": 41
+        }
+      ],
+      "en": "Esau hated Jacob because of the blessing with which his father blessed him. Esau said in his heart, “The days of mourning for my father are at hand. Then I will kill my brother Jacob.”",
+      "ko": "그 아비가 야곱에게 축복한 그 축복을 인하여 에서가 야곱을 미워하여 심중에 이르기를 아버지를 곡할 때가 가까웠은즉 내가 내 아우 야곱을 죽이리라 하였더니",
+      "source_text_hash": "11f7abe4602f73b241ba39dff50113b7917bfbd9002086f3b715bb449cc9137d",
+      "translation_text_hash": "370b03d1b6d16fe5a01437abebdf394d3faf42200c0729e91370389824dabf3b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 아비가 야곱에게 축복한 그 축복을 인하여 에서가 야곱을 미워하여 심중에 이르기를 아버지를 곡할 때가 가까웠은즉 내가 내 아우 야곱을 죽이리라 하였더니"
+      ],
+      "raw_text_hashes": [
+        "370b03d1b6d16fe5a01437abebdf394d3faf42200c0729e91370389824dabf3b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:27:42",
+      "sequence": 770,
+      "chapter_label": "GEN 27",
+      "verse_label": "42",
+      "locator": {
+        "book": "GEN",
+        "chapter": 27,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 27,
+          "verse": 42
+        }
+      ],
+      "en": "The words of Esau, her elder son, were told to Rebekah. She sent and called Jacob, her younger son, and said to him, “Behold, your brother Esau comforts himself about you by planning to kill you.",
+      "ko": "맏아들 에서의 이 말이 리브가에게 들리매 이에 보내어 작은 아들 야곱을 불러 그에게 이르되 네 형 에서가 너를 죽여 그 한을 풀려하나니",
+      "source_text_hash": "3fafedfa26cb2fb1ffc7929e8e979d34bb353f9f52cdf2c11a8a4f3d4f7bc126",
+      "translation_text_hash": "24712f867d3c43478d9acd6bf52215d037aa49327c55df5c2da2eedcd18bd92d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "맏아들 에서의 이 말이 리브가에게 들리매 이에 보내어 작은 아들 야곱을 불러 그에게 이르되 네 형 에서가 너를 죽여 그 한을 풀려하나니"
+      ],
+      "raw_text_hashes": [
+        "24712f867d3c43478d9acd6bf52215d037aa49327c55df5c2da2eedcd18bd92d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:27:43",
+      "sequence": 771,
+      "chapter_label": "GEN 27",
+      "verse_label": "43",
+      "locator": {
+        "book": "GEN",
+        "chapter": 27,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 27,
+          "verse": 43
+        }
+      ],
+      "en": "Now therefore, my son, obey my voice. Arise, flee to Laban, my brother, in Haran.",
+      "ko": "내 아들아 내 말을 좇아 일어나 하란으로 가서 내 오라버니 라반에게 피하여",
+      "source_text_hash": "d3871c793c6d05d7e6cd3b5f52ee397d7ce1c5ae183cd757abe504b7f352bf7c",
+      "translation_text_hash": "76204f0b6acb045b5f3d56e8fd01ec74e951d4cc8f2fc359b5437b119602eb13",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 아들아 내 말을 좇아 일어나 하란으로 가서 내 오라버니 라반에게 피하여"
+      ],
+      "raw_text_hashes": [
+        "76204f0b6acb045b5f3d56e8fd01ec74e951d4cc8f2fc359b5437b119602eb13"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:27:44",
+      "sequence": 772,
+      "chapter_label": "GEN 27",
+      "verse_label": "44",
+      "locator": {
+        "book": "GEN",
+        "chapter": 27,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 27,
+          "verse": 44
+        }
+      ],
+      "en": "Stay with him a few days, until your brother’s fury turns away—",
+      "ko": "네 형의 노가 풀리기까지 몇날 동안 그와 함께 거하라",
+      "source_text_hash": "456c4a05ac76cfb1e9ad93b396c6d05d2aac26c6d0df35a2c10f208e263c961c",
+      "translation_text_hash": "20e561a9a17c0c793b52834f2e4ef117d2869f857e98d25bfe3a6d275960cd36",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 형의 노가 풀리기까지 몇날 동안 그와 함께 거하라"
+      ],
+      "raw_text_hashes": [
+        "20e561a9a17c0c793b52834f2e4ef117d2869f857e98d25bfe3a6d275960cd36"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:27:45",
+      "sequence": 773,
+      "chapter_label": "GEN 27",
+      "verse_label": "45",
+      "locator": {
+        "book": "GEN",
+        "chapter": 27,
+        "verse": 45
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 27,
+          "verse": 45
+        }
+      ],
+      "en": "until your brother’s anger turns away from you, and he forgets what you have done to him. Then I will send, and get you from there. Why should I be bereaved of you both in one day?”",
+      "ko": "네 형의 분노가 풀려 네가 자기에게 행한 것을 잊어버리거든 내가 곧 보내어 너를 거기서 불러오리라 어찌 하루에 너희 둘을 잃으랴",
+      "source_text_hash": "03ef6594ff3a3a1a2af61dea6911151b2a2faa43cd58fcfcdbd404f7c12dc0de",
+      "translation_text_hash": "213ed46f5241aea141a01594e7dbef569dc4246f29f5dc2dedf4e2e925313002",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 형의 분노가 풀려 네가 자기에게 행한 것을 잊어버리거든 내가 곧 보내어 너를 거기서 불러오리라 어찌 하루에 너희 둘을 잃으랴"
+      ],
+      "raw_text_hashes": [
+        "213ed46f5241aea141a01594e7dbef569dc4246f29f5dc2dedf4e2e925313002"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:27:46",
+      "sequence": 774,
+      "chapter_label": "GEN 27",
+      "verse_label": "46",
+      "locator": {
+        "book": "GEN",
+        "chapter": 27,
+        "verse": 46
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 27,
+          "verse": 46
+        }
+      ],
+      "en": "Rebekah said to Isaac, “I am weary of my life because of the daughters of Heth. If Jacob takes a wife of the daughters of Heth, such as these, of the daughters of the land, what good will my life do me?”",
+      "ko": "리브가가 이삭에게 이르되 내가 헷 사람의 딸들을 인하여 나의 생명을 싫어하거늘 야곱이 만일 이 땅의 딸들 곧 그들과 같은 헷 사람의 딸들 중에서 아내를 취하면 나의 생명이 내게 무슨 재미가 있으리이까",
+      "source_text_hash": "9db7de18baf3c77048c300858cdf18b06526474bbecd1b12af703c2b872fe065",
+      "translation_text_hash": "abcc542504ca55160da7e6a10ac2c0c041b33174c8339cf088b7badb44a215a2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "리브가가 이삭에게 이르되 내가 헷 사람의 딸들을 인하여 나의 생명을 싫어하거늘 야곱이 만일 이 땅의 딸들 곧 그들과 같은 헷 사람의 딸들 중에서 아내를 취하면 나의 생명이 내게 무슨 재미가 있으리이까"
+      ],
+      "raw_text_hashes": [
+        "abcc542504ca55160da7e6a10ac2c0c041b33174c8339cf088b7badb44a215a2"
+      ]
+    }
+  ]
+}

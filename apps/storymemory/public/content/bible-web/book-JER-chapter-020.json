@@ -1,0 +1,589 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JER:chapter:020",
+  "unit_ordinal": 765,
+  "unit_label": "JER 20",
+  "book_code": "JER",
+  "chapter_number": 20,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JER:20:1",
+      "sequence": 19424,
+      "chapter_label": "JER 20",
+      "verse_label": "1",
+      "locator": {
+        "book": "JER",
+        "chapter": 20,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 20,
+          "verse": 1
+        }
+      ],
+      "en": "Now Pashhur, the son of Immer the priest, who was chief officer in the LORD’s house, heard Jeremiah prophesying these things.",
+      "ko": "제사장 임멜의 아들 바스훌은 여호와의 집 유사장이라 그가 예레미야의 이 일 예언함을 들은지라",
+      "source_text_hash": "9af5dfd225c5ae40f472fec9316a55aa2031de07c2d37e2aa37bfcbcb08a8805",
+      "translation_text_hash": "8a23b078426eca64870bf8e2c09878fe88fc1e7c027c3904341cf84de0e92c40",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장 임멜의 아들 바스훌은 여호와의 집 유사장이라 그가 예레미야의 이 일 예언함을 들은지라"
+      ],
+      "raw_text_hashes": [
+        "8a23b078426eca64870bf8e2c09878fe88fc1e7c027c3904341cf84de0e92c40"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:20:2",
+      "sequence": 19425,
+      "chapter_label": "JER 20",
+      "verse_label": "2",
+      "locator": {
+        "book": "JER",
+        "chapter": 20,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 20,
+          "verse": 2
+        }
+      ],
+      "en": "Then Pashhur struck Jeremiah the prophet and put him in the stocks that were in the upper gate of Benjamin, which was in the LORD’s house.",
+      "ko": "이에 바스훌이 선지자 예레미야를 때리고 여호와의 집 베냐민의 윗문에 있는 착고에 채웠더니",
+      "source_text_hash": "3b129401a90d69bb751439be6b3e7eba39194618e8e1557c616212d8e59f85e2",
+      "translation_text_hash": "1f8cbaf4e3aaad7f86dc50f2cad1a5675dbf5fcd305649d7cdb5fbba45a254ee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 바스훌이 선지자 예레미야를 때리고 여호와의 집 베냐민의 윗문에 있는 착고에 채웠더니"
+      ],
+      "raw_text_hashes": [
+        "1f8cbaf4e3aaad7f86dc50f2cad1a5675dbf5fcd305649d7cdb5fbba45a254ee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:20:3",
+      "sequence": 19426,
+      "chapter_label": "JER 20",
+      "verse_label": "3",
+      "locator": {
+        "book": "JER",
+        "chapter": 20,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 20,
+          "verse": 3
+        }
+      ],
+      "en": "On the next day, Pashhur released Jeremiah out of the stocks. Then Jeremiah said to him, “The LORD has not called your name Pashhur, but Magormissabib.",
+      "ko": "다음날 바스훌이 예레미야를 착고에서 놓아 주매 예레미야가 그에게 이르되 여호와께서 네 이름을 바스훌이라 아니하시고 마골밋사빕이라 하시느니라",
+      "source_text_hash": "212df55153a3d9e417f5fcd72e92508adb424b27cf1173fbcdd2c38db7b451ee",
+      "translation_text_hash": "46d778491b0d4daa064a60b7928f7b74408849bf87e76a9f30e79df31a0ff72b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다음날 바스훌이 예레미야를 착고에서 놓아 주매 예레미야가 그에게 이르되 여호와께서 네 이름을 바스훌이라 아니하시고 마골밋사빕이라 하시느니라"
+      ],
+      "raw_text_hashes": [
+        "46d778491b0d4daa064a60b7928f7b74408849bf87e76a9f30e79df31a0ff72b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:20:4",
+      "sequence": 19427,
+      "chapter_label": "JER 20",
+      "verse_label": "4",
+      "locator": {
+        "book": "JER",
+        "chapter": 20,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 20,
+          "verse": 4
+        }
+      ],
+      "en": "For the LORD says, ‘Behold, I will make you a terror to yourself and to all your friends. They will fall by the sword of their enemies, and your eyes will see it. I will give all Judah into the hand of the king of Babylon, and he will carry them captive to Babylon, and will kill them with the sword.",
+      "ko": "대저 여호와께서 이같이 말씀하시되 보라 내가 너로 너와 네 모든 친구에게 두려움이 되게 하리니 그들이 그 원수의 칼에 엎드러질 것이요 네 눈은 그것을 볼 것이며 내가 온 유다를 바벨론 왕의 손에 붙이리니 그가 그들을 사로잡아 바벨론으로 옮겨 칼로 죽이리라",
+      "source_text_hash": "277fe4626a1d0887cf5c5d435873434f8a35b41bbb4292657588f15a49c14769",
+      "translation_text_hash": "b45e3724869b34cd11ab4aade6ae0c935286bd72910bb5898f400ad1199268af",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대저 여호와께서 이같이 말씀하시되 보라 내가 너로 너와 네 모든 친구에게 두려움이 되게 하리니 그들이 그 원수의 칼에 엎드러질 것이요 네 눈은 그것을 볼 것이며 내가 온 유다를 바벨론 왕의 손에 붙이리니 그가 그들을 사로잡아 바벨론으로 옮겨 칼로 죽이리라"
+      ],
+      "raw_text_hashes": [
+        "b45e3724869b34cd11ab4aade6ae0c935286bd72910bb5898f400ad1199268af"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:20:5",
+      "sequence": 19428,
+      "chapter_label": "JER 20",
+      "verse_label": "5",
+      "locator": {
+        "book": "JER",
+        "chapter": 20,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 20,
+          "verse": 5
+        }
+      ],
+      "en": "Moreover I will give all the riches of this city, and all its gains, and all its precious things, yes, I will give all the treasures of the kings of Judah into the hand of their enemies. They will make them captives, take them, and carry them to Babylon.",
+      "ko": "내가 또 이 성의 모든 부와 그 모든 소득과 그 모든 귀물과 유다 왕들의 모든 보물을 그 원수의 손에 붙이리니 그들이 그것을 탈취하여 바벨론으로 가져가리라",
+      "source_text_hash": "f39b8847de1edff1a378c3d691a003a08b108df8508cff2ec968e318b9518ef5",
+      "translation_text_hash": "dca43369a81750b27d94f54eb99a4245e72867f47b4aec95e1930b5ce4c86ea1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 또 이 성의 모든 부와 그 모든 소득과 그 모든 귀물과 유다 왕들의 모든 보물을 그 원수의 손에 붙이리니 그들이 그것을 탈취하여 바벨론으로 가져가리라"
+      ],
+      "raw_text_hashes": [
+        "dca43369a81750b27d94f54eb99a4245e72867f47b4aec95e1930b5ce4c86ea1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:20:6",
+      "sequence": 19429,
+      "chapter_label": "JER 20",
+      "verse_label": "6",
+      "locator": {
+        "book": "JER",
+        "chapter": 20,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 20,
+          "verse": 6
+        }
+      ],
+      "en": "You, Pashhur, and all who dwell in your house will go into captivity. You will come to Babylon, and there you will die, and there you will be buried, you, and all your friends, to whom you have prophesied falsely.’”",
+      "ko": "바스훌아 너와 네 집에 거하는 모든 자가 포로되어 옮기우리니 네가 바벨론에 이르러 거기서 죽어 거기 묻힐 것이라 너와 네가 거짓 예언을 하여 들린 네 모든 친구도 일반이리라 하셨느니라",
+      "source_text_hash": "5cb00996af91c78093e5c556d77311361ad9790c15db20bcd5591af152cf05f5",
+      "translation_text_hash": "f54626a7121ce1f3d4c5a3601144ff34c50c20386086eca7c004c5978e03e4fc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바스훌아 너와 네 집에 거하는 모든 자가 포로되어 옮기우리니 네가 바벨론에 이르러 거기서 죽어 거기 묻힐 것이라 너와 네가 거짓 예언을 하여 들린 네 모든 친구도 일반이리라 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "f54626a7121ce1f3d4c5a3601144ff34c50c20386086eca7c004c5978e03e4fc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:20:7",
+      "sequence": 19430,
+      "chapter_label": "JER 20",
+      "verse_label": "7",
+      "locator": {
+        "book": "JER",
+        "chapter": 20,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 20,
+          "verse": 7
+        }
+      ],
+      "en": "LORD, you have persuaded me, and I was persuaded. You are stronger than I, and have prevailed. I have become a laughingstock all day. Everyone mocks me.",
+      "ko": "여호와여 주께서 나를 권유하시므로 내가 그 권유를 받았사오며 주께서 나보다 강하사 이기셨으므로 내가 조롱거리가 되니 사람마다 종일토록 나를 조롱하나이다",
+      "source_text_hash": "445be4357f4cb01992f0ecf7bae3dc0a5623282f393ea3b88bebc8bdb6c2bb34",
+      "translation_text_hash": "c7a0933edc8e80ef2c76dc9e67034e85986637a5203e0b61b111dff9d2937b4a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 주께서 나를 권유하시므로 내가 그 권유를 받았사오며 주께서 나보다 강하사 이기셨으므로 내가 조롱거리가 되니 사람마다 종일토록 나를 조롱하나이다"
+      ],
+      "raw_text_hashes": [
+        "c7a0933edc8e80ef2c76dc9e67034e85986637a5203e0b61b111dff9d2937b4a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:20:8",
+      "sequence": 19431,
+      "chapter_label": "JER 20",
+      "verse_label": "8",
+      "locator": {
+        "book": "JER",
+        "chapter": 20,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 20,
+          "verse": 8
+        }
+      ],
+      "en": "For as often as I speak, I cry out; I cry, “Violence and destruction!” because the LORD’s word has been made a reproach to me, and a derision, all day.",
+      "ko": "대저 내가 말할 때마다 외치며 강포와 멸망을 부르짖으오니 여호와의 말씀으로 하여 내가 종일토록 치욕과 모욕거리가 됨이니이다",
+      "source_text_hash": "8a0573f4a69b35497f4e41bb450f2dc5377c50f62eafab81fcc1ba9ea2bfb375",
+      "translation_text_hash": "cd8b71cabe31d3dd67055bf9aabd01711f797cefefa74d129cfa57d18e435aa2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대저 내가 말할 때마다 외치며 강포와 멸망을 부르짖으오니 여호와의 말씀으로 하여 내가 종일토록 치욕과 모욕거리가 됨이니이다"
+      ],
+      "raw_text_hashes": [
+        "cd8b71cabe31d3dd67055bf9aabd01711f797cefefa74d129cfa57d18e435aa2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:20:9",
+      "sequence": 19432,
+      "chapter_label": "JER 20",
+      "verse_label": "9",
+      "locator": {
+        "book": "JER",
+        "chapter": 20,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 20,
+          "verse": 9
+        }
+      ],
+      "en": "If I say that I will not make mention of him, or speak any more in his name, then there is in my heart as it were a burning fire shut up in my bones. I am weary with holding it in. I can’t.",
+      "ko": "내가 다시는 여호와를 선포하지 아니하며 그 이름으로 말하지 아니하리라 하면 나의 중심이 불붙는것 같아서 골수에 사무치니 답답하여 견딜 수 없나이다",
+      "source_text_hash": "cc6a7b801f4d0447237508e31ce6efb34af5f410bc16a39bb8f9bd1ee922db35",
+      "translation_text_hash": "c05e8d59cb51da7d8cb238df25d8fbf66dfc45b39ac07facfb37b02ccbcccedd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 다시는 여호와를 선포하지 아니하며 그 이름으로 말하지 아니하리라 하면 나의 중심이 불붙는것 같아서 골수에 사무치니 답답하여 견딜 수 없나이다"
+      ],
+      "raw_text_hashes": [
+        "c05e8d59cb51da7d8cb238df25d8fbf66dfc45b39ac07facfb37b02ccbcccedd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:20:10",
+      "sequence": 19433,
+      "chapter_label": "JER 20",
+      "verse_label": "10",
+      "locator": {
+        "book": "JER",
+        "chapter": 20,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 20,
+          "verse": 10
+        }
+      ],
+      "en": "For I have heard the defaming of many: “Terror on every side! Denounce, and we will denounce him!” say all my familiar friends, those who watch for my fall. “Perhaps he will be persuaded, and we will prevail against him, and we will take our revenge on him.”",
+      "ko": "나는 무리의 비방과 사방의 두려움을 들었나이다 그들이 이르기를 고소하라 우리도 고소하리라 하오며 나의 친한 벗도 다 나의 타락하기를 기다리며 피차 이르기를 그가 혹시 유혹을 받으리니 우리가 그를 이기어 우리 원수를 갚자 하나이다",
+      "source_text_hash": "3d7668dd8425ea0170101a7fd49f34847a35cfd2b530632d25c67f16f605151d",
+      "translation_text_hash": "a1db3716bd7958b4f8f4451056fe8947ad4306f84115a95f9f4ab3488cd4ec56",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 무리의 비방과 사방의 두려움을 들었나이다 그들이 이르기를 고소하라 우리도 고소하리라 하오며 나의 친한 벗도 다 나의 타락하기를 기다리며 피차 이르기를 그가 혹시 유혹을 받으리니 우리가 그를 이기어 우리 원수를 갚자 하나이다"
+      ],
+      "raw_text_hashes": [
+        "a1db3716bd7958b4f8f4451056fe8947ad4306f84115a95f9f4ab3488cd4ec56"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:20:11",
+      "sequence": 19434,
+      "chapter_label": "JER 20",
+      "verse_label": "11",
+      "locator": {
+        "book": "JER",
+        "chapter": 20,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 20,
+          "verse": 11
+        }
+      ],
+      "en": "But the LORD is with me as an awesome mighty one. Therefore my persecutors will stumble, and they won’t prevail. They will be utterly disappointed because they have not dealt wisely, even with an everlasting dishonor which will never be forgotten.",
+      "ko": "그러하오나 여호와는 두려운 용사 같으시며 나와 함께하시는고로 나를 박해하는 자가 넘어지고 이기지 못할 것이오며 그들은 지혜롭게 행치 못하므로 큰 수욕을 당하오리니 그 수욕은 영영히 잊지 못할 것이니이다",
+      "source_text_hash": "efd34a29d80b0648593afc3c9263af8f5ceb450cf3d06210f008feea23254ec1",
+      "translation_text_hash": "705a0181b26849817b6a7d8918cc20d835731da5fd023c3edfb837714a224ecb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러하오나 여호와는 두려운 용사 같으시며 나와 함께하시는고로 나를 박해하는 자가 넘어지고 이기지 못할 것이오며 그들은 지혜롭게 행치 못하므로 큰 수욕을 당하오리니 그 수욕은 영영히 잊지 못할 것이니이다"
+      ],
+      "raw_text_hashes": [
+        "705a0181b26849817b6a7d8918cc20d835731da5fd023c3edfb837714a224ecb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:20:12",
+      "sequence": 19435,
+      "chapter_label": "JER 20",
+      "verse_label": "12",
+      "locator": {
+        "book": "JER",
+        "chapter": 20,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 20,
+          "verse": 12
+        }
+      ],
+      "en": "But the LORD of Armies, who tests the righteous, who sees the heart and the mind, let me see your vengeance on them, for I have revealed my cause to you.",
+      "ko": "의인을 시험하사 그 폐부와 심장을 보시는 만군의 여호와여 나의 사정을 주께 아뢰었사온즉 주께서 그들에게 보수하심을 나로 보게 하옵소서",
+      "source_text_hash": "447df03612df9fa1cf2b8f498a05b39b000bf7b55b41ca124ad760c80344c103",
+      "translation_text_hash": "24d27271732625b405616d63e00710919eed0e24cc4c56a426afc9258aa1cb65",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "의인을 시험하사 그 폐부와 심장을 보시는 만군의 여호와여 나의 사정을 주께 아뢰었사온즉 주께서 그들에게 보수하심을 나로 보게 하옵소서"
+      ],
+      "raw_text_hashes": [
+        "24d27271732625b405616d63e00710919eed0e24cc4c56a426afc9258aa1cb65"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:20:13",
+      "sequence": 19436,
+      "chapter_label": "JER 20",
+      "verse_label": "13",
+      "locator": {
+        "book": "JER",
+        "chapter": 20,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 20,
+          "verse": 13
+        }
+      ],
+      "en": "Sing to the LORD! Praise the LORD, for he has delivered the soul of the needy from the hand of evildoers.",
+      "ko": "여호와께 노래하라 너희는 여호와를 찬양하라 가난한 자의 생명을 행악자의 손에서 구원하셨음이니라",
+      "source_text_hash": "c4fbe23ade66b178620bdc0d7337e6da4e9981cc95f1ff03fafdfcf845042129",
+      "translation_text_hash": "68f23601e60c423ddc61e3359667da4fb642a1ca4ea340eb473a45c7d411c169",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께 노래하라 너희는 여호와를 찬양하라 가난한 자의 생명을 행악자의 손에서 구원하셨음이니라"
+      ],
+      "raw_text_hashes": [
+        "68f23601e60c423ddc61e3359667da4fb642a1ca4ea340eb473a45c7d411c169"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:20:14",
+      "sequence": 19437,
+      "chapter_label": "JER 20",
+      "verse_label": "14",
+      "locator": {
+        "book": "JER",
+        "chapter": 20,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 20,
+          "verse": 14
+        }
+      ],
+      "en": "Cursed is the day in which I was born. Don’t let the day in which my mother bore me be blessed.",
+      "ko": "내 생일이 저주를 받았더면, 나의 어미가 나를 생산하던 날이 복이 없었더면,",
+      "source_text_hash": "0cd83e29e9bfc79bf703f87eb4cc7532d833cdf73fb8434977a0a474be7c1177",
+      "translation_text_hash": "88d6435907ac39ccd0a074f8b9214dd2340e3eaf46f9b21cc29882a3bfc37c03",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 생일이 저주를 받았더면, 나의 어미가 나를 생산하던 날이 복이 없었더면,"
+      ],
+      "raw_text_hashes": [
+        "88d6435907ac39ccd0a074f8b9214dd2340e3eaf46f9b21cc29882a3bfc37c03"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:20:15",
+      "sequence": 19438,
+      "chapter_label": "JER 20",
+      "verse_label": "15",
+      "locator": {
+        "book": "JER",
+        "chapter": 20,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 20,
+          "verse": 15
+        }
+      ],
+      "en": "Cursed is the man who brought news to my father, saying, “A boy is born to you,” making him very glad.",
+      "ko": "나의 아비에게 소식을 전하여 이르기를 네가 생남하였다 하여 아비를 즐겁게 하던 자가 저주를 받았더면,",
+      "source_text_hash": "eeddb75e88107f461a22c854c66e0b1a8ee3f68afb8b8352c587d09d82519a27",
+      "translation_text_hash": "eadc9cefda992aecebc551e0db3049927c0b2031ed6809d116c7b1e4d6d2cdb8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 아비에게 소식을 전하여 이르기를 네가 생남하였다 하여 아비를 즐겁게 하던 자가 저주를 받았더면,"
+      ],
+      "raw_text_hashes": [
+        "eadc9cefda992aecebc551e0db3049927c0b2031ed6809d116c7b1e4d6d2cdb8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:20:16",
+      "sequence": 19439,
+      "chapter_label": "JER 20",
+      "verse_label": "16",
+      "locator": {
+        "book": "JER",
+        "chapter": 20,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 20,
+          "verse": 16
+        }
+      ],
+      "en": "Let that man be as the cities which the LORD overthrew, and didn’t repent. Let him hear a cry in the morning, and shouting at noontime,",
+      "ko": "그 사람은 여호와께서 훼파하시고 후회치 아니하신 성읍 같이 되었더면, 그로 아침에는 부르짖는 소리, 낮에는 떠드는 소리를 듣게 하였더면,",
+      "source_text_hash": "2516419d3c9a0aed2cd6423459768a6de390f886b34193fe72c76d07d498f307",
+      "translation_text_hash": "3f06d8685a1517d8542b49b777c377684904878e45e5b94ced10789b9639fb0c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 사람은 여호와께서 훼파하시고 후회치 아니하신 성읍 같이 되었더면, 그로 아침에는 부르짖는 소리, 낮에는 떠드는 소리를 듣게 하였더면,"
+      ],
+      "raw_text_hashes": [
+        "3f06d8685a1517d8542b49b777c377684904878e45e5b94ced10789b9639fb0c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:20:17",
+      "sequence": 19440,
+      "chapter_label": "JER 20",
+      "verse_label": "17",
+      "locator": {
+        "book": "JER",
+        "chapter": 20,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 20,
+          "verse": 17
+        }
+      ],
+      "en": "because he didn’t kill me from the womb. So my mother would have been my grave, and her womb always great.",
+      "ko": "이는 그가 나를 태에서 죽이지 아니하셨으며 나의 어미로 내 무덤이 되게 하지 아니하셨으며 그 배로 항상 부르게 하지 아니하신 연고로다",
+      "source_text_hash": "56d35bed13f66c812de84069cf033baf1a07dbcdb3ce32d95e5f367ba5c1cf24",
+      "translation_text_hash": "e96ae9e77a8d6d949ff8a9ebf333ba7b486e1b6c07e9f00d2e19e0ee8bcb8659",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 그가 나를 태에서 죽이지 아니하셨으며 나의 어미로 내 무덤이 되게 하지 아니하셨으며 그 배로 항상 부르게 하지 아니하신 연고로다"
+      ],
+      "raw_text_hashes": [
+        "e96ae9e77a8d6d949ff8a9ebf333ba7b486e1b6c07e9f00d2e19e0ee8bcb8659"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:20:18",
+      "sequence": 19441,
+      "chapter_label": "JER 20",
+      "verse_label": "18",
+      "locator": {
+        "book": "JER",
+        "chapter": 20,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 20,
+          "verse": 18
+        }
+      ],
+      "en": "Why did I come out of the womb to see labor and sorrow, that my days should be consumed with shame?",
+      "ko": "어찌하여 내가 태에서 나와서 고생과 슬픔을 보며 나의 날을 수욕으로 보내는고",
+      "source_text_hash": "659d7440790407da90f6b76ac4b38ba8143d3331578fe43edd41c2a767ce7610",
+      "translation_text_hash": "b068a2100f33dbe4c09c0dc40b869fed20c2a0b084a02ec27c3b642734916c28",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어찌하여 내가 태에서 나와서 고생과 슬픔을 보며 나의 날을 수욕으로 보내는고"
+      ],
+      "raw_text_hashes": [
+        "b068a2100f33dbe4c09c0dc40b869fed20c2a0b084a02ec27c3b642734916c28"
+      ]
+    }
+  ]
+}

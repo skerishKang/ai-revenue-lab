@@ -1,0 +1,333 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:064",
+  "unit_ordinal": 542,
+  "unit_label": "PSA 64",
+  "book_code": "PSA",
+  "chapter_number": 64,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:64:1",
+      "sequence": 14852,
+      "chapter_label": "PSA 64",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 64,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 64,
+          "verse": 1
+        }
+      ],
+      "en": "Hear my voice, God, in my complaint. Preserve my life from fear of the enemy.",
+      "ko": "하나님이여 나의 근심하는 소리를 들으시고 원수의 두려움에서 나의 생명을 보존하소서",
+      "source_text_hash": "72cc5680fc1f1f6f7ec248d2651ab9d5d8cde2a66b83a805fdf403234b7e91b0",
+      "translation_text_hash": "979f1fdf06d7c286c94cf64d09028fc8f5b2c5875887072a7733b86713f79650",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이여 나의 근심하는 소리를 들으시고 원수의 두려움에서 나의 생명을 보존하소서"
+      ],
+      "raw_text_hashes": [
+        "979f1fdf06d7c286c94cf64d09028fc8f5b2c5875887072a7733b86713f79650"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:64:2",
+      "sequence": 14853,
+      "chapter_label": "PSA 64",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 64,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 64,
+          "verse": 2
+        }
+      ],
+      "en": "Hide me from the conspiracy of the wicked, from the noisy crowd of the ones doing evil;",
+      "ko": "주는 나를 숨기사 행악자의 비밀한 꾀에서와 죄악을 짓는 자의 요란에서 벗어나게 하소서",
+      "source_text_hash": "110e4144856c33b4e9b20b78cebc6f011fcdcb9db169ac6ffa1185609bdceba0",
+      "translation_text_hash": "9a1494bd4005b91632add56bd52bc63967f8e6f35673e2f92642a8c741adc5bc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주는 나를 숨기사 행악자의 비밀한 꾀에서와 죄악을 짓는 자의 요란에서 벗어나게 하소서"
+      ],
+      "raw_text_hashes": [
+        "9a1494bd4005b91632add56bd52bc63967f8e6f35673e2f92642a8c741adc5bc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:64:3",
+      "sequence": 14854,
+      "chapter_label": "PSA 64",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 64,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 64,
+          "verse": 3
+        }
+      ],
+      "en": "who sharpen their tongue like a sword, and aim their arrows, deadly words,",
+      "ko": "저희가 칼 같이 자기 혀를 연마하며 화살 같이 독한 말로 겨누고",
+      "source_text_hash": "0b11d17aefed213d7052bff64a8a877848fe768f386f89d05f95f93cfd430ecc",
+      "translation_text_hash": "4018dce3a1b8889b2e0c309d4b73c3f28e32546df0859c10c101f9e728df77e4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 칼 같이 자기 혀를 연마하며 화살 같이 독한 말로 겨누고"
+      ],
+      "raw_text_hashes": [
+        "4018dce3a1b8889b2e0c309d4b73c3f28e32546df0859c10c101f9e728df77e4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:64:4",
+      "sequence": 14855,
+      "chapter_label": "PSA 64",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 64,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 64,
+          "verse": 4
+        }
+      ],
+      "en": "to shoot innocent men from ambushes. They shoot at him suddenly and fearlessly.",
+      "ko": "숨은 곳에서 완전한 자를 쏘려 하다가 갑자기 쏘고 두려워하지 않도다",
+      "source_text_hash": "757cb15d5bffdfe08d8cdd5a7f9b67faaa8a6fb45d1addcf87326edb3b0ca4e3",
+      "translation_text_hash": "a9670b83e40037e5204a7bc3d73a8684ecfcffa53d60deffd73b02b0b98d8d8b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "숨은 곳에서 완전한 자를 쏘려 하다가 갑자기 쏘고 두려워하지 않도다"
+      ],
+      "raw_text_hashes": [
+        "a9670b83e40037e5204a7bc3d73a8684ecfcffa53d60deffd73b02b0b98d8d8b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:64:5",
+      "sequence": 14856,
+      "chapter_label": "PSA 64",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 64,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 64,
+          "verse": 5
+        }
+      ],
+      "en": "They encourage themselves in evil plans. They talk about laying snares secretly. They say, “Who will see them?”",
+      "ko": "저희는 악한 목적으로 서로 장려하며 비밀히 올무 놓기를 함께 의논하고 하는 말이 누가 보리요 하며",
+      "source_text_hash": "2d254f38e467c8d2200e44b02f4b20bacbd67b000a2f6c6c5249cf729952cb56",
+      "translation_text_hash": "48e31726d3ce351847108357be7fd058787c91b21050505f77744802286b34f0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희는 악한 목적으로 서로 장려하며 비밀히 올무 놓기를 함께 의논하고 하는 말이 누가 보리요 하며"
+      ],
+      "raw_text_hashes": [
+        "48e31726d3ce351847108357be7fd058787c91b21050505f77744802286b34f0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:64:6",
+      "sequence": 14857,
+      "chapter_label": "PSA 64",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 64,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 64,
+          "verse": 6
+        }
+      ],
+      "en": "They plot injustice, saying, “We have made a perfect plan!” Surely man’s mind and heart are cunning.",
+      "ko": "저희는 죄악을 도모하며 이르기를 우리가 묘책을 찾았다 하나니 각 사람의 속 뜻과 마음이 깊도다",
+      "source_text_hash": "1aa27a33e2132979b308019efbaa4df9c216b4fbe51aee3283bb5622f9f68c92",
+      "translation_text_hash": "8f3825b0bde4d2fb526bec3c8086d45263ce98a092bf1c63be4f8039e05130c3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희는 죄악을 도모하며 이르기를 우리가 묘책을 찾았다 하나니 각 사람의 속 뜻과 마음이 깊도다"
+      ],
+      "raw_text_hashes": [
+        "8f3825b0bde4d2fb526bec3c8086d45263ce98a092bf1c63be4f8039e05130c3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:64:7",
+      "sequence": 14858,
+      "chapter_label": "PSA 64",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 64,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 64,
+          "verse": 7
+        }
+      ],
+      "en": "But God will shoot at them. They will be suddenly struck down with an arrow.",
+      "ko": "그러나 하나님이 저희를 쏘시리니 저희가 홀연히 살에 상하리로다",
+      "source_text_hash": "03ff3caaf59e62daed7fbbc2070707be88bfb54c8c4d7023c486b34c091d49f2",
+      "translation_text_hash": "45c29b95340b007a65268e7c1d5b5db4909dc4f1f42ffaff95857373d2ca74cd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 하나님이 저희를 쏘시리니 저희가 홀연히 살에 상하리로다"
+      ],
+      "raw_text_hashes": [
+        "45c29b95340b007a65268e7c1d5b5db4909dc4f1f42ffaff95857373d2ca74cd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:64:8",
+      "sequence": 14859,
+      "chapter_label": "PSA 64",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 64,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 64,
+          "verse": 8
+        }
+      ],
+      "en": "Their own tongues shall ruin them. All who see them will shake their heads.",
+      "ko": "이러므로 저희가 엎드러지리니 저희의 혀가 저희를 해함이라 저희를 보는 자가 다 머리를 흔들리로다",
+      "source_text_hash": "1e0d6f8bb3f3d67eb1e8e9107cac9a37534fa768c5c1176b99a2da042da61144",
+      "translation_text_hash": "b24f52ab8a1e8dfcb9529f287202abb17cc15f1268cb4a185e142f6be4b708c5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러므로 저희가 엎드러지리니 저희의 혀가 저희를 해함이라 저희를 보는 자가 다 머리를 흔들리로다"
+      ],
+      "raw_text_hashes": [
+        "b24f52ab8a1e8dfcb9529f287202abb17cc15f1268cb4a185e142f6be4b708c5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:64:9",
+      "sequence": 14860,
+      "chapter_label": "PSA 64",
+      "verse_label": "9",
+      "locator": {
+        "book": "PSA",
+        "chapter": 64,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 64,
+          "verse": 9
+        }
+      ],
+      "en": "All mankind shall be afraid. They shall declare the work of God, and shall wisely ponder what he has done.",
+      "ko": "모든 사람이 두려워하여 하나님의 일을 선포하며 그 행하심을 깊이 생각하리로다",
+      "source_text_hash": "013e3f2ad2daf6e4febd7ab6141306e32af223e9080e03c0c7adfbab0fb505ad",
+      "translation_text_hash": "66fccf290eb11117ec492bffb669eefd9b47bf42eff7f705871d35798a070f0e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 사람이 두려워하여 하나님의 일을 선포하며 그 행하심을 깊이 생각하리로다"
+      ],
+      "raw_text_hashes": [
+        "66fccf290eb11117ec492bffb669eefd9b47bf42eff7f705871d35798a070f0e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:64:10",
+      "sequence": 14861,
+      "chapter_label": "PSA 64",
+      "verse_label": "10",
+      "locator": {
+        "book": "PSA",
+        "chapter": 64,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 64,
+          "verse": 10
+        }
+      ],
+      "en": "The righteous shall be glad in the LORD, and shall take refuge in him. All the upright in heart shall praise him!",
+      "ko": "의인은 여호와를 인하여 즐거워하며 그에게 피하리니 마음이 정직한 자는 다 자랑하리로다",
+      "source_text_hash": "0e0ad49af497e80d60f1f18c9f516f4a24f31ddfcc1a591a7bf02d84fd7c0ae9",
+      "translation_text_hash": "ab4d886ca93bd33e79f949726825089da0335609852676a24c4af28f46ab8c2d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "의인은 여호와를 인하여 즐거워하며 그에게 피하리니 마음이 정직한 자는 다 자랑하리로다"
+      ],
+      "raw_text_hashes": [
+        "ab4d886ca93bd33e79f949726825089da0335609852676a24c4af28f46ab8c2d"
+      ]
+    }
+  ]
+}

@@ -16,13 +16,18 @@
 # Configuration (environment; every path is the operator's, none is guessed):
 #   PADIEM_COM2_OPS_CHECKOUT     production checkout (required)
 #   PADIEM_COM2_STAGING_CHECKOUT staging checkout to stay apart (default below)
-#   PADIEM_COM2_STATE_DIR        previous-version worktrees (default below)
+#   PADIEM_COM2_STATE_DIR        private execution state (default below)
+#   PADIEM_COM2_PREVIOUS_DIR     root-owned, service-readable rollback worktrees
+#   PADIEM_COM2_CHAT_HEALTH_ATTEMPTS / PADIEM_COM2_CHAT_HEALTH_INTERVAL
+#   PADIEM_COM2_CHAT_HEALTH_TIMEOUT
 #   PADIEM_COM2_CHAT_DB          Chat SQLite file holding the migration ledger
 #   PADIEM_COM2_P01_APP          P01 install root (#6442 releases/rollback)
 #   PADIEM_COM2_B14_APP          B14 app checkout
 #   PADIEM_COM2_SYSTEMCTL        systemctl wrapper
 #   PADIEM_COM2_PYTHON           python3
 #   PADIEM_COM2_GIT              git
+#   B66_CGI_ALPHA_USERNAME / B66_CGI_ALPHA_PASSWORD  existing QA account
+#   PADIEM_COM2_AI_CHECK_BASE_URL  target Chat origin (default https://chat.padiem.net)
 #   COM2_CHAT_HEALTH_URL / COM2_P01_HEALTH_URL / COM2_B14_HEALTH_URL
 set -euo pipefail
 umask 077
@@ -30,6 +35,10 @@ umask 077
 ops_checkout=${PADIEM_COM2_OPS_CHECKOUT:-}
 staging_checkout=${PADIEM_COM2_STAGING_CHECKOUT:-/mnt/d/work/ai-revenue-lab-staging-chat}
 state_dir=${PADIEM_COM2_STATE_DIR:-/var/lib/padiem-com2-deploy}
+previous_dir=${PADIEM_COM2_PREVIOUS_DIR:-/opt/padiem/com2-deploy/previous}
+chat_health_attempts=${PADIEM_COM2_CHAT_HEALTH_ATTEMPTS:-31}
+chat_health_interval=${PADIEM_COM2_CHAT_HEALTH_INTERVAL:-2}
+chat_health_timeout=${PADIEM_COM2_CHAT_HEALTH_TIMEOUT:-60}
 chat_db=${PADIEM_COM2_CHAT_DB:-/mnt/d/padiem/chat-com2/chat.sqlite3}
 p01_root=${PADIEM_COM2_P01_APP:-/opt/padiem/p01}
 b14_app=${PADIEM_COM2_B14_APP:-/opt/padiem/b14/app}
@@ -40,6 +49,8 @@ chat_health_url=${PADIEM_COM2_CHAT_HEALTH_URL:-http://127.0.0.1:8798/health}
 p01_health_url=${PADIEM_COM2_P01_HEALTH_URL:-http://127.0.0.1:8811/internal/v1/health}
 b14_health_url=${PADIEM_COM2_B14_HEALTH_URL:-http://127.0.0.1:8789/health}
 apply=0
+ai_check=warn
+ai_base_url=${PADIEM_COM2_AI_CHECK_BASE_URL:-https://chat.padiem.net}
 requested=''
 resolved=''
 old=''
@@ -54,7 +65,7 @@ say() { printf 'COM2_DEPLOY_%s\n' "$*"; }
 usage() {
   cat >&2 <<'USAGE'
 usage: deploy_from_main.sh <main-sha> [--apply] [--dry-run]
-       [--ops-checkout PATH] [--state-dir PATH] [--chat-db PATH]
+       [--ops-checkout PATH] [--state-dir PATH] [--chat-db PATH] [--ai-check=required|warn]
 USAGE
 }
 
@@ -63,6 +74,8 @@ parse_args() {
     case "$1" in
       --apply) apply=1; shift ;;
       --dry-run) apply=0; shift ;;
+      --ai-check=warn) ai_check=warn; shift ;;
+      --ai-check=required) ai_check=required; shift ;;
       --ops-checkout) ops_checkout=${2:?path required}; shift 2 ;;
       --state-dir) state_dir=${2:?path required}; shift 2 ;;
       --chat-db) chat_db=${2:?path required}; shift 2 ;;
@@ -159,6 +172,53 @@ with_service_stopped() {
   if unit_active "$unit"; then "$systemctl_bin" stop "$unit" || return 1; fi
 }
 
+# Retry the real probe while the listener and app are starting. Every attempt
+# must still pass the full health contract; STATUS=0 is not a success.
+wait_chat_health() {
+  local source=$1 attempt deadline remaining pause
+  [[ $chat_health_attempts =~ ^[1-9][0-9]*$ && $chat_health_interval =~ ^[0-9]+$ && $chat_health_timeout =~ ^[1-9][0-9]*$ ]] || return 1
+  deadline=$((SECONDS + chat_health_timeout))
+  for ((attempt=1; attempt<=chat_health_attempts; attempt++)); do
+    remaining=$((deadline - SECONDS))
+    (( remaining > 0 )) || return 1
+    if timeout "${remaining}s" "$python_bin" "$source/deploy/host-com2/chat/health.py" --url "$chat_health_url"; then
+      return 0
+    fi
+    remaining=$((deadline - SECONDS))
+    (( remaining > 0 )) || return 1
+    if (( attempt < chat_health_attempts )); then
+      pause=$chat_health_interval
+      if (( pause > remaining )); then pause=$remaining; fi
+      sleep "$pause"
+    fi
+  done
+  return 1
+}
+
+# stage_code.sh copies these exact paths into the release selected by app.
+# Compare that actual link target with the requested Git tree. Missing, broken,
+# or unprovable state is not evidence that a deployment can be skipped.
+p01_matches_target() {
+  local actual temp item result=0
+  [[ -L $p01_root/app ]] || return 1
+  actual=$(readlink -f -- "$p01_root/app") || return 1
+  [[ -d $actual ]] || return 1
+  temp=$(mktemp -d) || return 1
+  if ! "$git_bin" -C "$ops_checkout" archive "$resolved" apps/padiem-ai-engine | tar -x -C "$temp"; then
+    rm -rf -- "$temp"
+    return 1
+  fi
+  for item in app clients ingress migrations asgi.py worker.py worker_identity.py; do
+    if ! diff -qr --exclude=__pycache__ --exclude='*.pyc' \
+        "$temp/apps/padiem-ai-engine/$item" "$actual/$item" >/dev/null 2>&1; then
+      result=1
+      break
+    fi
+  done
+  rm -rf -- "$temp"
+  return "$result"
+}
+
 deploy_chat() {
   local before_active=0
   if unit_active "$CHAT_UNIT"; then before_active=1; fi
@@ -167,7 +227,7 @@ deploy_chat() {
     --apply --source-root "$ops_checkout" || return 1
   if (( before_active )); then
     "$systemctl_bin" start "$CHAT_UNIT" || return 1
-    "$python_bin" "$ops_checkout/deploy/host-com2/chat/health.py" --url "$chat_health_url"
+    wait_chat_health "$ops_checkout"
   else
     say 'CHAT_START=SKIPPED_NOT_ACTIVE_BEFORE'
   fi
@@ -203,13 +263,13 @@ deploy_b14() {
 # Chat's live links point into a checkout, so its rollback is the previous
 # checkout itself.
 rollback_chat() {
-  local previous="$state_dir/previous/$old"
+  local previous="$previous_dir/$old"
   [[ -d $previous/deploy/host-com2/chat ]] || { say 'CHAT_ROLLBACK=NO_PREVIOUS_CHECKOUT'; return 1; }
   with_service_stopped "$CHAT_UNIT" || return 1
   bash "$previous/deploy/host-com2/chat/install.sh" \
     --apply --source-root "$previous" || return 1
   "$systemctl_bin" start "$CHAT_UNIT" || return 1
-  "$python_bin" "$previous/deploy/host-com2/chat/health.py" --url "$chat_health_url"
+  wait_chat_health "$previous"
 }
 
 # P01's own installer snapshots the replaced app (#6442); rollback re-points the
@@ -228,7 +288,7 @@ rollback_p01() {
 # restore it; when it is a copy the operator owns the rollback, and the script
 # says so instead of guessing.
 rollback_b14() {
-  local previous="$state_dir/previous/$old/apps/korean-ai-platform"
+  local previous="$previous_dir/$old/apps/korean-ai-platform"
   if [[ -L $b14_app ]]; then
     with_service_stopped "$B14_UNIT" || return 1
     ln -sfnT "$previous" "$b14_app" || return 1
@@ -255,7 +315,13 @@ run_deploy() {
   say "SHA=$resolved"
   say "PREVIOUS=$old"
 
-  if [[ $old == "$resolved" ]]; then
+  if p01_matches_target; then
+    say 'P01_RUNNING_CODE=MATCH'
+  else
+    say 'P01_RUNNING_CODE=DIFF_OR_UNVERIFIABLE'
+    wanted[p01]=1
+  fi
+  if [[ $old == "$resolved" ]] && (( ! wanted[p01] )); then
     say 'NOOP=YES'
     say 'SUMMARY=chat:SKIP p01:SKIP b14:SKIP'
     return 0
@@ -311,20 +377,34 @@ run_deploy() {
     fail CHECKOUT_DIRTY
   fi
 
-  mkdir -p -- "$state_dir/previous" || fail STATE_DIR_UNWRITABLE
-  if [[ ! -d $state_dir/previous/$old ]]; then
-    "$git_bin" -C "$ops_checkout" worktree add --detach --quiet \
-      "$state_dir/previous/$old" "$old" || fail PREVIOUS_CHECKOUT_FAILED
+  # Rollback sources must be traversable by the service but not writable by it.
+  [[ ! -L $previous_dir && ! -L $previous_dir/$old ]] || fail PREVIOUS_CHECKOUT_INVALID
+  install -d -m 0755 -- "$previous_dir" || fail PREVIOUS_DIR_UNWRITABLE
+  if [[ ! -d $previous_dir/$old ]]; then
+    (umask 022; "$git_bin" -C "$ops_checkout" worktree add --detach --quiet \
+      "$previous_dir/$old" "$old") || fail PREVIOUS_CHECKOUT_FAILED
   fi
-  say "PREVIOUS_CHECKOUT=$state_dir/previous/$old"
+  if [[ ${EUID} -eq 0 ]]; then
+    chown root:root "$previous_dir" || fail PREVIOUS_CHECKOUT_FAILED
+    chown -R root:root "$previous_dir/$old" || fail PREVIOUS_CHECKOUT_FAILED
+  fi
+  find "$previous_dir/$old" -type d -exec chmod a+rx,go-w {} + || fail PREVIOUS_CHECKOUT_FAILED
+  find "$previous_dir/$old" -type f -exec chmod a+r,go-w {} + || fail PREVIOUS_CHECKOUT_FAILED
+  say "PREVIOUS_CHECKOUT=$previous_dir/$old"
 
   "$git_bin" -C "$ops_checkout" checkout --detach --quiet "$resolved" \
     || fail CHECKOUT_MOVE_FAILED
   say "CHECKOUT=$ops_checkout"
 
-  local failed=0
+  local failed=0 ai_status=SKIP ai_code=none ai_output
+  declare -A was_active=([chat]=0 [p01]=0 [b14]=0)
   for line in chat p01 b14; do
     if (( ! wanted[$line] )); then continue; fi
+    case "$line" in
+      chat) if unit_active "$CHAT_UNIT"; then was_active[chat]=1; fi ;;
+      p01) if unit_active "$P01_UNIT"; then was_active[p01]=1; fi ;;
+      b14) if unit_active "$B14_UNIT"; then was_active[b14]=1; fi ;;
+    esac
     if "deploy_$line"; then
       result[$line]=PASS
     elif "rollback_$line"; then
@@ -336,7 +416,33 @@ run_deploy() {
     fi
   done
 
-  say "SUMMARY=chat:${result[chat]} p01:${result[p01]} b14:${result[b14]}"
+  if (( ! failed )); then
+    ai_status=FAIL
+    ai_code=ai_check_unavailable
+    if ai_output=$("$python_bin" "$ops_checkout/.github/scripts/post_deploy_ai_answer_check.py" --base-url "$ai_base_url" 2>/dev/null); then
+      if [[ $ai_output == 'ai:PASS' ]]; then ai_status=PASS; ai_code=none; fi
+    elif [[ $ai_output =~ ^ai:FAIL\ error_code=([a-z][a-z0-9_]{0,80})$ ]]; then
+      ai_code=${BASH_REMATCH[1]}
+    fi
+    if [[ $ai_status == FAIL && $ai_check == required ]]; then
+      failed=1
+      for line in b14 p01 chat; do
+        [[ ${result[$line]} == PASS ]] || continue
+        if (( ! was_active[$line] )); then
+          result[$line]=ROLLBACK_REQUIRED
+        elif "rollback_$line"; then
+          result[$line]=ROLLBACK
+        else
+          result[$line]=ROLLBACK_FAILED
+        fi
+      done
+    fi
+  fi
+  if [[ $ai_status == FAIL ]]; then
+    say "SUMMARY=chat:${result[chat]} p01:${result[p01]} b14:${result[b14]} ai:FAIL error_code=$ai_code"
+  else
+    say "SUMMARY=chat:${result[chat]} p01:${result[p01]} b14:${result[b14]} ai:$ai_status"
+  fi
   if (( failed )); then exit 1; fi
   return 0
 }

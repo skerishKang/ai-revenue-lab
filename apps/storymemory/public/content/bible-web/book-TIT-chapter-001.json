@@ -1,0 +1,525 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:TIT:chapter:001",
+  "unit_ordinal": 1130,
+  "unit_label": "TIT 1",
+  "book_code": "TIT",
+  "chapter_number": 1,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:TIT:1:1",
+      "sequence": 29890,
+      "chapter_label": "TIT 1",
+      "verse_label": "1",
+      "locator": {
+        "book": "TIT",
+        "chapter": 1,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "TIT",
+          "chapter": 1,
+          "verse": 1
+        }
+      ],
+      "en": "Paul, a servant of God and an apostle of Jesus Christ, according to the faith of God’s chosen ones and the knowledge of the truth which is according to godliness,",
+      "ko": "하나님의 종이요 예수 그리스도의 사도인 바울 곧 나의 사도 된 것은 하나님의 택하신 자들의 믿음과 경건함에 속한 진리의 지식과",
+      "source_text_hash": "536e7da2d946e5faa7d431bbbd271d745e5b366c0e30d7955fec85f51d3134fd",
+      "translation_text_hash": "42cd550a841838dec7bd56a8ae8515174836096dce40125ac462452da0fef31e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님의 종이요 예수 그리스도의 사도인 바울 곧 나의 사도 된 것은 하나님의 택하신 자들의 믿음과 경건함에 속한 진리의 지식과"
+      ],
+      "raw_text_hashes": [
+        "42cd550a841838dec7bd56a8ae8515174836096dce40125ac462452da0fef31e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:TIT:1:2",
+      "sequence": 29891,
+      "chapter_label": "TIT 1",
+      "verse_label": "2",
+      "locator": {
+        "book": "TIT",
+        "chapter": 1,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "TIT",
+          "chapter": 1,
+          "verse": 2
+        }
+      ],
+      "en": "in hope of eternal life, which God, who can’t lie, promised before time began;",
+      "ko": "영생의 소망을 인함이라 이 영생은 거짓이 없으신 하나님이 영원한 때 전부터 약속하신 것인데",
+      "source_text_hash": "c55a0c8fd9918bbbef2b971940e238f5dce0aa2a2a0805346312616393e834e6",
+      "translation_text_hash": "efc70716831d1541a23d9baf9e1b25d26fb016d1f0e3da4731c5738a00f07e4a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "영생의 소망을 인함이라 이 영생은 거짓이 없으신 하나님이 영원한 때 전부터 약속하신 것인데"
+      ],
+      "raw_text_hashes": [
+        "efc70716831d1541a23d9baf9e1b25d26fb016d1f0e3da4731c5738a00f07e4a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:TIT:1:3",
+      "sequence": 29892,
+      "chapter_label": "TIT 1",
+      "verse_label": "3",
+      "locator": {
+        "book": "TIT",
+        "chapter": 1,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "TIT",
+          "chapter": 1,
+          "verse": 3
+        }
+      ],
+      "en": "but in his own time revealed his word in the message with which I was entrusted according to the commandment of God our Savior,",
+      "ko": "자기 때에 자기의 말씀을 전도로 나타내셨으니 이 전도는 우리 구주 하나님의 명대로 내게 맡기신 것이라",
+      "source_text_hash": "dd9a419b848ddfc596217e37082096c28630f98c0dab57e6eb1831fb4daafba4",
+      "translation_text_hash": "4efc076c00d1cb28eb916f0452de874a1cc28ca5f5758de8d3edeb20e07a3f40",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자기 때에 자기의 말씀을 전도로 나타내셨으니 이 전도는 우리 구주 하나님의 명대로 내게 맡기신 것이라"
+      ],
+      "raw_text_hashes": [
+        "4efc076c00d1cb28eb916f0452de874a1cc28ca5f5758de8d3edeb20e07a3f40"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:TIT:1:4",
+      "sequence": 29893,
+      "chapter_label": "TIT 1",
+      "verse_label": "4",
+      "locator": {
+        "book": "TIT",
+        "chapter": 1,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "TIT",
+          "chapter": 1,
+          "verse": 4
+        }
+      ],
+      "en": "to Titus, my true child according to a common faith: Grace, mercy, and peace from God the Father and the Lord Jesus Christ our Savior.",
+      "ko": "같은 믿음을 따라 된 나의 참 아들 디도에게 편지하노니 하나님 아버지와 그리스도 예수 우리 구주로 좇아 은혜와 평강이 네게 있을찌어다",
+      "source_text_hash": "58bde1707b01243276906ad9cc939e2ddeea682637f7c7a4de6efee785b47f9e",
+      "translation_text_hash": "3466d634e15ea5f4b596106ce8cede00928b68e68e39dbf34f97a37544f596e7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "같은 믿음을 따라 된 나의 참 아들 디도에게 편지하노니 하나님 아버지와 그리스도 예수 우리 구주로 좇아 은혜와 평강이 네게 있을찌어다"
+      ],
+      "raw_text_hashes": [
+        "3466d634e15ea5f4b596106ce8cede00928b68e68e39dbf34f97a37544f596e7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:TIT:1:5",
+      "sequence": 29894,
+      "chapter_label": "TIT 1",
+      "verse_label": "5",
+      "locator": {
+        "book": "TIT",
+        "chapter": 1,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "TIT",
+          "chapter": 1,
+          "verse": 5
+        }
+      ],
+      "en": "I left you in Crete for this reason, that you would set in order the things that were lacking and appoint elders in every city, as I directed you—",
+      "ko": "내가 너를 그레데에 떨어뜨려 둔 이유는 부족한 일을 바로잡고 나의 명한대로 각 성에 장로들을 세우게 하려 함이니",
+      "source_text_hash": "6eba14436de2ae15b7bd15b31147d003cebf240bd7e2c69c98a580b57d7b641e",
+      "translation_text_hash": "6bf1272685cd0d586f48b857d26fb878b6e5920b74f1f452180eb440932b49e4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너를 그레데에 떨어뜨려 둔 이유는 부족한 일을 바로잡고 나의 명한대로 각 성에 장로들을 세우게 하려 함이니"
+      ],
+      "raw_text_hashes": [
+        "6bf1272685cd0d586f48b857d26fb878b6e5920b74f1f452180eb440932b49e4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:TIT:1:6",
+      "sequence": 29895,
+      "chapter_label": "TIT 1",
+      "verse_label": "6",
+      "locator": {
+        "book": "TIT",
+        "chapter": 1,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "TIT",
+          "chapter": 1,
+          "verse": 6
+        }
+      ],
+      "en": "if anyone is blameless, the husband of one wife, having children who believe, who are not accused of loose or unruly behavior.",
+      "ko": "책망할 것이 없고 한 아내의 남편이며 방탕하다 하는 비방이나 불순종하는 일이 없는 믿는 자녀를 둔 자라야 할찌라",
+      "source_text_hash": "494e674bbfc9bc7a64fdf9901a1d011a6e0db89a41a40f964af20bf45249ece8",
+      "translation_text_hash": "d33557bc5b1ef000b1695579d2556ef2882310105037cadc358a62750c16be9f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "책망할 것이 없고 한 아내의 남편이며 방탕하다 하는 비방이나 불순종하는 일이 없는 믿는 자녀를 둔 자라야 할찌라"
+      ],
+      "raw_text_hashes": [
+        "d33557bc5b1ef000b1695579d2556ef2882310105037cadc358a62750c16be9f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:TIT:1:7",
+      "sequence": 29896,
+      "chapter_label": "TIT 1",
+      "verse_label": "7",
+      "locator": {
+        "book": "TIT",
+        "chapter": 1,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "TIT",
+          "chapter": 1,
+          "verse": 7
+        }
+      ],
+      "en": "For the overseer must be blameless, as God’s steward, not self-pleasing, not easily angered, not given to wine, not violent, not greedy for dishonest gain;",
+      "ko": "감독은 하나님의 청지기로서 책망할 것이 없고 제 고집대로 하지 아니하며 급히 분내지 아니하며 술을 즐기지 아니하며 구타하지 아니하며 더러운 이를 탐하지 아니하며",
+      "source_text_hash": "06b502de757fbae7d182e555c69f4dff78733b5600d7ae44897b8ff766eb874d",
+      "translation_text_hash": "59d7467d705d359f217e2ae95d9ed81871d65539406e2772dd42bf22391b86ae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "감독은 하나님의 청지기로서 책망할 것이 없고 제 고집대로 하지 아니하며 급히 분내지 아니하며 술을 즐기지 아니하며 구타하지 아니하며 더러운 이를 탐하지 아니하며"
+      ],
+      "raw_text_hashes": [
+        "59d7467d705d359f217e2ae95d9ed81871d65539406e2772dd42bf22391b86ae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:TIT:1:8",
+      "sequence": 29897,
+      "chapter_label": "TIT 1",
+      "verse_label": "8",
+      "locator": {
+        "book": "TIT",
+        "chapter": 1,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "TIT",
+          "chapter": 1,
+          "verse": 8
+        }
+      ],
+      "en": "but given to hospitality, a lover of good, sober minded, fair, holy, self-controlled,",
+      "ko": "오직 나그네를 대접하며 선을 좋아하며 근신하며 의로우며 거룩하며 절제하며",
+      "source_text_hash": "4b77de32c6086d67b76e5ef5ef80981814fa1ea1bf14104aeb0541630ba9a977",
+      "translation_text_hash": "dc819c5af1df3aef31e7661ba2e38f3f26f05308b4a2cfda5fdf7daf18f36359",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 나그네를 대접하며 선을 좋아하며 근신하며 의로우며 거룩하며 절제하며"
+      ],
+      "raw_text_hashes": [
+        "dc819c5af1df3aef31e7661ba2e38f3f26f05308b4a2cfda5fdf7daf18f36359"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:TIT:1:9",
+      "sequence": 29898,
+      "chapter_label": "TIT 1",
+      "verse_label": "9",
+      "locator": {
+        "book": "TIT",
+        "chapter": 1,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "TIT",
+          "chapter": 1,
+          "verse": 9
+        }
+      ],
+      "en": "holding to the faithful word which is according to the teaching, that he may be able to exhort in the sound doctrine, and to convict those who contradict him.",
+      "ko": "미쁜 말씀의 가르침을 그대로 지켜야 하리니 이는 능히 바른 교훈으로 권면하고 거스려 말하는 자들을 책망하게 하려 함이라",
+      "source_text_hash": "b15cf4d49f43a97f4cd4d975d8c1c61094d04530be0853efda6b8a138684ec89",
+      "translation_text_hash": "8cb6c38569d39a7fadcc1067a9334de6daa68a1b04db4e6360fbcdd3efa79999",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "미쁜 말씀의 가르침을 그대로 지켜야 하리니 이는 능히 바른 교훈으로 권면하고 거스려 말하는 자들을 책망하게 하려 함이라"
+      ],
+      "raw_text_hashes": [
+        "8cb6c38569d39a7fadcc1067a9334de6daa68a1b04db4e6360fbcdd3efa79999"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:TIT:1:10",
+      "sequence": 29899,
+      "chapter_label": "TIT 1",
+      "verse_label": "10",
+      "locator": {
+        "book": "TIT",
+        "chapter": 1,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "TIT",
+          "chapter": 1,
+          "verse": 10
+        }
+      ],
+      "en": "For there are also many unruly men, vain talkers and deceivers, especially those of the circumcision,",
+      "ko": "복종치 아니하고 헛된 말을 하며 속이는 자가 많은 중 특별히 할례당 가운데 심하니",
+      "source_text_hash": "446b75dfc6a759015ee4e1d5a44cd074f1926a5bac48e30e1c8239f8d5b71fb2",
+      "translation_text_hash": "21354cca3e5d5ff4d5c2bf644e7ecf9d8150678422cc6211a53ad7d276ecc376",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "복종치 아니하고 헛된 말을 하며 속이는 자가 많은 중 특별히 할례당 가운데 심하니"
+      ],
+      "raw_text_hashes": [
+        "21354cca3e5d5ff4d5c2bf644e7ecf9d8150678422cc6211a53ad7d276ecc376"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:TIT:1:11",
+      "sequence": 29900,
+      "chapter_label": "TIT 1",
+      "verse_label": "11",
+      "locator": {
+        "book": "TIT",
+        "chapter": 1,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "TIT",
+          "chapter": 1,
+          "verse": 11
+        }
+      ],
+      "en": "whose mouths must be stopped: men who overthrow whole houses, teaching things which they ought not, for dishonest gain’s sake.",
+      "ko": "저희의 입을 막을 것이라 이런 자들이 더러운 이를 취하려고 마땅치 아니한 것을 가르쳐 집들을 온통 엎드러치는도다",
+      "source_text_hash": "084df4ebfaefe8cba8186f97bf93d3f4b331a00be194152454e6933b36d27973",
+      "translation_text_hash": "9393d044dc96362760e994a3854df92210e21edf11b3a0fd917ca42be1505b9a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희의 입을 막을 것이라 이런 자들이 더러운 이를 취하려고 마땅치 아니한 것을 가르쳐 집들을 온통 엎드러치는도다"
+      ],
+      "raw_text_hashes": [
+        "9393d044dc96362760e994a3854df92210e21edf11b3a0fd917ca42be1505b9a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:TIT:1:12",
+      "sequence": 29901,
+      "chapter_label": "TIT 1",
+      "verse_label": "12",
+      "locator": {
+        "book": "TIT",
+        "chapter": 1,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "TIT",
+          "chapter": 1,
+          "verse": 12
+        }
+      ],
+      "en": "One of them, a prophet of their own, said, “Cretans are always liars, evil beasts, and idle gluttons.”",
+      "ko": "그레데인 중에 어떤 선지자가 말하되 그레데인들은 항상 거짓말장이며 악한 짐승이며 배만 위하는 게으름장이라 하니",
+      "source_text_hash": "1d6fb04b97795638eb287e0ebd519d468f94753494d0371d6d7c58c39810ab80",
+      "translation_text_hash": "83d5ef1db95eab5b418150a7e314893cec43399b2cd38310c2ec1d39424ab759",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그레데인 중에 어떤 선지자가 말하되 그레데인들은 항상 거짓말장이며 악한 짐승이며 배만 위하는 게으름장이라 하니"
+      ],
+      "raw_text_hashes": [
+        "83d5ef1db95eab5b418150a7e314893cec43399b2cd38310c2ec1d39424ab759"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:TIT:1:13",
+      "sequence": 29902,
+      "chapter_label": "TIT 1",
+      "verse_label": "13",
+      "locator": {
+        "book": "TIT",
+        "chapter": 1,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "TIT",
+          "chapter": 1,
+          "verse": 13
+        }
+      ],
+      "en": "This testimony is true. For this cause, reprove them sharply, that they may be sound in the faith,",
+      "ko": "이 증거가 참되도다 그러므로 네가 저희를 엄히 꾸짖으라 이는 저희로 하여금 믿음을 온전케 하고",
+      "source_text_hash": "f09c8f343132500cbe44e23791417e3a64e7eaf1a6a05564933694cee908f3e9",
+      "translation_text_hash": "1f0cd902b9e9f38696a3b484900f4d031e97e7a466877a150f45d61d1f5b11c4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 증거가 참되도다 그러므로 네가 저희를 엄히 꾸짖으라 이는 저희로 하여금 믿음을 온전케 하고"
+      ],
+      "raw_text_hashes": [
+        "1f0cd902b9e9f38696a3b484900f4d031e97e7a466877a150f45d61d1f5b11c4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:TIT:1:14",
+      "sequence": 29903,
+      "chapter_label": "TIT 1",
+      "verse_label": "14",
+      "locator": {
+        "book": "TIT",
+        "chapter": 1,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "TIT",
+          "chapter": 1,
+          "verse": 14
+        }
+      ],
+      "en": "not paying attention to Jewish fables and commandments of men who turn away from the truth.",
+      "ko": "유대인의 허탄한 이야기와 진리를 배반하는 사람들의 명령을 좇지 않게 하려 함이라",
+      "source_text_hash": "d007ba551e6c1d7b13b1dac803ee962576bf29400942fe1cca67e9e152b3f2f2",
+      "translation_text_hash": "6879fc404293c2b5fb825582034f616ed3842ebfedfa332c074d41d12c451982",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유대인의 허탄한 이야기와 진리를 배반하는 사람들의 명령을 좇지 않게 하려 함이라"
+      ],
+      "raw_text_hashes": [
+        "6879fc404293c2b5fb825582034f616ed3842ebfedfa332c074d41d12c451982"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:TIT:1:15",
+      "sequence": 29904,
+      "chapter_label": "TIT 1",
+      "verse_label": "15",
+      "locator": {
+        "book": "TIT",
+        "chapter": 1,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "TIT",
+          "chapter": 1,
+          "verse": 15
+        }
+      ],
+      "en": "To the pure, all things are pure, but to those who are defiled and unbelieving, nothing is pure; but both their mind and their conscience are defiled.",
+      "ko": "깨끗한 자들에게는 모든 것이 깨끗하나 더럽고 믿지 아니하는 자들에게는 아무 것도 깨끗한 것이 없고 오직 저희 마음과 양심이 더러운지라",
+      "source_text_hash": "46cee9d38b2ccbc83ad2f14b3f2eeded6bbd69ed03e0543dadb062e54148ed48",
+      "translation_text_hash": "6a552a3f09826a9e56557d738154ea3f5f7afc1b285ee36fa4118601ffc6805a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "깨끗한 자들에게는 모든 것이 깨끗하나 더럽고 믿지 아니하는 자들에게는 아무 것도 깨끗한 것이 없고 오직 저희 마음과 양심이 더러운지라"
+      ],
+      "raw_text_hashes": [
+        "6a552a3f09826a9e56557d738154ea3f5f7afc1b285ee36fa4118601ffc6805a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:TIT:1:16",
+      "sequence": 29905,
+      "chapter_label": "TIT 1",
+      "verse_label": "16",
+      "locator": {
+        "book": "TIT",
+        "chapter": 1,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "TIT",
+          "chapter": 1,
+          "verse": 16
+        }
+      ],
+      "en": "They profess that they know God, but by their deeds they deny him, being abominable, disobedient, and unfit for any good work.",
+      "ko": "저희가 하나님을 시인하나 행위로는 부인하니 가증한 자요 복종치 아니하는 자요 모든 선한 일을 버리는 자니라",
+      "source_text_hash": "4f038b4a282950bf048837b2124423c8cc45a5ee522f9c7687eec046ebf853db",
+      "translation_text_hash": "53aa9bb4625787259170d5e50c2c3df87cc95a726fe4dbbb5a7a2083d8011909",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 하나님을 시인하나 행위로는 부인하니 가증한 자요 복종치 아니하는 자요 모든 선한 일을 버리는 자니라"
+      ],
+      "raw_text_hashes": [
+        "53aa9bb4625787259170d5e50c2c3df87cc95a726fe4dbbb5a7a2083d8011909"
+      ]
+    }
+  ]
+}

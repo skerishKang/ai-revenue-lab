@@ -1,0 +1,1293 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1CO:chapter:007",
+  "unit_ordinal": 1069,
+  "unit_label": "1CO 7",
+  "book_code": "1CO",
+  "chapter_number": 7,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1CO:7:1",
+      "sequence": 28485,
+      "chapter_label": "1CO 7",
+      "verse_label": "1",
+      "locator": {
+        "book": "1CO",
+        "chapter": 7,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 7,
+          "verse": 1
+        }
+      ],
+      "en": "Now concerning the things about which you wrote to me: it is good for a man not to touch a woman.",
+      "ko": "너희의 쓴 말에 대하여는 남자가 여자를 가까이 아니함이 좋으나",
+      "source_text_hash": "53f072a6f0046c6e189cd98201a900564b6f75409f7ad7e6010273bfe1880e8b",
+      "translation_text_hash": "336b58f7c707ea9b81c36d8776258053256b19907c12cd989ff4fc7b85eda891",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희의 쓴 말에 대하여는 남자가 여자를 가까이 아니함이 좋으나"
+      ],
+      "raw_text_hashes": [
+        "336b58f7c707ea9b81c36d8776258053256b19907c12cd989ff4fc7b85eda891"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:7:2",
+      "sequence": 28486,
+      "chapter_label": "1CO 7",
+      "verse_label": "2",
+      "locator": {
+        "book": "1CO",
+        "chapter": 7,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 7,
+          "verse": 2
+        }
+      ],
+      "en": "But, because of sexual immoralities, let each man have his own wife, and let each woman have her own husband.",
+      "ko": "음행의 연고로 남자마다 자기 아내를 두고 여자마다 자기 남편을 두라",
+      "source_text_hash": "99f58f76bd2def5ab53717451b36047b81ae9bbcb4ba1d3ba47e2de177fe2914",
+      "translation_text_hash": "3b4f76a2f9f70b0749d2ed4a8540f53a28bc3b7dd3d584610933aedb5c692c31",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "음행의 연고로 남자마다 자기 아내를 두고 여자마다 자기 남편을 두라"
+      ],
+      "raw_text_hashes": [
+        "3b4f76a2f9f70b0749d2ed4a8540f53a28bc3b7dd3d584610933aedb5c692c31"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:7:3",
+      "sequence": 28487,
+      "chapter_label": "1CO 7",
+      "verse_label": "3",
+      "locator": {
+        "book": "1CO",
+        "chapter": 7,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 7,
+          "verse": 3
+        }
+      ],
+      "en": "Let the husband give his wife the affection owed her, and likewise also the wife her husband.",
+      "ko": "남편은 그 아내에게 대한 의무를 다하고 아내도 그 남편에게 그렇게 할찌라",
+      "source_text_hash": "3ba59efcc8acddc6399299e31b71256664810d50d848f27dfcb32016df0e47f3",
+      "translation_text_hash": "b35ca38f440470450caa03deba357dc24b63e2a672e68aa46ae0a08b6a83bbe8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "남편은 그 아내에게 대한 의무를 다하고 아내도 그 남편에게 그렇게 할찌라"
+      ],
+      "raw_text_hashes": [
+        "b35ca38f440470450caa03deba357dc24b63e2a672e68aa46ae0a08b6a83bbe8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:7:4",
+      "sequence": 28488,
+      "chapter_label": "1CO 7",
+      "verse_label": "4",
+      "locator": {
+        "book": "1CO",
+        "chapter": 7,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 7,
+          "verse": 4
+        }
+      ],
+      "en": "The wife doesn’t have authority over her own body, but the husband does. Likewise also the husband doesn’t have authority over his own body, but the wife does.",
+      "ko": "아내가 자기 몸을 주장하지 못하고 오직 그 남편이 하며 남편도 이와 같이 자기 몸을 주장하지 못하고 오직 그 아내가 하나니",
+      "source_text_hash": "12af3a8e511716611a59e159918c6017b621af26b520ef6a373b81635815e854",
+      "translation_text_hash": "9394d888256ef0cf9c1d8aa4616bb07861d28ec29d5a63f6864c941b2347ae80",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아내가 자기 몸을 주장하지 못하고 오직 그 남편이 하며 남편도 이와 같이 자기 몸을 주장하지 못하고 오직 그 아내가 하나니"
+      ],
+      "raw_text_hashes": [
+        "9394d888256ef0cf9c1d8aa4616bb07861d28ec29d5a63f6864c941b2347ae80"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:7:5",
+      "sequence": 28489,
+      "chapter_label": "1CO 7",
+      "verse_label": "5",
+      "locator": {
+        "book": "1CO",
+        "chapter": 7,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 7,
+          "verse": 5
+        }
+      ],
+      "en": "Don’t deprive one another, unless it is by consent for a season, that you may give yourselves to fasting and prayer, and may be together again, that Satan doesn’t tempt you because of your lack of self-control.",
+      "ko": "서로 분방하지 말라 다만 기도할 틈을 얻기 위하여 합의상 얼마 동안은 하되 다시 합하라 이는 너희의 절제 못함을 인하여 사단으로 너희를 시험하지 못하게 하려 함이라",
+      "source_text_hash": "8aac696144aa65c44029132d05f2240b500d96a8465523435814368fb313937e",
+      "translation_text_hash": "dd6396841931def3f9ddea7f3a4df4e56f7c11551a4fe27fc520e9ce4cb060d1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "서로 분방하지 말라 다만 기도할 틈을 얻기 위하여 합의상 얼마 동안은 하되 다시 합하라 이는 너희의 절제 못함을 인하여 사단으로 너희를 시험하지 못하게 하려 함이라"
+      ],
+      "raw_text_hashes": [
+        "dd6396841931def3f9ddea7f3a4df4e56f7c11551a4fe27fc520e9ce4cb060d1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:7:6",
+      "sequence": 28490,
+      "chapter_label": "1CO 7",
+      "verse_label": "6",
+      "locator": {
+        "book": "1CO",
+        "chapter": 7,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 7,
+          "verse": 6
+        }
+      ],
+      "en": "But this I say by way of concession, not of commandment.",
+      "ko": "그러나 내가 이 말을 함은 권도요 명령은 아니라",
+      "source_text_hash": "9635c361f5179be4e441e04e45e9adba657da7389d8e056035178133efdb0732",
+      "translation_text_hash": "8fd0dd2941889473f1f4af6ae20a5942df3bf5a8deff76fb27ed76be50453f8b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 내가 이 말을 함은 권도요 명령은 아니라"
+      ],
+      "raw_text_hashes": [
+        "8fd0dd2941889473f1f4af6ae20a5942df3bf5a8deff76fb27ed76be50453f8b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:7:7",
+      "sequence": 28491,
+      "chapter_label": "1CO 7",
+      "verse_label": "7",
+      "locator": {
+        "book": "1CO",
+        "chapter": 7,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 7,
+          "verse": 7
+        }
+      ],
+      "en": "Yet I wish that all men were like me. However, each man has his own gift from God, one of this kind, and another of that kind.",
+      "ko": "나는 모든 사람이 나와 같기를 원하노라 그러나 각각 하나님께 받은 자기의 은사가 있으니 하나는 이러하고 하나는 저러하니라",
+      "source_text_hash": "defa191a9b063936f07e3da0fa61fc48ec7ce738e3ee635385eb9d90898cfedc",
+      "translation_text_hash": "77c9efab205c40648abe65718a96d2380eb171d3b1fbc854e5080fa9f9b23fe3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 모든 사람이 나와 같기를 원하노라 그러나 각각 하나님께 받은 자기의 은사가 있으니 하나는 이러하고 하나는 저러하니라"
+      ],
+      "raw_text_hashes": [
+        "77c9efab205c40648abe65718a96d2380eb171d3b1fbc854e5080fa9f9b23fe3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:7:8",
+      "sequence": 28492,
+      "chapter_label": "1CO 7",
+      "verse_label": "8",
+      "locator": {
+        "book": "1CO",
+        "chapter": 7,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 7,
+          "verse": 8
+        }
+      ],
+      "en": "But I say to the unmarried and to widows, it is good for them if they remain even as I am.",
+      "ko": "내가 혼인하지 아니한 자들과 및 과부들에게 이르노니 나와 같이 그냥 지내는 것이 좋으니라",
+      "source_text_hash": "74416b1258567f0d033fb7764a8bd2268fcab8b222ad723746609d261da09cd9",
+      "translation_text_hash": "ff939abef55b91885dd772c67d0c9f1bc9680b4fb34af5be89923b6b0f477a79",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 혼인하지 아니한 자들과 및 과부들에게 이르노니 나와 같이 그냥 지내는 것이 좋으니라"
+      ],
+      "raw_text_hashes": [
+        "ff939abef55b91885dd772c67d0c9f1bc9680b4fb34af5be89923b6b0f477a79"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:7:9",
+      "sequence": 28493,
+      "chapter_label": "1CO 7",
+      "verse_label": "9",
+      "locator": {
+        "book": "1CO",
+        "chapter": 7,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 7,
+          "verse": 9
+        }
+      ],
+      "en": "But if they don’t have self-control, let them marry. For it’s better to marry than to burn with passion.",
+      "ko": "만일 절제할 수 없거든 혼인하라 정욕이 불같이 타는 것보다 혼인하는 것이 나으니라",
+      "source_text_hash": "d04ac2dffb3884d2c3a8215232d5dd0a7b5b75a4e1a6da6a15ddd222744133e0",
+      "translation_text_hash": "dd418801de4159987e1d3239be8a009cd06871b4e7b6a80cf50e0ffa539ee634",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 절제할 수 없거든 혼인하라 정욕이 불같이 타는 것보다 혼인하는 것이 나으니라"
+      ],
+      "raw_text_hashes": [
+        "dd418801de4159987e1d3239be8a009cd06871b4e7b6a80cf50e0ffa539ee634"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:7:10",
+      "sequence": 28494,
+      "chapter_label": "1CO 7",
+      "verse_label": "10",
+      "locator": {
+        "book": "1CO",
+        "chapter": 7,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 7,
+          "verse": 10
+        }
+      ],
+      "en": "But to the married I command—not I, but the Lord—that the wife not leave her husband",
+      "ko": "혼인한 자들에게 내가 명하노니 (명하는 자는 내가 아니요 주시라) 여자는 남편에게서 갈리지 말고",
+      "source_text_hash": "8303759af1b7b6d1772c670c8a9ee35ee32c7aa9adfe3b612beecb62a41d0742",
+      "translation_text_hash": "13f7e469d37a2266b4c8af0daac466904a0c36220f809554079ae3d9ed7188ca",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "혼인한 자들에게 내가 명하노니 (명하는 자는 내가 아니요 주시라) 여자는 남편에게서 갈리지 말고"
+      ],
+      "raw_text_hashes": [
+        "13f7e469d37a2266b4c8af0daac466904a0c36220f809554079ae3d9ed7188ca"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:7:11",
+      "sequence": 28495,
+      "chapter_label": "1CO 7",
+      "verse_label": "11",
+      "locator": {
+        "book": "1CO",
+        "chapter": 7,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 7,
+          "verse": 11
+        }
+      ],
+      "en": "(but if she departs, let her remain unmarried, or else be reconciled to her husband), and that the husband not leave his wife.",
+      "ko": "(만일 갈릴찌라도 그냥 지내든지 다시 그 남편과 화합하든지 하라) 남편도 아내를 버리지 말라",
+      "source_text_hash": "2b9a597f4cb74b97d281958f39e0628e46d3198635c04a66a07497db8f339a9b",
+      "translation_text_hash": "64e057088130733026b54ee4fed917c129b7f54113b2ed67a56edcb8ff7e7215",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "(만일 갈릴찌라도 그냥 지내든지 다시 그 남편과 화합하든지 하라) 남편도 아내를 버리지 말라"
+      ],
+      "raw_text_hashes": [
+        "64e057088130733026b54ee4fed917c129b7f54113b2ed67a56edcb8ff7e7215"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:7:12",
+      "sequence": 28496,
+      "chapter_label": "1CO 7",
+      "verse_label": "12",
+      "locator": {
+        "book": "1CO",
+        "chapter": 7,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 7,
+          "verse": 12
+        }
+      ],
+      "en": "But to the rest I—not the Lord—say, if any brother has an unbelieving wife, and she is content to live with him, let him not leave her.",
+      "ko": "그 남은 사람들에게 내가 말하노니 (이는 주의 명령이 아니라) 만일 어떤 형제에게 믿지 아니하는 아내가 있어 남편과 함께 살기를 좋아하거든 저를 버리지 말며",
+      "source_text_hash": "126d54693ad2102c5937b7c74262dd302210a50da4bf96aaf3f3973d007b2986",
+      "translation_text_hash": "d3baffd03ed4e5c7f54371b6ff07fcfea4e707692b70461e31e522bdf91d6fca",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 남은 사람들에게 내가 말하노니 (이는 주의 명령이 아니라) 만일 어떤 형제에게 믿지 아니하는 아내가 있어 남편과 함께 살기를 좋아하거든 저를 버리지 말며"
+      ],
+      "raw_text_hashes": [
+        "d3baffd03ed4e5c7f54371b6ff07fcfea4e707692b70461e31e522bdf91d6fca"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:7:13",
+      "sequence": 28497,
+      "chapter_label": "1CO 7",
+      "verse_label": "13",
+      "locator": {
+        "book": "1CO",
+        "chapter": 7,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 7,
+          "verse": 13
+        }
+      ],
+      "en": "The woman who has an unbelieving husband, and he is content to live with her, let her not leave her husband.",
+      "ko": "어떤 여자에게 믿지 아니하는 남편이 있어 아내와 함께 살기를 좋아하거든 그 남편을 버리지 말라",
+      "source_text_hash": "7eba4ac4b8ee3e43438965ab13390d3f76d1ec8fd989ab70b1af96a61da663f4",
+      "translation_text_hash": "674345dad57ed82d91fb8507e168a644adb0de8fa04c76331d355445489c0b39",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어떤 여자에게 믿지 아니하는 남편이 있어 아내와 함께 살기를 좋아하거든 그 남편을 버리지 말라"
+      ],
+      "raw_text_hashes": [
+        "674345dad57ed82d91fb8507e168a644adb0de8fa04c76331d355445489c0b39"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:7:14",
+      "sequence": 28498,
+      "chapter_label": "1CO 7",
+      "verse_label": "14",
+      "locator": {
+        "book": "1CO",
+        "chapter": 7,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 7,
+          "verse": 14
+        }
+      ],
+      "en": "For the unbelieving husband is sanctified in the wife, and the unbelieving wife is sanctified in the husband. Otherwise your children would be unclean, but now they are holy.",
+      "ko": "믿지 아니하는 남편이 아내로 인하여 거룩하게 되고 믿지 아니하는 아내가 남편으로 인하여 거룩하게 되나니 그렇지 아니하면 너희 자녀도 깨끗지 못하니라 그러나 이제 거룩하니라",
+      "source_text_hash": "c310dad935d9831ea2a86bb1d444b8102286f7ee13639007dd436241433a1a50",
+      "translation_text_hash": "0e156783a50987dbe650030c497b17e13c2dfd9a693793d1c1153711dc3cb055",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "믿지 아니하는 남편이 아내로 인하여 거룩하게 되고 믿지 아니하는 아내가 남편으로 인하여 거룩하게 되나니 그렇지 아니하면 너희 자녀도 깨끗지 못하니라 그러나 이제 거룩하니라"
+      ],
+      "raw_text_hashes": [
+        "0e156783a50987dbe650030c497b17e13c2dfd9a693793d1c1153711dc3cb055"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:7:15",
+      "sequence": 28499,
+      "chapter_label": "1CO 7",
+      "verse_label": "15",
+      "locator": {
+        "book": "1CO",
+        "chapter": 7,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 7,
+          "verse": 15
+        }
+      ],
+      "en": "Yet if the unbeliever departs, let there be separation. The brother or the sister is not under bondage in such cases, but God has called us in peace.",
+      "ko": "혹 믿지 아니하는 자가 갈리거든 갈리게 하라 형제나 자매나 이런 일에 구속 받을 것이 없느니라 그러나 하나님은 화평 중에서 너희를 부르셨느니라",
+      "source_text_hash": "c0a5d4e6fd08a018f9e7b362ab31fd1da460c74a94d9f5fffbd54efab7bbc231",
+      "translation_text_hash": "1a123cb485e6b42936aaa7d21277506b531249a895ea5988585558ce6f548499",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "혹 믿지 아니하는 자가 갈리거든 갈리게 하라 형제나 자매나 이런 일에 구속 받을 것이 없느니라 그러나 하나님은 화평 중에서 너희를 부르셨느니라"
+      ],
+      "raw_text_hashes": [
+        "1a123cb485e6b42936aaa7d21277506b531249a895ea5988585558ce6f548499"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:7:16",
+      "sequence": 28500,
+      "chapter_label": "1CO 7",
+      "verse_label": "16",
+      "locator": {
+        "book": "1CO",
+        "chapter": 7,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 7,
+          "verse": 16
+        }
+      ],
+      "en": "For how do you know, wife, whether you will save your husband? Or how do you know, husband, whether you will save your wife?",
+      "ko": "아내된 자여 네가 남편을 구원할는지 어찌 알 수 있으며 남편된 자여 네가 네 아내를 구원할는지 어찌 알 수 있으리요",
+      "source_text_hash": "afeb3b2ea0558758ecd9b01ee5d3f4e47fb1701bedaa48279c1b6386f979ab09",
+      "translation_text_hash": "6773338475f5808259792811132243bc46d16758802d1d53d063cee82d2f2ba3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아내된 자여 네가 남편을 구원할는지 어찌 알 수 있으며 남편된 자여 네가 네 아내를 구원할는지 어찌 알 수 있으리요"
+      ],
+      "raw_text_hashes": [
+        "6773338475f5808259792811132243bc46d16758802d1d53d063cee82d2f2ba3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:7:17",
+      "sequence": 28501,
+      "chapter_label": "1CO 7",
+      "verse_label": "17",
+      "locator": {
+        "book": "1CO",
+        "chapter": 7,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 7,
+          "verse": 17
+        }
+      ],
+      "en": "Only, as the Lord has distributed to each man, as God has called each, so let him walk. So I command in all the assemblies.",
+      "ko": "오직 주께서 각 사람에게 나눠 주신대로 하나님이 각 사람을 부르신 그대로 행하라 내가 모든 교회에서 이와 같이 명하노라",
+      "source_text_hash": "b005c638599e60f4991a463e14bd8e4d5468012e16de49d91a10f803a3bbb9b1",
+      "translation_text_hash": "671f1c318a1309c064965cf11edd24e49f1f4bfb96e3d7f57c7557ba3819e38d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 주께서 각 사람에게 나눠 주신대로 하나님이 각 사람을 부르신 그대로 행하라 내가 모든 교회에서 이와 같이 명하노라"
+      ],
+      "raw_text_hashes": [
+        "671f1c318a1309c064965cf11edd24e49f1f4bfb96e3d7f57c7557ba3819e38d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:7:18",
+      "sequence": 28502,
+      "chapter_label": "1CO 7",
+      "verse_label": "18",
+      "locator": {
+        "book": "1CO",
+        "chapter": 7,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 7,
+          "verse": 18
+        }
+      ],
+      "en": "Was anyone called having been circumcised? Let him not become uncircumcised. Has anyone been called in uncircumcision? Let him not be circumcised.",
+      "ko": "할례자로 부르심을 받은 자가 있느냐 무할례자가 되지 말며 무할례자로 부르심을 받은 자가 있느냐 할례를 받지 말라",
+      "source_text_hash": "b7b80b67945cb855815da21eca3e254761f77f8302d6fde2ae991992583aff74",
+      "translation_text_hash": "fd2fb12396b5f1d50218441e120d263f7f54111e957b73a66a6573762f00ef76",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "할례자로 부르심을 받은 자가 있느냐 무할례자가 되지 말며 무할례자로 부르심을 받은 자가 있느냐 할례를 받지 말라"
+      ],
+      "raw_text_hashes": [
+        "fd2fb12396b5f1d50218441e120d263f7f54111e957b73a66a6573762f00ef76"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:7:19",
+      "sequence": 28503,
+      "chapter_label": "1CO 7",
+      "verse_label": "19",
+      "locator": {
+        "book": "1CO",
+        "chapter": 7,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 7,
+          "verse": 19
+        }
+      ],
+      "en": "Circumcision is nothing, and uncircumcision is nothing, but what matters is keeping God’s commandments.",
+      "ko": "할례 받는 것도 아무 것도 아니요 할례 받지 아니하는 것도 아무 것도 아니로되 오직 하나님의 계명을 지킬 따름이니라",
+      "source_text_hash": "4a918924d8ebe33949be6d19b312420d94e77850a972e4ac642390d695c64171",
+      "translation_text_hash": "9b73f5324f599cf077aea67ed4052c237c75e15032c6d451d2543a8c6312268e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "할례 받는 것도 아무 것도 아니요 할례 받지 아니하는 것도 아무 것도 아니로되 오직 하나님의 계명을 지킬 따름이니라"
+      ],
+      "raw_text_hashes": [
+        "9b73f5324f599cf077aea67ed4052c237c75e15032c6d451d2543a8c6312268e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:7:20",
+      "sequence": 28504,
+      "chapter_label": "1CO 7",
+      "verse_label": "20",
+      "locator": {
+        "book": "1CO",
+        "chapter": 7,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 7,
+          "verse": 20
+        }
+      ],
+      "en": "Let each man stay in that calling in which he was called.",
+      "ko": "각 사람이 부르심을 받은 그 부르심 그대로 지내라",
+      "source_text_hash": "020f8341db10c14c7ec09887cad708d8420b9d486ffed22890567ed610acd13b",
+      "translation_text_hash": "46e71ae51159df2a58a54501847359a604e8d61a58b7f507edb838f89888af05",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "각 사람이 부르심을 받은 그 부르심 그대로 지내라"
+      ],
+      "raw_text_hashes": [
+        "46e71ae51159df2a58a54501847359a604e8d61a58b7f507edb838f89888af05"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:7:21",
+      "sequence": 28505,
+      "chapter_label": "1CO 7",
+      "verse_label": "21",
+      "locator": {
+        "book": "1CO",
+        "chapter": 7,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 7,
+          "verse": 21
+        }
+      ],
+      "en": "Were you called being a bondservant? Don’t let that bother you, but if you get an opportunity to become free, use it.",
+      "ko": "네가 종으로 있을 때에 부르심을 받았느냐 염려하지 말라 그러나 자유할 수 있거든 차라리 사용하라",
+      "source_text_hash": "11246798e414af5882510cebcb53e1071b9976e1eb53c84c33e84b46ef220cf6",
+      "translation_text_hash": "ca27d9aa46083727c97d18fae6d4ee258ba1ba9ff881258851173ca3b1c9e9e3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 종으로 있을 때에 부르심을 받았느냐 염려하지 말라 그러나 자유할 수 있거든 차라리 사용하라"
+      ],
+      "raw_text_hashes": [
+        "ca27d9aa46083727c97d18fae6d4ee258ba1ba9ff881258851173ca3b1c9e9e3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:7:22",
+      "sequence": 28506,
+      "chapter_label": "1CO 7",
+      "verse_label": "22",
+      "locator": {
+        "book": "1CO",
+        "chapter": 7,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 7,
+          "verse": 22
+        }
+      ],
+      "en": "For he who was called in the Lord being a bondservant is the Lord’s free man. Likewise he who was called being free is Christ’s bondservant.",
+      "ko": "주 안에서 부르심을 받은 자는 종이라도 주께 속한 자유자요 또 이와 같이 자유자로 있을 때에 부르심을 받은 자는 그리스도의 종이니라",
+      "source_text_hash": "76c9fb538fcab23cb1365567e10b22e6fb44c0f8c28d9a25c5244314ede01db3",
+      "translation_text_hash": "3952953028abe73782b6f0756c6f9fd7ef698b1cadae3a740552528ea3371d1f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주 안에서 부르심을 받은 자는 종이라도 주께 속한 자유자요 또 이와 같이 자유자로 있을 때에 부르심을 받은 자는 그리스도의 종이니라"
+      ],
+      "raw_text_hashes": [
+        "3952953028abe73782b6f0756c6f9fd7ef698b1cadae3a740552528ea3371d1f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:7:23",
+      "sequence": 28507,
+      "chapter_label": "1CO 7",
+      "verse_label": "23",
+      "locator": {
+        "book": "1CO",
+        "chapter": 7,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 7,
+          "verse": 23
+        }
+      ],
+      "en": "You were bought with a price. Don’t become bondservants of men.",
+      "ko": "너희는 값으로 사신 것이니 사람들의 종이 되지 말라",
+      "source_text_hash": "9d2316638e01f24ffc49c49d07dafbd7f2373478deee308dcede649a79f3b964",
+      "translation_text_hash": "4711be67f0cd5e15168a29674bc11e1801cd0872373c59c5d2d7b128d089af1c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 값으로 사신 것이니 사람들의 종이 되지 말라"
+      ],
+      "raw_text_hashes": [
+        "4711be67f0cd5e15168a29674bc11e1801cd0872373c59c5d2d7b128d089af1c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:7:24",
+      "sequence": 28508,
+      "chapter_label": "1CO 7",
+      "verse_label": "24",
+      "locator": {
+        "book": "1CO",
+        "chapter": 7,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 7,
+          "verse": 24
+        }
+      ],
+      "en": "Brothers, let each man, in whatever condition he was called, stay in that condition with God.",
+      "ko": "형제들아 각각 부르심을 받은 그대로 하나님과 함께 거하라",
+      "source_text_hash": "fe71d057184a5eb4239875dbb2b97432f768708acc57b46f910bb11411dca281",
+      "translation_text_hash": "f879b68aa06f39515f5b029ce0e8f13384044a6d5996a48ae8812f214e5f109c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "형제들아 각각 부르심을 받은 그대로 하나님과 함께 거하라"
+      ],
+      "raw_text_hashes": [
+        "f879b68aa06f39515f5b029ce0e8f13384044a6d5996a48ae8812f214e5f109c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:7:25",
+      "sequence": 28509,
+      "chapter_label": "1CO 7",
+      "verse_label": "25",
+      "locator": {
+        "book": "1CO",
+        "chapter": 7,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 7,
+          "verse": 25
+        }
+      ],
+      "en": "Now concerning virgins, I have no commandment from the Lord, but I give my judgment as one who has obtained mercy from the Lord to be trustworthy.",
+      "ko": "처녀에 대하여는 내가 주께 받은 계명이 없으되 주의 자비하심을 받아서 충성된 자가 되어 의견을 고하노니",
+      "source_text_hash": "55691b6144aee925d1c5b4b658c3d127763a16c178cb6d4560689f955e66924a",
+      "translation_text_hash": "dc635f925e856cea11f0d17ffb27a64964b659282206edfd65b3c4feca8397fa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "처녀에 대하여는 내가 주께 받은 계명이 없으되 주의 자비하심을 받아서 충성된 자가 되어 의견을 고하노니"
+      ],
+      "raw_text_hashes": [
+        "dc635f925e856cea11f0d17ffb27a64964b659282206edfd65b3c4feca8397fa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:7:26",
+      "sequence": 28510,
+      "chapter_label": "1CO 7",
+      "verse_label": "26",
+      "locator": {
+        "book": "1CO",
+        "chapter": 7,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 7,
+          "verse": 26
+        }
+      ],
+      "en": "Therefore I think that because of the distress that is on us, it’s good for a man to remain as he is.",
+      "ko": "내 생각에는 이것이 좋으니 곧 임박한 환난을 인하여 사람이 그냥 지내는 것이 좋으니라",
+      "source_text_hash": "6f1896c4ca26c013640dbe8fed223a745f7cefa7f78d63e3f1e8defe83a759f3",
+      "translation_text_hash": "ed3cd40dbea65b59a4869acce837fcfd6cc2a5ce396d198a7f3d308f466b3f2b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 생각에는 이것이 좋으니 곧 임박한 환난을 인하여 사람이 그냥 지내는 것이 좋으니라"
+      ],
+      "raw_text_hashes": [
+        "ed3cd40dbea65b59a4869acce837fcfd6cc2a5ce396d198a7f3d308f466b3f2b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:7:27",
+      "sequence": 28511,
+      "chapter_label": "1CO 7",
+      "verse_label": "27",
+      "locator": {
+        "book": "1CO",
+        "chapter": 7,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 7,
+          "verse": 27
+        }
+      ],
+      "en": "Are you bound to a wife? Don’t seek to be freed. Are you free from a wife? Don’t seek a wife.",
+      "ko": "네가 아내에게 매였느냐 놓이기를 구하지 말며 아내에게서 놓였느냐 아내를 구하지 말라",
+      "source_text_hash": "2b3bc9fe76ad6d29da4cb7222d44a0e52e43f8e6dd211cc864e93c2767d05e88",
+      "translation_text_hash": "9869864b1ebb2a12329f7911121e8c5a8813cb8577a05739ed1c669ffdb8b3e3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 아내에게 매였느냐 놓이기를 구하지 말며 아내에게서 놓였느냐 아내를 구하지 말라"
+      ],
+      "raw_text_hashes": [
+        "9869864b1ebb2a12329f7911121e8c5a8813cb8577a05739ed1c669ffdb8b3e3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:7:28",
+      "sequence": 28512,
+      "chapter_label": "1CO 7",
+      "verse_label": "28",
+      "locator": {
+        "book": "1CO",
+        "chapter": 7,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 7,
+          "verse": 28
+        }
+      ],
+      "en": "But if you marry, you have not sinned. If a virgin marries, she has not sinned. Yet such will have oppression in the flesh, and I want to spare you.",
+      "ko": "그러나 장가 가도 죄 짓는 것이 아니요 처녀가 시집 가도 죄 짓는 것이 아니로되 이런 이들은 육신에 고난이 있으리니 나는 너희를 아끼노라",
+      "source_text_hash": "8be072ccbd658b29eb13a943b2518bc296cb448370d71f4330f3e0493138b745",
+      "translation_text_hash": "26ba409a659570829378cc9783ead02392bb7a4de114d6201d97bfbb519561f7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 장가 가도 죄 짓는 것이 아니요 처녀가 시집 가도 죄 짓는 것이 아니로되 이런 이들은 육신에 고난이 있으리니 나는 너희를 아끼노라"
+      ],
+      "raw_text_hashes": [
+        "26ba409a659570829378cc9783ead02392bb7a4de114d6201d97bfbb519561f7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:7:29",
+      "sequence": 28513,
+      "chapter_label": "1CO 7",
+      "verse_label": "29",
+      "locator": {
+        "book": "1CO",
+        "chapter": 7,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 7,
+          "verse": 29
+        }
+      ],
+      "en": "But I say this, brothers: the time is short. From now on, both those who have wives may be as though they had none;",
+      "ko": "형제들아 내가 이 말을 하노니 때가 단축하여진고로 이 후부터 아내 있는 자들은 없는 자 같이 하며",
+      "source_text_hash": "d9fd97bf1b0a6fc78acb23094b2702955e4cce9f6993689da77ce605ab3e4874",
+      "translation_text_hash": "a3541c27e7fcac7cb86ec892cebbd501179e5f3329aa3ab1dc424afac6740cc1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "형제들아 내가 이 말을 하노니 때가 단축하여진고로 이 후부터 아내 있는 자들은 없는 자 같이 하며"
+      ],
+      "raw_text_hashes": [
+        "a3541c27e7fcac7cb86ec892cebbd501179e5f3329aa3ab1dc424afac6740cc1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:7:30",
+      "sequence": 28514,
+      "chapter_label": "1CO 7",
+      "verse_label": "30",
+      "locator": {
+        "book": "1CO",
+        "chapter": 7,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 7,
+          "verse": 30
+        }
+      ],
+      "en": "and those who weep, as though they didn’t weep; and those who rejoice, as though they didn’t rejoice; and those who buy, as though they didn’t possess;",
+      "ko": "우는 자들은 울지 않는 자 같이 하며 기쁜 자들은 기쁘지 않은 자 같이 하며 매매하는 자들은 없는 자 같이 하며",
+      "source_text_hash": "5b7e0ad58f1c1cf70bebd52e99210fa4813b5d2fe13e1f17d48677e825c34999",
+      "translation_text_hash": "9eecfe1a9eb882f451fb9b145c52e2cd6ed9eaf35f1bf5fa14e5caaa65bfa585",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우는 자들은 울지 않는 자 같이 하며 기쁜 자들은 기쁘지 않은 자 같이 하며 매매하는 자들은 없는 자 같이 하며"
+      ],
+      "raw_text_hashes": [
+        "9eecfe1a9eb882f451fb9b145c52e2cd6ed9eaf35f1bf5fa14e5caaa65bfa585"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:7:31",
+      "sequence": 28515,
+      "chapter_label": "1CO 7",
+      "verse_label": "31",
+      "locator": {
+        "book": "1CO",
+        "chapter": 7,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 7,
+          "verse": 31
+        }
+      ],
+      "en": "and those who use the world, as not using it to the fullest. For the mode of this world passes away.",
+      "ko": "세상 물건을 쓰는 자들은 다 쓰지 못하는 자 같이 하라 이 세상의 형적은 지나감이니라",
+      "source_text_hash": "b6c4db61b5ad54bbd6bb0a08c7b61413e43bd154cb425c8ea4bdde79c77572db",
+      "translation_text_hash": "015d4b3ed8f87edf89646f39afa3ef5e3eff9b187a9ab6bcf67ae785b95b4924",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "세상 물건을 쓰는 자들은 다 쓰지 못하는 자 같이 하라 이 세상의 형적은 지나감이니라"
+      ],
+      "raw_text_hashes": [
+        "015d4b3ed8f87edf89646f39afa3ef5e3eff9b187a9ab6bcf67ae785b95b4924"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:7:32",
+      "sequence": 28516,
+      "chapter_label": "1CO 7",
+      "verse_label": "32",
+      "locator": {
+        "book": "1CO",
+        "chapter": 7,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 7,
+          "verse": 32
+        }
+      ],
+      "en": "But I desire to have you to be free from cares. He who is unmarried is concerned for the things of the Lord, how he may please the Lord;",
+      "ko": "너희가 염려 없기를 원하노라 장가 가지 않은 자는 주의 일을 염려하여 어찌하여야 주를 기쁘시게 할꼬 하되",
+      "source_text_hash": "5eaaec5225283d2b0162cae8a3f4a4e7f63b659da387dc6aeef0df9369fa968c",
+      "translation_text_hash": "3da5052433d25cb575e80e90f97085cca5aa81537aab44b0452c33d8008a2661",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 염려 없기를 원하노라 장가 가지 않은 자는 주의 일을 염려하여 어찌하여야 주를 기쁘시게 할꼬 하되"
+      ],
+      "raw_text_hashes": [
+        "3da5052433d25cb575e80e90f97085cca5aa81537aab44b0452c33d8008a2661"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:7:33",
+      "sequence": 28517,
+      "chapter_label": "1CO 7",
+      "verse_label": "33",
+      "locator": {
+        "book": "1CO",
+        "chapter": 7,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 7,
+          "verse": 33
+        }
+      ],
+      "en": "but he who is married is concerned about the things of the world, how he may please his wife.",
+      "ko": "장가 간 자는 세상 일을 염려하여 어찌하여야 아내를 기쁘게 할꼬 하여 마음이 나누이며",
+      "source_text_hash": "0b248c775689d3f26b00716773a6a18e2c6239cbc533b5bff7058d7a8bd297f9",
+      "translation_text_hash": "d49857d40d7175abaa575aae26d6faeda27245079493a7b6c3b3dcfc8f9a0752",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "장가 간 자는 세상 일을 염려하여 어찌하여야 아내를 기쁘게 할꼬 하여 마음이 나누이며"
+      ],
+      "raw_text_hashes": [
+        "d49857d40d7175abaa575aae26d6faeda27245079493a7b6c3b3dcfc8f9a0752"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:7:34",
+      "sequence": 28518,
+      "chapter_label": "1CO 7",
+      "verse_label": "34",
+      "locator": {
+        "book": "1CO",
+        "chapter": 7,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 7,
+          "verse": 34
+        }
+      ],
+      "en": "There is also a difference between a wife and a virgin. The unmarried woman cares about the things of the Lord, that she may be holy both in body and in spirit. But she who is married cares about the things of the world—how she may please her husband.",
+      "ko": "시집 가지 않은 자와 처녀는 주의 일을 염려하여 몸과 영을 다 거룩하게 하려 하되 시집 간 자는 세상 일을 염려하여 어찌하여야 남편을 기쁘게 할꼬 하느니라",
+      "source_text_hash": "fcabc1a602244604fed1918f3387b7ad12160826b1b59e61a71d54bc26dd01ab",
+      "translation_text_hash": "00075a4a9411a4ae3e85a26101399c244fa3423f41959039537d819254c7007a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시집 가지 않은 자와 처녀는 주의 일을 염려하여 몸과 영을 다 거룩하게 하려 하되 시집 간 자는 세상 일을 염려하여 어찌하여야 남편을 기쁘게 할꼬 하느니라"
+      ],
+      "raw_text_hashes": [
+        "00075a4a9411a4ae3e85a26101399c244fa3423f41959039537d819254c7007a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:7:35",
+      "sequence": 28519,
+      "chapter_label": "1CO 7",
+      "verse_label": "35",
+      "locator": {
+        "book": "1CO",
+        "chapter": 7,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 7,
+          "verse": 35
+        }
+      ],
+      "en": "This I say for your own benefit, not that I may ensnare you, but for that which is appropriate, and that you may attend to the Lord without distraction.",
+      "ko": "내가 이것을 말함은 너희의 유익을 위함이요 너희에게 올무를 놓으려 함이 아니니 오직 너희로 하여금 이치에 합하게 하여 분요함이 없이 주를 섬기게 하려 함이라",
+      "source_text_hash": "9d4ebe5f719df1e74ff9a513cc7f898fb221855ace21d10c23db2d48abb702fb",
+      "translation_text_hash": "feab6a3f933d59abc7bab45091da9c77ec55913d5c3f546be8a7ad7844c0fb50",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 이것을 말함은 너희의 유익을 위함이요 너희에게 올무를 놓으려 함이 아니니 오직 너희로 하여금 이치에 합하게 하여 분요함이 없이 주를 섬기게 하려 함이라"
+      ],
+      "raw_text_hashes": [
+        "feab6a3f933d59abc7bab45091da9c77ec55913d5c3f546be8a7ad7844c0fb50"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:7:36",
+      "sequence": 28520,
+      "chapter_label": "1CO 7",
+      "verse_label": "36",
+      "locator": {
+        "book": "1CO",
+        "chapter": 7,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 7,
+          "verse": 36
+        }
+      ],
+      "en": "But if any man thinks that he is behaving inappropriately toward his virgin, if she is past the flower of her age, and if need so requires, let him do what he desires. He doesn’t sin. Let them marry.",
+      "ko": "누가 자기의 처녀 딸에 대한 일이 이치에 합당치 못한 줄로 생각할 때에 혼기도 지나고 그같이 할 필요가 있거든 마음대로 하라 이것은 죄 짓는 것이 아니니 혼인하게 하라",
+      "source_text_hash": "e9b4bb232921b95764ceebc1a2a0a99524e56512781e6d5ecb395a91436b24f2",
+      "translation_text_hash": "88b15c62c5d1e2a5e5961dd0af0eda75f1641e9dd03d7a8faf2e6401c85ee6b4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누가 자기의 처녀 딸에 대한 일이 이치에 합당치 못한 줄로 생각할 때에 혼기도 지나고 그같이 할 필요가 있거든 마음대로 하라 이것은 죄 짓는 것이 아니니 혼인하게 하라"
+      ],
+      "raw_text_hashes": [
+        "88b15c62c5d1e2a5e5961dd0af0eda75f1641e9dd03d7a8faf2e6401c85ee6b4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:7:37",
+      "sequence": 28521,
+      "chapter_label": "1CO 7",
+      "verse_label": "37",
+      "locator": {
+        "book": "1CO",
+        "chapter": 7,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 7,
+          "verse": 37
+        }
+      ],
+      "en": "But he who stands steadfast in his heart, having no urgency, but has power over his own will, and has determined in his own heart to keep his own virgin, does well.",
+      "ko": "그러나 그 마음을 굳게 하고 또 부득이한 일도 없고 자기 뜻대로 할 권리가 있어서 그 처녀 딸을 머물러 두기로 마음에 작정하여도 잘하는 것이니라",
+      "source_text_hash": "2bd4abcdf304b7bcdfd87a9e7817d7742d80e43847e1759580643f1b6d5fe7cd",
+      "translation_text_hash": "e77938b1f0b827aedca6408d54ecd33a5b9ca0602f1b5b623582c50582a73bf7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 그 마음을 굳게 하고 또 부득이한 일도 없고 자기 뜻대로 할 권리가 있어서 그 처녀 딸을 머물러 두기로 마음에 작정하여도 잘하는 것이니라"
+      ],
+      "raw_text_hashes": [
+        "e77938b1f0b827aedca6408d54ecd33a5b9ca0602f1b5b623582c50582a73bf7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:7:38",
+      "sequence": 28522,
+      "chapter_label": "1CO 7",
+      "verse_label": "38",
+      "locator": {
+        "book": "1CO",
+        "chapter": 7,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 7,
+          "verse": 38
+        }
+      ],
+      "en": "So then both he who gives his own virgin in marriage does well, and he who doesn’t give her in marriage does better.",
+      "ko": "그러므로 처녀 딸을 시집 보내는 자도 잘하거니와 시집 보내지 아니하는 자가 더 잘하는 것이니라",
+      "source_text_hash": "2666615ff0dba17e3a0fb727e4e6c1238fa7518b53f1338f107eb929b9376344",
+      "translation_text_hash": "50b042ed0515b3cfa796c3cb0f8d9ba8cee2fa1f1e515809cb598ab4c6969ce8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 처녀 딸을 시집 보내는 자도 잘하거니와 시집 보내지 아니하는 자가 더 잘하는 것이니라"
+      ],
+      "raw_text_hashes": [
+        "50b042ed0515b3cfa796c3cb0f8d9ba8cee2fa1f1e515809cb598ab4c6969ce8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:7:39",
+      "sequence": 28523,
+      "chapter_label": "1CO 7",
+      "verse_label": "39",
+      "locator": {
+        "book": "1CO",
+        "chapter": 7,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 7,
+          "verse": 39
+        }
+      ],
+      "en": "A wife is bound by law for as long as her husband lives; but if the husband is dead, she is free to be married to whomever she desires, only in the Lord.",
+      "ko": "아내가 그 남편이 살 동안에 매여 있다가 남편이 죽으면 자유하여 자기 뜻대로 시집 갈것이나 주 안에서만 할 것이니라",
+      "source_text_hash": "6f530695a5babbf09965ce233143d528a7fa183fca07c268e682d55881ee2611",
+      "translation_text_hash": "f288586cc441c20013149890d3a3d9edc9c9045660b12349261d72b1822c9b6e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아내가 그 남편이 살 동안에 매여 있다가 남편이 죽으면 자유하여 자기 뜻대로 시집 갈것이나 주 안에서만 할 것이니라"
+      ],
+      "raw_text_hashes": [
+        "f288586cc441c20013149890d3a3d9edc9c9045660b12349261d72b1822c9b6e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:7:40",
+      "sequence": 28524,
+      "chapter_label": "1CO 7",
+      "verse_label": "40",
+      "locator": {
+        "book": "1CO",
+        "chapter": 7,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 7,
+          "verse": 40
+        }
+      ],
+      "en": "But she is happier if she stays as she is, in my judgment, and I think that I also have God’s Spirit.",
+      "ko": "그러나 내 뜻에는 그냥 지내는 것이 더욱 복이 있으리로다 나도 또한 하나님의 영을 받은 줄로 생각하노라",
+      "source_text_hash": "99256f5e7b4ed3b2b946cf163ddd6c7fd7e4e95575cf80678ea641f8cf011244",
+      "translation_text_hash": "0630a8540921418de30e40d325ae67b67ee489f44b70a7211264bcf304c20ec6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 내 뜻에는 그냥 지내는 것이 더욱 복이 있으리로다 나도 또한 하나님의 영을 받은 줄로 생각하노라"
+      ],
+      "raw_text_hashes": [
+        "0630a8540921418de30e40d325ae67b67ee489f44b70a7211264bcf304c20ec6"
+      ]
+    }
+  ]
+}

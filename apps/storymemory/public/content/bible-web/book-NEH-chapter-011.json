@@ -1,0 +1,1165 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:NEH:chapter:011",
+  "unit_ordinal": 424,
+  "unit_label": "NEH 11",
+  "book_code": "NEH",
+  "chapter_number": 11,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:NEH:11:1",
+      "sequence": 12590,
+      "chapter_label": "NEH 11",
+      "verse_label": "1",
+      "locator": {
+        "book": "NEH",
+        "chapter": 11,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 11,
+          "verse": 1
+        }
+      ],
+      "en": "The princes of the people lived in Jerusalem. The rest of the people also cast lots to bring one of ten to dwell in Jerusalem, the holy city, and nine parts in the other cities.",
+      "ko": "백성의 두목들은 예루살렘에 머물렀고 그 남은 백성은 제비 뽑아 십분의 일은 거룩한 성 예루살렘에 와서 거하게 하고 그 구분은 다른 성읍에 거하게 하였으며",
+      "source_text_hash": "f0464a5722aead802e24461d1085cf3d5a62d6311dc80e1bafe3ec0c1e00984b",
+      "translation_text_hash": "368cc395fd7a067c0c8f51cb2ecd30330eef6e14e19f6760104640db8543e9a8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "백성의 두목들은 예루살렘에 머물렀고 그 남은 백성은 제비 뽑아 십분의 일은 거룩한 성 예루살렘에 와서 거하게 하고 그 구분은 다른 성읍에 거하게 하였으며"
+      ],
+      "raw_text_hashes": [
+        "368cc395fd7a067c0c8f51cb2ecd30330eef6e14e19f6760104640db8543e9a8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:11:2",
+      "sequence": 12591,
+      "chapter_label": "NEH 11",
+      "verse_label": "2",
+      "locator": {
+        "book": "NEH",
+        "chapter": 11,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 11,
+          "verse": 2
+        }
+      ],
+      "en": "The people blessed all the men who willingly offered themselves to dwell in Jerusalem.",
+      "ko": "무릇 예루살렘에 거하기를 자원하는 자는 백성들이 위하여 복을 빌었느니라",
+      "source_text_hash": "19ebebbbd9efd15f8b1226a414e59f91c387f602fa9607d88e990ab9f1100553",
+      "translation_text_hash": "c538d0b9a5e2bc2f26cb07018db44d31d69c4735fcffdbca6f1078fcd11d5aa0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 예루살렘에 거하기를 자원하는 자는 백성들이 위하여 복을 빌었느니라"
+      ],
+      "raw_text_hashes": [
+        "c538d0b9a5e2bc2f26cb07018db44d31d69c4735fcffdbca6f1078fcd11d5aa0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:11:3",
+      "sequence": 12592,
+      "chapter_label": "NEH 11",
+      "verse_label": "3",
+      "locator": {
+        "book": "NEH",
+        "chapter": 11,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 11,
+          "verse": 3
+        }
+      ],
+      "en": "Now these are the chiefs of the province who lived in Jerusalem; but in the cities of Judah, everyone lived in his possession in their cities—Israel, the priests, the Levites, the temple servants, and the children of Solomon’s servants.",
+      "ko": "이스라엘과 제사장들과 레위 사람들과 느디님 사람들과 솔로몬의 신복의 자손은 유다 여러 성읍에서 각각 그 본성 본 기업에 거하였고 예루살렘에 거한 그 도의 두목들은 이러하니",
+      "source_text_hash": "c32847707cd2055bf854578cd7df2b9ab93c6ebf7e537cbe28af4405d054481c",
+      "translation_text_hash": "68d21dff36730a898c1f5f970d49cde75b51b20f6f3ec809d92cb5cc24137686",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘과 제사장들과 레위 사람들과 느디님 사람들과 솔로몬의 신복의 자손은 유다 여러 성읍에서 각각 그 본성 본 기업에 거하였고 예루살렘에 거한 그 도의 두목들은 이러하니"
+      ],
+      "raw_text_hashes": [
+        "68d21dff36730a898c1f5f970d49cde75b51b20f6f3ec809d92cb5cc24137686"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:11:4",
+      "sequence": 12593,
+      "chapter_label": "NEH 11",
+      "verse_label": "4",
+      "locator": {
+        "book": "NEH",
+        "chapter": 11,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 11,
+          "verse": 4
+        }
+      ],
+      "en": "Some of the children of Judah and of the children of Benjamin lived in Jerusalem. Of the children of Judah: Athaiah the son of Uzziah, the son of Zechariah, the son of Amariah, the son of Shephatiah, the son of Mahalalel, of the children of Perez;",
+      "ko": "예루살렘에 거한 자는 유다 자손과 베냐민 자손 몇명이라 유다 자손 중에는 베레스 자손 아다야니 저는 웃시야의 아들이요 스가랴의 손자요 아마랴의 증손이요 스바댜의 현손이요 마할랄렐의 오대손이며",
+      "source_text_hash": "75f1f299851b91142abf0d25d5dd6600476875a6767908ba7f97b52549f6ddb8",
+      "translation_text_hash": "d1654bedd14b1ba8ba29ada4020df835960fa84eb80aa13202bd553e8e1cba42",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예루살렘에 거한 자는 유다 자손과 베냐민 자손 몇명이라 유다 자손 중에는 베레스 자손 아다야니 저는 웃시야의 아들이요 스가랴의 손자요 아마랴의 증손이요 스바댜의 현손이요 마할랄렐의 오대손이며"
+      ],
+      "raw_text_hashes": [
+        "d1654bedd14b1ba8ba29ada4020df835960fa84eb80aa13202bd553e8e1cba42"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:11:5",
+      "sequence": 12594,
+      "chapter_label": "NEH 11",
+      "verse_label": "5",
+      "locator": {
+        "book": "NEH",
+        "chapter": 11,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 11,
+          "verse": 5
+        }
+      ],
+      "en": "and Maaseiah the son of Baruch, the son of Colhozeh, the son of Hazaiah, the son of Adaiah, the son of Joiarib, the son of Zechariah, the son of the Shilonite.",
+      "ko": "또 마아세야니 저는 바룩의 아들이요 골호세의 손자요 하사야의 증손이요 아다야의 현손이요 요야립의 오대손이요 스가랴의 육대손이요 실로 사람의 칠대손이라",
+      "source_text_hash": "66fc6d64bd99f6416261acb52274d0614e77d84205cb35b278721a12831800cd",
+      "translation_text_hash": "8ab924a9953c12db65fba8623b588f865275e705ada8339d71824888547db553",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 마아세야니 저는 바룩의 아들이요 골호세의 손자요 하사야의 증손이요 아다야의 현손이요 요야립의 오대손이요 스가랴의 육대손이요 실로 사람의 칠대손이라"
+      ],
+      "raw_text_hashes": [
+        "8ab924a9953c12db65fba8623b588f865275e705ada8339d71824888547db553"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:11:6",
+      "sequence": 12595,
+      "chapter_label": "NEH 11",
+      "verse_label": "6",
+      "locator": {
+        "book": "NEH",
+        "chapter": 11,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 11,
+          "verse": 6
+        }
+      ],
+      "en": "All the sons of Perez who lived in Jerusalem were four hundred sixty-eight valiant men.",
+      "ko": "예루살렘에 거한 베레스 자손의 도합이 사백 육십 팔명이니 다 용사이었느니라",
+      "source_text_hash": "8ae72a20ce7ac2084b97b20bc5c37688c211127e90a2791620c9ac2616f4d69d",
+      "translation_text_hash": "cf60792db384d61403e57c2636b6ffb8ac9eb9d5afe2418a96c79f440ee087c9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예루살렘에 거한 베레스 자손의 도합이 사백 육십 팔명이니 다 용사이었느니라"
+      ],
+      "raw_text_hashes": [
+        "cf60792db384d61403e57c2636b6ffb8ac9eb9d5afe2418a96c79f440ee087c9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:11:7",
+      "sequence": 12596,
+      "chapter_label": "NEH 11",
+      "verse_label": "7",
+      "locator": {
+        "book": "NEH",
+        "chapter": 11,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 11,
+          "verse": 7
+        }
+      ],
+      "en": "These are the sons of Benjamin: Sallu the son of Meshullam, the son of Joed, the son of Pedaiah, the son of Kolaiah, the son of Maaseiah, the son of Ithiel, the son of Jeshaiah.",
+      "ko": "베냐민 자손은 살루니 저는 므술람의 아들이요 요엣의 손자요 브다야의 증손이요 골라야의 현손이요 마아세야의 오대손이요 이디엘의 육대손이요 여사야의 칠대손이며",
+      "source_text_hash": "069da524fae53e2563caf1e197b2d7ea72d7e77795ef777e7dd4bbcbb7a97f72",
+      "translation_text_hash": "bf6d3f687d7cfb81c69f347b632fc1be07171c62f07179947c646a91a8fac38c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베냐민 자손은 살루니 저는 므술람의 아들이요 요엣의 손자요 브다야의 증손이요 골라야의 현손이요 마아세야의 오대손이요 이디엘의 육대손이요 여사야의 칠대손이며"
+      ],
+      "raw_text_hashes": [
+        "bf6d3f687d7cfb81c69f347b632fc1be07171c62f07179947c646a91a8fac38c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:11:8",
+      "sequence": 12597,
+      "chapter_label": "NEH 11",
+      "verse_label": "8",
+      "locator": {
+        "book": "NEH",
+        "chapter": 11,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 11,
+          "verse": 8
+        }
+      ],
+      "en": "After him Gabbai and Sallai, nine hundred twenty-eight.",
+      "ko": "그 다음은 갑배와 살래 등이니 도합이 구백 이십 팔명이라",
+      "source_text_hash": "0ef112b241eaaa9792bfc5dac722c6b5ed12b57c23834a249f4b5e9582be7137",
+      "translation_text_hash": "b026715b52c0968434c6d015cc406221206deff4e76bdf12fa82be1199211194",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 다음은 갑배와 살래 등이니 도합이 구백 이십 팔명이라"
+      ],
+      "raw_text_hashes": [
+        "b026715b52c0968434c6d015cc406221206deff4e76bdf12fa82be1199211194"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:11:9",
+      "sequence": 12598,
+      "chapter_label": "NEH 11",
+      "verse_label": "9",
+      "locator": {
+        "book": "NEH",
+        "chapter": 11,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 11,
+          "verse": 9
+        }
+      ],
+      "en": "Joel the son of Zichri was their overseer; and Judah the son of Hassenuah was second over the city.",
+      "ko": "시그리의 아들 요엘이 그 감독이 되었고 핫스누아의 아들 유다는 버금이 되어 성읍을 다스렸느니라",
+      "source_text_hash": "40a80dae2ed21418f6525f5da9a454b93f1829f3aad7443b1e61206dad23a87b",
+      "translation_text_hash": "25e84c743a957b25fdc94e89cd738eb746d328087ad7df18cb02bafc646e0e02",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시그리의 아들 요엘이 그 감독이 되었고 핫스누아의 아들 유다는 버금이 되어 성읍을 다스렸느니라"
+      ],
+      "raw_text_hashes": [
+        "25e84c743a957b25fdc94e89cd738eb746d328087ad7df18cb02bafc646e0e02"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:11:10",
+      "sequence": 12599,
+      "chapter_label": "NEH 11",
+      "verse_label": "10",
+      "locator": {
+        "book": "NEH",
+        "chapter": 11,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 11,
+          "verse": 10
+        }
+      ],
+      "en": "Of the priests: Jedaiah the son of Joiarib, Jachin,",
+      "ko": "제사장 중에는 요야립의 아들 여다야와 야긴이며",
+      "source_text_hash": "01ed57aac5130026fc0dd5da2c82acabe8c5deb1ef5befa2596bb50002620d18",
+      "translation_text_hash": "3d51c40a7b9d60df2dba6c3f91544de6fcfdbc5f1540bb305e7f2315afc3477a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장 중에는 요야립의 아들 여다야와 야긴이며"
+      ],
+      "raw_text_hashes": [
+        "3d51c40a7b9d60df2dba6c3f91544de6fcfdbc5f1540bb305e7f2315afc3477a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:11:11",
+      "sequence": 12600,
+      "chapter_label": "NEH 11",
+      "verse_label": "11",
+      "locator": {
+        "book": "NEH",
+        "chapter": 11,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 11,
+          "verse": 11
+        }
+      ],
+      "en": "Seraiah the son of Hilkiah, the son of Meshullam, the son of Zadok, the son of Meraioth, the son of Ahitub, the ruler of God’s house,",
+      "ko": "또 하나님의 전을 맡은 자 스라야니 저는 힐기야의 아들이요 므술람의 손자요 사독의 증손이요 므라욧의 현손이요 아히둡의 오대손이며",
+      "source_text_hash": "be9fb0806b8839d4d9a8ba853582aa769958cdc36096f06260bb46305780c310",
+      "translation_text_hash": "aed18a754fb0b8f3c5492fc27090c1605a94de6f0c24cd0d8772ded7deb04f6d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 하나님의 전을 맡은 자 스라야니 저는 힐기야의 아들이요 므술람의 손자요 사독의 증손이요 므라욧의 현손이요 아히둡의 오대손이며"
+      ],
+      "raw_text_hashes": [
+        "aed18a754fb0b8f3c5492fc27090c1605a94de6f0c24cd0d8772ded7deb04f6d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:11:12",
+      "sequence": 12601,
+      "chapter_label": "NEH 11",
+      "verse_label": "12",
+      "locator": {
+        "book": "NEH",
+        "chapter": 11,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 11,
+          "verse": 12
+        }
+      ],
+      "en": "and their brothers who did the work of the house, eight hundred twenty-two; and Adaiah the son of Jeroham, the son of Pelaliah, the son of Amzi, the son of Zechariah, the son of Pashhur, the son of Malchijah,",
+      "ko": "또 전에서 일하는 그 형제니 도합이 팔백 이십 이명이요 또 아다야니 저는 여로함의 아들이요 블라야의 손자요 암시의 증손이요 스가랴의 현손이요 바스훌의 오대손이요 말기야의 육대손이며",
+      "source_text_hash": "33baec9e3d25d0aae558e4f59399b0841ca4b9269b4b6aa90785dbe6643668bb",
+      "translation_text_hash": "c66045b05160720a705c74353f7d0897a699eb2d1d2048d5820034d9a784e693",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 전에서 일하는 그 형제니 도합이 팔백 이십 이명이요 또 아다야니 저는 여로함의 아들이요 블라야의 손자요 암시의 증손이요 스가랴의 현손이요 바스훌의 오대손이요 말기야의 육대손이며"
+      ],
+      "raw_text_hashes": [
+        "c66045b05160720a705c74353f7d0897a699eb2d1d2048d5820034d9a784e693"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:11:13",
+      "sequence": 12602,
+      "chapter_label": "NEH 11",
+      "verse_label": "13",
+      "locator": {
+        "book": "NEH",
+        "chapter": 11,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 11,
+          "verse": 13
+        }
+      ],
+      "en": "and his brothers, chiefs of fathers’ households, two hundred forty-two; and Amashsai the son of Azarel, the son of Ahzai, the son of Meshillemoth, the son of Immer,",
+      "ko": "또 그 형제의 족장된 자니 도합이 이백 사십 이명이요 또 아맛새니 저는 아사렐의 아들이요 아흐새의 손자요 므실레못의 증손이요 임멜의 현손이며",
+      "source_text_hash": "19c28f652ab32995c87ab6d211bde6037433f3b3a1b012a417fe6a94b3f258c6",
+      "translation_text_hash": "8a883157de7a60044c794f6f14882816658ff937785ea7b4a1d0e1a9e0904757",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 그 형제의 족장된 자니 도합이 이백 사십 이명이요 또 아맛새니 저는 아사렐의 아들이요 아흐새의 손자요 므실레못의 증손이요 임멜의 현손이며"
+      ],
+      "raw_text_hashes": [
+        "8a883157de7a60044c794f6f14882816658ff937785ea7b4a1d0e1a9e0904757"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:11:14",
+      "sequence": 12603,
+      "chapter_label": "NEH 11",
+      "verse_label": "14",
+      "locator": {
+        "book": "NEH",
+        "chapter": 11,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 11,
+          "verse": 14
+        }
+      ],
+      "en": "and their brothers, mighty men of valor, one hundred twenty-eight; and their overseer was Zabdiel, the son of Haggedolim.",
+      "ko": "또 그 형제의 큰 용사니 도합이 일백 이십 팔명이라 하그돌림의 아들 삽디엘이 그 감독이 되었느니라",
+      "source_text_hash": "69f9c1981ee3b86be48fd14da90a106d7f0dea194e8d19b3281032e846c8f743",
+      "translation_text_hash": "7ef7184e9a5ce6a337ee0c6ca5b4e5f67f3c5289aaed7dc0412057a04698cbd6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 그 형제의 큰 용사니 도합이 일백 이십 팔명이라 하그돌림의 아들 삽디엘이 그 감독이 되었느니라"
+      ],
+      "raw_text_hashes": [
+        "7ef7184e9a5ce6a337ee0c6ca5b4e5f67f3c5289aaed7dc0412057a04698cbd6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:11:15",
+      "sequence": 12604,
+      "chapter_label": "NEH 11",
+      "verse_label": "15",
+      "locator": {
+        "book": "NEH",
+        "chapter": 11,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 11,
+          "verse": 15
+        }
+      ],
+      "en": "Of the Levites: Shemaiah the son of Hasshub, the son of Azrikam, the son of Hashabiah, the son of Bunni;",
+      "ko": "레위 사람 중에는 스마야니 저는 핫숩의 아들이요 아스리감의 손자요 하사뱌의 증손이요 분니의 현손이며",
+      "source_text_hash": "7d50728552381007610a88d75f7b536ec1c31e29a7dd2ee23852a1531d916e4d",
+      "translation_text_hash": "9d0d1546f0eceae916d77d24c653e966f776813044cab12a164ad35728cfa1c7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "레위 사람 중에는 스마야니 저는 핫숩의 아들이요 아스리감의 손자요 하사뱌의 증손이요 분니의 현손이며"
+      ],
+      "raw_text_hashes": [
+        "9d0d1546f0eceae916d77d24c653e966f776813044cab12a164ad35728cfa1c7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:11:16",
+      "sequence": 12605,
+      "chapter_label": "NEH 11",
+      "verse_label": "16",
+      "locator": {
+        "book": "NEH",
+        "chapter": 11,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 11,
+          "verse": 16
+        }
+      ],
+      "en": "and Shabbethai and Jozabad, of the chiefs of the Levites, who had the oversight of the outward business of God’s house;",
+      "ko": "또 레위 사람의 족장 삽브대와 요사밧이니 저희는 하나님의 전 바깥 일을 맡았고",
+      "source_text_hash": "8f167bd3a7051114ecb881b396b20c867ebbed79fb05ae34965aba33df0ade79",
+      "translation_text_hash": "1827861c7bd9348ef3c6c4e3776467d088aa45bd364e19607e427a377075173e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 레위 사람의 족장 삽브대와 요사밧이니 저희는 하나님의 전 바깥 일을 맡았고"
+      ],
+      "raw_text_hashes": [
+        "1827861c7bd9348ef3c6c4e3776467d088aa45bd364e19607e427a377075173e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:11:17",
+      "sequence": 12606,
+      "chapter_label": "NEH 11",
+      "verse_label": "17",
+      "locator": {
+        "book": "NEH",
+        "chapter": 11,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 11,
+          "verse": 17
+        }
+      ],
+      "en": "and Mattaniah the son of Mica, the son of Zabdi, the son of Asaph, who was the chief to begin the thanksgiving in prayer, and Bakbukiah, the second among his brothers; and Abda the son of Shammua, the son of Galal, the son of Jeduthun.",
+      "ko": "또 아삽의 증손 삽디의 손자 미가의 아들 맛다냐니 저는 기도할 때에 감사하는 말씀을 인도하는 어른이 되었고 형제 중에 박부갸가 버금이 되었으며 또 여두둔의 증손 갈랄의 손자 삼무아의 아들 압다니",
+      "source_text_hash": "11737bbf16b1390bee49de2015185dc5a78b8c6f359dd2a2841515572706ed1e",
+      "translation_text_hash": "3fcd87f2f736ba95a3a20260f84befd3411b4c6ee75e4688b6762df011dbfbdb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 아삽의 증손 삽디의 손자 미가의 아들 맛다냐니 저는 기도할 때에 감사하는 말씀을 인도하는 어른이 되었고 형제 중에 박부갸가 버금이 되었으며 또 여두둔의 증손 갈랄의 손자 삼무아의 아들 압다니"
+      ],
+      "raw_text_hashes": [
+        "3fcd87f2f736ba95a3a20260f84befd3411b4c6ee75e4688b6762df011dbfbdb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:11:18",
+      "sequence": 12607,
+      "chapter_label": "NEH 11",
+      "verse_label": "18",
+      "locator": {
+        "book": "NEH",
+        "chapter": 11,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 11,
+          "verse": 18
+        }
+      ],
+      "en": "All the Levites in the holy city were two hundred eighty-four.",
+      "ko": "거룩한 성에 레위 사람의 도합이 이백 팔십 사명이었느니라",
+      "source_text_hash": "f8875172623594474517801e427bc3d0016207cd26fffef4a4052bbd60b5572f",
+      "translation_text_hash": "81d49afa89249648a76e69d898af82de3d5fc4a3e022abf0465f742e8ca48d7a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거룩한 성에 레위 사람의 도합이 이백 팔십 사명이었느니라"
+      ],
+      "raw_text_hashes": [
+        "81d49afa89249648a76e69d898af82de3d5fc4a3e022abf0465f742e8ca48d7a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:11:19",
+      "sequence": 12608,
+      "chapter_label": "NEH 11",
+      "verse_label": "19",
+      "locator": {
+        "book": "NEH",
+        "chapter": 11,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 11,
+          "verse": 19
+        }
+      ],
+      "en": "Moreover the gatekeepers, Akkub, Talmon, and their brothers, who kept watch at the gates, were one hundred seventy-two.",
+      "ko": "성 문지기는 악굽과 달몬과 그 형제니 도합이 일백 칠십 이명이며",
+      "source_text_hash": "26c88e16003bbf0723341a5d5798472e626cf920ace702d142614a8bfe20766a",
+      "translation_text_hash": "90ad1f4df89ec93034f9e8593b38c43056b8a7b5905e2e9c7de66124daf01754",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "성 문지기는 악굽과 달몬과 그 형제니 도합이 일백 칠십 이명이며"
+      ],
+      "raw_text_hashes": [
+        "90ad1f4df89ec93034f9e8593b38c43056b8a7b5905e2e9c7de66124daf01754"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:11:20",
+      "sequence": 12609,
+      "chapter_label": "NEH 11",
+      "verse_label": "20",
+      "locator": {
+        "book": "NEH",
+        "chapter": 11,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 11,
+          "verse": 20
+        }
+      ],
+      "en": "The residue of Israel, of the priests, and the Levites were in all the cities of Judah, everyone in his inheritance.",
+      "ko": "그 나머지 이스라엘 백성과 제사장과 레위 사람은 유다 모든 성읍에 흩어져 각각 자기 기업에 거하였고",
+      "source_text_hash": "8b3e5e48578502d71360a8d9f808cf76ffae3336f6fff54c1988c31dfcc44e88",
+      "translation_text_hash": "fe16f14f0a23c7f9c59ab9e6ed33db664e79e91962b9ba929071a3403a0e1618",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 나머지 이스라엘 백성과 제사장과 레위 사람은 유다 모든 성읍에 흩어져 각각 자기 기업에 거하였고"
+      ],
+      "raw_text_hashes": [
+        "fe16f14f0a23c7f9c59ab9e6ed33db664e79e91962b9ba929071a3403a0e1618"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:11:21",
+      "sequence": 12610,
+      "chapter_label": "NEH 11",
+      "verse_label": "21",
+      "locator": {
+        "book": "NEH",
+        "chapter": 11,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 11,
+          "verse": 21
+        }
+      ],
+      "en": "But the temple servants lived in Ophel; and Ziha and Gishpa were over the temple servants.",
+      "ko": "느디님 사람은 오벨에 거하니 시하와 기스바가 그 두목이 되었느니라",
+      "source_text_hash": "d120858f28032614ad7c136c5bd313b3398bd4492c8dff55fde741328dae3c91",
+      "translation_text_hash": "23ec1faf2708c640a4572f5bd1e1600a1e975579d40e7d6d229625b7b5e4c546",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "느디님 사람은 오벨에 거하니 시하와 기스바가 그 두목이 되었느니라"
+      ],
+      "raw_text_hashes": [
+        "23ec1faf2708c640a4572f5bd1e1600a1e975579d40e7d6d229625b7b5e4c546"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:11:22",
+      "sequence": 12611,
+      "chapter_label": "NEH 11",
+      "verse_label": "22",
+      "locator": {
+        "book": "NEH",
+        "chapter": 11,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 11,
+          "verse": 22
+        }
+      ],
+      "en": "The overseer also of the Levites at Jerusalem was Uzzi the son of Bani, the son of Hashabiah, the son of Mattaniah, the son of Mica, of the sons of Asaph, the singers responsible for the service of God’s house.",
+      "ko": "노래하는 자 아삽 자손 곧 미가의 현손 맛다냐의 증손 하사뱌의 손자 바니의 아들 웃시는 예루살렘에 거하는 레위 사람의 감독이 되어 하나님의 전 일을 맡아 다스렸으니",
+      "source_text_hash": "c42340eb1f4f556586ef67ae963f30764985931153d8d5b8440a23024bffc484",
+      "translation_text_hash": "39b97eab1107c512f759c20b64062fdccb9bd675c78ce85a07ea3300bdd2f775",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "노래하는 자 아삽 자손 곧 미가의 현손 맛다냐의 증손 하사뱌의 손자 바니의 아들 웃시는 예루살렘에 거하는 레위 사람의 감독이 되어 하나님의 전 일을 맡아 다스렸으니"
+      ],
+      "raw_text_hashes": [
+        "39b97eab1107c512f759c20b64062fdccb9bd675c78ce85a07ea3300bdd2f775"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:11:23",
+      "sequence": 12612,
+      "chapter_label": "NEH 11",
+      "verse_label": "23",
+      "locator": {
+        "book": "NEH",
+        "chapter": 11,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 11,
+          "verse": 23
+        }
+      ],
+      "en": "For there was a commandment from the king concerning them, and a settled provision for the singers, as every day required.",
+      "ko": "이는 왕의 명대로 노래하는 자에게 날마다 양식을 정하여 주는 것이 있음이며",
+      "source_text_hash": "ce5d1ab223dbc5ca6843199070db1c6eff971d8a136a26a6fd7dae42e5e1caaf",
+      "translation_text_hash": "6d6cf95b32b81a6c0dc710e6c084890294f090787f6fc18d3a09c45a5d8a9864",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 왕의 명대로 노래하는 자에게 날마다 양식을 정하여 주는 것이 있음이며"
+      ],
+      "raw_text_hashes": [
+        "6d6cf95b32b81a6c0dc710e6c084890294f090787f6fc18d3a09c45a5d8a9864"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:11:24",
+      "sequence": 12613,
+      "chapter_label": "NEH 11",
+      "verse_label": "24",
+      "locator": {
+        "book": "NEH",
+        "chapter": 11,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 11,
+          "verse": 24
+        }
+      ],
+      "en": "Pethahiah the son of Meshezabel, of the children of Zerah the son of Judah, was at the king’s hand in all matters concerning the people.",
+      "ko": "유다의 아들 세라의 자손 곧 므세사벨의 아들 브다히야는 왕의 수하에서 백성의 일을 다스렸느니라",
+      "source_text_hash": "7d1d42eca1fef35b02c185e7f83cc037816984f31f617667f0798dbf27323bd2",
+      "translation_text_hash": "a545be6668048ac8ebfa4e6bad46d0582f3b39ec683e7ccee89b763a66ad7524",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다의 아들 세라의 자손 곧 므세사벨의 아들 브다히야는 왕의 수하에서 백성의 일을 다스렸느니라"
+      ],
+      "raw_text_hashes": [
+        "a545be6668048ac8ebfa4e6bad46d0582f3b39ec683e7ccee89b763a66ad7524"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:11:25",
+      "sequence": 12614,
+      "chapter_label": "NEH 11",
+      "verse_label": "25",
+      "locator": {
+        "book": "NEH",
+        "chapter": 11,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 11,
+          "verse": 25
+        }
+      ],
+      "en": "As for the villages with their fields, some of the children of Judah lived in Kiriath Arba and its towns, in Dibon and its towns, in Jekabzeel and its villages,",
+      "ko": "향리와 들로 말하면 유다 자손의 더러는 기럇 아바와 그 촌과 디본과 그 촌과 여갑스엘과 그 동네에 거하며",
+      "source_text_hash": "a017bd2ec5da36e995a4ade55b8009568cb6d4176f5b1b3eded41aa51d19422f",
+      "translation_text_hash": "f51fff97e29e96b92d6c10b469ab5e3e17797e4d0cd298d7703ef6239495fc6a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "향리와 들로 말하면 유다 자손의 더러는 기럇 아바와 그 촌과 디본과 그 촌과 여갑스엘과 그 동네에 거하며"
+      ],
+      "raw_text_hashes": [
+        "f51fff97e29e96b92d6c10b469ab5e3e17797e4d0cd298d7703ef6239495fc6a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:11:26",
+      "sequence": 12615,
+      "chapter_label": "NEH 11",
+      "verse_label": "26",
+      "locator": {
+        "book": "NEH",
+        "chapter": 11,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 11,
+          "verse": 26
+        }
+      ],
+      "en": "in Jeshua, in Moladah, Beth Pelet,",
+      "ko": "또 예수아와 몰라다와 벧벨렛과",
+      "source_text_hash": "9f5ab6f23007f04dfcaf54441ee7f7912864053f4bfe38be532b703a1a16ca1d",
+      "translation_text_hash": "3c2e2a911147b3bf95bc3a58eed951b9c39e11103780fc642c70e9e224270cfb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 예수아와 몰라다와 벧벨렛과"
+      ],
+      "raw_text_hashes": [
+        "3c2e2a911147b3bf95bc3a58eed951b9c39e11103780fc642c70e9e224270cfb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:11:27",
+      "sequence": 12616,
+      "chapter_label": "NEH 11",
+      "verse_label": "27",
+      "locator": {
+        "book": "NEH",
+        "chapter": 11,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 11,
+          "verse": 27
+        }
+      ],
+      "en": "in Hazar Shual, in Beersheba and its towns,",
+      "ko": "하살수알과 브엘세바와 그 촌에 거하며",
+      "source_text_hash": "00c8a89ce7030439ef56b2e713340aaa5c26d792ff8ebcb309a4f6d0c05b5c43",
+      "translation_text_hash": "959cec39aa5585b3a392b2d6d5e58fc0600203f02aa8384f142de1a080d642be",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하살수알과 브엘세바와 그 촌에 거하며"
+      ],
+      "raw_text_hashes": [
+        "959cec39aa5585b3a392b2d6d5e58fc0600203f02aa8384f142de1a080d642be"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:11:28",
+      "sequence": 12617,
+      "chapter_label": "NEH 11",
+      "verse_label": "28",
+      "locator": {
+        "book": "NEH",
+        "chapter": 11,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 11,
+          "verse": 28
+        }
+      ],
+      "en": "in Ziklag, in Meconah and in its towns,",
+      "ko": "또 시글락과 므고나와 그 촌에 거하며",
+      "source_text_hash": "e6b7674b6f7a6d31d3db402913074afc4ac5a28a740bd2a236043d04326f06c1",
+      "translation_text_hash": "bcba9fc1bad2db99cf5a4a28a7847df75fddb3738e4876de8a59c7b6beb4ed53",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 시글락과 므고나와 그 촌에 거하며"
+      ],
+      "raw_text_hashes": [
+        "bcba9fc1bad2db99cf5a4a28a7847df75fddb3738e4876de8a59c7b6beb4ed53"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:11:29",
+      "sequence": 12618,
+      "chapter_label": "NEH 11",
+      "verse_label": "29",
+      "locator": {
+        "book": "NEH",
+        "chapter": 11,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 11,
+          "verse": 29
+        }
+      ],
+      "en": "in En Rimmon, in Zorah, in Jarmuth,",
+      "ko": "또 에느림몬과 소라와 야르뭇에 거하며",
+      "source_text_hash": "6f8b40d5d6e68b6367b9ad1c1375f7f4f75df42d80ffa2595709bddf7c8a2c19",
+      "translation_text_hash": "a8f278b5bb72e43941094c767d14c2fe9fc8487b7604ecc95c017965f161d607",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 에느림몬과 소라와 야르뭇에 거하며"
+      ],
+      "raw_text_hashes": [
+        "a8f278b5bb72e43941094c767d14c2fe9fc8487b7604ecc95c017965f161d607"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:11:30",
+      "sequence": 12619,
+      "chapter_label": "NEH 11",
+      "verse_label": "30",
+      "locator": {
+        "book": "NEH",
+        "chapter": 11,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 11,
+          "verse": 30
+        }
+      ],
+      "en": "Zanoah, Adullam, and their villages, Lachish and its fields, and Azekah and its towns. So they encamped from Beersheba to the valley of Hinnom.",
+      "ko": "또 사노아와 아둘람과 그 동네와 라기스와 그 들과 아세가와 그 촌에 거하였으니 저희는 브엘세바에서부터 힌놈의 골짜기까지 장막을 쳤으며",
+      "source_text_hash": "512a0b238318ee8aabdf007d89e188527ef8ca0696804f08d76b07013766579f",
+      "translation_text_hash": "72e83bfdadcd40a38a097d848b7dbf29a41c417185cbf1defef46ec834bd5ee7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 사노아와 아둘람과 그 동네와 라기스와 그 들과 아세가와 그 촌에 거하였으니 저희는 브엘세바에서부터 힌놈의 골짜기까지 장막을 쳤으며"
+      ],
+      "raw_text_hashes": [
+        "72e83bfdadcd40a38a097d848b7dbf29a41c417185cbf1defef46ec834bd5ee7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:11:31",
+      "sequence": 12620,
+      "chapter_label": "NEH 11",
+      "verse_label": "31",
+      "locator": {
+        "book": "NEH",
+        "chapter": 11,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 11,
+          "verse": 31
+        }
+      ],
+      "en": "The children of Benjamin also lived from Geba onward, at Michmash and Aija, and at Bethel and its towns,",
+      "ko": "또 베냐민 자손은 게바에서부터 믹마스와 아야와 벧엘과 그 촌에 거하며",
+      "source_text_hash": "36d85867bd137c8bec8bfa33917e9291d54f9f42e03bb604c465d6c7d5b6379c",
+      "translation_text_hash": "a148acbb983633beb9f26b189af67474b208e5e7a8669e53528a38208eb61cb4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 베냐민 자손은 게바에서부터 믹마스와 아야와 벧엘과 그 촌에 거하며"
+      ],
+      "raw_text_hashes": [
+        "a148acbb983633beb9f26b189af67474b208e5e7a8669e53528a38208eb61cb4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:11:32",
+      "sequence": 12621,
+      "chapter_label": "NEH 11",
+      "verse_label": "32",
+      "locator": {
+        "book": "NEH",
+        "chapter": 11,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 11,
+          "verse": 32
+        }
+      ],
+      "en": "at Anathoth, Nob, Ananiah,",
+      "ko": "아나돗과 놉과 아나냐와",
+      "source_text_hash": "d9e21a3ea1232865966a9bfc04b8095b8c85b481d8636e255161ab7fa27f6338",
+      "translation_text_hash": "7dd2e8d8275c9f38bfa4cdc2c407b48063a08278ef00a90a67304a3219f134ff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아나돗과 놉과 아나냐와"
+      ],
+      "raw_text_hashes": [
+        "7dd2e8d8275c9f38bfa4cdc2c407b48063a08278ef00a90a67304a3219f134ff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:11:33",
+      "sequence": 12622,
+      "chapter_label": "NEH 11",
+      "verse_label": "33",
+      "locator": {
+        "book": "NEH",
+        "chapter": 11,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 11,
+          "verse": 33
+        }
+      ],
+      "en": "Hazor, Ramah, Gittaim,",
+      "ko": "하솔과 라마와 깃다임과",
+      "source_text_hash": "5cbbb4ff9ece43e13add5be73420e37d4716bc83dc452f5f97f26bdba5beab51",
+      "translation_text_hash": "e82de3cc9727884ef9777fe0d87feaff4a58d86066ae3ab7d09b2748e85c052c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하솔과 라마와 깃다임과"
+      ],
+      "raw_text_hashes": [
+        "e82de3cc9727884ef9777fe0d87feaff4a58d86066ae3ab7d09b2748e85c052c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:11:34",
+      "sequence": 12623,
+      "chapter_label": "NEH 11",
+      "verse_label": "34",
+      "locator": {
+        "book": "NEH",
+        "chapter": 11,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 11,
+          "verse": 34
+        }
+      ],
+      "en": "Hadid, Zeboim, Neballat,",
+      "ko": "하딧과 스보임과 느발랏과",
+      "source_text_hash": "4bbd8899324f2aa63094db5236126f081367fd448c1fb4a98abbda23daaccd3b",
+      "translation_text_hash": "d1e8bc11a2bcde5091f51413e4b1bdede4ce9c3f0732bbf475e8c7fa1ac58ac5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하딧과 스보임과 느발랏과"
+      ],
+      "raw_text_hashes": [
+        "d1e8bc11a2bcde5091f51413e4b1bdede4ce9c3f0732bbf475e8c7fa1ac58ac5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:11:35",
+      "sequence": 12624,
+      "chapter_label": "NEH 11",
+      "verse_label": "35",
+      "locator": {
+        "book": "NEH",
+        "chapter": 11,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 11,
+          "verse": 35
+        }
+      ],
+      "en": "Lod, and Ono, the valley of craftsmen.",
+      "ko": "로드와 오노와 공장 골짜기에 거하였으며",
+      "source_text_hash": "6ac634a57fb65b7d29ebc14cb7b7af4cf20dbe037f113a94ad23bb4b1322ae7c",
+      "translation_text_hash": "0f88bc055d2273f5f093504778fb3898b6737c7f81c5e67ddcbc03b0b8a939ba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "로드와 오노와 공장 골짜기에 거하였으며"
+      ],
+      "raw_text_hashes": [
+        "0f88bc055d2273f5f093504778fb3898b6737c7f81c5e67ddcbc03b0b8a939ba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:11:36",
+      "sequence": 12625,
+      "chapter_label": "NEH 11",
+      "verse_label": "36",
+      "locator": {
+        "book": "NEH",
+        "chapter": 11,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 11,
+          "verse": 36
+        }
+      ],
+      "en": "Of the Levites, certain divisions in Judah settled in Benjamin’s territory.",
+      "ko": "유다에 있던 레위 사람의 어떤 반열은 베냐민과 합하였느니라",
+      "source_text_hash": "b1b0abe95b35033369e630f8271b753ae23bf8f977231df683108f096cb7c4f4",
+      "translation_text_hash": "3a7c8a967640bea39e91985a5f5a4db2b6f353129943ac509d0618d74ab14df1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다에 있던 레위 사람의 어떤 반열은 베냐민과 합하였느니라"
+      ],
+      "raw_text_hashes": [
+        "3a7c8a967640bea39e91985a5f5a4db2b6f353129943ac509d0618d74ab14df1"
+      ]
+    }
+  ]
+}

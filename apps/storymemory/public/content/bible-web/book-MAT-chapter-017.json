@@ -1,0 +1,877 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:MAT:chapter:017",
+  "unit_ordinal": 946,
+  "unit_label": "MAT 17",
+  "book_code": "MAT",
+  "chapter_number": 17,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:MAT:17:1",
+      "sequence": 23702,
+      "chapter_label": "MAT 17",
+      "verse_label": "1",
+      "locator": {
+        "book": "MAT",
+        "chapter": 17,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 17,
+          "verse": 1
+        }
+      ],
+      "en": "After six days, Jesus took with him Peter, James, and John his brother, and brought them up into a high mountain by themselves.",
+      "ko": "엿새 후에 예수께서 베드로와 야고보와 그 형제 요한을 데리시고 따로 높은 산에 올라가셨더니",
+      "source_text_hash": "251c1b59f63da32f2f5b1458b455b50e39e4faffcded7fbfc97ddf2c67670f6c",
+      "translation_text_hash": "211a01ef3d761371e45846d558660ae5ba1039c0f53918713b67ae728733fc29",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "엿새 후에 예수께서 베드로와 야고보와 그 형제 요한을 데리시고 따로 높은 산에 올라가셨더니"
+      ],
+      "raw_text_hashes": [
+        "211a01ef3d761371e45846d558660ae5ba1039c0f53918713b67ae728733fc29"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:17:2",
+      "sequence": 23703,
+      "chapter_label": "MAT 17",
+      "verse_label": "2",
+      "locator": {
+        "book": "MAT",
+        "chapter": 17,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 17,
+          "verse": 2
+        }
+      ],
+      "en": "He was changed before them. His face shone like the sun, and his garments became as white as the light.",
+      "ko": "저희 앞에서 변형되사 그 얼굴이 해 같이 빛나며 옷이 빛과 같이 희어졌더라",
+      "source_text_hash": "c71071256db8979dacbf8d35209d63730643e69ba93a901e726619cb5a0edf46",
+      "translation_text_hash": "01071f834ef103a02bfb150e8e306cee45e95ff6180a72520a3c829528f4ba93",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희 앞에서 변형되사 그 얼굴이 해 같이 빛나며 옷이 빛과 같이 희어졌더라"
+      ],
+      "raw_text_hashes": [
+        "01071f834ef103a02bfb150e8e306cee45e95ff6180a72520a3c829528f4ba93"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:17:3",
+      "sequence": 23704,
+      "chapter_label": "MAT 17",
+      "verse_label": "3",
+      "locator": {
+        "book": "MAT",
+        "chapter": 17,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 17,
+          "verse": 3
+        }
+      ],
+      "en": "Behold, Moses and Elijah appeared to them talking with him.",
+      "ko": "때에 모세와 엘리야가 예수로 더불어 말씀하는 것이 저희에게 보이거늘",
+      "source_text_hash": "b1ee59a29dd9e63adecf3e1cb0f69fb00f29b8a8396804c0639be73e2d4c7b1c",
+      "translation_text_hash": "6ab7db545d99d39827321fe99833d9b4c737e74c9d5e150fdda621dd5ac41657",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "때에 모세와 엘리야가 예수로 더불어 말씀하는 것이 저희에게 보이거늘"
+      ],
+      "raw_text_hashes": [
+        "6ab7db545d99d39827321fe99833d9b4c737e74c9d5e150fdda621dd5ac41657"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:17:4",
+      "sequence": 23705,
+      "chapter_label": "MAT 17",
+      "verse_label": "4",
+      "locator": {
+        "book": "MAT",
+        "chapter": 17,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 17,
+          "verse": 4
+        }
+      ],
+      "en": "Peter answered and said to Jesus, “Lord, it is good for us to be here. If you want, let’s make three tents here: one for you, one for Moses, and one for Elijah.”",
+      "ko": "베드로가 예수께 여짜와 가로되 주여 우리가 여기 있는 것이 좋사오니 주께서 만일 원하시면 내가 여기서 초막 셋을 짓되 하나는 주를 위하여, 하나는 모세를 위하여, 하나는 엘리야를 위하여 하리이다",
+      "source_text_hash": "c1e66da751cc39807e1233fa8f79810179e523d45e5a76bb2e362cc9e220fda5",
+      "translation_text_hash": "de1f94a1d2f647f7502013679d78ccea674b18cc6af06d000aec2435f915733c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베드로가 예수께 여짜와 가로되 주여 우리가 여기 있는 것이 좋사오니 주께서 만일 원하시면 내가 여기서 초막 셋을 짓되 하나는 주를 위하여, 하나는 모세를 위하여, 하나는 엘리야를 위하여 하리이다"
+      ],
+      "raw_text_hashes": [
+        "de1f94a1d2f647f7502013679d78ccea674b18cc6af06d000aec2435f915733c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:17:5",
+      "sequence": 23706,
+      "chapter_label": "MAT 17",
+      "verse_label": "5",
+      "locator": {
+        "book": "MAT",
+        "chapter": 17,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 17,
+          "verse": 5
+        }
+      ],
+      "en": "While he was still speaking, behold, a bright cloud overshadowed them. Behold, a voice came out of the cloud, saying, “This is my beloved Son, in whom I am well pleased. Listen to him.”",
+      "ko": "말할 때에 홀연히 빛난 구름이 저희를 덮으며 구름 속에서 소리가 나서 가로되 이는 내 사랑하는 아들이요 내 기뻐하는 자니 너희는 저의 말을 들으라 하는지라",
+      "source_text_hash": "9f03ea47d13161108b47ee02a13fb5d9d427b514f3be3569f54da087e0e6c955",
+      "translation_text_hash": "f9b208935c3b9f12ff96e0c1632f72074e26e5acdb586a09f505d3ae27589e89",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "말할 때에 홀연히 빛난 구름이 저희를 덮으며 구름 속에서 소리가 나서 가로되 이는 내 사랑하는 아들이요 내 기뻐하는 자니 너희는 저의 말을 들으라 하는지라"
+      ],
+      "raw_text_hashes": [
+        "f9b208935c3b9f12ff96e0c1632f72074e26e5acdb586a09f505d3ae27589e89"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:17:6",
+      "sequence": 23707,
+      "chapter_label": "MAT 17",
+      "verse_label": "6",
+      "locator": {
+        "book": "MAT",
+        "chapter": 17,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 17,
+          "verse": 6
+        }
+      ],
+      "en": "When the disciples heard it, they fell on their faces, and were very afraid.",
+      "ko": "제자들이 듣고 엎드리어 심히 두려워하니",
+      "source_text_hash": "2fe8154fc2c6220312ea94cfae1805ceb7a99d035709a03dd8fbee0db76213e2",
+      "translation_text_hash": "7b1c273659f05b0f0a9b69bc189254187209f263645667e72c07c80b6ca8ca7d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제자들이 듣고 엎드리어 심히 두려워하니"
+      ],
+      "raw_text_hashes": [
+        "7b1c273659f05b0f0a9b69bc189254187209f263645667e72c07c80b6ca8ca7d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:17:7",
+      "sequence": 23708,
+      "chapter_label": "MAT 17",
+      "verse_label": "7",
+      "locator": {
+        "book": "MAT",
+        "chapter": 17,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 17,
+          "verse": 7
+        }
+      ],
+      "en": "Jesus came and touched them and said, “Get up, and don’t be afraid.”",
+      "ko": "예수께서 나아와 저희에게 손을 대시며 가라사대 일어나라 두려워 말라 하신대",
+      "source_text_hash": "9daacce380bd5d3f18cb2bf753ebf1d87dfe926eb1a30d25677e653a0a04336e",
+      "translation_text_hash": "8ce98ef9a08f19d867bc496ddb26a69bc7b6ba400f58f5c7b7930db09393beb1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 나아와 저희에게 손을 대시며 가라사대 일어나라 두려워 말라 하신대"
+      ],
+      "raw_text_hashes": [
+        "8ce98ef9a08f19d867bc496ddb26a69bc7b6ba400f58f5c7b7930db09393beb1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:17:8",
+      "sequence": 23709,
+      "chapter_label": "MAT 17",
+      "verse_label": "8",
+      "locator": {
+        "book": "MAT",
+        "chapter": 17,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 17,
+          "verse": 8
+        }
+      ],
+      "en": "Lifting up their eyes, they saw no one, except Jesus alone.",
+      "ko": "제자들이 눈을 들고 보매 오직 예수 외에는 아무도 보이지 아니하더라",
+      "source_text_hash": "14787c0fc4bdba22072d381ce641798252621077bfdab0abfcb70f69a634f3e1",
+      "translation_text_hash": "7d3a090ea6e5e057a9203c7e38e60dcf0caf153ed0fe7ddec30989201caf27ca",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제자들이 눈을 들고 보매 오직 예수 외에는 아무도 보이지 아니하더라"
+      ],
+      "raw_text_hashes": [
+        "7d3a090ea6e5e057a9203c7e38e60dcf0caf153ed0fe7ddec30989201caf27ca"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:17:9",
+      "sequence": 23710,
+      "chapter_label": "MAT 17",
+      "verse_label": "9",
+      "locator": {
+        "book": "MAT",
+        "chapter": 17,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 17,
+          "verse": 9
+        }
+      ],
+      "en": "As they were coming down from the mountain, Jesus commanded them, saying, “Don’t tell anyone what you saw, until the Son of Man has risen from the dead.”",
+      "ko": "저희가 산에서 내려올 때에 예수께서 명하여 가라사대 인자가 죽은자 가운데서 살아나기 전에는 본것을 아무에게도 이르지 말라 하시니",
+      "source_text_hash": "8d7ca3b1132a9dbcd6f8a8c177d08bbac41894ed82b294b1e7e0f7518f2e4fc1",
+      "translation_text_hash": "452f208bf26d406a99681814f90cdca2254c8913d3937d53f4a55ff60d93f727",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 산에서 내려올 때에 예수께서 명하여 가라사대 인자가 죽은자 가운데서 살아나기 전에는 본것을 아무에게도 이르지 말라 하시니"
+      ],
+      "raw_text_hashes": [
+        "452f208bf26d406a99681814f90cdca2254c8913d3937d53f4a55ff60d93f727"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:17:10",
+      "sequence": 23711,
+      "chapter_label": "MAT 17",
+      "verse_label": "10",
+      "locator": {
+        "book": "MAT",
+        "chapter": 17,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 17,
+          "verse": 10
+        }
+      ],
+      "en": "His disciples asked him, saying, “Then why do the scribes say that Elijah must come first?”",
+      "ko": "제자들이 묻자와 가로되 그러면 어찌하여 서기관들이 엘리야가 먼저 와야 하리라 하나이까",
+      "source_text_hash": "203dbde7987c52cec90b1c253d8a62fbce079b5a1f93e730e6b3fce49bd1def1",
+      "translation_text_hash": "ea750a9b883c792480ca8984a74fbcc2214299cdbc9cb4ddc2a39b67a30e8bf1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제자들이 묻자와 가로되 그러면 어찌하여 서기관들이 엘리야가 먼저 와야 하리라 하나이까"
+      ],
+      "raw_text_hashes": [
+        "ea750a9b883c792480ca8984a74fbcc2214299cdbc9cb4ddc2a39b67a30e8bf1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:17:11",
+      "sequence": 23712,
+      "chapter_label": "MAT 17",
+      "verse_label": "11",
+      "locator": {
+        "book": "MAT",
+        "chapter": 17,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 17,
+          "verse": 11
+        }
+      ],
+      "en": "Jesus answered them, “Elijah indeed comes first, and will restore all things;",
+      "ko": "예수께서 대답하여 가라사대 엘리야가 과연 먼저 와서 모든 일을 회복하리라",
+      "source_text_hash": "5ee108ed4f1ddddae0b45a37ec27b1fbdd7cc9581e9900cafe8ff050f61b0584",
+      "translation_text_hash": "9b46f48d655e09b2e8b2779a74fc2b6f334d34d07fcc56a80b13adf1449cc567",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 대답하여 가라사대 엘리야가 과연 먼저 와서 모든 일을 회복하리라"
+      ],
+      "raw_text_hashes": [
+        "9b46f48d655e09b2e8b2779a74fc2b6f334d34d07fcc56a80b13adf1449cc567"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:17:12",
+      "sequence": 23713,
+      "chapter_label": "MAT 17",
+      "verse_label": "12",
+      "locator": {
+        "book": "MAT",
+        "chapter": 17,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 17,
+          "verse": 12
+        }
+      ],
+      "en": "but I tell you that Elijah has come already, and they didn’t recognize him, but did to him whatever they wanted to. Even so the Son of Man will also suffer by them.”",
+      "ko": "내가 너희에게 말하노니 엘리야가 이미 왔으되 사람들이 알지 못하고 임의로 대우하였도다 인자도 이와 같이 그들에게 고난을 받으리라 하시니",
+      "source_text_hash": "e945034eddd8c479877c961926dff34dfda2f2bd79c278109692ce4eeeb2f349",
+      "translation_text_hash": "691498883c3e0e8d9302d857c9821b4a45a1917da90e37ac26424f15084537e5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너희에게 말하노니 엘리야가 이미 왔으되 사람들이 알지 못하고 임의로 대우하였도다 인자도 이와 같이 그들에게 고난을 받으리라 하시니"
+      ],
+      "raw_text_hashes": [
+        "691498883c3e0e8d9302d857c9821b4a45a1917da90e37ac26424f15084537e5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:17:13",
+      "sequence": 23714,
+      "chapter_label": "MAT 17",
+      "verse_label": "13",
+      "locator": {
+        "book": "MAT",
+        "chapter": 17,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 17,
+          "verse": 13
+        }
+      ],
+      "en": "Then the disciples understood that he spoke to them of John the Baptizer.",
+      "ko": "그제야 제자들이 예수의 말씀하신 것이 세례 요한인 줄을 깨달으니라",
+      "source_text_hash": "9a9b02a66b8ef90bfd59da9e1a3d70078cc8834ee72f8d5c5ab9eb9b7efc65e3",
+      "translation_text_hash": "396b8273c6b371d165c16336297b2ebbe1d5e79e345161b284d1f7332a02bd54",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그제야 제자들이 예수의 말씀하신 것이 세례 요한인 줄을 깨달으니라"
+      ],
+      "raw_text_hashes": [
+        "396b8273c6b371d165c16336297b2ebbe1d5e79e345161b284d1f7332a02bd54"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:17:14",
+      "sequence": 23715,
+      "chapter_label": "MAT 17",
+      "verse_label": "14",
+      "locator": {
+        "book": "MAT",
+        "chapter": 17,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 17,
+          "verse": 14
+        }
+      ],
+      "en": "When they came to the multitude, a man came to him, kneeling down to him and saying,",
+      "ko": "저희가 무리에게 이르매 한 사람이 예수께 와서 꿇어 엎드리어 가로되",
+      "source_text_hash": "a96c656a168e2b50ad57432dc9a32394419d2b12c87a84132b52421c32b5593a",
+      "translation_text_hash": "ecba0bc8647b9b83067d1ca0660862482226a4528168afd96d1f7db1bc8a3cca",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 무리에게 이르매 한 사람이 예수께 와서 꿇어 엎드리어 가로되"
+      ],
+      "raw_text_hashes": [
+        "ecba0bc8647b9b83067d1ca0660862482226a4528168afd96d1f7db1bc8a3cca"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:17:15",
+      "sequence": 23716,
+      "chapter_label": "MAT 17",
+      "verse_label": "15",
+      "locator": {
+        "book": "MAT",
+        "chapter": 17,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 17,
+          "verse": 15
+        }
+      ],
+      "en": "“Lord, have mercy on my son, for he is epileptic and suffers grievously; for he often falls into the fire, and often into the water.",
+      "ko": "주여 내 아들을 불쌍히 여기소서 저가 간질로 심히 고생하여 자주 불에도 넘어지며 물에도 넘어지는지라",
+      "source_text_hash": "ee4d2e9f03195c326950e0a125ff0d17ff5331c9820166fe4ccf6a778020501f",
+      "translation_text_hash": "cbb33655615ba21d21594acd9243a5b726cd4fb9762540feb63ebb155f7b4dff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주여 내 아들을 불쌍히 여기소서 저가 간질로 심히 고생하여 자주 불에도 넘어지며 물에도 넘어지는지라"
+      ],
+      "raw_text_hashes": [
+        "cbb33655615ba21d21594acd9243a5b726cd4fb9762540feb63ebb155f7b4dff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:17:16",
+      "sequence": 23717,
+      "chapter_label": "MAT 17",
+      "verse_label": "16",
+      "locator": {
+        "book": "MAT",
+        "chapter": 17,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 17,
+          "verse": 16
+        }
+      ],
+      "en": "So I brought him to your disciples, and they could not cure him.”",
+      "ko": "내가 주의 제자들에게 데리고 왔으나 능히 고치지 못하더이다",
+      "source_text_hash": "0b80798acd297b58494b35478dcf2eebfb5f801cc95a45372eaf4f4b81ef0e22",
+      "translation_text_hash": "81d9c5459e94c1d413c0fc83e9eceb13c7d5d86c7c4dafdf23dfed209fce2f5a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 주의 제자들에게 데리고 왔으나 능히 고치지 못하더이다"
+      ],
+      "raw_text_hashes": [
+        "81d9c5459e94c1d413c0fc83e9eceb13c7d5d86c7c4dafdf23dfed209fce2f5a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:17:17",
+      "sequence": 23718,
+      "chapter_label": "MAT 17",
+      "verse_label": "17",
+      "locator": {
+        "book": "MAT",
+        "chapter": 17,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 17,
+          "verse": 17
+        }
+      ],
+      "en": "Jesus answered, “Faithless and perverse generation! How long will I be with you? How long will I bear with you? Bring him here to me.”",
+      "ko": "예수께서 대답하여 가라사대 믿음이 없고 패역한 세대여 내가 얼마나 너희와 함께 있으며 얼마나 너희를 참으리요 그를 이리로 데려오라 하시다",
+      "source_text_hash": "ba00216499eee2b2e5967cbb384c2767140422b3835bedd50e3e4bd9ab610312",
+      "translation_text_hash": "225c6e0d21a7aba27379d59f258e7587b5b943932bff63d4a1b6d6a3d8d24070",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 대답하여 가라사대 믿음이 없고 패역한 세대여 내가 얼마나 너희와 함께 있으며 얼마나 너희를 참으리요 그를 이리로 데려오라 하시다"
+      ],
+      "raw_text_hashes": [
+        "225c6e0d21a7aba27379d59f258e7587b5b943932bff63d4a1b6d6a3d8d24070"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:17:18",
+      "sequence": 23719,
+      "chapter_label": "MAT 17",
+      "verse_label": "18",
+      "locator": {
+        "book": "MAT",
+        "chapter": 17,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 17,
+          "verse": 18
+        }
+      ],
+      "en": "Jesus rebuked the demon, and it went out of him, and the boy was cured from that hour.",
+      "ko": "이에 예수께서 꾸짖으시니 귀신이 나가고 아이가 그때부터 나으니라",
+      "source_text_hash": "26c8eacaac99ae48ed262867833212791951c57e9c4cfaf41408cebc4a2f13b1",
+      "translation_text_hash": "e7241ee548fc1646dc6843a84093e1405a50d4142e4156ae7a1e482129cd3e7b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 예수께서 꾸짖으시니 귀신이 나가고 아이가 그때부터 나으니라"
+      ],
+      "raw_text_hashes": [
+        "e7241ee548fc1646dc6843a84093e1405a50d4142e4156ae7a1e482129cd3e7b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:17:19",
+      "sequence": 23720,
+      "chapter_label": "MAT 17",
+      "verse_label": "19",
+      "locator": {
+        "book": "MAT",
+        "chapter": 17,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 17,
+          "verse": 19
+        }
+      ],
+      "en": "Then the disciples came to Jesus privately, and said, “Why weren’t we able to cast it out?”",
+      "ko": "이 때에 제자들이 종용히 예수께 나아와 가로되 우리는 어찌하여 쫓아내지 못하였나이까",
+      "source_text_hash": "1625820daf0588ef655154c1ed12f769eb504e6b737b5a12b8f45cd4da5d1e8c",
+      "translation_text_hash": "d72ee7d34bc3a5dcdc6fc1bf01f00379b54968e40b402a4cd48a0343744312ae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 때에 제자들이 종용히 예수께 나아와 가로되 우리는 어찌하여 쫓아내지 못하였나이까"
+      ],
+      "raw_text_hashes": [
+        "d72ee7d34bc3a5dcdc6fc1bf01f00379b54968e40b402a4cd48a0343744312ae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:17:20",
+      "sequence": 23721,
+      "chapter_label": "MAT 17",
+      "verse_label": "20",
+      "locator": {
+        "book": "MAT",
+        "chapter": 17,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 17,
+          "verse": 20
+        }
+      ],
+      "en": "He said to them, “Because of your unbelief. For most certainly I tell you, if you have faith as a grain of mustard seed, you will tell this mountain, ‘Move from here to there,’ and it will move; and nothing will be impossible for you.",
+      "ko": "가라사대 너희 믿음이 적은 연고니라 진실로 너희에게 이르노니 너희가 만일 믿음이 한 겨자씨만큼만 있으면 이 산을 명하여 여기서 저기로 옮기라 하여도 옮길 것이요 또 너희가 못할 것이 없으리라",
+      "source_text_hash": "3b2d31785c1f19b8286a8d9f63ed4b0640a04d70ee93dbf11158b10c1ac1ae13",
+      "translation_text_hash": "2b16b280e9dbd71fb0aabdc8e7956bac1465abb6c64b3503da538f20639ec38a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가라사대 너희 믿음이 적은 연고니라 진실로 너희에게 이르노니 너희가 만일 믿음이 한 겨자씨만큼만 있으면 이 산을 명하여 여기서 저기로 옮기라 하여도 옮길 것이요 또 너희가 못할 것이 없으리라"
+      ],
+      "raw_text_hashes": [
+        "2b16b280e9dbd71fb0aabdc8e7956bac1465abb6c64b3503da538f20639ec38a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:17:21",
+      "sequence": 23722,
+      "chapter_label": "MAT 17",
+      "verse_label": "21",
+      "locator": {
+        "book": "MAT",
+        "chapter": 17,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 17,
+          "verse": 21
+        }
+      ],
+      "en": "But this kind doesn’t go out except by prayer and fasting.”",
+      "ko": "(없음)",
+      "source_text_hash": "100c19b2e18edc62927997cecc4bae14aa3173e94984e6c2e4e06aa6c467be9a",
+      "translation_text_hash": "2c5539adbf825ee1c84f495c41d2e3ab18f6627a722578a5aea4ff650909eec7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "(없음)"
+      ],
+      "raw_text_hashes": [
+        "2c5539adbf825ee1c84f495c41d2e3ab18f6627a722578a5aea4ff650909eec7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:17:22",
+      "sequence": 23723,
+      "chapter_label": "MAT 17",
+      "verse_label": "22",
+      "locator": {
+        "book": "MAT",
+        "chapter": 17,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 17,
+          "verse": 22
+        }
+      ],
+      "en": "While they were staying in Galilee, Jesus said to them, “The Son of Man is about to be delivered up into the hands of men,",
+      "ko": "갈릴리에 모일 때에 예수께서 제자들에게 이르시되 인자가 장차 사람들의 손에 넘기워",
+      "source_text_hash": "ea1001d90208eb74759ff4c491e12b0768390f695b4e485258179ff01e5d0b4c",
+      "translation_text_hash": "c94d909fe1919515c8bbec80a4e2de46c631559f34b182b20281be20dd29ae91",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "갈릴리에 모일 때에 예수께서 제자들에게 이르시되 인자가 장차 사람들의 손에 넘기워"
+      ],
+      "raw_text_hashes": [
+        "c94d909fe1919515c8bbec80a4e2de46c631559f34b182b20281be20dd29ae91"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:17:23",
+      "sequence": 23724,
+      "chapter_label": "MAT 17",
+      "verse_label": "23",
+      "locator": {
+        "book": "MAT",
+        "chapter": 17,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 17,
+          "verse": 23
+        }
+      ],
+      "en": "and they will kill him, and the third day he will be raised up.” They were exceedingly sorry.",
+      "ko": "죽임을 당하고 제 삼일에 살아나리라 하시니 제자들이 심히 근심하더라",
+      "source_text_hash": "4d7e62283a5b3c07f6ec75b5d183555f26d3fca5ff7531c178d0c6e116e0bb1f",
+      "translation_text_hash": "d79a1147834df729759d632456b6bf7f2a0d9e2a83cc9163b80ca4bb228ff51c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "죽임을 당하고 제 삼일에 살아나리라 하시니 제자들이 심히 근심하더라"
+      ],
+      "raw_text_hashes": [
+        "d79a1147834df729759d632456b6bf7f2a0d9e2a83cc9163b80ca4bb228ff51c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:17:24",
+      "sequence": 23725,
+      "chapter_label": "MAT 17",
+      "verse_label": "24",
+      "locator": {
+        "book": "MAT",
+        "chapter": 17,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 17,
+          "verse": 24
+        }
+      ],
+      "en": "When they had come to Capernaum, those who collected the didrachma coins came to Peter, and said, “Doesn’t your teacher pay the didrachma?”",
+      "ko": "가버나움에 이르니 반 세겔 받는 자들이 베드로에게 나아와 가로되 너의 선생이 반 세겔을 내지 아니하느냐",
+      "source_text_hash": "239b5d68bbd121b79fc4dae709a08a1991c18259dde809ba67031062a4996687",
+      "translation_text_hash": "60dad9a8a1123bcd422cd61d985f0f1294c674a117aeadf87c1234ff9b88b052",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가버나움에 이르니 반 세겔 받는 자들이 베드로에게 나아와 가로되 너의 선생이 반 세겔을 내지 아니하느냐"
+      ],
+      "raw_text_hashes": [
+        "60dad9a8a1123bcd422cd61d985f0f1294c674a117aeadf87c1234ff9b88b052"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:17:25",
+      "sequence": 23726,
+      "chapter_label": "MAT 17",
+      "verse_label": "25",
+      "locator": {
+        "book": "MAT",
+        "chapter": 17,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 17,
+          "verse": 25
+        }
+      ],
+      "en": "He said, “Yes.” When he came into the house, Jesus anticipated him, saying, “What do you think, Simon? From whom do the kings of the earth receive toll or tribute? From their children, or from strangers?”",
+      "ko": "가로되 내신다 하고 집에 들어가니 예수께서 먼저 가라사대 시몬아 네 생각은 어떠하뇨 세상 임금들이 뉘게 관세와 정세를 받느냐 자기 아들에게냐 타인에게냐",
+      "source_text_hash": "d6752657ff934c8d81197cbb1bf251faf9b923e54e55cd3fd8b2981f1b5d8027",
+      "translation_text_hash": "951541baa706fb4a91579d79c015c1d2ba1336ce60b4ba8cd705fa23a217398f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 내신다 하고 집에 들어가니 예수께서 먼저 가라사대 시몬아 네 생각은 어떠하뇨 세상 임금들이 뉘게 관세와 정세를 받느냐 자기 아들에게냐 타인에게냐"
+      ],
+      "raw_text_hashes": [
+        "951541baa706fb4a91579d79c015c1d2ba1336ce60b4ba8cd705fa23a217398f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:17:26",
+      "sequence": 23727,
+      "chapter_label": "MAT 17",
+      "verse_label": "26",
+      "locator": {
+        "book": "MAT",
+        "chapter": 17,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 17,
+          "verse": 26
+        }
+      ],
+      "en": "Peter said to him, “From strangers.” Jesus said to him, “Therefore the children are exempt.",
+      "ko": "베드로가 가로되 타인에게니이다 예수께서 가라사대 그러하면 아들들은 세를 면하리라",
+      "source_text_hash": "3d283210e50570c37548e0ff39c107ad0992c77ec7904a7307831c26125d72c5",
+      "translation_text_hash": "319fd7f6cb32b345b93bb28cbd2f6edb379f350a233941c77a6f24ff022a0780",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베드로가 가로되 타인에게니이다 예수께서 가라사대 그러하면 아들들은 세를 면하리라"
+      ],
+      "raw_text_hashes": [
+        "319fd7f6cb32b345b93bb28cbd2f6edb379f350a233941c77a6f24ff022a0780"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:17:27",
+      "sequence": 23728,
+      "chapter_label": "MAT 17",
+      "verse_label": "27",
+      "locator": {
+        "book": "MAT",
+        "chapter": 17,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 17,
+          "verse": 27
+        }
+      ],
+      "en": "But, lest we cause them to stumble, go to the sea, cast a hook, and take up the first fish that comes up. When you have opened its mouth, you will find a stater coin.Take that, and give it to them for me and you.”",
+      "ko": "그러나 우리가 저희로 오해케 하지 않기 위하여 네가 바다에 가서 낚시를 던져 먼저 오르는 고기를 가져 입을 열면 돈 한 세겔을 얻을 것이니 가져다가 나와 너를 위하여 주라 하시니라",
+      "source_text_hash": "99d3764232fa0e08fc67731aae9aaa1ff3d7ce3dc92639b6fbc4722f778c6a35",
+      "translation_text_hash": "8f58b86cdd55c198c0fdf2b58a6cdaef5520d4c8f82b59e4f0530a7eeb4ee0d7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 우리가 저희로 오해케 하지 않기 위하여 네가 바다에 가서 낚시를 던져 먼저 오르는 고기를 가져 입을 열면 돈 한 세겔을 얻을 것이니 가져다가 나와 너를 위하여 주라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "8f58b86cdd55c198c0fdf2b58a6cdaef5520d4c8f82b59e4f0530a7eeb4ee0d7"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,685 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:REV:chapter:022",
+  "unit_ordinal": 1189,
+  "unit_label": "REV 22",
+  "book_code": "REV",
+  "chapter_number": 22,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:REV:22:1",
+      "sequence": 31078,
+      "chapter_label": "REV 22",
+      "verse_label": "1",
+      "locator": {
+        "book": "REV",
+        "chapter": 22,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 22,
+          "verse": 1
+        }
+      ],
+      "en": "He showed me a river of water of life, clear as crystal, proceeding out of the throne of God and of the Lamb,",
+      "ko": "또 저가 수정 같이 맑은 생명수의 강을 내게 보이니 하나님과 및 어린 양의 보좌로부터 나서",
+      "source_text_hash": "6039b8b2b07ae95ee9946af27e428cf94d5d54bbad9f5c2472717baa80afa3fa",
+      "translation_text_hash": "b5dbf215c969dbea343f6b0439e9ec85b13c7b1603ed02643475e313e204e621",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 저가 수정 같이 맑은 생명수의 강을 내게 보이니 하나님과 및 어린 양의 보좌로부터 나서"
+      ],
+      "raw_text_hashes": [
+        "b5dbf215c969dbea343f6b0439e9ec85b13c7b1603ed02643475e313e204e621"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:22:2",
+      "sequence": 31079,
+      "chapter_label": "REV 22",
+      "verse_label": "2",
+      "locator": {
+        "book": "REV",
+        "chapter": 22,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 22,
+          "verse": 2
+        }
+      ],
+      "en": "in the middle of its street. On this side of the river and on that was the tree of life, bearing twelve kinds of fruits, yielding its fruit every month. The leaves of the tree were for the healing of the nations.",
+      "ko": "길 가운데로 흐르더라 강 좌우에 생명 나무가 있어 열 두가지 실과를 맺히되 달마다 그 실과를 맺히고 그 나무 잎사귀들은 만국을 소성하기 위하여 있더라",
+      "source_text_hash": "e2c5ababafcfb5d48e68fc5e68aaa47e77e1c8f659ceacd978b637adbea46d45",
+      "translation_text_hash": "86713ccbcd2d0622a90e37a12dc10a652828c7ebbb9983fa925ac2412c5dc9f0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "길 가운데로 흐르더라 강 좌우에 생명 나무가 있어 열 두가지 실과를 맺히되 달마다 그 실과를 맺히고 그 나무 잎사귀들은 만국을 소성하기 위하여 있더라"
+      ],
+      "raw_text_hashes": [
+        "86713ccbcd2d0622a90e37a12dc10a652828c7ebbb9983fa925ac2412c5dc9f0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:22:3",
+      "sequence": 31080,
+      "chapter_label": "REV 22",
+      "verse_label": "3",
+      "locator": {
+        "book": "REV",
+        "chapter": 22,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 22,
+          "verse": 3
+        }
+      ],
+      "en": "There will be no curse any more. The throne of God and of the Lamb will be in it, and his servants will serve him.",
+      "ko": "다시 저주가 없으며 하나님과 그 어린 양의 보좌가 그 가운데 있으리니 그의 종들이 그를 섬기며",
+      "source_text_hash": "001485a38a53ca7f26743eb6d7bc9d58b8ad6deaf604effc2d4af9c1a017ccdf",
+      "translation_text_hash": "43ff15492af3f7aee193f94d2599640ad034e88392f158fb45d231d2176f592c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다시 저주가 없으며 하나님과 그 어린 양의 보좌가 그 가운데 있으리니 그의 종들이 그를 섬기며"
+      ],
+      "raw_text_hashes": [
+        "43ff15492af3f7aee193f94d2599640ad034e88392f158fb45d231d2176f592c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:22:4",
+      "sequence": 31081,
+      "chapter_label": "REV 22",
+      "verse_label": "4",
+      "locator": {
+        "book": "REV",
+        "chapter": 22,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 22,
+          "verse": 4
+        }
+      ],
+      "en": "They will see his face, and his name will be on their foreheads.",
+      "ko": "그의 얼굴을 볼터이요 그의 이름도 저희 이마에 있으리라",
+      "source_text_hash": "895a06c28b3f743bae3748b99a69b90fe4a25fddde48f8872ce499db80d1f748",
+      "translation_text_hash": "0c91b1896a2911900727e003f1b54dbcfa284989ff94107504f53f9d82b5cd9d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그의 얼굴을 볼터이요 그의 이름도 저희 이마에 있으리라"
+      ],
+      "raw_text_hashes": [
+        "0c91b1896a2911900727e003f1b54dbcfa284989ff94107504f53f9d82b5cd9d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:22:5",
+      "sequence": 31082,
+      "chapter_label": "REV 22",
+      "verse_label": "5",
+      "locator": {
+        "book": "REV",
+        "chapter": 22,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 22,
+          "verse": 5
+        }
+      ],
+      "en": "There will be no night, and they need no lamp light or sun light; for the Lord God will illuminate them. They will reign forever and ever.",
+      "ko": "다시 밤이 없겠고 등불과 햇빛이 쓸데 없으니 이는 주 하나님이 저희에게 비취심이라 저희가 세세토록 왕노릇하리로다",
+      "source_text_hash": "660234789ec46a2c55eda536506e3ba69f3fa00e68d2afe946595deff1f8b13c",
+      "translation_text_hash": "0f82db8355213e87de9dc79f90cc33ae9ff84bd5d958887585aacb1ea8ce4d9f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다시 밤이 없겠고 등불과 햇빛이 쓸데 없으니 이는 주 하나님이 저희에게 비취심이라 저희가 세세토록 왕노릇하리로다"
+      ],
+      "raw_text_hashes": [
+        "0f82db8355213e87de9dc79f90cc33ae9ff84bd5d958887585aacb1ea8ce4d9f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:22:6",
+      "sequence": 31083,
+      "chapter_label": "REV 22",
+      "verse_label": "6",
+      "locator": {
+        "book": "REV",
+        "chapter": 22,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 22,
+          "verse": 6
+        }
+      ],
+      "en": "He said to me, “These words are faithful and true. The Lord God of the spirits of the prophets sent his angel to show to his bondservants the things which must happen soon.”",
+      "ko": "또 그가 내게 말하기를 이 말은 신실하고 참된지라 주 곧 선지자들의 영의 하나님이 그의 종들에게 결코 속히 될 일을 보이시려고 그의 천사를 보내셨도다",
+      "source_text_hash": "028455389eb2f2c7e4d237a96aa7d977b264f69e113aadc45c246d27d344a4cf",
+      "translation_text_hash": "dd51f4474fd4a1492b6175b5a6d4749b5a5f700c1606a7f4872bfd78c687375d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 그가 내게 말하기를 이 말은 신실하고 참된지라 주 곧 선지자들의 영의 하나님이 그의 종들에게 결코 속히 될 일을 보이시려고 그의 천사를 보내셨도다"
+      ],
+      "raw_text_hashes": [
+        "dd51f4474fd4a1492b6175b5a6d4749b5a5f700c1606a7f4872bfd78c687375d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:22:7",
+      "sequence": 31084,
+      "chapter_label": "REV 22",
+      "verse_label": "7",
+      "locator": {
+        "book": "REV",
+        "chapter": 22,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 22,
+          "verse": 7
+        }
+      ],
+      "en": "“Behold, I am coming soon! Blessed is he who keeps the words of the prophecy of this book.”",
+      "ko": "보라 내가 속히 오리니 이 책의 예언의 말씀을 지키는 자가 복이 있으리라 하더라",
+      "source_text_hash": "338e2a25dcf4a560a3f1bebf40201538ff0b772bd9aa4c339fa0b363257b8137",
+      "translation_text_hash": "43fc3ebdcaeb5f12df3580e48cb10824626c12de60ba690ebf95f15091220074",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보라 내가 속히 오리니 이 책의 예언의 말씀을 지키는 자가 복이 있으리라 하더라"
+      ],
+      "raw_text_hashes": [
+        "43fc3ebdcaeb5f12df3580e48cb10824626c12de60ba690ebf95f15091220074"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:22:8",
+      "sequence": 31085,
+      "chapter_label": "REV 22",
+      "verse_label": "8",
+      "locator": {
+        "book": "REV",
+        "chapter": 22,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 22,
+          "verse": 8
+        }
+      ],
+      "en": "Now I, John, am the one who heard and saw these things. When I heard and saw, I fell down to worship before the feet of the angel who had shown me these things.",
+      "ko": "이것들을 보고 들은 자는 나 요한이니 내가 듣고 볼 때에 이 일을 내게 보이던 천사의 발 앞에 경배하려고 엎드렸더니",
+      "source_text_hash": "ce89d0b5467fb8213bf39df8d97630b99ba307dfc0e5809f56421ce443697b06",
+      "translation_text_hash": "f4a96ff8d6d014e2bb241d81e5b1ef84050a054378934f4ef055f5d2ce252f55",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이것들을 보고 들은 자는 나 요한이니 내가 듣고 볼 때에 이 일을 내게 보이던 천사의 발 앞에 경배하려고 엎드렸더니"
+      ],
+      "raw_text_hashes": [
+        "f4a96ff8d6d014e2bb241d81e5b1ef84050a054378934f4ef055f5d2ce252f55"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:22:9",
+      "sequence": 31086,
+      "chapter_label": "REV 22",
+      "verse_label": "9",
+      "locator": {
+        "book": "REV",
+        "chapter": 22,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 22,
+          "verse": 9
+        }
+      ],
+      "en": "He said to me, “You must not do that! I am a fellow bondservant with you and with your brothers, the prophets, and with those who keep the words of this book. Worship God.”",
+      "ko": "저가 내게 말하기를 나는 너와 네 형제 선지자들과 또 이 책의 말을 지키는 자들과 함께 된 종이니 그리하지 말고 오직 하나님께 경배하라 하더라",
+      "source_text_hash": "1640b9c83888f473a32ddb40a9cb70bdee4da8aaac362d87f87f0fb2e0d7ecd4",
+      "translation_text_hash": "c531d07c24828108cbf6c210251c57adacd649489732b9c0c49e01c2d1316ae7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 내게 말하기를 나는 너와 네 형제 선지자들과 또 이 책의 말을 지키는 자들과 함께 된 종이니 그리하지 말고 오직 하나님께 경배하라 하더라"
+      ],
+      "raw_text_hashes": [
+        "c531d07c24828108cbf6c210251c57adacd649489732b9c0c49e01c2d1316ae7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:22:10",
+      "sequence": 31087,
+      "chapter_label": "REV 22",
+      "verse_label": "10",
+      "locator": {
+        "book": "REV",
+        "chapter": 22,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 22,
+          "verse": 10
+        }
+      ],
+      "en": "He said to me, “Don’t seal up the words of the prophecy of this book, for the time is at hand.",
+      "ko": "또 내게 말하되 이 책의 예언의 말씀을 인봉하지 말라 때가 가까우니라",
+      "source_text_hash": "e969dac2b8f92ac947912f78833de29d3dff9fa17425febb3b03a56cfb27781a",
+      "translation_text_hash": "7bbdc50657bb285a669ade5777e7ebe749257f9fbd8d7f21e94770a06961ed99",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 내게 말하되 이 책의 예언의 말씀을 인봉하지 말라 때가 가까우니라"
+      ],
+      "raw_text_hashes": [
+        "7bbdc50657bb285a669ade5777e7ebe749257f9fbd8d7f21e94770a06961ed99"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:22:11",
+      "sequence": 31088,
+      "chapter_label": "REV 22",
+      "verse_label": "11",
+      "locator": {
+        "book": "REV",
+        "chapter": 22,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 22,
+          "verse": 11
+        }
+      ],
+      "en": "He who acts unjustly, let him act unjustly still. He who is filthy, let him be filthy still. He who is righteous, let him do righteousness still. He who is holy, let him be holy still.”",
+      "ko": "불의를 하는 자는 그대로 불의를 하고 더러운 자는 그대로 더럽고 의로운 자는 그대로 의를 행하고 거룩한 자는 그대로 거룩되게 하라",
+      "source_text_hash": "a8cbf6e077aca1028e88fa7becbd5537a5b14c9c5151ee91113a8764d9ca64a6",
+      "translation_text_hash": "f619c73485f7b95bb9a5673869add070691918ffe54cc01043450e8196a13ea6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "불의를 하는 자는 그대로 불의를 하고 더러운 자는 그대로 더럽고 의로운 자는 그대로 의를 행하고 거룩한 자는 그대로 거룩되게 하라"
+      ],
+      "raw_text_hashes": [
+        "f619c73485f7b95bb9a5673869add070691918ffe54cc01043450e8196a13ea6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:22:12",
+      "sequence": 31089,
+      "chapter_label": "REV 22",
+      "verse_label": "12",
+      "locator": {
+        "book": "REV",
+        "chapter": 22,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 22,
+          "verse": 12
+        }
+      ],
+      "en": "“Behold, I am coming soon! My reward is with me, to repay to each man according to his work.",
+      "ko": "보라 내가 속히 오리니 내가 줄 상이 내게 있어 각 사람에게 그의 일한대로 갚아 주리라",
+      "source_text_hash": "92841e02924c5c3612b59685c71222f78bea50488097a3b11ab6dc5594461277",
+      "translation_text_hash": "e4bc41ade507aa334ccccd351ef0129af66501f78beab4697131b9ead2c6229f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보라 내가 속히 오리니 내가 줄 상이 내게 있어 각 사람에게 그의 일한대로 갚아 주리라"
+      ],
+      "raw_text_hashes": [
+        "e4bc41ade507aa334ccccd351ef0129af66501f78beab4697131b9ead2c6229f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:22:13",
+      "sequence": 31090,
+      "chapter_label": "REV 22",
+      "verse_label": "13",
+      "locator": {
+        "book": "REV",
+        "chapter": 22,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 22,
+          "verse": 13
+        }
+      ],
+      "en": "I am the Alpha and the Omega, the First and the Last, the Beginning and the End.",
+      "ko": "나는 알파와 오메가요 처음과 나중이요 시작과 끝이라",
+      "source_text_hash": "9b347b120819eeb7b74861829c440230c0f1eae4761b1b99f6eb1d9f4d37f0e2",
+      "translation_text_hash": "e7b2db226a7d643e672d7c7677e6aa72cbd777324105c976c6a55f8d1b287a48",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 알파와 오메가요 처음과 나중이요 시작과 끝이라"
+      ],
+      "raw_text_hashes": [
+        "e7b2db226a7d643e672d7c7677e6aa72cbd777324105c976c6a55f8d1b287a48"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:22:14",
+      "sequence": 31091,
+      "chapter_label": "REV 22",
+      "verse_label": "14",
+      "locator": {
+        "book": "REV",
+        "chapter": 22,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 22,
+          "verse": 14
+        }
+      ],
+      "en": "Blessed are those who do his commandments,that they may have the right to the tree of life, and may enter in by the gates into the city.",
+      "ko": "그 두루마기를 빠는 자들은 복이 있으니 이는 저희가 생명 나무에 나아가며 문들을 통하여 성에 들어갈 권세를 얻으려 함이로다",
+      "source_text_hash": "520d91203422a2f724cccd3a66d790ab477f83139fb13efdef266fd3c797744d",
+      "translation_text_hash": "5477d250a95a401ab9f6eb99a64736a15b0d3bc784b76b1606671fa1a8b758b8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 두루마기를 빠는 자들은 복이 있으니 이는 저희가 생명 나무에 나아가며 문들을 통하여 성에 들어갈 권세를 얻으려 함이로다"
+      ],
+      "raw_text_hashes": [
+        "5477d250a95a401ab9f6eb99a64736a15b0d3bc784b76b1606671fa1a8b758b8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:22:15",
+      "sequence": 31092,
+      "chapter_label": "REV 22",
+      "verse_label": "15",
+      "locator": {
+        "book": "REV",
+        "chapter": 22,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 22,
+          "verse": 15
+        }
+      ],
+      "en": "Outside are the dogs, the sorcerers, the sexually immoral, the murderers, the idolaters, and everyone who loves and practices falsehood.",
+      "ko": "개들과 술객들과 행음자들과 살인자들과 우상 숭배자들과 및 거짓말을 좋아하며 지어내는 자마다 성밖에 있으리라",
+      "source_text_hash": "17ab875c6716846dbdf01e63c09c6e1d6beef2042de210a8c0cb1ce8db1bfb1a",
+      "translation_text_hash": "92b9d5865abc00060e66ebf1d46b45973d2d4d1a8f5dbb3a7699d8d6d12c188b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "개들과 술객들과 행음자들과 살인자들과 우상 숭배자들과 및 거짓말을 좋아하며 지어내는 자마다 성밖에 있으리라"
+      ],
+      "raw_text_hashes": [
+        "92b9d5865abc00060e66ebf1d46b45973d2d4d1a8f5dbb3a7699d8d6d12c188b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:22:16",
+      "sequence": 31093,
+      "chapter_label": "REV 22",
+      "verse_label": "16",
+      "locator": {
+        "book": "REV",
+        "chapter": 22,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 22,
+          "verse": 16
+        }
+      ],
+      "en": "I, Jesus, have sent my angel to testify these things to you for the assemblies. I am the root and the offspring of David, the Bright and Morning Star.”",
+      "ko": "나 예수는 교회들을 위하여 내 사자를 보내어 이것들을 너희에게 증거하게 하였노라 나는 다윗의 뿌리요 자손이니 곧 광명한 새벽별이라 하시더라",
+      "source_text_hash": "a3cd02a43fee27d0ad9c89c6ae710939f8a3aaa5efe30fe05a286081a3659909",
+      "translation_text_hash": "c1d8b6e3d49c09d764e4db354083ce2f4243bf1b4abc20c15fc236c4cc158a85",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 예수는 교회들을 위하여 내 사자를 보내어 이것들을 너희에게 증거하게 하였노라 나는 다윗의 뿌리요 자손이니 곧 광명한 새벽별이라 하시더라"
+      ],
+      "raw_text_hashes": [
+        "c1d8b6e3d49c09d764e4db354083ce2f4243bf1b4abc20c15fc236c4cc158a85"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:22:17",
+      "sequence": 31094,
+      "chapter_label": "REV 22",
+      "verse_label": "17",
+      "locator": {
+        "book": "REV",
+        "chapter": 22,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 22,
+          "verse": 17
+        }
+      ],
+      "en": "The Spirit and the bride say, “Come!” He who hears, let him say, “Come!” He who is thirsty, let him come. He who desires, let him take the water of life freely.",
+      "ko": "성령과 신부가 말씀하시기를 오라 하시는도다 듣는 자도 오라 할 것이요 목마른 자도 올 것이요 또 원하는 자는 값 없이 생명수를 받으라 하시더라",
+      "source_text_hash": "f15d30fac7b7e2f8163c7f8039f8ea9fd1e3455b44ad8989a8627d5e87af7155",
+      "translation_text_hash": "becf9ca8a9f33bb84e80ac45f2463f3341ace92a926a39b6f297129dca2eb954",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "성령과 신부가 말씀하시기를 오라 하시는도다 듣는 자도 오라 할 것이요 목마른 자도 올 것이요 또 원하는 자는 값 없이 생명수를 받으라 하시더라"
+      ],
+      "raw_text_hashes": [
+        "becf9ca8a9f33bb84e80ac45f2463f3341ace92a926a39b6f297129dca2eb954"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:22:18",
+      "sequence": 31095,
+      "chapter_label": "REV 22",
+      "verse_label": "18",
+      "locator": {
+        "book": "REV",
+        "chapter": 22,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 22,
+          "verse": 18
+        }
+      ],
+      "en": "I testify to everyone who hears the words of the prophecy of this book: if anyone adds to them, God will add to him the plagues which are written in this book.",
+      "ko": "내가 이 책의 예언의 말씀을 듣는 각인에게 증거하노니 만일 누구든지 이것들 외에 더하면 하나님이 이 책에 기록된 재앙들을 그에게 더하실 터이요",
+      "source_text_hash": "77561f4cdc76ed491d0412d5ba39e8b5f69e0b85d77dfa20f810a5e93550bf4a",
+      "translation_text_hash": "670e097cb0e477b43550b88e05ec03a46445c7a656f19b7b46a07cff8225ea0b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 이 책의 예언의 말씀을 듣는 각인에게 증거하노니 만일 누구든지 이것들 외에 더하면 하나님이 이 책에 기록된 재앙들을 그에게 더하실 터이요"
+      ],
+      "raw_text_hashes": [
+        "670e097cb0e477b43550b88e05ec03a46445c7a656f19b7b46a07cff8225ea0b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:22:19",
+      "sequence": 31096,
+      "chapter_label": "REV 22",
+      "verse_label": "19",
+      "locator": {
+        "book": "REV",
+        "chapter": 22,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 22,
+          "verse": 19
+        }
+      ],
+      "en": "If anyone takes away from the words of the book of this prophecy, God will take away his part from the tree of life, and out of the holy city, which are written in this book.",
+      "ko": "만일 누구든지 이 책의 예언의 말씀에서 제하여 버리면 하나님이 이 책에 기록된 생명 나무와 및 거룩한 성에 참예함을 제하여 버리시리라",
+      "source_text_hash": "da9cee835dbee4fddf1900612f31033e42548620ef7c0cd1ee9d1f7da7ff9bf6",
+      "translation_text_hash": "20bf8739f631d3bee7f35a4e02ef61324af547dd61d0e3474caa75e0bc9cb44e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 누구든지 이 책의 예언의 말씀에서 제하여 버리면 하나님이 이 책에 기록된 생명 나무와 및 거룩한 성에 참예함을 제하여 버리시리라"
+      ],
+      "raw_text_hashes": [
+        "20bf8739f631d3bee7f35a4e02ef61324af547dd61d0e3474caa75e0bc9cb44e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:22:20",
+      "sequence": 31097,
+      "chapter_label": "REV 22",
+      "verse_label": "20",
+      "locator": {
+        "book": "REV",
+        "chapter": 22,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 22,
+          "verse": 20
+        }
+      ],
+      "en": "He who testifies these things says, “Yes, I am coming soon.” Amen! Yes, come, Lord Jesus!",
+      "ko": "이것들을 증거하신 이가 가라사대 내가 진실로 속히 오리라 하시거늘 아멘 주 예수여 오시옵소서",
+      "source_text_hash": "2b1287998dc03c7c31e51cbeca22be30efe8d40d674a4a59bcbe73e59fb76dfa",
+      "translation_text_hash": "45d5bd4517a4cf7ca41fcbcb0f879186b7deeeb5a94781d2bb00452ba0738eda",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이것들을 증거하신 이가 가라사대 내가 진실로 속히 오리라 하시거늘 아멘 주 예수여 오시옵소서"
+      ],
+      "raw_text_hashes": [
+        "45d5bd4517a4cf7ca41fcbcb0f879186b7deeeb5a94781d2bb00452ba0738eda"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:22:21",
+      "sequence": 31098,
+      "chapter_label": "REV 22",
+      "verse_label": "21",
+      "locator": {
+        "book": "REV",
+        "chapter": 22,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 22,
+          "verse": 21
+        }
+      ],
+      "en": "The grace of the Lord Jesus Christ be with all the saints. Amen.",
+      "ko": "주 예수의 은혜가 모든 자들에게 있을찌어다 아멘",
+      "source_text_hash": "a5ae586ae75e8a2eb0bf778e382201e89ea426ae5bc3f6a54f7d5093769b8352",
+      "translation_text_hash": "fb2e9da1f2b11bcf85decd3d1493e948f1e614ba53760ac84073a5c7b9acb977",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주 예수의 은혜가 모든 자들에게 있을찌어다 아멘"
+      ],
+      "raw_text_hashes": [
+        "fb2e9da1f2b11bcf85decd3d1493e948f1e614ba53760ac84073a5c7b9acb977"
+      ]
+    }
+  ]
+}

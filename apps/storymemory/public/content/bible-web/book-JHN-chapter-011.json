@@ -1,0 +1,1837 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JHN:chapter:011",
+  "unit_ordinal": 1008,
+  "unit_label": "JHN 11",
+  "book_code": "JHN",
+  "chapter_number": 11,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JHN:11:1",
+      "sequence": 26524,
+      "chapter_label": "JHN 11",
+      "verse_label": "1",
+      "locator": {
+        "book": "JHN",
+        "chapter": 11,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 11,
+          "verse": 1
+        }
+      ],
+      "en": "Now a certain man was sick, Lazarus from Bethany, of the village of Mary and her sister, Martha.",
+      "ko": "어떤 병든 자가 있으니 이는 마리아와 그 형제 마르다의 촌 베다니에 사는 나사로라",
+      "source_text_hash": "4638394766067efe89517515465a5aa7b8e844fb28018e38472f9c812b73de08",
+      "translation_text_hash": "0b625e14d1cc18ff7fe62880e042dce4b191906654eb8209499b95052bddbc88",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어떤 병든 자가 있으니 이는 마리아와 그 형제 마르다의 촌 베다니에 사는 나사로라"
+      ],
+      "raw_text_hashes": [
+        "0b625e14d1cc18ff7fe62880e042dce4b191906654eb8209499b95052bddbc88"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:11:2",
+      "sequence": 26525,
+      "chapter_label": "JHN 11",
+      "verse_label": "2",
+      "locator": {
+        "book": "JHN",
+        "chapter": 11,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 11,
+          "verse": 2
+        }
+      ],
+      "en": "It was that Mary who had anointed the Lord with ointment and wiped his feet with her hair, whose brother Lazarus was sick.",
+      "ko": "이 마리아는 향유를 주께 붓고 머리털로 주의 발을 씻기던 자요 병든 나사로는 그의 오라비러라",
+      "source_text_hash": "8e68356dbbc3c81486087057d38bc5c5e07500f88449156610c398bc05fc91c8",
+      "translation_text_hash": "769ecee42271f03d82931e1a192e2275acb11668d32d61d7b0def09a5cdeab35",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 마리아는 향유를 주께 붓고 머리털로 주의 발을 씻기던 자요 병든 나사로는 그의 오라비러라"
+      ],
+      "raw_text_hashes": [
+        "769ecee42271f03d82931e1a192e2275acb11668d32d61d7b0def09a5cdeab35"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:11:3",
+      "sequence": 26526,
+      "chapter_label": "JHN 11",
+      "verse_label": "3",
+      "locator": {
+        "book": "JHN",
+        "chapter": 11,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 11,
+          "verse": 3
+        }
+      ],
+      "en": "The sisters therefore sent to him, saying, “Lord, behold, he for whom you have great affection is sick.”",
+      "ko": "이에 그 누이들이 예수께 사람을 보내어 가로되 주여 보시옵소서 사랑하시는 자가 병들었나이다 하니",
+      "source_text_hash": "d37f60222d6cbffd23acc74edb65c73f8f7097dcacad94a9f67cdd9a962c9522",
+      "translation_text_hash": "e02b972b38705433964e4081b2160e7fcee9d68637cdcb94b885b47fb93ba8b5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 그 누이들이 예수께 사람을 보내어 가로되 주여 보시옵소서 사랑하시는 자가 병들었나이다 하니"
+      ],
+      "raw_text_hashes": [
+        "e02b972b38705433964e4081b2160e7fcee9d68637cdcb94b885b47fb93ba8b5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:11:4",
+      "sequence": 26527,
+      "chapter_label": "JHN 11",
+      "verse_label": "4",
+      "locator": {
+        "book": "JHN",
+        "chapter": 11,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 11,
+          "verse": 4
+        }
+      ],
+      "en": "But when Jesus heard it, he said, “This sickness is not to death, but for the glory of God, that God’s Son may be glorified by it.”",
+      "ko": "예수께서 들으시고 가라사대 이 병은 죽을 병이 아니라 하나님의 영광을 위함이요 하나님의 아들로 이를 인하여 영광을 얻게 하려함이라 하시더라",
+      "source_text_hash": "ce24003305d72b583ec3d6d619b77757eecdbe56c212192a02ad4a1d44753bfd",
+      "translation_text_hash": "3ea66646b89b16b5292bc2616c6ae57654888ba160208fe7025cb24d550e3fd1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 들으시고 가라사대 이 병은 죽을 병이 아니라 하나님의 영광을 위함이요 하나님의 아들로 이를 인하여 영광을 얻게 하려함이라 하시더라"
+      ],
+      "raw_text_hashes": [
+        "3ea66646b89b16b5292bc2616c6ae57654888ba160208fe7025cb24d550e3fd1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:11:5",
+      "sequence": 26528,
+      "chapter_label": "JHN 11",
+      "verse_label": "5",
+      "locator": {
+        "book": "JHN",
+        "chapter": 11,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 11,
+          "verse": 5
+        }
+      ],
+      "en": "Now Jesus loved Martha, and her sister, and Lazarus.",
+      "ko": "예수께서 본래 마르다와 그 동생과 나사로를 사랑하시더니",
+      "source_text_hash": "ad0151a69b1cc8089a9a3e5dc9b9da5ac4d71dc04f58a603ee05a75d12b9c57c",
+      "translation_text_hash": "6eaca7c794d49aa96c32ddd63755e3176d8c9071664ae747c609cb1a4139a20e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 본래 마르다와 그 동생과 나사로를 사랑하시더니"
+      ],
+      "raw_text_hashes": [
+        "6eaca7c794d49aa96c32ddd63755e3176d8c9071664ae747c609cb1a4139a20e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:11:6",
+      "sequence": 26529,
+      "chapter_label": "JHN 11",
+      "verse_label": "6",
+      "locator": {
+        "book": "JHN",
+        "chapter": 11,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 11,
+          "verse": 6
+        }
+      ],
+      "en": "When therefore he heard that he was sick, he stayed two days in the place where he was.",
+      "ko": "나사로가 병들었다 함을 들으시고 그 계시던 곳에 이틀을 더 유하시고",
+      "source_text_hash": "6f968852e4450d821a65092c3d6cd71f3f31d9b9df862c4ee096292e0af68975",
+      "translation_text_hash": "a9808a44ca2395ad3f551999f0ff13698ef00e80c6bf6e8a2ccf440effe71b66",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나사로가 병들었다 함을 들으시고 그 계시던 곳에 이틀을 더 유하시고"
+      ],
+      "raw_text_hashes": [
+        "a9808a44ca2395ad3f551999f0ff13698ef00e80c6bf6e8a2ccf440effe71b66"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:11:7",
+      "sequence": 26530,
+      "chapter_label": "JHN 11",
+      "verse_label": "7",
+      "locator": {
+        "book": "JHN",
+        "chapter": 11,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 11,
+          "verse": 7
+        }
+      ],
+      "en": "Then after this he said to the disciples, “Let’s go into Judea again.”",
+      "ko": "그 후에 제자들에게 이르시되 유대로 다시 가자 하시니",
+      "source_text_hash": "a78cd46cdaaf8828f88cf62d8ba36aab40d0ae1e589af592027b041996561df6",
+      "translation_text_hash": "dd8609dc133226c8eec18bbde0cac2f0a969ab9317eaa1d3d7b435ffc1d98d00",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 후에 제자들에게 이르시되 유대로 다시 가자 하시니"
+      ],
+      "raw_text_hashes": [
+        "dd8609dc133226c8eec18bbde0cac2f0a969ab9317eaa1d3d7b435ffc1d98d00"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:11:8",
+      "sequence": 26531,
+      "chapter_label": "JHN 11",
+      "verse_label": "8",
+      "locator": {
+        "book": "JHN",
+        "chapter": 11,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 11,
+          "verse": 8
+        }
+      ],
+      "en": "The disciples asked him, “Rabbi, the Jews were just trying to stone you. Are you going there again?”",
+      "ko": "제자들이 말하되 랍비여 방금도 유대인들이 돌로 치려 하였는데 또 그리로 가시려 하나이까",
+      "source_text_hash": "c101c2eb3a57fe3a0b64f9ce9cbee755e1161c4255e53093761b0f8b0e943596",
+      "translation_text_hash": "ee0056a4dc6231ab0e8eefbde77476b84c57d4aa3d839226a5cf3a93071d0125",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제자들이 말하되 랍비여 방금도 유대인들이 돌로 치려 하였는데 또 그리로 가시려 하나이까"
+      ],
+      "raw_text_hashes": [
+        "ee0056a4dc6231ab0e8eefbde77476b84c57d4aa3d839226a5cf3a93071d0125"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:11:9",
+      "sequence": 26532,
+      "chapter_label": "JHN 11",
+      "verse_label": "9",
+      "locator": {
+        "book": "JHN",
+        "chapter": 11,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 11,
+          "verse": 9
+        }
+      ],
+      "en": "Jesus answered, “Aren’t there twelve hours of daylight? If a man walks in the day, he doesn’t stumble, because he sees the light of this world.",
+      "ko": "예수께서 대답하시되 낮이 열 두시가 아니냐 사람이 낮에 다니면 이 세상의 빛을 보므로 실족하지 아니하고",
+      "source_text_hash": "4ba4382167277e30086e81199517ba2fbb99e8303d29fce00cc65c5fce824da0",
+      "translation_text_hash": "6ee11417d7f3528d8d4d9bef8b7a010cc0e8f282e1eb06df0dec264aa46b250e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 대답하시되 낮이 열 두시가 아니냐 사람이 낮에 다니면 이 세상의 빛을 보므로 실족하지 아니하고"
+      ],
+      "raw_text_hashes": [
+        "6ee11417d7f3528d8d4d9bef8b7a010cc0e8f282e1eb06df0dec264aa46b250e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:11:10",
+      "sequence": 26533,
+      "chapter_label": "JHN 11",
+      "verse_label": "10",
+      "locator": {
+        "book": "JHN",
+        "chapter": 11,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 11,
+          "verse": 10
+        }
+      ],
+      "en": "But if a man walks in the night, he stumbles, because the light isn’t in him.”",
+      "ko": "밤에 다니면 빛이 그 사람 안에 없는고로 실족하느니라",
+      "source_text_hash": "a74e5bc285ac60aaa5c863234588afa2c906994ba8ed54fc7851896edae19e86",
+      "translation_text_hash": "4933c276aa1285cd9a23e3c4a4901986291a3f6d505cfe82a97beff579589b66",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "밤에 다니면 빛이 그 사람 안에 없는고로 실족하느니라"
+      ],
+      "raw_text_hashes": [
+        "4933c276aa1285cd9a23e3c4a4901986291a3f6d505cfe82a97beff579589b66"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:11:11",
+      "sequence": 26534,
+      "chapter_label": "JHN 11",
+      "verse_label": "11",
+      "locator": {
+        "book": "JHN",
+        "chapter": 11,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 11,
+          "verse": 11
+        }
+      ],
+      "en": "He said these things, and after that, he said to them, “Our friend Lazarus has fallen asleep, but I am going so that I may awake him out of sleep.”",
+      "ko": "이 말씀을 하신 후에 또 가라사대 우리 친구 나사로가 잠들었도다 그러나 내가 깨우러 가노라",
+      "source_text_hash": "16c801939723dbea987f8ba34ac0c559d4e422224538eaf7ac5e924992c09c3c",
+      "translation_text_hash": "a49e76439298f1dd8fe13de370fc35ca7647d64e79cfc7de7112a47481f7f327",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 말씀을 하신 후에 또 가라사대 우리 친구 나사로가 잠들었도다 그러나 내가 깨우러 가노라"
+      ],
+      "raw_text_hashes": [
+        "a49e76439298f1dd8fe13de370fc35ca7647d64e79cfc7de7112a47481f7f327"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:11:12",
+      "sequence": 26535,
+      "chapter_label": "JHN 11",
+      "verse_label": "12",
+      "locator": {
+        "book": "JHN",
+        "chapter": 11,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 11,
+          "verse": 12
+        }
+      ],
+      "en": "The disciples therefore said, “Lord, if he has fallen asleep, he will recover.”",
+      "ko": "제자들이 가로되 주여 잠들었으면 낫겠나이다 하더라",
+      "source_text_hash": "35ce56b36d0c380b0b40252dd8eab34ed957c33634bb7d8a88ed8a5631f13260",
+      "translation_text_hash": "ebd35012b06b3f97fc358f289d7b5f237745f9d7463f1238712b0c6f4d8e1895",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제자들이 가로되 주여 잠들었으면 낫겠나이다 하더라"
+      ],
+      "raw_text_hashes": [
+        "ebd35012b06b3f97fc358f289d7b5f237745f9d7463f1238712b0c6f4d8e1895"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:11:13",
+      "sequence": 26536,
+      "chapter_label": "JHN 11",
+      "verse_label": "13",
+      "locator": {
+        "book": "JHN",
+        "chapter": 11,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 11,
+          "verse": 13
+        }
+      ],
+      "en": "Now Jesus had spoken of his death, but they thought that he spoke of taking rest in sleep.",
+      "ko": "예수는 그의 죽음을 가리켜 말씀하신 것이나 저희는 잠들어 쉬는 것을 가리켜 말씀하심인줄 생각하는지라",
+      "source_text_hash": "4a75df7c1eb988733eb213bd2bd030a6bf34bfbe3ef11ff53a85e1c27b389164",
+      "translation_text_hash": "5a811ef655801fba7d323d7f8702b5fe8e15d6bb1394eb55c68783e72f17bcfc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수는 그의 죽음을 가리켜 말씀하신 것이나 저희는 잠들어 쉬는 것을 가리켜 말씀하심인줄 생각하는지라"
+      ],
+      "raw_text_hashes": [
+        "5a811ef655801fba7d323d7f8702b5fe8e15d6bb1394eb55c68783e72f17bcfc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:11:14",
+      "sequence": 26537,
+      "chapter_label": "JHN 11",
+      "verse_label": "14",
+      "locator": {
+        "book": "JHN",
+        "chapter": 11,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 11,
+          "verse": 14
+        }
+      ],
+      "en": "So Jesus said to them plainly then, “Lazarus is dead.",
+      "ko": "이에 예수께서 밝히 이르시되 나사로가 죽었느니라",
+      "source_text_hash": "55ddee91d7390c3b2559718e8d800cfd2e1f15e4b719142f68732225ba0fa045",
+      "translation_text_hash": "3d661c5bce957c258e2bc25ace7c0d9aff829089746a3e787f85e3e85087cd54",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 예수께서 밝히 이르시되 나사로가 죽었느니라"
+      ],
+      "raw_text_hashes": [
+        "3d661c5bce957c258e2bc25ace7c0d9aff829089746a3e787f85e3e85087cd54"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:11:15",
+      "sequence": 26538,
+      "chapter_label": "JHN 11",
+      "verse_label": "15",
+      "locator": {
+        "book": "JHN",
+        "chapter": 11,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 11,
+          "verse": 15
+        }
+      ],
+      "en": "I am glad for your sakes that I was not there, so that you may believe. Nevertheless, let’s go to him.”",
+      "ko": "내가 거기 있지 아니한 것을 너희를 위하여 기뻐하노니 이는 너희로 믿게 하려함이라 그러나 그에게로 가자 하신대",
+      "source_text_hash": "87183674e61e8c32f4232c8c659430f1e31f397ad13975bfb084abdc0c28749d",
+      "translation_text_hash": "55b05a4f6364a515e539f6a06bb9fbf6c0ec8324bd56b6b271f5c45ebb260783",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 거기 있지 아니한 것을 너희를 위하여 기뻐하노니 이는 너희로 믿게 하려함이라 그러나 그에게로 가자 하신대"
+      ],
+      "raw_text_hashes": [
+        "55b05a4f6364a515e539f6a06bb9fbf6c0ec8324bd56b6b271f5c45ebb260783"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:11:16",
+      "sequence": 26539,
+      "chapter_label": "JHN 11",
+      "verse_label": "16",
+      "locator": {
+        "book": "JHN",
+        "chapter": 11,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 11,
+          "verse": 16
+        }
+      ],
+      "en": "Thomas therefore, who is called Didymus, said to his fellow disciples, “Let’s also go, that we may die with him.”",
+      "ko": "디두모라 하는 도마가 다른 제자들에게 말하되 우리도 주와 함께 죽으러 가자 하니라",
+      "source_text_hash": "50b6ad7d8230964c965988ddb0ce7995ed378d8b1adf1b6f61467690324d3c99",
+      "translation_text_hash": "e9271697c14a2c67a221b85d21a6cfc14e862ef7c953dc00b30734633e92776a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "디두모라 하는 도마가 다른 제자들에게 말하되 우리도 주와 함께 죽으러 가자 하니라"
+      ],
+      "raw_text_hashes": [
+        "e9271697c14a2c67a221b85d21a6cfc14e862ef7c953dc00b30734633e92776a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:11:17",
+      "sequence": 26540,
+      "chapter_label": "JHN 11",
+      "verse_label": "17",
+      "locator": {
+        "book": "JHN",
+        "chapter": 11,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 11,
+          "verse": 17
+        }
+      ],
+      "en": "So when Jesus came, he found that he had been in the tomb four days already.",
+      "ko": "예수께서 와서 보시니 나사로가 무덤에 있은지 이미 나흘이라",
+      "source_text_hash": "12e2a2c45c7b66e98545b977ce59369b86dda1e9e82ce79f9dc607cd9bd87e9c",
+      "translation_text_hash": "a1d4a040b46bd8d3175179d3c91d09f05de99d659d0f6728c84c244f986edbba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 와서 보시니 나사로가 무덤에 있은지 이미 나흘이라"
+      ],
+      "raw_text_hashes": [
+        "a1d4a040b46bd8d3175179d3c91d09f05de99d659d0f6728c84c244f986edbba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:11:18",
+      "sequence": 26541,
+      "chapter_label": "JHN 11",
+      "verse_label": "18",
+      "locator": {
+        "book": "JHN",
+        "chapter": 11,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 11,
+          "verse": 18
+        }
+      ],
+      "en": "Now Bethany was near Jerusalem, about fifteen stadia away.",
+      "ko": "베다니는 예루살렘에서 가깝기가 한 오리쯤 되매",
+      "source_text_hash": "35f415f5bde2e83c86566577a6991283cbccad051fdfdccf709484c7903448f4",
+      "translation_text_hash": "3880663620fed8663c9a21ef772732f8b00d1dda9a50b19733c7ed2b0f96e3ee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베다니는 예루살렘에서 가깝기가 한 오리쯤 되매"
+      ],
+      "raw_text_hashes": [
+        "3880663620fed8663c9a21ef772732f8b00d1dda9a50b19733c7ed2b0f96e3ee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:11:19",
+      "sequence": 26542,
+      "chapter_label": "JHN 11",
+      "verse_label": "19",
+      "locator": {
+        "book": "JHN",
+        "chapter": 11,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 11,
+          "verse": 19
+        }
+      ],
+      "en": "Many of the Jews had joined the women around Martha and Mary, to console them concerning their brother.",
+      "ko": "많은 유대인이 마르다와 마리아에게 그 오라비의 일로 위문하러 왔더니",
+      "source_text_hash": "acebf3143a90eb52d5b19341aec4fc2ad9c374690708fbd56ad18afd771e6acd",
+      "translation_text_hash": "69b7f0ef7b6cfcd83aa19bc0fd1b107c83af5b2b11f63d33a76b0f73f3f08da0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "많은 유대인이 마르다와 마리아에게 그 오라비의 일로 위문하러 왔더니"
+      ],
+      "raw_text_hashes": [
+        "69b7f0ef7b6cfcd83aa19bc0fd1b107c83af5b2b11f63d33a76b0f73f3f08da0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:11:20",
+      "sequence": 26543,
+      "chapter_label": "JHN 11",
+      "verse_label": "20",
+      "locator": {
+        "book": "JHN",
+        "chapter": 11,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 11,
+          "verse": 20
+        }
+      ],
+      "en": "Then when Martha heard that Jesus was coming, she went and met him, but Mary stayed in the house.",
+      "ko": "마르다는 예수 오신다는 말을 듣고 곧 나가 맞되 마리아는 집에 앉았더라",
+      "source_text_hash": "4d24784e9a6cd4b3c8bb324078c92d20e8d78bc11c48e4e0e9abc5feb957e229",
+      "translation_text_hash": "873afa6a10004b6f550e6560d35a33fabe5c153765feaf65e02fe78ebd2de556",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마르다는 예수 오신다는 말을 듣고 곧 나가 맞되 마리아는 집에 앉았더라"
+      ],
+      "raw_text_hashes": [
+        "873afa6a10004b6f550e6560d35a33fabe5c153765feaf65e02fe78ebd2de556"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:11:21",
+      "sequence": 26544,
+      "chapter_label": "JHN 11",
+      "verse_label": "21",
+      "locator": {
+        "book": "JHN",
+        "chapter": 11,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 11,
+          "verse": 21
+        }
+      ],
+      "en": "Therefore Martha said to Jesus, “Lord, if you would have been here, my brother wouldn’t have died.",
+      "ko": "마르다가 예수께 여짜오되 주께서 여기 계셨더면 내 오라비가 죽지 아니하였겠나이다",
+      "source_text_hash": "93837f132412e28af4e0b607683f87589069b368e28a367bee06c27c761b5c89",
+      "translation_text_hash": "f3d72a279c417cd21e1893d4a59f16e96c939d5053e488d43e2231139bb1e252",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마르다가 예수께 여짜오되 주께서 여기 계셨더면 내 오라비가 죽지 아니하였겠나이다"
+      ],
+      "raw_text_hashes": [
+        "f3d72a279c417cd21e1893d4a59f16e96c939d5053e488d43e2231139bb1e252"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:11:22",
+      "sequence": 26545,
+      "chapter_label": "JHN 11",
+      "verse_label": "22",
+      "locator": {
+        "book": "JHN",
+        "chapter": 11,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 11,
+          "verse": 22
+        }
+      ],
+      "en": "Even now I know that whatever you ask of God, God will give you.”",
+      "ko": "그러나 나는 이제라도 주께서 무엇이든지 하나님께 구하시는 것을 하나님이 주실 줄을 아나이다",
+      "source_text_hash": "0c53c65d69a201ddbbce9735e1e0f5d3e1e47833b3762170e6b16e02ce64ba51",
+      "translation_text_hash": "3f464f9d58595236c8ce62fd4d9cd03a23178da7bb96e0d267a7d6f0caba39dc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 나는 이제라도 주께서 무엇이든지 하나님께 구하시는 것을 하나님이 주실 줄을 아나이다"
+      ],
+      "raw_text_hashes": [
+        "3f464f9d58595236c8ce62fd4d9cd03a23178da7bb96e0d267a7d6f0caba39dc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:11:23",
+      "sequence": 26546,
+      "chapter_label": "JHN 11",
+      "verse_label": "23",
+      "locator": {
+        "book": "JHN",
+        "chapter": 11,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 11,
+          "verse": 23
+        }
+      ],
+      "en": "Jesus said to her, “Your brother will rise again.”",
+      "ko": "예수께서 가라사대 네 오라비가 다시 살리라",
+      "source_text_hash": "8adf01c391ee23aece5aba6ae5ed98bce68f8d8afdbf7d16e0d9036406445a63",
+      "translation_text_hash": "de06d5876f9c99b050c1f271a109ecc8f544c30bedfcb966f35739a139c1a130",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 가라사대 네 오라비가 다시 살리라"
+      ],
+      "raw_text_hashes": [
+        "de06d5876f9c99b050c1f271a109ecc8f544c30bedfcb966f35739a139c1a130"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:11:24",
+      "sequence": 26547,
+      "chapter_label": "JHN 11",
+      "verse_label": "24",
+      "locator": {
+        "book": "JHN",
+        "chapter": 11,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 11,
+          "verse": 24
+        }
+      ],
+      "en": "Martha said to him, “I know that he will rise again in the resurrection at the last day.”",
+      "ko": "마르다가 가로되 마지막 날 부활에는 다시 살 줄을 내가 아나이다",
+      "source_text_hash": "bdeb7126f102d1d44f68b401a776c9d9a916d342abdd6dde6821bab39e82f118",
+      "translation_text_hash": "f639f288a868675f8eeaf52a9646d9e23f54244f282f1444c360ce500b9348d3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마르다가 가로되 마지막 날 부활에는 다시 살 줄을 내가 아나이다"
+      ],
+      "raw_text_hashes": [
+        "f639f288a868675f8eeaf52a9646d9e23f54244f282f1444c360ce500b9348d3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:11:25",
+      "sequence": 26548,
+      "chapter_label": "JHN 11",
+      "verse_label": "25",
+      "locator": {
+        "book": "JHN",
+        "chapter": 11,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 11,
+          "verse": 25
+        }
+      ],
+      "en": "Jesus said to her, “I am the resurrection and the life. He who believes in me will still live, even if he dies.",
+      "ko": "예수께서 가라사대 나는 부활이요 생명이니 나를 믿는 자는 죽어도 살겠고",
+      "source_text_hash": "7c27f434d57dcd590cf8f9d7700bca38bf9510dfd541a679cb51a7c620af9936",
+      "translation_text_hash": "158c1220390b2eccc9994f6f88dedf448d95bcdaf38aa5c1bcf484c14d4d330c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 가라사대 나는 부활이요 생명이니 나를 믿는 자는 죽어도 살겠고"
+      ],
+      "raw_text_hashes": [
+        "158c1220390b2eccc9994f6f88dedf448d95bcdaf38aa5c1bcf484c14d4d330c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:11:26",
+      "sequence": 26549,
+      "chapter_label": "JHN 11",
+      "verse_label": "26",
+      "locator": {
+        "book": "JHN",
+        "chapter": 11,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 11,
+          "verse": 26
+        }
+      ],
+      "en": "Whoever lives and believes in me will never die. Do you believe this?”",
+      "ko": "무릇 살아서 나를 믿는 자는 영원히 죽지 아니하리니 이것을 네가 믿느냐",
+      "source_text_hash": "44ca8e571614546ae75756ce7967e1ba757fe6ec765f6665d09a86f724ecf305",
+      "translation_text_hash": "23ce08c485ad72fada5e0dbe63b7459b960e8315e3b4bc6ce40cf80d193fc66c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 살아서 나를 믿는 자는 영원히 죽지 아니하리니 이것을 네가 믿느냐"
+      ],
+      "raw_text_hashes": [
+        "23ce08c485ad72fada5e0dbe63b7459b960e8315e3b4bc6ce40cf80d193fc66c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:11:27",
+      "sequence": 26550,
+      "chapter_label": "JHN 11",
+      "verse_label": "27",
+      "locator": {
+        "book": "JHN",
+        "chapter": 11,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 11,
+          "verse": 27
+        }
+      ],
+      "en": "She said to him, “Yes, Lord. I have come to believe that you are the Christ, God’s Son, he who comes into the world.”",
+      "ko": "가로되 주여 그러하외다 주는 그리스도시요 세상에 오시는 하나님의 아들이신줄 내가 믿나이다",
+      "source_text_hash": "9d4e60b5c7f490b604f7862209427d89e4d70747e038ba3c0e2dc87cd5301d49",
+      "translation_text_hash": "85b2e77641d9407a0822cb2c1fa01b3392d67a0e626b7e3e30bc3a6439d73d3a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 주여 그러하외다 주는 그리스도시요 세상에 오시는 하나님의 아들이신줄 내가 믿나이다"
+      ],
+      "raw_text_hashes": [
+        "85b2e77641d9407a0822cb2c1fa01b3392d67a0e626b7e3e30bc3a6439d73d3a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:11:28",
+      "sequence": 26551,
+      "chapter_label": "JHN 11",
+      "verse_label": "28",
+      "locator": {
+        "book": "JHN",
+        "chapter": 11,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 11,
+          "verse": 28
+        }
+      ],
+      "en": "When she had said this, she went away and called Mary, her sister, secretly, saying, “The Teacher is here and is calling you.”",
+      "ko": "이 말을 하고 돌아가서 가만히 그 형제 마리아를 불러 말하되 선생님이 오셔서 너를 부르신다 하니",
+      "source_text_hash": "d585dc99dede56fad2ae22e7943a8be8f7479958c746c738db9a5a6439a3f3be",
+      "translation_text_hash": "ffad78f281f0bf8f844c21e0b542385f7b17936e5034f4713d5546438a7c8be9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 말을 하고 돌아가서 가만히 그 형제 마리아를 불러 말하되 선생님이 오셔서 너를 부르신다 하니"
+      ],
+      "raw_text_hashes": [
+        "ffad78f281f0bf8f844c21e0b542385f7b17936e5034f4713d5546438a7c8be9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:11:29",
+      "sequence": 26552,
+      "chapter_label": "JHN 11",
+      "verse_label": "29",
+      "locator": {
+        "book": "JHN",
+        "chapter": 11,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 11,
+          "verse": 29
+        }
+      ],
+      "en": "When she heard this, she arose quickly and went to him.",
+      "ko": "마리아가 이 말을 듣고 급히 일어나 예수께 나아가매",
+      "source_text_hash": "e772dad0b16cce703b7ff529846ee89019048d9c154ea9e7328063afde2aa095",
+      "translation_text_hash": "f5a3ad0e08c714643c1bb09883384c2b6b567feedf1bbbdd2abd859a74496186",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마리아가 이 말을 듣고 급히 일어나 예수께 나아가매"
+      ],
+      "raw_text_hashes": [
+        "f5a3ad0e08c714643c1bb09883384c2b6b567feedf1bbbdd2abd859a74496186"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:11:30",
+      "sequence": 26553,
+      "chapter_label": "JHN 11",
+      "verse_label": "30",
+      "locator": {
+        "book": "JHN",
+        "chapter": 11,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 11,
+          "verse": 30
+        }
+      ],
+      "en": "Now Jesus had not yet come into the village, but was in the place where Martha met him.",
+      "ko": "예수는 아직 마을로 들어오지 아니하시고 마르다의 맞던 곳에 그저 계시더라",
+      "source_text_hash": "d2b7da5b80abf17148a376c836f08ed9d012e19758508dc4b5acdd5e48bf37d9",
+      "translation_text_hash": "4f47346dcc8614e0b5d26c93ff7df45e9aadd4c0337dcb1e03f88f9a63856cf2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수는 아직 마을로 들어오지 아니하시고 마르다의 맞던 곳에 그저 계시더라"
+      ],
+      "raw_text_hashes": [
+        "4f47346dcc8614e0b5d26c93ff7df45e9aadd4c0337dcb1e03f88f9a63856cf2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:11:31",
+      "sequence": 26554,
+      "chapter_label": "JHN 11",
+      "verse_label": "31",
+      "locator": {
+        "book": "JHN",
+        "chapter": 11,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 11,
+          "verse": 31
+        }
+      ],
+      "en": "Then the Jews who were with her in the house and were consoling her, when they saw Mary, that she rose up quickly and went out, followed her, saying, “She is going to the tomb to weep there.”",
+      "ko": "마리아와 함께 집에 있어 위로하던 유대인들은 그의 급히 일어나 나가는 것을 보고 곡하러 무덤에 가는 줄로 생각하고 따라가더니",
+      "source_text_hash": "2c5506e17c19a22407ea17822d8298e3006d0f204b176832bb3b3540eaf52608",
+      "translation_text_hash": "eab0eba52f25d338a30d86223527bb92a3e031f2665ac5b55b2eed6eb3c7efe6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마리아와 함께 집에 있어 위로하던 유대인들은 그의 급히 일어나 나가는 것을 보고 곡하러 무덤에 가는 줄로 생각하고 따라가더니"
+      ],
+      "raw_text_hashes": [
+        "eab0eba52f25d338a30d86223527bb92a3e031f2665ac5b55b2eed6eb3c7efe6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:11:32",
+      "sequence": 26555,
+      "chapter_label": "JHN 11",
+      "verse_label": "32",
+      "locator": {
+        "book": "JHN",
+        "chapter": 11,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 11,
+          "verse": 32
+        }
+      ],
+      "en": "Therefore when Mary came to where Jesus was and saw him, she fell down at his feet, saying to him, “Lord, if you would have been here, my brother wouldn’t have died.”",
+      "ko": "마리아가 예수 계신 곳에 와서 보이고 그 발 앞에 엎드리어 가로되 주께서 여기 계셨더면 내 오라비가 죽지 아니하였겠나이다 하더라",
+      "source_text_hash": "e487bd7761b55e9231fb531526135043a253fd98b953e4e3edc5f6ed13caf0f1",
+      "translation_text_hash": "5842bc84334b34179917506a2a68f144b2c7cb778a86e33fe1cd466c944f5c3d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마리아가 예수 계신 곳에 와서 보이고 그 발 앞에 엎드리어 가로되 주께서 여기 계셨더면 내 오라비가 죽지 아니하였겠나이다 하더라"
+      ],
+      "raw_text_hashes": [
+        "5842bc84334b34179917506a2a68f144b2c7cb778a86e33fe1cd466c944f5c3d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:11:33",
+      "sequence": 26556,
+      "chapter_label": "JHN 11",
+      "verse_label": "33",
+      "locator": {
+        "book": "JHN",
+        "chapter": 11,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 11,
+          "verse": 33
+        }
+      ],
+      "en": "When Jesus therefore saw her weeping, and the Jews weeping who came with her, he groaned in the spirit and was troubled,",
+      "ko": "예수께서 그의 우는 것과 또 함께 온 유대인들의 우는 것을 보시고 심령에 통분히 여기시고 민망히 여기사",
+      "source_text_hash": "5a146218099d3d1fe079d721322ca10831d787b9d57a44b869d00eb931948343",
+      "translation_text_hash": "dc24fa7a622065619c7d573412824ad04f4a19cf27e929cff5a1300dc206c479",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 그의 우는 것과 또 함께 온 유대인들의 우는 것을 보시고 심령에 통분히 여기시고 민망히 여기사"
+      ],
+      "raw_text_hashes": [
+        "dc24fa7a622065619c7d573412824ad04f4a19cf27e929cff5a1300dc206c479"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:11:34",
+      "sequence": 26557,
+      "chapter_label": "JHN 11",
+      "verse_label": "34",
+      "locator": {
+        "book": "JHN",
+        "chapter": 11,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 11,
+          "verse": 34
+        }
+      ],
+      "en": "and said, “Where have you laid him?”They told him, “Lord, come and see.”",
+      "ko": "가라사대 그를 어디 두었느냐 가로되 주여 와서 보옵소서 하니",
+      "source_text_hash": "0e45f2460712e91714231e08ae5929ebcc51d5919b51d0ea4add5b3f8b8eba07",
+      "translation_text_hash": "87e28887e2781e2f92d07a384684fa80f3f06276c98fed48e0e1cf88d75d0179",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가라사대 그를 어디 두었느냐 가로되 주여 와서 보옵소서 하니"
+      ],
+      "raw_text_hashes": [
+        "87e28887e2781e2f92d07a384684fa80f3f06276c98fed48e0e1cf88d75d0179"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:11:35",
+      "sequence": 26558,
+      "chapter_label": "JHN 11",
+      "verse_label": "35",
+      "locator": {
+        "book": "JHN",
+        "chapter": 11,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 11,
+          "verse": 35
+        }
+      ],
+      "en": "Jesus wept.",
+      "ko": "예수께서 눈물을 흘리시더라",
+      "source_text_hash": "37c0a7cae6955a79b8c7dc2663fea265e804a7e88d69ca011fa0bcc83beb521d",
+      "translation_text_hash": "06a7cc046b8aa91797c57fce042e9fb5f100851d2138f752e636eda6750b4b09",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 눈물을 흘리시더라"
+      ],
+      "raw_text_hashes": [
+        "06a7cc046b8aa91797c57fce042e9fb5f100851d2138f752e636eda6750b4b09"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:11:36",
+      "sequence": 26559,
+      "chapter_label": "JHN 11",
+      "verse_label": "36",
+      "locator": {
+        "book": "JHN",
+        "chapter": 11,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 11,
+          "verse": 36
+        }
+      ],
+      "en": "The Jews therefore said, “See how much affection he had for him!”",
+      "ko": "이에 유대인들이 말하되 보라 그를 어떻게 사랑하였는가 하며",
+      "source_text_hash": "afdd6e87f8600fe2af98816fb79e6eb064137a79ae93eb369e17318dbf4affb2",
+      "translation_text_hash": "69a5fabc82ced909dcdcb544d8deb5e056809b669ac0dcca9cdcb7baf2e49cec",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 유대인들이 말하되 보라 그를 어떻게 사랑하였는가 하며"
+      ],
+      "raw_text_hashes": [
+        "69a5fabc82ced909dcdcb544d8deb5e056809b669ac0dcca9cdcb7baf2e49cec"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:11:37",
+      "sequence": 26560,
+      "chapter_label": "JHN 11",
+      "verse_label": "37",
+      "locator": {
+        "book": "JHN",
+        "chapter": 11,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 11,
+          "verse": 37
+        }
+      ],
+      "en": "Some of them said, “Couldn’t this man, who opened the eyes of him who was blind, have also kept this man from dying?”",
+      "ko": "그중 어떤 이는 말하되 소경의 눈을 뜨게 한 이 사람이 그 사람은 죽지 않게 할 수 없었더냐 하더라",
+      "source_text_hash": "eaf44dfbf119488afff7a246d61120ff796461255cfec3de8f0d82095f3a2916",
+      "translation_text_hash": "42ca1b289f1720e9d4e390625852818b1f70fbbf43af6356c34ddac462107eb7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그중 어떤 이는 말하되 소경의 눈을 뜨게 한 이 사람이 그 사람은 죽지 않게 할 수 없었더냐 하더라"
+      ],
+      "raw_text_hashes": [
+        "42ca1b289f1720e9d4e390625852818b1f70fbbf43af6356c34ddac462107eb7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:11:38",
+      "sequence": 26561,
+      "chapter_label": "JHN 11",
+      "verse_label": "38",
+      "locator": {
+        "book": "JHN",
+        "chapter": 11,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 11,
+          "verse": 38
+        }
+      ],
+      "en": "Jesus therefore, again groaning in himself, came to the tomb. Now it was a cave, and a stone lay against it.",
+      "ko": "이에 예수께서 다시 속으로 통분히 여기시며 무덤에 가시니 무덤이 굴이라 돌로 막았거늘",
+      "source_text_hash": "eb30bcf99b4687f8ec6dc0ba8c16520e7358b005bb84a10b46a127f6abbfad3b",
+      "translation_text_hash": "ff2769bcfac336474baff63db1db79825572b8174b4ab9678f22402d380defc5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 예수께서 다시 속으로 통분히 여기시며 무덤에 가시니 무덤이 굴이라 돌로 막았거늘"
+      ],
+      "raw_text_hashes": [
+        "ff2769bcfac336474baff63db1db79825572b8174b4ab9678f22402d380defc5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:11:39",
+      "sequence": 26562,
+      "chapter_label": "JHN 11",
+      "verse_label": "39",
+      "locator": {
+        "book": "JHN",
+        "chapter": 11,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 11,
+          "verse": 39
+        }
+      ],
+      "en": "Jesus said, “Take away the stone.”Martha, the sister of him who was dead, said to him, “Lord, by this time there is a stench, for he has been dead four days.”",
+      "ko": "예수께서 가라사대 돌을 옮겨 놓으라 하시니 그 죽은 자의 누이 마르다가 가로되 주여 죽은지가 나흘이 되었으매 벌써 냄새가 나나이다",
+      "source_text_hash": "33a1a57cde7db2104ec0052506d8f545ad9325b8056357624e896fccf9cb526a",
+      "translation_text_hash": "b99cb3bf29068d0f35a4de3aa29a38be5bbc5d80dd52b8c61b423bdce6eb6429",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 가라사대 돌을 옮겨 놓으라 하시니 그 죽은 자의 누이 마르다가 가로되 주여 죽은지가 나흘이 되었으매 벌써 냄새가 나나이다"
+      ],
+      "raw_text_hashes": [
+        "b99cb3bf29068d0f35a4de3aa29a38be5bbc5d80dd52b8c61b423bdce6eb6429"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:11:40",
+      "sequence": 26563,
+      "chapter_label": "JHN 11",
+      "verse_label": "40",
+      "locator": {
+        "book": "JHN",
+        "chapter": 11,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 11,
+          "verse": 40
+        }
+      ],
+      "en": "Jesus said to her, “Didn’t I tell you that if you believed, you would see God’s glory?”",
+      "ko": "예수께서 가라사대 내 말이 네가 믿으면 하나님의 영광을 보리라 하지 아니하였느냐 하신대",
+      "source_text_hash": "462d254ef1fe9716063a3a8eac6457381c61d7db766986c53586cf279b4bc155",
+      "translation_text_hash": "8b5491b75434926c62675174e05bf57c58007b36492293119e929bde2ad3e227",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 가라사대 내 말이 네가 믿으면 하나님의 영광을 보리라 하지 아니하였느냐 하신대"
+      ],
+      "raw_text_hashes": [
+        "8b5491b75434926c62675174e05bf57c58007b36492293119e929bde2ad3e227"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:11:41",
+      "sequence": 26564,
+      "chapter_label": "JHN 11",
+      "verse_label": "41",
+      "locator": {
+        "book": "JHN",
+        "chapter": 11,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 11,
+          "verse": 41
+        }
+      ],
+      "en": "So they took away the stone from the place where the dead man was lying. Jesus lifted up his eyes and said, “Father, I thank you that you listened to me.",
+      "ko": "돌을 옮겨 놓으니 예수께서 눈을 들어 우러러 보시고 가라사대 아버지여 내 말을 들으신 것을 감사하나이다",
+      "source_text_hash": "3546ee64f232483f4a16c2b2e7ea7c78a06cd8ea83ee9c47886d70931016e30c",
+      "translation_text_hash": "c0954c4922b30788aa7e772a8e87260464f60ef110951faaa4fcd7f7a2f7fb7d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "돌을 옮겨 놓으니 예수께서 눈을 들어 우러러 보시고 가라사대 아버지여 내 말을 들으신 것을 감사하나이다"
+      ],
+      "raw_text_hashes": [
+        "c0954c4922b30788aa7e772a8e87260464f60ef110951faaa4fcd7f7a2f7fb7d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:11:42",
+      "sequence": 26565,
+      "chapter_label": "JHN 11",
+      "verse_label": "42",
+      "locator": {
+        "book": "JHN",
+        "chapter": 11,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 11,
+          "verse": 42
+        }
+      ],
+      "en": "I know that you always listen to me, but because of the multitude standing around I said this, that they may believe that you sent me.”",
+      "ko": "항상 내 말을 들으시는 줄을 내가 알았나이다 그러나 이 말씀 하옵는 것은 둘러선 무리를 위함이니 곧 아버지께서 나를 보내신 것을 저희로 믿게 하려 함이니이다",
+      "source_text_hash": "cc9d664f58f6b0643ea955a9ca89904400870564f4a4f78defa608108eb2f066",
+      "translation_text_hash": "d5170a62cced9f24c5f793692e585fa362eae862c540bb31572f2083af51a8fb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "항상 내 말을 들으시는 줄을 내가 알았나이다 그러나 이 말씀 하옵는 것은 둘러선 무리를 위함이니 곧 아버지께서 나를 보내신 것을 저희로 믿게 하려 함이니이다"
+      ],
+      "raw_text_hashes": [
+        "d5170a62cced9f24c5f793692e585fa362eae862c540bb31572f2083af51a8fb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:11:43",
+      "sequence": 26566,
+      "chapter_label": "JHN 11",
+      "verse_label": "43",
+      "locator": {
+        "book": "JHN",
+        "chapter": 11,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 11,
+          "verse": 43
+        }
+      ],
+      "en": "When he had said this, he cried with a loud voice, “Lazarus, come out!”",
+      "ko": "이 말씀을 하시고 큰 소리로 나사로야 나오라 부르시니",
+      "source_text_hash": "ff0e2e312b11ecd805404d0f3a76031a1aa7848b29ebabcd4f8517efbec8aa4b",
+      "translation_text_hash": "c0e38dc59f14e6054fbea5e6fd2543e468f254f09f9f770189d2778e72e8be01",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 말씀을 하시고 큰 소리로 나사로야 나오라 부르시니"
+      ],
+      "raw_text_hashes": [
+        "c0e38dc59f14e6054fbea5e6fd2543e468f254f09f9f770189d2778e72e8be01"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:11:44",
+      "sequence": 26567,
+      "chapter_label": "JHN 11",
+      "verse_label": "44",
+      "locator": {
+        "book": "JHN",
+        "chapter": 11,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 11,
+          "verse": 44
+        }
+      ],
+      "en": "He who was dead came out, bound hand and foot with wrappings, and his face was wrapped around with a cloth. Jesus said to them, “Free him, and let him go.”",
+      "ko": "죽은 자가 수족을 베로 동인채로 나오는데 그 얼굴은 수건에 싸였더라 예수께서 가라사대 풀어 놓아 다니게 하라 하시니라",
+      "source_text_hash": "fa295c424e7507f16604b9ac44b659495ad36bd0f035106de40872030b61b4bd",
+      "translation_text_hash": "aa23a3ab36e4a7db5351d7a9de6ce1d52b9876e862bc302e0ce36d34bf651a32",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "죽은 자가 수족을 베로 동인채로 나오는데 그 얼굴은 수건에 싸였더라 예수께서 가라사대 풀어 놓아 다니게 하라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "aa23a3ab36e4a7db5351d7a9de6ce1d52b9876e862bc302e0ce36d34bf651a32"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:11:45",
+      "sequence": 26568,
+      "chapter_label": "JHN 11",
+      "verse_label": "45",
+      "locator": {
+        "book": "JHN",
+        "chapter": 11,
+        "verse": 45
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 11,
+          "verse": 45
+        }
+      ],
+      "en": "Therefore many of the Jews who came to Mary and saw what Jesus did believed in him.",
+      "ko": "마리아에게 와서 예수의 하신 일을 본 많은 유대인이 저를 믿었으나",
+      "source_text_hash": "de7489bf47ce1a38157ee65e25831d4b967f60e9e6af7a02c1b981858de7640b",
+      "translation_text_hash": "aa9ed5c9e24988d5314430ca7bde06119971e414a7c3143101dc5163a7187baf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마리아에게 와서 예수의 하신 일을 본 많은 유대인이 저를 믿었으나"
+      ],
+      "raw_text_hashes": [
+        "aa9ed5c9e24988d5314430ca7bde06119971e414a7c3143101dc5163a7187baf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:11:46",
+      "sequence": 26569,
+      "chapter_label": "JHN 11",
+      "verse_label": "46",
+      "locator": {
+        "book": "JHN",
+        "chapter": 11,
+        "verse": 46
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 11,
+          "verse": 46
+        }
+      ],
+      "en": "But some of them went away to the Pharisees and told them the things which Jesus had done.",
+      "ko": "그 중에 어떤 자는 바리새인들에게 가서 예수의 하신 일을 고하니라",
+      "source_text_hash": "8718971e4ce0fd674a8aa657b1bcad0c295008685f7c727e41bd1cc211e4bcd4",
+      "translation_text_hash": "41300e7f346d954afd34fecdcb8a9b554727e3464fcddf334c8afaf01d73684d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 중에 어떤 자는 바리새인들에게 가서 예수의 하신 일을 고하니라"
+      ],
+      "raw_text_hashes": [
+        "41300e7f346d954afd34fecdcb8a9b554727e3464fcddf334c8afaf01d73684d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:11:47",
+      "sequence": 26570,
+      "chapter_label": "JHN 11",
+      "verse_label": "47",
+      "locator": {
+        "book": "JHN",
+        "chapter": 11,
+        "verse": 47
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 11,
+          "verse": 47
+        }
+      ],
+      "en": "The chief priests therefore and the Pharisees gathered a council, and said, “What are we doing? For this man does many signs.",
+      "ko": "이에 대제사장들과 바리새인들이 공회를 모으고 가로되 이 사람이 많은 표적을 행하니 우리가 어떻게 하겠느냐",
+      "source_text_hash": "e32d4b0aeaf4522e391a90afef166bbeb1327ecbf9ebf6d3f1e224b784cd6600",
+      "translation_text_hash": "21f411c4699cec9399f59d2628b1b1b7d5609052ac5af6bf6149d2f3674ad329",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 대제사장들과 바리새인들이 공회를 모으고 가로되 이 사람이 많은 표적을 행하니 우리가 어떻게 하겠느냐"
+      ],
+      "raw_text_hashes": [
+        "21f411c4699cec9399f59d2628b1b1b7d5609052ac5af6bf6149d2f3674ad329"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:11:48",
+      "sequence": 26571,
+      "chapter_label": "JHN 11",
+      "verse_label": "48",
+      "locator": {
+        "book": "JHN",
+        "chapter": 11,
+        "verse": 48
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 11,
+          "verse": 48
+        }
+      ],
+      "en": "If we leave him alone like this, everyone will believe in him, and the Romans will come and take away both our place and our nation.”",
+      "ko": "만일 저를 이대로 두면 모든 사람이 저를 믿을 것이요 그리고 로마인들이 와서 우리 땅과 민족을 빼앗아 가리라 하니",
+      "source_text_hash": "44be5c773851f2d072e224498d8effc77a4808192d982b253c1d58542315ab8f",
+      "translation_text_hash": "05751143177c5c921505001081c041191e5088fe4f33331fbe37bb5c93eec1ba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 저를 이대로 두면 모든 사람이 저를 믿을 것이요 그리고 로마인들이 와서 우리 땅과 민족을 빼앗아 가리라 하니"
+      ],
+      "raw_text_hashes": [
+        "05751143177c5c921505001081c041191e5088fe4f33331fbe37bb5c93eec1ba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:11:49",
+      "sequence": 26572,
+      "chapter_label": "JHN 11",
+      "verse_label": "49",
+      "locator": {
+        "book": "JHN",
+        "chapter": 11,
+        "verse": 49
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 11,
+          "verse": 49
+        }
+      ],
+      "en": "But a certain one of them, Caiaphas, being high priest that year, said to them, “You know nothing at all,",
+      "ko": "그 중에 한 사람 그 해 대제사장인 가야바가 저희에게 말하되 너희가 아무 것도 알지 못하는도다",
+      "source_text_hash": "210c27dc0cb7f1b10083acdc77eab422f45ee828ec8f5444a554096db2d7b865",
+      "translation_text_hash": "a8ca37d9f2b01aec79671815eb2b39e81f67ed82d77b0999f208e3bfff850280",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 중에 한 사람 그 해 대제사장인 가야바가 저희에게 말하되 너희가 아무 것도 알지 못하는도다"
+      ],
+      "raw_text_hashes": [
+        "a8ca37d9f2b01aec79671815eb2b39e81f67ed82d77b0999f208e3bfff850280"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:11:50",
+      "sequence": 26573,
+      "chapter_label": "JHN 11",
+      "verse_label": "50",
+      "locator": {
+        "book": "JHN",
+        "chapter": 11,
+        "verse": 50
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 11,
+          "verse": 50
+        }
+      ],
+      "en": "nor do you consider that it is advantageous for us that one man should die for the people, and that the whole nation not perish.”",
+      "ko": "한 사람이 백성을 위하여 죽어서 온 민족이 망하지 않게 되는 것이 너희에게 유익한 줄을 생각지 아니하는도다 하였으니",
+      "source_text_hash": "6c718f5374cb0171d566a0fa7d5172ff7a141ff104c34c90d9ceb56ef9c99292",
+      "translation_text_hash": "9b9aaa50505b35d7c966c180f1e754b13fed92a8eecb4006ae797e905de37631",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "한 사람이 백성을 위하여 죽어서 온 민족이 망하지 않게 되는 것이 너희에게 유익한 줄을 생각지 아니하는도다 하였으니"
+      ],
+      "raw_text_hashes": [
+        "9b9aaa50505b35d7c966c180f1e754b13fed92a8eecb4006ae797e905de37631"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:11:51",
+      "sequence": 26574,
+      "chapter_label": "JHN 11",
+      "verse_label": "51",
+      "locator": {
+        "book": "JHN",
+        "chapter": 11,
+        "verse": 51
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 11,
+          "verse": 51
+        }
+      ],
+      "en": "Now he didn’t say this of himself, but being high priest that year, he prophesied that Jesus would die for the nation,",
+      "ko": "이 말은 스스로 함이 아니요 그 해에 대제사장이므로 예수께서 그 민족을 위하시고",
+      "source_text_hash": "6c6fef7294dacb2ca1764692099d4fa9d1e92ece610d10d5947219f15fd05612",
+      "translation_text_hash": "bacc60aabbcd5a217e46f2c5b3ed226ce009e75fc0b52e48831b3c170a04545a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 말은 스스로 함이 아니요 그 해에 대제사장이므로 예수께서 그 민족을 위하시고"
+      ],
+      "raw_text_hashes": [
+        "bacc60aabbcd5a217e46f2c5b3ed226ce009e75fc0b52e48831b3c170a04545a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:11:52",
+      "sequence": 26575,
+      "chapter_label": "JHN 11",
+      "verse_label": "52",
+      "locator": {
+        "book": "JHN",
+        "chapter": 11,
+        "verse": 52
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 11,
+          "verse": 52
+        }
+      ],
+      "en": "and not for the nation only, but that he might also gather together into one the children of God who are scattered abroad.",
+      "ko": "또 그 민족만 위할뿐 아니라 흩어진 하나님의 자녀를 모아 하나가 되게 하기 위하여 죽으실 것을 미리 말함이러라",
+      "source_text_hash": "5c8a67e16168f8706b28e0412b2e6e016202b8e64a565fd0aee20b477784df06",
+      "translation_text_hash": "a89e81dd345967ff97f94ca7f5bdc19756b23ea80d4f198eec75053b13cb8e72",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 그 민족만 위할뿐 아니라 흩어진 하나님의 자녀를 모아 하나가 되게 하기 위하여 죽으실 것을 미리 말함이러라"
+      ],
+      "raw_text_hashes": [
+        "a89e81dd345967ff97f94ca7f5bdc19756b23ea80d4f198eec75053b13cb8e72"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:11:53",
+      "sequence": 26576,
+      "chapter_label": "JHN 11",
+      "verse_label": "53",
+      "locator": {
+        "book": "JHN",
+        "chapter": 11,
+        "verse": 53
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 11,
+          "verse": 53
+        }
+      ],
+      "en": "So from that day forward they took counsel that they might put him to death.",
+      "ko": "이 날부터는 저희가 예수를 죽이려고 모의하니라",
+      "source_text_hash": "ea40641a38a2603e7014d6f84690135415d0cad4564884f79a77122d0810182b",
+      "translation_text_hash": "84a99738a1a82515c5f017c96dbad2bbe264f9375540d165deb8407e13a283b3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 날부터는 저희가 예수를 죽이려고 모의하니라"
+      ],
+      "raw_text_hashes": [
+        "84a99738a1a82515c5f017c96dbad2bbe264f9375540d165deb8407e13a283b3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:11:54",
+      "sequence": 26577,
+      "chapter_label": "JHN 11",
+      "verse_label": "54",
+      "locator": {
+        "book": "JHN",
+        "chapter": 11,
+        "verse": 54
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 11,
+          "verse": 54
+        }
+      ],
+      "en": "Jesus therefore walked no more openly among the Jews, but departed from there into the country near the wilderness, to a city called Ephraim. He stayed there with his disciples.",
+      "ko": "그러므로 예수께서 다시 유대인 가운데 드러나게 다니지 아니하시고 여기를 떠나 빈 들 가까운 곳인 에브라임이라는 동네에 가서 제자들과 함께 거기 유하시니라",
+      "source_text_hash": "a9e41b94821a4ff7fa1e10ed9e26ab97a1dd2fd43373548a9365de43036f838b",
+      "translation_text_hash": "0ef61c083ada537b5c2a82183a3122bd4415e21b623c4d6267e4e43d0e1b3963",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 예수께서 다시 유대인 가운데 드러나게 다니지 아니하시고 여기를 떠나 빈 들 가까운 곳인 에브라임이라는 동네에 가서 제자들과 함께 거기 유하시니라"
+      ],
+      "raw_text_hashes": [
+        "0ef61c083ada537b5c2a82183a3122bd4415e21b623c4d6267e4e43d0e1b3963"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:11:55",
+      "sequence": 26578,
+      "chapter_label": "JHN 11",
+      "verse_label": "55",
+      "locator": {
+        "book": "JHN",
+        "chapter": 11,
+        "verse": 55
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 11,
+          "verse": 55
+        }
+      ],
+      "en": "Now the Passover of the Jews was at hand. Many went up from the country to Jerusalem before the Passover, to purify themselves.",
+      "ko": "유대인의 유월절이 가까우매 많은 사람이 자기를 성결케 하기 위하여 유월절 전에 시골서 예루살렘으로 올라갔더니",
+      "source_text_hash": "e8d1cda58a500c1281b57ca354be35dbc749c9dd7c0832d115e7d6c1d3619329",
+      "translation_text_hash": "ca62eeda8046c0babae0bf1c5a6aad2dbc8beada9043c810fab3f17847b65c1e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유대인의 유월절이 가까우매 많은 사람이 자기를 성결케 하기 위하여 유월절 전에 시골서 예루살렘으로 올라갔더니"
+      ],
+      "raw_text_hashes": [
+        "ca62eeda8046c0babae0bf1c5a6aad2dbc8beada9043c810fab3f17847b65c1e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:11:56",
+      "sequence": 26579,
+      "chapter_label": "JHN 11",
+      "verse_label": "56",
+      "locator": {
+        "book": "JHN",
+        "chapter": 11,
+        "verse": 56
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 11,
+          "verse": 56
+        }
+      ],
+      "en": "Then they sought for Jesus and spoke with one another as they stood in the temple, “What do you think—that he isn’t coming to the feast at all?”",
+      "ko": "저희가 예수를 찾으며 성전에 서서 서로 말하되 너희 생각에는 어떠하뇨 저가 명절에 오지 아니하겠느냐 하니",
+      "source_text_hash": "a8c8db5f9aebcffc36387e09b057333759577f26da26b4a0e8efcfbcc01daa92",
+      "translation_text_hash": "50691088a6a057be3e8d2c4a9675c8f15cfd637d18f573bc8c712023c1d92327",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 예수를 찾으며 성전에 서서 서로 말하되 너희 생각에는 어떠하뇨 저가 명절에 오지 아니하겠느냐 하니"
+      ],
+      "raw_text_hashes": [
+        "50691088a6a057be3e8d2c4a9675c8f15cfd637d18f573bc8c712023c1d92327"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:11:57",
+      "sequence": 26580,
+      "chapter_label": "JHN 11",
+      "verse_label": "57",
+      "locator": {
+        "book": "JHN",
+        "chapter": 11,
+        "verse": 57
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 11,
+          "verse": 57
+        }
+      ],
+      "en": "Now the chief priests and the Pharisees had commanded that if anyone knew where he was, he should report it, that they might seize him.",
+      "ko": "이는 대제사장들과 바리새인들이 누구든지 예수 있는 곳을 알거든 고하여 잡게 하라 명령하였음이러라",
+      "source_text_hash": "cbd4cff761cb42f5912ef51e41440330c43542aa5221a781268d7b2117a7ad3e",
+      "translation_text_hash": "1f63e7d1dc0de96fec82f0ed2d4a965f256a90e45c8129e0bf72437055904933",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 대제사장들과 바리새인들이 누구든지 예수 있는 곳을 알거든 고하여 잡게 하라 명령하였음이러라"
+      ],
+      "raw_text_hashes": [
+        "1f63e7d1dc0de96fec82f0ed2d4a965f256a90e45c8129e0bf72437055904933"
+      ]
+    }
+  ]
+}

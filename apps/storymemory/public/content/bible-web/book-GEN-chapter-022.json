@@ -1,0 +1,781 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:GEN:chapter:022",
+  "unit_ordinal": 22,
+  "unit_label": "GEN 22",
+  "book_code": "GEN",
+  "chapter_number": 22,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:GEN:22:1",
+      "sequence": 549,
+      "chapter_label": "GEN 22",
+      "verse_label": "1",
+      "locator": {
+        "book": "GEN",
+        "chapter": 22,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 22,
+          "verse": 1
+        }
+      ],
+      "en": "After these things, God tested Abraham, and said to him, “Abraham!” He said, “Here I am.”",
+      "ko": "그 일 후에 하나님이 아브라함을 시험하시려고 그를 부르시되 아브라함아 하시니 그가 가로되 내가 여기 있나이다",
+      "source_text_hash": "794b04df180e13ae33a63bbeb71b85ff0d12ea7b813aff0e4fd39547778acd81",
+      "translation_text_hash": "1549e56427dec43f1a0cc922d6af73e870243a0cec37cf5c3478356692514ee6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 일 후에 하나님이 아브라함을 시험하시려고 그를 부르시되 아브라함아 하시니 그가 가로되 내가 여기 있나이다"
+      ],
+      "raw_text_hashes": [
+        "1549e56427dec43f1a0cc922d6af73e870243a0cec37cf5c3478356692514ee6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:22:2",
+      "sequence": 550,
+      "chapter_label": "GEN 22",
+      "verse_label": "2",
+      "locator": {
+        "book": "GEN",
+        "chapter": 22,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 22,
+          "verse": 2
+        }
+      ],
+      "en": "He said, “Now take your son, your only son, Isaac, whom you love, and go into the land of Moriah. Offer him there as a burnt offering on one of the mountains which I will tell you of.”",
+      "ko": "여호와께서 가라사대 네 아들 네 사랑하는 독자 이삭을 데리고 모리아 땅으로 가서 내가 네게 지시하는 한 산 거기서 그를 번제로 드리라",
+      "source_text_hash": "9d2e584e82273d7bbdcb0d6c5fca313b0e91d0c79f3f1b553cc51fbef25d452c",
+      "translation_text_hash": "30360551d026e5f402aa09b70dcba05f6a0c0ee3718ddf6af337129199085c24",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 가라사대 네 아들 네 사랑하는 독자 이삭을 데리고 모리아 땅으로 가서 내가 네게 지시하는 한 산 거기서 그를 번제로 드리라"
+      ],
+      "raw_text_hashes": [
+        "30360551d026e5f402aa09b70dcba05f6a0c0ee3718ddf6af337129199085c24"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:22:3",
+      "sequence": 551,
+      "chapter_label": "GEN 22",
+      "verse_label": "3",
+      "locator": {
+        "book": "GEN",
+        "chapter": 22,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 22,
+          "verse": 3
+        }
+      ],
+      "en": "Abraham rose early in the morning, and saddled his donkey; and took two of his young men with him, and Isaac his son. He split the wood for the burnt offering, and rose up, and went to the place of which God had told him.",
+      "ko": "아브라함이 아침에 일찌기 일어나 나귀에 안장을 지우고 두 사환과 그 아들 이삭을 데리고 번제에 쓸 나무를 쪼개어 가지고 떠나 하나님의 자기에게 지시하시는 곳으로 가더니",
+      "source_text_hash": "fd471fbc5eb4048b85308757435106795b988c28134eaa9e0b474a550eecd052",
+      "translation_text_hash": "c8e40ae9198d5240b8f46c9410a539afc3fdcddc45b692fae3514695c53eea54",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아브라함이 아침에 일찌기 일어나 나귀에 안장을 지우고 두 사환과 그 아들 이삭을 데리고 번제에 쓸 나무를 쪼개어 가지고 떠나 하나님의 자기에게 지시하시는 곳으로 가더니"
+      ],
+      "raw_text_hashes": [
+        "c8e40ae9198d5240b8f46c9410a539afc3fdcddc45b692fae3514695c53eea54"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:22:4",
+      "sequence": 552,
+      "chapter_label": "GEN 22",
+      "verse_label": "4",
+      "locator": {
+        "book": "GEN",
+        "chapter": 22,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 22,
+          "verse": 4
+        }
+      ],
+      "en": "On the third day Abraham lifted up his eyes, and saw the place far off.",
+      "ko": "제 삼일에 아브라함이 눈을 들어 그곳을 멀리 바라본지라",
+      "source_text_hash": "45aee4e2210cab5f40e2f4669644851e6d18f4b77267c6c4cfa0a41ec71fb726",
+      "translation_text_hash": "492c68f36fdcdb1b34bc519db53374957244965dc7fbc2ee02ddc96ece820424",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제 삼일에 아브라함이 눈을 들어 그곳을 멀리 바라본지라"
+      ],
+      "raw_text_hashes": [
+        "492c68f36fdcdb1b34bc519db53374957244965dc7fbc2ee02ddc96ece820424"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:22:5",
+      "sequence": 553,
+      "chapter_label": "GEN 22",
+      "verse_label": "5",
+      "locator": {
+        "book": "GEN",
+        "chapter": 22,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 22,
+          "verse": 5
+        }
+      ],
+      "en": "Abraham said to his young men, “Stay here with the donkey. The boy and I will go over there. We will worship, and come back to you.”",
+      "ko": "이에 아브라함이 사환에게 이르되 너희는 나귀와 함께 여기서 기다리라 내가 아이와 함께 저기 가서 경배하고 너희에게로 돌아오리라 하고",
+      "source_text_hash": "a4c2510ff2ef0bbb8b8f559bf977543371e666cfa68e8f033bea28d892d3a41a",
+      "translation_text_hash": "547a0cdda771cba757e8e06206b8feaf0bd959a001931d818ff086425ab0d925",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 아브라함이 사환에게 이르되 너희는 나귀와 함께 여기서 기다리라 내가 아이와 함께 저기 가서 경배하고 너희에게로 돌아오리라 하고"
+      ],
+      "raw_text_hashes": [
+        "547a0cdda771cba757e8e06206b8feaf0bd959a001931d818ff086425ab0d925"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:22:6",
+      "sequence": 554,
+      "chapter_label": "GEN 22",
+      "verse_label": "6",
+      "locator": {
+        "book": "GEN",
+        "chapter": 22,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 22,
+          "verse": 6
+        }
+      ],
+      "en": "Abraham took the wood of the burnt offering and laid it on Isaac his son. He took in his hand the fire and the knife. They both went together.",
+      "ko": "아브라함이 이에 번제 나무를 취하여 그 아들 이삭에게 지우고 자기는 불과 칼을 손에 들고 두 사람이 동행하더니",
+      "source_text_hash": "fcd4f9dc7c8c1cef5ee049bb93ed7adb02193c56d54fb70728c9a83a44a21f52",
+      "translation_text_hash": "c74afdf235d62caa36d81459675f9f0cee97c775209b7d6501f1e3007cbcde16",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아브라함이 이에 번제 나무를 취하여 그 아들 이삭에게 지우고 자기는 불과 칼을 손에 들고 두 사람이 동행하더니"
+      ],
+      "raw_text_hashes": [
+        "c74afdf235d62caa36d81459675f9f0cee97c775209b7d6501f1e3007cbcde16"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:22:7",
+      "sequence": 555,
+      "chapter_label": "GEN 22",
+      "verse_label": "7",
+      "locator": {
+        "book": "GEN",
+        "chapter": 22,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 22,
+          "verse": 7
+        }
+      ],
+      "en": "Isaac spoke to Abraham his father, and said, “My father?” He said, “Here I am, my son.” He said, “Here is the fire and the wood, but where is the lamb for a burnt offering?”",
+      "ko": "이삭이 그 아비 아브라함에게 말하여 가로되 내 아버지여 하니 그가 가로되 내 아들아 내가 여기 있노라 이삭이 가로되 불과 나무는 있거니와 번제할 어린 양은 어디 있나이까",
+      "source_text_hash": "40336fb883adbe1c41cd72fd491304029bcbc2616feee9dd20a487d80f56f55c",
+      "translation_text_hash": "279bc6bc5162451449c373a96499e7d1c9968ee6aad9443de8bc5d80a6fe8b9b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이삭이 그 아비 아브라함에게 말하여 가로되 내 아버지여 하니 그가 가로되 내 아들아 내가 여기 있노라 이삭이 가로되 불과 나무는 있거니와 번제할 어린 양은 어디 있나이까"
+      ],
+      "raw_text_hashes": [
+        "279bc6bc5162451449c373a96499e7d1c9968ee6aad9443de8bc5d80a6fe8b9b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:22:8",
+      "sequence": 556,
+      "chapter_label": "GEN 22",
+      "verse_label": "8",
+      "locator": {
+        "book": "GEN",
+        "chapter": 22,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 22,
+          "verse": 8
+        }
+      ],
+      "en": "Abraham said, “God will provide himself the lamb for a burnt offering, my son.” So they both went together.",
+      "ko": "아브라함이 가로되 아들아 번제할 어린 양은 하나님이 자기를 위하여 친히 준비하시리라 하고 두 사람이 함께 나아가서",
+      "source_text_hash": "9448b2ad191257bc92fa876214dfed31a147473730095a8c153f6845f4a5b9ca",
+      "translation_text_hash": "af0c0141793d3007c434e502a9d83a5a109cf05aad8ea95d6cb9871d29684568",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아브라함이 가로되 아들아 번제할 어린 양은 하나님이 자기를 위하여 친히 준비하시리라 하고 두 사람이 함께 나아가서"
+      ],
+      "raw_text_hashes": [
+        "af0c0141793d3007c434e502a9d83a5a109cf05aad8ea95d6cb9871d29684568"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:22:9",
+      "sequence": 557,
+      "chapter_label": "GEN 22",
+      "verse_label": "9",
+      "locator": {
+        "book": "GEN",
+        "chapter": 22,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 22,
+          "verse": 9
+        }
+      ],
+      "en": "They came to the place which God had told him of. Abraham built the altar there, and laid the wood in order, bound Isaac his son, and laid him on the altar, on the wood.",
+      "ko": "하나님이 그에게 지시하신 곳에 이른지라 이에 아브라함이 그곳에 단을 쌓고 나무를 벌여놓고 그 아들 이삭을 결박하여 단 나무 위에 놓고",
+      "source_text_hash": "edb2cc50cb404e2adc193c94193de2cbceb11ff7366e22da378e9fa1bfd9b101",
+      "translation_text_hash": "02f810f11111d6d5cb5f18e5f399255a7c5fcaa7030e814896e07ce8e7d6b517",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 그에게 지시하신 곳에 이른지라 이에 아브라함이 그곳에 단을 쌓고 나무를 벌여놓고 그 아들 이삭을 결박하여 단 나무 위에 놓고"
+      ],
+      "raw_text_hashes": [
+        "02f810f11111d6d5cb5f18e5f399255a7c5fcaa7030e814896e07ce8e7d6b517"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:22:10",
+      "sequence": 558,
+      "chapter_label": "GEN 22",
+      "verse_label": "10",
+      "locator": {
+        "book": "GEN",
+        "chapter": 22,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 22,
+          "verse": 10
+        }
+      ],
+      "en": "Abraham stretched out his hand, and took the knife to kill his son.",
+      "ko": "손을 내밀어 칼을 잡고 그 아들을 잡으려 하더니",
+      "source_text_hash": "8262732bb8e3f92dfe86af9f3050aabd52c7749f39b634a3cb6b64bf9f6b7808",
+      "translation_text_hash": "66e60d4faa24348b6976139793e8b5154a2284aec877bc6f1ef048935fc5abe4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "손을 내밀어 칼을 잡고 그 아들을 잡으려 하더니"
+      ],
+      "raw_text_hashes": [
+        "66e60d4faa24348b6976139793e8b5154a2284aec877bc6f1ef048935fc5abe4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:22:11",
+      "sequence": 559,
+      "chapter_label": "GEN 22",
+      "verse_label": "11",
+      "locator": {
+        "book": "GEN",
+        "chapter": 22,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 22,
+          "verse": 11
+        }
+      ],
+      "en": "The LORD’s angel called to him out of the sky, and said, “Abraham, Abraham!” He said, “Here I am.”",
+      "ko": "여호와의 사자가 하늘에서부터 그를 불러 가라사대 아브라함아 아브라함아 하시는지라 아브라함이 가로되 내가 여기 있나이다 하매",
+      "source_text_hash": "131c061a14dd47f87f0a561315cc217d0f8db0dd31ee401c45250bded97e3a78",
+      "translation_text_hash": "b3dd585ba0922f4ff60397a212e4929cbcbb642156dee2cd51bffcd61427a952",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 사자가 하늘에서부터 그를 불러 가라사대 아브라함아 아브라함아 하시는지라 아브라함이 가로되 내가 여기 있나이다 하매"
+      ],
+      "raw_text_hashes": [
+        "b3dd585ba0922f4ff60397a212e4929cbcbb642156dee2cd51bffcd61427a952"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:22:12",
+      "sequence": 560,
+      "chapter_label": "GEN 22",
+      "verse_label": "12",
+      "locator": {
+        "book": "GEN",
+        "chapter": 22,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 22,
+          "verse": 12
+        }
+      ],
+      "en": "He said, “Don’t lay your hand on the boy or do anything to him. For now I know that you fear God, since you have not withheld your son, your only son, from me.”",
+      "ko": "사자가 가라사대 그 아이에게 네 손을 대지 말라 아무 일도 그에게 하지 말라 네가 네 아들 네 독자라도 내게 아끼지 아니하였으니 내가 이제야 네가 하나님을 경외하는 줄을 아노라",
+      "source_text_hash": "c24ddc2dbe985770219b730749c3355a76747a2b9da6f243323845950718c0e7",
+      "translation_text_hash": "85ef9541064c0ba5d52690a3786f061543eb7c2bc491fcc36e26d58b598cbdaf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사자가 가라사대 그 아이에게 네 손을 대지 말라 아무 일도 그에게 하지 말라 네가 네 아들 네 독자라도 내게 아끼지 아니하였으니 내가 이제야 네가 하나님을 경외하는 줄을 아노라"
+      ],
+      "raw_text_hashes": [
+        "85ef9541064c0ba5d52690a3786f061543eb7c2bc491fcc36e26d58b598cbdaf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:22:13",
+      "sequence": 561,
+      "chapter_label": "GEN 22",
+      "verse_label": "13",
+      "locator": {
+        "book": "GEN",
+        "chapter": 22,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 22,
+          "verse": 13
+        }
+      ],
+      "en": "Abraham lifted up his eyes, and looked, and saw that behind him was a ram caught in the thicket by his horns. Abraham went and took the ram, and offered him up for a burnt offering instead of his son.",
+      "ko": "아브라함이 눈을 들어 살펴본즉 한 수양이 뒤에 있는데 뿔이 수풀에 걸렸는지라 아브라함이 가서 그 수양을 가져다가 아들을 대신하여 번제로 드렸더라",
+      "source_text_hash": "2c988c394cef40fe6d7a15d5b49ceb1f6ea82c33d9617bb81d6cb83a333bd177",
+      "translation_text_hash": "126ec519d7e2619f498fbe365b90b066e362ac036dd3114c5a74cc257a6040b3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아브라함이 눈을 들어 살펴본즉 한 수양이 뒤에 있는데 뿔이 수풀에 걸렸는지라 아브라함이 가서 그 수양을 가져다가 아들을 대신하여 번제로 드렸더라"
+      ],
+      "raw_text_hashes": [
+        "126ec519d7e2619f498fbe365b90b066e362ac036dd3114c5a74cc257a6040b3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:22:14",
+      "sequence": 562,
+      "chapter_label": "GEN 22",
+      "verse_label": "14",
+      "locator": {
+        "book": "GEN",
+        "chapter": 22,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 22,
+          "verse": 14
+        }
+      ],
+      "en": "Abraham called the name of that place “The LORD Will Provide”. As it is said to this day, “On the LORD’s mountain, it will be provided.”",
+      "ko": "아브라함이 그 땅 이름을 여호와이레라 하였으므로 오늘까지 사람들이 이르기를 여호와의 산에서 준비되리라 하더라",
+      "source_text_hash": "989d4dad64a787855e54b87a241f2751cd5ca16820468f172bcc524808840e29",
+      "translation_text_hash": "ead34e989e103036d91a849956286d4eede41f2954fc08cfd4e514585d4d18ac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아브라함이 그 땅 이름을 여호와이레라 하였으므로 오늘까지 사람들이 이르기를 여호와의 산에서 준비되리라 하더라"
+      ],
+      "raw_text_hashes": [
+        "ead34e989e103036d91a849956286d4eede41f2954fc08cfd4e514585d4d18ac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:22:15",
+      "sequence": 563,
+      "chapter_label": "GEN 22",
+      "verse_label": "15",
+      "locator": {
+        "book": "GEN",
+        "chapter": 22,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 22,
+          "verse": 15
+        }
+      ],
+      "en": "The LORD’s angel called to Abraham a second time out of the sky,",
+      "ko": "여호와의 사자가 하늘에서부터 두번째 아브라함을 불러",
+      "source_text_hash": "c3cff49b89e9a7603a81e7111516670b6200dccb8c2e89c5339ca94b1c403b8d",
+      "translation_text_hash": "2eb0ef68972b70ab2139081d043fff9288c2de0be3aefc403b92685cd0618096",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 사자가 하늘에서부터 두번째 아브라함을 불러"
+      ],
+      "raw_text_hashes": [
+        "2eb0ef68972b70ab2139081d043fff9288c2de0be3aefc403b92685cd0618096"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:22:16",
+      "sequence": 564,
+      "chapter_label": "GEN 22",
+      "verse_label": "16",
+      "locator": {
+        "book": "GEN",
+        "chapter": 22,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 22,
+          "verse": 16
+        }
+      ],
+      "en": "and said, “‘I have sworn by myself,’ says the LORD, ‘because you have done this thing, and have not withheld your son, your only son,",
+      "ko": "가라사대 여호와께서 이르시기를 내가 나를 가리켜 맹세하노니 네가 이같이 행하여 네 아들 네 독자를 아끼지 아니하였은즉",
+      "source_text_hash": "d7f53c9947721c1b2400c2897b6dc36d557d07444b3e616e57dad772bb98d3bf",
+      "translation_text_hash": "baad4bd3abad6b26931708c462dc5b7dccb699bd4e003defc813b8d326f551fc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가라사대 여호와께서 이르시기를 내가 나를 가리켜 맹세하노니 네가 이같이 행하여 네 아들 네 독자를 아끼지 아니하였은즉"
+      ],
+      "raw_text_hashes": [
+        "baad4bd3abad6b26931708c462dc5b7dccb699bd4e003defc813b8d326f551fc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:22:17",
+      "sequence": 565,
+      "chapter_label": "GEN 22",
+      "verse_label": "17",
+      "locator": {
+        "book": "GEN",
+        "chapter": 22,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 22,
+          "verse": 17
+        }
+      ],
+      "en": "that I will bless you greatly, and I will multiply your offspring greatly like the stars of the heavens, and like the sand which is on the seashore. Your offspring will possess the gate of his enemies.",
+      "ko": "내가 네게 큰 복을 주고 네 씨로 크게 성하여 하늘의 별과 같고 바닷가의 모래와 같게 하리니 네 씨가 그 대적의 문을 얻으리라",
+      "source_text_hash": "a0066b9a5879cb5ef1ffe041668d71ddb7960e16de8b69216707a380d0620efb",
+      "translation_text_hash": "f47c613a2a1d159be30642b9036c1ca45fd9bef0452d909c8fdf90ee72a15901",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 네게 큰 복을 주고 네 씨로 크게 성하여 하늘의 별과 같고 바닷가의 모래와 같게 하리니 네 씨가 그 대적의 문을 얻으리라"
+      ],
+      "raw_text_hashes": [
+        "f47c613a2a1d159be30642b9036c1ca45fd9bef0452d909c8fdf90ee72a15901"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:22:18",
+      "sequence": 566,
+      "chapter_label": "GEN 22",
+      "verse_label": "18",
+      "locator": {
+        "book": "GEN",
+        "chapter": 22,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 22,
+          "verse": 18
+        }
+      ],
+      "en": "All the nations of the earth will be blessed by your offspring, because you have obeyed my voice.’”",
+      "ko": "또 네 씨로 말미암아 천하 만민이 복을 얻으리니 이는 네가 나의 말을 준행하였음이니라 하셨다 하니라",
+      "source_text_hash": "3c0b73d33e68aace3ffd66460bcda666575a9d4a4cac19d57ba27ce89d5ae398",
+      "translation_text_hash": "b0586431909a1b16d09c82f0a579c32d88c23f106ceede351acba5fed150f95b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 네 씨로 말미암아 천하 만민이 복을 얻으리니 이는 네가 나의 말을 준행하였음이니라 하셨다 하니라"
+      ],
+      "raw_text_hashes": [
+        "b0586431909a1b16d09c82f0a579c32d88c23f106ceede351acba5fed150f95b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:22:19",
+      "sequence": 567,
+      "chapter_label": "GEN 22",
+      "verse_label": "19",
+      "locator": {
+        "book": "GEN",
+        "chapter": 22,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 22,
+          "verse": 19
+        }
+      ],
+      "en": "So Abraham returned to his young men, and they rose up and went together to Beersheba. Abraham lived at Beersheba.",
+      "ko": "이에 아브라함이 그 사환에게로 돌아와서 함께 떠나 브엘세바에 이르러 거기 거하였더라",
+      "source_text_hash": "e6bb8a1bc4420e33189fc3c7ac31f7be18b9cbacd189591c89393c2e97275012",
+      "translation_text_hash": "f8ae08cd4cbd6915f7b4dff6bdb580da39e93c3361f54dddc57227bc09216adf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 아브라함이 그 사환에게로 돌아와서 함께 떠나 브엘세바에 이르러 거기 거하였더라"
+      ],
+      "raw_text_hashes": [
+        "f8ae08cd4cbd6915f7b4dff6bdb580da39e93c3361f54dddc57227bc09216adf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:22:20",
+      "sequence": 568,
+      "chapter_label": "GEN 22",
+      "verse_label": "20",
+      "locator": {
+        "book": "GEN",
+        "chapter": 22,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 22,
+          "verse": 20
+        }
+      ],
+      "en": "After these things, Abraham was told, “Behold, Milcah, she also has borne children to your brother Nahor:",
+      "ko": "이 일 후에 혹이 아브라함에게 고하여 이르기를 밀가가 그대의 동생 나홀에게 자녀를 낳았다 하였더라",
+      "source_text_hash": "020a9977d26b2328f7a3c22be826a021361cbfa7c8b5f5b28ee82120c5047502",
+      "translation_text_hash": "91a16bd427c2a6ce862f6e56c25d9addfb2cc0985f32871900b5fb38f1c54cad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 일 후에 혹이 아브라함에게 고하여 이르기를 밀가가 그대의 동생 나홀에게 자녀를 낳았다 하였더라"
+      ],
+      "raw_text_hashes": [
+        "91a16bd427c2a6ce862f6e56c25d9addfb2cc0985f32871900b5fb38f1c54cad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:22:21",
+      "sequence": 569,
+      "chapter_label": "GEN 22",
+      "verse_label": "21",
+      "locator": {
+        "book": "GEN",
+        "chapter": 22,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 22,
+          "verse": 21
+        }
+      ],
+      "en": "Uz his firstborn, Buz his brother, Kemuel the father of Aram,",
+      "ko": "그 맏아들은 우스요 우스의 동생은 부스와 아람의 아비 그므엘과",
+      "source_text_hash": "8fd4d56eff24a2af377441d75cc83d7a0a7458a3c2dcd714b5fb654bddf6f244",
+      "translation_text_hash": "64d0e5f6a39226f616d19faf4392ed7c6e2212480ec1c7fb288e312149be1685",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 맏아들은 우스요 우스의 동생은 부스와 아람의 아비 그므엘과"
+      ],
+      "raw_text_hashes": [
+        "64d0e5f6a39226f616d19faf4392ed7c6e2212480ec1c7fb288e312149be1685"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:22:22",
+      "sequence": 570,
+      "chapter_label": "GEN 22",
+      "verse_label": "22",
+      "locator": {
+        "book": "GEN",
+        "chapter": 22,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 22,
+          "verse": 22
+        }
+      ],
+      "en": "Chesed, Hazo, Pildash, Jidlaph, and Bethuel.”",
+      "ko": "게셋과 하소와 빌다스와 이들랍과 브두엘이라",
+      "source_text_hash": "2750c9c6669d38debec91e66b90b0fd565120be0c0a1d1c1f446cb0c360c2a5d",
+      "translation_text_hash": "15cdf4b68dcab47de64d9534bd9e1e2947b0a66f458c92baed4e36c43c00a624",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "게셋과 하소와 빌다스와 이들랍과 브두엘이라"
+      ],
+      "raw_text_hashes": [
+        "15cdf4b68dcab47de64d9534bd9e1e2947b0a66f458c92baed4e36c43c00a624"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:22:23",
+      "sequence": 571,
+      "chapter_label": "GEN 22",
+      "verse_label": "23",
+      "locator": {
+        "book": "GEN",
+        "chapter": 22,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 22,
+          "verse": 23
+        }
+      ],
+      "en": "Bethuel became the father of Rebekah. These eight Milcah bore to Nahor, Abraham’s brother.",
+      "ko": "이 여덟 사람은 아브라함의 동생 나홀의 처 밀가의 소생이며 브두엘은 리브가를 낳았고",
+      "source_text_hash": "a8db3327db59cc5001f940edb923727d8ed2cb896be80911ada712aa9f7e251a",
+      "translation_text_hash": "f377d0b1b792585fb68b03ef8087ffc7ef8ebf820808383bf54142100c16d477",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 여덟 사람은 아브라함의 동생 나홀의 처 밀가의 소생이며 브두엘은 리브가를 낳았고"
+      ],
+      "raw_text_hashes": [
+        "f377d0b1b792585fb68b03ef8087ffc7ef8ebf820808383bf54142100c16d477"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:22:24",
+      "sequence": 572,
+      "chapter_label": "GEN 22",
+      "verse_label": "24",
+      "locator": {
+        "book": "GEN",
+        "chapter": 22,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 22,
+          "verse": 24
+        }
+      ],
+      "en": "His concubine, whose name was Reumah, also bore Tebah, Gaham, Tahash, and Maacah.",
+      "ko": "나홀의 첩 르우마라 하는 자도 데바와 가함과 다하스와 마아가를 낳았더라",
+      "source_text_hash": "dafa609961987d558f16595f6fd6831d29b655c8a6f5aa71dc1d629ddc5532bd",
+      "translation_text_hash": "002a67056075245d5448b0bdf7ad4925ce170c5b2edb98e2b85308e6fe2c9ac6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나홀의 첩 르우마라 하는 자도 데바와 가함과 다하스와 마아가를 낳았더라"
+      ],
+      "raw_text_hashes": [
+        "002a67056075245d5448b0bdf7ad4925ce170c5b2edb98e2b85308e6fe2c9ac6"
+      ]
+    }
+  ]
+}

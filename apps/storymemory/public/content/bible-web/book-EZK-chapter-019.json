@@ -1,0 +1,461 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EZK:chapter:019",
+  "unit_ordinal": 821,
+  "unit_label": "EZK 19",
+  "book_code": "EZK",
+  "chapter_number": 19,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EZK:19:1",
+      "sequence": 20883,
+      "chapter_label": "EZK 19",
+      "verse_label": "1",
+      "locator": {
+        "book": "EZK",
+        "chapter": 19,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 19,
+          "verse": 1
+        }
+      ],
+      "en": "“Moreover, take up a lamentation for the princes of Israel,",
+      "ko": "너는 이스라엘 방백들을 위하여 애가를 지어",
+      "source_text_hash": "94b02a790cd907d48ccd435321bffb26613fe497fe0cf767b3e28f736b49515e",
+      "translation_text_hash": "97b13bf40eac5989823f77e868335bd7d8481c92e4626c18e62ab4b735cf4a87",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 이스라엘 방백들을 위하여 애가를 지어"
+      ],
+      "raw_text_hashes": [
+        "97b13bf40eac5989823f77e868335bd7d8481c92e4626c18e62ab4b735cf4a87"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:19:2",
+      "sequence": 20884,
+      "chapter_label": "EZK 19",
+      "verse_label": "2",
+      "locator": {
+        "book": "EZK",
+        "chapter": 19,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 19,
+          "verse": 2
+        }
+      ],
+      "en": "and say, ‘What was your mother? A lioness. She couched among lions, in the middle of the young lions she nourished her cubs.",
+      "ko": "부르기를 네 어미는 무엇이냐 암사자라 그가 사자들 가운데 엎드리어 젊은 사자 중에서 그 새끼를 기르는데",
+      "source_text_hash": "c827b0e8cafe62da4adb701140a87bf28f0625b888c02f38b87254428b8e2759",
+      "translation_text_hash": "5e8db2755f1d1c90c7d8b1794a2ff2d6d786650f3c0f940ad0c656ecf9751ee0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "부르기를 네 어미는 무엇이냐 암사자라 그가 사자들 가운데 엎드리어 젊은 사자 중에서 그 새끼를 기르는데"
+      ],
+      "raw_text_hashes": [
+        "5e8db2755f1d1c90c7d8b1794a2ff2d6d786650f3c0f940ad0c656ecf9751ee0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:19:3",
+      "sequence": 20885,
+      "chapter_label": "EZK 19",
+      "verse_label": "3",
+      "locator": {
+        "book": "EZK",
+        "chapter": 19,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 19,
+          "verse": 3
+        }
+      ],
+      "en": "She brought up one of her cubs. He became a young lion. He learned to catch the prey. He devoured men.",
+      "ko": "그 새끼 하나를 키우매 젊은 사자가 되어 식물 움키기를 배워 사람을 삼키매",
+      "source_text_hash": "cd52c11b724951dab24a9910a2f378672a0e3a6235d896b0465869adcf1c91ce",
+      "translation_text_hash": "a6f80a86c0b9fad6ef0d53af93936e951be6cfdf48adda40c839f44f7f388826",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 새끼 하나를 키우매 젊은 사자가 되어 식물 움키기를 배워 사람을 삼키매"
+      ],
+      "raw_text_hashes": [
+        "a6f80a86c0b9fad6ef0d53af93936e951be6cfdf48adda40c839f44f7f388826"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:19:4",
+      "sequence": 20886,
+      "chapter_label": "EZK 19",
+      "verse_label": "4",
+      "locator": {
+        "book": "EZK",
+        "chapter": 19,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 19,
+          "verse": 4
+        }
+      ],
+      "en": "The nations also heard of him. He was taken in their pit; and they brought him with hooks to the land of Egypt.",
+      "ko": "이방이 듣고 함정으로 그를 잡아 갈고리로 꿰어끌고 애굽 땅으로 간지라",
+      "source_text_hash": "f2959d838037d19e7f4e6f7537b14ebe137996b0dd44e3add3e7d42b73351eb1",
+      "translation_text_hash": "53337348b68869e0aea9d534298d1ba14a6bf9f98565505996549aa1da1c5611",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이방이 듣고 함정으로 그를 잡아 갈고리로 꿰어끌고 애굽 땅으로 간지라"
+      ],
+      "raw_text_hashes": [
+        "53337348b68869e0aea9d534298d1ba14a6bf9f98565505996549aa1da1c5611"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:19:5",
+      "sequence": 20887,
+      "chapter_label": "EZK 19",
+      "verse_label": "5",
+      "locator": {
+        "book": "EZK",
+        "chapter": 19,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 19,
+          "verse": 5
+        }
+      ],
+      "en": "“‘Now when she saw that she had waited, and her hope was lost, then she took another of her cubs, and made him a young lion.",
+      "ko": "암사자가 기다리다가 소망이 끊어진 줄을 알고 그 새끼 하나를 또 취하여 젊은 사자가 되게 하니",
+      "source_text_hash": "9a1aca83b12934ee8a1df0a413be4b6412849983d81992f1a52b485f4faecb32",
+      "translation_text_hash": "6c6d132d2c06370d6b7daf49389bf9a1319ba21f02494e31cb6e9cd581da86c3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "암사자가 기다리다가 소망이 끊어진 줄을 알고 그 새끼 하나를 또 취하여 젊은 사자가 되게 하니"
+      ],
+      "raw_text_hashes": [
+        "6c6d132d2c06370d6b7daf49389bf9a1319ba21f02494e31cb6e9cd581da86c3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:19:6",
+      "sequence": 20888,
+      "chapter_label": "EZK 19",
+      "verse_label": "6",
+      "locator": {
+        "book": "EZK",
+        "chapter": 19,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 19,
+          "verse": 6
+        }
+      ],
+      "en": "He went up and down among the lions. He became a young lion. He learned to catch the prey. He devoured men.",
+      "ko": "젊은 사자가 되매 여러 사자 가운데 왕래하며 식물 움키기를 배워 사람을 삼키며",
+      "source_text_hash": "d8bd64f10073611c0637443b9f6755f392d631e4926f8a7a742cc427034c4421",
+      "translation_text_hash": "ef2a0892e119b045a8bfcb33602b6eff86ea0809d69de99864bc98a2848f0866",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "젊은 사자가 되매 여러 사자 가운데 왕래하며 식물 움키기를 배워 사람을 삼키며"
+      ],
+      "raw_text_hashes": [
+        "ef2a0892e119b045a8bfcb33602b6eff86ea0809d69de99864bc98a2848f0866"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:19:7",
+      "sequence": 20889,
+      "chapter_label": "EZK 19",
+      "verse_label": "7",
+      "locator": {
+        "book": "EZK",
+        "chapter": 19,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 19,
+          "verse": 7
+        }
+      ],
+      "en": "He knew their palaces, and laid waste their cities. The land was desolate with its fullness, because of the noise of his roaring.",
+      "ko": "그의 궁실들을 헐고 성읍들을 훼파하니 그 우는 소리로 인하여 땅과 그 가득한 것이 황무한지라",
+      "source_text_hash": "54df1d4ab53828d17dd492c2e92a456fedae454d48280f6f7d3df0a08133fdc6",
+      "translation_text_hash": "37902d1f7e48f602b9506094e34fa636e99c765c48103a195db9afef25c90666",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그의 궁실들을 헐고 성읍들을 훼파하니 그 우는 소리로 인하여 땅과 그 가득한 것이 황무한지라"
+      ],
+      "raw_text_hashes": [
+        "37902d1f7e48f602b9506094e34fa636e99c765c48103a195db9afef25c90666"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:19:8",
+      "sequence": 20890,
+      "chapter_label": "EZK 19",
+      "verse_label": "8",
+      "locator": {
+        "book": "EZK",
+        "chapter": 19,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 19,
+          "verse": 8
+        }
+      ],
+      "en": "Then the nations attacked him on every side from the provinces. They spread their net over him. He was taken in their pit.",
+      "ko": "이방이 둘려 있는 지방에서 그를 치러 와서 그의 위에 그물을 치고 함정에 잡아",
+      "source_text_hash": "b96986c6ea1bae7e4334a69b2e0889a1ae3261498a3cce92941c1b6c8ae7eba6",
+      "translation_text_hash": "b68abcd4443b385297cb62d405bc0dd2be8506f93acd080da64271886ca95405",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이방이 둘려 있는 지방에서 그를 치러 와서 그의 위에 그물을 치고 함정에 잡아"
+      ],
+      "raw_text_hashes": [
+        "b68abcd4443b385297cb62d405bc0dd2be8506f93acd080da64271886ca95405"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:19:9",
+      "sequence": 20891,
+      "chapter_label": "EZK 19",
+      "verse_label": "9",
+      "locator": {
+        "book": "EZK",
+        "chapter": 19,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 19,
+          "verse": 9
+        }
+      ],
+      "en": "They put him in a cage with hooks, and brought him to the king of Babylon. They brought him into strongholds, so that his voice should no more be heard on the mountains of Israel.",
+      "ko": "갈고리로 꿰고 철롱에 넣어 끌고 바벨론 왕에게 이르렀나니 그를 옥에 가두어서 그 소리로 다시 이스라엘 산에 들리지 않게 하려 함이니라",
+      "source_text_hash": "494e12cbad086e00769a45998a5ed4c59081672a372859f3881a4a8185ee7e50",
+      "translation_text_hash": "cef2b82f279ec54cc849b9fde9eb8d991bc17f6ff81049cd3e9584be2962e271",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "갈고리로 꿰고 철롱에 넣어 끌고 바벨론 왕에게 이르렀나니 그를 옥에 가두어서 그 소리로 다시 이스라엘 산에 들리지 않게 하려 함이니라"
+      ],
+      "raw_text_hashes": [
+        "cef2b82f279ec54cc849b9fde9eb8d991bc17f6ff81049cd3e9584be2962e271"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:19:10",
+      "sequence": 20892,
+      "chapter_label": "EZK 19",
+      "verse_label": "10",
+      "locator": {
+        "book": "EZK",
+        "chapter": 19,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 19,
+          "verse": 10
+        }
+      ],
+      "en": "“‘Your mother was like a vine in your blood, planted by the waters. It was fruitful and full of branches by reason of many waters.",
+      "ko": "네 피의 어미는 물 가에 심긴 포도나무 같아서 물이 많으므로 실과가 많고 가지가 무성하며",
+      "source_text_hash": "cd221d70a5d650cab0d5b661cade4510e1ffa098d66d17d557d89968bbe254be",
+      "translation_text_hash": "29ce85fa3dd77daabf5f8451c63091aa83f64aabfb686daebab2850f0ce7369e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 피의 어미는 물 가에 심긴 포도나무 같아서 물이 많으므로 실과가 많고 가지가 무성하며"
+      ],
+      "raw_text_hashes": [
+        "29ce85fa3dd77daabf5f8451c63091aa83f64aabfb686daebab2850f0ce7369e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:19:11",
+      "sequence": 20893,
+      "chapter_label": "EZK 19",
+      "verse_label": "11",
+      "locator": {
+        "book": "EZK",
+        "chapter": 19,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 19,
+          "verse": 11
+        }
+      ],
+      "en": "It had strong branches for the scepters of those who ruled. Their stature was exalted among the thick boughs. They were seen in their height with the multitude of their branches.",
+      "ko": "그 가지들은 견강하여 권세 잡은 자의 홀이 될만한데 그 하나의 키가 굵은 가지 가운데서 높았으며 많은 가지 가운데서 뛰어나서 보이다가",
+      "source_text_hash": "0690660429f80d5d9428be366faff0155f034801685a7ed629dedff52fc636b3",
+      "translation_text_hash": "014495421798d45ec98b3863e932b6f2184081ec2b533df2b765443f20f21431",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 가지들은 견강하여 권세 잡은 자의 홀이 될만한데 그 하나의 키가 굵은 가지 가운데서 높았으며 많은 가지 가운데서 뛰어나서 보이다가"
+      ],
+      "raw_text_hashes": [
+        "014495421798d45ec98b3863e932b6f2184081ec2b533df2b765443f20f21431"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:19:12",
+      "sequence": 20894,
+      "chapter_label": "EZK 19",
+      "verse_label": "12",
+      "locator": {
+        "book": "EZK",
+        "chapter": 19,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 19,
+          "verse": 12
+        }
+      ],
+      "en": "But it was plucked up in fury. It was cast down to the ground, and the east wind dried up its fruit. Its strong branches were broken off and withered. The fire consumed them.",
+      "ko": "분노 중에 뽑혀서 땅에 던짐을 당하매 그 실과는 동풍에 마르고 그 견강한 가지들은 꺾이고 말라 불에 탔더니",
+      "source_text_hash": "6e6eb7b4d29ad3fdc82db622f240ca008dbcbbc2d43d6154e1787eb7edc88b2a",
+      "translation_text_hash": "652195bf49912c649f9d365bdac643ef5bb30f5436687fa0310622f9a58346e5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "분노 중에 뽑혀서 땅에 던짐을 당하매 그 실과는 동풍에 마르고 그 견강한 가지들은 꺾이고 말라 불에 탔더니"
+      ],
+      "raw_text_hashes": [
+        "652195bf49912c649f9d365bdac643ef5bb30f5436687fa0310622f9a58346e5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:19:13",
+      "sequence": 20895,
+      "chapter_label": "EZK 19",
+      "verse_label": "13",
+      "locator": {
+        "book": "EZK",
+        "chapter": 19,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 19,
+          "verse": 13
+        }
+      ],
+      "en": "Now it is planted in the wilderness, in a dry and thirsty land.",
+      "ko": "이제는 광야, 메마르고 가물이 든 땅에 심긴바 되고",
+      "source_text_hash": "c67c138a4d2161a7963a1eda6728fdcd07e742a16c81874d59bb06622a75e492",
+      "translation_text_hash": "51c41b5e0e637f2b6dcd2552486f012ab59864902e4efee8892bcdca0136314d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제는 광야, 메마르고 가물이 든 땅에 심긴바 되고"
+      ],
+      "raw_text_hashes": [
+        "51c41b5e0e637f2b6dcd2552486f012ab59864902e4efee8892bcdca0136314d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:19:14",
+      "sequence": 20896,
+      "chapter_label": "EZK 19",
+      "verse_label": "14",
+      "locator": {
+        "book": "EZK",
+        "chapter": 19,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 19,
+          "verse": 14
+        }
+      ],
+      "en": "Fire has gone out of its branches. It has devoured its fruit, so that there is in it no strong branch to be a scepter to rule.’ This is a lamentation, and shall be for a lamentation.”",
+      "ko": "불이 그 가지 중 하나에서부터 나와서 그 실과를 태우니 권세 잡은 자의 홀이 될만한 견강한 가지가 없도다 이것이 애가라 후에도 애가가 되리라",
+      "source_text_hash": "e2351990f69f3dcfc490e0124befde739f927bc1e252a1bb9910e5639b86932d",
+      "translation_text_hash": "969b0b604c6ce45ea5bbbebc49e40eb0aef697351008785e0a419fcd7eea622f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "불이 그 가지 중 하나에서부터 나와서 그 실과를 태우니 권세 잡은 자의 홀이 될만한 견강한 가지가 없도다 이것이 애가라 후에도 애가가 되리라"
+      ],
+      "raw_text_hashes": [
+        "969b0b604c6ce45ea5bbbebc49e40eb0aef697351008785e0a419fcd7eea622f"
+      ]
+    }
+  ]
+}

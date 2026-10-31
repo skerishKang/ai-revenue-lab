@@ -1,0 +1,941 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ISA:chapter:028",
+  "unit_ordinal": 707,
+  "unit_label": "ISA 28",
+  "book_code": "ISA",
+  "chapter_number": 28,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ISA:28:1",
+      "sequence": 18166,
+      "chapter_label": "ISA 28",
+      "verse_label": "1",
+      "locator": {
+        "book": "ISA",
+        "chapter": 28,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 28,
+          "verse": 1
+        }
+      ],
+      "en": "Woe to the crown of pride of the drunkards of Ephraim, and to the fading flower of his glorious beauty, which is on the head of the fertile valley of those who are overcome with wine!",
+      "ko": "취한 자 에브라임의 교만한 면류관이여 화 있을찐저 술에 빠진 자의 성 곧 영화로운 관 같이 기름진 골짜기 꼭대기에 세운 성이여 쇠잔해가는 꽃 같으니 화 있을찐저",
+      "source_text_hash": "c0918f0d0a9b32d192beae0a63e6b80b8d68f60bab884a31eef005899fe4bcd2",
+      "translation_text_hash": "e640f675369fa7e500cb08422653c9b5ebe74a90f7ad59e2508e820cc6ac1df5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "취한 자 에브라임의 교만한 면류관이여 화 있을찐저 술에 빠진 자의 성 곧 영화로운 관 같이 기름진 골짜기 꼭대기에 세운 성이여 쇠잔해가는 꽃 같으니 화 있을찐저"
+      ],
+      "raw_text_hashes": [
+        "e640f675369fa7e500cb08422653c9b5ebe74a90f7ad59e2508e820cc6ac1df5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:28:2",
+      "sequence": 18167,
+      "chapter_label": "ISA 28",
+      "verse_label": "2",
+      "locator": {
+        "book": "ISA",
+        "chapter": 28,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 28,
+          "verse": 2
+        }
+      ],
+      "en": "Behold, the Lord has one who is mighty and strong. Like a storm of hail, a destroying storm, and like a storm of mighty waters overflowing, he will cast them down to the earth with his hand.",
+      "ko": "보라 주께 있는 강하고 힘 있는 자가 쏟아지는 우박 같이, 파괴하는 광풍 같이, 큰 물의 창일함 같이 손으로 그 면류관을 땅에 던지리니",
+      "source_text_hash": "75e758a0789d0b1be90bd029d674dfec0c7a35c2365710b2d4199b64c7cda7d7",
+      "translation_text_hash": "9f8c4e6a1a27d5f80808c504c7c191403f7fc1266e1e5af698479d344f334db9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보라 주께 있는 강하고 힘 있는 자가 쏟아지는 우박 같이, 파괴하는 광풍 같이, 큰 물의 창일함 같이 손으로 그 면류관을 땅에 던지리니"
+      ],
+      "raw_text_hashes": [
+        "9f8c4e6a1a27d5f80808c504c7c191403f7fc1266e1e5af698479d344f334db9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:28:3",
+      "sequence": 18168,
+      "chapter_label": "ISA 28",
+      "verse_label": "3",
+      "locator": {
+        "book": "ISA",
+        "chapter": 28,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 28,
+          "verse": 3
+        }
+      ],
+      "en": "The crown of pride of the drunkards of Ephraim will be trodden under foot.",
+      "ko": "에브라임의 취한 자의 교만한 면류관이 발에 밟힐 것이라",
+      "source_text_hash": "88fc47075923aacfb3b04e344ec78a442f76caa9ed8212d53b2c0f16f8f08795",
+      "translation_text_hash": "71826dc5ccebebedbd67f5bc473336c4ac4115bf50c11bbc2368fccaf32654c6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에브라임의 취한 자의 교만한 면류관이 발에 밟힐 것이라"
+      ],
+      "raw_text_hashes": [
+        "71826dc5ccebebedbd67f5bc473336c4ac4115bf50c11bbc2368fccaf32654c6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:28:4",
+      "sequence": 18169,
+      "chapter_label": "ISA 28",
+      "verse_label": "4",
+      "locator": {
+        "book": "ISA",
+        "chapter": 28,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 28,
+          "verse": 4
+        }
+      ],
+      "en": "The fading flower of his glorious beauty, which is on the head of the fertile valley, shall be like the first-ripe fig before the summer, which someone picks and eats as soon as he sees it.",
+      "ko": "그 기름진 골짜기 꼭대기에 있는 그 영화의 쇠잔해 가는 꽃이 여름 전에 처음 익은 무화과와 같으리니 보는 자가 그것을 보고 얼른 따서 먹으리로다",
+      "source_text_hash": "0d983e16b17cb2961e6d00ab5aef4ada7ca87d89c67fe5c03faa928faf8fdefe",
+      "translation_text_hash": "07ebc5dce9f49a7b0cc6e2505bc0fc8b98120e447f3e1d77dfc646ce181aab4b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 기름진 골짜기 꼭대기에 있는 그 영화의 쇠잔해 가는 꽃이 여름 전에 처음 익은 무화과와 같으리니 보는 자가 그것을 보고 얼른 따서 먹으리로다"
+      ],
+      "raw_text_hashes": [
+        "07ebc5dce9f49a7b0cc6e2505bc0fc8b98120e447f3e1d77dfc646ce181aab4b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:28:5",
+      "sequence": 18170,
+      "chapter_label": "ISA 28",
+      "verse_label": "5",
+      "locator": {
+        "book": "ISA",
+        "chapter": 28,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 28,
+          "verse": 5
+        }
+      ],
+      "en": "In that day, the LORD of Armies will become a crown of glory and a diadem of beauty to the residue of his people,",
+      "ko": "그 날에 만군의 여호와께서 그 남은 백성에게 영화로운 면류관이 되시며 아름다운 화관이 되실 것이라",
+      "source_text_hash": "09919a0933b7ebe9cf8b9ba7d97abd5f55530e98eca3b598b807a4c5c32c484d",
+      "translation_text_hash": "658b0977301a379524d5eef6a053aca0eec75fe21cedaa29a2a7f78fe04c1dd7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날에 만군의 여호와께서 그 남은 백성에게 영화로운 면류관이 되시며 아름다운 화관이 되실 것이라"
+      ],
+      "raw_text_hashes": [
+        "658b0977301a379524d5eef6a053aca0eec75fe21cedaa29a2a7f78fe04c1dd7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:28:6",
+      "sequence": 18171,
+      "chapter_label": "ISA 28",
+      "verse_label": "6",
+      "locator": {
+        "book": "ISA",
+        "chapter": 28,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 28,
+          "verse": 6
+        }
+      ],
+      "en": "and a spirit of justice to him who sits in judgment, and strength to those who turn back the battle at the gate.",
+      "ko": "재판석에 앉은 자에게는 판결하는 신이 되시며 성문에서 싸움을 물리치는 자에게는 힘이 되시리로다 마는",
+      "source_text_hash": "68ae4eb85e830529864ab05963d68e13f7651f0d949c10295d75f51f16d1d29a",
+      "translation_text_hash": "7bd62d0e494d0e4b8be269d1ddb28980c1a6a9b2d71ac234ca45d56b53a2fd0e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "재판석에 앉은 자에게는 판결하는 신이 되시며 성문에서 싸움을 물리치는 자에게는 힘이 되시리로다 마는"
+      ],
+      "raw_text_hashes": [
+        "7bd62d0e494d0e4b8be269d1ddb28980c1a6a9b2d71ac234ca45d56b53a2fd0e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:28:7",
+      "sequence": 18172,
+      "chapter_label": "ISA 28",
+      "verse_label": "7",
+      "locator": {
+        "book": "ISA",
+        "chapter": 28,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 28,
+          "verse": 7
+        }
+      ],
+      "en": "They also reel with wine, and stagger with strong drink. The priest and the prophet reel with strong drink. They are swallowed up by wine. They stagger with strong drink. They err in vision. They stumble in judgment.",
+      "ko": "이 유다 사람들도 포도주로 인하여 옆걸음 치며 독주로 인하여 비틀거리며 제사장과 선지자도 독주로 인하여 옆걸음 치며 포도주에 빠지며 독주로 인하여 비틀거리며 이상을 그릇 풀며 재판할 때에 실수하나니",
+      "source_text_hash": "10015a1c5e40eefdf417eb50c7c97399aad118283f474652c859eafa74c5d430",
+      "translation_text_hash": "efbc262c84b091cb764e46eca68630fe34b24282a51115602eaa096503401a39",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 유다 사람들도 포도주로 인하여 옆걸음 치며 독주로 인하여 비틀거리며 제사장과 선지자도 독주로 인하여 옆걸음 치며 포도주에 빠지며 독주로 인하여 비틀거리며 이상을 그릇 풀며 재판할 때에 실수하나니"
+      ],
+      "raw_text_hashes": [
+        "efbc262c84b091cb764e46eca68630fe34b24282a51115602eaa096503401a39"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:28:8",
+      "sequence": 18173,
+      "chapter_label": "ISA 28",
+      "verse_label": "8",
+      "locator": {
+        "book": "ISA",
+        "chapter": 28,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 28,
+          "verse": 8
+        }
+      ],
+      "en": "For all tables are completely full of filthy vomit and filthiness.",
+      "ko": "모든 상에는 토한 것, 더러운 것이 가득하고 깨끗한 곳이 없도다",
+      "source_text_hash": "b742ee9f706d162f966dee2ffc35bc3c581d99333d58a6c10da887bbdf86aacb",
+      "translation_text_hash": "74368899ccf377c860602fc95a3b6a02acadc540cf4045483d9c126b598285f6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 상에는 토한 것, 더러운 것이 가득하고 깨끗한 곳이 없도다"
+      ],
+      "raw_text_hashes": [
+        "74368899ccf377c860602fc95a3b6a02acadc540cf4045483d9c126b598285f6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:28:9",
+      "sequence": 18174,
+      "chapter_label": "ISA 28",
+      "verse_label": "9",
+      "locator": {
+        "book": "ISA",
+        "chapter": 28,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 28,
+          "verse": 9
+        }
+      ],
+      "en": "Whom will he teach knowledge? To whom will he explain the message? Those who are weaned from the milk, and drawn from the breasts?",
+      "ko": "그들이 이르기를 그가 뉘게 지식을 가르치며 뉘게 도를 전하여 깨닫게 하려는가 젖 떨어져 품을 떠난 자들에게 하려는가",
+      "source_text_hash": "5aaf8a183d9dc428604f81ff7e73f4df00d14085c0e00e67f99034e496d1d19d",
+      "translation_text_hash": "60eb6f2f795e18875254b75562f597b0220694f60b14de3dcbc988ee39caf6d1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 이르기를 그가 뉘게 지식을 가르치며 뉘게 도를 전하여 깨닫게 하려는가 젖 떨어져 품을 떠난 자들에게 하려는가"
+      ],
+      "raw_text_hashes": [
+        "60eb6f2f795e18875254b75562f597b0220694f60b14de3dcbc988ee39caf6d1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:28:10",
+      "sequence": 18175,
+      "chapter_label": "ISA 28",
+      "verse_label": "10",
+      "locator": {
+        "book": "ISA",
+        "chapter": 28,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 28,
+          "verse": 10
+        }
+      ],
+      "en": "For it is precept on precept, precept on precept; line on line, line on line; here a little, there a little.",
+      "ko": "대저 경계에 경계를 더하며 경계에 경계를 더하며 교훈에 교훈을 더하며 교훈에 교훈을 더하되 여기서도 조금, 저기서도 조금 하는구나 하는도다",
+      "source_text_hash": "88a06a06b43b31503f3ada56b4ba8f4534509e1d029f2dccd96019e5085b8e52",
+      "translation_text_hash": "3792abb861d0b9f25efb2a21cbd07c9c03dcd4762c20517e0767fc7aad557973",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대저 경계에 경계를 더하며 경계에 경계를 더하며 교훈에 교훈을 더하며 교훈에 교훈을 더하되 여기서도 조금, 저기서도 조금 하는구나 하는도다"
+      ],
+      "raw_text_hashes": [
+        "3792abb861d0b9f25efb2a21cbd07c9c03dcd4762c20517e0767fc7aad557973"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:28:11",
+      "sequence": 18176,
+      "chapter_label": "ISA 28",
+      "verse_label": "11",
+      "locator": {
+        "book": "ISA",
+        "chapter": 28,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 28,
+          "verse": 11
+        }
+      ],
+      "en": "But he will speak to this nation with stammering lips and in another language,",
+      "ko": "그러므로 생소한 입술과 다른 방언으로 이 백성에게 말씀하시리라",
+      "source_text_hash": "5b7a97a396cf09efa8be854ca5f1fc77ba104f68c0c96b20ec6961a694d65e8d",
+      "translation_text_hash": "0fbe477dea86032a55486e44d006f7cd47f5bd8d9f616ce6788fda84b46a6624",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 생소한 입술과 다른 방언으로 이 백성에게 말씀하시리라"
+      ],
+      "raw_text_hashes": [
+        "0fbe477dea86032a55486e44d006f7cd47f5bd8d9f616ce6788fda84b46a6624"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:28:12",
+      "sequence": 18177,
+      "chapter_label": "ISA 28",
+      "verse_label": "12",
+      "locator": {
+        "book": "ISA",
+        "chapter": 28,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 28,
+          "verse": 12
+        }
+      ],
+      "en": "to whom he said, “This is the resting place. Give rest to the weary,” and “This is the refreshing;” yet they would not hear.",
+      "ko": "전에 그들에게 이르시기를 이것이 너희 안식이요 이것이 너희 상쾌함이니 너희는 곤비한 자에게 안식을 주라 하셨으나 그들이 듣지 아니하였으므로",
+      "source_text_hash": "e3d347e3764eb5c63064f49cf19a9b3d144ea3c6f7a345b787f9dbd37acd7d2f",
+      "translation_text_hash": "89c3a43ad5f163e99db6c8d85994ad9ed51140913d29750db17d29086e63e5f4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "전에 그들에게 이르시기를 이것이 너희 안식이요 이것이 너희 상쾌함이니 너희는 곤비한 자에게 안식을 주라 하셨으나 그들이 듣지 아니하였으므로"
+      ],
+      "raw_text_hashes": [
+        "89c3a43ad5f163e99db6c8d85994ad9ed51140913d29750db17d29086e63e5f4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:28:13",
+      "sequence": 18178,
+      "chapter_label": "ISA 28",
+      "verse_label": "13",
+      "locator": {
+        "book": "ISA",
+        "chapter": 28,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 28,
+          "verse": 13
+        }
+      ],
+      "en": "Therefore the LORD’s word will be to them precept on precept, precept on precept; line on line, line on line; here a little, there a little; that they may go, fall backward, be broken, be snared, and be taken.",
+      "ko": "여호와께서 그들에게 말씀하시되 경계에 경계를 더하며 경계에 경계를 더하며 교훈에 교훈을 더하며 교훈에 교훈을 더하고 여기서도 조금, 저기서도 조금 하사 그들로 가다가 뒤로 넘어져 부러지며 걸리며 잡히게 하시리라",
+      "source_text_hash": "328d9412fe1ac4de529aecfd9c5de464d841b5083a495194844efd6642afab97",
+      "translation_text_hash": "9ae41130328727c884da16aa17e000a8e092c2fa6f8a8c699fb756a118bf05d5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 그들에게 말씀하시되 경계에 경계를 더하며 경계에 경계를 더하며 교훈에 교훈을 더하며 교훈에 교훈을 더하고 여기서도 조금, 저기서도 조금 하사 그들로 가다가 뒤로 넘어져 부러지며 걸리며 잡히게 하시리라"
+      ],
+      "raw_text_hashes": [
+        "9ae41130328727c884da16aa17e000a8e092c2fa6f8a8c699fb756a118bf05d5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:28:14",
+      "sequence": 18179,
+      "chapter_label": "ISA 28",
+      "verse_label": "14",
+      "locator": {
+        "book": "ISA",
+        "chapter": 28,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 28,
+          "verse": 14
+        }
+      ],
+      "en": "Therefore hear the LORD’s word, you scoffers, that rule this people in Jerusalem:",
+      "ko": "이러므로 예루살렘에 있는 이 백성을 치리하는 너희 경만한 자여 여호와의 말씀을 들을찌어다",
+      "source_text_hash": "53ee73626ab5b716dc11c6e5e8bceb357cf36af553b46ed24062f2e794028881",
+      "translation_text_hash": "b76f98215b56fc7776b679b37102a24cbc840330fd5b76200d1b1c619c9be942",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러므로 예루살렘에 있는 이 백성을 치리하는 너희 경만한 자여 여호와의 말씀을 들을찌어다"
+      ],
+      "raw_text_hashes": [
+        "b76f98215b56fc7776b679b37102a24cbc840330fd5b76200d1b1c619c9be942"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:28:15",
+      "sequence": 18180,
+      "chapter_label": "ISA 28",
+      "verse_label": "15",
+      "locator": {
+        "book": "ISA",
+        "chapter": 28,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 28,
+          "verse": 15
+        }
+      ],
+      "en": "“Because you have said, ‘We have made a covenant with death, and we are in agreement with Sheol. When the overflowing scourge passes through, it won’t come to us; for we have made lies our refuge, and we have hidden ourselves under falsehood.’”",
+      "ko": "너희 말이 우리는 사망과 언약하였고 음부와 맹약하였은즉 넘치는 재앙이 유행할찌라도 우리에게 미치지 못하리니 우리는 거짓으로 우리 피난처를 삼았고 허위 아래 우리를 숨겼음이라 하는도다",
+      "source_text_hash": "fea2e4a3ab29ffda812bc61fef438277aceea9847f990504ab8d1cbf98740f48",
+      "translation_text_hash": "38c4767ff084761ada72af45174c2a631fb95db6919b72fbb4b44362a813d8e3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 말이 우리는 사망과 언약하였고 음부와 맹약하였은즉 넘치는 재앙이 유행할찌라도 우리에게 미치지 못하리니 우리는 거짓으로 우리 피난처를 삼았고 허위 아래 우리를 숨겼음이라 하는도다"
+      ],
+      "raw_text_hashes": [
+        "38c4767ff084761ada72af45174c2a631fb95db6919b72fbb4b44362a813d8e3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:28:16",
+      "sequence": 18181,
+      "chapter_label": "ISA 28",
+      "verse_label": "16",
+      "locator": {
+        "book": "ISA",
+        "chapter": 28,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 28,
+          "verse": 16
+        }
+      ],
+      "en": "Therefore the Lord GOD says, “Behold, I lay in Zion for a foundation a stone, a tried stone, a precious cornerstone of a sure foundation. He who believes shall not act hastily.",
+      "ko": "그러므로 주 여호와께서 가라사대 보라 내가 한 돌을 시온에 두어 기초를 삼았노니 곧 시험한 돌이요 귀하고 견고한 기초 돌이라 그것을 믿는 자는 급절하게 되지 아니하리로다",
+      "source_text_hash": "921268c7be880c32461c60c7ea169d5d3fcf87e7f4a445635f8d8f98abe38002",
+      "translation_text_hash": "93a275ee83995a83298c87c7ce2190bbe96f429cb691db9cc0be56e1236eaf0e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 주 여호와께서 가라사대 보라 내가 한 돌을 시온에 두어 기초를 삼았노니 곧 시험한 돌이요 귀하고 견고한 기초 돌이라 그것을 믿는 자는 급절하게 되지 아니하리로다"
+      ],
+      "raw_text_hashes": [
+        "93a275ee83995a83298c87c7ce2190bbe96f429cb691db9cc0be56e1236eaf0e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:28:17",
+      "sequence": 18182,
+      "chapter_label": "ISA 28",
+      "verse_label": "17",
+      "locator": {
+        "book": "ISA",
+        "chapter": 28,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 28,
+          "verse": 17
+        }
+      ],
+      "en": "I will make justice the measuring line, and righteousness the plumb line. The hail will sweep away the refuge of lies, and the waters will overflow the hiding place.",
+      "ko": "나는 공평으로 줄을 삼고 의로 추를 삼으니 우박이 거짓의 피난처를 소탕하며 물이 그 숨는 곳에 넘칠 것인즉",
+      "source_text_hash": "851e8e550b561f38d7bebcbf0fcf8aa125952257cad226ef864ab5fcc3b5228e",
+      "translation_text_hash": "3630a81405e98d36ce268d0b755aaccb427aa4e13472d31149001af24af2abe4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 공평으로 줄을 삼고 의로 추를 삼으니 우박이 거짓의 피난처를 소탕하며 물이 그 숨는 곳에 넘칠 것인즉"
+      ],
+      "raw_text_hashes": [
+        "3630a81405e98d36ce268d0b755aaccb427aa4e13472d31149001af24af2abe4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:28:18",
+      "sequence": 18183,
+      "chapter_label": "ISA 28",
+      "verse_label": "18",
+      "locator": {
+        "book": "ISA",
+        "chapter": 28,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 28,
+          "verse": 18
+        }
+      ],
+      "en": "Your covenant with death shall be annulled, and your agreement with Sheol shall not stand. When the overflowing scourge passes through, then you will be trampled down by it.",
+      "ko": "너희의 사망으로 더불어 세운 언약이 폐하며 음부로 더불어 맺은 맹약이 서지 못하여 넘치는 재앙이 유행할 때에 너희가 그것에게 밟힘을 당할 것이라",
+      "source_text_hash": "cb376a72648e5e2d22f22b3a1eb9aa54f6b7b54ba3f397af2d13f4a7093dc8e3",
+      "translation_text_hash": "f3e57de096cec70d7e56fa0839fdbd9444c0c7dc9ac8a5a22b69cc241e62ad26",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희의 사망으로 더불어 세운 언약이 폐하며 음부로 더불어 맺은 맹약이 서지 못하여 넘치는 재앙이 유행할 때에 너희가 그것에게 밟힘을 당할 것이라"
+      ],
+      "raw_text_hashes": [
+        "f3e57de096cec70d7e56fa0839fdbd9444c0c7dc9ac8a5a22b69cc241e62ad26"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:28:19",
+      "sequence": 18184,
+      "chapter_label": "ISA 28",
+      "verse_label": "19",
+      "locator": {
+        "book": "ISA",
+        "chapter": 28,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 28,
+          "verse": 19
+        }
+      ],
+      "en": "As often as it passes through, it will seize you; for morning by morning it will pass through, by day and by night; and it will be nothing but terror to understand the message.”",
+      "ko": "그것이 유행할 때마다 너희를 잡을 것이니 아침마다 유행하고 주야로 유행한즉 그 전하는 도를 깨닫는 것이 오직 두려움이라",
+      "source_text_hash": "c7db942d8a5d1c33034f4f4500b0cf33949b0b6ec7463a3dcc9c54f427a8bb8c",
+      "translation_text_hash": "8058ec7eba8bf330f320f94de1bb186ad650360b1131f990c709a2c8d108a93f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그것이 유행할 때마다 너희를 잡을 것이니 아침마다 유행하고 주야로 유행한즉 그 전하는 도를 깨닫는 것이 오직 두려움이라"
+      ],
+      "raw_text_hashes": [
+        "8058ec7eba8bf330f320f94de1bb186ad650360b1131f990c709a2c8d108a93f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:28:20",
+      "sequence": 18185,
+      "chapter_label": "ISA 28",
+      "verse_label": "20",
+      "locator": {
+        "book": "ISA",
+        "chapter": 28,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 28,
+          "verse": 20
+        }
+      ],
+      "en": "For the bed is too short to stretch out on, and the blanket is too narrow to wrap oneself in.",
+      "ko": "침상이 짧아서 능히 몸을 펴지 못하며 이불이 좁아서 능히 몸을 싸지 못함 같으리라 하셨나니",
+      "source_text_hash": "cee3461a3d889cd50f46d0cec280d4f0dbd2f67f3063b4651bb66ed12b807f6a",
+      "translation_text_hash": "fc54db6dffdb3b1a3b339390185fcf4ad6836071d888063e3c8aff6aa517328f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "침상이 짧아서 능히 몸을 펴지 못하며 이불이 좁아서 능히 몸을 싸지 못함 같으리라 하셨나니"
+      ],
+      "raw_text_hashes": [
+        "fc54db6dffdb3b1a3b339390185fcf4ad6836071d888063e3c8aff6aa517328f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:28:21",
+      "sequence": 18186,
+      "chapter_label": "ISA 28",
+      "verse_label": "21",
+      "locator": {
+        "book": "ISA",
+        "chapter": 28,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 28,
+          "verse": 21
+        }
+      ],
+      "en": "For the LORD will rise up as on Mount Perazim. He will be angry as in the valley of Gibeon; that he may do his work, his unusual work, and bring to pass his act, his extraordinary act.",
+      "ko": "대저 여호와께서 브라심산에서와 같이 일어나시며 기브온 골짜기에서와 같이 진노하사 자기 일을 행하시리니 그 일이 비상할 것이며 자기 공을 이루시리니 그 공이 기이할 것임이라",
+      "source_text_hash": "ae72c1a7122c0b5043663faad1697c1e320171e9d9b22870b863fc171ccc3862",
+      "translation_text_hash": "c578fd0b1570d15e31d49d44cd7f51cebf100e534a6ee0e3f4d178789ae2df52",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대저 여호와께서 브라심산에서와 같이 일어나시며 기브온 골짜기에서와 같이 진노하사 자기 일을 행하시리니 그 일이 비상할 것이며 자기 공을 이루시리니 그 공이 기이할 것임이라"
+      ],
+      "raw_text_hashes": [
+        "c578fd0b1570d15e31d49d44cd7f51cebf100e534a6ee0e3f4d178789ae2df52"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:28:22",
+      "sequence": 18187,
+      "chapter_label": "ISA 28",
+      "verse_label": "22",
+      "locator": {
+        "book": "ISA",
+        "chapter": 28,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 28,
+          "verse": 22
+        }
+      ],
+      "en": "Now therefore don’t be scoffers, lest your bonds be made strong; for I have heard a decree of destruction from the Lord, GOD of Armies, on the whole earth.",
+      "ko": "그러므로 너희는 경만한 자가 되지 말라 너희 결박이 우심할까 하노라 대저 온 땅을 멸망시키기로 작정하신 것을 내가 만군의 주 여호와께로서 들었느니라",
+      "source_text_hash": "edb75a96d43afe436046bdca21f0a88f428fce6d77783bccbc3b6f7e645d5691",
+      "translation_text_hash": "68746fb868695b1d590719b3f305570a8bc1aa450e323c17b08839a10de72e12",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 너희는 경만한 자가 되지 말라 너희 결박이 우심할까 하노라 대저 온 땅을 멸망시키기로 작정하신 것을 내가 만군의 주 여호와께로서 들었느니라"
+      ],
+      "raw_text_hashes": [
+        "68746fb868695b1d590719b3f305570a8bc1aa450e323c17b08839a10de72e12"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:28:23",
+      "sequence": 18188,
+      "chapter_label": "ISA 28",
+      "verse_label": "23",
+      "locator": {
+        "book": "ISA",
+        "chapter": 28,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 28,
+          "verse": 23
+        }
+      ],
+      "en": "Give ear, and hear my voice! Listen, and hear my speech!",
+      "ko": "너희는 귀를 기울여 내 목소리를 들으라 자세히 내 말을 들으라",
+      "source_text_hash": "23793a494c6712b6b8a6817aa95fa0fcc444f4ed347c6edbab5affefefbad3da",
+      "translation_text_hash": "79f0d1a8f05c1a1adb47cea283c844747f320c7d4afa00b95d45a954b0c909cf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 귀를 기울여 내 목소리를 들으라 자세히 내 말을 들으라"
+      ],
+      "raw_text_hashes": [
+        "79f0d1a8f05c1a1adb47cea283c844747f320c7d4afa00b95d45a954b0c909cf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:28:24",
+      "sequence": 18189,
+      "chapter_label": "ISA 28",
+      "verse_label": "24",
+      "locator": {
+        "book": "ISA",
+        "chapter": 28,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 28,
+          "verse": 24
+        }
+      ],
+      "en": "Does he who plows to sow plow continually? Does he keep turning the soil and breaking the clods?",
+      "ko": "파종하려고 가는 자가 어찌 끊이지 않고 갈기만 하겠느냐 그 땅을 개간하며 고르게만 하겠느냐",
+      "source_text_hash": "c5ec3290d8c8fab6c4c2cc500fb7b71c87dfa4553c93a8802fd4443eb959805c",
+      "translation_text_hash": "f54a355ca7ecf57be0071437f20358cc37d49e0598956191bdc4254c273dc2e6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "파종하려고 가는 자가 어찌 끊이지 않고 갈기만 하겠느냐 그 땅을 개간하며 고르게만 하겠느냐"
+      ],
+      "raw_text_hashes": [
+        "f54a355ca7ecf57be0071437f20358cc37d49e0598956191bdc4254c273dc2e6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:28:25",
+      "sequence": 18190,
+      "chapter_label": "ISA 28",
+      "verse_label": "25",
+      "locator": {
+        "book": "ISA",
+        "chapter": 28,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 28,
+          "verse": 25
+        }
+      ],
+      "en": "When he has leveled its surface, doesn’t he plant the dill, and scatter the cumin seed, and put in the wheat in rows, the barley in the appointed place, and the spelt in its place?",
+      "ko": "지면을 이미 평평히 하였으면 소회향을 뿌리며 대회향을 뿌리며 소맥을 줄줄이 심으며 대맥을 정한 곳에 심으며 귀리를 그 가에 심지 않겠느냐",
+      "source_text_hash": "3f724d2eeda4bcdbfcfa81491de08560ecec0056162728f875aa6e8fb13780ad",
+      "translation_text_hash": "06fea9f2c25563851e0e8126802edeaa638890da95e566b882850df997e89c15",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "지면을 이미 평평히 하였으면 소회향을 뿌리며 대회향을 뿌리며 소맥을 줄줄이 심으며 대맥을 정한 곳에 심으며 귀리를 그 가에 심지 않겠느냐"
+      ],
+      "raw_text_hashes": [
+        "06fea9f2c25563851e0e8126802edeaa638890da95e566b882850df997e89c15"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:28:26",
+      "sequence": 18191,
+      "chapter_label": "ISA 28",
+      "verse_label": "26",
+      "locator": {
+        "book": "ISA",
+        "chapter": 28,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 28,
+          "verse": 26
+        }
+      ],
+      "en": "For his God instructs him in right judgment and teaches him.",
+      "ko": "이는 그의 하나님이 그에게 적당한 방법으로 보이사 가르치셨음이며",
+      "source_text_hash": "693e1ba62c9c53e6b331c11201d4c36f85dc0b390eba03fa13f1e48254c374d5",
+      "translation_text_hash": "2befe441075db2eacee5c601fac3d2b64d3e9640e725267538a5170c76ad25cb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 그의 하나님이 그에게 적당한 방법으로 보이사 가르치셨음이며"
+      ],
+      "raw_text_hashes": [
+        "2befe441075db2eacee5c601fac3d2b64d3e9640e725267538a5170c76ad25cb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:28:27",
+      "sequence": 18192,
+      "chapter_label": "ISA 28",
+      "verse_label": "27",
+      "locator": {
+        "book": "ISA",
+        "chapter": 28,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 28,
+          "verse": 27
+        }
+      ],
+      "en": "For the dill isn’t threshed with a sharp instrument, neither is a cart wheel turned over the cumin; but the dill is beaten out with a stick, and the cumin with a rod.",
+      "ko": "소회향은 도리깨로 떨지 아니하며 대회향에는 수레 바퀴를 굴리지 아니하고 소회향은 작대기로 떨고 대회향은 막대기로 떨며",
+      "source_text_hash": "8346f5ec5d49a4d65d734b566f8e6574aabf566e82416d6aa3f3d382ed90c5d2",
+      "translation_text_hash": "0b21c75fb58fe9c47793c97187f3ef4185e4a8b8d530ebfa9e77060dc2a03aca",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "소회향은 도리깨로 떨지 아니하며 대회향에는 수레 바퀴를 굴리지 아니하고 소회향은 작대기로 떨고 대회향은 막대기로 떨며"
+      ],
+      "raw_text_hashes": [
+        "0b21c75fb58fe9c47793c97187f3ef4185e4a8b8d530ebfa9e77060dc2a03aca"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:28:28",
+      "sequence": 18193,
+      "chapter_label": "ISA 28",
+      "verse_label": "28",
+      "locator": {
+        "book": "ISA",
+        "chapter": 28,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 28,
+          "verse": 28
+        }
+      ],
+      "en": "Bread flour must be ground; so he will not always be threshing it. Although he drives the wheel of his threshing cart over it, his horses don’t grind it.",
+      "ko": "곡식은 부수는가, 아니라 늘 떨기만 하지 아니하고 그것에 수레 바퀴를 굴리고 그것을 말굽으로 밟게 할지라도 부수지는 아니하나니",
+      "source_text_hash": "8b8a44568286fe10cdddd3bf30b36f6d651eef1155e0d54bc5c6db54a0cc7ec7",
+      "translation_text_hash": "804a2af6fd49fd8e9cd301e07bd3b38111d96fe9420838bc613e6bbe5eff6810",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곡식은 부수는가, 아니라 늘 떨기만 하지 아니하고 그것에 수레 바퀴를 굴리고 그것을 말굽으로 밟게 할지라도 부수지는 아니하나니"
+      ],
+      "raw_text_hashes": [
+        "804a2af6fd49fd8e9cd301e07bd3b38111d96fe9420838bc613e6bbe5eff6810"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:28:29",
+      "sequence": 18194,
+      "chapter_label": "ISA 28",
+      "verse_label": "29",
+      "locator": {
+        "book": "ISA",
+        "chapter": 28,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 28,
+          "verse": 29
+        }
+      ],
+      "en": "This also comes out from the LORD of Armies, who is wonderful in counsel, and excellent in wisdom.",
+      "ko": "이도 만군의 여호와께로서 난 것이라 그의 모략은 기묘하며 지혜는 광대하니라",
+      "source_text_hash": "da3a0db6f84e285a1c028d3798536eabc82524aea1240b0c74c95c0a6c874c15",
+      "translation_text_hash": "2360a82600398f7c469cd79381255803d3ac27ed247dbdb4bfc6c1c661da7dca",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이도 만군의 여호와께로서 난 것이라 그의 모략은 기묘하며 지혜는 광대하니라"
+      ],
+      "raw_text_hashes": [
+        "2360a82600398f7c469cd79381255803d3ac27ed247dbdb4bfc6c1c661da7dca"
+      ]
+    }
+  ]
+}

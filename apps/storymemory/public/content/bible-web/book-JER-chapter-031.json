@@ -1,0 +1,1293 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JER:chapter:031",
+  "unit_ordinal": 776,
+  "unit_label": "JER 31",
+  "book_code": "JER",
+  "chapter_number": 31,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JER:31:1",
+      "sequence": 19693,
+      "chapter_label": "JER 31",
+      "verse_label": "1",
+      "locator": {
+        "book": "JER",
+        "chapter": 31,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 31,
+          "verse": 1
+        }
+      ],
+      "en": "“At that time,” says the LORD, “I will be the God of all the families of Israel, and they will be my people.”",
+      "ko": "나 여호와가 말하노라 그 때에 내가 이스라엘 모든 가족의 하나님이 되고 그들은 내 백성이 되리라",
+      "source_text_hash": "d3dbe5246a6731a6d86b995c3d96cbd1162b3cd032b10e935590b82cf9738106",
+      "translation_text_hash": "dd3270a28965fb20bcb995563510aca6ef25e068cd1b58234d4b96a8713c8572",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와가 말하노라 그 때에 내가 이스라엘 모든 가족의 하나님이 되고 그들은 내 백성이 되리라"
+      ],
+      "raw_text_hashes": [
+        "dd3270a28965fb20bcb995563510aca6ef25e068cd1b58234d4b96a8713c8572"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:31:2",
+      "sequence": 19694,
+      "chapter_label": "JER 31",
+      "verse_label": "2",
+      "locator": {
+        "book": "JER",
+        "chapter": 31,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 31,
+          "verse": 2
+        }
+      ],
+      "en": "The LORD says, “The people who survive the sword found favor in the wilderness; even Israel, when I went to cause him to rest.”",
+      "ko": "나 여호와가 이같이 말하노라 칼에서 벗어난 백성이 광야에서 은혜를 얻었나니 곧 내가 이스라엘로 안식을 얻게 하러 갈 때에라",
+      "source_text_hash": "6ce96759d597cbbb9787c110dc773bdebb6d3f3f9263e0341241565b429a1655",
+      "translation_text_hash": "53f11871473fab65205a75859a5ae74dc08782f57ddc8fa49c38ab582cc9e46d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와가 이같이 말하노라 칼에서 벗어난 백성이 광야에서 은혜를 얻었나니 곧 내가 이스라엘로 안식을 얻게 하러 갈 때에라"
+      ],
+      "raw_text_hashes": [
+        "53f11871473fab65205a75859a5ae74dc08782f57ddc8fa49c38ab582cc9e46d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:31:3",
+      "sequence": 19695,
+      "chapter_label": "JER 31",
+      "verse_label": "3",
+      "locator": {
+        "book": "JER",
+        "chapter": 31,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 31,
+          "verse": 3
+        }
+      ],
+      "en": "The LORD appeared of old to me, saying, “Yes, I have loved you with an everlasting love. Therefore I have drawn you with loving kindness.",
+      "ko": "나 여호와가 옛적에 이스라엘에게 나타나 이르기를 내가 무궁한 사랑으로 너를 사랑하는고로 인자함으로 너를 인도하였다 하였노라",
+      "source_text_hash": "e7a6b8380d505924d25719a33eda644ea5af3244d7893364d4a00288d27708ff",
+      "translation_text_hash": "a6df924bf536824a05bc16410a2a1a44e2dafacbe130bca205b31ad23bcfe17a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와가 옛적에 이스라엘에게 나타나 이르기를 내가 무궁한 사랑으로 너를 사랑하는고로 인자함으로 너를 인도하였다 하였노라"
+      ],
+      "raw_text_hashes": [
+        "a6df924bf536824a05bc16410a2a1a44e2dafacbe130bca205b31ad23bcfe17a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:31:4",
+      "sequence": 19696,
+      "chapter_label": "JER 31",
+      "verse_label": "4",
+      "locator": {
+        "book": "JER",
+        "chapter": 31,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 31,
+          "verse": 4
+        }
+      ],
+      "en": "I will build you again, and you will be built, O virgin of Israel. You will again be adorned with your tambourines, and will go out in the dances of those who make merry.",
+      "ko": "처녀 이스라엘아 내가 다시 너를 세우리니 네가 세움을 입을 것이요 네가 다시 소고로 너를 장식하고 즐거운 무리처럼 춤추며 나올 것이며",
+      "source_text_hash": "4b408bf2334f5b2c08ad1f1b2aa2585f765ce4f832da41636a7703f68b5b3548",
+      "translation_text_hash": "6de73a0a98bcabb8ddc3d13fd70948d081d79d922771d9d8d8e9fe5bd305eef8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "처녀 이스라엘아 내가 다시 너를 세우리니 네가 세움을 입을 것이요 네가 다시 소고로 너를 장식하고 즐거운 무리처럼 춤추며 나올 것이며"
+      ],
+      "raw_text_hashes": [
+        "6de73a0a98bcabb8ddc3d13fd70948d081d79d922771d9d8d8e9fe5bd305eef8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:31:5",
+      "sequence": 19697,
+      "chapter_label": "JER 31",
+      "verse_label": "5",
+      "locator": {
+        "book": "JER",
+        "chapter": 31,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 31,
+          "verse": 5
+        }
+      ],
+      "en": "Again you will plant vineyards on the mountains of Samaria. The planters will plant, and will enjoy its fruit.",
+      "ko": "네가 다시 사마리아 산들에 포도원을 심되 심는 자가 심고 그 과실을 먹으리라",
+      "source_text_hash": "ef92e3f69de5f1c87f2939e7421b6e8ef070714ce08f21b375a3d24e104e17b2",
+      "translation_text_hash": "97e04f0f2d72aa65382c23d676172afa4ec7d7f17367e1c4c456814fa43b17bf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 다시 사마리아 산들에 포도원을 심되 심는 자가 심고 그 과실을 먹으리라"
+      ],
+      "raw_text_hashes": [
+        "97e04f0f2d72aa65382c23d676172afa4ec7d7f17367e1c4c456814fa43b17bf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:31:6",
+      "sequence": 19698,
+      "chapter_label": "JER 31",
+      "verse_label": "6",
+      "locator": {
+        "book": "JER",
+        "chapter": 31,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 31,
+          "verse": 6
+        }
+      ],
+      "en": "For there will be a day that the watchmen on the hills of Ephraim cry, ‘Arise! Let’s go up to Zion to the LORD our God.’”",
+      "ko": "에브라임산 위에서 파숫군이 외치는 날이 이를 것이라 이르기를 너희는 일어나라 우리가 시온에 올라가서 우리 하나님 여호와께로 나아가자 하리라",
+      "source_text_hash": "19cebb170039f4e625b88262b73ec66bb3a9b88c491afb08a169eed9ff4ecc67",
+      "translation_text_hash": "270b709ad2408c9592fddc7583d3ebb53bdb94ddda057a8d709ebb85993c002d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에브라임산 위에서 파숫군이 외치는 날이 이를 것이라 이르기를 너희는 일어나라 우리가 시온에 올라가서 우리 하나님 여호와께로 나아가자 하리라"
+      ],
+      "raw_text_hashes": [
+        "270b709ad2408c9592fddc7583d3ebb53bdb94ddda057a8d709ebb85993c002d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:31:7",
+      "sequence": 19699,
+      "chapter_label": "JER 31",
+      "verse_label": "7",
+      "locator": {
+        "book": "JER",
+        "chapter": 31,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 31,
+          "verse": 7
+        }
+      ],
+      "en": "For the LORD says, “Sing with gladness for Jacob, and shout for the chief of the nations. Publish, praise, and say, ‘LORD, save your people, the remnant of Israel!’",
+      "ko": "나 여호와가 이같이 말하노라 너희는 야곱을 위하여 기뻐 노래하며 만국의 머리 된 자를 위하여 외쳐 전파하며 찬양하며 이르기를 여호와여 주의 백성 이스라엘의 남은 자를 구원하소서 하라",
+      "source_text_hash": "3bc4897f21e2992248272f2694800a0d8fab748b36cca98b2705bd704d41028f",
+      "translation_text_hash": "3202358941272c012a0eeee5d73ec574a0f3f7b35a9c78b1d2933b2e331ac69d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와가 이같이 말하노라 너희는 야곱을 위하여 기뻐 노래하며 만국의 머리 된 자를 위하여 외쳐 전파하며 찬양하며 이르기를 여호와여 주의 백성 이스라엘의 남은 자를 구원하소서 하라"
+      ],
+      "raw_text_hashes": [
+        "3202358941272c012a0eeee5d73ec574a0f3f7b35a9c78b1d2933b2e331ac69d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:31:8",
+      "sequence": 19700,
+      "chapter_label": "JER 31",
+      "verse_label": "8",
+      "locator": {
+        "book": "JER",
+        "chapter": 31,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 31,
+          "verse": 8
+        }
+      ],
+      "en": "Behold, I will bring them from the north country, and gather them from the uttermost parts of the earth, along with the blind and the lame, the woman with child and her who travails with child together. They will return as a great company.",
+      "ko": "보라 내가 그들을 북편 땅에서 인도하며 땅 끝에서부터 모으리니 그들 중에는 소경과 절뚝발이와 잉태한 여인과 해산하는 여인이 함께하여 큰 무리를 이루어 이곳으로 돌아오되",
+      "source_text_hash": "2dd0e29a1465707f69ccacaa5b2598df3a3aa6b31543065c058d65cec028570f",
+      "translation_text_hash": "171cd676a84a836bfbc00094b8a71abb54f6f35f4300978b087e53362cdfd174",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보라 내가 그들을 북편 땅에서 인도하며 땅 끝에서부터 모으리니 그들 중에는 소경과 절뚝발이와 잉태한 여인과 해산하는 여인이 함께하여 큰 무리를 이루어 이곳으로 돌아오되"
+      ],
+      "raw_text_hashes": [
+        "171cd676a84a836bfbc00094b8a71abb54f6f35f4300978b087e53362cdfd174"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:31:9",
+      "sequence": 19701,
+      "chapter_label": "JER 31",
+      "verse_label": "9",
+      "locator": {
+        "book": "JER",
+        "chapter": 31,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 31,
+          "verse": 9
+        }
+      ],
+      "en": "They will come with weeping. I will lead them with petitions. I will cause them to walk by rivers of waters, in a straight way in which they won’t stumble; for I am a father to Israel. Ephraim is my firstborn.",
+      "ko": "울며 올 것이며 그들이 나의 인도함을 입고 간구할 때에 내가 그들로 넘어지지 아니하고 하숫가의 바른 길로 행하게 하리라 나는 이스라엘의 아비요 에브라임은 나의 장자니라",
+      "source_text_hash": "3b20ac14c6dac65b04a0ad23f190119685931c7f1b50653705bbab3fe0af3174",
+      "translation_text_hash": "ef3048955070b71821d1a4573ffd491bcfce7f7a88cc9c8511e0092914cf896e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "울며 올 것이며 그들이 나의 인도함을 입고 간구할 때에 내가 그들로 넘어지지 아니하고 하숫가의 바른 길로 행하게 하리라 나는 이스라엘의 아비요 에브라임은 나의 장자니라"
+      ],
+      "raw_text_hashes": [
+        "ef3048955070b71821d1a4573ffd491bcfce7f7a88cc9c8511e0092914cf896e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:31:10",
+      "sequence": 19702,
+      "chapter_label": "JER 31",
+      "verse_label": "10",
+      "locator": {
+        "book": "JER",
+        "chapter": 31,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 31,
+          "verse": 10
+        }
+      ],
+      "en": "“Hear the LORD’s word, you nations, and declare it in the distant islands. Say, ‘He who scattered Israel will gather him, and keep him, as a shepherd does his flock.’",
+      "ko": "열방이여 너희는 나 여호와의 말을 듣고 먼 섬에 전파하여 이르기를 이스라엘을 흩으신 자가 그를 모으시고 목자가 그 양무리에게 행함 같이 그를 지키시리로다",
+      "source_text_hash": "d660f8b2690610100d646ec64275abadd142c562c4e3636f4f57262a4d18521a",
+      "translation_text_hash": "1c0c2b87845652d03fd789564373e034608bc09c4356bd80f6bb0b7db064316e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "열방이여 너희는 나 여호와의 말을 듣고 먼 섬에 전파하여 이르기를 이스라엘을 흩으신 자가 그를 모으시고 목자가 그 양무리에게 행함 같이 그를 지키시리로다"
+      ],
+      "raw_text_hashes": [
+        "1c0c2b87845652d03fd789564373e034608bc09c4356bd80f6bb0b7db064316e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:31:11",
+      "sequence": 19703,
+      "chapter_label": "JER 31",
+      "verse_label": "11",
+      "locator": {
+        "book": "JER",
+        "chapter": 31,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 31,
+          "verse": 11
+        }
+      ],
+      "en": "For the LORD has ransomed Jacob, and redeemed him from the hand of him who was stronger than he.",
+      "ko": "여호와께서 야곱을 속량하시되 그들보다 강한 자의 손에서 구속하셨으니",
+      "source_text_hash": "781849a4eab91ada6a35f7f206474b30dc6ab63101549d10175ecdcb320a0110",
+      "translation_text_hash": "908e2bf3c32852e0e599420f8495967cc37bc9f785ca54a2f3b1f4485b315fd2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 야곱을 속량하시되 그들보다 강한 자의 손에서 구속하셨으니"
+      ],
+      "raw_text_hashes": [
+        "908e2bf3c32852e0e599420f8495967cc37bc9f785ca54a2f3b1f4485b315fd2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:31:12",
+      "sequence": 19704,
+      "chapter_label": "JER 31",
+      "verse_label": "12",
+      "locator": {
+        "book": "JER",
+        "chapter": 31,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 31,
+          "verse": 12
+        }
+      ],
+      "en": "They will come and sing in the height of Zion, and will flow to the goodness of the LORD, to the grain, to the new wine, to the oil, and to the young of the flock and of the herd. Their soul will be as a watered garden. They will not sorrow any more at all.",
+      "ko": "그들이 와서 시온의 높은 곳에서 찬송하며 여호와의 은사 곧 곡식과 새 포도주와 기름과 어린 양의 떼와 소의 떼에 모일 것이라 그 심령은 물댄 동산 같겠고 다시는 근심이 없으리로다 할찌어다",
+      "source_text_hash": "7a797d4ec06da63f627039faf85756bfaafb0c4add7e7b5787b9c5375030cf57",
+      "translation_text_hash": "8376c5edca154ccca9aac08c54c23bf829df1e4ef7057045970eae7da943470b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 와서 시온의 높은 곳에서 찬송하며 여호와의 은사 곧 곡식과 새 포도주와 기름과 어린 양의 떼와 소의 떼에 모일 것이라 그 심령은 물댄 동산 같겠고 다시는 근심이 없으리로다 할찌어다"
+      ],
+      "raw_text_hashes": [
+        "8376c5edca154ccca9aac08c54c23bf829df1e4ef7057045970eae7da943470b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:31:13",
+      "sequence": 19705,
+      "chapter_label": "JER 31",
+      "verse_label": "13",
+      "locator": {
+        "book": "JER",
+        "chapter": 31,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 31,
+          "verse": 13
+        }
+      ],
+      "en": "Then the virgin will rejoice in the dance, the young men and the old together; for I will turn their mourning into joy, and will comfort them, and make them rejoice from their sorrow.",
+      "ko": "그 때에 처녀는 춤추며 즐거워하겠고 청년과 노인이 함께 즐거워하리니 내가 그들의 슬픔을 돌이켜 즐겁게 하며 그들을 위로하여 근심한 후에 기쁨을 얻게 할것임이니라",
+      "source_text_hash": "03d95c0e2d0b03bdfeec62093bf2c209edbb00bf04d95226b036ee75dc0044c9",
+      "translation_text_hash": "bf02f13914497b1807e1ea5b37be3425823ec02c906f2f0ac0bea30700c4a0be",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 처녀는 춤추며 즐거워하겠고 청년과 노인이 함께 즐거워하리니 내가 그들의 슬픔을 돌이켜 즐겁게 하며 그들을 위로하여 근심한 후에 기쁨을 얻게 할것임이니라"
+      ],
+      "raw_text_hashes": [
+        "bf02f13914497b1807e1ea5b37be3425823ec02c906f2f0ac0bea30700c4a0be"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:31:14",
+      "sequence": 19706,
+      "chapter_label": "JER 31",
+      "verse_label": "14",
+      "locator": {
+        "book": "JER",
+        "chapter": 31,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 31,
+          "verse": 14
+        }
+      ],
+      "en": "I will satiate the soul of the priests with fatness, and my people will be satisfied with my goodness,” says the LORD.",
+      "ko": "내가 기름으로 제사장들의 심령에 흡족케 하며 내 은혜로 내 백성에게 만족케 하리라 여호와의 말이니라",
+      "source_text_hash": "88a1f117ce36decb5b747fb385a4e1d4f7f1769855cfcd9bd32e3f08788bcc5b",
+      "translation_text_hash": "2cfe5a6335b25b99a1a62e4ec79eaf83f8b5cb3bcbbfd1b73a729da6be34a3cd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 기름으로 제사장들의 심령에 흡족케 하며 내 은혜로 내 백성에게 만족케 하리라 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "2cfe5a6335b25b99a1a62e4ec79eaf83f8b5cb3bcbbfd1b73a729da6be34a3cd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:31:15",
+      "sequence": 19707,
+      "chapter_label": "JER 31",
+      "verse_label": "15",
+      "locator": {
+        "book": "JER",
+        "chapter": 31,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 31,
+          "verse": 15
+        }
+      ],
+      "en": "The LORD says: “A voice is heard in Ramah, lamentation and bitter weeping, Rachel weeping for her children. She refuses to be comforted for her children, because they are no more.”",
+      "ko": "나 여호와가 이같이 말하노라 라마에서 슬퍼하며 통곡하는 소리가 들리니 라헬이 그 자식을 위하여 애곡하는 것이라 그가 자식이 없으므로 위로 받기를 거절하는도다",
+      "source_text_hash": "0a540c700adb0be3a5b4fd2b31e7cea10413b8df5e498520859d6d39f1a2bd31",
+      "translation_text_hash": "f72eb3c86ad15220c950129035688069dfb0e76622da644459d8ab6efb908c92",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와가 이같이 말하노라 라마에서 슬퍼하며 통곡하는 소리가 들리니 라헬이 그 자식을 위하여 애곡하는 것이라 그가 자식이 없으므로 위로 받기를 거절하는도다"
+      ],
+      "raw_text_hashes": [
+        "f72eb3c86ad15220c950129035688069dfb0e76622da644459d8ab6efb908c92"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:31:16",
+      "sequence": 19708,
+      "chapter_label": "JER 31",
+      "verse_label": "16",
+      "locator": {
+        "book": "JER",
+        "chapter": 31,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 31,
+          "verse": 16
+        }
+      ],
+      "en": "The LORD says: “Refrain your voice from weeping, and your eyes from tears, for your work will be rewarded,” says the LORD. “They will come again from the land of the enemy.",
+      "ko": "나 여호와가 이같이 말하노라 네 소리를 금하여 울지 말며 네 눈을 금하여 눈물을 흘리지 말라 네 일에 갚음을 받을 것인즉 그들이 그 대적의 땅에서 돌아오리라 여호와의 말이니라",
+      "source_text_hash": "cb695d8314836d2c2d06715210d329ccbc5ee028308baaa4d2eeb9849c35fad0",
+      "translation_text_hash": "47e4f3f018d74247a06597c405aac8e35a9411f6790aabbafa61ff3bdea0397d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와가 이같이 말하노라 네 소리를 금하여 울지 말며 네 눈을 금하여 눈물을 흘리지 말라 네 일에 갚음을 받을 것인즉 그들이 그 대적의 땅에서 돌아오리라 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "47e4f3f018d74247a06597c405aac8e35a9411f6790aabbafa61ff3bdea0397d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:31:17",
+      "sequence": 19709,
+      "chapter_label": "JER 31",
+      "verse_label": "17",
+      "locator": {
+        "book": "JER",
+        "chapter": 31,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 31,
+          "verse": 17
+        }
+      ],
+      "en": "There is hope for your latter end,” says the LORD. “Your children will come again to their own territory.",
+      "ko": "나 여호와가 말하노라 너의 최후에 소망이 있을 것이라 너의 자녀가 자기들의 경내로 돌아오리라",
+      "source_text_hash": "24d7cfcf38d6d54b1a1205efa2dc8b3bdbcf3293687f3db715e1e1fa31716875",
+      "translation_text_hash": "98565f5d6f634bc57ea4dfbfdfc8af2238c16afd6a97e00129ee9581f3b36157",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와가 말하노라 너의 최후에 소망이 있을 것이라 너의 자녀가 자기들의 경내로 돌아오리라"
+      ],
+      "raw_text_hashes": [
+        "98565f5d6f634bc57ea4dfbfdfc8af2238c16afd6a97e00129ee9581f3b36157"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:31:18",
+      "sequence": 19710,
+      "chapter_label": "JER 31",
+      "verse_label": "18",
+      "locator": {
+        "book": "JER",
+        "chapter": 31,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 31,
+          "verse": 18
+        }
+      ],
+      "en": "“I have surely heard Ephraim grieving thus, ‘You have chastised me, and I was chastised, as an untrained calf. Turn me, and I will be turned, for you are the LORD my God.",
+      "ko": "에브라임이 스스로 탄식함을 내가 정녕히 들었노니 이르기를 주께서 나를 징벌하시매 멍에에 익숙지 못한 송아지 같은 내가 징벌을 받았나이다 주는 나의 하나님 여호와시니 나를 이끌어 돌이키소서 그리하시면 내가 돌아오겠나이다",
+      "source_text_hash": "fdbb3598a57f19876d19a5e40940a4a25d6f7249ff3fb2948ff53a6f5d026a2c",
+      "translation_text_hash": "a90dd96b084687c4e85c2f478e962f57c6fcd2f46c1fe8fb0a74cffcd6f19132",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에브라임이 스스로 탄식함을 내가 정녕히 들었노니 이르기를 주께서 나를 징벌하시매 멍에에 익숙지 못한 송아지 같은 내가 징벌을 받았나이다 주는 나의 하나님 여호와시니 나를 이끌어 돌이키소서 그리하시면 내가 돌아오겠나이다"
+      ],
+      "raw_text_hashes": [
+        "a90dd96b084687c4e85c2f478e962f57c6fcd2f46c1fe8fb0a74cffcd6f19132"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:31:19",
+      "sequence": 19711,
+      "chapter_label": "JER 31",
+      "verse_label": "19",
+      "locator": {
+        "book": "JER",
+        "chapter": 31,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 31,
+          "verse": 19
+        }
+      ],
+      "en": "Surely after that I was turned. I repented. After that I was instructed. I struck my thigh. I was ashamed, yes, even confounded, because I bore the reproach of my youth.’",
+      "ko": "내가 돌이킴을 받은 후에 뉘우쳤고 내가 교훈을 받은 후에 내 볼기를 쳤사오니 이는 어렸을 때의 치욕을 진고로 부끄럽고 욕됨이니이다 하도다",
+      "source_text_hash": "faabe2a326f3fbe871abbf9255e0e2e81ace9030f609feba1d187ec0f9094e94",
+      "translation_text_hash": "28a148e7f7e826ca7c430a8692dbd10facbd908964ead11ad972f2b5448962f4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 돌이킴을 받은 후에 뉘우쳤고 내가 교훈을 받은 후에 내 볼기를 쳤사오니 이는 어렸을 때의 치욕을 진고로 부끄럽고 욕됨이니이다 하도다"
+      ],
+      "raw_text_hashes": [
+        "28a148e7f7e826ca7c430a8692dbd10facbd908964ead11ad972f2b5448962f4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:31:20",
+      "sequence": 19712,
+      "chapter_label": "JER 31",
+      "verse_label": "20",
+      "locator": {
+        "book": "JER",
+        "chapter": 31,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 31,
+          "verse": 20
+        }
+      ],
+      "en": "Is Ephraim my dear son? Is he a darling child? For as often as I speak against him, I still earnestly remember him. Therefore my heart yearns for him. I will surely have mercy on him,” says the LORD.",
+      "ko": "에브라임은 나의 사랑하는 아들 기뻐하는 자식이 아니냐 내가 그를 책망하여 말할 때마다 깊이 생각하노라 그러므로 그를 위하여 내 마음이 측은한즉 내가 반드시 그를 긍휼히 여기리라 여호와의 말이니라",
+      "source_text_hash": "29e04de78308d64102e86d8e37ab39a75b6ccd993ca0f6aaa6f02f8a0b7b0c01",
+      "translation_text_hash": "bca8ab932eb62b0ecc8077e2347cee9f72b0b6e22317e9968891d33c03211b99",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에브라임은 나의 사랑하는 아들 기뻐하는 자식이 아니냐 내가 그를 책망하여 말할 때마다 깊이 생각하노라 그러므로 그를 위하여 내 마음이 측은한즉 내가 반드시 그를 긍휼히 여기리라 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "bca8ab932eb62b0ecc8077e2347cee9f72b0b6e22317e9968891d33c03211b99"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:31:21",
+      "sequence": 19713,
+      "chapter_label": "JER 31",
+      "verse_label": "21",
+      "locator": {
+        "book": "JER",
+        "chapter": 31,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 31,
+          "verse": 21
+        }
+      ],
+      "en": "“Set up road signs. Make guideposts. Set your heart toward the highway, even the way by which you went. Turn again, virgin of Israel. Turn again to these your cities.",
+      "ko": "처녀 이스라엘아 너를 위하여 길표를 세우며 너를 위하여 표목을 만들고 대로 곧 네가 전에 가던길에 착념하라 돌아오라 네 성읍들로 돌아오라",
+      "source_text_hash": "3ed09081a650ec72e16180fc3e3b27c168350f8e5946993b8e398304089e3489",
+      "translation_text_hash": "0c05afa0e201fc0d596394ff5a9e91704643cd9b62cd48cad4340c6ad96b3cb0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "처녀 이스라엘아 너를 위하여 길표를 세우며 너를 위하여 표목을 만들고 대로 곧 네가 전에 가던길에 착념하라 돌아오라 네 성읍들로 돌아오라"
+      ],
+      "raw_text_hashes": [
+        "0c05afa0e201fc0d596394ff5a9e91704643cd9b62cd48cad4340c6ad96b3cb0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:31:22",
+      "sequence": 19714,
+      "chapter_label": "JER 31",
+      "verse_label": "22",
+      "locator": {
+        "book": "JER",
+        "chapter": 31,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 31,
+          "verse": 22
+        }
+      ],
+      "en": "How long will you go here and there, you backsliding daughter? For the LORD has created a new thing on the earth: a woman will encompass a man.”",
+      "ko": "패역한 딸아 네가 어느 때까지 방황하겠느냐 여호와가 새 일을 세상에 창조하였나니 곧 여자가 남자를 안으리라",
+      "source_text_hash": "10f0c88a5244e4b89b324a1354f7c0e904b18c31175c11ae0b6e3537b67de54b",
+      "translation_text_hash": "1b3e19663fabfddf589241697fee06b448fe6dd8860f381bd7a14bada99a4702",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "패역한 딸아 네가 어느 때까지 방황하겠느냐 여호와가 새 일을 세상에 창조하였나니 곧 여자가 남자를 안으리라"
+      ],
+      "raw_text_hashes": [
+        "1b3e19663fabfddf589241697fee06b448fe6dd8860f381bd7a14bada99a4702"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:31:23",
+      "sequence": 19715,
+      "chapter_label": "JER 31",
+      "verse_label": "23",
+      "locator": {
+        "book": "JER",
+        "chapter": 31,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 31,
+          "verse": 23
+        }
+      ],
+      "en": "The LORD of Armies, the God of Israel, says: “Yet again they will use this speech in the land of Judah and in its cities, when I reverse their captivity: ‘The LORD bless you, habitation of righteousness, mountain of holiness.’",
+      "ko": "나 만군의 여호와 이스라엘의 하나님이 이같이 말하노라 내가 그 사로잡힌 자를 돌아오게 할 때에 그들이 유다 땅과 그 성읍들에서 다시 이 말을 쓰리니 곧 의로운 처소여, 거룩한 산이여, 여호와께서 네게 복 주시기를 원하노라 할 것이며",
+      "source_text_hash": "9da5b782cf3864f887d2de63c09fec0a8e00722c2ba6a81ca9108b9e82b0d570",
+      "translation_text_hash": "8a2aaf9cd76bd5e7fd3d426da8501cfd5ac13c633c4b79c8db5fd64747e3a765",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 만군의 여호와 이스라엘의 하나님이 이같이 말하노라 내가 그 사로잡힌 자를 돌아오게 할 때에 그들이 유다 땅과 그 성읍들에서 다시 이 말을 쓰리니 곧 의로운 처소여, 거룩한 산이여, 여호와께서 네게 복 주시기를 원하노라 할 것이며"
+      ],
+      "raw_text_hashes": [
+        "8a2aaf9cd76bd5e7fd3d426da8501cfd5ac13c633c4b79c8db5fd64747e3a765"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:31:24",
+      "sequence": 19716,
+      "chapter_label": "JER 31",
+      "verse_label": "24",
+      "locator": {
+        "book": "JER",
+        "chapter": 31,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 31,
+          "verse": 24
+        }
+      ],
+      "en": "Judah and all its cities will dwell therein together, the farmers, and those who go about with flocks.",
+      "ko": "유다와 그 모든 성읍의 농부와 양떼를 인도하는 자가 거기 함께 거하리니",
+      "source_text_hash": "638a6a6b6cb62e381b4b63b8f5b3dac6434e7dc4510254168bb311b8e9f8d31d",
+      "translation_text_hash": "3bf9e1e08f455506dd8d159b0efa4d3efe323f9f0fb24006b946c8308f8e0b46",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다와 그 모든 성읍의 농부와 양떼를 인도하는 자가 거기 함께 거하리니"
+      ],
+      "raw_text_hashes": [
+        "3bf9e1e08f455506dd8d159b0efa4d3efe323f9f0fb24006b946c8308f8e0b46"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:31:25",
+      "sequence": 19717,
+      "chapter_label": "JER 31",
+      "verse_label": "25",
+      "locator": {
+        "book": "JER",
+        "chapter": 31,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 31,
+          "verse": 25
+        }
+      ],
+      "en": "For I have satiated the weary soul, and I have replenished every sorrowful soul.”",
+      "ko": "이는 내가 그 피곤한 심령을 만족케 하며 무릇 슬픈 심령을 상쾌케 하였음이니라 하시기로",
+      "source_text_hash": "f252f5f90b5796f51357b1a89b7e592759469c2e978d9b1d42ae9b20bdd6db40",
+      "translation_text_hash": "08be3da3b32e0b7a56f6ffd097bd8c55377d4bfccc6e5120e9c1c0486399e7a7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 내가 그 피곤한 심령을 만족케 하며 무릇 슬픈 심령을 상쾌케 하였음이니라 하시기로"
+      ],
+      "raw_text_hashes": [
+        "08be3da3b32e0b7a56f6ffd097bd8c55377d4bfccc6e5120e9c1c0486399e7a7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:31:26",
+      "sequence": 19718,
+      "chapter_label": "JER 31",
+      "verse_label": "26",
+      "locator": {
+        "book": "JER",
+        "chapter": 31,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 31,
+          "verse": 26
+        }
+      ],
+      "en": "On this I awakened, and saw; and my sleep was sweet to me.",
+      "ko": "내가 깨어보니 내 잠이 달았더라",
+      "source_text_hash": "4eadaf476b6769f53c1913cdce5d057a2ac8db6c8ed649d0e8339b51e7499b1f",
+      "translation_text_hash": "c1b8b07ee5787b1fccd8457fda143fca077805d83e45677fb05b9ac1ea40b365",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 깨어보니 내 잠이 달았더라"
+      ],
+      "raw_text_hashes": [
+        "c1b8b07ee5787b1fccd8457fda143fca077805d83e45677fb05b9ac1ea40b365"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:31:27",
+      "sequence": 19719,
+      "chapter_label": "JER 31",
+      "verse_label": "27",
+      "locator": {
+        "book": "JER",
+        "chapter": 31,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 31,
+          "verse": 27
+        }
+      ],
+      "en": "“Behold, the days come,” says the LORD, “that I will sow the house of Israel and the house of Judah with the seed of man and with the seed of animal.",
+      "ko": "여호와께서 가라사대 보라 내가 사람의 씨와 짐승의 씨를 이스라엘 집과 유다 집에 뿌릴 날이 이르리니",
+      "source_text_hash": "baef6d8c71fbb31167fdf515d7b053026a969db448ef8cc62adc2e8ff5dc00e6",
+      "translation_text_hash": "924643b97f1cbb57cf09f8f349a004d2fd224467f329de417fe455f665081f10",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 가라사대 보라 내가 사람의 씨와 짐승의 씨를 이스라엘 집과 유다 집에 뿌릴 날이 이르리니"
+      ],
+      "raw_text_hashes": [
+        "924643b97f1cbb57cf09f8f349a004d2fd224467f329de417fe455f665081f10"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:31:28",
+      "sequence": 19720,
+      "chapter_label": "JER 31",
+      "verse_label": "28",
+      "locator": {
+        "book": "JER",
+        "chapter": 31,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 31,
+          "verse": 28
+        }
+      ],
+      "en": "It will happen that, like as I have watched over them to pluck up and to break down and to overthrow and to destroy and to afflict, so I will watch over them to build and to plant,” says the LORD.",
+      "ko": "내가 경성하여 그들을 뽑으며 훼파하며 전복하며 멸하며 곤란케 하던것 같이 경성하여 그들을 세우며 심으리라 여호와의 말이니라",
+      "source_text_hash": "144b84f73507060eb46d925c8192ff2f9a41bfbd9c7672e1e8d8adfdef37abe6",
+      "translation_text_hash": "35b717dc20d39dbf1d52527cd594e38daa77ff1df006bb64efb0a0f0ce201ccd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 경성하여 그들을 뽑으며 훼파하며 전복하며 멸하며 곤란케 하던것 같이 경성하여 그들을 세우며 심으리라 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "35b717dc20d39dbf1d52527cd594e38daa77ff1df006bb64efb0a0f0ce201ccd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:31:29",
+      "sequence": 19721,
+      "chapter_label": "JER 31",
+      "verse_label": "29",
+      "locator": {
+        "book": "JER",
+        "chapter": 31,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 31,
+          "verse": 29
+        }
+      ],
+      "en": "“In those days they will say no more, “‘The fathers have eaten sour grapes, and the children’s teeth are set on edge.’",
+      "ko": "그 때에 그들이 다시는 이르기를 아비가 신 포도를 먹었으므로 아들들의 이가 시다 하지 아니하겠고",
+      "source_text_hash": "e724eb14e644f1e44c7e991ff7fc9144186054a2d1b1c321c2545f794f9278e2",
+      "translation_text_hash": "4bb91539a46c4d304b592b20282e27129f8d627d6959e743bc857e7da360880e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 그들이 다시는 이르기를 아비가 신 포도를 먹었으므로 아들들의 이가 시다 하지 아니하겠고"
+      ],
+      "raw_text_hashes": [
+        "4bb91539a46c4d304b592b20282e27129f8d627d6959e743bc857e7da360880e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:31:30",
+      "sequence": 19722,
+      "chapter_label": "JER 31",
+      "verse_label": "30",
+      "locator": {
+        "book": "JER",
+        "chapter": 31,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 31,
+          "verse": 30
+        }
+      ],
+      "en": "But everyone will die for his own iniquity. Every man who eats the sour grapes, his teeth will be set on edge.",
+      "ko": "신 포도를 먹는 자마다 그 이가 심 같이 각기 자기 죄악으로만 죽으리라",
+      "source_text_hash": "5cd9d0060b98a95efcef6a77ba69e453857704f836ce57259deb885271256c52",
+      "translation_text_hash": "bda7b0bc091e3b747ad9e677909773bfbfd2f42418f29c416f9ef2a90efa9cbf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "신 포도를 먹는 자마다 그 이가 심 같이 각기 자기 죄악으로만 죽으리라"
+      ],
+      "raw_text_hashes": [
+        "bda7b0bc091e3b747ad9e677909773bfbfd2f42418f29c416f9ef2a90efa9cbf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:31:31",
+      "sequence": 19723,
+      "chapter_label": "JER 31",
+      "verse_label": "31",
+      "locator": {
+        "book": "JER",
+        "chapter": 31,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 31,
+          "verse": 31
+        }
+      ],
+      "en": "“Behold, the days come,” says the LORD, “that I will make a new covenant with the house of Israel, and with the house of Judah,",
+      "ko": "나 여호와가 말하노라 보라 날이 이르리니 내가 이스라엘 집과 유다 집에 새 언약을 세우리라",
+      "source_text_hash": "ca81ee83fe578d5aa5e6e00fd2add7cb4c3445c881b6eb614c60d8fc36235285",
+      "translation_text_hash": "7fe8186c0e4dab9ce37dd8b7561ce8deff25944758aab6cb3d6fb95ed1f15557",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와가 말하노라 보라 날이 이르리니 내가 이스라엘 집과 유다 집에 새 언약을 세우리라"
+      ],
+      "raw_text_hashes": [
+        "7fe8186c0e4dab9ce37dd8b7561ce8deff25944758aab6cb3d6fb95ed1f15557"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:31:32",
+      "sequence": 19724,
+      "chapter_label": "JER 31",
+      "verse_label": "32",
+      "locator": {
+        "book": "JER",
+        "chapter": 31,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 31,
+          "verse": 32
+        }
+      ],
+      "en": "not according to the covenant that I made with their fathers in the day that I took them by the hand to bring them out of the land of Egypt, which covenant of mine they broke, although I was a husband to them,” says the LORD.",
+      "ko": "나 여호와가 말하노라 이 언약은 내가 그들의 열조의 손을 잡고 애굽 땅에서 인도하여 내던 날에 세운것과 같지 아니할 것은 내가 그들의 남편이 되었어도 그들이 내 언약을 파하였음이니라",
+      "source_text_hash": "bfbcec73fd9bd0c5e60f59a26c0a200f9bce7132fec862428c26343aae25c49c",
+      "translation_text_hash": "10e1d98895b4b43792292d2628914e0f9eb73ce4383f853bf66d9c882b95ed20",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와가 말하노라 이 언약은 내가 그들의 열조의 손을 잡고 애굽 땅에서 인도하여 내던 날에 세운것과 같지 아니할 것은 내가 그들의 남편이 되었어도 그들이 내 언약을 파하였음이니라"
+      ],
+      "raw_text_hashes": [
+        "10e1d98895b4b43792292d2628914e0f9eb73ce4383f853bf66d9c882b95ed20"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:31:33",
+      "sequence": 19725,
+      "chapter_label": "JER 31",
+      "verse_label": "33",
+      "locator": {
+        "book": "JER",
+        "chapter": 31,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 31,
+          "verse": 33
+        }
+      ],
+      "en": "“But this is the covenant that I will make with the house of Israel after those days,” says the LORD: “I will put my law in their inward parts, and I will write it in their heart. I will be their God, and they shall be my people.",
+      "ko": "나 여호와가 말하노라 그러나 그 날 후에 내가 이스라엘 집에 세울 언약은 이러하니 곧 내가 나의 법을 그들의 속에 두며 그 마음에 기록하여 나는 그들의 하나님이 되고 그들은 내 백성이 될것이라",
+      "source_text_hash": "2ae6efdb2d7b5d9c0298c9bc8b9fa8d84bb456d249f76ec5d0c2628bd451eb3e",
+      "translation_text_hash": "7606fe5e55e4599d5c938f47b6ec2a5c822e5fd3c8f5c5ac5f85ac8e34958cf2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와가 말하노라 그러나 그 날 후에 내가 이스라엘 집에 세울 언약은 이러하니 곧 내가 나의 법을 그들의 속에 두며 그 마음에 기록하여 나는 그들의 하나님이 되고 그들은 내 백성이 될것이라"
+      ],
+      "raw_text_hashes": [
+        "7606fe5e55e4599d5c938f47b6ec2a5c822e5fd3c8f5c5ac5f85ac8e34958cf2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:31:34",
+      "sequence": 19726,
+      "chapter_label": "JER 31",
+      "verse_label": "34",
+      "locator": {
+        "book": "JER",
+        "chapter": 31,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 31,
+          "verse": 34
+        }
+      ],
+      "en": "They will no longer each teach his neighbor, and every man teach his brother, saying, ‘Know the LORD;’ for they will all know me, from their least to their greatest,” says the LORD, “for I will forgive their iniquity, and I will remember their sin no more.”",
+      "ko": "그들이 다시는 각기 이웃과 형제를 가리켜 이르기를 너는 여호와를 알라 하지 아니하리니 이는 작은 자로부터 큰 자까지 다 나를 앎이니라 내가 그들의 죄악을 사하고 다시는 그 죄를 기억지 아니하리라 여호와의 말이니라",
+      "source_text_hash": "bc9442e153da82a67c06d3352f8f87e46b4a3134e5d3fe63d74a64e730cf7afe",
+      "translation_text_hash": "e2931d3e78b3d7355fc32daab8fcc76c56a79d070a2ccb9653494e50424202a9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 다시는 각기 이웃과 형제를 가리켜 이르기를 너는 여호와를 알라 하지 아니하리니 이는 작은 자로부터 큰 자까지 다 나를 앎이니라 내가 그들의 죄악을 사하고 다시는 그 죄를 기억지 아니하리라 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "e2931d3e78b3d7355fc32daab8fcc76c56a79d070a2ccb9653494e50424202a9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:31:35",
+      "sequence": 19727,
+      "chapter_label": "JER 31",
+      "verse_label": "35",
+      "locator": {
+        "book": "JER",
+        "chapter": 31,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 31,
+          "verse": 35
+        }
+      ],
+      "en": "The LORD, who gives the sun for a light by day, and the ordinances of the moon and of the stars for a light by night, who stirs up the sea, so that its waves roar— the LORD of Armies is his name, says:",
+      "ko": "나 여호와는 해를 낮의 빛으로 주었고 달과 별들을 밤의 빛으로 규정하였고 바다를 격동시켜 그 파도로 소리치게 하나니 내 이름은 만군의 여호와니라 내가 말하노라",
+      "source_text_hash": "3b306a9dbc21598165d6d21eb368e3b80c8fadd12c7d6a9404f6ff458e83daf4",
+      "translation_text_hash": "814620b5763f0d3d9bc2ad3305afe53807881acd9e7e777a9219480d4477aaa7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와는 해를 낮의 빛으로 주었고 달과 별들을 밤의 빛으로 규정하였고 바다를 격동시켜 그 파도로 소리치게 하나니 내 이름은 만군의 여호와니라 내가 말하노라"
+      ],
+      "raw_text_hashes": [
+        "814620b5763f0d3d9bc2ad3305afe53807881acd9e7e777a9219480d4477aaa7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:31:36",
+      "sequence": 19728,
+      "chapter_label": "JER 31",
+      "verse_label": "36",
+      "locator": {
+        "book": "JER",
+        "chapter": 31,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 31,
+          "verse": 36
+        }
+      ],
+      "en": "“If these ordinances depart from before me,” says the LORD, “then the offspring of Israel also will cease from being a nation before me forever.”",
+      "ko": "이 규정이 내 앞에서 폐할찐대 이스라엘 자손도 내 앞에서 폐함을 입어 영영히 나라가 되지 못하리라",
+      "source_text_hash": "3980c5090ca3447ea12d1ccb9f5746c4ce31d68f48f8eadf81ae278266f098d9",
+      "translation_text_hash": "1a8e7bcb4d302094de4216a106f717c8a41a62b48ed19d25007a5d5c8c318c2c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 규정이 내 앞에서 폐할찐대 이스라엘 자손도 내 앞에서 폐함을 입어 영영히 나라가 되지 못하리라"
+      ],
+      "raw_text_hashes": [
+        "1a8e7bcb4d302094de4216a106f717c8a41a62b48ed19d25007a5d5c8c318c2c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:31:37",
+      "sequence": 19729,
+      "chapter_label": "JER 31",
+      "verse_label": "37",
+      "locator": {
+        "book": "JER",
+        "chapter": 31,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 31,
+          "verse": 37
+        }
+      ],
+      "en": "The LORD says: “If heaven above can be measured, and the foundations of the earth searched out beneath, then I will also cast off all the offspring of Israel for all that they have done,” says the LORD.",
+      "ko": "나 여호와가 이같이 말하노라 위로 하늘을 측량할 수 있으며 아래로 땅의 기초를 탐지할 수 있다면 내가 이스라엘 자손의 행한 모든 일을 인하여 그들을 다 버리리라 여호와의 말이니라",
+      "source_text_hash": "6fc7cecd1e4ad7a69eb7e413668544fb9a113af721401b1fcf3b69ed4bebc1bf",
+      "translation_text_hash": "4e74d791134ddb9d2aca8cb827e72062461b42776564d20bc307db3b181caa2b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와가 이같이 말하노라 위로 하늘을 측량할 수 있으며 아래로 땅의 기초를 탐지할 수 있다면 내가 이스라엘 자손의 행한 모든 일을 인하여 그들을 다 버리리라 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "4e74d791134ddb9d2aca8cb827e72062461b42776564d20bc307db3b181caa2b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:31:38",
+      "sequence": 19730,
+      "chapter_label": "JER 31",
+      "verse_label": "38",
+      "locator": {
+        "book": "JER",
+        "chapter": 31,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 31,
+          "verse": 38
+        }
+      ],
+      "en": "“Behold, the days come,” says the LORD, “that the city will be built to the LORD from the tower of Hananel to the gate of the corner.",
+      "ko": "나 여호와가 말하노라 보라, 날이 이르리니 이 성을 하나넬 망대에서부터 모퉁이 문까지 여호와를 위하여 건축할 것이라",
+      "source_text_hash": "504e713182403d1e6a05b42c63e4f0a9f01df34d06c75161eff4ba427c6c9438",
+      "translation_text_hash": "8234732e7c318c54e9b8fbd8e170fe6381fa7bb28f1ee0a92dab218c325efbf3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와가 말하노라 보라, 날이 이르리니 이 성을 하나넬 망대에서부터 모퉁이 문까지 여호와를 위하여 건축할 것이라"
+      ],
+      "raw_text_hashes": [
+        "8234732e7c318c54e9b8fbd8e170fe6381fa7bb28f1ee0a92dab218c325efbf3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:31:39",
+      "sequence": 19731,
+      "chapter_label": "JER 31",
+      "verse_label": "39",
+      "locator": {
+        "book": "JER",
+        "chapter": 31,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 31,
+          "verse": 39
+        }
+      ],
+      "en": "The measuring line will go out further straight onward to the hill Gareb, and will turn toward Goah.",
+      "ko": "측량줄이 곧게 가렙산에 이르고 고아 방면으로 돌아",
+      "source_text_hash": "61acfb80551354ac5a991223b461e9016ee0fbd78cbe13a8cac01cbe14a29301",
+      "translation_text_hash": "67da22c047e64dfa4e3b7f11d60bbce39ce3bfb41d9a20e2a4c5851af555bd4a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "측량줄이 곧게 가렙산에 이르고 고아 방면으로 돌아"
+      ],
+      "raw_text_hashes": [
+        "67da22c047e64dfa4e3b7f11d60bbce39ce3bfb41d9a20e2a4c5851af555bd4a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:31:40",
+      "sequence": 19732,
+      "chapter_label": "JER 31",
+      "verse_label": "40",
+      "locator": {
+        "book": "JER",
+        "chapter": 31,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 31,
+          "verse": 40
+        }
+      ],
+      "en": "The whole valley of the dead bodies and of the ashes, and all the fields to the brook Kidron, to the corner of the horse gate toward the east, will be holy to the LORD. It will not be plucked up or thrown down any more forever.”",
+      "ko": "시체와 재의 골짜기와 기드론 시내에 이르는데까지와 동편 말문 모퉁이에 이르기까지의 모든 밭에 이르리니 다 여호와의 성지가 되고 영영히 다시는 뽑히거나 전복되지 아니하리라",
+      "source_text_hash": "668fdee349279db2582c9b263cc8cdfeb6887fdeacb640504a6027e2aed43b2d",
+      "translation_text_hash": "0031f08120372a3d648b4a24268b1b742031275e6a3228577a2c6bce292ce9aa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시체와 재의 골짜기와 기드론 시내에 이르는데까지와 동편 말문 모퉁이에 이르기까지의 모든 밭에 이르리니 다 여호와의 성지가 되고 영영히 다시는 뽑히거나 전복되지 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "0031f08120372a3d648b4a24268b1b742031275e6a3228577a2c6bce292ce9aa"
+      ]
+    }
+  ]
+}

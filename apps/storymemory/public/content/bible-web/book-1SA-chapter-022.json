@@ -1,0 +1,749 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1SA:chapter:022",
+  "unit_ordinal": 258,
+  "unit_label": "1SA 22",
+  "book_code": "1SA",
+  "chapter_number": 22,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1SA:22:1",
+      "sequence": 7789,
+      "chapter_label": "1SA 22",
+      "verse_label": "1",
+      "locator": {
+        "book": "1SA",
+        "chapter": 22,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 22,
+          "verse": 1
+        }
+      ],
+      "en": "David therefore departed from there and escaped to Adullam’s cave. When his brothers and all his father’s house heard it, they went down there to him.",
+      "ko": "그러므로 다윗이 그곳을 떠나 아둘람 굴로 도망하매 그 형제와 아비의 온 집이 듣고는 그리로 내려가서 그에게 이르렀고",
+      "source_text_hash": "8d5da985bc8ddc44898d452ffcd33c92bd86f048ff46a1c065917ece5b30a122",
+      "translation_text_hash": "5cd9f43104415f06c378a9a8e3563471f1c1c8855d2913d740a9b4646e777e88",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 다윗이 그곳을 떠나 아둘람 굴로 도망하매 그 형제와 아비의 온 집이 듣고는 그리로 내려가서 그에게 이르렀고"
+      ],
+      "raw_text_hashes": [
+        "5cd9f43104415f06c378a9a8e3563471f1c1c8855d2913d740a9b4646e777e88"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:22:2",
+      "sequence": 7790,
+      "chapter_label": "1SA 22",
+      "verse_label": "2",
+      "locator": {
+        "book": "1SA",
+        "chapter": 22,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 22,
+          "verse": 2
+        }
+      ],
+      "en": "Everyone who was in distress, everyone who was in debt, and everyone who was discontented gathered themselves to him; and he became captain over them. There were with him about four hundred men.",
+      "ko": "환난 당한 모든 자와 빚진 자와 마음이 원통한 자가 다 그에게로 모였고 그는 그 장관이 되었는데 그와 함께한 자가 사백명 가량이었더라",
+      "source_text_hash": "b11ea711ed84171d121ab31e02c373b77e6317d0066991d24ba182c0772f0c1d",
+      "translation_text_hash": "1a5a193cabee9432e8b2aebc8a0b830ee675baa2b6efe261a3f01daf2678ead5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "환난 당한 모든 자와 빚진 자와 마음이 원통한 자가 다 그에게로 모였고 그는 그 장관이 되었는데 그와 함께한 자가 사백명 가량이었더라"
+      ],
+      "raw_text_hashes": [
+        "1a5a193cabee9432e8b2aebc8a0b830ee675baa2b6efe261a3f01daf2678ead5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:22:3",
+      "sequence": 7791,
+      "chapter_label": "1SA 22",
+      "verse_label": "3",
+      "locator": {
+        "book": "1SA",
+        "chapter": 22,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 22,
+          "verse": 3
+        }
+      ],
+      "en": "David went from there to Mizpeh of Moab; and he said to the king of Moab, “Please let my father and my mother come out to you, until I know what God will do for me.”",
+      "ko": "다윗이 거기서 모압 미스베로 가서 모압 왕에게 이르되 하나님이 나를 위하여 어떻게 하실 것을 내가 알기까지 나의 부모로 나와서 당신들과 함께 있게 하기를 청하나이다 하고",
+      "source_text_hash": "2a6550f7dba3470f9720f44f374a2639816b6e1fb928672414ad0eb6ddba30d6",
+      "translation_text_hash": "2aebddf9cb2b82a4e3feda6f188caf386f95134da6d5b44e1867d35ab9ee2d02",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 거기서 모압 미스베로 가서 모압 왕에게 이르되 하나님이 나를 위하여 어떻게 하실 것을 내가 알기까지 나의 부모로 나와서 당신들과 함께 있게 하기를 청하나이다 하고"
+      ],
+      "raw_text_hashes": [
+        "2aebddf9cb2b82a4e3feda6f188caf386f95134da6d5b44e1867d35ab9ee2d02"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:22:4",
+      "sequence": 7792,
+      "chapter_label": "1SA 22",
+      "verse_label": "4",
+      "locator": {
+        "book": "1SA",
+        "chapter": 22,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 22,
+          "verse": 4
+        }
+      ],
+      "en": "He brought them before the king of Moab; and they lived with him all the time that David was in the stronghold.",
+      "ko": "부모를 인도하여 모압 왕 앞에 나아갔더니 그들이 다윗의 요새에 있을 동안에 모압 왕과 함께 있었더라",
+      "source_text_hash": "1903b038fecf5844bdc1ad5f7136635406732d561ea6415c8d5f6d6be01a5ab3",
+      "translation_text_hash": "a92a5a80a1e814fd4655d0262d6c688dafbb2c97f3074a2ad3b2d8aa448e7f51",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "부모를 인도하여 모압 왕 앞에 나아갔더니 그들이 다윗의 요새에 있을 동안에 모압 왕과 함께 있었더라"
+      ],
+      "raw_text_hashes": [
+        "a92a5a80a1e814fd4655d0262d6c688dafbb2c97f3074a2ad3b2d8aa448e7f51"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:22:5",
+      "sequence": 7793,
+      "chapter_label": "1SA 22",
+      "verse_label": "5",
+      "locator": {
+        "book": "1SA",
+        "chapter": 22,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 22,
+          "verse": 5
+        }
+      ],
+      "en": "The prophet Gad said to David, “Don’t stay in the stronghold. Depart, and go into the land of Judah.” Then David departed, and came into the forest of Hereth.",
+      "ko": "선지자 갓이 다윗에게 이르되 이 요새에 있지 말고 떠나 유다땅으로 들어가라 다윗이 떠나 헤렛 수풀에 이르니라",
+      "source_text_hash": "640b3866629b8fb36622be93806180dd9a8aea1ebdf4a609fcb69ea5c185603d",
+      "translation_text_hash": "7f1424b76bb59b2490842d60950a3a5a4f3f7c61bccc94968a612e18f5c21cd4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "선지자 갓이 다윗에게 이르되 이 요새에 있지 말고 떠나 유다땅으로 들어가라 다윗이 떠나 헤렛 수풀에 이르니라"
+      ],
+      "raw_text_hashes": [
+        "7f1424b76bb59b2490842d60950a3a5a4f3f7c61bccc94968a612e18f5c21cd4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:22:6",
+      "sequence": 7794,
+      "chapter_label": "1SA 22",
+      "verse_label": "6",
+      "locator": {
+        "book": "1SA",
+        "chapter": 22,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 22,
+          "verse": 6
+        }
+      ],
+      "en": "Saul heard that David was discovered, with the men who were with him. Now Saul was sitting in Gibeah, under the tamarisk tree in Ramah, with his spear in his hand, and all his servants were standing around him.",
+      "ko": "사울이 다윗과 그와 함께 있는 사람들이 나타났다 함을 들으니라 때에 사울이 기브아 높은 곳에서 손에 단창을 들고 에셀나무 아래 앉았고 모든 신하들은 그 곁에 섰더니",
+      "source_text_hash": "0a496956b93b14e4dbffd218b5ae8ecdbd826a0c9703126d02c03459f2e77c88",
+      "translation_text_hash": "3c7c3cb894a5ec7151ecaec70865d0ef31ffcfb88aadaaf84d73ebf2197c5b84",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울이 다윗과 그와 함께 있는 사람들이 나타났다 함을 들으니라 때에 사울이 기브아 높은 곳에서 손에 단창을 들고 에셀나무 아래 앉았고 모든 신하들은 그 곁에 섰더니"
+      ],
+      "raw_text_hashes": [
+        "3c7c3cb894a5ec7151ecaec70865d0ef31ffcfb88aadaaf84d73ebf2197c5b84"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:22:7",
+      "sequence": 7795,
+      "chapter_label": "1SA 22",
+      "verse_label": "7",
+      "locator": {
+        "book": "1SA",
+        "chapter": 22,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 22,
+          "verse": 7
+        }
+      ],
+      "en": "Saul said to his servants who stood around him, “Hear now, you Benjamites! Will the son of Jesse give everyone of you fields and vineyards? Will he make you all captains of thousands and captains of hundreds?",
+      "ko": "사울이 곁에 선 신하들에게 이르되 너희 베냐민 사람들아 들으라 이새의 아들이 너희에게 각기 밭과 포도원을 주며 너희로 천부장, 백부장을 삼겠느냐",
+      "source_text_hash": "0ba9bc6e65631835687c52b404d8ef1f3416f0f13cdc776179e2f9b533660a02",
+      "translation_text_hash": "bc7e12b696acd9b91e9b0656ae049d07b06c62936c0a547af19fa38012faf897",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울이 곁에 선 신하들에게 이르되 너희 베냐민 사람들아 들으라 이새의 아들이 너희에게 각기 밭과 포도원을 주며 너희로 천부장, 백부장을 삼겠느냐"
+      ],
+      "raw_text_hashes": [
+        "bc7e12b696acd9b91e9b0656ae049d07b06c62936c0a547af19fa38012faf897"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:22:8",
+      "sequence": 7796,
+      "chapter_label": "1SA 22",
+      "verse_label": "8",
+      "locator": {
+        "book": "1SA",
+        "chapter": 22,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 22,
+          "verse": 8
+        }
+      ],
+      "en": "Is that why all of you have conspired against me, and there is no one who discloses to me when my son makes a treaty with the son of Jesse, and there is none of you who is sorry for me, or discloses to me that my son has stirred up my servant against me, to lie in wait, as it is today?”",
+      "ko": "너희가 다 공모하여 나를 대적하며 내 아들이 이새의 아들과 맹약하였으되 내게 고발하는 자가 하나도 없고 나를 위하여 슬퍼하거나 내 아들이 내 신하를 선동하여 오늘이라도 매복하였다가 나를 치려 하는것을 내게 고발하는 자가 하나도 없도다",
+      "source_text_hash": "2cd5d9aac730d9b8f012675f7895d1fe453c59e7b00e0b7a594467075ab44a51",
+      "translation_text_hash": "ff0ae62d1966fd6e8ad3e56960cd99900c3bb1dc932ee8aa0c45d9d4e1a24df6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 다 공모하여 나를 대적하며 내 아들이 이새의 아들과 맹약하였으되 내게 고발하는 자가 하나도 없고 나를 위하여 슬퍼하거나 내 아들이 내 신하를 선동하여 오늘이라도 매복하였다가 나를 치려 하는것을 내게 고발하는 자가 하나도 없도다"
+      ],
+      "raw_text_hashes": [
+        "ff0ae62d1966fd6e8ad3e56960cd99900c3bb1dc932ee8aa0c45d9d4e1a24df6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:22:9",
+      "sequence": 7797,
+      "chapter_label": "1SA 22",
+      "verse_label": "9",
+      "locator": {
+        "book": "1SA",
+        "chapter": 22,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 22,
+          "verse": 9
+        }
+      ],
+      "en": "Then Doeg the Edomite, who stood by the servants of Saul, answered and said, “I saw the son of Jesse coming to Nob, to Ahimelech the son of Ahitub.",
+      "ko": "때에 에돔 사람 도엑이 사울의 신하 중에 섰더니 대답하여 가로되 이새의 아들이 놉에 와서 아히둡의 아들 아히멜렉에게 이른것을 내가 보았었는데",
+      "source_text_hash": "2622f5ce2108a7f54c93e9803a84402c770c36e3bb9405b4169b6f0437431fed",
+      "translation_text_hash": "2e8ae15f5e02ba37bac5edc7c1c999728916b4b3cd93e7df1fffddb7bfc299b9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "때에 에돔 사람 도엑이 사울의 신하 중에 섰더니 대답하여 가로되 이새의 아들이 놉에 와서 아히둡의 아들 아히멜렉에게 이른것을 내가 보았었는데"
+      ],
+      "raw_text_hashes": [
+        "2e8ae15f5e02ba37bac5edc7c1c999728916b4b3cd93e7df1fffddb7bfc299b9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:22:10",
+      "sequence": 7798,
+      "chapter_label": "1SA 22",
+      "verse_label": "10",
+      "locator": {
+        "book": "1SA",
+        "chapter": 22,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 22,
+          "verse": 10
+        }
+      ],
+      "en": "He inquired of the LORD for him, gave him food, and gave him the sword of Goliath the Philistine.”",
+      "ko": "아히멜렉이 그를 위하여 여호와께 묻고 그에게 식물도 주고 블레셋 사람 골리앗의 칼도 주더이다",
+      "source_text_hash": "20be055387973d400f2b9e95859208adf16f012b47e4d293332b322172f5f4dd",
+      "translation_text_hash": "1b343a8fe340a5f7ddec87aa681b1c71df64d141237f073c02191865854b56ba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아히멜렉이 그를 위하여 여호와께 묻고 그에게 식물도 주고 블레셋 사람 골리앗의 칼도 주더이다"
+      ],
+      "raw_text_hashes": [
+        "1b343a8fe340a5f7ddec87aa681b1c71df64d141237f073c02191865854b56ba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:22:11",
+      "sequence": 7799,
+      "chapter_label": "1SA 22",
+      "verse_label": "11",
+      "locator": {
+        "book": "1SA",
+        "chapter": 22,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 22,
+          "verse": 11
+        }
+      ],
+      "en": "Then the king sent to call Ahimelech the priest, the son of Ahitub, and all his father’s house, the priests who were in Nob; and they all came to the king.",
+      "ko": "왕이 보내어 아히둡의 아들 제사장 아히멜렉과 그 아비의 온 집 곧 놉에 있는 제사장들을 부르매 그들이 다 왕께 이른지라",
+      "source_text_hash": "0581cff6937fa9eccef0adad5a9fe16ee36861e08148077aa69e527b0d44ea78",
+      "translation_text_hash": "aa37d6408d2e2bf8c2b98779ae9c6fd672309f3d88959efc74f65160ed00ffd9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 보내어 아히둡의 아들 제사장 아히멜렉과 그 아비의 온 집 곧 놉에 있는 제사장들을 부르매 그들이 다 왕께 이른지라"
+      ],
+      "raw_text_hashes": [
+        "aa37d6408d2e2bf8c2b98779ae9c6fd672309f3d88959efc74f65160ed00ffd9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:22:12",
+      "sequence": 7800,
+      "chapter_label": "1SA 22",
+      "verse_label": "12",
+      "locator": {
+        "book": "1SA",
+        "chapter": 22,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 22,
+          "verse": 12
+        }
+      ],
+      "en": "Saul said, “Hear now, you son of Ahitub.” He answered, “Here I am, my lord.”",
+      "ko": "사울이 가로되 너 아히둡의 아들아 들으라 대답하되 내 주여 내가 여기 있나이다",
+      "source_text_hash": "58d9d67b7edc40338e5eef6ec79bb0c4f8ea9bd26f9acb49de00188c034b8cd1",
+      "translation_text_hash": "a40abde6c183feef80840f79634c8fc3e2847851d132c37c2e5c0485bc5e3e48",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울이 가로되 너 아히둡의 아들아 들으라 대답하되 내 주여 내가 여기 있나이다"
+      ],
+      "raw_text_hashes": [
+        "a40abde6c183feef80840f79634c8fc3e2847851d132c37c2e5c0485bc5e3e48"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:22:13",
+      "sequence": 7801,
+      "chapter_label": "1SA 22",
+      "verse_label": "13",
+      "locator": {
+        "book": "1SA",
+        "chapter": 22,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 22,
+          "verse": 13
+        }
+      ],
+      "en": "Saul said to him, “Why have you conspired against me, you and the son of Jesse, in that you have given him bread, and a sword, and have inquired of God for him, that he should rise against me, to lie in wait, as it is today?”",
+      "ko": "사울이 그에게 이르되 네가 어찌하여 이새의 아들과 공모하여 나를 대적하여 그에게 떡과 칼을 주고 그를 위하여 하나님께 물어서 그로 오늘이라도 매복하였다가 나를 치게 하려 하였느뇨",
+      "source_text_hash": "d0a7a57117ad83386a0b5932a07057c116bca092aefc4b7cd134040b52815e99",
+      "translation_text_hash": "fa6acc704a2a6a841b1b7c7e762dbc053badf04450b31ad8c612ad7098aad8a4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울이 그에게 이르되 네가 어찌하여 이새의 아들과 공모하여 나를 대적하여 그에게 떡과 칼을 주고 그를 위하여 하나님께 물어서 그로 오늘이라도 매복하였다가 나를 치게 하려 하였느뇨"
+      ],
+      "raw_text_hashes": [
+        "fa6acc704a2a6a841b1b7c7e762dbc053badf04450b31ad8c612ad7098aad8a4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:22:14",
+      "sequence": 7802,
+      "chapter_label": "1SA 22",
+      "verse_label": "14",
+      "locator": {
+        "book": "1SA",
+        "chapter": 22,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 22,
+          "verse": 14
+        }
+      ],
+      "en": "Then Ahimelech answered the king, and said, “Who among all your servants is so faithful as David, who is the king’s son-in-law, captain of your body guard, and honored in your house?",
+      "ko": "아히멜렉이 왕에게 대답하여 가로되 왕의 모든 신하 중에 다윗 같이 충실한 자가 누구인지요 그는 왕의 사위도 되고 왕의 모신도 되고 왕실에서 존귀한 자가 아니니이까",
+      "source_text_hash": "19ed113186fdd352bfbb0580e4ac74bbcdb1689bd8d979872cd16bd99b74c33b",
+      "translation_text_hash": "3c5f69a615e1d114187d9daf5e22bf37799fbf885764e4415576f957cc22a0a5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아히멜렉이 왕에게 대답하여 가로되 왕의 모든 신하 중에 다윗 같이 충실한 자가 누구인지요 그는 왕의 사위도 되고 왕의 모신도 되고 왕실에서 존귀한 자가 아니니이까"
+      ],
+      "raw_text_hashes": [
+        "3c5f69a615e1d114187d9daf5e22bf37799fbf885764e4415576f957cc22a0a5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:22:15",
+      "sequence": 7803,
+      "chapter_label": "1SA 22",
+      "verse_label": "15",
+      "locator": {
+        "book": "1SA",
+        "chapter": 22,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 22,
+          "verse": 15
+        }
+      ],
+      "en": "Have I today begun to inquire of God for him? Be it far from me! Don’t let the king impute anything to his servant, nor to all the house of my father; for your servant knew nothing of all this, less or more.”",
+      "ko": "내가 그를 위하여 하나님께 물은 것이 오늘이 처음이니이까 결단코 아니니이다 원컨대 왕은 종과 종의 아비의 온 집에 아무것도 돌리지 마옵소서 왕의 종은 이 모든 일의 대소간에 아는것이 없나이다",
+      "source_text_hash": "3fa67fa10c5145c826bb580000de946270fc36f746e497c1ffca150a806100f7",
+      "translation_text_hash": "cc1c8849681427e2abb38c394e7e29183996f5dfed2f02bc595e689a427e7fcc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 그를 위하여 하나님께 물은 것이 오늘이 처음이니이까 결단코 아니니이다 원컨대 왕은 종과 종의 아비의 온 집에 아무것도 돌리지 마옵소서 왕의 종은 이 모든 일의 대소간에 아는것이 없나이다"
+      ],
+      "raw_text_hashes": [
+        "cc1c8849681427e2abb38c394e7e29183996f5dfed2f02bc595e689a427e7fcc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:22:16",
+      "sequence": 7804,
+      "chapter_label": "1SA 22",
+      "verse_label": "16",
+      "locator": {
+        "book": "1SA",
+        "chapter": 22,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 22,
+          "verse": 16
+        }
+      ],
+      "en": "The king said, “You shall surely die, Ahimelech, you and all your father’s house.”",
+      "ko": "왕이 가로되 아히멜렉아 네가 반드시 죽을 것이요 네 아비의 온 집도 그러하리라 하고",
+      "source_text_hash": "e950fc6dbe5e111597532fe483d05d13fec33cdc6159694a561626592afadba7",
+      "translation_text_hash": "e3305d3a96a8500ba5d5bbac308d6cda598b4c7c55a8398e43dd632e0c804c53",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 가로되 아히멜렉아 네가 반드시 죽을 것이요 네 아비의 온 집도 그러하리라 하고"
+      ],
+      "raw_text_hashes": [
+        "e3305d3a96a8500ba5d5bbac308d6cda598b4c7c55a8398e43dd632e0c804c53"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:22:17",
+      "sequence": 7805,
+      "chapter_label": "1SA 22",
+      "verse_label": "17",
+      "locator": {
+        "book": "1SA",
+        "chapter": 22,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 22,
+          "verse": 17
+        }
+      ],
+      "en": "The king said to the guard who stood about him, “Turn and kill the priests of the LORD, because their hand also is with David, and because they knew that he fled and didn’t disclose it to me.” But the servants of the king wouldn’t put out their hand to fall on the priests of the LORD.",
+      "ko": "왕이 좌우의 시위자에게 이르되 돌이켜 가서 여호와의 제사장들을 죽이라 그들도 다윗과 합력하였고 또 그들이 다윗의 도망한 것을 알고도 내게 고발치 아니하였음이니라 하나 왕의 신하들이 손을 들어 여호와의 제사장들 죽이기를 싫어한지라",
+      "source_text_hash": "d34c2a522c2e1340ac9503e8fa783ab1604a6190a27386da05470fd9f55495cb",
+      "translation_text_hash": "47783b5b3dbaf99255a3268878f8473f063a65cc85dd6551dfe39a3ece6f190f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 좌우의 시위자에게 이르되 돌이켜 가서 여호와의 제사장들을 죽이라 그들도 다윗과 합력하였고 또 그들이 다윗의 도망한 것을 알고도 내게 고발치 아니하였음이니라 하나 왕의 신하들이 손을 들어 여호와의 제사장들 죽이기를 싫어한지라"
+      ],
+      "raw_text_hashes": [
+        "47783b5b3dbaf99255a3268878f8473f063a65cc85dd6551dfe39a3ece6f190f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:22:18",
+      "sequence": 7806,
+      "chapter_label": "1SA 22",
+      "verse_label": "18",
+      "locator": {
+        "book": "1SA",
+        "chapter": 22,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 22,
+          "verse": 18
+        }
+      ],
+      "en": "The king said to Doeg, “Turn and attack the priests!” Doeg the Edomite turned, and he attacked the priests, and he killed on that day eighty-five people who wore a linen ephod.",
+      "ko": "왕이 도엑에게 이르되 너는 돌이켜 제사장들을 죽이라 하매 에돔 사람 도엑이 돌이켜 제사장들을 쳐서 그 날에 세마포 에봇 입은자 팔십 오인을 죽였고",
+      "source_text_hash": "45894752a60f961ccdc34f12bfd2f9a131ebbd904accd5cac2c5a688c4b0b76b",
+      "translation_text_hash": "fe0107766931350ef25eb53f283b5ea5418db9d11e1e87a2f93e463e4561abef",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 도엑에게 이르되 너는 돌이켜 제사장들을 죽이라 하매 에돔 사람 도엑이 돌이켜 제사장들을 쳐서 그 날에 세마포 에봇 입은자 팔십 오인을 죽였고"
+      ],
+      "raw_text_hashes": [
+        "fe0107766931350ef25eb53f283b5ea5418db9d11e1e87a2f93e463e4561abef"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:22:19",
+      "sequence": 7807,
+      "chapter_label": "1SA 22",
+      "verse_label": "19",
+      "locator": {
+        "book": "1SA",
+        "chapter": 22,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 22,
+          "verse": 19
+        }
+      ],
+      "en": "He struck Nob, the city of the priests, with the edge of the sword—both men and women, children and nursing babies, and cattle, donkeys, and sheep, with the edge of the sword.",
+      "ko": "제사장들의 성읍 놉의 남녀와 아이들과 젖먹는 자들과 소와 나귀와 양을 칼로 쳤더라",
+      "source_text_hash": "ff3fd3118d92fa4e73bf3c4c3d615962ab919064c8055a39bd04730dc34621c7",
+      "translation_text_hash": "23d126e15bb4811b59f21e462583de87f4e09c0031d8a4d831dd0c20a8114c04",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장들의 성읍 놉의 남녀와 아이들과 젖먹는 자들과 소와 나귀와 양을 칼로 쳤더라"
+      ],
+      "raw_text_hashes": [
+        "23d126e15bb4811b59f21e462583de87f4e09c0031d8a4d831dd0c20a8114c04"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:22:20",
+      "sequence": 7808,
+      "chapter_label": "1SA 22",
+      "verse_label": "20",
+      "locator": {
+        "book": "1SA",
+        "chapter": 22,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 22,
+          "verse": 20
+        }
+      ],
+      "en": "One of the sons of Ahimelech the son of Ahitub, named Abiathar, escaped and fled after David.",
+      "ko": "아히둡의 아들 아히멜렉의 아들 중 하나가 피하였으니 그 이름은 아비아달이라 그가 도망하여 다윗에게로 가서",
+      "source_text_hash": "bf77fcba3ac5bb48f24f61b56cf147038538c14e0fd258128dc9a8e54e45e0b0",
+      "translation_text_hash": "c7c9261da1632a8de35c6407aa6460c68d921272ef2f7c51444e4948eefa6e23",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아히둡의 아들 아히멜렉의 아들 중 하나가 피하였으니 그 이름은 아비아달이라 그가 도망하여 다윗에게로 가서"
+      ],
+      "raw_text_hashes": [
+        "c7c9261da1632a8de35c6407aa6460c68d921272ef2f7c51444e4948eefa6e23"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:22:21",
+      "sequence": 7809,
+      "chapter_label": "1SA 22",
+      "verse_label": "21",
+      "locator": {
+        "book": "1SA",
+        "chapter": 22,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 22,
+          "verse": 21
+        }
+      ],
+      "en": "Abiathar told David that Saul had slain the LORD’s priests.",
+      "ko": "사울이 여호와의 제사장들 죽인 일을 다윗에게 고하매",
+      "source_text_hash": "4b8a7dcf06fc759a36225aa9d81b08f10b1b88b9fbda4e89ee5f5afebf787281",
+      "translation_text_hash": "d65ea5e9ee2b229aacebd09549ba0d3bd8988b7a96299bc3da2075be58213ad3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울이 여호와의 제사장들 죽인 일을 다윗에게 고하매"
+      ],
+      "raw_text_hashes": [
+        "d65ea5e9ee2b229aacebd09549ba0d3bd8988b7a96299bc3da2075be58213ad3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:22:22",
+      "sequence": 7810,
+      "chapter_label": "1SA 22",
+      "verse_label": "22",
+      "locator": {
+        "book": "1SA",
+        "chapter": 22,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 22,
+          "verse": 22
+        }
+      ],
+      "en": "David said to Abiathar, “I knew on that day, when Doeg the Edomite was there, that he would surely tell Saul. I am responsible for the death of all the persons of your father’s house.",
+      "ko": "다윗이 아비아달에게 이르되 그 날에 에돔 사람 도엑이 거기 있기로 그가 반드시 사울에게 고할줄 내가 알았노라 네 아비 집의 모든 사람 죽은 것이 나의 연고로다",
+      "source_text_hash": "908f72f1e7cefa88e60207e442c7d68f22af004483646a91f71f3880b355c596",
+      "translation_text_hash": "575882afe3f950003320c14276704e235583abe1a953fac3a7ae7c69e186adf5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 아비아달에게 이르되 그 날에 에돔 사람 도엑이 거기 있기로 그가 반드시 사울에게 고할줄 내가 알았노라 네 아비 집의 모든 사람 죽은 것이 나의 연고로다"
+      ],
+      "raw_text_hashes": [
+        "575882afe3f950003320c14276704e235583abe1a953fac3a7ae7c69e186adf5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:22:23",
+      "sequence": 7811,
+      "chapter_label": "1SA 22",
+      "verse_label": "23",
+      "locator": {
+        "book": "1SA",
+        "chapter": 22,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 22,
+          "verse": 23
+        }
+      ],
+      "en": "Stay with me. Don’t be afraid, for he who seeks my life seeks your life. You will be safe with me.”",
+      "ko": "두려워 말고 내게 있으라 내 생명을 찾는 자가 네 생명도 찾는 자니 네가 나와 함께 있으면 보전하리라 하니라",
+      "source_text_hash": "253ccba500a54e702b06279fd4264e06e7d545cbc42d82f2138a5f2d6701083a",
+      "translation_text_hash": "eefc41ee76af2b89e371b50e2127b0e1c5b45008bf6a90a46602883feb0ed3dc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "두려워 말고 내게 있으라 내 생명을 찾는 자가 네 생명도 찾는 자니 네가 나와 함께 있으면 보전하리라 하니라"
+      ],
+      "raw_text_hashes": [
+        "eefc41ee76af2b89e371b50e2127b0e1c5b45008bf6a90a46602883feb0ed3dc"
+      ]
+    }
+  ]
+}

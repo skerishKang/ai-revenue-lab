@@ -1,0 +1,973 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JER:chapter:044",
+  "unit_ordinal": 789,
+  "unit_label": "JER 44",
+  "book_code": "JER",
+  "chapter_number": 44,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JER:44:1",
+      "sequence": 20012,
+      "chapter_label": "JER 44",
+      "verse_label": "1",
+      "locator": {
+        "book": "JER",
+        "chapter": 44,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 44,
+          "verse": 1
+        }
+      ],
+      "en": "The word that came to Jeremiah concerning all the Jews who lived in the land of Egypt, who lived at Migdol, and at Tahpanhes, and at Memphis, and in the country of Pathros, saying,",
+      "ko": "애굽 땅에 거하는 모든 유다인 곧 믹돌과 다바네스와 놉과 바드로스 지방에 거하는 자에 대하여 말씀이 예레미야에게 임하니라 가라사대",
+      "source_text_hash": "92358078fe392963eb1706cd60f73be1dec04fbfa72415028d62528c07584276",
+      "translation_text_hash": "aaf6dd92b167b038c1e6bb4ec89f1d6a5cc21b66cff0002ac3ce96a6da02eb22",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "애굽 땅에 거하는 모든 유다인 곧 믹돌과 다바네스와 놉과 바드로스 지방에 거하는 자에 대하여 말씀이 예레미야에게 임하니라 가라사대"
+      ],
+      "raw_text_hashes": [
+        "aaf6dd92b167b038c1e6bb4ec89f1d6a5cc21b66cff0002ac3ce96a6da02eb22"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:44:2",
+      "sequence": 20013,
+      "chapter_label": "JER 44",
+      "verse_label": "2",
+      "locator": {
+        "book": "JER",
+        "chapter": 44,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 44,
+          "verse": 2
+        }
+      ],
+      "en": "“The LORD of Armies, the God of Israel, says: ‘You have seen all the evil that I have brought on Jerusalem, and on all the cities of Judah. Behold, today they are a desolation, and no man dwells in them,",
+      "ko": "만군의 여호와 이스라엘의 하나님이 이같이 말하노라 너희가 예루살렘과 유다 모든 성읍에 내린 나의 모든 재앙을 보았느니라 보라 오늘날 그것들이 황무지가 되었고 거하는 사람이 없나니",
+      "source_text_hash": "de9fa594719045757c658bf2ab13d27536a1883ea16bc67afd9478c019e087d8",
+      "translation_text_hash": "18b0557595ea18d08a9f9b45e6e89645c11945df79c358503b2f9faa9bd4c6ae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만군의 여호와 이스라엘의 하나님이 이같이 말하노라 너희가 예루살렘과 유다 모든 성읍에 내린 나의 모든 재앙을 보았느니라 보라 오늘날 그것들이 황무지가 되었고 거하는 사람이 없나니"
+      ],
+      "raw_text_hashes": [
+        "18b0557595ea18d08a9f9b45e6e89645c11945df79c358503b2f9faa9bd4c6ae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:44:3",
+      "sequence": 20014,
+      "chapter_label": "JER 44",
+      "verse_label": "3",
+      "locator": {
+        "book": "JER",
+        "chapter": 44,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 44,
+          "verse": 3
+        }
+      ],
+      "en": "because of their wickedness which they have committed to provoke me to anger, in that they went to burn incense, to serve other gods that they didn’t know, neither they, nor you, nor your fathers.",
+      "ko": "이는 그들이 자기나 너희나 너희 열조의 알지 못하는 다른 신들에게 나아가 분향하여 섬겨서 나의 노를 격동한 악행을 인함이라",
+      "source_text_hash": "ef809604a524345942bd20ec53a77345f13b14f28cd04e0c94116f2ea8c25317",
+      "translation_text_hash": "06c26c967d899fd9dac1911c1c1012f2bc771b542d3e5a9039d196949f776e55",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 그들이 자기나 너희나 너희 열조의 알지 못하는 다른 신들에게 나아가 분향하여 섬겨서 나의 노를 격동한 악행을 인함이라"
+      ],
+      "raw_text_hashes": [
+        "06c26c967d899fd9dac1911c1c1012f2bc771b542d3e5a9039d196949f776e55"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:44:4",
+      "sequence": 20015,
+      "chapter_label": "JER 44",
+      "verse_label": "4",
+      "locator": {
+        "book": "JER",
+        "chapter": 44,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 44,
+          "verse": 4
+        }
+      ],
+      "en": "However I sent to you all my servants the prophets, rising up early and sending them, saying, “Oh, don’t do this abominable thing that I hate.”",
+      "ko": "내가 나의 모든 종 선지자들을 그들에게 보내되 부지런히 보내어 이르기를 너희는 나의 미워하는 이 가증한 일을 행치 말라 하였어도",
+      "source_text_hash": "a53bc9d7cb699cb2816f73d0875279a5335eb0f05c8394cc38bf4fe848895a01",
+      "translation_text_hash": "d94a3c79e02ca93bcf3ffe13b016856ba04afb988047d4eaa8fff69d78682114",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 나의 모든 종 선지자들을 그들에게 보내되 부지런히 보내어 이르기를 너희는 나의 미워하는 이 가증한 일을 행치 말라 하였어도"
+      ],
+      "raw_text_hashes": [
+        "d94a3c79e02ca93bcf3ffe13b016856ba04afb988047d4eaa8fff69d78682114"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:44:5",
+      "sequence": 20016,
+      "chapter_label": "JER 44",
+      "verse_label": "5",
+      "locator": {
+        "book": "JER",
+        "chapter": 44,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 44,
+          "verse": 5
+        }
+      ],
+      "en": "But they didn’t listen and didn’t incline their ear. They didn’t turn from their wickedness, to stop burning incense to other gods.",
+      "ko": "그들이 듣지 아니하며 귀를 기울이지 아니하고 다른 신들에게 여전히 분향하여 그 악에서 돌이키지 아니하였으므로",
+      "source_text_hash": "3e151d07922c807db3f2b5428c631e5e3501d0f4894564c567c11824eb8ad83a",
+      "translation_text_hash": "569677ce52a3243abf2990fd55129c5b56688c171fcf5cd652c2e1347973f7ec",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 듣지 아니하며 귀를 기울이지 아니하고 다른 신들에게 여전히 분향하여 그 악에서 돌이키지 아니하였으므로"
+      ],
+      "raw_text_hashes": [
+        "569677ce52a3243abf2990fd55129c5b56688c171fcf5cd652c2e1347973f7ec"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:44:6",
+      "sequence": 20017,
+      "chapter_label": "JER 44",
+      "verse_label": "6",
+      "locator": {
+        "book": "JER",
+        "chapter": 44,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 44,
+          "verse": 6
+        }
+      ],
+      "en": "Therefore my wrath and my anger was poured out, and was kindled in the cities of Judah and in the streets of Jerusalem; and they are wasted and desolate, as it is today.’",
+      "ko": "나의 분과 나의 노를 쏟아서 유다 성읍들과 예루살렘 거리를 살랐더니 그것들이 오늘과 같이 황폐하고 적막하였느니라",
+      "source_text_hash": "69b727d83cd38bfc435f4c3bd24265c674ae045126956937fec02cb0f1e203a7",
+      "translation_text_hash": "72347108ad6dc5767b2bbd26ca7eef1457845e4456315258c67659cde2bcec6d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 분과 나의 노를 쏟아서 유다 성읍들과 예루살렘 거리를 살랐더니 그것들이 오늘과 같이 황폐하고 적막하였느니라"
+      ],
+      "raw_text_hashes": [
+        "72347108ad6dc5767b2bbd26ca7eef1457845e4456315258c67659cde2bcec6d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:44:7",
+      "sequence": 20018,
+      "chapter_label": "JER 44",
+      "verse_label": "7",
+      "locator": {
+        "book": "JER",
+        "chapter": 44,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 44,
+          "verse": 7
+        }
+      ],
+      "en": "“Therefore now the LORD, the God of Armies, the God of Israel, says: ‘Why do you commit great evil against your own souls, to cut off from yourselves man and woman, infant and nursing child out of the middle of Judah, to leave yourselves no one remaining,",
+      "ko": "나 만군의 하나님 이스라엘의 하나님 여호와가 이같이 말하노라 너희가 어찌하여 큰 악을 행하여 자기 영혼을 해하며 유다 중에서 너희의 남자와 여자와 아이와 젖 먹는 자를 멸절하여 하나도 남기지 않게 하려느냐",
+      "source_text_hash": "895a7a1791558b17b787c00eb49940e58c84c3f3a15749ac133c797575f1eaed",
+      "translation_text_hash": "87c78353d5307e1cb5b693f25aea22d8dd92e33265ca79b33ef6b1f5718d0cb0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 만군의 하나님 이스라엘의 하나님 여호와가 이같이 말하노라 너희가 어찌하여 큰 악을 행하여 자기 영혼을 해하며 유다 중에서 너희의 남자와 여자와 아이와 젖 먹는 자를 멸절하여 하나도 남기지 않게 하려느냐"
+      ],
+      "raw_text_hashes": [
+        "87c78353d5307e1cb5b693f25aea22d8dd92e33265ca79b33ef6b1f5718d0cb0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:44:8",
+      "sequence": 20019,
+      "chapter_label": "JER 44",
+      "verse_label": "8",
+      "locator": {
+        "book": "JER",
+        "chapter": 44,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 44,
+          "verse": 8
+        }
+      ],
+      "en": "in that you provoke me to anger with the works of your hands, burning incense to other gods in the land of Egypt where you have gone to live, that you may be cut off, and that you may be a curse and a reproach among all the nations of the earth?",
+      "ko": "어찌하여 너희가 너희 손의 소위로 나의 노를 격동하여 너희의 가서 우거하는 애굽 땅에서 다른 신들에게 분향함으로 끊어버림을 당하여 세계 열방 중에서 저주와 모욕거리가 되고자 하느냐",
+      "source_text_hash": "486d8741cfde8ab9f62f66998e3d99d7a79a40f843d17906797b65dff439bde1",
+      "translation_text_hash": "dcb102ea4e812bd5caf0fe38ad8ffb1b59246d0e2b0f0a219855a85dad29bf2a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어찌하여 너희가 너희 손의 소위로 나의 노를 격동하여 너희의 가서 우거하는 애굽 땅에서 다른 신들에게 분향함으로 끊어버림을 당하여 세계 열방 중에서 저주와 모욕거리가 되고자 하느냐"
+      ],
+      "raw_text_hashes": [
+        "dcb102ea4e812bd5caf0fe38ad8ffb1b59246d0e2b0f0a219855a85dad29bf2a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:44:9",
+      "sequence": 20020,
+      "chapter_label": "JER 44",
+      "verse_label": "9",
+      "locator": {
+        "book": "JER",
+        "chapter": 44,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 44,
+          "verse": 9
+        }
+      ],
+      "en": "Have you forgotten the wickedness of your fathers, the wickedness of the kings of Judah, the wickedness of their wives, your own wickedness, and the wickedness of your wives which they committed in the land of Judah and in the streets of Jerusalem?",
+      "ko": "너희가 유다 땅과 예루살렘 거리에서 행한 너희 열조의 악과 유다 왕들의 악과 왕비들의 악과 너희의 악과 너희 아내들의 악을 잊었느냐",
+      "source_text_hash": "abc6b9d5b20a4a9b5ef8ecd102f4926bd8a7e3688500f004cc55014ddfa9ce43",
+      "translation_text_hash": "4cd259c4be4dea2690a5fa818ebff62bf82067bc3e13c9b9211151a7c7e07d17",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 유다 땅과 예루살렘 거리에서 행한 너희 열조의 악과 유다 왕들의 악과 왕비들의 악과 너희의 악과 너희 아내들의 악을 잊었느냐"
+      ],
+      "raw_text_hashes": [
+        "4cd259c4be4dea2690a5fa818ebff62bf82067bc3e13c9b9211151a7c7e07d17"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:44:10",
+      "sequence": 20021,
+      "chapter_label": "JER 44",
+      "verse_label": "10",
+      "locator": {
+        "book": "JER",
+        "chapter": 44,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 44,
+          "verse": 10
+        }
+      ],
+      "en": "They are not humbled even to this day, neither have they feared, nor walked in my law, nor in my statutes, that I set before you and before your fathers.’",
+      "ko": "그들이 오늘까지 겸비치 아니하며 두려워하지도 아니하고 내가 너희와 너희 열조 앞에 세운 나의 법과 나의 율례를 준행치 아니하느니라",
+      "source_text_hash": "9d4e14d57a012901f40f0e6a1432ba8a04c7ac9894da8ffaf555a7e4019ad26a",
+      "translation_text_hash": "d4edbdb13c742e7de58a3a0d3b1f95f5fa054f6b5b08307634a7e378ac04b485",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 오늘까지 겸비치 아니하며 두려워하지도 아니하고 내가 너희와 너희 열조 앞에 세운 나의 법과 나의 율례를 준행치 아니하느니라"
+      ],
+      "raw_text_hashes": [
+        "d4edbdb13c742e7de58a3a0d3b1f95f5fa054f6b5b08307634a7e378ac04b485"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:44:11",
+      "sequence": 20022,
+      "chapter_label": "JER 44",
+      "verse_label": "11",
+      "locator": {
+        "book": "JER",
+        "chapter": 44,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 44,
+          "verse": 11
+        }
+      ],
+      "en": "“Therefore the LORD of Armies, the God of Israel, says: ‘Behold, I will set my face against you for evil, even to cut off all Judah.",
+      "ko": "그러므로 나 만군의 여호와 이스라엘의 하나님이 이같이 말하노라 보라 내가 얼굴을 너희에게로 향하여 재앙을 내리고 온 유다를 끊어 버릴 것이며",
+      "source_text_hash": "f1f90132f6627dd6c1cf62af63d3995ee0cfd28df546e5c9539ff7fef4815e27",
+      "translation_text_hash": "3fb90f461604b458277f293f8a5250409394240d8c5cfff2f1f716e7a57d81f3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 나 만군의 여호와 이스라엘의 하나님이 이같이 말하노라 보라 내가 얼굴을 너희에게로 향하여 재앙을 내리고 온 유다를 끊어 버릴 것이며"
+      ],
+      "raw_text_hashes": [
+        "3fb90f461604b458277f293f8a5250409394240d8c5cfff2f1f716e7a57d81f3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:44:12",
+      "sequence": 20023,
+      "chapter_label": "JER 44",
+      "verse_label": "12",
+      "locator": {
+        "book": "JER",
+        "chapter": 44,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 44,
+          "verse": 12
+        }
+      ],
+      "en": "I will take the remnant of Judah that have set their faces to go into the land of Egypt to live there, and they will all be consumed. They will fall in the land of Egypt. They will be consumed by the sword and by the famine. They will die, from the least even to the greatest, by the sword and by the famine. They will be an object of horror, an astonishment, a curse, and a reproach.",
+      "ko": "내가 또 애굽 땅에 우거하기로 고집하고 그리로 들어간 유다의 남은 자들을 취하리니 그들이 다 멸망하여 애굽 땅에서 엎드러질 것이라 그들이 칼과 기근에 망하되 작은 자로부터 큰 자까지 칼과 기근에 죽어서 가증함과 놀램과 저주와 모욕거리가 되리라",
+      "source_text_hash": "77a88e852260e81b6b53c02007fad709c9b2d43567b8323bb045694a78087363",
+      "translation_text_hash": "988ce7c9f808305b07d9dcf3a9c30e680c1fa0e528fac7316460851da6a04a5f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 또 애굽 땅에 우거하기로 고집하고 그리로 들어간 유다의 남은 자들을 취하리니 그들이 다 멸망하여 애굽 땅에서 엎드러질 것이라 그들이 칼과 기근에 망하되 작은 자로부터 큰 자까지 칼과 기근에 죽어서 가증함과 놀램과 저주와 모욕거리가 되리라"
+      ],
+      "raw_text_hashes": [
+        "988ce7c9f808305b07d9dcf3a9c30e680c1fa0e528fac7316460851da6a04a5f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:44:13",
+      "sequence": 20024,
+      "chapter_label": "JER 44",
+      "verse_label": "13",
+      "locator": {
+        "book": "JER",
+        "chapter": 44,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 44,
+          "verse": 13
+        }
+      ],
+      "en": "For I will punish those who dwell in the land of Egypt, as I have punished Jerusalem, by the sword, by the famine, and by the pestilence;",
+      "ko": "내가 예루살렘을 벌한 것 같이 애굽 땅에 거하는 자들을 칼과 기근과 염병으로 벌하리니",
+      "source_text_hash": "df9b21e4e2d47872f8fb273d0b978d1b2d69fb4bef7f8a5d38f4383e39326979",
+      "translation_text_hash": "d21aee2f2493ccb3ddefb1da709d5edfbf14deed42817de4ae28cede572140b5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 예루살렘을 벌한 것 같이 애굽 땅에 거하는 자들을 칼과 기근과 염병으로 벌하리니"
+      ],
+      "raw_text_hashes": [
+        "d21aee2f2493ccb3ddefb1da709d5edfbf14deed42817de4ae28cede572140b5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:44:14",
+      "sequence": 20025,
+      "chapter_label": "JER 44",
+      "verse_label": "14",
+      "locator": {
+        "book": "JER",
+        "chapter": 44,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 44,
+          "verse": 14
+        }
+      ],
+      "en": "so that none of the remnant of Judah, who have gone into the land of Egypt to live there, will escape or be left to return into the land of Judah, to which they have a desire to return to dwell there; for no one will return except those who will escape.’”",
+      "ko": "애굽 땅에 들어가서 거기 우거하는 유다의 남은 자 중에 피하거나 남아서 그 사모하여 돌아와서 거하려는 유다 땅에 돌아올 자가 없을 것이라 도피하는 자들 외에는 돌아올 자가 없으리라 하셨느니라",
+      "source_text_hash": "5cbc37292485ee39bcd78a9b78229c52d34ce714612542b4833456151b2d3ec5",
+      "translation_text_hash": "1f2b6c6ff45fc2d6043dbb28217015daad0bee1d0fa21a227e58cd7186bb9cc9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "애굽 땅에 들어가서 거기 우거하는 유다의 남은 자 중에 피하거나 남아서 그 사모하여 돌아와서 거하려는 유다 땅에 돌아올 자가 없을 것이라 도피하는 자들 외에는 돌아올 자가 없으리라 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "1f2b6c6ff45fc2d6043dbb28217015daad0bee1d0fa21a227e58cd7186bb9cc9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:44:15",
+      "sequence": 20026,
+      "chapter_label": "JER 44",
+      "verse_label": "15",
+      "locator": {
+        "book": "JER",
+        "chapter": 44,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 44,
+          "verse": 15
+        }
+      ],
+      "en": "Then all the men who knew that their wives burned incense to other gods, and all the women who stood by, a great assembly, even all the people who lived in the land of Egypt, in Pathros, answered Jeremiah, saying,",
+      "ko": "때에 자기 아내들이 다른 신들에게 분향하는 줄을 아는 모든 남자와 곁에 섰던 모든 여인 곧 애굽 땅 바드로스에 거하는 모든 백성의 큰 무리가 예레미야에게 대답하여 가로되",
+      "source_text_hash": "809e2088f1cfaf6c02845ecd41c9978cd4c2380d68817f3edb2ed9686ee731a8",
+      "translation_text_hash": "a2756595b743cc30360ffcf2c03461f570dc1b7437bbca5d208101c34e03fa7f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "때에 자기 아내들이 다른 신들에게 분향하는 줄을 아는 모든 남자와 곁에 섰던 모든 여인 곧 애굽 땅 바드로스에 거하는 모든 백성의 큰 무리가 예레미야에게 대답하여 가로되"
+      ],
+      "raw_text_hashes": [
+        "a2756595b743cc30360ffcf2c03461f570dc1b7437bbca5d208101c34e03fa7f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:44:16",
+      "sequence": 20027,
+      "chapter_label": "JER 44",
+      "verse_label": "16",
+      "locator": {
+        "book": "JER",
+        "chapter": 44,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 44,
+          "verse": 16
+        }
+      ],
+      "en": "“As for the word that you have spoken to us in the LORD’s name, we will not listen to you.",
+      "ko": "네가 여호와의 이름으로 우리에게 하는 말을 우리가 듣지 아니하고",
+      "source_text_hash": "03fa0aff0744d24d736f04d51c1a4a00d705859df7643c85bd8372dcecbb4435",
+      "translation_text_hash": "e464a25c7b9a33ae99808f60fb5b7d12332f6e76b686278fa6cd0416ef413c4b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 여호와의 이름으로 우리에게 하는 말을 우리가 듣지 아니하고"
+      ],
+      "raw_text_hashes": [
+        "e464a25c7b9a33ae99808f60fb5b7d12332f6e76b686278fa6cd0416ef413c4b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:44:17",
+      "sequence": 20028,
+      "chapter_label": "JER 44",
+      "verse_label": "17",
+      "locator": {
+        "book": "JER",
+        "chapter": 44,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 44,
+          "verse": 17
+        }
+      ],
+      "en": "But we will certainly perform every word that has gone out of our mouth, to burn incense to the queen of the sky and to pour out drink offerings to her, as we have done, we and our fathers, our kings and our princes, in the cities of Judah and in the streets of Jerusalem; for then we had plenty of food, and were well, and saw no evil.",
+      "ko": "우리 입에서 낸 모든 말을 정녕히 실행하여 우리의 본래 하던 것 곧 우리와 우리 선조와 우리 왕들과 우리 방백들이 유다 성읍들과 예루살렘 거리에서 하던대로 하늘 여신에게 분향하고 그 앞에 전제를 드리리라 대저 그 때에는 우리가 식물이 풍부하며 복을 받고 재앙을 만나지 아니하였더니",
+      "source_text_hash": "c22e65295c4b1bf5ccd724cbb131921ad849e7c2a356ce6b2f5860e61d062197",
+      "translation_text_hash": "dc011428758f3f4f7f6ad1d92a839dbbb503265895c188941349722e26fdd463",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리 입에서 낸 모든 말을 정녕히 실행하여 우리의 본래 하던 것 곧 우리와 우리 선조와 우리 왕들과 우리 방백들이 유다 성읍들과 예루살렘 거리에서 하던대로 하늘 여신에게 분향하고 그 앞에 전제를 드리리라 대저 그 때에는 우리가 식물이 풍부하며 복을 받고 재앙을 만나지 아니하였더니"
+      ],
+      "raw_text_hashes": [
+        "dc011428758f3f4f7f6ad1d92a839dbbb503265895c188941349722e26fdd463"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:44:18",
+      "sequence": 20029,
+      "chapter_label": "JER 44",
+      "verse_label": "18",
+      "locator": {
+        "book": "JER",
+        "chapter": 44,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 44,
+          "verse": 18
+        }
+      ],
+      "en": "But since we stopped burning incense to the queen of the sky, and pouring out drink offerings to her, we have lacked all things, and have been consumed by the sword and by the famine.”",
+      "ko": "우리가 하늘 여신에게 분향하고 그 앞에 전제 드리던 것을 폐한 후부터는 모든 것이 핍절하고 칼과 기근에 멸망을 당하였느니라 하며",
+      "source_text_hash": "05fee4e1c774097886a49718c87ea7d6aa4f3d68c65e5453bf0a8f5ae8624ef3",
+      "translation_text_hash": "fae719db81ed655d52b191c02e1a1a7b6b32d457bd746776a7d823169f7eab08",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 하늘 여신에게 분향하고 그 앞에 전제 드리던 것을 폐한 후부터는 모든 것이 핍절하고 칼과 기근에 멸망을 당하였느니라 하며"
+      ],
+      "raw_text_hashes": [
+        "fae719db81ed655d52b191c02e1a1a7b6b32d457bd746776a7d823169f7eab08"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:44:19",
+      "sequence": 20030,
+      "chapter_label": "JER 44",
+      "verse_label": "19",
+      "locator": {
+        "book": "JER",
+        "chapter": 44,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 44,
+          "verse": 19
+        }
+      ],
+      "en": "The women said, “When we burned incense to the queen of the sky and poured out drink offerings to her, did we make her cakes to worship her, and pour out drink offerings to her, without our husbands?”",
+      "ko": "여인들은 가로되 우리가 하늘 여신에게 분향하고 그 앞에 전제를 드릴 때에 어찌 우리 남편의 허락이 없이 그에게 경배하는 과자를 만들어 놓고 전제를 드렸느냐",
+      "source_text_hash": "5c8fe255c96034763f61f76e85d47a76da4bad4d4c64df057b4841efbeb3fc4b",
+      "translation_text_hash": "5e3eb75dc4810875a0b908a721b2c47329fb9231820b1db64b2d19d945ae6268",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여인들은 가로되 우리가 하늘 여신에게 분향하고 그 앞에 전제를 드릴 때에 어찌 우리 남편의 허락이 없이 그에게 경배하는 과자를 만들어 놓고 전제를 드렸느냐"
+      ],
+      "raw_text_hashes": [
+        "5e3eb75dc4810875a0b908a721b2c47329fb9231820b1db64b2d19d945ae6268"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:44:20",
+      "sequence": 20031,
+      "chapter_label": "JER 44",
+      "verse_label": "20",
+      "locator": {
+        "book": "JER",
+        "chapter": 44,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 44,
+          "verse": 20
+        }
+      ],
+      "en": "Then Jeremiah said to all the people—to the men and to the women, even to all the people who had given him an answer, saying,",
+      "ko": "예레미야가 남녀 모든 무리 곧 이 말로 대답하는 모든 백성에게 일러 가로되",
+      "source_text_hash": "f7f4e4e5ceb0b871f6bcc2a39b91f047cc1644bf81a247d99a6e572fe40bc96d",
+      "translation_text_hash": "1dcaf639075803d6a94e8d9052b21975ec5a9fac35e7a133e493cb813515872b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예레미야가 남녀 모든 무리 곧 이 말로 대답하는 모든 백성에게 일러 가로되"
+      ],
+      "raw_text_hashes": [
+        "1dcaf639075803d6a94e8d9052b21975ec5a9fac35e7a133e493cb813515872b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:44:21",
+      "sequence": 20032,
+      "chapter_label": "JER 44",
+      "verse_label": "21",
+      "locator": {
+        "book": "JER",
+        "chapter": 44,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 44,
+          "verse": 21
+        }
+      ],
+      "en": "“The incense that you burned in the cities of Judah, and in the streets of Jerusalem, you and your fathers, your kings and your princes, and the people of the land, didn’t the LORD remember them, and didn’t it come into his mind?",
+      "ko": "너희가 너희 선조와 너희 왕들과 방백들과 유다 땅 백성이 유다 성읍들과 예루살렘 거리들에서 분향한 일을 여호와께서 기억지 아니하셨느냐 생각지 아니하셨느냐",
+      "source_text_hash": "577258ccfce51ca6149d7b12fdfd280eb41c0dd7c5124f36c3ffa47fd955b0cb",
+      "translation_text_hash": "ab608bea9248c17e8a84a19209f8ff2083069a0790279814ca986224658f5df5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 너희 선조와 너희 왕들과 방백들과 유다 땅 백성이 유다 성읍들과 예루살렘 거리들에서 분향한 일을 여호와께서 기억지 아니하셨느냐 생각지 아니하셨느냐"
+      ],
+      "raw_text_hashes": [
+        "ab608bea9248c17e8a84a19209f8ff2083069a0790279814ca986224658f5df5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:44:22",
+      "sequence": 20033,
+      "chapter_label": "JER 44",
+      "verse_label": "22",
+      "locator": {
+        "book": "JER",
+        "chapter": 44,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 44,
+          "verse": 22
+        }
+      ],
+      "en": "Thus the LORD could no longer bear it, because of the evil of your doings and because of the abominations which you have committed. Therefore your land has become a desolation, an astonishment, and a curse, without inhabitant, as it is today.",
+      "ko": "여호와께서 너희 악행과 가증한 소위를 더 참으실 수 없으셨으므로 너희 땅이 오늘과 같이 황무하며 놀램과 저줏거리가 되어 거민이 없게 되었나니",
+      "source_text_hash": "b9c40b23ca246703954f05e7f6d9cc4177c34a173d2eab073c6c245f1190a19b",
+      "translation_text_hash": "6debc2ab5a229e90f9c588175c930912406b6f86d8ff38b405eb4f57260f8c67",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 너희 악행과 가증한 소위를 더 참으실 수 없으셨으므로 너희 땅이 오늘과 같이 황무하며 놀램과 저줏거리가 되어 거민이 없게 되었나니"
+      ],
+      "raw_text_hashes": [
+        "6debc2ab5a229e90f9c588175c930912406b6f86d8ff38b405eb4f57260f8c67"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:44:23",
+      "sequence": 20034,
+      "chapter_label": "JER 44",
+      "verse_label": "23",
+      "locator": {
+        "book": "JER",
+        "chapter": 44,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 44,
+          "verse": 23
+        }
+      ],
+      "en": "Because you have burned incense and because you have sinned against the LORD, and have not obeyed the LORD’s voice, nor walked in his law, nor in his statutes, nor in his testimonies; therefore this evil has happened to you, as it is today.”",
+      "ko": "너희가 분향하여 여호와께 범죄하였으며 여호와의 목소리를 청종치 아니하고 여호와의 법과 율례와 증거대로 행치 아니하였으므로 이 재앙이 오늘과 같이 너희에게 미쳤느니라",
+      "source_text_hash": "a0af3581e1a7f205472f710c0568d04f6e9b99905476d98b6f0bc9e13ee5690e",
+      "translation_text_hash": "60cec9890dba89168636d060af14909407913e50e210ca12c54a89b20c6a7ce5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 분향하여 여호와께 범죄하였으며 여호와의 목소리를 청종치 아니하고 여호와의 법과 율례와 증거대로 행치 아니하였으므로 이 재앙이 오늘과 같이 너희에게 미쳤느니라"
+      ],
+      "raw_text_hashes": [
+        "60cec9890dba89168636d060af14909407913e50e210ca12c54a89b20c6a7ce5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:44:24",
+      "sequence": 20035,
+      "chapter_label": "JER 44",
+      "verse_label": "24",
+      "locator": {
+        "book": "JER",
+        "chapter": 44,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 44,
+          "verse": 24
+        }
+      ],
+      "en": "Moreover Jeremiah said to all the people, including all the women, “Hear the LORD’s word, all Judah who are in the land of Egypt!",
+      "ko": "예레미야가 다시 모든 백성과 모든 여인에게 말하되 애굽 땅에서 사는 모든 유다여 여호와의 말씀을 들으라",
+      "source_text_hash": "125df1bd48f8c9f5df7f8bc99b55eae925a255d323f5f6b9ecf8a250d5b097cd",
+      "translation_text_hash": "1af879300ecace7fce6882fbed750b4cea7628460968602b3c8c505afe42f427",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예레미야가 다시 모든 백성과 모든 여인에게 말하되 애굽 땅에서 사는 모든 유다여 여호와의 말씀을 들으라"
+      ],
+      "raw_text_hashes": [
+        "1af879300ecace7fce6882fbed750b4cea7628460968602b3c8c505afe42f427"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:44:25",
+      "sequence": 20036,
+      "chapter_label": "JER 44",
+      "verse_label": "25",
+      "locator": {
+        "book": "JER",
+        "chapter": 44,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 44,
+          "verse": 25
+        }
+      ],
+      "en": "The LORD of Armies, the God of Israel, says, ‘You and your wives have both spoken with your mouths, and with your hands have fulfilled it, saying, “We will surely perform our vows that we have vowed, to burn incense to the queen of the sky, and to pour out drink offerings to her.” “‘Establish then your vows, and perform your vows.’",
+      "ko": "만군의 여호와 이스라엘의 하나님이 이같이 말씀하시되 너희와 너희 아내들이 입으로 말하고 손으로 이루려 하여 이르기를 우리가 서원한대로 반드시 이행하여 하늘 여신에게 분향하고 전제를 드리리라 하였은즉 너희 서원을 성립하며 너희 서원을 이행하라 하시느니라",
+      "source_text_hash": "0e517e8eee16733feb0be93c6786e07276386382a1b0af492fe37f5e0ac94d92",
+      "translation_text_hash": "5418b53cd7057fdcb38a32a3a39781d297e145b70c76598775607f3425695c31",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만군의 여호와 이스라엘의 하나님이 이같이 말씀하시되 너희와 너희 아내들이 입으로 말하고 손으로 이루려 하여 이르기를 우리가 서원한대로 반드시 이행하여 하늘 여신에게 분향하고 전제를 드리리라 하였은즉 너희 서원을 성립하며 너희 서원을 이행하라 하시느니라"
+      ],
+      "raw_text_hashes": [
+        "5418b53cd7057fdcb38a32a3a39781d297e145b70c76598775607f3425695c31"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:44:26",
+      "sequence": 20037,
+      "chapter_label": "JER 44",
+      "verse_label": "26",
+      "locator": {
+        "book": "JER",
+        "chapter": 44,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 44,
+          "verse": 26
+        }
+      ],
+      "en": "“Therefore hear the LORD’s word, all Judah who dwell in the land of Egypt: ‘Behold, I have sworn by my great name,’ says the LORD, ‘that my name will no more be named in the mouth of any man of Judah in all the land of Egypt, saying, “As the Lord GOD lives.”",
+      "ko": "그러므로 애굽 땅에서 사는 모든 유다여 여호와의 말씀을 들으라 여호와께서 말씀하시되 내가 나의 큰 이름으로 맹세하였은즉 애굽 온 땅에 거하는 유다 사람들의 입에서 다시는 내 이름을 일컬어서 주 여호와의 사심으로 맹세하노라 하는 자가 없게 되리라",
+      "source_text_hash": "0afbd5fdafbd98736b8fc60880776e7f7dd16dd224649bfba25877301fa6f205",
+      "translation_text_hash": "3e0d267db70a609ee4d159e0b53f66e7352d37d735a2d0a843530ecfd71f443a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 애굽 땅에서 사는 모든 유다여 여호와의 말씀을 들으라 여호와께서 말씀하시되 내가 나의 큰 이름으로 맹세하였은즉 애굽 온 땅에 거하는 유다 사람들의 입에서 다시는 내 이름을 일컬어서 주 여호와의 사심으로 맹세하노라 하는 자가 없게 되리라"
+      ],
+      "raw_text_hashes": [
+        "3e0d267db70a609ee4d159e0b53f66e7352d37d735a2d0a843530ecfd71f443a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:44:27",
+      "sequence": 20038,
+      "chapter_label": "JER 44",
+      "verse_label": "27",
+      "locator": {
+        "book": "JER",
+        "chapter": 44,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 44,
+          "verse": 27
+        }
+      ],
+      "en": "Behold, I watch over them for evil, and not for good; and all the men of Judah who are in the land of Egypt will be consumed by the sword and by the famine, until they are all gone.",
+      "ko": "보라 내가 경성하여 그들에게 재앙을 내리고 복을 내리지 아니하리니 애굽 땅에 있는 유다 모든 사람이 칼과 기근에 망하여 멸절되리라",
+      "source_text_hash": "72e468301112de902afd9bc5ee9e6525a31078d98862a8e889049bddddd11312",
+      "translation_text_hash": "906c2254a0d1afaceccbf9fd34af5202c8db315045bacddaeca8db4018d2fdb5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보라 내가 경성하여 그들에게 재앙을 내리고 복을 내리지 아니하리니 애굽 땅에 있는 유다 모든 사람이 칼과 기근에 망하여 멸절되리라"
+      ],
+      "raw_text_hashes": [
+        "906c2254a0d1afaceccbf9fd34af5202c8db315045bacddaeca8db4018d2fdb5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:44:28",
+      "sequence": 20039,
+      "chapter_label": "JER 44",
+      "verse_label": "28",
+      "locator": {
+        "book": "JER",
+        "chapter": 44,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 44,
+          "verse": 28
+        }
+      ],
+      "en": "Those who escape the sword will return out of the land of Egypt into the land of Judah few in number. All the remnant of Judah, who have gone into the land of Egypt to live there, will know whose word will stand, mine or theirs.",
+      "ko": "그런즉 칼을 피한 소수의 사람이 애굽 땅에서 나와 유다 땅으로 돌아오리니 애굽 땅에 들어가서 거기 우거하는 유다의 모든 남은 자가 내 말이 성립되었는지, 자기들의 말이 성립되었는지 알리라",
+      "source_text_hash": "b65f1cd031055127a345241a7d45d0d55fcdca261a5b9e1c51cc8ecf9e9c61bc",
+      "translation_text_hash": "0deff11c754c76b1d6c05cb066716e97d2e7bb42c5e172866389db64be106939",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 칼을 피한 소수의 사람이 애굽 땅에서 나와 유다 땅으로 돌아오리니 애굽 땅에 들어가서 거기 우거하는 유다의 모든 남은 자가 내 말이 성립되었는지, 자기들의 말이 성립되었는지 알리라"
+      ],
+      "raw_text_hashes": [
+        "0deff11c754c76b1d6c05cb066716e97d2e7bb42c5e172866389db64be106939"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:44:29",
+      "sequence": 20040,
+      "chapter_label": "JER 44",
+      "verse_label": "29",
+      "locator": {
+        "book": "JER",
+        "chapter": 44,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 44,
+          "verse": 29
+        }
+      ],
+      "en": "“‘This will be the sign to you,’ says the LORD, ‘that I will punish you in this place, that you may know that my words will surely stand against you for evil.’",
+      "ko": "나 여호와가 말하노라 내가 이곳에서 너희를 벌할 표징이 이것이라 내가 너희에게 재앙을 내리리라 한 말이 단정코 성립될 것을 그것으로 알게 하리라",
+      "source_text_hash": "8b0c55413a2b422258cc0531175aa901ff76b051e61a820dbd72fc1ff6a3a282",
+      "translation_text_hash": "eda3fd6dd9b7db0c873b8e39f10ddfc45c139624ee997a4346a21bd1e84794a7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와가 말하노라 내가 이곳에서 너희를 벌할 표징이 이것이라 내가 너희에게 재앙을 내리리라 한 말이 단정코 성립될 것을 그것으로 알게 하리라"
+      ],
+      "raw_text_hashes": [
+        "eda3fd6dd9b7db0c873b8e39f10ddfc45c139624ee997a4346a21bd1e84794a7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:44:30",
+      "sequence": 20041,
+      "chapter_label": "JER 44",
+      "verse_label": "30",
+      "locator": {
+        "book": "JER",
+        "chapter": 44,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 44,
+          "verse": 30
+        }
+      ],
+      "en": "The LORD says, ‘Behold, I will give Pharaoh Hophra king of Egypt into the hand of his enemies and into the hand of those who seek his life, just as I gave Zedekiah king of Judah into the hand of Nebuchadnezzar king of Babylon, who was his enemy and sought his life.’”",
+      "ko": "보라 내가 유다 왕 시드기야를 그 원수 곧 그 생명을 찾는 바벨론 왕 느부갓네살의 손에 붙인 것 같이 애굽 왕 바로 호브라를 그 원수들 곧 그 생명을 찾는 자들의 손에 붙이리라 나 여호와가 이같이 말하였느니라 하시니라",
+      "source_text_hash": "ff4b62cecd0df48d68758dcd2182e452faa6849d96203270e828f0acbb7ef25f",
+      "translation_text_hash": "a828cc2d039ae2aaf7fcb544a14809ab1a580020cec578ae7f81b92e6bb904ed",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보라 내가 유다 왕 시드기야를 그 원수 곧 그 생명을 찾는 바벨론 왕 느부갓네살의 손에 붙인 것 같이 애굽 왕 바로 호브라를 그 원수들 곧 그 생명을 찾는 자들의 손에 붙이리라 나 여호와가 이같이 말하였느니라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "a828cc2d039ae2aaf7fcb544a14809ab1a580020cec578ae7f81b92e6bb904ed"
+      ]
+    }
+  ]
+}

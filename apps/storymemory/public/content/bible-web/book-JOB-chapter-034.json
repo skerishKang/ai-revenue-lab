@@ -1,0 +1,1197 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JOB:chapter:034",
+  "unit_ordinal": 470,
+  "unit_label": "JOB 34",
+  "book_code": "JOB",
+  "chapter_number": 34,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JOB:34:1",
+      "sequence": 13685,
+      "chapter_label": "JOB 34",
+      "verse_label": "1",
+      "locator": {
+        "book": "JOB",
+        "chapter": 34,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 34,
+          "verse": 1
+        }
+      ],
+      "en": "Moreover Elihu answered,",
+      "ko": "엘리후가 말을 이어 가로되",
+      "source_text_hash": "b20553332783a4d2722be367506d01ec5289454ea2abb21f32de4aac4fec0a80",
+      "translation_text_hash": "e605e20edf46f5b31db6256f698b9e49cdac3db820ff27278dcd3522816e8f27",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "엘리후가 말을 이어 가로되"
+      ],
+      "raw_text_hashes": [
+        "e605e20edf46f5b31db6256f698b9e49cdac3db820ff27278dcd3522816e8f27"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:34:2",
+      "sequence": 13686,
+      "chapter_label": "JOB 34",
+      "verse_label": "2",
+      "locator": {
+        "book": "JOB",
+        "chapter": 34,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 34,
+          "verse": 2
+        }
+      ],
+      "en": "“Hear my words, you wise men. Give ear to me, you who have knowledge.",
+      "ko": "지혜 있는 자들아 내 말을 들으며 지식 있는 자들아 내게 귀를 기울이라",
+      "source_text_hash": "4c5e8b1a97c06ddf6043215b1bb29341b5da876a0673d5feeef769060e7c84ce",
+      "translation_text_hash": "8c257c8cd2a449b2f2b3afcba130be35f96ecb599a438dfcf25bae814da4b877",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "지혜 있는 자들아 내 말을 들으며 지식 있는 자들아 내게 귀를 기울이라"
+      ],
+      "raw_text_hashes": [
+        "8c257c8cd2a449b2f2b3afcba130be35f96ecb599a438dfcf25bae814da4b877"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:34:3",
+      "sequence": 13687,
+      "chapter_label": "JOB 34",
+      "verse_label": "3",
+      "locator": {
+        "book": "JOB",
+        "chapter": 34,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 34,
+          "verse": 3
+        }
+      ],
+      "en": "For the ear tries words, as the palate tastes food.",
+      "ko": "입이 식물의 맛을 변별함 같이 귀가 말을 분별하나니",
+      "source_text_hash": "a2c39492c4bf1d07f7f9ffbf77b4d56ae4923c4935c06110e1e216fb0f43522a",
+      "translation_text_hash": "7458eff8acfd6f4d456615b267af245f2eb8767aac1ebb914f8c1b5d37c17fa6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "입이 식물의 맛을 변별함 같이 귀가 말을 분별하나니"
+      ],
+      "raw_text_hashes": [
+        "7458eff8acfd6f4d456615b267af245f2eb8767aac1ebb914f8c1b5d37c17fa6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:34:4",
+      "sequence": 13688,
+      "chapter_label": "JOB 34",
+      "verse_label": "4",
+      "locator": {
+        "book": "JOB",
+        "chapter": 34,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 34,
+          "verse": 4
+        }
+      ],
+      "en": "Let us choose for us that which is right. Let us know among ourselves what is good.",
+      "ko": "우리가 스스로 옳은 것은 택하고 무엇이 선한가 우리끼리 알아 보자",
+      "source_text_hash": "f50e91d98b8576a4d8e1ab1e26816a498f5eb7b83d9a2cbfc059c55fba1035c3",
+      "translation_text_hash": "9fec230c6a62e710e0e4b6582192a0eb84d0410da6cd507dfa73db6bc00a0d64",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 스스로 옳은 것은 택하고 무엇이 선한가 우리끼리 알아 보자"
+      ],
+      "raw_text_hashes": [
+        "9fec230c6a62e710e0e4b6582192a0eb84d0410da6cd507dfa73db6bc00a0d64"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:34:5",
+      "sequence": 13689,
+      "chapter_label": "JOB 34",
+      "verse_label": "5",
+      "locator": {
+        "book": "JOB",
+        "chapter": 34,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 34,
+          "verse": 5
+        }
+      ],
+      "en": "For Job has said, ‘I am righteous, God has taken away my right.",
+      "ko": "욥이 말하기를 내가 의로우나 하나님이 내 의를 제하셨고",
+      "source_text_hash": "5bf484b9dbf534d6fc0552e8b00747265e9ff0026df11d50f9feb512b941e343",
+      "translation_text_hash": "9369596709c8697fb60b36e205c3eac85a2f93440b1e23dc365b42417724f425",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "욥이 말하기를 내가 의로우나 하나님이 내 의를 제하셨고"
+      ],
+      "raw_text_hashes": [
+        "9369596709c8697fb60b36e205c3eac85a2f93440b1e23dc365b42417724f425"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:34:6",
+      "sequence": 13690,
+      "chapter_label": "JOB 34",
+      "verse_label": "6",
+      "locator": {
+        "book": "JOB",
+        "chapter": 34,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 34,
+          "verse": 6
+        }
+      ],
+      "en": "Notwithstanding my right I am considered a liar. My wound is incurable, though I am without disobedience.’",
+      "ko": "내가 정직하나 거짓말장이가 되었고 나는 허물이 없으나 내 상처가 낫지 못하게 되었노라 하니",
+      "source_text_hash": "987feb65b2bfa75aef731598275bf701275333f5c388baaf92de435cf80b34e1",
+      "translation_text_hash": "e8350d045d0fbb438a6b35e7df4d76dae77aeb2d50e4cbe771f7c6ee3f4b8c06",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 정직하나 거짓말장이가 되었고 나는 허물이 없으나 내 상처가 낫지 못하게 되었노라 하니"
+      ],
+      "raw_text_hashes": [
+        "e8350d045d0fbb438a6b35e7df4d76dae77aeb2d50e4cbe771f7c6ee3f4b8c06"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:34:7",
+      "sequence": 13691,
+      "chapter_label": "JOB 34",
+      "verse_label": "7",
+      "locator": {
+        "book": "JOB",
+        "chapter": 34,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 34,
+          "verse": 7
+        }
+      ],
+      "en": "What man is like Job, who drinks scorn like water,",
+      "ko": "어느 사람이 욥과 같으랴 욥이 훼방하기를 물마시듯 하며",
+      "source_text_hash": "9ded4c5e3a9892931a11116306d792cdd7687a91d48bfcabaf661b300ac5c7cd",
+      "translation_text_hash": "e9fd2d4c7fb98da0fe00d21d4261de79fd3bd5b039c2b3a9c19b6bfdc0ab5726",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어느 사람이 욥과 같으랴 욥이 훼방하기를 물마시듯 하며"
+      ],
+      "raw_text_hashes": [
+        "e9fd2d4c7fb98da0fe00d21d4261de79fd3bd5b039c2b3a9c19b6bfdc0ab5726"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:34:8",
+      "sequence": 13692,
+      "chapter_label": "JOB 34",
+      "verse_label": "8",
+      "locator": {
+        "book": "JOB",
+        "chapter": 34,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 34,
+          "verse": 8
+        }
+      ],
+      "en": "who goes in company with the workers of iniquity, and walks with wicked men?",
+      "ko": "악한 일을 하는 자들과 사귀며 악인과 함께 다니면서",
+      "source_text_hash": "c8add08bb8c8881dcfac38990ebb07f16299c14129f82548625216484371b776",
+      "translation_text_hash": "2491ac2742df93e8710510d1e52ef370510809d58d4129f09d7913e002dd2dff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "악한 일을 하는 자들과 사귀며 악인과 함께 다니면서"
+      ],
+      "raw_text_hashes": [
+        "2491ac2742df93e8710510d1e52ef370510809d58d4129f09d7913e002dd2dff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:34:9",
+      "sequence": 13693,
+      "chapter_label": "JOB 34",
+      "verse_label": "9",
+      "locator": {
+        "book": "JOB",
+        "chapter": 34,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 34,
+          "verse": 9
+        }
+      ],
+      "en": "For he has said, ‘It profits a man nothing that he should delight himself with God.’",
+      "ko": "이르기를 사람이 하나님을 기뻐하나 무익하다 하는구나",
+      "source_text_hash": "71b51ca97edff45a514a4b1f8bd69c09513db65a79f0859a91ca242142354d5b",
+      "translation_text_hash": "cbbdaed9dce837d5c868e43b7267f5030ef9fc25e442b62fd7336a8016a6cd10",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이르기를 사람이 하나님을 기뻐하나 무익하다 하는구나"
+      ],
+      "raw_text_hashes": [
+        "cbbdaed9dce837d5c868e43b7267f5030ef9fc25e442b62fd7336a8016a6cd10"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:34:10",
+      "sequence": 13694,
+      "chapter_label": "JOB 34",
+      "verse_label": "10",
+      "locator": {
+        "book": "JOB",
+        "chapter": 34,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 34,
+          "verse": 10
+        }
+      ],
+      "en": "“Therefore listen to me, you men of understanding: far be it from God, that he should do wickedness, from the Almighty, that he should commit iniquity.",
+      "ko": "그러므로 너희 총명한 자들아 내 말을 들으라 하나님은 단정코 악을 행치 아니하시며 전능자는 단정코 불의를 행치 아니하시고",
+      "source_text_hash": "dc6efc5004c297f82f06af9d8d34a8f76d0cd0cd07a86204bfd19baeee27eaa7",
+      "translation_text_hash": "e85b6cb366618fa5c7ef64b9e080f25ead6df02f86e8e7e7f1da206412e2cfdf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 너희 총명한 자들아 내 말을 들으라 하나님은 단정코 악을 행치 아니하시며 전능자는 단정코 불의를 행치 아니하시고"
+      ],
+      "raw_text_hashes": [
+        "e85b6cb366618fa5c7ef64b9e080f25ead6df02f86e8e7e7f1da206412e2cfdf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:34:11",
+      "sequence": 13695,
+      "chapter_label": "JOB 34",
+      "verse_label": "11",
+      "locator": {
+        "book": "JOB",
+        "chapter": 34,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 34,
+          "verse": 11
+        }
+      ],
+      "en": "For the work of a man he will give to him, and cause every man to find according to his ways.",
+      "ko": "사람의 일을 따라 보응하사 각각 그 행위대로 얻게 하시나니",
+      "source_text_hash": "3324e4fc0400783f4386232c1504787dd73bb82b50c6ed468122948f8eb6f51a",
+      "translation_text_hash": "2b8a8c8da30fa218262406a4c1bb0cb8d4ced39df07fee5f014c3f67138390e6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람의 일을 따라 보응하사 각각 그 행위대로 얻게 하시나니"
+      ],
+      "raw_text_hashes": [
+        "2b8a8c8da30fa218262406a4c1bb0cb8d4ced39df07fee5f014c3f67138390e6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:34:12",
+      "sequence": 13696,
+      "chapter_label": "JOB 34",
+      "verse_label": "12",
+      "locator": {
+        "book": "JOB",
+        "chapter": 34,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 34,
+          "verse": 12
+        }
+      ],
+      "en": "Yes surely, God will not do wickedly, neither will the Almighty pervert justice.",
+      "ko": "진실로 하나님은 악을 행치 아니하시며 전능자는 공의를 굽히지 아니 하시느니라",
+      "source_text_hash": "579d6b2d172ccca3efa1c443e6cb8c8a81488842c7e3dd5918f365197477b1a0",
+      "translation_text_hash": "789585248da64645948b96d2539cd879a868ec2992bb97b97f902951d1521793",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "진실로 하나님은 악을 행치 아니하시며 전능자는 공의를 굽히지 아니 하시느니라"
+      ],
+      "raw_text_hashes": [
+        "789585248da64645948b96d2539cd879a868ec2992bb97b97f902951d1521793"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:34:13",
+      "sequence": 13697,
+      "chapter_label": "JOB 34",
+      "verse_label": "13",
+      "locator": {
+        "book": "JOB",
+        "chapter": 34,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 34,
+          "verse": 13
+        }
+      ],
+      "en": "Who put him in charge of the earth? Or who has appointed him over the whole world?",
+      "ko": "누가 땅을 그에게 맡겼느냐 누가 온 세계를 정하였느냐",
+      "source_text_hash": "e6ef2289cbb092e3fdf34e6ca9ddd80ea417b7d3263300642fcf70c18c9c72a7",
+      "translation_text_hash": "77a854dcf91c5dc4d849164c1cfe2653a83acaa87b1b2b3a13d6a5875bfa67a6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누가 땅을 그에게 맡겼느냐 누가 온 세계를 정하였느냐"
+      ],
+      "raw_text_hashes": [
+        "77a854dcf91c5dc4d849164c1cfe2653a83acaa87b1b2b3a13d6a5875bfa67a6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:34:14",
+      "sequence": 13698,
+      "chapter_label": "JOB 34",
+      "verse_label": "14",
+      "locator": {
+        "book": "JOB",
+        "chapter": 34,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 34,
+          "verse": 14
+        }
+      ],
+      "en": "If he set his heart on himself, if he gathered to himself his spirit and his breath,",
+      "ko": "그가 만일 자기만 생각하시고 그 신과 기운을 거두실찐대",
+      "source_text_hash": "ee5cfdffc8bdb1688263af48c222fcadf7aff3874a58e1856322917fc688c40f",
+      "translation_text_hash": "a8061fac3f65dc929351b24cd89720af0d8d697a006d86aae250fc6258a284ba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 만일 자기만 생각하시고 그 신과 기운을 거두실찐대"
+      ],
+      "raw_text_hashes": [
+        "a8061fac3f65dc929351b24cd89720af0d8d697a006d86aae250fc6258a284ba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:34:15",
+      "sequence": 13699,
+      "chapter_label": "JOB 34",
+      "verse_label": "15",
+      "locator": {
+        "book": "JOB",
+        "chapter": 34,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 34,
+          "verse": 15
+        }
+      ],
+      "en": "all flesh would perish together, and man would turn again to dust.",
+      "ko": "모든 혈기 있는 자가 일체로 망하고 사람도 진토로 돌아 가리라",
+      "source_text_hash": "156a8341b0582cb2469c86d422322b6f059deb7d1606e4e0318b6023338e8e32",
+      "translation_text_hash": "9b858949ec8a328a12f08315f6a112c5ecd0885e9bba41193bc3545b194c977d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 혈기 있는 자가 일체로 망하고 사람도 진토로 돌아 가리라"
+      ],
+      "raw_text_hashes": [
+        "9b858949ec8a328a12f08315f6a112c5ecd0885e9bba41193bc3545b194c977d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:34:16",
+      "sequence": 13700,
+      "chapter_label": "JOB 34",
+      "verse_label": "16",
+      "locator": {
+        "book": "JOB",
+        "chapter": 34,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 34,
+          "verse": 16
+        }
+      ],
+      "en": "“If now you have understanding, hear this. Listen to the voice of my words.",
+      "ko": "만일 총명이 있거든 이것을 들으며 내 말소리에 귀를 기울이라",
+      "source_text_hash": "99e71719524faeea37bcb9025c0adcdab3754a30a34207a63bb18c1760d435b9",
+      "translation_text_hash": "ad5ecdadba950013559049a9b9702af9caed119996623649f43cd725f474b505",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 총명이 있거든 이것을 들으며 내 말소리에 귀를 기울이라"
+      ],
+      "raw_text_hashes": [
+        "ad5ecdadba950013559049a9b9702af9caed119996623649f43cd725f474b505"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:34:17",
+      "sequence": 13701,
+      "chapter_label": "JOB 34",
+      "verse_label": "17",
+      "locator": {
+        "book": "JOB",
+        "chapter": 34,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 34,
+          "verse": 17
+        }
+      ],
+      "en": "Should even one who hates justice govern? Will you condemn him who is righteous and mighty,",
+      "ko": "공의를 미워하는 자시면 어찌 치리하시겠느냐 의롭고 전능하신 자를 네가 정죄하겠느냐",
+      "source_text_hash": "e18b226becefc273474bb823dd237c781843d40f409afc0dbc9c16e88aace5b9",
+      "translation_text_hash": "4e67461826de842c6fcac66ab755257f83904b7246e95e030b8a472c42a9b0d5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "공의를 미워하는 자시면 어찌 치리하시겠느냐 의롭고 전능하신 자를 네가 정죄하겠느냐"
+      ],
+      "raw_text_hashes": [
+        "4e67461826de842c6fcac66ab755257f83904b7246e95e030b8a472c42a9b0d5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:34:18",
+      "sequence": 13702,
+      "chapter_label": "JOB 34",
+      "verse_label": "18",
+      "locator": {
+        "book": "JOB",
+        "chapter": 34,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 34,
+          "verse": 18
+        }
+      ],
+      "en": "who says to a king, ‘Vile!’ or to nobles, ‘Wicked!’?",
+      "ko": "그는 왕에게라도 비루하다 하시며 귀인들에게라도 악하다 하시며",
+      "source_text_hash": "977b6fdd5d3eb9199044a6974c6e2e0e0e2480b986ba796a7987ba2f6e332017",
+      "translation_text_hash": "4427b3dfdd913299c56366a846bb76090fb04b596bc387d28372441a239fdaf0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그는 왕에게라도 비루하다 하시며 귀인들에게라도 악하다 하시며"
+      ],
+      "raw_text_hashes": [
+        "4427b3dfdd913299c56366a846bb76090fb04b596bc387d28372441a239fdaf0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:34:19",
+      "sequence": 13703,
+      "chapter_label": "JOB 34",
+      "verse_label": "19",
+      "locator": {
+        "book": "JOB",
+        "chapter": 34,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 34,
+          "verse": 19
+        }
+      ],
+      "en": "He doesn’t respect the persons of princes, nor respect the rich more than the poor, for they all are the work of his hands.",
+      "ko": "왕족을 외모로 취치 아니하시며 부자를 가난한 자보다 더 생각하지 아니하시나니 이는 그들이 다 그의 손으로 지으신 바가 됨이니라",
+      "source_text_hash": "70262e4b82b936ab374af9f41e3381ef4df790724052f7ef3df07f7f48ff2f90",
+      "translation_text_hash": "6a0194ca90f34d0135ed84c3b52dd3d3be6ac0d9a6b5dd52bafa0c51a24bd884",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕족을 외모로 취치 아니하시며 부자를 가난한 자보다 더 생각하지 아니하시나니 이는 그들이 다 그의 손으로 지으신 바가 됨이니라"
+      ],
+      "raw_text_hashes": [
+        "6a0194ca90f34d0135ed84c3b52dd3d3be6ac0d9a6b5dd52bafa0c51a24bd884"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:34:20",
+      "sequence": 13704,
+      "chapter_label": "JOB 34",
+      "verse_label": "20",
+      "locator": {
+        "book": "JOB",
+        "chapter": 34,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 34,
+          "verse": 20
+        }
+      ],
+      "en": "In a moment they die, even at midnight. The people are shaken and pass away. The mighty are taken away without a hand.",
+      "ko": "그들은 밤중 순식간에 죽나니 백성은 떨며 없어지고 세력 있는 자도 사람의 손을 대지 않고 제함을 당하느니라",
+      "source_text_hash": "23cebde696654f30bafe0448c32d8cf82bc8b883cd5524efbc876c50528ded85",
+      "translation_text_hash": "e6cde033804b30c2547e39b6dd9b9def263824c0188d3d1e40111c0fcb415299",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들은 밤중 순식간에 죽나니 백성은 떨며 없어지고 세력 있는 자도 사람의 손을 대지 않고 제함을 당하느니라"
+      ],
+      "raw_text_hashes": [
+        "e6cde033804b30c2547e39b6dd9b9def263824c0188d3d1e40111c0fcb415299"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:34:21",
+      "sequence": 13705,
+      "chapter_label": "JOB 34",
+      "verse_label": "21",
+      "locator": {
+        "book": "JOB",
+        "chapter": 34,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 34,
+          "verse": 21
+        }
+      ],
+      "en": "“For his eyes are on the ways of a man. He sees all his goings.",
+      "ko": "하나님은 사람의 길을 주목하시며 사람의 모든 걸음을 감찰하시나니",
+      "source_text_hash": "b2335a098a0d23689bd2cb804a64ff94891713d4e2f17d702ef91b12916808df",
+      "translation_text_hash": "a6dcefba70b7e1e1e3d8c5b565544490ae5fac42eab94ef530c799db08ee40f2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님은 사람의 길을 주목하시며 사람의 모든 걸음을 감찰하시나니"
+      ],
+      "raw_text_hashes": [
+        "a6dcefba70b7e1e1e3d8c5b565544490ae5fac42eab94ef530c799db08ee40f2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:34:22",
+      "sequence": 13706,
+      "chapter_label": "JOB 34",
+      "verse_label": "22",
+      "locator": {
+        "book": "JOB",
+        "chapter": 34,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 34,
+          "verse": 22
+        }
+      ],
+      "en": "There is no darkness, nor thick gloom, where the workers of iniquity may hide themselves.",
+      "ko": "악을 행한 자는 숨을만한 흑암이나 어두운 그늘이 없느니라",
+      "source_text_hash": "a2eae6338166821e7264630ac421b89087759be9ca4aa7c3ce64b6cbb6f6d302",
+      "translation_text_hash": "4b4072c2cf50e0e37525ac5f7e7c033e020871f83c6eb1e40f1d246e4ebe4d5c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "악을 행한 자는 숨을만한 흑암이나 어두운 그늘이 없느니라"
+      ],
+      "raw_text_hashes": [
+        "4b4072c2cf50e0e37525ac5f7e7c033e020871f83c6eb1e40f1d246e4ebe4d5c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:34:23",
+      "sequence": 13707,
+      "chapter_label": "JOB 34",
+      "verse_label": "23",
+      "locator": {
+        "book": "JOB",
+        "chapter": 34,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 34,
+          "verse": 23
+        }
+      ],
+      "en": "For he doesn’t need to consider a man further, that he should go before God in judgment.",
+      "ko": "하나님은 사람을 심판하시기에 오래 생각하실 것이 없으시니",
+      "source_text_hash": "69781a3c7572d3aa715a1f8791095c9065fec26ff7b6334fcfd543937c2b26f4",
+      "translation_text_hash": "a5c6a5904979ec2a78f25f8cb65115c1b55adfc324e76e2d2fc58ceae769ee66",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님은 사람을 심판하시기에 오래 생각하실 것이 없으시니"
+      ],
+      "raw_text_hashes": [
+        "a5c6a5904979ec2a78f25f8cb65115c1b55adfc324e76e2d2fc58ceae769ee66"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:34:24",
+      "sequence": 13708,
+      "chapter_label": "JOB 34",
+      "verse_label": "24",
+      "locator": {
+        "book": "JOB",
+        "chapter": 34,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 34,
+          "verse": 24
+        }
+      ],
+      "en": "He breaks mighty men in pieces in ways past finding out, and sets others in their place.",
+      "ko": "세력 있는 자를 조사할 것 없이 꺾으시고 다른 사람을 세워 그를 대신하게 하시느니라",
+      "source_text_hash": "c31f9d6e373869de7c41bf37f0ea3c5a442bb942a61a35901eecf538b0b859c8",
+      "translation_text_hash": "1d5deb6d96e7338e9022d866decbcadd8b38a0b41ec9dfd9ff80e6bad881008f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "세력 있는 자를 조사할 것 없이 꺾으시고 다른 사람을 세워 그를 대신하게 하시느니라"
+      ],
+      "raw_text_hashes": [
+        "1d5deb6d96e7338e9022d866decbcadd8b38a0b41ec9dfd9ff80e6bad881008f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:34:25",
+      "sequence": 13709,
+      "chapter_label": "JOB 34",
+      "verse_label": "25",
+      "locator": {
+        "book": "JOB",
+        "chapter": 34,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 34,
+          "verse": 25
+        }
+      ],
+      "en": "Therefore he takes knowledge of their works. He overturns them in the night, so that they are destroyed.",
+      "ko": "이와 같이 그들의 행위를 아시고 그들을 밤 사이에 엎으신즉 멸망하나니",
+      "source_text_hash": "f4e460b1130efb19f2e126b9e93fba37ce480e6f8cd3a0968f35dbfef0a30bfa",
+      "translation_text_hash": "b51578884a4cfbabb14d35fd8a0743007f740dbd29c396e666bee44953810bfa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이와 같이 그들의 행위를 아시고 그들을 밤 사이에 엎으신즉 멸망하나니"
+      ],
+      "raw_text_hashes": [
+        "b51578884a4cfbabb14d35fd8a0743007f740dbd29c396e666bee44953810bfa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:34:26",
+      "sequence": 13710,
+      "chapter_label": "JOB 34",
+      "verse_label": "26",
+      "locator": {
+        "book": "JOB",
+        "chapter": 34,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 34,
+          "verse": 26
+        }
+      ],
+      "en": "He strikes them as wicked men in the open sight of others;",
+      "ko": "그들을 악한 자로 여겨 사람의 목전에서 치심은",
+      "source_text_hash": "bbc4795fde0273d243019f1753c42733b7f22c25a2f463e406b6b797cc5356f1",
+      "translation_text_hash": "6a2efb4dcf60b0dc17d5dd3805437faf0d8df59c219c5fcc3e3c072d852ccdc0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들을 악한 자로 여겨 사람의 목전에서 치심은"
+      ],
+      "raw_text_hashes": [
+        "6a2efb4dcf60b0dc17d5dd3805437faf0d8df59c219c5fcc3e3c072d852ccdc0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:34:27",
+      "sequence": 13711,
+      "chapter_label": "JOB 34",
+      "verse_label": "27",
+      "locator": {
+        "book": "JOB",
+        "chapter": 34,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 34,
+          "verse": 27
+        }
+      ],
+      "en": "because they turned away from following him, and wouldn’t pay attention to any of his ways,",
+      "ko": "그들이 그를 떠나고 그의 모든 길을 무관히 여김이라",
+      "source_text_hash": "0a98eab03dbc2c20e0036317f188283f4b521228205e8156d72bd9f63a3efc5b",
+      "translation_text_hash": "575de6f57a887a08d62ad39a2a02e7c17c1c2a91a5a30193e1c7f8c8a81f2b97",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 그를 떠나고 그의 모든 길을 무관히 여김이라"
+      ],
+      "raw_text_hashes": [
+        "575de6f57a887a08d62ad39a2a02e7c17c1c2a91a5a30193e1c7f8c8a81f2b97"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:34:28",
+      "sequence": 13712,
+      "chapter_label": "JOB 34",
+      "verse_label": "28",
+      "locator": {
+        "book": "JOB",
+        "chapter": 34,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 34,
+          "verse": 28
+        }
+      ],
+      "en": "so that they caused the cry of the poor to come to him. He heard the cry of the afflicted.",
+      "ko": "그들이 이와 같이 하여 가난한 자의 부르짖음이 그에게 상달케 하며 환난 받는 자의 부르짖음이 그에게 들리게 하느니라",
+      "source_text_hash": "bf6c7cc4605456b436ec3f0f68129cbddd2ffa273cf4cc8452447b265318e68d",
+      "translation_text_hash": "971d22010275ecf6867c638d537a00230afc55f70ee59db17ffc053aee8bd09a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 이와 같이 하여 가난한 자의 부르짖음이 그에게 상달케 하며 환난 받는 자의 부르짖음이 그에게 들리게 하느니라"
+      ],
+      "raw_text_hashes": [
+        "971d22010275ecf6867c638d537a00230afc55f70ee59db17ffc053aee8bd09a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:34:29",
+      "sequence": 13713,
+      "chapter_label": "JOB 34",
+      "verse_label": "29",
+      "locator": {
+        "book": "JOB",
+        "chapter": 34,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 34,
+          "verse": 29
+        }
+      ],
+      "en": "When he gives quietness, who then can condemn? When he hides his face, who then can see him? He is over a nation or a man alike,",
+      "ko": "주께서 사람에게 평강을 주실 때에 누가 감히 잘못하신다 하겠느냐 주께서 자기 얼굴을 가리우실 때에 누가 감히 뵈올수 있으랴 나라에게나 사람에게나 일반이시니",
+      "source_text_hash": "3838c4c1180fb869fd6c74cb405016220ee854e7802dd16dbd1b9e905c6a25c0",
+      "translation_text_hash": "d30a7202287db9714bcee68f1757ce13fa1dc9e317cec30f13c25505bf546c63",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 사람에게 평강을 주실 때에 누가 감히 잘못하신다 하겠느냐 주께서 자기 얼굴을 가리우실 때에 누가 감히 뵈올수 있으랴 나라에게나 사람에게나 일반이시니"
+      ],
+      "raw_text_hashes": [
+        "d30a7202287db9714bcee68f1757ce13fa1dc9e317cec30f13c25505bf546c63"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:34:30",
+      "sequence": 13714,
+      "chapter_label": "JOB 34",
+      "verse_label": "30",
+      "locator": {
+        "book": "JOB",
+        "chapter": 34,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 34,
+          "verse": 30
+        }
+      ],
+      "en": "that the godless man may not reign, that there be no one to ensnare the people.",
+      "ko": "이는 사특한 자로 권세를 잡아 백성을 함해하지 못하게 하려 하심이니라",
+      "source_text_hash": "ae587271bf289ede2fed1955693d5beacaa12aa704ce324b2f64a7c58971400c",
+      "translation_text_hash": "ef2d1afb3db5c9ca3b269df1ebd479a42fbaacc04513ffc3b7b32637d1d54ce3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 사특한 자로 권세를 잡아 백성을 함해하지 못하게 하려 하심이니라"
+      ],
+      "raw_text_hashes": [
+        "ef2d1afb3db5c9ca3b269df1ebd479a42fbaacc04513ffc3b7b32637d1d54ce3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:34:31",
+      "sequence": 13715,
+      "chapter_label": "JOB 34",
+      "verse_label": "31",
+      "locator": {
+        "book": "JOB",
+        "chapter": 34,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 34,
+          "verse": 31
+        }
+      ],
+      "en": "“For has any said to God, ‘I am guilty, but I will not offend any more.",
+      "ko": "누가 하나님께 아뢰기를 내가 징계를 받았사오니 다시는 범죄치 아니하겠나이다",
+      "source_text_hash": "0c7377259ccaf8bd3bdf869e49325c51f9973d39a30077c045a560c21a1c3bca",
+      "translation_text_hash": "6395455720aa27dfab2d5e469dace589300126c41521937fedd5be57e982029f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누가 하나님께 아뢰기를 내가 징계를 받았사오니 다시는 범죄치 아니하겠나이다"
+      ],
+      "raw_text_hashes": [
+        "6395455720aa27dfab2d5e469dace589300126c41521937fedd5be57e982029f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:34:32",
+      "sequence": 13716,
+      "chapter_label": "JOB 34",
+      "verse_label": "32",
+      "locator": {
+        "book": "JOB",
+        "chapter": 34,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 34,
+          "verse": 32
+        }
+      ],
+      "en": "Teach me that which I don’t see. If I have done iniquity, I will do it no more’?",
+      "ko": "나의 깨닫지 못하는 것을 내게 가르치소서 내가 악을 행하였으면 다시는 아니하겠나이다 한 자가 있느냐",
+      "source_text_hash": "5b0c4e3d200712afa7b273594bc0e3e0c20b44d055da618173aba36ad7f02150",
+      "translation_text_hash": "32c64994ac32d61249f0b0f3da3bfcac8e1e8a07e35e128b9b68d5254542d884",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 깨닫지 못하는 것을 내게 가르치소서 내가 악을 행하였으면 다시는 아니하겠나이다 한 자가 있느냐"
+      ],
+      "raw_text_hashes": [
+        "32c64994ac32d61249f0b0f3da3bfcac8e1e8a07e35e128b9b68d5254542d884"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:34:33",
+      "sequence": 13717,
+      "chapter_label": "JOB 34",
+      "verse_label": "33",
+      "locator": {
+        "book": "JOB",
+        "chapter": 34,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 34,
+          "verse": 33
+        }
+      ],
+      "en": "Shall his recompense be as you desire, that you refuse it? For you must choose, and not I. Therefore speak what you know.",
+      "ko": "하나님이 네 뜻대로 갚으셔야 하겠다고 네가 그것을 싫어하느냐 그러면 네가 스스로 택할 것이요 내가 할 것이 아니니 너는 아는대로 말하라",
+      "source_text_hash": "030d7fa87269c3aaa8eaa0ad9a65dc4575ac4016fd935c97a42df7f7ef641f46",
+      "translation_text_hash": "8a6e2eef1044134fd372a650977647bf8b84e4b2765bc4f2e8a3ec6fe9fcbd33",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 네 뜻대로 갚으셔야 하겠다고 네가 그것을 싫어하느냐 그러면 네가 스스로 택할 것이요 내가 할 것이 아니니 너는 아는대로 말하라"
+      ],
+      "raw_text_hashes": [
+        "8a6e2eef1044134fd372a650977647bf8b84e4b2765bc4f2e8a3ec6fe9fcbd33"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:34:34",
+      "sequence": 13718,
+      "chapter_label": "JOB 34",
+      "verse_label": "34",
+      "locator": {
+        "book": "JOB",
+        "chapter": 34,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 34,
+          "verse": 34
+        }
+      ],
+      "en": "Men of understanding will tell me, yes, every wise man who hears me:",
+      "ko": "총명한 자와 내 말을 듣는 모든 지혜 있는 자가 필연 내게 이르기를",
+      "source_text_hash": "79fe26ba91ddd93dbacb6feaf9d19942eff9c48dfc6521d141556c05346ada18",
+      "translation_text_hash": "5d5ac953ba01bfc88e455779e224f4e1a7db79b710843d1bb4c58536fe9bc894",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "총명한 자와 내 말을 듣는 모든 지혜 있는 자가 필연 내게 이르기를"
+      ],
+      "raw_text_hashes": [
+        "5d5ac953ba01bfc88e455779e224f4e1a7db79b710843d1bb4c58536fe9bc894"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:34:35",
+      "sequence": 13719,
+      "chapter_label": "JOB 34",
+      "verse_label": "35",
+      "locator": {
+        "book": "JOB",
+        "chapter": 34,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 34,
+          "verse": 35
+        }
+      ],
+      "en": "‘Job speaks without knowledge. His words are without wisdom.’",
+      "ko": "욥이 무식하게 말하니 그 말이 지혜 없다 하리라",
+      "source_text_hash": "522753f85585cec94d91194363c6ab8693071c1ba869cc195c9938f75fbfed7a",
+      "translation_text_hash": "56d6054634dafba19b14ecab1037040ae55d974595f34fb9b5f9e4fb43c84270",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "욥이 무식하게 말하니 그 말이 지혜 없다 하리라"
+      ],
+      "raw_text_hashes": [
+        "56d6054634dafba19b14ecab1037040ae55d974595f34fb9b5f9e4fb43c84270"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:34:36",
+      "sequence": 13720,
+      "chapter_label": "JOB 34",
+      "verse_label": "36",
+      "locator": {
+        "book": "JOB",
+        "chapter": 34,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 34,
+          "verse": 36
+        }
+      ],
+      "en": "I wish that Job were tried to the end, because of his answering like wicked men.",
+      "ko": "욥이 끝까지 시험 받기를 내가 원하노니 이는 그 대답이 악인과 같음이라",
+      "source_text_hash": "6f0dd09572800ab72b18ceaae3b85ee07dd2fdb1e9831ac8204952ec134feff4",
+      "translation_text_hash": "0b44d5fa18018646a7b94d734929696a64459fbe75697dd6b91f2228b27a4fa8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "욥이 끝까지 시험 받기를 내가 원하노니 이는 그 대답이 악인과 같음이라"
+      ],
+      "raw_text_hashes": [
+        "0b44d5fa18018646a7b94d734929696a64459fbe75697dd6b91f2228b27a4fa8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:34:37",
+      "sequence": 13721,
+      "chapter_label": "JOB 34",
+      "verse_label": "37",
+      "locator": {
+        "book": "JOB",
+        "chapter": 34,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 34,
+          "verse": 37
+        }
+      ],
+      "en": "For he adds rebellion to his sin. He claps his hands among us, and multiplies his words against God.”",
+      "ko": "그가 그 죄 위에 패역을 더하며 우리 중에서 손뼉을 치며 하나님을 거역하는 말을 많이 하는구나",
+      "source_text_hash": "1da4d7c81dcdad70d1063051122b18908f3053f5730def21b80d70ad01b44651",
+      "translation_text_hash": "a154d6ae3d4a4d1147eecc07b2135ce5dc9fd987cfb5424e2f6175ee5e66fa96",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 그 죄 위에 패역을 더하며 우리 중에서 손뼉을 치며 하나님을 거역하는 말을 많이 하는구나"
+      ],
+      "raw_text_hashes": [
+        "a154d6ae3d4a4d1147eecc07b2135ce5dc9fd987cfb5424e2f6175ee5e66fa96"
+      ]
+    }
+  ]
+}

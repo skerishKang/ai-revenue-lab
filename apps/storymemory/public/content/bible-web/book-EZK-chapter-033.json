@@ -1,0 +1,1069 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EZK:chapter:033",
+  "unit_ordinal": 835,
+  "unit_label": "EZK 33",
+  "book_code": "EZK",
+  "chapter_number": 33,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EZK:33:1",
+      "sequence": 21282,
+      "chapter_label": "EZK 33",
+      "verse_label": "1",
+      "locator": {
+        "book": "EZK",
+        "chapter": 33,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 33,
+          "verse": 1
+        }
+      ],
+      "en": "The LORD’s word came to me, saying,",
+      "ko": "여호와의 말씀이 내게 임하여 가라사대",
+      "source_text_hash": "9896c4581212f69b0f4adc87dc02e9102477b3f2cc043645fc2c8a0c2e7ce852",
+      "translation_text_hash": "2fcb54244475e91bef0fbc3c3374d04d74406d7f7556cf1f7a2dd6aaa6668237",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 말씀이 내게 임하여 가라사대"
+      ],
+      "raw_text_hashes": [
+        "2fcb54244475e91bef0fbc3c3374d04d74406d7f7556cf1f7a2dd6aaa6668237"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:33:2",
+      "sequence": 21283,
+      "chapter_label": "EZK 33",
+      "verse_label": "2",
+      "locator": {
+        "book": "EZK",
+        "chapter": 33,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 33,
+          "verse": 2
+        }
+      ],
+      "en": "“Son of man, speak to the children of your people, and tell them, ‘When I bring the sword on a land, and the people of the land take a man from among them, and set him for their watchman,",
+      "ko": "인자야 너는 네 민족에게 고하여 이르라 가령 내가 칼을 한 땅에 임하게 한다 하자 그 땅 백성이 자기 중에 하나를 택하여 파숫군을 삼은",
+      "source_text_hash": "6df946817c35d1c3f43085592d0f308076f3d787ba461543acc87dbe1ff5cdd5",
+      "translation_text_hash": "7a3072131831402cbdd41b86e2ff4cd60fdfac83508929331b52fd133bad77b1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "인자야 너는 네 민족에게 고하여 이르라 가령 내가 칼을 한 땅에 임하게 한다 하자 그 땅 백성이 자기 중에 하나를 택하여 파숫군을 삼은"
+      ],
+      "raw_text_hashes": [
+        "7a3072131831402cbdd41b86e2ff4cd60fdfac83508929331b52fd133bad77b1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:33:3",
+      "sequence": 21284,
+      "chapter_label": "EZK 33",
+      "verse_label": "3",
+      "locator": {
+        "book": "EZK",
+        "chapter": 33,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 33,
+          "verse": 3
+        }
+      ],
+      "en": "if, when he sees the sword come on the land, he blows the trumpet and warns the people,",
+      "ko": "그 사람이 칼이 그 땅에 임함을 보고 나팔을 불어 백성에게 경고하되",
+      "source_text_hash": "746bb0e0eaaf5ff44fdc269716c589215c4edae2fd62cb3b6763f6197776e44d",
+      "translation_text_hash": "5fb0078454d8da0b206ed2acbf029161016cc3701dcef40b630e842548128b22",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 사람이 칼이 그 땅에 임함을 보고 나팔을 불어 백성에게 경고하되"
+      ],
+      "raw_text_hashes": [
+        "5fb0078454d8da0b206ed2acbf029161016cc3701dcef40b630e842548128b22"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:33:4",
+      "sequence": 21285,
+      "chapter_label": "EZK 33",
+      "verse_label": "4",
+      "locator": {
+        "book": "EZK",
+        "chapter": 33,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 33,
+          "verse": 4
+        }
+      ],
+      "en": "then whoever hears the sound of the trumpet and doesn’t heed the warning, if the sword comes and takes him away, his blood will be on his own head.",
+      "ko": "나팔 소리를 듣고도 경비를 하지 아니하므로 그 임하는 칼에 제함을 당하면 그 피가 자기의 머리로 돌아갈 것이라",
+      "source_text_hash": "f89da4ae1b55dc6be382bd6b2e07a0767b04bcff0e780b734852eaa46beaa04d",
+      "translation_text_hash": "d96754094f7a244ca2ae7a9a546b7851f389c2d87f914fa146b8b4efc6b9876a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나팔 소리를 듣고도 경비를 하지 아니하므로 그 임하는 칼에 제함을 당하면 그 피가 자기의 머리로 돌아갈 것이라"
+      ],
+      "raw_text_hashes": [
+        "d96754094f7a244ca2ae7a9a546b7851f389c2d87f914fa146b8b4efc6b9876a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:33:5",
+      "sequence": 21286,
+      "chapter_label": "EZK 33",
+      "verse_label": "5",
+      "locator": {
+        "book": "EZK",
+        "chapter": 33,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 33,
+          "verse": 5
+        }
+      ],
+      "en": "He heard the sound of the trumpet and didn’t take warning. His blood will be on him; whereas if he had heeded the warning, he would have delivered his soul.",
+      "ko": "그가 경비를 하였던들 자기 생명을 보전하였을 것이나 나팔 소리를 듣고도 경비를 하지 아니하였으니 그 피가 자기에게로 돌아가리라",
+      "source_text_hash": "569870986c61c53f18218bc6878e462ca8a9d8fb33bed934202992ffa69725da",
+      "translation_text_hash": "6c40319fd84a90d5680960e11874f156b846d48b2b217826677eea30360b3316",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 경비를 하였던들 자기 생명을 보전하였을 것이나 나팔 소리를 듣고도 경비를 하지 아니하였으니 그 피가 자기에게로 돌아가리라"
+      ],
+      "raw_text_hashes": [
+        "6c40319fd84a90d5680960e11874f156b846d48b2b217826677eea30360b3316"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:33:6",
+      "sequence": 21287,
+      "chapter_label": "EZK 33",
+      "verse_label": "6",
+      "locator": {
+        "book": "EZK",
+        "chapter": 33,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 33,
+          "verse": 6
+        }
+      ],
+      "en": "But if the watchman sees the sword come and doesn’t blow the trumpet, and the people aren’t warned, and the sword comes and takes any person from among them, he is taken away in his iniquity, but his blood I will require at the watchman’s hand.’",
+      "ko": "그러나 파숫군이 칼이 임함을 보고도 나팔을 불지 아니하여 백성에게 경고치 아니하므로 그 중에 한 사람이 그 임하는 칼에 제함을 당하면 그는 자기 죄악 중에서 제한바 되려니와 그 죄를 내가 파숫군의 손에서 찾으리라",
+      "source_text_hash": "4217a79f42436b6ffc67ea9f37d89ed7c15e9567521e780630501158db8f9782",
+      "translation_text_hash": "f9f88aead157bb7a2f16b94460d6e7a6b0ebf4bf4523429a41237a7a745416d8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 파숫군이 칼이 임함을 보고도 나팔을 불지 아니하여 백성에게 경고치 아니하므로 그 중에 한 사람이 그 임하는 칼에 제함을 당하면 그는 자기 죄악 중에서 제한바 되려니와 그 죄를 내가 파숫군의 손에서 찾으리라"
+      ],
+      "raw_text_hashes": [
+        "f9f88aead157bb7a2f16b94460d6e7a6b0ebf4bf4523429a41237a7a745416d8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:33:7",
+      "sequence": 21288,
+      "chapter_label": "EZK 33",
+      "verse_label": "7",
+      "locator": {
+        "book": "EZK",
+        "chapter": 33,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 33,
+          "verse": 7
+        }
+      ],
+      "en": "“So you, son of man, I have set you a watchman to the house of Israel. Therefore hear the word from my mouth, and give them warnings from me.",
+      "ko": "인자야 내가 너로 이스라엘 족속의 파숫군을 삼음이 이와 같으니라 그런즉 너는 내 입의 말을 듣고 나를 대신하여 그들에게 경고할찌어다",
+      "source_text_hash": "ff6a7d1d36d546bf7ccfd817c0e3cc4516aeded6e17b2f31c6ce500803a80bff",
+      "translation_text_hash": "6255d1f518e9ef8e56238cfb7a4f2c5a03c8e0f5a3faf35ab7f2c378fb849ada",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "인자야 내가 너로 이스라엘 족속의 파숫군을 삼음이 이와 같으니라 그런즉 너는 내 입의 말을 듣고 나를 대신하여 그들에게 경고할찌어다"
+      ],
+      "raw_text_hashes": [
+        "6255d1f518e9ef8e56238cfb7a4f2c5a03c8e0f5a3faf35ab7f2c378fb849ada"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:33:8",
+      "sequence": 21289,
+      "chapter_label": "EZK 33",
+      "verse_label": "8",
+      "locator": {
+        "book": "EZK",
+        "chapter": 33,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 33,
+          "verse": 8
+        }
+      ],
+      "en": "When I tell the wicked, ‘O wicked man, you will surely die,’ and you don’t speak to warn the wicked from his way, that wicked man will die in his iniquity, but I will require his blood at your hand.",
+      "ko": "가령 내가 악인에게 이르기를 악인아 너는 정녕 죽으리라 하였다 하자 네가 그 악인에게 말로 경고하여 그 길에서 떠나게 아니하면 그 악인은 자기 죄악 중에서 죽으려니와 내가 그 피를 네 손에서 찾으리라",
+      "source_text_hash": "2c9e48e756639c20662f1b3e6424ef458fac3cf5fd517aace4cc3c768751e8f4",
+      "translation_text_hash": "d94ae2c299468a2cc0fc9bce2e17fa4dd5166852b4875af404073e3ffe57cad0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가령 내가 악인에게 이르기를 악인아 너는 정녕 죽으리라 하였다 하자 네가 그 악인에게 말로 경고하여 그 길에서 떠나게 아니하면 그 악인은 자기 죄악 중에서 죽으려니와 내가 그 피를 네 손에서 찾으리라"
+      ],
+      "raw_text_hashes": [
+        "d94ae2c299468a2cc0fc9bce2e17fa4dd5166852b4875af404073e3ffe57cad0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:33:9",
+      "sequence": 21290,
+      "chapter_label": "EZK 33",
+      "verse_label": "9",
+      "locator": {
+        "book": "EZK",
+        "chapter": 33,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 33,
+          "verse": 9
+        }
+      ],
+      "en": "Nevertheless, if you warn the wicked of his way to turn from it, and he doesn’t turn from his way; he will die in his iniquity, but you have delivered your soul.",
+      "ko": "그러나 너는 악인에게 경고하여 돌이켜 그 길에서 떠나라고 하되 그가 돌이켜 그 길에서 떠나지 아니하면 그는 자기 죄악 중에서 죽으려니와 너는 네 생명을 보전하리라",
+      "source_text_hash": "b54ded933a7af3d9734b12381e5a184e9484efe68f513ec177859f11e017e8fe",
+      "translation_text_hash": "102096fd7b98d354c2421cbf77061461006bea398b707db76ed462c96ddae3e1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 너는 악인에게 경고하여 돌이켜 그 길에서 떠나라고 하되 그가 돌이켜 그 길에서 떠나지 아니하면 그는 자기 죄악 중에서 죽으려니와 너는 네 생명을 보전하리라"
+      ],
+      "raw_text_hashes": [
+        "102096fd7b98d354c2421cbf77061461006bea398b707db76ed462c96ddae3e1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:33:10",
+      "sequence": 21291,
+      "chapter_label": "EZK 33",
+      "verse_label": "10",
+      "locator": {
+        "book": "EZK",
+        "chapter": 33,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 33,
+          "verse": 10
+        }
+      ],
+      "en": "“You, son of man, tell the house of Israel: ‘You say this, “Our transgressions and our sins are on us, and we pine away in them. How then can we live?”’",
+      "ko": "그런즉 인자야 너는 이스라엘 족속에게 이르기를 너희가 말하여 이르되 우리의 허물과 죄가 이미 우리에게 있어 우리로 그 중에서 쇠패하게 하니 어찌 능히 살리요 하거니와",
+      "source_text_hash": "4c1b247155025f12fbcc3363819d36ea3e305b5e0ec92e352e331b92a194d92a",
+      "translation_text_hash": "ed5af6e174a0290770066be32571b7e92bd678ce0064750c552dfa2278fc655c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 인자야 너는 이스라엘 족속에게 이르기를 너희가 말하여 이르되 우리의 허물과 죄가 이미 우리에게 있어 우리로 그 중에서 쇠패하게 하니 어찌 능히 살리요 하거니와"
+      ],
+      "raw_text_hashes": [
+        "ed5af6e174a0290770066be32571b7e92bd678ce0064750c552dfa2278fc655c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:33:11",
+      "sequence": 21292,
+      "chapter_label": "EZK 33",
+      "verse_label": "11",
+      "locator": {
+        "book": "EZK",
+        "chapter": 33,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 33,
+          "verse": 11
+        }
+      ],
+      "en": "Tell them, ‘“As I live,” says the Lord GOD, “I have no pleasure in the death of the wicked, but that the wicked turn from his way and live. Turn, turn from your evil ways! For why will you die, house of Israel?”’",
+      "ko": "주 여호와의 말씀에 나의 삶을 두고 맹세하노니 나는 악인의 죽는 것을 기뻐하지 아니하고 악인이 그 길에서 돌이켜 떠나서 사는 것을 기뻐하노라 이스라엘 족속아 돌이키고 돌이키라 너희 악한 길에서 떠나라 어찌 죽고자 하느냐 하셨다 하라",
+      "source_text_hash": "9fe2212a4aada2863ccb8edbeb26a75742be95e8dac5de8381e8189d4f34b9d1",
+      "translation_text_hash": "2810e8609f04012bd6bdf88f2626c4a592df35ab4e33b9a4a3eff04ba0800fea",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주 여호와의 말씀에 나의 삶을 두고 맹세하노니 나는 악인의 죽는 것을 기뻐하지 아니하고 악인이 그 길에서 돌이켜 떠나서 사는 것을 기뻐하노라 이스라엘 족속아 돌이키고 돌이키라 너희 악한 길에서 떠나라 어찌 죽고자 하느냐 하셨다 하라"
+      ],
+      "raw_text_hashes": [
+        "2810e8609f04012bd6bdf88f2626c4a592df35ab4e33b9a4a3eff04ba0800fea"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:33:12",
+      "sequence": 21293,
+      "chapter_label": "EZK 33",
+      "verse_label": "12",
+      "locator": {
+        "book": "EZK",
+        "chapter": 33,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 33,
+          "verse": 12
+        }
+      ],
+      "en": "“You, son of man, tell the children of your people, ‘The righteousness of the righteous will not deliver him in the day of his disobedience. And as for the wickedness of the wicked, he will not fall by it in the day that he turns from his wickedness; neither will he who is righteous be able to live by it in the day that he sins.",
+      "ko": "인자야 너는 네 민족에게 이르기를 의인이 범죄하는 날에는 그 의가 구원치 못할 것이요 악인이 돌이켜 그 악에서 떠나는 날에는 그 악이 그를 엎드러뜨리지 못할 것인즉 의인이 범죄하는 날에는 그 의로 인하여는 살지 못하리라",
+      "source_text_hash": "ba8277f9cc11d3c8d3f8d5e3d8c2f448323525f60a96234f549870c4ea2e7fa2",
+      "translation_text_hash": "2bee16ea49096261baa85d8ba42ff6e2de3ee0c1419e171da0c2c2a4d498a3c3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "인자야 너는 네 민족에게 이르기를 의인이 범죄하는 날에는 그 의가 구원치 못할 것이요 악인이 돌이켜 그 악에서 떠나는 날에는 그 악이 그를 엎드러뜨리지 못할 것인즉 의인이 범죄하는 날에는 그 의로 인하여는 살지 못하리라"
+      ],
+      "raw_text_hashes": [
+        "2bee16ea49096261baa85d8ba42ff6e2de3ee0c1419e171da0c2c2a4d498a3c3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:33:13",
+      "sequence": 21294,
+      "chapter_label": "EZK 33",
+      "verse_label": "13",
+      "locator": {
+        "book": "EZK",
+        "chapter": 33,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 33,
+          "verse": 13
+        }
+      ],
+      "en": "When I tell the righteous that he will surely live, if he trusts in his righteousness and commits iniquity, none of his righteous deeds will be remembered; but he will die in his iniquity that he has committed.",
+      "ko": "가령 내가 의인에게 말하기를 너는 살리라 하였다 하자 그가 그 의를 스스로 믿고 죄악을 행하면 그 모든 의로운 행위가 하나도 기억되지 아니하리니 그가 그 지은 죄악 중 곧 그 중에서 죽으리라",
+      "source_text_hash": "3886abb47c9cfce7b36c5d1605803fe31e6697293b9e8caa3ede53df6609b1e6",
+      "translation_text_hash": "c702777756e01141e0872297be84b8d741c8725461b6dd04c32701bf6ab96769",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가령 내가 의인에게 말하기를 너는 살리라 하였다 하자 그가 그 의를 스스로 믿고 죄악을 행하면 그 모든 의로운 행위가 하나도 기억되지 아니하리니 그가 그 지은 죄악 중 곧 그 중에서 죽으리라"
+      ],
+      "raw_text_hashes": [
+        "c702777756e01141e0872297be84b8d741c8725461b6dd04c32701bf6ab96769"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:33:14",
+      "sequence": 21295,
+      "chapter_label": "EZK 33",
+      "verse_label": "14",
+      "locator": {
+        "book": "EZK",
+        "chapter": 33,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 33,
+          "verse": 14
+        }
+      ],
+      "en": "Again, when I say to the wicked, “You will surely die,” if he turns from his sin and does that which is lawful and right,",
+      "ko": "가령 내가 악인에게 말하기를 너는 죽으리라 하였다 하자 그가 돌이켜 자기의 죄에서 떠나서 법과 의대로 행하여",
+      "source_text_hash": "539d9583da13d7554ddb590404b9c90e6adf02b847da477e7e8ab3946decd959",
+      "translation_text_hash": "9277aee5ee348b44471b996da867cc09b5cfe95be78ea0c14a6e622f3b36f496",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가령 내가 악인에게 말하기를 너는 죽으리라 하였다 하자 그가 돌이켜 자기의 죄에서 떠나서 법과 의대로 행하여"
+      ],
+      "raw_text_hashes": [
+        "9277aee5ee348b44471b996da867cc09b5cfe95be78ea0c14a6e622f3b36f496"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:33:15",
+      "sequence": 21296,
+      "chapter_label": "EZK 33",
+      "verse_label": "15",
+      "locator": {
+        "book": "EZK",
+        "chapter": 33,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 33,
+          "verse": 15
+        }
+      ],
+      "en": "if the wicked restore the pledge, give again that which he had taken by robbery, walk in the statutes of life, committing no iniquity, he will surely live. He will not die.",
+      "ko": "전당물을 도로 주며 억탈물을 돌려 보내고 생명의 율례를 준행하여 다시는 죄악을 짓지 아니하면 그가 정녕 살고 죽지 않을찌라",
+      "source_text_hash": "b6e40993e2421eb737a45d910bca4770d5d2b92770c93aa3120a0617c6e4f113",
+      "translation_text_hash": "147d973c55b2ad79e74a777568eea8d91720bb5a03507710144b418e24a4a83d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "전당물을 도로 주며 억탈물을 돌려 보내고 생명의 율례를 준행하여 다시는 죄악을 짓지 아니하면 그가 정녕 살고 죽지 않을찌라"
+      ],
+      "raw_text_hashes": [
+        "147d973c55b2ad79e74a777568eea8d91720bb5a03507710144b418e24a4a83d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:33:16",
+      "sequence": 21297,
+      "chapter_label": "EZK 33",
+      "verse_label": "16",
+      "locator": {
+        "book": "EZK",
+        "chapter": 33,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 33,
+          "verse": 16
+        }
+      ],
+      "en": "None of his sins that he has committed will be remembered against him. He has done that which is lawful and right. He will surely live.",
+      "ko": "그의 본래 범한 모든 죄가 기억되지 아니하리니 그가 정녕 살리라 이는 법과 의를 행하였음이니라 하라",
+      "source_text_hash": "5663d52fc317e4191bfe96d05082a518185e30f3f97f9d9012d3b0f52f3e913d",
+      "translation_text_hash": "70c5c21d432ed825416859eacc383082291391fec69cc8f95c721d45d72641d3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그의 본래 범한 모든 죄가 기억되지 아니하리니 그가 정녕 살리라 이는 법과 의를 행하였음이니라 하라"
+      ],
+      "raw_text_hashes": [
+        "70c5c21d432ed825416859eacc383082291391fec69cc8f95c721d45d72641d3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:33:17",
+      "sequence": 21298,
+      "chapter_label": "EZK 33",
+      "verse_label": "17",
+      "locator": {
+        "book": "EZK",
+        "chapter": 33,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 33,
+          "verse": 17
+        }
+      ],
+      "en": "“‘Yet the children of your people say, “The way of the Lord is not fair;” but as for them, their way is not fair.",
+      "ko": "그래도 네 민족은 말하기를 주의 길이 공평치 않다 하는도다 그러나 실상은 그들의 길이 공평치 아니하니라",
+      "source_text_hash": "c7ae7962e10f4a1336bb2e20a735ca939a70505a2b2a5b4a98f61e87e20adba9",
+      "translation_text_hash": "d04b7242cfe509760af1e0c18ab43496804195cb99a415288f772de1dded6f29",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그래도 네 민족은 말하기를 주의 길이 공평치 않다 하는도다 그러나 실상은 그들의 길이 공평치 아니하니라"
+      ],
+      "raw_text_hashes": [
+        "d04b7242cfe509760af1e0c18ab43496804195cb99a415288f772de1dded6f29"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:33:18",
+      "sequence": 21299,
+      "chapter_label": "EZK 33",
+      "verse_label": "18",
+      "locator": {
+        "book": "EZK",
+        "chapter": 33,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 33,
+          "verse": 18
+        }
+      ],
+      "en": "When the righteous turns from his righteousness and commits iniquity, he will even die therein.",
+      "ko": "만일 의인이 돌이켜 그 의에서 떠나 죄악을 지으면 그가 그 가운데서 죽을 것이고",
+      "source_text_hash": "190640e48a48053da7337c614eb5a62af35dcc679f318a9eabe56b9dc5bdead2",
+      "translation_text_hash": "f576be9f9a810c5f70cc62285322d3063115566168bec1e5fc4c9e589b73d87f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 의인이 돌이켜 그 의에서 떠나 죄악을 지으면 그가 그 가운데서 죽을 것이고"
+      ],
+      "raw_text_hashes": [
+        "f576be9f9a810c5f70cc62285322d3063115566168bec1e5fc4c9e589b73d87f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:33:19",
+      "sequence": 21300,
+      "chapter_label": "EZK 33",
+      "verse_label": "19",
+      "locator": {
+        "book": "EZK",
+        "chapter": 33,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 33,
+          "verse": 19
+        }
+      ],
+      "en": "When the wicked turns from his wickedness and does that which is lawful and right, he will live by it.",
+      "ko": "만일 악인이 돌이켜 그 악에서 떠나 법과 의대로 행하면 그가 그로 인하여 살리라",
+      "source_text_hash": "151e262fb80cdf44a2f70a9f895243e901aaf5d3995a7b9db2a7c71f98ba80f4",
+      "translation_text_hash": "fe8b09c6795bdae5befb8872de8d6fc6e1e99e3ed812fb3914a481b9bdbb2a44",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 악인이 돌이켜 그 악에서 떠나 법과 의대로 행하면 그가 그로 인하여 살리라"
+      ],
+      "raw_text_hashes": [
+        "fe8b09c6795bdae5befb8872de8d6fc6e1e99e3ed812fb3914a481b9bdbb2a44"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:33:20",
+      "sequence": 21301,
+      "chapter_label": "EZK 33",
+      "verse_label": "20",
+      "locator": {
+        "book": "EZK",
+        "chapter": 33,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 33,
+          "verse": 20
+        }
+      ],
+      "en": "Yet you say, “The way of the Lord is not fair.” House of Israel, I will judge every one of you after his ways.’”",
+      "ko": "그러나 너희가 이르기를 주의 길이 공평치 않다 하는도다 이스라엘 족속아 내가 너희의 각기 행한대로 심판하리라 하시니라",
+      "source_text_hash": "67470b74b1d577d755b754d65be036c2e19e68dc17c0d036c77c5f342b9c0477",
+      "translation_text_hash": "6bce312399c10269a96cc6221f2f05d41176b7a3823e4d3e4bca579b45f0e565",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 너희가 이르기를 주의 길이 공평치 않다 하는도다 이스라엘 족속아 내가 너희의 각기 행한대로 심판하리라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "6bce312399c10269a96cc6221f2f05d41176b7a3823e4d3e4bca579b45f0e565"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:33:21",
+      "sequence": 21302,
+      "chapter_label": "EZK 33",
+      "verse_label": "21",
+      "locator": {
+        "book": "EZK",
+        "chapter": 33,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 33,
+          "verse": 21
+        }
+      ],
+      "en": "In the twelfth year of our captivity, in the tenth month, in the fifth day of the month, one who had escaped out of Jerusalem came to me, saying, “The city has been defeated!”",
+      "ko": "우리가 사로잡힌지 십 이년 시월 오일에 예루살렘에서부터 도망하여 온 자가 내게 나아와 말하기를 그 성이 함락되었다 하였는데",
+      "source_text_hash": "980bb2e7577d4c3eb4acf49a2c31f00622faf6caea98e0a1b0588ecf6d4a1927",
+      "translation_text_hash": "6a0240f46597b1fe2390256837f8f71a9a1250eb26f4844430707b369cd0962a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 사로잡힌지 십 이년 시월 오일에 예루살렘에서부터 도망하여 온 자가 내게 나아와 말하기를 그 성이 함락되었다 하였는데"
+      ],
+      "raw_text_hashes": [
+        "6a0240f46597b1fe2390256837f8f71a9a1250eb26f4844430707b369cd0962a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:33:22",
+      "sequence": 21303,
+      "chapter_label": "EZK 33",
+      "verse_label": "22",
+      "locator": {
+        "book": "EZK",
+        "chapter": 33,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 33,
+          "verse": 22
+        }
+      ],
+      "en": "Now the LORD’s hand had been on me in the evening, before he who had escaped came; and he had opened my mouth until he came to me in the morning; and my mouth was opened, and I was no longer mute.",
+      "ko": "그 도망한 자가 내게 나아오기 전날 저녁에 여호와의 손이 내게 임하여 내 입을 여시더니 다음 아침 그 사람이 내게 나아올 임시에 내 입이 열리기로 내가 다시는 잠잠하지 아니하였노라",
+      "source_text_hash": "def4a79bffeda6c6037a0dd9f56f1ea51dc06b031f64c2d16a9ba93e89629d8b",
+      "translation_text_hash": "1e583f487c003309db6e9bf7350b2b299973a06edf22750d6cdfdb74049260c3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 도망한 자가 내게 나아오기 전날 저녁에 여호와의 손이 내게 임하여 내 입을 여시더니 다음 아침 그 사람이 내게 나아올 임시에 내 입이 열리기로 내가 다시는 잠잠하지 아니하였노라"
+      ],
+      "raw_text_hashes": [
+        "1e583f487c003309db6e9bf7350b2b299973a06edf22750d6cdfdb74049260c3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:33:23",
+      "sequence": 21304,
+      "chapter_label": "EZK 33",
+      "verse_label": "23",
+      "locator": {
+        "book": "EZK",
+        "chapter": 33,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 33,
+          "verse": 23
+        }
+      ],
+      "en": "The LORD’s word came to me, saying,",
+      "ko": "여호와의 말씀이 내게 임하여 가라사대",
+      "source_text_hash": "9896c4581212f69b0f4adc87dc02e9102477b3f2cc043645fc2c8a0c2e7ce852",
+      "translation_text_hash": "2fcb54244475e91bef0fbc3c3374d04d74406d7f7556cf1f7a2dd6aaa6668237",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 말씀이 내게 임하여 가라사대"
+      ],
+      "raw_text_hashes": [
+        "2fcb54244475e91bef0fbc3c3374d04d74406d7f7556cf1f7a2dd6aaa6668237"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:33:24",
+      "sequence": 21305,
+      "chapter_label": "EZK 33",
+      "verse_label": "24",
+      "locator": {
+        "book": "EZK",
+        "chapter": 33,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 33,
+          "verse": 24
+        }
+      ],
+      "en": "“Son of man, those who inhabit the waste places in the land of Israel speak, saying, ‘Abraham was one, and he inherited the land; but we are many. The land is given us for inheritance.’",
+      "ko": "인자야 이 이스라엘 황무한 땅에 거한 자들이 말하여 이르기를 아브라함은 오직 한 사람이라도 이 땅을 기업으로 얻었나니 우리가 중다한즉 더욱 이 땅으로 우리에게 기업으로 주신 것이 되느니라 하는도다",
+      "source_text_hash": "a4948fbdfa1eaf04150571691f80b0b66838399c87c018136ca8dc6eb6b6ceb3",
+      "translation_text_hash": "1c84cd9466618176aa6f532f6bed623db4164c177750d9c118b115c2fb1e2a60",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "인자야 이 이스라엘 황무한 땅에 거한 자들이 말하여 이르기를 아브라함은 오직 한 사람이라도 이 땅을 기업으로 얻었나니 우리가 중다한즉 더욱 이 땅으로 우리에게 기업으로 주신 것이 되느니라 하는도다"
+      ],
+      "raw_text_hashes": [
+        "1c84cd9466618176aa6f532f6bed623db4164c177750d9c118b115c2fb1e2a60"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:33:25",
+      "sequence": 21306,
+      "chapter_label": "EZK 33",
+      "verse_label": "25",
+      "locator": {
+        "book": "EZK",
+        "chapter": 33,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 33,
+          "verse": 25
+        }
+      ],
+      "en": "Therefore tell them, ‘The Lord GOD says: “You eat with the blood, and lift up your eyes to your idols, and shed blood. So should you possess the land?",
+      "ko": "그러므로 너는 그들에게 이르기를 주 여호와의 말씀에 너희가 피 있는 고기를 먹으며 너희 우상들에게 눈을 들며 피를 흘리니 그 땅이 너희의 기업이 될까보냐",
+      "source_text_hash": "b038bf1ccd99e88876d8f3b4c4ad67c130bbc5e70eed6d0efc1f0133ed0ee2ac",
+      "translation_text_hash": "8c8fa08f3f945db10545248b629883c1087521351b17c50cdfa083993010b42e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 너는 그들에게 이르기를 주 여호와의 말씀에 너희가 피 있는 고기를 먹으며 너희 우상들에게 눈을 들며 피를 흘리니 그 땅이 너희의 기업이 될까보냐"
+      ],
+      "raw_text_hashes": [
+        "8c8fa08f3f945db10545248b629883c1087521351b17c50cdfa083993010b42e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:33:26",
+      "sequence": 21307,
+      "chapter_label": "EZK 33",
+      "verse_label": "26",
+      "locator": {
+        "book": "EZK",
+        "chapter": 33,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 33,
+          "verse": 26
+        }
+      ],
+      "en": "You stand on your sword, you work abomination, and every one of you defiles his neighbor’s wife. So should you possess the land?”’",
+      "ko": "너희가 칼을 믿어 가증한 일을 행하며 각기 이웃의 아내를 더럽히니 그 땅이 너희의 기업이 될까보냐 하고",
+      "source_text_hash": "6533ba7284bd84172731c211b55c5d3c39dabed0fd5b0d34e425b7e82a0bfd90",
+      "translation_text_hash": "5d1eb9da8dfaa76201211a54f47e06aeb8dc7fce4bd8c904ffd2f7fd0a71df33",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 칼을 믿어 가증한 일을 행하며 각기 이웃의 아내를 더럽히니 그 땅이 너희의 기업이 될까보냐 하고"
+      ],
+      "raw_text_hashes": [
+        "5d1eb9da8dfaa76201211a54f47e06aeb8dc7fce4bd8c904ffd2f7fd0a71df33"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:33:27",
+      "sequence": 21308,
+      "chapter_label": "EZK 33",
+      "verse_label": "27",
+      "locator": {
+        "book": "EZK",
+        "chapter": 33,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 33,
+          "verse": 27
+        }
+      ],
+      "en": "“You shall tell them, ‘The Lord GOD says: “As I live, surely those who are in the waste places will fall by the sword. I will give whoever is in the open field to the animals to be devoured, and those who are in the strongholds and in the caves will die of the pestilence.",
+      "ko": "너는 그들에게 또 이르기를 주 여호와의 말씀에 내가 나의 삶을 두고 맹세하노니 황무지에 있는 자는 칼에 엎드러뜨리고 들에 있는 자는 들짐승에게 붙여 먹게 하고 산성과 굴에 있는 자는 온역에 죽게 하리라",
+      "source_text_hash": "54dc2ce74828bb1a5d895a3f406a2bf0dae393d667442476b6c454014e29eaa6",
+      "translation_text_hash": "9f44e327f76875d65fc37628dd3e737b6b97527709f9f15d94fd4ab6119e1cb3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 그들에게 또 이르기를 주 여호와의 말씀에 내가 나의 삶을 두고 맹세하노니 황무지에 있는 자는 칼에 엎드러뜨리고 들에 있는 자는 들짐승에게 붙여 먹게 하고 산성과 굴에 있는 자는 온역에 죽게 하리라"
+      ],
+      "raw_text_hashes": [
+        "9f44e327f76875d65fc37628dd3e737b6b97527709f9f15d94fd4ab6119e1cb3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:33:28",
+      "sequence": 21309,
+      "chapter_label": "EZK 33",
+      "verse_label": "28",
+      "locator": {
+        "book": "EZK",
+        "chapter": 33,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 33,
+          "verse": 28
+        }
+      ],
+      "en": "I will make the land a desolation and an astonishment. The pride of her power will cease. The mountains of Israel will be desolate, so that no one will pass through.",
+      "ko": "내가 그 땅으로 황무지와 놀라움이 되게 하고 그 권능의 교만을 그치게 하리니 이스라엘의 산들이 황무하여 지나갈 사람이 없으리라",
+      "source_text_hash": "bce46ea3e87614e0cb79fa01e3c46b68fd9229b63c279e04b060dae61b04323e",
+      "translation_text_hash": "f7dfa2f17e20a93e858bd1c06d664c566e589b0ccc6c26332fd3b7c8972b3c60",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 그 땅으로 황무지와 놀라움이 되게 하고 그 권능의 교만을 그치게 하리니 이스라엘의 산들이 황무하여 지나갈 사람이 없으리라"
+      ],
+      "raw_text_hashes": [
+        "f7dfa2f17e20a93e858bd1c06d664c566e589b0ccc6c26332fd3b7c8972b3c60"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:33:29",
+      "sequence": 21310,
+      "chapter_label": "EZK 33",
+      "verse_label": "29",
+      "locator": {
+        "book": "EZK",
+        "chapter": 33,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 33,
+          "verse": 29
+        }
+      ],
+      "en": "Then they will know that I am the LORD, when I have made the land a desolation and an astonishment because of all their abominations which they have committed.”’",
+      "ko": "내가 그들의 행한 모든 가증한 일로 인하여 그 땅으로 황무지와 놀라움이 되게 하면 그 때에 그들이 나를 여호와인줄 알리라 하라",
+      "source_text_hash": "1b15306598bae73e0e95e88755868e499d3bcea1222927d09dbd2d1ff0253778",
+      "translation_text_hash": "da2cf6a48aec6e5c11f81e045d1a819a18d91b688549883610adf64f4a46f8f5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 그들의 행한 모든 가증한 일로 인하여 그 땅으로 황무지와 놀라움이 되게 하면 그 때에 그들이 나를 여호와인줄 알리라 하라"
+      ],
+      "raw_text_hashes": [
+        "da2cf6a48aec6e5c11f81e045d1a819a18d91b688549883610adf64f4a46f8f5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:33:30",
+      "sequence": 21311,
+      "chapter_label": "EZK 33",
+      "verse_label": "30",
+      "locator": {
+        "book": "EZK",
+        "chapter": 33,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 33,
+          "verse": 30
+        }
+      ],
+      "en": "“As for you, son of man, the children of your people talk about you by the walls and in the doors of the houses, and speak to one another, everyone to his brother, saying, ‘Please come and hear what the word is that comes out from the LORD.’",
+      "ko": "인자야 네 민족이 담 곁에서와 집 문에서 너를 의논하며 각각 그 형제로 더불어 말하여 이르기를 자, 가서 여호와께로부터 무슨 말씀이 나오는가 들어보자 하고",
+      "source_text_hash": "cceadfe3634d14e96a7b1efbb0b0149668197b287715b8759e2e7d69abf5aca7",
+      "translation_text_hash": "1af58847d2f64f8ded534c1bb4221414f0c2fcd059d4ef99bc6178a97986c819",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "인자야 네 민족이 담 곁에서와 집 문에서 너를 의논하며 각각 그 형제로 더불어 말하여 이르기를 자, 가서 여호와께로부터 무슨 말씀이 나오는가 들어보자 하고"
+      ],
+      "raw_text_hashes": [
+        "1af58847d2f64f8ded534c1bb4221414f0c2fcd059d4ef99bc6178a97986c819"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:33:31",
+      "sequence": 21312,
+      "chapter_label": "EZK 33",
+      "verse_label": "31",
+      "locator": {
+        "book": "EZK",
+        "chapter": 33,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 33,
+          "verse": 31
+        }
+      ],
+      "en": "They come to you as the people come, and they sit before you as my people, and they hear your words, but don’t do them; for with their mouth they show much love, but their heart goes after their gain.",
+      "ko": "백성이 모이는 것 같이 네게 나아오며 내 백성처럼 네 앞에 앉아서 네 말을 들으나 그대로 행치 아니하니 이는 그 입으로는 사랑을 나타내어도 마음은 이욕을 좇음이라",
+      "source_text_hash": "d67b1a7a41dc5ec72713e7e0bb3a3827bb6e921dc890d1c6a95ae3e897c425ba",
+      "translation_text_hash": "98a5524c049e4b032d9a98d628fdc64e7cbba47997a641d20ae2965a9c33bfd2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "백성이 모이는 것 같이 네게 나아오며 내 백성처럼 네 앞에 앉아서 네 말을 들으나 그대로 행치 아니하니 이는 그 입으로는 사랑을 나타내어도 마음은 이욕을 좇음이라"
+      ],
+      "raw_text_hashes": [
+        "98a5524c049e4b032d9a98d628fdc64e7cbba47997a641d20ae2965a9c33bfd2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:33:32",
+      "sequence": 21313,
+      "chapter_label": "EZK 33",
+      "verse_label": "32",
+      "locator": {
+        "book": "EZK",
+        "chapter": 33,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 33,
+          "verse": 32
+        }
+      ],
+      "en": "Behold, you are to them as a very lovely song of one who has a pleasant voice, and can play well on an instrument; for they hear your words, but they don’t do them.",
+      "ko": "그들이 너를 음악을 잘하며 고운 음성으로 사랑의 노래를 하는 자 같이 여겼나니 네 말을 듣고도 준행치 아니하거니와",
+      "source_text_hash": "860d79b889dd275dde98a8b34691155d671797c8adea2187ab90cf4a724283cc",
+      "translation_text_hash": "9826391cea8a5b11d71654a9a62180e8b92f4aaaa19f0973cbbb6f6b4bf7c417",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 너를 음악을 잘하며 고운 음성으로 사랑의 노래를 하는 자 같이 여겼나니 네 말을 듣고도 준행치 아니하거니와"
+      ],
+      "raw_text_hashes": [
+        "9826391cea8a5b11d71654a9a62180e8b92f4aaaa19f0973cbbb6f6b4bf7c417"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:33:33",
+      "sequence": 21314,
+      "chapter_label": "EZK 33",
+      "verse_label": "33",
+      "locator": {
+        "book": "EZK",
+        "chapter": 33,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 33,
+          "verse": 33
+        }
+      ],
+      "en": "“When this comes to pass—behold, it comes—then they will know that a prophet has been among them.”",
+      "ko": "그 말이 응하리니 응할 때에는 그들이 한 선지자가 자기 가운데 있었던 줄을 알리라",
+      "source_text_hash": "097c956cacc61a0d248a4571ed53af3c3229ec15dce111aa4731e58effb4170a",
+      "translation_text_hash": "4d8d4340a2210613d9def311367b02b1fd0999635033d9f59b9725c18d356217",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 말이 응하리니 응할 때에는 그들이 한 선지자가 자기 가운데 있었던 줄을 알리라"
+      ],
+      "raw_text_hashes": [
+        "4d8d4340a2210613d9def311367b02b1fd0999635033d9f59b9725c18d356217"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,77 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:117",
+  "unit_ordinal": 595,
+  "unit_label": "PSA 117",
+  "book_code": "PSA",
+  "chapter_number": 117,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:117:1",
+      "sequence": 15869,
+      "chapter_label": "PSA 117",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 117,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 117,
+          "verse": 1
+        }
+      ],
+      "en": "Praise the LORD, all you nations! Extol him, all you peoples!",
+      "ko": "너희 모든 나라들아 여호와를 찬양하며 너희 모든 백성들아 저를 칭송할찌어다",
+      "source_text_hash": "952c47ac4f318921d0609d48692d1d3bd5b9e36e7572cf397ce1050f2fa791e6",
+      "translation_text_hash": "1f07f9877a47668c8ab877569ce106080f4fc0f7eb431ab8e20473597bca3ef5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 모든 나라들아 여호와를 찬양하며 너희 모든 백성들아 저를 칭송할찌어다"
+      ],
+      "raw_text_hashes": [
+        "1f07f9877a47668c8ab877569ce106080f4fc0f7eb431ab8e20473597bca3ef5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:117:2",
+      "sequence": 15870,
+      "chapter_label": "PSA 117",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 117,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 117,
+          "verse": 2
+        }
+      ],
+      "en": "For his loving kindness is great toward us. The LORD’s faithfulness endures forever. Praise the LORD!",
+      "ko": "우리에게 향하신 여호와의 인자하심이 크고 진실하심이 영원함이로다 할렐루야",
+      "source_text_hash": "ba0b69612b35d5e465573755612eb586bf31e537702cdb58f0ba256987ddb5de",
+      "translation_text_hash": "f5ea6f2adbcebf2b5f22034fd9b22792370af595803404ea365be366541dd879",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리에게 향하신 여호와의 인자하심이 크고 진실하심이 영원함이로다 할렐루야"
+      ],
+      "raw_text_hashes": [
+        "f5ea6f2adbcebf2b5f22034fd9b22792370af595803404ea365be366541dd879"
+      ]
+    }
+  ]
+}

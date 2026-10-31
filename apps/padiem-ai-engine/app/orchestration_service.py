@@ -7,6 +7,9 @@ resumption, and cancellation over the internal Engine transport.
 from __future__ import annotations
 
 import asyncio
+import logging
+from app.pc_correlation import run_hash as _pc_run_hash
+
 from collections.abc import AsyncIterator, Callable, Mapping, Sequence
 from dataclasses import dataclass, replace
 from datetime import datetime, timezone
@@ -1218,8 +1221,19 @@ class OrchestrationEngineService:
                     app_id, getattr(orch_req, "subject_id", None),
                 ),
             )
-            with credential_scope(user_credential_ref):
-                result = await runner.run(orch_req)
+            token = _pc_run_hash(exec_req.session_id) or "none"
+            trace = exec_req.trace_id
+            if not isinstance(trace, str) or not re.fullmatch(r"tr_[A-Za-z0-9_.:-]{1,125}", trace) or "chat_pcq_" in trace:
+                trace = "none"
+            logger = logging.getLogger(__name__)
+            logger.info("pc_engine stage=start run_hash=%s dispatch_id=none trace_id=%s", token, trace)
+            try:
+                with credential_scope(user_credential_ref):
+                    result = await runner.run(orch_req)
+            except BaseException:
+                logger.info("pc_engine stage=error run_hash=%s dispatch_id=none trace_id=%s", token, trace)
+                raise
+            logger.info("pc_engine stage=end run_hash=%s dispatch_id=none trace_id=%s", token, trace)
         except (IdempotencyConflictError, OrchestrationError, EngineToolProjectionError, ExecutionRuntimeError) as exc:
             response = self._orchestration_run_error_response(exc)
             if response is not None:
@@ -1829,9 +1843,24 @@ class OrchestrationEngineService:
             (lambda item: queue.put_nowait({"pc_progress": item}))
             if pc_stream else None
         )
+        async def run_with_correlation():
+            token = _pc_run_hash(exec_req.session_id) or "none"
+            trace = exec_req.trace_id
+            if not isinstance(trace, str) or not re.fullmatch(r"tr_[A-Za-z0-9_.:-]{1,125}", trace) or "chat_pcq_" in trace:
+                trace = "none"
+            logger = logging.getLogger(__name__)
+            logger.info("pc_engine stage=start run_hash=%s dispatch_id=none trace_id=%s", token, trace)
+            try:
+                result = await runner.run(orch_req)
+            except BaseException:
+                logger.info("pc_engine stage=error run_hash=%s dispatch_id=none trace_id=%s", token, trace)
+                raise
+            logger.info("pc_engine stage=end run_hash=%s dispatch_id=none trace_id=%s", token, trace)
+            return result
+
         try:
             with credential_scope(user_credential_ref):
-                task = asyncio.create_task(runner.run(orch_req))
+                task = asyncio.create_task(run_with_correlation())
         finally:
             _PC_TURN_STREAM_SINK.reset(turn_sink_token)
             _PC_PROGRESS_SINK.reset(progress_token)

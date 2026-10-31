@@ -1,0 +1,781 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:071",
+  "unit_ordinal": 549,
+  "unit_label": "PSA 71",
+  "book_code": "PSA",
+  "chapter_number": 71,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:71:1",
+      "sequence": 14978,
+      "chapter_label": "PSA 71",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 71,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 71,
+          "verse": 1
+        }
+      ],
+      "en": "In you, LORD, I take refuge. Never let me be disappointed.",
+      "ko": "여호와여 내가 주께 피하오니 나로 영영히 수치를 당케 마소서",
+      "source_text_hash": "825d099ae6db20800a966e5ffa9ca5f560ed0ffc270733e14511368d0225eba8",
+      "translation_text_hash": "77a8c24d563946719070c86abbcd9db8e8e3d1f565b6f9a0836939b5acf66d7b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 내가 주께 피하오니 나로 영영히 수치를 당케 마소서"
+      ],
+      "raw_text_hashes": [
+        "77a8c24d563946719070c86abbcd9db8e8e3d1f565b6f9a0836939b5acf66d7b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:71:2",
+      "sequence": 14979,
+      "chapter_label": "PSA 71",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 71,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 71,
+          "verse": 2
+        }
+      ],
+      "en": "Deliver me in your righteousness, and rescue me. Turn your ear to me, and save me.",
+      "ko": "주의 의로 나를 건지시며 나를 풀어주시며 주의 귀를 내게 기울이사 나를 구원하소서",
+      "source_text_hash": "957ad009433ec3eab52686ac9141f19695c53a05f9b30ae0733d4029527c40d4",
+      "translation_text_hash": "b832766227bfe5846d8df991af9175f85def1d4f9abd774236bfe765b350fe81",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 의로 나를 건지시며 나를 풀어주시며 주의 귀를 내게 기울이사 나를 구원하소서"
+      ],
+      "raw_text_hashes": [
+        "b832766227bfe5846d8df991af9175f85def1d4f9abd774236bfe765b350fe81"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:71:3",
+      "sequence": 14980,
+      "chapter_label": "PSA 71",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 71,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 71,
+          "verse": 3
+        }
+      ],
+      "en": "Be to me a rock of refuge to which I may always go. Give the command to save me, for you are my rock and my fortress.",
+      "ko": "주는 나의 무시로 피하여 거할 바위가 되소서 주께서 나를 구원하라 명하셨으니 이는 주께서 나의 반석이시요 나의 산성이심이니이다",
+      "source_text_hash": "5927fc23e7d598defbb39c72aae8b6a3d53993a08fc0a2bd3bc3052a5ab000d8",
+      "translation_text_hash": "5d3259034560d443878e079fe821b86e1495b471973eb90031bfbb2fe88739da",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주는 나의 무시로 피하여 거할 바위가 되소서 주께서 나를 구원하라 명하셨으니 이는 주께서 나의 반석이시요 나의 산성이심이니이다"
+      ],
+      "raw_text_hashes": [
+        "5d3259034560d443878e079fe821b86e1495b471973eb90031bfbb2fe88739da"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:71:4",
+      "sequence": 14981,
+      "chapter_label": "PSA 71",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 71,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 71,
+          "verse": 4
+        }
+      ],
+      "en": "Rescue me, my God, from the hand of the wicked, from the hand of the unrighteous and cruel man.",
+      "ko": "나의 하나님이여 나를 악인의 손 곧 불의한 자와 흉악한 자의 장중에서 피하게 하소서",
+      "source_text_hash": "ce4ed4282f3292ce55166e24f1a842e21faef7f50b139a28121f33cbfb5f74ab",
+      "translation_text_hash": "1181f187f7edc26e9ec131ef42edc264b59431183346e5dd6eb33bd92c6de6d3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 하나님이여 나를 악인의 손 곧 불의한 자와 흉악한 자의 장중에서 피하게 하소서"
+      ],
+      "raw_text_hashes": [
+        "1181f187f7edc26e9ec131ef42edc264b59431183346e5dd6eb33bd92c6de6d3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:71:5",
+      "sequence": 14982,
+      "chapter_label": "PSA 71",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 71,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 71,
+          "verse": 5
+        }
+      ],
+      "en": "For you are my hope, Lord GOD, my confidence from my youth.",
+      "ko": "주 여호와여 주는 나의 소망이시요 나의 어릴 때부터 의지시라",
+      "source_text_hash": "335e6af7c9942faffb2b483dd13ad5052be8d8dd745786984c25cbb22d6025c9",
+      "translation_text_hash": "33ed979a422a299f37189cd1c4565ae5e6fcbc4987f99cbbf88315f731fe41bd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주 여호와여 주는 나의 소망이시요 나의 어릴 때부터 의지시라"
+      ],
+      "raw_text_hashes": [
+        "33ed979a422a299f37189cd1c4565ae5e6fcbc4987f99cbbf88315f731fe41bd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:71:6",
+      "sequence": 14983,
+      "chapter_label": "PSA 71",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 71,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 71,
+          "verse": 6
+        }
+      ],
+      "en": "I have relied on you from the womb. You are he who took me out of my mother’s womb. I will always praise you.",
+      "ko": "내가 모태에서부터 주의 붙드신바 되었으며 내 어미 배에서 주의 취하여 내신바 되었사오니 나는 항상 주를 찬송하리이다",
+      "source_text_hash": "fdd28900c8e781c99061c24b0b449476c483973f74ad1fe3ddf00d1d2ba6c019",
+      "translation_text_hash": "3ac6d8e45c9ca0ba43b50d874dec72b7e70a7906185b84d478ec61041f23f5a2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 모태에서부터 주의 붙드신바 되었으며 내 어미 배에서 주의 취하여 내신바 되었사오니 나는 항상 주를 찬송하리이다"
+      ],
+      "raw_text_hashes": [
+        "3ac6d8e45c9ca0ba43b50d874dec72b7e70a7906185b84d478ec61041f23f5a2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:71:7",
+      "sequence": 14984,
+      "chapter_label": "PSA 71",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 71,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 71,
+          "verse": 7
+        }
+      ],
+      "en": "I am a marvel to many, but you are my strong refuge.",
+      "ko": "나는 무리에게 이상함이 되었사오나 주는 나의 견고한 피난처시오니",
+      "source_text_hash": "35e7cc099a13e58072e370ce6fb40da8d0e485f4a78cf165c14581ca8db41cd5",
+      "translation_text_hash": "9a5df6293c56633137141f34e33d88a726d8d425efa77672dd1b0aff456f602a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 무리에게 이상함이 되었사오나 주는 나의 견고한 피난처시오니"
+      ],
+      "raw_text_hashes": [
+        "9a5df6293c56633137141f34e33d88a726d8d425efa77672dd1b0aff456f602a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:71:8",
+      "sequence": 14985,
+      "chapter_label": "PSA 71",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 71,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 71,
+          "verse": 8
+        }
+      ],
+      "en": "My mouth shall be filled with your praise, with your honor all day long.",
+      "ko": "주를 찬송함과 주를 존숭함이 종일토록 내 입에 가득하리이다",
+      "source_text_hash": "132f1b25d24b2ae4e37ca96688b980142fdc3fa7f9ac6aaf5f9fef3276ec255d",
+      "translation_text_hash": "89dc42d88a561a9a50b3e641b1733901357a2d01ccc5306f4de50bb6484e8632",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주를 찬송함과 주를 존숭함이 종일토록 내 입에 가득하리이다"
+      ],
+      "raw_text_hashes": [
+        "89dc42d88a561a9a50b3e641b1733901357a2d01ccc5306f4de50bb6484e8632"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:71:9",
+      "sequence": 14986,
+      "chapter_label": "PSA 71",
+      "verse_label": "9",
+      "locator": {
+        "book": "PSA",
+        "chapter": 71,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 71,
+          "verse": 9
+        }
+      ],
+      "en": "Don’t reject me in my old age. Don’t forsake me when my strength fails.",
+      "ko": "나를 늙은 때에 버리지 마시며 내 힘이 쇠약한 때에 떠나지 마소서",
+      "source_text_hash": "a02e430b9dc1f1d08aabfb200bf66b22fe5d125bfc8605c8bc0f9408da95996a",
+      "translation_text_hash": "4904cc3220a63268a8d53e6bee36e4e4e325c2dd6291c456ded927b56cb94aa5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나를 늙은 때에 버리지 마시며 내 힘이 쇠약한 때에 떠나지 마소서"
+      ],
+      "raw_text_hashes": [
+        "4904cc3220a63268a8d53e6bee36e4e4e325c2dd6291c456ded927b56cb94aa5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:71:10",
+      "sequence": 14987,
+      "chapter_label": "PSA 71",
+      "verse_label": "10",
+      "locator": {
+        "book": "PSA",
+        "chapter": 71,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 71,
+          "verse": 10
+        }
+      ],
+      "en": "For my enemies talk about me. Those who watch for my soul conspire together,",
+      "ko": "나의 원수들이 내게 대하여 말하며 나의 영혼을 엿보는 자가 서로 꾀하여",
+      "source_text_hash": "e6c84f06cacecba4b9ade6c7631caf5eddd4318f59f6c7f3de870425e68491a4",
+      "translation_text_hash": "729d58e9a237f6f8a9287339e9f4eddd8b1be09c02dbd4b75fc4a1f954fc564c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 원수들이 내게 대하여 말하며 나의 영혼을 엿보는 자가 서로 꾀하여"
+      ],
+      "raw_text_hashes": [
+        "729d58e9a237f6f8a9287339e9f4eddd8b1be09c02dbd4b75fc4a1f954fc564c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:71:11",
+      "sequence": 14988,
+      "chapter_label": "PSA 71",
+      "verse_label": "11",
+      "locator": {
+        "book": "PSA",
+        "chapter": 71,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 71,
+          "verse": 11
+        }
+      ],
+      "en": "saying, “God has forsaken him. Pursue and take him, for no one will rescue him.”",
+      "ko": "이르기를 하나님이 저를 버리셨은즉 따라 잡으라 건질 자가 없다 하오니",
+      "source_text_hash": "935a1fbed75a384610540df08591933d53685df92a18def908ae41eb2c40a97e",
+      "translation_text_hash": "68890916acecddf7ea7c28263628e6bd24ccf240103a046e4ee1406c2ab6b52e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이르기를 하나님이 저를 버리셨은즉 따라 잡으라 건질 자가 없다 하오니"
+      ],
+      "raw_text_hashes": [
+        "68890916acecddf7ea7c28263628e6bd24ccf240103a046e4ee1406c2ab6b52e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:71:12",
+      "sequence": 14989,
+      "chapter_label": "PSA 71",
+      "verse_label": "12",
+      "locator": {
+        "book": "PSA",
+        "chapter": 71,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 71,
+          "verse": 12
+        }
+      ],
+      "en": "God, don’t be far from me. My God, hurry to help me.",
+      "ko": "하나님이여 나를 멀리 마소서 나의 하나님이여 속히 나를 도우소서",
+      "source_text_hash": "c3b22b420d0b019261d928b7d5b5ab85366792b0f9fb3e10598b7a21359f089d",
+      "translation_text_hash": "e544975668d0f450f798e8695ba1ca1ad895ddd3b1509ae1e68732c886cb51b8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이여 나를 멀리 마소서 나의 하나님이여 속히 나를 도우소서"
+      ],
+      "raw_text_hashes": [
+        "e544975668d0f450f798e8695ba1ca1ad895ddd3b1509ae1e68732c886cb51b8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:71:13",
+      "sequence": 14990,
+      "chapter_label": "PSA 71",
+      "verse_label": "13",
+      "locator": {
+        "book": "PSA",
+        "chapter": 71,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 71,
+          "verse": 13
+        }
+      ],
+      "en": "Let my accusers be disappointed and consumed. Let them be covered with disgrace and scorn who want to harm me.",
+      "ko": "내 영혼을 대적하는 자로 수치와 멸망을 당케 하시며 나를 모해하려 하는 자에게는 욕과 수욕이 덮이게 하소서",
+      "source_text_hash": "b80c0c5de83e8ffbdaefd2d9ddd3fb8e7c9e249310c1d91df9eb9c56435312d2",
+      "translation_text_hash": "75a6af0842d970a2c7e5952f59ed19293d4fbb523f2f1cf0b48cf2afab10a411",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 영혼을 대적하는 자로 수치와 멸망을 당케 하시며 나를 모해하려 하는 자에게는 욕과 수욕이 덮이게 하소서"
+      ],
+      "raw_text_hashes": [
+        "75a6af0842d970a2c7e5952f59ed19293d4fbb523f2f1cf0b48cf2afab10a411"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:71:14",
+      "sequence": 14991,
+      "chapter_label": "PSA 71",
+      "verse_label": "14",
+      "locator": {
+        "book": "PSA",
+        "chapter": 71,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 71,
+          "verse": 14
+        }
+      ],
+      "en": "But I will always hope, and will add to all of your praise.",
+      "ko": "나는 항상 소망을 품고 주를 더욱 더욱 찬송하리이다",
+      "source_text_hash": "299a743511b009a8e760179071d453a35b667a9fa7595574a07cd3a47a6c9abd",
+      "translation_text_hash": "8c72efd0e1f96eac694e6f56a75d53dafab96dd5556d43c04f1f2dac94b8594e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 항상 소망을 품고 주를 더욱 더욱 찬송하리이다"
+      ],
+      "raw_text_hashes": [
+        "8c72efd0e1f96eac694e6f56a75d53dafab96dd5556d43c04f1f2dac94b8594e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:71:15",
+      "sequence": 14992,
+      "chapter_label": "PSA 71",
+      "verse_label": "15",
+      "locator": {
+        "book": "PSA",
+        "chapter": 71,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 71,
+          "verse": 15
+        }
+      ],
+      "en": "My mouth will tell about your righteousness, and of your salvation all day, though I don’t know its full measure.",
+      "ko": "내가 측량할 수 없는 주의 의와 구원을 내 입으로 종일 전하리이다",
+      "source_text_hash": "6d430d46a7f959615cf0e9fafd63c6539a8288ca1bc6ed5f9f0cdd1911a535bf",
+      "translation_text_hash": "42222923c753502b742d6cbf6faa1a85ab245af5249b89092826b7a8d0c6f2d0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 측량할 수 없는 주의 의와 구원을 내 입으로 종일 전하리이다"
+      ],
+      "raw_text_hashes": [
+        "42222923c753502b742d6cbf6faa1a85ab245af5249b89092826b7a8d0c6f2d0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:71:16",
+      "sequence": 14993,
+      "chapter_label": "PSA 71",
+      "verse_label": "16",
+      "locator": {
+        "book": "PSA",
+        "chapter": 71,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 71,
+          "verse": 16
+        }
+      ],
+      "en": "I will come with the mighty acts of the Lord GOD. I will make mention of your righteousness, even of yours alone.",
+      "ko": "내가 주 여호와의 능하신 행적을 가지고 오겠사오며 주의 의 곧 주의 의만 진술하겠나이다",
+      "source_text_hash": "671fe34299c6aaaa9a97fd2a7ed862e35cf911c8ade04e442717561c2f886b0a",
+      "translation_text_hash": "9fb74872ac15a5fa1e2f544a0b17d43cb40231968af1a32cd83965ac9902c5e2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 주 여호와의 능하신 행적을 가지고 오겠사오며 주의 의 곧 주의 의만 진술하겠나이다"
+      ],
+      "raw_text_hashes": [
+        "9fb74872ac15a5fa1e2f544a0b17d43cb40231968af1a32cd83965ac9902c5e2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:71:17",
+      "sequence": 14994,
+      "chapter_label": "PSA 71",
+      "verse_label": "17",
+      "locator": {
+        "book": "PSA",
+        "chapter": 71,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 71,
+          "verse": 17
+        }
+      ],
+      "en": "God, you have taught me from my youth. Until now, I have declared your wondrous works.",
+      "ko": "하나님이여 나를 어려서부터 교훈하셨으므로 내가 지금까지 주의 기사를 전하였나이다",
+      "source_text_hash": "cf717689f379d0c3c29ec7a99e3e0350c6d02aad90763eed72438c3a749085c3",
+      "translation_text_hash": "204544acbcef57fef01ea7c2c8663350e151eaa3733ba5edf06af1f865d187b8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이여 나를 어려서부터 교훈하셨으므로 내가 지금까지 주의 기사를 전하였나이다"
+      ],
+      "raw_text_hashes": [
+        "204544acbcef57fef01ea7c2c8663350e151eaa3733ba5edf06af1f865d187b8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:71:18",
+      "sequence": 14995,
+      "chapter_label": "PSA 71",
+      "verse_label": "18",
+      "locator": {
+        "book": "PSA",
+        "chapter": 71,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 71,
+          "verse": 18
+        }
+      ],
+      "en": "Yes, even when I am old and gray-haired, God, don’t forsake me, until I have declared your strength to the next generation, your might to everyone who is to come.",
+      "ko": "하나님이여 내가 늙어 백수가 될 때에도 나를 버리지 마시며 내가 주의 힘을 후대에 전하고 주의 능을 장래 모든 사람에게 전하기까지 나를 버리지 마소서",
+      "source_text_hash": "c2ef2e4a44ef84895f2bedbeca70516fbabe23b3c1c2c628ff5168586d106699",
+      "translation_text_hash": "e240474e831936ff22f1ff2df67e8933cad28b9ba65f2e5c4db6af2eeb5b1709",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이여 내가 늙어 백수가 될 때에도 나를 버리지 마시며 내가 주의 힘을 후대에 전하고 주의 능을 장래 모든 사람에게 전하기까지 나를 버리지 마소서"
+      ],
+      "raw_text_hashes": [
+        "e240474e831936ff22f1ff2df67e8933cad28b9ba65f2e5c4db6af2eeb5b1709"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:71:19",
+      "sequence": 14996,
+      "chapter_label": "PSA 71",
+      "verse_label": "19",
+      "locator": {
+        "book": "PSA",
+        "chapter": 71,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 71,
+          "verse": 19
+        }
+      ],
+      "en": "God, your righteousness also reaches to the heavens. You have done great things. God, who is like you?",
+      "ko": "하나님이여 주의 의가 또한 지극히 높으시니이다 하나님이여 주께서 대사를 행하셨사오니 누가 주와 같으리이까",
+      "source_text_hash": "95cb4b3f7f47a07b5a5ba0a32795f32122a0987d798a5bb896b537341458f662",
+      "translation_text_hash": "afc467f2886ea679700c24ac3265ee9d8e88526a3561ba3157aeb1056433327f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이여 주의 의가 또한 지극히 높으시니이다 하나님이여 주께서 대사를 행하셨사오니 누가 주와 같으리이까"
+      ],
+      "raw_text_hashes": [
+        "afc467f2886ea679700c24ac3265ee9d8e88526a3561ba3157aeb1056433327f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:71:20",
+      "sequence": 14997,
+      "chapter_label": "PSA 71",
+      "verse_label": "20",
+      "locator": {
+        "book": "PSA",
+        "chapter": 71,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 71,
+          "verse": 20
+        }
+      ],
+      "en": "You, who have shown us many and bitter troubles, you will let me live. You will bring us up again from the depths of the earth.",
+      "ko": "우리에게 많고 심한 고난을 보이신 주께서 우리를 다시 살리시며 땅 깊은 곳에서 다시 이끌어 올리시리이다",
+      "source_text_hash": "03e5fa8f5e54bbb8e365b6183d37e07eadf4a54b53d00caf137159cd9490fb50",
+      "translation_text_hash": "53c729cf45a9193974efd7dd1205a633915b15cd25d4ada54443a44f191a60e7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리에게 많고 심한 고난을 보이신 주께서 우리를 다시 살리시며 땅 깊은 곳에서 다시 이끌어 올리시리이다"
+      ],
+      "raw_text_hashes": [
+        "53c729cf45a9193974efd7dd1205a633915b15cd25d4ada54443a44f191a60e7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:71:21",
+      "sequence": 14998,
+      "chapter_label": "PSA 71",
+      "verse_label": "21",
+      "locator": {
+        "book": "PSA",
+        "chapter": 71,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 71,
+          "verse": 21
+        }
+      ],
+      "en": "Increase my honor and comfort me again.",
+      "ko": "나를 더욱 창대하게 하시고 돌이키사 나를 위로하소서",
+      "source_text_hash": "1b235e970eb3ca0aefd410f916cce207da5296631aaa964458af52af3601dbe1",
+      "translation_text_hash": "a1a01e95ee4da43c14fd975b31399372d2dec360c6424af518d502fef8800a36",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나를 더욱 창대하게 하시고 돌이키사 나를 위로하소서"
+      ],
+      "raw_text_hashes": [
+        "a1a01e95ee4da43c14fd975b31399372d2dec360c6424af518d502fef8800a36"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:71:22",
+      "sequence": 14999,
+      "chapter_label": "PSA 71",
+      "verse_label": "22",
+      "locator": {
+        "book": "PSA",
+        "chapter": 71,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 71,
+          "verse": 22
+        }
+      ],
+      "en": "I will also praise you with the harp for your faithfulness, my God. I sing praises to you with the lyre, Holy One of Israel.",
+      "ko": "나의 하나님이여 내가 또 비파로 주를 찬양하며 주의 성실을 찬양하리이다 이스라엘의 거룩하신 주여 내가 수금으로 주를 찬양하리이다",
+      "source_text_hash": "1d995da2957c5ded8399bd00728cc2fd137210136dda03edc74b3655901e4497",
+      "translation_text_hash": "8b4a6a7d16c5bfe44d5579cbb8a7c4d5e72dc53488314fdb8440b79922860c4e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 하나님이여 내가 또 비파로 주를 찬양하며 주의 성실을 찬양하리이다 이스라엘의 거룩하신 주여 내가 수금으로 주를 찬양하리이다"
+      ],
+      "raw_text_hashes": [
+        "8b4a6a7d16c5bfe44d5579cbb8a7c4d5e72dc53488314fdb8440b79922860c4e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:71:23",
+      "sequence": 15000,
+      "chapter_label": "PSA 71",
+      "verse_label": "23",
+      "locator": {
+        "book": "PSA",
+        "chapter": 71,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 71,
+          "verse": 23
+        }
+      ],
+      "en": "My lips shall shout for joy! My soul, which you have redeemed, sings praises to you!",
+      "ko": "내가 주를 찬양할 때에 내 입술이 기뻐 외치며 주께서 구속하신 내 영혼이 즐거워하리이다",
+      "source_text_hash": "8ca247f4544ee9921d0fbbfd5a01b7f81fad3ee1ade35acd38aed391dbaf8047",
+      "translation_text_hash": "e55710b805c1bd789f1fe9abc68835db26b668313bea4b3bc0a1f82bf2bcead9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 주를 찬양할 때에 내 입술이 기뻐 외치며 주께서 구속하신 내 영혼이 즐거워하리이다"
+      ],
+      "raw_text_hashes": [
+        "e55710b805c1bd789f1fe9abc68835db26b668313bea4b3bc0a1f82bf2bcead9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:71:24",
+      "sequence": 15001,
+      "chapter_label": "PSA 71",
+      "verse_label": "24",
+      "locator": {
+        "book": "PSA",
+        "chapter": 71,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 71,
+          "verse": 24
+        }
+      ],
+      "en": "My tongue will also talk about your righteousness all day long, for they are disappointed, and they are confounded, who want to harm me.",
+      "ko": "내 혀도 종일토록 주의 의를 말씀하오리니 나를 모해하려하던 자가 수치와 무안을 당함이니이다",
+      "source_text_hash": "fe6d34aaedf65396ccc36c287804d8b7dab17a0f3d47cb71679d07c618df8893",
+      "translation_text_hash": "90fca48dd547c3ea3153fee84bc150e6efad90b570ee5f8c5ca7f5f3d113d09b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 혀도 종일토록 주의 의를 말씀하오리니 나를 모해하려하던 자가 수치와 무안을 당함이니이다"
+      ],
+      "raw_text_hashes": [
+        "90fca48dd547c3ea3153fee84bc150e6efad90b570ee5f8c5ca7f5f3d113d09b"
+      ]
+    }
+  ]
+}

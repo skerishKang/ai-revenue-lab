@@ -1,0 +1,1517 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:LUK:chapter:020",
+  "unit_ordinal": 993,
+  "unit_label": "LUK 20",
+  "book_code": "LUK",
+  "chapter_number": 20,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:LUK:20:1",
+      "sequence": 25780,
+      "chapter_label": "LUK 20",
+      "verse_label": "1",
+      "locator": {
+        "book": "LUK",
+        "chapter": 20,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 20,
+          "verse": 1
+        }
+      ],
+      "en": "On one of those days, as he was teaching the people in the temple and preaching the Good News, the priests and scribes came to him with the elders.",
+      "ko": "하루는 예수께서 성전에서 백성을 가르치시며 복음을 전하실쌔 대제사장들과 서기관들이 장로들과 함께 가까이 와서",
+      "source_text_hash": "a81cd7fb58f6a52cd55d271e84cc3face47ad9987dad42f9edfdbf48346d6750",
+      "translation_text_hash": "ded9705c7d82e946e3adf7a387e5902014b3ecab07a12c474ef035d54ef3a0b0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하루는 예수께서 성전에서 백성을 가르치시며 복음을 전하실쌔 대제사장들과 서기관들이 장로들과 함께 가까이 와서"
+      ],
+      "raw_text_hashes": [
+        "ded9705c7d82e946e3adf7a387e5902014b3ecab07a12c474ef035d54ef3a0b0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:20:2",
+      "sequence": 25781,
+      "chapter_label": "LUK 20",
+      "verse_label": "2",
+      "locator": {
+        "book": "LUK",
+        "chapter": 20,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 20,
+          "verse": 2
+        }
+      ],
+      "en": "They asked him, “Tell us: by what authority do you do these things? Or who is giving you this authority?”",
+      "ko": "말하여 가로되 당신이 무슨 권세로 이런 일을 하는지 이 권세를 준이가 누구인지 우리에게 말하라",
+      "source_text_hash": "eacf518932d7925ba556f1478ac8e59132cf3388641de5d7e2111093c185bd62",
+      "translation_text_hash": "7f5bb6decb2002f08497337bba64fb577fd408206bb1c18a4257f3a017c5fbe8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "말하여 가로되 당신이 무슨 권세로 이런 일을 하는지 이 권세를 준이가 누구인지 우리에게 말하라"
+      ],
+      "raw_text_hashes": [
+        "7f5bb6decb2002f08497337bba64fb577fd408206bb1c18a4257f3a017c5fbe8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:20:3",
+      "sequence": 25782,
+      "chapter_label": "LUK 20",
+      "verse_label": "3",
+      "locator": {
+        "book": "LUK",
+        "chapter": 20,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 20,
+          "verse": 3
+        }
+      ],
+      "en": "He answered them, “I also will ask you one question. Tell me:",
+      "ko": "대답하여 가라사대 나도 한 말을 너희에게 물으리니 내게 말하라",
+      "source_text_hash": "84abc529689ea99b0cd458522d542a600608d958a352225010c557853facc1ef",
+      "translation_text_hash": "3fd9b46af301ab5af890c2aa5e395c0f8d8360be19cc6aadb64ef7f34eef4221",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대답하여 가라사대 나도 한 말을 너희에게 물으리니 내게 말하라"
+      ],
+      "raw_text_hashes": [
+        "3fd9b46af301ab5af890c2aa5e395c0f8d8360be19cc6aadb64ef7f34eef4221"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:20:4",
+      "sequence": 25783,
+      "chapter_label": "LUK 20",
+      "verse_label": "4",
+      "locator": {
+        "book": "LUK",
+        "chapter": 20,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 20,
+          "verse": 4
+        }
+      ],
+      "en": "the baptism of John, was it from heaven, or from men?”",
+      "ko": "요한의 세례가 하늘로서냐 사람에게로서냐",
+      "source_text_hash": "65d0d9708de35a0caa54f82be3c1a8a43be5a2dba8e01ed6a0b93342bf228242",
+      "translation_text_hash": "240767c34b853ec75e15dc9c3cf1e5cca95da1df867587927699cd936fc26e54",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요한의 세례가 하늘로서냐 사람에게로서냐"
+      ],
+      "raw_text_hashes": [
+        "240767c34b853ec75e15dc9c3cf1e5cca95da1df867587927699cd936fc26e54"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:20:5",
+      "sequence": 25784,
+      "chapter_label": "LUK 20",
+      "verse_label": "5",
+      "locator": {
+        "book": "LUK",
+        "chapter": 20,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 20,
+          "verse": 5
+        }
+      ],
+      "en": "They reasoned with themselves, saying, “If we say, ‘From heaven,’ he will say, ‘Why didn’t you believe him?’",
+      "ko": "저희가 서로 의논하여 가로되 만일 하늘로서라 하면 어찌하여 저를 믿지 아니하였느냐 할 것이요",
+      "source_text_hash": "f92839501cb0682e397c0bce4877295ba434c9c09e19fa0c057c5bc217d45ace",
+      "translation_text_hash": "e1dbb49d166a4d560410009bbca3cb9e2bd0da798455b9953967ec21ac0bdd88",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 서로 의논하여 가로되 만일 하늘로서라 하면 어찌하여 저를 믿지 아니하였느냐 할 것이요"
+      ],
+      "raw_text_hashes": [
+        "e1dbb49d166a4d560410009bbca3cb9e2bd0da798455b9953967ec21ac0bdd88"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:20:6",
+      "sequence": 25785,
+      "chapter_label": "LUK 20",
+      "verse_label": "6",
+      "locator": {
+        "book": "LUK",
+        "chapter": 20,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 20,
+          "verse": 6
+        }
+      ],
+      "en": "But if we say, ‘From men,’ all the people will stone us, for they are persuaded that John was a prophet.”",
+      "ko": "만일 사람에게로서라 하면 백성이 요한을 선지자로 인정하니 저희가 다 우리를 돌로 칠 것이라 하고",
+      "source_text_hash": "d90fc6ca2cb7f26ea5adbad9d6362dd83404903e3cede583e246d8388af0cba9",
+      "translation_text_hash": "f70456aca7b0308cb837e00ffe4999118482a846f8953b093796002995dec41c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 사람에게로서라 하면 백성이 요한을 선지자로 인정하니 저희가 다 우리를 돌로 칠 것이라 하고"
+      ],
+      "raw_text_hashes": [
+        "f70456aca7b0308cb837e00ffe4999118482a846f8953b093796002995dec41c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:20:7",
+      "sequence": 25786,
+      "chapter_label": "LUK 20",
+      "verse_label": "7",
+      "locator": {
+        "book": "LUK",
+        "chapter": 20,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 20,
+          "verse": 7
+        }
+      ],
+      "en": "They answered that they didn’t know where it was from.",
+      "ko": "대답하되 어디로서인지 알지 못하노라 하니",
+      "source_text_hash": "ea4e9ff0381159355e8ad2bac98edc9d3753d1fae98cd01126705723efa0f0a7",
+      "translation_text_hash": "7c96a85677b5c6adaf199ec2a184b6c111561a52f9746a439b35f5e50c458345",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대답하되 어디로서인지 알지 못하노라 하니"
+      ],
+      "raw_text_hashes": [
+        "7c96a85677b5c6adaf199ec2a184b6c111561a52f9746a439b35f5e50c458345"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:20:8",
+      "sequence": 25787,
+      "chapter_label": "LUK 20",
+      "verse_label": "8",
+      "locator": {
+        "book": "LUK",
+        "chapter": 20,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 20,
+          "verse": 8
+        }
+      ],
+      "en": "Jesus said to them, “Neither will I tell you by what authority I do these things.”",
+      "ko": "예수께서 이르시되 나도 무슨 권세로 이런 일을 하는지 너희에게 이르지 아니하리라 하시니라",
+      "source_text_hash": "9baf9f3f63aa50dcee110ca42de701af1263d37f5d51b7da13e677c6e0240edd",
+      "translation_text_hash": "243519bf66283738ba300926d8fea138692a3402db408e1660708ea7daf88fb9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 이르시되 나도 무슨 권세로 이런 일을 하는지 너희에게 이르지 아니하리라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "243519bf66283738ba300926d8fea138692a3402db408e1660708ea7daf88fb9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:20:9",
+      "sequence": 25788,
+      "chapter_label": "LUK 20",
+      "verse_label": "9",
+      "locator": {
+        "book": "LUK",
+        "chapter": 20,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 20,
+          "verse": 9
+        }
+      ],
+      "en": "He began to tell the people this parable: “A man planted a vineyard and rented it out to some farmers, and went into another country for a long time.",
+      "ko": "이 비유로 백성에게 말씀하시되 한 사람이 포도원을 만들어 농부들에게 세로 주고 타국에 가서 오래 있다가",
+      "source_text_hash": "37330c844141dade28f2b6adba1fac67ccc0bd9dbab99cb0627c91cf44a117ea",
+      "translation_text_hash": "506ef27acba092b71baf25396b8c8cb48c5080b0cb7e41c7318432a27ff32549",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 비유로 백성에게 말씀하시되 한 사람이 포도원을 만들어 농부들에게 세로 주고 타국에 가서 오래 있다가"
+      ],
+      "raw_text_hashes": [
+        "506ef27acba092b71baf25396b8c8cb48c5080b0cb7e41c7318432a27ff32549"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:20:10",
+      "sequence": 25789,
+      "chapter_label": "LUK 20",
+      "verse_label": "10",
+      "locator": {
+        "book": "LUK",
+        "chapter": 20,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 20,
+          "verse": 10
+        }
+      ],
+      "en": "At the proper season, he sent a servant to the farmers to collect his share of the fruit of the vineyard. But the farmers beat him and sent him away empty.",
+      "ko": "때가 이르매 포도원 소출 얼마를 바치게 하려고 한 종을 농부들에게 보내니 농부들이 종을 심히 때리고 거저 보내었거늘",
+      "source_text_hash": "0fc7b75a9e9e6503eeea52e40881050aff88a891e021ccd53bd8595175a3dd90",
+      "translation_text_hash": "056d4761da72081743cc4f89f5b211510bc874e4ccaa3c65ab18f11b2a8c1777",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "때가 이르매 포도원 소출 얼마를 바치게 하려고 한 종을 농부들에게 보내니 농부들이 종을 심히 때리고 거저 보내었거늘"
+      ],
+      "raw_text_hashes": [
+        "056d4761da72081743cc4f89f5b211510bc874e4ccaa3c65ab18f11b2a8c1777"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:20:11",
+      "sequence": 25790,
+      "chapter_label": "LUK 20",
+      "verse_label": "11",
+      "locator": {
+        "book": "LUK",
+        "chapter": 20,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 20,
+          "verse": 11
+        }
+      ],
+      "en": "He sent yet another servant, and they also beat him and treated him shamefully, and sent him away empty.",
+      "ko": "다시 다른 종을 보내니 그도 심히 때리고 능욕하고 거저 보내었거늘",
+      "source_text_hash": "1c1073bc3750bba667a83e16faefbab3d5c09c1248379f39dc9ad24a19b23cac",
+      "translation_text_hash": "0dd6331e4579a69d57727997caf2ab7d7d95b07e63eb4e97d307413c2341205f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다시 다른 종을 보내니 그도 심히 때리고 능욕하고 거저 보내었거늘"
+      ],
+      "raw_text_hashes": [
+        "0dd6331e4579a69d57727997caf2ab7d7d95b07e63eb4e97d307413c2341205f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:20:12",
+      "sequence": 25791,
+      "chapter_label": "LUK 20",
+      "verse_label": "12",
+      "locator": {
+        "book": "LUK",
+        "chapter": 20,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 20,
+          "verse": 12
+        }
+      ],
+      "en": "He sent yet a third, and they also wounded him and threw him out.",
+      "ko": "다시 세 번째 종을 보내니 이도 상하게 하고 내어 쫓은지라",
+      "source_text_hash": "96eb27e8c63199d39b8c914ad05c2cb2dc7eb880341db92862b787409277f823",
+      "translation_text_hash": "b6adf60e163ba56216aff6af15144c7837cd1115a3f2722e3c2d7450d8cf25b9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다시 세 번째 종을 보내니 이도 상하게 하고 내어 쫓은지라"
+      ],
+      "raw_text_hashes": [
+        "b6adf60e163ba56216aff6af15144c7837cd1115a3f2722e3c2d7450d8cf25b9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:20:13",
+      "sequence": 25792,
+      "chapter_label": "LUK 20",
+      "verse_label": "13",
+      "locator": {
+        "book": "LUK",
+        "chapter": 20,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 20,
+          "verse": 13
+        }
+      ],
+      "en": "The lord of the vineyard said, ‘What shall I do? I will send my beloved son. It may be that seeing him, they will respect him.’",
+      "ko": "포도원 주인이 가로되 어찌할꼬 내 사랑하는 아들을 보내리니 저희가 혹 그는 공경하리라 하였더니",
+      "source_text_hash": "b37544ac9bff0a9a85e16354cb8eafd8efe4f129eaa23aef8a85d7a88014707c",
+      "translation_text_hash": "d105bfdde8c13ee7360148a4ea3e3b11fae858204cd3a9dbddd71d7b52a33191",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "포도원 주인이 가로되 어찌할꼬 내 사랑하는 아들을 보내리니 저희가 혹 그는 공경하리라 하였더니"
+      ],
+      "raw_text_hashes": [
+        "d105bfdde8c13ee7360148a4ea3e3b11fae858204cd3a9dbddd71d7b52a33191"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:20:14",
+      "sequence": 25793,
+      "chapter_label": "LUK 20",
+      "verse_label": "14",
+      "locator": {
+        "book": "LUK",
+        "chapter": 20,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 20,
+          "verse": 14
+        }
+      ],
+      "en": "“But when the farmers saw him, they reasoned among themselves, saying, ‘This is the heir. Come, let’s kill him, that the inheritance may be ours.’",
+      "ko": "농부들이 그를 보고 서로 의논하여 가로되 이는 상속자니 죽이고 그 유업을 우리의 것으로 만들자 하고",
+      "source_text_hash": "6af53e191683f751ffb534be2a17bbca015deaeab5c6ab6d2622546a6b5a1d74",
+      "translation_text_hash": "29e91d693c2429cac2dd4794077669e91a81efa516fce44b2ab419570541d53f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "농부들이 그를 보고 서로 의논하여 가로되 이는 상속자니 죽이고 그 유업을 우리의 것으로 만들자 하고"
+      ],
+      "raw_text_hashes": [
+        "29e91d693c2429cac2dd4794077669e91a81efa516fce44b2ab419570541d53f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:20:15",
+      "sequence": 25794,
+      "chapter_label": "LUK 20",
+      "verse_label": "15",
+      "locator": {
+        "book": "LUK",
+        "chapter": 20,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 20,
+          "verse": 15
+        }
+      ],
+      "en": "Then they threw him out of the vineyard and killed him. What therefore will the lord of the vineyard do to them?",
+      "ko": "포도원 밖에 내어쫓아 죽였느니라 그런즉 포도원 주인이 이 사람들을 어떻게 하겠느뇨",
+      "source_text_hash": "ea1c38d3712e4c52e137e65c71172d8013d4f6e063037f2be42141c958d90083",
+      "translation_text_hash": "a0bed7f74c4ea5683e8ac292862290915e6c790c75820b859f88553969aeeb03",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "포도원 밖에 내어쫓아 죽였느니라 그런즉 포도원 주인이 이 사람들을 어떻게 하겠느뇨"
+      ],
+      "raw_text_hashes": [
+        "a0bed7f74c4ea5683e8ac292862290915e6c790c75820b859f88553969aeeb03"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:20:16",
+      "sequence": 25795,
+      "chapter_label": "LUK 20",
+      "verse_label": "16",
+      "locator": {
+        "book": "LUK",
+        "chapter": 20,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 20,
+          "verse": 16
+        }
+      ],
+      "en": "He will come and destroy these farmers, and will give the vineyard to others.”When they heard that, they said, “May that never be!”",
+      "ko": "와서 그 농부들을 진멸하고 포도원을 다른 사람들에게 주리라 하시니 사람들이 듣고 가로되 그렇게 되지 말아지이다 하거늘",
+      "source_text_hash": "94ad123a2681d00dac4ab33fc8598ca43e250e4806326023ad35501be184098d",
+      "translation_text_hash": "33487a375343d49dd0a63095cd4fd161ca0a908eda043c7d2bc3f20bac8e41f4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "와서 그 농부들을 진멸하고 포도원을 다른 사람들에게 주리라 하시니 사람들이 듣고 가로되 그렇게 되지 말아지이다 하거늘"
+      ],
+      "raw_text_hashes": [
+        "33487a375343d49dd0a63095cd4fd161ca0a908eda043c7d2bc3f20bac8e41f4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:20:17",
+      "sequence": 25796,
+      "chapter_label": "LUK 20",
+      "verse_label": "17",
+      "locator": {
+        "book": "LUK",
+        "chapter": 20,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 20,
+          "verse": 17
+        }
+      ],
+      "en": "But he looked at them and said, “Then what is this that is written,‘The stone which the builders rejected was made the chief cornerstone’?",
+      "ko": "저희를 보시며 가라사대 그러면 기록된바 건축자들의 버린 돌이 모퉁이의 머릿돌이 되었느니라 함이 어찜이뇨",
+      "source_text_hash": "cecc4a1cb69c79fc62f4765a0962fc5a94479065defed74d6d627bf8055f704c",
+      "translation_text_hash": "9d3cd861a300de3646fb48a31975427aabd45cdab16ee0903eee9ffc950cf46b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희를 보시며 가라사대 그러면 기록된바 건축자들의 버린 돌이 모퉁이의 머릿돌이 되었느니라 함이 어찜이뇨"
+      ],
+      "raw_text_hashes": [
+        "9d3cd861a300de3646fb48a31975427aabd45cdab16ee0903eee9ffc950cf46b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:20:18",
+      "sequence": 25797,
+      "chapter_label": "LUK 20",
+      "verse_label": "18",
+      "locator": {
+        "book": "LUK",
+        "chapter": 20,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 20,
+          "verse": 18
+        }
+      ],
+      "en": "Everyone who falls on that stone will be broken to pieces, but it will crush whomever it falls on to dust.”",
+      "ko": "무릇 이 돌 위에 떨어지는 자는 깨어지겠고 이 돌이 사람 위에 떨어지면 저로 가루를 만들어 흩으리라 하시니라",
+      "source_text_hash": "8e12a52efced56d9cd5e6f4bad6a9b1569e16d56b9138e7f0d90b420c49a9697",
+      "translation_text_hash": "18985da38629bed3ea35387a3adf0916ec70133f2dfcbb1f89fc22b3180dabe0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 이 돌 위에 떨어지는 자는 깨어지겠고 이 돌이 사람 위에 떨어지면 저로 가루를 만들어 흩으리라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "18985da38629bed3ea35387a3adf0916ec70133f2dfcbb1f89fc22b3180dabe0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:20:19",
+      "sequence": 25798,
+      "chapter_label": "LUK 20",
+      "verse_label": "19",
+      "locator": {
+        "book": "LUK",
+        "chapter": 20,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 20,
+          "verse": 19
+        }
+      ],
+      "en": "The chief priests and the scribes sought to lay hands on him that very hour, but they feared the people—for they knew he had spoken this parable against them.",
+      "ko": "서기관들과 대제사장들이 예수의 이 비유는 자기들을 가리켜 말씀하심인줄 알고 즉시 잡고자 하되 백성을 두려워하더라",
+      "source_text_hash": "fd65d1e8171eb265e6ab606cef41586c0823d8c6a7c422223e8980b7f31f0f3a",
+      "translation_text_hash": "e0debd6a6668c3a7dcd97259c338e7cec6421fd4893500e4ae0c882512b00d15",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "서기관들과 대제사장들이 예수의 이 비유는 자기들을 가리켜 말씀하심인줄 알고 즉시 잡고자 하되 백성을 두려워하더라"
+      ],
+      "raw_text_hashes": [
+        "e0debd6a6668c3a7dcd97259c338e7cec6421fd4893500e4ae0c882512b00d15"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:20:20",
+      "sequence": 25799,
+      "chapter_label": "LUK 20",
+      "verse_label": "20",
+      "locator": {
+        "book": "LUK",
+        "chapter": 20,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 20,
+          "verse": 20
+        }
+      ],
+      "en": "They watched him and sent out spies, who pretended to be righteous, that they might trap him in something he said, so as to deliver him up to the power and authority of the governor.",
+      "ko": "이에 저희가 엿보다가 예수를 총독의 치리와 권세 아래 붙이려 하여 정탐들을 보내어 그들로 스스로 의인인 체하며 예수의 말을 책잡게 하니",
+      "source_text_hash": "3eed78c81a3b28c113fe391921b2faa376a396cf1ad288a50a74f0357c3833d9",
+      "translation_text_hash": "dffe392ecb302e846e09548a30c42b78e40bc9bedae0bc819b7e7b07a73ec06b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 저희가 엿보다가 예수를 총독의 치리와 권세 아래 붙이려 하여 정탐들을 보내어 그들로 스스로 의인인 체하며 예수의 말을 책잡게 하니"
+      ],
+      "raw_text_hashes": [
+        "dffe392ecb302e846e09548a30c42b78e40bc9bedae0bc819b7e7b07a73ec06b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:20:21",
+      "sequence": 25800,
+      "chapter_label": "LUK 20",
+      "verse_label": "21",
+      "locator": {
+        "book": "LUK",
+        "chapter": 20,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 20,
+          "verse": 21
+        }
+      ],
+      "en": "They asked him, “Teacher, we know that you say and teach what is right, and aren’t partial to anyone, but truly teach the way of God.",
+      "ko": "그들이 물어 가로되 선생님이여 우리가 아노니 당신은 바로 말씀하시고 가르치시며 사람을 외모로 취치 아니하시고 오직 참으로서 하나님의 도를 가르치시나이다",
+      "source_text_hash": "e0128e96f769653d5fc93d12fda5474d89a61c9263743ab35596ace8e9edd7ab",
+      "translation_text_hash": "ebcc75956036b8610c18f701fc0f3ca3cad3a985ab46b6970e5f4abf18074827",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 물어 가로되 선생님이여 우리가 아노니 당신은 바로 말씀하시고 가르치시며 사람을 외모로 취치 아니하시고 오직 참으로서 하나님의 도를 가르치시나이다"
+      ],
+      "raw_text_hashes": [
+        "ebcc75956036b8610c18f701fc0f3ca3cad3a985ab46b6970e5f4abf18074827"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:20:22",
+      "sequence": 25801,
+      "chapter_label": "LUK 20",
+      "verse_label": "22",
+      "locator": {
+        "book": "LUK",
+        "chapter": 20,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 20,
+          "verse": 22
+        }
+      ],
+      "en": "Is it lawful for us to pay taxes to Caesar, or not?”",
+      "ko": "우리가 가이사에게 세를 바치는 것이 가하니이까 불가하니이까 하니",
+      "source_text_hash": "9c687dc29e36b9ac6986887b06f7964daff56db7acc95d4ef4bd5030a63d24ee",
+      "translation_text_hash": "3be6265a56054de4221151b9a966d2d7fec86bc0037bda600a9fad766114e75d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 가이사에게 세를 바치는 것이 가하니이까 불가하니이까 하니"
+      ],
+      "raw_text_hashes": [
+        "3be6265a56054de4221151b9a966d2d7fec86bc0037bda600a9fad766114e75d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:20:23",
+      "sequence": 25802,
+      "chapter_label": "LUK 20",
+      "verse_label": "23",
+      "locator": {
+        "book": "LUK",
+        "chapter": 20,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 20,
+          "verse": 23
+        }
+      ],
+      "en": "But he perceived their craftiness, and said to them, “Why do you test me?",
+      "ko": "예수께서 그 간계를 아시고 가라사대",
+      "source_text_hash": "916c1aa8bc90c4a098af8fe73d683afb3d035715f56c624daa38403e7af6c61e",
+      "translation_text_hash": "127ab8d2ee0db9ea13c0fd15e5631f1fe5c9eb90681272d548617447fc71b98f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 그 간계를 아시고 가라사대"
+      ],
+      "raw_text_hashes": [
+        "127ab8d2ee0db9ea13c0fd15e5631f1fe5c9eb90681272d548617447fc71b98f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:20:24",
+      "sequence": 25803,
+      "chapter_label": "LUK 20",
+      "verse_label": "24",
+      "locator": {
+        "book": "LUK",
+        "chapter": 20,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 20,
+          "verse": 24
+        }
+      ],
+      "en": "Show me a denarius. Whose image and inscription are on it?” They answered, “Caesar’s.”",
+      "ko": "데나리온 하나를 내게 보이라 뉘 화상과 글이 여기 있느냐 대답하되 가이사의 것이니이다",
+      "source_text_hash": "d110e179c19386106c6cad2de8dbd36ed0128a4a24594e7dfc151464405fdab0",
+      "translation_text_hash": "d94c01a7416591da7628fd711613f099ad793c262c3312a86edbd539b4840fd2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "데나리온 하나를 내게 보이라 뉘 화상과 글이 여기 있느냐 대답하되 가이사의 것이니이다"
+      ],
+      "raw_text_hashes": [
+        "d94c01a7416591da7628fd711613f099ad793c262c3312a86edbd539b4840fd2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:20:25",
+      "sequence": 25804,
+      "chapter_label": "LUK 20",
+      "verse_label": "25",
+      "locator": {
+        "book": "LUK",
+        "chapter": 20,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 20,
+          "verse": 25
+        }
+      ],
+      "en": "He said to them, “Then give to Caesar the things that are Caesar’s, and to God the things that are God’s.”",
+      "ko": "가라사대 그런즉 가이사의 것은 가이사에게, 하나님의 것은 하나님께 바치라 하시니",
+      "source_text_hash": "b41afbe96693b01060e799b3776c9748028a12349ac284cbe9d2d4be72af8375",
+      "translation_text_hash": "cdcaa1d39ba17a3e324b4e67d5718a2bc064b5c2a1eea65210950b02caed1893",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가라사대 그런즉 가이사의 것은 가이사에게, 하나님의 것은 하나님께 바치라 하시니"
+      ],
+      "raw_text_hashes": [
+        "cdcaa1d39ba17a3e324b4e67d5718a2bc064b5c2a1eea65210950b02caed1893"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:20:26",
+      "sequence": 25805,
+      "chapter_label": "LUK 20",
+      "verse_label": "26",
+      "locator": {
+        "book": "LUK",
+        "chapter": 20,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 20,
+          "verse": 26
+        }
+      ],
+      "en": "They weren’t able to trap him in his words before the people. They marveled at his answer and were silent.",
+      "ko": "저희가 백성 앞에서 그의 말을 능히 책잡지 못하고 그의 대답을 기이히 여겨 잠잠하니라",
+      "source_text_hash": "19ca3ca381ddab59a1907a062c727229a300bdc2343ed0d1d719989aec81f16c",
+      "translation_text_hash": "68dc6387eaedba5a2b9aa92127c8d474cbe4b07687564cc201216d880cdd2588",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 백성 앞에서 그의 말을 능히 책잡지 못하고 그의 대답을 기이히 여겨 잠잠하니라"
+      ],
+      "raw_text_hashes": [
+        "68dc6387eaedba5a2b9aa92127c8d474cbe4b07687564cc201216d880cdd2588"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:20:27",
+      "sequence": 25806,
+      "chapter_label": "LUK 20",
+      "verse_label": "27",
+      "locator": {
+        "book": "LUK",
+        "chapter": 20,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 20,
+          "verse": 27
+        }
+      ],
+      "en": "Some of the Sadducees came to him, those who deny that there is a resurrection.",
+      "ko": "부활이 없다 주장하는 사두개인 중 어떤이들이 와서",
+      "source_text_hash": "619d9bcdea601b163bce352fc5eee16207136012ea30495199ea528d8d1e98b9",
+      "translation_text_hash": "5eca641d345b0281afeecd42176fd6efd5c1e37a46750eeddaeeebee3eb63811",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "부활이 없다 주장하는 사두개인 중 어떤이들이 와서"
+      ],
+      "raw_text_hashes": [
+        "5eca641d345b0281afeecd42176fd6efd5c1e37a46750eeddaeeebee3eb63811"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:20:28",
+      "sequence": 25807,
+      "chapter_label": "LUK 20",
+      "verse_label": "28",
+      "locator": {
+        "book": "LUK",
+        "chapter": 20,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 20,
+          "verse": 28
+        }
+      ],
+      "en": "They asked him, “Teacher, Moses wrote to us that if a man’s brother dies having a wife, and he is childless, his brother should take the wife and raise up children for his brother.",
+      "ko": "물어 가로되 선생님이여 모세가 우리에게 써 주기를 사람의 형이 만일 아내를 두고 자식이 없이 죽거든 그 동생이 그 아내를 취하여 형을 위하여 후사를 세울찌니라 하였나이다",
+      "source_text_hash": "66feec3d83a5681edf858ecf4e5476dc3b39a8d3fefdcb29ee98e8b0afb99676",
+      "translation_text_hash": "c096211259af8274038b73db96f7ceeec700aba274d17372db8e7c4ab1992966",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "물어 가로되 선생님이여 모세가 우리에게 써 주기를 사람의 형이 만일 아내를 두고 자식이 없이 죽거든 그 동생이 그 아내를 취하여 형을 위하여 후사를 세울찌니라 하였나이다"
+      ],
+      "raw_text_hashes": [
+        "c096211259af8274038b73db96f7ceeec700aba274d17372db8e7c4ab1992966"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:20:29",
+      "sequence": 25808,
+      "chapter_label": "LUK 20",
+      "verse_label": "29",
+      "locator": {
+        "book": "LUK",
+        "chapter": 20,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 20,
+          "verse": 29
+        }
+      ],
+      "en": "There were therefore seven brothers. The first took a wife, and died childless.",
+      "ko": "그런데 칠 형제가 있었는데 맏이 아내를 취하였다가 자식이 없이 죽고",
+      "source_text_hash": "3c71a791c59626d59c2c5388f6c86540cda4fd22a9574d17c8323710ce194608",
+      "translation_text_hash": "b41dd0c12831720afe008ec4e6d3aa15d433758807384977c669151949993e54",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런데 칠 형제가 있었는데 맏이 아내를 취하였다가 자식이 없이 죽고"
+      ],
+      "raw_text_hashes": [
+        "b41dd0c12831720afe008ec4e6d3aa15d433758807384977c669151949993e54"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:20:30",
+      "sequence": 25809,
+      "chapter_label": "LUK 20",
+      "verse_label": "30",
+      "locator": {
+        "book": "LUK",
+        "chapter": 20,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 20,
+          "verse": 30
+        }
+      ],
+      "en": "The second took her as wife, and he died childless.",
+      "ko": "그 둘째와 세째가 저를 취하고",
+      "source_text_hash": "f0739caf1c1c0ead4c0a15f157ac6f07dbfa5eed497214c8fe87896f63b57882",
+      "translation_text_hash": "488952504e06cf5d3d8c592e3596ff7a4921e3469ae219b78e75a82968b9c274",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 둘째와 세째가 저를 취하고"
+      ],
+      "raw_text_hashes": [
+        "488952504e06cf5d3d8c592e3596ff7a4921e3469ae219b78e75a82968b9c274"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:20:31",
+      "sequence": 25810,
+      "chapter_label": "LUK 20",
+      "verse_label": "31",
+      "locator": {
+        "book": "LUK",
+        "chapter": 20,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 20,
+          "verse": 31
+        }
+      ],
+      "en": "The third took her, and likewise the seven all left no children, and died.",
+      "ko": "일곱이 다 그와 같이 자식이 없이 죽고",
+      "source_text_hash": "faf9d510774371045293fda25a1fdac306ed7cf6b088ee78b486271390e8eeb4",
+      "translation_text_hash": "89f307b9bd380b061e5d48a969a81c2c69f1b1c00dd4b8605ef44d6597f5164e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "일곱이 다 그와 같이 자식이 없이 죽고"
+      ],
+      "raw_text_hashes": [
+        "89f307b9bd380b061e5d48a969a81c2c69f1b1c00dd4b8605ef44d6597f5164e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:20:32",
+      "sequence": 25811,
+      "chapter_label": "LUK 20",
+      "verse_label": "32",
+      "locator": {
+        "book": "LUK",
+        "chapter": 20,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 20,
+          "verse": 32
+        }
+      ],
+      "en": "Afterward the woman also died.",
+      "ko": "그 후에 여자도 죽었나이다",
+      "source_text_hash": "ea3915e90c06440186cee90ab263d6a0979637597a6080bf971542887c38a9c4",
+      "translation_text_hash": "5286f624872dabc63afafded0674bc415939199740d71b04e6901905169d4db4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 후에 여자도 죽었나이다"
+      ],
+      "raw_text_hashes": [
+        "5286f624872dabc63afafded0674bc415939199740d71b04e6901905169d4db4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:20:33",
+      "sequence": 25812,
+      "chapter_label": "LUK 20",
+      "verse_label": "33",
+      "locator": {
+        "book": "LUK",
+        "chapter": 20,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 20,
+          "verse": 33
+        }
+      ],
+      "en": "Therefore in the resurrection whose wife of them will she be? For the seven had her as a wife.”",
+      "ko": "일곱이 다 저를 아내로 취하였으니 부활 때에 그 중에 뉘 아내가 되리이까",
+      "source_text_hash": "a5572eca2163b681fcb2f760a728aa8d384fd8cd92face2b48aad102a8a67ec6",
+      "translation_text_hash": "b60afc0f83fa5f0058428f79c039bf0d14cbc7b57fe4f404fb730f2137c1b18b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "일곱이 다 저를 아내로 취하였으니 부활 때에 그 중에 뉘 아내가 되리이까"
+      ],
+      "raw_text_hashes": [
+        "b60afc0f83fa5f0058428f79c039bf0d14cbc7b57fe4f404fb730f2137c1b18b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:20:34",
+      "sequence": 25813,
+      "chapter_label": "LUK 20",
+      "verse_label": "34",
+      "locator": {
+        "book": "LUK",
+        "chapter": 20,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 20,
+          "verse": 34
+        }
+      ],
+      "en": "Jesus said to them, “The children of this age marry and are given in marriage.",
+      "ko": "예수께서 이르시되 이 세상의 자녀들은 장가도 가고 시집도 가되",
+      "source_text_hash": "eddde64b715b1386098023607397d137f3906e1ab5cc95d82a631ba08fee70ed",
+      "translation_text_hash": "b338db54031ea0e02461cbc2758f70e0d0f1ec89fb46159ae799d9c369feb4d6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 이르시되 이 세상의 자녀들은 장가도 가고 시집도 가되"
+      ],
+      "raw_text_hashes": [
+        "b338db54031ea0e02461cbc2758f70e0d0f1ec89fb46159ae799d9c369feb4d6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:20:35",
+      "sequence": 25814,
+      "chapter_label": "LUK 20",
+      "verse_label": "35",
+      "locator": {
+        "book": "LUK",
+        "chapter": 20,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 20,
+          "verse": 35
+        }
+      ],
+      "en": "But those who are considered worthy to attain to that age and the resurrection from the dead neither marry nor are given in marriage.",
+      "ko": "저 세상과 및 죽은 자 가운데서 부활함을 얻기에 합당히 여김을 입은 자들은 장가가고 시집가는 일이 없으며",
+      "source_text_hash": "bfd6de16cc36d1c9caf44c33818d9d16df82d2108efaa8d91977af0a50be625f",
+      "translation_text_hash": "1ca79361fdd451478cd6dbb46e5d52da5872e0e96e00538c54c98cff932580af",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저 세상과 및 죽은 자 가운데서 부활함을 얻기에 합당히 여김을 입은 자들은 장가가고 시집가는 일이 없으며"
+      ],
+      "raw_text_hashes": [
+        "1ca79361fdd451478cd6dbb46e5d52da5872e0e96e00538c54c98cff932580af"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:20:36",
+      "sequence": 25815,
+      "chapter_label": "LUK 20",
+      "verse_label": "36",
+      "locator": {
+        "book": "LUK",
+        "chapter": 20,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 20,
+          "verse": 36
+        }
+      ],
+      "en": "For they can’t die any more, for they are like the angels and are children of God, being children of the resurrection.",
+      "ko": "저희는 다시 죽을 수도 없나니 이는 천사와 동등이요 부활의 자녀로서 하나님의 자녀임이니라",
+      "source_text_hash": "ab3be0d82cc905be145961cb0862b405fe13666d845bc9bd485da15dbb21c3d7",
+      "translation_text_hash": "f3450f5e4707912905c30d1addaef615acae85e08962868e90aa994a7163b8ec",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희는 다시 죽을 수도 없나니 이는 천사와 동등이요 부활의 자녀로서 하나님의 자녀임이니라"
+      ],
+      "raw_text_hashes": [
+        "f3450f5e4707912905c30d1addaef615acae85e08962868e90aa994a7163b8ec"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:20:37",
+      "sequence": 25816,
+      "chapter_label": "LUK 20",
+      "verse_label": "37",
+      "locator": {
+        "book": "LUK",
+        "chapter": 20,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 20,
+          "verse": 37
+        }
+      ],
+      "en": "But that the dead are raised, even Moses showed at the bush, when he called the Lord ‘The God of Abraham, the God of Isaac, and the God of Jacob.’",
+      "ko": "죽은 자의 살아난다는 것은 모세도 가시나무떨기에 관한 글에 보였으되 주를 아브라함의 하나님이요 이삭의 하나님이요 야곱의 하나님이시라 칭하였나니",
+      "source_text_hash": "2f4bc0bdbc153fd30d83a2b9c51e24be7a2987462e82fd80a67e46540b030593",
+      "translation_text_hash": "b4e5707118dc5bef01345e4c36f15348d6d1033c424987eca19aec9e5570bb4d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "죽은 자의 살아난다는 것은 모세도 가시나무떨기에 관한 글에 보였으되 주를 아브라함의 하나님이요 이삭의 하나님이요 야곱의 하나님이시라 칭하였나니"
+      ],
+      "raw_text_hashes": [
+        "b4e5707118dc5bef01345e4c36f15348d6d1033c424987eca19aec9e5570bb4d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:20:38",
+      "sequence": 25817,
+      "chapter_label": "LUK 20",
+      "verse_label": "38",
+      "locator": {
+        "book": "LUK",
+        "chapter": 20,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 20,
+          "verse": 38
+        }
+      ],
+      "en": "Now he is not the God of the dead, but of the living, for all are alive to him.”",
+      "ko": "하나님은 죽은 자의 하나님이 아니요 산 자의 하나님이시라 하나님에게는 모든 사람이 살았느니라 하시니",
+      "source_text_hash": "b646385a3d445299d58cae87993c97070ebbae7ca7e74d2d02ed34fbec0b5acf",
+      "translation_text_hash": "609f55d4c9b609036038418b1b2e22a224d59726a3a2906258a51dca8f1741d6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님은 죽은 자의 하나님이 아니요 산 자의 하나님이시라 하나님에게는 모든 사람이 살았느니라 하시니"
+      ],
+      "raw_text_hashes": [
+        "609f55d4c9b609036038418b1b2e22a224d59726a3a2906258a51dca8f1741d6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:20:39",
+      "sequence": 25818,
+      "chapter_label": "LUK 20",
+      "verse_label": "39",
+      "locator": {
+        "book": "LUK",
+        "chapter": 20,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 20,
+          "verse": 39
+        }
+      ],
+      "en": "Some of the scribes answered, “Teacher, you speak well.”",
+      "ko": "서기관 중 어떤이들이 말하되 선생이여 말씀이 옳으니이다 하니",
+      "source_text_hash": "316c6d2024bcfd34e4bd13d7ea9b9842edae143c0692af99695598141b54ced6",
+      "translation_text_hash": "a9a7787cbf3e7da582aa40c35d989b931875207f244d092224cd97af0b733b62",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "서기관 중 어떤이들이 말하되 선생이여 말씀이 옳으니이다 하니"
+      ],
+      "raw_text_hashes": [
+        "a9a7787cbf3e7da582aa40c35d989b931875207f244d092224cd97af0b733b62"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:20:40",
+      "sequence": 25819,
+      "chapter_label": "LUK 20",
+      "verse_label": "40",
+      "locator": {
+        "book": "LUK",
+        "chapter": 20,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 20,
+          "verse": 40
+        }
+      ],
+      "en": "They didn’t dare to ask him any more questions.",
+      "ko": "저희는 아무 것도 감히 더 물을 수 없음이더라",
+      "source_text_hash": "e8113412c59ee1d5f0221b6753a8f77757f302604432a2da693a1149e11c1f46",
+      "translation_text_hash": "5a849d6846788aa65a69113827811158ca1715ff885bf7f349b02792efcb5009",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희는 아무 것도 감히 더 물을 수 없음이더라"
+      ],
+      "raw_text_hashes": [
+        "5a849d6846788aa65a69113827811158ca1715ff885bf7f349b02792efcb5009"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:20:41",
+      "sequence": 25820,
+      "chapter_label": "LUK 20",
+      "verse_label": "41",
+      "locator": {
+        "book": "LUK",
+        "chapter": 20,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 20,
+          "verse": 41
+        }
+      ],
+      "en": "He said to them, “Why do they say that the Christ is David’s son?",
+      "ko": "예수께서 저희에게 이르시되 사람들이 어찌하여 그리스도를 다윗의 자손이라 하느냐",
+      "source_text_hash": "3e9d2178b86168729e8e9cd46ed3527fa464928937673380ac2d41220c83315a",
+      "translation_text_hash": "9bb914feeb5c831649f406783ed86e53b6a7b1c8782441d68cd86baacb489b33",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 저희에게 이르시되 사람들이 어찌하여 그리스도를 다윗의 자손이라 하느냐"
+      ],
+      "raw_text_hashes": [
+        "9bb914feeb5c831649f406783ed86e53b6a7b1c8782441d68cd86baacb489b33"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:20:42",
+      "sequence": 25821,
+      "chapter_label": "LUK 20",
+      "verse_label": "42",
+      "locator": {
+        "book": "LUK",
+        "chapter": 20,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 20,
+          "verse": 42
+        }
+      ],
+      "en": "David himself says in the book of Psalms,‘The Lord said to my Lord, “Sit at my right hand,",
+      "ko": "시편에 다윗이 친히 말하였으되 주께서 내 주께 이르시되",
+      "source_text_hash": "f49ea10d283c0348b14ceed535d96481d9eba53bb6c434747b7a07232792b871",
+      "translation_text_hash": "1a164f1c5b7800bbb13187c98dd989fb906cafea9ce5a473c997f3ba8bc4746e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시편에 다윗이 친히 말하였으되 주께서 내 주께 이르시되"
+      ],
+      "raw_text_hashes": [
+        "1a164f1c5b7800bbb13187c98dd989fb906cafea9ce5a473c997f3ba8bc4746e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:20:43",
+      "sequence": 25822,
+      "chapter_label": "LUK 20",
+      "verse_label": "43",
+      "locator": {
+        "book": "LUK",
+        "chapter": 20,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 20,
+          "verse": 43
+        }
+      ],
+      "en": "until I make your enemies the footstool of your feet.”’",
+      "ko": "내가 네 원수를 네 발의 발등상으로 둘 때까지 내 우편에 앉았으라 하셨도다 하였느니라",
+      "source_text_hash": "8130fde3ccd3d56875b3b6b3d241d4ef3bdbcbc95b04cacf6362a77853f29189",
+      "translation_text_hash": "7a25a71edf91e8973d5783c48fc30b181b29e15192c125050bc1ce3e1ec643b9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 네 원수를 네 발의 발등상으로 둘 때까지 내 우편에 앉았으라 하셨도다 하였느니라"
+      ],
+      "raw_text_hashes": [
+        "7a25a71edf91e8973d5783c48fc30b181b29e15192c125050bc1ce3e1ec643b9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:20:44",
+      "sequence": 25823,
+      "chapter_label": "LUK 20",
+      "verse_label": "44",
+      "locator": {
+        "book": "LUK",
+        "chapter": 20,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 20,
+          "verse": 44
+        }
+      ],
+      "en": "“David therefore calls him Lord, so how is he his son?”",
+      "ko": "그런즉 다윗이 그리스도를 주라 칭하였으니 어찌 그의 자손이 되겠느뇨 하시니라",
+      "source_text_hash": "78538ce940955018e6459a28d201429f9c689a26ee43d29f3a83264d96292e7e",
+      "translation_text_hash": "75189fb690261ffcf6d657a4db6517453c4c9a3143ef9153c134e4cdec2dee1a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 다윗이 그리스도를 주라 칭하였으니 어찌 그의 자손이 되겠느뇨 하시니라"
+      ],
+      "raw_text_hashes": [
+        "75189fb690261ffcf6d657a4db6517453c4c9a3143ef9153c134e4cdec2dee1a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:20:45",
+      "sequence": 25824,
+      "chapter_label": "LUK 20",
+      "verse_label": "45",
+      "locator": {
+        "book": "LUK",
+        "chapter": 20,
+        "verse": 45
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 20,
+          "verse": 45
+        }
+      ],
+      "en": "In the hearing of all the people, he said to his disciples,",
+      "ko": "모든 백성이 들을 때에 예수께서 그 제자들에게 이르시되",
+      "source_text_hash": "ccf24968fed31916649c7dd23d4ac9c7541f0bf77b88e04697ca2767e2b7e5e7",
+      "translation_text_hash": "c9d4a1a0931b423af93536048357dd0aa9de618ed8e966f705371d75f81b3b0c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 백성이 들을 때에 예수께서 그 제자들에게 이르시되"
+      ],
+      "raw_text_hashes": [
+        "c9d4a1a0931b423af93536048357dd0aa9de618ed8e966f705371d75f81b3b0c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:20:46",
+      "sequence": 25825,
+      "chapter_label": "LUK 20",
+      "verse_label": "46",
+      "locator": {
+        "book": "LUK",
+        "chapter": 20,
+        "verse": 46
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 20,
+          "verse": 46
+        }
+      ],
+      "en": "“Beware of those scribes who like to walk in long robes, and love greetings in the marketplaces, the best seats in the synagogues, and the best places at feasts;",
+      "ko": "긴 옷을 입고 다니는 것을 원하며 시장에서 문안 받는 것과 회당의 상좌와 잔치의 상석을 좋아하는 서기관들을 삼가라",
+      "source_text_hash": "ffea578d7949c841cba8ebd940dc3846c5b9a12587a638cb0e9ea4ac9f6d5c9f",
+      "translation_text_hash": "d6199f9ee45f8f82316549661f620f0dc0b3bea0b5da1d9b09b5c3a514018ba8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "긴 옷을 입고 다니는 것을 원하며 시장에서 문안 받는 것과 회당의 상좌와 잔치의 상석을 좋아하는 서기관들을 삼가라"
+      ],
+      "raw_text_hashes": [
+        "d6199f9ee45f8f82316549661f620f0dc0b3bea0b5da1d9b09b5c3a514018ba8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:20:47",
+      "sequence": 25826,
+      "chapter_label": "LUK 20",
+      "verse_label": "47",
+      "locator": {
+        "book": "LUK",
+        "chapter": 20,
+        "verse": 47
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 20,
+          "verse": 47
+        }
+      ],
+      "en": "who devour widows’ houses, and for a pretense make long prayers. These will receive greater condemnation.”",
+      "ko": "저희는 과부의 가산을 삼키며 외식으로 길게 기도하니 그 받는 판결이 더욱 중하리라 하시니라",
+      "source_text_hash": "e36b43279ce298bab5bc86723468c7b491b173ec7262bb504ad17a3ca9bc083b",
+      "translation_text_hash": "6d445f9d1e3362a808f581115146790dbdcc2891be765e2f8cc405b13b9199f6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희는 과부의 가산을 삼키며 외식으로 길게 기도하니 그 받는 판결이 더욱 중하리라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "6d445f9d1e3362a808f581115146790dbdcc2891be765e2f8cc405b13b9199f6"
+      ]
+    }
+  ]
+}

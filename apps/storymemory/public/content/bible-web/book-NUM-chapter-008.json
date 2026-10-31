@@ -1,0 +1,845 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:NUM:chapter:008",
+  "unit_ordinal": 125,
+  "unit_label": "NUM 8",
+  "book_code": "NUM",
+  "chapter_number": 8,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:NUM:8:1",
+      "sequence": 3941,
+      "chapter_label": "NUM 8",
+      "verse_label": "1",
+      "locator": {
+        "book": "NUM",
+        "chapter": 8,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 8,
+          "verse": 1
+        }
+      ],
+      "en": "The LORD spoke to Moses, saying,",
+      "ko": "여호와께서 또 모세에게 일러 가라사대",
+      "source_text_hash": "28219e5da0d26514843495c6edb280f326aa0ccffb0d2bb642d0e1b0f4478ca1",
+      "translation_text_hash": "6fce10c5891051be4b55b9e2e719c4053fd55e8a3bff58acabc65699508c88a6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 또 모세에게 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "6fce10c5891051be4b55b9e2e719c4053fd55e8a3bff58acabc65699508c88a6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:8:2",
+      "sequence": 3942,
+      "chapter_label": "NUM 8",
+      "verse_label": "2",
+      "locator": {
+        "book": "NUM",
+        "chapter": 8,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 8,
+          "verse": 2
+        }
+      ],
+      "en": "“Speak to Aaron, and tell him, ‘When you light the lamps, the seven lamps shall give light in front of the lamp stand.’”",
+      "ko": "아론에게 고하여 이르라 등을 켤 때에는 일곱 등잔을 등대 앞으로 비취게 할찌니라 하시매",
+      "source_text_hash": "acb60a0ff2d8bc9031522921cc97daca5d451dda89507548ede844f663b83404",
+      "translation_text_hash": "fd4d75df05b03e582550e1e2e5f1c4a7ec04818dbabcfa63fba49fa716be5e4c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아론에게 고하여 이르라 등을 켤 때에는 일곱 등잔을 등대 앞으로 비취게 할찌니라 하시매"
+      ],
+      "raw_text_hashes": [
+        "fd4d75df05b03e582550e1e2e5f1c4a7ec04818dbabcfa63fba49fa716be5e4c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:8:3",
+      "sequence": 3943,
+      "chapter_label": "NUM 8",
+      "verse_label": "3",
+      "locator": {
+        "book": "NUM",
+        "chapter": 8,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 8,
+          "verse": 3
+        }
+      ],
+      "en": "Aaron did so. He lit its lamps to light the area in front of the lamp stand, as the LORD commanded Moses.",
+      "ko": "아론이 그리하여 등불을 등대 앞으로 비취도록 켰으니 여호와께서 모세에게 명하심과 같았더라",
+      "source_text_hash": "9ea885fb526441aa51e4de6efe8a2f58c40553e779a7c05dcb2b53b16ba2e240",
+      "translation_text_hash": "68b31b98ce2e70fd14b013b752a810d829c993bb297b37b33b37813c0113647d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아론이 그리하여 등불을 등대 앞으로 비취도록 켰으니 여호와께서 모세에게 명하심과 같았더라"
+      ],
+      "raw_text_hashes": [
+        "68b31b98ce2e70fd14b013b752a810d829c993bb297b37b33b37813c0113647d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:8:4",
+      "sequence": 3944,
+      "chapter_label": "NUM 8",
+      "verse_label": "4",
+      "locator": {
+        "book": "NUM",
+        "chapter": 8,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 8,
+          "verse": 4
+        }
+      ],
+      "en": "This was the workmanship of the lamp stand, beaten work of gold. From its base to its flowers, it was beaten work. He made the lamp stand according to the pattern which the LORD had shown Moses.",
+      "ko": "이 등대의 제도는 이러하니 곧 금을 쳐서 만든 것인데 밑판에서 그 꽃까지 쳐서 만든 것이라 모세가 여호와께서 자기에게 보이신 식양을 따라 이 등대를 만들었더라",
+      "source_text_hash": "81cf83e69f0d0e24413ad256ddabb4b5320858950b28d1d45439e675c033943b",
+      "translation_text_hash": "672143eff7b64b7065922843a23e38dcaff354f6a8b082c22c3e569100308258",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 등대의 제도는 이러하니 곧 금을 쳐서 만든 것인데 밑판에서 그 꽃까지 쳐서 만든 것이라 모세가 여호와께서 자기에게 보이신 식양을 따라 이 등대를 만들었더라"
+      ],
+      "raw_text_hashes": [
+        "672143eff7b64b7065922843a23e38dcaff354f6a8b082c22c3e569100308258"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:8:5",
+      "sequence": 3945,
+      "chapter_label": "NUM 8",
+      "verse_label": "5",
+      "locator": {
+        "book": "NUM",
+        "chapter": 8,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 8,
+          "verse": 5
+        }
+      ],
+      "en": "The LORD spoke to Moses, saying,",
+      "ko": "여호와께서 모세에게 일러 가라사대",
+      "source_text_hash": "28219e5da0d26514843495c6edb280f326aa0ccffb0d2bb642d0e1b0f4478ca1",
+      "translation_text_hash": "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:8:6",
+      "sequence": 3946,
+      "chapter_label": "NUM 8",
+      "verse_label": "6",
+      "locator": {
+        "book": "NUM",
+        "chapter": 8,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 8,
+          "verse": 6
+        }
+      ],
+      "en": "“Take the Levites from among the children of Israel, and cleanse them.",
+      "ko": "이스라엘 자손 중에서 레위인을 취하여 정결케 하라",
+      "source_text_hash": "57101a4e29223db7708b7e2e6687bec037d5220f4fa4c6acf524d5d4a9338912",
+      "translation_text_hash": "b53ad2cd4c9f0c61df8c004bd4f3b9809610eef978fc42c77384f52a3e0c0f2e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손 중에서 레위인을 취하여 정결케 하라"
+      ],
+      "raw_text_hashes": [
+        "b53ad2cd4c9f0c61df8c004bd4f3b9809610eef978fc42c77384f52a3e0c0f2e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:8:7",
+      "sequence": 3947,
+      "chapter_label": "NUM 8",
+      "verse_label": "7",
+      "locator": {
+        "book": "NUM",
+        "chapter": 8,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 8,
+          "verse": 7
+        }
+      ],
+      "en": "You shall do this to them to cleanse them: sprinkle the water of cleansing on them, let them shave their whole bodies with a razor, let them wash their clothes, and cleanse themselves.",
+      "ko": "너는 이같이 하여 그들을 정결케 하되 곧 속죄의 물로 그들에게 뿌리고 그들로 그 전신을 삭도로 밀게 하고 그 의복을 빨게 하여 몸을 정결케 하고",
+      "source_text_hash": "3d0037bcdfce8dbbac1fa12aae30c058c49c10e204dbe911442e819b124244ac",
+      "translation_text_hash": "8d8bd4b73c26e9b240285bf72bb0afe12af13fbb46494dad8952983e2da48253",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 이같이 하여 그들을 정결케 하되 곧 속죄의 물로 그들에게 뿌리고 그들로 그 전신을 삭도로 밀게 하고 그 의복을 빨게 하여 몸을 정결케 하고"
+      ],
+      "raw_text_hashes": [
+        "8d8bd4b73c26e9b240285bf72bb0afe12af13fbb46494dad8952983e2da48253"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:8:8",
+      "sequence": 3948,
+      "chapter_label": "NUM 8",
+      "verse_label": "8",
+      "locator": {
+        "book": "NUM",
+        "chapter": 8,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 8,
+          "verse": 8
+        }
+      ],
+      "en": "Then let them take a young bull and its meal offering, fine flour mixed with oil; and another young bull you shall take for a sin offering.",
+      "ko": "또 그들로 수송아지 하나를 번제물로, 기름 섞은 고운 가루를 그 소제물로 취하게 하고 그 외에 너는 또 수송아지 하나를 속죄제물로 취하고",
+      "source_text_hash": "010803153e49dcc8a59e2d8b0c5809e5b668eaa5ece4a7754ff1506906225912",
+      "translation_text_hash": "481b323b2a207f44c1cdd0370e0eae83bd8b6b0c9a3e4a22f9a8ea097ccf6cdb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 그들로 수송아지 하나를 번제물로, 기름 섞은 고운 가루를 그 소제물로 취하게 하고 그 외에 너는 또 수송아지 하나를 속죄제물로 취하고"
+      ],
+      "raw_text_hashes": [
+        "481b323b2a207f44c1cdd0370e0eae83bd8b6b0c9a3e4a22f9a8ea097ccf6cdb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:8:9",
+      "sequence": 3949,
+      "chapter_label": "NUM 8",
+      "verse_label": "9",
+      "locator": {
+        "book": "NUM",
+        "chapter": 8,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 8,
+          "verse": 9
+        }
+      ],
+      "en": "You shall present the Levites before the Tent of Meeting. You shall assemble the whole congregation of the children of Israel.",
+      "ko": "레위인을 회막 앞에 나오게 하고 이스라엘 자손의 온 회중을 모으고",
+      "source_text_hash": "5e232f23da4e5afded9911e36834141bfc9bd3575ae667e10d3c9256fb05adc8",
+      "translation_text_hash": "034438d287dea68ffbd289fde998f3790d276c63b1aa658e1e275671ac6ca275",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "레위인을 회막 앞에 나오게 하고 이스라엘 자손의 온 회중을 모으고"
+      ],
+      "raw_text_hashes": [
+        "034438d287dea68ffbd289fde998f3790d276c63b1aa658e1e275671ac6ca275"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:8:10",
+      "sequence": 3950,
+      "chapter_label": "NUM 8",
+      "verse_label": "10",
+      "locator": {
+        "book": "NUM",
+        "chapter": 8,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 8,
+          "verse": 10
+        }
+      ],
+      "en": "You shall present the Levites before the LORD. The children of Israel shall lay their hands on the Levites,",
+      "ko": "레위인을 여호와 앞에 나오게 하고 이스라엘 자손으로 그들에게 안수케 한 후에",
+      "source_text_hash": "41b83f5ceab2797726c7a84c59ce87116f0b89c1a6d18cf8927408c70bf1bf99",
+      "translation_text_hash": "c2c954f8e266c60a52d5b4b926f396d578c984bfc964ee3714aa5449a424714b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "레위인을 여호와 앞에 나오게 하고 이스라엘 자손으로 그들에게 안수케 한 후에"
+      ],
+      "raw_text_hashes": [
+        "c2c954f8e266c60a52d5b4b926f396d578c984bfc964ee3714aa5449a424714b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:8:11",
+      "sequence": 3951,
+      "chapter_label": "NUM 8",
+      "verse_label": "11",
+      "locator": {
+        "book": "NUM",
+        "chapter": 8,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 8,
+          "verse": 11
+        }
+      ],
+      "en": "and Aaron shall offer the Levites before the LORD for a wave offering on the behalf of the children of Israel, that it may be theirs to do the service of the LORD.",
+      "ko": "아론이 이스라엘 자손을 위하여 레위인을 요제로 여호와 앞에 드릴찌니 이는 그들로 여호와를 봉사케 하기 위함이라",
+      "source_text_hash": "55d6b47a60f6fc4bcc5a770a64b6f18f7e5dcff81a26f1d168e0543b1049c52f",
+      "translation_text_hash": "ff85acf1f9c4cd4aeba9f2a23a344b3de84285520bb43999e221699250186167",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아론이 이스라엘 자손을 위하여 레위인을 요제로 여호와 앞에 드릴찌니 이는 그들로 여호와를 봉사케 하기 위함이라"
+      ],
+      "raw_text_hashes": [
+        "ff85acf1f9c4cd4aeba9f2a23a344b3de84285520bb43999e221699250186167"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:8:12",
+      "sequence": 3952,
+      "chapter_label": "NUM 8",
+      "verse_label": "12",
+      "locator": {
+        "book": "NUM",
+        "chapter": 8,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 8,
+          "verse": 12
+        }
+      ],
+      "en": "“The Levites shall lay their hands on the heads of the bulls, and you shall offer the one for a sin offering and the other for a burnt offering to the LORD, to make atonement for the Levites.",
+      "ko": "레위인으로 수송아지들의 머리에 안수케 하고 네가 그 하나는 속죄제물로, 하나는 번제물로 여호와께 드려 레위인을 속죄하고",
+      "source_text_hash": "1f977c1c4db07fa160e7daff9f247c9b2e5190b31230210410008f7b7873c29d",
+      "translation_text_hash": "d7ac4f4190bf610cfd496d194219d7c92339b15814a61c59ada7ab490fbebdb6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "레위인으로 수송아지들의 머리에 안수케 하고 네가 그 하나는 속죄제물로, 하나는 번제물로 여호와께 드려 레위인을 속죄하고"
+      ],
+      "raw_text_hashes": [
+        "d7ac4f4190bf610cfd496d194219d7c92339b15814a61c59ada7ab490fbebdb6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:8:13",
+      "sequence": 3953,
+      "chapter_label": "NUM 8",
+      "verse_label": "13",
+      "locator": {
+        "book": "NUM",
+        "chapter": 8,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 8,
+          "verse": 13
+        }
+      ],
+      "en": "You shall set the Levites before Aaron and before his sons, and offer them as a wave offering to the LORD.",
+      "ko": "레위인을 아론과 그 아들들 앞에 세워 여호와께 요제로 드릴찌니라",
+      "source_text_hash": "bcdd7033cdf742559d2c4951c88a210a667f94147985b9fc11f525a21cc832fb",
+      "translation_text_hash": "7c2d4663b986db6e8dce641f06c8e683b105decf26c3d0a159777843dad7b162",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "레위인을 아론과 그 아들들 앞에 세워 여호와께 요제로 드릴찌니라"
+      ],
+      "raw_text_hashes": [
+        "7c2d4663b986db6e8dce641f06c8e683b105decf26c3d0a159777843dad7b162"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:8:14",
+      "sequence": 3954,
+      "chapter_label": "NUM 8",
+      "verse_label": "14",
+      "locator": {
+        "book": "NUM",
+        "chapter": 8,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 8,
+          "verse": 14
+        }
+      ],
+      "en": "Thus you shall separate the Levites from among the children of Israel, and the Levites shall be mine.",
+      "ko": "너는 이같이 이스라엘 자손 중에서 레위인을 구별하라 그리하면 그들이 내게 속할 것이라",
+      "source_text_hash": "d65eea2a12d2029be59722937aad9b140a4de17818781a65db1e1a18ee979493",
+      "translation_text_hash": "b1663991843bb915cc1891ca054e820fd71893a7aa857177523740094df9b94b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 이같이 이스라엘 자손 중에서 레위인을 구별하라 그리하면 그들이 내게 속할 것이라"
+      ],
+      "raw_text_hashes": [
+        "b1663991843bb915cc1891ca054e820fd71893a7aa857177523740094df9b94b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:8:15",
+      "sequence": 3955,
+      "chapter_label": "NUM 8",
+      "verse_label": "15",
+      "locator": {
+        "book": "NUM",
+        "chapter": 8,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 8,
+          "verse": 15
+        }
+      ],
+      "en": "“After that, the Levites shall go in to do the service of the Tent of Meeting. You shall cleanse them, and offer them as a wave offering.",
+      "ko": "네가 그들을 정결케 하여 요제로 드린 후에 그들이 회막에 들어가서 봉사할 것이니라",
+      "source_text_hash": "c6f5260b4e61ca15a474962135361fde52904f8717c835dd3d05410bfb30f98c",
+      "translation_text_hash": "e37f8062261cda775808c2e09a3cf893b3afcdbd3517e935f818d6fc5af2a609",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 그들을 정결케 하여 요제로 드린 후에 그들이 회막에 들어가서 봉사할 것이니라"
+      ],
+      "raw_text_hashes": [
+        "e37f8062261cda775808c2e09a3cf893b3afcdbd3517e935f818d6fc5af2a609"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:8:16",
+      "sequence": 3956,
+      "chapter_label": "NUM 8",
+      "verse_label": "16",
+      "locator": {
+        "book": "NUM",
+        "chapter": 8,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 8,
+          "verse": 16
+        }
+      ],
+      "en": "For they are wholly given to me from among the children of Israel; instead of all who open the womb, even the firstborn of all the children of Israel, I have taken them to me.",
+      "ko": "그들은 이스라엘 자손 중에서 내게 온전히 드린바 된 자라 이스라엘 자손 중 일절 초태생 곧 모든 처음 난 자의 대신으로 내가 그들을 취하였나니",
+      "source_text_hash": "7fe75c797193ddfe9ad0610517f1809c33515250e7e99f398bbd3aa47c296d2f",
+      "translation_text_hash": "22eebb6c9865bd23cd1af08988201148f3d0677638d70b24189c8e77cfe5b0c3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들은 이스라엘 자손 중에서 내게 온전히 드린바 된 자라 이스라엘 자손 중 일절 초태생 곧 모든 처음 난 자의 대신으로 내가 그들을 취하였나니"
+      ],
+      "raw_text_hashes": [
+        "22eebb6c9865bd23cd1af08988201148f3d0677638d70b24189c8e77cfe5b0c3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:8:17",
+      "sequence": 3957,
+      "chapter_label": "NUM 8",
+      "verse_label": "17",
+      "locator": {
+        "book": "NUM",
+        "chapter": 8,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 8,
+          "verse": 17
+        }
+      ],
+      "en": "For all the firstborn among the children of Israel are mine, both man and animal. On the day that I struck all the firstborn in the land of Egypt, I sanctified them for myself.",
+      "ko": "이스라엘 자손 중에 처음 난 것은 사람이든지 짐승이든지 다 내게 속하였음은 내가 애굽 땅에서 그 모든 처음 난 자를 치던 날에 내가 그들을 내게 구별하였음이라",
+      "source_text_hash": "ecedab63d1cf58c7878dfbe023119073518c18b61914fbac56c860899708d6b7",
+      "translation_text_hash": "fe06d2739ef4e20f40dff3a1b2537eb6434a44b0eb8279f46ca15710bb1b63d2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손 중에 처음 난 것은 사람이든지 짐승이든지 다 내게 속하였음은 내가 애굽 땅에서 그 모든 처음 난 자를 치던 날에 내가 그들을 내게 구별하였음이라"
+      ],
+      "raw_text_hashes": [
+        "fe06d2739ef4e20f40dff3a1b2537eb6434a44b0eb8279f46ca15710bb1b63d2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:8:18",
+      "sequence": 3958,
+      "chapter_label": "NUM 8",
+      "verse_label": "18",
+      "locator": {
+        "book": "NUM",
+        "chapter": 8,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 8,
+          "verse": 18
+        }
+      ],
+      "en": "I have taken the Levites instead of all the firstborn among the children of Israel.",
+      "ko": "이러므로 내가 이스라엘 자손 중 모든 처음 난 자의 대신으로 레위인을 취하였느니라",
+      "source_text_hash": "d8970d4a5d00911aee33046484fad1ce6f87c649fdf2576eeb3bd0eeb309fca5",
+      "translation_text_hash": "3b6cd6765d319129780a98c789e6e2c0f3013a8f7c2bdf4d3e22735206ba35a9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러므로 내가 이스라엘 자손 중 모든 처음 난 자의 대신으로 레위인을 취하였느니라"
+      ],
+      "raw_text_hashes": [
+        "3b6cd6765d319129780a98c789e6e2c0f3013a8f7c2bdf4d3e22735206ba35a9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:8:19",
+      "sequence": 3959,
+      "chapter_label": "NUM 8",
+      "verse_label": "19",
+      "locator": {
+        "book": "NUM",
+        "chapter": 8,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 8,
+          "verse": 19
+        }
+      ],
+      "en": "I have given the Levites as a gift to Aaron and to his sons from among the children of Israel, to do the service of the children of Israel in the Tent of Meeting, and to make atonement for the children of Israel, so that there will be no plague among the children of Israel when the children of Israel come near to the sanctuary.”",
+      "ko": "내가 이스라엘 자손 중에서 레위인을 취하여 그들을 아론과 그 아들들에게 선물로 주어서 그들로 회막에서 이스라엘 자손을 대신하여 봉사하게 하며 또 이스라엘 자손을 위하여 속죄하게 하였나니 이는 이스라엘 자손이 성소에 가까이 할 때에 그들 중에 재앙이 없게 하려 하였음이니라",
+      "source_text_hash": "b8295955c4ffe73dd08eae3d1ca8f3e8ab34604575f4dcc57949d40384df98f0",
+      "translation_text_hash": "a95df73643988ea7172e7abe5a0530837375243fae97b10e9dee37dacca3cb04",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 이스라엘 자손 중에서 레위인을 취하여 그들을 아론과 그 아들들에게 선물로 주어서 그들로 회막에서 이스라엘 자손을 대신하여 봉사하게 하며 또 이스라엘 자손을 위하여 속죄하게 하였나니 이는 이스라엘 자손이 성소에 가까이 할 때에 그들 중에 재앙이 없게 하려 하였음이니라"
+      ],
+      "raw_text_hashes": [
+        "a95df73643988ea7172e7abe5a0530837375243fae97b10e9dee37dacca3cb04"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:8:20",
+      "sequence": 3960,
+      "chapter_label": "NUM 8",
+      "verse_label": "20",
+      "locator": {
+        "book": "NUM",
+        "chapter": 8,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 8,
+          "verse": 20
+        }
+      ],
+      "en": "Moses, and Aaron, and all the congregation of the children of Israel did so to the Levites. According to all that the LORD commanded Moses concerning the Levites, so the children of Israel did to them.",
+      "ko": "모세와 아론과 이스라엘 자손의 온 회중이 여호와께서 레위인에게 대하여 모세에게 명하신 것을 다 좇아 레위인에게 행하였으되 곧 이스라엘 자손이 그와 같이 그들에게 행하였더라",
+      "source_text_hash": "f0cf3d06e6806c7b0dff43a40e3c372e6e2b411bb68984f36314b3921f09594c",
+      "translation_text_hash": "4c6c289c28381dc24276078070d54ea2fa1efeaf65793eb97f0a8f845f7879d2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세와 아론과 이스라엘 자손의 온 회중이 여호와께서 레위인에게 대하여 모세에게 명하신 것을 다 좇아 레위인에게 행하였으되 곧 이스라엘 자손이 그와 같이 그들에게 행하였더라"
+      ],
+      "raw_text_hashes": [
+        "4c6c289c28381dc24276078070d54ea2fa1efeaf65793eb97f0a8f845f7879d2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:8:21",
+      "sequence": 3961,
+      "chapter_label": "NUM 8",
+      "verse_label": "21",
+      "locator": {
+        "book": "NUM",
+        "chapter": 8,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 8,
+          "verse": 21
+        }
+      ],
+      "en": "The Levites purified themselves from sin, and they washed their clothes; and Aaron offered them for a wave offering before the LORD and Aaron made atonement for them to cleanse them.",
+      "ko": "레위인이 이에 죄에서 스스로 깨끗케 하고 그 옷을 빨매 아론이 그들을 여호와 앞에 요제로 드리고 그가 또 그들을 위하여 속죄하여 정결케 한",
+      "source_text_hash": "351474c213060fd7ba4d037e3da264ea4e1d707eac5bfb8a40d2fded1e152c12",
+      "translation_text_hash": "2cf17a22fe63f906d1d90776cec72a5adb61d3be198039e35990ce3dd6d3738d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "레위인이 이에 죄에서 스스로 깨끗케 하고 그 옷을 빨매 아론이 그들을 여호와 앞에 요제로 드리고 그가 또 그들을 위하여 속죄하여 정결케 한"
+      ],
+      "raw_text_hashes": [
+        "2cf17a22fe63f906d1d90776cec72a5adb61d3be198039e35990ce3dd6d3738d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:8:22",
+      "sequence": 3962,
+      "chapter_label": "NUM 8",
+      "verse_label": "22",
+      "locator": {
+        "book": "NUM",
+        "chapter": 8,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 8,
+          "verse": 22
+        }
+      ],
+      "en": "After that, the Levites went in to do their service in the Tent of Meeting before Aaron and before his sons: as the LORD had commanded Moses concerning the Levites, so they did to them.",
+      "ko": "후에 레위인이 회막에 들어가서 아론과 그 아들들의 앞에서 봉사하니라 여호와께서 레위인의 일에 대하여 모세에게 명하신 것을 좇아 그와 같이 그들에게 행하였더라",
+      "source_text_hash": "2e05ddc481edd20a5516a7c1b384527c16afdd015b11eca56ffb8b19eacf6244",
+      "translation_text_hash": "ab8dc4905e3aa60a9dadce15ce317eab56c96d8b9e91ccd344d16948e31a8237",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "후에 레위인이 회막에 들어가서 아론과 그 아들들의 앞에서 봉사하니라 여호와께서 레위인의 일에 대하여 모세에게 명하신 것을 좇아 그와 같이 그들에게 행하였더라"
+      ],
+      "raw_text_hashes": [
+        "ab8dc4905e3aa60a9dadce15ce317eab56c96d8b9e91ccd344d16948e31a8237"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:8:23",
+      "sequence": 3963,
+      "chapter_label": "NUM 8",
+      "verse_label": "23",
+      "locator": {
+        "book": "NUM",
+        "chapter": 8,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 8,
+          "verse": 23
+        }
+      ],
+      "en": "The LORD spoke to Moses, saying,",
+      "ko": "여호와께서 또 모세에게 일러 가라사대",
+      "source_text_hash": "28219e5da0d26514843495c6edb280f326aa0ccffb0d2bb642d0e1b0f4478ca1",
+      "translation_text_hash": "6fce10c5891051be4b55b9e2e719c4053fd55e8a3bff58acabc65699508c88a6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 또 모세에게 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "6fce10c5891051be4b55b9e2e719c4053fd55e8a3bff58acabc65699508c88a6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:8:24",
+      "sequence": 3964,
+      "chapter_label": "NUM 8",
+      "verse_label": "24",
+      "locator": {
+        "book": "NUM",
+        "chapter": 8,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 8,
+          "verse": 24
+        }
+      ],
+      "en": "“This is what is assigned to the Levites: from twenty-five years old and upward they shall go in to wait on the service in the work of the Tent of Meeting;",
+      "ko": "레위인은 이같이 할찌니 곧 이십 오세 이상으로는 회막에 들어와서 봉사하여 일할 것이요",
+      "source_text_hash": "26a3fed42fdf8f4e35370d1e01a01f7d597f23c76f3f4f11a5b99db317bab885",
+      "translation_text_hash": "657eff8194b91a6271ceb8f82872c88cf530895caa49a83a311c59c754f5185d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "레위인은 이같이 할찌니 곧 이십 오세 이상으로는 회막에 들어와서 봉사하여 일할 것이요"
+      ],
+      "raw_text_hashes": [
+        "657eff8194b91a6271ceb8f82872c88cf530895caa49a83a311c59c754f5185d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:8:25",
+      "sequence": 3965,
+      "chapter_label": "NUM 8",
+      "verse_label": "25",
+      "locator": {
+        "book": "NUM",
+        "chapter": 8,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 8,
+          "verse": 25
+        }
+      ],
+      "en": "and from the age of fifty years they shall retire from doing the work, and shall serve no more,",
+      "ko": "오십세부터는 그 일을 쉬어 봉사하지 아니할 것이나",
+      "source_text_hash": "1f339388445be7967db5602ee2e474c3f7889a912719226433e9dc2173b8081e",
+      "translation_text_hash": "a6cf136ea7984e70a8d32609575dfb8ce380c4a0191a18337e14110418836e4a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오십세부터는 그 일을 쉬어 봉사하지 아니할 것이나"
+      ],
+      "raw_text_hashes": [
+        "a6cf136ea7984e70a8d32609575dfb8ce380c4a0191a18337e14110418836e4a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:8:26",
+      "sequence": 3966,
+      "chapter_label": "NUM 8",
+      "verse_label": "26",
+      "locator": {
+        "book": "NUM",
+        "chapter": 8,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 8,
+          "verse": 26
+        }
+      ],
+      "en": "but shall assist their brothers in the Tent of Meeting, to perform the duty, and shall perform no service. This is how you shall have the Levites do their duties.”",
+      "ko": "그 형제와 함께 회막에서 모시는 직무를 지킬 것이요 일하지 아니할 것이라 너는 레위인의 직무에 대하여 이같이 할찌니라",
+      "source_text_hash": "ff6226edaa7f341084ed1419430800301d6d646aba83784ac3ac6af514cfbc6a",
+      "translation_text_hash": "2392ab8ac8db32d866e15aad0d99699b5a125276deb5deaf91f1d2bfa1275fa8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 형제와 함께 회막에서 모시는 직무를 지킬 것이요 일하지 아니할 것이라 너는 레위인의 직무에 대하여 이같이 할찌니라"
+      ],
+      "raw_text_hashes": [
+        "2392ab8ac8db32d866e15aad0d99699b5a125276deb5deaf91f1d2bfa1275fa8"
+      ]
+    }
+  ]
+}

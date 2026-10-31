@@ -1,0 +1,1229 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JER:chapter:025",
+  "unit_ordinal": 770,
+  "unit_label": "JER 25",
+  "book_code": "JER",
+  "chapter_number": 25,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JER:25:1",
+      "sequence": 19536,
+      "chapter_label": "JER 25",
+      "verse_label": "1",
+      "locator": {
+        "book": "JER",
+        "chapter": 25,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 25,
+          "verse": 1
+        }
+      ],
+      "en": "The word that came to Jeremiah concerning all the people of Judah, in the fourth year of Jehoiakim the son of Josiah, king of Judah (this was the first year of Nebuchadnezzar king of Babylon),",
+      "ko": "유다 왕 요시야의 아들 여호야김 사년 곧 바벨론 왕 느부갓네살 원년에 유다 모든 백성에 관한 말씀이 예레미야에게 임하니라",
+      "source_text_hash": "7228e908a5e0f1e2f4877f9770208fc0b441fc9e7458601e34a9b53d00b3895f",
+      "translation_text_hash": "d684a7c74196505f7331eb8caa57e9af8e0ffc8977964efe2874c627e89c8c77",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다 왕 요시야의 아들 여호야김 사년 곧 바벨론 왕 느부갓네살 원년에 유다 모든 백성에 관한 말씀이 예레미야에게 임하니라"
+      ],
+      "raw_text_hashes": [
+        "d684a7c74196505f7331eb8caa57e9af8e0ffc8977964efe2874c627e89c8c77"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:25:2",
+      "sequence": 19537,
+      "chapter_label": "JER 25",
+      "verse_label": "2",
+      "locator": {
+        "book": "JER",
+        "chapter": 25,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 25,
+          "verse": 2
+        }
+      ],
+      "en": "which Jeremiah the prophet spoke to all the people of Judah, and to all the inhabitants of Jerusalem:",
+      "ko": "선지자 예레미야가 유다 모든 백성과 예루살렘 모든 거민에게 고하여 가로되",
+      "source_text_hash": "2608cf8b44a9d557d8cd1d24ccfea3578f40dc63f5f2d2dd7cb687d61203ae48",
+      "translation_text_hash": "5d839342dd9d3a8488c4cd8bdee8f82dac03c4dbbb67bc5f1a6259455d17e14d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "선지자 예레미야가 유다 모든 백성과 예루살렘 모든 거민에게 고하여 가로되"
+      ],
+      "raw_text_hashes": [
+        "5d839342dd9d3a8488c4cd8bdee8f82dac03c4dbbb67bc5f1a6259455d17e14d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:25:3",
+      "sequence": 19538,
+      "chapter_label": "JER 25",
+      "verse_label": "3",
+      "locator": {
+        "book": "JER",
+        "chapter": 25,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 25,
+          "verse": 3
+        }
+      ],
+      "en": "From the thirteenth year of Josiah the son of Amon, king of Judah, even to this day, these twenty-three years, the LORD’s word has come to me, and I have spoken to you, rising up early and speaking; but you have not listened.",
+      "ko": "유다 왕 아몬의 아들 요시야의 십 삼년부터 오늘까지 이십 삼년 동안에 여호와의 말씀이 내게 임하기로 내가 너희에게 이르되 부지런히 일렀으나 너희가 듣지 아니 하였으며",
+      "source_text_hash": "4153965b970ef44da146be9af7fcc9ae77452adfefb68aee31912537dfdf94fa",
+      "translation_text_hash": "6c89562a4216039e2158d079628cdc21a4dcbb31bf41dc2c710cc79dbe0dd543",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다 왕 아몬의 아들 요시야의 십 삼년부터 오늘까지 이십 삼년 동안에 여호와의 말씀이 내게 임하기로 내가 너희에게 이르되 부지런히 일렀으나 너희가 듣지 아니 하였으며"
+      ],
+      "raw_text_hashes": [
+        "6c89562a4216039e2158d079628cdc21a4dcbb31bf41dc2c710cc79dbe0dd543"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:25:4",
+      "sequence": 19539,
+      "chapter_label": "JER 25",
+      "verse_label": "4",
+      "locator": {
+        "book": "JER",
+        "chapter": 25,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 25,
+          "verse": 4
+        }
+      ],
+      "en": "The LORD has sent to you all his servants the prophets, rising up early and sending them (but you have not listened or inclined your ear to hear),",
+      "ko": "여호와께서 그 모든 종 선지자를 너희에게 보내시되 부지런히 보내셨으나 너희가 듣지 아니하였으며 귀를 기울여 들으려고도 아니하였도다",
+      "source_text_hash": "49be57550eb6fbc3a2c84d95cd65bb608f00287e87b64e322f545caf5f09e17e",
+      "translation_text_hash": "af4006f05c42ea989ae1cf56f29384ded971f501c839d794668bbf9facb27cda",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 그 모든 종 선지자를 너희에게 보내시되 부지런히 보내셨으나 너희가 듣지 아니하였으며 귀를 기울여 들으려고도 아니하였도다"
+      ],
+      "raw_text_hashes": [
+        "af4006f05c42ea989ae1cf56f29384ded971f501c839d794668bbf9facb27cda"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:25:5",
+      "sequence": 19540,
+      "chapter_label": "JER 25",
+      "verse_label": "5",
+      "locator": {
+        "book": "JER",
+        "chapter": 25,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 25,
+          "verse": 5
+        }
+      ],
+      "en": "saying, “Return now everyone from his evil way, and from the evil of your doings, and dwell in the land that the LORD has given to you and to your fathers, from of old and even forever more.",
+      "ko": "이르시기를 너희는 각기 악한 길과 너희 악행에서 돌이키라 그리하면 나 여호와가 너희와 너희 열조에게 옛적에 주어 영원히 있게 한 그 땅에 거하리니",
+      "source_text_hash": "876d66b060bca90e6bac3caf67ee4b3a3b812e9e679bedbee9c2c2103794e5fd",
+      "translation_text_hash": "bf640462acde88addbe2ffc399ca57010cd5106cd4b7a3f023477bb480f93b29",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이르시기를 너희는 각기 악한 길과 너희 악행에서 돌이키라 그리하면 나 여호와가 너희와 너희 열조에게 옛적에 주어 영원히 있게 한 그 땅에 거하리니"
+      ],
+      "raw_text_hashes": [
+        "bf640462acde88addbe2ffc399ca57010cd5106cd4b7a3f023477bb480f93b29"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:25:6",
+      "sequence": 19541,
+      "chapter_label": "JER 25",
+      "verse_label": "6",
+      "locator": {
+        "book": "JER",
+        "chapter": 25,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 25,
+          "verse": 6
+        }
+      ],
+      "en": "Don’t go after other gods to serve them or worship them, and don’t provoke me to anger with the work of your hands; then I will do you no harm.”",
+      "ko": "너희는 다른 신을 좇아 섬기거나 숭배하지 말며 너희 손으로 만든 것을 인하여 나의 노를 격동치 말라 그리하면 내가 너희를 해치 아니하리라 하였으나",
+      "source_text_hash": "51b94c1986b64800c83e7fd51d7729da2ac26ab1a9fcf58b8a6ec2ffd8ecfb0b",
+      "translation_text_hash": "45ff3ac8aaea99304d50f8d0909d47beffbe591451fddf3286e63a89b0a90a12",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 다른 신을 좇아 섬기거나 숭배하지 말며 너희 손으로 만든 것을 인하여 나의 노를 격동치 말라 그리하면 내가 너희를 해치 아니하리라 하였으나"
+      ],
+      "raw_text_hashes": [
+        "45ff3ac8aaea99304d50f8d0909d47beffbe591451fddf3286e63a89b0a90a12"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:25:7",
+      "sequence": 19542,
+      "chapter_label": "JER 25",
+      "verse_label": "7",
+      "locator": {
+        "book": "JER",
+        "chapter": 25,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 25,
+          "verse": 7
+        }
+      ],
+      "en": "“Yet you have not listened to me,” says the LORD, “that you may provoke me to anger with the work of your hands to your own hurt.”",
+      "ko": "너희가 내 말을 듣지 아니하고 너희 손으로 만든 것으로 나의 노를 격동하여 스스로 해하였느니라 여호와의 말이니라",
+      "source_text_hash": "952b812d2a5cc6a88154eb45cca5c30a89ddae82f396453343cc12cb1810c6fd",
+      "translation_text_hash": "6baf2cc17b649eac26d091e221eb22628f39b7be91aab219d0aa0d8a981637fc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 내 말을 듣지 아니하고 너희 손으로 만든 것으로 나의 노를 격동하여 스스로 해하였느니라 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "6baf2cc17b649eac26d091e221eb22628f39b7be91aab219d0aa0d8a981637fc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:25:8",
+      "sequence": 19543,
+      "chapter_label": "JER 25",
+      "verse_label": "8",
+      "locator": {
+        "book": "JER",
+        "chapter": 25,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 25,
+          "verse": 8
+        }
+      ],
+      "en": "Therefore the LORD of Armies says: “Because you have not heard my words,",
+      "ko": "그러므로 나 만군의 여호와가 이같이 말하노라 너희가 내 말을 듣지 아니하였은즉",
+      "source_text_hash": "de79a3f45ed76378a58afd308812eea023e4cf7387b9763cd8dc2c1c26e5a817",
+      "translation_text_hash": "1b35281ff05b4a959004d7bcc8fd0591b6466433e0066556de3ba4c81f0b5335",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 나 만군의 여호와가 이같이 말하노라 너희가 내 말을 듣지 아니하였은즉"
+      ],
+      "raw_text_hashes": [
+        "1b35281ff05b4a959004d7bcc8fd0591b6466433e0066556de3ba4c81f0b5335"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:25:9",
+      "sequence": 19544,
+      "chapter_label": "JER 25",
+      "verse_label": "9",
+      "locator": {
+        "book": "JER",
+        "chapter": 25,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 25,
+          "verse": 9
+        }
+      ],
+      "en": "behold, I will send and take all the families of the north,” says the LORD, “and I will send to Nebuchadnezzar the king of Babylon, my servant, and will bring them against this land, and against its inhabitants, and against all these nations around. I will utterly destroy them, and make them an astonishment, and a hissing, and perpetual desolations.",
+      "ko": "보라 내가 보내어 북방 모든 족속과 내 종 바벨론 왕 느부갓네살을 불러다가 이 땅과 그 거민과 사방 모든 나라를 쳐서 진멸하여 그들로 놀램과 치소거리가 되게 하며 땅으로 영영한 황무지가 되게 할 것이라",
+      "source_text_hash": "f497589fb940557428e1649258095a65c3f015db3842dceedac7d9992109aeb8",
+      "translation_text_hash": "89c33c32e8fc1ee60bb3fdab3017bf09d57d78027e24ef9a76477de2b521c332",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보라 내가 보내어 북방 모든 족속과 내 종 바벨론 왕 느부갓네살을 불러다가 이 땅과 그 거민과 사방 모든 나라를 쳐서 진멸하여 그들로 놀램과 치소거리가 되게 하며 땅으로 영영한 황무지가 되게 할 것이라"
+      ],
+      "raw_text_hashes": [
+        "89c33c32e8fc1ee60bb3fdab3017bf09d57d78027e24ef9a76477de2b521c332"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:25:10",
+      "sequence": 19545,
+      "chapter_label": "JER 25",
+      "verse_label": "10",
+      "locator": {
+        "book": "JER",
+        "chapter": 25,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 25,
+          "verse": 10
+        }
+      ],
+      "en": "Moreover I will take from them the voice of mirth and the voice of gladness, the voice of the bridegroom and the voice of the bride, the sound of the millstones, and the light of the lamp.",
+      "ko": "내가 그들 중에서 기뻐하는 소리와 즐거워하는 소리와 신랑의 소리와 신부의 소리와 맷돌소리와 등불 빛이 끊쳐지게 하리니",
+      "source_text_hash": "290891247dfb2ab9b1805d948ed173b31b106b7cdd4089efa609d9e167b1cdff",
+      "translation_text_hash": "1b6a96ead5952bf96a99425280f09dee1b82a05298bb1416e552a086d72314c4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 그들 중에서 기뻐하는 소리와 즐거워하는 소리와 신랑의 소리와 신부의 소리와 맷돌소리와 등불 빛이 끊쳐지게 하리니"
+      ],
+      "raw_text_hashes": [
+        "1b6a96ead5952bf96a99425280f09dee1b82a05298bb1416e552a086d72314c4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:25:11",
+      "sequence": 19546,
+      "chapter_label": "JER 25",
+      "verse_label": "11",
+      "locator": {
+        "book": "JER",
+        "chapter": 25,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 25,
+          "verse": 11
+        }
+      ],
+      "en": "This whole land will be a desolation, and an astonishment; and these nations will serve the king of Babylon seventy years.",
+      "ko": "이 온 땅이 황폐하여 놀램이 될 것이며 이 나라들은 칠십년 동안 바벨론 왕을 섬기리라",
+      "source_text_hash": "4d9d2863c2706f1db7402dfee1735f6dce5cee73a1861df525c14d9be064b1dc",
+      "translation_text_hash": "cd53d4b3ce96f7b815bcc56e26a3fc02f2ba51e1ac081fd831e9b12c57769934",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 온 땅이 황폐하여 놀램이 될 것이며 이 나라들은 칠십년 동안 바벨론 왕을 섬기리라"
+      ],
+      "raw_text_hashes": [
+        "cd53d4b3ce96f7b815bcc56e26a3fc02f2ba51e1ac081fd831e9b12c57769934"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:25:12",
+      "sequence": 19547,
+      "chapter_label": "JER 25",
+      "verse_label": "12",
+      "locator": {
+        "book": "JER",
+        "chapter": 25,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 25,
+          "verse": 12
+        }
+      ],
+      "en": "“It will happen, when seventy years are accomplished, that I will punish the king of Babylon and that nation,” says the LORD, “for their iniquity. I will make the land of the Chaldeans desolate forever.",
+      "ko": "나 여호와가 말하노라 칠십년이 마치면 내가 바벨론 왕과 그 나라와 갈대아인의 땅을 그 죄악으로 인하여 벌하여 영영히 황무케 하되",
+      "source_text_hash": "4ba4d90a362c1c0568e6f88070f730541d27a65934f9f674a553ad4b8b7df98f",
+      "translation_text_hash": "30ec1cfa91a4d77fd33b26ef9c46438d0557753c9cfe1db8ebc8f981cb1709b5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와가 말하노라 칠십년이 마치면 내가 바벨론 왕과 그 나라와 갈대아인의 땅을 그 죄악으로 인하여 벌하여 영영히 황무케 하되"
+      ],
+      "raw_text_hashes": [
+        "30ec1cfa91a4d77fd33b26ef9c46438d0557753c9cfe1db8ebc8f981cb1709b5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:25:13",
+      "sequence": 19548,
+      "chapter_label": "JER 25",
+      "verse_label": "13",
+      "locator": {
+        "book": "JER",
+        "chapter": 25,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 25,
+          "verse": 13
+        }
+      ],
+      "en": "I will bring on that land all my words which I have pronounced against it, even all that is written in this book, which Jeremiah has prophesied against all the nations.",
+      "ko": "내가 그 땅에 대하여 선고한바 곧 예레미야가 열방에 대하여 예언하고 이 책에 기록한 나의 모든 말을 그 땅에 임하게 하리니",
+      "source_text_hash": "a4a1b04181ad050e4cbde01616ec47aeadf4247c6b26ee4bc994b1784d3441de",
+      "translation_text_hash": "6217cccf01d32ae8a74218b0f7fab9d87c1ef1a51a6e893416043dba44277e65",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 그 땅에 대하여 선고한바 곧 예레미야가 열방에 대하여 예언하고 이 책에 기록한 나의 모든 말을 그 땅에 임하게 하리니"
+      ],
+      "raw_text_hashes": [
+        "6217cccf01d32ae8a74218b0f7fab9d87c1ef1a51a6e893416043dba44277e65"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:25:14",
+      "sequence": 19549,
+      "chapter_label": "JER 25",
+      "verse_label": "14",
+      "locator": {
+        "book": "JER",
+        "chapter": 25,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 25,
+          "verse": 14
+        }
+      ],
+      "en": "For many nations and great kings will make bondservants of them, even of them. I will recompense them according to their deeds, and according to the work of their hands.”",
+      "ko": "여러 나라와 큰 왕들이 그들로 자기 역군을 삼으리라 내가 그들의 행위와 그들의 손의 행한대로 보응하리라 하시니라",
+      "source_text_hash": "d3e77993af30b0d700869bf829ba6e1a4d2e9a4a025b8287f6ea1f68b3d0336b",
+      "translation_text_hash": "383ff7c1460826ac80b7c3e97354af5caf5bd035d6c5080cde4102e1ad69c124",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여러 나라와 큰 왕들이 그들로 자기 역군을 삼으리라 내가 그들의 행위와 그들의 손의 행한대로 보응하리라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "383ff7c1460826ac80b7c3e97354af5caf5bd035d6c5080cde4102e1ad69c124"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:25:15",
+      "sequence": 19550,
+      "chapter_label": "JER 25",
+      "verse_label": "15",
+      "locator": {
+        "book": "JER",
+        "chapter": 25,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 25,
+          "verse": 15
+        }
+      ],
+      "en": "For the LORD, the God of Israel, says to me: “Take this cup of the wine of wrath from my hand, and cause all the nations to whom I send you to drink it.",
+      "ko": "이스라엘의 하나님 여호와께서 이같이 내게 이르시되 너는 내 손에서 이 진노의 잔을 받아가지고 내가 너를 보내는바 그 모든 나라로 마시게 하라",
+      "source_text_hash": "32031ba82c8d21c300ad61d2139183e69c9786a2ef50702baf588cd5bfd0003b",
+      "translation_text_hash": "23ade7f584776667bbc2781fadac4d2ac6ff6547d91b4db0d95a921cd93f9650",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘의 하나님 여호와께서 이같이 내게 이르시되 너는 내 손에서 이 진노의 잔을 받아가지고 내가 너를 보내는바 그 모든 나라로 마시게 하라"
+      ],
+      "raw_text_hashes": [
+        "23ade7f584776667bbc2781fadac4d2ac6ff6547d91b4db0d95a921cd93f9650"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:25:16",
+      "sequence": 19551,
+      "chapter_label": "JER 25",
+      "verse_label": "16",
+      "locator": {
+        "book": "JER",
+        "chapter": 25,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 25,
+          "verse": 16
+        }
+      ],
+      "en": "They will drink, and reel back and forth, and be insane, because of the sword that I will send among them.”",
+      "ko": "그들이 마시고 비틀거리며 미치리니 이는 내가 그들 중에 칼을 보냄을 인함이니라 하시기로",
+      "source_text_hash": "fedbcf0ce4b2d1e5fcf9293f565097dbabdf59e2bf3c9f57b0eb4fea87f4e1ab",
+      "translation_text_hash": "7d35bc4193be00a2aa615ca3ecd76c73cb193c6291ac658ff971e724b1a7da4d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 마시고 비틀거리며 미치리니 이는 내가 그들 중에 칼을 보냄을 인함이니라 하시기로"
+      ],
+      "raw_text_hashes": [
+        "7d35bc4193be00a2aa615ca3ecd76c73cb193c6291ac658ff971e724b1a7da4d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:25:17",
+      "sequence": 19552,
+      "chapter_label": "JER 25",
+      "verse_label": "17",
+      "locator": {
+        "book": "JER",
+        "chapter": 25,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 25,
+          "verse": 17
+        }
+      ],
+      "en": "Then I took the cup at the LORD’s hand, and made all the nations to drink, to whom the LORD had sent me:",
+      "ko": "내가 여호와의 손에서 그 잔을 받아서 여호와께서 나를 보내신바 그 모든 나라로 마시게 하되",
+      "source_text_hash": "38098587637300539334c4bd6ba17cde204926348fd7cafaeef5d3aba78eb476",
+      "translation_text_hash": "323b0062e6753b90a075d4dd29d0fcc1eb278505673984b1db92f648b29615d5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 여호와의 손에서 그 잔을 받아서 여호와께서 나를 보내신바 그 모든 나라로 마시게 하되"
+      ],
+      "raw_text_hashes": [
+        "323b0062e6753b90a075d4dd29d0fcc1eb278505673984b1db92f648b29615d5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:25:18",
+      "sequence": 19553,
+      "chapter_label": "JER 25",
+      "verse_label": "18",
+      "locator": {
+        "book": "JER",
+        "chapter": 25,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 25,
+          "verse": 18
+        }
+      ],
+      "en": "Jerusalem, and the cities of Judah, with its kings and its princes, to make them a desolation, an astonishment, a hissing, and a curse, as it is today;",
+      "ko": "예루살렘과 유다 성읍들과 그 왕들과 그 방백들로 마시게 하였더니 그들이 멸망과 놀램과 치소와 저주를 당함이 오늘날과 같으니라",
+      "source_text_hash": "0d13519cfd2ad433b69f3b0269e44d8366a46451dd20c63da08cf8e3942cfecb",
+      "translation_text_hash": "57325c203f4947e6fcf2618cfbf2b86f700910363ae4dd4781a4de2f74f0b9c1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예루살렘과 유다 성읍들과 그 왕들과 그 방백들로 마시게 하였더니 그들이 멸망과 놀램과 치소와 저주를 당함이 오늘날과 같으니라"
+      ],
+      "raw_text_hashes": [
+        "57325c203f4947e6fcf2618cfbf2b86f700910363ae4dd4781a4de2f74f0b9c1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:25:19",
+      "sequence": 19554,
+      "chapter_label": "JER 25",
+      "verse_label": "19",
+      "locator": {
+        "book": "JER",
+        "chapter": 25,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 25,
+          "verse": 19
+        }
+      ],
+      "en": "Pharaoh king of Egypt, with his servants, his princes, and all his people;",
+      "ko": "또 애굽 왕 바로와 그의 신하들과 그의 방백들과 그의 모든 백성과",
+      "source_text_hash": "6db45eae5901816423048e68dc93d986ff4d6eeb29cd6b46f3a14f6494104b1d",
+      "translation_text_hash": "e528e29aab2c93dd62124da9910ac95b11b465bf40b684de99a083d884aea3a0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 애굽 왕 바로와 그의 신하들과 그의 방백들과 그의 모든 백성과"
+      ],
+      "raw_text_hashes": [
+        "e528e29aab2c93dd62124da9910ac95b11b465bf40b684de99a083d884aea3a0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:25:20",
+      "sequence": 19555,
+      "chapter_label": "JER 25",
+      "verse_label": "20",
+      "locator": {
+        "book": "JER",
+        "chapter": 25,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 25,
+          "verse": 20
+        }
+      ],
+      "en": "and all the mixed people, and all the kings of the land of Uz, all the kings of the Philistines, Ashkelon, Gaza, Ekron, and the remnant of Ashdod;",
+      "ko": "모든 잡족과 우스 땅 모든 왕과 블레셋 사람의 땅 모든 왕과 아스글론과 가사와 에그론과 아스돗의 남은 자와",
+      "source_text_hash": "79ee5325385b9cb9c6ebea5f110dcb9389a512357d6cd93dd1f0dd2b535dc325",
+      "translation_text_hash": "338708c54b47d1d3972c9e4506fc737f125106249b70c0f81f3e3084d6769de9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 잡족과 우스 땅 모든 왕과 블레셋 사람의 땅 모든 왕과 아스글론과 가사와 에그론과 아스돗의 남은 자와"
+      ],
+      "raw_text_hashes": [
+        "338708c54b47d1d3972c9e4506fc737f125106249b70c0f81f3e3084d6769de9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:25:21",
+      "sequence": 19556,
+      "chapter_label": "JER 25",
+      "verse_label": "21",
+      "locator": {
+        "book": "JER",
+        "chapter": 25,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 25,
+          "verse": 21
+        }
+      ],
+      "en": "Edom, Moab, and the children of Ammon;",
+      "ko": "에돔과 모압과 암몬 자손과",
+      "source_text_hash": "f2aff0599b139a25d784b17bafccb00c1272a3cda8642e4caf5ba71b71b34158",
+      "translation_text_hash": "649681877a2a43f3502ff4fce2b1ce3a949d7bd9de41395ef8599bca4a9467db",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에돔과 모압과 암몬 자손과"
+      ],
+      "raw_text_hashes": [
+        "649681877a2a43f3502ff4fce2b1ce3a949d7bd9de41395ef8599bca4a9467db"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:25:22",
+      "sequence": 19557,
+      "chapter_label": "JER 25",
+      "verse_label": "22",
+      "locator": {
+        "book": "JER",
+        "chapter": 25,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 25,
+          "verse": 22
+        }
+      ],
+      "en": "and all the kings of Tyre, all the kings of Sidon, and the kings of the isle which is beyond the sea;",
+      "ko": "두로의 모든 왕과 시돈의 모든 왕과 바다 저편 섬의 왕들과",
+      "source_text_hash": "d7ba382eebda8d3db9e5daeedf7e380dbfed23f77425ec929cac08a2fac76e7b",
+      "translation_text_hash": "2605dd848492b79d0d944b402b1929199ce51bd0b8862ef3b57765899a956a5d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "두로의 모든 왕과 시돈의 모든 왕과 바다 저편 섬의 왕들과"
+      ],
+      "raw_text_hashes": [
+        "2605dd848492b79d0d944b402b1929199ce51bd0b8862ef3b57765899a956a5d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:25:23",
+      "sequence": 19558,
+      "chapter_label": "JER 25",
+      "verse_label": "23",
+      "locator": {
+        "book": "JER",
+        "chapter": 25,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 25,
+          "verse": 23
+        }
+      ],
+      "en": "Dedan, Tema, Buz, and all who have the corners of their beard cut off;",
+      "ko": "드단과 데마와 부스와 털을 모지게 깎은 모든 자와",
+      "source_text_hash": "60900d887878efb53ae16177911852aba830fdd1f5390f1a83fca1a2cd62e4b6",
+      "translation_text_hash": "d1ec6342b2f86591016041f8385d3f07a67066a7db997bff000b10766e1f5174",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "드단과 데마와 부스와 털을 모지게 깎은 모든 자와"
+      ],
+      "raw_text_hashes": [
+        "d1ec6342b2f86591016041f8385d3f07a67066a7db997bff000b10766e1f5174"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:25:24",
+      "sequence": 19559,
+      "chapter_label": "JER 25",
+      "verse_label": "24",
+      "locator": {
+        "book": "JER",
+        "chapter": 25,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 25,
+          "verse": 24
+        }
+      ],
+      "en": "and all the kings of Arabia, all the kings of the mixed people who dwell in the wilderness;",
+      "ko": "아라비아 모든 왕과 광야에 거하는 잡족의 모든 왕과",
+      "source_text_hash": "73372d0175bc1781c57d872940f0eebba8fd96400c7a9c46ecff16d08ae2dda3",
+      "translation_text_hash": "e045b46e05fc9deefc9e8e308a694e830c83bc2482ec75e127ef5a4844feb69e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아라비아 모든 왕과 광야에 거하는 잡족의 모든 왕과"
+      ],
+      "raw_text_hashes": [
+        "e045b46e05fc9deefc9e8e308a694e830c83bc2482ec75e127ef5a4844feb69e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:25:25",
+      "sequence": 19560,
+      "chapter_label": "JER 25",
+      "verse_label": "25",
+      "locator": {
+        "book": "JER",
+        "chapter": 25,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 25,
+          "verse": 25
+        }
+      ],
+      "en": "and all the kings of Zimri, all the kings of Elam, and all the kings of the Medes;",
+      "ko": "시므리의 모든 왕과 엘람의 모든 왕과 메대의 모든 왕과",
+      "source_text_hash": "a941bbc48718ada1cfe628f2d887a7a542eb04178f3bb32230d88ea4ebebc6fb",
+      "translation_text_hash": "de937dbfa3c56a1195f10ef11a7963db7bdc33d49a0128e430761e5691f3bf6a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시므리의 모든 왕과 엘람의 모든 왕과 메대의 모든 왕과"
+      ],
+      "raw_text_hashes": [
+        "de937dbfa3c56a1195f10ef11a7963db7bdc33d49a0128e430761e5691f3bf6a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:25:26",
+      "sequence": 19561,
+      "chapter_label": "JER 25",
+      "verse_label": "26",
+      "locator": {
+        "book": "JER",
+        "chapter": 25,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 25,
+          "verse": 26
+        }
+      ],
+      "en": "and all the kings of the north, far and near, one with another; and all the kingdoms of the world, which are on the surface of the earth. The king of Sheshach will drink after them.",
+      "ko": "북방 원근의 모든 왕과 지면에 있는 세상의 모든 나라로 마시게 하니라 세삭 왕은 그 후에 마시리라",
+      "source_text_hash": "de32a822957332e2d34439380c03ebcbe45ab972e8b096f00c71c12bcd9bab34",
+      "translation_text_hash": "8860d9ffd99eec4929db73bc568c5a777c80173d5752932feb8d64340efdafb9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "북방 원근의 모든 왕과 지면에 있는 세상의 모든 나라로 마시게 하니라 세삭 왕은 그 후에 마시리라"
+      ],
+      "raw_text_hashes": [
+        "8860d9ffd99eec4929db73bc568c5a777c80173d5752932feb8d64340efdafb9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:25:27",
+      "sequence": 19562,
+      "chapter_label": "JER 25",
+      "verse_label": "27",
+      "locator": {
+        "book": "JER",
+        "chapter": 25,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 25,
+          "verse": 27
+        }
+      ],
+      "en": "“You shall tell them, ‘The LORD of Armies, the God of Israel says: “Drink, and be drunk, vomit, fall, and rise no more, because of the sword which I will send among you.”’",
+      "ko": "너는 그들에게 이르기를 만군의 여호와 이스라엘의 하나님의 말씀에 너희는 마시라 취하라 토하라 엎드러지고 다시는 일어나지 말라 이는 내가 너희 중에 칼을 보냄을 인함이니라 하셨다 하라",
+      "source_text_hash": "751fe3e3e3132488b8469f69d1335e398fbcd5a049cd3993aec56069cfc1a9dd",
+      "translation_text_hash": "8c30a7e28705a811a2ff4fb0ac89ee0536f9c62b7bea4fedb5b27b906fda4afc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 그들에게 이르기를 만군의 여호와 이스라엘의 하나님의 말씀에 너희는 마시라 취하라 토하라 엎드러지고 다시는 일어나지 말라 이는 내가 너희 중에 칼을 보냄을 인함이니라 하셨다 하라"
+      ],
+      "raw_text_hashes": [
+        "8c30a7e28705a811a2ff4fb0ac89ee0536f9c62b7bea4fedb5b27b906fda4afc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:25:28",
+      "sequence": 19563,
+      "chapter_label": "JER 25",
+      "verse_label": "28",
+      "locator": {
+        "book": "JER",
+        "chapter": 25,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 25,
+          "verse": 28
+        }
+      ],
+      "en": "It shall be, if they refuse to take the cup at your hand to drink, then you shall tell them, ‘The LORD of Armies says: “You shall surely drink.",
+      "ko": "그들이 만일 네 손에서 잔을 받아 마시기를 거절하거든 너는 그들에게 이르기를 만군의 여호와의 말씀에 너희가 반드시 마시리라",
+      "source_text_hash": "5bf80157c6ca1b7be8b3702d43af881673f8e7ab02be1a73e347b6f1c80f3d7d",
+      "translation_text_hash": "409d341745fa398b328588b8bbbd03a235089273a8a08856003a122d78fc8760",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 만일 네 손에서 잔을 받아 마시기를 거절하거든 너는 그들에게 이르기를 만군의 여호와의 말씀에 너희가 반드시 마시리라"
+      ],
+      "raw_text_hashes": [
+        "409d341745fa398b328588b8bbbd03a235089273a8a08856003a122d78fc8760"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:25:29",
+      "sequence": 19564,
+      "chapter_label": "JER 25",
+      "verse_label": "29",
+      "locator": {
+        "book": "JER",
+        "chapter": 25,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 25,
+          "verse": 29
+        }
+      ],
+      "en": "For, behold, I begin to work evil at the city which is called by my name; and should you be utterly unpunished? You will not be unpunished; for I will call for a sword on all the inhabitants of the earth, says the LORD of Armies.”’",
+      "ko": "보라 내가 내 이름으로 일컬음을 받는 성에서부터 재앙 내리기를 시작하였은즉 너희가 어찌 능히 형벌을 면할 수 있느냐 면치 못하리니 이는 내가 칼을 불러 세상의 모든 거민을 칠 것임이니라 하셨다 하라 만군의 여호와의 말이니라",
+      "source_text_hash": "755455dd3900fcbb6680622dae3ed648098580cc1eb14152b7bc8f19b0f18b69",
+      "translation_text_hash": "83f042998aefb00ef28281e0b090ccf0403cf17459d276547e6b5f5279db05fa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보라 내가 내 이름으로 일컬음을 받는 성에서부터 재앙 내리기를 시작하였은즉 너희가 어찌 능히 형벌을 면할 수 있느냐 면치 못하리니 이는 내가 칼을 불러 세상의 모든 거민을 칠 것임이니라 하셨다 하라 만군의 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "83f042998aefb00ef28281e0b090ccf0403cf17459d276547e6b5f5279db05fa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:25:30",
+      "sequence": 19565,
+      "chapter_label": "JER 25",
+      "verse_label": "30",
+      "locator": {
+        "book": "JER",
+        "chapter": 25,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 25,
+          "verse": 30
+        }
+      ],
+      "en": "“Therefore prophesy against them all these words, and tell them, “‘The LORD will roar from on high, and utter his voice from his holy habitation. He will mightily roar against his fold. He will give a shout, as those who tread grapes, against all the inhabitants of the earth.",
+      "ko": "그러므로 너는 그들에게 이 모든 말로 예언하여 이르기를 여호와께서 높은데서 부르시며 그 거룩한 처소에서 소리를 발하시며 그 양의 우리를 향하여 크게 부르시며 세상 모든 거민을 대하여 포도 밟는 자 같이 외치시리니",
+      "source_text_hash": "c704a859a5777215ad235dc3ac02b7af7ff898c21daae4ab164b33d4d6313e9d",
+      "translation_text_hash": "49e20a4cdef401f9a8e515525cd7f24f3dba0205abb024794605074c6f7bafe0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 너는 그들에게 이 모든 말로 예언하여 이르기를 여호와께서 높은데서 부르시며 그 거룩한 처소에서 소리를 발하시며 그 양의 우리를 향하여 크게 부르시며 세상 모든 거민을 대하여 포도 밟는 자 같이 외치시리니"
+      ],
+      "raw_text_hashes": [
+        "49e20a4cdef401f9a8e515525cd7f24f3dba0205abb024794605074c6f7bafe0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:25:31",
+      "sequence": 19566,
+      "chapter_label": "JER 25",
+      "verse_label": "31",
+      "locator": {
+        "book": "JER",
+        "chapter": 25,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 25,
+          "verse": 31
+        }
+      ],
+      "en": "A noise will come even to the end of the earth; for the LORD has a controversy with the nations. He will enter into judgment with all flesh. As for the wicked, he will give them to the sword,”’ says the LORD.”",
+      "ko": "요란한 소리가 땅 끝까지 이름은 여호와께서 열국과 다투시며 모든 육체를 심판하시며 악인을 칼에 붙이심을 인함이라 하라 여호와의 말이니라",
+      "source_text_hash": "7a9dc014e6f26bdbff21e2a31970f7026c9140389bf7d712c39a7fdcc495120a",
+      "translation_text_hash": "bb098b1d2c41fbed5c2a7b02368bfed2e56aceba0faaec492a22d5b12140f77d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요란한 소리가 땅 끝까지 이름은 여호와께서 열국과 다투시며 모든 육체를 심판하시며 악인을 칼에 붙이심을 인함이라 하라 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "bb098b1d2c41fbed5c2a7b02368bfed2e56aceba0faaec492a22d5b12140f77d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:25:32",
+      "sequence": 19567,
+      "chapter_label": "JER 25",
+      "verse_label": "32",
+      "locator": {
+        "book": "JER",
+        "chapter": 25,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 25,
+          "verse": 32
+        }
+      ],
+      "en": "The LORD of Armies says, “Behold, evil will go out from nation to nation, and a great storm will be raised up from the uttermost parts of the earth.”",
+      "ko": "나 만군의 여호와가 말하노라 보라 재앙이 나서 나라에서 나라에 미칠 것이며 대풍이 땅 끝에서 일어날 것이라",
+      "source_text_hash": "8c1192061cf60155f5aa576111c0d0b13ef071307fe7b09a16d5bb63e0a794b4",
+      "translation_text_hash": "e3d9fe9c9d77dc500716c9572f9648363063d8a8d9e706f491a0780d7031bcd8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 만군의 여호와가 말하노라 보라 재앙이 나서 나라에서 나라에 미칠 것이며 대풍이 땅 끝에서 일어날 것이라"
+      ],
+      "raw_text_hashes": [
+        "e3d9fe9c9d77dc500716c9572f9648363063d8a8d9e706f491a0780d7031bcd8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:25:33",
+      "sequence": 19568,
+      "chapter_label": "JER 25",
+      "verse_label": "33",
+      "locator": {
+        "book": "JER",
+        "chapter": 25,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 25,
+          "verse": 33
+        }
+      ],
+      "en": "The slain of the LORD will be at that day from one end of the earth even to the other end of the earth. They won’t be lamented. They won’t be gathered or buried. They will be dung on the surface of the ground.",
+      "ko": "그 날에 나 여호와에게 살륙을 당한 자가 땅 이 끝에서 땅 저 끝에 미칠 것이나 그들이 슬퍼함을 받지 못하며 염습함을 입지 못하며 매장함을 얻지 못하고 지면에서 분토가 되리로다",
+      "source_text_hash": "cb747082ee086b2b9b93bee8ffd49fdea3de12dc9b2f249b127ddb71581400d4",
+      "translation_text_hash": "034c5ac43bc3147803a66e0a00af04062f29a62c9e945843fee0710450435e5e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날에 나 여호와에게 살륙을 당한 자가 땅 이 끝에서 땅 저 끝에 미칠 것이나 그들이 슬퍼함을 받지 못하며 염습함을 입지 못하며 매장함을 얻지 못하고 지면에서 분토가 되리로다"
+      ],
+      "raw_text_hashes": [
+        "034c5ac43bc3147803a66e0a00af04062f29a62c9e945843fee0710450435e5e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:25:34",
+      "sequence": 19569,
+      "chapter_label": "JER 25",
+      "verse_label": "34",
+      "locator": {
+        "book": "JER",
+        "chapter": 25,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 25,
+          "verse": 34
+        }
+      ],
+      "en": "Wail, you shepherds, and cry. Wallow in dust, you leader of the flock; for the days of your slaughter and of your dispersions have fully come, and you will fall like fine pottery.",
+      "ko": "너희 목자들아 외쳐 애곡하라 너희 양떼의 인도자들아 재에 굴라 이는 너희 도륙을 당할 날과 흩음을 당할 기한이 찼음인즉 너희가 귀한 그릇의 떨어짐 같이 될 것이라",
+      "source_text_hash": "a8ee984a8911befa9b8ddd1834fdea69a9a94ed694a8786707fb94630120079c",
+      "translation_text_hash": "04159896efa2e32b5fa80afbb7240a67f6b6e58ddf95244d420da1501634d271",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 목자들아 외쳐 애곡하라 너희 양떼의 인도자들아 재에 굴라 이는 너희 도륙을 당할 날과 흩음을 당할 기한이 찼음인즉 너희가 귀한 그릇의 떨어짐 같이 될 것이라"
+      ],
+      "raw_text_hashes": [
+        "04159896efa2e32b5fa80afbb7240a67f6b6e58ddf95244d420da1501634d271"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:25:35",
+      "sequence": 19570,
+      "chapter_label": "JER 25",
+      "verse_label": "35",
+      "locator": {
+        "book": "JER",
+        "chapter": 25,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 25,
+          "verse": 35
+        }
+      ],
+      "en": "The shepherds will have no way to flee. The leader of the flock will have no escape.",
+      "ko": "목자들은 도망할 수 없겠고 양떼의 인도자들은 도피할 수 없으리로다",
+      "source_text_hash": "b4289a1d8e9abbebdf6127a7f91da6037968e479b22d7472e7658471d706fc0d",
+      "translation_text_hash": "78ec6199f859be4c5b59732d7ef1ae7a50d79e37484f0de938c7bef44ebe6b35",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "목자들은 도망할 수 없겠고 양떼의 인도자들은 도피할 수 없으리로다"
+      ],
+      "raw_text_hashes": [
+        "78ec6199f859be4c5b59732d7ef1ae7a50d79e37484f0de938c7bef44ebe6b35"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:25:36",
+      "sequence": 19571,
+      "chapter_label": "JER 25",
+      "verse_label": "36",
+      "locator": {
+        "book": "JER",
+        "chapter": 25,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 25,
+          "verse": 36
+        }
+      ],
+      "en": "A voice of the cry of the shepherds, and the wailing of the leader of the flock, for the LORD destroys their pasture.",
+      "ko": "목자들의 부르짖음과 양떼의 인도자들의 애곡하는 소리여 나 여호와가 그들의 초장으로 황폐케 함이로다",
+      "source_text_hash": "f2833f0c39fbda8412653060819b12b83f467576d69673ffe980b6379878bd73",
+      "translation_text_hash": "922d7c34a19db0822f37c75d0973d4c0cf345f2607f762438615d88dc6ad61a8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "목자들의 부르짖음과 양떼의 인도자들의 애곡하는 소리여 나 여호와가 그들의 초장으로 황폐케 함이로다"
+      ],
+      "raw_text_hashes": [
+        "922d7c34a19db0822f37c75d0973d4c0cf345f2607f762438615d88dc6ad61a8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:25:37",
+      "sequence": 19572,
+      "chapter_label": "JER 25",
+      "verse_label": "37",
+      "locator": {
+        "book": "JER",
+        "chapter": 25,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 25,
+          "verse": 37
+        }
+      ],
+      "en": "The peaceful folds are brought to silence because of the fierce anger of the LORD.",
+      "ko": "평안한 목장들이 적막하니 이는 여호와의 진노의 연고로다",
+      "source_text_hash": "7cfab1b09ec5c40984a20088cfffe5c9fa822e32170f265c88044582e09333c8",
+      "translation_text_hash": "8c86bcb2e08b23933b17a2c3347ee9952a096d53ffcbba63c21cee1c42c68166",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "평안한 목장들이 적막하니 이는 여호와의 진노의 연고로다"
+      ],
+      "raw_text_hashes": [
+        "8c86bcb2e08b23933b17a2c3347ee9952a096d53ffcbba63c21cee1c42c68166"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:25:38",
+      "sequence": 19573,
+      "chapter_label": "JER 25",
+      "verse_label": "38",
+      "locator": {
+        "book": "JER",
+        "chapter": 25,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 25,
+          "verse": 38
+        }
+      ],
+      "en": "He has left his covert, as the lion; for their land has become an astonishment because of the fierceness of the oppression, and because of his fierce anger.",
+      "ko": "그가 사자 같이 그 소혈에서 나오셨도다 그 잔멸하는 자의 진노와 그 극렬한 분으로 인하여 그들의 땅이 황량하였도다",
+      "source_text_hash": "9293dd9c20f8ee2d3a9b4d720cefbe7cbe2bb87b0a94adb50496fdea1ecef04f",
+      "translation_text_hash": "15349566077f455a2c512e9fb38b459d0638fd33bbbb3e8f23a56a7d5ffcf5ea",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 사자 같이 그 소혈에서 나오셨도다 그 잔멸하는 자의 진노와 그 극렬한 분으로 인하여 그들의 땅이 황량하였도다"
+      ],
+      "raw_text_hashes": [
+        "15349566077f455a2c512e9fb38b459d0638fd33bbbb3e8f23a56a7d5ffcf5ea"
+      ]
+    }
+  ]
+}

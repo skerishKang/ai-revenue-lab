@@ -1,0 +1,493 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:2CO:chapter:009",
+  "unit_ordinal": 1087,
+  "unit_label": "2CO 9",
+  "book_code": "2CO",
+  "chapter_number": 9,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:2CO:9:1",
+      "sequence": 28954,
+      "chapter_label": "2CO 9",
+      "verse_label": "1",
+      "locator": {
+        "book": "2CO",
+        "chapter": 9,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 9,
+          "verse": 1
+        }
+      ],
+      "en": "It is indeed unnecessary for me to write to you concerning the service to the saints,",
+      "ko": "성도를 섬기는 일에 대하여 내가 너희에게 쓸 필요가 없나니",
+      "source_text_hash": "d32a6fb432cded01fb5692f65d0d17aecd1d5b5f3d84d9cca9ae973db26e338d",
+      "translation_text_hash": "08e2d175ba5eecb5c15b6297f0525807d1b2cd3de26366fa9700f698b12efa03",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "성도를 섬기는 일에 대하여 내가 너희에게 쓸 필요가 없나니"
+      ],
+      "raw_text_hashes": [
+        "08e2d175ba5eecb5c15b6297f0525807d1b2cd3de26366fa9700f698b12efa03"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:9:2",
+      "sequence": 28955,
+      "chapter_label": "2CO 9",
+      "verse_label": "2",
+      "locator": {
+        "book": "2CO",
+        "chapter": 9,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 9,
+          "verse": 2
+        }
+      ],
+      "en": "for I know your readiness, of which I boast on your behalf to those of Macedonia, that Achaia has been prepared for the past year. Your zeal has stirred up very many of them.",
+      "ko": "이는 내가 너희의 원함을 앎이라 내가 너희를 위하여 마게도냐인들에게 아가야에서는 일년 전부터 예비하였다 자랑하였는데 과연 너희 열심이 퍽 많은 사람들을 격동시켰느니라",
+      "source_text_hash": "7b4560cdc7173f66bb5fc700b0d4dbc13011250d5f12428d0e887c0e827780e9",
+      "translation_text_hash": "d4be3d0e7531b4833c5bcb6c7156335192ff550e904305c88f30ff4d75da3bb8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 내가 너희의 원함을 앎이라 내가 너희를 위하여 마게도냐인들에게 아가야에서는 일년 전부터 예비하였다 자랑하였는데 과연 너희 열심이 퍽 많은 사람들을 격동시켰느니라"
+      ],
+      "raw_text_hashes": [
+        "d4be3d0e7531b4833c5bcb6c7156335192ff550e904305c88f30ff4d75da3bb8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:9:3",
+      "sequence": 28956,
+      "chapter_label": "2CO 9",
+      "verse_label": "3",
+      "locator": {
+        "book": "2CO",
+        "chapter": 9,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 9,
+          "verse": 3
+        }
+      ],
+      "en": "But I have sent the brothers so that our boasting on your behalf may not be in vain in this respect, that, just as I said, you may be prepared,",
+      "ko": "그런데 이 형제들을 보낸 것은 이 일에 너희를 위한 우리의 자랑이 헛되지 않고 내 말한것 같이 준비하게 하려 함이라",
+      "source_text_hash": "9a64bb153155541c5f674a69c78a838ecd3fdf9cb016d704797668a6c1d27d3d",
+      "translation_text_hash": "afc48f2e43597b663f589d12b15798c524f29d0b9116cf42672cade03debac31",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런데 이 형제들을 보낸 것은 이 일에 너희를 위한 우리의 자랑이 헛되지 않고 내 말한것 같이 준비하게 하려 함이라"
+      ],
+      "raw_text_hashes": [
+        "afc48f2e43597b663f589d12b15798c524f29d0b9116cf42672cade03debac31"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:9:4",
+      "sequence": 28957,
+      "chapter_label": "2CO 9",
+      "verse_label": "4",
+      "locator": {
+        "book": "2CO",
+        "chapter": 9,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 9,
+          "verse": 4
+        }
+      ],
+      "en": "lest by any means, if anyone from Macedonia comes there with me and finds you unprepared, we (to say nothing of you) would be disappointed in this confident boasting.",
+      "ko": "혹 마게도냐인들이 나와 함께 가서 너희의 준비치 아니한 것을 보면 너희는 고사하고 우리가 이 믿던 것에 부끄러움을 당할까 두려워하노라",
+      "source_text_hash": "9400b823aba83c2c378f5077b38c9d9e04909332f97354ec358a09ddcee40fbf",
+      "translation_text_hash": "5cddb3f18aa3e02114aca2514df75d614233ac0c47851ba7f8acd8389c9dac9e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "혹 마게도냐인들이 나와 함께 가서 너희의 준비치 아니한 것을 보면 너희는 고사하고 우리가 이 믿던 것에 부끄러움을 당할까 두려워하노라"
+      ],
+      "raw_text_hashes": [
+        "5cddb3f18aa3e02114aca2514df75d614233ac0c47851ba7f8acd8389c9dac9e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:9:5",
+      "sequence": 28958,
+      "chapter_label": "2CO 9",
+      "verse_label": "5",
+      "locator": {
+        "book": "2CO",
+        "chapter": 9,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 9,
+          "verse": 5
+        }
+      ],
+      "en": "I thought it necessary therefore to entreat the brothers that they would go before to you and arrange ahead of time the generous gift that you promised before, that the same might be ready as a matter of generosity, and not of greediness.",
+      "ko": "이러므로 내가 이 형제들로 먼저 너희에게 가서 너희의 전에 약속한 연보를 미리 준비케 하도록 권면하는 것이 필요한 줄 생각하였노니 이렇게 준비하여야 참 연보답고 억지가 아니니라",
+      "source_text_hash": "f99c32f7e867afeaf483fab08e2d2c94de9ec42bbe88ca240674825ce7ecd41f",
+      "translation_text_hash": "c58bc997d1135cfc5f8363f3a08fe50930aaa24a444e7873c2e2e0f089be57fd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러므로 내가 이 형제들로 먼저 너희에게 가서 너희의 전에 약속한 연보를 미리 준비케 하도록 권면하는 것이 필요한 줄 생각하였노니 이렇게 준비하여야 참 연보답고 억지가 아니니라"
+      ],
+      "raw_text_hashes": [
+        "c58bc997d1135cfc5f8363f3a08fe50930aaa24a444e7873c2e2e0f089be57fd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:9:6",
+      "sequence": 28959,
+      "chapter_label": "2CO 9",
+      "verse_label": "6",
+      "locator": {
+        "book": "2CO",
+        "chapter": 9,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 9,
+          "verse": 6
+        }
+      ],
+      "en": "Remember this: he who sows sparingly will also reap sparingly. He who sows bountifully will also reap bountifully.",
+      "ko": "이것이 곧 적게 심는 자는 적게 거두고 많이 심는 자는 많이 거둔다 하는 말이로다",
+      "source_text_hash": "5531100c72a969a1c00b729271a4c4f9f461ad6f8963672a5fff212984452193",
+      "translation_text_hash": "e1c2c122c9386993bfb7908708d9342ec0c02b1065f03ecaa3cccab5d1612a4c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이것이 곧 적게 심는 자는 적게 거두고 많이 심는 자는 많이 거둔다 하는 말이로다"
+      ],
+      "raw_text_hashes": [
+        "e1c2c122c9386993bfb7908708d9342ec0c02b1065f03ecaa3cccab5d1612a4c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:9:7",
+      "sequence": 28960,
+      "chapter_label": "2CO 9",
+      "verse_label": "7",
+      "locator": {
+        "book": "2CO",
+        "chapter": 9,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 9,
+          "verse": 7
+        }
+      ],
+      "en": "Let each man give according as he has determined in his heart, not grudgingly or under compulsion, for God loves a cheerful giver.",
+      "ko": "각각 그 마음에 정한대로 할 것이요 인색함으로나 억지로 하지 말찌니 하나님은 즐겨 내는 자를 사랑하시느니라",
+      "source_text_hash": "06a26ef2f0cb6e07de875a22b364afc4cab8b6053f682f4cd830a45c8ef0151b",
+      "translation_text_hash": "05f5b4b4f2770ab2c7583e6ccb76dce8c4b1c98d0afdf61df9f71e028dffeec0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "각각 그 마음에 정한대로 할 것이요 인색함으로나 억지로 하지 말찌니 하나님은 즐겨 내는 자를 사랑하시느니라"
+      ],
+      "raw_text_hashes": [
+        "05f5b4b4f2770ab2c7583e6ccb76dce8c4b1c98d0afdf61df9f71e028dffeec0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:9:8",
+      "sequence": 28961,
+      "chapter_label": "2CO 9",
+      "verse_label": "8",
+      "locator": {
+        "book": "2CO",
+        "chapter": 9,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 9,
+          "verse": 8
+        }
+      ],
+      "en": "And God is able to make all grace abound to you, that you, always having all sufficiency in everything, may abound to every good work.",
+      "ko": "하나님이 능히 모든 은혜를 너희에게 넘치게 하시나니 이는 너희로 모든 일에 항상 모든 것이 넉넉하여 모든 착한 일을 넘치게 하게 하려 하심이라",
+      "source_text_hash": "e2472917d386f95002999d642376891e2317db82bed96a4c057a3cf38b185b3f",
+      "translation_text_hash": "ada09d012f70dd2088cc9ebd4e77c5f99f567aab1796c67cf43463f4e71de981",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 능히 모든 은혜를 너희에게 넘치게 하시나니 이는 너희로 모든 일에 항상 모든 것이 넉넉하여 모든 착한 일을 넘치게 하게 하려 하심이라"
+      ],
+      "raw_text_hashes": [
+        "ada09d012f70dd2088cc9ebd4e77c5f99f567aab1796c67cf43463f4e71de981"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:9:9",
+      "sequence": 28962,
+      "chapter_label": "2CO 9",
+      "verse_label": "9",
+      "locator": {
+        "book": "2CO",
+        "chapter": 9,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 9,
+          "verse": 9
+        }
+      ],
+      "en": "As it is written, “He has scattered abroad. He has given to the poor. His righteousness remains forever.”",
+      "ko": "기록한바 저가 흩어 가난한 자들에게 주었으니 그의 의가 영원토록 있느니라 함과 같으니라",
+      "source_text_hash": "28dbfd19c8dce242f685072e07ad04f969b730c0c84217776b9d93e2a3f9702c",
+      "translation_text_hash": "6477a6c1fdae7ac3482808db145f6845083ebad19061be3e883fd4d504be9349",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "기록한바 저가 흩어 가난한 자들에게 주었으니 그의 의가 영원토록 있느니라 함과 같으니라"
+      ],
+      "raw_text_hashes": [
+        "6477a6c1fdae7ac3482808db145f6845083ebad19061be3e883fd4d504be9349"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:9:10",
+      "sequence": 28963,
+      "chapter_label": "2CO 9",
+      "verse_label": "10",
+      "locator": {
+        "book": "2CO",
+        "chapter": 9,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 9,
+          "verse": 10
+        }
+      ],
+      "en": "Now may he who supplies seed to the sower and bread for food, supply and multiply your seed for sowing, and increase the fruits of your righteousness,",
+      "ko": "심는 자에게 씨와 먹을 양식을 주시는 이가 너희 심을 것을 주사 풍성하게 하시고 너희 의의 열매를 더하게 하시리니",
+      "source_text_hash": "c5e8dfd6c2536d00449a477a79fb1bfc60ac1a081e3062eb64bd4bb59ea51ec1",
+      "translation_text_hash": "128cf0502abb59e318b9e6d68ffcfc14f7ec0035911884f5834e85f76e97bfad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "심는 자에게 씨와 먹을 양식을 주시는 이가 너희 심을 것을 주사 풍성하게 하시고 너희 의의 열매를 더하게 하시리니"
+      ],
+      "raw_text_hashes": [
+        "128cf0502abb59e318b9e6d68ffcfc14f7ec0035911884f5834e85f76e97bfad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:9:11",
+      "sequence": 28964,
+      "chapter_label": "2CO 9",
+      "verse_label": "11",
+      "locator": {
+        "book": "2CO",
+        "chapter": 9,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 9,
+          "verse": 11
+        }
+      ],
+      "en": "you being enriched in everything for all generosity, which produces thanksgiving to God through us.",
+      "ko": "너희가 모든 일에 부요하여 너그럽게 연보를 함은 저희로 우리로 말미암아 하나님께 감사하게 하는 것이라",
+      "source_text_hash": "36a80088b3403ea140e9e2a4d06001304512d8c6fd4184ce8e4698fff0c26697",
+      "translation_text_hash": "ccd1666df9bc77b3b7487b15f984c1a8964b6a7425441b3048b395f4dec8d2bf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 모든 일에 부요하여 너그럽게 연보를 함은 저희로 우리로 말미암아 하나님께 감사하게 하는 것이라"
+      ],
+      "raw_text_hashes": [
+        "ccd1666df9bc77b3b7487b15f984c1a8964b6a7425441b3048b395f4dec8d2bf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:9:12",
+      "sequence": 28965,
+      "chapter_label": "2CO 9",
+      "verse_label": "12",
+      "locator": {
+        "book": "2CO",
+        "chapter": 9,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 9,
+          "verse": 12
+        }
+      ],
+      "en": "For this service of giving that you perform not only makes up for lack among the saints, but abounds also through much giving of thanks to God,",
+      "ko": "이 봉사의 직무가 성도들의 부족한 것만 보충할 뿐 아니라 사람들의 하나님께 드리는 많은 감사를 인하여 넘쳤느니라",
+      "source_text_hash": "cf568896f483187b61127b77d9808c0fb79005e01e12dc1943e2ee651b3450a5",
+      "translation_text_hash": "4eb8ded7b0e94734a1ce37c7a3b76a91d7cdbe3eac45234e36dd64d997388c68",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 봉사의 직무가 성도들의 부족한 것만 보충할 뿐 아니라 사람들의 하나님께 드리는 많은 감사를 인하여 넘쳤느니라"
+      ],
+      "raw_text_hashes": [
+        "4eb8ded7b0e94734a1ce37c7a3b76a91d7cdbe3eac45234e36dd64d997388c68"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:9:13",
+      "sequence": 28966,
+      "chapter_label": "2CO 9",
+      "verse_label": "13",
+      "locator": {
+        "book": "2CO",
+        "chapter": 9,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 9,
+          "verse": 13
+        }
+      ],
+      "en": "seeing that through the proof given by this service, they glorify God for the obedience of your confession to the Good News of Christ and for the generosity of your contribution to them and to all,",
+      "ko": "이 직무로 증거를 삼아 너희의 그리스도의 복음을 진실히 믿고 복종하는 것과 저희와 모든 사람을 섬기는 너희의 후한 연보를 인하여 하나님께 영광을 돌리고",
+      "source_text_hash": "f0e7706ceaabef11ae3ebb49ba98ae822be12872da3c1e16a61c22ea960d8d27",
+      "translation_text_hash": "36d6fc2b71dbe520582701f1884a57b465b7c5ffccd939db8f7722651d036560",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 직무로 증거를 삼아 너희의 그리스도의 복음을 진실히 믿고 복종하는 것과 저희와 모든 사람을 섬기는 너희의 후한 연보를 인하여 하나님께 영광을 돌리고"
+      ],
+      "raw_text_hashes": [
+        "36d6fc2b71dbe520582701f1884a57b465b7c5ffccd939db8f7722651d036560"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:9:14",
+      "sequence": 28967,
+      "chapter_label": "2CO 9",
+      "verse_label": "14",
+      "locator": {
+        "book": "2CO",
+        "chapter": 9,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 9,
+          "verse": 14
+        }
+      ],
+      "en": "while they themselves also, with supplication on your behalf, yearn for you by reason of the exceeding grace of God in you.",
+      "ko": "또 저희가 너희를 위하여 간구하며 하나님의 너희에게 주신 지극한 은혜를 인하여 너희를 사모하느니라",
+      "source_text_hash": "e6421ea36c4725a78af1ffbe4e07873a4f59f82cc34cfaa659a091c43eda64d8",
+      "translation_text_hash": "413aa87f9b4d7f4a75002d9a895ef986484c0bf1761a8643f898c02189ce5d7d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 저희가 너희를 위하여 간구하며 하나님의 너희에게 주신 지극한 은혜를 인하여 너희를 사모하느니라"
+      ],
+      "raw_text_hashes": [
+        "413aa87f9b4d7f4a75002d9a895ef986484c0bf1761a8643f898c02189ce5d7d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:9:15",
+      "sequence": 28968,
+      "chapter_label": "2CO 9",
+      "verse_label": "15",
+      "locator": {
+        "book": "2CO",
+        "chapter": 9,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 9,
+          "verse": 15
+        }
+      ],
+      "en": "Now thanks be to God for his unspeakable gift!",
+      "ko": "말할 수 없는 그의 은사를 인하여 하나님께 감사하노라",
+      "source_text_hash": "95beb4ac3c3266d18901d85a9800ffb7cc02f415c6cc52c7277d13f2e2b8809e",
+      "translation_text_hash": "2f281b6ce21ed465ec29b308b0b1e1238a2645a4d79b7709755d473f63806fa7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "말할 수 없는 그의 은사를 인하여 하나님께 감사하노라"
+      ],
+      "raw_text_hashes": [
+        "2f281b6ce21ed465ec29b308b0b1e1238a2645a4d79b7709755d473f63806fa7"
+      ]
+    }
+  ]
+}

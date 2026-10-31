@@ -1,0 +1,749 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:LEV:chapter:024",
+  "unit_ordinal": 114,
+  "unit_label": "LEV 24",
+  "book_code": "LEV",
+  "chapter_number": 24,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:LEV:24:1",
+      "sequence": 3448,
+      "chapter_label": "LEV 24",
+      "verse_label": "1",
+      "locator": {
+        "book": "LEV",
+        "chapter": 24,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 24,
+          "verse": 1
+        }
+      ],
+      "en": "The LORD spoke to Moses, saying,",
+      "ko": "여호와께서 모세에게 일러 가라사대",
+      "source_text_hash": "28219e5da0d26514843495c6edb280f326aa0ccffb0d2bb642d0e1b0f4478ca1",
+      "translation_text_hash": "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:24:2",
+      "sequence": 3449,
+      "chapter_label": "LEV 24",
+      "verse_label": "2",
+      "locator": {
+        "book": "LEV",
+        "chapter": 24,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 24,
+          "verse": 2
+        }
+      ],
+      "en": "“Command the children of Israel, that they bring to you pure olive oil beaten for the light, to cause a lamp to burn continually.",
+      "ko": "이스라엘 자손에게 명하여 감람을 찧어 낸 순결한 기름을 켜기 위하여 네게로 가져오게 하고 끊이지 말고 등잔불을 켤찌며",
+      "source_text_hash": "0c2cfa77e0cc760b6e9f8f9296219b2f8b965abc8666117bf6a98e27a02f62a1",
+      "translation_text_hash": "57b1f506d5f4139d27e91487d3f18b2ee6cf9291ae9779fcebc3d66ed5aee08c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손에게 명하여 감람을 찧어 낸 순결한 기름을 켜기 위하여 네게로 가져오게 하고 끊이지 말고 등잔불을 켤찌며"
+      ],
+      "raw_text_hashes": [
+        "57b1f506d5f4139d27e91487d3f18b2ee6cf9291ae9779fcebc3d66ed5aee08c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:24:3",
+      "sequence": 3450,
+      "chapter_label": "LEV 24",
+      "verse_label": "3",
+      "locator": {
+        "book": "LEV",
+        "chapter": 24,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 24,
+          "verse": 3
+        }
+      ],
+      "en": "Outside of the veil of the Testimony, in the Tent of Meeting, Aaron shall keep it in order from evening to morning before the LORD continually. It shall be a statute forever throughout your generations.",
+      "ko": "아론은 회막안 증거궤 장 밖에서 저녁부터 아침까지 여호와 앞에 항상 등잔불을 정리할찌니 너희 대대로 지킬 영원한 규례라",
+      "source_text_hash": "a1a405171171575850241a3149d532049f7113ace773dd6e6e8e02c09ab24cd5",
+      "translation_text_hash": "c90dbc4e1f10b3173c0252e13f20f81fa8d70d3084388cca7e8cd72ba92d4277",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아론은 회막안 증거궤 장 밖에서 저녁부터 아침까지 여호와 앞에 항상 등잔불을 정리할찌니 너희 대대로 지킬 영원한 규례라"
+      ],
+      "raw_text_hashes": [
+        "c90dbc4e1f10b3173c0252e13f20f81fa8d70d3084388cca7e8cd72ba92d4277"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:24:4",
+      "sequence": 3451,
+      "chapter_label": "LEV 24",
+      "verse_label": "4",
+      "locator": {
+        "book": "LEV",
+        "chapter": 24,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 24,
+          "verse": 4
+        }
+      ],
+      "en": "He shall keep in order the lamps on the pure gold lamp stand before the LORD continually.",
+      "ko": "그가 여호와 앞에서 순결한 등대 위의 등잔들을 끊이지 않고 정리할찌니라",
+      "source_text_hash": "b777cbfd103df46ce4c0315a65af0842dd765babb34b302db72fc4bb1690b0d4",
+      "translation_text_hash": "c83e5c11825aad008373930286c077da32f82322741dcf5e8897ea5750a44930",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 여호와 앞에서 순결한 등대 위의 등잔들을 끊이지 않고 정리할찌니라"
+      ],
+      "raw_text_hashes": [
+        "c83e5c11825aad008373930286c077da32f82322741dcf5e8897ea5750a44930"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:24:5",
+      "sequence": 3452,
+      "chapter_label": "LEV 24",
+      "verse_label": "5",
+      "locator": {
+        "book": "LEV",
+        "chapter": 24,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 24,
+          "verse": 5
+        }
+      ],
+      "en": "“You shall take fine flour, and bake twelve cakes of it: two tenths of an ephah shall be in one cake.",
+      "ko": "너는 고운 가루를 취하여 떡 열 둘을 굽되 매 덩이를 에바 십분 이로 하여",
+      "source_text_hash": "54c17a071c5c149f2dab551bcf7d0a5e8c7c43da6fe55a3e1429e0c53e4c2387",
+      "translation_text_hash": "d61f7ec950ec40b1b83bf66e1be5c8e42434a3cbf336f2aec72868dc13565e13",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 고운 가루를 취하여 떡 열 둘을 굽되 매 덩이를 에바 십분 이로 하여"
+      ],
+      "raw_text_hashes": [
+        "d61f7ec950ec40b1b83bf66e1be5c8e42434a3cbf336f2aec72868dc13565e13"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:24:6",
+      "sequence": 3453,
+      "chapter_label": "LEV 24",
+      "verse_label": "6",
+      "locator": {
+        "book": "LEV",
+        "chapter": 24,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 24,
+          "verse": 6
+        }
+      ],
+      "en": "You shall set them in two rows, six on a row, on the pure gold table before the LORD.",
+      "ko": "여호와 앞 순결한 상 위에 두 줄로 한 줄에 여섯씩 진설하고",
+      "source_text_hash": "cbd597f63f60577e9829536c7d61700033346716ee70aa8db84e64f666163e64",
+      "translation_text_hash": "29b574407093481a31cab038c191cebd0eadcab4d6df94f20935333e3ccb46af",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와 앞 순결한 상 위에 두 줄로 한 줄에 여섯씩 진설하고"
+      ],
+      "raw_text_hashes": [
+        "29b574407093481a31cab038c191cebd0eadcab4d6df94f20935333e3ccb46af"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:24:7",
+      "sequence": 3454,
+      "chapter_label": "LEV 24",
+      "verse_label": "7",
+      "locator": {
+        "book": "LEV",
+        "chapter": 24,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 24,
+          "verse": 7
+        }
+      ],
+      "en": "You shall put pure frankincense on each row, that it may be to the bread for a memorial, even an offering made by fire to the LORD.",
+      "ko": "너는 또 정결한 유향을 그 매 줄 위에 두어 기념물로 여호와께 화제를 삼을 것이며",
+      "source_text_hash": "494acf2485ef4d580e8a12ba2ebe5029c4f72afdd72dfb5da3f4041958468e19",
+      "translation_text_hash": "c150c38432d456cbb5438c7303e06ec1935ffcc4af0572f60157d69059c2d82f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 또 정결한 유향을 그 매 줄 위에 두어 기념물로 여호와께 화제를 삼을 것이며"
+      ],
+      "raw_text_hashes": [
+        "c150c38432d456cbb5438c7303e06ec1935ffcc4af0572f60157d69059c2d82f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:24:8",
+      "sequence": 3455,
+      "chapter_label": "LEV 24",
+      "verse_label": "8",
+      "locator": {
+        "book": "LEV",
+        "chapter": 24,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 24,
+          "verse": 8
+        }
+      ],
+      "en": "Every Sabbath day he shall set it in order before the LORD continually. It is an everlasting covenant on the behalf of the children of Israel.",
+      "ko": "항상 매안식일에 이 떡을 여호와 앞에 진설할찌니 이는 이스라엘 자손을 위한 것이요 영원한 언약이니라",
+      "source_text_hash": "302f6dd3f90cd6923b65f70941f27a3b7188c36033f7463121a4f9979eb32f71",
+      "translation_text_hash": "26385d19531324ef2258bbb2e6454bf032127bfabd46c71734d2cd68b8530904",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "항상 매안식일에 이 떡을 여호와 앞에 진설할찌니 이는 이스라엘 자손을 위한 것이요 영원한 언약이니라"
+      ],
+      "raw_text_hashes": [
+        "26385d19531324ef2258bbb2e6454bf032127bfabd46c71734d2cd68b8530904"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:24:9",
+      "sequence": 3456,
+      "chapter_label": "LEV 24",
+      "verse_label": "9",
+      "locator": {
+        "book": "LEV",
+        "chapter": 24,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 24,
+          "verse": 9
+        }
+      ],
+      "en": "It shall be for Aaron and his sons. They shall eat it in a holy place; for it is most holy to him of the offerings of the LORD made by fire by a perpetual statute.”",
+      "ko": "이 떡은 아론과 그 자손에게 돌리고 그들은 그것을 거룩한 곳에서 먹을찌니 이는 여호와의 화제중 그에게 돌리는 것으로서 지극히 거룩함이니라 이는 영원한 규례니라",
+      "source_text_hash": "2f58fe7fa40736818b6a9d18f91c0173370aa6bfff1d713ec124ee857726a3de",
+      "translation_text_hash": "b173db8b648f0736c41f8d11a635d0bd1767528640591aec4bfce28126194c8c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 떡은 아론과 그 자손에게 돌리고 그들은 그것을 거룩한 곳에서 먹을찌니 이는 여호와의 화제중 그에게 돌리는 것으로서 지극히 거룩함이니라 이는 영원한 규례니라"
+      ],
+      "raw_text_hashes": [
+        "b173db8b648f0736c41f8d11a635d0bd1767528640591aec4bfce28126194c8c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:24:10",
+      "sequence": 3457,
+      "chapter_label": "LEV 24",
+      "verse_label": "10",
+      "locator": {
+        "book": "LEV",
+        "chapter": 24,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 24,
+          "verse": 10
+        }
+      ],
+      "en": "The son of an Israelite woman, whose father was an Egyptian, went out among the children of Israel; and the son of the Israelite woman and a man of Israel strove together in the camp.",
+      "ko": "이스라엘 여인의 아들이요 그 아비는 애굽 사람 된 자가 이스라엘 자손 중에 나가서 한 이스라엘 사람과 진중에서 싸우다가",
+      "source_text_hash": "8cfef7c3dc29a32371a2fdb6f99609ec6ae8283f7f63ef97eef22f2b81502e35",
+      "translation_text_hash": "a521a69a23936423fa4ad921457a41db6911b5efb81bae759f920560a0e8329d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 여인의 아들이요 그 아비는 애굽 사람 된 자가 이스라엘 자손 중에 나가서 한 이스라엘 사람과 진중에서 싸우다가"
+      ],
+      "raw_text_hashes": [
+        "a521a69a23936423fa4ad921457a41db6911b5efb81bae759f920560a0e8329d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:24:11",
+      "sequence": 3458,
+      "chapter_label": "LEV 24",
+      "verse_label": "11",
+      "locator": {
+        "book": "LEV",
+        "chapter": 24,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 24,
+          "verse": 11
+        }
+      ],
+      "en": "The son of the Israelite woman blasphemed the Name, and cursed; and they brought him to Moses. His mother’s name was Shelomith, the daughter of Dibri, of the tribe of Dan.",
+      "ko": "그 이스라엘 여인의 아들이 여호와의 이름을 훼방하며 저주하므로 무리가 끌고 모세에게로 가니라 그 어미의 이름은 슬로밋이요 단 지파 디브리의 딸이었더라",
+      "source_text_hash": "a2ae4a8f44c57424f3821abbcc3957c0042e51751cb2ab85cbe38cd271a4c851",
+      "translation_text_hash": "1098ca3d50b6458db61a889426f7896741d29f103941fe552293a3ffd42ed874",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 이스라엘 여인의 아들이 여호와의 이름을 훼방하며 저주하므로 무리가 끌고 모세에게로 가니라 그 어미의 이름은 슬로밋이요 단 지파 디브리의 딸이었더라"
+      ],
+      "raw_text_hashes": [
+        "1098ca3d50b6458db61a889426f7896741d29f103941fe552293a3ffd42ed874"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:24:12",
+      "sequence": 3459,
+      "chapter_label": "LEV 24",
+      "verse_label": "12",
+      "locator": {
+        "book": "LEV",
+        "chapter": 24,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 24,
+          "verse": 12
+        }
+      ],
+      "en": "They put him in custody until the LORD’s will should be declared to them.",
+      "ko": "그들이 그를 가두고 여호와의 명령을 기다리더니",
+      "source_text_hash": "cbc55adc85e686e1bc822237f2e76325ed20ed4e1995c71bf831b787130521ae",
+      "translation_text_hash": "a3324471903027a8ab3f0693eafa09833c18d2b5a19e61e00e736112c8105226",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 그를 가두고 여호와의 명령을 기다리더니"
+      ],
+      "raw_text_hashes": [
+        "a3324471903027a8ab3f0693eafa09833c18d2b5a19e61e00e736112c8105226"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:24:13",
+      "sequence": 3460,
+      "chapter_label": "LEV 24",
+      "verse_label": "13",
+      "locator": {
+        "book": "LEV",
+        "chapter": 24,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 24,
+          "verse": 13
+        }
+      ],
+      "en": "The LORD spoke to Moses, saying,",
+      "ko": "여호와께서 모세에게 일러 가라사대",
+      "source_text_hash": "28219e5da0d26514843495c6edb280f326aa0ccffb0d2bb642d0e1b0f4478ca1",
+      "translation_text_hash": "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:24:14",
+      "sequence": 3461,
+      "chapter_label": "LEV 24",
+      "verse_label": "14",
+      "locator": {
+        "book": "LEV",
+        "chapter": 24,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 24,
+          "verse": 14
+        }
+      ],
+      "en": "“Bring him who cursed out of the camp; and let all who heard him lay their hands on his head, and let all the congregation stone him.",
+      "ko": "저주한 사람을 진 밖에 끌어 내어 그 말을 들은 모든 자로 그 머리에 안수하게 하고 온 회중이 돌로 그를 칠찌니라",
+      "source_text_hash": "67f546d19e81426c597a3ed706ce4e8d166fe11bec956ee0d266729d65b851c3",
+      "translation_text_hash": "2982b83d5943db30d877ebe54e80628d68d064944e2bf77b42cbea87e80318cf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저주한 사람을 진 밖에 끌어 내어 그 말을 들은 모든 자로 그 머리에 안수하게 하고 온 회중이 돌로 그를 칠찌니라"
+      ],
+      "raw_text_hashes": [
+        "2982b83d5943db30d877ebe54e80628d68d064944e2bf77b42cbea87e80318cf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:24:15",
+      "sequence": 3462,
+      "chapter_label": "LEV 24",
+      "verse_label": "15",
+      "locator": {
+        "book": "LEV",
+        "chapter": 24,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 24,
+          "verse": 15
+        }
+      ],
+      "en": "You shall speak to the children of Israel, saying, ‘Whoever curses his God shall bear his sin.",
+      "ko": "너는 이스라엘 자손에게 고하여 이르라 누구든지 자기 하나님을 저주하면 죄를 당할 것이요",
+      "source_text_hash": "5b5ef3b4f8ba1a27bb318f04ed248ed0bb47f6df841b1393444cb0e468907c8c",
+      "translation_text_hash": "f45747252d0885a02c8289f1241a2762723a8a6fb155cffe299b2a5dddf8f338",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 이스라엘 자손에게 고하여 이르라 누구든지 자기 하나님을 저주하면 죄를 당할 것이요"
+      ],
+      "raw_text_hashes": [
+        "f45747252d0885a02c8289f1241a2762723a8a6fb155cffe299b2a5dddf8f338"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:24:16",
+      "sequence": 3463,
+      "chapter_label": "LEV 24",
+      "verse_label": "16",
+      "locator": {
+        "book": "LEV",
+        "chapter": 24,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 24,
+          "verse": 16
+        }
+      ],
+      "en": "He who blasphemes the LORD’s name, he shall surely be put to death. All the congregation shall certainly stone him. The foreigner as well as the native-born shall be put to death when he blasphemes the Name.",
+      "ko": "여호와의 이름을 훼방하면 그를 반드시 죽일찌니 온 회중이 돌로 그를 칠 것이라 외국인이든지 본토인이든지 여호와의 이름을 훼방하면 그를 죽일찌니라",
+      "source_text_hash": "c07803c345fbc372efe42a99d4b68375b94f99ee51939c291f33257518bfe151",
+      "translation_text_hash": "76fe8c45b6c4cf4c3dbb850f9cdb632e516a4927f0cc7f909008fc84b682b122",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 이름을 훼방하면 그를 반드시 죽일찌니 온 회중이 돌로 그를 칠 것이라 외국인이든지 본토인이든지 여호와의 이름을 훼방하면 그를 죽일찌니라"
+      ],
+      "raw_text_hashes": [
+        "76fe8c45b6c4cf4c3dbb850f9cdb632e516a4927f0cc7f909008fc84b682b122"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:24:17",
+      "sequence": 3464,
+      "chapter_label": "LEV 24",
+      "verse_label": "17",
+      "locator": {
+        "book": "LEV",
+        "chapter": 24,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 24,
+          "verse": 17
+        }
+      ],
+      "en": "“‘He who strikes any man mortally shall surely be put to death.",
+      "ko": "사람을 쳐 죽인 자는 반드시 죽일 것이요",
+      "source_text_hash": "1ab73529a2fbde406ee82457d8ac010981e9fb30cc2f671cb9f8f54b49c88d78",
+      "translation_text_hash": "0f22535c36f50207420526b131f4713dcef6eeb20dde28017d06ac283772abd6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람을 쳐 죽인 자는 반드시 죽일 것이요"
+      ],
+      "raw_text_hashes": [
+        "0f22535c36f50207420526b131f4713dcef6eeb20dde28017d06ac283772abd6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:24:18",
+      "sequence": 3465,
+      "chapter_label": "LEV 24",
+      "verse_label": "18",
+      "locator": {
+        "book": "LEV",
+        "chapter": 24,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 24,
+          "verse": 18
+        }
+      ],
+      "en": "He who strikes an animal mortally shall make it good, life for life.",
+      "ko": "짐승을 쳐 죽인 자는 짐승으로 짐승을 갚을 것이며",
+      "source_text_hash": "3938a496df1099e498c895aed3ed23844eeb08b1d16acc2173aebf1529a81016",
+      "translation_text_hash": "c9cd1155996523d85bc466554cb8a41a8717bbd5d55cc64e8757469666489345",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "짐승을 쳐 죽인 자는 짐승으로 짐승을 갚을 것이며"
+      ],
+      "raw_text_hashes": [
+        "c9cd1155996523d85bc466554cb8a41a8717bbd5d55cc64e8757469666489345"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:24:19",
+      "sequence": 3466,
+      "chapter_label": "LEV 24",
+      "verse_label": "19",
+      "locator": {
+        "book": "LEV",
+        "chapter": 24,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 24,
+          "verse": 19
+        }
+      ],
+      "en": "If anyone injures his neighbor, it shall be done to him as he has done:",
+      "ko": "사람이 만일 그 이웃을 상하였으면 그 행한 대로 그에게 행할 것이니",
+      "source_text_hash": "779600287163bc139f77b40d58d22d7f605a438e126c0e1bfcb9734f21ce2a1c",
+      "translation_text_hash": "92239e25a834a60acb892a9c01d0ed3d843863eed7b9a692a7b389ecd3d86996",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 만일 그 이웃을 상하였으면 그 행한 대로 그에게 행할 것이니"
+      ],
+      "raw_text_hashes": [
+        "92239e25a834a60acb892a9c01d0ed3d843863eed7b9a692a7b389ecd3d86996"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:24:20",
+      "sequence": 3467,
+      "chapter_label": "LEV 24",
+      "verse_label": "20",
+      "locator": {
+        "book": "LEV",
+        "chapter": 24,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 24,
+          "verse": 20
+        }
+      ],
+      "en": "fracture for fracture, eye for eye, tooth for tooth. It shall be done to him as he has injured someone.",
+      "ko": "파상은 파상으로, 눈은 눈으로, 이는 이로 갚을찌라 남에게 손상을 입힌 대로 그에게 그렇게 할것이며",
+      "source_text_hash": "7eb33036dc804b2e8b84479e80a9ec49a55ecf018409804180187aab32afb0be",
+      "translation_text_hash": "abd97253617d66302445894ffe559ebcc2920a8e710882790fab8914a197562d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "파상은 파상으로, 눈은 눈으로, 이는 이로 갚을찌라 남에게 손상을 입힌 대로 그에게 그렇게 할것이며"
+      ],
+      "raw_text_hashes": [
+        "abd97253617d66302445894ffe559ebcc2920a8e710882790fab8914a197562d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:24:21",
+      "sequence": 3468,
+      "chapter_label": "LEV 24",
+      "verse_label": "21",
+      "locator": {
+        "book": "LEV",
+        "chapter": 24,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 24,
+          "verse": 21
+        }
+      ],
+      "en": "He who kills an animal shall make it good; and he who kills a man shall be put to death.",
+      "ko": "짐승을 죽인 자는 그것을 물어 줄 것이요 사람을 죽인 자는 죽일찌니",
+      "source_text_hash": "eaffaf7951cc8a5e98ab4e881c89faa5cff4f7f2de9c7911cab58caee83fcd5a",
+      "translation_text_hash": "a96b5a03e33673a1aed2d456f894212a56510c0a39a1253a5a77c2105ef0e32e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "짐승을 죽인 자는 그것을 물어 줄 것이요 사람을 죽인 자는 죽일찌니"
+      ],
+      "raw_text_hashes": [
+        "a96b5a03e33673a1aed2d456f894212a56510c0a39a1253a5a77c2105ef0e32e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:24:22",
+      "sequence": 3469,
+      "chapter_label": "LEV 24",
+      "verse_label": "22",
+      "locator": {
+        "book": "LEV",
+        "chapter": 24,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 24,
+          "verse": 22
+        }
+      ],
+      "en": "You shall have one kind of law for the foreigner as well as the native-born; for I am the LORD your God.’”",
+      "ko": "외국인에게든지 본토인에게든지 그 법을 동일히 할것은 나는 너희 하나님 여호와임이니라",
+      "source_text_hash": "6a9830fcbbf9bfc8f0f5d3186f5988db0b183e7b5caaa26fed7c805cf30e1873",
+      "translation_text_hash": "a40df5a28cd741592530d1572cdde8cfcbf719281084a92df468ef8f17aa4bdc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "외국인에게든지 본토인에게든지 그 법을 동일히 할것은 나는 너희 하나님 여호와임이니라"
+      ],
+      "raw_text_hashes": [
+        "a40df5a28cd741592530d1572cdde8cfcbf719281084a92df468ef8f17aa4bdc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:24:23",
+      "sequence": 3470,
+      "chapter_label": "LEV 24",
+      "verse_label": "23",
+      "locator": {
+        "book": "LEV",
+        "chapter": 24,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 24,
+          "verse": 23
+        }
+      ],
+      "en": "Moses spoke to the children of Israel; and they brought him who had cursed out of the camp, and stoned him with stones. The children of Israel did as the LORD commanded Moses.",
+      "ko": "모세가 이스라엘 자손에게 고하니 그들이 저주한 자를 진 밖에 끌어 내어 돌로 쳤더라 이스라엘 자손이 여호와께서 모세에게 명하신대로 행하였더라",
+      "source_text_hash": "10486870941236b3d12f8bd846cd9f83944354e0d64e7f44f2e2304f3edc6959",
+      "translation_text_hash": "4c1c4a3b58afe9812ba0f8ff4ec9dce4f135082ccaccebbf113de8be4fed80e9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 이스라엘 자손에게 고하니 그들이 저주한 자를 진 밖에 끌어 내어 돌로 쳤더라 이스라엘 자손이 여호와께서 모세에게 명하신대로 행하였더라"
+      ],
+      "raw_text_hashes": [
+        "4c1c4a3b58afe9812ba0f8ff4ec9dce4f135082ccaccebbf113de8be4fed80e9"
+      ]
+    }
+  ]
+}

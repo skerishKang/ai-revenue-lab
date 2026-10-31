@@ -1,0 +1,685 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1CO:chapter:004",
+  "unit_ordinal": 1066,
+  "unit_label": "1CO 4",
+  "book_code": "1CO",
+  "chapter_number": 4,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1CO:4:1",
+      "sequence": 28431,
+      "chapter_label": "1CO 4",
+      "verse_label": "1",
+      "locator": {
+        "book": "1CO",
+        "chapter": 4,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 4,
+          "verse": 1
+        }
+      ],
+      "en": "So let a man think of us as Christ’s servants and stewards of God’s mysteries.",
+      "ko": "사람이 마땅히 우리를 그리스도의 일군이요 하나님의 비밀을 맡은 자로 여길찌어다",
+      "source_text_hash": "a367b2b5842c934148daad418462c3f53e9fe3b7821de179865963b5b40548a2",
+      "translation_text_hash": "7369fe8194483979b938975951dbc71adced3501b7bf874d7eea8308a81049f0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 마땅히 우리를 그리스도의 일군이요 하나님의 비밀을 맡은 자로 여길찌어다"
+      ],
+      "raw_text_hashes": [
+        "7369fe8194483979b938975951dbc71adced3501b7bf874d7eea8308a81049f0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:4:2",
+      "sequence": 28432,
+      "chapter_label": "1CO 4",
+      "verse_label": "2",
+      "locator": {
+        "book": "1CO",
+        "chapter": 4,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 4,
+          "verse": 2
+        }
+      ],
+      "en": "Here, moreover, it is required of stewards that they be found faithful.",
+      "ko": "그리고 맡은 자들에게 구할 것은 충성이니라",
+      "source_text_hash": "dc34747a8b0a6235f3af2103a04e47704c83595fc2094e92ced0ca6e2a06b7b7",
+      "translation_text_hash": "b75d95e8ea4afd08ccfe29932954901a802f064b0e49350d06303d61412fe800",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그리고 맡은 자들에게 구할 것은 충성이니라"
+      ],
+      "raw_text_hashes": [
+        "b75d95e8ea4afd08ccfe29932954901a802f064b0e49350d06303d61412fe800"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:4:3",
+      "sequence": 28433,
+      "chapter_label": "1CO 4",
+      "verse_label": "3",
+      "locator": {
+        "book": "1CO",
+        "chapter": 4,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 4,
+          "verse": 3
+        }
+      ],
+      "en": "But with me it is a very small thing that I should be judged by you, or by a human court. Yes, I don’t even judge my own self.",
+      "ko": "너희에게나 다른 사람에게나 판단 받는 것이 내게는 매우 작은 일이라 나도 나를 판단치 아니하노니",
+      "source_text_hash": "4b04e426cc16b90c0bb6d4204a367a89c294a75958091237d32c7e143f0dc420",
+      "translation_text_hash": "92fae698108ceb6f8b9d9ca8d47f6c7d07c69fa162ae74d321965da2566bc5af",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희에게나 다른 사람에게나 판단 받는 것이 내게는 매우 작은 일이라 나도 나를 판단치 아니하노니"
+      ],
+      "raw_text_hashes": [
+        "92fae698108ceb6f8b9d9ca8d47f6c7d07c69fa162ae74d321965da2566bc5af"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:4:4",
+      "sequence": 28434,
+      "chapter_label": "1CO 4",
+      "verse_label": "4",
+      "locator": {
+        "book": "1CO",
+        "chapter": 4,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 4,
+          "verse": 4
+        }
+      ],
+      "en": "For I know nothing against myself. Yet I am not justified by this, but he who judges me is the Lord.",
+      "ko": "내가 자책할 아무 것도 깨닫지 못하나 그러나 이를 인하여 의롭다 함을 얻지 못하노라 다만 나를 판단하실 이는 주시니라",
+      "source_text_hash": "ce6a705292fae36cbe25aaed2703f624124ebad6a5ba4f9cdd99d4baa053972d",
+      "translation_text_hash": "961938cd3272f6d790e98efef7cc26c414fbf297fc795cd5a379ad9784caa8a6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 자책할 아무 것도 깨닫지 못하나 그러나 이를 인하여 의롭다 함을 얻지 못하노라 다만 나를 판단하실 이는 주시니라"
+      ],
+      "raw_text_hashes": [
+        "961938cd3272f6d790e98efef7cc26c414fbf297fc795cd5a379ad9784caa8a6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:4:5",
+      "sequence": 28435,
+      "chapter_label": "1CO 4",
+      "verse_label": "5",
+      "locator": {
+        "book": "1CO",
+        "chapter": 4,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 4,
+          "verse": 5
+        }
+      ],
+      "en": "Therefore judge nothing before the time, until the Lord comes, who will both bring to light the hidden things of darkness and reveal the counsels of the hearts. Then each man will get his praise from God.",
+      "ko": "그러므로 때가 이르기 전 곧 주께서 오시기까지 아무것도 판단치 말라 그가 어두움에 감추인 것들을 드러내고 마음의 뜻을 나타내시리니 그 때에 각 사람에게 하나님께로부터 칭찬이 있으리라",
+      "source_text_hash": "c064670fa64ab8169a79460a8a1d146dd201e4514be1a78a6c0da909c9b31030",
+      "translation_text_hash": "38e9c5a4416413087ea564b32ac4e93036f3fdfdf80df04e976078a20f58841e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 때가 이르기 전 곧 주께서 오시기까지 아무것도 판단치 말라 그가 어두움에 감추인 것들을 드러내고 마음의 뜻을 나타내시리니 그 때에 각 사람에게 하나님께로부터 칭찬이 있으리라"
+      ],
+      "raw_text_hashes": [
+        "38e9c5a4416413087ea564b32ac4e93036f3fdfdf80df04e976078a20f58841e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:4:6",
+      "sequence": 28436,
+      "chapter_label": "1CO 4",
+      "verse_label": "6",
+      "locator": {
+        "book": "1CO",
+        "chapter": 4,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 4,
+          "verse": 6
+        }
+      ],
+      "en": "Now these things, brothers, I have in a figure transferred to myself and Apollos for your sakes, that in us you might learn not to think beyond the things which are written, that none of you be puffed up against one another.",
+      "ko": "형제들아 내가 너희를 위하여 이 일에 나와 아볼로를 가지고 본을 보였으니 이는 너희로 하여금 기록한 말씀 밖에 넘어가지 말라 한 것을 우리에게서 배워 서로 대적하여 교만한 마음을 먹지 말게 하려 함이라",
+      "source_text_hash": "786e38d024ae36d159c31f75a5a57bece6a27f1ed3079128d032481e22387f05",
+      "translation_text_hash": "3fd140db26d74d80cf41f1a4c3cf0bafe1c7f3c2ef8061bbfcdf2d86ba91e9a3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "형제들아 내가 너희를 위하여 이 일에 나와 아볼로를 가지고 본을 보였으니 이는 너희로 하여금 기록한 말씀 밖에 넘어가지 말라 한 것을 우리에게서 배워 서로 대적하여 교만한 마음을 먹지 말게 하려 함이라"
+      ],
+      "raw_text_hashes": [
+        "3fd140db26d74d80cf41f1a4c3cf0bafe1c7f3c2ef8061bbfcdf2d86ba91e9a3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:4:7",
+      "sequence": 28437,
+      "chapter_label": "1CO 4",
+      "verse_label": "7",
+      "locator": {
+        "book": "1CO",
+        "chapter": 4,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 4,
+          "verse": 7
+        }
+      ],
+      "en": "For who makes you different? And what do you have that you didn’t receive? But if you did receive it, why do you boast as if you had not received it?",
+      "ko": "누가 너를 구별하였느뇨 네게 있는 것 중에 받지 아니한 것이 무엇이뇨 네가 받았은즉 어찌하여 받지 아니한 것 같이 자랑하느뇨",
+      "source_text_hash": "5647f0526b8c60b687df034552a84975bbf06cc52786cefe42d3551f3b84a48e",
+      "translation_text_hash": "820ecb831405d8c9a23587c930af922897c901ff0afcebcaa55785d3185fdb8f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누가 너를 구별하였느뇨 네게 있는 것 중에 받지 아니한 것이 무엇이뇨 네가 받았은즉 어찌하여 받지 아니한 것 같이 자랑하느뇨"
+      ],
+      "raw_text_hashes": [
+        "820ecb831405d8c9a23587c930af922897c901ff0afcebcaa55785d3185fdb8f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:4:8",
+      "sequence": 28438,
+      "chapter_label": "1CO 4",
+      "verse_label": "8",
+      "locator": {
+        "book": "1CO",
+        "chapter": 4,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 4,
+          "verse": 8
+        }
+      ],
+      "en": "You are already filled. You have already become rich. You have come to reign without us. Yes, and I wish that you did reign, that we also might reign with you!",
+      "ko": "너희가 이미 배부르며 이미 부요하며 우리 없이 왕노릇 하였도다 우리가 너희와 함께 왕노릇 하기 위하여 참으로 너희의 왕노릇 하기를 원하노라",
+      "source_text_hash": "8c0eed568398084ec156fa54965d63f0a6a2cad38c78a448bba49e2e783d6290",
+      "translation_text_hash": "68a0862ecc82c5715aab80d23c77f322f5e646f3fefc177ba922ba9aeeae9d6a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 이미 배부르며 이미 부요하며 우리 없이 왕노릇 하였도다 우리가 너희와 함께 왕노릇 하기 위하여 참으로 너희의 왕노릇 하기를 원하노라"
+      ],
+      "raw_text_hashes": [
+        "68a0862ecc82c5715aab80d23c77f322f5e646f3fefc177ba922ba9aeeae9d6a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:4:9",
+      "sequence": 28439,
+      "chapter_label": "1CO 4",
+      "verse_label": "9",
+      "locator": {
+        "book": "1CO",
+        "chapter": 4,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 4,
+          "verse": 9
+        }
+      ],
+      "en": "For I think that God has displayed us, the apostles, last of all, like men sentenced to death. For we are made a spectacle to the world, both to angels and men.",
+      "ko": "내가 생각건대 하나님이 사도인 우리를 죽이기로 작정한 자 같이 미말에 두셨으매 우리는 세계 곧 천사와 사람에게 구경거리가 되었노라",
+      "source_text_hash": "3cb273e0657557ec773cefe11ae8e83b349511aacf114f4899d1b861dc6b2150",
+      "translation_text_hash": "5f6fd830e2e9c5ab783df59216217c900bb7624555746c698f27eeaff5e4d0ad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 생각건대 하나님이 사도인 우리를 죽이기로 작정한 자 같이 미말에 두셨으매 우리는 세계 곧 천사와 사람에게 구경거리가 되었노라"
+      ],
+      "raw_text_hashes": [
+        "5f6fd830e2e9c5ab783df59216217c900bb7624555746c698f27eeaff5e4d0ad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:4:10",
+      "sequence": 28440,
+      "chapter_label": "1CO 4",
+      "verse_label": "10",
+      "locator": {
+        "book": "1CO",
+        "chapter": 4,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 4,
+          "verse": 10
+        }
+      ],
+      "en": "We are fools for Christ’s sake, but you are wise in Christ. We are weak, but you are strong. You have honor, but we have dishonor.",
+      "ko": "우리는 그리스도의 연고로 미련하되 너희는 그리스도 안에서 지혜롭고 우리는 약하되 너희는 강하고 너희는 존귀하되 우리는 비천하여",
+      "source_text_hash": "40688748c2871f7cc466bd7b5ccb8e3acda015d17d401df38deb86077f2cb888",
+      "translation_text_hash": "1a6fd5537864f9abe70d98a13b5c9800b9721367c7d0b5414d2bedf647773a26",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리는 그리스도의 연고로 미련하되 너희는 그리스도 안에서 지혜롭고 우리는 약하되 너희는 강하고 너희는 존귀하되 우리는 비천하여"
+      ],
+      "raw_text_hashes": [
+        "1a6fd5537864f9abe70d98a13b5c9800b9721367c7d0b5414d2bedf647773a26"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:4:11",
+      "sequence": 28441,
+      "chapter_label": "1CO 4",
+      "verse_label": "11",
+      "locator": {
+        "book": "1CO",
+        "chapter": 4,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 4,
+          "verse": 11
+        }
+      ],
+      "en": "Even to this present hour we hunger, thirst, are naked, are beaten, and have no certain dwelling place.",
+      "ko": "바로 이 시간까지 우리가 주리고 목마르며 헐벗고 매맞으며 정처가 없고",
+      "source_text_hash": "b9f645bca19f514e82afd6d8efbfc97d86bdca0909fdb1947f9fee2fd1432a39",
+      "translation_text_hash": "5de322024b8d6685486c0eda657e587d7cc55bbdb5bf2391fa66e0bbf16e5414",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바로 이 시간까지 우리가 주리고 목마르며 헐벗고 매맞으며 정처가 없고"
+      ],
+      "raw_text_hashes": [
+        "5de322024b8d6685486c0eda657e587d7cc55bbdb5bf2391fa66e0bbf16e5414"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:4:12",
+      "sequence": 28442,
+      "chapter_label": "1CO 4",
+      "verse_label": "12",
+      "locator": {
+        "book": "1CO",
+        "chapter": 4,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 4,
+          "verse": 12
+        }
+      ],
+      "en": "We toil, working with our own hands. When people curse us, we bless. Being persecuted, we endure.",
+      "ko": "또 수고하여 친히 손으로 일을 하며 후욕을 당한즉 축복하고 핍박을 당한즉 참고",
+      "source_text_hash": "e3ece8fb73d9f3712b0d613040f17e44f79066d27dfa642eae44fc0523b2bad1",
+      "translation_text_hash": "bc7b40179da95c7cd597eabaeb8d01529fc03f9a1957473d7f1477701a7820fb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 수고하여 친히 손으로 일을 하며 후욕을 당한즉 축복하고 핍박을 당한즉 참고"
+      ],
+      "raw_text_hashes": [
+        "bc7b40179da95c7cd597eabaeb8d01529fc03f9a1957473d7f1477701a7820fb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:4:13",
+      "sequence": 28443,
+      "chapter_label": "1CO 4",
+      "verse_label": "13",
+      "locator": {
+        "book": "1CO",
+        "chapter": 4,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 4,
+          "verse": 13
+        }
+      ],
+      "en": "Being defamed, we entreat. We are made as the filth of the world, the dirt wiped off by all, even until now.",
+      "ko": "비방을 당한즉 권면하니 우리가 지금까지 세상의 더러운 것과 만물의 찌끼 같이 되었도다",
+      "source_text_hash": "8703d540c421600bcc03f44c22c47e5c2d0c95e1f9e9bfd0a042d013aad9f703",
+      "translation_text_hash": "3e9c0b66b7fa43db871ca2bdd38c6c0ba84b00c81539e2a6a42fd1b6d7893a59",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "비방을 당한즉 권면하니 우리가 지금까지 세상의 더러운 것과 만물의 찌끼 같이 되었도다"
+      ],
+      "raw_text_hashes": [
+        "3e9c0b66b7fa43db871ca2bdd38c6c0ba84b00c81539e2a6a42fd1b6d7893a59"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:4:14",
+      "sequence": 28444,
+      "chapter_label": "1CO 4",
+      "verse_label": "14",
+      "locator": {
+        "book": "1CO",
+        "chapter": 4,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 4,
+          "verse": 14
+        }
+      ],
+      "en": "I don’t write these things to shame you, but to admonish you as my beloved children.",
+      "ko": "내가 너희를 부끄럽게 하려고 이것을 쓰는 것이 아니라 오직 너희를 내 사랑하는 자녀 같이 권하려 하는 것이라",
+      "source_text_hash": "65396ec425f341afe74847f71d913c605ea08d92628f4304e03da9b89107072e",
+      "translation_text_hash": "875725a8a2e3ddfba5eb6b8f0d5bc1cf319d20c575371053bc23ab89f37b126c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너희를 부끄럽게 하려고 이것을 쓰는 것이 아니라 오직 너희를 내 사랑하는 자녀 같이 권하려 하는 것이라"
+      ],
+      "raw_text_hashes": [
+        "875725a8a2e3ddfba5eb6b8f0d5bc1cf319d20c575371053bc23ab89f37b126c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:4:15",
+      "sequence": 28445,
+      "chapter_label": "1CO 4",
+      "verse_label": "15",
+      "locator": {
+        "book": "1CO",
+        "chapter": 4,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 4,
+          "verse": 15
+        }
+      ],
+      "en": "For though you have ten thousand tutors in Christ, you don’t have many fathers. For in Christ Jesus, I became your father through the Good News.",
+      "ko": "그리스도 안에서 일만 스승이 있으되 아비는 많지 아니하니 그리스도 예수 안에서 복음으로써 내가 너희를 낳았음이라",
+      "source_text_hash": "8b5b432f4fb61614c7a14565c55fbd9834fad420fcc12f70cb80c39404ccc8b2",
+      "translation_text_hash": "65d6bf3215bf7505b7db6d68e258c34a48f16334fbbd66e6dc925af2091ea1b1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그리스도 안에서 일만 스승이 있으되 아비는 많지 아니하니 그리스도 예수 안에서 복음으로써 내가 너희를 낳았음이라"
+      ],
+      "raw_text_hashes": [
+        "65d6bf3215bf7505b7db6d68e258c34a48f16334fbbd66e6dc925af2091ea1b1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:4:16",
+      "sequence": 28446,
+      "chapter_label": "1CO 4",
+      "verse_label": "16",
+      "locator": {
+        "book": "1CO",
+        "chapter": 4,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 4,
+          "verse": 16
+        }
+      ],
+      "en": "I beg you therefore, be imitators of me.",
+      "ko": "그러므로 내가 너희에게 권하노니 너희는 나를 본받는 자 되라",
+      "source_text_hash": "2701f69cee7dd9290c27f95bcbf9ef25218358c239cf5c233c0a6e58f261d11f",
+      "translation_text_hash": "68043d98aa91618b23c238037e0d27cdaae2de8adbe1296350ce1f4b53199bdb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 내가 너희에게 권하노니 너희는 나를 본받는 자 되라"
+      ],
+      "raw_text_hashes": [
+        "68043d98aa91618b23c238037e0d27cdaae2de8adbe1296350ce1f4b53199bdb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:4:17",
+      "sequence": 28447,
+      "chapter_label": "1CO 4",
+      "verse_label": "17",
+      "locator": {
+        "book": "1CO",
+        "chapter": 4,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 4,
+          "verse": 17
+        }
+      ],
+      "en": "Because of this I have sent Timothy to you, who is my beloved and faithful child in the Lord, who will remind you of my ways which are in Christ, even as I teach everywhere in every assembly.",
+      "ko": "이를 인하여 내가 주 안에서 내 사랑하고 신실한 아들 디모데를 너희에게 보내었노니 저가 너희로 하여금 그리스도 예수 안에서 나의 행사 곧 내가 각처 각 교회에서 가르치는 것을 생각나게 하리라",
+      "source_text_hash": "21d187813117e6b2b54ced8d5fbad0400fd715dfe35d6e3f89cb682b829d6273",
+      "translation_text_hash": "9a40cbb3ff5b1a935473faeb09885d5e63e0b9e3a15732d5b00518d92c1a78c9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이를 인하여 내가 주 안에서 내 사랑하고 신실한 아들 디모데를 너희에게 보내었노니 저가 너희로 하여금 그리스도 예수 안에서 나의 행사 곧 내가 각처 각 교회에서 가르치는 것을 생각나게 하리라"
+      ],
+      "raw_text_hashes": [
+        "9a40cbb3ff5b1a935473faeb09885d5e63e0b9e3a15732d5b00518d92c1a78c9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:4:18",
+      "sequence": 28448,
+      "chapter_label": "1CO 4",
+      "verse_label": "18",
+      "locator": {
+        "book": "1CO",
+        "chapter": 4,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 4,
+          "verse": 18
+        }
+      ],
+      "en": "Now some are puffed up, as though I were not coming to you.",
+      "ko": "어떤이들은 내가 너희에게 나아가지 아니할 것 같이 스스로 교만하여졌으나",
+      "source_text_hash": "f20b300705e2eb33a95ec9e28f470b9407ef65dc4ebc1e917210a3d1413c7f9b",
+      "translation_text_hash": "68c4994efc47026703f9c59f12ae2b3c2f28935036ec17a99082b54bbba2b048",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어떤이들은 내가 너희에게 나아가지 아니할 것 같이 스스로 교만하여졌으나"
+      ],
+      "raw_text_hashes": [
+        "68c4994efc47026703f9c59f12ae2b3c2f28935036ec17a99082b54bbba2b048"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:4:19",
+      "sequence": 28449,
+      "chapter_label": "1CO 4",
+      "verse_label": "19",
+      "locator": {
+        "book": "1CO",
+        "chapter": 4,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 4,
+          "verse": 19
+        }
+      ],
+      "en": "But I will come to you shortly, if the Lord is willing. And I will know, not the word of those who are puffed up, but the power.",
+      "ko": "그러나 주께서 허락하시면 내가 너희에게 속히 나아가서 교만한 자의 말을 알아 볼 것이 아니라 오직 그 능력을 알아 보겠노니",
+      "source_text_hash": "514a39c648b65d6705e4870045b10a56fe2f3ac480336cee77ba6a41eabde1d2",
+      "translation_text_hash": "7dcbed16f81004572df2680ef0d9fac9ee9bab60761df48924305d1d4baed051",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 주께서 허락하시면 내가 너희에게 속히 나아가서 교만한 자의 말을 알아 볼 것이 아니라 오직 그 능력을 알아 보겠노니"
+      ],
+      "raw_text_hashes": [
+        "7dcbed16f81004572df2680ef0d9fac9ee9bab60761df48924305d1d4baed051"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:4:20",
+      "sequence": 28450,
+      "chapter_label": "1CO 4",
+      "verse_label": "20",
+      "locator": {
+        "book": "1CO",
+        "chapter": 4,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 4,
+          "verse": 20
+        }
+      ],
+      "en": "For God’s Kingdom is not in word, but in power.",
+      "ko": "하나님의 나라는 말에 있지 아니하고 오직 능력에 있음이라",
+      "source_text_hash": "dd8e4c0b2759eaf9053464bb5385a51a86b2bc764b9551f91a5d2116369151b7",
+      "translation_text_hash": "8508e3f29c8832aaab8f892a86ac5d3038853c3179985eced5a4e3c73c7a6291",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님의 나라는 말에 있지 아니하고 오직 능력에 있음이라"
+      ],
+      "raw_text_hashes": [
+        "8508e3f29c8832aaab8f892a86ac5d3038853c3179985eced5a4e3c73c7a6291"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:4:21",
+      "sequence": 28451,
+      "chapter_label": "1CO 4",
+      "verse_label": "21",
+      "locator": {
+        "book": "1CO",
+        "chapter": 4,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 4,
+          "verse": 21
+        }
+      ],
+      "en": "What do you want? Shall I come to you with a rod, or in love and a spirit of gentleness?",
+      "ko": "너희가 무엇을 원하느냐 내가 매를 가지고 너희에게 나아가랴 사랑과 온유한 마음으로 나아가랴",
+      "source_text_hash": "63b58afbb665240c1a25c89ac91492e832ce37beb8408157d26127a9eae58ba3",
+      "translation_text_hash": "9a438ebd93d52f2126fb7ba79a344a18987a38e0b301194027d954b789653f16",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 무엇을 원하느냐 내가 매를 가지고 너희에게 나아가랴 사랑과 온유한 마음으로 나아가랴"
+      ],
+      "raw_text_hashes": [
+        "9a438ebd93d52f2126fb7ba79a344a18987a38e0b301194027d954b789653f16"
+      ]
+    }
+  ]
+}

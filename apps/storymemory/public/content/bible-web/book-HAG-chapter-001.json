@@ -1,0 +1,493 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:HAG:chapter:001",
+  "unit_ordinal": 910,
+  "unit_label": "HAG 1",
+  "book_code": "HAG",
+  "chapter_number": 1,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:HAG:1:1",
+      "sequence": 22842,
+      "chapter_label": "HAG 1",
+      "verse_label": "1",
+      "locator": {
+        "book": "HAG",
+        "chapter": 1,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "HAG",
+          "chapter": 1,
+          "verse": 1
+        }
+      ],
+      "en": "In the second year of Darius the king, in the sixth month, in the first day of the month, the LORD’s word came by Haggai the prophet, to Zerubbabel the son of Shealtiel, governor of Judah, and to Joshua the son of Jehozadak, the high priest, saying,",
+      "ko": "다리오왕 이년 유월 곧 그 달 초하루에 여호와의 말씀이 선지자 학개로 말미암아 스알디엘의 아들 유다 총독 스룹바벨과 여호사닥의 아들 대제사장 여호수아에게 임하니라 가라사대",
+      "source_text_hash": "dbb26966081060ad0b68a4c77151cce25c0add61ae050577aa52bd0b7c7893a8",
+      "translation_text_hash": "f351749c1bfc54d06802a90b1d639dcf24e53d3fb8b0f438c95a18a4f4fa8cf9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다리오왕 이년 유월 곧 그 달 초하루에 여호와의 말씀이 선지자 학개로 말미암아 스알디엘의 아들 유다 총독 스룹바벨과 여호사닥의 아들 대제사장 여호수아에게 임하니라 가라사대"
+      ],
+      "raw_text_hashes": [
+        "f351749c1bfc54d06802a90b1d639dcf24e53d3fb8b0f438c95a18a4f4fa8cf9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HAG:1:2",
+      "sequence": 22843,
+      "chapter_label": "HAG 1",
+      "verse_label": "2",
+      "locator": {
+        "book": "HAG",
+        "chapter": 1,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "HAG",
+          "chapter": 1,
+          "verse": 2
+        }
+      ],
+      "en": "“This is what the LORD of Armies says: These people say, ‘The time hasn’t yet come, the time for the LORD’s house to be built.’”",
+      "ko": "만군의 여호와가 말하여 이르노라 이 백성이 말하기를 여호와의 전을 건축할 시기가 이르지 아니하였다 하느니라",
+      "source_text_hash": "47d8dcd26937996b5c3ca105cd3d88f05deadf452e96e464b67423313c82d37c",
+      "translation_text_hash": "18f99cd69260404ef70c83d24d4d765dfa3516f89ad7caf77c9c6a0a97e9b667",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만군의 여호와가 말하여 이르노라 이 백성이 말하기를 여호와의 전을 건축할 시기가 이르지 아니하였다 하느니라"
+      ],
+      "raw_text_hashes": [
+        "18f99cd69260404ef70c83d24d4d765dfa3516f89ad7caf77c9c6a0a97e9b667"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HAG:1:3",
+      "sequence": 22844,
+      "chapter_label": "HAG 1",
+      "verse_label": "3",
+      "locator": {
+        "book": "HAG",
+        "chapter": 1,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "HAG",
+          "chapter": 1,
+          "verse": 3
+        }
+      ],
+      "en": "Then the LORD’s word came by Haggai the prophet, saying,",
+      "ko": "여호와의 말씀이 선지자 학개에게 임하여 가라사대",
+      "source_text_hash": "5a05efd85e1735f4bd5a4e93dac73b29d0228c6f504591e52eb1830e67991295",
+      "translation_text_hash": "6862690bdcd916e59da8f06567cb0bcfd4fc043266b1dfa86b92e96d3d013a2f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 말씀이 선지자 학개에게 임하여 가라사대"
+      ],
+      "raw_text_hashes": [
+        "6862690bdcd916e59da8f06567cb0bcfd4fc043266b1dfa86b92e96d3d013a2f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HAG:1:4",
+      "sequence": 22845,
+      "chapter_label": "HAG 1",
+      "verse_label": "4",
+      "locator": {
+        "book": "HAG",
+        "chapter": 1,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "HAG",
+          "chapter": 1,
+          "verse": 4
+        }
+      ],
+      "en": "“Is it a time for you yourselves to dwell in your paneled houses, while this house lies waste?",
+      "ko": "이 전이 황무하였거늘 너희가 이 때에 판벽한 집에 거하는 것이 가하냐",
+      "source_text_hash": "394a34692df04247f29b2d755eea040adf2dffb02da47217bad5e54fc3c448bd",
+      "translation_text_hash": "48375cb924f4c4d8fd8b2722482522c5497d688850d2f84386d099d8eecbb59e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 전이 황무하였거늘 너희가 이 때에 판벽한 집에 거하는 것이 가하냐"
+      ],
+      "raw_text_hashes": [
+        "48375cb924f4c4d8fd8b2722482522c5497d688850d2f84386d099d8eecbb59e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HAG:1:5",
+      "sequence": 22846,
+      "chapter_label": "HAG 1",
+      "verse_label": "5",
+      "locator": {
+        "book": "HAG",
+        "chapter": 1,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "HAG",
+          "chapter": 1,
+          "verse": 5
+        }
+      ],
+      "en": "Now therefore this is what the LORD of Armies says: ‘Consider your ways.",
+      "ko": "그러므로 이제 나 만군의 여호와가 말하노니 너희는 자기의 소위를 살펴 볼찌니라",
+      "source_text_hash": "7828c53c9682f7a271c4c8caec2a2d90cc62b871fa9279befd6c28298fa447fb",
+      "translation_text_hash": "7692499eee70e79382344b4ca07d61e9ebc72aa5568f21908b8b15468b8ea795",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 이제 나 만군의 여호와가 말하노니 너희는 자기의 소위를 살펴 볼찌니라"
+      ],
+      "raw_text_hashes": [
+        "7692499eee70e79382344b4ca07d61e9ebc72aa5568f21908b8b15468b8ea795"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HAG:1:6",
+      "sequence": 22847,
+      "chapter_label": "HAG 1",
+      "verse_label": "6",
+      "locator": {
+        "book": "HAG",
+        "chapter": 1,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "HAG",
+          "chapter": 1,
+          "verse": 6
+        }
+      ],
+      "en": "You have sown much, and bring in little. You eat, but you don’t have enough. You drink, but you aren’t filled with drink. You clothe yourselves, but no one is warm; and he who earns wages earns wages to put them into a bag with holes in it.’",
+      "ko": "너희가 많이 뿌릴찌라도 수입이 적으며 먹을찌라도 배부르지 못하며 마실찌라도 흡족하지 못하며 입어도 따뜻하지 못하며 일군이 삯을 받아도 그것을 구멍 뚫어진 전대에 넣음이 되느니라",
+      "source_text_hash": "29a252f740e6ff46c7c2938a9704dd39647a0b2610912fe4406b36a09ff6f300",
+      "translation_text_hash": "9ec47d443766538290e83626a8b2d6a3e4858c48c7bf733c937e2d8718ad3d37",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 많이 뿌릴찌라도 수입이 적으며 먹을찌라도 배부르지 못하며 마실찌라도 흡족하지 못하며 입어도 따뜻하지 못하며 일군이 삯을 받아도 그것을 구멍 뚫어진 전대에 넣음이 되느니라"
+      ],
+      "raw_text_hashes": [
+        "9ec47d443766538290e83626a8b2d6a3e4858c48c7bf733c937e2d8718ad3d37"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HAG:1:7",
+      "sequence": 22848,
+      "chapter_label": "HAG 1",
+      "verse_label": "7",
+      "locator": {
+        "book": "HAG",
+        "chapter": 1,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "HAG",
+          "chapter": 1,
+          "verse": 7
+        }
+      ],
+      "en": "“This is what the LORD of Armies says: ‘Consider your ways.",
+      "ko": "나 만군의 여호와가 말하노니 너희는 자기의 소위를 살펴 볼찌니라",
+      "source_text_hash": "aece12fb27fe009314cea6505f632aa49741cb368f4f78795701924767dd0f96",
+      "translation_text_hash": "04502fcd6a75cc9481d9d0ae855aeb9ae2aace207b2f345f5ff999238b587a1a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 만군의 여호와가 말하노니 너희는 자기의 소위를 살펴 볼찌니라"
+      ],
+      "raw_text_hashes": [
+        "04502fcd6a75cc9481d9d0ae855aeb9ae2aace207b2f345f5ff999238b587a1a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HAG:1:8",
+      "sequence": 22849,
+      "chapter_label": "HAG 1",
+      "verse_label": "8",
+      "locator": {
+        "book": "HAG",
+        "chapter": 1,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "HAG",
+          "chapter": 1,
+          "verse": 8
+        }
+      ],
+      "en": "Go up to the mountain, bring wood, and build the house. I will take pleasure in it, and I will be glorified,” says the LORD.",
+      "ko": "너희는 산에 올라가서 나무를 가져다가 전을 건축하라 그리하면 내가 그로 인하여 기뻐하고 또 영광을 얻으리라 나 여호와가 말하였느니라",
+      "source_text_hash": "124b58cad2c8d3367f1b6d5d82d0d7d7da6554d1d652577f5fd35a47787b7eff",
+      "translation_text_hash": "35857ba52b9e9fe5e9bf55247d601d92e097b1cae6b01f19949c69a74dd1dd46",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 산에 올라가서 나무를 가져다가 전을 건축하라 그리하면 내가 그로 인하여 기뻐하고 또 영광을 얻으리라 나 여호와가 말하였느니라"
+      ],
+      "raw_text_hashes": [
+        "35857ba52b9e9fe5e9bf55247d601d92e097b1cae6b01f19949c69a74dd1dd46"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HAG:1:9",
+      "sequence": 22850,
+      "chapter_label": "HAG 1",
+      "verse_label": "9",
+      "locator": {
+        "book": "HAG",
+        "chapter": 1,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "HAG",
+          "chapter": 1,
+          "verse": 9
+        }
+      ],
+      "en": "“You looked for much, and, behold, it came to little; and when you brought it home, I blew it away. Why?” says the LORD of Armies, “Because of my house that lies waste, while each of you is busy with his own house.",
+      "ko": "너희가 많은 것을 바랐으나 도리어 적었고 너희가 그것을 집으로 가져갔으나 내가 불어 버렸느니라 나 만군의 여호와가 말하노라 이것이 무슨 연고뇨 내 집은 황무하였으되 너희는 각각 자기의 집에 빨랐음이니라",
+      "source_text_hash": "2b3f1975f7046aba879915a2e6a89169230fd63d43b0d5833149fd8c8bb2386f",
+      "translation_text_hash": "c3988864ca1ec7dc7e8a1aa03f01b9cfbfe87cb6f3ffdfbf038ff7ecac938f8d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 많은 것을 바랐으나 도리어 적었고 너희가 그것을 집으로 가져갔으나 내가 불어 버렸느니라 나 만군의 여호와가 말하노라 이것이 무슨 연고뇨 내 집은 황무하였으되 너희는 각각 자기의 집에 빨랐음이니라"
+      ],
+      "raw_text_hashes": [
+        "c3988864ca1ec7dc7e8a1aa03f01b9cfbfe87cb6f3ffdfbf038ff7ecac938f8d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HAG:1:10",
+      "sequence": 22851,
+      "chapter_label": "HAG 1",
+      "verse_label": "10",
+      "locator": {
+        "book": "HAG",
+        "chapter": 1,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "HAG",
+          "chapter": 1,
+          "verse": 10
+        }
+      ],
+      "en": "Therefore for your sake the heavens withhold the dew, and the earth withholds its fruit.",
+      "ko": "그러므로 너희로 인하여 하늘은 이슬을 그쳤고 땅은 산물을 그쳤으며",
+      "source_text_hash": "02a48e4b25f64d297045b8fc75ca3ab1f3296f2dbb4a282bc99ddea45ae38f88",
+      "translation_text_hash": "aa39fcef4d71a7aee9e47c054ca195fb16479defc5a5d915027ca901578d6ce3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 너희로 인하여 하늘은 이슬을 그쳤고 땅은 산물을 그쳤으며"
+      ],
+      "raw_text_hashes": [
+        "aa39fcef4d71a7aee9e47c054ca195fb16479defc5a5d915027ca901578d6ce3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HAG:1:11",
+      "sequence": 22852,
+      "chapter_label": "HAG 1",
+      "verse_label": "11",
+      "locator": {
+        "book": "HAG",
+        "chapter": 1,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "HAG",
+          "chapter": 1,
+          "verse": 11
+        }
+      ],
+      "en": "I called for a drought on the land, on the mountains, on the grain, on the new wine, on the oil, on that which the ground produces, on men, on livestock, and on all the labor of the hands.”",
+      "ko": "내가 한재를 불러 이 땅에, 산에, 곡물에, 새 포도주에, 기름에, 땅의 모든 소산에, 사람에게, 육축에게, 손으로 수고하는 모든 일에 임하게 하였느니라",
+      "source_text_hash": "977efe4c6393ed459f5f553c745b53a840d9e06d9653253c5222478d895c426b",
+      "translation_text_hash": "19225a680b6e58f147ec87c49d39bd870767987d17305f4617c6e38aafa4d0d0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 한재를 불러 이 땅에, 산에, 곡물에, 새 포도주에, 기름에, 땅의 모든 소산에, 사람에게, 육축에게, 손으로 수고하는 모든 일에 임하게 하였느니라"
+      ],
+      "raw_text_hashes": [
+        "19225a680b6e58f147ec87c49d39bd870767987d17305f4617c6e38aafa4d0d0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HAG:1:12",
+      "sequence": 22853,
+      "chapter_label": "HAG 1",
+      "verse_label": "12",
+      "locator": {
+        "book": "HAG",
+        "chapter": 1,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "HAG",
+          "chapter": 1,
+          "verse": 12
+        }
+      ],
+      "en": "Then Zerubbabel the son of Shealtiel and Joshua the son of Jehozadak, the high priest, with all the remnant of the people, obeyed the LORD their God’s voice, and the words of Haggai the prophet, as the LORD their God had sent him; and the people feared the LORD.",
+      "ko": "스알디엘의 아들 스룹바벨과 여호사닥의 아들 대제사장 여호수아와 남은바 모든 백성이 그 하나님 여호와의 목소리와 선지자 학개의 말을 청종하였으니 이는 그들의 하나님 여호와께서 그를 보내셨음을 인함이라 백성이 다 여호와를 경외하매",
+      "source_text_hash": "528042edea1221d33a8ce4fc7bec993168cb4f9f823262e8af883012824d3a1f",
+      "translation_text_hash": "b40debd971a29a71e93d13cd361e3c668cd1c4e2f0ce8339a7f74f09428f7d14",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "스알디엘의 아들 스룹바벨과 여호사닥의 아들 대제사장 여호수아와 남은바 모든 백성이 그 하나님 여호와의 목소리와 선지자 학개의 말을 청종하였으니 이는 그들의 하나님 여호와께서 그를 보내셨음을 인함이라 백성이 다 여호와를 경외하매"
+      ],
+      "raw_text_hashes": [
+        "b40debd971a29a71e93d13cd361e3c668cd1c4e2f0ce8339a7f74f09428f7d14"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HAG:1:13",
+      "sequence": 22854,
+      "chapter_label": "HAG 1",
+      "verse_label": "13",
+      "locator": {
+        "book": "HAG",
+        "chapter": 1,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "HAG",
+          "chapter": 1,
+          "verse": 13
+        }
+      ],
+      "en": "Then Haggai, the LORD’s messenger, spoke the LORD’s message to the people, saying, “I am with you,” says the LORD.",
+      "ko": "때에 여호와의 사자 학개가 여호와의 명을 의지하여 백성에게 고하여 가로되 나 여호와가 말하노니 내가 너희와 함께하노라 하셨느니라 하니라",
+      "source_text_hash": "951425de649f3c375dec9928740c6d96b6d60d91e82ce4277dfb9e42f4b7ab70",
+      "translation_text_hash": "9f4683957a091637bb720e062f644df87da8ef115e6ca3fc1ce9d4a82e9313d8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "때에 여호와의 사자 학개가 여호와의 명을 의지하여 백성에게 고하여 가로되 나 여호와가 말하노니 내가 너희와 함께하노라 하셨느니라 하니라"
+      ],
+      "raw_text_hashes": [
+        "9f4683957a091637bb720e062f644df87da8ef115e6ca3fc1ce9d4a82e9313d8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HAG:1:14",
+      "sequence": 22855,
+      "chapter_label": "HAG 1",
+      "verse_label": "14",
+      "locator": {
+        "book": "HAG",
+        "chapter": 1,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "HAG",
+          "chapter": 1,
+          "verse": 14
+        }
+      ],
+      "en": "The LORD stirred up the spirit of Zerubbabel the son of Shealtiel, governor of Judah, and the spirit of Joshua the son of Jehozadak, the high priest, and the spirit of all the remnant of the people; and they came and worked on the house of the LORD of Armies, their God,",
+      "ko": "여호와께서 스알디엘의 아들 유다 총독 스룹바벨의 마음과 여호사닥의 아들 대제사장 여호수아의 마음과 남은바 모든 백성의 마음을 흥분시키시매 그들이 와서 만군의 여호와 그들의 하나님의 전 역사를 하였으니",
+      "source_text_hash": "42b32af2f4c1862ec14838f44153e0ddb6fe99be42b60dc1e83fac733394291d",
+      "translation_text_hash": "6279c11512b507837d1d7a606cb7406ae843080e6ac6c97b6f47fda911f96c9e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 스알디엘의 아들 유다 총독 스룹바벨의 마음과 여호사닥의 아들 대제사장 여호수아의 마음과 남은바 모든 백성의 마음을 흥분시키시매 그들이 와서 만군의 여호와 그들의 하나님의 전 역사를 하였으니"
+      ],
+      "raw_text_hashes": [
+        "6279c11512b507837d1d7a606cb7406ae843080e6ac6c97b6f47fda911f96c9e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HAG:1:15",
+      "sequence": 22856,
+      "chapter_label": "HAG 1",
+      "verse_label": "15",
+      "locator": {
+        "book": "HAG",
+        "chapter": 1,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "HAG",
+          "chapter": 1,
+          "verse": 15
+        }
+      ],
+      "en": "in the twenty-fourth day of the month, in the sixth month, in the second year of Darius the king.",
+      "ko": "때는 다리오왕 이년 유월 이십 사일이었더라",
+      "source_text_hash": "12cb8207de0f2d8684d6d66245f33a00280b820669174e1daf16994526d3fd5e",
+      "translation_text_hash": "d4dd85d2e9b648416c5a29b31a73f95b3c30ea4713791d1a5eb213c00fc89527",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "때는 다리오왕 이년 유월 이십 사일이었더라"
+      ],
+      "raw_text_hashes": [
+        "d4dd85d2e9b648416c5a29b31a73f95b3c30ea4713791d1a5eb213c00fc89527"
+      ]
+    }
+  ]
+}

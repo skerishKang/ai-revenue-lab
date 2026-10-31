@@ -1,0 +1,941 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:DEU:chapter:009",
+  "unit_ordinal": 162,
+  "unit_label": "DEU 9",
+  "book_code": "DEU",
+  "chapter_number": 9,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:DEU:9:1",
+      "sequence": 5159,
+      "chapter_label": "DEU 9",
+      "verse_label": "1",
+      "locator": {
+        "book": "DEU",
+        "chapter": 9,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 9,
+          "verse": 1
+        }
+      ],
+      "en": "Hear, Israel! You are to pass over the Jordan today, to go in to dispossess nations greater and mightier than yourself, cities great and fortified up to the sky,",
+      "ko": "이스라엘아 들으라 네가 오늘 요단을 건너 너보다 강대한 나라들로 들어가서 그것을 얻으리니 그 성읍들은 크고 성벽은 하늘에 닿았으며",
+      "source_text_hash": "8dce5c452e91d1ee46c9e6114c69554c5d9d4c95cc2acca40619f2cec59d961d",
+      "translation_text_hash": "123e329f01d0b21a2ea7dbee5d5c6c25b72b7b62e04aa84ab7b00761366b6fc7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘아 들으라 네가 오늘 요단을 건너 너보다 강대한 나라들로 들어가서 그것을 얻으리니 그 성읍들은 크고 성벽은 하늘에 닿았으며"
+      ],
+      "raw_text_hashes": [
+        "123e329f01d0b21a2ea7dbee5d5c6c25b72b7b62e04aa84ab7b00761366b6fc7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:9:2",
+      "sequence": 5160,
+      "chapter_label": "DEU 9",
+      "verse_label": "2",
+      "locator": {
+        "book": "DEU",
+        "chapter": 9,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 9,
+          "verse": 2
+        }
+      ],
+      "en": "a people great and tall, the sons of the Anakim, whom you know, and of whom you have heard say, “Who can stand before the sons of Anak?”",
+      "ko": "그 백성은 네가 아는바 장대한 아낙 자손이라 그에게 대한 말을 네가 들었나니 이르기를 누가 아낙 자손을 능히 당하리요 하거니와",
+      "source_text_hash": "9b42081fe52fa9c480457ef685be02be2f8642242d5ccc673e125a79fd3fe7f1",
+      "translation_text_hash": "7fcce155559b95cbcc467c6090e4d3c096e385df3394d6fd2aac39bda94d29cf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 백성은 네가 아는바 장대한 아낙 자손이라 그에게 대한 말을 네가 들었나니 이르기를 누가 아낙 자손을 능히 당하리요 하거니와"
+      ],
+      "raw_text_hashes": [
+        "7fcce155559b95cbcc467c6090e4d3c096e385df3394d6fd2aac39bda94d29cf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:9:3",
+      "sequence": 5161,
+      "chapter_label": "DEU 9",
+      "verse_label": "3",
+      "locator": {
+        "book": "DEU",
+        "chapter": 9,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 9,
+          "verse": 3
+        }
+      ],
+      "en": "Know therefore today that the LORD your God is he who goes over before you as a devouring fire. He will destroy them and he will bring them down before you. So you shall drive them out and make them perish quickly, as the LORD has spoken to you.",
+      "ko": "오늘날 너는 알라 네 하나님 여호와께서 맹렬한 불과 같이 네 앞에 나아가신즉 여호와께서 그들을 파하사 네 앞에 엎드러지게 하시리니 여호와께서 네게 말씀하신것 같이 너는 그들을 쫓아내며 속히 멸할 것이라",
+      "source_text_hash": "4164c2ce5867a2aef7d2a0db65ccf32dc84862cd63672506044f4c2806fc35ee",
+      "translation_text_hash": "8afeff26ff3c781f5e540303520cc5a2836927fd691a2db5487eda9a87193d33",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오늘날 너는 알라 네 하나님 여호와께서 맹렬한 불과 같이 네 앞에 나아가신즉 여호와께서 그들을 파하사 네 앞에 엎드러지게 하시리니 여호와께서 네게 말씀하신것 같이 너는 그들을 쫓아내며 속히 멸할 것이라"
+      ],
+      "raw_text_hashes": [
+        "8afeff26ff3c781f5e540303520cc5a2836927fd691a2db5487eda9a87193d33"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:9:4",
+      "sequence": 5162,
+      "chapter_label": "DEU 9",
+      "verse_label": "4",
+      "locator": {
+        "book": "DEU",
+        "chapter": 9,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 9,
+          "verse": 4
+        }
+      ],
+      "en": "Don’t say in your heart, after the LORD your God has thrust them out from before you, “For my righteousness the LORD has brought me in to possess this land;” because the LORD drives them out before you because of the wickedness of these nations.",
+      "ko": "네 하나님 여호와께서 그들을 네 앞에서 쫓아내신 후에 네가 심중에 이르기를 나의 의로움을 인하여 여호와께서 나를 이 땅으로 인도하여 들여서 그것을 얻게 하셨다 하지 말라 실상은 이 민족들이 악함을 인하여 여호와께서 그들을 네 앞에서 쫓아내심이니라",
+      "source_text_hash": "1ef038eb410fa620857f8f9a27e1edfc7a6a995d5b5d338d9ebe7f08537d1a20",
+      "translation_text_hash": "deedb9a6f95f03241bc7157c55e2d019b7c133804929f1c0d9e776c05c0de085",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 하나님 여호와께서 그들을 네 앞에서 쫓아내신 후에 네가 심중에 이르기를 나의 의로움을 인하여 여호와께서 나를 이 땅으로 인도하여 들여서 그것을 얻게 하셨다 하지 말라 실상은 이 민족들이 악함을 인하여 여호와께서 그들을 네 앞에서 쫓아내심이니라"
+      ],
+      "raw_text_hashes": [
+        "deedb9a6f95f03241bc7157c55e2d019b7c133804929f1c0d9e776c05c0de085"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:9:5",
+      "sequence": 5163,
+      "chapter_label": "DEU 9",
+      "verse_label": "5",
+      "locator": {
+        "book": "DEU",
+        "chapter": 9,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 9,
+          "verse": 5
+        }
+      ],
+      "en": "Not for your righteousness or for the uprightness of your heart do you go in to possess their land; but for the wickedness of these nations the LORD your God does drive them out from before you, and that he may establish the word which the LORD swore to your fathers, to Abraham, to Isaac, and to Jacob.",
+      "ko": "네가 가서 그 땅을 얻음은 너의 의로움을 인함도 아니며 네 마음이 정직함을 인함도 아니요 이 민족들의 악함을 인하여 네 하나님 여호와께서 그들을 네 앞에서 쫓아내심이라 여호와께서 이같이 하심은 네 열조 아브라함과 이삭과 야곱에게 하신 맹세를 이루려 하심이니라",
+      "source_text_hash": "5e75185832d44406161b2abd53fd9a9ebc2d3b80eac09b445f910b8925c2eedd",
+      "translation_text_hash": "8e098cb9931fd003a6e42e1009725f8e0075dab7fb6d72dac94370ac5d657535",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 가서 그 땅을 얻음은 너의 의로움을 인함도 아니며 네 마음이 정직함을 인함도 아니요 이 민족들의 악함을 인하여 네 하나님 여호와께서 그들을 네 앞에서 쫓아내심이라 여호와께서 이같이 하심은 네 열조 아브라함과 이삭과 야곱에게 하신 맹세를 이루려 하심이니라"
+      ],
+      "raw_text_hashes": [
+        "8e098cb9931fd003a6e42e1009725f8e0075dab7fb6d72dac94370ac5d657535"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:9:6",
+      "sequence": 5164,
+      "chapter_label": "DEU 9",
+      "verse_label": "6",
+      "locator": {
+        "book": "DEU",
+        "chapter": 9,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 9,
+          "verse": 6
+        }
+      ],
+      "en": "Know therefore that the LORD your God doesn’t give you this good land to possess for your righteousness, for you are a stiff-necked people.",
+      "ko": "그러므로 네가 알 것은 네 하나님 여호와께서 네게 이 아름다운 땅을 기업으로 주신 것이 네 의로움을 인함이 아니니라 너는 목이 곧은 백성이니라",
+      "source_text_hash": "62861fc47b8febd1a0f9506a0a10f90d4d8517e4f35f150fc50339c52d2058de",
+      "translation_text_hash": "7ccb7f717293ee58ad21f969020f80f521a7be3a53892fd92d711736bc4e8561",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 네가 알 것은 네 하나님 여호와께서 네게 이 아름다운 땅을 기업으로 주신 것이 네 의로움을 인함이 아니니라 너는 목이 곧은 백성이니라"
+      ],
+      "raw_text_hashes": [
+        "7ccb7f717293ee58ad21f969020f80f521a7be3a53892fd92d711736bc4e8561"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:9:7",
+      "sequence": 5165,
+      "chapter_label": "DEU 9",
+      "verse_label": "7",
+      "locator": {
+        "book": "DEU",
+        "chapter": 9,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 9,
+          "verse": 7
+        }
+      ],
+      "en": "Remember, and don’t forget, how you provoked the LORD your God to wrath in the wilderness. From the day that you left the land of Egypt until you came to this place, you have been rebellious against the LORD.",
+      "ko": "너는 광야에서 네 하나님 여호와를 격노케 하던 일을 잊지 말고 기억하라 네가 애굽땅에서 나오던 날부터 이곳에 이르기까지 늘 여호와를 거역하였으되",
+      "source_text_hash": "78afa2b222b6b0392d3c82ea5135c68edbfe5a4ae594ed5fbbc5d0e66671e7ba",
+      "translation_text_hash": "6e52cc619313c93ffc62a8a8783b8198d4c5fbd508b5900613fc241dc6e16873",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 광야에서 네 하나님 여호와를 격노케 하던 일을 잊지 말고 기억하라 네가 애굽땅에서 나오던 날부터 이곳에 이르기까지 늘 여호와를 거역하였으되"
+      ],
+      "raw_text_hashes": [
+        "6e52cc619313c93ffc62a8a8783b8198d4c5fbd508b5900613fc241dc6e16873"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:9:8",
+      "sequence": 5166,
+      "chapter_label": "DEU 9",
+      "verse_label": "8",
+      "locator": {
+        "book": "DEU",
+        "chapter": 9,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 9,
+          "verse": 8
+        }
+      ],
+      "en": "Also in Horeb you provoked the LORD to wrath, and the LORD was angry with you to destroy you.",
+      "ko": "호렙산에서 너희가 여호와를 격노케 하였으므로 여호와께서 진노하사 너희를 멸하려 하셨느니라",
+      "source_text_hash": "fbaaa3e09066ab17c2de42b20cfaacc84839db28c863d9b101cd7c775e17f99e",
+      "translation_text_hash": "d54e4da857d36cfdfac3c2c631b38dbd217509abe7e84a66c64ded04d53ca8e7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "호렙산에서 너희가 여호와를 격노케 하였으므로 여호와께서 진노하사 너희를 멸하려 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "d54e4da857d36cfdfac3c2c631b38dbd217509abe7e84a66c64ded04d53ca8e7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:9:9",
+      "sequence": 5167,
+      "chapter_label": "DEU 9",
+      "verse_label": "9",
+      "locator": {
+        "book": "DEU",
+        "chapter": 9,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 9,
+          "verse": 9
+        }
+      ],
+      "en": "When I had gone up onto the mountain to receive the stone tablets, even the tablets of the covenant which the LORD made with you, then I stayed on the mountain forty days and forty nights. I neither ate bread nor drank water.",
+      "ko": "그 때에 내가 돌판들 곧 여호와께서 너희와 세우신 언약의 돌판들을 받으려고 산에 올라가서 사십 주야를 산에 거하며 떡도 먹지 아니하고 물도 마시지 아니하였더니",
+      "source_text_hash": "2a0ed61aa470679c32b39ea03105541006748061ca67c1fa0cf749c788874211",
+      "translation_text_hash": "e04866eb714cbe0e8305308c1608b90f4817e1c9146b8042014bc037d298b3fe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 내가 돌판들 곧 여호와께서 너희와 세우신 언약의 돌판들을 받으려고 산에 올라가서 사십 주야를 산에 거하며 떡도 먹지 아니하고 물도 마시지 아니하였더니"
+      ],
+      "raw_text_hashes": [
+        "e04866eb714cbe0e8305308c1608b90f4817e1c9146b8042014bc037d298b3fe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:9:10",
+      "sequence": 5168,
+      "chapter_label": "DEU 9",
+      "verse_label": "10",
+      "locator": {
+        "book": "DEU",
+        "chapter": 9,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 9,
+          "verse": 10
+        }
+      ],
+      "en": "The LORD delivered to me the two stone tablets written with God’s finger. On them were all the words which the LORD spoke with you on the mountain out of the middle of the fire in the day of the assembly.",
+      "ko": "여호와께서 두 돌판을 내게 주셨나니 그 판의 글은 하나님이 친수로 기록하신 것이요 너희 총회 날에 여호와께서 산상 불 가운데서 너희에게 이르신 모든 말씀이니라",
+      "source_text_hash": "f7f65e03494462db3d97a980c8b57ab276dd737b977d2216189ceb2e7461a340",
+      "translation_text_hash": "0f95a264940d6c5086180b52c6f5980654eb3bf2d999c176e55417573b1cf2f6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 두 돌판을 내게 주셨나니 그 판의 글은 하나님이 친수로 기록하신 것이요 너희 총회 날에 여호와께서 산상 불 가운데서 너희에게 이르신 모든 말씀이니라"
+      ],
+      "raw_text_hashes": [
+        "0f95a264940d6c5086180b52c6f5980654eb3bf2d999c176e55417573b1cf2f6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:9:11",
+      "sequence": 5169,
+      "chapter_label": "DEU 9",
+      "verse_label": "11",
+      "locator": {
+        "book": "DEU",
+        "chapter": 9,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 9,
+          "verse": 11
+        }
+      ],
+      "en": "It came to pass at the end of forty days and forty nights that the LORD gave me the two stone tablets, even the tablets of the covenant.",
+      "ko": "사십 주야가 지난 후에 여호와께서 내게 돌판 곧 언약의 두 돌판을 주시고",
+      "source_text_hash": "dd49d26823d15bee9097f65c3abc5967e446855d0162d3e360df9be4df68de5c",
+      "translation_text_hash": "1f80bc60b161f00f1c1d789fa55f13efe1a236abf0dc6226e9245c7d4ebba4dc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사십 주야가 지난 후에 여호와께서 내게 돌판 곧 언약의 두 돌판을 주시고"
+      ],
+      "raw_text_hashes": [
+        "1f80bc60b161f00f1c1d789fa55f13efe1a236abf0dc6226e9245c7d4ebba4dc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:9:12",
+      "sequence": 5170,
+      "chapter_label": "DEU 9",
+      "verse_label": "12",
+      "locator": {
+        "book": "DEU",
+        "chapter": 9,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 9,
+          "verse": 12
+        }
+      ],
+      "en": "The LORD said to me, “Arise, get down quickly from here; for your people whom you have brought out of Egypt have corrupted themselves. They have quickly turned away from the way which I commanded them. They have made a molten image for themselves!”",
+      "ko": "내게 이르시되 일어나 여기서 속히 내려가라 네가 애굽에서 인도하여 낸 내 백성이 스스로 부패하여 내가 그들에게 명한 도를 속히 떠나 자기를 위하여 우상을 부어 만들었느니라",
+      "source_text_hash": "75471e84b096777e5fcbde33e62b88e991ef4feb0da657dd61b8f9dae9dbe1de",
+      "translation_text_hash": "d76939e6dfcfe3c48de8fa004201f83ce0f7bc23c625cd6dc532804c82215a26",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내게 이르시되 일어나 여기서 속히 내려가라 네가 애굽에서 인도하여 낸 내 백성이 스스로 부패하여 내가 그들에게 명한 도를 속히 떠나 자기를 위하여 우상을 부어 만들었느니라"
+      ],
+      "raw_text_hashes": [
+        "d76939e6dfcfe3c48de8fa004201f83ce0f7bc23c625cd6dc532804c82215a26"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:9:13",
+      "sequence": 5171,
+      "chapter_label": "DEU 9",
+      "verse_label": "13",
+      "locator": {
+        "book": "DEU",
+        "chapter": 9,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 9,
+          "verse": 13
+        }
+      ],
+      "en": "Furthermore the LORD spoke to me, saying, “I have seen these people, and behold, they are a stiff-necked people.",
+      "ko": "여호와께서 또 내게 일러 가라사대 내가 이 백성을 보았노라 보라 이는 목이 곧은 백성이니라",
+      "source_text_hash": "ec9c7beb2f43ce518adc2083e51223a8a6de9760147dc667a180e312c0c687c5",
+      "translation_text_hash": "ffcfce0c5cde4d06e235efb530a4212e6aa3ed1ae5bf90be5ea679dd6471c00c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 또 내게 일러 가라사대 내가 이 백성을 보았노라 보라 이는 목이 곧은 백성이니라"
+      ],
+      "raw_text_hashes": [
+        "ffcfce0c5cde4d06e235efb530a4212e6aa3ed1ae5bf90be5ea679dd6471c00c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:9:14",
+      "sequence": 5172,
+      "chapter_label": "DEU 9",
+      "verse_label": "14",
+      "locator": {
+        "book": "DEU",
+        "chapter": 9,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 9,
+          "verse": 14
+        }
+      ],
+      "en": "Leave me alone, that I may destroy them, and blot out their name from under the sky; and I will make of you a nation mightier and greater than they.”",
+      "ko": "나를 막지 말라 내가 그들을 멸하여 그 이름을 천하에서 도말하고 너로 그들보다 강대한 나라가 되게 하리라 하시기로",
+      "source_text_hash": "e943db3c759f1b286f0a590b2be45da38db2424f138149c78ffb087584474e89",
+      "translation_text_hash": "dad0f2023cff11004fc4cb7cd517aa270878fdf5f3ae106ea7dcb4cb92f52abd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나를 막지 말라 내가 그들을 멸하여 그 이름을 천하에서 도말하고 너로 그들보다 강대한 나라가 되게 하리라 하시기로"
+      ],
+      "raw_text_hashes": [
+        "dad0f2023cff11004fc4cb7cd517aa270878fdf5f3ae106ea7dcb4cb92f52abd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:9:15",
+      "sequence": 5173,
+      "chapter_label": "DEU 9",
+      "verse_label": "15",
+      "locator": {
+        "book": "DEU",
+        "chapter": 9,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 9,
+          "verse": 15
+        }
+      ],
+      "en": "So I turned and came down from the mountain, and the mountain was burning with fire. The two tablets of the covenant were in my two hands.",
+      "ko": "내가 돌이켜 산에서 내려오는데 산에는 불이 붙었고 언약의 두 돌판은 내 손에 있었느니라",
+      "source_text_hash": "abe51e663548def25e9700f1b7707f9c8f7caaade31f28ffa6e422b668195707",
+      "translation_text_hash": "3dfd9dfa582b47ce4b45d5fed616f89b4378e8bc76c0142c488d9919016e5d87",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 돌이켜 산에서 내려오는데 산에는 불이 붙었고 언약의 두 돌판은 내 손에 있었느니라"
+      ],
+      "raw_text_hashes": [
+        "3dfd9dfa582b47ce4b45d5fed616f89b4378e8bc76c0142c488d9919016e5d87"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:9:16",
+      "sequence": 5174,
+      "chapter_label": "DEU 9",
+      "verse_label": "16",
+      "locator": {
+        "book": "DEU",
+        "chapter": 9,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 9,
+          "verse": 16
+        }
+      ],
+      "en": "I looked, and behold, you had sinned against the LORD your God. You had made yourselves a molded calf. You had quickly turned away from the way which the LORD had commanded you.",
+      "ko": "내가 본즉 너희가 너희 하나님 여호와께 범죄하여 자기를 위하여 송아지를 부어 만들어서 급속히 여호와의 명하신 도를 떠났기로",
+      "source_text_hash": "0e85e9654651e145be09e1eab0deb20add48a17fe55ed099dff8d98af4a98b73",
+      "translation_text_hash": "4ac80a771060f1952efd497a672e1dce0daf8bf09f3579e399ed61b39d866691",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 본즉 너희가 너희 하나님 여호와께 범죄하여 자기를 위하여 송아지를 부어 만들어서 급속히 여호와의 명하신 도를 떠났기로"
+      ],
+      "raw_text_hashes": [
+        "4ac80a771060f1952efd497a672e1dce0daf8bf09f3579e399ed61b39d866691"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:9:17",
+      "sequence": 5175,
+      "chapter_label": "DEU 9",
+      "verse_label": "17",
+      "locator": {
+        "book": "DEU",
+        "chapter": 9,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 9,
+          "verse": 17
+        }
+      ],
+      "en": "I took hold of the two tablets, and threw them out of my two hands, and broke them before your eyes.",
+      "ko": "내가 그 두 돌판을 내 두 손에서 들어 던져 너희의 목전에서 깨뜨렸었노라",
+      "source_text_hash": "2e621e61b952d026966d34db3588797897e1fb0afb2ac7dedb47e49c976c5a55",
+      "translation_text_hash": "a26c18af234f72d2ab9aea919638d577fdecf54b860e9dd13aaa24fb3884534e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 그 두 돌판을 내 두 손에서 들어 던져 너희의 목전에서 깨뜨렸었노라"
+      ],
+      "raw_text_hashes": [
+        "a26c18af234f72d2ab9aea919638d577fdecf54b860e9dd13aaa24fb3884534e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:9:18",
+      "sequence": 5176,
+      "chapter_label": "DEU 9",
+      "verse_label": "18",
+      "locator": {
+        "book": "DEU",
+        "chapter": 9,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 9,
+          "verse": 18
+        }
+      ],
+      "en": "I fell down before the LORD, as at the first, forty days and forty nights. I neither ate bread nor drank water, because of all your sin which you sinned, in doing that which was evil in the LORD’s sight, to provoke him to anger.",
+      "ko": "그리고 내가 전과 같이 사십 주야를 여호와 앞에 엎드려서 떡도 먹지 아니하고 물도 마시지 아니하였으니 이는 너희가 여호와의 목전에 악을 행하여 그를 격노케 하여 크게 죄를 얻었음이라",
+      "source_text_hash": "852eb948a9c66f17f63fcda0122e362803b54f0e811b5b789a860cc9adc9c878",
+      "translation_text_hash": "ad6c0352f20178961f68a22555a2228cd768143e7f94bdd1a071117f24b5a135",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그리고 내가 전과 같이 사십 주야를 여호와 앞에 엎드려서 떡도 먹지 아니하고 물도 마시지 아니하였으니 이는 너희가 여호와의 목전에 악을 행하여 그를 격노케 하여 크게 죄를 얻었음이라"
+      ],
+      "raw_text_hashes": [
+        "ad6c0352f20178961f68a22555a2228cd768143e7f94bdd1a071117f24b5a135"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:9:19",
+      "sequence": 5177,
+      "chapter_label": "DEU 9",
+      "verse_label": "19",
+      "locator": {
+        "book": "DEU",
+        "chapter": 9,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 9,
+          "verse": 19
+        }
+      ],
+      "en": "For I was afraid of the anger and hot displeasure with which the LORD was angry against you to destroy you. But the LORD listened to me that time also.",
+      "ko": "여호와께서 심히 분노하사 너희를 멸하려 하셨으므로 내가 두려워 하였었노라 그러나 여호와께서 그 때에도 내 말을 들으셨고",
+      "source_text_hash": "84e297ed7533d457a2f3c254e32521ec123666140448856850998ea04d784b95",
+      "translation_text_hash": "796f5ac7ba9692461e9e50338b637b25bd35cf999ba11d0f5fd8b9fbe1d7951f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 심히 분노하사 너희를 멸하려 하셨으므로 내가 두려워 하였었노라 그러나 여호와께서 그 때에도 내 말을 들으셨고"
+      ],
+      "raw_text_hashes": [
+        "796f5ac7ba9692461e9e50338b637b25bd35cf999ba11d0f5fd8b9fbe1d7951f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:9:20",
+      "sequence": 5178,
+      "chapter_label": "DEU 9",
+      "verse_label": "20",
+      "locator": {
+        "book": "DEU",
+        "chapter": 9,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 9,
+          "verse": 20
+        }
+      ],
+      "en": "The LORD was angry enough with Aaron to destroy him. I prayed for Aaron also at the same time.",
+      "ko": "여호와께서 또 아론에게 진노하사 그를 멸하려 하셨으므로 내가 그 때에도 아론을 위하여 기도하고",
+      "source_text_hash": "7c65fdbc55614105e0450bc5d6966ce0d7947f18e949ea900ab52843649e28d0",
+      "translation_text_hash": "30284ad625ecedc3457b212d9e49957a4436aa6e5abb6b99cc5ccb6ee499fe69",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 또 아론에게 진노하사 그를 멸하려 하셨으므로 내가 그 때에도 아론을 위하여 기도하고"
+      ],
+      "raw_text_hashes": [
+        "30284ad625ecedc3457b212d9e49957a4436aa6e5abb6b99cc5ccb6ee499fe69"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:9:21",
+      "sequence": 5179,
+      "chapter_label": "DEU 9",
+      "verse_label": "21",
+      "locator": {
+        "book": "DEU",
+        "chapter": 9,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 9,
+          "verse": 21
+        }
+      ],
+      "en": "I took your sin, the calf which you had made, and burned it with fire, and crushed it, grinding it very small, until it was as fine as dust. I threw its dust into the brook that descended out of the mountain.",
+      "ko": "너희의 죄 곧 너희의 만든 송아지를 취하여 불살라 찧고 티끌 같이 가늘게 갈아 그 가루를 산에서 흘러내리는 시내에 뿌렸었느니라",
+      "source_text_hash": "24da6f23d3eb75f372b3adf6c40314cafd6be780c2d87c8bbf21bf6100199fc8",
+      "translation_text_hash": "bbb1c22e435d1ac95ef55c1a9d158c3b36a3d2ecfc994eb5eebe26104fddfeb1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희의 죄 곧 너희의 만든 송아지를 취하여 불살라 찧고 티끌 같이 가늘게 갈아 그 가루를 산에서 흘러내리는 시내에 뿌렸었느니라"
+      ],
+      "raw_text_hashes": [
+        "bbb1c22e435d1ac95ef55c1a9d158c3b36a3d2ecfc994eb5eebe26104fddfeb1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:9:22",
+      "sequence": 5180,
+      "chapter_label": "DEU 9",
+      "verse_label": "22",
+      "locator": {
+        "book": "DEU",
+        "chapter": 9,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 9,
+          "verse": 22
+        }
+      ],
+      "en": "At Taberah, at Massah, and at Kibroth Hattaavah you provoked the LORD to wrath.",
+      "ko": "너희가 다베라와 맛사와 기브롯 핫다아와에서도 여호와를 격노케 하였느니라",
+      "source_text_hash": "c08b85294fc2fe9872681dab74fc857dbd4843361f1ac202b6a7285cf77c8528",
+      "translation_text_hash": "ec6344ffb2e8e0d5f29372563c1fabe36d5fcd04e27933961a3ad8b2110b44e7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 다베라와 맛사와 기브롯 핫다아와에서도 여호와를 격노케 하였느니라"
+      ],
+      "raw_text_hashes": [
+        "ec6344ffb2e8e0d5f29372563c1fabe36d5fcd04e27933961a3ad8b2110b44e7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:9:23",
+      "sequence": 5181,
+      "chapter_label": "DEU 9",
+      "verse_label": "23",
+      "locator": {
+        "book": "DEU",
+        "chapter": 9,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 9,
+          "verse": 23
+        }
+      ],
+      "en": "When the LORD sent you from Kadesh Barnea, saying, “Go up and possess the land which I have given you,” you rebelled against the commandment of the LORD your God, and you didn’t believe him or listen to his voice.",
+      "ko": "여호와께서 너희를 가데스 바네아에서 떠나게 하실 때에 이르시기를 너희는 올라가서 내가 너희에게 준 땅을 얻으라 하시되 너희가 너희 하나님 여호와의 명령을 거역하여 믿지 아니하고 그 말씀을 듣지 아니하였나니",
+      "source_text_hash": "72cc1f052eacb29d7b3727d7aad05260bfd3a87028e5267ab430d7ef13a41265",
+      "translation_text_hash": "0ded12e2efeb0260bf0e4a65325d8b618bfc02823f4886a72776fb495d9db8b0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 너희를 가데스 바네아에서 떠나게 하실 때에 이르시기를 너희는 올라가서 내가 너희에게 준 땅을 얻으라 하시되 너희가 너희 하나님 여호와의 명령을 거역하여 믿지 아니하고 그 말씀을 듣지 아니하였나니"
+      ],
+      "raw_text_hashes": [
+        "0ded12e2efeb0260bf0e4a65325d8b618bfc02823f4886a72776fb495d9db8b0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:9:24",
+      "sequence": 5182,
+      "chapter_label": "DEU 9",
+      "verse_label": "24",
+      "locator": {
+        "book": "DEU",
+        "chapter": 9,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 9,
+          "verse": 24
+        }
+      ],
+      "en": "You have been rebellious against the LORD from the day that I knew you.",
+      "ko": "내가 너희를 알던 날부터 오므로 너희가 항상 여호와를 거역하였느니라",
+      "source_text_hash": "369acf8f34739e1d7467f1c5d9972bfc12eb3b5f29f351594bd907c263e5b884",
+      "translation_text_hash": "efe4e96a4f4c3761703ab3398783c4e7d190674af3c07ea6f571f66f361ec327",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너희를 알던 날부터 오므로 너희가 항상 여호와를 거역하였느니라"
+      ],
+      "raw_text_hashes": [
+        "efe4e96a4f4c3761703ab3398783c4e7d190674af3c07ea6f571f66f361ec327"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:9:25",
+      "sequence": 5183,
+      "chapter_label": "DEU 9",
+      "verse_label": "25",
+      "locator": {
+        "book": "DEU",
+        "chapter": 9,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 9,
+          "verse": 25
+        }
+      ],
+      "en": "So I fell down before the LORD the forty days and forty nights that I fell down, because the LORD had said he would destroy you.",
+      "ko": "그 때에 여호와께서 너희를 멸하겠다 하셨으므로 내가 여전히 사십 주야를 여호와 앞에 엎드리고",
+      "source_text_hash": "61a029b754ff12b74cc78b6762b389d7f9647d0baddbe5ce1136247498e31466",
+      "translation_text_hash": "b153ef5a81314f77b24ff4715e589d25b6aa05c76bb9366c67e00d03415c06cb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 여호와께서 너희를 멸하겠다 하셨으므로 내가 여전히 사십 주야를 여호와 앞에 엎드리고"
+      ],
+      "raw_text_hashes": [
+        "b153ef5a81314f77b24ff4715e589d25b6aa05c76bb9366c67e00d03415c06cb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:9:26",
+      "sequence": 5184,
+      "chapter_label": "DEU 9",
+      "verse_label": "26",
+      "locator": {
+        "book": "DEU",
+        "chapter": 9,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 9,
+          "verse": 26
+        }
+      ],
+      "en": "I prayed to the LORD, and said, “Lord GOD, don’t destroy your people and your inheritance that you have redeemed through your greatness, that you have brought out of Egypt with a mighty hand.",
+      "ko": "여호와께 간구하여 가로되 주 여호와여 주께서 큰 위엄으로 속하시고 강한 손으로 애굽에서 인도하여 내신 주의 백성 곧 주의 기업을 멸하지 마옵소서",
+      "source_text_hash": "22f95df7d726fe17f1571fdc0012a39341f3c8e782314a5e63119268fcdbfe1f",
+      "translation_text_hash": "21d564cc3dd710961142e462cb40d297543544e969114b8d71ae06cb6c1d8654",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께 간구하여 가로되 주 여호와여 주께서 큰 위엄으로 속하시고 강한 손으로 애굽에서 인도하여 내신 주의 백성 곧 주의 기업을 멸하지 마옵소서"
+      ],
+      "raw_text_hashes": [
+        "21d564cc3dd710961142e462cb40d297543544e969114b8d71ae06cb6c1d8654"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:9:27",
+      "sequence": 5185,
+      "chapter_label": "DEU 9",
+      "verse_label": "27",
+      "locator": {
+        "book": "DEU",
+        "chapter": 9,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 9,
+          "verse": 27
+        }
+      ],
+      "en": "Remember your servants, Abraham, Isaac, and Jacob. Don’t look at the stubbornness of this people, nor at their wickedness, nor at their sin,",
+      "ko": "주의 종 아브라함과 이삭과 야곱을 생각하사 이 백성의 강퍅과 악과 죄를 보지 마옵소서",
+      "source_text_hash": "77451fd0df62964a8315c87c83f20b0b6d77270b6ace7861b414e1d48e955919",
+      "translation_text_hash": "62f5dcb2d8c41f4683834a75f89945e8a6d6f17e6219c85be5eb58b87ae3cf13",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 종 아브라함과 이삭과 야곱을 생각하사 이 백성의 강퍅과 악과 죄를 보지 마옵소서"
+      ],
+      "raw_text_hashes": [
+        "62f5dcb2d8c41f4683834a75f89945e8a6d6f17e6219c85be5eb58b87ae3cf13"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:9:28",
+      "sequence": 5186,
+      "chapter_label": "DEU 9",
+      "verse_label": "28",
+      "locator": {
+        "book": "DEU",
+        "chapter": 9,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 9,
+          "verse": 28
+        }
+      ],
+      "en": "lest the land you brought us out from say, ‘Because the LORD was not able to bring them into the land which he promised to them, and because he hated them, he has brought them out to kill them in the wilderness.’",
+      "ko": "주께서 우리를 인도하여 내신 그 땅 백성이 말하기를 여호와께서 그들에게 허락하신 땅으로 그들을 인도하여 들일 능력도 없고 그들을 미워도 하사 광야에서 죽이려고 인도하여 내셨다 할까 두려워하나이다",
+      "source_text_hash": "cdea011e6814ab84d15ce4d5136c62a22175337f52bb4a06f3cf8cdc99d54a22",
+      "translation_text_hash": "87ccd8b981ac956486d445a95cc653cd276724b9a0e54f374e51dc7d8e7928c3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 우리를 인도하여 내신 그 땅 백성이 말하기를 여호와께서 그들에게 허락하신 땅으로 그들을 인도하여 들일 능력도 없고 그들을 미워도 하사 광야에서 죽이려고 인도하여 내셨다 할까 두려워하나이다"
+      ],
+      "raw_text_hashes": [
+        "87ccd8b981ac956486d445a95cc653cd276724b9a0e54f374e51dc7d8e7928c3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:9:29",
+      "sequence": 5187,
+      "chapter_label": "DEU 9",
+      "verse_label": "29",
+      "locator": {
+        "book": "DEU",
+        "chapter": 9,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 9,
+          "verse": 29
+        }
+      ],
+      "en": "Yet they are your people and your inheritance, which you brought out by your great power and by your outstretched arm.”",
+      "ko": "그들은 주의 큰 능력과 펴신 팔로 인도하여 내신 주의 백성 곧 주의 기업이로소이다 하였었노라",
+      "source_text_hash": "6cdea81c9a1db1f47beae7cb41dfe3350b36596e528c5cc3954dd74e4f297c8f",
+      "translation_text_hash": "e181b8f3b45a887af9aef0bcaa01aa12190ea067b12780b0d6fe49002474093b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들은 주의 큰 능력과 펴신 팔로 인도하여 내신 주의 백성 곧 주의 기업이로소이다 하였었노라"
+      ],
+      "raw_text_hashes": [
+        "e181b8f3b45a887af9aef0bcaa01aa12190ea067b12780b0d6fe49002474093b"
+      ]
+    }
+  ]
+}

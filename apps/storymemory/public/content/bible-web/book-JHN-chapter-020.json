@@ -1,0 +1,1005 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JHN:chapter:020",
+  "unit_ordinal": 1017,
+  "unit_label": "JHN 20",
+  "book_code": "JHN",
+  "chapter_number": 20,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JHN:20:1",
+      "sequence": 26868,
+      "chapter_label": "JHN 20",
+      "verse_label": "1",
+      "locator": {
+        "book": "JHN",
+        "chapter": 20,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 20,
+          "verse": 1
+        }
+      ],
+      "en": "Now on the first day of the week, Mary Magdalene went early, while it was still dark, to the tomb, and saw that the stone had been taken away from the tomb.",
+      "ko": "안식 후 첫날 이른 아침 아직 어두울 때에 막달라 마리아가 무덤에 와서 돌이 무덤에서 옮겨간 것을 보고",
+      "source_text_hash": "bfda225f00e71ba34725cc5358f9d944230134962b093217179425c95456af71",
+      "translation_text_hash": "dfce1b5d92322d2ce087ef951327c80a4c10288e3f20a5a1e95286db8dba44c2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "안식 후 첫날 이른 아침 아직 어두울 때에 막달라 마리아가 무덤에 와서 돌이 무덤에서 옮겨간 것을 보고"
+      ],
+      "raw_text_hashes": [
+        "dfce1b5d92322d2ce087ef951327c80a4c10288e3f20a5a1e95286db8dba44c2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:20:2",
+      "sequence": 26869,
+      "chapter_label": "JHN 20",
+      "verse_label": "2",
+      "locator": {
+        "book": "JHN",
+        "chapter": 20,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 20,
+          "verse": 2
+        }
+      ],
+      "en": "Therefore she ran and came to Simon Peter and to the other disciple whom Jesus loved, and said to them, “They have taken away the Lord out of the tomb, and we don’t know where they have laid him!”",
+      "ko": "시몬 베드로와 예수의 사랑하시던 그 다른 제자에게 달려가서 말하되 사람이 주를 무덤에서 가져다가 어디 두었는지 우리가 알지 못하겠다 하니",
+      "source_text_hash": "2f2456e0c55577c073de6ac050a46e38ec94eb2a52dd296ba698bb6ed0cc5ff8",
+      "translation_text_hash": "3d191eae605936e468a23aa34ba92c00a799d8e08ee354c3f5cfb1f35439201b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시몬 베드로와 예수의 사랑하시던 그 다른 제자에게 달려가서 말하되 사람이 주를 무덤에서 가져다가 어디 두었는지 우리가 알지 못하겠다 하니"
+      ],
+      "raw_text_hashes": [
+        "3d191eae605936e468a23aa34ba92c00a799d8e08ee354c3f5cfb1f35439201b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:20:3",
+      "sequence": 26870,
+      "chapter_label": "JHN 20",
+      "verse_label": "3",
+      "locator": {
+        "book": "JHN",
+        "chapter": 20,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 20,
+          "verse": 3
+        }
+      ],
+      "en": "Therefore Peter and the other disciple went out, and they went toward the tomb.",
+      "ko": "베드로와 그 다른 제자가 나가서 무덤으로 갈쌔",
+      "source_text_hash": "071a794e18eb106eca7bdd3e8ae2af9999758c478bb1e873dd2c718d132b30af",
+      "translation_text_hash": "e6f073f20cf2021db0dc4687fe9c7bb3da6b25216b4f8ff1722aabb81d8d53b0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베드로와 그 다른 제자가 나가서 무덤으로 갈쌔"
+      ],
+      "raw_text_hashes": [
+        "e6f073f20cf2021db0dc4687fe9c7bb3da6b25216b4f8ff1722aabb81d8d53b0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:20:4",
+      "sequence": 26871,
+      "chapter_label": "JHN 20",
+      "verse_label": "4",
+      "locator": {
+        "book": "JHN",
+        "chapter": 20,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 20,
+          "verse": 4
+        }
+      ],
+      "en": "They both ran together. The other disciple outran Peter and came to the tomb first.",
+      "ko": "둘이 같이 달음질하더니 그 다른 제자가 베드로보다 더 빨리 달아나서 먼저 무덤에 이르러",
+      "source_text_hash": "a122d03d4ae2744d0015b095a37ffa0787c95628054efa0b3834ab3cb542dc21",
+      "translation_text_hash": "2020b70180e97be6155a12aafa935db155fb78c0198ec33ad34f5f131c5ecf0f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "둘이 같이 달음질하더니 그 다른 제자가 베드로보다 더 빨리 달아나서 먼저 무덤에 이르러"
+      ],
+      "raw_text_hashes": [
+        "2020b70180e97be6155a12aafa935db155fb78c0198ec33ad34f5f131c5ecf0f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:20:5",
+      "sequence": 26872,
+      "chapter_label": "JHN 20",
+      "verse_label": "5",
+      "locator": {
+        "book": "JHN",
+        "chapter": 20,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 20,
+          "verse": 5
+        }
+      ],
+      "en": "Stooping and looking in, he saw the linen cloths lying there; yet he didn’t enter in.",
+      "ko": "구푸려 세마포 놓인 것을 보았으나 들어가지는 아니하였더니",
+      "source_text_hash": "6d59f8b7434b8937f4bbab9ee9218baf45954a25c8717a04ad2bde7e52d5465c",
+      "translation_text_hash": "59a7adfaef98dbc2bd04a8cf1ac9ef44fcb1e0d3ea6106d1594e02c1cedf1d2a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "구푸려 세마포 놓인 것을 보았으나 들어가지는 아니하였더니"
+      ],
+      "raw_text_hashes": [
+        "59a7adfaef98dbc2bd04a8cf1ac9ef44fcb1e0d3ea6106d1594e02c1cedf1d2a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:20:6",
+      "sequence": 26873,
+      "chapter_label": "JHN 20",
+      "verse_label": "6",
+      "locator": {
+        "book": "JHN",
+        "chapter": 20,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 20,
+          "verse": 6
+        }
+      ],
+      "en": "Then Simon Peter came, following him, and entered into the tomb. He saw the linen cloths lying,",
+      "ko": "시몬 베드로도 따라 와서 무덤에 들어가 보니 세마포가 놓였고",
+      "source_text_hash": "5e27a7044124364d7ef6f5d09854f6f36cce6c41b58714dbc361f2096d8bea65",
+      "translation_text_hash": "2fee24191c429a817129de1a577fcec31c2ac64e44e7d454038e7dc09653b014",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시몬 베드로도 따라 와서 무덤에 들어가 보니 세마포가 놓였고"
+      ],
+      "raw_text_hashes": [
+        "2fee24191c429a817129de1a577fcec31c2ac64e44e7d454038e7dc09653b014"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:20:7",
+      "sequence": 26874,
+      "chapter_label": "JHN 20",
+      "verse_label": "7",
+      "locator": {
+        "book": "JHN",
+        "chapter": 20,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 20,
+          "verse": 7
+        }
+      ],
+      "en": "and the cloth that had been on his head, not lying with the linen cloths, but rolled up in a place by itself.",
+      "ko": "또 머리를 쌌던 수건은 세마포와 함께 놓이지 않고 딴 곳에 개켜 있더라",
+      "source_text_hash": "f65cddfb31265b1b4dbf09e180af29942e2c1f5f11597a5b47343c2b2327c9e6",
+      "translation_text_hash": "65ad12aeef6533b5037b7903bd5a0766196cc5b90270f81b3838e1d0fe1c9aad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 머리를 쌌던 수건은 세마포와 함께 놓이지 않고 딴 곳에 개켜 있더라"
+      ],
+      "raw_text_hashes": [
+        "65ad12aeef6533b5037b7903bd5a0766196cc5b90270f81b3838e1d0fe1c9aad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:20:8",
+      "sequence": 26875,
+      "chapter_label": "JHN 20",
+      "verse_label": "8",
+      "locator": {
+        "book": "JHN",
+        "chapter": 20,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 20,
+          "verse": 8
+        }
+      ],
+      "en": "So then the other disciple who came first to the tomb also entered in, and he saw and believed.",
+      "ko": "그 때에야 무덤에 먼저 왔던 그 다른 제자도 들어가 보고 믿더라",
+      "source_text_hash": "28be2662a2f37d6eb2fe7c46ef592eac180fef4597e8182b39c78122622813b9",
+      "translation_text_hash": "dca20033eb42050650cdda9434e0b99593dd39b2311e764bbed5b4874096a71b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에야 무덤에 먼저 왔던 그 다른 제자도 들어가 보고 믿더라"
+      ],
+      "raw_text_hashes": [
+        "dca20033eb42050650cdda9434e0b99593dd39b2311e764bbed5b4874096a71b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:20:9",
+      "sequence": 26876,
+      "chapter_label": "JHN 20",
+      "verse_label": "9",
+      "locator": {
+        "book": "JHN",
+        "chapter": 20,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 20,
+          "verse": 9
+        }
+      ],
+      "en": "For as yet they didn’t know the Scripture, that he must rise from the dead.",
+      "ko": "(저희는 성경에 그가 죽은 자 가운데서 다시 살아나야 하리라 하신 말씀을 아직 알지 못하더라)",
+      "source_text_hash": "103bfe57ebfbe5b2a3d33b3348390649c220d1891e457ca50ef8cdc4c8847a19",
+      "translation_text_hash": "8d09a948ada72a699ade9156357f3b3e9d83ad092e21b694d23b77f97d42e813",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "(저희는 성경에 그가 죽은 자 가운데서 다시 살아나야 하리라 하신 말씀을 아직 알지 못하더라)"
+      ],
+      "raw_text_hashes": [
+        "8d09a948ada72a699ade9156357f3b3e9d83ad092e21b694d23b77f97d42e813"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:20:10",
+      "sequence": 26877,
+      "chapter_label": "JHN 20",
+      "verse_label": "10",
+      "locator": {
+        "book": "JHN",
+        "chapter": 20,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 20,
+          "verse": 10
+        }
+      ],
+      "en": "So the disciples went away again to their own homes.",
+      "ko": "이에 두 제자가 자기 집으로 돌아가니라",
+      "source_text_hash": "b62f0c2b47a813884f3120f5b25d5e4ad48f7ea66ae60fe81e2408c85b922b6e",
+      "translation_text_hash": "eb0a12eb52b10f60f537fdeed61c7e889a13e4459fbfcece3d9ae528b61a217c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 두 제자가 자기 집으로 돌아가니라"
+      ],
+      "raw_text_hashes": [
+        "eb0a12eb52b10f60f537fdeed61c7e889a13e4459fbfcece3d9ae528b61a217c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:20:11",
+      "sequence": 26878,
+      "chapter_label": "JHN 20",
+      "verse_label": "11",
+      "locator": {
+        "book": "JHN",
+        "chapter": 20,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 20,
+          "verse": 11
+        }
+      ],
+      "en": "But Mary was standing outside at the tomb weeping. So as she wept, she stooped and looked into the tomb,",
+      "ko": "마리아는 무덤 밖에 서서 울고 있더니 울면서 구푸려 무덤 속을 들여다보니",
+      "source_text_hash": "1b89f6273e5c33b0563064e2c7ec433bffce24532e59628acd789439e5aee369",
+      "translation_text_hash": "bea9d51719baf0f6e4e686db42ea1b0ec4c3adaa38f4c463c27d1adb8c1f643c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마리아는 무덤 밖에 서서 울고 있더니 울면서 구푸려 무덤 속을 들여다보니"
+      ],
+      "raw_text_hashes": [
+        "bea9d51719baf0f6e4e686db42ea1b0ec4c3adaa38f4c463c27d1adb8c1f643c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:20:12",
+      "sequence": 26879,
+      "chapter_label": "JHN 20",
+      "verse_label": "12",
+      "locator": {
+        "book": "JHN",
+        "chapter": 20,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 20,
+          "verse": 12
+        }
+      ],
+      "en": "and she saw two angels in white sitting, one at the head and one at the feet, where the body of Jesus had lain.",
+      "ko": "흰 옷 입은 두 천사가 예수의 시체 뉘었던 곳에 하나는 머리 편에, 하나는 발 편에 앉았더라",
+      "source_text_hash": "d801c1bead166b3bed4e36169af22ec84af20d84aded6e4bad2322a522fc50e1",
+      "translation_text_hash": "e3f9d5adda5b34373fd014f92c1a36ac4c3fb149ed8eaa87a29d7339e5946aaa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "흰 옷 입은 두 천사가 예수의 시체 뉘었던 곳에 하나는 머리 편에, 하나는 발 편에 앉았더라"
+      ],
+      "raw_text_hashes": [
+        "e3f9d5adda5b34373fd014f92c1a36ac4c3fb149ed8eaa87a29d7339e5946aaa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:20:13",
+      "sequence": 26880,
+      "chapter_label": "JHN 20",
+      "verse_label": "13",
+      "locator": {
+        "book": "JHN",
+        "chapter": 20,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 20,
+          "verse": 13
+        }
+      ],
+      "en": "They asked her, “Woman, why are you weeping?” She said to them, “Because they have taken away my Lord, and I don’t know where they have laid him.”",
+      "ko": "천사들이 가로되 여자여 어찌하여 우느냐 가로되 사람이 내 주를 가져다가 어디 두었는지 내가 알지 못함이니이다",
+      "source_text_hash": "c24816f42e2f4b6a0d322f1227141f162bb88beb6d841969110e7335c98a6647",
+      "translation_text_hash": "672a03b1ac7e38b84538540c509f98aa97936c0f72847cf113527dd3a736329a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "천사들이 가로되 여자여 어찌하여 우느냐 가로되 사람이 내 주를 가져다가 어디 두었는지 내가 알지 못함이니이다"
+      ],
+      "raw_text_hashes": [
+        "672a03b1ac7e38b84538540c509f98aa97936c0f72847cf113527dd3a736329a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:20:14",
+      "sequence": 26881,
+      "chapter_label": "JHN 20",
+      "verse_label": "14",
+      "locator": {
+        "book": "JHN",
+        "chapter": 20,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 20,
+          "verse": 14
+        }
+      ],
+      "en": "When she had said this, she turned around and saw Jesus standing, and didn’t know that it was Jesus.",
+      "ko": "이 말을 하고 뒤로 돌이켜 예수의 서신 것을 보나 예수신줄 알지 못하더라",
+      "source_text_hash": "4b5035050b3ee62d196b078ffcb9ac510493f134a2baaca8fd23b1eb10671224",
+      "translation_text_hash": "d234a2094501714afce6275b5e4b5a82d9b59a0dad6025acd91fca60be7737a4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 말을 하고 뒤로 돌이켜 예수의 서신 것을 보나 예수신줄 알지 못하더라"
+      ],
+      "raw_text_hashes": [
+        "d234a2094501714afce6275b5e4b5a82d9b59a0dad6025acd91fca60be7737a4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:20:15",
+      "sequence": 26882,
+      "chapter_label": "JHN 20",
+      "verse_label": "15",
+      "locator": {
+        "book": "JHN",
+        "chapter": 20,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 20,
+          "verse": 15
+        }
+      ],
+      "en": "Jesus said to her, “Woman, why are you weeping? Who are you looking for?”She, supposing him to be the gardener, said to him, “Sir, if you have carried him away, tell me where you have laid him, and I will take him away.”",
+      "ko": "예수께서 가라사대 여자여 어찌하여 울며 누구를 찾느냐 하시니 마리아는 그가 동산지기인 줄로 알고 가로되 주여 당신이 옮겨 갔거든 어디 두었는지 내게 이르소서 그리하면 내가 가져가리이다",
+      "source_text_hash": "8c4825397de0e7affba77fe234df673ae8829990f9c512bac08b17fe9de73628",
+      "translation_text_hash": "e136b5e63874110a07a1022cb021ed40c0a8b9a287b14a58286fdbbc2203fcb2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 가라사대 여자여 어찌하여 울며 누구를 찾느냐 하시니 마리아는 그가 동산지기인 줄로 알고 가로되 주여 당신이 옮겨 갔거든 어디 두었는지 내게 이르소서 그리하면 내가 가져가리이다"
+      ],
+      "raw_text_hashes": [
+        "e136b5e63874110a07a1022cb021ed40c0a8b9a287b14a58286fdbbc2203fcb2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:20:16",
+      "sequence": 26883,
+      "chapter_label": "JHN 20",
+      "verse_label": "16",
+      "locator": {
+        "book": "JHN",
+        "chapter": 20,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 20,
+          "verse": 16
+        }
+      ],
+      "en": "Jesus said to her, “Mary.”She turned and said to him, “Rabboni!” which is to say, “Teacher!”",
+      "ko": "예수께서 마리아야 하시거늘 마리아가 돌이켜 히브리 말로 랍오니여 하니 (이는 선생님이라)",
+      "source_text_hash": "787507d4baf498f7c16d7906aefde83fb49939a636391fb62c3fe673fdf3c1d5",
+      "translation_text_hash": "64d08827b0711428c9a9eb7c0d432b8ba83a618c48e15d41b355dfbc3b4d8321",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 마리아야 하시거늘 마리아가 돌이켜 히브리 말로 랍오니여 하니 (이는 선생님이라)"
+      ],
+      "raw_text_hashes": [
+        "64d08827b0711428c9a9eb7c0d432b8ba83a618c48e15d41b355dfbc3b4d8321"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:20:17",
+      "sequence": 26884,
+      "chapter_label": "JHN 20",
+      "verse_label": "17",
+      "locator": {
+        "book": "JHN",
+        "chapter": 20,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 20,
+          "verse": 17
+        }
+      ],
+      "en": "Jesus said to her, “Don’t hold me, for I haven’t yet ascended to my Father; but go to my brothers and tell them, ‘I am ascending to my Father and your Father, to my God and your God.’”",
+      "ko": "예수께서 이르시되 나를 만지지 말라 내가 아직 아버지께로 올라가지 못하였노라 너는 내 형제들에게 가서 이르되 내가 내 아버지 곧 너희 아버지, 내 하나님 곧 너희 하나님께로 올라간다 하라 하신대",
+      "source_text_hash": "3fbc53d3d135196e9f097b8d6c8591126c1a1cf5ce13788a58d2ccf379a1fa84",
+      "translation_text_hash": "7ff0d41b3d2d1dcbbb618bd5750f47262cd0b70c55fb0a37b94e0b51e6a1a7d3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 이르시되 나를 만지지 말라 내가 아직 아버지께로 올라가지 못하였노라 너는 내 형제들에게 가서 이르되 내가 내 아버지 곧 너희 아버지, 내 하나님 곧 너희 하나님께로 올라간다 하라 하신대"
+      ],
+      "raw_text_hashes": [
+        "7ff0d41b3d2d1dcbbb618bd5750f47262cd0b70c55fb0a37b94e0b51e6a1a7d3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:20:18",
+      "sequence": 26885,
+      "chapter_label": "JHN 20",
+      "verse_label": "18",
+      "locator": {
+        "book": "JHN",
+        "chapter": 20,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 20,
+          "verse": 18
+        }
+      ],
+      "en": "Mary Magdalene came and told the disciples that she had seen the Lord, and that he had said these things to her.",
+      "ko": "막달라 마리아가 가서 제자들에게 내가 주를 보았다 하고 또 주께서 자기에게 이렇게 말씀하셨다 이르니라",
+      "source_text_hash": "ea49b0dbd40d90f7385db036daa0ff7d9d8c935590d10caf7c5972df26b8d5cf",
+      "translation_text_hash": "288bddfc9d90795e307a506bd435feb8ff9e6f7302ce182042bec9131f0ab877",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "막달라 마리아가 가서 제자들에게 내가 주를 보았다 하고 또 주께서 자기에게 이렇게 말씀하셨다 이르니라"
+      ],
+      "raw_text_hashes": [
+        "288bddfc9d90795e307a506bd435feb8ff9e6f7302ce182042bec9131f0ab877"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:20:19",
+      "sequence": 26886,
+      "chapter_label": "JHN 20",
+      "verse_label": "19",
+      "locator": {
+        "book": "JHN",
+        "chapter": 20,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 20,
+          "verse": 19
+        }
+      ],
+      "en": "When therefore it was evening on that day, the first day of the week, and when the doors were locked where the disciples were assembled, for fear of the Jews, Jesus came and stood in the middle and said to them, “Peace be to you.”",
+      "ko": "이날 곧 안식 후 첫날 저녁 때에 제자들이 유대인들을 두려워하여 모인 곳에 문들을 닫았더니 예수께서 오사 가운데 서서 가라사대 너희에게 평강이 있을찌어다",
+      "source_text_hash": "358722df9f0a489a0ec584cedef1cf3ee5de93c3b23895114e15691e541a15f6",
+      "translation_text_hash": "d6e38a3e753fec3df8454b55b3bd28cf55c0bb207e2323db79be492c6484ce3d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이날 곧 안식 후 첫날 저녁 때에 제자들이 유대인들을 두려워하여 모인 곳에 문들을 닫았더니 예수께서 오사 가운데 서서 가라사대 너희에게 평강이 있을찌어다"
+      ],
+      "raw_text_hashes": [
+        "d6e38a3e753fec3df8454b55b3bd28cf55c0bb207e2323db79be492c6484ce3d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:20:20",
+      "sequence": 26887,
+      "chapter_label": "JHN 20",
+      "verse_label": "20",
+      "locator": {
+        "book": "JHN",
+        "chapter": 20,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 20,
+          "verse": 20
+        }
+      ],
+      "en": "When he had said this, he showed them his hands and his side. The disciples therefore were glad when they saw the Lord.",
+      "ko": "이 말씀을 하시고 손과 옆구리를 보이시니 제자들이 주를 보고 기뻐하더라",
+      "source_text_hash": "eeeb49b8c6719aac9887adbf64e91ab566af0ed15a28309f3a4f97eb94a71bc7",
+      "translation_text_hash": "6acd278152bbd711ae911d03c60403b659daf19bc224fca75602ee07379e5e4f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 말씀을 하시고 손과 옆구리를 보이시니 제자들이 주를 보고 기뻐하더라"
+      ],
+      "raw_text_hashes": [
+        "6acd278152bbd711ae911d03c60403b659daf19bc224fca75602ee07379e5e4f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:20:21",
+      "sequence": 26888,
+      "chapter_label": "JHN 20",
+      "verse_label": "21",
+      "locator": {
+        "book": "JHN",
+        "chapter": 20,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 20,
+          "verse": 21
+        }
+      ],
+      "en": "Jesus therefore said to them again, “Peace be to you. As the Father has sent me, even so I send you.”",
+      "ko": "예수께서 또 가라사대 너희에게 평강이 있을찌어다 아버지께서 나를 보내신 것 같이 나도 너희를 보내노라",
+      "source_text_hash": "76c87111a7e8b7ee6a912517902e136c52ff49a2fef55e0cafe553f8d0cf4abe",
+      "translation_text_hash": "14e3bb5254382d7e73c9c425e2b1fc5c74e2b03f2aea816faebd28585c192a36",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 또 가라사대 너희에게 평강이 있을찌어다 아버지께서 나를 보내신 것 같이 나도 너희를 보내노라"
+      ],
+      "raw_text_hashes": [
+        "14e3bb5254382d7e73c9c425e2b1fc5c74e2b03f2aea816faebd28585c192a36"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:20:22",
+      "sequence": 26889,
+      "chapter_label": "JHN 20",
+      "verse_label": "22",
+      "locator": {
+        "book": "JHN",
+        "chapter": 20,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 20,
+          "verse": 22
+        }
+      ],
+      "en": "When he had said this, he breathed on them, and said to them, “Receive the Holy Spirit!",
+      "ko": "이 말씀을 하시고 저희를 향하사 숨을 내쉬며 가라사대 성령을 받으라",
+      "source_text_hash": "fa0ad674d90f56ab3d1528b3be618b863d0af7a810f82fe963219f6f62beb2ef",
+      "translation_text_hash": "bdbb830e26ea33777dfb926ac2acbc15e53bd3b4176d63914967d61c328db804",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 말씀을 하시고 저희를 향하사 숨을 내쉬며 가라사대 성령을 받으라"
+      ],
+      "raw_text_hashes": [
+        "bdbb830e26ea33777dfb926ac2acbc15e53bd3b4176d63914967d61c328db804"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:20:23",
+      "sequence": 26890,
+      "chapter_label": "JHN 20",
+      "verse_label": "23",
+      "locator": {
+        "book": "JHN",
+        "chapter": 20,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 20,
+          "verse": 23
+        }
+      ],
+      "en": "If you forgive anyone’s sins, they have been forgiven them. If you retain anyone’s sins, they have been retained.”",
+      "ko": "너희가 뉘 죄든지 사하면 사하여질 것이요 뉘 죄든지 그대로 두면 그대로 있으리라 하시니라",
+      "source_text_hash": "a577e6b44d53e2f604771d4ef4379378c7e38e135367e08903d651dd64bf14d3",
+      "translation_text_hash": "d65e54e4141219422e9a56cc0474e1cd12e19700ac66221df87c95e3ad89147b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 뉘 죄든지 사하면 사하여질 것이요 뉘 죄든지 그대로 두면 그대로 있으리라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "d65e54e4141219422e9a56cc0474e1cd12e19700ac66221df87c95e3ad89147b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:20:24",
+      "sequence": 26891,
+      "chapter_label": "JHN 20",
+      "verse_label": "24",
+      "locator": {
+        "book": "JHN",
+        "chapter": 20,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 20,
+          "verse": 24
+        }
+      ],
+      "en": "But Thomas, one of the twelve, called Didymus, wasn’t with them when Jesus came.",
+      "ko": "열 두 제자 중에 하나인 디두모라 하는 도마는 예수 오셨을 때에 함께 있지 아니한지라",
+      "source_text_hash": "cbb16ca94cf126e21fc282f8c7a4d78c9aba6017c343db9ed72b84712da57d91",
+      "translation_text_hash": "c7f8570049c697a4d282b4e21e56ca898d2e550f3483c103be309a2b0f72d7b6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "열 두 제자 중에 하나인 디두모라 하는 도마는 예수 오셨을 때에 함께 있지 아니한지라"
+      ],
+      "raw_text_hashes": [
+        "c7f8570049c697a4d282b4e21e56ca898d2e550f3483c103be309a2b0f72d7b6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:20:25",
+      "sequence": 26892,
+      "chapter_label": "JHN 20",
+      "verse_label": "25",
+      "locator": {
+        "book": "JHN",
+        "chapter": 20,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 20,
+          "verse": 25
+        }
+      ],
+      "en": "The other disciples therefore said to him, “We have seen the Lord!” But he said to them, “Unless I see in his hands the print of the nails, put my finger into the print of the nails, and put my hand into his side, I will not believe.”",
+      "ko": "다른 제자들이 그에게 이르되 우리가 주를 보았노라 하니 도마가 가로되 내가 그 손의 못자국을 보며 내 손가락을 그 못자국에 넣으며 내 손을 그 옆구리에 넣어 보지 않고는 믿지 아니하겠노라 하니라",
+      "source_text_hash": "5733480fea07f48523fbd0338f769ab6d9d8b4c9c0d8e96a3a2277f33a3673f1",
+      "translation_text_hash": "f3cb3a326e87539110e377ad3cd1b5586dc6c1fefc1d2f433a5420208d57a52b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다른 제자들이 그에게 이르되 우리가 주를 보았노라 하니 도마가 가로되 내가 그 손의 못자국을 보며 내 손가락을 그 못자국에 넣으며 내 손을 그 옆구리에 넣어 보지 않고는 믿지 아니하겠노라 하니라"
+      ],
+      "raw_text_hashes": [
+        "f3cb3a326e87539110e377ad3cd1b5586dc6c1fefc1d2f433a5420208d57a52b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:20:26",
+      "sequence": 26893,
+      "chapter_label": "JHN 20",
+      "verse_label": "26",
+      "locator": {
+        "book": "JHN",
+        "chapter": 20,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 20,
+          "verse": 26
+        }
+      ],
+      "en": "After eight days, again his disciples were inside and Thomas was with them. Jesus came, the doors being locked, and stood in the middle, and said, “Peace be to you.”",
+      "ko": "여드레를 지나서 제자들이 다시 집안에 있을 때에 도마도 함께 있고 문들이 닫혔는데 예수께서 오사 가운데 서서 가라사대 너희에게 평강이 있을찌어다 하시고",
+      "source_text_hash": "7ecc5abd06a36b036d135f6987b8f0f09b7a923ccbf7506d681a40ba24510474",
+      "translation_text_hash": "4d81c4e1db7c9c871e5ad392682081a58972db2060f8ea0c1539aab71e49b370",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여드레를 지나서 제자들이 다시 집안에 있을 때에 도마도 함께 있고 문들이 닫혔는데 예수께서 오사 가운데 서서 가라사대 너희에게 평강이 있을찌어다 하시고"
+      ],
+      "raw_text_hashes": [
+        "4d81c4e1db7c9c871e5ad392682081a58972db2060f8ea0c1539aab71e49b370"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:20:27",
+      "sequence": 26894,
+      "chapter_label": "JHN 20",
+      "verse_label": "27",
+      "locator": {
+        "book": "JHN",
+        "chapter": 20,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 20,
+          "verse": 27
+        }
+      ],
+      "en": "Then he said to Thomas, “Reach here your finger, and see my hands. Reach here your hand, and put it into my side. Don’t be unbelieving, but believing.”",
+      "ko": "도마에게 이르시되 네 손가락을 이리 내밀어 내 손을 보고 네 손을 내밀어 내 옆구리에 넣어보라 그리하고 믿음 없는 자가 되지 말고 믿는 자가 되라",
+      "source_text_hash": "9adedc10762de1c5bc56e0fbce9e6a4c36eaf31bbcfb3bfceb3463311661c930",
+      "translation_text_hash": "dc6dc46f9da07442d3948132ad37abfad99d1ce5e447ae6f07aaf57b6d0b0638",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "도마에게 이르시되 네 손가락을 이리 내밀어 내 손을 보고 네 손을 내밀어 내 옆구리에 넣어보라 그리하고 믿음 없는 자가 되지 말고 믿는 자가 되라"
+      ],
+      "raw_text_hashes": [
+        "dc6dc46f9da07442d3948132ad37abfad99d1ce5e447ae6f07aaf57b6d0b0638"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:20:28",
+      "sequence": 26895,
+      "chapter_label": "JHN 20",
+      "verse_label": "28",
+      "locator": {
+        "book": "JHN",
+        "chapter": 20,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 20,
+          "verse": 28
+        }
+      ],
+      "en": "Thomas answered him, “My Lord and my God!”",
+      "ko": "도마가 대답하여 가로되 나의 주시며 나의 하나님이시니이다",
+      "source_text_hash": "7b8431ce23018760d3838b91b1eb3123acf7aa45b8c58972a90505d2b6421e2b",
+      "translation_text_hash": "a206e5e1b4ba3d52dcd6cc766c7894b7c8d09790943ce8bef5c5be204b22f3c7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "도마가 대답하여 가로되 나의 주시며 나의 하나님이시니이다"
+      ],
+      "raw_text_hashes": [
+        "a206e5e1b4ba3d52dcd6cc766c7894b7c8d09790943ce8bef5c5be204b22f3c7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:20:29",
+      "sequence": 26896,
+      "chapter_label": "JHN 20",
+      "verse_label": "29",
+      "locator": {
+        "book": "JHN",
+        "chapter": 20,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 20,
+          "verse": 29
+        }
+      ],
+      "en": "Jesus said to him, “Because you have seen me,you have believed. Blessed are those who have not seen and have believed.”",
+      "ko": "예수께서 가라사대 너는 나를 본 고로 믿느냐 보지못하고 믿는 자들은 복되도다 하시니라",
+      "source_text_hash": "e7a31c1c004882803bcd68d0ec0e7d22839afe4c8720a86505f4f077bcf948c5",
+      "translation_text_hash": "a66dce0bd2d72464db1a443555901aacbe2ffb72b0c791f46c33d1d085e6a7bf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 가라사대 너는 나를 본 고로 믿느냐 보지못하고 믿는 자들은 복되도다 하시니라"
+      ],
+      "raw_text_hashes": [
+        "a66dce0bd2d72464db1a443555901aacbe2ffb72b0c791f46c33d1d085e6a7bf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:20:30",
+      "sequence": 26897,
+      "chapter_label": "JHN 20",
+      "verse_label": "30",
+      "locator": {
+        "book": "JHN",
+        "chapter": 20,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 20,
+          "verse": 30
+        }
+      ],
+      "en": "Therefore Jesus did many other signs in the presence of his disciples, which are not written in this book;",
+      "ko": "예수께서 제자들 앞에서 이책에 기록되지 아니한 다른 표적도 많이 행하셨으나",
+      "source_text_hash": "33c29f438bf1470024353bc1e655f1f3608bdee1de2b18c8959775d61e762bb0",
+      "translation_text_hash": "51e044715ab898ed330476cbad7ee92bc43098551bce59ce414031de72bf3980",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 제자들 앞에서 이책에 기록되지 아니한 다른 표적도 많이 행하셨으나"
+      ],
+      "raw_text_hashes": [
+        "51e044715ab898ed330476cbad7ee92bc43098551bce59ce414031de72bf3980"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:20:31",
+      "sequence": 26898,
+      "chapter_label": "JHN 20",
+      "verse_label": "31",
+      "locator": {
+        "book": "JHN",
+        "chapter": 20,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 20,
+          "verse": 31
+        }
+      ],
+      "en": "but these are written that you may believe that Jesus is the Christ, the Son of God, and that believing you may have life in his name.",
+      "ko": "오직 이것을 기록함은 너희로 예수께서 하나님의 아들 그리스도이심을 믿게 하려 함이요 또 너희로 믿고 그 이름을 힘입어 생명을 얻게 하려 함이니라",
+      "source_text_hash": "15f5378cc55c433b6ced152507ff85cf25566bf44d40263b60669320ece7f213",
+      "translation_text_hash": "d2f947cfa3bc1ff11372bc98d537832328f801a673e0b0e2e89938c524b4bbfd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 이것을 기록함은 너희로 예수께서 하나님의 아들 그리스도이심을 믿게 하려 함이요 또 너희로 믿고 그 이름을 힘입어 생명을 얻게 하려 함이니라"
+      ],
+      "raw_text_hashes": [
+        "d2f947cfa3bc1ff11372bc98d537832328f801a673e0b0e2e89938c524b4bbfd"
+      ]
+    }
+  ]
+}

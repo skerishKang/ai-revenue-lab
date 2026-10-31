@@ -1,0 +1,429 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:079",
+  "unit_ordinal": 557,
+  "unit_label": "PSA 79",
+  "book_code": "PSA",
+  "chapter_number": 79,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:79:1",
+      "sequence": 15187,
+      "chapter_label": "PSA 79",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 79,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 79,
+          "verse": 1
+        }
+      ],
+      "en": "God, the nations have come into your inheritance. They have defiled your holy temple. They have laid Jerusalem in heaps.",
+      "ko": "하나님이여 열방이 주의 기업에 들어와서 주의 성전을 더럽히고 예루살렘으로 돌 무더기가 되게 하였나이다",
+      "source_text_hash": "123f0e47fb9649ee6dfafca61c4fd3f752b7b4d0b25d782151ccbfdc2126ddac",
+      "translation_text_hash": "3a03c7ed4cbb51d0209165cf44b0f4021c67327354a3817df59eb39dc34361ad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이여 열방이 주의 기업에 들어와서 주의 성전을 더럽히고 예루살렘으로 돌 무더기가 되게 하였나이다"
+      ],
+      "raw_text_hashes": [
+        "3a03c7ed4cbb51d0209165cf44b0f4021c67327354a3817df59eb39dc34361ad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:79:2",
+      "sequence": 15188,
+      "chapter_label": "PSA 79",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 79,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 79,
+          "verse": 2
+        }
+      ],
+      "en": "They have given the dead bodies of your servants to be food for the birds of the sky, the flesh of your saints to the animals of the earth.",
+      "ko": "저희가 주의 종들의 시체를 공중의 새에게 밥으로 주며 주의 성도들의 육체를 땅 짐승에게 주며",
+      "source_text_hash": "603f0bdb390991855925e9116f72cca07191df445659d9950c59c8066b9717b8",
+      "translation_text_hash": "adc4a35fa59416c809cafe0cd7bc29c3f66bd78673c9e0c7fb7668a210d5e00f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 주의 종들의 시체를 공중의 새에게 밥으로 주며 주의 성도들의 육체를 땅 짐승에게 주며"
+      ],
+      "raw_text_hashes": [
+        "adc4a35fa59416c809cafe0cd7bc29c3f66bd78673c9e0c7fb7668a210d5e00f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:79:3",
+      "sequence": 15189,
+      "chapter_label": "PSA 79",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 79,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 79,
+          "verse": 3
+        }
+      ],
+      "en": "They have shed their blood like water around Jerusalem. There was no one to bury them.",
+      "ko": "그들의 피를 예루살렘 사면에 물 같이 흘렸으며 그들을 매장하는 자가 없었나이다",
+      "source_text_hash": "d363f3b952f5c03470ad3f2a99761582ac0c60f80be435591854efff8415d449",
+      "translation_text_hash": "a780ca87180d38ad7d7fec40f74e749aa9ec5a0aae07e96f4fd330e1a3e15d46",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들의 피를 예루살렘 사면에 물 같이 흘렸으며 그들을 매장하는 자가 없었나이다"
+      ],
+      "raw_text_hashes": [
+        "a780ca87180d38ad7d7fec40f74e749aa9ec5a0aae07e96f4fd330e1a3e15d46"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:79:4",
+      "sequence": 15190,
+      "chapter_label": "PSA 79",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 79,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 79,
+          "verse": 4
+        }
+      ],
+      "en": "We have become a reproach to our neighbors, a scoffing and derision to those who are around us.",
+      "ko": "우리는 우리 이웃에게 비방거리가 되며 우리를 에운 자에게 조소와 조롱거리가 되었나이다",
+      "source_text_hash": "841bafbf98e6cf73285694e01c15c283fc40acf82941b88bb29da8218dfd2ae7",
+      "translation_text_hash": "1f275c76b573b4f27557cfc6e5f5b53dbac72b682f5ca2c02800668ec3e00d2b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리는 우리 이웃에게 비방거리가 되며 우리를 에운 자에게 조소와 조롱거리가 되었나이다"
+      ],
+      "raw_text_hashes": [
+        "1f275c76b573b4f27557cfc6e5f5b53dbac72b682f5ca2c02800668ec3e00d2b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:79:5",
+      "sequence": 15191,
+      "chapter_label": "PSA 79",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 79,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 79,
+          "verse": 5
+        }
+      ],
+      "en": "How long, LORD? Will you be angry forever? Will your jealousy burn like fire?",
+      "ko": "여호와여 어느 때까지니이까 영원히 노하시리이까 주의 진노가 불붙듯 하시리이까",
+      "source_text_hash": "aa205032a5102784e127fa093828e3de5b32894242426405c41c8995b8b419de",
+      "translation_text_hash": "6cfa0054721886fcc04f268dfa860b1a56bfdf43d392cb985582fa9342cfc96d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 어느 때까지니이까 영원히 노하시리이까 주의 진노가 불붙듯 하시리이까"
+      ],
+      "raw_text_hashes": [
+        "6cfa0054721886fcc04f268dfa860b1a56bfdf43d392cb985582fa9342cfc96d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:79:6",
+      "sequence": 15192,
+      "chapter_label": "PSA 79",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 79,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 79,
+          "verse": 6
+        }
+      ],
+      "en": "Pour out your wrath on the nations that don’t know you, on the kingdoms that don’t call on your name,",
+      "ko": "주를 알지 아니하는 열방과 주의 이름을 부르지 아니하는 열국에 주의 노를 쏟으소서",
+      "source_text_hash": "8f6afc18a1ba18f02c8bb107a3738e6e383a1031a390cb7a909124482f3373de",
+      "translation_text_hash": "c21acc982338b8fcd23c80be412d2a29f6b221846f06bf90124529fd7a8a9c5d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주를 알지 아니하는 열방과 주의 이름을 부르지 아니하는 열국에 주의 노를 쏟으소서"
+      ],
+      "raw_text_hashes": [
+        "c21acc982338b8fcd23c80be412d2a29f6b221846f06bf90124529fd7a8a9c5d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:79:7",
+      "sequence": 15193,
+      "chapter_label": "PSA 79",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 79,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 79,
+          "verse": 7
+        }
+      ],
+      "en": "for they have devoured Jacob, and destroyed his homeland.",
+      "ko": "저희가 야곱을 삼키고 그 거처를 황폐케 함이니이다",
+      "source_text_hash": "85c290cfd3241b5b98f6e468a3f69958a01a6062419706b4e3d22bd6a6011ca2",
+      "translation_text_hash": "03e19175c60709157e3575681233657b2b4232c0cbaa61be025774cfd0a35bfe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 야곱을 삼키고 그 거처를 황폐케 함이니이다"
+      ],
+      "raw_text_hashes": [
+        "03e19175c60709157e3575681233657b2b4232c0cbaa61be025774cfd0a35bfe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:79:8",
+      "sequence": 15194,
+      "chapter_label": "PSA 79",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 79,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 79,
+          "verse": 8
+        }
+      ],
+      "en": "Don’t hold the iniquities of our forefathers against us. Let your tender mercies speedily meet us, for we are in desperate need.",
+      "ko": "우리 열조의 죄악을 기억하여 우리에게 돌리지 마옵소서 우리가 심히 천하게 되었사오니 주의 긍휼하심으로 속히 우리를 영접하소서",
+      "source_text_hash": "e2f8c153f7db506ca7b6cc100095f768d070348a84ab52703b4c85f66abc7837",
+      "translation_text_hash": "0442a79f4920780d2ee6a69335786831a5bfc612457304ef93be6f18f7c29c72",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리 열조의 죄악을 기억하여 우리에게 돌리지 마옵소서 우리가 심히 천하게 되었사오니 주의 긍휼하심으로 속히 우리를 영접하소서"
+      ],
+      "raw_text_hashes": [
+        "0442a79f4920780d2ee6a69335786831a5bfc612457304ef93be6f18f7c29c72"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:79:9",
+      "sequence": 15195,
+      "chapter_label": "PSA 79",
+      "verse_label": "9",
+      "locator": {
+        "book": "PSA",
+        "chapter": 79,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 79,
+          "verse": 9
+        }
+      ],
+      "en": "Help us, God of our salvation, for the glory of your name. Deliver us, and forgive our sins, for your name’s sake.",
+      "ko": "우리 구원의 하나님이여 주의 이름의 영광을 위하여 우리를 도우시며 주의 이름을 위하여 우리를 건지시며 우리 죄를 사하소서",
+      "source_text_hash": "5f819354db5718e022b55bd9ee76b5cc51291c87eb37cbf5944d9d20b5ce2df1",
+      "translation_text_hash": "7429edb9f130d82be3cebd46e8e11765a5ab958704953d1d5c95e27d4cf7ab02",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리 구원의 하나님이여 주의 이름의 영광을 위하여 우리를 도우시며 주의 이름을 위하여 우리를 건지시며 우리 죄를 사하소서"
+      ],
+      "raw_text_hashes": [
+        "7429edb9f130d82be3cebd46e8e11765a5ab958704953d1d5c95e27d4cf7ab02"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:79:10",
+      "sequence": 15196,
+      "chapter_label": "PSA 79",
+      "verse_label": "10",
+      "locator": {
+        "book": "PSA",
+        "chapter": 79,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 79,
+          "verse": 10
+        }
+      ],
+      "en": "Why should the nations say, “Where is their God?” Let it be known among the nations, before our eyes, that vengeance for your servants’ blood is being poured out.",
+      "ko": "어찌하여 열방으로 저희 하나님이 어디 있느냐 말하게 하리이까 주의 종들의 피 흘림 당한 보수를 우리 목전에 열방 중에 알리소서",
+      "source_text_hash": "58c1fcb657084d4f548f4d4020417f3a6537ff77ba395d913f1a8f3da7589547",
+      "translation_text_hash": "b91f98106a2e9b7e21bded29813eaa942bf9b4562c1c00cb7bfa3f3b9986d29d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어찌하여 열방으로 저희 하나님이 어디 있느냐 말하게 하리이까 주의 종들의 피 흘림 당한 보수를 우리 목전에 열방 중에 알리소서"
+      ],
+      "raw_text_hashes": [
+        "b91f98106a2e9b7e21bded29813eaa942bf9b4562c1c00cb7bfa3f3b9986d29d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:79:11",
+      "sequence": 15197,
+      "chapter_label": "PSA 79",
+      "verse_label": "11",
+      "locator": {
+        "book": "PSA",
+        "chapter": 79,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 79,
+          "verse": 11
+        }
+      ],
+      "en": "Let the sighing of the prisoner come before you. According to the greatness of your power, preserve those who are sentenced to death.",
+      "ko": "갇힌 자의 탄식으로 주의 앞에 이르게 하시며 죽이기로 정한 자를 주의 크신 능력을 따라 보존하소서",
+      "source_text_hash": "bbc4bea68cd0484b3d043c404358223442896400bb82b293aea4af3a5cef5f7e",
+      "translation_text_hash": "a8476e18d6f9417e9c7c6874f3ae1f413766a9b738de9868e89024967ef91a9e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "갇힌 자의 탄식으로 주의 앞에 이르게 하시며 죽이기로 정한 자를 주의 크신 능력을 따라 보존하소서"
+      ],
+      "raw_text_hashes": [
+        "a8476e18d6f9417e9c7c6874f3ae1f413766a9b738de9868e89024967ef91a9e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:79:12",
+      "sequence": 15198,
+      "chapter_label": "PSA 79",
+      "verse_label": "12",
+      "locator": {
+        "book": "PSA",
+        "chapter": 79,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 79,
+          "verse": 12
+        }
+      ],
+      "en": "Pay back to our neighbors seven times into their bosom their reproach with which they have reproached you, Lord.",
+      "ko": "주여 우리 이웃이 주를 훼방한 그 훼방을 저희 품에 칠배나 갚으소서",
+      "source_text_hash": "94d2a574cbc6cf2065073b990a8a3526202677e6d0677fedfcf17bd62b4af987",
+      "translation_text_hash": "53298c97178ce1151a750d591f3f0babd1faa0d21051522d3a8a0eb447d8d651",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주여 우리 이웃이 주를 훼방한 그 훼방을 저희 품에 칠배나 갚으소서"
+      ],
+      "raw_text_hashes": [
+        "53298c97178ce1151a750d591f3f0babd1faa0d21051522d3a8a0eb447d8d651"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:79:13",
+      "sequence": 15199,
+      "chapter_label": "PSA 79",
+      "verse_label": "13",
+      "locator": {
+        "book": "PSA",
+        "chapter": 79,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 79,
+          "verse": 13
+        }
+      ],
+      "en": "So we, your people and sheep of your pasture, will give you thanks forever. We will praise you forever, to all generations.",
+      "ko": "그러하면 주의 백성 곧 주의 기르시는 양 된 우리는 영원히 주께 감사하며 주의 영예를 대대로 전하리이다",
+      "source_text_hash": "415214693c29357083f13fe6d560ceb1c80e3701b14d0b1719302c3a88fcc3df",
+      "translation_text_hash": "950b13599fe1e89d72be6017c9d516b6591d4729d83b00162593dea0bdd86502",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러하면 주의 백성 곧 주의 기르시는 양 된 우리는 영원히 주께 감사하며 주의 영예를 대대로 전하리이다"
+      ],
+      "raw_text_hashes": [
+        "950b13599fe1e89d72be6017c9d516b6591d4729d83b00162593dea0bdd86502"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,205 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:MAL:chapter:004",
+  "unit_ordinal": 929,
+  "unit_label": "MAL 4",
+  "book_code": "MAL",
+  "chapter_number": 4,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:MAL:4:1",
+      "sequence": 23140,
+      "chapter_label": "MAL 4",
+      "verse_label": "1",
+      "locator": {
+        "book": "MAL",
+        "chapter": 4,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "MAL",
+          "chapter": 4,
+          "verse": 1
+        }
+      ],
+      "en": "“For behold, the day comes, burning like a furnace, when all the proud and all who work wickedness will be stubble. The day that comes will burn them up,” says the LORD of Armies, “so that it will leave them neither root nor branch.",
+      "ko": "만군의 여호와가 이르노라 보라 극렬한 풀무불 같은 날이 이르리니 교만한 자와 악을 행하는 자는 다 초개 같을 것이라 그 이르는 날이 그들을 살라 그 뿌리와 가지를 남기지 아니할 것이로되",
+      "source_text_hash": "c1ebe409390ddc54d7192134c670ad01128b70b09e12fcc987ada7b1be745682",
+      "translation_text_hash": "ed555354b8ff3cdc3d211d14929c59b321eef1262f55fbc9e3039a2da98a3e32",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만군의 여호와가 이르노라 보라 극렬한 풀무불 같은 날이 이르리니 교만한 자와 악을 행하는 자는 다 초개 같을 것이라 그 이르는 날이 그들을 살라 그 뿌리와 가지를 남기지 아니할 것이로되"
+      ],
+      "raw_text_hashes": [
+        "ed555354b8ff3cdc3d211d14929c59b321eef1262f55fbc9e3039a2da98a3e32"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAL:4:2",
+      "sequence": 23141,
+      "chapter_label": "MAL 4",
+      "verse_label": "2",
+      "locator": {
+        "book": "MAL",
+        "chapter": 4,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "MAL",
+          "chapter": 4,
+          "verse": 2
+        }
+      ],
+      "en": "But to you who fear my name shall the sun of righteousness arise with healing in its wings. You will go out and leap like calves of the stall.",
+      "ko": "내 이름을 경외하는 너희에게는 의로운 해가 떠올라서 치료하는 광선을 발하리니 너희가 나가서 외양간에서 나온 송아지 같이 뛰리라",
+      "source_text_hash": "9ef78cdcb10213c1c47ab1df3e779589b2dfe038e58bf1a35f586b07163d2c1e",
+      "translation_text_hash": "f199c1c3b3a635d4956bf917aeef0bb0dc3a005f1955d5616d218b686a719f21",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 이름을 경외하는 너희에게는 의로운 해가 떠올라서 치료하는 광선을 발하리니 너희가 나가서 외양간에서 나온 송아지 같이 뛰리라"
+      ],
+      "raw_text_hashes": [
+        "f199c1c3b3a635d4956bf917aeef0bb0dc3a005f1955d5616d218b686a719f21"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAL:4:3",
+      "sequence": 23142,
+      "chapter_label": "MAL 4",
+      "verse_label": "3",
+      "locator": {
+        "book": "MAL",
+        "chapter": 4,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "MAL",
+          "chapter": 4,
+          "verse": 3
+        }
+      ],
+      "en": "You shall tread down the wicked; for they will be ashes under the soles of your feet in the day that I make,” says the LORD of Armies.",
+      "ko": "또 너희가 악인을 밟을 것이니 그들이 나의 정한 날에 너희 발바닥 밑에 재와 같으리라 만군의 여호와의 말이니라",
+      "source_text_hash": "7e3a8f40637663e400f8d5a97373f65d4c713e7c8aab0a46a7b04387ea7c0e74",
+      "translation_text_hash": "7aef6b4d75cd2a39a5d7c9ab8d47e716b78899c57ae58de28902531d52dc6617",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 너희가 악인을 밟을 것이니 그들이 나의 정한 날에 너희 발바닥 밑에 재와 같으리라 만군의 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "7aef6b4d75cd2a39a5d7c9ab8d47e716b78899c57ae58de28902531d52dc6617"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAL:4:4",
+      "sequence": 23143,
+      "chapter_label": "MAL 4",
+      "verse_label": "4",
+      "locator": {
+        "book": "MAL",
+        "chapter": 4,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "MAL",
+          "chapter": 4,
+          "verse": 4
+        }
+      ],
+      "en": "“Remember the law of Moses my servant, which I commanded to him in Horeb for all Israel, even statutes and ordinances.",
+      "ko": "너희는 내가 호렙에서 온 이스라엘을 위하여 내 종 모세에게 명한 법 곧 율례와 법도를 기억하라",
+      "source_text_hash": "740b3d3177df98765faf35afb896c4b5a05ade1f294718c777a5b8c2177d04df",
+      "translation_text_hash": "08c93f7b69599a898abdb4a4ca061bb66f7c5b6b2510630b6d8ef9ad6a72b06d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 내가 호렙에서 온 이스라엘을 위하여 내 종 모세에게 명한 법 곧 율례와 법도를 기억하라"
+      ],
+      "raw_text_hashes": [
+        "08c93f7b69599a898abdb4a4ca061bb66f7c5b6b2510630b6d8ef9ad6a72b06d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAL:4:5",
+      "sequence": 23144,
+      "chapter_label": "MAL 4",
+      "verse_label": "5",
+      "locator": {
+        "book": "MAL",
+        "chapter": 4,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "MAL",
+          "chapter": 4,
+          "verse": 5
+        }
+      ],
+      "en": "Behold, I will send you Elijah the prophet before the great and terrible day of the LORD comes.",
+      "ko": "보라 여호와의 크고 두려운 날이 이르기 전에 내가 선지 엘리야를 너희에게 보내리니",
+      "source_text_hash": "ba16470f49c59fa7d779cb23954f206f471c0b0d0a15f3dc726ca99e6fc4c03a",
+      "translation_text_hash": "91f1f02de9a31854770c1c66e01934bbc605b3b4628996c32c1cab2847ff6734",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보라 여호와의 크고 두려운 날이 이르기 전에 내가 선지 엘리야를 너희에게 보내리니"
+      ],
+      "raw_text_hashes": [
+        "91f1f02de9a31854770c1c66e01934bbc605b3b4628996c32c1cab2847ff6734"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAL:4:6",
+      "sequence": 23145,
+      "chapter_label": "MAL 4",
+      "verse_label": "6",
+      "locator": {
+        "book": "MAL",
+        "chapter": 4,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "MAL",
+          "chapter": 4,
+          "verse": 6
+        }
+      ],
+      "en": "He will turn the hearts of the fathers to the children and the hearts of the children to their fathers, lest I come and strike the earth with a curse.”",
+      "ko": "그가 아비의 마음을 자녀에게로 돌이키게 하고 자녀들의 마음을 그들의 아비에게로 돌이키게 하리라 돌이키지 아니하면 두렵건대 내가 와서 저주로 그 땅을 칠까 하노라 하시니라",
+      "source_text_hash": "c2f6e242d70375e495114fe1da5e2f65c45ad444fd6c304bf64ecd1ced03d870",
+      "translation_text_hash": "2305ac866576d5d2993c2653f7ab3db997cfcd3afbdc8c44c553e7052191616c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 아비의 마음을 자녀에게로 돌이키게 하고 자녀들의 마음을 그들의 아비에게로 돌이키게 하리라 돌이키지 아니하면 두렵건대 내가 와서 저주로 그 땅을 칠까 하노라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "2305ac866576d5d2993c2653f7ab3db997cfcd3afbdc8c44c553e7052191616c"
+      ]
+    }
+  ]
+}

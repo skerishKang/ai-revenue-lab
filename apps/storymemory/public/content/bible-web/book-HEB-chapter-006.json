@@ -1,0 +1,653 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:HEB:chapter:006",
+  "unit_ordinal": 1139,
+  "unit_label": "HEB 6",
+  "book_code": "HEB",
+  "chapter_number": 6,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:HEB:6:1",
+      "sequence": 30042,
+      "chapter_label": "HEB 6",
+      "verse_label": "1",
+      "locator": {
+        "book": "HEB",
+        "chapter": 6,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 6,
+          "verse": 1
+        }
+      ],
+      "en": "Therefore leaving the teaching of the first principles of Christ, let’s press on to perfection—not laying again a foundation of repentance from dead works, of faith toward God,",
+      "ko": "그러므로 우리가 그리스도 도의 초보를 버리고 죽은 행실을 회개함과 하나님께 대한 신앙과",
+      "source_text_hash": "756ea31af6593f8a1e00697048664dc1957f6c6aff23b16537b7192dc517ec99",
+      "translation_text_hash": "77b00afa235580a73800e5b571da91018c5170a92ee91b7d4863880869015b1d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 우리가 그리스도 도의 초보를 버리고 죽은 행실을 회개함과 하나님께 대한 신앙과"
+      ],
+      "raw_text_hashes": [
+        "77b00afa235580a73800e5b571da91018c5170a92ee91b7d4863880869015b1d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:6:2",
+      "sequence": 30043,
+      "chapter_label": "HEB 6",
+      "verse_label": "2",
+      "locator": {
+        "book": "HEB",
+        "chapter": 6,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 6,
+          "verse": 2
+        }
+      ],
+      "en": "of the teaching of baptisms, of laying on of hands, of resurrection of the dead, and of eternal judgment.",
+      "ko": "세례들과 안수와 죽은 자의 부활과 영원한 심판에 관한 교훈의 터를 다시 닦지 말고 완전한데 나아갈찌니라",
+      "source_text_hash": "2bee8068c8f1e39ad605f2c229994b5b6bbceb53143179d4fb7ed1d6ca11be58",
+      "translation_text_hash": "f9bfebefdb8eddb90c508baba9e7b1218ecabb75eba48a103207c5727d4c40a3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "세례들과 안수와 죽은 자의 부활과 영원한 심판에 관한 교훈의 터를 다시 닦지 말고 완전한데 나아갈찌니라"
+      ],
+      "raw_text_hashes": [
+        "f9bfebefdb8eddb90c508baba9e7b1218ecabb75eba48a103207c5727d4c40a3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:6:3",
+      "sequence": 30044,
+      "chapter_label": "HEB 6",
+      "verse_label": "3",
+      "locator": {
+        "book": "HEB",
+        "chapter": 6,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 6,
+          "verse": 3
+        }
+      ],
+      "en": "This will we do, if God permits.",
+      "ko": "하나님께서 허락하시면 우리가 이것을 하리라",
+      "source_text_hash": "50d6660d1aa20d887e9b313c2de136330d03d5ac10be99fc4e6fe2d0f435bec1",
+      "translation_text_hash": "538ef4c8a3eb93a5f5edf576a35b261176a30c76698fe9a7548689b5aec65a76",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님께서 허락하시면 우리가 이것을 하리라"
+      ],
+      "raw_text_hashes": [
+        "538ef4c8a3eb93a5f5edf576a35b261176a30c76698fe9a7548689b5aec65a76"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:6:4",
+      "sequence": 30045,
+      "chapter_label": "HEB 6",
+      "verse_label": "4",
+      "locator": {
+        "book": "HEB",
+        "chapter": 6,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 6,
+          "verse": 4
+        }
+      ],
+      "en": "For concerning those who were once enlightened and tasted of the heavenly gift, and were made partakers of the Holy Spirit,",
+      "ko": "한번 비췸을 얻고 하늘의 은사를 맛보고 성령에 참예한바 되고",
+      "source_text_hash": "df1ec5b0f6df1e1399b3f1ccc195b21b8784bcbb4c431284b1aa3ee23ca82129",
+      "translation_text_hash": "ab96fa1f4092b74c4a79f6c911e5c2692bad676d745379adf81df7577870dbfe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "한번 비췸을 얻고 하늘의 은사를 맛보고 성령에 참예한바 되고"
+      ],
+      "raw_text_hashes": [
+        "ab96fa1f4092b74c4a79f6c911e5c2692bad676d745379adf81df7577870dbfe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:6:5",
+      "sequence": 30046,
+      "chapter_label": "HEB 6",
+      "verse_label": "5",
+      "locator": {
+        "book": "HEB",
+        "chapter": 6,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 6,
+          "verse": 5
+        }
+      ],
+      "en": "and tasted the good word of God and the powers of the age to come,",
+      "ko": "하나님의 선한 말씀과 내세의 능력을 맛보고",
+      "source_text_hash": "8910754e2615585f2c25def314d6f72d5ebdb93ef22a6c5a2a7b5ee8dc5ba73e",
+      "translation_text_hash": "907a314f9497c89b7c696f2200efdbc22160086a7f2b11b4a2a85779795e6ebe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님의 선한 말씀과 내세의 능력을 맛보고"
+      ],
+      "raw_text_hashes": [
+        "907a314f9497c89b7c696f2200efdbc22160086a7f2b11b4a2a85779795e6ebe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:6:6",
+      "sequence": 30047,
+      "chapter_label": "HEB 6",
+      "verse_label": "6",
+      "locator": {
+        "book": "HEB",
+        "chapter": 6,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 6,
+          "verse": 6
+        }
+      ],
+      "en": "and then fell away, it is impossible to renew them again to repentance; seeing they crucify the Son of God for themselves again, and put him to open shame.",
+      "ko": "타락한 자들은 다시 새롭게 하여 회개케 할 수 없나니 이는 자기가 하나님의 아들을 다시 십자가에 못 박아 현저히 욕을 보임이라",
+      "source_text_hash": "f4215748110e9539b1dd84866c77af0688234716793f141534a8795232a1ae23",
+      "translation_text_hash": "2e73fe7220c0dccc816c1af5991a5fc8399d0ea77c7cf404281d41d2ded1d753",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "타락한 자들은 다시 새롭게 하여 회개케 할 수 없나니 이는 자기가 하나님의 아들을 다시 십자가에 못 박아 현저히 욕을 보임이라"
+      ],
+      "raw_text_hashes": [
+        "2e73fe7220c0dccc816c1af5991a5fc8399d0ea77c7cf404281d41d2ded1d753"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:6:7",
+      "sequence": 30048,
+      "chapter_label": "HEB 6",
+      "verse_label": "7",
+      "locator": {
+        "book": "HEB",
+        "chapter": 6,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 6,
+          "verse": 7
+        }
+      ],
+      "en": "For the land which has drunk the rain that comes often on it and produces a crop suitable for them for whose sake it is also tilled, receives blessing from God;",
+      "ko": "땅이 그 위에 자주 내리는 비를 흡수하여 밭 가는 자들의 쓰기에 합당한 채소를 내면 하나님께 복을 받고",
+      "source_text_hash": "b269bbf7918c6f06f6d92e3d1a662be08da18a396f707bff4bb007fd84a240b9",
+      "translation_text_hash": "3d35e1b25302fbc4b923e64b44afc4fa9790bafc9a3ebd074c8d74192d4f078f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "땅이 그 위에 자주 내리는 비를 흡수하여 밭 가는 자들의 쓰기에 합당한 채소를 내면 하나님께 복을 받고"
+      ],
+      "raw_text_hashes": [
+        "3d35e1b25302fbc4b923e64b44afc4fa9790bafc9a3ebd074c8d74192d4f078f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:6:8",
+      "sequence": 30049,
+      "chapter_label": "HEB 6",
+      "verse_label": "8",
+      "locator": {
+        "book": "HEB",
+        "chapter": 6,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 6,
+          "verse": 8
+        }
+      ],
+      "en": "but if it bears thorns and thistles, it is rejected and near being cursed, whose end is to be burned.",
+      "ko": "만일 가시와 엉겅퀴를 내면 버림을 당하고 저주함에 가까와 그 마지막은 불사름이 되리라",
+      "source_text_hash": "1f4973b0c7c97aa702620028e2de2ae94fe8d24962dd0f68f1ab2b8601c03964",
+      "translation_text_hash": "aecdda7305c2351accc30aad223ffc3e45b4e67c7d35b6a2f3320cfcf70dfd8e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 가시와 엉겅퀴를 내면 버림을 당하고 저주함에 가까와 그 마지막은 불사름이 되리라"
+      ],
+      "raw_text_hashes": [
+        "aecdda7305c2351accc30aad223ffc3e45b4e67c7d35b6a2f3320cfcf70dfd8e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:6:9",
+      "sequence": 30050,
+      "chapter_label": "HEB 6",
+      "verse_label": "9",
+      "locator": {
+        "book": "HEB",
+        "chapter": 6,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 6,
+          "verse": 9
+        }
+      ],
+      "en": "But, beloved, we are persuaded of better things for you, and things that accompany salvation, even though we speak like this.",
+      "ko": "사랑하는 자들아 우리가 이같이 말하나 너희에게는 이보다 나은 것과 구원에 가까운 것을 확신하노라",
+      "source_text_hash": "a16753c567c531c33507a38231b1ef6f820e6c5aaff7cb6ec8fa07f63da1c92e",
+      "translation_text_hash": "054fecb9eba00bb21543090250877bff6731824a9a4455303712b9a30fd0fd15",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사랑하는 자들아 우리가 이같이 말하나 너희에게는 이보다 나은 것과 구원에 가까운 것을 확신하노라"
+      ],
+      "raw_text_hashes": [
+        "054fecb9eba00bb21543090250877bff6731824a9a4455303712b9a30fd0fd15"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:6:10",
+      "sequence": 30051,
+      "chapter_label": "HEB 6",
+      "verse_label": "10",
+      "locator": {
+        "book": "HEB",
+        "chapter": 6,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 6,
+          "verse": 10
+        }
+      ],
+      "en": "For God is not unrighteous, so as to forget your work and the labor of love which you showed toward his name, in that you served the saints, and still do serve them.",
+      "ko": "하나님이 불의치 아니하사 너희 행위와 그의 이름을 위하여 나타낸 사랑으로 이미 성도를 섬긴 것과 이제도 섬기는 것을 잊어버리지 아니하시느니라",
+      "source_text_hash": "56465590d4e0a3e328c1d4d63180d9658be93d9a4cdf7950e8f3f777f83be13a",
+      "translation_text_hash": "97d7b6b3065f14feb84bb1155496b85db8ba6bdf3acf81d30f728d90b27c7565",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 불의치 아니하사 너희 행위와 그의 이름을 위하여 나타낸 사랑으로 이미 성도를 섬긴 것과 이제도 섬기는 것을 잊어버리지 아니하시느니라"
+      ],
+      "raw_text_hashes": [
+        "97d7b6b3065f14feb84bb1155496b85db8ba6bdf3acf81d30f728d90b27c7565"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:6:11",
+      "sequence": 30052,
+      "chapter_label": "HEB 6",
+      "verse_label": "11",
+      "locator": {
+        "book": "HEB",
+        "chapter": 6,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 6,
+          "verse": 11
+        }
+      ],
+      "en": "We desire that each one of you may show the same diligence to the fullness of hope even to the end,",
+      "ko": "우리가 간절히 원하는 것은 너희 각 사람이 동일한 부지런을 나타내어 끝까지 소망의 풍성함에 이르러",
+      "source_text_hash": "65434b0619757903026fe3759e68ad1484e0af69d3bf77e1680fb7f9f26a0803",
+      "translation_text_hash": "9cefc2adc8ec26697c727e553d7e9d683d1743c3700d124461668d5bfb8542c1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 간절히 원하는 것은 너희 각 사람이 동일한 부지런을 나타내어 끝까지 소망의 풍성함에 이르러"
+      ],
+      "raw_text_hashes": [
+        "9cefc2adc8ec26697c727e553d7e9d683d1743c3700d124461668d5bfb8542c1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:6:12",
+      "sequence": 30053,
+      "chapter_label": "HEB 6",
+      "verse_label": "12",
+      "locator": {
+        "book": "HEB",
+        "chapter": 6,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 6,
+          "verse": 12
+        }
+      ],
+      "en": "that you won’t be sluggish, but imitators of those who through faith and perseverance inherited the promises.",
+      "ko": "게으르지 아니하고 믿음과 오래 참음으로 말미암아 약속들을 기업으로 받는 자들을 본받는 자 되게 하려는 것이니라",
+      "source_text_hash": "39200433f1993994ce6d1cc30ece86ba2a69b993bad9a6d35e7698d28918d2c9",
+      "translation_text_hash": "93dae2a5494317f2a2c65b778ceec39dd0b3b9e4a8cc79d88f0f67d4604a2abc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "게으르지 아니하고 믿음과 오래 참음으로 말미암아 약속들을 기업으로 받는 자들을 본받는 자 되게 하려는 것이니라"
+      ],
+      "raw_text_hashes": [
+        "93dae2a5494317f2a2c65b778ceec39dd0b3b9e4a8cc79d88f0f67d4604a2abc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:6:13",
+      "sequence": 30054,
+      "chapter_label": "HEB 6",
+      "verse_label": "13",
+      "locator": {
+        "book": "HEB",
+        "chapter": 6,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 6,
+          "verse": 13
+        }
+      ],
+      "en": "For when God made a promise to Abraham, since he could swear by no one greater, he swore by himself,",
+      "ko": "하나님이 아브라함에게 약속하실 때에 가리켜 맹세할 자가 자기보다 더 큰이가 없으므로 자기를 가리켜 맹세하여",
+      "source_text_hash": "970a977f9b7ee3b4722b6be024c8707fa84faebf89aebc5cdd6adf21f0a9a5e4",
+      "translation_text_hash": "22f415f8a4f260b549312955510b805089ddb5a46864e20d215196a9556afc09",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 아브라함에게 약속하실 때에 가리켜 맹세할 자가 자기보다 더 큰이가 없으므로 자기를 가리켜 맹세하여"
+      ],
+      "raw_text_hashes": [
+        "22f415f8a4f260b549312955510b805089ddb5a46864e20d215196a9556afc09"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:6:14",
+      "sequence": 30055,
+      "chapter_label": "HEB 6",
+      "verse_label": "14",
+      "locator": {
+        "book": "HEB",
+        "chapter": 6,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 6,
+          "verse": 14
+        }
+      ],
+      "en": "saying, “Surely blessing I will bless you, and multiplying I will multiply you.”",
+      "ko": "가라사대 내가 반드시 너를 복주고 복주며 너를 번성케 하고 번성케 하리라 하셨더니",
+      "source_text_hash": "a5f291e1c92869a853f5acae46be113cb3df564df53ec8349750c4ae844b438a",
+      "translation_text_hash": "4bb27a34dc68704c71e05c017cca5fdee4d5bc40e41036be2e9372180db84a49",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가라사대 내가 반드시 너를 복주고 복주며 너를 번성케 하고 번성케 하리라 하셨더니"
+      ],
+      "raw_text_hashes": [
+        "4bb27a34dc68704c71e05c017cca5fdee4d5bc40e41036be2e9372180db84a49"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:6:15",
+      "sequence": 30056,
+      "chapter_label": "HEB 6",
+      "verse_label": "15",
+      "locator": {
+        "book": "HEB",
+        "chapter": 6,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 6,
+          "verse": 15
+        }
+      ],
+      "en": "Thus, having patiently endured, he obtained the promise.",
+      "ko": "저가 이같이 오래 참아 약속을 받았느니라",
+      "source_text_hash": "31f5d5abad3b96e35794f549faf74e58992f86220fc81f1a98fa9bf81ce21d92",
+      "translation_text_hash": "52fe02e7f9eb5ae34c04fb8d16bb455e1ae221e73619dcc6a0f9bece592f5d49",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 이같이 오래 참아 약속을 받았느니라"
+      ],
+      "raw_text_hashes": [
+        "52fe02e7f9eb5ae34c04fb8d16bb455e1ae221e73619dcc6a0f9bece592f5d49"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:6:16",
+      "sequence": 30057,
+      "chapter_label": "HEB 6",
+      "verse_label": "16",
+      "locator": {
+        "book": "HEB",
+        "chapter": 6,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 6,
+          "verse": 16
+        }
+      ],
+      "en": "For men indeed swear by a greater one, and in every dispute of theirs the oath is final for confirmation.",
+      "ko": "사람들은 자기보다 더 큰 자를 가리켜 맹세하나니 맹세는 저희 모든 다투는 일에 최후 확정이니라",
+      "source_text_hash": "35cd762d0472a1b04c032bb37d8d5e2d6ce17fc0803edbc5b8d80c2b7347a858",
+      "translation_text_hash": "f9a95d076ad7e8afa85b4612a8ebf5506d368cec048d797d4cfcf10171f8ef0d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람들은 자기보다 더 큰 자를 가리켜 맹세하나니 맹세는 저희 모든 다투는 일에 최후 확정이니라"
+      ],
+      "raw_text_hashes": [
+        "f9a95d076ad7e8afa85b4612a8ebf5506d368cec048d797d4cfcf10171f8ef0d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:6:17",
+      "sequence": 30058,
+      "chapter_label": "HEB 6",
+      "verse_label": "17",
+      "locator": {
+        "book": "HEB",
+        "chapter": 6,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 6,
+          "verse": 17
+        }
+      ],
+      "en": "In this way God, being determined to show more abundantly to the heirs of the promise the immutability of his counsel, interposed with an oath,",
+      "ko": "하나님은 약속을 기업으로 받는 자들에게 그 뜻이 변치 아니함을 충분히 나타내시려고 그 일에 맹세로 보증하셨나니",
+      "source_text_hash": "fc3929c9f15b03b552b239633b23469b3b908c6546386d8212a79b7834ba0075",
+      "translation_text_hash": "c16a7d09cdcb0520fbc54b8ece09dbe3ee25b275a96b573df2bf723b70946d76",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님은 약속을 기업으로 받는 자들에게 그 뜻이 변치 아니함을 충분히 나타내시려고 그 일에 맹세로 보증하셨나니"
+      ],
+      "raw_text_hashes": [
+        "c16a7d09cdcb0520fbc54b8ece09dbe3ee25b275a96b573df2bf723b70946d76"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:6:18",
+      "sequence": 30059,
+      "chapter_label": "HEB 6",
+      "verse_label": "18",
+      "locator": {
+        "book": "HEB",
+        "chapter": 6,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 6,
+          "verse": 18
+        }
+      ],
+      "en": "that by two immutable things, in which it is impossible for God to lie, we may have a strong encouragement, who have fled for refuge to take hold of the hope set before us.",
+      "ko": "이는 하나님이 거짓말을 하실 수 없는 이 두 가지 변치 못할 사실을 인하여 앞에 있는 소망을 얻으려고 피하여 가는 우리로 큰 안위를 받게 하려 하심이라",
+      "source_text_hash": "9dbc3efa964475dc4e63dec9c1feef5a86cab21d251b52dc62120da00410e222",
+      "translation_text_hash": "0c1473de25fcd31954775b278562c76e081273a20f65b16548d12e0ce6c0ba54",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 하나님이 거짓말을 하실 수 없는 이 두 가지 변치 못할 사실을 인하여 앞에 있는 소망을 얻으려고 피하여 가는 우리로 큰 안위를 받게 하려 하심이라"
+      ],
+      "raw_text_hashes": [
+        "0c1473de25fcd31954775b278562c76e081273a20f65b16548d12e0ce6c0ba54"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:6:19",
+      "sequence": 30060,
+      "chapter_label": "HEB 6",
+      "verse_label": "19",
+      "locator": {
+        "book": "HEB",
+        "chapter": 6,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 6,
+          "verse": 19
+        }
+      ],
+      "en": "This hope we have as an anchor of the soul, a hope both sure and steadfast and entering into that which is within the veil,",
+      "ko": "우리가 이 소망이 있는 것은 영혼의 닻 같아서 튼튼하고 견고하여 휘장 안에 들어 가나니",
+      "source_text_hash": "9901c25919c42f445cb5b47722630de61f684c8f0f6ab0659095699e4cc84128",
+      "translation_text_hash": "8c4091c6b25fb4d62cc4167aeaa11e079d2abda4d9b26cb21169e3e01586a8fe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 이 소망이 있는 것은 영혼의 닻 같아서 튼튼하고 견고하여 휘장 안에 들어 가나니"
+      ],
+      "raw_text_hashes": [
+        "8c4091c6b25fb4d62cc4167aeaa11e079d2abda4d9b26cb21169e3e01586a8fe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:6:20",
+      "sequence": 30061,
+      "chapter_label": "HEB 6",
+      "verse_label": "20",
+      "locator": {
+        "book": "HEB",
+        "chapter": 6,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 6,
+          "verse": 20
+        }
+      ],
+      "en": "where as a forerunner Jesus entered for us, having become a high priest forever after the order of Melchizedek.",
+      "ko": "그리로 앞서 가신 예수께서 멜기세덱의 반차를 좇아 영원히 대제사장이 되어 우리를 위하여 들어 가셨느니라",
+      "source_text_hash": "0b6939210a3763af0664a13521d113ff5e88046c58cf3f9d0f24319a208f042e",
+      "translation_text_hash": "0bf8b4bb746eeda30b4a243452d4d27a48dac1e56396166c70be50463d3dedbb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그리로 앞서 가신 예수께서 멜기세덱의 반차를 좇아 영원히 대제사장이 되어 우리를 위하여 들어 가셨느니라"
+      ],
+      "raw_text_hashes": [
+        "0bf8b4bb746eeda30b4a243452d4d27a48dac1e56396166c70be50463d3dedbb"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1677 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1SA:chapter:014",
+  "unit_ordinal": 250,
+  "unit_label": "1SA 14",
+  "book_code": "1SA",
+  "chapter_number": 14,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1SA:14:1",
+      "sequence": 7510,
+      "chapter_label": "1SA 14",
+      "verse_label": "1",
+      "locator": {
+        "book": "1SA",
+        "chapter": 14,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 14,
+          "verse": 1
+        }
+      ],
+      "en": "Now it happened on a day that Jonathan the son of Saul said to the young man who bore his armor, “Come! Let’s go over to the Philistines’ garrison that is on the other side.” But he didn’t tell his father.",
+      "ko": "하루는 사울의 아들 요나단이 자기 병기를 든 소년에게 이르되 우리가 건너편 블레셋 사람의 부대에게로 건너가자 하고 그 아비에게는 고하지 아니하였더라",
+      "source_text_hash": "df24acc6279ef387001973f5935a53bc6e42cd410f04f6727d7e890b17cdb98c",
+      "translation_text_hash": "deb925c27b0065e104a2e7ea94372e9b5123c624c17041d6f8f477822dfb7e71",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하루는 사울의 아들 요나단이 자기 병기를 든 소년에게 이르되 우리가 건너편 블레셋 사람의 부대에게로 건너가자 하고 그 아비에게는 고하지 아니하였더라"
+      ],
+      "raw_text_hashes": [
+        "deb925c27b0065e104a2e7ea94372e9b5123c624c17041d6f8f477822dfb7e71"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:14:2",
+      "sequence": 7511,
+      "chapter_label": "1SA 14",
+      "verse_label": "2",
+      "locator": {
+        "book": "1SA",
+        "chapter": 14,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 14,
+          "verse": 2
+        }
+      ],
+      "en": "Saul stayed in the uttermost part of Gibeah under the pomegranate tree which is in Migron; and the people who were with him were about six hundred men,",
+      "ko": "사울이 기브아 변경 미그론에 있는 석류나무 아래 머물렀고 함께한 백성은 육백명 가량이며",
+      "source_text_hash": "0424ecb001c1fcff30162767a74fe50cffaf13b0d755e7f2c7499266d2e4d9e2",
+      "translation_text_hash": "77a7c6d35f3a07d55f5e571ec255d5798735182de1606bbb217d6433ce15a66c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울이 기브아 변경 미그론에 있는 석류나무 아래 머물렀고 함께한 백성은 육백명 가량이며"
+      ],
+      "raw_text_hashes": [
+        "77a7c6d35f3a07d55f5e571ec255d5798735182de1606bbb217d6433ce15a66c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:14:3",
+      "sequence": 7512,
+      "chapter_label": "1SA 14",
+      "verse_label": "3",
+      "locator": {
+        "book": "1SA",
+        "chapter": 14,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 14,
+          "verse": 3
+        }
+      ],
+      "en": "including Ahijah the son of Ahitub, Ichabod’s brother, the son of Phinehas, the son of Eli the priest of the LORD in Shiloh, wearing an ephod. The people didn’t know that Jonathan was gone.",
+      "ko": "아히야는 에봇을 입고 거기 있었으니 그는 이가봇의 형제 아히둡의 아들이요 비느하스의 손자요 실로에서 여호와의 제사장이 되었던 엘리의 증손이었더라 백성은 요나단의 간줄을 알지 못하니라",
+      "source_text_hash": "54b590d272ed25ca400bfdd767c4b676a814c9d486129ec2be816c8fff73a2c1",
+      "translation_text_hash": "79853b5a18940e62f28cdee0b698c1c423d0dabdd3101c462ea7e5849f9bd5c9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아히야는 에봇을 입고 거기 있었으니 그는 이가봇의 형제 아히둡의 아들이요 비느하스의 손자요 실로에서 여호와의 제사장이 되었던 엘리의 증손이었더라 백성은 요나단의 간줄을 알지 못하니라"
+      ],
+      "raw_text_hashes": [
+        "79853b5a18940e62f28cdee0b698c1c423d0dabdd3101c462ea7e5849f9bd5c9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:14:4",
+      "sequence": 7513,
+      "chapter_label": "1SA 14",
+      "verse_label": "4",
+      "locator": {
+        "book": "1SA",
+        "chapter": 14,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 14,
+          "verse": 4
+        }
+      ],
+      "en": "Between the passes, by which Jonathan sought to go over to the Philistines’ garrison, there was a rocky crag on the one side and a rocky crag on the other side; and the name of the one was Bozez, and the name of the other Seneh.",
+      "ko": "요나단이 블레셋 사람의 부대에게로 건너가려 하는 어귀 사이 이편에도 험한 바위가 있고 저편에도 험한 바위가 있는데 하나의 이름은 보세스요 하나의 이름은 세네라",
+      "source_text_hash": "2598a2e90be6bd199d0123a8a8753e6dc13535cef7e9105e32eff8ed2877a491",
+      "translation_text_hash": "41acb555c485824892bebd7ff1ea24b7d0c88bf95d194004b1527e5a143a5de5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요나단이 블레셋 사람의 부대에게로 건너가려 하는 어귀 사이 이편에도 험한 바위가 있고 저편에도 험한 바위가 있는데 하나의 이름은 보세스요 하나의 이름은 세네라"
+      ],
+      "raw_text_hashes": [
+        "41acb555c485824892bebd7ff1ea24b7d0c88bf95d194004b1527e5a143a5de5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:14:5",
+      "sequence": 7514,
+      "chapter_label": "1SA 14",
+      "verse_label": "5",
+      "locator": {
+        "book": "1SA",
+        "chapter": 14,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 14,
+          "verse": 5
+        }
+      ],
+      "en": "The one crag rose up on the north in front of Michmash, and the other on the south in front of Geba.",
+      "ko": "한 바위는 북에서 믹마스 앞에 일어섰고 하나는 남에서 게바 앞에 일어섰더라",
+      "source_text_hash": "8df2180c3ca65d2bf46fcdc8134643db7a2919ca3b4029b62d83a9bf7371a8da",
+      "translation_text_hash": "2eecdfb93a6e510889425079d9c43e429d301b6679194e451cf837fe34a419ba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "한 바위는 북에서 믹마스 앞에 일어섰고 하나는 남에서 게바 앞에 일어섰더라"
+      ],
+      "raw_text_hashes": [
+        "2eecdfb93a6e510889425079d9c43e429d301b6679194e451cf837fe34a419ba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:14:6",
+      "sequence": 7515,
+      "chapter_label": "1SA 14",
+      "verse_label": "6",
+      "locator": {
+        "book": "1SA",
+        "chapter": 14,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 14,
+          "verse": 6
+        }
+      ],
+      "en": "Jonathan said to the young man who bore his armor, “Come! Let’s go over to the garrison of these uncircumcised. It may be that the LORD will work for us, for there is no restraint on the LORD to save by many or by few.”",
+      "ko": "요나단이 자기 병기 든 소년에게 이르되 우리가 이 할례 없는 자들의 부대에게로 건너가자 여호와께서 우리를 위하여 일하실까 하노라 여호와의 구원은 사람의 많고 적음에 달리지 아니하였느니라",
+      "source_text_hash": "e36f5cdb70c83ecbc3b01369d287ad26e47027b0554e7c617a45ed0af11f4e61",
+      "translation_text_hash": "a4a95205508af9d8b2463a6864a0058b1f9aadb6318c7a84cf28b1684d1c80c6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요나단이 자기 병기 든 소년에게 이르되 우리가 이 할례 없는 자들의 부대에게로 건너가자 여호와께서 우리를 위하여 일하실까 하노라 여호와의 구원은 사람의 많고 적음에 달리지 아니하였느니라"
+      ],
+      "raw_text_hashes": [
+        "a4a95205508af9d8b2463a6864a0058b1f9aadb6318c7a84cf28b1684d1c80c6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:14:7",
+      "sequence": 7516,
+      "chapter_label": "1SA 14",
+      "verse_label": "7",
+      "locator": {
+        "book": "1SA",
+        "chapter": 14,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 14,
+          "verse": 7
+        }
+      ],
+      "en": "His armor bearer said to him, “Do all that is in your heart. Go, and behold, I am with you according to your heart.”",
+      "ko": "병기 든 자가 그에게 이르되 당신의 마음에 있는대로 다 행하여 앞서 가소서 내가 당신과 마음을 같이하여 따르리이다",
+      "source_text_hash": "eb8769fb94fd2c79ffd83b8c8f081b8bb2010bd15aaf5abe9504a1cd8af3b100",
+      "translation_text_hash": "27810bb81821f3845967316c79413c1ed396ef9c355c6f6971b98b9183423569",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "병기 든 자가 그에게 이르되 당신의 마음에 있는대로 다 행하여 앞서 가소서 내가 당신과 마음을 같이하여 따르리이다"
+      ],
+      "raw_text_hashes": [
+        "27810bb81821f3845967316c79413c1ed396ef9c355c6f6971b98b9183423569"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:14:8",
+      "sequence": 7517,
+      "chapter_label": "1SA 14",
+      "verse_label": "8",
+      "locator": {
+        "book": "1SA",
+        "chapter": 14,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 14,
+          "verse": 8
+        }
+      ],
+      "en": "Then Jonathan said, “Behold, we will pass over to the men, and we will reveal ourselves to them.",
+      "ko": "요나단이 가로되 보라 우리가 그 사람들에게로 건너가서 그들에게 보이리니",
+      "source_text_hash": "df62488f84164bbaffcb058b13d0eb4c47e3dce4664c815211ea36f0b4b67c1a",
+      "translation_text_hash": "662f18efba758da3c3d984c5f980125a0acdfbd1899c2dadf86c45692f98c3d7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요나단이 가로되 보라 우리가 그 사람들에게로 건너가서 그들에게 보이리니"
+      ],
+      "raw_text_hashes": [
+        "662f18efba758da3c3d984c5f980125a0acdfbd1899c2dadf86c45692f98c3d7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:14:9",
+      "sequence": 7518,
+      "chapter_label": "1SA 14",
+      "verse_label": "9",
+      "locator": {
+        "book": "1SA",
+        "chapter": 14,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 14,
+          "verse": 9
+        }
+      ],
+      "en": "If they say this to us, ‘Wait until we come to you!’ then we will stand still in our place and will not go up to them.",
+      "ko": "그들이 만일 이같이 우리에게 이르기를 우리가 너희에게로 가기를 기다리라 하면 우리는 우리 곳에 가만히 서서 그들에게로 올라가지 말 것이요",
+      "source_text_hash": "89e3b57bd43f308d2583825587b3a8f7a4533e808d0aed13488e8f8ff6841656",
+      "translation_text_hash": "ade0a9f5569bf67c3945987b37f21db98ae45548409af2e9ef8bef875b94bacf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 만일 이같이 우리에게 이르기를 우리가 너희에게로 가기를 기다리라 하면 우리는 우리 곳에 가만히 서서 그들에게로 올라가지 말 것이요"
+      ],
+      "raw_text_hashes": [
+        "ade0a9f5569bf67c3945987b37f21db98ae45548409af2e9ef8bef875b94bacf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:14:10",
+      "sequence": 7519,
+      "chapter_label": "1SA 14",
+      "verse_label": "10",
+      "locator": {
+        "book": "1SA",
+        "chapter": 14,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 14,
+          "verse": 10
+        }
+      ],
+      "en": "But if they say this, ‘Come up to us!’ then we will go up, for the LORD has delivered them into our hand. This shall be the sign to us.”",
+      "ko": "그들이 만일 이같이 말하기를 우리에게로 올라오라 하면 우리가 올라갈 것은 여호와께서 그들을 우리 손에 붙이셨음이니 이것이 우리에게 표징이 되리라 하고",
+      "source_text_hash": "c5004210ed021158eb89a9c890d199ec03ffd7cbe7a056533077dfab47d50f8e",
+      "translation_text_hash": "848e60f4b0098c0fa06e1460268b86b3686145a020cc649820db948415ae0aad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 만일 이같이 말하기를 우리에게로 올라오라 하면 우리가 올라갈 것은 여호와께서 그들을 우리 손에 붙이셨음이니 이것이 우리에게 표징이 되리라 하고"
+      ],
+      "raw_text_hashes": [
+        "848e60f4b0098c0fa06e1460268b86b3686145a020cc649820db948415ae0aad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:14:11",
+      "sequence": 7520,
+      "chapter_label": "1SA 14",
+      "verse_label": "11",
+      "locator": {
+        "book": "1SA",
+        "chapter": 14,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 14,
+          "verse": 11
+        }
+      ],
+      "en": "Both of them revealed themselves to the garrison of the Philistines; and the Philistines said, “Behold, the Hebrews are coming out of the holes where they had hidden themselves!”",
+      "ko": "둘이 다 블레셋 사람의 부대에게 보이매 블레셋 사람이 가로되 보라 히브리 사람이 그 숨었던 구멍에서 나온다 하고",
+      "source_text_hash": "8b53f60d3165e2a1c3de51142cae9c11ce828fd5959a1c3a2e87c798f3a3087c",
+      "translation_text_hash": "1bab109ecc4932fa45c55ac7f4f128bf4701094e3d4a82ca7f13d029ceabb84e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "둘이 다 블레셋 사람의 부대에게 보이매 블레셋 사람이 가로되 보라 히브리 사람이 그 숨었던 구멍에서 나온다 하고"
+      ],
+      "raw_text_hashes": [
+        "1bab109ecc4932fa45c55ac7f4f128bf4701094e3d4a82ca7f13d029ceabb84e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:14:12",
+      "sequence": 7521,
+      "chapter_label": "1SA 14",
+      "verse_label": "12",
+      "locator": {
+        "book": "1SA",
+        "chapter": 14,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 14,
+          "verse": 12
+        }
+      ],
+      "en": "The men of the garrison answered Jonathan and his armor bearer, and said, “Come up to us, and we will show you something!” Jonathan said to his armor bearer, “Come up after me, for the LORD has delivered them into the hand of Israel.”",
+      "ko": "그 부대 사람들이 요나단과 그 병기 든 자를 대하여 가로되 우리에게로 올라오라 너희에게 한 일을 보이리라 한지라 요나단이 자기 병기 든 자에게 이르되 나를 따라 올라오라 여호와께서 그들을 이스라엘의 손에 붙이셨느니라 하고",
+      "source_text_hash": "412e8504d4aee41b3d6f48f9f32d117345aa496dab3a1c4e5887d2d5f07c7813",
+      "translation_text_hash": "60fba6d9b9ccfec02cec2fc7d62eb92ead15309c734c1e21f7431cd4d29d75e2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 부대 사람들이 요나단과 그 병기 든 자를 대하여 가로되 우리에게로 올라오라 너희에게 한 일을 보이리라 한지라 요나단이 자기 병기 든 자에게 이르되 나를 따라 올라오라 여호와께서 그들을 이스라엘의 손에 붙이셨느니라 하고"
+      ],
+      "raw_text_hashes": [
+        "60fba6d9b9ccfec02cec2fc7d62eb92ead15309c734c1e21f7431cd4d29d75e2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:14:13",
+      "sequence": 7522,
+      "chapter_label": "1SA 14",
+      "verse_label": "13",
+      "locator": {
+        "book": "1SA",
+        "chapter": 14,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 14,
+          "verse": 13
+        }
+      ],
+      "en": "Jonathan climbed up on his hands and on his feet, and his armor bearer after him, and they fell before Jonathan; and his armor bearer killed them after him.",
+      "ko": "요나단이 손발로 붙잡고 올라갔고 그 병기 든 자도 따랐더라 블레셋 사람들이 요나단 앞에서 엎드러지매 병기 든 자가 따라가며 죽였으니",
+      "source_text_hash": "1883b33048e04f5c2bcbb24556b0f22245cee22e4207b8914de02522d4a09028",
+      "translation_text_hash": "5593e572b7871be2973167aadd7e16ce4010812061a6067f3e09eb794805bfb6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요나단이 손발로 붙잡고 올라갔고 그 병기 든 자도 따랐더라 블레셋 사람들이 요나단 앞에서 엎드러지매 병기 든 자가 따라가며 죽였으니"
+      ],
+      "raw_text_hashes": [
+        "5593e572b7871be2973167aadd7e16ce4010812061a6067f3e09eb794805bfb6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:14:14",
+      "sequence": 7523,
+      "chapter_label": "1SA 14",
+      "verse_label": "14",
+      "locator": {
+        "book": "1SA",
+        "chapter": 14,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 14,
+          "verse": 14
+        }
+      ],
+      "en": "That first slaughter, which Jonathan and his armor bearer made, was about twenty men, within as it were half a furrow’s length in an acre of land.",
+      "ko": "요나단과 그 병기 든 자가 반일경 지단 안에서 처음으로 도륙한 자가 이십인 가량이라",
+      "source_text_hash": "58a4b4fb389a6fe557fbb94e4257b21d067764cc0b1d01bd1fb4bdb5c1693f07",
+      "translation_text_hash": "6af4bbb454f11ff565c2baf2951d9162af1ee544e270fba21b4de3bc64a50395",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요나단과 그 병기 든 자가 반일경 지단 안에서 처음으로 도륙한 자가 이십인 가량이라"
+      ],
+      "raw_text_hashes": [
+        "6af4bbb454f11ff565c2baf2951d9162af1ee544e270fba21b4de3bc64a50395"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:14:15",
+      "sequence": 7524,
+      "chapter_label": "1SA 14",
+      "verse_label": "15",
+      "locator": {
+        "book": "1SA",
+        "chapter": 14,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 14,
+          "verse": 15
+        }
+      ],
+      "en": "There was a trembling in the camp, in the field, and among all the people; the garrison and the raiders also trembled; and the earth quaked, so there was an exceedingly great trembling.",
+      "ko": "들에 있는 진과 모든 백성 중에 떨림이 일어났고 부대와 노략군들도 떨었으며 땅도 진동하였으니 이는 큰 떨림이었더라",
+      "source_text_hash": "e13c9a1fb1e7bc2003bb8ea8d4f464ad16220f53e831416ac86763b7036d18a4",
+      "translation_text_hash": "15fa8cb60cb9a114d3493f47188584fac183d020bb2b36f1adc68c937ba40c10",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "들에 있는 진과 모든 백성 중에 떨림이 일어났고 부대와 노략군들도 떨었으며 땅도 진동하였으니 이는 큰 떨림이었더라"
+      ],
+      "raw_text_hashes": [
+        "15fa8cb60cb9a114d3493f47188584fac183d020bb2b36f1adc68c937ba40c10"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:14:16",
+      "sequence": 7525,
+      "chapter_label": "1SA 14",
+      "verse_label": "16",
+      "locator": {
+        "book": "1SA",
+        "chapter": 14,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 14,
+          "verse": 16
+        }
+      ],
+      "en": "The watchmen of Saul in Gibeah of Benjamin looked; and behold, the multitude melted away and scattered.",
+      "ko": "베냐민 기브아에 있는 사울의 파숫군이 바라본즉 허다한 블레셋 사람이 무너져 이리 저리 흩어지더라",
+      "source_text_hash": "cede2f9e6ac5d37dc59d05a9a4c93f3a6bf304799fde45d47262ca3898cb058b",
+      "translation_text_hash": "ef3c635a247c4183083cd21575e6cb27ab4f64a9c6a3d47514685031fcf8d351",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베냐민 기브아에 있는 사울의 파숫군이 바라본즉 허다한 블레셋 사람이 무너져 이리 저리 흩어지더라"
+      ],
+      "raw_text_hashes": [
+        "ef3c635a247c4183083cd21575e6cb27ab4f64a9c6a3d47514685031fcf8d351"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:14:17",
+      "sequence": 7526,
+      "chapter_label": "1SA 14",
+      "verse_label": "17",
+      "locator": {
+        "book": "1SA",
+        "chapter": 14,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 14,
+          "verse": 17
+        }
+      ],
+      "en": "Then Saul said to the people who were with him, “Count now, and see who is missing from us.” When they had counted, behold, Jonathan and his armor bearer were not there.",
+      "ko": "사울이 자기와 함께한 백성에게 이르되 우리에게서 누가 나갔는지 점고하여 보라 하고 점고한즉 요나단과 그의 병기 든 자가 없어졌더라",
+      "source_text_hash": "36f2f858b2f26b0bf6f5b156c57426e67be7bd24f7e6310cab1dcf2a0797aad5",
+      "translation_text_hash": "9f2ba6066b236f2eec792f0583f0624f7c75453afe172345b0c6ce31b0224032",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울이 자기와 함께한 백성에게 이르되 우리에게서 누가 나갔는지 점고하여 보라 하고 점고한즉 요나단과 그의 병기 든 자가 없어졌더라"
+      ],
+      "raw_text_hashes": [
+        "9f2ba6066b236f2eec792f0583f0624f7c75453afe172345b0c6ce31b0224032"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:14:18",
+      "sequence": 7527,
+      "chapter_label": "1SA 14",
+      "verse_label": "18",
+      "locator": {
+        "book": "1SA",
+        "chapter": 14,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 14,
+          "verse": 18
+        }
+      ],
+      "en": "Saul said to Ahijah, “Bring God’s ark here.” For God’s ark was with the children of Israel at that time.",
+      "ko": "사울이 아히야에게 이르되 하나님의 궤를 이리로 가져오라 하니 그 때에 하나님의 궤가 이스라엘 자손과 함께 있음이라",
+      "source_text_hash": "be5e51428e6a35346c5fa07c13f9a49b3dd1354c9f8a93dc2317b7510b2f24a1",
+      "translation_text_hash": "dbf3663b85d84a27a7427101bfbf9c765e14951473f72ade479f5438c586efe5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울이 아히야에게 이르되 하나님의 궤를 이리로 가져오라 하니 그 때에 하나님의 궤가 이스라엘 자손과 함께 있음이라"
+      ],
+      "raw_text_hashes": [
+        "dbf3663b85d84a27a7427101bfbf9c765e14951473f72ade479f5438c586efe5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:14:19",
+      "sequence": 7528,
+      "chapter_label": "1SA 14",
+      "verse_label": "19",
+      "locator": {
+        "book": "1SA",
+        "chapter": 14,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 14,
+          "verse": 19
+        }
+      ],
+      "en": "While Saul talked to the priest, the tumult that was in the camp of the Philistines went on and increased; and Saul said to the priest, “Withdraw your hand!”",
+      "ko": "사울이 제사장에게 말할 때에 블레셋 사람의 진에 소동이 점점 더한지라 사울이 제사장에게 이르되 네 손을 거두라 하고",
+      "source_text_hash": "cabed18186f6e084bfdebff5c3b5ae5fc0b83b721d56e77c584bbc163da5747f",
+      "translation_text_hash": "f347d334c32eaa485ca60d62e9c754bc46067988b0d18ce138581f94cd9af681",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울이 제사장에게 말할 때에 블레셋 사람의 진에 소동이 점점 더한지라 사울이 제사장에게 이르되 네 손을 거두라 하고"
+      ],
+      "raw_text_hashes": [
+        "f347d334c32eaa485ca60d62e9c754bc46067988b0d18ce138581f94cd9af681"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:14:20",
+      "sequence": 7529,
+      "chapter_label": "1SA 14",
+      "verse_label": "20",
+      "locator": {
+        "book": "1SA",
+        "chapter": 14,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 14,
+          "verse": 20
+        }
+      ],
+      "en": "Saul and all the people who were with him were gathered together, and came to the battle; and behold, they were all striking each other with their swords in very great confusion.",
+      "ko": "사울과 그와 함께한 모든 백성이 모여 전장에 가서 본즉 블레셋 사람이 각각 칼로 그 동무를 치므로 크게 혼란하였더라",
+      "source_text_hash": "f49d710ebaa753358a56e38e2fc248e44ed0c8d75ebce522296e42157dc485b4",
+      "translation_text_hash": "8160cc54d713657d1575d95a69669ff59ce152f6a770876f11ae294fae95350f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울과 그와 함께한 모든 백성이 모여 전장에 가서 본즉 블레셋 사람이 각각 칼로 그 동무를 치므로 크게 혼란하였더라"
+      ],
+      "raw_text_hashes": [
+        "8160cc54d713657d1575d95a69669ff59ce152f6a770876f11ae294fae95350f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:14:21",
+      "sequence": 7530,
+      "chapter_label": "1SA 14",
+      "verse_label": "21",
+      "locator": {
+        "book": "1SA",
+        "chapter": 14,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 14,
+          "verse": 21
+        }
+      ],
+      "en": "Now the Hebrews who were with the Philistines before and who went up with them into the camp from all around, even they also turned to be with the Israelites who were with Saul and Jonathan.",
+      "ko": "전에 블레셋 사람과 함께하던 히브리 사람이 사방에서 블레셋 사람과 함께 와서 진에 들어 왔더니 그들이 돌이켜 사울과 요나단과 함께 한 이스라엘 사람과 합하였고",
+      "source_text_hash": "61e297dc89881ad2634d35ab1fe504a3019a9ceb454a7cf3f21297921b4dac5a",
+      "translation_text_hash": "acf363b749c05ac6b50ead80851a75fba4a494ef6e2b88961b86420f16cfce62",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "전에 블레셋 사람과 함께하던 히브리 사람이 사방에서 블레셋 사람과 함께 와서 진에 들어 왔더니 그들이 돌이켜 사울과 요나단과 함께 한 이스라엘 사람과 합하였고"
+      ],
+      "raw_text_hashes": [
+        "acf363b749c05ac6b50ead80851a75fba4a494ef6e2b88961b86420f16cfce62"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:14:22",
+      "sequence": 7531,
+      "chapter_label": "1SA 14",
+      "verse_label": "22",
+      "locator": {
+        "book": "1SA",
+        "chapter": 14,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 14,
+          "verse": 22
+        }
+      ],
+      "en": "Likewise all the men of Israel who had hidden themselves in the hill country of Ephraim, when they heard that the Philistines fled, even they also followed hard after them in the battle.",
+      "ko": "에브라임 산지에 숨었던 이스라엘 모든 사람도 블레셋 사람의 도망함을 듣고 싸우러 나와서 그들을 추격하였더라",
+      "source_text_hash": "5e329f90916809a4758f1eef8a640580324d0a5f68e88a109cf35cf87fc74477",
+      "translation_text_hash": "f4976c7ec31d3ae10d9864384fc9cecc1942dbb3f4ce566545f80be34824e4f9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에브라임 산지에 숨었던 이스라엘 모든 사람도 블레셋 사람의 도망함을 듣고 싸우러 나와서 그들을 추격하였더라"
+      ],
+      "raw_text_hashes": [
+        "f4976c7ec31d3ae10d9864384fc9cecc1942dbb3f4ce566545f80be34824e4f9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:14:23",
+      "sequence": 7532,
+      "chapter_label": "1SA 14",
+      "verse_label": "23",
+      "locator": {
+        "book": "1SA",
+        "chapter": 14,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 14,
+          "verse": 23
+        }
+      ],
+      "en": "So the LORD saved Israel that day; and the battle passed over by Beth Aven.",
+      "ko": "여호와께서 그 날에 이스라엘을 구원하시므로 전쟁이 벧아웬을 지나니라",
+      "source_text_hash": "cfd9491f939532542179868ac36782493c14fd291f74bec6c1c89f67058c4029",
+      "translation_text_hash": "7149c3f0f7b0370c6c30581306dae907ab9610c065f2aa9070bf151c4eaac295",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 그 날에 이스라엘을 구원하시므로 전쟁이 벧아웬을 지나니라"
+      ],
+      "raw_text_hashes": [
+        "7149c3f0f7b0370c6c30581306dae907ab9610c065f2aa9070bf151c4eaac295"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:14:24",
+      "sequence": 7533,
+      "chapter_label": "1SA 14",
+      "verse_label": "24",
+      "locator": {
+        "book": "1SA",
+        "chapter": 14,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 14,
+          "verse": 24
+        }
+      ],
+      "en": "The men of Israel were distressed that day; for Saul had adjured the people, saying, “Cursed is the man who eats any food until it is evening, and I am avenged of my enemies.” So none of the people tasted food.",
+      "ko": "이 날에 이스라엘 백성이 피곤하였으니 이는 사울이 백성에게 맹세시켜 경계하여 이르기를 저녁 곧 내가 내 원수에게 보수하는 때까지 아무 식물이든지 먹는 사람은 저주를 받을지어다 하였음이라 그러므로 백성이 식물을 맛보지 못하고",
+      "source_text_hash": "b3919ee0077784cdec44b756923c3ca059ec756be38e1da8ba636b6500c580e5",
+      "translation_text_hash": "7d83e1fc89d9ecfbeb6f7c8e07183d541932f27fc29ebecbbed31de5b597b2c9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 날에 이스라엘 백성이 피곤하였으니 이는 사울이 백성에게 맹세시켜 경계하여 이르기를 저녁 곧 내가 내 원수에게 보수하는 때까지 아무 식물이든지 먹는 사람은 저주를 받을지어다 하였음이라 그러므로 백성이 식물을 맛보지 못하고"
+      ],
+      "raw_text_hashes": [
+        "7d83e1fc89d9ecfbeb6f7c8e07183d541932f27fc29ebecbbed31de5b597b2c9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:14:25",
+      "sequence": 7534,
+      "chapter_label": "1SA 14",
+      "verse_label": "25",
+      "locator": {
+        "book": "1SA",
+        "chapter": 14,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 14,
+          "verse": 25
+        }
+      ],
+      "en": "All the people came into the forest; and there was honey on the ground.",
+      "ko": "그들이 다 수풀에 들어간즉 땅에 꿀이 있더라",
+      "source_text_hash": "a1742751920500f61a2efe3dd6e2fd0ff5744faa919fcad574c3e0304edefdc4",
+      "translation_text_hash": "c63bca1a3bd4f0b96bb61df9968247688689272b88800f022e617731f9a0ce82",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 다 수풀에 들어간즉 땅에 꿀이 있더라"
+      ],
+      "raw_text_hashes": [
+        "c63bca1a3bd4f0b96bb61df9968247688689272b88800f022e617731f9a0ce82"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:14:26",
+      "sequence": 7535,
+      "chapter_label": "1SA 14",
+      "verse_label": "26",
+      "locator": {
+        "book": "1SA",
+        "chapter": 14,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 14,
+          "verse": 26
+        }
+      ],
+      "en": "When the people had come to the forest, behold, honey was dripping, but no one put his hand to his mouth, for the people feared the oath.",
+      "ko": "백성이 수풀로 들어갈 때에 꿀이 흐르는 것을 보고도 그들이 맹세를 두려워하여 손을 그 입에 대는 자가 없으나",
+      "source_text_hash": "f9061cffab35d04f87f99258752ca15f63bea0d35f59eb24aa9be0334e9e6c51",
+      "translation_text_hash": "8d98ee74319f75ed3f97e4ab6c24f42eac273dbd214e075c01ada22832342fe2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "백성이 수풀로 들어갈 때에 꿀이 흐르는 것을 보고도 그들이 맹세를 두려워하여 손을 그 입에 대는 자가 없으나"
+      ],
+      "raw_text_hashes": [
+        "8d98ee74319f75ed3f97e4ab6c24f42eac273dbd214e075c01ada22832342fe2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:14:27",
+      "sequence": 7536,
+      "chapter_label": "1SA 14",
+      "verse_label": "27",
+      "locator": {
+        "book": "1SA",
+        "chapter": 14,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 14,
+          "verse": 27
+        }
+      ],
+      "en": "But Jonathan didn’t hear when his father commanded the people with the oath. Therefore he put out the end of the rod that was in his hand and dipped it in the honeycomb, and put his hand to his mouth; and his eyes brightened.",
+      "ko": "요나단은 그 아비가 맹세로 백성에게 명할 때에 듣지 못하였으므로 손에 가진 지팡이 끝을 내밀어 꿀을 찍고 그 손을 돌이켜 입에 대매 눈이 밝아졌더라",
+      "source_text_hash": "132e45fff0cb197febb9879691ff3aad4acab263fb33809fa2b5cd8d07f36107",
+      "translation_text_hash": "eaf5c8bd47b285d414bbbdaab77ace19480f7aeb99415d4c1d160169993aba2c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요나단은 그 아비가 맹세로 백성에게 명할 때에 듣지 못하였으므로 손에 가진 지팡이 끝을 내밀어 꿀을 찍고 그 손을 돌이켜 입에 대매 눈이 밝아졌더라"
+      ],
+      "raw_text_hashes": [
+        "eaf5c8bd47b285d414bbbdaab77ace19480f7aeb99415d4c1d160169993aba2c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:14:28",
+      "sequence": 7537,
+      "chapter_label": "1SA 14",
+      "verse_label": "28",
+      "locator": {
+        "book": "1SA",
+        "chapter": 14,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 14,
+          "verse": 28
+        }
+      ],
+      "en": "Then one of the people answered, and said, “Your father directly commanded the people with an oath, saying, ‘Cursed is the man who eats food today.’” So the people were faint.",
+      "ko": "때에 백성 중 하나가 고하여 가로되 당신의 부친이 맹세로 백성에게 엄히 명하여 말씀하시기를 오늘날 식물을 먹는 사람은 저주를 받을지어다 하셨나이다 그러므로 백성이 피곤하였나이다",
+      "source_text_hash": "68ef2ac21243fb836d647079990187a4353f06d474a63006f6a0e3c8f126060d",
+      "translation_text_hash": "003495d19190645b7fe6bb6fddc26fc81596dc5f0576c24b812179c4d1d18611",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "때에 백성 중 하나가 고하여 가로되 당신의 부친이 맹세로 백성에게 엄히 명하여 말씀하시기를 오늘날 식물을 먹는 사람은 저주를 받을지어다 하셨나이다 그러므로 백성이 피곤하였나이다"
+      ],
+      "raw_text_hashes": [
+        "003495d19190645b7fe6bb6fddc26fc81596dc5f0576c24b812179c4d1d18611"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:14:29",
+      "sequence": 7538,
+      "chapter_label": "1SA 14",
+      "verse_label": "29",
+      "locator": {
+        "book": "1SA",
+        "chapter": 14,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 14,
+          "verse": 29
+        }
+      ],
+      "en": "Then Jonathan said, “My father has troubled the land. Please look how my eyes have brightened because I tasted a little of this honey.",
+      "ko": "요나단이 가로되 내 부친이 이 땅으로 곤란케 하셨도다 보라 내가 이 꿀 조금을 맛보고도 내 눈이 이렇게 밝았거든",
+      "source_text_hash": "6c3fba47965301e656fe4c14f36c88d1531e75d3c3b025d0971775a1f403a352",
+      "translation_text_hash": "7802b215885196fdc70d5828b49dd89e346d43efd5b0ab3237ebae9ac98516d0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요나단이 가로되 내 부친이 이 땅으로 곤란케 하셨도다 보라 내가 이 꿀 조금을 맛보고도 내 눈이 이렇게 밝았거든"
+      ],
+      "raw_text_hashes": [
+        "7802b215885196fdc70d5828b49dd89e346d43efd5b0ab3237ebae9ac98516d0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:14:30",
+      "sequence": 7539,
+      "chapter_label": "1SA 14",
+      "verse_label": "30",
+      "locator": {
+        "book": "1SA",
+        "chapter": 14,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 14,
+          "verse": 30
+        }
+      ],
+      "en": "How much more, if perhaps the people had eaten freely today of the plunder of their enemies which they found? For now there has been no great slaughter among the Philistines.”",
+      "ko": "하물며 백성이 오늘 그 대적에게서 탈취하여 얻은 것을 임의로 먹었더면 블레셋 사람을 살륙함이 더욱 많지 아니하였겠느냐",
+      "source_text_hash": "4b2ac04a242ffbd9460b8930fc90f4f1f90cfd96d755f39a95e5d69f8363ebcc",
+      "translation_text_hash": "babbbd0e3a519ba68120301b90496c42f0dde0a001923c294189547878f0d72f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하물며 백성이 오늘 그 대적에게서 탈취하여 얻은 것을 임의로 먹었더면 블레셋 사람을 살륙함이 더욱 많지 아니하였겠느냐"
+      ],
+      "raw_text_hashes": [
+        "babbbd0e3a519ba68120301b90496c42f0dde0a001923c294189547878f0d72f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:14:31",
+      "sequence": 7540,
+      "chapter_label": "1SA 14",
+      "verse_label": "31",
+      "locator": {
+        "book": "1SA",
+        "chapter": 14,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 14,
+          "verse": 31
+        }
+      ],
+      "en": "They struck the Philistines that day from Michmash to Aijalon. The people were very faint;",
+      "ko": "그 날에 백성이 믹마스에서부터 아얄론에 이르기까지 블레셋 사람을 쳤으므로 그들이 심히 피곤한지라",
+      "source_text_hash": "dc27c808dd437a7e4d5647bd8ae0d7616460300ef4ccec62da1b94397815fd92",
+      "translation_text_hash": "7f9cf75cfedf2767a1213959023095dc668e6077b681b9292d4142a7800dc003",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날에 백성이 믹마스에서부터 아얄론에 이르기까지 블레셋 사람을 쳤으므로 그들이 심히 피곤한지라"
+      ],
+      "raw_text_hashes": [
+        "7f9cf75cfedf2767a1213959023095dc668e6077b681b9292d4142a7800dc003"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:14:32",
+      "sequence": 7541,
+      "chapter_label": "1SA 14",
+      "verse_label": "32",
+      "locator": {
+        "book": "1SA",
+        "chapter": 14,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 14,
+          "verse": 32
+        }
+      ],
+      "en": "and the people pounced on the plunder, and took sheep, cattle, and calves, and killed them on the ground; and the people ate them with the blood.",
+      "ko": "백성이 이에 탈취한 물건에 달려가서 양과 소와 송아지들을 취하고 그것을 땅에서 잡아 피 있는채 먹었더니",
+      "source_text_hash": "5d04c8af5cb30c0bd6a7571e417e515a66a12dfce530e683ee916c6ebdb4d0be",
+      "translation_text_hash": "abcbdc8a19e0bc06062b36ca04e51896fa8f4e0e8ecb0b50929c9d8d1b1cb0c1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "백성이 이에 탈취한 물건에 달려가서 양과 소와 송아지들을 취하고 그것을 땅에서 잡아 피 있는채 먹었더니"
+      ],
+      "raw_text_hashes": [
+        "abcbdc8a19e0bc06062b36ca04e51896fa8f4e0e8ecb0b50929c9d8d1b1cb0c1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:14:33",
+      "sequence": 7542,
+      "chapter_label": "1SA 14",
+      "verse_label": "33",
+      "locator": {
+        "book": "1SA",
+        "chapter": 14,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 14,
+          "verse": 33
+        }
+      ],
+      "en": "Then they told Saul, saying, “Behold, the people are sinning against the LORD, in that they eat meat with the blood.” He said, “You have dealt treacherously. Roll a large stone to me today!”",
+      "ko": "무리가 사울에게 고하여 가로되 보소서 백성이 고기를 피채 먹어 여호와께 범죄하였나이다 사울이 가로되 너희가 무신하게 행하였도다 이제 큰 돌을 내게로 굴려 오라 하고",
+      "source_text_hash": "f0e0e8b959f4a3b143f4c3ee393b170bd0767e0402d53ef45e9458f2d7b20914",
+      "translation_text_hash": "55f2db3510fe71f9bf5b9606b4872fe3823cc3a01d41fd7eb537aa54f6d5fdef",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무리가 사울에게 고하여 가로되 보소서 백성이 고기를 피채 먹어 여호와께 범죄하였나이다 사울이 가로되 너희가 무신하게 행하였도다 이제 큰 돌을 내게로 굴려 오라 하고"
+      ],
+      "raw_text_hashes": [
+        "55f2db3510fe71f9bf5b9606b4872fe3823cc3a01d41fd7eb537aa54f6d5fdef"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:14:34",
+      "sequence": 7543,
+      "chapter_label": "1SA 14",
+      "verse_label": "34",
+      "locator": {
+        "book": "1SA",
+        "chapter": 14,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 14,
+          "verse": 34
+        }
+      ],
+      "en": "Saul said, “Disperse yourselves among the people, and tell them, ‘Every man bring me here his ox, and every man his sheep, and kill them here, and eat; and don’t sin against the LORD in eating meat with the blood.’” All the people brought every man his ox with him that night, and killed them there.",
+      "ko": "또 가로되 너희는 백성 중에 흩어져 다니며 이르기를 사람은 각기 소와 각기 양을 이리로 끌어다가 잡아 먹되 피 있는 채 먹어서 여호와께 범죄하지 말라 하매 그 밤에 모든 백성이 각각 자기의 소를 끌어다가 거기서 잡으니라",
+      "source_text_hash": "3d0392adfb8c8ad38b16fbf9d96d8dcb24aecfe9141f23c231a8aa99f5e2a676",
+      "translation_text_hash": "81bf8367ce0653c37f931f6acbf24492efa1e84f7ea48c9ee082c4fcbb456d5b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 가로되 너희는 백성 중에 흩어져 다니며 이르기를 사람은 각기 소와 각기 양을 이리로 끌어다가 잡아 먹되 피 있는 채 먹어서 여호와께 범죄하지 말라 하매 그 밤에 모든 백성이 각각 자기의 소를 끌어다가 거기서 잡으니라"
+      ],
+      "raw_text_hashes": [
+        "81bf8367ce0653c37f931f6acbf24492efa1e84f7ea48c9ee082c4fcbb456d5b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:14:35",
+      "sequence": 7544,
+      "chapter_label": "1SA 14",
+      "verse_label": "35",
+      "locator": {
+        "book": "1SA",
+        "chapter": 14,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 14,
+          "verse": 35
+        }
+      ],
+      "en": "Saul built an altar to the LORD. This was the first altar that he built to the LORD.",
+      "ko": "사울이 여호와를 위하여 단을 쌓았으니 이는 그가 여호와를 위하여 처음 쌓은 단이었더라",
+      "source_text_hash": "4d316470fafb51d3c421f54f4edbbf1f9c71027603a4bfa063925a493494e02e",
+      "translation_text_hash": "db83357336334dbb58d39afe8e0fe8d8fd2ded53a089064f0d7a7405d0265b73",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울이 여호와를 위하여 단을 쌓았으니 이는 그가 여호와를 위하여 처음 쌓은 단이었더라"
+      ],
+      "raw_text_hashes": [
+        "db83357336334dbb58d39afe8e0fe8d8fd2ded53a089064f0d7a7405d0265b73"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:14:36",
+      "sequence": 7545,
+      "chapter_label": "1SA 14",
+      "verse_label": "36",
+      "locator": {
+        "book": "1SA",
+        "chapter": 14,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 14,
+          "verse": 36
+        }
+      ],
+      "en": "Saul said, “Let’s go down after the Philistines by night, and take plunder among them until the morning light. Let’s not leave a man of them.” They said, “Do whatever seems good to you.” Then the priest said, “Let’s draw near here to God.”",
+      "ko": "사울이 가로되 우리가 밤에 블레셋 사람을 쫓아 내려가서 동틀 때까지 그들 중에서 탈취하고 한 사람도 남기지 말자 무리가 가로되 왕의 소견에 좋은대로 하소서 할 때에 제사장이 가로되 이리로 와서 하나님께로 나아가사이다 하매",
+      "source_text_hash": "8935f34c148cafc573b9cd265a10ffbb8be866f7ae72e21d8cf3a1ad79048ba8",
+      "translation_text_hash": "8ea2f34af96f35ef921fe6576cffaea0d66722394d8a4c989391c57f075a2e87",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울이 가로되 우리가 밤에 블레셋 사람을 쫓아 내려가서 동틀 때까지 그들 중에서 탈취하고 한 사람도 남기지 말자 무리가 가로되 왕의 소견에 좋은대로 하소서 할 때에 제사장이 가로되 이리로 와서 하나님께로 나아가사이다 하매"
+      ],
+      "raw_text_hashes": [
+        "8ea2f34af96f35ef921fe6576cffaea0d66722394d8a4c989391c57f075a2e87"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:14:37",
+      "sequence": 7546,
+      "chapter_label": "1SA 14",
+      "verse_label": "37",
+      "locator": {
+        "book": "1SA",
+        "chapter": 14,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 14,
+          "verse": 37
+        }
+      ],
+      "en": "Saul asked counsel of God: “Shall I go down after the Philistines? Will you deliver them into the hand of Israel?” But he didn’t answer him that day.",
+      "ko": "사울이 하나님께 묻자오되 내가 블레셋 사람을 쫓아 내려가리이까 주께서 그들을 이스라엘의 손에 붙이시겠나이까 하되 그 날에 대답지 아니하시는지라",
+      "source_text_hash": "8912cdbb20edcd9872eaeec36ad1294f453011f98f3f65ea11ef8aa08686acc2",
+      "translation_text_hash": "0523fe60b00f5a8028c84b61e04f661a98073c49481bd6215481cc690f9a4594",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울이 하나님께 묻자오되 내가 블레셋 사람을 쫓아 내려가리이까 주께서 그들을 이스라엘의 손에 붙이시겠나이까 하되 그 날에 대답지 아니하시는지라"
+      ],
+      "raw_text_hashes": [
+        "0523fe60b00f5a8028c84b61e04f661a98073c49481bd6215481cc690f9a4594"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:14:38",
+      "sequence": 7547,
+      "chapter_label": "1SA 14",
+      "verse_label": "38",
+      "locator": {
+        "book": "1SA",
+        "chapter": 14,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 14,
+          "verse": 38
+        }
+      ],
+      "en": "Saul said, “Draw near here, all you chiefs of the people, and know and see in whom this sin has been today.",
+      "ko": "사울이 가로되 너희 백성의 어른들아 다 이리로 오라 오늘 이 죄가 뉘게 있나 알아 보자",
+      "source_text_hash": "f413136214f1c3264d17f716e2b2809bbfde010526833e78b3fed9af43c328a4",
+      "translation_text_hash": "771b0020b19113acf4e66765f604e95b35f51d4fffb832b90ce62ec228c71ad0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울이 가로되 너희 백성의 어른들아 다 이리로 오라 오늘 이 죄가 뉘게 있나 알아 보자"
+      ],
+      "raw_text_hashes": [
+        "771b0020b19113acf4e66765f604e95b35f51d4fffb832b90ce62ec228c71ad0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:14:39",
+      "sequence": 7548,
+      "chapter_label": "1SA 14",
+      "verse_label": "39",
+      "locator": {
+        "book": "1SA",
+        "chapter": 14,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 14,
+          "verse": 39
+        }
+      ],
+      "en": "For as the LORD lives, who saves Israel, though it is in Jonathan my son, he shall surely die.” But there was not a man among all the people who answered him.",
+      "ko": "이스라엘을 구원하신 여호와의 사심으로 맹세하노니 내 아들 요나단에게 있다 할찌라도 반드시 죽으리라 하되 모든 백성 중 한 사람도 대답지 아니하매",
+      "source_text_hash": "c6b5bd31230b2f21a75e0b2871caee64c61fbca20dd6eb33705244ae788a2850",
+      "translation_text_hash": "aed962d3e71e32e331cf5e356c82acea4492ec445d3b8ebd4aee02d8100c336a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘을 구원하신 여호와의 사심으로 맹세하노니 내 아들 요나단에게 있다 할찌라도 반드시 죽으리라 하되 모든 백성 중 한 사람도 대답지 아니하매"
+      ],
+      "raw_text_hashes": [
+        "aed962d3e71e32e331cf5e356c82acea4492ec445d3b8ebd4aee02d8100c336a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:14:40",
+      "sequence": 7549,
+      "chapter_label": "1SA 14",
+      "verse_label": "40",
+      "locator": {
+        "book": "1SA",
+        "chapter": 14,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 14,
+          "verse": 40
+        }
+      ],
+      "en": "Then he said to all Israel, “You be on one side, and I and Jonathan my son will be on the other side.” The people said to Saul, “Do what seems good to you.”",
+      "ko": "이에 그가 온 이스라엘에게 이르되 너희는 저편에 있으라 나와 내 아들 요나단은 이편에 있으리라 백성이 사울에게 말하되 왕의 소견에 좋은대로 하소서 하니라",
+      "source_text_hash": "563aebb0326bb47a1ed27256bcfdf065f86edb4030d94fad2c76b2ad3b31c59c",
+      "translation_text_hash": "3e90bbb5798582b24187d6f9077dec63bd41d26a772a95d32f4be15068bb39f3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 그가 온 이스라엘에게 이르되 너희는 저편에 있으라 나와 내 아들 요나단은 이편에 있으리라 백성이 사울에게 말하되 왕의 소견에 좋은대로 하소서 하니라"
+      ],
+      "raw_text_hashes": [
+        "3e90bbb5798582b24187d6f9077dec63bd41d26a772a95d32f4be15068bb39f3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:14:41",
+      "sequence": 7550,
+      "chapter_label": "1SA 14",
+      "verse_label": "41",
+      "locator": {
+        "book": "1SA",
+        "chapter": 14,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 14,
+          "verse": 41
+        }
+      ],
+      "en": "Therefore Saul said to the LORD, the God of Israel, “Show the right.” Jonathan and Saul were chosen, but the people escaped.",
+      "ko": "이에 사울이 이스라엘의 하나님 여호와께 아뢰되 원컨대 실상을 보이소서 하였더니 요나단과 사울이 뽑히고 백성은 면한지라",
+      "source_text_hash": "d9ebadd89c2ebe193bf21b644a094cd1d55484b79dff53feb3897a27acf8694b",
+      "translation_text_hash": "4b1b00924499cea627cb2c2cf846ca181699178cd8adf4715d5b07c4c6b44fb1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 사울이 이스라엘의 하나님 여호와께 아뢰되 원컨대 실상을 보이소서 하였더니 요나단과 사울이 뽑히고 백성은 면한지라"
+      ],
+      "raw_text_hashes": [
+        "4b1b00924499cea627cb2c2cf846ca181699178cd8adf4715d5b07c4c6b44fb1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:14:42",
+      "sequence": 7551,
+      "chapter_label": "1SA 14",
+      "verse_label": "42",
+      "locator": {
+        "book": "1SA",
+        "chapter": 14,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 14,
+          "verse": 42
+        }
+      ],
+      "en": "Saul said, “Cast lots between me and Jonathan my son.” Jonathan was selected.",
+      "ko": "사울이 가로되 나와 내 아들 요나단 사이에 뽑으라 하였더니 요나단이 뽑히니라",
+      "source_text_hash": "7a5e0098f8af3d70cf48cbab540e3b554534ff97e21dff605dededa3a0a63cb9",
+      "translation_text_hash": "fa4c78fcdb6da227270afc96a9bd570d0b15e144fd1ca3696ee07e8c175edfdb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울이 가로되 나와 내 아들 요나단 사이에 뽑으라 하였더니 요나단이 뽑히니라"
+      ],
+      "raw_text_hashes": [
+        "fa4c78fcdb6da227270afc96a9bd570d0b15e144fd1ca3696ee07e8c175edfdb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:14:43",
+      "sequence": 7552,
+      "chapter_label": "1SA 14",
+      "verse_label": "43",
+      "locator": {
+        "book": "1SA",
+        "chapter": 14,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 14,
+          "verse": 43
+        }
+      ],
+      "en": "Then Saul said to Jonathan, “Tell me what you have done!” Jonathan told him, and said, “I certainly did taste a little honey with the end of the rod that was in my hand; and behold, I must die.”",
+      "ko": "사울이 요나단에게 가로되 너의 행한 것을 내게 고하라 요나단이 고하여 가로되 내가 다만 내 손에 가진 지팡이 끝으로 꿀을 조금 맛보았을 뿐이오나 내가 죽을 수 밖에 없나이다",
+      "source_text_hash": "2b9f6be4102204b6e33c9b2dc648e1eb5da845f37ecadb7071f09f1c381fa70c",
+      "translation_text_hash": "9238dcf4941a190e22733d22921002b0f47325cb534752c6f80cb691678379be",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울이 요나단에게 가로되 너의 행한 것을 내게 고하라 요나단이 고하여 가로되 내가 다만 내 손에 가진 지팡이 끝으로 꿀을 조금 맛보았을 뿐이오나 내가 죽을 수 밖에 없나이다"
+      ],
+      "raw_text_hashes": [
+        "9238dcf4941a190e22733d22921002b0f47325cb534752c6f80cb691678379be"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:14:44",
+      "sequence": 7553,
+      "chapter_label": "1SA 14",
+      "verse_label": "44",
+      "locator": {
+        "book": "1SA",
+        "chapter": 14,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 14,
+          "verse": 44
+        }
+      ],
+      "en": "Saul said, “God do so and more also; for you shall surely die, Jonathan.”",
+      "ko": "사울이 가로되 요나단아 네가 반드시 죽으리라 그렇지 않으면 하나님이 내게 벌을 내리시고 또 내리시기를 원하노라",
+      "source_text_hash": "2d855e6e72eeec65d108db4d338c0e889bbb94756ccd255fd0db229395b3f335",
+      "translation_text_hash": "f78ec5240ebdc6a06ceaa9a5d5e577a9129c283912562b801de1efe51a2fc796",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울이 가로되 요나단아 네가 반드시 죽으리라 그렇지 않으면 하나님이 내게 벌을 내리시고 또 내리시기를 원하노라"
+      ],
+      "raw_text_hashes": [
+        "f78ec5240ebdc6a06ceaa9a5d5e577a9129c283912562b801de1efe51a2fc796"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:14:45",
+      "sequence": 7554,
+      "chapter_label": "1SA 14",
+      "verse_label": "45",
+      "locator": {
+        "book": "1SA",
+        "chapter": 14,
+        "verse": 45
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 14,
+          "verse": 45
+        }
+      ],
+      "en": "The people said to Saul, “Shall Jonathan die, who has worked this great salvation in Israel? Far from it! As the LORD lives, there shall not one hair of his head fall to the ground, for he has worked with God today!” So the people rescued Jonathan, so he didn’t die.",
+      "ko": "백성이 사울에게 말하되 이스라엘에 이 큰 구원을 이룬 요나단이 죽겠나이까 결단코 그렇지 아니하니이다 여호와의 사심으로 맹세하옵나니 그의 머리털 하나도 땅에 떨어지지 아니할 것은 그가 오늘 하나님과 동사하였음이니이다 하여 요나단을 구원하여 죽지 않게 하니라",
+      "source_text_hash": "897a744d43bfd042a3aa6a643fa647dce3a6d441fd73166120467abe9089834c",
+      "translation_text_hash": "0c836e702bcf6196213f273ae4ee3b3cbf9a64c9b8ab3829c730c42f10136d00",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "백성이 사울에게 말하되 이스라엘에 이 큰 구원을 이룬 요나단이 죽겠나이까 결단코 그렇지 아니하니이다 여호와의 사심으로 맹세하옵나니 그의 머리털 하나도 땅에 떨어지지 아니할 것은 그가 오늘 하나님과 동사하였음이니이다 하여 요나단을 구원하여 죽지 않게 하니라"
+      ],
+      "raw_text_hashes": [
+        "0c836e702bcf6196213f273ae4ee3b3cbf9a64c9b8ab3829c730c42f10136d00"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:14:46",
+      "sequence": 7555,
+      "chapter_label": "1SA 14",
+      "verse_label": "46",
+      "locator": {
+        "book": "1SA",
+        "chapter": 14,
+        "verse": 46
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 14,
+          "verse": 46
+        }
+      ],
+      "en": "Then Saul went up from following the Philistines; and the Philistines went to their own place.",
+      "ko": "사울이 블레셋 사람 따르기를 그치고 올라가매 블레셋 사람이 자기 곳으로 돌아가니라",
+      "source_text_hash": "9ff4d7ddc1804d53e8f141cc2a8c6c8071fa79eb4992ab91ce4db32faf31f795",
+      "translation_text_hash": "1a73db76b5470d0daa83d68e3dc372b8be023fe77d1451ec3fc1c5ee7fa2b937",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울이 블레셋 사람 따르기를 그치고 올라가매 블레셋 사람이 자기 곳으로 돌아가니라"
+      ],
+      "raw_text_hashes": [
+        "1a73db76b5470d0daa83d68e3dc372b8be023fe77d1451ec3fc1c5ee7fa2b937"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:14:47",
+      "sequence": 7556,
+      "chapter_label": "1SA 14",
+      "verse_label": "47",
+      "locator": {
+        "book": "1SA",
+        "chapter": 14,
+        "verse": 47
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 14,
+          "verse": 47
+        }
+      ],
+      "en": "Now when Saul had taken the kingdom over Israel, he fought against all his enemies on every side: against Moab, and against the children of Ammon, and against Edom, and against the kings of Zobah, and against the Philistines. Wherever he turned himself, he defeated them.",
+      "ko": "사울이 이스라엘 왕위에 나아간 후에 사방에 있는 모든 대적 곧 모압과 암몬 자손과 에돔과 소바의 왕들과 블레셋 사람을 쳤는데 향하는 곳마다 이기었고",
+      "source_text_hash": "f1744fcee617fdcc4b5553e21760ecfc85ad41b1e0639ea10dadddf637b5c251",
+      "translation_text_hash": "77cb2ae418648562206ff6db816f6292e66ab54bbb0e4fb00c8e9d807e277121",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울이 이스라엘 왕위에 나아간 후에 사방에 있는 모든 대적 곧 모압과 암몬 자손과 에돔과 소바의 왕들과 블레셋 사람을 쳤는데 향하는 곳마다 이기었고"
+      ],
+      "raw_text_hashes": [
+        "77cb2ae418648562206ff6db816f6292e66ab54bbb0e4fb00c8e9d807e277121"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:14:48",
+      "sequence": 7557,
+      "chapter_label": "1SA 14",
+      "verse_label": "48",
+      "locator": {
+        "book": "1SA",
+        "chapter": 14,
+        "verse": 48
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 14,
+          "verse": 48
+        }
+      ],
+      "en": "He did valiantly and struck the Amalekites, and delivered Israel out of the hands of those who plundered them.",
+      "ko": "용맹 있게 아말렉 사람을 치고 이스라엘을 그 약탈하는 자의 손에서 건졌더라",
+      "source_text_hash": "94c6b21c395a1c1ace869d038498fca94308478b728d56d2a313ae410f995443",
+      "translation_text_hash": "e4904f17ec4ed2227d433ba00164c45db8fbae08610a79b4f2cb21c42dd50d08",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "용맹 있게 아말렉 사람을 치고 이스라엘을 그 약탈하는 자의 손에서 건졌더라"
+      ],
+      "raw_text_hashes": [
+        "e4904f17ec4ed2227d433ba00164c45db8fbae08610a79b4f2cb21c42dd50d08"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:14:49",
+      "sequence": 7558,
+      "chapter_label": "1SA 14",
+      "verse_label": "49",
+      "locator": {
+        "book": "1SA",
+        "chapter": 14,
+        "verse": 49
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 14,
+          "verse": 49
+        }
+      ],
+      "en": "Now the sons of Saul were Jonathan, Ishvi, and Malchishua; and the names of his two daughters were these: the name of the firstborn Merab, and the name of the younger Michal.",
+      "ko": "사울의 아들은 요나단과 리스위와 말기수아요 그 두 딸의 이름은 이러하니 맏딸의 이름은 메랍이요 작은 딸의 이름은 미갈이며",
+      "source_text_hash": "92a1ae173cd4e7b458c3fba31da610700071ee00d1fce32154247ecb254a93bf",
+      "translation_text_hash": "cadda1ecc9fbfc69fceedd402579ca6d114d674e6c8a3f521e8b5c5da7687e9b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울의 아들은 요나단과 리스위와 말기수아요 그 두 딸의 이름은 이러하니 맏딸의 이름은 메랍이요 작은 딸의 이름은 미갈이며"
+      ],
+      "raw_text_hashes": [
+        "cadda1ecc9fbfc69fceedd402579ca6d114d674e6c8a3f521e8b5c5da7687e9b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:14:50",
+      "sequence": 7559,
+      "chapter_label": "1SA 14",
+      "verse_label": "50",
+      "locator": {
+        "book": "1SA",
+        "chapter": 14,
+        "verse": 50
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 14,
+          "verse": 50
+        }
+      ],
+      "en": "The name of Saul’s wife was Ahinoam the daughter of Ahimaaz. The name of the captain of his army was Abner the son of Ner, Saul’s uncle.",
+      "ko": "사울의 아내의 이름은 아히노암이니 아히마아스의 딸이요 그 군장의 이름은 아브넬이니 사울의 숙부 넬의 아들이며",
+      "source_text_hash": "47688e3ad3b957ffb8e0a08dabe43e3ff1589770a1594f32b78683ae30d21f97",
+      "translation_text_hash": "e39ffce3884ddc7cc5edc261acd8348acc04befc7147d4a32df6f70805a86d71",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울의 아내의 이름은 아히노암이니 아히마아스의 딸이요 그 군장의 이름은 아브넬이니 사울의 숙부 넬의 아들이며"
+      ],
+      "raw_text_hashes": [
+        "e39ffce3884ddc7cc5edc261acd8348acc04befc7147d4a32df6f70805a86d71"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:14:51",
+      "sequence": 7560,
+      "chapter_label": "1SA 14",
+      "verse_label": "51",
+      "locator": {
+        "book": "1SA",
+        "chapter": 14,
+        "verse": 51
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 14,
+          "verse": 51
+        }
+      ],
+      "en": "Kish was the father of Saul, and Ner the father of Abner was the son of Abiel.",
+      "ko": "사울의 아비는 기스요 아브넬의 아비는 넬이니 아비엘의 아들이었더라",
+      "source_text_hash": "68be212cd536a4b63b83eafb06227a580855ed159d62f9ebb7084ee0fc05e924",
+      "translation_text_hash": "84188583ddcb81ca5d7cf916b23ffede26c49843f354b7d0b6d09b44d6c3eecf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울의 아비는 기스요 아브넬의 아비는 넬이니 아비엘의 아들이었더라"
+      ],
+      "raw_text_hashes": [
+        "84188583ddcb81ca5d7cf916b23ffede26c49843f354b7d0b6d09b44d6c3eecf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:14:52",
+      "sequence": 7561,
+      "chapter_label": "1SA 14",
+      "verse_label": "52",
+      "locator": {
+        "book": "1SA",
+        "chapter": 14,
+        "verse": 52
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 14,
+          "verse": 52
+        }
+      ],
+      "en": "There was severe war against the Philistines all the days of Saul; and when Saul saw any mighty man or any valiant man, he took him into his service.",
+      "ko": "사울의 사는 날 동안에 블레셋 사람과 큰 싸움이 있었으므로 사울이 힘 있는 자나 용맹 있는 자를 보면 그들을 불러 모았더라",
+      "source_text_hash": "ee7f610fe13a5660234676317ee73d8a85b3553b3977683497c0c468ec92287a",
+      "translation_text_hash": "32638781f42fc6dc85ed4885d2639bc7b440862665ceff611b598d6c98eff00e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울의 사는 날 동안에 블레셋 사람과 큰 싸움이 있었으므로 사울이 힘 있는 자나 용맹 있는 자를 보면 그들을 불러 모았더라"
+      ],
+      "raw_text_hashes": [
+        "32638781f42fc6dc85ed4885d2639bc7b440862665ceff611b598d6c98eff00e"
+      ]
+    }
+  ]
+}

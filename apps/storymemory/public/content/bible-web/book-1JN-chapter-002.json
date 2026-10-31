@@ -1,0 +1,941 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1JN:chapter:002",
+  "unit_ordinal": 1161,
+  "unit_label": "1JN 2",
+  "book_code": "1JN",
+  "chapter_number": 2,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1JN:2:1",
+      "sequence": 30548,
+      "chapter_label": "1JN 2",
+      "verse_label": "1",
+      "locator": {
+        "book": "1JN",
+        "chapter": 2,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 2,
+          "verse": 1
+        }
+      ],
+      "en": "My little children, I write these things to you so that you may not sin. If anyone sins, we have a Counselor with the Father, Jesus Christ, the righteous.",
+      "ko": "나의 자녀들아 내가 이것을 너희에게 씀은 너희로 죄를 범치 않게 하려 함이라 만일 누가 죄를 범하면 아버지 앞에서 우리에게 대언자가 있으니 곧 의로우신 예수 그리스도시라",
+      "source_text_hash": "53be37f6470a18b3d594e58cfb23f7bdd21a6dd941ba37dd3504d19b7d23a33c",
+      "translation_text_hash": "8d854984e10d651153a955b634b674394450963c2febe337a86703f72f6c8b13",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 자녀들아 내가 이것을 너희에게 씀은 너희로 죄를 범치 않게 하려 함이라 만일 누가 죄를 범하면 아버지 앞에서 우리에게 대언자가 있으니 곧 의로우신 예수 그리스도시라"
+      ],
+      "raw_text_hashes": [
+        "8d854984e10d651153a955b634b674394450963c2febe337a86703f72f6c8b13"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:2:2",
+      "sequence": 30549,
+      "chapter_label": "1JN 2",
+      "verse_label": "2",
+      "locator": {
+        "book": "1JN",
+        "chapter": 2,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 2,
+          "verse": 2
+        }
+      ],
+      "en": "And he is the atoning sacrifice for our sins, and not for ours only, but also for the whole world.",
+      "ko": "저는 우리 죄를 위한 화목 제물이니 우리만 위할뿐 아니요 온 세상의 죄를 위하심이라",
+      "source_text_hash": "e37dc3695fbcd6837e0b5a4157943cfde420eb224789f9615117b3f907f98b34",
+      "translation_text_hash": "429adaf14c024a09fd5df586acc8de84b37e6dbb31264d990daaad968443e8da",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저는 우리 죄를 위한 화목 제물이니 우리만 위할뿐 아니요 온 세상의 죄를 위하심이라"
+      ],
+      "raw_text_hashes": [
+        "429adaf14c024a09fd5df586acc8de84b37e6dbb31264d990daaad968443e8da"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:2:3",
+      "sequence": 30550,
+      "chapter_label": "1JN 2",
+      "verse_label": "3",
+      "locator": {
+        "book": "1JN",
+        "chapter": 2,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 2,
+          "verse": 3
+        }
+      ],
+      "en": "This is how we know that we know him: if we keep his commandments.",
+      "ko": "우리가 그의 계명을 지키면 이로써 우리가 저를 아는 줄로 알 것이요",
+      "source_text_hash": "e0b99d19ef72c693d427db95b3f8022040c5b123c730ec06c85bb0399aa41848",
+      "translation_text_hash": "498eb5cc8d4f410c1229f7f3b09e69c996efe0762214fdb2b40bd4306a077968",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 그의 계명을 지키면 이로써 우리가 저를 아는 줄로 알 것이요"
+      ],
+      "raw_text_hashes": [
+        "498eb5cc8d4f410c1229f7f3b09e69c996efe0762214fdb2b40bd4306a077968"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:2:4",
+      "sequence": 30551,
+      "chapter_label": "1JN 2",
+      "verse_label": "4",
+      "locator": {
+        "book": "1JN",
+        "chapter": 2,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 2,
+          "verse": 4
+        }
+      ],
+      "en": "One who says, “I know him,” and doesn’t keep his commandments, is a liar, and the truth isn’t in him.",
+      "ko": "저를 아노라 하고 그의 계명을 지키지 아니하는 자는 거짓말하는 자요 진리가 그 속에 있지 아니하되",
+      "source_text_hash": "6584770b67a2b515b21fb62932cbd3e22d80f054dd4622110031af0b246fc901",
+      "translation_text_hash": "61019acb3b1196a33e49dcd2fcd42149622cd9845b0e267d865b3d24819d8e20",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저를 아노라 하고 그의 계명을 지키지 아니하는 자는 거짓말하는 자요 진리가 그 속에 있지 아니하되"
+      ],
+      "raw_text_hashes": [
+        "61019acb3b1196a33e49dcd2fcd42149622cd9845b0e267d865b3d24819d8e20"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:2:5",
+      "sequence": 30552,
+      "chapter_label": "1JN 2",
+      "verse_label": "5",
+      "locator": {
+        "book": "1JN",
+        "chapter": 2,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 2,
+          "verse": 5
+        }
+      ],
+      "en": "But God’s love has most certainly been perfected in whoever keeps his word. This is how we know that we are in him:",
+      "ko": "누구든지 그의 말씀을 지키는 자는 하나님의 사랑이 참으로 그 속에서 온전케 되었나니 이로써 우리가 저 안에 있는 줄을 아노라",
+      "source_text_hash": "3a56705470a85777de2403e149ad029e3f8669c9bf9cdc1d02c1ff6319f02121",
+      "translation_text_hash": "2c07daafd4ef0098f8d5ea261a53a7dd3e0b1d71ff8b0e28b3a466064ee70430",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누구든지 그의 말씀을 지키는 자는 하나님의 사랑이 참으로 그 속에서 온전케 되었나니 이로써 우리가 저 안에 있는 줄을 아노라"
+      ],
+      "raw_text_hashes": [
+        "2c07daafd4ef0098f8d5ea261a53a7dd3e0b1d71ff8b0e28b3a466064ee70430"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:2:6",
+      "sequence": 30553,
+      "chapter_label": "1JN 2",
+      "verse_label": "6",
+      "locator": {
+        "book": "1JN",
+        "chapter": 2,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 2,
+          "verse": 6
+        }
+      ],
+      "en": "he who says he remains in him ought himself also to walk just like he walked.",
+      "ko": "저 안에 거한다 하는 자는 그의 행하시는대로 자기도 행할찌니라",
+      "source_text_hash": "85ca08052cb8c9dfdd87e02f800ba3e4c4c9f9edf80cea52afb9667b3fa9b7f8",
+      "translation_text_hash": "7354abeecaa30a5b155e49d97f9dcdfe2ad6f51128937edfcecd38251f6af5f1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저 안에 거한다 하는 자는 그의 행하시는대로 자기도 행할찌니라"
+      ],
+      "raw_text_hashes": [
+        "7354abeecaa30a5b155e49d97f9dcdfe2ad6f51128937edfcecd38251f6af5f1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:2:7",
+      "sequence": 30554,
+      "chapter_label": "1JN 2",
+      "verse_label": "7",
+      "locator": {
+        "book": "1JN",
+        "chapter": 2,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 2,
+          "verse": 7
+        }
+      ],
+      "en": "Brothers, I write no new commandment to you, but an old commandment which you had from the beginning. The old commandment is the word which you heard from the beginning.",
+      "ko": "사랑하는 자들아 내가 새 계명을 너희에게 쓰는 것이 아니라 너희가 처음부터 가진 옛 계명이니 이 옛 계명은 너희의 들은 바 말씀이거니와",
+      "source_text_hash": "e9183b7ed10d6099f9a2eea7955f1ca2016f9d89b353071a67f96c89e1838521",
+      "translation_text_hash": "8de0fde9cb97fda3a4d5ec0e3b82f74432c51029f873a25e0e0990221d48a0f4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사랑하는 자들아 내가 새 계명을 너희에게 쓰는 것이 아니라 너희가 처음부터 가진 옛 계명이니 이 옛 계명은 너희의 들은 바 말씀이거니와"
+      ],
+      "raw_text_hashes": [
+        "8de0fde9cb97fda3a4d5ec0e3b82f74432c51029f873a25e0e0990221d48a0f4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:2:8",
+      "sequence": 30555,
+      "chapter_label": "1JN 2",
+      "verse_label": "8",
+      "locator": {
+        "book": "1JN",
+        "chapter": 2,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 2,
+          "verse": 8
+        }
+      ],
+      "en": "Again, I write a new commandment to you, which is true in him and in you, because the darkness is passing away and the true light already shines.",
+      "ko": "다시 내가 너희에게 새 계명을 쓰노니 저에게와 너희에게도 참된 것이라 이는 어두움이 지나가고 참빛이 벌써 비췸이니라",
+      "source_text_hash": "f05c16d74aada13da8cd7367101a88634386ec9d5e65b990ecad269b94056bc2",
+      "translation_text_hash": "ca17d178193b6f3bcf1af43acbe2735ea3d09d3fe28553a62d225c14a8f04f12",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다시 내가 너희에게 새 계명을 쓰노니 저에게와 너희에게도 참된 것이라 이는 어두움이 지나가고 참빛이 벌써 비췸이니라"
+      ],
+      "raw_text_hashes": [
+        "ca17d178193b6f3bcf1af43acbe2735ea3d09d3fe28553a62d225c14a8f04f12"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:2:9",
+      "sequence": 30556,
+      "chapter_label": "1JN 2",
+      "verse_label": "9",
+      "locator": {
+        "book": "1JN",
+        "chapter": 2,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 2,
+          "verse": 9
+        }
+      ],
+      "en": "He who says he is in the light and hates his brother is in the darkness even until now.",
+      "ko": "빛 가운데 있다 하며 그 형제를 미워하는 자는 지금까지 어두운 가운데 있는 자요",
+      "source_text_hash": "d71009d6d168ab50222c5a32538a6421099deb48968e9dc4390f5c1eca79cdf6",
+      "translation_text_hash": "34ba1dddcb523601ae8daf6e216ea0098c66bca38a209e444594a5c6ca836d92",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "빛 가운데 있다 하며 그 형제를 미워하는 자는 지금까지 어두운 가운데 있는 자요"
+      ],
+      "raw_text_hashes": [
+        "34ba1dddcb523601ae8daf6e216ea0098c66bca38a209e444594a5c6ca836d92"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:2:10",
+      "sequence": 30557,
+      "chapter_label": "1JN 2",
+      "verse_label": "10",
+      "locator": {
+        "book": "1JN",
+        "chapter": 2,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 2,
+          "verse": 10
+        }
+      ],
+      "en": "He who loves his brother remains in the light, and there is no occasion for stumbling in him.",
+      "ko": "그의 형제를 사랑하는 자는 빛 가운데 거하여 자기 속에 거리낌이 없으나",
+      "source_text_hash": "3f29aa497d07b4fd5282bd51dea90146bc503d07f35eefec5e0cf0cd8ee70b4d",
+      "translation_text_hash": "1ac0aa93d8824c2b407ea86a2e8dcad2ec94d87414b764f09bdb898d79dca638",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그의 형제를 사랑하는 자는 빛 가운데 거하여 자기 속에 거리낌이 없으나"
+      ],
+      "raw_text_hashes": [
+        "1ac0aa93d8824c2b407ea86a2e8dcad2ec94d87414b764f09bdb898d79dca638"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:2:11",
+      "sequence": 30558,
+      "chapter_label": "1JN 2",
+      "verse_label": "11",
+      "locator": {
+        "book": "1JN",
+        "chapter": 2,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 2,
+          "verse": 11
+        }
+      ],
+      "en": "But he who hates his brother is in the darkness, and walks in the darkness, and doesn’t know where he is going, because the darkness has blinded his eyes.",
+      "ko": "그의 형제를 미워하는 자는 어두운 가운데 있고 또 어두운 가운데 행하며 갈 곳을 알지 못하나니 이는 어두움이 그의 눈을 멀게 하였음이니라",
+      "source_text_hash": "78df7ea4d054393b57ee2035015af5a816322f5ee8210f394ad19d538555f8bb",
+      "translation_text_hash": "8577cc9087d13e91d05b83e1f8af7eaf9afe0d7eb6f7ae67c663f792376ce348",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그의 형제를 미워하는 자는 어두운 가운데 있고 또 어두운 가운데 행하며 갈 곳을 알지 못하나니 이는 어두움이 그의 눈을 멀게 하였음이니라"
+      ],
+      "raw_text_hashes": [
+        "8577cc9087d13e91d05b83e1f8af7eaf9afe0d7eb6f7ae67c663f792376ce348"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:2:12",
+      "sequence": 30559,
+      "chapter_label": "1JN 2",
+      "verse_label": "12",
+      "locator": {
+        "book": "1JN",
+        "chapter": 2,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 2,
+          "verse": 12
+        }
+      ],
+      "en": "I write to you, little children, because your sins are forgiven you for his name’s sake.",
+      "ko": "자녀들아 내가 너희에게 쓰는 것은 너희 죄가 그의 이름으로 말미암아 사함을 얻음이요",
+      "source_text_hash": "df274e39df9f19edaf8010754d6e28a40636785c2a2af84e47136bc318e708d4",
+      "translation_text_hash": "35082298479481c05bf00a6c0e6652cf47586465c4d8099012a9b703cdc4d765",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자녀들아 내가 너희에게 쓰는 것은 너희 죄가 그의 이름으로 말미암아 사함을 얻음이요"
+      ],
+      "raw_text_hashes": [
+        "35082298479481c05bf00a6c0e6652cf47586465c4d8099012a9b703cdc4d765"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:2:13",
+      "sequence": 30560,
+      "chapter_label": "1JN 2",
+      "verse_label": "13",
+      "locator": {
+        "book": "1JN",
+        "chapter": 2,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 2,
+          "verse": 13
+        }
+      ],
+      "en": "I write to you, fathers, because you know him who is from the beginning. I write to you, young men, because you have overcome the evil one. I write to you, little children, because you know the Father.",
+      "ko": "아비들아 내가 너희에게 쓰는 것은 너희가 태초부터 계신 이를 앎이요 청년들아 내가 너희에게 쓰는 것은 너희가 악한 자를 이기었음이니라",
+      "source_text_hash": "7809103efc35a9f574fc7af27eba288f440b5eb332e9d4f27aa3b26eb664e579",
+      "translation_text_hash": "4a8cd1d43314edec7faaf7d25b1aa09498b8ddde870d4ed3ba12005ffe43326e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아비들아 내가 너희에게 쓰는 것은 너희가 태초부터 계신 이를 앎이요 청년들아 내가 너희에게 쓰는 것은 너희가 악한 자를 이기었음이니라"
+      ],
+      "raw_text_hashes": [
+        "4a8cd1d43314edec7faaf7d25b1aa09498b8ddde870d4ed3ba12005ffe43326e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:2:14",
+      "sequence": 30561,
+      "chapter_label": "1JN 2",
+      "verse_label": "14",
+      "locator": {
+        "book": "1JN",
+        "chapter": 2,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 2,
+          "verse": 14
+        }
+      ],
+      "en": "I have written to you, fathers, because you know him who is from the beginning. I have written to you, young men, because you are strong, and the word of God remains in you, and you have overcome the evil one.",
+      "ko": "아이들아 내가 너희에게 쓴 것은 너희가 아버지를 알았음이요 아비들아 내가 너희에게 쓴 것은 너희가 태초부터 계신 이를 알았음이요 청년들아 내가 너희에게 쓴 것은 너희가 강하고 하나님의 말씀이 너희 속에 거하시고 너희가 흉악한 자를 이기었음이라",
+      "source_text_hash": "fb793748e741f757872065cafeb70be54cb83273f63b1795e5cad8177c580a85",
+      "translation_text_hash": "7e3fafcdfb28bcdb2ae5af0497e87697d6c98ca5bc13e9289877b5f99a35291d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아이들아 내가 너희에게 쓴 것은 너희가 아버지를 알았음이요 아비들아 내가 너희에게 쓴 것은 너희가 태초부터 계신 이를 알았음이요 청년들아 내가 너희에게 쓴 것은 너희가 강하고 하나님의 말씀이 너희 속에 거하시고 너희가 흉악한 자를 이기었음이라"
+      ],
+      "raw_text_hashes": [
+        "7e3fafcdfb28bcdb2ae5af0497e87697d6c98ca5bc13e9289877b5f99a35291d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:2:15",
+      "sequence": 30562,
+      "chapter_label": "1JN 2",
+      "verse_label": "15",
+      "locator": {
+        "book": "1JN",
+        "chapter": 2,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 2,
+          "verse": 15
+        }
+      ],
+      "en": "Don’t love the world or the things that are in the world. If anyone loves the world, the Father’s love isn’t in him.",
+      "ko": "이 세상이나 세상에 있는 것들을 사랑치 말라 누구든지 세상을 사랑하면 아버지의 사랑이 그 속에 있지 아니하니",
+      "source_text_hash": "152d1904327436e65c7ba8fe099f6e7217d3ec9cd6fd16a3753d1c652e2dd711",
+      "translation_text_hash": "bff7741896a437a24ac93009f4e9338f5cbe9877509d3df3ef498ee7997bcf2f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 세상이나 세상에 있는 것들을 사랑치 말라 누구든지 세상을 사랑하면 아버지의 사랑이 그 속에 있지 아니하니"
+      ],
+      "raw_text_hashes": [
+        "bff7741896a437a24ac93009f4e9338f5cbe9877509d3df3ef498ee7997bcf2f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:2:16",
+      "sequence": 30563,
+      "chapter_label": "1JN 2",
+      "verse_label": "16",
+      "locator": {
+        "book": "1JN",
+        "chapter": 2,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 2,
+          "verse": 16
+        }
+      ],
+      "en": "For all that is in the world—the lust of the flesh, the lust of the eyes, and the pride of life—isn’t the Father’s, but is the world’s.",
+      "ko": "이는 세상에 있는 모든 것이 육신의 정욕과 안목의 정욕과 이생의 자랑이니 다 아버지께로 좇아 온 것이 아니요 세상으로 좇아 온 것이라",
+      "source_text_hash": "dff3df3c9a21f8dceae9160855332b2590fcc47b7c4fcf92e807df7d0688a7ac",
+      "translation_text_hash": "2509ce71d0e09dd25d83b79fe2c6e015e2ce34920ba72cf5a5c4dd5254aa8ff8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 세상에 있는 모든 것이 육신의 정욕과 안목의 정욕과 이생의 자랑이니 다 아버지께로 좇아 온 것이 아니요 세상으로 좇아 온 것이라"
+      ],
+      "raw_text_hashes": [
+        "2509ce71d0e09dd25d83b79fe2c6e015e2ce34920ba72cf5a5c4dd5254aa8ff8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:2:17",
+      "sequence": 30564,
+      "chapter_label": "1JN 2",
+      "verse_label": "17",
+      "locator": {
+        "book": "1JN",
+        "chapter": 2,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 2,
+          "verse": 17
+        }
+      ],
+      "en": "The world is passing away with its lusts, but he who does God’s will remains forever.",
+      "ko": "이 세상도, 그 정욕도 지나가되 오직 하나님의 뜻을 행하는 이는 영원히 거하느니라",
+      "source_text_hash": "9685fce6ecea037fad16ed3e5189b3219096ecf5108ed8e2f512b98ec9f3112c",
+      "translation_text_hash": "1621f03d386cc220f461c009ac6cbf8e51bc108a54b47fd868208ed06242c18e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 세상도, 그 정욕도 지나가되 오직 하나님의 뜻을 행하는 이는 영원히 거하느니라"
+      ],
+      "raw_text_hashes": [
+        "1621f03d386cc220f461c009ac6cbf8e51bc108a54b47fd868208ed06242c18e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:2:18",
+      "sequence": 30565,
+      "chapter_label": "1JN 2",
+      "verse_label": "18",
+      "locator": {
+        "book": "1JN",
+        "chapter": 2,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 2,
+          "verse": 18
+        }
+      ],
+      "en": "Little children, these are the end times, and as you heard that the Antichrist is coming, even now many antichrists have arisen. By this we know that it is the final hour.",
+      "ko": "아이들아 이것이 마지막 때라 적그리스도가 이르겠다 함을 너희가 들은 것과 같이 지금도 많은 적그리스도가 일어났으니 이러므로 우리가 마지막 때인줄 아노라",
+      "source_text_hash": "5f27f18628fa71b2318e63f5844dc0d8f530713d87d32523b31d4590720b41bc",
+      "translation_text_hash": "feb6f293e40064b5b31115559e5c6a3836501f30d938ae640b713bb9204de3d2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아이들아 이것이 마지막 때라 적그리스도가 이르겠다 함을 너희가 들은 것과 같이 지금도 많은 적그리스도가 일어났으니 이러므로 우리가 마지막 때인줄 아노라"
+      ],
+      "raw_text_hashes": [
+        "feb6f293e40064b5b31115559e5c6a3836501f30d938ae640b713bb9204de3d2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:2:19",
+      "sequence": 30566,
+      "chapter_label": "1JN 2",
+      "verse_label": "19",
+      "locator": {
+        "book": "1JN",
+        "chapter": 2,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 2,
+          "verse": 19
+        }
+      ],
+      "en": "They went out from us, but they didn’t belong to us; for if they had belonged to us, they would have continued with us. But they left, that they might be revealed that none of them belong to us.",
+      "ko": "저희가 우리에게서 나갔으나 우리에게 속하지 아니하였나니 만일 우리에게 속하였더면 우리와 함께 거하였으려니와 저희가 나간 것은 다 우리에게 속하지 아니함을 나타내려 함이니라",
+      "source_text_hash": "a97154b59933607954fa8140109c84ffd89a1671b686f08408e78539ec36e52f",
+      "translation_text_hash": "0fab6d8248e5bcdbec765fb738d24180b436dd546b0af255d28e1875e73b3bf9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 우리에게서 나갔으나 우리에게 속하지 아니하였나니 만일 우리에게 속하였더면 우리와 함께 거하였으려니와 저희가 나간 것은 다 우리에게 속하지 아니함을 나타내려 함이니라"
+      ],
+      "raw_text_hashes": [
+        "0fab6d8248e5bcdbec765fb738d24180b436dd546b0af255d28e1875e73b3bf9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:2:20",
+      "sequence": 30567,
+      "chapter_label": "1JN 2",
+      "verse_label": "20",
+      "locator": {
+        "book": "1JN",
+        "chapter": 2,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 2,
+          "verse": 20
+        }
+      ],
+      "en": "You have an anointing from the Holy One, and you all have knowledge.",
+      "ko": "너희는 거룩하신 자에게서 기름 부음을 받고 모든 것을 아느니라",
+      "source_text_hash": "adf9fe56805db402cab749a5649713b3f997fd46df84b0340717e68428187efb",
+      "translation_text_hash": "75c7cfa39947be9f5740797c0f77078a1f8bb351fb203c4a543877d8955452ef",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 거룩하신 자에게서 기름 부음을 받고 모든 것을 아느니라"
+      ],
+      "raw_text_hashes": [
+        "75c7cfa39947be9f5740797c0f77078a1f8bb351fb203c4a543877d8955452ef"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:2:21",
+      "sequence": 30568,
+      "chapter_label": "1JN 2",
+      "verse_label": "21",
+      "locator": {
+        "book": "1JN",
+        "chapter": 2,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 2,
+          "verse": 21
+        }
+      ],
+      "en": "I have not written to you because you don’t know the truth, but because you know it, and because no lie is of the truth.",
+      "ko": "내가 너희에게 쓴 것은 너희가 진리를 알지 못함을 인함이 아니라 너희가 앎을 인함이요 또 모든 거짓은 진리에서 나지 않음을 인함이니라",
+      "source_text_hash": "d0d8797ca5b26280da7ca35c00dd792582ea2de4d6fe5f28fe51d162ae289674",
+      "translation_text_hash": "c88176dfb503a253a90650e14034de0899f56a98619a5a87cdc66a3c17ce12bc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너희에게 쓴 것은 너희가 진리를 알지 못함을 인함이 아니라 너희가 앎을 인함이요 또 모든 거짓은 진리에서 나지 않음을 인함이니라"
+      ],
+      "raw_text_hashes": [
+        "c88176dfb503a253a90650e14034de0899f56a98619a5a87cdc66a3c17ce12bc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:2:22",
+      "sequence": 30569,
+      "chapter_label": "1JN 2",
+      "verse_label": "22",
+      "locator": {
+        "book": "1JN",
+        "chapter": 2,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 2,
+          "verse": 22
+        }
+      ],
+      "en": "Who is the liar but he who denies that Jesus is the Christ? This is the Antichrist, he who denies the Father and the Son.",
+      "ko": "거짓말 하는 자가 누구뇨 예수께서 그리스도이심을 부인하는 자가 아니뇨 아버지와 아들을 부인하는 그가 적그리스도니",
+      "source_text_hash": "c2a52d326241300a58f39115b6aa4f443ddc6c96cc742e5856f215e0d900d1ff",
+      "translation_text_hash": "2a22591c02c6c5812f58c37a15c218f4a84f9705705e6507ae3fc31af66a8450",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거짓말 하는 자가 누구뇨 예수께서 그리스도이심을 부인하는 자가 아니뇨 아버지와 아들을 부인하는 그가 적그리스도니"
+      ],
+      "raw_text_hashes": [
+        "2a22591c02c6c5812f58c37a15c218f4a84f9705705e6507ae3fc31af66a8450"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:2:23",
+      "sequence": 30570,
+      "chapter_label": "1JN 2",
+      "verse_label": "23",
+      "locator": {
+        "book": "1JN",
+        "chapter": 2,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 2,
+          "verse": 23
+        }
+      ],
+      "en": "Whoever denies the Son doesn’t have the Father. He who confesses the Son has the Father also.",
+      "ko": "아들을 부인하는 자에게는 또한 아버지가 없으되 아들을 시인하는 자에게는 아버지도 있느니라",
+      "source_text_hash": "a6967df3fdc271cf81cd6e1140f0852cbf88ddcd61df76a0b83afe8994264d02",
+      "translation_text_hash": "b4be0e42e4b9b2ee95ac1cd0fde0002bcc7b227aebdc4c1ff77ee8262fdab547",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아들을 부인하는 자에게는 또한 아버지가 없으되 아들을 시인하는 자에게는 아버지도 있느니라"
+      ],
+      "raw_text_hashes": [
+        "b4be0e42e4b9b2ee95ac1cd0fde0002bcc7b227aebdc4c1ff77ee8262fdab547"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:2:24",
+      "sequence": 30571,
+      "chapter_label": "1JN 2",
+      "verse_label": "24",
+      "locator": {
+        "book": "1JN",
+        "chapter": 2,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 2,
+          "verse": 24
+        }
+      ],
+      "en": "Therefore, as for you, let that remain in you which you heard from the beginning. If that which you heard from the beginning remains in you, you also will remain in the Son, and in the Father.",
+      "ko": "너희는 처음부터 들은 것을 너희 안에 거하게 하라 처음부터 들은 것이 너희 안에 거하면 너희가 아들의 안과 아버지의 안에 거하리라",
+      "source_text_hash": "f7d02215dceb6071fb8b7cd249806891dc08c8db0856a01197bd0865ef36bd24",
+      "translation_text_hash": "7285ed2e85920716e34a98a015c349689980d1c5d3ea5b86c6e8f1e714b789b8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 처음부터 들은 것을 너희 안에 거하게 하라 처음부터 들은 것이 너희 안에 거하면 너희가 아들의 안과 아버지의 안에 거하리라"
+      ],
+      "raw_text_hashes": [
+        "7285ed2e85920716e34a98a015c349689980d1c5d3ea5b86c6e8f1e714b789b8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:2:25",
+      "sequence": 30572,
+      "chapter_label": "1JN 2",
+      "verse_label": "25",
+      "locator": {
+        "book": "1JN",
+        "chapter": 2,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 2,
+          "verse": 25
+        }
+      ],
+      "en": "This is the promise which he promised us, the eternal life.",
+      "ko": "그가 우리에게 약속하신 약속이 이것이니 곧 영원한 생명이니라",
+      "source_text_hash": "f94c9a5941d65aa1d675ca1ffe9a5a809b61e0869b762ef3dbb82cf9dce9a818",
+      "translation_text_hash": "68d98a5dd9af307668dc4c34abba1295f3cf364cf19a2ee110339f973f4e35c1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 우리에게 약속하신 약속이 이것이니 곧 영원한 생명이니라"
+      ],
+      "raw_text_hashes": [
+        "68d98a5dd9af307668dc4c34abba1295f3cf364cf19a2ee110339f973f4e35c1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:2:26",
+      "sequence": 30573,
+      "chapter_label": "1JN 2",
+      "verse_label": "26",
+      "locator": {
+        "book": "1JN",
+        "chapter": 2,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 2,
+          "verse": 26
+        }
+      ],
+      "en": "These things I have written to you concerning those who would lead you astray.",
+      "ko": "너희를 미혹케 하는 자들에 관하여 내가 이것을 너희에게 썼노라",
+      "source_text_hash": "458914d7d001aca2cc8b9718dc2bc53e2ee5178af55fc367a086825fdb59140f",
+      "translation_text_hash": "8480f1a7a792bc44f44b8ffcdd2fd9e8d538905c52fd887cf9c60158023ddcc4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희를 미혹케 하는 자들에 관하여 내가 이것을 너희에게 썼노라"
+      ],
+      "raw_text_hashes": [
+        "8480f1a7a792bc44f44b8ffcdd2fd9e8d538905c52fd887cf9c60158023ddcc4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:2:27",
+      "sequence": 30574,
+      "chapter_label": "1JN 2",
+      "verse_label": "27",
+      "locator": {
+        "book": "1JN",
+        "chapter": 2,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 2,
+          "verse": 27
+        }
+      ],
+      "en": "As for you, the anointing which you received from him remains in you, and you don’t need for anyone to teach you. But as his anointing teaches you concerning all things, and is true, and is no lie, and even as it taught you, you will remain in him.",
+      "ko": "너희는 주께 받은바 기름 부음이 너희 안에 거하나니 아무도 너희를 가르칠 필요가 없고 오직 그의 기름 부음이 모든 것을 너희에게 가르치며 또 참되고 거짓이 없으니 너희를 가르치신 그대로 주 안에 거하라",
+      "source_text_hash": "5b5600c7c7db54d88189827b90e27ec33037c09bfb8069be2541fce9db415a3b",
+      "translation_text_hash": "4114ae202d23dc87bf461e53b0432c3d8faba067ee8dbf03f7bb16bd56bebd57",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 주께 받은바 기름 부음이 너희 안에 거하나니 아무도 너희를 가르칠 필요가 없고 오직 그의 기름 부음이 모든 것을 너희에게 가르치며 또 참되고 거짓이 없으니 너희를 가르치신 그대로 주 안에 거하라"
+      ],
+      "raw_text_hashes": [
+        "4114ae202d23dc87bf461e53b0432c3d8faba067ee8dbf03f7bb16bd56bebd57"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:2:28",
+      "sequence": 30575,
+      "chapter_label": "1JN 2",
+      "verse_label": "28",
+      "locator": {
+        "book": "1JN",
+        "chapter": 2,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 2,
+          "verse": 28
+        }
+      ],
+      "en": "Now, little children, remain in him, that when he appears, we may have boldness and not be ashamed before him at his coming.",
+      "ko": "자녀들아 이제 그 안에 거하라 이는 주께서 나타내신바 되면 그의 강림하실 때에 우리로 담대함을 얻어 그 앞에서 부끄럽지 않게 하려 함이라",
+      "source_text_hash": "52babd0f20af616db731be95e2e21e5f43ffd6981b6b4a10799e2a00e823c115",
+      "translation_text_hash": "bd1f9fb7447399ffbcb24cbc9541a5a09afa8577d9fdf2aa734251031db23bb4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자녀들아 이제 그 안에 거하라 이는 주께서 나타내신바 되면 그의 강림하실 때에 우리로 담대함을 얻어 그 앞에서 부끄럽지 않게 하려 함이라"
+      ],
+      "raw_text_hashes": [
+        "bd1f9fb7447399ffbcb24cbc9541a5a09afa8577d9fdf2aa734251031db23bb4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:2:29",
+      "sequence": 30576,
+      "chapter_label": "1JN 2",
+      "verse_label": "29",
+      "locator": {
+        "book": "1JN",
+        "chapter": 2,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 2,
+          "verse": 29
+        }
+      ],
+      "en": "If you know that he is righteous, you know that everyone who practices righteousness has been born of him.",
+      "ko": "너희가 그의 의로우신 줄을 알면 의를 행하는 자마다 그에게서 난 줄을 알리라",
+      "source_text_hash": "71cfee113e8769d4bcee8740785952bcdcc6468b7cdc04c356b7b9dbc01a237b",
+      "translation_text_hash": "763cd598687deda32bb8f0ae8c64925d3f90d869d9120422f8bba8bc8bf31cd5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 그의 의로우신 줄을 알면 의를 행하는 자마다 그에게서 난 줄을 알리라"
+      ],
+      "raw_text_hashes": [
+        "763cd598687deda32bb8f0ae8c64925d3f90d869d9120422f8bba8bc8bf31cd5"
+      ]
+    }
+  ]
+}

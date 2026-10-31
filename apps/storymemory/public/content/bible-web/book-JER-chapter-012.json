@@ -1,0 +1,557 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JER:chapter:012",
+  "unit_ordinal": 757,
+  "unit_label": "JER 12",
+  "book_code": "JER",
+  "chapter_number": 12,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JER:12:1",
+      "sequence": 19251,
+      "chapter_label": "JER 12",
+      "verse_label": "1",
+      "locator": {
+        "book": "JER",
+        "chapter": 12,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 12,
+          "verse": 1
+        }
+      ],
+      "en": "You are righteous, LORD, when I contend with you; yet I would like to plead a case with you. Why does the way of the wicked prosper? Why are they all at ease who deal very treacherously?",
+      "ko": "여호와여 내가 주와 쟁변할 때에는 주는 의로우시니이다 그러나 내가 주께 질문하옵나니 악한 자의 길이 형통하며 패역한 자가 다 안락함은 무슨 연고니이까",
+      "source_text_hash": "790453d76ed7d9b28bc2584290616eef1080a6a4c78d3bb089a31979757d538a",
+      "translation_text_hash": "c7dcd7351188711b6847556ce4539f22706b97ea4cfd16ffad3d0e55da4cc0b3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 내가 주와 쟁변할 때에는 주는 의로우시니이다 그러나 내가 주께 질문하옵나니 악한 자의 길이 형통하며 패역한 자가 다 안락함은 무슨 연고니이까"
+      ],
+      "raw_text_hashes": [
+        "c7dcd7351188711b6847556ce4539f22706b97ea4cfd16ffad3d0e55da4cc0b3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:12:2",
+      "sequence": 19252,
+      "chapter_label": "JER 12",
+      "verse_label": "2",
+      "locator": {
+        "book": "JER",
+        "chapter": 12,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 12,
+          "verse": 2
+        }
+      ],
+      "en": "You have planted them. Yes, they have taken root. They grow. Yes, they produce fruit. You are near in their mouth, and far from their heart.",
+      "ko": "주께서 그들을 심으시므로 그들이 뿌리가 박히고 장성하여 열매를 맺었거늘 그들의 입은 주께 가까우나 그 마음은 머니이다",
+      "source_text_hash": "05ce3dbd74d935126a866756be59fd2aa46a5411c31774bae5386b84ac33f38c",
+      "translation_text_hash": "79db0a13517b13ffdcb27f8eddcf330095bb02610a7415c59d564ea29ffb375b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 그들을 심으시므로 그들이 뿌리가 박히고 장성하여 열매를 맺었거늘 그들의 입은 주께 가까우나 그 마음은 머니이다"
+      ],
+      "raw_text_hashes": [
+        "79db0a13517b13ffdcb27f8eddcf330095bb02610a7415c59d564ea29ffb375b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:12:3",
+      "sequence": 19253,
+      "chapter_label": "JER 12",
+      "verse_label": "3",
+      "locator": {
+        "book": "JER",
+        "chapter": 12,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 12,
+          "verse": 3
+        }
+      ],
+      "en": "But you, LORD, know me. You see me, and test my heart toward you. Pull them out like sheep for the slaughter, and prepare them for the day of slaughter.",
+      "ko": "여호와여 주께서 나를 아시고 나를 보시며 내 마음이 주를 향하여 어떠함을 감찰하시오니 양을 잡으려고 끌어 냄과 같이 그들을 끌어 내시되 죽일 날을 위하여 그들을 예비하옵소서",
+      "source_text_hash": "9ace546b77ef49c4845f66764d9101804a350d7545c6e8143791634e91ec23d6",
+      "translation_text_hash": "7c7498ebcebb7e179cef1fd042aaab8e70d84db8aae411b43d1ddc21cf48273a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 주께서 나를 아시고 나를 보시며 내 마음이 주를 향하여 어떠함을 감찰하시오니 양을 잡으려고 끌어 냄과 같이 그들을 끌어 내시되 죽일 날을 위하여 그들을 예비하옵소서"
+      ],
+      "raw_text_hashes": [
+        "7c7498ebcebb7e179cef1fd042aaab8e70d84db8aae411b43d1ddc21cf48273a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:12:4",
+      "sequence": 19254,
+      "chapter_label": "JER 12",
+      "verse_label": "4",
+      "locator": {
+        "book": "JER",
+        "chapter": 12,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 12,
+          "verse": 4
+        }
+      ],
+      "en": "How long will the land mourn, and the herbs of the whole country wither? Because of the wickedness of those who dwell therein, the animals and birds are consumed; because they said, “He won’t see our latter end.”",
+      "ko": "언제까지 이 땅이 슬퍼하며 온 지방의 채소가 마르리이까 짐승과 새들도 멸절하게 되었사오니 이는 이 땅 거민이 악하여 스스로 말하기를 그가 우리의 결국을 보지 못하리라 함이니이다",
+      "source_text_hash": "e58acb806c731a9cfff75d0dd8655b4b024f9ca75502e87085589a41e727a473",
+      "translation_text_hash": "3f6b10479a65f44dbded68284474dbbc3561cf48fce6cdc689af8090600e2066",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "언제까지 이 땅이 슬퍼하며 온 지방의 채소가 마르리이까 짐승과 새들도 멸절하게 되었사오니 이는 이 땅 거민이 악하여 스스로 말하기를 그가 우리의 결국을 보지 못하리라 함이니이다"
+      ],
+      "raw_text_hashes": [
+        "3f6b10479a65f44dbded68284474dbbc3561cf48fce6cdc689af8090600e2066"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:12:5",
+      "sequence": 19255,
+      "chapter_label": "JER 12",
+      "verse_label": "5",
+      "locator": {
+        "book": "JER",
+        "chapter": 12,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 12,
+          "verse": 5
+        }
+      ],
+      "en": "“If you have run with the footmen, and they have wearied you, then how can you contend with horses? Though in a land of peace you are secure, yet how will you do in the pride of the Jordan?",
+      "ko": "네가 보행자와 함께 달려도 피곤하면 어찌 능히 말과 경주하겠느냐 네가 평안한 땅에서는 무사하려니와 요단의 창일한 중에서는 어찌하겠느냐",
+      "source_text_hash": "c238d345a41e6775ebb39c811654c13e9b098f6623c288f041b634b1b8b34e49",
+      "translation_text_hash": "b09396296dec79f80243656365cd8931acf7d499d334f8e5ddfc30daf09bb6b7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 보행자와 함께 달려도 피곤하면 어찌 능히 말과 경주하겠느냐 네가 평안한 땅에서는 무사하려니와 요단의 창일한 중에서는 어찌하겠느냐"
+      ],
+      "raw_text_hashes": [
+        "b09396296dec79f80243656365cd8931acf7d499d334f8e5ddfc30daf09bb6b7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:12:6",
+      "sequence": 19256,
+      "chapter_label": "JER 12",
+      "verse_label": "6",
+      "locator": {
+        "book": "JER",
+        "chapter": 12,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 12,
+          "verse": 6
+        }
+      ],
+      "en": "For even your brothers, and the house of your father, even they have dealt treacherously with you! Even they have cried aloud after you! Don’t believe them, though they speak beautiful words to you.",
+      "ko": "네 형제와 아비의 집이라도 너를 속이며 네 뒤에서 크게 외치나니 그들이 네게 좋은 말을 할찌라도 너는 믿지 말찌니라",
+      "source_text_hash": "1b2089962e17d6ff594645b969ac9136d8646478a61aa9a84ac892aecd848799",
+      "translation_text_hash": "eab901f2e4534da1a2671cf02ee5e56a565ac89e6571a0a6e7c0c8ac548934a7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 형제와 아비의 집이라도 너를 속이며 네 뒤에서 크게 외치나니 그들이 네게 좋은 말을 할찌라도 너는 믿지 말찌니라"
+      ],
+      "raw_text_hashes": [
+        "eab901f2e4534da1a2671cf02ee5e56a565ac89e6571a0a6e7c0c8ac548934a7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:12:7",
+      "sequence": 19257,
+      "chapter_label": "JER 12",
+      "verse_label": "7",
+      "locator": {
+        "book": "JER",
+        "chapter": 12,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 12,
+          "verse": 7
+        }
+      ],
+      "en": "“I have forsaken my house. I have cast off my heritage. I have given the dearly beloved of my soul into the hand of her enemies.",
+      "ko": "내가 내 집을 버리며 내 산업을 내어던져 내 마음의 사랑하는 것을 그 대적의 손에 붙였노니",
+      "source_text_hash": "b2c6180912422756c92924a3829fcb6c163dd6e4e3016b817c9c1605fe3c9109",
+      "translation_text_hash": "abb5fc6c29c08f4e621e13d671b9634959ce7c9b3bcbc1b73e3309f2ee3a763f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 내 집을 버리며 내 산업을 내어던져 내 마음의 사랑하는 것을 그 대적의 손에 붙였노니"
+      ],
+      "raw_text_hashes": [
+        "abb5fc6c29c08f4e621e13d671b9634959ce7c9b3bcbc1b73e3309f2ee3a763f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:12:8",
+      "sequence": 19258,
+      "chapter_label": "JER 12",
+      "verse_label": "8",
+      "locator": {
+        "book": "JER",
+        "chapter": 12,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 12,
+          "verse": 8
+        }
+      ],
+      "en": "My heritage has become to me as a lion in the forest. She has uttered her voice against me. Therefore I have hated her.",
+      "ko": "내 산업이 삼림 중의 사자 같이 되어서 나를 향하여 그 소리를 발하는고로 내가 그를 미워하였음이로라",
+      "source_text_hash": "6070ad9141ff2127549e05174d50b1295bc232129beb547536b332ca52f75695",
+      "translation_text_hash": "402fd2a912aee8eb04cdc9f1ec9aa6594f38dfd8651794014927fdf0e2a2013e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 산업이 삼림 중의 사자 같이 되어서 나를 향하여 그 소리를 발하는고로 내가 그를 미워하였음이로라"
+      ],
+      "raw_text_hashes": [
+        "402fd2a912aee8eb04cdc9f1ec9aa6594f38dfd8651794014927fdf0e2a2013e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:12:9",
+      "sequence": 19259,
+      "chapter_label": "JER 12",
+      "verse_label": "9",
+      "locator": {
+        "book": "JER",
+        "chapter": 12,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 12,
+          "verse": 9
+        }
+      ],
+      "en": "Is my heritage to me as a speckled bird of prey? Are the birds of prey against her all around? Go, assemble all the animals of the field. Bring them to devour.",
+      "ko": "내 산업이 내게 대하여는 무늬 있는 매가 아니냐 매들이 그를 에워싸지 아니하느냐 너희는 가서 들짐승들을 모아다가 그것을 삼키게 하라",
+      "source_text_hash": "a0c33d69bc09d07f45055e81910fde926ce7e0185c66484dc7a5b24181193d98",
+      "translation_text_hash": "d7d48b8b7666c279a3d831f284e940d08fa01d234b3f5f0eb99f82f05129f59c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 산업이 내게 대하여는 무늬 있는 매가 아니냐 매들이 그를 에워싸지 아니하느냐 너희는 가서 들짐승들을 모아다가 그것을 삼키게 하라"
+      ],
+      "raw_text_hashes": [
+        "d7d48b8b7666c279a3d831f284e940d08fa01d234b3f5f0eb99f82f05129f59c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:12:10",
+      "sequence": 19260,
+      "chapter_label": "JER 12",
+      "verse_label": "10",
+      "locator": {
+        "book": "JER",
+        "chapter": 12,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 12,
+          "verse": 10
+        }
+      ],
+      "en": "Many shepherds have destroyed my vineyard. They have trodden my portion under foot. They have made my pleasant portion a desolate wilderness.",
+      "ko": "많은 목자가 내 포도원을 훼파하며 내 분깃을 유린하여 나의 낙토로 황무지를 만들었도다",
+      "source_text_hash": "69b58b00b2581349c2527701eb0776a18c70a9c4b25effe259b5a2bce3fc6a12",
+      "translation_text_hash": "d30d561633ca0e4aa0fc2c808c173dbc8fac12131a5c16057b0e33534147cb3e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "많은 목자가 내 포도원을 훼파하며 내 분깃을 유린하여 나의 낙토로 황무지를 만들었도다"
+      ],
+      "raw_text_hashes": [
+        "d30d561633ca0e4aa0fc2c808c173dbc8fac12131a5c16057b0e33534147cb3e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:12:11",
+      "sequence": 19261,
+      "chapter_label": "JER 12",
+      "verse_label": "11",
+      "locator": {
+        "book": "JER",
+        "chapter": 12,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 12,
+          "verse": 11
+        }
+      ],
+      "en": "They have made it a desolation. It mourns to me, being desolate. The whole land is made desolate, because no one cares.",
+      "ko": "그들이 이를 황무케 하였으므로 그 황무지가 나를 향하여 슬퍼하는도다 온 땅이 황무함은 이를 개의하는 자가 없음이로다",
+      "source_text_hash": "c874630cc3183d97588389afe40356ffe1ab8d54079b1448d22db8107ad02f73",
+      "translation_text_hash": "087d8c1a990c45e7c7bd055677c0b8a9f0edc1264cd7d72af2a93ea284c22373",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 이를 황무케 하였으므로 그 황무지가 나를 향하여 슬퍼하는도다 온 땅이 황무함은 이를 개의하는 자가 없음이로다"
+      ],
+      "raw_text_hashes": [
+        "087d8c1a990c45e7c7bd055677c0b8a9f0edc1264cd7d72af2a93ea284c22373"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:12:12",
+      "sequence": 19262,
+      "chapter_label": "JER 12",
+      "verse_label": "12",
+      "locator": {
+        "book": "JER",
+        "chapter": 12,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 12,
+          "verse": 12
+        }
+      ],
+      "en": "Destroyers have come on all the bare heights in the wilderness; for the sword of the LORD devours from the one end of the land even to the other end of the land. No flesh has peace.",
+      "ko": "훼멸하는 자들이 광야 모든 자산 위에 이르렀고 여호와의 칼이 땅 이 끝에서 저 끝까지 삼키니 무릇 혈육 있는 자가 평안치 못하도다",
+      "source_text_hash": "c723f0a54621eba597609f3647e8ea07691f395e2c6e196418519fb9430d2906",
+      "translation_text_hash": "71cc3c5304f2914b187bad87e2059f1de902dd8caa172efa84f7b929ce5174b9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "훼멸하는 자들이 광야 모든 자산 위에 이르렀고 여호와의 칼이 땅 이 끝에서 저 끝까지 삼키니 무릇 혈육 있는 자가 평안치 못하도다"
+      ],
+      "raw_text_hashes": [
+        "71cc3c5304f2914b187bad87e2059f1de902dd8caa172efa84f7b929ce5174b9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:12:13",
+      "sequence": 19263,
+      "chapter_label": "JER 12",
+      "verse_label": "13",
+      "locator": {
+        "book": "JER",
+        "chapter": 12,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 12,
+          "verse": 13
+        }
+      ],
+      "en": "They have sown wheat, and have reaped thorns. They have exhausted themselves, and profit nothing. You will be ashamed of your fruits, because of the LORD’s fierce anger.”",
+      "ko": "무리가 밀을 심어도 가시를 거두며 수고하여도 소득이 없은즉 그 소산으로 인하여 스스로 수치를 당하리니 이는 여호와의 분노를 인함이니라",
+      "source_text_hash": "b09d0deeeb34d72b8547ca71925b3b9017a185102799196cd9a8eb3648a1665a",
+      "translation_text_hash": "3dfa09b48ea2fe9bd96777b8d6136281bed48350c19b46f09b1ffe4e7e1d07d6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무리가 밀을 심어도 가시를 거두며 수고하여도 소득이 없은즉 그 소산으로 인하여 스스로 수치를 당하리니 이는 여호와의 분노를 인함이니라"
+      ],
+      "raw_text_hashes": [
+        "3dfa09b48ea2fe9bd96777b8d6136281bed48350c19b46f09b1ffe4e7e1d07d6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:12:14",
+      "sequence": 19264,
+      "chapter_label": "JER 12",
+      "verse_label": "14",
+      "locator": {
+        "book": "JER",
+        "chapter": 12,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 12,
+          "verse": 14
+        }
+      ],
+      "en": "The LORD says, “Concerning all my evil neighbors, who touch the inheritance which I have caused my people Israel to inherit: Behold, I will pluck them up from off their land, and will pluck up the house of Judah from among them.",
+      "ko": "내가 내 백성 이스라엘에게 산업으로 준 산업을 다치는 나의 모든 악한 이웃에게 대하여 나 여호와가 이같이 말하노라 보라 내가 그들을 그 땅에서 뽑아버리겠고 유다 집은 그들 중에서 뽑아내리라",
+      "source_text_hash": "a729d1463d221b4cf75e01a3d59449bf0241fe2f747292335b1be10197069bd8",
+      "translation_text_hash": "d06932b4ee1206d66fd0105a9703a93e4bf1276904dc3899d1677a63a72ee1fb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 내 백성 이스라엘에게 산업으로 준 산업을 다치는 나의 모든 악한 이웃에게 대하여 나 여호와가 이같이 말하노라 보라 내가 그들을 그 땅에서 뽑아버리겠고 유다 집은 그들 중에서 뽑아내리라"
+      ],
+      "raw_text_hashes": [
+        "d06932b4ee1206d66fd0105a9703a93e4bf1276904dc3899d1677a63a72ee1fb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:12:15",
+      "sequence": 19265,
+      "chapter_label": "JER 12",
+      "verse_label": "15",
+      "locator": {
+        "book": "JER",
+        "chapter": 12,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 12,
+          "verse": 15
+        }
+      ],
+      "en": "It will happen that after I have plucked them up, I will return and have compassion on them. I will bring them again, every man to his heritage, and every man to his land.",
+      "ko": "내가 그들을 뽑아낸 후에 내가 돌이켜 그들을 긍휼히 여겨서 각 사람을 그 산업으로, 각 사람을 그 땅으로 다시 인도하리니",
+      "source_text_hash": "7b5663b682cccb6c6fd0f6ae1e611b8a91ba780c22e50b9992bc7fd4c771f43f",
+      "translation_text_hash": "d7295b0ce066c361416482cd1cd27e71b5b371c4b6a713a8261320a884929eb9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 그들을 뽑아낸 후에 내가 돌이켜 그들을 긍휼히 여겨서 각 사람을 그 산업으로, 각 사람을 그 땅으로 다시 인도하리니"
+      ],
+      "raw_text_hashes": [
+        "d7295b0ce066c361416482cd1cd27e71b5b371c4b6a713a8261320a884929eb9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:12:16",
+      "sequence": 19266,
+      "chapter_label": "JER 12",
+      "verse_label": "16",
+      "locator": {
+        "book": "JER",
+        "chapter": 12,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 12,
+          "verse": 16
+        }
+      ],
+      "en": "It will happen, if they will diligently learn the ways of my people, to swear by my name, ‘As the LORD lives;’ even as they taught my people to swear by Baal, then they will be built up in the middle of my people.",
+      "ko": "그들이 내 백성의 도를 부지런히 배우며 사는 여호와 내 이름으로 맹세하기를 자기들이 내 백성을 가리켜 바알로 맹세하게 한것 같이 하면 그들이 내 백성 중에 세움을 입으려니와",
+      "source_text_hash": "685c5854efe08ba9671acb3babb6eabfb1ef793faffe88fb95f185f5a1dbdff4",
+      "translation_text_hash": "7970b24a6beab1e8750f6476f523d5a42d9dc052847a2be074cdb7f5d3f8d2f5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 내 백성의 도를 부지런히 배우며 사는 여호와 내 이름으로 맹세하기를 자기들이 내 백성을 가리켜 바알로 맹세하게 한것 같이 하면 그들이 내 백성 중에 세움을 입으려니와"
+      ],
+      "raw_text_hashes": [
+        "7970b24a6beab1e8750f6476f523d5a42d9dc052847a2be074cdb7f5d3f8d2f5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:12:17",
+      "sequence": 19267,
+      "chapter_label": "JER 12",
+      "verse_label": "17",
+      "locator": {
+        "book": "JER",
+        "chapter": 12,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 12,
+          "verse": 17
+        }
+      ],
+      "en": "But if they will not hear, then I will pluck up that nation, plucking up and destroying it,” says the LORD.",
+      "ko": "그들이 그리하지 아니하면 내가 반드시 그 나라를 뽑으리라 뽑아 멸하리라 여호와의 말이니라",
+      "source_text_hash": "9a17d503bc8cd9cff651e5a2ff00c54cb7505a24b1b2a1b0192fe31b86fe5725",
+      "translation_text_hash": "1ad6ad667feeb4bb5e5debed600d0873a6676fb8680893b636120366afe7656f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 그리하지 아니하면 내가 반드시 그 나라를 뽑으리라 뽑아 멸하리라 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "1ad6ad667feeb4bb5e5debed600d0873a6676fb8680893b636120366afe7656f"
+      ]
+    }
+  ]
+}

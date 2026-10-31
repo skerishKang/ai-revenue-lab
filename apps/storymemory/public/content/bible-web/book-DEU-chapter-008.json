@@ -1,0 +1,653 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:DEU:chapter:008",
+  "unit_ordinal": 161,
+  "unit_label": "DEU 8",
+  "book_code": "DEU",
+  "chapter_number": 8,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:DEU:8:1",
+      "sequence": 5139,
+      "chapter_label": "DEU 8",
+      "verse_label": "1",
+      "locator": {
+        "book": "DEU",
+        "chapter": 8,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 8,
+          "verse": 1
+        }
+      ],
+      "en": "You shall observe to do all the commandments which I command you today, that you may live, and multiply, and go in and possess the land which the LORD swore to your fathers.",
+      "ko": "내가 오늘날 명하는 모든 명령을 너희는 지켜 행하라 그리하면 너희가 살고 번성하고 여호와께서 너희의 열조에게 맹세하신 땅에 들어가서 그것을 얻으리라",
+      "source_text_hash": "f2a78b460d35b5ccf848452265dcd1bc53056f5a74bc3ec5d8db1e22e4f11f66",
+      "translation_text_hash": "f0b34874b076efe8700d6c0d134965be8b7561e040ad0818c9fbb7e1d5688a79",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 오늘날 명하는 모든 명령을 너희는 지켜 행하라 그리하면 너희가 살고 번성하고 여호와께서 너희의 열조에게 맹세하신 땅에 들어가서 그것을 얻으리라"
+      ],
+      "raw_text_hashes": [
+        "f0b34874b076efe8700d6c0d134965be8b7561e040ad0818c9fbb7e1d5688a79"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:8:2",
+      "sequence": 5140,
+      "chapter_label": "DEU 8",
+      "verse_label": "2",
+      "locator": {
+        "book": "DEU",
+        "chapter": 8,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 8,
+          "verse": 2
+        }
+      ],
+      "en": "You shall remember all the way which the LORD your God has led you these forty years in the wilderness, that he might humble you, to test you, to know what was in your heart, whether you would keep his commandments or not.",
+      "ko": "네 하나님 여호와께서 이 사십년 동안에 너로 광야의 길을 걷게 하신 것을 기억하라 이는 너를 낮추시며 너를 시험하사 네 마음이 어떠한지 그 명령을 지키는지 아니 지키는지 알려하심이라",
+      "source_text_hash": "94cb83ed96b651d9a430eaad57b5230094a6a03e3ed369b963914bc33cc6d357",
+      "translation_text_hash": "2dca7926636caeb633945b3a1b54534f11ceba90a2580ef6f2321f843e3b30c2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 하나님 여호와께서 이 사십년 동안에 너로 광야의 길을 걷게 하신 것을 기억하라 이는 너를 낮추시며 너를 시험하사 네 마음이 어떠한지 그 명령을 지키는지 아니 지키는지 알려하심이라"
+      ],
+      "raw_text_hashes": [
+        "2dca7926636caeb633945b3a1b54534f11ceba90a2580ef6f2321f843e3b30c2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:8:3",
+      "sequence": 5141,
+      "chapter_label": "DEU 8",
+      "verse_label": "3",
+      "locator": {
+        "book": "DEU",
+        "chapter": 8,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 8,
+          "verse": 3
+        }
+      ],
+      "en": "He humbled you, allowed you to be hungry, and fed you with manna, which you didn’t know, neither did your fathers know, that he might teach you that man does not live by bread only, but man lives by every word that proceeds out of the LORD’s mouth.",
+      "ko": "너를 낮추시며 너로 주리게 하시며 또 너도 알지 못하며 네 열조도 알지 못하던 만나를 네게 먹이신것은 사람이 떡으로만 사는 것이 아니요 여호와의 입에서 나오는 모든 말씀으로 사는 줄을 너로 알게하려 하심이니라",
+      "source_text_hash": "90337012d6bfbad8aed814cb4825fd15a5001c927bc0f5a4e121f2295de2f5ac",
+      "translation_text_hash": "bdc5fbb195b8cacae67b6eda405d08621d7e362cb0a4d79d1c4dc6074cc09a74",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너를 낮추시며 너로 주리게 하시며 또 너도 알지 못하며 네 열조도 알지 못하던 만나를 네게 먹이신것은 사람이 떡으로만 사는 것이 아니요 여호와의 입에서 나오는 모든 말씀으로 사는 줄을 너로 알게하려 하심이니라"
+      ],
+      "raw_text_hashes": [
+        "bdc5fbb195b8cacae67b6eda405d08621d7e362cb0a4d79d1c4dc6074cc09a74"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:8:4",
+      "sequence": 5142,
+      "chapter_label": "DEU 8",
+      "verse_label": "4",
+      "locator": {
+        "book": "DEU",
+        "chapter": 8,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 8,
+          "verse": 4
+        }
+      ],
+      "en": "Your clothing didn’t grow old on you, neither did your foot swell, these forty years.",
+      "ko": "이 사십년 동안에 네 의복이 해어지지 아니하였고 네 발이 부릍지 아니하였느니라",
+      "source_text_hash": "d0791a43956ec5e5cd7001e668884396b4047031a5a170994d48c12d24c12fcc",
+      "translation_text_hash": "d6ee85b58eacde46d4a5be0721f288940fea880b2953e04e64fede9efd716b67",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 사십년 동안에 네 의복이 해어지지 아니하였고 네 발이 부릍지 아니하였느니라"
+      ],
+      "raw_text_hashes": [
+        "d6ee85b58eacde46d4a5be0721f288940fea880b2953e04e64fede9efd716b67"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:8:5",
+      "sequence": 5143,
+      "chapter_label": "DEU 8",
+      "verse_label": "5",
+      "locator": {
+        "book": "DEU",
+        "chapter": 8,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 8,
+          "verse": 5
+        }
+      ],
+      "en": "You shall consider in your heart that as a man disciplines his son, so the LORD your God disciplines you.",
+      "ko": "너는 사람이 그 아들을 징계함 같이 네 하나님 여호와께서 너를 징계하시는줄 마음에 생각하고",
+      "source_text_hash": "e108bfc867b08f37ef353f89d8e752f8107789764de2b40ca2047eec2467b33d",
+      "translation_text_hash": "dd2d0e167baaf857f43c596e8f3c498084197199893c9c56e2fa2ddf5e560ba7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 사람이 그 아들을 징계함 같이 네 하나님 여호와께서 너를 징계하시는줄 마음에 생각하고"
+      ],
+      "raw_text_hashes": [
+        "dd2d0e167baaf857f43c596e8f3c498084197199893c9c56e2fa2ddf5e560ba7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:8:6",
+      "sequence": 5144,
+      "chapter_label": "DEU 8",
+      "verse_label": "6",
+      "locator": {
+        "book": "DEU",
+        "chapter": 8,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 8,
+          "verse": 6
+        }
+      ],
+      "en": "You shall keep the commandments of the LORD your God, to walk in his ways, and to fear him.",
+      "ko": "네 하나님 여호와의 명령을 지켜 그 도를 행하며 그를 경외할찌니라",
+      "source_text_hash": "b0906f79534ae01ca578a5ebd9dcfb0d4138d17b0f0ab525475d6864312b30bd",
+      "translation_text_hash": "5b7ae8c41f6dda68a68dc70e41ac8f45c09895875c670f891d71713b861b815f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 하나님 여호와의 명령을 지켜 그 도를 행하며 그를 경외할찌니라"
+      ],
+      "raw_text_hashes": [
+        "5b7ae8c41f6dda68a68dc70e41ac8f45c09895875c670f891d71713b861b815f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:8:7",
+      "sequence": 5145,
+      "chapter_label": "DEU 8",
+      "verse_label": "7",
+      "locator": {
+        "book": "DEU",
+        "chapter": 8,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 8,
+          "verse": 7
+        }
+      ],
+      "en": "For the LORD your God brings you into a good land, a land of brooks of water, of springs, and underground water flowing into valleys and hills;",
+      "ko": "네 하나님 여호와께서 너로 아름다운 땅에 이르게 하시나니 그곳은 골짜기에든지 산지에든지 시내와 분천과 샘이 흐르고",
+      "source_text_hash": "1ac2988a8dd1dc16e7f311a34818ba8cb0864fa9996b6669cef1ad705682a361",
+      "translation_text_hash": "5c197986059e2b66b3863992a6b5ce9e691d7fc82049d19c366716317481a470",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 하나님 여호와께서 너로 아름다운 땅에 이르게 하시나니 그곳은 골짜기에든지 산지에든지 시내와 분천과 샘이 흐르고"
+      ],
+      "raw_text_hashes": [
+        "5c197986059e2b66b3863992a6b5ce9e691d7fc82049d19c366716317481a470"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:8:8",
+      "sequence": 5146,
+      "chapter_label": "DEU 8",
+      "verse_label": "8",
+      "locator": {
+        "book": "DEU",
+        "chapter": 8,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 8,
+          "verse": 8
+        }
+      ],
+      "en": "a land of wheat, barley, vines, fig trees, and pomegranates; a land of olive trees and honey;",
+      "ko": "밀과 보리의 소산지요 포도와 무화과와 석류와 감람들의 나무와 꿀의 소산지라",
+      "source_text_hash": "ccaf58f1acce65696bd101ed375397147e9a58ce840568f1b381533bcc921c5b",
+      "translation_text_hash": "3fb11d5fe6fe5d01a5b2c0c3b9f8bf29f52794e6369558a2d9c24252cb8868c6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "밀과 보리의 소산지요 포도와 무화과와 석류와 감람들의 나무와 꿀의 소산지라"
+      ],
+      "raw_text_hashes": [
+        "3fb11d5fe6fe5d01a5b2c0c3b9f8bf29f52794e6369558a2d9c24252cb8868c6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:8:9",
+      "sequence": 5147,
+      "chapter_label": "DEU 8",
+      "verse_label": "9",
+      "locator": {
+        "book": "DEU",
+        "chapter": 8,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 8,
+          "verse": 9
+        }
+      ],
+      "en": "a land in which you shall eat bread without scarcity, you shall not lack anything in it; a land whose stones are iron, and out of whose hills you may dig copper.",
+      "ko": "너의 먹는 식물의 결핍함이 없고 네게 아무 부족함이 없는 땅이며 그 땅의 돌은 철이요 산에서는 동을 캘 것이라",
+      "source_text_hash": "026646313f92344122dda03bcc33a333166784bd36c295538aa9b9c9b640e7e4",
+      "translation_text_hash": "5dcc818838ffa5d44516b60020a045d1fd173ac374c7b94e55f1a9b6fff8124c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너의 먹는 식물의 결핍함이 없고 네게 아무 부족함이 없는 땅이며 그 땅의 돌은 철이요 산에서는 동을 캘 것이라"
+      ],
+      "raw_text_hashes": [
+        "5dcc818838ffa5d44516b60020a045d1fd173ac374c7b94e55f1a9b6fff8124c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:8:10",
+      "sequence": 5148,
+      "chapter_label": "DEU 8",
+      "verse_label": "10",
+      "locator": {
+        "book": "DEU",
+        "chapter": 8,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 8,
+          "verse": 10
+        }
+      ],
+      "en": "You shall eat and be full, and you shall bless the LORD your God for the good land which he has given you.",
+      "ko": "네가 먹어서 배불리고 네 하나님 여호와께서 옥토로 네게 주셨음을 인하여 그를 찬송하리라",
+      "source_text_hash": "dc9961a299f8273eb3a54c9d475a8eb5c3dd69aedd8947b40b3fd5357575b7b0",
+      "translation_text_hash": "d73732c888653c0a24e10e67a13f90b60ab911cbbb6d952fd61932d93a96c985",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 먹어서 배불리고 네 하나님 여호와께서 옥토로 네게 주셨음을 인하여 그를 찬송하리라"
+      ],
+      "raw_text_hashes": [
+        "d73732c888653c0a24e10e67a13f90b60ab911cbbb6d952fd61932d93a96c985"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:8:11",
+      "sequence": 5149,
+      "chapter_label": "DEU 8",
+      "verse_label": "11",
+      "locator": {
+        "book": "DEU",
+        "chapter": 8,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 8,
+          "verse": 11
+        }
+      ],
+      "en": "Beware lest you forget the LORD your God, in not keeping his commandments, his ordinances, and his statutes, which I command you today;",
+      "ko": "내가 오늘날 네게 명하는 여호와의 명령과 법도와 규례를 지키지 아니하고 네 하나님 여호와를 잊어버리게 되지 않도록 삼갈찌어다",
+      "source_text_hash": "18966f0d5153258bef35e1f28c291a997fabae0ab1a3b952ea71240505cef4cd",
+      "translation_text_hash": "59ce8fea0cd4bc06b2e399fc8621bef31f3c443aa53625231314a03bbb780e43",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 오늘날 네게 명하는 여호와의 명령과 법도와 규례를 지키지 아니하고 네 하나님 여호와를 잊어버리게 되지 않도록 삼갈찌어다"
+      ],
+      "raw_text_hashes": [
+        "59ce8fea0cd4bc06b2e399fc8621bef31f3c443aa53625231314a03bbb780e43"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:8:12",
+      "sequence": 5150,
+      "chapter_label": "DEU 8",
+      "verse_label": "12",
+      "locator": {
+        "book": "DEU",
+        "chapter": 8,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 8,
+          "verse": 12
+        }
+      ],
+      "en": "lest, when you have eaten and are full, and have built fine houses and lived in them;",
+      "ko": "네가 먹어서 배불리고 아름다운 집을 짓고 거하게 되며",
+      "source_text_hash": "bf81e5da452c8a8d7fc92acaa924b2398c575e0c4e62bc0fc85e8ba64f70d1b0",
+      "translation_text_hash": "02f9f24bcb2a154779cfffb95d22c2e5ae0d2fc678ccd3ef1a46a2912f2376e7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 먹어서 배불리고 아름다운 집을 짓고 거하게 되며"
+      ],
+      "raw_text_hashes": [
+        "02f9f24bcb2a154779cfffb95d22c2e5ae0d2fc678ccd3ef1a46a2912f2376e7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:8:13",
+      "sequence": 5151,
+      "chapter_label": "DEU 8",
+      "verse_label": "13",
+      "locator": {
+        "book": "DEU",
+        "chapter": 8,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 8,
+          "verse": 13
+        }
+      ],
+      "en": "and when your herds and your flocks multiply, and your silver and your gold is multiplied, and all that you have is multiplied;",
+      "ko": "또 네 우양이 번성하며 네 은금이 증식되며 네 소유가 다 풍부하게 될 때에",
+      "source_text_hash": "1088d16e3a7b926eb5ee90d9910edaed08e49069c729ab699655c4c4373903dd",
+      "translation_text_hash": "1e5ac48eb5b53c221321fa46df02214b56e2ad28d5daf26c2f11c9171402a864",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 네 우양이 번성하며 네 은금이 증식되며 네 소유가 다 풍부하게 될 때에"
+      ],
+      "raw_text_hashes": [
+        "1e5ac48eb5b53c221321fa46df02214b56e2ad28d5daf26c2f11c9171402a864"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:8:14",
+      "sequence": 5152,
+      "chapter_label": "DEU 8",
+      "verse_label": "14",
+      "locator": {
+        "book": "DEU",
+        "chapter": 8,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 8,
+          "verse": 14
+        }
+      ],
+      "en": "then your heart might be lifted up, and you forget the LORD your God, who brought you out of the land of Egypt, out of the house of bondage;",
+      "ko": "두렵건대 네 마음이 교만하여 네 하나님 여호와를 잊어버릴까 하노라 여호와는 너를 애굽 땅 종 되었던 집에서 이끌어 내시고",
+      "source_text_hash": "aa32f77eb0c4c8edcb01c1d70cffe54fdd8ac63427b37175cb0535b06781863f",
+      "translation_text_hash": "ad2f5f619b133598bf5b15333a7eae7f4ad7d962277e2c844b1b497d0ba83fd2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "두렵건대 네 마음이 교만하여 네 하나님 여호와를 잊어버릴까 하노라 여호와는 너를 애굽 땅 종 되었던 집에서 이끌어 내시고"
+      ],
+      "raw_text_hashes": [
+        "ad2f5f619b133598bf5b15333a7eae7f4ad7d962277e2c844b1b497d0ba83fd2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:8:15",
+      "sequence": 5153,
+      "chapter_label": "DEU 8",
+      "verse_label": "15",
+      "locator": {
+        "book": "DEU",
+        "chapter": 8,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 8,
+          "verse": 15
+        }
+      ],
+      "en": "who led you through the great and terrible wilderness, with venomous snakes and scorpions, and thirsty ground where there was no water; who poured water for you out of the rock of flint;",
+      "ko": "너를 인도하여 그 광대하고 위험한 광야 곧 불뱀과 전갈이 있고 물이 없는 간조한 땅을 지나게 하셨으며 또 너를 위하여 물을 굳은 반석에서 내셨으며",
+      "source_text_hash": "cd285197159dbad172f7c1fd8a3e616e245f5bda8b15082a77eda7670710d4db",
+      "translation_text_hash": "f04f4a208fe582d55215d230f563b6cec618ee77ba5c9dd520892ef90e3852ca",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너를 인도하여 그 광대하고 위험한 광야 곧 불뱀과 전갈이 있고 물이 없는 간조한 땅을 지나게 하셨으며 또 너를 위하여 물을 굳은 반석에서 내셨으며"
+      ],
+      "raw_text_hashes": [
+        "f04f4a208fe582d55215d230f563b6cec618ee77ba5c9dd520892ef90e3852ca"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:8:16",
+      "sequence": 5154,
+      "chapter_label": "DEU 8",
+      "verse_label": "16",
+      "locator": {
+        "book": "DEU",
+        "chapter": 8,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 8,
+          "verse": 16
+        }
+      ],
+      "en": "who fed you in the wilderness with manna, which your fathers didn’t know, that he might humble you, and that he might prove you, to do you good at your latter end;",
+      "ko": "네 열조도 알지 못하던 만나를 광야에서 네게 먹이셨나니 이는 다 너를 낮추시며 너를 시험하사 마침내 네게 복을 주려 하심이었느니라",
+      "source_text_hash": "2e3e24eee1da9aa6a25ca2ac8bf2f1c750a52ce6261b236a38d2f5a1798a67b9",
+      "translation_text_hash": "f945108e57594f604b391841cc89a1e949421794b983cbdf7a9edabaa19861cc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 열조도 알지 못하던 만나를 광야에서 네게 먹이셨나니 이는 다 너를 낮추시며 너를 시험하사 마침내 네게 복을 주려 하심이었느니라"
+      ],
+      "raw_text_hashes": [
+        "f945108e57594f604b391841cc89a1e949421794b983cbdf7a9edabaa19861cc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:8:17",
+      "sequence": 5155,
+      "chapter_label": "DEU 8",
+      "verse_label": "17",
+      "locator": {
+        "book": "DEU",
+        "chapter": 8,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 8,
+          "verse": 17
+        }
+      ],
+      "en": "and lest you say in your heart, “My power and the might of my hand has gotten me this wealth.”",
+      "ko": "또 두렵건대 네가 마음에 이르기를 내 능과 내 손의 힘으로 내가 이 재물을 얻었다 할까 하노라",
+      "source_text_hash": "baa6e1a9b497decf80b02746f10dd0dfde3bb0219024d10917d72f2987fdbae1",
+      "translation_text_hash": "7aa2861fc26b32e89b7b5d095539d767d62ec89022632ada20a28a6b3eb223cf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 두렵건대 네가 마음에 이르기를 내 능과 내 손의 힘으로 내가 이 재물을 얻었다 할까 하노라"
+      ],
+      "raw_text_hashes": [
+        "7aa2861fc26b32e89b7b5d095539d767d62ec89022632ada20a28a6b3eb223cf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:8:18",
+      "sequence": 5156,
+      "chapter_label": "DEU 8",
+      "verse_label": "18",
+      "locator": {
+        "book": "DEU",
+        "chapter": 8,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 8,
+          "verse": 18
+        }
+      ],
+      "en": "But you shall remember the LORD your God, for it is he who gives you power to get wealth, that he may establish his covenant which he swore to your fathers, as it is today.",
+      "ko": "네 하나님 여호와를 기억하라 그가 네게 재물 얻을 능을 주셨음이라 이같이 하심은 네 열조에게 맹세하신 언약을 오늘과 같이 이루려 하심이니라",
+      "source_text_hash": "d20477d0f425dfa16baf62b01b3f157379d6dee775234abed9715dd180457d7e",
+      "translation_text_hash": "555614f35ec4066e74f5f1eeac6866e84247afa31e25006de8df603eb34aa953",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 하나님 여호와를 기억하라 그가 네게 재물 얻을 능을 주셨음이라 이같이 하심은 네 열조에게 맹세하신 언약을 오늘과 같이 이루려 하심이니라"
+      ],
+      "raw_text_hashes": [
+        "555614f35ec4066e74f5f1eeac6866e84247afa31e25006de8df603eb34aa953"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:8:19",
+      "sequence": 5157,
+      "chapter_label": "DEU 8",
+      "verse_label": "19",
+      "locator": {
+        "book": "DEU",
+        "chapter": 8,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 8,
+          "verse": 19
+        }
+      ],
+      "en": "It shall be, if you shall forget the LORD your God, and walk after other gods, and serve them and worship them, I testify against you today that you shall surely perish.",
+      "ko": "네가 만일 네 하나님 여호와를 잊어버리고 다른 신들을 좇아 그들을 섬기며 그들에게 절하면 내가 너희에게 증거하노니 너희가 정녕히 멸망할 것이라",
+      "source_text_hash": "4748015d7d0762d03bc0b6884fec9e157794924d906a273550c6b37fdd3dfa39",
+      "translation_text_hash": "4bf562ae118214bd64485f1c42565b60325e5c74745f62fb79465fa76eaa818b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 만일 네 하나님 여호와를 잊어버리고 다른 신들을 좇아 그들을 섬기며 그들에게 절하면 내가 너희에게 증거하노니 너희가 정녕히 멸망할 것이라"
+      ],
+      "raw_text_hashes": [
+        "4bf562ae118214bd64485f1c42565b60325e5c74745f62fb79465fa76eaa818b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:8:20",
+      "sequence": 5158,
+      "chapter_label": "DEU 8",
+      "verse_label": "20",
+      "locator": {
+        "book": "DEU",
+        "chapter": 8,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 8,
+          "verse": 20
+        }
+      ],
+      "en": "As the nations that the LORD makes to perish before you, so you shall perish, because you wouldn’t listen to the LORD your God’s voice.",
+      "ko": "여호와께서 너희의 앞에서 멸망시키신 민족들 같이 너희도 멸망하리니 이는 너희가 너희 하나님 여호와의 소리를 청종치 아니함이니라",
+      "source_text_hash": "f7576d887856c17a47d0badf850cddc00b1d2d093e966f12c409550b47b7f9c0",
+      "translation_text_hash": "70e74011dbe4cde230ad2ece89d69d7e2d85378c0efec20f52ead369a25c0cab",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 너희의 앞에서 멸망시키신 민족들 같이 너희도 멸망하리니 이는 너희가 너희 하나님 여호와의 소리를 청종치 아니함이니라"
+      ],
+      "raw_text_hashes": [
+        "70e74011dbe4cde230ad2ece89d69d7e2d85378c0efec20f52ead369a25c0cab"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,589 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:088",
+  "unit_ordinal": 566,
+  "unit_label": "PSA 88",
+  "book_code": "PSA",
+  "chapter_number": 88,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:88:1",
+      "sequence": 15310,
+      "chapter_label": "PSA 88",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 88,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 88,
+          "verse": 1
+        }
+      ],
+      "en": "LORD, the God of my salvation, I have cried day and night before you.",
+      "ko": "여호와 내 구원의 하나님이여 내가 주야로 주의 앞에 부르짖었사오니",
+      "source_text_hash": "fd64529b79d3262a87cb0854dc3e4703e517f635a2be0cbda90a3d3d8cbf4126",
+      "translation_text_hash": "445f20f47a98048ba0db4d9ef14d32a17bbe5c8c7b0b99fd3397132039218228",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와 내 구원의 하나님이여 내가 주야로 주의 앞에 부르짖었사오니"
+      ],
+      "raw_text_hashes": [
+        "445f20f47a98048ba0db4d9ef14d32a17bbe5c8c7b0b99fd3397132039218228"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:88:2",
+      "sequence": 15311,
+      "chapter_label": "PSA 88",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 88,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 88,
+          "verse": 2
+        }
+      ],
+      "en": "Let my prayer enter into your presence. Turn your ear to my cry.",
+      "ko": "나의 기도로 주의 앞에 달하게 하시며 주의 귀를 나의 부르짖음에 기울이소서",
+      "source_text_hash": "1d54e996d496e78256d25ea4c294eb6549dc5b823bc19e53674e47373f510d9e",
+      "translation_text_hash": "03baef44743258d67e34dfd1bfebe5b121e71e51fed4d104bcbe7ba997ee186e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 기도로 주의 앞에 달하게 하시며 주의 귀를 나의 부르짖음에 기울이소서"
+      ],
+      "raw_text_hashes": [
+        "03baef44743258d67e34dfd1bfebe5b121e71e51fed4d104bcbe7ba997ee186e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:88:3",
+      "sequence": 15312,
+      "chapter_label": "PSA 88",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 88,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 88,
+          "verse": 3
+        }
+      ],
+      "en": "For my soul is full of troubles. My life draws near to Sheol.",
+      "ko": "대저 나의 영혼에 곤란이 가득하며 나의 생명은 음부에 가까왔사오니",
+      "source_text_hash": "883a4f33e9652b8fdf09c1560e06b8be85bd4f059b9dfc46ea69abc49dbfe325",
+      "translation_text_hash": "bcb39a10acb8eb3a2d277e1cedd7f9373f69ccae1a550677315d7fbd366261c9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대저 나의 영혼에 곤란이 가득하며 나의 생명은 음부에 가까왔사오니"
+      ],
+      "raw_text_hashes": [
+        "bcb39a10acb8eb3a2d277e1cedd7f9373f69ccae1a550677315d7fbd366261c9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:88:4",
+      "sequence": 15313,
+      "chapter_label": "PSA 88",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 88,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 88,
+          "verse": 4
+        }
+      ],
+      "en": "I am counted among those who go down into the pit. I am like a man who has no help,",
+      "ko": "나는 무덤에 내려가는 자와 함께 인정되고 힘이 없는 사람과 같으며",
+      "source_text_hash": "b8959db7a54c0da98969476e8ab3021e680c2fb1b791824b47784bb1caac79d8",
+      "translation_text_hash": "246e69f17a9bc064463c03e81d3171d25ed4cba1a2bdd81daf088fe841f9f3cc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 무덤에 내려가는 자와 함께 인정되고 힘이 없는 사람과 같으며"
+      ],
+      "raw_text_hashes": [
+        "246e69f17a9bc064463c03e81d3171d25ed4cba1a2bdd81daf088fe841f9f3cc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:88:5",
+      "sequence": 15314,
+      "chapter_label": "PSA 88",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 88,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 88,
+          "verse": 5
+        }
+      ],
+      "en": "set apart among the dead, like the slain who lie in the grave, whom you remember no more. They are cut off from your hand.",
+      "ko": "사망자 중에 던지운바 되었으며 살륙을 당하여 무덤에 누운 자 같으니이다 주께서 저희를 다시 기억지 아니하시니 저희는 주의 손에서 끊어진 자니이다",
+      "source_text_hash": "38c1d81e80d66a2f32abbe61c7eab35fe3eeb3c20faf64d0879c0a5ac3cfae12",
+      "translation_text_hash": "694c1d2e7ba48de90a83b502e88bfea8685f4cd11f53f61bf852da61e6a082e1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사망자 중에 던지운바 되었으며 살륙을 당하여 무덤에 누운 자 같으니이다 주께서 저희를 다시 기억지 아니하시니 저희는 주의 손에서 끊어진 자니이다"
+      ],
+      "raw_text_hashes": [
+        "694c1d2e7ba48de90a83b502e88bfea8685f4cd11f53f61bf852da61e6a082e1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:88:6",
+      "sequence": 15315,
+      "chapter_label": "PSA 88",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 88,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 88,
+          "verse": 6
+        }
+      ],
+      "en": "You have laid me in the lowest pit, in the darkest depths.",
+      "ko": "주께서 나를 깊은 웅덩이 어두운 곳 음침한데 두셨사오며",
+      "source_text_hash": "bbc7b7557abb83ed318c2e99c5c9e8121a45a791b90ac284d7a7b10c44c4eda3",
+      "translation_text_hash": "4d06673115e32fd1bb448da96fba2f0985443109aff40603ee065e184bb562c9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 나를 깊은 웅덩이 어두운 곳 음침한데 두셨사오며"
+      ],
+      "raw_text_hashes": [
+        "4d06673115e32fd1bb448da96fba2f0985443109aff40603ee065e184bb562c9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:88:7",
+      "sequence": 15316,
+      "chapter_label": "PSA 88",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 88,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 88,
+          "verse": 7
+        }
+      ],
+      "en": "Your wrath lies heavily on me. You have afflicted me with all your waves. Selah.",
+      "ko": "주의 노가 나를 심히 누르시고 주의 모든 파도로 나를 괴롭게 하셨나이다(셀라)",
+      "source_text_hash": "e4e030c8568c47ea22fff35ced8d1c768121b7112da181acfa148f00ef2af7f3",
+      "translation_text_hash": "bb5e1d7624e49b21dcd4534f3759a3621417d4e1df2282641823cbe4d10a6874",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 노가 나를 심히 누르시고 주의 모든 파도로 나를 괴롭게 하셨나이다(셀라)"
+      ],
+      "raw_text_hashes": [
+        "bb5e1d7624e49b21dcd4534f3759a3621417d4e1df2282641823cbe4d10a6874"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:88:8",
+      "sequence": 15317,
+      "chapter_label": "PSA 88",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 88,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 88,
+          "verse": 8
+        }
+      ],
+      "en": "You have taken my friends from me. You have made me an abomination to them. I am confined, and I can’t escape.",
+      "ko": "주께서 나의 아는 자로 내게서 멀리 떠나게 하시고 나로 저희에게 가증되게 하셨사오니 나는 갇혀서 나갈 수 없게 되었나이다",
+      "source_text_hash": "f338907b9a6c05969c182cc984c9f0756682832f78777157827414a55f9a3c4e",
+      "translation_text_hash": "5adf7bb3091475b5e70e6e72c73c56ac5d9967295b87b6cd9162a831963e70a8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 나의 아는 자로 내게서 멀리 떠나게 하시고 나로 저희에게 가증되게 하셨사오니 나는 갇혀서 나갈 수 없게 되었나이다"
+      ],
+      "raw_text_hashes": [
+        "5adf7bb3091475b5e70e6e72c73c56ac5d9967295b87b6cd9162a831963e70a8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:88:9",
+      "sequence": 15318,
+      "chapter_label": "PSA 88",
+      "verse_label": "9",
+      "locator": {
+        "book": "PSA",
+        "chapter": 88,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 88,
+          "verse": 9
+        }
+      ],
+      "en": "My eyes are dim from grief. I have called on you daily, LORD. I have spread out my hands to you.",
+      "ko": "곤란으로 인하여 내 눈이 쇠하였나이다 여호와여 내가 매일 주께 부르며 주를 향하여 나의 두 손을 들었나이다",
+      "source_text_hash": "afb83d3fb23e92fe65ad8f658cb5bc9ccc4e13386cf9d1461163139a074dd55e",
+      "translation_text_hash": "fb64fdc1688a7a9915bd62c6f0a845f9b0236a5e3333adba46820ba5b3e32d1a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곤란으로 인하여 내 눈이 쇠하였나이다 여호와여 내가 매일 주께 부르며 주를 향하여 나의 두 손을 들었나이다"
+      ],
+      "raw_text_hashes": [
+        "fb64fdc1688a7a9915bd62c6f0a845f9b0236a5e3333adba46820ba5b3e32d1a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:88:10",
+      "sequence": 15319,
+      "chapter_label": "PSA 88",
+      "verse_label": "10",
+      "locator": {
+        "book": "PSA",
+        "chapter": 88,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 88,
+          "verse": 10
+        }
+      ],
+      "en": "Do you show wonders to the dead? Do the departed spirits rise up and praise you? Selah.",
+      "ko": "주께서 사망한 자에게 기사를 보이시겠나이까 유혼이 일어나 주를 찬송하리이까(셀라)",
+      "source_text_hash": "afe974c87cca93a59e243cbd78d7f1009f30cc9eb5639548f27b4b3f4508bd5a",
+      "translation_text_hash": "ca17a3fa32a7fdef4c3f663bf993711090c2dbd8a674943b63ea41fadcc53f37",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 사망한 자에게 기사를 보이시겠나이까 유혼이 일어나 주를 찬송하리이까(셀라)"
+      ],
+      "raw_text_hashes": [
+        "ca17a3fa32a7fdef4c3f663bf993711090c2dbd8a674943b63ea41fadcc53f37"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:88:11",
+      "sequence": 15320,
+      "chapter_label": "PSA 88",
+      "verse_label": "11",
+      "locator": {
+        "book": "PSA",
+        "chapter": 88,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 88,
+          "verse": 11
+        }
+      ],
+      "en": "Is your loving kindness declared in the grave? Or your faithfulness in Destruction?",
+      "ko": "주의 인자하심을 무덤에서, 주의 성실하심을 멸망 중에서 선포할 수 있으리이까",
+      "source_text_hash": "e787c59a63a383603952a67e246f5b7213b856953a6f7f5c7cbb35170a1cfa67",
+      "translation_text_hash": "59b78407dbae19b10d9c664598b79418e241794bf4dd910ce6c055d761a982c8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 인자하심을 무덤에서, 주의 성실하심을 멸망 중에서 선포할 수 있으리이까"
+      ],
+      "raw_text_hashes": [
+        "59b78407dbae19b10d9c664598b79418e241794bf4dd910ce6c055d761a982c8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:88:12",
+      "sequence": 15321,
+      "chapter_label": "PSA 88",
+      "verse_label": "12",
+      "locator": {
+        "book": "PSA",
+        "chapter": 88,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 88,
+          "verse": 12
+        }
+      ],
+      "en": "Are your wonders made known in the dark? Or your righteousness in the land of forgetfulness?",
+      "ko": "흑암 중에서 주의 기사와 잊음의 땅에서 주의 의를 알수 있으리이까",
+      "source_text_hash": "4b5840fee7f37d04af29b83621ece748d77b8a21f844fd9e7d73f8fb7020ebbb",
+      "translation_text_hash": "509c81d0038fe9e0193db5f0c0088f269bbc91863a9a4e25cda4bf0d70b4c9db",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "흑암 중에서 주의 기사와 잊음의 땅에서 주의 의를 알수 있으리이까"
+      ],
+      "raw_text_hashes": [
+        "509c81d0038fe9e0193db5f0c0088f269bbc91863a9a4e25cda4bf0d70b4c9db"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:88:13",
+      "sequence": 15322,
+      "chapter_label": "PSA 88",
+      "verse_label": "13",
+      "locator": {
+        "book": "PSA",
+        "chapter": 88,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 88,
+          "verse": 13
+        }
+      ],
+      "en": "But to you, LORD, I have cried. In the morning, my prayer comes before you.",
+      "ko": "여호와여 오직 주께 내가 부르짖었사오니 아침에 나의 기도가 주의 앞에 달하리이다",
+      "source_text_hash": "283ece1a86698073e9ad88ee03e81b63ddd20bf26c6b2bf6bc6cda7f1d387d56",
+      "translation_text_hash": "754620c5526f8eb143e22cc9ae554541fc4ef0d551af957f06760423633be6a0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 오직 주께 내가 부르짖었사오니 아침에 나의 기도가 주의 앞에 달하리이다"
+      ],
+      "raw_text_hashes": [
+        "754620c5526f8eb143e22cc9ae554541fc4ef0d551af957f06760423633be6a0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:88:14",
+      "sequence": 15323,
+      "chapter_label": "PSA 88",
+      "verse_label": "14",
+      "locator": {
+        "book": "PSA",
+        "chapter": 88,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 88,
+          "verse": 14
+        }
+      ],
+      "en": "LORD, why do you reject my soul? Why do you hide your face from me?",
+      "ko": "여호와여 어찌하여 나의 영혼을 버리시며 어찌하여 주의 얼굴을 내게 숨기시나이까",
+      "source_text_hash": "aa62372e5f5b4931d9454863a0c8e1064e21dc4b4294f3ff84bef15217c3aaba",
+      "translation_text_hash": "435a79befbce8c4094213fdc66ebe986ec5594291efb711a461489c60bd58e05",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 어찌하여 나의 영혼을 버리시며 어찌하여 주의 얼굴을 내게 숨기시나이까"
+      ],
+      "raw_text_hashes": [
+        "435a79befbce8c4094213fdc66ebe986ec5594291efb711a461489c60bd58e05"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:88:15",
+      "sequence": 15324,
+      "chapter_label": "PSA 88",
+      "verse_label": "15",
+      "locator": {
+        "book": "PSA",
+        "chapter": 88,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 88,
+          "verse": 15
+        }
+      ],
+      "en": "I am afflicted and ready to die from my youth up. While I suffer your terrors, I am distracted.",
+      "ko": "내가 소시부터 곤란을 당하여 죽게 되었사오며 주의 두렵게 하심을 당할 때에 황망하였나이다",
+      "source_text_hash": "dccc044dae3f9d9b19820ed93c33b45be2d3cb0b202d413fa7aee5d12098b3ec",
+      "translation_text_hash": "0a6ffe3d795a1ab5963d462b7b606063a79f02a0869526a16bb2cca2418481df",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 소시부터 곤란을 당하여 죽게 되었사오며 주의 두렵게 하심을 당할 때에 황망하였나이다"
+      ],
+      "raw_text_hashes": [
+        "0a6ffe3d795a1ab5963d462b7b606063a79f02a0869526a16bb2cca2418481df"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:88:16",
+      "sequence": 15325,
+      "chapter_label": "PSA 88",
+      "verse_label": "16",
+      "locator": {
+        "book": "PSA",
+        "chapter": 88,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 88,
+          "verse": 16
+        }
+      ],
+      "en": "Your fierce wrath has gone over me. Your terrors have cut me off.",
+      "ko": "주의 진노가 내게 넘치고 주의 두렵게 하심이 나를 끊었나이다",
+      "source_text_hash": "60f1f3ff775d20528cbf7a583d0b07519b657c243b71fc08152fed8cd7053702",
+      "translation_text_hash": "0f16a5181f907d7513bfe9e794fa9486fb2871e356de791790205b677ed0c2d0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 진노가 내게 넘치고 주의 두렵게 하심이 나를 끊었나이다"
+      ],
+      "raw_text_hashes": [
+        "0f16a5181f907d7513bfe9e794fa9486fb2871e356de791790205b677ed0c2d0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:88:17",
+      "sequence": 15326,
+      "chapter_label": "PSA 88",
+      "verse_label": "17",
+      "locator": {
+        "book": "PSA",
+        "chapter": 88,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 88,
+          "verse": 17
+        }
+      ],
+      "en": "They came around me like water all day long. They completely engulfed me.",
+      "ko": "이런 일이 물 같이 종일 나를 에우며 함께 나를 둘렀나이다",
+      "source_text_hash": "aa75f3c7d90e3ede2d5ab6ddb02c61648a05dbf0023097a4c21cd818cce61411",
+      "translation_text_hash": "0e93820fec360ac3b16c34df711723dfcd405b38d8da1aba540accd27c035e9e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이런 일이 물 같이 종일 나를 에우며 함께 나를 둘렀나이다"
+      ],
+      "raw_text_hashes": [
+        "0e93820fec360ac3b16c34df711723dfcd405b38d8da1aba540accd27c035e9e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:88:18",
+      "sequence": 15327,
+      "chapter_label": "PSA 88",
+      "verse_label": "18",
+      "locator": {
+        "book": "PSA",
+        "chapter": 88,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 88,
+          "verse": 18
+        }
+      ],
+      "en": "You have put lover and friend far from me, and my friends into darkness.",
+      "ko": "주께서 나의 사랑하는 자와 친구를 내게서 멀리 떠나게 하시며 나의 아는 자를 흑암에 두셨나이다",
+      "source_text_hash": "69a711fe373441458e0b5b0b8433658f6444afd1a87f66945f362393533ba661",
+      "translation_text_hash": "0b3a660bcfe1b41fb4de69a264532061f6dc46cc35bb2a8e956563793b5c2aac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 나의 사랑하는 자와 친구를 내게서 멀리 떠나게 하시며 나의 아는 자를 흑암에 두셨나이다"
+      ],
+      "raw_text_hashes": [
+        "0b3a660bcfe1b41fb4de69a264532061f6dc46cc35bb2a8e956563793b5c2aac"
+      ]
+    }
+  ]
+}

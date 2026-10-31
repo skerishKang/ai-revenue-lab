@@ -108,7 +108,7 @@ def _identity_env(**extra: Any) -> _Env:
 
 
 def test_the_real_fetch_entrypoint_reports_the_code_it_answered_with(
-    identity_modules, monkeypatch
+    identity_modules, monkeypatch, caplog
 ) -> None:
     _legacy, identity = identity_modules
     import app.stack_telemetry as telemetry
@@ -137,6 +137,7 @@ def test_the_real_fetch_entrypoint_reports_the_code_it_answered_with(
     # refusal is a bounded identifier the caller can act on.
     assert response.status == 400, body
     assert refusal_code == "invalid_request"
+    assert "run_hash=none dispatch_id=none trace_id=none code=invalid_request" in caplog.text
 
     assert len(captured) == 1, captured
     events = captured[0]
@@ -153,3 +154,95 @@ def test_the_real_fetch_entrypoint_reports_the_code_it_answered_with(
     rendered = json.dumps(event, ensure_ascii=False)
     assert CALLER_ID not in rendered
     assert CALLER_SECRET not in rendered
+
+
+@pytest.mark.parametrize("path,code", [
+    ("/internal/v1/orchestrate", "invalid_request"),
+    ("/internal/v1/orchestrate/stream", "invalid_request"),
+    ("/internal/v1/orchestrate", "entitlement_unavailable"),
+    ("/internal/v1/orchestrate/stream", "entitlement_request_mismatch"),
+])
+def test_orchestration_refusal_logs_safe_correlation(identity_modules, caplog, path, code):
+    from types import SimpleNamespace
+    from app.service import ServiceResponse
+    from app.pc_correlation import run_hash
+    legacy, _ = identity_modules
+    run = "chat_pcq_" + "a" * 32
+    payload = {"app_id": ALLOWED_APP, "session_id": run,
+               "execution_context": {"trace_id": "tr_test123"}}
+    result = ServiceResponse(status_code=403, body={"error": {"code": code}})
+
+    class RefusingOrchestration:
+        async def handle(self, **kwargs):
+            return result
+        async def prepare_stream(self, **kwargs):
+            return result
+
+    async def factory(env):
+        return SimpleNamespace(orchestration=RefusingOrchestration())
+
+    worker = legacy.Default(ctx=None, env=_identity_env())
+    worker.engine_services_factory = factory
+    with caplog.at_level("WARNING", logger="worker"):
+        response = asyncio.run(worker.fetch(_Request(path, body=json.dumps(payload).encode())))
+    assert response.status == 403
+    assert f"run_hash={run_hash(run)} dispatch_id=none trace_id=tr_test123 code={code}" in caplog.text
+    assert run not in caplog.text
+
+
+@pytest.mark.parametrize("wrong_app", [False, True], ids=["authentication", "caller"])
+def test_auth_and_caller_refusal_log_safe_correlation(identity_modules, caplog, wrong_app):
+    from app.orchestration_wire import ORCHESTRATE_PATH
+    from app.pc_correlation import run_hash
+    legacy, _ = identity_modules
+    run = "chat_pcq_" + "b" * 32
+    payload = {"app_id": "other" if wrong_app else ALLOWED_APP,
+               "session_id": run, "trace_id": "tr_auth123"}
+    request = _Request(ORCHESTRATE_PATH, body=json.dumps(payload).encode())
+    if not wrong_app:
+        request.headers["x-padiem-engine-credential"] = "invalid"
+    worker = legacy.Default(ctx=None, env=_identity_env())
+    with caplog.at_level("WARNING", logger="worker"):
+        response = asyncio.run(worker.fetch(request))
+    expected = "service_app_not_authorized" if wrong_app else "service_authentication_failed"
+    assert response.status == (403 if wrong_app else 401)
+    assert f"run_hash={run_hash(run)} dispatch_id=none trace_id=tr_auth123 code={expected}" in caplog.text
+    assert run not in caplog.text
+    assert CALLER_SECRET not in caplog.text
+
+
+def test_refusal_log_rejects_raw_or_injected_identifiers(identity_modules, caplog):
+    legacy, _ = identity_modules
+    run = "chat_pcq_" + "c" * 32
+    with caplog.at_level("WARNING", logger="worker"):
+        legacy._log_orchestration_refusal(
+            json.dumps({"session_id": run, "trace_id": "tr_" + run}).encode(), "bad\\ncode",
+        )
+    assert "dispatch_id=none trace_id=none code=unknown" in caplog.text
+    assert run not in caplog.text
+
+
+@pytest.mark.parametrize("denied", [False, True], ids=["unavailable", "denied"])
+def test_real_admission_refusal_is_logged_before_core(identity_modules, caplog, denied):
+    from types import SimpleNamespace
+    from app.pc_correlation import run_hash
+    from test_execution_admission_service import _payload, _service, DenyingAdapter
+    legacy, _ = identity_modules
+    run = "chat_pcq_" + "d" * 32
+    payload = _payload()
+    payload["session_id"] = run
+    service, runtime = _service(DenyingAdapter() if denied else None)
+
+    async def factory(env):
+        return SimpleNamespace(orchestration=service)
+
+    worker = legacy.Default(ctx=None, env=_identity_env())
+    worker.engine_services_factory = factory
+    request = _Request("/internal/v1/orchestrate", body=json.dumps(payload).encode())
+    with caplog.at_level("WARNING", logger="worker"):
+        response = asyncio.run(worker.fetch(request))
+    code = "entitlement_denied" if denied else "entitlement_unavailable"
+    assert response.status == (403 if denied else 503)
+    assert runtime.call_count == 0
+    assert f"run_hash={run_hash(run)} dispatch_id=none trace_id=tr_admission_run code={code}" in caplog.text
+    assert run not in caplog.text

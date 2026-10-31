@@ -36,6 +36,7 @@ from urllib.parse import urlsplit
 import httpx
 
 from app.local_admission_binding import admission_binding_for
+from app.local_identity_binding import identity_binding_for
 from app.local_sqlite_d1 import (
     LocalSqliteD1,
     apply_engine_migrations,
@@ -420,6 +421,10 @@ def _local_bindings(values: Mapping[str, str]) -> dict[str, Any]:
     # adapter composes unchanged; without them the binding is absent and every
     # model route keeps the Worker's 503 `entitlement_unavailable`.
     bindings.update(admission_binding_for(values))
+    # Same session/scope authority as worker_identity.py on Cloudflare. This
+    # read does not substitute for Chat's canonical-subject resolution or the
+    # admission Worker's own authoritative entitlement/session checks.
+    bindings.update(identity_binding_for(values))
     # Without a configured path the binding stays absent, so every durable lane
     # keeps the Worker's own fail-closed answer instead of a process-local fake.
     return bindings

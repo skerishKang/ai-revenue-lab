@@ -1,0 +1,1133 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EXO:chapter:032",
+  "unit_ordinal": 82,
+  "unit_label": "EXO 32",
+  "book_code": "EXO",
+  "chapter_number": 32,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EXO:32:1",
+      "sequence": 2440,
+      "chapter_label": "EXO 32",
+      "verse_label": "1",
+      "locator": {
+        "book": "EXO",
+        "chapter": 32,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 32,
+          "verse": 1
+        }
+      ],
+      "en": "When the people saw that Moses delayed coming down from the mountain, the people gathered themselves together to Aaron, and said to him, “Come, make us gods, which shall go before us; for as for this Moses, the man who brought us up out of the land of Egypt, we don’t know what has become of him.”",
+      "ko": "백성이 모세가 산에서 내려옴이 더딤을 보고 모여 아론에게 이르러 가로되 일어나라 우리를 인도할 신을 우리를 위하여 만들라 이 모세 곧 우리를 애굽 땅에서 인도하여 낸 사람은 어찌 되었는지 알지 못함이니라",
+      "source_text_hash": "7b03f2e4c8a89c1f9518fe30b36d17584af9ec09d049f44337e225d3b06d376b",
+      "translation_text_hash": "6b7522ec2616942fd3c55dbac4af5bf8f84d59d02a88184b309dfbaf927b4c5f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "백성이 모세가 산에서 내려옴이 더딤을 보고 모여 아론에게 이르러 가로되 일어나라 우리를 인도할 신을 우리를 위하여 만들라 이 모세 곧 우리를 애굽 땅에서 인도하여 낸 사람은 어찌 되었는지 알지 못함이니라"
+      ],
+      "raw_text_hashes": [
+        "6b7522ec2616942fd3c55dbac4af5bf8f84d59d02a88184b309dfbaf927b4c5f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:32:2",
+      "sequence": 2441,
+      "chapter_label": "EXO 32",
+      "verse_label": "2",
+      "locator": {
+        "book": "EXO",
+        "chapter": 32,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 32,
+          "verse": 2
+        }
+      ],
+      "en": "Aaron said to them, “Take off the golden rings, which are in the ears of your wives, of your sons, and of your daughters, and bring them to me.”",
+      "ko": "아론이 그들에게 이르되 너희 아내와 자녀의 귀의 금고리를 빼어 내게로 가져 오라",
+      "source_text_hash": "b32e18a8f29f700f32904011544497385e60b71e65f542da77aff4aea011cb9f",
+      "translation_text_hash": "5e5a4d5731efefa01b136c55727fb28757d8eee8536d48fa8c37d55066ffeb61",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아론이 그들에게 이르되 너희 아내와 자녀의 귀의 금고리를 빼어 내게로 가져 오라"
+      ],
+      "raw_text_hashes": [
+        "5e5a4d5731efefa01b136c55727fb28757d8eee8536d48fa8c37d55066ffeb61"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:32:3",
+      "sequence": 2442,
+      "chapter_label": "EXO 32",
+      "verse_label": "3",
+      "locator": {
+        "book": "EXO",
+        "chapter": 32,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 32,
+          "verse": 3
+        }
+      ],
+      "en": "All the people took off the golden rings which were in their ears, and brought them to Aaron.",
+      "ko": "모든 백성이 그 귀에서 금고리를 빼어 아론에게로 가져 오매",
+      "source_text_hash": "5230e1bb4a833e413c44d26446ffff5ffa819d14b0568ee2516a019125d2ebb1",
+      "translation_text_hash": "5cfcdd061eb59d80eadf39b33613e1a474b9fbd5ed006bdeea386c535b180b99",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 백성이 그 귀에서 금고리를 빼어 아론에게로 가져 오매"
+      ],
+      "raw_text_hashes": [
+        "5cfcdd061eb59d80eadf39b33613e1a474b9fbd5ed006bdeea386c535b180b99"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:32:4",
+      "sequence": 2443,
+      "chapter_label": "EXO 32",
+      "verse_label": "4",
+      "locator": {
+        "book": "EXO",
+        "chapter": 32,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 32,
+          "verse": 4
+        }
+      ],
+      "en": "He received what they handed him, fashioned it with an engraving tool, and made it a molded calf. Then they said, “These are your gods, Israel, which brought you up out of the land of Egypt.”",
+      "ko": "아론이 그들의 손에서 그 고리를 받아 부어서 각도로 새겨 송아지 형상을 만드니 그들이 말하되 이스라엘아 이는 너희를 애굽 땅에서 인도하여 낸 너희 신이로다 하는지라",
+      "source_text_hash": "c85e2b7b20975a5dd2951810fd9bed9e265c9c83c36776e8fcf8c0ad1bdcce4b",
+      "translation_text_hash": "45d725f643bc8f21516b9560a451a23427403ec42eb6fe2f0c12b51abc6b7299",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아론이 그들의 손에서 그 고리를 받아 부어서 각도로 새겨 송아지 형상을 만드니 그들이 말하되 이스라엘아 이는 너희를 애굽 땅에서 인도하여 낸 너희 신이로다 하는지라"
+      ],
+      "raw_text_hashes": [
+        "45d725f643bc8f21516b9560a451a23427403ec42eb6fe2f0c12b51abc6b7299"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:32:5",
+      "sequence": 2444,
+      "chapter_label": "EXO 32",
+      "verse_label": "5",
+      "locator": {
+        "book": "EXO",
+        "chapter": 32,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 32,
+          "verse": 5
+        }
+      ],
+      "en": "When Aaron saw this, he built an altar before it; and Aaron made a proclamation, and said, “Tomorrow shall be a feast to the LORD.”",
+      "ko": "아론이 보고 그 앞에 단을 쌓고 이에 공포하여 가로되 내일은 여호와의 절일이니라 하니",
+      "source_text_hash": "777a6691071f343763e1d92eb97b1de7169bf91c6c093c005cd5b91502742b03",
+      "translation_text_hash": "084abf69736f9d05669d47c144a163865aec82dee05afdf350dbaca56e68f605",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아론이 보고 그 앞에 단을 쌓고 이에 공포하여 가로되 내일은 여호와의 절일이니라 하니"
+      ],
+      "raw_text_hashes": [
+        "084abf69736f9d05669d47c144a163865aec82dee05afdf350dbaca56e68f605"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:32:6",
+      "sequence": 2445,
+      "chapter_label": "EXO 32",
+      "verse_label": "6",
+      "locator": {
+        "book": "EXO",
+        "chapter": 32,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 32,
+          "verse": 6
+        }
+      ],
+      "en": "They rose up early on the next day, and offered burnt offerings, and brought peace offerings; and the people sat down to eat and to drink, and rose up to play.",
+      "ko": "이튿날에 그들이 일찌기 일어나 번제를 드리며 화목제를 드리고 앉아서 먹고 마시며 일어나서 뛰놀더라",
+      "source_text_hash": "49cd2d4fe3b7eeddc1fef03a6f2a4f9ad4dc8e3a9b7f7ad7445dc1882bf8d9a9",
+      "translation_text_hash": "9e4b9aad7bbdaf4c12c21bd36d12ce1ac2820e9a73c82784f450fb074d13cfe4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이튿날에 그들이 일찌기 일어나 번제를 드리며 화목제를 드리고 앉아서 먹고 마시며 일어나서 뛰놀더라"
+      ],
+      "raw_text_hashes": [
+        "9e4b9aad7bbdaf4c12c21bd36d12ce1ac2820e9a73c82784f450fb074d13cfe4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:32:7",
+      "sequence": 2446,
+      "chapter_label": "EXO 32",
+      "verse_label": "7",
+      "locator": {
+        "book": "EXO",
+        "chapter": 32,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 32,
+          "verse": 7
+        }
+      ],
+      "en": "The LORD spoke to Moses, “Go, get down; for your people, whom you brought up out of the land of Egypt, have corrupted themselves!",
+      "ko": "여호와께서 모세에게 이르시되 너는 내려가라 네가 애굽 땅에서 인도하여 낸 네 백성이 부패하였도다",
+      "source_text_hash": "044290d8b4126f861f848b14b4ff9ecfc4a771c2ced3d317ca6235dd84712067",
+      "translation_text_hash": "a72d019935ab33672a4f56fea6a47290acd26d9557202139def9614626783e2e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 이르시되 너는 내려가라 네가 애굽 땅에서 인도하여 낸 네 백성이 부패하였도다"
+      ],
+      "raw_text_hashes": [
+        "a72d019935ab33672a4f56fea6a47290acd26d9557202139def9614626783e2e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:32:8",
+      "sequence": 2447,
+      "chapter_label": "EXO 32",
+      "verse_label": "8",
+      "locator": {
+        "book": "EXO",
+        "chapter": 32,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 32,
+          "verse": 8
+        }
+      ],
+      "en": "They have turned away quickly out of the way which I commanded them. They have made themselves a molded calf, and have worshiped it, and have sacrificed to it, and said, ‘These are your gods, Israel, which brought you up out of the land of Egypt.’”",
+      "ko": "그들이 내가 그들에게 명한 길을 속히 떠나 자기를 위하여 송아지를 부어 만들고 그것을 숭배하며 그것에게 희생을 드리며 말하기를 이스라엘아 이는 너희를 애굽 땅에서 인도하여 낸 너희 신이라 하였도다",
+      "source_text_hash": "ee41c5aaa3fd6d2e517baffb0798e1ae908d34696ac3f9dd047b5273042c15e7",
+      "translation_text_hash": "5e16f43ed462a05a087551fe2164e14d9ee60afe677180aaad5e6bcb5b53acf1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 내가 그들에게 명한 길을 속히 떠나 자기를 위하여 송아지를 부어 만들고 그것을 숭배하며 그것에게 희생을 드리며 말하기를 이스라엘아 이는 너희를 애굽 땅에서 인도하여 낸 너희 신이라 하였도다"
+      ],
+      "raw_text_hashes": [
+        "5e16f43ed462a05a087551fe2164e14d9ee60afe677180aaad5e6bcb5b53acf1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:32:9",
+      "sequence": 2448,
+      "chapter_label": "EXO 32",
+      "verse_label": "9",
+      "locator": {
+        "book": "EXO",
+        "chapter": 32,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 32,
+          "verse": 9
+        }
+      ],
+      "en": "The LORD said to Moses, “I have seen these people, and behold, they are a stiff-necked people.",
+      "ko": "여호와께서 또 모세에게 이르시되 내가 이 백성을 보니 목이 곧은 백성이로다",
+      "source_text_hash": "d2ade5ff6518f5e64e7464df10b2a6a44f2d25afab40d6783ae861bfc613ff9c",
+      "translation_text_hash": "dacb7dffeef0f7b675ac632dbd307e8d6a12973e95a30c133120e28d8ab70611",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 또 모세에게 이르시되 내가 이 백성을 보니 목이 곧은 백성이로다"
+      ],
+      "raw_text_hashes": [
+        "dacb7dffeef0f7b675ac632dbd307e8d6a12973e95a30c133120e28d8ab70611"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:32:10",
+      "sequence": 2449,
+      "chapter_label": "EXO 32",
+      "verse_label": "10",
+      "locator": {
+        "book": "EXO",
+        "chapter": 32,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 32,
+          "verse": 10
+        }
+      ],
+      "en": "Now therefore leave me alone, that my wrath may burn hot against them, and that I may consume them; and I will make of you a great nation.”",
+      "ko": "그런즉 나대로 하게 하라 내가 그들에게 진노하여 그들을 진멸하고 너로 큰 나라가 되게 하리라",
+      "source_text_hash": "3ed076d8e545adb7c63bb696e169b7077cc525a98bc61167859602dad40caadc",
+      "translation_text_hash": "5b3ebfb99c8dbf6bb0d514f384ea6669c260ffb97f0df97988a4dfc3e17a11e8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 나대로 하게 하라 내가 그들에게 진노하여 그들을 진멸하고 너로 큰 나라가 되게 하리라"
+      ],
+      "raw_text_hashes": [
+        "5b3ebfb99c8dbf6bb0d514f384ea6669c260ffb97f0df97988a4dfc3e17a11e8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:32:11",
+      "sequence": 2450,
+      "chapter_label": "EXO 32",
+      "verse_label": "11",
+      "locator": {
+        "book": "EXO",
+        "chapter": 32,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 32,
+          "verse": 11
+        }
+      ],
+      "en": "Moses begged the LORD his God, and said, “LORD, why does your wrath burn hot against your people, that you have brought out of the land of Egypt with great power and with a mighty hand?",
+      "ko": "모세가 그 하나님 여호와께 구하여 가로되 여호와여 어찌하여 그 큰 권능과 강한 손으로 애굽 땅에서 인도하여 내신 주의 백성에게 진노하시나이까",
+      "source_text_hash": "83a9ad04efda2dfa227eed2d78bd2cf20fb70099ee5c83773bb411d2e8103961",
+      "translation_text_hash": "e9767b9aed2753b3e74bb2ab22ca2807d629db3b9ccf230d6e22382e8779acf2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 그 하나님 여호와께 구하여 가로되 여호와여 어찌하여 그 큰 권능과 강한 손으로 애굽 땅에서 인도하여 내신 주의 백성에게 진노하시나이까"
+      ],
+      "raw_text_hashes": [
+        "e9767b9aed2753b3e74bb2ab22ca2807d629db3b9ccf230d6e22382e8779acf2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:32:12",
+      "sequence": 2451,
+      "chapter_label": "EXO 32",
+      "verse_label": "12",
+      "locator": {
+        "book": "EXO",
+        "chapter": 32,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 32,
+          "verse": 12
+        }
+      ],
+      "en": "Why should the Egyptians talk, saying, ‘He brought them out for evil, to kill them in the mountains, and to consume them from the surface of the earth’? Turn from your fierce wrath, and turn away from this evil against your people.",
+      "ko": "어찌하여 애굽 사람으로 이르기를 여호와가 화를 내려 그 백성을 산에서 죽이고 지면에서 진멸하려고 인도하여 내었다 하게 하려하시나이까 주의 맹렬한 노를 그치시고 뜻을 돌이키사 주의 백성에게 이 화를 내리지 마옵소서",
+      "source_text_hash": "455c68eb05cc2ea79c87934aded9e7bd2c55c1e528cc8b3253a5e763522994a5",
+      "translation_text_hash": "e5c13031b67cd8c2da96a295dcc54a8eeb4c4b7c95f712b4b437ac380f8a8344",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어찌하여 애굽 사람으로 이르기를 여호와가 화를 내려 그 백성을 산에서 죽이고 지면에서 진멸하려고 인도하여 내었다 하게 하려하시나이까 주의 맹렬한 노를 그치시고 뜻을 돌이키사 주의 백성에게 이 화를 내리지 마옵소서"
+      ],
+      "raw_text_hashes": [
+        "e5c13031b67cd8c2da96a295dcc54a8eeb4c4b7c95f712b4b437ac380f8a8344"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:32:13",
+      "sequence": 2452,
+      "chapter_label": "EXO 32",
+      "verse_label": "13",
+      "locator": {
+        "book": "EXO",
+        "chapter": 32,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 32,
+          "verse": 13
+        }
+      ],
+      "en": "Remember Abraham, Isaac, and Israel, your servants, to whom you swore by your own self, and said to them, ‘I will multiply your offspring as the stars of the sky, and all this land that I have spoken of I will give to your offspring, and they shall inherit it forever.’”",
+      "ko": "주의 종 아브라함과 이삭과 이스라엘을 기억하소서 주께서 주를 가리켜 그들에게 맹세하여 이르시기를 내가 너희 자손을 하늘의 별처럼 많게 하고 나의 허락한 이 온 땅을 너희의 자손에게 주어 영영한 기업이 되게 하리라 하셨나이다",
+      "source_text_hash": "0932dd34d718370f6b3fef38eee59d006746423e990214995451c60fe82d9a22",
+      "translation_text_hash": "66964d24e46843922f9191691c8189dcd561848f73aad644dbac60c321d797a2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 종 아브라함과 이삭과 이스라엘을 기억하소서 주께서 주를 가리켜 그들에게 맹세하여 이르시기를 내가 너희 자손을 하늘의 별처럼 많게 하고 나의 허락한 이 온 땅을 너희의 자손에게 주어 영영한 기업이 되게 하리라 하셨나이다"
+      ],
+      "raw_text_hashes": [
+        "66964d24e46843922f9191691c8189dcd561848f73aad644dbac60c321d797a2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:32:14",
+      "sequence": 2453,
+      "chapter_label": "EXO 32",
+      "verse_label": "14",
+      "locator": {
+        "book": "EXO",
+        "chapter": 32,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 32,
+          "verse": 14
+        }
+      ],
+      "en": "So the LORD turned away from the evil which he said he would do to his people.",
+      "ko": "여호와께서 뜻을 돌이키사 말씀하신 화를 그 백성에게 내리지 아니하시니라",
+      "source_text_hash": "3cd44fb9d40a3229ed37444651441734eab5ccd8327efcfba60d055b2fd27192",
+      "translation_text_hash": "011149196655be2cb731c120c49d6dba4b218d9593e3ae83f86ef8120f584011",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 뜻을 돌이키사 말씀하신 화를 그 백성에게 내리지 아니하시니라"
+      ],
+      "raw_text_hashes": [
+        "011149196655be2cb731c120c49d6dba4b218d9593e3ae83f86ef8120f584011"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:32:15",
+      "sequence": 2454,
+      "chapter_label": "EXO 32",
+      "verse_label": "15",
+      "locator": {
+        "book": "EXO",
+        "chapter": 32,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 32,
+          "verse": 15
+        }
+      ],
+      "en": "Moses turned, and went down from the mountain, with the two tablets of the covenant in his hand; tablets that were written on both their sides. They were written on one side and on the other.",
+      "ko": "모세가 돌이켜 산에서 내려 오는데 증거의 두 판이 그 손에 있고 그 판의 양면 이편 저편에 글자가 있으니",
+      "source_text_hash": "a75f4e25e4c3a2c6de4861349d7e2d9813b184ef3e751c9dc3b21896d79ab025",
+      "translation_text_hash": "c79ea422ec1687eaec003a9e896b2765efa14bfc0b9255342e2dc9135b10bdb7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 돌이켜 산에서 내려 오는데 증거의 두 판이 그 손에 있고 그 판의 양면 이편 저편에 글자가 있으니"
+      ],
+      "raw_text_hashes": [
+        "c79ea422ec1687eaec003a9e896b2765efa14bfc0b9255342e2dc9135b10bdb7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:32:16",
+      "sequence": 2455,
+      "chapter_label": "EXO 32",
+      "verse_label": "16",
+      "locator": {
+        "book": "EXO",
+        "chapter": 32,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 32,
+          "verse": 16
+        }
+      ],
+      "en": "The tablets were the work of God, and the writing was the writing of God, engraved on the tablets.",
+      "ko": "그 판은 하나님이 만드신 것이요 글자는 하나님이 쓰셔서 판에 새기신 것이더라",
+      "source_text_hash": "af788c8f6a6fa7fb9fe267a37e6c7f226039de9e713c56a3dcdbdc2701aee27e",
+      "translation_text_hash": "be683866bdc5459750118de45758b5351005a065137b5703f4a9a39ed70e849c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 판은 하나님이 만드신 것이요 글자는 하나님이 쓰셔서 판에 새기신 것이더라"
+      ],
+      "raw_text_hashes": [
+        "be683866bdc5459750118de45758b5351005a065137b5703f4a9a39ed70e849c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:32:17",
+      "sequence": 2456,
+      "chapter_label": "EXO 32",
+      "verse_label": "17",
+      "locator": {
+        "book": "EXO",
+        "chapter": 32,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 32,
+          "verse": 17
+        }
+      ],
+      "en": "When Joshua heard the noise of the people as they shouted, he said to Moses, “There is the noise of war in the camp.”",
+      "ko": "여호수아가 백성의 떠듦을 듣고 모세에게 말하되 진중에서 싸우는 소리가 나나이다",
+      "source_text_hash": "2925191b3be33bb5138c8ccfa116bd729afe55e7680ea099331705ad1b36a464",
+      "translation_text_hash": "2f7e8380cde272a8af1c951573ad239b53260194be44fb08d089d47d2ffc491d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호수아가 백성의 떠듦을 듣고 모세에게 말하되 진중에서 싸우는 소리가 나나이다"
+      ],
+      "raw_text_hashes": [
+        "2f7e8380cde272a8af1c951573ad239b53260194be44fb08d089d47d2ffc491d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:32:18",
+      "sequence": 2457,
+      "chapter_label": "EXO 32",
+      "verse_label": "18",
+      "locator": {
+        "book": "EXO",
+        "chapter": 32,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 32,
+          "verse": 18
+        }
+      ],
+      "en": "He said, “It isn’t the voice of those who shout for victory. It is not the voice of those who cry for being overcome; but the noise of those who sing that I hear.”",
+      "ko": "모세가 가로되 이는 승전가도 아니요 패하여 부르짖는 소리도 아니라 나의 듣기에는 노래하는 소리로다 하고",
+      "source_text_hash": "0ca9c9710e4e5d1512ab5a91e3531908401699ad49dda6b1595625aaa1587f49",
+      "translation_text_hash": "44f533c81884c220258badc158b789fa16fdde7df48bd3e612863db02774ac55",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 가로되 이는 승전가도 아니요 패하여 부르짖는 소리도 아니라 나의 듣기에는 노래하는 소리로다 하고"
+      ],
+      "raw_text_hashes": [
+        "44f533c81884c220258badc158b789fa16fdde7df48bd3e612863db02774ac55"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:32:19",
+      "sequence": 2458,
+      "chapter_label": "EXO 32",
+      "verse_label": "19",
+      "locator": {
+        "book": "EXO",
+        "chapter": 32,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 32,
+          "verse": 19
+        }
+      ],
+      "en": "As soon as he came near to the camp, he saw the calf and the dancing. Then Moses’ anger grew hot, and he threw the tablets out of his hands, and broke them beneath the mountain.",
+      "ko": "진에 가까이 이르러 송아지와 그 춤 추는 것을 보고 대노하여 손에서 그 판들을 산 아래로 던져 깨뜨리니라",
+      "source_text_hash": "07acfb57ee877d7f583e438955e97126867ff8523209e24cb965636b4052f276",
+      "translation_text_hash": "e172f0d6863970241e328658f6b3ce4386a400a3dbcdfea717c56f71c07619bb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "진에 가까이 이르러 송아지와 그 춤 추는 것을 보고 대노하여 손에서 그 판들을 산 아래로 던져 깨뜨리니라"
+      ],
+      "raw_text_hashes": [
+        "e172f0d6863970241e328658f6b3ce4386a400a3dbcdfea717c56f71c07619bb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:32:20",
+      "sequence": 2459,
+      "chapter_label": "EXO 32",
+      "verse_label": "20",
+      "locator": {
+        "book": "EXO",
+        "chapter": 32,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 32,
+          "verse": 20
+        }
+      ],
+      "en": "He took the calf which they had made, and burned it with fire, ground it to powder, and scattered it on the water, and made the children of Israel drink it.",
+      "ko": "모세가 그들의 만든 송아지를 가져 불살라 부수어 가루를 만들어 물에 뿌려 이스라엘 자손에게 마시우니라",
+      "source_text_hash": "dfc8e2c72dcb251b1937c6b4a9ec13734e7ac0928ceeb7c639ef034a8b30c573",
+      "translation_text_hash": "1fc84381d4c20f5e16704c58eb99a9fa4b54a98dbe270c5021dce979e1f5dc73",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 그들의 만든 송아지를 가져 불살라 부수어 가루를 만들어 물에 뿌려 이스라엘 자손에게 마시우니라"
+      ],
+      "raw_text_hashes": [
+        "1fc84381d4c20f5e16704c58eb99a9fa4b54a98dbe270c5021dce979e1f5dc73"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:32:21",
+      "sequence": 2460,
+      "chapter_label": "EXO 32",
+      "verse_label": "21",
+      "locator": {
+        "book": "EXO",
+        "chapter": 32,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 32,
+          "verse": 21
+        }
+      ],
+      "en": "Moses said to Aaron, “What did these people do to you, that you have brought a great sin on them?”",
+      "ko": "모세가 아론에게 이르되 이 백성이 네게 어떻게 하였기에 네가 그들로 중죄에 빠지게 하였느뇨",
+      "source_text_hash": "993957e25bcb5f4df46885e85953d0b7d137e16881ef9a32825055b34552f741",
+      "translation_text_hash": "b85f8350db9b56dc0be641c6b44ac1106d53e6e473a47b2993bc095aa267fc3f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 아론에게 이르되 이 백성이 네게 어떻게 하였기에 네가 그들로 중죄에 빠지게 하였느뇨"
+      ],
+      "raw_text_hashes": [
+        "b85f8350db9b56dc0be641c6b44ac1106d53e6e473a47b2993bc095aa267fc3f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:32:22",
+      "sequence": 2461,
+      "chapter_label": "EXO 32",
+      "verse_label": "22",
+      "locator": {
+        "book": "EXO",
+        "chapter": 32,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 32,
+          "verse": 22
+        }
+      ],
+      "en": "Aaron said, “Don’t let the anger of my lord grow hot. You know the people, that they are set on evil.",
+      "ko": "아론이 가로되 내 주여 노하지 마소서 이 백성의 악함을 당신이 아나이다",
+      "source_text_hash": "0a28ccaefe91199014ddd05b92362a4b5fc6d16b6bf4f3509ec4cf0f8874f05e",
+      "translation_text_hash": "528615727a4abdf1fc07fbdb8de89e23b9154707d978de5817769c16433166d7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아론이 가로되 내 주여 노하지 마소서 이 백성의 악함을 당신이 아나이다"
+      ],
+      "raw_text_hashes": [
+        "528615727a4abdf1fc07fbdb8de89e23b9154707d978de5817769c16433166d7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:32:23",
+      "sequence": 2462,
+      "chapter_label": "EXO 32",
+      "verse_label": "23",
+      "locator": {
+        "book": "EXO",
+        "chapter": 32,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 32,
+          "verse": 23
+        }
+      ],
+      "en": "For they said to me, ‘Make us gods, which shall go before us. As for this Moses, the man who brought us up out of the land of Egypt, we don’t know what has become of him.’",
+      "ko": "그들이 내게 말하기를 우리를 위하여 우리를 인도할 신을 만들라 이 모세 곧 우리를 애굽 땅에서 인도하여 낸 사람은 어찌 되었는지 알수 없노라 하기에",
+      "source_text_hash": "d980589a8ba10a09023939eec676a16a006bc34dde50f0c7d1bc61c6b2921df9",
+      "translation_text_hash": "80afb9553414d390de1fac80c190da5a67f64131e7f4315a6ff85b0096c60794",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 내게 말하기를 우리를 위하여 우리를 인도할 신을 만들라 이 모세 곧 우리를 애굽 땅에서 인도하여 낸 사람은 어찌 되었는지 알수 없노라 하기에"
+      ],
+      "raw_text_hashes": [
+        "80afb9553414d390de1fac80c190da5a67f64131e7f4315a6ff85b0096c60794"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:32:24",
+      "sequence": 2463,
+      "chapter_label": "EXO 32",
+      "verse_label": "24",
+      "locator": {
+        "book": "EXO",
+        "chapter": 32,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 32,
+          "verse": 24
+        }
+      ],
+      "en": "I said to them, ‘Whoever has any gold, let them take it off.’ So they gave it to me; and I threw it into the fire, and out came this calf.”",
+      "ko": "내가 그들에게 이르기를 금이 있는 자는 빼어내라 한즉 그들이 그것을 내게로 가져왔기로 내가 불에 던졌더니 이 송아지가 나왔나이다",
+      "source_text_hash": "513972a491a92a8e980fefffd4d70c9c816b6b43cd4fe3b74f897373547893ec",
+      "translation_text_hash": "0d88925b502f55d7ecbec827ca4865ffb07d4293e0ae825037b28eb954277662",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 그들에게 이르기를 금이 있는 자는 빼어내라 한즉 그들이 그것을 내게로 가져왔기로 내가 불에 던졌더니 이 송아지가 나왔나이다"
+      ],
+      "raw_text_hashes": [
+        "0d88925b502f55d7ecbec827ca4865ffb07d4293e0ae825037b28eb954277662"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:32:25",
+      "sequence": 2464,
+      "chapter_label": "EXO 32",
+      "verse_label": "25",
+      "locator": {
+        "book": "EXO",
+        "chapter": 32,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 32,
+          "verse": 25
+        }
+      ],
+      "en": "When Moses saw that the people were out of control, (for Aaron had let them lose control, causing derision among their enemies),",
+      "ko": "모세가 본즉 백성이 방자하니 이는 아론이 그들로 방자하게 하여 원수에게 조롱거리가 되게 하였음이라",
+      "source_text_hash": "f5568ac53ff72e1cf4a25cd6f955b2a4dd2a01371383109d5c60cac539be3d79",
+      "translation_text_hash": "5f2cfa0891ea699d7c1353db99ec6dbbf337abd8ff5bfb0b9d6389ad8d869618",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 본즉 백성이 방자하니 이는 아론이 그들로 방자하게 하여 원수에게 조롱거리가 되게 하였음이라"
+      ],
+      "raw_text_hashes": [
+        "5f2cfa0891ea699d7c1353db99ec6dbbf337abd8ff5bfb0b9d6389ad8d869618"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:32:26",
+      "sequence": 2465,
+      "chapter_label": "EXO 32",
+      "verse_label": "26",
+      "locator": {
+        "book": "EXO",
+        "chapter": 32,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 32,
+          "verse": 26
+        }
+      ],
+      "en": "then Moses stood in the gate of the camp, and said, “Whoever is on the LORD’s side, come to me!” All the sons of Levi gathered themselves together to him.",
+      "ko": "이에 모세가 진문에 서서 가로되 누구든지 여호와의 편에 있는 자는 내게로 나아오라 하매 레위 자손이 다 모여 그에게로 오는지라",
+      "source_text_hash": "ea20671d39e1760de5c9d792054161b9b6f0d108d36592eabdc3741b05822efe",
+      "translation_text_hash": "2d00dff4573de733636b9592138710c5df784b59f51f78e88821fb4edb1edf67",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 모세가 진문에 서서 가로되 누구든지 여호와의 편에 있는 자는 내게로 나아오라 하매 레위 자손이 다 모여 그에게로 오는지라"
+      ],
+      "raw_text_hashes": [
+        "2d00dff4573de733636b9592138710c5df784b59f51f78e88821fb4edb1edf67"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:32:27",
+      "sequence": 2466,
+      "chapter_label": "EXO 32",
+      "verse_label": "27",
+      "locator": {
+        "book": "EXO",
+        "chapter": 32,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 32,
+          "verse": 27
+        }
+      ],
+      "en": "He said to them, “The LORD, the God of Israel, says, ‘Every man put his sword on his thigh, and go back and forth from gate to gate throughout the camp, and every man kill his brother, and every man his companion, and every man his neighbor.’”",
+      "ko": "모세가 그들에게 이르되 이스라엘의 하나님 여호와께서 이같이 말씀하시기를 너희는 각각 허리에 칼을 차고 진 이 문에서 저 문까지 왕래하며 각 사람이 그 형제를, 각 사람이 그 친구를, 각 사람이 그 이웃을 도륙하라 하셨느니라",
+      "source_text_hash": "9808995a910d3e35758f115f852ef3179ff9e9341a9ce34ee37de62d877e86fa",
+      "translation_text_hash": "b882fa0fd95a0bed7c8dc99827cf52c033e7d62511b0b6add4428675bde1f149",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 그들에게 이르되 이스라엘의 하나님 여호와께서 이같이 말씀하시기를 너희는 각각 허리에 칼을 차고 진 이 문에서 저 문까지 왕래하며 각 사람이 그 형제를, 각 사람이 그 친구를, 각 사람이 그 이웃을 도륙하라 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "b882fa0fd95a0bed7c8dc99827cf52c033e7d62511b0b6add4428675bde1f149"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:32:28",
+      "sequence": 2467,
+      "chapter_label": "EXO 32",
+      "verse_label": "28",
+      "locator": {
+        "book": "EXO",
+        "chapter": 32,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 32,
+          "verse": 28
+        }
+      ],
+      "en": "The sons of Levi did according to the word of Moses. About three thousand men fell of the people that day.",
+      "ko": "레위 자손이 모세의 말대로 행하매 이 날에 백성 중에 삼천명 가량이 죽인바 된지라",
+      "source_text_hash": "ea8e116a172182486f6d1a6dcc0e18de06fd77011db34aefe6007423aaf8cdba",
+      "translation_text_hash": "553b3f0760cbc573fd868e118c8698d67c985dd6f33e7d5583f42c43298573b5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "레위 자손이 모세의 말대로 행하매 이 날에 백성 중에 삼천명 가량이 죽인바 된지라"
+      ],
+      "raw_text_hashes": [
+        "553b3f0760cbc573fd868e118c8698d67c985dd6f33e7d5583f42c43298573b5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:32:29",
+      "sequence": 2468,
+      "chapter_label": "EXO 32",
+      "verse_label": "29",
+      "locator": {
+        "book": "EXO",
+        "chapter": 32,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 32,
+          "verse": 29
+        }
+      ],
+      "en": "Moses said, “Consecrate yourselves today to the LORD, for every man was against his son and against his brother, that he may give you a blessing today.”",
+      "ko": "모세가 이르되 각 사람이 그 아들과 그 형제를 쳤으니 오늘날 여호와께 헌신하게 되었느니라 그가 오늘날 너희에게 복을 내리시리라",
+      "source_text_hash": "ff288f5c7fcdee1cac9a5ac132961ea2442ae8abbda260bd7c6737f95e3ac25a",
+      "translation_text_hash": "a3f34addc9173d5dbd1dde960b1885b39b05b51bae452e75268f6d24ab0bc164",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 이르되 각 사람이 그 아들과 그 형제를 쳤으니 오늘날 여호와께 헌신하게 되었느니라 그가 오늘날 너희에게 복을 내리시리라"
+      ],
+      "raw_text_hashes": [
+        "a3f34addc9173d5dbd1dde960b1885b39b05b51bae452e75268f6d24ab0bc164"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:32:30",
+      "sequence": 2469,
+      "chapter_label": "EXO 32",
+      "verse_label": "30",
+      "locator": {
+        "book": "EXO",
+        "chapter": 32,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 32,
+          "verse": 30
+        }
+      ],
+      "en": "On the next day, Moses said to the people, “You have sinned a great sin. Now I will go up to the LORD. Perhaps I shall make atonement for your sin.”",
+      "ko": "이튿날 모세가 백성에게 이르되 너희가 큰 죄를 범하였도다 내가 이제 여호와께로 올라가노니 혹 너희의 죄를 속할까 하노라 하고",
+      "source_text_hash": "d78c27ddc7284af51d79da3682920e53299312b3f1dddf432d66113a45b09cb4",
+      "translation_text_hash": "9f1a646fbe21f054aaad7ea6d119a158a856f309b2017225845b69ee31a3de43",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이튿날 모세가 백성에게 이르되 너희가 큰 죄를 범하였도다 내가 이제 여호와께로 올라가노니 혹 너희의 죄를 속할까 하노라 하고"
+      ],
+      "raw_text_hashes": [
+        "9f1a646fbe21f054aaad7ea6d119a158a856f309b2017225845b69ee31a3de43"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:32:31",
+      "sequence": 2470,
+      "chapter_label": "EXO 32",
+      "verse_label": "31",
+      "locator": {
+        "book": "EXO",
+        "chapter": 32,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 32,
+          "verse": 31
+        }
+      ],
+      "en": "Moses returned to the LORD, and said, “Oh, this people have sinned a great sin, and have made themselves gods of gold.",
+      "ko": "여호와께로 다시 나아가 여짜오되 슬프도소이다 이 백성이 자기들을 위하여 금신을 만들었사오니 큰 죄를 범하였나이다",
+      "source_text_hash": "55c1cb85ba41920bd827f8391f3cfaac7e115d5e8735b5ecbb4b1f75e2b20f3d",
+      "translation_text_hash": "472aaae5a6fd5a6cdd356539d71ff1749acdff4cfe78064072362990b32edaea",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께로 다시 나아가 여짜오되 슬프도소이다 이 백성이 자기들을 위하여 금신을 만들었사오니 큰 죄를 범하였나이다"
+      ],
+      "raw_text_hashes": [
+        "472aaae5a6fd5a6cdd356539d71ff1749acdff4cfe78064072362990b32edaea"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:32:32",
+      "sequence": 2471,
+      "chapter_label": "EXO 32",
+      "verse_label": "32",
+      "locator": {
+        "book": "EXO",
+        "chapter": 32,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 32,
+          "verse": 32
+        }
+      ],
+      "en": "Yet now, if you will, forgive their sin—and if not, please blot me out of your book which you have written.”",
+      "ko": "그러나 합의하시면 이제 그들의 죄를 사하시옵소서 그렇지 않사오면 원컨대 주의 기록하신 책에서 내 이름을 지워 버려주옵소서",
+      "source_text_hash": "7613f856cd2c976b7c498881ac47f942b88e433d7e3612260bc5adb593364eab",
+      "translation_text_hash": "2bb2f47f225b5de62dbd59b70f554d86afe21a691d8a4b7f27274c14e34c79b1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 합의하시면 이제 그들의 죄를 사하시옵소서 그렇지 않사오면 원컨대 주의 기록하신 책에서 내 이름을 지워 버려주옵소서"
+      ],
+      "raw_text_hashes": [
+        "2bb2f47f225b5de62dbd59b70f554d86afe21a691d8a4b7f27274c14e34c79b1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:32:33",
+      "sequence": 2472,
+      "chapter_label": "EXO 32",
+      "verse_label": "33",
+      "locator": {
+        "book": "EXO",
+        "chapter": 32,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 32,
+          "verse": 33
+        }
+      ],
+      "en": "The LORD said to Moses, “Whoever has sinned against me, I will blot him out of my book.",
+      "ko": "여호와께서 모세에게 이르시되 누구든지 내게 범죄하면 그는 내가 내 책에서 지워버리리라",
+      "source_text_hash": "073464f1a784c9a62cd2bca414f718666c1afaf21566586c39162648974c4f16",
+      "translation_text_hash": "91ac043fbfccab6c251e7ca0d904ec7b093c244474000f3109a22497c4a488d1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 이르시되 누구든지 내게 범죄하면 그는 내가 내 책에서 지워버리리라"
+      ],
+      "raw_text_hashes": [
+        "91ac043fbfccab6c251e7ca0d904ec7b093c244474000f3109a22497c4a488d1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:32:34",
+      "sequence": 2473,
+      "chapter_label": "EXO 32",
+      "verse_label": "34",
+      "locator": {
+        "book": "EXO",
+        "chapter": 32,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 32,
+          "verse": 34
+        }
+      ],
+      "en": "Now go, lead the people to the place of which I have spoken to you. Behold, my angel shall go before you. Nevertheless, in the day when I punish, I will punish them for their sin.”",
+      "ko": "이제 가서 내가 네게 말한 곳으로 백성을 인도하라 내 사자가 네 앞서 가리라 그러나 내가 보응할 날에는 그들의 죄를 보응하리라",
+      "source_text_hash": "15a2fd60ee7771a96607c6828b72121de3faf0091c8088c4e976fd2cb686d582",
+      "translation_text_hash": "a059a74d604cbab75b849fb818b405201838d01dd8a795866782edf59c0b9445",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제 가서 내가 네게 말한 곳으로 백성을 인도하라 내 사자가 네 앞서 가리라 그러나 내가 보응할 날에는 그들의 죄를 보응하리라"
+      ],
+      "raw_text_hashes": [
+        "a059a74d604cbab75b849fb818b405201838d01dd8a795866782edf59c0b9445"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:32:35",
+      "sequence": 2474,
+      "chapter_label": "EXO 32",
+      "verse_label": "35",
+      "locator": {
+        "book": "EXO",
+        "chapter": 32,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 32,
+          "verse": 35
+        }
+      ],
+      "en": "The LORD struck the people, because of what they did with the calf, which Aaron made.",
+      "ko": "여호와께서 백성을 치시니 이는 그들이 아론의 만든바 그 송아지를 만들었음이더라",
+      "source_text_hash": "beb6af8a489bebe0a4e7a30cf616e90378ef6614730b8f242593bad130c4e4bc",
+      "translation_text_hash": "5608e7ce59770a47fe724fa63dc6421ddcc67e3b9a5d03ff8a3d03a4c3174307",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 백성을 치시니 이는 그들이 아론의 만든바 그 송아지를 만들었음이더라"
+      ],
+      "raw_text_hashes": [
+        "5608e7ce59770a47fe724fa63dc6421ddcc67e3b9a5d03ff8a3d03a4c3174307"
+      ]
+    }
+  ]
+}

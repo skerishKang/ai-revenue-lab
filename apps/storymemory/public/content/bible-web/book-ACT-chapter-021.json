@@ -1,0 +1,1293 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ACT:chapter:021",
+  "unit_ordinal": 1039,
+  "unit_label": "ACT 21",
+  "book_code": "ACT",
+  "chapter_number": 21,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ACT:21:1",
+      "sequence": 27663,
+      "chapter_label": "ACT 21",
+      "verse_label": "1",
+      "locator": {
+        "book": "ACT",
+        "chapter": 21,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 21,
+          "verse": 1
+        }
+      ],
+      "en": "When we had departed from them and had set sail, we came with a straight course to Cos, and the next day to Rhodes, and from there to Patara.",
+      "ko": "우리가 저희를 작별하고 행선하여 바로 고스로 가서 이튿날 로도에 이르러 거기서부터 바다라로 가서",
+      "source_text_hash": "9a8b911b9908faa5914e24c7a79ed63a5d471a5c8329ede58b0d470e21c75d1d",
+      "translation_text_hash": "32d416f5820ee42e35ae3e0c0609ab2bc582c015333b75c14260d7c40f6ab8e8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 저희를 작별하고 행선하여 바로 고스로 가서 이튿날 로도에 이르러 거기서부터 바다라로 가서"
+      ],
+      "raw_text_hashes": [
+        "32d416f5820ee42e35ae3e0c0609ab2bc582c015333b75c14260d7c40f6ab8e8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:21:2",
+      "sequence": 27664,
+      "chapter_label": "ACT 21",
+      "verse_label": "2",
+      "locator": {
+        "book": "ACT",
+        "chapter": 21,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 21,
+          "verse": 2
+        }
+      ],
+      "en": "Having found a ship crossing over to Phoenicia, we went aboard and set sail.",
+      "ko": "베니게로 건너가는 배를 만나서 타고 가다가",
+      "source_text_hash": "3d1d242c9d29711907fdef9057765eb5f598ca25ad1292fa4fffade3cc45827c",
+      "translation_text_hash": "3f3aada8e62009e94779c885f79e3fd28a3b3ae01c86f6aa7f949928d8705b0a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베니게로 건너가는 배를 만나서 타고 가다가"
+      ],
+      "raw_text_hashes": [
+        "3f3aada8e62009e94779c885f79e3fd28a3b3ae01c86f6aa7f949928d8705b0a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:21:3",
+      "sequence": 27665,
+      "chapter_label": "ACT 21",
+      "verse_label": "3",
+      "locator": {
+        "book": "ACT",
+        "chapter": 21,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 21,
+          "verse": 3
+        }
+      ],
+      "en": "When we had come in sight of Cyprus, leaving it on the left hand, we sailed to Syria and landed at Tyre, for the ship was there to unload her cargo.",
+      "ko": "구브로를 바라보고 이를 왼편에 두고 수리아로 행선하여 두로에서 상륙하니 거기서 배가 짐을 풀려 함이러라",
+      "source_text_hash": "745528fc45f0eff6fc8b8553bd692ba361ae962288beb7342bafe3b3470129a9",
+      "translation_text_hash": "805ead4c52adc7ca1d0a9c62d9a79bbd00274ebc4b4521cc65fb1e499d18c463",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "구브로를 바라보고 이를 왼편에 두고 수리아로 행선하여 두로에서 상륙하니 거기서 배가 짐을 풀려 함이러라"
+      ],
+      "raw_text_hashes": [
+        "805ead4c52adc7ca1d0a9c62d9a79bbd00274ebc4b4521cc65fb1e499d18c463"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:21:4",
+      "sequence": 27666,
+      "chapter_label": "ACT 21",
+      "verse_label": "4",
+      "locator": {
+        "book": "ACT",
+        "chapter": 21,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 21,
+          "verse": 4
+        }
+      ],
+      "en": "Having found disciples, we stayed there seven days. These said to Paul through the Spirit that he should not go up to Jerusalem.",
+      "ko": "제자들을 찾아 거기서 이레를 머물더니 그 제자들이 성령의 감동으로 바울더러 예루살렘에 들어가지 말라 하더라",
+      "source_text_hash": "1c259626f8f48dfa22ccc5324de7a774d63fba9ec95f42b549547f63118729d4",
+      "translation_text_hash": "d3b8de31ef7f594df3fc76c94a6f194c54b058fc990fca8f5dec9c800220fdf4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제자들을 찾아 거기서 이레를 머물더니 그 제자들이 성령의 감동으로 바울더러 예루살렘에 들어가지 말라 하더라"
+      ],
+      "raw_text_hashes": [
+        "d3b8de31ef7f594df3fc76c94a6f194c54b058fc990fca8f5dec9c800220fdf4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:21:5",
+      "sequence": 27667,
+      "chapter_label": "ACT 21",
+      "verse_label": "5",
+      "locator": {
+        "book": "ACT",
+        "chapter": 21,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 21,
+          "verse": 5
+        }
+      ],
+      "en": "When those days were over, we departed and went on our journey. They all, with wives and children, brought us on our way until we were out of the city. Kneeling down on the beach, we prayed.",
+      "ko": "이 여러 날을 지난 후 우리가 떠나갈쌔 저희가 다 그 처자와 함께 성문 밖까지 전송하거늘 우리가 바닷가에서 무릎을 꿇어 기도하고",
+      "source_text_hash": "a4db16a9ecdd2a78d86a7e7ee772e1b5c6660380f6ebd0069834d4d9e101a1e2",
+      "translation_text_hash": "3aa46296ac1a1854a72a6561021d50bc4d3be50df5fbd2654f6b0a5293f2c5e2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 여러 날을 지난 후 우리가 떠나갈쌔 저희가 다 그 처자와 함께 성문 밖까지 전송하거늘 우리가 바닷가에서 무릎을 꿇어 기도하고"
+      ],
+      "raw_text_hashes": [
+        "3aa46296ac1a1854a72a6561021d50bc4d3be50df5fbd2654f6b0a5293f2c5e2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:21:6",
+      "sequence": 27668,
+      "chapter_label": "ACT 21",
+      "verse_label": "6",
+      "locator": {
+        "book": "ACT",
+        "chapter": 21,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 21,
+          "verse": 6
+        }
+      ],
+      "en": "After saying goodbye to each other, we went on board the ship, and they returned home again.",
+      "ko": "서로 작별한 후 우리는 배에 오르고 저희는 집으로 돌아가니라",
+      "source_text_hash": "5e5a63fd56cd5f691b4ae3122a5faa3c34d43748cc662f6dc2aa97c6c6e42c8b",
+      "translation_text_hash": "014d7b1a3bcc2ae730d522e5ad00d94366c891b2d8d295e859a9ac2e7378c6fb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "서로 작별한 후 우리는 배에 오르고 저희는 집으로 돌아가니라"
+      ],
+      "raw_text_hashes": [
+        "014d7b1a3bcc2ae730d522e5ad00d94366c891b2d8d295e859a9ac2e7378c6fb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:21:7",
+      "sequence": 27669,
+      "chapter_label": "ACT 21",
+      "verse_label": "7",
+      "locator": {
+        "book": "ACT",
+        "chapter": 21,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 21,
+          "verse": 7
+        }
+      ],
+      "en": "When we had finished the voyage from Tyre, we arrived at Ptolemais. We greeted the brothers and stayed with them one day.",
+      "ko": "두로로부터 수로를 다 행하여 돌레마이에 이르러 형제들에게 안부를 묻고 그들과 함께 하루를 있다가",
+      "source_text_hash": "6b8f146a283489196bdc50e3351f8464f617c76881ba60c443f2d8ce76608248",
+      "translation_text_hash": "d634c6ecabc62262b075a26118b211adc6b0b422a1a9790bed93cd443f609264",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "두로로부터 수로를 다 행하여 돌레마이에 이르러 형제들에게 안부를 묻고 그들과 함께 하루를 있다가"
+      ],
+      "raw_text_hashes": [
+        "d634c6ecabc62262b075a26118b211adc6b0b422a1a9790bed93cd443f609264"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:21:8",
+      "sequence": 27670,
+      "chapter_label": "ACT 21",
+      "verse_label": "8",
+      "locator": {
+        "book": "ACT",
+        "chapter": 21,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 21,
+          "verse": 8
+        }
+      ],
+      "en": "On the next day, we who were Paul’s companions departed and came to Caesarea. We entered into the house of Philip the evangelist, who was one of the seven, and stayed with him.",
+      "ko": "이튿날 떠나 가이사랴에 이르러 일곱 집사 중 하나인 전도자 빌립의 집에 들어가서 유하니라",
+      "source_text_hash": "e830b56e664c8caab34ab291b121536ed8027ecd6ffcb42303e4de642a66aceb",
+      "translation_text_hash": "85f64de5ef2a57f33836356dd2a4fe2718b40d579e0fac4c725ac68d6087dd6f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이튿날 떠나 가이사랴에 이르러 일곱 집사 중 하나인 전도자 빌립의 집에 들어가서 유하니라"
+      ],
+      "raw_text_hashes": [
+        "85f64de5ef2a57f33836356dd2a4fe2718b40d579e0fac4c725ac68d6087dd6f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:21:9",
+      "sequence": 27671,
+      "chapter_label": "ACT 21",
+      "verse_label": "9",
+      "locator": {
+        "book": "ACT",
+        "chapter": 21,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 21,
+          "verse": 9
+        }
+      ],
+      "en": "Now this man had four virgin daughters who prophesied.",
+      "ko": "그에게 딸 넷이 있으니 처녀로 예언하는 자라",
+      "source_text_hash": "587d950bdf953140a64548562f55a5a4d0b63f6734c1a233e046c38accb07029",
+      "translation_text_hash": "e451a63e0b5940f7c2a432b3fdb958815160095c29f3458e56efc98ed08a6003",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그에게 딸 넷이 있으니 처녀로 예언하는 자라"
+      ],
+      "raw_text_hashes": [
+        "e451a63e0b5940f7c2a432b3fdb958815160095c29f3458e56efc98ed08a6003"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:21:10",
+      "sequence": 27672,
+      "chapter_label": "ACT 21",
+      "verse_label": "10",
+      "locator": {
+        "book": "ACT",
+        "chapter": 21,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 21,
+          "verse": 10
+        }
+      ],
+      "en": "As we stayed there some days, a certain prophet named Agabus came down from Judea.",
+      "ko": "여러 날 있더니 한 선지자 아가보라 하는 이가 유대로부터 내려와",
+      "source_text_hash": "8fd92ff33212778476f03fee3b8efbb5413b400b52695a306c13b000b21150c1",
+      "translation_text_hash": "16d5496b79f4603991b406d43bc687d2b75887e2cf22f59c9d6686a7c024d1fa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여러 날 있더니 한 선지자 아가보라 하는 이가 유대로부터 내려와"
+      ],
+      "raw_text_hashes": [
+        "16d5496b79f4603991b406d43bc687d2b75887e2cf22f59c9d6686a7c024d1fa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:21:11",
+      "sequence": 27673,
+      "chapter_label": "ACT 21",
+      "verse_label": "11",
+      "locator": {
+        "book": "ACT",
+        "chapter": 21,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 21,
+          "verse": 11
+        }
+      ],
+      "en": "Coming to us and taking Paul’s belt, he bound his own feet and hands, and said, “The Holy Spirit says: ‘So the Jews at Jerusalem will bind the man who owns this belt, and will deliver him into the hands of the Gentiles.’”",
+      "ko": "우리에게 와서 바울의 띠를 가져다가 자기 수족을 잡아매고 말하기를 성령이 말씀하시되 예루살렘에서 유대인들이 이같이 이 띠 임자를 결박하여 이방인의 손에 넘겨주리라 하거늘",
+      "source_text_hash": "ade6221f6a8bb42475bbb38c1ebf333c2065d50d5880ac4a390fb7c6c8d31c1c",
+      "translation_text_hash": "f8a9acdd40787f9c61b40a7f4e7cfe688c5a25b81b8f593d88730c688d04715e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리에게 와서 바울의 띠를 가져다가 자기 수족을 잡아매고 말하기를 성령이 말씀하시되 예루살렘에서 유대인들이 이같이 이 띠 임자를 결박하여 이방인의 손에 넘겨주리라 하거늘"
+      ],
+      "raw_text_hashes": [
+        "f8a9acdd40787f9c61b40a7f4e7cfe688c5a25b81b8f593d88730c688d04715e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:21:12",
+      "sequence": 27674,
+      "chapter_label": "ACT 21",
+      "verse_label": "12",
+      "locator": {
+        "book": "ACT",
+        "chapter": 21,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 21,
+          "verse": 12
+        }
+      ],
+      "en": "When we heard these things, both we and the people of that place begged him not to go up to Jerusalem.",
+      "ko": "우리가 그 말을 듣고 그곳 사람들로 더불어 바울에게 예루살렘으로 올라가지 말라 권하니",
+      "source_text_hash": "f8126a182e64344496206791284ea7953595dba2ce3e973ff63004d340a8f8b5",
+      "translation_text_hash": "72cf2e41279badf8b45d8e33d3bdb75e47211125f8546c77269b0cdf81407456",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 그 말을 듣고 그곳 사람들로 더불어 바울에게 예루살렘으로 올라가지 말라 권하니"
+      ],
+      "raw_text_hashes": [
+        "72cf2e41279badf8b45d8e33d3bdb75e47211125f8546c77269b0cdf81407456"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:21:13",
+      "sequence": 27675,
+      "chapter_label": "ACT 21",
+      "verse_label": "13",
+      "locator": {
+        "book": "ACT",
+        "chapter": 21,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 21,
+          "verse": 13
+        }
+      ],
+      "en": "Then Paul answered, “What are you doing, weeping and breaking my heart? For I am ready not only to be bound, but also to die at Jerusalem for the name of the Lord Jesus.”",
+      "ko": "바울이 대답하되 너희가 어찌하여 울어 내 마음을 상하게 하느냐 나는 주 예수의 이름을 위하여 결박 받을 뿐아니라 예루살렘에서 죽을 것도 각오하였노라 하니",
+      "source_text_hash": "f684aab80221b8ab9f82f16a9e0622407d46e17d5f8b494f6b76ac096a66529f",
+      "translation_text_hash": "4a016cb3543dd6c480abca63c6becaf36e92d610535ea4cc562a190b2ec4d6e9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바울이 대답하되 너희가 어찌하여 울어 내 마음을 상하게 하느냐 나는 주 예수의 이름을 위하여 결박 받을 뿐아니라 예루살렘에서 죽을 것도 각오하였노라 하니"
+      ],
+      "raw_text_hashes": [
+        "4a016cb3543dd6c480abca63c6becaf36e92d610535ea4cc562a190b2ec4d6e9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:21:14",
+      "sequence": 27676,
+      "chapter_label": "ACT 21",
+      "verse_label": "14",
+      "locator": {
+        "book": "ACT",
+        "chapter": 21,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 21,
+          "verse": 14
+        }
+      ],
+      "en": "When he would not be persuaded, we ceased, saying, “The Lord’s will be done.”",
+      "ko": "저가 권함을 받지 아니하므로 우리가 주의 뜻대로 이루어지이다 하고 그쳤노라",
+      "source_text_hash": "dc5e9482e310963c2d3452e6e345cafe022cb9e4124f99f44193a520aa2e665d",
+      "translation_text_hash": "b783b030a4d442a467c80bbcd268d41c8c0532f3ba4062a6960093a08103daa3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 권함을 받지 아니하므로 우리가 주의 뜻대로 이루어지이다 하고 그쳤노라"
+      ],
+      "raw_text_hashes": [
+        "b783b030a4d442a467c80bbcd268d41c8c0532f3ba4062a6960093a08103daa3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:21:15",
+      "sequence": 27677,
+      "chapter_label": "ACT 21",
+      "verse_label": "15",
+      "locator": {
+        "book": "ACT",
+        "chapter": 21,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 21,
+          "verse": 15
+        }
+      ],
+      "en": "After these days we took up our baggage and went up to Jerusalem.",
+      "ko": "이 여러 날 후에 행장을 준비하여 예루살렘으로 올라갈쌔",
+      "source_text_hash": "7daad4422161e9274635d1e0c186bfd0594cacf33715017c1f16cd049c790d66",
+      "translation_text_hash": "b8b1c16db02c2877a7c23ddb49f8314195640e4c6d9329ef4cf1bbbcb817aaee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 여러 날 후에 행장을 준비하여 예루살렘으로 올라갈쌔"
+      ],
+      "raw_text_hashes": [
+        "b8b1c16db02c2877a7c23ddb49f8314195640e4c6d9329ef4cf1bbbcb817aaee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:21:16",
+      "sequence": 27678,
+      "chapter_label": "ACT 21",
+      "verse_label": "16",
+      "locator": {
+        "book": "ACT",
+        "chapter": 21,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 21,
+          "verse": 16
+        }
+      ],
+      "en": "Some of the disciples from Caesarea also went with us, bringing one Mnason of Cyprus, an early disciple, with whom we would stay.",
+      "ko": "가이사랴의 몇 제자가 함께 가며 한 오랜 제자 구브로 사람 나손을 데리고 가니 이는 우리가 그의 집에 유하려 함이라",
+      "source_text_hash": "498666f1cf242934f1e5dc4d1a31c5eb53144bd5fe22a8050888029bbb6d75b2",
+      "translation_text_hash": "c0fba0fd0d07326baa1fa5069acd9adf460838c4a1fde421bca0a8ad2ebbba39",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가이사랴의 몇 제자가 함께 가며 한 오랜 제자 구브로 사람 나손을 데리고 가니 이는 우리가 그의 집에 유하려 함이라"
+      ],
+      "raw_text_hashes": [
+        "c0fba0fd0d07326baa1fa5069acd9adf460838c4a1fde421bca0a8ad2ebbba39"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:21:17",
+      "sequence": 27679,
+      "chapter_label": "ACT 21",
+      "verse_label": "17",
+      "locator": {
+        "book": "ACT",
+        "chapter": 21,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 21,
+          "verse": 17
+        }
+      ],
+      "en": "When we had come to Jerusalem, the brothers received us gladly.",
+      "ko": "예루살렘에 이르니 형제들이 우리를 기꺼이 영접하거늘",
+      "source_text_hash": "de0aa311e2ac7c665e3f8b4613e4943fcbc9b3a9d5476e6f7b4408f5a2477051",
+      "translation_text_hash": "1e830bc82aef1fa87bdae9f8f56a422fe6adaab1a448ffbbe2c0d3e53f5a46fa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예루살렘에 이르니 형제들이 우리를 기꺼이 영접하거늘"
+      ],
+      "raw_text_hashes": [
+        "1e830bc82aef1fa87bdae9f8f56a422fe6adaab1a448ffbbe2c0d3e53f5a46fa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:21:18",
+      "sequence": 27680,
+      "chapter_label": "ACT 21",
+      "verse_label": "18",
+      "locator": {
+        "book": "ACT",
+        "chapter": 21,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 21,
+          "verse": 18
+        }
+      ],
+      "en": "The day following, Paul went in with us to James; and all the elders were present.",
+      "ko": "그 이튿날 바울이 우리와 함께 야고보에게로 들어가니 장로들도 다 있더라",
+      "source_text_hash": "be89166e5f9e40bae0417909ed7fabc67ededa95bee3ac2091efdc550a6ff216",
+      "translation_text_hash": "36a2d675f3763eb29470308f3fb5ce4277bbceb4ee306e158f057c2ad26c3931",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 이튿날 바울이 우리와 함께 야고보에게로 들어가니 장로들도 다 있더라"
+      ],
+      "raw_text_hashes": [
+        "36a2d675f3763eb29470308f3fb5ce4277bbceb4ee306e158f057c2ad26c3931"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:21:19",
+      "sequence": 27681,
+      "chapter_label": "ACT 21",
+      "verse_label": "19",
+      "locator": {
+        "book": "ACT",
+        "chapter": 21,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 21,
+          "verse": 19
+        }
+      ],
+      "en": "When he had greeted them, he reported one by one the things which God had worked among the Gentiles through his ministry.",
+      "ko": "바울이 문안하고 하나님이 자기의 봉사로 말미암아 이방 가운데서 하신 일을 낱낱이 고하니",
+      "source_text_hash": "6e5db641d01cacd8c8438e7d4bdd17962b581881a9cdfd45bc3c91c90e28398a",
+      "translation_text_hash": "dd101dcd55e67029dac642af9bc6f6138f5483a5a96411f3671ce759d78b8e4b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바울이 문안하고 하나님이 자기의 봉사로 말미암아 이방 가운데서 하신 일을 낱낱이 고하니"
+      ],
+      "raw_text_hashes": [
+        "dd101dcd55e67029dac642af9bc6f6138f5483a5a96411f3671ce759d78b8e4b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:21:20",
+      "sequence": 27682,
+      "chapter_label": "ACT 21",
+      "verse_label": "20",
+      "locator": {
+        "book": "ACT",
+        "chapter": 21,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 21,
+          "verse": 20
+        }
+      ],
+      "en": "They, when they heard it, glorified God. They said to him, “You see, brother, how many thousands there are among the Jews of those who have believed, and they are all zealous for the law.",
+      "ko": "저희가 듣고 하나님께 영광을 돌리고 바울더러 이르되 형제여 그대도 보는바에 유대인 중에 믿는 자 수만명이 있으니 다 율법에 열심 있는 자라",
+      "source_text_hash": "53dd095e33660c6ebc820baf72d0b44b7acbc52573924701ae23450c23f392b7",
+      "translation_text_hash": "d6128b9215930e0011beb048ce38680cde4f335a502b8afbbda01bf3f3ed7867",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 듣고 하나님께 영광을 돌리고 바울더러 이르되 형제여 그대도 보는바에 유대인 중에 믿는 자 수만명이 있으니 다 율법에 열심 있는 자라"
+      ],
+      "raw_text_hashes": [
+        "d6128b9215930e0011beb048ce38680cde4f335a502b8afbbda01bf3f3ed7867"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:21:21",
+      "sequence": 27683,
+      "chapter_label": "ACT 21",
+      "verse_label": "21",
+      "locator": {
+        "book": "ACT",
+        "chapter": 21,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 21,
+          "verse": 21
+        }
+      ],
+      "en": "They have been informed about you, that you teach all the Jews who are among the Gentiles to forsake Moses, telling them not to circumcise their children and not to walk after the customs.",
+      "ko": "네가 이방에 있는 모든 유대인을 가르치되 모세를 배반하고 아들들에게 할례를 하지 말고 또 규모를 지키지 말라 한다 함을 저희가 들었도다",
+      "source_text_hash": "2040bae19a6d191f0fb017b7eb240600104c348b7587c9d6832e4ba3c322d9a7",
+      "translation_text_hash": "380a5555363bde8061211438aed9a85272fe11652d6081b195327bb5372c3161",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 이방에 있는 모든 유대인을 가르치되 모세를 배반하고 아들들에게 할례를 하지 말고 또 규모를 지키지 말라 한다 함을 저희가 들었도다"
+      ],
+      "raw_text_hashes": [
+        "380a5555363bde8061211438aed9a85272fe11652d6081b195327bb5372c3161"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:21:22",
+      "sequence": 27684,
+      "chapter_label": "ACT 21",
+      "verse_label": "22",
+      "locator": {
+        "book": "ACT",
+        "chapter": 21,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 21,
+          "verse": 22
+        }
+      ],
+      "en": "What then? The assembly must certainly meet, for they will hear that you have come.",
+      "ko": "그러면 어찌할꼬 저희가 필연 그대의 온 것을 들으리니",
+      "source_text_hash": "f2ff440d260161ffb83e6c965c452abd67ad5c1767226a901fba6c8273c7db8d",
+      "translation_text_hash": "dd19493faebeb387640a3e9fe61d8cf8ace19a5e9abc62933018ec377344e357",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러면 어찌할꼬 저희가 필연 그대의 온 것을 들으리니"
+      ],
+      "raw_text_hashes": [
+        "dd19493faebeb387640a3e9fe61d8cf8ace19a5e9abc62933018ec377344e357"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:21:23",
+      "sequence": 27685,
+      "chapter_label": "ACT 21",
+      "verse_label": "23",
+      "locator": {
+        "book": "ACT",
+        "chapter": 21,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 21,
+          "verse": 23
+        }
+      ],
+      "en": "Therefore do what we tell you. We have four men who have taken a vow.",
+      "ko": "우리의 말하는 이대로 하라 서원한 네 사람이 우리에게 있으니",
+      "source_text_hash": "7eb08c9b9cfe00754af0ecf8e5e972af8096849ba81600647dcc98c7cd354e74",
+      "translation_text_hash": "aa430d86963767bd2b812f1c531738afb14ff89969f8b548ef5f8744f865ee4d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리의 말하는 이대로 하라 서원한 네 사람이 우리에게 있으니"
+      ],
+      "raw_text_hashes": [
+        "aa430d86963767bd2b812f1c531738afb14ff89969f8b548ef5f8744f865ee4d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:21:24",
+      "sequence": 27686,
+      "chapter_label": "ACT 21",
+      "verse_label": "24",
+      "locator": {
+        "book": "ACT",
+        "chapter": 21,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 21,
+          "verse": 24
+        }
+      ],
+      "en": "Take them and purify yourself with them, and pay their expenses for them, that they may shave their heads. Then all will know that there is no truth in the things that they have been informed about you, but that you yourself also walk keeping the law.",
+      "ko": "저희를 데리고 함께 결례를 행하고 저희를 위하여 비용을 내어 머리를 깎게 하라 그러면 모든 사람이 그대에게 대하여 들은 것이 헛된 것이고 그대도 율법을 지켜 행하는 줄로 알 것이라",
+      "source_text_hash": "d0923801638754f13a1dad53da685e28ac5274b09614c5395a48940081e7426d",
+      "translation_text_hash": "29b09510494c80753914282ccdc909bd70fbfd3670b497911ef62d666a923de6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희를 데리고 함께 결례를 행하고 저희를 위하여 비용을 내어 머리를 깎게 하라 그러면 모든 사람이 그대에게 대하여 들은 것이 헛된 것이고 그대도 율법을 지켜 행하는 줄로 알 것이라"
+      ],
+      "raw_text_hashes": [
+        "29b09510494c80753914282ccdc909bd70fbfd3670b497911ef62d666a923de6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:21:25",
+      "sequence": 27687,
+      "chapter_label": "ACT 21",
+      "verse_label": "25",
+      "locator": {
+        "book": "ACT",
+        "chapter": 21,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 21,
+          "verse": 25
+        }
+      ],
+      "en": "But concerning the Gentiles who believe, we have written our decision that they should observe no such thing, except that they should keep themselves from food offered to idols, from blood, from strangled things, and from sexual immorality.”",
+      "ko": "주를 믿는 이방인에게는 우리가 우상의 제물과 피와 목매어 죽인 것과 음행을 피할 것을 결의하고 편지하였느니라 하니",
+      "source_text_hash": "2a18b27a7b41b6bc5f85b31a1e680b8f90d8ec96c9946ca0247d22f5fd2a23c9",
+      "translation_text_hash": "0bc8edf85401f9a24f09dc49ac8bcdc6aa19d007eed9e8df8a175ac906e2b9e0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주를 믿는 이방인에게는 우리가 우상의 제물과 피와 목매어 죽인 것과 음행을 피할 것을 결의하고 편지하였느니라 하니"
+      ],
+      "raw_text_hashes": [
+        "0bc8edf85401f9a24f09dc49ac8bcdc6aa19d007eed9e8df8a175ac906e2b9e0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:21:26",
+      "sequence": 27688,
+      "chapter_label": "ACT 21",
+      "verse_label": "26",
+      "locator": {
+        "book": "ACT",
+        "chapter": 21,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 21,
+          "verse": 26
+        }
+      ],
+      "en": "Then Paul took the men, and the next day purified himself and went with them into the temple, declaring the fulfillment of the days of purification, until the offering was offered for every one of them.",
+      "ko": "바울이 이 사람들을 데리고 이튿날 저희와 함께 결례를 행하고 성전에 들어가서 각 사람을 위하여 제사 드릴 때까지의 결례의 만기 된것을 고하니라",
+      "source_text_hash": "7ff04b513e171127833eceb686f804fc4289c9f66d9b8d52cae1731f69cbecb5",
+      "translation_text_hash": "8ecddc91715abe62def36c9ca349f7ffe7d85276f33ee934e3608768270a2e23",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바울이 이 사람들을 데리고 이튿날 저희와 함께 결례를 행하고 성전에 들어가서 각 사람을 위하여 제사 드릴 때까지의 결례의 만기 된것을 고하니라"
+      ],
+      "raw_text_hashes": [
+        "8ecddc91715abe62def36c9ca349f7ffe7d85276f33ee934e3608768270a2e23"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:21:27",
+      "sequence": 27689,
+      "chapter_label": "ACT 21",
+      "verse_label": "27",
+      "locator": {
+        "book": "ACT",
+        "chapter": 21,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 21,
+          "verse": 27
+        }
+      ],
+      "en": "When the seven days were almost completed, the Jews from Asia, when they saw him in the temple, stirred up all the multitude and laid hands on him,",
+      "ko": "그 이레가 거의 차매 아시아로부터 온 유대인들이 성전에서 바울을 보고 모든 무리를 충동하여 그를 붙들고",
+      "source_text_hash": "dc1f314512afae6c4704681ef3e5ceea3d378d7f739c0abac077859d1093e446",
+      "translation_text_hash": "bd38b2eaa9b1076bbd912c4041f289d2372298db41ecfe2026360a258448f528",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 이레가 거의 차매 아시아로부터 온 유대인들이 성전에서 바울을 보고 모든 무리를 충동하여 그를 붙들고"
+      ],
+      "raw_text_hashes": [
+        "bd38b2eaa9b1076bbd912c4041f289d2372298db41ecfe2026360a258448f528"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:21:28",
+      "sequence": 27690,
+      "chapter_label": "ACT 21",
+      "verse_label": "28",
+      "locator": {
+        "book": "ACT",
+        "chapter": 21,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 21,
+          "verse": 28
+        }
+      ],
+      "en": "crying out, “Men of Israel, help! This is the man who teaches all men everywhere against the people, and the law, and this place. Moreover, he also brought Greeks into the temple and has defiled this holy place!”",
+      "ko": "외치되 이스라엘 사람들아 도우라 이 사람은 각처에서 우리 백성과 율법과 이곳을 훼방하여 모든 사람을 가르치는 그 자인데 또 헬라인을 데리고 성전에 들어가서 이 거룩한 곳을 더럽게 하였다 하니",
+      "source_text_hash": "1de60d0f331fcc08e89aecc6cfcb96436cbb7ea140f0bdc2640e15de8cf45955",
+      "translation_text_hash": "696f2c9672a58882ca9302f16fd2a77090b77166e6351e09737f991842f16cfc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "외치되 이스라엘 사람들아 도우라 이 사람은 각처에서 우리 백성과 율법과 이곳을 훼방하여 모든 사람을 가르치는 그 자인데 또 헬라인을 데리고 성전에 들어가서 이 거룩한 곳을 더럽게 하였다 하니"
+      ],
+      "raw_text_hashes": [
+        "696f2c9672a58882ca9302f16fd2a77090b77166e6351e09737f991842f16cfc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:21:29",
+      "sequence": 27691,
+      "chapter_label": "ACT 21",
+      "verse_label": "29",
+      "locator": {
+        "book": "ACT",
+        "chapter": 21,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 21,
+          "verse": 29
+        }
+      ],
+      "en": "For they had seen Trophimus the Ephesian with him in the city, and they supposed that Paul had brought him into the temple.",
+      "ko": "이는 저희가 전에 에베소 사람 드로비모가 바울과 함께 성내에 있음을 보고 바울이 저를 성전에 데리고 들어간 줄로 생각함일러라",
+      "source_text_hash": "406e93cea9fdd6e78c22314e6b912730e22393f360b54abbde7b1e508ad71b6d",
+      "translation_text_hash": "bec85843350f4f744fc8fe77b3cf5798f75662c2543f716fcf7c13dbab4fb678",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 저희가 전에 에베소 사람 드로비모가 바울과 함께 성내에 있음을 보고 바울이 저를 성전에 데리고 들어간 줄로 생각함일러라"
+      ],
+      "raw_text_hashes": [
+        "bec85843350f4f744fc8fe77b3cf5798f75662c2543f716fcf7c13dbab4fb678"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:21:30",
+      "sequence": 27692,
+      "chapter_label": "ACT 21",
+      "verse_label": "30",
+      "locator": {
+        "book": "ACT",
+        "chapter": 21,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 21,
+          "verse": 30
+        }
+      ],
+      "en": "All the city was moved and the people ran together. They seized Paul and dragged him out of the temple. Immediately the doors were shut.",
+      "ko": "온 성이 소동하여 백성이 달려와 모여 바울을 잡아 성전 밖으로 끌고 나가니 문들이 곧 닫히더라",
+      "source_text_hash": "f4758a011d9ba995b99b44be8ae5f0b8084637c7b62ee65c282ba4d2a76116c6",
+      "translation_text_hash": "e626515c5ced507607df7df119798245a66d865ba2e072a1e1d4da39eb5b6dd1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "온 성이 소동하여 백성이 달려와 모여 바울을 잡아 성전 밖으로 끌고 나가니 문들이 곧 닫히더라"
+      ],
+      "raw_text_hashes": [
+        "e626515c5ced507607df7df119798245a66d865ba2e072a1e1d4da39eb5b6dd1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:21:31",
+      "sequence": 27693,
+      "chapter_label": "ACT 21",
+      "verse_label": "31",
+      "locator": {
+        "book": "ACT",
+        "chapter": 21,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 21,
+          "verse": 31
+        }
+      ],
+      "en": "As they were trying to kill him, news came up to the commanding officer of the regiment that all Jerusalem was in an uproar.",
+      "ko": "저희가 그를 죽이려 할 때에 온 예루살렘의 요란하다는 소문이 군대의 천부장에게 들리매",
+      "source_text_hash": "7398d273ffcb74687c88bdd1ea09a1e681b0734d96f578017c1d9cb9b55b5a2a",
+      "translation_text_hash": "95d33b08d28e0fb7ba3ea9277d5a1c02456c375d8f24a0da319183c9e91c2d9f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 그를 죽이려 할 때에 온 예루살렘의 요란하다는 소문이 군대의 천부장에게 들리매"
+      ],
+      "raw_text_hashes": [
+        "95d33b08d28e0fb7ba3ea9277d5a1c02456c375d8f24a0da319183c9e91c2d9f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:21:32",
+      "sequence": 27694,
+      "chapter_label": "ACT 21",
+      "verse_label": "32",
+      "locator": {
+        "book": "ACT",
+        "chapter": 21,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 21,
+          "verse": 32
+        }
+      ],
+      "en": "Immediately he took soldiers and centurions and ran down to them. They, when they saw the chief captain and the soldiers, stopped beating Paul.",
+      "ko": "저가 급히 군사들과 백부장들을 거느리고 달려 내려가니 저희가 천부장과 군사들을 보고 바울 치기를 그치는지라",
+      "source_text_hash": "c682feb1c7fce046be0919d08e52f4c832c07b68097c01cc24428da6ed60f27d",
+      "translation_text_hash": "26e3e01b9fe030b30121bf572200b72fed552c44d783cef5485c742831d20f81",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 급히 군사들과 백부장들을 거느리고 달려 내려가니 저희가 천부장과 군사들을 보고 바울 치기를 그치는지라"
+      ],
+      "raw_text_hashes": [
+        "26e3e01b9fe030b30121bf572200b72fed552c44d783cef5485c742831d20f81"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:21:33",
+      "sequence": 27695,
+      "chapter_label": "ACT 21",
+      "verse_label": "33",
+      "locator": {
+        "book": "ACT",
+        "chapter": 21,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 21,
+          "verse": 33
+        }
+      ],
+      "en": "Then the commanding officer came near, arrested him, commanded him to be bound with two chains, and inquired who he was and what he had done.",
+      "ko": "이에 천부장이 가까이 가서 바울을 잡아 두 쇠사슬로 결박하라 명하고 누구며 무슨 일을 하였느냐 물으니",
+      "source_text_hash": "ab5948ff8ceb5667544c0c3f32c113093504916f91d4b5c6668491b54fbedbb9",
+      "translation_text_hash": "f60ef836b537e600423549903ee15f0d2079b88d3c826fce1ce70f4400add326",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 천부장이 가까이 가서 바울을 잡아 두 쇠사슬로 결박하라 명하고 누구며 무슨 일을 하였느냐 물으니"
+      ],
+      "raw_text_hashes": [
+        "f60ef836b537e600423549903ee15f0d2079b88d3c826fce1ce70f4400add326"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:21:34",
+      "sequence": 27696,
+      "chapter_label": "ACT 21",
+      "verse_label": "34",
+      "locator": {
+        "book": "ACT",
+        "chapter": 21,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 21,
+          "verse": 34
+        }
+      ],
+      "en": "Some shouted one thing and some another, among the crowd. When he couldn’t find out the truth because of the noise, he commanded him to be brought into the barracks.",
+      "ko": "무리 가운데서 어떤이는 이 말로, 어떤이는 저 말로 부르짖거늘 천부장이 소동을 인하여 그 실상을 알 수 없어 그를 영문 안으로 데려가라 명하니라",
+      "source_text_hash": "f023cf3d754206174165d7b56b4fb0c3fc33f571d3b8c099c91ec8f1f959e23f",
+      "translation_text_hash": "8d8ae291474bf6030cd9645d6e64d3695ee544ba4cc3322daa6d172b37157547",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무리 가운데서 어떤이는 이 말로, 어떤이는 저 말로 부르짖거늘 천부장이 소동을 인하여 그 실상을 알 수 없어 그를 영문 안으로 데려가라 명하니라"
+      ],
+      "raw_text_hashes": [
+        "8d8ae291474bf6030cd9645d6e64d3695ee544ba4cc3322daa6d172b37157547"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:21:35",
+      "sequence": 27697,
+      "chapter_label": "ACT 21",
+      "verse_label": "35",
+      "locator": {
+        "book": "ACT",
+        "chapter": 21,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 21,
+          "verse": 35
+        }
+      ],
+      "en": "When he came to the stairs, he was carried by the soldiers because of the violence of the crowd;",
+      "ko": "바울이 층대에 이를 때에 무리의 포행을 인하여 군사들에게 들려가니",
+      "source_text_hash": "86205faa2e5e1a78191f06afd5dd072c23387e1bc4129104a669c213bcd1ce78",
+      "translation_text_hash": "2b20ff686d1d525a631f09627e8681b5ea4333ea119492bf365668059b42f0a0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바울이 층대에 이를 때에 무리의 포행을 인하여 군사들에게 들려가니"
+      ],
+      "raw_text_hashes": [
+        "2b20ff686d1d525a631f09627e8681b5ea4333ea119492bf365668059b42f0a0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:21:36",
+      "sequence": 27698,
+      "chapter_label": "ACT 21",
+      "verse_label": "36",
+      "locator": {
+        "book": "ACT",
+        "chapter": 21,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 21,
+          "verse": 36
+        }
+      ],
+      "en": "for the multitude of the people followed after, crying out, “Away with him!”",
+      "ko": "이는 백성의 무리가 그를 없이 하자고 외치며 따라 감이러라",
+      "source_text_hash": "ded1b2f461645728d2708ff4c5ed426c60a55ba680709f9f5c96020654373e38",
+      "translation_text_hash": "462448a16c29dc631abd32f4f71f140ffa5ab9e39f3d98c292ed0d7a5118c254",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 백성의 무리가 그를 없이 하자고 외치며 따라 감이러라"
+      ],
+      "raw_text_hashes": [
+        "462448a16c29dc631abd32f4f71f140ffa5ab9e39f3d98c292ed0d7a5118c254"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:21:37",
+      "sequence": 27699,
+      "chapter_label": "ACT 21",
+      "verse_label": "37",
+      "locator": {
+        "book": "ACT",
+        "chapter": 21,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 21,
+          "verse": 37
+        }
+      ],
+      "en": "As Paul was about to be brought into the barracks, he asked the commanding officer, “May I speak to you?” He said, “Do you know Greek?",
+      "ko": "바울을 데리고 영문으로 들어가려 할 그 때에 바울이 천부장더러 이르되 내가 당신에게 말할 수 있느뇨 가로되 네가 헬라 말을 아느냐",
+      "source_text_hash": "de9e429bb04264813b962e77c04785dbb9081c46de34fe6bc7b9d3e562e498c9",
+      "translation_text_hash": "6202ccfeea2abc8d06b9430676cbcd9f90e8f6a716d9b51970ef5de90db0c8e0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바울을 데리고 영문으로 들어가려 할 그 때에 바울이 천부장더러 이르되 내가 당신에게 말할 수 있느뇨 가로되 네가 헬라 말을 아느냐"
+      ],
+      "raw_text_hashes": [
+        "6202ccfeea2abc8d06b9430676cbcd9f90e8f6a716d9b51970ef5de90db0c8e0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:21:38",
+      "sequence": 27700,
+      "chapter_label": "ACT 21",
+      "verse_label": "38",
+      "locator": {
+        "book": "ACT",
+        "chapter": 21,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 21,
+          "verse": 38
+        }
+      ],
+      "en": "Aren’t you then the Egyptian who before these days stirred up to sedition and led out into the wilderness the four thousand men of the Assassins?”",
+      "ko": "그러면 네가 이전에 난을 일으켜 사천의 자객을 거느리고 광야로 가던 애굽인이 아니냐",
+      "source_text_hash": "e2ef34eb730cbdea71a244940b9a3729915e88ea1019e152cddf4eae205d0cc6",
+      "translation_text_hash": "799618a9cae23766d002ebb2047e817f089e0978b3081f3c0d88c580ccad9999",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러면 네가 이전에 난을 일으켜 사천의 자객을 거느리고 광야로 가던 애굽인이 아니냐"
+      ],
+      "raw_text_hashes": [
+        "799618a9cae23766d002ebb2047e817f089e0978b3081f3c0d88c580ccad9999"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:21:39",
+      "sequence": 27701,
+      "chapter_label": "ACT 21",
+      "verse_label": "39",
+      "locator": {
+        "book": "ACT",
+        "chapter": 21,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 21,
+          "verse": 39
+        }
+      ],
+      "en": "But Paul said, “I am a Jew from Tarsus in Cilicia, a citizen of no insignificant city. I beg you, allow me to speak to the people.”",
+      "ko": "바울이 가로되 나는 유대인이라 소읍이 아닌 길리기아 다소성의 시민이니 청컨대 백성에게 말하기를 허락하라 하니",
+      "source_text_hash": "9e13dec30e4e400e4e58c1c34fac92da31864642f33a5d5766e9da839bceab25",
+      "translation_text_hash": "8d20b61408216a61aef4d0a3dd5af11cc47630b2d6e1fba68bd7f96187f631ac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바울이 가로되 나는 유대인이라 소읍이 아닌 길리기아 다소성의 시민이니 청컨대 백성에게 말하기를 허락하라 하니"
+      ],
+      "raw_text_hashes": [
+        "8d20b61408216a61aef4d0a3dd5af11cc47630b2d6e1fba68bd7f96187f631ac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:21:40",
+      "sequence": 27702,
+      "chapter_label": "ACT 21",
+      "verse_label": "40",
+      "locator": {
+        "book": "ACT",
+        "chapter": 21,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 21,
+          "verse": 40
+        }
+      ],
+      "en": "When he had given him permission, Paul, standing on the stairs, beckoned with his hand to the people. When there was a great silence, he spoke to them in the Hebrew language, saying,",
+      "ko": "천부장이 허락하거늘 바울이 층대 위에 서서 백성에게 손짓하여 크게 종용히 한 후에 히브리 방언으로 말하여 가로되",
+      "source_text_hash": "399434e193463ef79a67ec1c5c364ea1141d0aa8fe1b4b4af97da62f919a1194",
+      "translation_text_hash": "806d0f0838bbaa661a04f2ea06ec5e0d5f93fddaefce89b5dc9d759864940d3f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "천부장이 허락하거늘 바울이 층대 위에 서서 백성에게 손짓하여 크게 종용히 한 후에 히브리 방언으로 말하여 가로되"
+      ],
+      "raw_text_hashes": [
+        "806d0f0838bbaa661a04f2ea06ec5e0d5f93fddaefce89b5dc9d759864940d3f"
+      ]
+    }
+  ]
+}

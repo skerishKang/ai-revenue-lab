@@ -1,0 +1,685 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:2CH:chapter:031",
+  "unit_ordinal": 398,
+  "unit_label": "2CH 31",
+  "book_code": "2CH",
+  "chapter_number": 31,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:2CH:31:1",
+      "sequence": 11856,
+      "chapter_label": "2CH 31",
+      "verse_label": "1",
+      "locator": {
+        "book": "2CH",
+        "chapter": 31,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 31,
+          "verse": 1
+        }
+      ],
+      "en": "Now when all this was finished, all Israel who were present went out to the cities of Judah and broke the pillars in pieces, cut down the Asherah poles, and broke down the high places and the altars out of all Judah and Benjamin, also in Ephraim and Manasseh, until they had destroyed them all. Then all the children of Israel returned, every man to his possession, into their own cities.",
+      "ko": "이 모든 일이 마치매 거기 있는 이스라엘 무리가 나가서 유다 여러 성읍에 이르러 주상을 깨뜨리며 아세라 목상을 찍으며 유다와 베냐민과 에브라임과 므낫세 온 땅에서 산당과 단을 제하여 멸하고 이스라엘 모든 자손이 각각 그 본성 기업으로 돌아갔더라",
+      "source_text_hash": "e9c0ed04505a7514e68f83fcaf4539c3792c0eb00f3fad24dade43b8a48a3bfe",
+      "translation_text_hash": "af5e17ae25e87036cf1c80f64e7466ed8ab9d09b28f3fcd4c0e0729730e55210",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 모든 일이 마치매 거기 있는 이스라엘 무리가 나가서 유다 여러 성읍에 이르러 주상을 깨뜨리며 아세라 목상을 찍으며 유다와 베냐민과 에브라임과 므낫세 온 땅에서 산당과 단을 제하여 멸하고 이스라엘 모든 자손이 각각 그 본성 기업으로 돌아갔더라"
+      ],
+      "raw_text_hashes": [
+        "af5e17ae25e87036cf1c80f64e7466ed8ab9d09b28f3fcd4c0e0729730e55210"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:31:2",
+      "sequence": 11857,
+      "chapter_label": "2CH 31",
+      "verse_label": "2",
+      "locator": {
+        "book": "2CH",
+        "chapter": 31,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 31,
+          "verse": 2
+        }
+      ],
+      "en": "Hezekiah appointed the divisions of the priests and the Levites after their divisions, every man according to his service, both the priests and the Levites, for burnt offerings and for peace offerings, to minister, to give thanks, and to praise in the gates of the LORD’s camp.",
+      "ko": "히스기야가 제사장들과 레위 사람들의 반차를 정하고 각각 그 직임을 행하게 하되 곧 제사장들과 레위 사람들로 번제와 화목제를 드리며 여호와의 영문에서 섬기며 감사하며 찬송하게 하고",
+      "source_text_hash": "e02a04257de2e3f8d2099f2ae394f8ee42f66dbe6ffc01084845758c9c6ced3c",
+      "translation_text_hash": "bf5e920051fc3a1d4d6894eae16a29c713d39d09bbfca0032ea5db70a7457d83",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "히스기야가 제사장들과 레위 사람들의 반차를 정하고 각각 그 직임을 행하게 하되 곧 제사장들과 레위 사람들로 번제와 화목제를 드리며 여호와의 영문에서 섬기며 감사하며 찬송하게 하고"
+      ],
+      "raw_text_hashes": [
+        "bf5e920051fc3a1d4d6894eae16a29c713d39d09bbfca0032ea5db70a7457d83"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:31:3",
+      "sequence": 11858,
+      "chapter_label": "2CH 31",
+      "verse_label": "3",
+      "locator": {
+        "book": "2CH",
+        "chapter": 31,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 31,
+          "verse": 3
+        }
+      ],
+      "en": "He also appointed the king’s portion of his possessions for the burnt offerings: for the morning and evening burnt offerings, and the burnt offerings for the Sabbaths, for the new moons, and for the set feasts, as it is written in the LORD’s law.",
+      "ko": "또 자기 재산 중에서 얼마를 정하여 여호와의 율법에 기록된대로 번제 곧 조석 번제와 안식일과 초하루와 절기의 번제에 쓰게 하고",
+      "source_text_hash": "27a19851846311c0a19ee8623101a91f90ceff254ee83d45a55d0b43118eeda3",
+      "translation_text_hash": "fcc64c7ee015dcc4893a1126cf75ab2e2c7d09989e3c0549e0c19796dbd3f0ba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 자기 재산 중에서 얼마를 정하여 여호와의 율법에 기록된대로 번제 곧 조석 번제와 안식일과 초하루와 절기의 번제에 쓰게 하고"
+      ],
+      "raw_text_hashes": [
+        "fcc64c7ee015dcc4893a1126cf75ab2e2c7d09989e3c0549e0c19796dbd3f0ba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:31:4",
+      "sequence": 11859,
+      "chapter_label": "2CH 31",
+      "verse_label": "4",
+      "locator": {
+        "book": "2CH",
+        "chapter": 31,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 31,
+          "verse": 4
+        }
+      ],
+      "en": "Moreover he commanded the people who lived in Jerusalem to give the portion of the priests and the Levites, that they might give themselves to the LORD’s law.",
+      "ko": "또 예루살렘에 거한 백성을 명하여 제사장들과 레위 사람들의 응식을 주어 저희로 여호와의 율법을 힘쓰게 하라 한지라",
+      "source_text_hash": "5a975083e7779817bd524593889a8398cfbc065afca7bfa1fac7cf9e686a89d0",
+      "translation_text_hash": "c10aa9dbabb73a46541419c59723e4704255765d1753cde9201e39f66593cadf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 예루살렘에 거한 백성을 명하여 제사장들과 레위 사람들의 응식을 주어 저희로 여호와의 율법을 힘쓰게 하라 한지라"
+      ],
+      "raw_text_hashes": [
+        "c10aa9dbabb73a46541419c59723e4704255765d1753cde9201e39f66593cadf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:31:5",
+      "sequence": 11860,
+      "chapter_label": "2CH 31",
+      "verse_label": "5",
+      "locator": {
+        "book": "2CH",
+        "chapter": 31,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 31,
+          "verse": 5
+        }
+      ],
+      "en": "As soon as the commandment went out, the children of Israel gave in abundance the first fruits of grain, new wine, oil, honey, and of all the increase of the field; and they brought in the tithe of all things abundantly.",
+      "ko": "왕의 명령이 내리자 곧 이스라엘 자손이 곡식과 포도주와 기름과 꿀과 밭의 모든 소산의 처음 것을 풍성히 드렸고 또 모든 것의 십일조를 많이 가져왔으며",
+      "source_text_hash": "044568715bf358f5f31303c95a2bc25b50a91ae7e6e8d276ce06b20dc7b8b0cf",
+      "translation_text_hash": "1d619813ae109c1ba7e64110aebfec3591143f4d48a4b64e5622e7b712935fc5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕의 명령이 내리자 곧 이스라엘 자손이 곡식과 포도주와 기름과 꿀과 밭의 모든 소산의 처음 것을 풍성히 드렸고 또 모든 것의 십일조를 많이 가져왔으며"
+      ],
+      "raw_text_hashes": [
+        "1d619813ae109c1ba7e64110aebfec3591143f4d48a4b64e5622e7b712935fc5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:31:6",
+      "sequence": 11861,
+      "chapter_label": "2CH 31",
+      "verse_label": "6",
+      "locator": {
+        "book": "2CH",
+        "chapter": 31,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 31,
+          "verse": 6
+        }
+      ],
+      "en": "The children of Israel and Judah, who lived in the cities of Judah, also brought in the tithe of cattle and sheep, and the tithe of dedicated things which were consecrated to the LORD their God, and laid them in heaps.",
+      "ko": "유다 여러 성읍에 거한 이스라엘과 유다 자손도 소와 양의 십일조를 가져왔고 또 그 하나님 여호와께 구별하여 드릴 성물의 십일조를 가져왔으며 그것을 쌓아 더미를 이루었는데",
+      "source_text_hash": "c43156f7a15e835574f2637a4d8ef8624b0a8a5a2b46ca69029c2a32b530177a",
+      "translation_text_hash": "2c562a3dc4e347764a6715a6e1dfa356164eae2e48a7474d48d2fe2a3ef8eba8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다 여러 성읍에 거한 이스라엘과 유다 자손도 소와 양의 십일조를 가져왔고 또 그 하나님 여호와께 구별하여 드릴 성물의 십일조를 가져왔으며 그것을 쌓아 더미를 이루었는데"
+      ],
+      "raw_text_hashes": [
+        "2c562a3dc4e347764a6715a6e1dfa356164eae2e48a7474d48d2fe2a3ef8eba8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:31:7",
+      "sequence": 11862,
+      "chapter_label": "2CH 31",
+      "verse_label": "7",
+      "locator": {
+        "book": "2CH",
+        "chapter": 31,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 31,
+          "verse": 7
+        }
+      ],
+      "en": "In the third month, they began to lay the foundation of the heaps, and finished them in the seventh month.",
+      "ko": "삼월에 쌓기를 시작하여 칠월에 마친지라",
+      "source_text_hash": "4c3122d47e0b82bfd1bf6b78a62ff474ce68441c7162fe1e83beff1f8fd1cf26",
+      "translation_text_hash": "102adfae4155a13f6629e2badcea9f5f13aee8c68ce18826e7adda6533eb3459",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "삼월에 쌓기를 시작하여 칠월에 마친지라"
+      ],
+      "raw_text_hashes": [
+        "102adfae4155a13f6629e2badcea9f5f13aee8c68ce18826e7adda6533eb3459"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:31:8",
+      "sequence": 11863,
+      "chapter_label": "2CH 31",
+      "verse_label": "8",
+      "locator": {
+        "book": "2CH",
+        "chapter": 31,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 31,
+          "verse": 8
+        }
+      ],
+      "en": "When Hezekiah and the princes came and saw the heaps, they blessed the LORD and his people Israel.",
+      "ko": "히스기야와 방백들이 와서 더미를 보고 여호와를 송축하고 그 백성 이스라엘을 위하여 축복하니라",
+      "source_text_hash": "c19c79d696a661edb1df91f7c5d5c9cfdbf9c3dadda035dafe4df6932d4cd144",
+      "translation_text_hash": "46899cbfdff4c8287b925f7a850405a7323e68014f3c9ae3747bd34e0ac86955",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "히스기야와 방백들이 와서 더미를 보고 여호와를 송축하고 그 백성 이스라엘을 위하여 축복하니라"
+      ],
+      "raw_text_hashes": [
+        "46899cbfdff4c8287b925f7a850405a7323e68014f3c9ae3747bd34e0ac86955"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:31:9",
+      "sequence": 11864,
+      "chapter_label": "2CH 31",
+      "verse_label": "9",
+      "locator": {
+        "book": "2CH",
+        "chapter": 31,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 31,
+          "verse": 9
+        }
+      ],
+      "en": "Then Hezekiah questioned the priests and the Levites about the heaps.",
+      "ko": "히스기야가 그 더미에 대하여 제사장들과 레위 사람들에게 물으니",
+      "source_text_hash": "e289bb5415161e2fdc79aa041ca8ec29c58a39e59780039d0cf02bbf425a4cc1",
+      "translation_text_hash": "ca9e55ea553bd6fadc872803a3a790abc3e7c28ea042b4e4735b84e129fb54e3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "히스기야가 그 더미에 대하여 제사장들과 레위 사람들에게 물으니"
+      ],
+      "raw_text_hashes": [
+        "ca9e55ea553bd6fadc872803a3a790abc3e7c28ea042b4e4735b84e129fb54e3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:31:10",
+      "sequence": 11865,
+      "chapter_label": "2CH 31",
+      "verse_label": "10",
+      "locator": {
+        "book": "2CH",
+        "chapter": 31,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 31,
+          "verse": 10
+        }
+      ],
+      "en": "Azariah the chief priest, of the house of Zadok, answered him and said, “Since people began to bring the offerings into the LORD’s house, we have eaten and had enough, and have plenty left over, for the LORD has blessed his people; and that which is left is this great store.”",
+      "ko": "사독의 족속 대제사장 아사랴가 대답하여 가로되 백성이 예물을 여호와의 전에 드리기 시작함으로부터 우리가 족하게 먹었으나 남은 것이 많으니 이는 여호와께서 그 백성에게 복을 주셨음이라 그 남은 것이 이렇게 많이 쌓였나이다",
+      "source_text_hash": "0bf73da54447f9207e0e2fa1ca7dfecb221746718d156d3924e479192f7d014e",
+      "translation_text_hash": "8b4b0ed7ba32a6a0d0a2c00825556247fc24aa79665a08d27870e9e1bb136c54",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사독의 족속 대제사장 아사랴가 대답하여 가로되 백성이 예물을 여호와의 전에 드리기 시작함으로부터 우리가 족하게 먹었으나 남은 것이 많으니 이는 여호와께서 그 백성에게 복을 주셨음이라 그 남은 것이 이렇게 많이 쌓였나이다"
+      ],
+      "raw_text_hashes": [
+        "8b4b0ed7ba32a6a0d0a2c00825556247fc24aa79665a08d27870e9e1bb136c54"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:31:11",
+      "sequence": 11866,
+      "chapter_label": "2CH 31",
+      "verse_label": "11",
+      "locator": {
+        "book": "2CH",
+        "chapter": 31,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 31,
+          "verse": 11
+        }
+      ],
+      "en": "Then Hezekiah commanded them to prepare rooms in the LORD’s house, and they prepared them.",
+      "ko": "그 때에 히스기야가 명하여 여호와의 전안에 방을 예비하라 한고로 드디어 예비하고",
+      "source_text_hash": "905692f8cb4fafdbffa174f424c09b1b6aea60c64e904e50594463a2c87b2769",
+      "translation_text_hash": "6d692e9c3a6db2ab8235e0f414a612967d9e733a539db0ad76306492642f7c1a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 히스기야가 명하여 여호와의 전안에 방을 예비하라 한고로 드디어 예비하고"
+      ],
+      "raw_text_hashes": [
+        "6d692e9c3a6db2ab8235e0f414a612967d9e733a539db0ad76306492642f7c1a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:31:12",
+      "sequence": 11867,
+      "chapter_label": "2CH 31",
+      "verse_label": "12",
+      "locator": {
+        "book": "2CH",
+        "chapter": 31,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 31,
+          "verse": 12
+        }
+      ],
+      "en": "They brought in the offerings, the tithes, and the dedicated things faithfully. Conaniah the Levite was ruler over them, and Shimei his brother was second.",
+      "ko": "성심으로 그 예물과 십일조와 구별한 물건을 갖다두고 레위 사람 고나냐는 그 일을 주관하고 그 아우 시므이는 버금이 되며",
+      "source_text_hash": "c93da250aa767e12e10441ba374683056514b16c157324c18465fc6c614ca1f2",
+      "translation_text_hash": "2449406034806baee6a765244b58f4e881b0584a6a1f4cd17591f4a20ef2ae03",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "성심으로 그 예물과 십일조와 구별한 물건을 갖다두고 레위 사람 고나냐는 그 일을 주관하고 그 아우 시므이는 버금이 되며"
+      ],
+      "raw_text_hashes": [
+        "2449406034806baee6a765244b58f4e881b0584a6a1f4cd17591f4a20ef2ae03"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:31:13",
+      "sequence": 11868,
+      "chapter_label": "2CH 31",
+      "verse_label": "13",
+      "locator": {
+        "book": "2CH",
+        "chapter": 31,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 31,
+          "verse": 13
+        }
+      ],
+      "en": "Jehiel, Azaziah, Nahath, Asahel, Jerimoth, Jozabad, Eliel, Ismachiah, Mahath, and Benaiah were overseers under the hand of Conaniah and Shimei his brother, by the appointment of Hezekiah the king and Azariah the ruler of God’s house.",
+      "ko": "여히엘과 아사시야와 나핫과 아사헬과 여리못과 요사밧과 엘리엘과 이스마갸와 마핫과 브나야는 고나냐와 그 아우 시므이의 수하에서 보살피는 자가 되니 이는 히스기야왕과 하나님의 전을 관리하는 아사랴의 명한바며",
+      "source_text_hash": "b5d9689e709bf2d8f859a64f0e9022cd3cdb677a5ddd6454c5d792cb4293a552",
+      "translation_text_hash": "84a74361c90097efefbcaef88e1964919e10d25766a66b7dfce4f882ea313e39",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여히엘과 아사시야와 나핫과 아사헬과 여리못과 요사밧과 엘리엘과 이스마갸와 마핫과 브나야는 고나냐와 그 아우 시므이의 수하에서 보살피는 자가 되니 이는 히스기야왕과 하나님의 전을 관리하는 아사랴의 명한바며"
+      ],
+      "raw_text_hashes": [
+        "84a74361c90097efefbcaef88e1964919e10d25766a66b7dfce4f882ea313e39"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:31:14",
+      "sequence": 11869,
+      "chapter_label": "2CH 31",
+      "verse_label": "14",
+      "locator": {
+        "book": "2CH",
+        "chapter": 31,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 31,
+          "verse": 14
+        }
+      ],
+      "en": "Kore the son of Imnah the Levite, the gatekeeper at the east gate, was over the free will offerings of God, to distribute the LORD’s offerings and the most holy things.",
+      "ko": "동문지기 레위 사람 임나의 아들 고레는 즐거이 하나님께 드리는 예물을 맡아 여호와께 드리는 것과 모든 지성물을 나눠주며",
+      "source_text_hash": "f925f9f8665846c91ce5e1f418bec22862d02d940291a66357c7ad55441aba03",
+      "translation_text_hash": "bd4c725b685015d62f55dd1e30023f43894ec3bbebb499b7f774165f1b42a709",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "동문지기 레위 사람 임나의 아들 고레는 즐거이 하나님께 드리는 예물을 맡아 여호와께 드리는 것과 모든 지성물을 나눠주며"
+      ],
+      "raw_text_hashes": [
+        "bd4c725b685015d62f55dd1e30023f43894ec3bbebb499b7f774165f1b42a709"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:31:15",
+      "sequence": 11870,
+      "chapter_label": "2CH 31",
+      "verse_label": "15",
+      "locator": {
+        "book": "2CH",
+        "chapter": 31,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 31,
+          "verse": 15
+        }
+      ],
+      "en": "Under him were Eden, Miniamin, Jeshua, Shemaiah, Amariah, and Shecaniah, in the cities of the priests, in their office of trust, to give to their brothers by divisions, to the great as well as to the small;",
+      "ko": "그 수하의 에덴과 미냐민과 예수아와 스마야와 아마랴와 스가냐는 제사장의 성읍들에 있어서 직임을 맡아 그 형제에게 반차대로 무론대소하고 나눠주되",
+      "source_text_hash": "c55edc2fe1236e796f6bd1657b8b51b97d72badf5b67d87f44228f647fdf2d71",
+      "translation_text_hash": "dad255936664ed525eb325f897e98239d6d7def435fd24b793558855bc1b2f6d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 수하의 에덴과 미냐민과 예수아와 스마야와 아마랴와 스가냐는 제사장의 성읍들에 있어서 직임을 맡아 그 형제에게 반차대로 무론대소하고 나눠주되"
+      ],
+      "raw_text_hashes": [
+        "dad255936664ed525eb325f897e98239d6d7def435fd24b793558855bc1b2f6d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:31:16",
+      "sequence": 11871,
+      "chapter_label": "2CH 31",
+      "verse_label": "16",
+      "locator": {
+        "book": "2CH",
+        "chapter": 31,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 31,
+          "verse": 16
+        }
+      ],
+      "en": "in addition to those who were listed by genealogy of males, from three years old and upward, even everyone who entered into the LORD’s house, as the duty of every day required, for their service in their offices according to their divisions;",
+      "ko": "삼세 이상으로 족보에 기록된 남자 외에 날마다 여호와의 전에 들어가서 그 반차대로 직임에 수종드는 자들에게 다 나눠주며",
+      "source_text_hash": "0c29e210f971c873c56820b604671fc3d34be26a96a9cc907e063ef265e3fbd1",
+      "translation_text_hash": "3ea2fc8a2fe1a116734a1c4be80c5351c3e583c69d3213aecf99d92bc85f8e18",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "삼세 이상으로 족보에 기록된 남자 외에 날마다 여호와의 전에 들어가서 그 반차대로 직임에 수종드는 자들에게 다 나눠주며"
+      ],
+      "raw_text_hashes": [
+        "3ea2fc8a2fe1a116734a1c4be80c5351c3e583c69d3213aecf99d92bc85f8e18"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:31:17",
+      "sequence": 11872,
+      "chapter_label": "2CH 31",
+      "verse_label": "17",
+      "locator": {
+        "book": "2CH",
+        "chapter": 31,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 31,
+          "verse": 17
+        }
+      ],
+      "en": "and those who were listed by genealogy of the priests by their fathers’ houses, and the Levites from twenty years old and upward, in their offices by their divisions;",
+      "ko": "또 그 족속대로 족보에 기록된 제사장들에게 나눠 주며 이십세 이상부터 그 반차대로 직임을 맡은 레위 사람들에게 나눠 주며",
+      "source_text_hash": "2a77668c1b66babd464d45ebc194dd8a07383b870ae0f77f4b27eee4b36a8eb2",
+      "translation_text_hash": "eb6350978b57115d7d19b154b86bff14a4bb1fd06690a0042db484f72f673f0d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 그 족속대로 족보에 기록된 제사장들에게 나눠 주며 이십세 이상부터 그 반차대로 직임을 맡은 레위 사람들에게 나눠 주며"
+      ],
+      "raw_text_hashes": [
+        "eb6350978b57115d7d19b154b86bff14a4bb1fd06690a0042db484f72f673f0d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:31:18",
+      "sequence": 11873,
+      "chapter_label": "2CH 31",
+      "verse_label": "18",
+      "locator": {
+        "book": "2CH",
+        "chapter": 31,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 31,
+          "verse": 18
+        }
+      ],
+      "en": "and those who were listed by genealogy of all their little ones, their wives, their sons, and their daughters, through all the congregation; for in their office of trust they sanctified themselves in holiness.",
+      "ko": "또 그 족보에 기록된 온 회중의 어린아이와 아내와 자녀들에게 나눠 주었으니 이 회중은 성결하고 충실히 그 직분을 다하는 자며",
+      "source_text_hash": "bea78b3f0f0a57d0c7dcc63bbfc5f8ad39c6d61a0008d9af278dc7512e9dcad9",
+      "translation_text_hash": "b04fddbd2121b4298f503d2e32a15e9d5a4ffb982f22aeddd2248e1ce7701118",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 그 족보에 기록된 온 회중의 어린아이와 아내와 자녀들에게 나눠 주었으니 이 회중은 성결하고 충실히 그 직분을 다하는 자며"
+      ],
+      "raw_text_hashes": [
+        "b04fddbd2121b4298f503d2e32a15e9d5a4ffb982f22aeddd2248e1ce7701118"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:31:19",
+      "sequence": 11874,
+      "chapter_label": "2CH 31",
+      "verse_label": "19",
+      "locator": {
+        "book": "2CH",
+        "chapter": 31,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 31,
+          "verse": 19
+        }
+      ],
+      "en": "Also for the sons of Aaron the priests, who were in the fields of the pasture lands of their cities, in every city, there were men who were mentioned by name to give portions to all the males among the priests and to all who were listed by genealogy among the Levites.",
+      "ko": "각 성읍에서 녹명된 사람이 있어 성읍 가까운 들에 거한 아론 자손 제사장들에게도 나눠 주되 제사장들의 모든 남자와 족보에 기록된 레위 사람들에게 나눠 주었더라",
+      "source_text_hash": "b85174ddbf1e99672f757615438b41169198c4ebf3a8a65725ace0f3eb05a559",
+      "translation_text_hash": "ec4e4d5b54f8dcc442eb40f661179198e48a3032b134b8c5ac86d4c34a55b2e2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "각 성읍에서 녹명된 사람이 있어 성읍 가까운 들에 거한 아론 자손 제사장들에게도 나눠 주되 제사장들의 모든 남자와 족보에 기록된 레위 사람들에게 나눠 주었더라"
+      ],
+      "raw_text_hashes": [
+        "ec4e4d5b54f8dcc442eb40f661179198e48a3032b134b8c5ac86d4c34a55b2e2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:31:20",
+      "sequence": 11875,
+      "chapter_label": "2CH 31",
+      "verse_label": "20",
+      "locator": {
+        "book": "2CH",
+        "chapter": 31,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 31,
+          "verse": 20
+        }
+      ],
+      "en": "Hezekiah did so throughout all Judah; and he did that which was good, right, and faithful before the LORD his God.",
+      "ko": "히스기야가 온 유다에 이같이 행하되 그 하나님 여호와 보시기에 선과 정의와 진실함으로 행하였으니",
+      "source_text_hash": "8b025523524d1bc40739b6f009ed2ac056a99a17693ca32afe93b7b52d874448",
+      "translation_text_hash": "93e7c5739ac88a48c7645d02833c1613db32465344f665245aff53091aa2943e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "히스기야가 온 유다에 이같이 행하되 그 하나님 여호와 보시기에 선과 정의와 진실함으로 행하였으니"
+      ],
+      "raw_text_hashes": [
+        "93e7c5739ac88a48c7645d02833c1613db32465344f665245aff53091aa2943e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:31:21",
+      "sequence": 11876,
+      "chapter_label": "2CH 31",
+      "verse_label": "21",
+      "locator": {
+        "book": "2CH",
+        "chapter": 31,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 31,
+          "verse": 21
+        }
+      ],
+      "en": "In every work that he began in the service of God’s house, in the law, and in the commandments, to seek his God, he did it with all his heart and prospered.",
+      "ko": "무릇 그 행하는 모든 일 곧 하나님의 전에 수종드는 일에나 율법에나 계명에나 그 하나님을 구하고 일심으로 행하여 형통하였더라",
+      "source_text_hash": "64a3bc637ebe7e92e607516aaff51095852ed6d5f8bc2d8b0c0aa1baefde05c8",
+      "translation_text_hash": "fd9eaf2b7e99c36a1e23c750090502b05f7b889ab17a45a535e080fc45fba27d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 그 행하는 모든 일 곧 하나님의 전에 수종드는 일에나 율법에나 계명에나 그 하나님을 구하고 일심으로 행하여 형통하였더라"
+      ],
+      "raw_text_hashes": [
+        "fd9eaf2b7e99c36a1e23c750090502b05f7b889ab17a45a535e080fc45fba27d"
+      ]
+    }
+  ]
+}

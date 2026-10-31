@@ -1,0 +1,909 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:HEB:chapter:009",
+  "unit_ordinal": 1142,
+  "unit_label": "HEB 9",
+  "book_code": "HEB",
+  "chapter_number": 9,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:HEB:9:1",
+      "sequence": 30103,
+      "chapter_label": "HEB 9",
+      "verse_label": "1",
+      "locator": {
+        "book": "HEB",
+        "chapter": 9,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 9,
+          "verse": 1
+        }
+      ],
+      "en": "Now indeed even the first covenant had ordinances of divine service and an earthly sanctuary.",
+      "ko": "첫 언약에도 섬기는 예법과 세상에 속한 성소가 있더라",
+      "source_text_hash": "ad66cb99867122e83173e4965abd9cf5a5690fd9af09d493a7c70004396d0877",
+      "translation_text_hash": "ee24e8cb66f165fa89329a26ffa5dc9129dff91e543ad081cc233692571eaac1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "첫 언약에도 섬기는 예법과 세상에 속한 성소가 있더라"
+      ],
+      "raw_text_hashes": [
+        "ee24e8cb66f165fa89329a26ffa5dc9129dff91e543ad081cc233692571eaac1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:9:2",
+      "sequence": 30104,
+      "chapter_label": "HEB 9",
+      "verse_label": "2",
+      "locator": {
+        "book": "HEB",
+        "chapter": 9,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 9,
+          "verse": 2
+        }
+      ],
+      "en": "For a tabernacle was prepared. In the first part were the lamp stand, the table, and the show bread, which is called the Holy Place.",
+      "ko": "예비한 첫장막이 있고 그 안에 등대와 상과 진설병이 있으니 이는 성소라 일컫고",
+      "source_text_hash": "4119859b51f096c5d4cbb3e58678698b59d75162e49497139c33de6ebdc6dc76",
+      "translation_text_hash": "5c22f88c4b0e0adc23d878f2832692bd48c536f51462dba636510df9bc8454c0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예비한 첫장막이 있고 그 안에 등대와 상과 진설병이 있으니 이는 성소라 일컫고"
+      ],
+      "raw_text_hashes": [
+        "5c22f88c4b0e0adc23d878f2832692bd48c536f51462dba636510df9bc8454c0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:9:3",
+      "sequence": 30105,
+      "chapter_label": "HEB 9",
+      "verse_label": "3",
+      "locator": {
+        "book": "HEB",
+        "chapter": 9,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 9,
+          "verse": 3
+        }
+      ],
+      "en": "After the second veil was the tabernacle which is called the Holy of Holies,",
+      "ko": "또 둘째 휘장 뒤에 있는 장막을 지성소라 일컫나니",
+      "source_text_hash": "dd0b75eb1643a3039d493ac42f7c76e7a1596bc20c9d17ee7ab8825da4b95fd1",
+      "translation_text_hash": "b5adf2a289f8672b2a954f246001ba88191010345106ef8e2fd2cb308b8ff144",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 둘째 휘장 뒤에 있는 장막을 지성소라 일컫나니"
+      ],
+      "raw_text_hashes": [
+        "b5adf2a289f8672b2a954f246001ba88191010345106ef8e2fd2cb308b8ff144"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:9:4",
+      "sequence": 30106,
+      "chapter_label": "HEB 9",
+      "verse_label": "4",
+      "locator": {
+        "book": "HEB",
+        "chapter": 9,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 9,
+          "verse": 4
+        }
+      ],
+      "en": "having a golden altar of incense and the ark of the covenant overlaid on all sides with gold, in which was a golden pot holding the manna, Aaron’s rod that budded, and the tablets of the covenant;",
+      "ko": "금향로와 사면을 금으로 싼 언약궤가 있고 그 안에 만나를 담은 금항아리와 아론의 싹난 지팡이와 언약의 비석들이 있고",
+      "source_text_hash": "5cc00f4a97c8240148ee4caa4b33843d08ec82c8479d879eb5d475fe96c870cf",
+      "translation_text_hash": "38ddb7259e53d6ad0c4c806463799946f13b75f947d1363f2f8c51bc0d103107",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "금향로와 사면을 금으로 싼 언약궤가 있고 그 안에 만나를 담은 금항아리와 아론의 싹난 지팡이와 언약의 비석들이 있고"
+      ],
+      "raw_text_hashes": [
+        "38ddb7259e53d6ad0c4c806463799946f13b75f947d1363f2f8c51bc0d103107"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:9:5",
+      "sequence": 30107,
+      "chapter_label": "HEB 9",
+      "verse_label": "5",
+      "locator": {
+        "book": "HEB",
+        "chapter": 9,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 9,
+          "verse": 5
+        }
+      ],
+      "en": "and above it cherubim of glory overshadowing the mercy seat, of which things we can’t speak now in detail.",
+      "ko": "그 위에 속죄소를 덮는 영광의 그룹들이 있으니 이것들에 관하여는 이제 낱낱이 말할 수 없노라",
+      "source_text_hash": "2037ee7d99ed9f86afbf93c89946902975d8e34e4e93065361b3da1e9f0a46bb",
+      "translation_text_hash": "df05e11dc56ed56855ef8d2a71698f02b9a4942e54a3214bd7f9efece5278904",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 위에 속죄소를 덮는 영광의 그룹들이 있으니 이것들에 관하여는 이제 낱낱이 말할 수 없노라"
+      ],
+      "raw_text_hashes": [
+        "df05e11dc56ed56855ef8d2a71698f02b9a4942e54a3214bd7f9efece5278904"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:9:6",
+      "sequence": 30108,
+      "chapter_label": "HEB 9",
+      "verse_label": "6",
+      "locator": {
+        "book": "HEB",
+        "chapter": 9,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 9,
+          "verse": 6
+        }
+      ],
+      "en": "Now these things having been thus prepared, the priests go in continually into the first tabernacle, accomplishing the services,",
+      "ko": "이 모든 것을 이같이 예비하였으니 제사장들이 항상 첫장막에 들어가 섬기는 예를 행하고",
+      "source_text_hash": "a5bb8058c2c17886f1eed20212cd7cd7878fc9db3b5e2ad56d0264c2c9493865",
+      "translation_text_hash": "7d663b92bee1a7d3ffb2e87cc4c50a63025c438d08c9afacdd36ed064dcd4e7f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 모든 것을 이같이 예비하였으니 제사장들이 항상 첫장막에 들어가 섬기는 예를 행하고"
+      ],
+      "raw_text_hashes": [
+        "7d663b92bee1a7d3ffb2e87cc4c50a63025c438d08c9afacdd36ed064dcd4e7f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:9:7",
+      "sequence": 30109,
+      "chapter_label": "HEB 9",
+      "verse_label": "7",
+      "locator": {
+        "book": "HEB",
+        "chapter": 9,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 9,
+          "verse": 7
+        }
+      ],
+      "en": "but into the second the high priest alone, once in the year, not without blood, which he offers for himself and for the errors of the people.",
+      "ko": "오직 둘째 장막은 대제사장이 홀로 일년 일차씩 들어가되 피 없이는 아니하나니 이 피는 자기와 백성의 허물을 위하여 드리는 것이라",
+      "source_text_hash": "5aeb4c365b1ca7101d16cd475d68e19d2ba6f80ae05642bd2273999ad52e0347",
+      "translation_text_hash": "803411ec374a70e02ff128f9073169d80cf6d14c5e680d1e7c4a7e71d4f58c84",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 둘째 장막은 대제사장이 홀로 일년 일차씩 들어가되 피 없이는 아니하나니 이 피는 자기와 백성의 허물을 위하여 드리는 것이라"
+      ],
+      "raw_text_hashes": [
+        "803411ec374a70e02ff128f9073169d80cf6d14c5e680d1e7c4a7e71d4f58c84"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:9:8",
+      "sequence": 30110,
+      "chapter_label": "HEB 9",
+      "verse_label": "8",
+      "locator": {
+        "book": "HEB",
+        "chapter": 9,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 9,
+          "verse": 8
+        }
+      ],
+      "en": "The Holy Spirit is indicating this, that the way into the Holy Place wasn’t yet revealed while the first tabernacle was still standing.",
+      "ko": "성령이 이로써 보이신 것은 첫장막이 서 있을 동안에 성소에 들어가는 길이 아직 나타나지 아니한 것이라",
+      "source_text_hash": "af3db36660cc099fa9c441d6cfcfdf34a17669aee6e79d784e711799f302ff47",
+      "translation_text_hash": "374744d0dbb46f88ba11ec9b4cf1d8bcf1f39081a7add139301b9bc3a7a5aa5c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "성령이 이로써 보이신 것은 첫장막이 서 있을 동안에 성소에 들어가는 길이 아직 나타나지 아니한 것이라"
+      ],
+      "raw_text_hashes": [
+        "374744d0dbb46f88ba11ec9b4cf1d8bcf1f39081a7add139301b9bc3a7a5aa5c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:9:9",
+      "sequence": 30111,
+      "chapter_label": "HEB 9",
+      "verse_label": "9",
+      "locator": {
+        "book": "HEB",
+        "chapter": 9,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 9,
+          "verse": 9
+        }
+      ],
+      "en": "This is a symbol of the present age, where gifts and sacrifices are offered that are incapable, concerning the conscience, of making the worshiper perfect,",
+      "ko": "이 장막은 현재까지의 비유니 이에 의지하여 드리는 예물과 제사가 섬기는 자로 그 양심상으로 온전케 할 수 없나니",
+      "source_text_hash": "43f57aa04144bafec6659e4ce90ca536cdf661bf73bad3ff9a9df1399ab61b3d",
+      "translation_text_hash": "3a3272bf53b098fc3aa745cdb44935ac4b4d1dbe80663a0b70523ca2e4e1e57e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 장막은 현재까지의 비유니 이에 의지하여 드리는 예물과 제사가 섬기는 자로 그 양심상으로 온전케 할 수 없나니"
+      ],
+      "raw_text_hashes": [
+        "3a3272bf53b098fc3aa745cdb44935ac4b4d1dbe80663a0b70523ca2e4e1e57e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:9:10",
+      "sequence": 30112,
+      "chapter_label": "HEB 9",
+      "verse_label": "10",
+      "locator": {
+        "book": "HEB",
+        "chapter": 9,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 9,
+          "verse": 10
+        }
+      ],
+      "en": "being only (with foods and drinks and various washings) fleshly ordinances, imposed until a time of reformation.",
+      "ko": "이런 것은 먹고 마시는 것과 여러가지 씻는 것과 함께 육체의 예법만 되어 개혁할 때까지 맡겨 둔 것이니라",
+      "source_text_hash": "d01bcbce4f6cadb0848581d69d27a77d6b2dc5a2f4f4b29b19a7b1e6a0deca06",
+      "translation_text_hash": "11a229c52480db32e35b7ff5c3b0b74d4adc0939a8864413584b1269de2658e7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이런 것은 먹고 마시는 것과 여러가지 씻는 것과 함께 육체의 예법만 되어 개혁할 때까지 맡겨 둔 것이니라"
+      ],
+      "raw_text_hashes": [
+        "11a229c52480db32e35b7ff5c3b0b74d4adc0939a8864413584b1269de2658e7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:9:11",
+      "sequence": 30113,
+      "chapter_label": "HEB 9",
+      "verse_label": "11",
+      "locator": {
+        "book": "HEB",
+        "chapter": 9,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 9,
+          "verse": 11
+        }
+      ],
+      "en": "But Christ having come as a high priest of the coming good things, through the greater and more perfect tabernacle, not made with hands, that is to say, not of this creation,",
+      "ko": "그리스도께서 장래 좋은 일의 대제사장으로 오사 손으로 짓지 아니한 곧 이 창조에 속하지 아니한 더 크고 온전한 장막으로 말미암아",
+      "source_text_hash": "094926124eac545d8993345d99c7e2454a15219d79a3b44797f2869e2d08e700",
+      "translation_text_hash": "4d37f09f1c110c158608ef736fc0645f88ded90ab4c8dd0082cd34b05ad45566",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그리스도께서 장래 좋은 일의 대제사장으로 오사 손으로 짓지 아니한 곧 이 창조에 속하지 아니한 더 크고 온전한 장막으로 말미암아"
+      ],
+      "raw_text_hashes": [
+        "4d37f09f1c110c158608ef736fc0645f88ded90ab4c8dd0082cd34b05ad45566"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:9:12",
+      "sequence": 30114,
+      "chapter_label": "HEB 9",
+      "verse_label": "12",
+      "locator": {
+        "book": "HEB",
+        "chapter": 9,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 9,
+          "verse": 12
+        }
+      ],
+      "en": "nor yet through the blood of goats and calves, but through his own blood, entered in once for all into the Holy Place, having obtained eternal redemption.",
+      "ko": "염소와 송아지의 피로 아니하고 오직 자기 피로 영원한 속죄를 이루사 단번에 성소에 들어 가셨느니라",
+      "source_text_hash": "2122d665de3c303f4d9682be8b4d1f4c7b53aec2353017dd627e244dd0ee9ef6",
+      "translation_text_hash": "0c01a4f081b190d9a928fff2191d3907c1d56227daf249226e7e51772f1e0cdb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "염소와 송아지의 피로 아니하고 오직 자기 피로 영원한 속죄를 이루사 단번에 성소에 들어 가셨느니라"
+      ],
+      "raw_text_hashes": [
+        "0c01a4f081b190d9a928fff2191d3907c1d56227daf249226e7e51772f1e0cdb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:9:13",
+      "sequence": 30115,
+      "chapter_label": "HEB 9",
+      "verse_label": "13",
+      "locator": {
+        "book": "HEB",
+        "chapter": 9,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 9,
+          "verse": 13
+        }
+      ],
+      "en": "For if the blood of goats and bulls, and the ashes of a heifer sprinkling those who have been defiled, sanctify to the cleanness of the flesh,",
+      "ko": "염소와 황소의 피와 및 암송아지의 재로 부정한 자에게 뿌려 그 육체를 정결케 하여 거룩케 하거든",
+      "source_text_hash": "c4af8e0b03755e5424d4539872b9f1c8537dfb75f7e05226ac6aabc62c11f75d",
+      "translation_text_hash": "18cc2575e57c5c087e561cf37885c12bec602a07272fc42da456066ff8a0b21f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "염소와 황소의 피와 및 암송아지의 재로 부정한 자에게 뿌려 그 육체를 정결케 하여 거룩케 하거든"
+      ],
+      "raw_text_hashes": [
+        "18cc2575e57c5c087e561cf37885c12bec602a07272fc42da456066ff8a0b21f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:9:14",
+      "sequence": 30116,
+      "chapter_label": "HEB 9",
+      "verse_label": "14",
+      "locator": {
+        "book": "HEB",
+        "chapter": 9,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 9,
+          "verse": 14
+        }
+      ],
+      "en": "how much more will the blood of Christ, who through the eternal Spirit offered himself without defect to God, cleanse your conscience from dead works to serve the living God?",
+      "ko": "하물며 영원하신 성령으로 말미암아 흠 없는 자기를 하나님께 드린 그리스도의 피가 어찌 너희 양심으로 죽은 행실에서 깨끗하게 하고 살아계신 하나님을 섬기게 못하겠느뇨",
+      "source_text_hash": "e62fd64e67dfbe679d9d3e201349b36707a0d7f7e9dc71c7a7e79fc3cd3274b4",
+      "translation_text_hash": "7a438af403d6ba47cfddae7ac249544cdd0d4f83814a4d41d3bb269187f24796",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하물며 영원하신 성령으로 말미암아 흠 없는 자기를 하나님께 드린 그리스도의 피가 어찌 너희 양심으로 죽은 행실에서 깨끗하게 하고 살아계신 하나님을 섬기게 못하겠느뇨"
+      ],
+      "raw_text_hashes": [
+        "7a438af403d6ba47cfddae7ac249544cdd0d4f83814a4d41d3bb269187f24796"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:9:15",
+      "sequence": 30117,
+      "chapter_label": "HEB 9",
+      "verse_label": "15",
+      "locator": {
+        "book": "HEB",
+        "chapter": 9,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 9,
+          "verse": 15
+        }
+      ],
+      "en": "For this reason he is the mediator of a new covenant, since a death has occurred for the redemption of the transgressions that were under the first covenant, that those who have been called may receive the promise of the eternal inheritance.",
+      "ko": "이를 인하여 그는 새 언약의 중보니 이는 첫 언약 때에 범한 죄를 속하려고 죽으사 부르심을 입은 자로 하여금 영원한 기업의 약속을 얻게 하려 하심이니라",
+      "source_text_hash": "1fe049afca63d97c4536d8e1d3cf61a63f701f60bfd9bed198f2ae89d0cbe79e",
+      "translation_text_hash": "3eada3305a7348b5f28fe92de3a922a800b5326c58e3b3b515b905db740e516c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이를 인하여 그는 새 언약의 중보니 이는 첫 언약 때에 범한 죄를 속하려고 죽으사 부르심을 입은 자로 하여금 영원한 기업의 약속을 얻게 하려 하심이니라"
+      ],
+      "raw_text_hashes": [
+        "3eada3305a7348b5f28fe92de3a922a800b5326c58e3b3b515b905db740e516c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:9:16",
+      "sequence": 30118,
+      "chapter_label": "HEB 9",
+      "verse_label": "16",
+      "locator": {
+        "book": "HEB",
+        "chapter": 9,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 9,
+          "verse": 16
+        }
+      ],
+      "en": "For where a last will and testament is, there must of necessity be the death of him who made it.",
+      "ko": "유언은 유언한 자가 죽어야 되나니",
+      "source_text_hash": "3734364179b297fcfaae677ad53aa4699ee2cbdd9347983b5bc138e698443fe2",
+      "translation_text_hash": "a8a474e0646098eeaf1a0d03d4fd6b506a09c7ba3c894edac82849c38c6255e1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유언은 유언한 자가 죽어야 되나니"
+      ],
+      "raw_text_hashes": [
+        "a8a474e0646098eeaf1a0d03d4fd6b506a09c7ba3c894edac82849c38c6255e1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:9:17",
+      "sequence": 30119,
+      "chapter_label": "HEB 9",
+      "verse_label": "17",
+      "locator": {
+        "book": "HEB",
+        "chapter": 9,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 9,
+          "verse": 17
+        }
+      ],
+      "en": "For a will is in force where there has been death, for it is never in force while he who made it lives.",
+      "ko": "유언은 그 사람이 죽은 후에야 견고한즉 유언한 자가 살았을 때에는 언제든지 효력이 없느니라",
+      "source_text_hash": "3cf5d664ec737f0d9a67c7a5ea867c174e7396cec2ecba5ecaa276263c4961b8",
+      "translation_text_hash": "8992c5a6219c6a1a9d8df40d532baae37b54e452e51004d7ff0eb27b060e3cad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유언은 그 사람이 죽은 후에야 견고한즉 유언한 자가 살았을 때에는 언제든지 효력이 없느니라"
+      ],
+      "raw_text_hashes": [
+        "8992c5a6219c6a1a9d8df40d532baae37b54e452e51004d7ff0eb27b060e3cad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:9:18",
+      "sequence": 30120,
+      "chapter_label": "HEB 9",
+      "verse_label": "18",
+      "locator": {
+        "book": "HEB",
+        "chapter": 9,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 9,
+          "verse": 18
+        }
+      ],
+      "en": "Therefore even the first covenant has not been dedicated without blood.",
+      "ko": "이러므로 첫 언약도 피 없이 세운 것이 아니니",
+      "source_text_hash": "baa8ed6fc43d5d26f6f78067893bf01d149fba7809d0a0373e2b4e8ef12a6779",
+      "translation_text_hash": "3fda37c793dcb2e5ccd5e0fc58c5b2612673fc2aa33d294a5b733f6a34a32200",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러므로 첫 언약도 피 없이 세운 것이 아니니"
+      ],
+      "raw_text_hashes": [
+        "3fda37c793dcb2e5ccd5e0fc58c5b2612673fc2aa33d294a5b733f6a34a32200"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:9:19",
+      "sequence": 30121,
+      "chapter_label": "HEB 9",
+      "verse_label": "19",
+      "locator": {
+        "book": "HEB",
+        "chapter": 9,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 9,
+          "verse": 19
+        }
+      ],
+      "en": "For when every commandment had been spoken by Moses to all the people according to the law, he took the blood of the calves and the goats, with water and scarlet wool and hyssop, and sprinkled both the book itself and all the people,",
+      "ko": "모세가 율법대로 모든 계명을 온 백성에게 말한 후에 송아지와 염소의 피와 및 물과 붉은 양털과 우슬초를 취하여 그 책과 온 백성에게 뿌려",
+      "source_text_hash": "b6abeb59372a34a4a38056ec2f278807a975a28525ac61913e5c282dd1d2adf7",
+      "translation_text_hash": "d3a89eb090f69de473b35020ed20d43c39d51a7ae2ee3eefcea136606092d2f0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 율법대로 모든 계명을 온 백성에게 말한 후에 송아지와 염소의 피와 및 물과 붉은 양털과 우슬초를 취하여 그 책과 온 백성에게 뿌려"
+      ],
+      "raw_text_hashes": [
+        "d3a89eb090f69de473b35020ed20d43c39d51a7ae2ee3eefcea136606092d2f0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:9:20",
+      "sequence": 30122,
+      "chapter_label": "HEB 9",
+      "verse_label": "20",
+      "locator": {
+        "book": "HEB",
+        "chapter": 9,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 9,
+          "verse": 20
+        }
+      ],
+      "en": "saying, “This is the blood of the covenant which God has commanded you.”",
+      "ko": "이르되 이는 하나님이 너희에게 명하신 언약의 피라 하고",
+      "source_text_hash": "42eccbc099d0b5973eba7c5e06407896ffeae8e0a340e25bec6915c4ec9f466c",
+      "translation_text_hash": "02c6baeddd6c5efd54bbd19b2ef35d94d5c5c9a007f4fd39d501faeda7c90645",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이르되 이는 하나님이 너희에게 명하신 언약의 피라 하고"
+      ],
+      "raw_text_hashes": [
+        "02c6baeddd6c5efd54bbd19b2ef35d94d5c5c9a007f4fd39d501faeda7c90645"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:9:21",
+      "sequence": 30123,
+      "chapter_label": "HEB 9",
+      "verse_label": "21",
+      "locator": {
+        "book": "HEB",
+        "chapter": 9,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 9,
+          "verse": 21
+        }
+      ],
+      "en": "He sprinkled the tabernacle and all the vessels of the ministry in the same way with the blood.",
+      "ko": "또한 이와 같이 피로써 장막과 섬기는 일에 쓰는 모든 그릇에 뿌렸느니라",
+      "source_text_hash": "116f8764b36d280dffc2610029cf738c1f99647b1be11c71e51ab37f6ce4c611",
+      "translation_text_hash": "99b3e5a75f3b99441b648e8454f83fe2159789721f972a91b10f3ffe684ff046",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또한 이와 같이 피로써 장막과 섬기는 일에 쓰는 모든 그릇에 뿌렸느니라"
+      ],
+      "raw_text_hashes": [
+        "99b3e5a75f3b99441b648e8454f83fe2159789721f972a91b10f3ffe684ff046"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:9:22",
+      "sequence": 30124,
+      "chapter_label": "HEB 9",
+      "verse_label": "22",
+      "locator": {
+        "book": "HEB",
+        "chapter": 9,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 9,
+          "verse": 22
+        }
+      ],
+      "en": "According to the law, nearly everything is cleansed with blood, and apart from shedding of blood there is no remission.",
+      "ko": "율법을 좇아 거의 모든 물건이 피로써 정결케 되나니 피흘림이 없은즉 사함이 없느니라",
+      "source_text_hash": "5fd55be961bbc26393dbd088d15ae021c312dffa697793020abb3346158ad745",
+      "translation_text_hash": "71b543932efb1d51d721dffa8f97be1870f625bedf83134f82c9b6b4eb217c1f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "율법을 좇아 거의 모든 물건이 피로써 정결케 되나니 피흘림이 없은즉 사함이 없느니라"
+      ],
+      "raw_text_hashes": [
+        "71b543932efb1d51d721dffa8f97be1870f625bedf83134f82c9b6b4eb217c1f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:9:23",
+      "sequence": 30125,
+      "chapter_label": "HEB 9",
+      "verse_label": "23",
+      "locator": {
+        "book": "HEB",
+        "chapter": 9,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 9,
+          "verse": 23
+        }
+      ],
+      "en": "It was necessary therefore that the copies of the things in the heavens should be cleansed with these, but the heavenly things themselves with better sacrifices than these.",
+      "ko": "그러므로 하늘에 있는 것들의 모형은 이런 것들로써 정결케 할 필요가 있었으나 하늘에 있는 그것들은 이런 것들보다 더 좋은 제물로 할찌니라",
+      "source_text_hash": "33e3c25fce5ffbbb254801988aa8174aab95c71278fdd5839a84c0eafa1ea712",
+      "translation_text_hash": "39f920b1f8517e8445c56e17eec1b7d7d1b0558f55d9d2f9e8659a81fb41d2e2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 하늘에 있는 것들의 모형은 이런 것들로써 정결케 할 필요가 있었으나 하늘에 있는 그것들은 이런 것들보다 더 좋은 제물로 할찌니라"
+      ],
+      "raw_text_hashes": [
+        "39f920b1f8517e8445c56e17eec1b7d7d1b0558f55d9d2f9e8659a81fb41d2e2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:9:24",
+      "sequence": 30126,
+      "chapter_label": "HEB 9",
+      "verse_label": "24",
+      "locator": {
+        "book": "HEB",
+        "chapter": 9,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 9,
+          "verse": 24
+        }
+      ],
+      "en": "For Christ hasn’t entered into holy places made with hands, which are representations of the true, but into heaven itself, now to appear in the presence of God for us;",
+      "ko": "그리스도께서는 참 것의 그림자인 손으로 만든 성소에 들어가지 아니하시고 오직 참 하늘에 들어가사 이제 우리를 위하여 하나님 앞에 나타나시고",
+      "source_text_hash": "3ec419da446f734e516d75e378472d8813183b55931fbc87a737361c94f097c5",
+      "translation_text_hash": "ac0a2eaaf002226910d9b7e99b4f37f4ad6e433f26c273f4a0130602d1b0da42",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그리스도께서는 참 것의 그림자인 손으로 만든 성소에 들어가지 아니하시고 오직 참 하늘에 들어가사 이제 우리를 위하여 하나님 앞에 나타나시고"
+      ],
+      "raw_text_hashes": [
+        "ac0a2eaaf002226910d9b7e99b4f37f4ad6e433f26c273f4a0130602d1b0da42"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:9:25",
+      "sequence": 30127,
+      "chapter_label": "HEB 9",
+      "verse_label": "25",
+      "locator": {
+        "book": "HEB",
+        "chapter": 9,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 9,
+          "verse": 25
+        }
+      ],
+      "en": "nor yet that he should offer himself often, as the high priest enters into the holy place year by year with blood not his own,",
+      "ko": "대제사장이 해마다 다른 것의 피로써 성소에 들어가는 것 같이 자주 자기를 드리려고 아니하실찌니",
+      "source_text_hash": "a787ba06f0f5f152d92cb425ec184c78e18a6e3d6e8a6a844b558407230725e8",
+      "translation_text_hash": "88a614b879592ad602d39385be5ca0d2dee8325495b84c291b1708fcf6d96b79",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대제사장이 해마다 다른 것의 피로써 성소에 들어가는 것 같이 자주 자기를 드리려고 아니하실찌니"
+      ],
+      "raw_text_hashes": [
+        "88a614b879592ad602d39385be5ca0d2dee8325495b84c291b1708fcf6d96b79"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:9:26",
+      "sequence": 30128,
+      "chapter_label": "HEB 9",
+      "verse_label": "26",
+      "locator": {
+        "book": "HEB",
+        "chapter": 9,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 9,
+          "verse": 26
+        }
+      ],
+      "en": "or else he must have suffered often since the foundation of the world. But now once at the end of the ages, he has been revealed to put away sin by the sacrifice of himself.",
+      "ko": "그리하면 그가 세상을 창조할 때부터 자주 고난을 받았어야 할 것이로되 이제 자기를 단번에 제사로 드려 죄를 없게 하시려고 세상 끝에 나타나셨느니라",
+      "source_text_hash": "a0a8099fbf10e35243c59abee6adeb66f65e981ef02d23be23177b0717309600",
+      "translation_text_hash": "c10c6f1275fc944bbfc8847d04af648475d618e584caab35befbb929b256dd2a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그리하면 그가 세상을 창조할 때부터 자주 고난을 받았어야 할 것이로되 이제 자기를 단번에 제사로 드려 죄를 없게 하시려고 세상 끝에 나타나셨느니라"
+      ],
+      "raw_text_hashes": [
+        "c10c6f1275fc944bbfc8847d04af648475d618e584caab35befbb929b256dd2a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:9:27",
+      "sequence": 30129,
+      "chapter_label": "HEB 9",
+      "verse_label": "27",
+      "locator": {
+        "book": "HEB",
+        "chapter": 9,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 9,
+          "verse": 27
+        }
+      ],
+      "en": "Inasmuch as it is appointed for men to die once, and after this, judgment,",
+      "ko": "한번 죽는 것은 사람에게 정하신 것이요 그 후에는 심판이 있으리니",
+      "source_text_hash": "fab0012814db595afe706fa2b686282c87a21fa92559aeb14e8648bd08ccca7f",
+      "translation_text_hash": "628c4f5265cd18543ecebfaa3b51babe2cf05fba3c969a358c29ba2a948a9209",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "한번 죽는 것은 사람에게 정하신 것이요 그 후에는 심판이 있으리니"
+      ],
+      "raw_text_hashes": [
+        "628c4f5265cd18543ecebfaa3b51babe2cf05fba3c969a358c29ba2a948a9209"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:9:28",
+      "sequence": 30130,
+      "chapter_label": "HEB 9",
+      "verse_label": "28",
+      "locator": {
+        "book": "HEB",
+        "chapter": 9,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 9,
+          "verse": 28
+        }
+      ],
+      "en": "so Christ also, having been offered once to bear the sins of many, will appear a second time, not to deal with sin, but to save those who are eagerly waiting for him.",
+      "ko": "이와 같이 그리스도도 많은 사람의 죄를 담당하시려고 단번에 드리신바 되셨고 구원에 이르게 하기 위하여 죄와 상관 없이 자기를 바라는 자들에게 두번째 나타나시리라",
+      "source_text_hash": "55996a90c9fd23aedb13ebf69e9930769b48f9cf3a58deccda4d9c2472974ef8",
+      "translation_text_hash": "a7ce77e9276f92e19523e717d683bca193bc972b4cb410ad0aace0248d9ad495",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이와 같이 그리스도도 많은 사람의 죄를 담당하시려고 단번에 드리신바 되셨고 구원에 이르게 하기 위하여 죄와 상관 없이 자기를 바라는 자들에게 두번째 나타나시리라"
+      ],
+      "raw_text_hashes": [
+        "a7ce77e9276f92e19523e717d683bca193bc972b4cb410ad0aace0248d9ad495"
+      ]
+    }
+  ]
+}

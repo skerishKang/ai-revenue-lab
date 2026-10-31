@@ -1,0 +1,1805 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:MRK:chapter:006",
+  "unit_ordinal": 963,
+  "unit_label": "MRK 6",
+  "book_code": "MRK",
+  "chapter_number": 6,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:MRK:6:1",
+      "sequence": 24409,
+      "chapter_label": "MRK 6",
+      "verse_label": "1",
+      "locator": {
+        "book": "MRK",
+        "chapter": 6,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 6,
+          "verse": 1
+        }
+      ],
+      "en": "He went out from there. He came into his own country, and his disciples followed him.",
+      "ko": "예수께서 거기를 떠나사 고향으로 가시니 제자들도 좇으니라",
+      "source_text_hash": "67414bf14619a2d82230c22969b0bb8fbc36d7927cb50b8b66d50e1f8f97ad71",
+      "translation_text_hash": "c3cc588b80c99907a8f49f76b61c21221791a9b6251f89ac6cb68287423adf60",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 거기를 떠나사 고향으로 가시니 제자들도 좇으니라"
+      ],
+      "raw_text_hashes": [
+        "c3cc588b80c99907a8f49f76b61c21221791a9b6251f89ac6cb68287423adf60"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:6:2",
+      "sequence": 24410,
+      "chapter_label": "MRK 6",
+      "verse_label": "2",
+      "locator": {
+        "book": "MRK",
+        "chapter": 6,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 6,
+          "verse": 2
+        }
+      ],
+      "en": "When the Sabbath had come, he began to teach in the synagogue, and many hearing him were astonished, saying, “Where did this man get these things?” and, “What is the wisdom that is given to this man, that such mighty works come about by his hands?",
+      "ko": "안식일이 되어 회당에서 가르치시니 많은 사람이 듣고 놀라 가로되 이 사람이 어디서 이런 것을 얻었느뇨 이 사람의 받은 지혜와 그 손으로 이루어지는 이런 권능이 어찌됨이뇨",
+      "source_text_hash": "b49e396a5df42363a5d746b1fb68cc9c528599a6468fd160076c1c128e5e9af9",
+      "translation_text_hash": "37240fb2d819bf6664a6b06946a1c77e2c71c0cba3aab53b14a802ce6c047022",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "안식일이 되어 회당에서 가르치시니 많은 사람이 듣고 놀라 가로되 이 사람이 어디서 이런 것을 얻었느뇨 이 사람의 받은 지혜와 그 손으로 이루어지는 이런 권능이 어찌됨이뇨"
+      ],
+      "raw_text_hashes": [
+        "37240fb2d819bf6664a6b06946a1c77e2c71c0cba3aab53b14a802ce6c047022"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:6:3",
+      "sequence": 24411,
+      "chapter_label": "MRK 6",
+      "verse_label": "3",
+      "locator": {
+        "book": "MRK",
+        "chapter": 6,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 6,
+          "verse": 3
+        }
+      ],
+      "en": "Isn’t this the carpenter, the son of Mary and brother of James, Joses, Judah, and Simon? Aren’t his sisters here with us?” So they were offended at him.",
+      "ko": "이 사람이 마리아의 아들 목수가 아니냐 야고보와 요셉과 유다와 시몬의 형제가 아니냐 그 누이들이 우리와 함께 여기 있지 아니하냐 하고 예수를 배척한지라",
+      "source_text_hash": "922bca223e7de1e8fffc81dddba64399f3fc7b6c27eff2993fe641ea63278c6b",
+      "translation_text_hash": "0e30d36338721f9cb097b15dc3e3c0d5b76810fa636cb8fc9f61ad500bf50218",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 사람이 마리아의 아들 목수가 아니냐 야고보와 요셉과 유다와 시몬의 형제가 아니냐 그 누이들이 우리와 함께 여기 있지 아니하냐 하고 예수를 배척한지라"
+      ],
+      "raw_text_hashes": [
+        "0e30d36338721f9cb097b15dc3e3c0d5b76810fa636cb8fc9f61ad500bf50218"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:6:4",
+      "sequence": 24412,
+      "chapter_label": "MRK 6",
+      "verse_label": "4",
+      "locator": {
+        "book": "MRK",
+        "chapter": 6,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 6,
+          "verse": 4
+        }
+      ],
+      "en": "Jesus said to them, “A prophet is not without honor, except in his own country, and among his own relatives, and in his own house.”",
+      "ko": "예수께서 저희에게 이르시되 선지자가 자기 고향과 자기 친척과 자기 집 외에서는 존경을 받지 않음이 없느니라 하시며",
+      "source_text_hash": "20d8b01f65f594483349326ff4d7905a3b36c9a34437418676f8db852ff90e51",
+      "translation_text_hash": "55d3a7f235c5aa480e88d5b4e5be16052f570ca7a0d8e898b948114785cf1108",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 저희에게 이르시되 선지자가 자기 고향과 자기 친척과 자기 집 외에서는 존경을 받지 않음이 없느니라 하시며"
+      ],
+      "raw_text_hashes": [
+        "55d3a7f235c5aa480e88d5b4e5be16052f570ca7a0d8e898b948114785cf1108"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:6:5",
+      "sequence": 24413,
+      "chapter_label": "MRK 6",
+      "verse_label": "5",
+      "locator": {
+        "book": "MRK",
+        "chapter": 6,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 6,
+          "verse": 5
+        }
+      ],
+      "en": "He could do no mighty work there, except that he laid his hands on a few sick people and healed them.",
+      "ko": "거기서는 아무 권능도 행하실 수 없어 다만 소수의 병인에게 안수하여 고치실 뿐이었고",
+      "source_text_hash": "0803ef53c2b1b6e6974362a2bcfded441f68b8d0358effe814d08a9c7553714a",
+      "translation_text_hash": "599b22cde6d7a21e26eac849dcd0de9aaeaa71a21d7561a9d989f9ffbd600a2c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거기서는 아무 권능도 행하실 수 없어 다만 소수의 병인에게 안수하여 고치실 뿐이었고"
+      ],
+      "raw_text_hashes": [
+        "599b22cde6d7a21e26eac849dcd0de9aaeaa71a21d7561a9d989f9ffbd600a2c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:6:6",
+      "sequence": 24414,
+      "chapter_label": "MRK 6",
+      "verse_label": "6",
+      "locator": {
+        "book": "MRK",
+        "chapter": 6,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 6,
+          "verse": 6
+        }
+      ],
+      "en": "He marveled because of their unbelief. He went around the villages teaching.",
+      "ko": "저희의 믿지 않음을 이상히 여기셨더라 이에 모든 촌에 두루 다니시며 가르치시더라",
+      "source_text_hash": "ecf902e36c702bf9e171045e4e7d300c437312de4aa18b66193781f008a9ed5d",
+      "translation_text_hash": "97ca26ccb750d855e2761eb27bd71b04da1508880bf66b1becf0a5f5e354537a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희의 믿지 않음을 이상히 여기셨더라 이에 모든 촌에 두루 다니시며 가르치시더라"
+      ],
+      "raw_text_hashes": [
+        "97ca26ccb750d855e2761eb27bd71b04da1508880bf66b1becf0a5f5e354537a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:6:7",
+      "sequence": 24415,
+      "chapter_label": "MRK 6",
+      "verse_label": "7",
+      "locator": {
+        "book": "MRK",
+        "chapter": 6,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 6,
+          "verse": 7
+        }
+      ],
+      "en": "He called to himself the twelve, and began to send them out two by two; and he gave them authority over the unclean spirits.",
+      "ko": "열 두 제자를 부르사 둘씩 둘씩 보내시며 더러운 귀신을 제어하는 권세를 주시고",
+      "source_text_hash": "eb7a5b97c7f76afa8568412d974aa7ec4da3f5b2665ff208eaaee276fc080e9b",
+      "translation_text_hash": "78bed11fdb19af062525bd524710c67db114ee36463bd9aaf8abe5131bde89f3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "열 두 제자를 부르사 둘씩 둘씩 보내시며 더러운 귀신을 제어하는 권세를 주시고"
+      ],
+      "raw_text_hashes": [
+        "78bed11fdb19af062525bd524710c67db114ee36463bd9aaf8abe5131bde89f3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:6:8",
+      "sequence": 24416,
+      "chapter_label": "MRK 6",
+      "verse_label": "8",
+      "locator": {
+        "book": "MRK",
+        "chapter": 6,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 6,
+          "verse": 8
+        }
+      ],
+      "en": "He commanded them that they should take nothing for their journey, except a staff only: no bread, no wallet, no money in their purse,",
+      "ko": "명하시되 여행을 위하여 지팡이 외에는 양식이나 주머니나 전대의 돈이나 아무 것도 가지지 말며",
+      "source_text_hash": "7fd07c7b5f4e3d5ec155fd8dc15aa9fbb24b6b202dd4ab1932ffee5bba12608a",
+      "translation_text_hash": "0165b874d5cea0b8bf3b13e2160491fa7f1f48d8e0959698d9b4091e22d92921",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "명하시되 여행을 위하여 지팡이 외에는 양식이나 주머니나 전대의 돈이나 아무 것도 가지지 말며"
+      ],
+      "raw_text_hashes": [
+        "0165b874d5cea0b8bf3b13e2160491fa7f1f48d8e0959698d9b4091e22d92921"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:6:9",
+      "sequence": 24417,
+      "chapter_label": "MRK 6",
+      "verse_label": "9",
+      "locator": {
+        "book": "MRK",
+        "chapter": 6,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 6,
+          "verse": 9
+        }
+      ],
+      "en": "but to wear sandals, and not put on two tunics.",
+      "ko": "신만 신고 두 벌 옷도 입지 말라 하시고",
+      "source_text_hash": "06c7ecf066cfed28d7ce03e955b95c03b749cc616ad210cb7cb3dd8de8a7c192",
+      "translation_text_hash": "135a5e1bc169550bfaeffb9ea72f52cb7ebdc7dc588cabc3b7cf7e2233ce1a07",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "신만 신고 두 벌 옷도 입지 말라 하시고"
+      ],
+      "raw_text_hashes": [
+        "135a5e1bc169550bfaeffb9ea72f52cb7ebdc7dc588cabc3b7cf7e2233ce1a07"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:6:10",
+      "sequence": 24418,
+      "chapter_label": "MRK 6",
+      "verse_label": "10",
+      "locator": {
+        "book": "MRK",
+        "chapter": 6,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 6,
+          "verse": 10
+        }
+      ],
+      "en": "He said to them, “Wherever you enter into a house, stay there until you depart from there.",
+      "ko": "또 가라사대 어디서든지 뉘 집에 들어가거든 그곳을 떠나기까지 거기 유하라",
+      "source_text_hash": "aee7078eb846fd67386496b41e8330f28ab4cc66d89ac7f4f6579297059a1170",
+      "translation_text_hash": "59eb8490ce68052e64535f92f354d755db2fb48feba60823dc2bb280b8158654",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 가라사대 어디서든지 뉘 집에 들어가거든 그곳을 떠나기까지 거기 유하라"
+      ],
+      "raw_text_hashes": [
+        "59eb8490ce68052e64535f92f354d755db2fb48feba60823dc2bb280b8158654"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:6:11",
+      "sequence": 24419,
+      "chapter_label": "MRK 6",
+      "verse_label": "11",
+      "locator": {
+        "book": "MRK",
+        "chapter": 6,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 6,
+          "verse": 11
+        }
+      ],
+      "en": "Whoever will not receive you nor hear you, as you depart from there, shake off the dust that is under your feet for a testimony against them. Assuredly, I tell you, it will be more tolerable for Sodom and Gomorrah in the day of judgment than for that city!”",
+      "ko": "어느 곳에서든지 너희를 영접지 아니하고 너희 말을 듣지도 아니하거든 거기서 나갈 때에 발아래 먼지를 떨어버려 저희에게 증거를 삼으라 하시니",
+      "source_text_hash": "c62c02fb7cd0751d8d88fab6c8b434ae63054aeff0de9d0ca01ade7e9be49c29",
+      "translation_text_hash": "bdbe4c59fc4b4521452d319a5a2ef089836b04706cf3e78ee2847ae011cddc99",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어느 곳에서든지 너희를 영접지 아니하고 너희 말을 듣지도 아니하거든 거기서 나갈 때에 발아래 먼지를 떨어버려 저희에게 증거를 삼으라 하시니"
+      ],
+      "raw_text_hashes": [
+        "bdbe4c59fc4b4521452d319a5a2ef089836b04706cf3e78ee2847ae011cddc99"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:6:12",
+      "sequence": 24420,
+      "chapter_label": "MRK 6",
+      "verse_label": "12",
+      "locator": {
+        "book": "MRK",
+        "chapter": 6,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 6,
+          "verse": 12
+        }
+      ],
+      "en": "They went out and preached that people should repent.",
+      "ko": "제자들이 나가서 회개하라 전파하고",
+      "source_text_hash": "f99972f6f478ef544af4ba031d119d5e88b2b3cff4e6e310b788d367c7c06793",
+      "translation_text_hash": "aa5f9e6b62288ad2d98a5b57c61576066ddcc3bf4d11f3ad842940cda2bbab34",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제자들이 나가서 회개하라 전파하고"
+      ],
+      "raw_text_hashes": [
+        "aa5f9e6b62288ad2d98a5b57c61576066ddcc3bf4d11f3ad842940cda2bbab34"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:6:13",
+      "sequence": 24421,
+      "chapter_label": "MRK 6",
+      "verse_label": "13",
+      "locator": {
+        "book": "MRK",
+        "chapter": 6,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 6,
+          "verse": 13
+        }
+      ],
+      "en": "They cast out many demons, and anointed many with oil who were sick and healed them.",
+      "ko": "많은 귀신을 쫓아내며 많은 병인에게 기름을 발라 고치더라",
+      "source_text_hash": "d66e8f2a23a610b337ab49249ac28da86bd56bd431ab850ee8baf85001c88476",
+      "translation_text_hash": "1ec947e0918eb2ed9f5fba1545b250675e4a7b80f65f36df217524f593cf7608",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "많은 귀신을 쫓아내며 많은 병인에게 기름을 발라 고치더라"
+      ],
+      "raw_text_hashes": [
+        "1ec947e0918eb2ed9f5fba1545b250675e4a7b80f65f36df217524f593cf7608"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:6:14",
+      "sequence": 24422,
+      "chapter_label": "MRK 6",
+      "verse_label": "14",
+      "locator": {
+        "book": "MRK",
+        "chapter": 6,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 6,
+          "verse": 14
+        }
+      ],
+      "en": "King Herod heard this, for his name had become known, and he said, “John the Baptizer has risen from the dead, and therefore these powers are at work in him.”",
+      "ko": "이에 예수의 이름이 드러난지라 헤롯왕이 듣고 가로되 이는 세례 요한이 죽은 자 가운데서 살아났도다 그러므로 이런 능력이 그 속에서 운동하느니라 하고",
+      "source_text_hash": "4cdf8f01ca7a751846eccab2461680928c211b73c8f13cd4e60808204a5d3511",
+      "translation_text_hash": "23eff8b4a7f1625cbfc0e11a496bbb4c2c15b9db9c3a602f9856cb59ffcd2b87",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 예수의 이름이 드러난지라 헤롯왕이 듣고 가로되 이는 세례 요한이 죽은 자 가운데서 살아났도다 그러므로 이런 능력이 그 속에서 운동하느니라 하고"
+      ],
+      "raw_text_hashes": [
+        "23eff8b4a7f1625cbfc0e11a496bbb4c2c15b9db9c3a602f9856cb59ffcd2b87"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:6:15",
+      "sequence": 24423,
+      "chapter_label": "MRK 6",
+      "verse_label": "15",
+      "locator": {
+        "book": "MRK",
+        "chapter": 6,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 6,
+          "verse": 15
+        }
+      ],
+      "en": "But others said, “He is Elijah.” Others said, “He is a prophet, or like one of the prophets.”",
+      "ko": "어떤이는 이가 엘리야라 하고 또 어떤이는 이가 선지자니 옛 선지자 중의 하나와 같다 하되",
+      "source_text_hash": "ac8d874c8f3a1f2c57f31a644b7e291064074f89e48cd95cd25326f02f546a0c",
+      "translation_text_hash": "308de36ded4275448d6211dffb6f338be2199b67ab891ea41b4ce1bb9309bcd4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어떤이는 이가 엘리야라 하고 또 어떤이는 이가 선지자니 옛 선지자 중의 하나와 같다 하되"
+      ],
+      "raw_text_hashes": [
+        "308de36ded4275448d6211dffb6f338be2199b67ab891ea41b4ce1bb9309bcd4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:6:16",
+      "sequence": 24424,
+      "chapter_label": "MRK 6",
+      "verse_label": "16",
+      "locator": {
+        "book": "MRK",
+        "chapter": 6,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 6,
+          "verse": 16
+        }
+      ],
+      "en": "But Herod, when he heard this, said, “This is John, whom I beheaded. He has risen from the dead.”",
+      "ko": "헤롯은 듣고 가로되 내가 목 베인 요한 그가 살아났다 하더라",
+      "source_text_hash": "1d608f93ae23832dcbb6bae025ab854a341c2e88aef39ed4a691d2e3ec84e986",
+      "translation_text_hash": "1269a5ae9d9629664f81c74d58c4c14d8e6daa9a650558bf458f6d24f43de179",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "헤롯은 듣고 가로되 내가 목 베인 요한 그가 살아났다 하더라"
+      ],
+      "raw_text_hashes": [
+        "1269a5ae9d9629664f81c74d58c4c14d8e6daa9a650558bf458f6d24f43de179"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:6:17",
+      "sequence": 24425,
+      "chapter_label": "MRK 6",
+      "verse_label": "17",
+      "locator": {
+        "book": "MRK",
+        "chapter": 6,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 6,
+          "verse": 17
+        }
+      ],
+      "en": "For Herod himself had sent out and arrested John and bound him in prison for the sake of Herodias, his brother Philip’s wife, for he had married her.",
+      "ko": "전에 헤롯이 자기가 동생 빌립의 아내 헤로디아에게 장가 든 고로 이 여자를 위하여 사람을 보내어 요한을 잡아 옥에 가두었으니",
+      "source_text_hash": "09f950c11845113be5686d17489bbba70c3c3e2d994a28803ca76dc9b30e57ea",
+      "translation_text_hash": "69d7c1f0cb0bb369abf8a337c51f146cee275fa5e1f8d5b85aff1b6524ef21de",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "전에 헤롯이 자기가 동생 빌립의 아내 헤로디아에게 장가 든 고로 이 여자를 위하여 사람을 보내어 요한을 잡아 옥에 가두었으니"
+      ],
+      "raw_text_hashes": [
+        "69d7c1f0cb0bb369abf8a337c51f146cee275fa5e1f8d5b85aff1b6524ef21de"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:6:18",
+      "sequence": 24426,
+      "chapter_label": "MRK 6",
+      "verse_label": "18",
+      "locator": {
+        "book": "MRK",
+        "chapter": 6,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 6,
+          "verse": 18
+        }
+      ],
+      "en": "For John had said to Herod, “It is not lawful for you to have your brother’s wife.”",
+      "ko": "이는 요한이 헤롯에게 말하되 동생의 아내를 취한 것이 옳지 않다 하였음이라",
+      "source_text_hash": "845ffecf0515d6039f8d6cca330351d4d8436f6d9dd8c2e5e1d6718fba64ab38",
+      "translation_text_hash": "fb607ed588c299be61daa69bee6a4f68b53a6cd199987fa6c3f049cc0a6ecc00",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 요한이 헤롯에게 말하되 동생의 아내를 취한 것이 옳지 않다 하였음이라"
+      ],
+      "raw_text_hashes": [
+        "fb607ed588c299be61daa69bee6a4f68b53a6cd199987fa6c3f049cc0a6ecc00"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:6:19",
+      "sequence": 24427,
+      "chapter_label": "MRK 6",
+      "verse_label": "19",
+      "locator": {
+        "book": "MRK",
+        "chapter": 6,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 6,
+          "verse": 19
+        }
+      ],
+      "en": "Herodias set herself against him and desired to kill him, but she couldn’t,",
+      "ko": "헤로디아가 요한을 원수로 여겨 죽이고자 하였으되 하지 못한 것은",
+      "source_text_hash": "79187c0bcd6efc66c672b7fa4523609e6ddff813ed63c56b596f2a4753248283",
+      "translation_text_hash": "d269acdcb3e1d28d64e698e5673f7467e3c65a2f97e85c12771d7f07ad747bbb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "헤로디아가 요한을 원수로 여겨 죽이고자 하였으되 하지 못한 것은"
+      ],
+      "raw_text_hashes": [
+        "d269acdcb3e1d28d64e698e5673f7467e3c65a2f97e85c12771d7f07ad747bbb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:6:20",
+      "sequence": 24428,
+      "chapter_label": "MRK 6",
+      "verse_label": "20",
+      "locator": {
+        "book": "MRK",
+        "chapter": 6,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 6,
+          "verse": 20
+        }
+      ],
+      "en": "for Herod feared John, knowing that he was a righteous and holy man, and kept him safe. When he heard him, he did many things, and he heard him gladly.",
+      "ko": "헤롯이 요한을 의롭고 거룩한 사람으로 알고 두려워하여 보호하며 또 그의 말을 들을 때에 크게 번민을 느끼면서도 달게 들음이러라",
+      "source_text_hash": "f222d6e5c94c677ac5946aabfd81f98a42939622d9e28a935114db4aabee2227",
+      "translation_text_hash": "493f16fb7ec0db9996ee3e1af5a743447e76ff6937c88077ae8696050a332205",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "헤롯이 요한을 의롭고 거룩한 사람으로 알고 두려워하여 보호하며 또 그의 말을 들을 때에 크게 번민을 느끼면서도 달게 들음이러라"
+      ],
+      "raw_text_hashes": [
+        "493f16fb7ec0db9996ee3e1af5a743447e76ff6937c88077ae8696050a332205"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:6:21",
+      "sequence": 24429,
+      "chapter_label": "MRK 6",
+      "verse_label": "21",
+      "locator": {
+        "book": "MRK",
+        "chapter": 6,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 6,
+          "verse": 21
+        }
+      ],
+      "en": "Then a convenient day came when Herod on his birthday made a supper for his nobles, the high officers, and the chief men of Galilee.",
+      "ko": "마침 기회 좋은 날이 왔으니 곧 헤롯이 자기 생일에 대신들과 천부장들과 갈릴리의 귀인들로 더불어 잔치할쌔",
+      "source_text_hash": "fb6075bab27e05d373fb1c58c9b253642a700ca23584d86591dc4252d9677823",
+      "translation_text_hash": "484d8781123e4d29898c3b0b9c00f75088dc0e24ec4d963b8f258bf088863314",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마침 기회 좋은 날이 왔으니 곧 헤롯이 자기 생일에 대신들과 천부장들과 갈릴리의 귀인들로 더불어 잔치할쌔"
+      ],
+      "raw_text_hashes": [
+        "484d8781123e4d29898c3b0b9c00f75088dc0e24ec4d963b8f258bf088863314"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:6:22",
+      "sequence": 24430,
+      "chapter_label": "MRK 6",
+      "verse_label": "22",
+      "locator": {
+        "book": "MRK",
+        "chapter": 6,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 6,
+          "verse": 22
+        }
+      ],
+      "en": "When the daughter of Herodias herself came in and danced, she pleased Herod and those sitting with him. The king said to the young lady, “Ask me whatever you want, and I will give it to you.”",
+      "ko": "헤로디아의 딸이 친히 들어와 춤을 추어 헤롯과 및 함께 앉은 자들을 기쁘게 한지라 왕이 그 여아에게 이르되 무엇이든지 너 원하는 것을 내게 구하라 내가 주리라 하고",
+      "source_text_hash": "436684e850c4edb8e19bf2d2f72c5f10e713b560fefe1e2efd558df3ee82b43e",
+      "translation_text_hash": "0d32bd8aa5d686a79919a76d73b48704b430c6b105c1f3244fa22479e548f64f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "헤로디아의 딸이 친히 들어와 춤을 추어 헤롯과 및 함께 앉은 자들을 기쁘게 한지라 왕이 그 여아에게 이르되 무엇이든지 너 원하는 것을 내게 구하라 내가 주리라 하고"
+      ],
+      "raw_text_hashes": [
+        "0d32bd8aa5d686a79919a76d73b48704b430c6b105c1f3244fa22479e548f64f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:6:23",
+      "sequence": 24431,
+      "chapter_label": "MRK 6",
+      "verse_label": "23",
+      "locator": {
+        "book": "MRK",
+        "chapter": 6,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 6,
+          "verse": 23
+        }
+      ],
+      "en": "He swore to her, “Whatever you ask of me, I will give you, up to half of my kingdom.”",
+      "ko": "또 맹세하되 무엇이든지 네가 내게 구하면 내 나라의 절반까지라도 주리라 하거늘",
+      "source_text_hash": "139383920594babdd8b4c4251de18688f14a957dd10b793fd718c5247572c42a",
+      "translation_text_hash": "11248fd9151a90c7d031fafb8d391f8ba1acafeb7ea9d5c3a1fe7e2e350035cc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 맹세하되 무엇이든지 네가 내게 구하면 내 나라의 절반까지라도 주리라 하거늘"
+      ],
+      "raw_text_hashes": [
+        "11248fd9151a90c7d031fafb8d391f8ba1acafeb7ea9d5c3a1fe7e2e350035cc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:6:24",
+      "sequence": 24432,
+      "chapter_label": "MRK 6",
+      "verse_label": "24",
+      "locator": {
+        "book": "MRK",
+        "chapter": 6,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 6,
+          "verse": 24
+        }
+      ],
+      "en": "She went out and said to her mother, “What shall I ask?” She said, “The head of John the Baptizer.”",
+      "ko": "저가 나가서 그 어미에게 말하되 내가 무엇을 구하리이까 그 어미가 가로되 세례 요한의 머리를 구하라 하니",
+      "source_text_hash": "af252a66f3f2ad81e76ff2399145ace5093e855194d3884ed09ddf64c0984847",
+      "translation_text_hash": "6cb43bc20b4fd9430361af26f17393337e885b10fabf19bea2ca1caf92099e74",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 나가서 그 어미에게 말하되 내가 무엇을 구하리이까 그 어미가 가로되 세례 요한의 머리를 구하라 하니"
+      ],
+      "raw_text_hashes": [
+        "6cb43bc20b4fd9430361af26f17393337e885b10fabf19bea2ca1caf92099e74"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:6:25",
+      "sequence": 24433,
+      "chapter_label": "MRK 6",
+      "verse_label": "25",
+      "locator": {
+        "book": "MRK",
+        "chapter": 6,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 6,
+          "verse": 25
+        }
+      ],
+      "en": "She came in immediately with haste to the king and requested, “I want you to give me right now the head of John the Baptizer on a platter.”",
+      "ko": "저가 곧 왕에게 급히 들어가 구하여 가로되 세례 요한의 머리를 소반에 담아 곧 내게 주기를 원하옵나이다 한대",
+      "source_text_hash": "1ad752085727293678d1695ada9686bf40231377307f2ebadd483baa77cb3979",
+      "translation_text_hash": "fa5ad69cc6c8d113640b0eb1fee8010a8c55324dd944b0d0e79bb611c8710df2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 곧 왕에게 급히 들어가 구하여 가로되 세례 요한의 머리를 소반에 담아 곧 내게 주기를 원하옵나이다 한대"
+      ],
+      "raw_text_hashes": [
+        "fa5ad69cc6c8d113640b0eb1fee8010a8c55324dd944b0d0e79bb611c8710df2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:6:26",
+      "sequence": 24434,
+      "chapter_label": "MRK 6",
+      "verse_label": "26",
+      "locator": {
+        "book": "MRK",
+        "chapter": 6,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 6,
+          "verse": 26
+        }
+      ],
+      "en": "The king was exceedingly sorry, but for the sake of his oaths and of his dinner guests, he didn’t wish to refuse her.",
+      "ko": "왕이 심히 근심하나 자기의 맹세한 것과 그 앉은 자들을 인하여 저를 거절할 수 없는지라",
+      "source_text_hash": "4ffaf2290fd0ce51bb310a0b0eb32d2cb61d97ddcb028adbc81fdf0979a0cf44",
+      "translation_text_hash": "43609d5021de8cd949ebe0ba67ad1d8ed62899b828f93c90fb229fb516fa11a6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 심히 근심하나 자기의 맹세한 것과 그 앉은 자들을 인하여 저를 거절할 수 없는지라"
+      ],
+      "raw_text_hashes": [
+        "43609d5021de8cd949ebe0ba67ad1d8ed62899b828f93c90fb229fb516fa11a6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:6:27",
+      "sequence": 24435,
+      "chapter_label": "MRK 6",
+      "verse_label": "27",
+      "locator": {
+        "book": "MRK",
+        "chapter": 6,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 6,
+          "verse": 27
+        }
+      ],
+      "en": "Immediately the king sent out a soldier of his guard and commanded to bring John’s head; and he went and beheaded him in the prison,",
+      "ko": "왕이 곧 시위병 하나를 보내어 요한의 머리를 가져오라 명하니 그 사람이 나가 옥에서 요한을 목 베어",
+      "source_text_hash": "1834918ff3753c515d58908a763667bcc7333385c2fe48b84cebd16069bd9354",
+      "translation_text_hash": "a4552be06be5cb755c2f4579bbd048316cf9282e8dc68fbfe19b87ea7509a496",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 곧 시위병 하나를 보내어 요한의 머리를 가져오라 명하니 그 사람이 나가 옥에서 요한을 목 베어"
+      ],
+      "raw_text_hashes": [
+        "a4552be06be5cb755c2f4579bbd048316cf9282e8dc68fbfe19b87ea7509a496"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:6:28",
+      "sequence": 24436,
+      "chapter_label": "MRK 6",
+      "verse_label": "28",
+      "locator": {
+        "book": "MRK",
+        "chapter": 6,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 6,
+          "verse": 28
+        }
+      ],
+      "en": "and brought his head on a platter, and gave it to the young lady; and the young lady gave it to her mother.",
+      "ko": "그 머리를 소반에 담아다가 여아에게 주니 여아가 이것을 그 어미에게 주니라",
+      "source_text_hash": "11af99b8d6f8bf5d1e977cead9c6ed1758f37770cd86e940e596d17be6c5a590",
+      "translation_text_hash": "1cf5a6dfbf98e3223a8bd259a4d8619760f382f4df9ae689c2af0a1c73045a06",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 머리를 소반에 담아다가 여아에게 주니 여아가 이것을 그 어미에게 주니라"
+      ],
+      "raw_text_hashes": [
+        "1cf5a6dfbf98e3223a8bd259a4d8619760f382f4df9ae689c2af0a1c73045a06"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:6:29",
+      "sequence": 24437,
+      "chapter_label": "MRK 6",
+      "verse_label": "29",
+      "locator": {
+        "book": "MRK",
+        "chapter": 6,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 6,
+          "verse": 29
+        }
+      ],
+      "en": "When his disciples heard this, they came and took up his corpse and laid it in a tomb.",
+      "ko": "요한의 제자들이 듣고 와서 시체를 가져다가 장사하니라",
+      "source_text_hash": "75ae96ae747069f577af08e377f2476ce3a4f4efcb85e34a8902c5a68b0a16f4",
+      "translation_text_hash": "db0c0f874176b2f88d3f750d8f64c56d55135fea65720bd69c6661ea908e020d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요한의 제자들이 듣고 와서 시체를 가져다가 장사하니라"
+      ],
+      "raw_text_hashes": [
+        "db0c0f874176b2f88d3f750d8f64c56d55135fea65720bd69c6661ea908e020d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:6:30",
+      "sequence": 24438,
+      "chapter_label": "MRK 6",
+      "verse_label": "30",
+      "locator": {
+        "book": "MRK",
+        "chapter": 6,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 6,
+          "verse": 30
+        }
+      ],
+      "en": "The apostles gathered themselves together to Jesus, and they told him all things, whatever they had done, and whatever they had taught.",
+      "ko": "사도들이 예수께 모여 자기들의 행한 것과 가르친 것을 낱낱이 고하니",
+      "source_text_hash": "2023f8d8612a1aaba15ab10c46c1bce892dde1ff07aa80f9f22eeb007c251224",
+      "translation_text_hash": "2ae9ebd9bf7c6fab73beebd18c155c282d55a6068be34d89a655749877a2e0bc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사도들이 예수께 모여 자기들의 행한 것과 가르친 것을 낱낱이 고하니"
+      ],
+      "raw_text_hashes": [
+        "2ae9ebd9bf7c6fab73beebd18c155c282d55a6068be34d89a655749877a2e0bc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:6:31",
+      "sequence": 24439,
+      "chapter_label": "MRK 6",
+      "verse_label": "31",
+      "locator": {
+        "book": "MRK",
+        "chapter": 6,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 6,
+          "verse": 31
+        }
+      ],
+      "en": "He said to them, “Come away into a deserted place, and rest awhile.”For there were many coming and going, and they had no leisure so much as to eat.",
+      "ko": "이르시되 너희는 따로 한적한 곳에 와서 잠간 쉬어라 하시니 이는 오고 가는 사람이 많아 음식 먹을 겨를도 없음이라",
+      "source_text_hash": "01e63ee95b1308a1627dd0fcb84f11ec205f3d404304aca38cd1daf61b5a4bfb",
+      "translation_text_hash": "167f87e1d603e238372d9a99cc6d0c9933e11a6326cf732ccdbb80c70b53056e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이르시되 너희는 따로 한적한 곳에 와서 잠간 쉬어라 하시니 이는 오고 가는 사람이 많아 음식 먹을 겨를도 없음이라"
+      ],
+      "raw_text_hashes": [
+        "167f87e1d603e238372d9a99cc6d0c9933e11a6326cf732ccdbb80c70b53056e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:6:32",
+      "sequence": 24440,
+      "chapter_label": "MRK 6",
+      "verse_label": "32",
+      "locator": {
+        "book": "MRK",
+        "chapter": 6,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 6,
+          "verse": 32
+        }
+      ],
+      "en": "They went away in the boat to a deserted place by themselves.",
+      "ko": "이에 배를 타고 따로 한적한 곳에 갈쌔",
+      "source_text_hash": "3652cff33200de64d139f30114f9d3d2cdb4a7282c658b6798288dd98aa7601f",
+      "translation_text_hash": "1a2d851b657fce0aaecfa8478aef91afa5a0a4bc0ed568bb33587de03a4508f0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 배를 타고 따로 한적한 곳에 갈쌔"
+      ],
+      "raw_text_hashes": [
+        "1a2d851b657fce0aaecfa8478aef91afa5a0a4bc0ed568bb33587de03a4508f0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:6:33",
+      "sequence": 24441,
+      "chapter_label": "MRK 6",
+      "verse_label": "33",
+      "locator": {
+        "book": "MRK",
+        "chapter": 6,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 6,
+          "verse": 33
+        }
+      ],
+      "en": "They saw them going, and many recognized him and ran there on foot from all the cities. They arrived before them and came together to him.",
+      "ko": "그 가는 것을 보고 많은 사람이 저희인줄 안지라 모든 고을로부터 도보로 그 곳에 달려와 저희보다 먼저 갔더라",
+      "source_text_hash": "f88d3d795ac87c21d80af5106ed350066685a3233118692541bacea6f2bfd434",
+      "translation_text_hash": "fb92bdefdb3c0bf493341017f8c496189a510df26f6e821750920a9443cf1aa6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 가는 것을 보고 많은 사람이 저희인줄 안지라 모든 고을로부터 도보로 그 곳에 달려와 저희보다 먼저 갔더라"
+      ],
+      "raw_text_hashes": [
+        "fb92bdefdb3c0bf493341017f8c496189a510df26f6e821750920a9443cf1aa6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:6:34",
+      "sequence": 24442,
+      "chapter_label": "MRK 6",
+      "verse_label": "34",
+      "locator": {
+        "book": "MRK",
+        "chapter": 6,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 6,
+          "verse": 34
+        }
+      ],
+      "en": "Jesus came out, saw a great multitude, and he had compassion on them because they were like sheep without a shepherd; and he began to teach them many things.",
+      "ko": "예수께서 나오사 큰 무리를 보시고 그 목자 없는 양 같음을 인하여 불쌍히 여기사 이에 여러가지로 가르치시더라",
+      "source_text_hash": "a9f8ead5ef294acce369a6be0575ff66e9d277fbfd64eac9649742a209f0ccef",
+      "translation_text_hash": "ef42c26dadc25eac156183df8f80f29981b3464e56bbc5596b288349e06ef788",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 나오사 큰 무리를 보시고 그 목자 없는 양 같음을 인하여 불쌍히 여기사 이에 여러가지로 가르치시더라"
+      ],
+      "raw_text_hashes": [
+        "ef42c26dadc25eac156183df8f80f29981b3464e56bbc5596b288349e06ef788"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:6:35",
+      "sequence": 24443,
+      "chapter_label": "MRK 6",
+      "verse_label": "35",
+      "locator": {
+        "book": "MRK",
+        "chapter": 6,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 6,
+          "verse": 35
+        }
+      ],
+      "en": "When it was late in the day, his disciples came to him and said, “This place is deserted, and it is late in the day.",
+      "ko": "때가 저물어가매 제자들이 예수께 나아와 여짜오되 이곳은 빈 들이요 때도 저물어가니",
+      "source_text_hash": "f7f7da606a3a8d9e0e8aa518255621c183b08952b91a72bd7c9a47bde2e5ec7c",
+      "translation_text_hash": "a64531741f37ce5cfc46b9b7af104dadbc4c476802a074950c78beee0c5a512d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "때가 저물어가매 제자들이 예수께 나아와 여짜오되 이곳은 빈 들이요 때도 저물어가니"
+      ],
+      "raw_text_hashes": [
+        "a64531741f37ce5cfc46b9b7af104dadbc4c476802a074950c78beee0c5a512d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:6:36",
+      "sequence": 24444,
+      "chapter_label": "MRK 6",
+      "verse_label": "36",
+      "locator": {
+        "book": "MRK",
+        "chapter": 6,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 6,
+          "verse": 36
+        }
+      ],
+      "en": "Send them away, that they may go into the surrounding country and villages and buy themselves bread, for they have nothing to eat.”",
+      "ko": "무리를 보내어 두루 촌과 마을로 가서 무엇을 사 먹게 하옵소서",
+      "source_text_hash": "7e265e59bdd15f32f83de1ace561be76b113e567a04b31a2d7389c4dc227efc4",
+      "translation_text_hash": "95735d5f1f8df5263dc5568ddeb16b33d8df7b11af816700ef855037f4b262c9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무리를 보내어 두루 촌과 마을로 가서 무엇을 사 먹게 하옵소서"
+      ],
+      "raw_text_hashes": [
+        "95735d5f1f8df5263dc5568ddeb16b33d8df7b11af816700ef855037f4b262c9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:6:37",
+      "sequence": 24445,
+      "chapter_label": "MRK 6",
+      "verse_label": "37",
+      "locator": {
+        "book": "MRK",
+        "chapter": 6,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 6,
+          "verse": 37
+        }
+      ],
+      "en": "But he answered them, “You give them something to eat.”They asked him, “Shall we go and buy two hundred denarii worth of bread and give them something to eat?”",
+      "ko": "대답하여 가라사대 너희가 먹을 것을 주라 하시니 여짜오되 우리가 가서 이백 데나리온의 떡을 사다 먹이리이까",
+      "source_text_hash": "b658cfbc97586e98877a105f7e637ee93322caf7d2bfc4535611d82fe8ebaa5e",
+      "translation_text_hash": "0a071797eb41ab704b55fd53507fcdcc7105d4cb37c2d46f76a867a1e5be30b7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대답하여 가라사대 너희가 먹을 것을 주라 하시니 여짜오되 우리가 가서 이백 데나리온의 떡을 사다 먹이리이까"
+      ],
+      "raw_text_hashes": [
+        "0a071797eb41ab704b55fd53507fcdcc7105d4cb37c2d46f76a867a1e5be30b7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:6:38",
+      "sequence": 24446,
+      "chapter_label": "MRK 6",
+      "verse_label": "38",
+      "locator": {
+        "book": "MRK",
+        "chapter": 6,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 6,
+          "verse": 38
+        }
+      ],
+      "en": "He said to them, “How many loaves do you have? Go see.”When they knew, they said, “Five, and two fish.”",
+      "ko": "이르시되 너희에게 떡 몇 개나 있느냐 가서 보라 하시니 알아보고 가로되 떡 다섯 개와 물고기 두 마리가 있더이다 하거늘",
+      "source_text_hash": "fa1d7d6ff838c4392c3472c721251f5f5dd4db968d37c83771e41cfe9cc748fc",
+      "translation_text_hash": "1e0134ac45c096f23f518461a9c66dbca60a84ce2b24eb266096e4812eb544e6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이르시되 너희에게 떡 몇 개나 있느냐 가서 보라 하시니 알아보고 가로되 떡 다섯 개와 물고기 두 마리가 있더이다 하거늘"
+      ],
+      "raw_text_hashes": [
+        "1e0134ac45c096f23f518461a9c66dbca60a84ce2b24eb266096e4812eb544e6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:6:39",
+      "sequence": 24447,
+      "chapter_label": "MRK 6",
+      "verse_label": "39",
+      "locator": {
+        "book": "MRK",
+        "chapter": 6,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 6,
+          "verse": 39
+        }
+      ],
+      "en": "He commanded them that everyone should sit down in groups on the green grass.",
+      "ko": "제자들을 명하사 그 모든 사람으로 떼를 지어 푸른 잔디 위에 앉게 하시니",
+      "source_text_hash": "7d0e00f0a57e22b1a3e65a8edfe8a03a1dcbe17828f350d28d8ba8c5a8702236",
+      "translation_text_hash": "9e6030c76e727bf81ecab73d7be5ee72cf52cd7510d72829e2854d0010c798ec",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제자들을 명하사 그 모든 사람으로 떼를 지어 푸른 잔디 위에 앉게 하시니"
+      ],
+      "raw_text_hashes": [
+        "9e6030c76e727bf81ecab73d7be5ee72cf52cd7510d72829e2854d0010c798ec"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:6:40",
+      "sequence": 24448,
+      "chapter_label": "MRK 6",
+      "verse_label": "40",
+      "locator": {
+        "book": "MRK",
+        "chapter": 6,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 6,
+          "verse": 40
+        }
+      ],
+      "en": "They sat down in ranks, by hundreds and by fifties.",
+      "ko": "떼로 혹 백씩, 혹 오십씩 앉은지라",
+      "source_text_hash": "7cdc9c8d015341342486b63a12f665f1d4306e1d306a0c004e125dfca052cbd9",
+      "translation_text_hash": "0ea7c122a03c0a77827783f13c35a0799a4419281d7f380aa359b00af1b2442d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "떼로 혹 백씩, 혹 오십씩 앉은지라"
+      ],
+      "raw_text_hashes": [
+        "0ea7c122a03c0a77827783f13c35a0799a4419281d7f380aa359b00af1b2442d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:6:41",
+      "sequence": 24449,
+      "chapter_label": "MRK 6",
+      "verse_label": "41",
+      "locator": {
+        "book": "MRK",
+        "chapter": 6,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 6,
+          "verse": 41
+        }
+      ],
+      "en": "He took the five loaves and the two fish; and looking up to heaven, he blessed and broke the loaves, and he gave to his disciples to set before them, and he divided the two fish among them all.",
+      "ko": "예수께서 떡 다섯 개와 물고기 두 마리를 가지사 하늘을 우러러 축사하시고 떡을 떼어 제자들에게 주어 사람들 앞에 놓게 하시고 또 물고기 두 마리도 모든 사람에게 나누어 주시매",
+      "source_text_hash": "99a0f9a869ff5a55d004aa755ade862ff2480e3d5d96fdc0e7fee2f3df9f73e7",
+      "translation_text_hash": "d713a6f3392d3ffc7ba49f4750df9fc1b503138dd036f66a3710e5bed7d112d4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 떡 다섯 개와 물고기 두 마리를 가지사 하늘을 우러러 축사하시고 떡을 떼어 제자들에게 주어 사람들 앞에 놓게 하시고 또 물고기 두 마리도 모든 사람에게 나누어 주시매"
+      ],
+      "raw_text_hashes": [
+        "d713a6f3392d3ffc7ba49f4750df9fc1b503138dd036f66a3710e5bed7d112d4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:6:42",
+      "sequence": 24450,
+      "chapter_label": "MRK 6",
+      "verse_label": "42",
+      "locator": {
+        "book": "MRK",
+        "chapter": 6,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 6,
+          "verse": 42
+        }
+      ],
+      "en": "They all ate and were filled.",
+      "ko": "다 배불리 먹고",
+      "source_text_hash": "ff4314df0dbfb27414251c2b7639c356a014ab9d807fe2731ee22c77d8b5e18c",
+      "translation_text_hash": "b92133f18ded8fb27f59d6482ee959d8cdd36959dfc65201568f0a98f0536227",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다 배불리 먹고"
+      ],
+      "raw_text_hashes": [
+        "b92133f18ded8fb27f59d6482ee959d8cdd36959dfc65201568f0a98f0536227"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:6:43",
+      "sequence": 24451,
+      "chapter_label": "MRK 6",
+      "verse_label": "43",
+      "locator": {
+        "book": "MRK",
+        "chapter": 6,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 6,
+          "verse": 43
+        }
+      ],
+      "en": "They took up twelve baskets full of broken pieces and also of the fish.",
+      "ko": "남은 떡 조각과 물고기를 열 두 바구니에 차게 거두었으며",
+      "source_text_hash": "112355d6bb5f5b740109fd654ba21cb28b791c8af45cbee2f1d21d866625d9f5",
+      "translation_text_hash": "132d7bafaed4810623924f79adfc1772714cc6f637da4ee74798934de4711b1d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "남은 떡 조각과 물고기를 열 두 바구니에 차게 거두었으며"
+      ],
+      "raw_text_hashes": [
+        "132d7bafaed4810623924f79adfc1772714cc6f637da4ee74798934de4711b1d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:6:44",
+      "sequence": 24452,
+      "chapter_label": "MRK 6",
+      "verse_label": "44",
+      "locator": {
+        "book": "MRK",
+        "chapter": 6,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 6,
+          "verse": 44
+        }
+      ],
+      "en": "Those who ate the loaves were five thousand men.",
+      "ko": "떡을 먹은 남자가 오천 명이었더라",
+      "source_text_hash": "bcb16a5fd031f4e1d3e7a7c0ed64135696c034e221732cd688c92a8ff74aed7f",
+      "translation_text_hash": "d1772b03f139c8ad94dc73fa95a07c1110c6a47ac7643207da07f7f96139d244",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "떡을 먹은 남자가 오천 명이었더라"
+      ],
+      "raw_text_hashes": [
+        "d1772b03f139c8ad94dc73fa95a07c1110c6a47ac7643207da07f7f96139d244"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:6:45",
+      "sequence": 24453,
+      "chapter_label": "MRK 6",
+      "verse_label": "45",
+      "locator": {
+        "book": "MRK",
+        "chapter": 6,
+        "verse": 45
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 6,
+          "verse": 45
+        }
+      ],
+      "en": "Immediately he made his disciples get into the boat and go ahead to the other side, to Bethsaida, while he himself sent the multitude away.",
+      "ko": "예수께서 즉시 제자들을 재촉하사 자기가 무리를 보내는 동안에 배 타고 앞서 건너편 벳새다로 가게 하시고",
+      "source_text_hash": "1c32141e9f09004e57d38e39af6befc0fac3a928e68820372b8eadfbc43861af",
+      "translation_text_hash": "8c7f462e69b3034e700cd75221d240c610220f6edd4fa84f16d3e8bfcc4500de",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 즉시 제자들을 재촉하사 자기가 무리를 보내는 동안에 배 타고 앞서 건너편 벳새다로 가게 하시고"
+      ],
+      "raw_text_hashes": [
+        "8c7f462e69b3034e700cd75221d240c610220f6edd4fa84f16d3e8bfcc4500de"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:6:46",
+      "sequence": 24454,
+      "chapter_label": "MRK 6",
+      "verse_label": "46",
+      "locator": {
+        "book": "MRK",
+        "chapter": 6,
+        "verse": 46
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 6,
+          "verse": 46
+        }
+      ],
+      "en": "After he had taken leave of them, he went up the mountain to pray.",
+      "ko": "무리를 작별하신 후에 기도하러 산으로 가시다",
+      "source_text_hash": "22f8e8afa2fa1780c6fa615a578ba05541d50e1f000c27d3b89f0d8e4b729d34",
+      "translation_text_hash": "5a9720af559832bf17b8b66c509e75cdec0abb60cf892a9616210f15fc527795",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무리를 작별하신 후에 기도하러 산으로 가시다"
+      ],
+      "raw_text_hashes": [
+        "5a9720af559832bf17b8b66c509e75cdec0abb60cf892a9616210f15fc527795"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:6:47",
+      "sequence": 24455,
+      "chapter_label": "MRK 6",
+      "verse_label": "47",
+      "locator": {
+        "book": "MRK",
+        "chapter": 6,
+        "verse": 47
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 6,
+          "verse": 47
+        }
+      ],
+      "en": "When evening had come, the boat was in the middle of the sea, and he was alone on the land.",
+      "ko": "저물매 배는 바다 가운데 있고 예수는 홀로 뭍에 계시다가",
+      "source_text_hash": "5801c4ba2023469ff6a26538c69eaccf3bd0114c3054a9e2a99c210cf7a3bd6a",
+      "translation_text_hash": "ccb54da65cb52febe4843b64959ea5a947b10b2ebf51f383a62b8816a777a053",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저물매 배는 바다 가운데 있고 예수는 홀로 뭍에 계시다가"
+      ],
+      "raw_text_hashes": [
+        "ccb54da65cb52febe4843b64959ea5a947b10b2ebf51f383a62b8816a777a053"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:6:48",
+      "sequence": 24456,
+      "chapter_label": "MRK 6",
+      "verse_label": "48",
+      "locator": {
+        "book": "MRK",
+        "chapter": 6,
+        "verse": 48
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 6,
+          "verse": 48
+        }
+      ],
+      "en": "Seeing them distressed in rowing, for the wind was contrary to them, about the fourth watch of the night he came to them, walking on the sea; and he would have passed by them,",
+      "ko": "바람이 거스리므로 제자들의 괴로이 노 젓는 것을 보시고 밤 사경 즈음에 바다 위로 걸어서 저희에게 오사 지나가려고 하시매",
+      "source_text_hash": "de5c238d7f2ab6c90f8d1af9185b28539fe4a8e59e27d5603e1ba1ea4aa95fe3",
+      "translation_text_hash": "c880ee88640d25761fd07b7668377ce9781192a5adfbdc2dfc81d9fafc43e2a1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바람이 거스리므로 제자들의 괴로이 노 젓는 것을 보시고 밤 사경 즈음에 바다 위로 걸어서 저희에게 오사 지나가려고 하시매"
+      ],
+      "raw_text_hashes": [
+        "c880ee88640d25761fd07b7668377ce9781192a5adfbdc2dfc81d9fafc43e2a1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:6:49",
+      "sequence": 24457,
+      "chapter_label": "MRK 6",
+      "verse_label": "49",
+      "locator": {
+        "book": "MRK",
+        "chapter": 6,
+        "verse": 49
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 6,
+          "verse": 49
+        }
+      ],
+      "en": "but they, when they saw him walking on the sea, supposed that it was a ghost, and cried out;",
+      "ko": "제자들이 그의 바다 위로 걸어 오심을 보고 유령인가 하여 소리지르니",
+      "source_text_hash": "8dbfffcbb262022f0369f40e604cf5bc3a1972b3f75b55d43245833179f343aa",
+      "translation_text_hash": "b6ce58b520d4b22b7a0a941dbc9252be05d5d412531cea3c4d274274ea7c8b61",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제자들이 그의 바다 위로 걸어 오심을 보고 유령인가 하여 소리지르니"
+      ],
+      "raw_text_hashes": [
+        "b6ce58b520d4b22b7a0a941dbc9252be05d5d412531cea3c4d274274ea7c8b61"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:6:50",
+      "sequence": 24458,
+      "chapter_label": "MRK 6",
+      "verse_label": "50",
+      "locator": {
+        "book": "MRK",
+        "chapter": 6,
+        "verse": 50
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 6,
+          "verse": 50
+        }
+      ],
+      "en": "for they all saw him and were troubled. But he immediately spoke with them and said to them, “Cheer up! It is I!Don’t be afraid.”",
+      "ko": "저희가 다 예수를 보고 놀람이라 이에 예수께서 곧 더불어 말씀하여 가라사대 안심하라 내니 두려워 말라 하시고",
+      "source_text_hash": "649899c9d136b9dac4519dec5c4193fe702a3cdc5e0dfa2b8fabf44e2444772a",
+      "translation_text_hash": "9445ffba8b1d756b8b3a6932b8f8afadf6d430eee2dc8832dbd9bf379b4b3ccf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 다 예수를 보고 놀람이라 이에 예수께서 곧 더불어 말씀하여 가라사대 안심하라 내니 두려워 말라 하시고"
+      ],
+      "raw_text_hashes": [
+        "9445ffba8b1d756b8b3a6932b8f8afadf6d430eee2dc8832dbd9bf379b4b3ccf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:6:51",
+      "sequence": 24459,
+      "chapter_label": "MRK 6",
+      "verse_label": "51",
+      "locator": {
+        "book": "MRK",
+        "chapter": 6,
+        "verse": 51
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 6,
+          "verse": 51
+        }
+      ],
+      "en": "He got into the boat with them; and the wind ceased, and they were very amazed among themselves, and marveled;",
+      "ko": "배에 올라 저희에게 가시니 바람이 그치는지라 제자들이 마음에 심히 놀라니",
+      "source_text_hash": "0faf297cbad6659b9f95bdfa22e37d3e9e33f767516d9537f0da035a4f895f68",
+      "translation_text_hash": "223278d6d7c858d9774eb3fe9461332a57a6bf52cfc11b08d5a7ecfca7ef46d1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "배에 올라 저희에게 가시니 바람이 그치는지라 제자들이 마음에 심히 놀라니"
+      ],
+      "raw_text_hashes": [
+        "223278d6d7c858d9774eb3fe9461332a57a6bf52cfc11b08d5a7ecfca7ef46d1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:6:52",
+      "sequence": 24460,
+      "chapter_label": "MRK 6",
+      "verse_label": "52",
+      "locator": {
+        "book": "MRK",
+        "chapter": 6,
+        "verse": 52
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 6,
+          "verse": 52
+        }
+      ],
+      "en": "for they hadn’t understood about the loaves, but their hearts were hardened.",
+      "ko": "이는 저희가 그 떡 떼시던 일을 깨닫지 못하고 도리어 그 마음이 둔하여졌음이러라",
+      "source_text_hash": "b4b911cbece896589c25b4f3c73a555c31278b7750b1f5a02f3e8a456463da7c",
+      "translation_text_hash": "082142cd4b49b08c8f125413229da5e83c9252e2a02180de80eaa3a575a52576",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 저희가 그 떡 떼시던 일을 깨닫지 못하고 도리어 그 마음이 둔하여졌음이러라"
+      ],
+      "raw_text_hashes": [
+        "082142cd4b49b08c8f125413229da5e83c9252e2a02180de80eaa3a575a52576"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:6:53",
+      "sequence": 24461,
+      "chapter_label": "MRK 6",
+      "verse_label": "53",
+      "locator": {
+        "book": "MRK",
+        "chapter": 6,
+        "verse": 53
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 6,
+          "verse": 53
+        }
+      ],
+      "en": "When they had crossed over, they came to land at Gennesaret and moored to the shore.",
+      "ko": "건너가 게네사렛 땅에 이르러 대고",
+      "source_text_hash": "b2125808e69f315f78383e1b04037d21ecb2b06f4085598921e24ffbcfdf3160",
+      "translation_text_hash": "f968c48e5f9009292501f248c9272609ef79624fcc27b60a92691078c9112083",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "건너가 게네사렛 땅에 이르러 대고"
+      ],
+      "raw_text_hashes": [
+        "f968c48e5f9009292501f248c9272609ef79624fcc27b60a92691078c9112083"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:6:54",
+      "sequence": 24462,
+      "chapter_label": "MRK 6",
+      "verse_label": "54",
+      "locator": {
+        "book": "MRK",
+        "chapter": 6,
+        "verse": 54
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 6,
+          "verse": 54
+        }
+      ],
+      "en": "When they had come out of the boat, immediately the people recognized him,",
+      "ko": "배에서 내리니 사람들이 곧 예수신 줄을 알고",
+      "source_text_hash": "f036ef64ce68d68402eaa3046314aead9b520a5e0ad769f97c6b2e9da541ba85",
+      "translation_text_hash": "11c68133f12b24aabf9a86507aa5421eec154afa4354bb212875593ef027590f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "배에서 내리니 사람들이 곧 예수신 줄을 알고"
+      ],
+      "raw_text_hashes": [
+        "11c68133f12b24aabf9a86507aa5421eec154afa4354bb212875593ef027590f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:6:55",
+      "sequence": 24463,
+      "chapter_label": "MRK 6",
+      "verse_label": "55",
+      "locator": {
+        "book": "MRK",
+        "chapter": 6,
+        "verse": 55
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 6,
+          "verse": 55
+        }
+      ],
+      "en": "and ran around that whole region, and began to bring those who were sick on their mats to where they heard he was.",
+      "ko": "그 온 지방으로 달려 돌아 다니며 예수께서 어디 계시단 말을 듣는대로 병든 자를 침상채로 메고 나아오니",
+      "source_text_hash": "7bcf929012eccd09f0f1ca290711ea7d86995bb989aab5bf4aa7d9ac459397c8",
+      "translation_text_hash": "f0943bbf4246ec2e4fa9ea3a0234630e310ece0020ba7dd2c32c2d515f17cc0d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 온 지방으로 달려 돌아 다니며 예수께서 어디 계시단 말을 듣는대로 병든 자를 침상채로 메고 나아오니"
+      ],
+      "raw_text_hashes": [
+        "f0943bbf4246ec2e4fa9ea3a0234630e310ece0020ba7dd2c32c2d515f17cc0d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:6:56",
+      "sequence": 24464,
+      "chapter_label": "MRK 6",
+      "verse_label": "56",
+      "locator": {
+        "book": "MRK",
+        "chapter": 6,
+        "verse": 56
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 6,
+          "verse": 56
+        }
+      ],
+      "en": "Wherever he entered—into villages, or into cities, or into the country—they laid the sick in the marketplaces and begged him that they might just touch the fringe of his garment; and as many as touched him were made well.",
+      "ko": "아무데나 예수께서 들어가시는 마을이나 도시나 촌에서 병자를 시장에 두고 예수의 옷가에라도 손을 대게 하시기를 간구하니 손을 대는 자는 다 성함을 얻으니라",
+      "source_text_hash": "7d29e9c78793471bdad22454e2362318548001ea33cca519b4b6516bdc470218",
+      "translation_text_hash": "566e409e01f6094e61c2611aebf3024a383b969056f1e33d64f29fc1ba045a63",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아무데나 예수께서 들어가시는 마을이나 도시나 촌에서 병자를 시장에 두고 예수의 옷가에라도 손을 대게 하시기를 간구하니 손을 대는 자는 다 성함을 얻으니라"
+      ],
+      "raw_text_hashes": [
+        "566e409e01f6094e61c2611aebf3024a383b969056f1e33d64f29fc1ba045a63"
+      ]
+    }
+  ]
+}

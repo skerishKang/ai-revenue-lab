@@ -1,0 +1,1005 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1CO:chapter:001",
+  "unit_ordinal": 1063,
+  "unit_label": "1CO 1",
+  "book_code": "1CO",
+  "chapter_number": 1,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1CO:1:1",
+      "sequence": 28361,
+      "chapter_label": "1CO 1",
+      "verse_label": "1",
+      "locator": {
+        "book": "1CO",
+        "chapter": 1,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 1,
+          "verse": 1
+        }
+      ],
+      "en": "Paul, called to be an apostle of Jesus Christ through the will of God, and our brother Sosthenes,",
+      "ko": "하나님의 뜻을 따라 그리스도 예수의 사도로 부르심을 입은 바울과 및 형제 소스데네는",
+      "source_text_hash": "c8216d0cc500b585ee21112c13e165984a5defc5fab9b9baf408d4afca978ed4",
+      "translation_text_hash": "5a476573e3a811af11dfff44ced7ef9a52ef8af291b3b5d74c7a5ed4f0517037",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님의 뜻을 따라 그리스도 예수의 사도로 부르심을 입은 바울과 및 형제 소스데네는"
+      ],
+      "raw_text_hashes": [
+        "5a476573e3a811af11dfff44ced7ef9a52ef8af291b3b5d74c7a5ed4f0517037"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:1:2",
+      "sequence": 28362,
+      "chapter_label": "1CO 1",
+      "verse_label": "2",
+      "locator": {
+        "book": "1CO",
+        "chapter": 1,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 1,
+          "verse": 2
+        }
+      ],
+      "en": "to the assembly of God which is at Corinth—those who are sanctified in Christ Jesus, called saints, with all who call on the name of our Lord Jesus Christ in every place, both theirs and ours:",
+      "ko": "고린도에 있는 하나님의 교회 곧 그리스도 예수 안에서 거룩하여지고 성도라 부르심을 입은 자들과 또 각처에서 우리의 주 곧 저희와 우리의 주 되신 예수 그리스도의 이름을 부르는 모든 자들에게",
+      "source_text_hash": "6db2cf395ca728583c942d6b27f19f08ee8b0213f99fe339723fd64eb79a1d05",
+      "translation_text_hash": "42c2808687a2cf5c9817de084e80d36e09cfab82b53084d6dbfe458f991cfbd9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "고린도에 있는 하나님의 교회 곧 그리스도 예수 안에서 거룩하여지고 성도라 부르심을 입은 자들과 또 각처에서 우리의 주 곧 저희와 우리의 주 되신 예수 그리스도의 이름을 부르는 모든 자들에게"
+      ],
+      "raw_text_hashes": [
+        "42c2808687a2cf5c9817de084e80d36e09cfab82b53084d6dbfe458f991cfbd9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:1:3",
+      "sequence": 28363,
+      "chapter_label": "1CO 1",
+      "verse_label": "3",
+      "locator": {
+        "book": "1CO",
+        "chapter": 1,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 1,
+          "verse": 3
+        }
+      ],
+      "en": "Grace to you and peace from God our Father and the Lord Jesus Christ.",
+      "ko": "하나님 우리 아버지와 주 예수 그리스도로 좇아 은혜와 평강이 있기를 원하노라",
+      "source_text_hash": "4b0c50bd93c1ece92cdc3eb0ce96aa9db845690c46dccfc6611823b4dce05733",
+      "translation_text_hash": "a3e36146b61318d5062b691ba22e48330d04304695ea25cafe4543c226588885",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님 우리 아버지와 주 예수 그리스도로 좇아 은혜와 평강이 있기를 원하노라"
+      ],
+      "raw_text_hashes": [
+        "a3e36146b61318d5062b691ba22e48330d04304695ea25cafe4543c226588885"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:1:4",
+      "sequence": 28364,
+      "chapter_label": "1CO 1",
+      "verse_label": "4",
+      "locator": {
+        "book": "1CO",
+        "chapter": 1,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 1,
+          "verse": 4
+        }
+      ],
+      "en": "I always thank my God concerning you for the grace of God which was given you in Christ Jesus,",
+      "ko": "그리스도 예수 안에서 너희에게 주신 하나님의 은혜를 인하여 내가 너희를 위하여 항상 하나님께 감사하노니",
+      "source_text_hash": "b118858ee5a2f14bd1385cb6a2bfbba853167679dc09aa645582deb1d4443742",
+      "translation_text_hash": "1eb9ab1b08528693766ca43ebd3f1abf9fdea15e1d48e8a31f0376eff9643fb5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그리스도 예수 안에서 너희에게 주신 하나님의 은혜를 인하여 내가 너희를 위하여 항상 하나님께 감사하노니"
+      ],
+      "raw_text_hashes": [
+        "1eb9ab1b08528693766ca43ebd3f1abf9fdea15e1d48e8a31f0376eff9643fb5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:1:5",
+      "sequence": 28365,
+      "chapter_label": "1CO 1",
+      "verse_label": "5",
+      "locator": {
+        "book": "1CO",
+        "chapter": 1,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 1,
+          "verse": 5
+        }
+      ],
+      "en": "that in everything you were enriched in him, in all speech and all knowledge—",
+      "ko": "이는 너희가 그의 안에서 모든 일 곧 모든 구변과 모든 지식에 풍족하므로",
+      "source_text_hash": "7d599b106a534930a4f9b48a3a0a283ed72f4bed048959ea7603c0044de4a69e",
+      "translation_text_hash": "611779e8067e25786a52ed72e28c86163879b5b53416ed880fba56eaeb69685a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 너희가 그의 안에서 모든 일 곧 모든 구변과 모든 지식에 풍족하므로"
+      ],
+      "raw_text_hashes": [
+        "611779e8067e25786a52ed72e28c86163879b5b53416ed880fba56eaeb69685a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:1:6",
+      "sequence": 28366,
+      "chapter_label": "1CO 1",
+      "verse_label": "6",
+      "locator": {
+        "book": "1CO",
+        "chapter": 1,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 1,
+          "verse": 6
+        }
+      ],
+      "en": "even as the testimony of Christ was confirmed in you—",
+      "ko": "그리스도의 증거가 너희 중에 견고케 되어",
+      "source_text_hash": "0bca7302cb724d0ccc5736849ec9d6326fee8d6407c835b07468663a793da385",
+      "translation_text_hash": "8dbfa83d062e56d22b45a0754a80b62b4a774c7d5c1e7e7c2f2c79958c814965",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그리스도의 증거가 너희 중에 견고케 되어"
+      ],
+      "raw_text_hashes": [
+        "8dbfa83d062e56d22b45a0754a80b62b4a774c7d5c1e7e7c2f2c79958c814965"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:1:7",
+      "sequence": 28367,
+      "chapter_label": "1CO 1",
+      "verse_label": "7",
+      "locator": {
+        "book": "1CO",
+        "chapter": 1,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 1,
+          "verse": 7
+        }
+      ],
+      "en": "so that you come behind in no gift, waiting for the revelation of our Lord Jesus Christ,",
+      "ko": "너희가 모든 은사에 부족함이 없이 우리 주 예수 그리스도의 나타나심을 기다림이라",
+      "source_text_hash": "588e9f817684c51dfeaf62f7ec62663a185771a22921daa3edfbcd9fb2706a6a",
+      "translation_text_hash": "7ff95bf8e94c619e4ca0917d80e99d14f02c4c388bf272ca6a2a9b7f1266c17b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 모든 은사에 부족함이 없이 우리 주 예수 그리스도의 나타나심을 기다림이라"
+      ],
+      "raw_text_hashes": [
+        "7ff95bf8e94c619e4ca0917d80e99d14f02c4c388bf272ca6a2a9b7f1266c17b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:1:8",
+      "sequence": 28368,
+      "chapter_label": "1CO 1",
+      "verse_label": "8",
+      "locator": {
+        "book": "1CO",
+        "chapter": 1,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 1,
+          "verse": 8
+        }
+      ],
+      "en": "who will also confirm you until the end, blameless in the day of our Lord Jesus Christ.",
+      "ko": "주께서 너희를 우리 주 예수 그리스도의 날에 책망할 것이 없는 자로 끝까지 견고케 하시리라",
+      "source_text_hash": "796b19a9f5dd918a4bfe4e901afaf156dd7b37b158c5af1eaed46ce11a4ece0a",
+      "translation_text_hash": "846680a97f5a9322b4dc85d2b258cfb9ea48b94a14219c005be2b1321adaa734",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 너희를 우리 주 예수 그리스도의 날에 책망할 것이 없는 자로 끝까지 견고케 하시리라"
+      ],
+      "raw_text_hashes": [
+        "846680a97f5a9322b4dc85d2b258cfb9ea48b94a14219c005be2b1321adaa734"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:1:9",
+      "sequence": 28369,
+      "chapter_label": "1CO 1",
+      "verse_label": "9",
+      "locator": {
+        "book": "1CO",
+        "chapter": 1,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 1,
+          "verse": 9
+        }
+      ],
+      "en": "God is faithful, through whom you were called into the fellowship of his Son, Jesus Christ our Lord.",
+      "ko": "너희를 불러 그의 아들 예수 그리스도 우리 주로 더불어 교제케 하시는 하나님은 미쁘시도다",
+      "source_text_hash": "db85f59b0923e450a86bc5137226c1ca3fd639dfd1232ebef23ab86a2d551a17",
+      "translation_text_hash": "6c7fc294ad881dc6cb0df9b51b0b0e9a08e1c0e6f936439b7d1f5ee72e549a18",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희를 불러 그의 아들 예수 그리스도 우리 주로 더불어 교제케 하시는 하나님은 미쁘시도다"
+      ],
+      "raw_text_hashes": [
+        "6c7fc294ad881dc6cb0df9b51b0b0e9a08e1c0e6f936439b7d1f5ee72e549a18"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:1:10",
+      "sequence": 28370,
+      "chapter_label": "1CO 1",
+      "verse_label": "10",
+      "locator": {
+        "book": "1CO",
+        "chapter": 1,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 1,
+          "verse": 10
+        }
+      ],
+      "en": "Now I beg you, brothers, through the name of our Lord, Jesus Christ, that you all speak the same thing, and that there be no divisions among you, but that you be perfected together in the same mind and in the same judgment.",
+      "ko": "형제들아 내가 우리 주 예수 그리스도의 이름으로 너희를 권하노니 다 같은 말을 하고 너희 가운데 분쟁이 없이 같은 마음과 같은 뜻으로 온전히 합하라",
+      "source_text_hash": "ef4f10653060401388f0ba474f2a43c51b16d363d69027d6f72092419500ccf1",
+      "translation_text_hash": "3c40d202557e311ab46c498902febec0c8d70dfc2d0faf68defdddddb74e2a44",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "형제들아 내가 우리 주 예수 그리스도의 이름으로 너희를 권하노니 다 같은 말을 하고 너희 가운데 분쟁이 없이 같은 마음과 같은 뜻으로 온전히 합하라"
+      ],
+      "raw_text_hashes": [
+        "3c40d202557e311ab46c498902febec0c8d70dfc2d0faf68defdddddb74e2a44"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:1:11",
+      "sequence": 28371,
+      "chapter_label": "1CO 1",
+      "verse_label": "11",
+      "locator": {
+        "book": "1CO",
+        "chapter": 1,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 1,
+          "verse": 11
+        }
+      ],
+      "en": "For it has been reported to me concerning you, my brothers, by those who are from Chloe’s household, that there are contentions among you.",
+      "ko": "내 형제들아 글로에의 집 편으로서 너희에게 대한 말이 내게 들리니 곧 너희 가운데 분쟁이 있다는 것이라",
+      "source_text_hash": "4f01c7a377b353811fbc5929689a88f20461370ab136328fe2f3171a9e6fb16e",
+      "translation_text_hash": "e6786412466d7658838024c329533a7e27a4d31a5b05622b846ca35349b60c6d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 형제들아 글로에의 집 편으로서 너희에게 대한 말이 내게 들리니 곧 너희 가운데 분쟁이 있다는 것이라"
+      ],
+      "raw_text_hashes": [
+        "e6786412466d7658838024c329533a7e27a4d31a5b05622b846ca35349b60c6d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:1:12",
+      "sequence": 28372,
+      "chapter_label": "1CO 1",
+      "verse_label": "12",
+      "locator": {
+        "book": "1CO",
+        "chapter": 1,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 1,
+          "verse": 12
+        }
+      ],
+      "en": "Now I mean this, that each one of you says, “I follow Paul,” “I follow Apollos,” “I follow Cephas,” and, “I follow Christ.”",
+      "ko": "이는 다름아니라 너희가 각각 이르되 나는 바울에게, 나는 아볼로에게, 나는 게바에게, 나는 그리스도에게 속한 자라 하는 것이니",
+      "source_text_hash": "166fbbbb8d19af5baed93150c11f63fc1bf23d184b6b5cb24d7175fefe408833",
+      "translation_text_hash": "454da145ae911b95ac8ae5333d4bcab6e543254007dc16bd6845eea3d5f450d2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 다름아니라 너희가 각각 이르되 나는 바울에게, 나는 아볼로에게, 나는 게바에게, 나는 그리스도에게 속한 자라 하는 것이니"
+      ],
+      "raw_text_hashes": [
+        "454da145ae911b95ac8ae5333d4bcab6e543254007dc16bd6845eea3d5f450d2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:1:13",
+      "sequence": 28373,
+      "chapter_label": "1CO 1",
+      "verse_label": "13",
+      "locator": {
+        "book": "1CO",
+        "chapter": 1,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 1,
+          "verse": 13
+        }
+      ],
+      "en": "Is Christ divided? Was Paul crucified for you? Or were you baptized into the name of Paul?",
+      "ko": "그리스도께서 어찌 나뉘었느뇨 바울이 너희를 위하여 십자가에 못 박혔으며 바울의 이름으로 너희가 세례를 받았느뇨",
+      "source_text_hash": "a03a83f599657b04a37f76a9512cf0dc489d819e3be36f800ded9a0d59834396",
+      "translation_text_hash": "7a125b17499fa095dfb0938d8d141e3ceb2d062b120a170d06bff379d09308b4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그리스도께서 어찌 나뉘었느뇨 바울이 너희를 위하여 십자가에 못 박혔으며 바울의 이름으로 너희가 세례를 받았느뇨"
+      ],
+      "raw_text_hashes": [
+        "7a125b17499fa095dfb0938d8d141e3ceb2d062b120a170d06bff379d09308b4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:1:14",
+      "sequence": 28374,
+      "chapter_label": "1CO 1",
+      "verse_label": "14",
+      "locator": {
+        "book": "1CO",
+        "chapter": 1,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 1,
+          "verse": 14
+        }
+      ],
+      "en": "I thank God that I baptized none of you except Crispus and Gaius,",
+      "ko": "그리스보와 가이오 외에는 너희 중 아무에게도 내가 세례를 주지 아니한 것을 감사하노니",
+      "source_text_hash": "72414cb639d9d0c3d281e48adb191092db80c6652ccaf0e745e403a6a0fb3126",
+      "translation_text_hash": "3afd1ef5e63fa0a9b0014950c4582796c84114509f9671efcfa2f7987eb79a6e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그리스보와 가이오 외에는 너희 중 아무에게도 내가 세례를 주지 아니한 것을 감사하노니"
+      ],
+      "raw_text_hashes": [
+        "3afd1ef5e63fa0a9b0014950c4582796c84114509f9671efcfa2f7987eb79a6e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:1:15",
+      "sequence": 28375,
+      "chapter_label": "1CO 1",
+      "verse_label": "15",
+      "locator": {
+        "book": "1CO",
+        "chapter": 1,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 1,
+          "verse": 15
+        }
+      ],
+      "en": "so that no one should say that I had baptized you into my own name.",
+      "ko": "이는 아무도 나의 이름으로 세례를 받았다 말하지 못하게 하려 함이라",
+      "source_text_hash": "fc526a4408dfac0fbdd99b5d76ce14e3db7053b3a5d61f9917639ad6cac3ad8e",
+      "translation_text_hash": "8c973c95d1afed08e1bbf5e7c7494a6b111e01ad90f4373eb1f7b32f28b45071",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 아무도 나의 이름으로 세례를 받았다 말하지 못하게 하려 함이라"
+      ],
+      "raw_text_hashes": [
+        "8c973c95d1afed08e1bbf5e7c7494a6b111e01ad90f4373eb1f7b32f28b45071"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:1:16",
+      "sequence": 28376,
+      "chapter_label": "1CO 1",
+      "verse_label": "16",
+      "locator": {
+        "book": "1CO",
+        "chapter": 1,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 1,
+          "verse": 16
+        }
+      ],
+      "en": "(I also baptized the household of Stephanas; besides them, I don’t know whether I baptized any other.)",
+      "ko": "내가 또한 스데바나 집 사람에게 세례를 주었고 그 외에는 다른 아무에게 세례를 주었는지 알지 못하노라",
+      "source_text_hash": "2ba707f6c1c010644a561b7aa3ed84310484d21ffd4d1aba01831e701541fa68",
+      "translation_text_hash": "bcd3cb02c9f59645a53571b587b4fa7ab97e0ba27933e7decbb5b60a3a7b6ec1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 또한 스데바나 집 사람에게 세례를 주었고 그 외에는 다른 아무에게 세례를 주었는지 알지 못하노라"
+      ],
+      "raw_text_hashes": [
+        "bcd3cb02c9f59645a53571b587b4fa7ab97e0ba27933e7decbb5b60a3a7b6ec1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:1:17",
+      "sequence": 28377,
+      "chapter_label": "1CO 1",
+      "verse_label": "17",
+      "locator": {
+        "book": "1CO",
+        "chapter": 1,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 1,
+          "verse": 17
+        }
+      ],
+      "en": "For Christ sent me not to baptize, but to preach the Good News—not in wisdom of words, so that the cross of Christ wouldn’t be made void.",
+      "ko": "그리스도께서 나를 보내심은 세례를 주게 하려 하심이 아니요 오직 복음을 전케 하려 하심이니 말의 지혜로 하지 아니함은 그리스도의 십자가가 헛되지 않게 하려 함이라",
+      "source_text_hash": "b4dffd5de5cf0cf1a9c9a061c2d149a8c3f3d397f10941b8c17e2b86037c6c0c",
+      "translation_text_hash": "6b8f509b6051d0c031ea7cf69bcb899099ed529e783210302bf6084a7acbd052",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그리스도께서 나를 보내심은 세례를 주게 하려 하심이 아니요 오직 복음을 전케 하려 하심이니 말의 지혜로 하지 아니함은 그리스도의 십자가가 헛되지 않게 하려 함이라"
+      ],
+      "raw_text_hashes": [
+        "6b8f509b6051d0c031ea7cf69bcb899099ed529e783210302bf6084a7acbd052"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:1:18",
+      "sequence": 28378,
+      "chapter_label": "1CO 1",
+      "verse_label": "18",
+      "locator": {
+        "book": "1CO",
+        "chapter": 1,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 1,
+          "verse": 18
+        }
+      ],
+      "en": "For the word of the cross is foolishness to those who are dying, but to us who are being saved it is the power of God.",
+      "ko": "십자가의 도가 멸망하는 자들에게는 미련한 것이요 구원을 얻는 우리에게는 하나님의 능력이라",
+      "source_text_hash": "99f590f0ff90a1b03ba614a55866f337731dd9e07b4ccefa1877c37cc569e6c9",
+      "translation_text_hash": "ef3985995f8c5843db9a300bce15a2814fa738f90521ee4fa49c2530a4dc05bd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "십자가의 도가 멸망하는 자들에게는 미련한 것이요 구원을 얻는 우리에게는 하나님의 능력이라"
+      ],
+      "raw_text_hashes": [
+        "ef3985995f8c5843db9a300bce15a2814fa738f90521ee4fa49c2530a4dc05bd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:1:19",
+      "sequence": 28379,
+      "chapter_label": "1CO 1",
+      "verse_label": "19",
+      "locator": {
+        "book": "1CO",
+        "chapter": 1,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 1,
+          "verse": 19
+        }
+      ],
+      "en": "For it is written, “I will destroy the wisdom of the wise. I will bring the discernment of the discerning to nothing.”",
+      "ko": "기록된바 내가 지혜 있는 자들의 지혜를 멸하고 총명한 자들의 총명을 폐하리라 하였으니",
+      "source_text_hash": "21a9f52b79add4dca941a18700e4842417bfc4cf5b228d50c34311ca27a3cad7",
+      "translation_text_hash": "fb420a1e71933a1803b4f7f3521c62c468bd422584d1a41876c744faaf819aef",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "기록된바 내가 지혜 있는 자들의 지혜를 멸하고 총명한 자들의 총명을 폐하리라 하였으니"
+      ],
+      "raw_text_hashes": [
+        "fb420a1e71933a1803b4f7f3521c62c468bd422584d1a41876c744faaf819aef"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:1:20",
+      "sequence": 28380,
+      "chapter_label": "1CO 1",
+      "verse_label": "20",
+      "locator": {
+        "book": "1CO",
+        "chapter": 1,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 1,
+          "verse": 20
+        }
+      ],
+      "en": "Where is the wise? Where is the scribe? Where is the debater of this age? Hasn’t God made foolish the wisdom of this world?",
+      "ko": "지혜 있는 자가 어디 있느뇨 선비가 어디 있느뇨 이 세대에 변사가 어디 있느뇨 하나님께서 이 세상의 지혜를 미련케 하신 것이 아니뇨",
+      "source_text_hash": "1b53704008fcdcabb24eeb6785a3657e7506f8455d6fddab7b31ddffe7db79b4",
+      "translation_text_hash": "6ae6b6afce0203de7fb2545de9c2534aaae65a8eada058eb32597281e33d541f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "지혜 있는 자가 어디 있느뇨 선비가 어디 있느뇨 이 세대에 변사가 어디 있느뇨 하나님께서 이 세상의 지혜를 미련케 하신 것이 아니뇨"
+      ],
+      "raw_text_hashes": [
+        "6ae6b6afce0203de7fb2545de9c2534aaae65a8eada058eb32597281e33d541f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:1:21",
+      "sequence": 28381,
+      "chapter_label": "1CO 1",
+      "verse_label": "21",
+      "locator": {
+        "book": "1CO",
+        "chapter": 1,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 1,
+          "verse": 21
+        }
+      ],
+      "en": "For seeing that in the wisdom of God, the world through its wisdom didn’t know God, it was God’s good pleasure through the foolishness of the preaching to save those who believe.",
+      "ko": "하나님의 지혜에 있어서는 이 세상이 자기 지혜로 하나님을 알지 못하는고로 하나님께서 전도의 미련한 것으로 믿는 자들을 구원하시기를 기뻐하셨도다",
+      "source_text_hash": "d74ae0ba3f8ac2a0090f5926e8116c5b49db320d2220c21556fc7d652f3bfdf6",
+      "translation_text_hash": "fc091394ffb81b21bf3c4d719a03498ea40bc980e00895ac30d59bd25a2bd98e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님의 지혜에 있어서는 이 세상이 자기 지혜로 하나님을 알지 못하는고로 하나님께서 전도의 미련한 것으로 믿는 자들을 구원하시기를 기뻐하셨도다"
+      ],
+      "raw_text_hashes": [
+        "fc091394ffb81b21bf3c4d719a03498ea40bc980e00895ac30d59bd25a2bd98e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:1:22",
+      "sequence": 28382,
+      "chapter_label": "1CO 1",
+      "verse_label": "22",
+      "locator": {
+        "book": "1CO",
+        "chapter": 1,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 1,
+          "verse": 22
+        }
+      ],
+      "en": "For Jews ask for signs, Greeks seek after wisdom,",
+      "ko": "유대인은 표적을 구하고 헬라인은 지혜를 찾으나",
+      "source_text_hash": "de682e988824147ed82e384b3c84b627698ee0e2bba1d816033d78c82dfe1439",
+      "translation_text_hash": "2a0bd16b90df4c52c019bcc926d3c2b0e36f5abbe28782251c4d015611e9686e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유대인은 표적을 구하고 헬라인은 지혜를 찾으나"
+      ],
+      "raw_text_hashes": [
+        "2a0bd16b90df4c52c019bcc926d3c2b0e36f5abbe28782251c4d015611e9686e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:1:23",
+      "sequence": 28383,
+      "chapter_label": "1CO 1",
+      "verse_label": "23",
+      "locator": {
+        "book": "1CO",
+        "chapter": 1,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 1,
+          "verse": 23
+        }
+      ],
+      "en": "but we preach Christ crucified, a stumbling block to Jews and foolishness to Greeks,",
+      "ko": "우리는 십자가에 못 박힌 그리스도를 전하니 유대인에게는 거리끼는 것이요 이방인에게는 미련한 것이로되",
+      "source_text_hash": "19f8f9638b99b44b2a404d5b1e608e44ef4efb980ad147d5d485442948d4af86",
+      "translation_text_hash": "21ce53cb29de4c188d7bae71ab123d67f1acfd116896c902f55c3badac81fd2b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리는 십자가에 못 박힌 그리스도를 전하니 유대인에게는 거리끼는 것이요 이방인에게는 미련한 것이로되"
+      ],
+      "raw_text_hashes": [
+        "21ce53cb29de4c188d7bae71ab123d67f1acfd116896c902f55c3badac81fd2b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:1:24",
+      "sequence": 28384,
+      "chapter_label": "1CO 1",
+      "verse_label": "24",
+      "locator": {
+        "book": "1CO",
+        "chapter": 1,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 1,
+          "verse": 24
+        }
+      ],
+      "en": "but to those who are called, both Jews and Greeks, Christ is the power of God and the wisdom of God;",
+      "ko": "오직 부르심을 입은 자들에게는 유대인이나 헬라인이나 그리스도는 하나님의 능력이요 하나님의 지혜니라",
+      "source_text_hash": "9c3f8a0fd833dcc5b3e742af46404249aea91daef749f039370b257596bf826b",
+      "translation_text_hash": "f3224ef0b84f94207d6b35e8747a79327bdc559343cab95cceedea7087f98bb5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 부르심을 입은 자들에게는 유대인이나 헬라인이나 그리스도는 하나님의 능력이요 하나님의 지혜니라"
+      ],
+      "raw_text_hashes": [
+        "f3224ef0b84f94207d6b35e8747a79327bdc559343cab95cceedea7087f98bb5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:1:25",
+      "sequence": 28385,
+      "chapter_label": "1CO 1",
+      "verse_label": "25",
+      "locator": {
+        "book": "1CO",
+        "chapter": 1,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 1,
+          "verse": 25
+        }
+      ],
+      "en": "because the foolishness of God is wiser than men, and the weakness of God is stronger than men.",
+      "ko": "하나님의 미련한 것이 사람보다 지혜 있고 하나님의 약한 것이 사람보다 강하니라",
+      "source_text_hash": "daedd5fcb3627f2b1a3d51eeededaac829f180dbfe3d9d5fed3997bc73909626",
+      "translation_text_hash": "ad4f4b1d1fcf69797d867c3cb426a4516bd223e2f5fe9ab08b284041e0437c11",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님의 미련한 것이 사람보다 지혜 있고 하나님의 약한 것이 사람보다 강하니라"
+      ],
+      "raw_text_hashes": [
+        "ad4f4b1d1fcf69797d867c3cb426a4516bd223e2f5fe9ab08b284041e0437c11"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:1:26",
+      "sequence": 28386,
+      "chapter_label": "1CO 1",
+      "verse_label": "26",
+      "locator": {
+        "book": "1CO",
+        "chapter": 1,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 1,
+          "verse": 26
+        }
+      ],
+      "en": "For you see your calling, brothers, that not many are wise according to the flesh, not many mighty, and not many noble;",
+      "ko": "형제들아 너희를 부르심을 보라 육체를 따라 지혜 있는 자가 많지 아니하며 능한 자가 많지 아니하며 문벌 좋은 자가 많지 아니하도다",
+      "source_text_hash": "6d27696370577a33fd64b918fd841ceca048ec77ad339b3088a4aaa4a2623505",
+      "translation_text_hash": "a0cd1606b47c5dc94f88e1659971e1dd7522c1eba4b4dbb7cea9549c9a626ae9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "형제들아 너희를 부르심을 보라 육체를 따라 지혜 있는 자가 많지 아니하며 능한 자가 많지 아니하며 문벌 좋은 자가 많지 아니하도다"
+      ],
+      "raw_text_hashes": [
+        "a0cd1606b47c5dc94f88e1659971e1dd7522c1eba4b4dbb7cea9549c9a626ae9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:1:27",
+      "sequence": 28387,
+      "chapter_label": "1CO 1",
+      "verse_label": "27",
+      "locator": {
+        "book": "1CO",
+        "chapter": 1,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 1,
+          "verse": 27
+        }
+      ],
+      "en": "but God chose the foolish things of the world that he might put to shame those who are wise. God chose the weak things of the world that he might put to shame the things that are strong.",
+      "ko": "그러나 하나님께서 세상의 미련한 것들을 택하사 지혜 있는 자들을 부끄럽게 하려 하시고 세상의 약한 것들을 택하사 강한 것들을 부끄럽게 하려 하시며",
+      "source_text_hash": "eccc7a3dbe82c7913b09017082d9f5ec6eb89b4a8892c4d7841bc2528f967cc4",
+      "translation_text_hash": "785a89c33902251c72c355ba7b4ce3e7b0a65dca33571679a3ce445f7823ff5e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 하나님께서 세상의 미련한 것들을 택하사 지혜 있는 자들을 부끄럽게 하려 하시고 세상의 약한 것들을 택하사 강한 것들을 부끄럽게 하려 하시며"
+      ],
+      "raw_text_hashes": [
+        "785a89c33902251c72c355ba7b4ce3e7b0a65dca33571679a3ce445f7823ff5e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:1:28",
+      "sequence": 28388,
+      "chapter_label": "1CO 1",
+      "verse_label": "28",
+      "locator": {
+        "book": "1CO",
+        "chapter": 1,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 1,
+          "verse": 28
+        }
+      ],
+      "en": "God chose the lowly things of the world, and the things that are despised, and the things that don’t exist, that he might bring to nothing the things that exist,",
+      "ko": "하나님께서 세상의 천한 것들과 멸시 받는 것들과 없는 것들을 택하사 있는 것들을 폐하려 하시나니",
+      "source_text_hash": "bcc03021bdde9708ff4dffe3073ed3db008202e6532ab108d104c52d6857d045",
+      "translation_text_hash": "2fa3832676cfb08c956a769d11ed7f071931c407bf4e314cec77374a4ec8829c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님께서 세상의 천한 것들과 멸시 받는 것들과 없는 것들을 택하사 있는 것들을 폐하려 하시나니"
+      ],
+      "raw_text_hashes": [
+        "2fa3832676cfb08c956a769d11ed7f071931c407bf4e314cec77374a4ec8829c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:1:29",
+      "sequence": 28389,
+      "chapter_label": "1CO 1",
+      "verse_label": "29",
+      "locator": {
+        "book": "1CO",
+        "chapter": 1,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 1,
+          "verse": 29
+        }
+      ],
+      "en": "that no flesh should boast before God.",
+      "ko": "이는 아무 육체라도 하나님 앞에서 자랑하지 못하게 하려 하심이라",
+      "source_text_hash": "141b1366f4d5a29049eac20969ee20fefbd3c0dfcbf84a11859b709bec316c9b",
+      "translation_text_hash": "9584eaf92d8f37ec55fb6194e0c101c619f6a8138c080e717c0af477eda1367b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 아무 육체라도 하나님 앞에서 자랑하지 못하게 하려 하심이라"
+      ],
+      "raw_text_hashes": [
+        "9584eaf92d8f37ec55fb6194e0c101c619f6a8138c080e717c0af477eda1367b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:1:30",
+      "sequence": 28390,
+      "chapter_label": "1CO 1",
+      "verse_label": "30",
+      "locator": {
+        "book": "1CO",
+        "chapter": 1,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 1,
+          "verse": 30
+        }
+      ],
+      "en": "Because of him, you are in Christ Jesus, who was made to us wisdom from God, and righteousness and sanctification, and redemption,",
+      "ko": "너희는 하나님께로부터 나서 그리스도 예수 안에 있고 예수는 하나님께로서 나와서 우리에게 지혜와 의로움과 거룩함과 구속함이 되셨으니",
+      "source_text_hash": "43a2ae6598bfed9341619bd8420b94ea24744d3f9d222f9bf145daf58c7fc4d7",
+      "translation_text_hash": "59b948465cff1f664b44b5658115179b57e6dc8bb59c941dbeaa0b8ccd936119",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 하나님께로부터 나서 그리스도 예수 안에 있고 예수는 하나님께로서 나와서 우리에게 지혜와 의로움과 거룩함과 구속함이 되셨으니"
+      ],
+      "raw_text_hashes": [
+        "59b948465cff1f664b44b5658115179b57e6dc8bb59c941dbeaa0b8ccd936119"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:1:31",
+      "sequence": 28391,
+      "chapter_label": "1CO 1",
+      "verse_label": "31",
+      "locator": {
+        "book": "1CO",
+        "chapter": 1,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 1,
+          "verse": 31
+        }
+      ],
+      "en": "that, as it is written, “He who boasts, let him boast in the Lord.”",
+      "ko": "기록된바 자랑하는 자는 주 안에서 자랑하라 함과 같게 하려 함이니라",
+      "source_text_hash": "94ac645f20888bdfcf20ba6d2e0f3d1df273fd148f0e16eba1f0ecfb731c02d2",
+      "translation_text_hash": "a6dc3cf9942fda91e1d4daf113c31f85fe5e1e7fd06f8dd70af1ea47c12ebfb5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "기록된바 자랑하는 자는 주 안에서 자랑하라 함과 같게 하려 함이니라"
+      ],
+      "raw_text_hashes": [
+        "a6dc3cf9942fda91e1d4daf113c31f85fe5e1e7fd06f8dd70af1ea47c12ebfb5"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,301 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ZEC:chapter:013",
+  "unit_ordinal": 924,
+  "unit_label": "ZEC 13",
+  "book_code": "ZEC",
+  "chapter_number": 13,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ZEC:13:1",
+      "sequence": 23061,
+      "chapter_label": "ZEC 13",
+      "verse_label": "1",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 13,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 13,
+          "verse": 1
+        }
+      ],
+      "en": "“In that day there will be a fountain opened to David’s house and to the inhabitants of Jerusalem, for sin and for uncleanness.",
+      "ko": "그 날에 죄와 더러움을 씻는 샘이 다윗의 족속과 예루살렘 거민을 위하여 열리리라",
+      "source_text_hash": "c121550648c3f652df49d5193f393bd8bed416c672e33adc2382fc111e9ecd37",
+      "translation_text_hash": "dea66f9774f4884f07cc13bc088248a5ee45311c451973a28c83bee7269a26ea",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날에 죄와 더러움을 씻는 샘이 다윗의 족속과 예루살렘 거민을 위하여 열리리라"
+      ],
+      "raw_text_hashes": [
+        "dea66f9774f4884f07cc13bc088248a5ee45311c451973a28c83bee7269a26ea"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:13:2",
+      "sequence": 23062,
+      "chapter_label": "ZEC 13",
+      "verse_label": "2",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 13,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 13,
+          "verse": 2
+        }
+      ],
+      "en": "It will come to pass in that day, says the LORD of Armies, that I will cut off the names of the idols out of the land, and they will be remembered no more. I will also cause the prophets and the spirit of impurity to pass out of the land.",
+      "ko": "만군의 여호와가 말하노라 그 날에 내가 우상의 이름을 이 땅에서 끊어서 기억도 되지 못하게 할 것이며 거짓 선지자와 더러운 사귀를 이 땅에서 떠나게 할 것이라",
+      "source_text_hash": "06ee36047310f49466a71731c32e6afa3e010b3fda2777bd8a3dacf37249fcc3",
+      "translation_text_hash": "448ef4e1e4a94bdf349cc3984b5905a27dca9a8ca0e7785a8f1bb36fb8679e82",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만군의 여호와가 말하노라 그 날에 내가 우상의 이름을 이 땅에서 끊어서 기억도 되지 못하게 할 것이며 거짓 선지자와 더러운 사귀를 이 땅에서 떠나게 할 것이라"
+      ],
+      "raw_text_hashes": [
+        "448ef4e1e4a94bdf349cc3984b5905a27dca9a8ca0e7785a8f1bb36fb8679e82"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:13:3",
+      "sequence": 23063,
+      "chapter_label": "ZEC 13",
+      "verse_label": "3",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 13,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 13,
+          "verse": 3
+        }
+      ],
+      "en": "It will happen that when anyone still prophesies, then his father and his mother who bore him will tell him, ‘You must die, because you speak lies in the LORD’s name;’ and his father and his mother who bore him will stab him when he prophesies.",
+      "ko": "사람이 오히려 예언할 것 같으면 그 낳은 부모가 그에게 이르기를 네가 여호와의 이름을 빙자하여 거짓말을 하니 살지 못하리라 하고 낳은 부모가 그 예언할 때에 칼로 찌르리라",
+      "source_text_hash": "dfaff37ecf0baa620e5b2d6c3376f69576b915a359cd7638ac2807be12f0c2c5",
+      "translation_text_hash": "5b4f8e9d2688117b27db12b98f016b3536dd82a3cb9d6a8746ce69abdf8fdff9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 오히려 예언할 것 같으면 그 낳은 부모가 그에게 이르기를 네가 여호와의 이름을 빙자하여 거짓말을 하니 살지 못하리라 하고 낳은 부모가 그 예언할 때에 칼로 찌르리라"
+      ],
+      "raw_text_hashes": [
+        "5b4f8e9d2688117b27db12b98f016b3536dd82a3cb9d6a8746ce69abdf8fdff9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:13:4",
+      "sequence": 23064,
+      "chapter_label": "ZEC 13",
+      "verse_label": "4",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 13,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 13,
+          "verse": 4
+        }
+      ],
+      "en": "It will happen in that day that the prophets will each be ashamed of his vision when he prophesies; they won’t wear a hairy mantle to deceive,",
+      "ko": "그 날에 선지자들이 예언할 때에 그 이상을 각기 부끄러워할 것이며 사람을 속이려고 털옷도 입지 아니할 것이며",
+      "source_text_hash": "2b59ac9314d97cc819cf555f4bcce54db70fe18f73bf700ed0fad8986eef075c",
+      "translation_text_hash": "1d6a885ff8e0767acc5966d88e37a0c24a2faffad41db27068ee75633d7b0b3b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날에 선지자들이 예언할 때에 그 이상을 각기 부끄러워할 것이며 사람을 속이려고 털옷도 입지 아니할 것이며"
+      ],
+      "raw_text_hashes": [
+        "1d6a885ff8e0767acc5966d88e37a0c24a2faffad41db27068ee75633d7b0b3b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:13:5",
+      "sequence": 23065,
+      "chapter_label": "ZEC 13",
+      "verse_label": "5",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 13,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 13,
+          "verse": 5
+        }
+      ],
+      "en": "but he will say, ‘I am no prophet, I am a tiller of the ground; for I have been made a bondservant from my youth.’",
+      "ko": "말하기를 나는 선지자가 아니요 나는 농부라 내가 어려서부터 사람의 종이 되었노라 할 것이요",
+      "source_text_hash": "d360fb6a57b98b18e3af3aaa02c3ffef415e3761cf5067bb9541f0baaebf0cf0",
+      "translation_text_hash": "141a3df3918cc3aea48201402c5a5c9ca98d483f0943fb7db6bda6b1f72eac6a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "말하기를 나는 선지자가 아니요 나는 농부라 내가 어려서부터 사람의 종이 되었노라 할 것이요"
+      ],
+      "raw_text_hashes": [
+        "141a3df3918cc3aea48201402c5a5c9ca98d483f0943fb7db6bda6b1f72eac6a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:13:6",
+      "sequence": 23066,
+      "chapter_label": "ZEC 13",
+      "verse_label": "6",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 13,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 13,
+          "verse": 6
+        }
+      ],
+      "en": "One will say to him, ‘What are these wounds between your arms?’ Then he will answer, ‘Those with which I was wounded in the house of my friends.’",
+      "ko": "혹이 그에게 묻기를 네 두 팔 사이에 상처는 어찜이냐 하면 대답하기를 이는 나의 친구의 집에서 받은 상처라 하리라",
+      "source_text_hash": "5db2f4398d1b3b51dc0ec8faa19d1bfc23545c682043e3e64c813a6ffc05b503",
+      "translation_text_hash": "d47ce237c27e8b07f4f5d9ef9ca0fd1c2a10eab08a90a63e6425c632ee7b7ffe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "혹이 그에게 묻기를 네 두 팔 사이에 상처는 어찜이냐 하면 대답하기를 이는 나의 친구의 집에서 받은 상처라 하리라"
+      ],
+      "raw_text_hashes": [
+        "d47ce237c27e8b07f4f5d9ef9ca0fd1c2a10eab08a90a63e6425c632ee7b7ffe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:13:7",
+      "sequence": 23067,
+      "chapter_label": "ZEC 13",
+      "verse_label": "7",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 13,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 13,
+          "verse": 7
+        }
+      ],
+      "en": "“Awake, sword, against my shepherd, and against the man who is close to me,” says the LORD of Armies. “Strike the shepherd, and the sheep will be scattered; and I will turn my hand against the little ones.",
+      "ko": "만군의 여호와가 말하노라 칼아 깨어서 내 목자, 내 짝된 자를 치라 목자를 치면 양이 흩어지려니와 작은 자들 위에는 내가 내 손을 드리우리라",
+      "source_text_hash": "0d30ece121b9f91cdb395dc663db8a3284723b55b64396b4fc64b51e44be384b",
+      "translation_text_hash": "f82d3f251c5502c35c5150a63fb58b7e1b4f600fb4ad44a19ab56c4e692521c2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만군의 여호와가 말하노라 칼아 깨어서 내 목자, 내 짝된 자를 치라 목자를 치면 양이 흩어지려니와 작은 자들 위에는 내가 내 손을 드리우리라"
+      ],
+      "raw_text_hashes": [
+        "f82d3f251c5502c35c5150a63fb58b7e1b4f600fb4ad44a19ab56c4e692521c2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:13:8",
+      "sequence": 23068,
+      "chapter_label": "ZEC 13",
+      "verse_label": "8",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 13,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 13,
+          "verse": 8
+        }
+      ],
+      "en": "It shall happen that in all the land,” says the LORD, “two parts in it will be cut off and die; but the third will be left in it.",
+      "ko": "여호와가 말하노라 이 온 땅에서 삼분지 이는 멸절하고 삼분지 일은 거기 남으리니",
+      "source_text_hash": "14991728b1a5735442cc30918aac210b092e0ec9dcb110556751e183e5498787",
+      "translation_text_hash": "058750f8083be090ba6193143952df83e91baf4d62c32c2ed81ed11eb3c5626a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와가 말하노라 이 온 땅에서 삼분지 이는 멸절하고 삼분지 일은 거기 남으리니"
+      ],
+      "raw_text_hashes": [
+        "058750f8083be090ba6193143952df83e91baf4d62c32c2ed81ed11eb3c5626a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:13:9",
+      "sequence": 23069,
+      "chapter_label": "ZEC 13",
+      "verse_label": "9",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 13,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 13,
+          "verse": 9
+        }
+      ],
+      "en": "I will bring the third part into the fire, and will refine them as silver is refined, and will test them like gold is tested. They will call on my name, and I will hear them. I will say, ‘It is my people;’ and they will say, ‘The LORD is my God.’”",
+      "ko": "내가 그 삼분지 일을 불 가운데 던져 은 같이 연단하며 금 같이 시험할 것이라 그들이 내 이름을 부르리니 내가 들을 것이며 나는 말하기를 이는 내 백성이라 할 것이요 그들은 말하기를 여호와는 내 하나님이시라 하리라",
+      "source_text_hash": "5f22c3f9e2337270c7991cf05e512847d8e05ab9f8fd4675ef916451eaa0846d",
+      "translation_text_hash": "1290eeddb28b5c7b1a55aa9c6d6cb19a8803f83d12d9e9925cee19c9a150323c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 그 삼분지 일을 불 가운데 던져 은 같이 연단하며 금 같이 시험할 것이라 그들이 내 이름을 부르리니 내가 들을 것이며 나는 말하기를 이는 내 백성이라 할 것이요 그들은 말하기를 여호와는 내 하나님이시라 하리라"
+      ],
+      "raw_text_hashes": [
+        "1290eeddb28b5c7b1a55aa9c6d6cb19a8803f83d12d9e9925cee19c9a150323c"
+      ]
+    }
+  ]
+}

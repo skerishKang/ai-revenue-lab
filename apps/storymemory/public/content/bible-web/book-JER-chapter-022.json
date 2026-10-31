@@ -1,0 +1,973 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JER:chapter:022",
+  "unit_ordinal": 767,
+  "unit_label": "JER 22",
+  "book_code": "JER",
+  "chapter_number": 22,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JER:22:1",
+      "sequence": 19456,
+      "chapter_label": "JER 22",
+      "verse_label": "1",
+      "locator": {
+        "book": "JER",
+        "chapter": 22,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 22,
+          "verse": 1
+        }
+      ],
+      "en": "The LORD said, “Go down to the house of the king of Judah, and speak this word there:",
+      "ko": "여호와께서 이같이 말씀하시되 너는 유다 왕의 집에 내려가서 거기서 이를 선언하여",
+      "source_text_hash": "d026a685002ccea32475d34d28ea25f4bef4c813d2264ab1f433ef1f70786dde",
+      "translation_text_hash": "07f00602e1ae3e64aabbbb87924fc0f15e91478e6d4fabafbe1b31cb85c249b9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 이같이 말씀하시되 너는 유다 왕의 집에 내려가서 거기서 이를 선언하여"
+      ],
+      "raw_text_hashes": [
+        "07f00602e1ae3e64aabbbb87924fc0f15e91478e6d4fabafbe1b31cb85c249b9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:22:2",
+      "sequence": 19457,
+      "chapter_label": "JER 22",
+      "verse_label": "2",
+      "locator": {
+        "book": "JER",
+        "chapter": 22,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 22,
+          "verse": 2
+        }
+      ],
+      "en": "‘Hear the LORD’s word, king of Judah, who sits on David’s throne—you, your servants, and your people who enter in by these gates.",
+      "ko": "이르기를 다윗의 위에 앉은 유다 왕이여 너와 네 신하와 이 문들로 들어오는 네 백성은 여호와의 말씀을 들을찌니라",
+      "source_text_hash": "3f0f5f043f46bdb3d31c3936deeef12d5ad49dc6240e613579a7728e42c590f0",
+      "translation_text_hash": "8fb67c0a82bbaa204aee8b5c10fb61b55f6ade2f14ea2cf40f6f0c519b890345",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이르기를 다윗의 위에 앉은 유다 왕이여 너와 네 신하와 이 문들로 들어오는 네 백성은 여호와의 말씀을 들을찌니라"
+      ],
+      "raw_text_hashes": [
+        "8fb67c0a82bbaa204aee8b5c10fb61b55f6ade2f14ea2cf40f6f0c519b890345"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:22:3",
+      "sequence": 19458,
+      "chapter_label": "JER 22",
+      "verse_label": "3",
+      "locator": {
+        "book": "JER",
+        "chapter": 22,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 22,
+          "verse": 3
+        }
+      ],
+      "en": "The LORD says: “Execute justice and righteousness, and deliver him who is robbed out of the hand of the oppressor. Do no wrong. Do no violence to the foreigner, the fatherless, or the widow. Don’t shed innocent blood in this place.",
+      "ko": "여호와께서 이같이 말씀하시되 너희가 공평과 정의를 행하여 탈취 당한 자를 압박하는 자의 손에서 건지고 이방인과 고아와 과부를 압제하거나 학대하지 말며 이곳에서 무죄한 피를 흘리지 말라",
+      "source_text_hash": "fa82c21c169d517e6c4faa757f1c6775ce84dbd3e1a2aecdbd6057da601a13e4",
+      "translation_text_hash": "577c918cab649e5b8a90d19632a2817695ae36688616c7b75f333c6d5e0c6ca4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 이같이 말씀하시되 너희가 공평과 정의를 행하여 탈취 당한 자를 압박하는 자의 손에서 건지고 이방인과 고아와 과부를 압제하거나 학대하지 말며 이곳에서 무죄한 피를 흘리지 말라"
+      ],
+      "raw_text_hashes": [
+        "577c918cab649e5b8a90d19632a2817695ae36688616c7b75f333c6d5e0c6ca4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:22:4",
+      "sequence": 19459,
+      "chapter_label": "JER 22",
+      "verse_label": "4",
+      "locator": {
+        "book": "JER",
+        "chapter": 22,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 22,
+          "verse": 4
+        }
+      ],
+      "en": "For if you do this thing indeed, then kings sitting on David’s throne will enter in by the gates of this house, riding in chariots and on horses—they, their servants, and their people.",
+      "ko": "너희가 참으로 이 말을 준행하면 다윗의 위에 앉을 왕들과 신하들과 백성이 병거와 말을 타고 이집 문으로 들어 오게 되리라마는",
+      "source_text_hash": "53b728cd90d30a362fd586441c6115158bbad8aa7e67b5e800da2c4e49bce963",
+      "translation_text_hash": "9928cfafdb8ce8bfc7226a234a21263918ccd7c8b99ae5e66c3ef17245dd01d2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 참으로 이 말을 준행하면 다윗의 위에 앉을 왕들과 신하들과 백성이 병거와 말을 타고 이집 문으로 들어 오게 되리라마는"
+      ],
+      "raw_text_hashes": [
+        "9928cfafdb8ce8bfc7226a234a21263918ccd7c8b99ae5e66c3ef17245dd01d2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:22:5",
+      "sequence": 19460,
+      "chapter_label": "JER 22",
+      "verse_label": "5",
+      "locator": {
+        "book": "JER",
+        "chapter": 22,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 22,
+          "verse": 5
+        }
+      ],
+      "en": "But if you will not hear these words, I swear by myself,” says the LORD, “that this house will become a desolation.”’”",
+      "ko": "너희가 이 말을 듣지 아니하면 내가 나로 맹세하노니 이 집이 황무하리라 나 여호와의 말이니라",
+      "source_text_hash": "9355dcc897d10e92971923aa121cfbf54de7741416f309e90f4effa650ee19cd",
+      "translation_text_hash": "4af6f73285073f012cf5ff4fb90022cee4752b734d34dacba51402761bcdff97",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 이 말을 듣지 아니하면 내가 나로 맹세하노니 이 집이 황무하리라 나 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "4af6f73285073f012cf5ff4fb90022cee4752b734d34dacba51402761bcdff97"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:22:6",
+      "sequence": 19461,
+      "chapter_label": "JER 22",
+      "verse_label": "6",
+      "locator": {
+        "book": "JER",
+        "chapter": 22,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 22,
+          "verse": 6
+        }
+      ],
+      "en": "For the LORD says concerning the house of the king of Judah: “You are Gilead to me, the head of Lebanon. Yet surely I will make you a wilderness, cities which are not inhabited.",
+      "ko": "나 여호와가 유다 왕의 집에 대하여 이같이 말하노라 네가 내게 길르앗 같고 레바논의 꼭대기 같으나 내가 정녕히 너로 광야와 거민이 없는 성을 만들 것이라",
+      "source_text_hash": "9a83b6e5347cf3f6db18776bf0a7fd7c3ece3690e0decbb501861db7729f308d",
+      "translation_text_hash": "9f73859982b83c7c3a1c9189be534910a4cccbcca7c0f3fe5380f9da79b8d32f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와가 유다 왕의 집에 대하여 이같이 말하노라 네가 내게 길르앗 같고 레바논의 꼭대기 같으나 내가 정녕히 너로 광야와 거민이 없는 성을 만들 것이라"
+      ],
+      "raw_text_hashes": [
+        "9f73859982b83c7c3a1c9189be534910a4cccbcca7c0f3fe5380f9da79b8d32f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:22:7",
+      "sequence": 19462,
+      "chapter_label": "JER 22",
+      "verse_label": "7",
+      "locator": {
+        "book": "JER",
+        "chapter": 22,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 22,
+          "verse": 7
+        }
+      ],
+      "en": "I will prepare destroyers against you, everyone with his weapons, and they will cut down your choice cedars, and cast them into the fire.",
+      "ko": "내가 너 파멸할 자를 준비하리니 그들이 각기 손에 병기를 가지고 네 아름다운 백향목을 찍어 불에 던지리라",
+      "source_text_hash": "0031fa24b4e7f4ff61786d325e1512207ab5a780d8b91798043cf554cf03146f",
+      "translation_text_hash": "c7874310fee84be1e1ac8c6c7613d25f751c9ee07a7829a3264aaed55f9187d3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너 파멸할 자를 준비하리니 그들이 각기 손에 병기를 가지고 네 아름다운 백향목을 찍어 불에 던지리라"
+      ],
+      "raw_text_hashes": [
+        "c7874310fee84be1e1ac8c6c7613d25f751c9ee07a7829a3264aaed55f9187d3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:22:8",
+      "sequence": 19463,
+      "chapter_label": "JER 22",
+      "verse_label": "8",
+      "locator": {
+        "book": "JER",
+        "chapter": 22,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 22,
+          "verse": 8
+        }
+      ],
+      "en": "“Many nations will pass by this city, and they will each ask his neighbor, ‘Why has the LORD done this to this great city?’",
+      "ko": "여러 나라 사람이 이 성으로 지나며 피차 말하기를 여호와가 이 큰 성에 이같이 행함은 어찜인고 하겠고",
+      "source_text_hash": "285887ed476509b4c5cf5e2a9153d8657fb6d730a29dc4b072e102f4dd541452",
+      "translation_text_hash": "39bf8e43aa82f649340bac558db5f838be791414c6b98c713bad6dfd301a4107",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여러 나라 사람이 이 성으로 지나며 피차 말하기를 여호와가 이 큰 성에 이같이 행함은 어찜인고 하겠고"
+      ],
+      "raw_text_hashes": [
+        "39bf8e43aa82f649340bac558db5f838be791414c6b98c713bad6dfd301a4107"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:22:9",
+      "sequence": 19464,
+      "chapter_label": "JER 22",
+      "verse_label": "9",
+      "locator": {
+        "book": "JER",
+        "chapter": 22,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 22,
+          "verse": 9
+        }
+      ],
+      "en": "Then they will answer, ‘Because they abandoned the covenant of the LORD their God, worshiped other gods, and served them.’”",
+      "ko": "대답하기는 이는 그들이 자기 하나님 여호와의 언약을 버리고 다른 신들에게 절하고 그를 섬긴 연고라 하리라 하셨다 할찌니라",
+      "source_text_hash": "e045b9b161e790b7b906b95b6b209a2090415035d2d0e22ff04ab311206e706e",
+      "translation_text_hash": "27092508a7b96b7757f8bc8c103179d1a682a449a070b46ca45408b067d2ccb3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대답하기는 이는 그들이 자기 하나님 여호와의 언약을 버리고 다른 신들에게 절하고 그를 섬긴 연고라 하리라 하셨다 할찌니라"
+      ],
+      "raw_text_hashes": [
+        "27092508a7b96b7757f8bc8c103179d1a682a449a070b46ca45408b067d2ccb3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:22:10",
+      "sequence": 19465,
+      "chapter_label": "JER 22",
+      "verse_label": "10",
+      "locator": {
+        "book": "JER",
+        "chapter": 22,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 22,
+          "verse": 10
+        }
+      ],
+      "en": "Don’t weep for the dead. Don’t bemoan him; but weep bitterly for him who goes away, for he will return no more, and not see his native country.",
+      "ko": "너희는 죽은 자를 위하여 울지 말며 그를 위하여 애통하지 말고 잡혀간 자를 위하여 슬피 울라 그는 다시 돌아와서 그 고국을 보지 못할 것임이니라",
+      "source_text_hash": "5964dd4355ea4ce0ce4ed8718f7006d0a36ca91b3ca9e60a20f70443d5ad5896",
+      "translation_text_hash": "5709beeb955480ccf791204018dc3f03992ea9411bf521e45cd88e090d4e951d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 죽은 자를 위하여 울지 말며 그를 위하여 애통하지 말고 잡혀간 자를 위하여 슬피 울라 그는 다시 돌아와서 그 고국을 보지 못할 것임이니라"
+      ],
+      "raw_text_hashes": [
+        "5709beeb955480ccf791204018dc3f03992ea9411bf521e45cd88e090d4e951d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:22:11",
+      "sequence": 19466,
+      "chapter_label": "JER 22",
+      "verse_label": "11",
+      "locator": {
+        "book": "JER",
+        "chapter": 22,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 22,
+          "verse": 11
+        }
+      ],
+      "en": "For the LORD says touching Shallum the son of Josiah, king of Judah, who reigned instead of Josiah his father, and who went out of this place: “He won’t return there any more.",
+      "ko": "나 여호와가 유다왕 요시야의 아들 곧 그 아비 요시야를 이어 왕이 되었다가 이곳에서 나간 살룸에 대하여 말하노라 그가 이곳으로 다시 돌아 오지 못하고",
+      "source_text_hash": "3bf3ddc7c6bc77bfbbf38e1d68cdd68bdfe9b730ae4601e571e35ba5feedf185",
+      "translation_text_hash": "d66a25b5e56dfbc27635e85cf999a656e868dd4dbdac94aa817a5fbf0e766bd8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와가 유다왕 요시야의 아들 곧 그 아비 요시야를 이어 왕이 되었다가 이곳에서 나간 살룸에 대하여 말하노라 그가 이곳으로 다시 돌아 오지 못하고"
+      ],
+      "raw_text_hashes": [
+        "d66a25b5e56dfbc27635e85cf999a656e868dd4dbdac94aa817a5fbf0e766bd8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:22:12",
+      "sequence": 19467,
+      "chapter_label": "JER 22",
+      "verse_label": "12",
+      "locator": {
+        "book": "JER",
+        "chapter": 22,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 22,
+          "verse": 12
+        }
+      ],
+      "en": "But he will die in the place where they have led him captive. He will see this land no more.”",
+      "ko": "잡혀간 곳에서 죽으리니 이 땅을 다시 보지 못하리라",
+      "source_text_hash": "4fcb88edbb151fb56db1bf713850294c5cb0acb95230d8908fc6e22649b51897",
+      "translation_text_hash": "feaaf6784468a9bad8feba77dbe578ba02635aa6b47ce41d3a40ee36faca6005",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "잡혀간 곳에서 죽으리니 이 땅을 다시 보지 못하리라"
+      ],
+      "raw_text_hashes": [
+        "feaaf6784468a9bad8feba77dbe578ba02635aa6b47ce41d3a40ee36faca6005"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:22:13",
+      "sequence": 19468,
+      "chapter_label": "JER 22",
+      "verse_label": "13",
+      "locator": {
+        "book": "JER",
+        "chapter": 22,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 22,
+          "verse": 13
+        }
+      ],
+      "en": "“Woe to him who builds his house by unrighteousness, and his rooms by injustice; who uses his neighbor’s service without wages, and doesn’t give him his hire;",
+      "ko": "불의로 그 집을 세우며 불공평으로 그 다락방을 지으며 그 이웃을 고용하고 그 고가를 주지 아니하는 자에게 화 있을찐저",
+      "source_text_hash": "6ca7ddfd859dcf6726aac4ccb6038ed8b3248ddd2917b338aeca275d45e8dd27",
+      "translation_text_hash": "8e621e12f850ece2704b62d40ed2d334cf92b36b0b13da271528f8b588594868",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "불의로 그 집을 세우며 불공평으로 그 다락방을 지으며 그 이웃을 고용하고 그 고가를 주지 아니하는 자에게 화 있을찐저"
+      ],
+      "raw_text_hashes": [
+        "8e621e12f850ece2704b62d40ed2d334cf92b36b0b13da271528f8b588594868"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:22:14",
+      "sequence": 19469,
+      "chapter_label": "JER 22",
+      "verse_label": "14",
+      "locator": {
+        "book": "JER",
+        "chapter": 22,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 22,
+          "verse": 14
+        }
+      ],
+      "en": "who says, ‘I will build myself a wide house and spacious rooms,’ and cuts out windows for himself, with a cedar ceiling, and painted with red.",
+      "ko": "그가 이르기를 내가 나를 위하여 광대한 집과 광활한 다락방을 지으리라 하고 자기를 위하여 창을 만들고 그것에 백향목으로 입히고 붉은 빛으로 칠하도다",
+      "source_text_hash": "a64826850075b81ddabd9370410cdb5639e7383898a0ed26c8eb148ea8604a89",
+      "translation_text_hash": "45183d16162baf62aeb2322061ed5d46809c050fe03bfd88890bbeb4a52dbd47",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 이르기를 내가 나를 위하여 광대한 집과 광활한 다락방을 지으리라 하고 자기를 위하여 창을 만들고 그것에 백향목으로 입히고 붉은 빛으로 칠하도다"
+      ],
+      "raw_text_hashes": [
+        "45183d16162baf62aeb2322061ed5d46809c050fe03bfd88890bbeb4a52dbd47"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:22:15",
+      "sequence": 19470,
+      "chapter_label": "JER 22",
+      "verse_label": "15",
+      "locator": {
+        "book": "JER",
+        "chapter": 22,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 22,
+          "verse": 15
+        }
+      ],
+      "en": "“Should you reign because you strive to excel in cedar? Didn’t your father eat and drink, and do justice and righteousness? Then it was well with him.",
+      "ko": "네가 백향목으로 집 짓기를 경쟁하므로 왕이 될 수 있겠느냐 네 아비가 먹으며 마시지 아니하였으며 공평과 의리를 행치 아니하였느냐 그 때에 그가 형통하였었느니라",
+      "source_text_hash": "384056fe039b8581b682712b2418045fb51f86de0e1bd5a042677725f1628627",
+      "translation_text_hash": "19e9231e4a1302172d6692217ffd80eb3b4a25bf79887e0bee238155f766e18f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 백향목으로 집 짓기를 경쟁하므로 왕이 될 수 있겠느냐 네 아비가 먹으며 마시지 아니하였으며 공평과 의리를 행치 아니하였느냐 그 때에 그가 형통하였었느니라"
+      ],
+      "raw_text_hashes": [
+        "19e9231e4a1302172d6692217ffd80eb3b4a25bf79887e0bee238155f766e18f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:22:16",
+      "sequence": 19471,
+      "chapter_label": "JER 22",
+      "verse_label": "16",
+      "locator": {
+        "book": "JER",
+        "chapter": 22,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 22,
+          "verse": 16
+        }
+      ],
+      "en": "He judged the cause of the poor and needy; so then it was well. Wasn’t this to know me?” says the LORD.",
+      "ko": "그는 가난한 자와 궁핍한 자를 신원하고 형통하였나니 이것이 나를 앎이 아니냐 여호와의 말이니라",
+      "source_text_hash": "78bd8c9756395813986d471cded53e01eb15e5635ea6fe821ec30f4d3c9fc5da",
+      "translation_text_hash": "f9d007a6e36b0b4e13bc0e1b0f74ca585ad37dc2ea5f599420b1868131980e16",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그는 가난한 자와 궁핍한 자를 신원하고 형통하였나니 이것이 나를 앎이 아니냐 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "f9d007a6e36b0b4e13bc0e1b0f74ca585ad37dc2ea5f599420b1868131980e16"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:22:17",
+      "sequence": 19472,
+      "chapter_label": "JER 22",
+      "verse_label": "17",
+      "locator": {
+        "book": "JER",
+        "chapter": 22,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 22,
+          "verse": 17
+        }
+      ],
+      "en": "But your eyes and your heart are only for your covetousness, for shedding innocent blood, for oppression, and for doing violence.”",
+      "ko": "그러나 네 눈과 마음은 탐남과 무죄한 피를 흘림과 압박과 강포를 행하려 할 뿐이니라",
+      "source_text_hash": "82ee00fa945fbd513304740b0896ca54d145fb9b0c2460752fda34b0846d45c0",
+      "translation_text_hash": "2b8046b54ec81cda8b96f8a9ebd3d092dd77d09dd549ba9845d7bd4f870481d8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 네 눈과 마음은 탐남과 무죄한 피를 흘림과 압박과 강포를 행하려 할 뿐이니라"
+      ],
+      "raw_text_hashes": [
+        "2b8046b54ec81cda8b96f8a9ebd3d092dd77d09dd549ba9845d7bd4f870481d8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:22:18",
+      "sequence": 19473,
+      "chapter_label": "JER 22",
+      "verse_label": "18",
+      "locator": {
+        "book": "JER",
+        "chapter": 22,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 22,
+          "verse": 18
+        }
+      ],
+      "en": "Therefore the LORD says concerning Jehoiakim the son of Josiah, king of Judah: “They won’t lament for him, saying, ‘Ah my brother!’ or, ‘Ah sister!’ They won’t lament for him, saying ‘Ah lord!’ or, ‘Ah his glory!’",
+      "ko": "그러므로 나 여호와가 유다 왕 요시야의 아들 여호야김에게 대하여 이같이 말하노라 무리가 그를 위하여 슬프다 내 형제여, 슬프다 내 자매여 하며 통곡하지 아니할 것이며 그를 위하여 슬프다 주여 슬프다 그 영광이여 하며 통곡하지도 아니할 것이라",
+      "source_text_hash": "58460c87177c84c9dcc2d1e553492efcb82640672addc1eb1196f349e21dc94f",
+      "translation_text_hash": "dd6a78963d857646ca93eee60bf145bf490218a3359eab8083a30c6cb2203ed3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 나 여호와가 유다 왕 요시야의 아들 여호야김에게 대하여 이같이 말하노라 무리가 그를 위하여 슬프다 내 형제여, 슬프다 내 자매여 하며 통곡하지 아니할 것이며 그를 위하여 슬프다 주여 슬프다 그 영광이여 하며 통곡하지도 아니할 것이라"
+      ],
+      "raw_text_hashes": [
+        "dd6a78963d857646ca93eee60bf145bf490218a3359eab8083a30c6cb2203ed3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:22:19",
+      "sequence": 19474,
+      "chapter_label": "JER 22",
+      "verse_label": "19",
+      "locator": {
+        "book": "JER",
+        "chapter": 22,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 22,
+          "verse": 19
+        }
+      ],
+      "en": "He will be buried with the burial of a donkey, drawn and cast out beyond the gates of Jerusalem.”",
+      "ko": "그가 끌려 예루살렘 문밖에 던지우고 나귀 같이 매장함을 당하리라",
+      "source_text_hash": "f4d36b9c5b8fbb07a25fee28c777c0f6c88ff942be3e3fcee1648261558a6fed",
+      "translation_text_hash": "ef4b4b6570d868861e2db5fff718d5b315db364c98973d8526c0d4cb8bdc9738",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 끌려 예루살렘 문밖에 던지우고 나귀 같이 매장함을 당하리라"
+      ],
+      "raw_text_hashes": [
+        "ef4b4b6570d868861e2db5fff718d5b315db364c98973d8526c0d4cb8bdc9738"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:22:20",
+      "sequence": 19475,
+      "chapter_label": "JER 22",
+      "verse_label": "20",
+      "locator": {
+        "book": "JER",
+        "chapter": 22,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 22,
+          "verse": 20
+        }
+      ],
+      "en": "“Go up to Lebanon, and cry out. Lift up your voice in Bashan, and cry from Abarim; for all your lovers have been destroyed.",
+      "ko": "너는 레바논에 올라 외치며 바산에서 네 소리를 높이며 아바림에서 외치라 이는 너를 사랑하는 자가 다 멸망하였음이니라",
+      "source_text_hash": "95f13cda87b3dbb46de58d3cb236b56281979e1b04fd2fe98296de582a0fc928",
+      "translation_text_hash": "b66a285eae17eac8aeff4be00356e38f40cb308b2af35495866d52db6870f2b4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 레바논에 올라 외치며 바산에서 네 소리를 높이며 아바림에서 외치라 이는 너를 사랑하는 자가 다 멸망하였음이니라"
+      ],
+      "raw_text_hashes": [
+        "b66a285eae17eac8aeff4be00356e38f40cb308b2af35495866d52db6870f2b4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:22:21",
+      "sequence": 19476,
+      "chapter_label": "JER 22",
+      "verse_label": "21",
+      "locator": {
+        "book": "JER",
+        "chapter": 22,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 22,
+          "verse": 21
+        }
+      ],
+      "en": "I spoke to you in your prosperity, but you said, ‘I will not listen.’ This has been your way from your youth, that you didn’t obey my voice.",
+      "ko": "네가 평안할 때에 내가 네게 말하였으나 네 말이 나는 듣지 아니하리라 하였나니 네가 어려서부터 내 목소리를 청종치 아니함이 네 습관이라",
+      "source_text_hash": "fe608e1f34a9cee349bda733aac44f1376b16b7506e66b8abe98cdc179ec2751",
+      "translation_text_hash": "c865ad4f20994d620d4c0359f9c8554319b9403ec4d3ed4b717a83f65f926d74",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 평안할 때에 내가 네게 말하였으나 네 말이 나는 듣지 아니하리라 하였나니 네가 어려서부터 내 목소리를 청종치 아니함이 네 습관이라"
+      ],
+      "raw_text_hashes": [
+        "c865ad4f20994d620d4c0359f9c8554319b9403ec4d3ed4b717a83f65f926d74"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:22:22",
+      "sequence": 19477,
+      "chapter_label": "JER 22",
+      "verse_label": "22",
+      "locator": {
+        "book": "JER",
+        "chapter": 22,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 22,
+          "verse": 22
+        }
+      ],
+      "en": "The wind will feed all your shepherds, and your lovers will go into captivity. Surely then you will be ashamed and confounded for all your wickedness.",
+      "ko": "네 목자들은 다 바람에 삼키울 것이요 너를 사랑하는 자들은 사로잡혀 가리니 그 때에 네가 반드시 네 모든 악을 인하여 수치와 욕을 당하리라",
+      "source_text_hash": "8879b3bd51381794857083aa748c190d4746e3a02b1cdb6609db1a0db4eaa89a",
+      "translation_text_hash": "a88811bea74715fb57292bfaa7994883f61bea9b9bf8c0d844d0f22843173dd8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 목자들은 다 바람에 삼키울 것이요 너를 사랑하는 자들은 사로잡혀 가리니 그 때에 네가 반드시 네 모든 악을 인하여 수치와 욕을 당하리라"
+      ],
+      "raw_text_hashes": [
+        "a88811bea74715fb57292bfaa7994883f61bea9b9bf8c0d844d0f22843173dd8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:22:23",
+      "sequence": 19478,
+      "chapter_label": "JER 22",
+      "verse_label": "23",
+      "locator": {
+        "book": "JER",
+        "chapter": 22,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 22,
+          "verse": 23
+        }
+      ],
+      "en": "Inhabitant of Lebanon, who makes your nest in the cedars, how greatly to be pitied you will be when pangs come on you, the pain as of a woman in travail!",
+      "ko": "레바논에 거하여 백향목에 깃들이는 자여 여인의 해산하는 고통 같은 고통이 네게 임할 때에 너의 가련함이 얼마나 심하랴",
+      "source_text_hash": "daf9c7b53358e6a6e9fc99e938ec3145dedeacfe80d2756f6af2e360282018d4",
+      "translation_text_hash": "8ce896af7053fb18eb39696dc1f8f3d583679613632b4947323984d9d03b4bf9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "레바논에 거하여 백향목에 깃들이는 자여 여인의 해산하는 고통 같은 고통이 네게 임할 때에 너의 가련함이 얼마나 심하랴"
+      ],
+      "raw_text_hashes": [
+        "8ce896af7053fb18eb39696dc1f8f3d583679613632b4947323984d9d03b4bf9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:22:24",
+      "sequence": 19479,
+      "chapter_label": "JER 22",
+      "verse_label": "24",
+      "locator": {
+        "book": "JER",
+        "chapter": 22,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 22,
+          "verse": 24
+        }
+      ],
+      "en": "“As I live,” says the LORD, “though Coniah the son of Jehoiakim king of Judah were the signet on my right hand, I would still pluck you from there.",
+      "ko": "나 여호와가 말하노라 나의 삶으로 맹세하노니 유다 왕 여호야김의 아들 너 고니야가 나의 오른손의 인장반지라 할찌라도 내가 빼어",
+      "source_text_hash": "d562b1d454bd2d8be5116e38c5d9f0fd330686b2845970667c15d8cec2e8d08e",
+      "translation_text_hash": "2cf6cb80e104382c24f2decf6351787f7e317aa64d1d14c760b9ba88f4d282e1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와가 말하노라 나의 삶으로 맹세하노니 유다 왕 여호야김의 아들 너 고니야가 나의 오른손의 인장반지라 할찌라도 내가 빼어"
+      ],
+      "raw_text_hashes": [
+        "2cf6cb80e104382c24f2decf6351787f7e317aa64d1d14c760b9ba88f4d282e1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:22:25",
+      "sequence": 19480,
+      "chapter_label": "JER 22",
+      "verse_label": "25",
+      "locator": {
+        "book": "JER",
+        "chapter": 22,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 22,
+          "verse": 25
+        }
+      ],
+      "en": "I would give you into the hand of those who seek your life, and into the hand of them of whom you are afraid, even into the hand of Nebuchadnezzar king of Babylon, and into the hand of the Chaldeans.",
+      "ko": "네 생명을 찾는 자의 손과 너의 두려워하는 자의 손 곧 바벨론 왕 느부갓네살의 손과 갈대아인의 손에 줄 것이라",
+      "source_text_hash": "79e5a18bc2847f9d52782a2a25a6c2f5673c4c4847a77b7e77ec174b377463e7",
+      "translation_text_hash": "6be30e9e76ad2b34bc52af3994ab788f5173c7ad5e2b32b68de8632b6e1951ce",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 생명을 찾는 자의 손과 너의 두려워하는 자의 손 곧 바벨론 왕 느부갓네살의 손과 갈대아인의 손에 줄 것이라"
+      ],
+      "raw_text_hashes": [
+        "6be30e9e76ad2b34bc52af3994ab788f5173c7ad5e2b32b68de8632b6e1951ce"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:22:26",
+      "sequence": 19481,
+      "chapter_label": "JER 22",
+      "verse_label": "26",
+      "locator": {
+        "book": "JER",
+        "chapter": 22,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 22,
+          "verse": 26
+        }
+      ],
+      "en": "I will cast you out with your mother who bore you into another country, where you were not born; and there you will die.",
+      "ko": "내가 너와 너를 낳은 어미를 너희가 나지 아니한 다른 지방에 쫓아내리니 너희가 거기서 죽고",
+      "source_text_hash": "91658fbda7f4eb82ac8cd7e2901d694cce10db5f1c08e69dcc7a25cf7c83760d",
+      "translation_text_hash": "5e2548dd2a63605468422d89becf59a7887f14bafa7eeadf33d3c4223fa8f708",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너와 너를 낳은 어미를 너희가 나지 아니한 다른 지방에 쫓아내리니 너희가 거기서 죽고"
+      ],
+      "raw_text_hashes": [
+        "5e2548dd2a63605468422d89becf59a7887f14bafa7eeadf33d3c4223fa8f708"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:22:27",
+      "sequence": 19482,
+      "chapter_label": "JER 22",
+      "verse_label": "27",
+      "locator": {
+        "book": "JER",
+        "chapter": 22,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 22,
+          "verse": 27
+        }
+      ],
+      "en": "But to the land to which their soul longs to return, there they will not return.”",
+      "ko": "너희 마음에 돌아오기를 사모하는 땅에 돌아 오지 못하리라",
+      "source_text_hash": "bcbe80ca930bdb63df72691bb0eb6be41cb1523a46fed5568b741161b0e98592",
+      "translation_text_hash": "1ed77e8ae387b63747511023c6d7013d3a5ba29df9620bc202d04a212ce6be70",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 마음에 돌아오기를 사모하는 땅에 돌아 오지 못하리라"
+      ],
+      "raw_text_hashes": [
+        "1ed77e8ae387b63747511023c6d7013d3a5ba29df9620bc202d04a212ce6be70"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:22:28",
+      "sequence": 19483,
+      "chapter_label": "JER 22",
+      "verse_label": "28",
+      "locator": {
+        "book": "JER",
+        "chapter": 22,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 22,
+          "verse": 28
+        }
+      ],
+      "en": "Is this man Coniah a despised broken vessel? Is he a vessel in which no one delights? Why are they cast out, he and his offspring, and cast into a land which they don’t know?",
+      "ko": "이 사람 고니야는 천한 파기냐 좋아하지 아니하는 그릇이냐 어찌하여 그와 그 자손이 쫓겨나서 알지 못하는 땅에 들어 갔는고",
+      "source_text_hash": "ed5946191873abc74975a8484f3402a922fc51a5fd54aec3f71a6fcf1cae8b88",
+      "translation_text_hash": "c90047c836ba809a43616d42a2102db9077bc7fc27b0a87c2c1d9d0abe033a7b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 사람 고니야는 천한 파기냐 좋아하지 아니하는 그릇이냐 어찌하여 그와 그 자손이 쫓겨나서 알지 못하는 땅에 들어 갔는고"
+      ],
+      "raw_text_hashes": [
+        "c90047c836ba809a43616d42a2102db9077bc7fc27b0a87c2c1d9d0abe033a7b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:22:29",
+      "sequence": 19484,
+      "chapter_label": "JER 22",
+      "verse_label": "29",
+      "locator": {
+        "book": "JER",
+        "chapter": 22,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 22,
+          "verse": 29
+        }
+      ],
+      "en": "O earth, earth, earth, hear the LORD’s word!",
+      "ko": "땅이여, 땅이여, 땅이여, 여호와의 말을 들을찌니라",
+      "source_text_hash": "5227b55085268945cc16490470dff0c1b90ea54fed968cb1c98751f47764951a",
+      "translation_text_hash": "ae7cfa428d6b09a36555448a3d639340e49f30fa9b15b283cbdd783188d29257",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "땅이여, 땅이여, 땅이여, 여호와의 말을 들을찌니라"
+      ],
+      "raw_text_hashes": [
+        "ae7cfa428d6b09a36555448a3d639340e49f30fa9b15b283cbdd783188d29257"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:22:30",
+      "sequence": 19485,
+      "chapter_label": "JER 22",
+      "verse_label": "30",
+      "locator": {
+        "book": "JER",
+        "chapter": 22,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 22,
+          "verse": 30
+        }
+      ],
+      "en": "The LORD says, “Record this man as childless, a man who will not prosper in his days; for no more will a man of his offspring prosper, sitting on David’s throne and ruling in Judah.”",
+      "ko": "나 여호와가 이같이 말하노라 너희는 이 사람이 무자하겠고 그 평생에 형통치 못할 자라 기록하라 이는 그 자손 중 형통하여 다윗의 위에 앉아 유다를 다스릴 사람이 다시는 없을 것임이니라",
+      "source_text_hash": "d595ccdc102ee31af17be7f5a791bf9f60989272994b98c485879f2ccd403b93",
+      "translation_text_hash": "0fe166824da7415705f9ccdbd785ddc3babaf5f85f0386e38c9007d3b3060669",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와가 이같이 말하노라 너희는 이 사람이 무자하겠고 그 평생에 형통치 못할 자라 기록하라 이는 그 자손 중 형통하여 다윗의 위에 앉아 유다를 다스릴 사람이 다시는 없을 것임이니라"
+      ],
+      "raw_text_hashes": [
+        "0fe166824da7415705f9ccdbd785ddc3babaf5f85f0386e38c9007d3b3060669"
+      ]
+    }
+  ]
+}

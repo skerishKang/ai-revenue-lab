@@ -1,0 +1,1389 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:107",
+  "unit_ordinal": 585,
+  "unit_label": "PSA 107",
+  "book_code": "PSA",
+  "chapter_number": 107,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:107:1",
+      "sequence": 15701,
+      "chapter_label": "PSA 107",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 107,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 107,
+          "verse": 1
+        }
+      ],
+      "en": "Give thanks to the LORD, for he is good, for his loving kindness endures forever.",
+      "ko": "여호와께 감사하라 그는 선하시며 그 인자하심이 영원함이로다",
+      "source_text_hash": "5952864712492c7c4000fb1ee544c2bd85ba0d5c398afae1e166342fe07a5263",
+      "translation_text_hash": "dc191eaa2cafa6a8b06a7d277813c0ae7b6f397607600233379c0797e8895296",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께 감사하라 그는 선하시며 그 인자하심이 영원함이로다"
+      ],
+      "raw_text_hashes": [
+        "dc191eaa2cafa6a8b06a7d277813c0ae7b6f397607600233379c0797e8895296"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:107:2",
+      "sequence": 15702,
+      "chapter_label": "PSA 107",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 107,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 107,
+          "verse": 2
+        }
+      ],
+      "en": "Let the redeemed by the LORD say so, whom he has redeemed from the hand of the adversary,",
+      "ko": "여호와께 구속함을 받은 자는 이 같이 말할찌어다 여호와께서 대적의 손에서 저희를 구속하사",
+      "source_text_hash": "b6c87f0b92aad89739e0104afed16b9004ee1fcceb96c1a9beabd3369b92ae35",
+      "translation_text_hash": "f6f4cf8afddb34e308e420062f6c25a6f3b7ace0069f5de07a5c2de273d9dcc9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께 구속함을 받은 자는 이 같이 말할찌어다 여호와께서 대적의 손에서 저희를 구속하사"
+      ],
+      "raw_text_hashes": [
+        "f6f4cf8afddb34e308e420062f6c25a6f3b7ace0069f5de07a5c2de273d9dcc9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:107:3",
+      "sequence": 15703,
+      "chapter_label": "PSA 107",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 107,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 107,
+          "verse": 3
+        }
+      ],
+      "en": "and gathered out of the lands, from the east and from the west, from the north and from the south.",
+      "ko": "동서 남북 각 지방에서부터 모으셨도다",
+      "source_text_hash": "90eea9f42b4052592ac3a9d5914443ef36dd6881f03c767956a415b9521df87d",
+      "translation_text_hash": "b67ebb70ff707ac35bcb8581753e120ab3932fafddeff5a25ca7b6f801679458",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "동서 남북 각 지방에서부터 모으셨도다"
+      ],
+      "raw_text_hashes": [
+        "b67ebb70ff707ac35bcb8581753e120ab3932fafddeff5a25ca7b6f801679458"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:107:4",
+      "sequence": 15704,
+      "chapter_label": "PSA 107",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 107,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 107,
+          "verse": 4
+        }
+      ],
+      "en": "They wandered in the wilderness in a desert way. They found no city to live in.",
+      "ko": "저희가 광야 사막 길에서 방황하며 거할 성을 찾지 못하고",
+      "source_text_hash": "5380bf5985010b4e489818992c70d714f88bd5de384612ad1110e59e31f31b81",
+      "translation_text_hash": "900d2e09150abea9e79264a559ab706f2ae9e4b1b61da8461b6baf7643345888",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 광야 사막 길에서 방황하며 거할 성을 찾지 못하고"
+      ],
+      "raw_text_hashes": [
+        "900d2e09150abea9e79264a559ab706f2ae9e4b1b61da8461b6baf7643345888"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:107:5",
+      "sequence": 15705,
+      "chapter_label": "PSA 107",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 107,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 107,
+          "verse": 5
+        }
+      ],
+      "en": "Hungry and thirsty, their soul fainted in them.",
+      "ko": "주리고 목마름으로 그 영혼이 속에서 피곤하였도다",
+      "source_text_hash": "1407d4de0c85ba328e4374647299858841db3d87ffa85f3aabaa09a312eb4fe3",
+      "translation_text_hash": "c651145e777ef0e305bdebebb9894dd2264221d34d0e1a733a63b030f96b90d2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주리고 목마름으로 그 영혼이 속에서 피곤하였도다"
+      ],
+      "raw_text_hashes": [
+        "c651145e777ef0e305bdebebb9894dd2264221d34d0e1a733a63b030f96b90d2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:107:6",
+      "sequence": 15706,
+      "chapter_label": "PSA 107",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 107,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 107,
+          "verse": 6
+        }
+      ],
+      "en": "Then they cried to the LORD in their trouble, and he delivered them out of their distresses.",
+      "ko": "이에 저희가 그 근심 중에 여호와께 부르짖으매 그 고통에서 건지시고",
+      "source_text_hash": "fedb2ceb671b81eecb82d43d7b35dff7488407908ec1b5326b0fa2b23b2cb162",
+      "translation_text_hash": "64d6ffcdb78a1a7a154e60017670e9f53752aa7f928a0a8b2e21d7903c9f4919",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 저희가 그 근심 중에 여호와께 부르짖으매 그 고통에서 건지시고"
+      ],
+      "raw_text_hashes": [
+        "64d6ffcdb78a1a7a154e60017670e9f53752aa7f928a0a8b2e21d7903c9f4919"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:107:7",
+      "sequence": 15707,
+      "chapter_label": "PSA 107",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 107,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 107,
+          "verse": 7
+        }
+      ],
+      "en": "He led them also by a straight way, that they might go to a city to live in.",
+      "ko": "또 바른 길로 인도하사 거할 성에 이르게 하셨도다",
+      "source_text_hash": "f595fa880708e357a700dd6296d233b73ce8c0b95579876646ea569b8d7d135a",
+      "translation_text_hash": "5bd4aeef0d261f337aec20ad97bef7b1343055ce8f67ddc64b878cb39578c61a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 바른 길로 인도하사 거할 성에 이르게 하셨도다"
+      ],
+      "raw_text_hashes": [
+        "5bd4aeef0d261f337aec20ad97bef7b1343055ce8f67ddc64b878cb39578c61a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:107:8",
+      "sequence": 15708,
+      "chapter_label": "PSA 107",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 107,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 107,
+          "verse": 8
+        }
+      ],
+      "en": "Let them praise the LORD for his loving kindness, for his wonderful deeds to the children of men!",
+      "ko": "여호와의 인자하심과 인생에게 행하신 기이한 일을 인하여 그를 찬송할찌로다",
+      "source_text_hash": "649eb11aaf5d08e1b5e0b2c61782dd168b64e260e93a1fc883375be6a6e0db6a",
+      "translation_text_hash": "28d7c8f6d9535e08ccc30021e9f4ef7e000e1741081c42a2be21740d71fd9d43",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 인자하심과 인생에게 행하신 기이한 일을 인하여 그를 찬송할찌로다"
+      ],
+      "raw_text_hashes": [
+        "28d7c8f6d9535e08ccc30021e9f4ef7e000e1741081c42a2be21740d71fd9d43"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:107:9",
+      "sequence": 15709,
+      "chapter_label": "PSA 107",
+      "verse_label": "9",
+      "locator": {
+        "book": "PSA",
+        "chapter": 107,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 107,
+          "verse": 9
+        }
+      ],
+      "en": "For he satisfies the longing soul. He fills the hungry soul with good.",
+      "ko": "저가 사모하는 영혼을 만족케 하시며 주린 영혼에게 좋은 것으로 채워주심이로다",
+      "source_text_hash": "50f88080730cbd0f505ef3970e614d6d7a5f30eec20ac165a3250d8c0721c0c1",
+      "translation_text_hash": "69277caa43db74ef9f8dc49185200e907b420196855c31cfb692643eabd934f2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 사모하는 영혼을 만족케 하시며 주린 영혼에게 좋은 것으로 채워주심이로다"
+      ],
+      "raw_text_hashes": [
+        "69277caa43db74ef9f8dc49185200e907b420196855c31cfb692643eabd934f2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:107:10",
+      "sequence": 15710,
+      "chapter_label": "PSA 107",
+      "verse_label": "10",
+      "locator": {
+        "book": "PSA",
+        "chapter": 107,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 107,
+          "verse": 10
+        }
+      ],
+      "en": "Some sat in darkness and in the shadow of death, being bound in affliction and iron,",
+      "ko": "사람이 흑암과 사망의 그늘에 앉으며 곤고와 쇠사슬에 매임은",
+      "source_text_hash": "e46750590bc328f1daac37425b7f7b059e10e83fc44a40a3eebfe8254425ff14",
+      "translation_text_hash": "d44312790d7a4b4c4114b6f8562c49ccba333b1df7623327481b95814dbf3375",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 흑암과 사망의 그늘에 앉으며 곤고와 쇠사슬에 매임은"
+      ],
+      "raw_text_hashes": [
+        "d44312790d7a4b4c4114b6f8562c49ccba333b1df7623327481b95814dbf3375"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:107:11",
+      "sequence": 15711,
+      "chapter_label": "PSA 107",
+      "verse_label": "11",
+      "locator": {
+        "book": "PSA",
+        "chapter": 107,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 107,
+          "verse": 11
+        }
+      ],
+      "en": "because they rebelled against the words of God, and condemned the counsel of the Most High.",
+      "ko": "하나님의 말씀을 거역하며 지존자의 뜻을 멸시함이라",
+      "source_text_hash": "99883f7fdaf4a9a71432d456c1ed507144c9f60da3c3d181ed770598a94dfbaa",
+      "translation_text_hash": "4352aa90132f96bbc0875d18a5b71d8192128c80186790283679d3f76f78228d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님의 말씀을 거역하며 지존자의 뜻을 멸시함이라"
+      ],
+      "raw_text_hashes": [
+        "4352aa90132f96bbc0875d18a5b71d8192128c80186790283679d3f76f78228d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:107:12",
+      "sequence": 15712,
+      "chapter_label": "PSA 107",
+      "verse_label": "12",
+      "locator": {
+        "book": "PSA",
+        "chapter": 107,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 107,
+          "verse": 12
+        }
+      ],
+      "en": "Therefore he brought down their heart with labor. They fell down, and there was no one to help.",
+      "ko": "그러므로 수고로 저희 마음을 낮추셨으니 저희가 엎드러져도 돕는 자가 없었도다",
+      "source_text_hash": "64ca2df4557c69e6f65338ee8824cad5b6fc59251b575a502ae628c574a6abac",
+      "translation_text_hash": "0e3eeb971d931037087306c1fdb98ce6da0e10138aa7958e51832a77c946e5bb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 수고로 저희 마음을 낮추셨으니 저희가 엎드러져도 돕는 자가 없었도다"
+      ],
+      "raw_text_hashes": [
+        "0e3eeb971d931037087306c1fdb98ce6da0e10138aa7958e51832a77c946e5bb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:107:13",
+      "sequence": 15713,
+      "chapter_label": "PSA 107",
+      "verse_label": "13",
+      "locator": {
+        "book": "PSA",
+        "chapter": 107,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 107,
+          "verse": 13
+        }
+      ],
+      "en": "Then they cried to the LORD in their trouble, and he saved them out of their distresses.",
+      "ko": "이에 저희가 그 근심 중에 여호와께 부르짖으매 그 고통에서 구원하시되",
+      "source_text_hash": "3f0f06bbe27c21edf0fe4eb5d1daf82e2cf6a1fb5cd7130ba3293f01074aca07",
+      "translation_text_hash": "dda34c9ebd55c1c19083a80f7d88e5599b48438fd51d99f76a26db4ccf5e26a4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 저희가 그 근심 중에 여호와께 부르짖으매 그 고통에서 구원하시되"
+      ],
+      "raw_text_hashes": [
+        "dda34c9ebd55c1c19083a80f7d88e5599b48438fd51d99f76a26db4ccf5e26a4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:107:14",
+      "sequence": 15714,
+      "chapter_label": "PSA 107",
+      "verse_label": "14",
+      "locator": {
+        "book": "PSA",
+        "chapter": 107,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 107,
+          "verse": 14
+        }
+      ],
+      "en": "He brought them out of darkness and the shadow of death, and broke away their chains.",
+      "ko": "흑암과 사망의 그늘에서 인도하여 내시고 그 얽은 줄을 끊으셨도다",
+      "source_text_hash": "e7004907250ae89ff04dd5d43fe1476ca3562cae01483ad2b10ada092bb057e3",
+      "translation_text_hash": "af9aeec1f2647645a63b5c01725bbcbd2a3f2c960550ffe38c7d93af110d360a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "흑암과 사망의 그늘에서 인도하여 내시고 그 얽은 줄을 끊으셨도다"
+      ],
+      "raw_text_hashes": [
+        "af9aeec1f2647645a63b5c01725bbcbd2a3f2c960550ffe38c7d93af110d360a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:107:15",
+      "sequence": 15715,
+      "chapter_label": "PSA 107",
+      "verse_label": "15",
+      "locator": {
+        "book": "PSA",
+        "chapter": 107,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 107,
+          "verse": 15
+        }
+      ],
+      "en": "Let them praise the LORD for his loving kindness, for his wonderful deeds to the children of men!",
+      "ko": "여호와의 인자하심과 인생에게 행하신 기이한 일을 인하여 그를 찬송할찌로다",
+      "source_text_hash": "649eb11aaf5d08e1b5e0b2c61782dd168b64e260e93a1fc883375be6a6e0db6a",
+      "translation_text_hash": "28d7c8f6d9535e08ccc30021e9f4ef7e000e1741081c42a2be21740d71fd9d43",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 인자하심과 인생에게 행하신 기이한 일을 인하여 그를 찬송할찌로다"
+      ],
+      "raw_text_hashes": [
+        "28d7c8f6d9535e08ccc30021e9f4ef7e000e1741081c42a2be21740d71fd9d43"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:107:16",
+      "sequence": 15716,
+      "chapter_label": "PSA 107",
+      "verse_label": "16",
+      "locator": {
+        "book": "PSA",
+        "chapter": 107,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 107,
+          "verse": 16
+        }
+      ],
+      "en": "For he has broken the gates of bronze, and cut through bars of iron.",
+      "ko": "저가 놋문을 깨뜨리시며 쇠 빗장을 꺾으셨음이로다",
+      "source_text_hash": "c73ab11d0cfd123924cbdb9b5f7f64f81b89277b81c2459fb60c8e2f931127d9",
+      "translation_text_hash": "75ff1e168ca081b836360c36915a05d25f05c9d670fceb54b5d19ea3b366bded",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 놋문을 깨뜨리시며 쇠 빗장을 꺾으셨음이로다"
+      ],
+      "raw_text_hashes": [
+        "75ff1e168ca081b836360c36915a05d25f05c9d670fceb54b5d19ea3b366bded"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:107:17",
+      "sequence": 15717,
+      "chapter_label": "PSA 107",
+      "verse_label": "17",
+      "locator": {
+        "book": "PSA",
+        "chapter": 107,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 107,
+          "verse": 17
+        }
+      ],
+      "en": "Fools are afflicted because of their disobedience, and because of their iniquities.",
+      "ko": "미련한 자는 저희 범과와 죄악의 연고로 곤난을 당하매",
+      "source_text_hash": "30cc9b9f4f482dd7f69d209af41e758e472f006755ce0593582c7fc21fdb8c6d",
+      "translation_text_hash": "40529ca91d2b946ceba34fc19900839e7652bf6efacdbe12fbfff996bb12b296",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "미련한 자는 저희 범과와 죄악의 연고로 곤난을 당하매"
+      ],
+      "raw_text_hashes": [
+        "40529ca91d2b946ceba34fc19900839e7652bf6efacdbe12fbfff996bb12b296"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:107:18",
+      "sequence": 15718,
+      "chapter_label": "PSA 107",
+      "verse_label": "18",
+      "locator": {
+        "book": "PSA",
+        "chapter": 107,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 107,
+          "verse": 18
+        }
+      ],
+      "en": "Their soul abhors all kinds of food. They draw near to the gates of death.",
+      "ko": "저희 혼이 각종 식물을 싫어하여 사망의 문에 가깝도다",
+      "source_text_hash": "e3c705075cac79e1a2ce5aabf3345090b73f89d4b61e466c9ba9111ee58c5429",
+      "translation_text_hash": "2f218f34effb8e3a020fffb8b43e0e053320ac0ee66cd3ef22798f9cd5c807ed",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희 혼이 각종 식물을 싫어하여 사망의 문에 가깝도다"
+      ],
+      "raw_text_hashes": [
+        "2f218f34effb8e3a020fffb8b43e0e053320ac0ee66cd3ef22798f9cd5c807ed"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:107:19",
+      "sequence": 15719,
+      "chapter_label": "PSA 107",
+      "verse_label": "19",
+      "locator": {
+        "book": "PSA",
+        "chapter": 107,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 107,
+          "verse": 19
+        }
+      ],
+      "en": "Then they cry to the LORD in their trouble, and he saves them out of their distresses.",
+      "ko": "이에 저희가 그 근심 중에서 여호와께 부르짖으매 그 고통에서 구원하시되",
+      "source_text_hash": "ebd694ed84c9f43bb939b2c869c8ffe89fef68ee073937b28c2d2006f6588539",
+      "translation_text_hash": "3c88110c11fdce6547b95d19517c3040fed3bc976937dbb1381fdc1565068e2c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 저희가 그 근심 중에서 여호와께 부르짖으매 그 고통에서 구원하시되"
+      ],
+      "raw_text_hashes": [
+        "3c88110c11fdce6547b95d19517c3040fed3bc976937dbb1381fdc1565068e2c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:107:20",
+      "sequence": 15720,
+      "chapter_label": "PSA 107",
+      "verse_label": "20",
+      "locator": {
+        "book": "PSA",
+        "chapter": 107,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 107,
+          "verse": 20
+        }
+      ],
+      "en": "He sends his word, and heals them, and delivers them from their graves.",
+      "ko": "저가 그 말씀을 보내어 저희를 고치사 위경에서 건지시는도다",
+      "source_text_hash": "dfa3fe684cb90255888dc7572762d5560bb98224ccf4fe25970ffa7373f4e17c",
+      "translation_text_hash": "e3b536a9e3256baa36af78582ed2fc1a30a8180a141a61140521f6db99b39d02",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 그 말씀을 보내어 저희를 고치사 위경에서 건지시는도다"
+      ],
+      "raw_text_hashes": [
+        "e3b536a9e3256baa36af78582ed2fc1a30a8180a141a61140521f6db99b39d02"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:107:21",
+      "sequence": 15721,
+      "chapter_label": "PSA 107",
+      "verse_label": "21",
+      "locator": {
+        "book": "PSA",
+        "chapter": 107,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 107,
+          "verse": 21
+        }
+      ],
+      "en": "Let them praise the LORD for his loving kindness, for his wonderful deeds to the children of men!",
+      "ko": "여호와의 인자하심과 인생에게 행하신 기이한 일을 인하여 그를 찬송할찌로다",
+      "source_text_hash": "649eb11aaf5d08e1b5e0b2c61782dd168b64e260e93a1fc883375be6a6e0db6a",
+      "translation_text_hash": "28d7c8f6d9535e08ccc30021e9f4ef7e000e1741081c42a2be21740d71fd9d43",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 인자하심과 인생에게 행하신 기이한 일을 인하여 그를 찬송할찌로다"
+      ],
+      "raw_text_hashes": [
+        "28d7c8f6d9535e08ccc30021e9f4ef7e000e1741081c42a2be21740d71fd9d43"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:107:22",
+      "sequence": 15722,
+      "chapter_label": "PSA 107",
+      "verse_label": "22",
+      "locator": {
+        "book": "PSA",
+        "chapter": 107,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 107,
+          "verse": 22
+        }
+      ],
+      "en": "Let them offer the sacrifices of thanksgiving, and declare his deeds with singing.",
+      "ko": "감사제를 드리며 노래하여 그 행사를 선포할찌로다",
+      "source_text_hash": "450ad2285e57f48556841602d484ac67f02a43da12f46df821247adc2c9b95bb",
+      "translation_text_hash": "274956fc80073182a4053f5f43f9135cb11124245fc2a66ede23bba5859171de",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "감사제를 드리며 노래하여 그 행사를 선포할찌로다"
+      ],
+      "raw_text_hashes": [
+        "274956fc80073182a4053f5f43f9135cb11124245fc2a66ede23bba5859171de"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:107:23",
+      "sequence": 15723,
+      "chapter_label": "PSA 107",
+      "verse_label": "23",
+      "locator": {
+        "book": "PSA",
+        "chapter": 107,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 107,
+          "verse": 23
+        }
+      ],
+      "en": "Those who go down to the sea in ships, who do business in great waters,",
+      "ko": "선척을 바다에 띄우며 큰 물에서 영업하는 자는",
+      "source_text_hash": "260f1bbc0bdba3d10cc8451eef75ea454b56d2e44a0ad2e5b6270180d1c3ee78",
+      "translation_text_hash": "a0caadb8755ac239c35313e1e508c6f6b794a8bb3053143f1e374fb6ff967201",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "선척을 바다에 띄우며 큰 물에서 영업하는 자는"
+      ],
+      "raw_text_hashes": [
+        "a0caadb8755ac239c35313e1e508c6f6b794a8bb3053143f1e374fb6ff967201"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:107:24",
+      "sequence": 15724,
+      "chapter_label": "PSA 107",
+      "verse_label": "24",
+      "locator": {
+        "book": "PSA",
+        "chapter": 107,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 107,
+          "verse": 24
+        }
+      ],
+      "en": "these see the LORD’s deeds, and his wonders in the deep.",
+      "ko": "여호와의 행사와 그 기사를 바다에서 보나니",
+      "source_text_hash": "86ecf1ac7e9277cad0368a5482f76f90b4d64738130460c8a2cb78dc74c12de2",
+      "translation_text_hash": "4f0495b033ff704174d5d8035b6463eaa66aa77a5eb32a0fb048e6d93ca5d73f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 행사와 그 기사를 바다에서 보나니"
+      ],
+      "raw_text_hashes": [
+        "4f0495b033ff704174d5d8035b6463eaa66aa77a5eb32a0fb048e6d93ca5d73f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:107:25",
+      "sequence": 15725,
+      "chapter_label": "PSA 107",
+      "verse_label": "25",
+      "locator": {
+        "book": "PSA",
+        "chapter": 107,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 107,
+          "verse": 25
+        }
+      ],
+      "en": "For he commands, and raises the stormy wind, which lifts up its waves.",
+      "ko": "여호와께서 명하신즉 광풍이 일어나서 바다 물결을 일으키는도다",
+      "source_text_hash": "df091a7d7fbb029b4bf71b39619e22e1a38b2f3b32d9b3131f9b0e75a37988ad",
+      "translation_text_hash": "d0a94d536d68d1bd31f45b20e173e4cd2dc5de6eaeaecc93ea4c257fe6b12fc9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 명하신즉 광풍이 일어나서 바다 물결을 일으키는도다"
+      ],
+      "raw_text_hashes": [
+        "d0a94d536d68d1bd31f45b20e173e4cd2dc5de6eaeaecc93ea4c257fe6b12fc9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:107:26",
+      "sequence": 15726,
+      "chapter_label": "PSA 107",
+      "verse_label": "26",
+      "locator": {
+        "book": "PSA",
+        "chapter": 107,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 107,
+          "verse": 26
+        }
+      ],
+      "en": "They mount up to the sky; they go down again to the depths. Their soul melts away because of trouble.",
+      "ko": "저희가 하늘에 올랐다가 깊은 곳에 내리니 그 위험을 인하여 그 영혼이 녹는도다",
+      "source_text_hash": "1e099dd235b088dde19e78ef8b87a68a4d418601483bddb7a659a2c386c52d9a",
+      "translation_text_hash": "c336e68cad8272dbec883d8a1340cb9162f7fca3a203a00aa14100aab8b8934c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 하늘에 올랐다가 깊은 곳에 내리니 그 위험을 인하여 그 영혼이 녹는도다"
+      ],
+      "raw_text_hashes": [
+        "c336e68cad8272dbec883d8a1340cb9162f7fca3a203a00aa14100aab8b8934c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:107:27",
+      "sequence": 15727,
+      "chapter_label": "PSA 107",
+      "verse_label": "27",
+      "locator": {
+        "book": "PSA",
+        "chapter": 107,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 107,
+          "verse": 27
+        }
+      ],
+      "en": "They reel back and forth, and stagger like a drunken man, and are at their wits’ end.",
+      "ko": "저희가 이리 저리 구르며 취한 자 같이 비틀거리니 지각이 혼돈하도다",
+      "source_text_hash": "c6fa3b67827298e8140405d3f1fc7efba337ae5c021ef2b4f0d5a0d963e900c7",
+      "translation_text_hash": "824647a4c042a81077d4d8b1668c1e5bf854a4940e1be4d2aca7d04f774a5d98",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 이리 저리 구르며 취한 자 같이 비틀거리니 지각이 혼돈하도다"
+      ],
+      "raw_text_hashes": [
+        "824647a4c042a81077d4d8b1668c1e5bf854a4940e1be4d2aca7d04f774a5d98"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:107:28",
+      "sequence": 15728,
+      "chapter_label": "PSA 107",
+      "verse_label": "28",
+      "locator": {
+        "book": "PSA",
+        "chapter": 107,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 107,
+          "verse": 28
+        }
+      ],
+      "en": "Then they cry to the LORD in their trouble, and he brings them out of their distress.",
+      "ko": "이에 저희가 그 근심 중에서 여호와께 부르짖으매 그 고통에서 인도하여 내시고",
+      "source_text_hash": "5826986a74183a41c5af9a90300815351c3980479776252dd6b41d176f99de69",
+      "translation_text_hash": "ad01a9502c612a4717f39f5ad43387a0e01818132303e681cc33df2a5558cd4c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 저희가 그 근심 중에서 여호와께 부르짖으매 그 고통에서 인도하여 내시고"
+      ],
+      "raw_text_hashes": [
+        "ad01a9502c612a4717f39f5ad43387a0e01818132303e681cc33df2a5558cd4c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:107:29",
+      "sequence": 15729,
+      "chapter_label": "PSA 107",
+      "verse_label": "29",
+      "locator": {
+        "book": "PSA",
+        "chapter": 107,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 107,
+          "verse": 29
+        }
+      ],
+      "en": "He makes the storm a calm, so that its waves are still.",
+      "ko": "광풍을 평정히 하사 물결로 잔잔케 하시는도다",
+      "source_text_hash": "00a434571acfa44bdbf6a502d474cbe7219427c24319441ca7a13fcc2dd812e9",
+      "translation_text_hash": "2cdc997d1bb505cbb14b0303d50337d3286a16cf6e33d67c5d7dc871ea31f07c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "광풍을 평정히 하사 물결로 잔잔케 하시는도다"
+      ],
+      "raw_text_hashes": [
+        "2cdc997d1bb505cbb14b0303d50337d3286a16cf6e33d67c5d7dc871ea31f07c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:107:30",
+      "sequence": 15730,
+      "chapter_label": "PSA 107",
+      "verse_label": "30",
+      "locator": {
+        "book": "PSA",
+        "chapter": 107,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 107,
+          "verse": 30
+        }
+      ],
+      "en": "Then they are glad because it is calm, so he brings them to their desired haven.",
+      "ko": "저희가 평온함을 인하여 기뻐하는 중에 여호와께서 저희를 소원의 항구로 인도하시는도다",
+      "source_text_hash": "f21e50ebfdc28788d03d834bcd01b12bf0cfef11249b0207a0c2bee721082624",
+      "translation_text_hash": "4310dfbb991c89531f377605f2ab0e9bafae10f42369f108496271a4428888aa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 평온함을 인하여 기뻐하는 중에 여호와께서 저희를 소원의 항구로 인도하시는도다"
+      ],
+      "raw_text_hashes": [
+        "4310dfbb991c89531f377605f2ab0e9bafae10f42369f108496271a4428888aa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:107:31",
+      "sequence": 15731,
+      "chapter_label": "PSA 107",
+      "verse_label": "31",
+      "locator": {
+        "book": "PSA",
+        "chapter": 107,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 107,
+          "verse": 31
+        }
+      ],
+      "en": "Let them praise the LORD for his loving kindness, for his wonderful deeds for the children of men!",
+      "ko": "여호와의 인자하심과 인생에게 행하신 기이한 일을 인하여 그를 찬송할찌로다",
+      "source_text_hash": "d68a9e4c3f146fa6756cb260717d6610a713c91050cb1cfe74824bca291fa52c",
+      "translation_text_hash": "28d7c8f6d9535e08ccc30021e9f4ef7e000e1741081c42a2be21740d71fd9d43",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 인자하심과 인생에게 행하신 기이한 일을 인하여 그를 찬송할찌로다"
+      ],
+      "raw_text_hashes": [
+        "28d7c8f6d9535e08ccc30021e9f4ef7e000e1741081c42a2be21740d71fd9d43"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:107:32",
+      "sequence": 15732,
+      "chapter_label": "PSA 107",
+      "verse_label": "32",
+      "locator": {
+        "book": "PSA",
+        "chapter": 107,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 107,
+          "verse": 32
+        }
+      ],
+      "en": "Let them exalt him also in the assembly of the people, and praise him in the seat of the elders.",
+      "ko": "백성의 회에서 저를 높이며 장로들의 자리에서 저를 찬송할찌로다",
+      "source_text_hash": "f0ca43766741131727a9bc568d83815282136f3d2b3235fdca3fb6cec5d8cc58",
+      "translation_text_hash": "2741f82eb8b710b98c73ef325e19f253d26a68f2130adac652724af02f260982",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "백성의 회에서 저를 높이며 장로들의 자리에서 저를 찬송할찌로다"
+      ],
+      "raw_text_hashes": [
+        "2741f82eb8b710b98c73ef325e19f253d26a68f2130adac652724af02f260982"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:107:33",
+      "sequence": 15733,
+      "chapter_label": "PSA 107",
+      "verse_label": "33",
+      "locator": {
+        "book": "PSA",
+        "chapter": 107,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 107,
+          "verse": 33
+        }
+      ],
+      "en": "He turns rivers into a desert, water springs into a thirsty ground,",
+      "ko": "여호와께서는 강을 변하여 광야가 되게 하시며 샘으로 마른 땅이 되게 하시며",
+      "source_text_hash": "0ce9db21a072c5f7f7f6946fb9053eda03b7014c803d9d4ff5a9dfb07e5f1d02",
+      "translation_text_hash": "b06672bed89c50d09fff58b708fd179d71e125eebcde6692be2f42bbc3511df2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서는 강을 변하여 광야가 되게 하시며 샘으로 마른 땅이 되게 하시며"
+      ],
+      "raw_text_hashes": [
+        "b06672bed89c50d09fff58b708fd179d71e125eebcde6692be2f42bbc3511df2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:107:34",
+      "sequence": 15734,
+      "chapter_label": "PSA 107",
+      "verse_label": "34",
+      "locator": {
+        "book": "PSA",
+        "chapter": 107,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 107,
+          "verse": 34
+        }
+      ],
+      "en": "and a fruitful land into a salt waste, for the wickedness of those who dwell in it.",
+      "ko": "그 거민의 악을 인하여 옥토로 염밭이 되게 하시며",
+      "source_text_hash": "6decd4517715d29f1ef3ca8e2d9ca461a23e86a9bec5e71b555087b0eea1831b",
+      "translation_text_hash": "072c9c62e581d0e27d4b914263fed2c638ff898f0876efc64a7c982e4298a9bf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 거민의 악을 인하여 옥토로 염밭이 되게 하시며"
+      ],
+      "raw_text_hashes": [
+        "072c9c62e581d0e27d4b914263fed2c638ff898f0876efc64a7c982e4298a9bf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:107:35",
+      "sequence": 15735,
+      "chapter_label": "PSA 107",
+      "verse_label": "35",
+      "locator": {
+        "book": "PSA",
+        "chapter": 107,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 107,
+          "verse": 35
+        }
+      ],
+      "en": "He turns a desert into a pool of water, and a dry land into water springs.",
+      "ko": "또 광야를 변하여 못이 되게 하시며 마른 땅으로 샘물이 되게 하시고",
+      "source_text_hash": "2e7fe813b12cc392b762dbd475b288f0e9e4dc909d41b68c176ea5e4bdb40abb",
+      "translation_text_hash": "92979722036c3aef22bcb4cdaac947d97e5995f9f172f134f418f42ab6aa3d46",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 광야를 변하여 못이 되게 하시며 마른 땅으로 샘물이 되게 하시고"
+      ],
+      "raw_text_hashes": [
+        "92979722036c3aef22bcb4cdaac947d97e5995f9f172f134f418f42ab6aa3d46"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:107:36",
+      "sequence": 15736,
+      "chapter_label": "PSA 107",
+      "verse_label": "36",
+      "locator": {
+        "book": "PSA",
+        "chapter": 107,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 107,
+          "verse": 36
+        }
+      ],
+      "en": "There he makes the hungry live, that they may prepare a city to live in,",
+      "ko": "주린 자로 거기 거하게 하사 저희로 거할 성을 예비케 하시고",
+      "source_text_hash": "87f8a7cc0be40deaf5914151a69cc000e961f1a28b62c79c4e5e2c55f4bc2674",
+      "translation_text_hash": "dc94e75ee067d4977c48c78d7f793b3a13fcbeeeed294f4cdf77c9bee3d93cd7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주린 자로 거기 거하게 하사 저희로 거할 성을 예비케 하시고"
+      ],
+      "raw_text_hashes": [
+        "dc94e75ee067d4977c48c78d7f793b3a13fcbeeeed294f4cdf77c9bee3d93cd7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:107:37",
+      "sequence": 15737,
+      "chapter_label": "PSA 107",
+      "verse_label": "37",
+      "locator": {
+        "book": "PSA",
+        "chapter": 107,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 107,
+          "verse": 37
+        }
+      ],
+      "en": "sow fields, plant vineyards, and reap the fruits of increase.",
+      "ko": "밭에 파종하며 포도원을 재배하여 소산을 취케 하시며",
+      "source_text_hash": "1461bd65f5d49f2e16fe81648aa807f502e476e04f67d2868c050e3b535f7abb",
+      "translation_text_hash": "475e5356d72c9dcb8e60f475827d669a04aa0eac5e44d5bf01e9d6499bffc48e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "밭에 파종하며 포도원을 재배하여 소산을 취케 하시며"
+      ],
+      "raw_text_hashes": [
+        "475e5356d72c9dcb8e60f475827d669a04aa0eac5e44d5bf01e9d6499bffc48e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:107:38",
+      "sequence": 15738,
+      "chapter_label": "PSA 107",
+      "verse_label": "38",
+      "locator": {
+        "book": "PSA",
+        "chapter": 107,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 107,
+          "verse": 38
+        }
+      ],
+      "en": "He blesses them also, so that they are multiplied greatly. He doesn’t allow their livestock to decrease.",
+      "ko": "또 복을 주사 저희로 크게 번성케 하시고 그 가축이 감소치 않게 하실지라도",
+      "source_text_hash": "c0fed5dd28d64037d9cbad5c4cab71abb6ac0a06fcbd1b902de5a392ae673d29",
+      "translation_text_hash": "b4c3038ee2183f954d0da2a3f42202f2235415d73398095a71a68ca124f3b2df",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 복을 주사 저희로 크게 번성케 하시고 그 가축이 감소치 않게 하실지라도"
+      ],
+      "raw_text_hashes": [
+        "b4c3038ee2183f954d0da2a3f42202f2235415d73398095a71a68ca124f3b2df"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:107:39",
+      "sequence": 15739,
+      "chapter_label": "PSA 107",
+      "verse_label": "39",
+      "locator": {
+        "book": "PSA",
+        "chapter": 107,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 107,
+          "verse": 39
+        }
+      ],
+      "en": "Again, they are diminished and bowed down through oppression, trouble, and sorrow.",
+      "ko": "다시 압박과 곤란과 우환을 인하여 저희로 감소하여 비굴하게 하시는도다",
+      "source_text_hash": "cacdacc8d8f369e23ac529a710305b5af28ef1125b4d7ded3fa082c352551500",
+      "translation_text_hash": "6203c44f5429421ff60fb4a6e2ab037aa0fb80dd129e1fabd3ff9231adc21767",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다시 압박과 곤란과 우환을 인하여 저희로 감소하여 비굴하게 하시는도다"
+      ],
+      "raw_text_hashes": [
+        "6203c44f5429421ff60fb4a6e2ab037aa0fb80dd129e1fabd3ff9231adc21767"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:107:40",
+      "sequence": 15740,
+      "chapter_label": "PSA 107",
+      "verse_label": "40",
+      "locator": {
+        "book": "PSA",
+        "chapter": 107,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 107,
+          "verse": 40
+        }
+      ],
+      "en": "He pours contempt on princes, and causes them to wander in a trackless waste.",
+      "ko": "여호와께서는 방백들에게 능욕을 부으시고 길 없는 황야에서 유리케 하시나",
+      "source_text_hash": "530f92f5fe5074e571f8807a83661919bb6272c128b2284435be7c21019df0b0",
+      "translation_text_hash": "ee6431fb883bc55c4ce1e7057c063e04caae887fc1575821260333c1e10d95c2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서는 방백들에게 능욕을 부으시고 길 없는 황야에서 유리케 하시나"
+      ],
+      "raw_text_hashes": [
+        "ee6431fb883bc55c4ce1e7057c063e04caae887fc1575821260333c1e10d95c2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:107:41",
+      "sequence": 15741,
+      "chapter_label": "PSA 107",
+      "verse_label": "41",
+      "locator": {
+        "book": "PSA",
+        "chapter": 107,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 107,
+          "verse": 41
+        }
+      ],
+      "en": "Yet he lifts the needy out of their affliction, and increases their families like a flock.",
+      "ko": "궁핍한 자는 곤란에서 높이 드시고 그 가족을 양무리 같게 하시나니",
+      "source_text_hash": "8991e8836e033095cecb1c71c1c8ca7dfc7555aa4cf6139a9377767db160c467",
+      "translation_text_hash": "85f1a95248de8ddad40e50c18780ac447c6066c1ba5d8e05d4505d8eacb9f4f5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "궁핍한 자는 곤란에서 높이 드시고 그 가족을 양무리 같게 하시나니"
+      ],
+      "raw_text_hashes": [
+        "85f1a95248de8ddad40e50c18780ac447c6066c1ba5d8e05d4505d8eacb9f4f5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:107:42",
+      "sequence": 15742,
+      "chapter_label": "PSA 107",
+      "verse_label": "42",
+      "locator": {
+        "book": "PSA",
+        "chapter": 107,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 107,
+          "verse": 42
+        }
+      ],
+      "en": "The upright will see it, and be glad. All the wicked will shut their mouths.",
+      "ko": "정직한 자는 보고 기뻐하며 모든 악인은 자기 입을 봉하리로다",
+      "source_text_hash": "174f51f748678d0a769e1ab3051c1d1dd589c0024c89194727374320bc6083f4",
+      "translation_text_hash": "c2c2713e85acd7fdd3619232ee06bd8c8aab850fe7af667ebd0c332b21d0d5c4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "정직한 자는 보고 기뻐하며 모든 악인은 자기 입을 봉하리로다"
+      ],
+      "raw_text_hashes": [
+        "c2c2713e85acd7fdd3619232ee06bd8c8aab850fe7af667ebd0c332b21d0d5c4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:107:43",
+      "sequence": 15743,
+      "chapter_label": "PSA 107",
+      "verse_label": "43",
+      "locator": {
+        "book": "PSA",
+        "chapter": 107,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 107,
+          "verse": 43
+        }
+      ],
+      "en": "Whoever is wise will pay attention to these things. They will consider the loving kindnesses of the LORD.",
+      "ko": "지혜 있는 자들은 이 일에 주의하고 여호와의 인자하심을 깨달으리로다",
+      "source_text_hash": "a8aee31e556b39f3694383c1894204aeaad356305ee905c5a0decffb1dc1d816",
+      "translation_text_hash": "330f5f51f206d4fff0714a392aff6f6e2891def964b69a9a9ffe8504e582aadf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "지혜 있는 자들은 이 일에 주의하고 여호와의 인자하심을 깨달으리로다"
+      ],
+      "raw_text_hashes": [
+        "330f5f51f206d4fff0714a392aff6f6e2891def964b69a9a9ffe8504e582aadf"
+      ]
+    }
+  ]
+}

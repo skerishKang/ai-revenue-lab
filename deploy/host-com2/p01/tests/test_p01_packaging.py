@@ -128,6 +128,10 @@ class P01Packaging(unittest.TestCase):
                 "P01_HOST", "P01_PORT", "PADIEM_ENGINE_CALLER_ID",
                 "PADIEM_ENGINE_CALLER_SECRET",
                 "PADIEM_ENGINE_AUTHORITY_DIAGNOSTIC_TOKEN",
+                "PADIEM_ENGINE_LOCAL_IDENTITY_ORIGIN",
+                "PADIEM_ENGINE_LOCAL_IDENTITY_SECRET",
+                "PADIEM_ENGINE_LOCAL_ADMISSION_ORIGIN",
+                "PADIEM_ENGINE_LOCAL_ADMISSION_SECRET",
             })
             if name not in {"P01_HOST", "P01_PORT"}:
                 self.assertEqual(value, "", name)

@@ -1,0 +1,589 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EZK:chapter:008",
+  "unit_ordinal": 810,
+  "unit_label": "EZK 8",
+  "book_code": "EZK",
+  "chapter_number": 8,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EZK:8:1",
+      "sequence": 20606,
+      "chapter_label": "EZK 8",
+      "verse_label": "1",
+      "locator": {
+        "book": "EZK",
+        "chapter": 8,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 8,
+          "verse": 1
+        }
+      ],
+      "en": "In the sixth year, in the sixth month, in the fifth day of the month, as I sat in my house, and the elders of Judah sat before me, the Lord GOD’s hand fell on me there.",
+      "ko": "제 육년 유월 오일에 나는 집에 앉았고 유다 장로들은 내 앞에 앉았는데 주 여호와의 권능이 거기서 내게 임하기로",
+      "source_text_hash": "53d6dce24a7aa64035b510360718e7868df65150f3da998e6f95e2fe77820461",
+      "translation_text_hash": "90fd68ff1ee326ebf999a6b3e57b82a2ef849bdef54e999b39768a3d04912474",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제 육년 유월 오일에 나는 집에 앉았고 유다 장로들은 내 앞에 앉았는데 주 여호와의 권능이 거기서 내게 임하기로"
+      ],
+      "raw_text_hashes": [
+        "90fd68ff1ee326ebf999a6b3e57b82a2ef849bdef54e999b39768a3d04912474"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:8:2",
+      "sequence": 20607,
+      "chapter_label": "EZK 8",
+      "verse_label": "2",
+      "locator": {
+        "book": "EZK",
+        "chapter": 8,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 8,
+          "verse": 2
+        }
+      ],
+      "en": "Then I saw, and behold, a likeness as the appearance of fire—from the appearance of his waist and downward, fire, and from his waist and upward, as the appearance of brightness, as it were glowing metal.",
+      "ko": "내가 보니 불 같은 형상이 있어 그 허리 이하 모양은 불 같고 허리 이상은 광채가 나서 단 쇠 같은데",
+      "source_text_hash": "9d82284a4926e30f9cf592b9bdef7b82d1f06a9f62c965e96e5e049137bf99db",
+      "translation_text_hash": "5238609d46faed57905b0b910840edac32a3ca73e2989cdd53370afc100fde14",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 보니 불 같은 형상이 있어 그 허리 이하 모양은 불 같고 허리 이상은 광채가 나서 단 쇠 같은데"
+      ],
+      "raw_text_hashes": [
+        "5238609d46faed57905b0b910840edac32a3ca73e2989cdd53370afc100fde14"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:8:3",
+      "sequence": 20608,
+      "chapter_label": "EZK 8",
+      "verse_label": "3",
+      "locator": {
+        "book": "EZK",
+        "chapter": 8,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 8,
+          "verse": 3
+        }
+      ],
+      "en": "He stretched out the form of a hand, and took me by a lock of my head; and the Spirit lifted me up between earth and the sky, and brought me in the visions of God to Jerusalem, to the door of the gate of the inner court that looks toward the north, where there was the seat of the image of jealousy, which provokes to jealousy.",
+      "ko": "그가 손 같은 것을 펴서 내 머리털 한 모숨을 잡으며 주의 신이 나를 들어 천지 사이로 올리시고 하나님의 이상 가운데 나를 이끌어 예루살렘으로 가서 안뜰로 들어가는 북향한 문에 이르시니 거기는 투기의 우상 곧 투기를 격발케 하는 우상의 자리가 있는 곳이라",
+      "source_text_hash": "b30a11764e556f7d6017f45e0f29914bff24df94ed9b4062986561af09f8c64b",
+      "translation_text_hash": "3204797f05dee02ca9f302846f5c97e279f28b7fdda3a6724c7e1b83aa79231c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 손 같은 것을 펴서 내 머리털 한 모숨을 잡으며 주의 신이 나를 들어 천지 사이로 올리시고 하나님의 이상 가운데 나를 이끌어 예루살렘으로 가서 안뜰로 들어가는 북향한 문에 이르시니 거기는 투기의 우상 곧 투기를 격발케 하는 우상의 자리가 있는 곳이라"
+      ],
+      "raw_text_hashes": [
+        "3204797f05dee02ca9f302846f5c97e279f28b7fdda3a6724c7e1b83aa79231c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:8:4",
+      "sequence": 20609,
+      "chapter_label": "EZK 8",
+      "verse_label": "4",
+      "locator": {
+        "book": "EZK",
+        "chapter": 8,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 8,
+          "verse": 4
+        }
+      ],
+      "en": "Behold, the glory of the God of Israel was there, according to the appearance that I saw in the plain.",
+      "ko": "이스라엘 하나님의 영광이 거기 있는데 내가 들에서 보던 이상과 같더라",
+      "source_text_hash": "985217074b80854a05833dc2f83592fd2ab70905a980379b39b1e2ed3ff56244",
+      "translation_text_hash": "e1249455f018e412a5e57cafc6c9a4a68001c65c0f3e38391671cd1dbe41ecf0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 하나님의 영광이 거기 있는데 내가 들에서 보던 이상과 같더라"
+      ],
+      "raw_text_hashes": [
+        "e1249455f018e412a5e57cafc6c9a4a68001c65c0f3e38391671cd1dbe41ecf0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:8:5",
+      "sequence": 20610,
+      "chapter_label": "EZK 8",
+      "verse_label": "5",
+      "locator": {
+        "book": "EZK",
+        "chapter": 8,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 8,
+          "verse": 5
+        }
+      ],
+      "en": "Then he said to me, “Son of man, lift up your eyes now the way toward the north.” So I lifted up my eyes the way toward the north, and saw, northward of the gate of the altar this image of jealousy in the entry.",
+      "ko": "그가 내게 이르시되 인자야 이제 너는 눈을 들어 북편을 바라보라 하시기로 내가 눈을 들어 북편을 바라보니 제단 문 어귀 북편에 그 투기의 우상이 있더라",
+      "source_text_hash": "311b9fd5b3d425938b98316ed62535128b281ec9fbd9a0c005c71d78c7e2d57b",
+      "translation_text_hash": "01cb1324e1791013bef0aaad4ba2f5fe8215092d11bc8f3c64ea980e96b6fe82",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 내게 이르시되 인자야 이제 너는 눈을 들어 북편을 바라보라 하시기로 내가 눈을 들어 북편을 바라보니 제단 문 어귀 북편에 그 투기의 우상이 있더라"
+      ],
+      "raw_text_hashes": [
+        "01cb1324e1791013bef0aaad4ba2f5fe8215092d11bc8f3c64ea980e96b6fe82"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:8:6",
+      "sequence": 20611,
+      "chapter_label": "EZK 8",
+      "verse_label": "6",
+      "locator": {
+        "book": "EZK",
+        "chapter": 8,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 8,
+          "verse": 6
+        }
+      ],
+      "en": "He said to me, “Son of man, do you see what they do? Even the great abominations that the house of Israel commit here, that I should go far off from my sanctuary? But you will again see yet other great abominations.”",
+      "ko": "그가 또 내게 이르시되 인자야 이스라엘 족속의 행하는 일을 보느냐 그들이 여기서 크게 가증한 일을 행하여 나로 내 성소를 멀리 떠나게 하느니라 너는 다시 다른 큰 가증한 일을 보리라 하시더라",
+      "source_text_hash": "1d8552d25e1eea0ea8883bbfa470810af155d26c0b42ab0fe1e755dce2b09deb",
+      "translation_text_hash": "a8a60deacb89a63d22bc24c1515e09d3f9abfc267a360e68c9977f3bffd8e18f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 또 내게 이르시되 인자야 이스라엘 족속의 행하는 일을 보느냐 그들이 여기서 크게 가증한 일을 행하여 나로 내 성소를 멀리 떠나게 하느니라 너는 다시 다른 큰 가증한 일을 보리라 하시더라"
+      ],
+      "raw_text_hashes": [
+        "a8a60deacb89a63d22bc24c1515e09d3f9abfc267a360e68c9977f3bffd8e18f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:8:7",
+      "sequence": 20612,
+      "chapter_label": "EZK 8",
+      "verse_label": "7",
+      "locator": {
+        "book": "EZK",
+        "chapter": 8,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 8,
+          "verse": 7
+        }
+      ],
+      "en": "He brought me to the door of the court; and when I looked, behold, a hole in the wall.",
+      "ko": "그가 나를 이끌고 뜰 문에 이르시기로 내가 본즉 담에 구멍이 있더라",
+      "source_text_hash": "755be0c25e477fe6e47a5a62deb7b55c52474194d4c822fee467e0cc18eca70a",
+      "translation_text_hash": "520ef3bf1e6799f3d6c7c465472e1f79fa3e36a9e9c6e17a2ea259ee9d78b065",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 나를 이끌고 뜰 문에 이르시기로 내가 본즉 담에 구멍이 있더라"
+      ],
+      "raw_text_hashes": [
+        "520ef3bf1e6799f3d6c7c465472e1f79fa3e36a9e9c6e17a2ea259ee9d78b065"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:8:8",
+      "sequence": 20613,
+      "chapter_label": "EZK 8",
+      "verse_label": "8",
+      "locator": {
+        "book": "EZK",
+        "chapter": 8,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 8,
+          "verse": 8
+        }
+      ],
+      "en": "Then he said to me, “Son of man, dig now in the wall.” When I had dug in the wall, I saw a door.",
+      "ko": "그가 내게 이르시되 인자야 너는 이 담을 헐라 하시기로 내가 그 담을 허니 한 문이 있더라",
+      "source_text_hash": "72241a78ebba1794789503e08e0b8f4aa90484ccda1b7f59dbd7e0c21b1d369d",
+      "translation_text_hash": "13017cdce3769836096a68310d40d1117062ecf376f8fc33e15b73147b56fa83",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 내게 이르시되 인자야 너는 이 담을 헐라 하시기로 내가 그 담을 허니 한 문이 있더라"
+      ],
+      "raw_text_hashes": [
+        "13017cdce3769836096a68310d40d1117062ecf376f8fc33e15b73147b56fa83"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:8:9",
+      "sequence": 20614,
+      "chapter_label": "EZK 8",
+      "verse_label": "9",
+      "locator": {
+        "book": "EZK",
+        "chapter": 8,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 8,
+          "verse": 9
+        }
+      ],
+      "en": "He said to me, “Go in, and see the wicked abominations that they do here.”",
+      "ko": "또 내게 이르시되 들어가서 그들이 거기서 행하는 가증하고 악한 일을 보라 하시기로",
+      "source_text_hash": "0c730e4d07a22da6bb41cfd93ea8c65e009281518028173f9de347c57b88d281",
+      "translation_text_hash": "11bdfc73479646be23f067fbf5d4eaf484bdcacb5ff0dc991a210893e17d7230",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 내게 이르시되 들어가서 그들이 거기서 행하는 가증하고 악한 일을 보라 하시기로"
+      ],
+      "raw_text_hashes": [
+        "11bdfc73479646be23f067fbf5d4eaf484bdcacb5ff0dc991a210893e17d7230"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:8:10",
+      "sequence": 20615,
+      "chapter_label": "EZK 8",
+      "verse_label": "10",
+      "locator": {
+        "book": "EZK",
+        "chapter": 8,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 8,
+          "verse": 10
+        }
+      ],
+      "en": "So I went in and looked, and saw every form of creeping things, abominable animals, and all the idols of the house of Israel, portrayed around on the wall.",
+      "ko": "내가 들어가보니 각양 곤충과 가증한 짐승과 이스라엘 족속의 모든 우상을 그 사면 벽에 그렸고",
+      "source_text_hash": "815580923335d4bd87c98193ccd59825d8de21044d891003e2d6326fb6c18ff3",
+      "translation_text_hash": "a69aeba0bfc30dfd7e0be292abb47db24c8c01af2cca138595605e754aed7053",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 들어가보니 각양 곤충과 가증한 짐승과 이스라엘 족속의 모든 우상을 그 사면 벽에 그렸고"
+      ],
+      "raw_text_hashes": [
+        "a69aeba0bfc30dfd7e0be292abb47db24c8c01af2cca138595605e754aed7053"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:8:11",
+      "sequence": 20616,
+      "chapter_label": "EZK 8",
+      "verse_label": "11",
+      "locator": {
+        "book": "EZK",
+        "chapter": 8,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 8,
+          "verse": 11
+        }
+      ],
+      "en": "Seventy men of the elders of the house of Israel stood before them. In the middle of them Jaazaniah the son of Shaphan stood, every man with his censer in his hand; and the smell of the cloud of incense went up.",
+      "ko": "이스라엘 족속의 장로 중 칠십인이 그 앞에 섰으며 사반의 아들 야아사냐도 그 가운데 섰고 각기 손에 향로를 들었는데 향연이 구름 같이 오르더라",
+      "source_text_hash": "c20ad1872655582f97e66c23011fc66b50e34326c5fda1d0775e14d635986813",
+      "translation_text_hash": "67836d3fb6c676da70da033916e5bc522d3c09c172cf6efaa4c42f3d67c65429",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 족속의 장로 중 칠십인이 그 앞에 섰으며 사반의 아들 야아사냐도 그 가운데 섰고 각기 손에 향로를 들었는데 향연이 구름 같이 오르더라"
+      ],
+      "raw_text_hashes": [
+        "67836d3fb6c676da70da033916e5bc522d3c09c172cf6efaa4c42f3d67c65429"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:8:12",
+      "sequence": 20617,
+      "chapter_label": "EZK 8",
+      "verse_label": "12",
+      "locator": {
+        "book": "EZK",
+        "chapter": 8,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 8,
+          "verse": 12
+        }
+      ],
+      "en": "Then he said to me, “Son of man, have you seen what the elders of the house of Israel do in the dark, every man in his rooms of imagery? For they say, ‘The LORD doesn’t see us. The LORD has forsaken the land.’”",
+      "ko": "또 내게 이르시되 인자야 이스라엘 족속의 장로들이 각각 그 우상의 방안 어두운 가운데서 행하는 것을 네가 보았느냐 그들이 이르기를 여호와께서 우리를 보지 아니하시며 이 땅을 버리셨다 하느니라",
+      "source_text_hash": "46db198de73bc3b22d180102a39c28d8039e2bf23e62586daa8ab02e7a2a53d5",
+      "translation_text_hash": "99d5c88afc085cc6879639f4b26ff0f7211d24beb0e4b744e8892b03c7379659",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 내게 이르시되 인자야 이스라엘 족속의 장로들이 각각 그 우상의 방안 어두운 가운데서 행하는 것을 네가 보았느냐 그들이 이르기를 여호와께서 우리를 보지 아니하시며 이 땅을 버리셨다 하느니라"
+      ],
+      "raw_text_hashes": [
+        "99d5c88afc085cc6879639f4b26ff0f7211d24beb0e4b744e8892b03c7379659"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:8:13",
+      "sequence": 20618,
+      "chapter_label": "EZK 8",
+      "verse_label": "13",
+      "locator": {
+        "book": "EZK",
+        "chapter": 8,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 8,
+          "verse": 13
+        }
+      ],
+      "en": "He said also to me, “You will again see more of the great abominations which they do.”",
+      "ko": "또 내게 이르시되 너는 다시 그들의 행하는바 다른 큰 가증한 일을 보리라 하시더라",
+      "source_text_hash": "453dffa2f3446e0800c1d1e9a3ce101e9f16a0011b1c61e3a7d64f09eff7e7e0",
+      "translation_text_hash": "b21593abe858c0e76d9fe850438a455ab14dc0fd447f0489994b1e968277c278",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 내게 이르시되 너는 다시 그들의 행하는바 다른 큰 가증한 일을 보리라 하시더라"
+      ],
+      "raw_text_hashes": [
+        "b21593abe858c0e76d9fe850438a455ab14dc0fd447f0489994b1e968277c278"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:8:14",
+      "sequence": 20619,
+      "chapter_label": "EZK 8",
+      "verse_label": "14",
+      "locator": {
+        "book": "EZK",
+        "chapter": 8,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 8,
+          "verse": 14
+        }
+      ],
+      "en": "Then he brought me to the door of the gate of the LORD’s house which was toward the north; and I saw the women sit there weeping for Tammuz.",
+      "ko": "그가 또 나를 데리고 여호와의 전으로 들어가는 북문에 이르시기로 보니 거기 여인들이 앉아 담무스를 위하여 애곡하더라",
+      "source_text_hash": "242f3fc299a40dddc84e61dcdbe68bdb015480f805656af59a221ca65a61a3e9",
+      "translation_text_hash": "571719b12554187f69237146f126db80943668a0cf86f4de05153d393f55ebfe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 또 나를 데리고 여호와의 전으로 들어가는 북문에 이르시기로 보니 거기 여인들이 앉아 담무스를 위하여 애곡하더라"
+      ],
+      "raw_text_hashes": [
+        "571719b12554187f69237146f126db80943668a0cf86f4de05153d393f55ebfe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:8:15",
+      "sequence": 20620,
+      "chapter_label": "EZK 8",
+      "verse_label": "15",
+      "locator": {
+        "book": "EZK",
+        "chapter": 8,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 8,
+          "verse": 15
+        }
+      ],
+      "en": "Then he said to me, “Have you seen this, son of man? You will again see yet greater abominations than these.”",
+      "ko": "그가 또 내게 이르시되 인자야 네가 그것을 보았느냐 너는 또 이보다 더 큰 가증한 일을 보리라 하시더라",
+      "source_text_hash": "1d9ab9bd2aa9063aa6cefa0a98a5083229fc2c0375e5bcd7aaed04916052b452",
+      "translation_text_hash": "132fbdd2fbc072293e77f302c171e71a26cd353164dc7d04dfb4e8a8619f655d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 또 내게 이르시되 인자야 네가 그것을 보았느냐 너는 또 이보다 더 큰 가증한 일을 보리라 하시더라"
+      ],
+      "raw_text_hashes": [
+        "132fbdd2fbc072293e77f302c171e71a26cd353164dc7d04dfb4e8a8619f655d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:8:16",
+      "sequence": 20621,
+      "chapter_label": "EZK 8",
+      "verse_label": "16",
+      "locator": {
+        "book": "EZK",
+        "chapter": 8,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 8,
+          "verse": 16
+        }
+      ],
+      "en": "He brought me into the inner court of the LORD’s house; and I saw at the door of the LORD’s temple, between the porch and the altar, there were about twenty-five men with their backs toward the LORD’s temple and their faces toward the east. They were worshiping the sun toward the east.",
+      "ko": "그가 또 나를 데리고 여호와의 전 안뜰에 들어가시기로 보니 여호와의 전문 앞 현관과 제단 사이에서 약 이십 오인이 여호와의 전을 등지고 낯을 동으로 향하여 동방 태양에 경배하더라",
+      "source_text_hash": "24d18cec90b894bbb037e09aeacb0c82f48fb24b6590a7112c280f4848be91cb",
+      "translation_text_hash": "1d614c5a203133c096a4709f4009773dbb0acc2ef88980e466706f7ea2923c37",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 또 나를 데리고 여호와의 전 안뜰에 들어가시기로 보니 여호와의 전문 앞 현관과 제단 사이에서 약 이십 오인이 여호와의 전을 등지고 낯을 동으로 향하여 동방 태양에 경배하더라"
+      ],
+      "raw_text_hashes": [
+        "1d614c5a203133c096a4709f4009773dbb0acc2ef88980e466706f7ea2923c37"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:8:17",
+      "sequence": 20622,
+      "chapter_label": "EZK 8",
+      "verse_label": "17",
+      "locator": {
+        "book": "EZK",
+        "chapter": 8,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 8,
+          "verse": 17
+        }
+      ],
+      "en": "Then he said to me, “Have you seen this, son of man? Is it a light thing to the house of Judah that they commit the abominations which they commit here? For they have filled the land with violence, and have turned again to provoke me to anger. Behold, they put the branch to their nose.",
+      "ko": "또 내게 이르시되 인자야 네가 보았느냐 유다 족속이 여기서 행한 가증한 일을 적다 하겠느냐 그들이 강포로 이 땅에 채우고 또 다시 내 노를 격동하고 심지어 나무가지를 그 코에 두었느니라",
+      "source_text_hash": "142e0ddc410d4c6083f76eabe982caee11474b50c6497a15eba51d59af2f07ce",
+      "translation_text_hash": "5fee371bf1ee94bc8420a1366fae25bdfc3b6d7b960b68f1b5362d5ed9952b01",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 내게 이르시되 인자야 네가 보았느냐 유다 족속이 여기서 행한 가증한 일을 적다 하겠느냐 그들이 강포로 이 땅에 채우고 또 다시 내 노를 격동하고 심지어 나무가지를 그 코에 두었느니라"
+      ],
+      "raw_text_hashes": [
+        "5fee371bf1ee94bc8420a1366fae25bdfc3b6d7b960b68f1b5362d5ed9952b01"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:8:18",
+      "sequence": 20623,
+      "chapter_label": "EZK 8",
+      "verse_label": "18",
+      "locator": {
+        "book": "EZK",
+        "chapter": 8,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 8,
+          "verse": 18
+        }
+      ],
+      "en": "Therefore I will also deal in wrath. My eye won’t spare, neither will I have pity. Though they cry in my ears with a loud voice, yet I will not hear them.”",
+      "ko": "그러므로 나도 분노로 갚아 아껴 보지 아니하고 긍휼을 베풀지도 아니하리니 그들이 큰 소리로 내 귀에 부르짖을찌라도 내가 듣지 아니하리라",
+      "source_text_hash": "817cfd18022b22b5a099c04737bbde6ee847aab71b67cbe0cb5c44b42e5d55ab",
+      "translation_text_hash": "68b3e0af257b758db702903d63c627ad5b5e88a688f60072bb0f5a16b1a0bae5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 나도 분노로 갚아 아껴 보지 아니하고 긍휼을 베풀지도 아니하리니 그들이 큰 소리로 내 귀에 부르짖을찌라도 내가 듣지 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "68b3e0af257b758db702903d63c627ad5b5e88a688f60072bb0f5a16b1a0bae5"
+      ]
+    }
+  ]
+}

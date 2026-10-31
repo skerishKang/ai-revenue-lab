@@ -1,0 +1,429 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:SNG:chapter:007",
+  "unit_ordinal": 678,
+  "unit_label": "SNG 7",
+  "book_code": "SNG",
+  "chapter_number": 7,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:SNG:7:1",
+      "sequence": 17629,
+      "chapter_label": "SNG 7",
+      "verse_label": "1",
+      "locator": {
+        "book": "SNG",
+        "chapter": 7,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 7,
+          "verse": 1
+        }
+      ],
+      "en": "How beautiful are your feet in sandals, prince’s daughter! Your rounded thighs are like jewels, the work of the hands of a skillful workman.",
+      "ko": "귀한 자의 딸아 신을 신은 네 발이 어찌 그리 아름다운가 네 넓적다리는 둥글어서 공교한 장색의 만든 구슬 꿰미 같구나",
+      "source_text_hash": "6ec5679d00f2b6e2582ccebe864b56c0d54270a7bd92b19a821d27378f89e427",
+      "translation_text_hash": "c44884f72dd877eddda6a53f02832d20b789efe135faf69cf90070fe57bc16eb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "귀한 자의 딸아 신을 신은 네 발이 어찌 그리 아름다운가 네 넓적다리는 둥글어서 공교한 장색의 만든 구슬 꿰미 같구나"
+      ],
+      "raw_text_hashes": [
+        "c44884f72dd877eddda6a53f02832d20b789efe135faf69cf90070fe57bc16eb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:SNG:7:2",
+      "sequence": 17630,
+      "chapter_label": "SNG 7",
+      "verse_label": "2",
+      "locator": {
+        "book": "SNG",
+        "chapter": 7,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 7,
+          "verse": 2
+        }
+      ],
+      "en": "Your body is like a round goblet, no mixed wine is wanting. Your waist is like a heap of wheat, set about with lilies.",
+      "ko": "배꼽은 섞은 포도주를 가득히 부은 둥근 잔 같고 허리는 백합화로 두른 밀단 같구나",
+      "source_text_hash": "3becd9f526d86906f20071cd088202fb73efc83c96d740cf12ee36408eafe53c",
+      "translation_text_hash": "6e8018d9d21abd72e2e24531d6fc4866090ea6d36109f24d96a656545f502b07",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "배꼽은 섞은 포도주를 가득히 부은 둥근 잔 같고 허리는 백합화로 두른 밀단 같구나"
+      ],
+      "raw_text_hashes": [
+        "6e8018d9d21abd72e2e24531d6fc4866090ea6d36109f24d96a656545f502b07"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:SNG:7:3",
+      "sequence": 17631,
+      "chapter_label": "SNG 7",
+      "verse_label": "3",
+      "locator": {
+        "book": "SNG",
+        "chapter": 7,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 7,
+          "verse": 3
+        }
+      ],
+      "en": "Your two breasts are like two fawns, that are twins of a roe.",
+      "ko": "두 유방은 암사슴의 쌍태 새끼 같고",
+      "source_text_hash": "6d3652def3d2db903e6a980d871c9a5d398302c21bfbde7fe2ce8915780cf4b5",
+      "translation_text_hash": "48a75fe30d615c592851805caa867e0608ea780b0677f6379af5069c4ca3cdf6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "두 유방은 암사슴의 쌍태 새끼 같고"
+      ],
+      "raw_text_hashes": [
+        "48a75fe30d615c592851805caa867e0608ea780b0677f6379af5069c4ca3cdf6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:SNG:7:4",
+      "sequence": 17632,
+      "chapter_label": "SNG 7",
+      "verse_label": "4",
+      "locator": {
+        "book": "SNG",
+        "chapter": 7,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 7,
+          "verse": 4
+        }
+      ],
+      "en": "Your neck is like an ivory tower. Your eyes are like the pools in Heshbon by the gate of Bathrabbim. Your nose is like the tower of Lebanon which looks toward Damascus.",
+      "ko": "목은 상아 망대 같구나 눈은 헤스본 바드랍빔 문 곁의 못 같고 코는 다메섹을 향한 레바논 망대 같구나",
+      "source_text_hash": "46f9f23de8c07eb5069c11b1f4482c7306bd3ed9266a62140b2fb1cc6618eda8",
+      "translation_text_hash": "c330cd5e03b9df0e40304754028f815596a43f1a7f20dbdd91f45dcc4f77c410",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "목은 상아 망대 같구나 눈은 헤스본 바드랍빔 문 곁의 못 같고 코는 다메섹을 향한 레바논 망대 같구나"
+      ],
+      "raw_text_hashes": [
+        "c330cd5e03b9df0e40304754028f815596a43f1a7f20dbdd91f45dcc4f77c410"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:SNG:7:5",
+      "sequence": 17633,
+      "chapter_label": "SNG 7",
+      "verse_label": "5",
+      "locator": {
+        "book": "SNG",
+        "chapter": 7,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 7,
+          "verse": 5
+        }
+      ],
+      "en": "Your head on you is like Carmel. The hair of your head like purple. The king is held captive in its tresses.",
+      "ko": "머리는 갈멜산 같고 드리운 머리털은 자주 빛이 있으니 왕이 그 머리카락에 매이었구나",
+      "source_text_hash": "432cda9b9cea0f8b3e76070bec9167af8ae0f111a4420f205f868d86aa7044ae",
+      "translation_text_hash": "36b245b9c4c1273f0e480585d781d3fad0d989f5e6e54240e8e8417f02750da9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "머리는 갈멜산 같고 드리운 머리털은 자주 빛이 있으니 왕이 그 머리카락에 매이었구나"
+      ],
+      "raw_text_hashes": [
+        "36b245b9c4c1273f0e480585d781d3fad0d989f5e6e54240e8e8417f02750da9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:SNG:7:6",
+      "sequence": 17634,
+      "chapter_label": "SNG 7",
+      "verse_label": "6",
+      "locator": {
+        "book": "SNG",
+        "chapter": 7,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 7,
+          "verse": 6
+        }
+      ],
+      "en": "How beautiful and how pleasant you are, love, for delights!",
+      "ko": "사랑아 네가 어찌 그리 아름다운지, 어찌 그리 화창한지 쾌락하게 하는구나",
+      "source_text_hash": "aef5dd54d5700bf63f33c00b000b05f22f2a14349ef83008de0060c02b774d0f",
+      "translation_text_hash": "eab6d965ebede7c94123ca326ad77a81fe352d44019d3fe35987970c93377f39",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사랑아 네가 어찌 그리 아름다운지, 어찌 그리 화창한지 쾌락하게 하는구나"
+      ],
+      "raw_text_hashes": [
+        "eab6d965ebede7c94123ca326ad77a81fe352d44019d3fe35987970c93377f39"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:SNG:7:7",
+      "sequence": 17635,
+      "chapter_label": "SNG 7",
+      "verse_label": "7",
+      "locator": {
+        "book": "SNG",
+        "chapter": 7,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 7,
+          "verse": 7
+        }
+      ],
+      "en": "This, your stature, is like a palm tree, your breasts like its fruit.",
+      "ko": "네 키는 종려나무 같고 네 유방은 그 열매 송이 같구나",
+      "source_text_hash": "0a36b5da82e0dc07b0201866946030cc42706319832e8cbabc8a18c6194c23d7",
+      "translation_text_hash": "7483e1d77a4275b4f33641fcada2a2eed24404ec320e813902d4e52396d1499f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 키는 종려나무 같고 네 유방은 그 열매 송이 같구나"
+      ],
+      "raw_text_hashes": [
+        "7483e1d77a4275b4f33641fcada2a2eed24404ec320e813902d4e52396d1499f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:SNG:7:8",
+      "sequence": 17636,
+      "chapter_label": "SNG 7",
+      "verse_label": "8",
+      "locator": {
+        "book": "SNG",
+        "chapter": 7,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 7,
+          "verse": 8
+        }
+      ],
+      "en": "I said, “I will climb up into the palm tree. I will take hold of its fruit.” Let your breasts be like clusters of the vine, the smell of your breath like apples.",
+      "ko": "내가 말하기를 종려나무에 올라가서 그 가지를 잡으리라 하였나니 네 유방은 포도 송이 같고 네 콧김은 사과 냄새 같고",
+      "source_text_hash": "f6e5c55dae87466df7e1aaca6d9ccc73cbb4403e78ea2f0237924246b1d37dd0",
+      "translation_text_hash": "d842cdffbf7674ce2cdfa17eaadb0cc86afa59a63d065a08c32fd7ed078fb5d3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 말하기를 종려나무에 올라가서 그 가지를 잡으리라 하였나니 네 유방은 포도 송이 같고 네 콧김은 사과 냄새 같고"
+      ],
+      "raw_text_hashes": [
+        "d842cdffbf7674ce2cdfa17eaadb0cc86afa59a63d065a08c32fd7ed078fb5d3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:SNG:7:9",
+      "sequence": 17637,
+      "chapter_label": "SNG 7",
+      "verse_label": "9",
+      "locator": {
+        "book": "SNG",
+        "chapter": 7,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 7,
+          "verse": 9
+        }
+      ],
+      "en": "Your mouth is like the best wine, that goes down smoothly for my beloved, gliding through the lips of those who are asleep. Beloved",
+      "ko": "네 입은 좋은 포도주 같을 것이니라 이 포도주는 나의 사랑하는 자를 위하여 미끄럽게 흘러 내려서 자는 자의 입으로 움직이게 하느니라",
+      "source_text_hash": "6cca7f3ee36197d5b07f4bf070bfe43bac764277ca289c1038f4eea6c628e3b6",
+      "translation_text_hash": "0eaa1bc11de6b06709498252312868561a82e5cbb2f95ae2a4d760b205385c2b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 입은 좋은 포도주 같을 것이니라 이 포도주는 나의 사랑하는 자를 위하여 미끄럽게 흘러 내려서 자는 자의 입으로 움직이게 하느니라"
+      ],
+      "raw_text_hashes": [
+        "0eaa1bc11de6b06709498252312868561a82e5cbb2f95ae2a4d760b205385c2b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:SNG:7:10",
+      "sequence": 17638,
+      "chapter_label": "SNG 7",
+      "verse_label": "10",
+      "locator": {
+        "book": "SNG",
+        "chapter": 7,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 7,
+          "verse": 10
+        }
+      ],
+      "en": "I am my beloved’s. His desire is toward me.",
+      "ko": "나는 나의 사랑하는 자에게 속하였구나 그가 나를 사모하는구나",
+      "source_text_hash": "d25043972e2d33f51030ac3abaa634c9be551f1047b4902d0c9a408e8fe7e573",
+      "translation_text_hash": "7a21adebd7b255488b43f28362ef6f0cebdf95bdabee7f7acb7fd4cbd1b0077e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 나의 사랑하는 자에게 속하였구나 그가 나를 사모하는구나"
+      ],
+      "raw_text_hashes": [
+        "7a21adebd7b255488b43f28362ef6f0cebdf95bdabee7f7acb7fd4cbd1b0077e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:SNG:7:11",
+      "sequence": 17639,
+      "chapter_label": "SNG 7",
+      "verse_label": "11",
+      "locator": {
+        "book": "SNG",
+        "chapter": 7,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 7,
+          "verse": 11
+        }
+      ],
+      "en": "Come, my beloved! Let’s go out into the field. Let’s lodge in the villages.",
+      "ko": "나의 사랑하는 자야 우리가 함께 들로 가서 동네에서 유숙하자",
+      "source_text_hash": "217768a2421c4da9f608a469248e4d10e2a28665f5903b7c63286fa2499ea91d",
+      "translation_text_hash": "839e1816f1de155e29043bf0b7b441655dc9129808cd39536c8977d9d3a6d845",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 사랑하는 자야 우리가 함께 들로 가서 동네에서 유숙하자"
+      ],
+      "raw_text_hashes": [
+        "839e1816f1de155e29043bf0b7b441655dc9129808cd39536c8977d9d3a6d845"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:SNG:7:12",
+      "sequence": 17640,
+      "chapter_label": "SNG 7",
+      "verse_label": "12",
+      "locator": {
+        "book": "SNG",
+        "chapter": 7,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 7,
+          "verse": 12
+        }
+      ],
+      "en": "Let’s go early up to the vineyards. Let’s see whether the vine has budded, its blossom is open, and the pomegranates are in flower. There I will give you my love.",
+      "ko": "우리가 일찌기 일어나서 포도원으로 가서 포도 움이 돋았는지, 꽃술이 퍼졌는지, 석류 꽃이 피었는지 보자 거기서 내가 나의 사랑을 네게 주리라",
+      "source_text_hash": "1142a716e71339db8186e4eb4bc25309b65de34059cfdf2fb639e80a8deb6166",
+      "translation_text_hash": "b002df630a29771fd00a86760a59c2195ef7e3800b2258cd7a7fe14eaa89570f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 일찌기 일어나서 포도원으로 가서 포도 움이 돋았는지, 꽃술이 퍼졌는지, 석류 꽃이 피었는지 보자 거기서 내가 나의 사랑을 네게 주리라"
+      ],
+      "raw_text_hashes": [
+        "b002df630a29771fd00a86760a59c2195ef7e3800b2258cd7a7fe14eaa89570f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:SNG:7:13",
+      "sequence": 17641,
+      "chapter_label": "SNG 7",
+      "verse_label": "13",
+      "locator": {
+        "book": "SNG",
+        "chapter": 7,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 7,
+          "verse": 13
+        }
+      ],
+      "en": "The mandrakes produce fragrance. At our doors are all kinds of precious fruits, new and old, which I have stored up for you, my beloved.",
+      "ko": "합환채가 향기를 토하고 우리의 문 앞에는 각양 귀한 실과가 새것, 묵은 것이 구비하였구나 내가 나의 사랑하는 자 너를 위하여 쌓아둔 것이로구나",
+      "source_text_hash": "ee15d4b488af556fa61e380abdaf2340f445fef409bd3a7c075bd5da990d44e2",
+      "translation_text_hash": "59bc88a5a54b79842c86beb127d39717aaa2f66fddda3dee200eddab4257b853",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "합환채가 향기를 토하고 우리의 문 앞에는 각양 귀한 실과가 새것, 묵은 것이 구비하였구나 내가 나의 사랑하는 자 너를 위하여 쌓아둔 것이로구나"
+      ],
+      "raw_text_hashes": [
+        "59bc88a5a54b79842c86beb127d39717aaa2f66fddda3dee200eddab4257b853"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,461 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1CH:chapter:010",
+  "unit_ordinal": 348,
+  "unit_label": "1CH 10",
+  "book_code": "1CH",
+  "chapter_number": 10,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1CH:10:1",
+      "sequence": 10661,
+      "chapter_label": "1CH 10",
+      "verse_label": "1",
+      "locator": {
+        "book": "1CH",
+        "chapter": 10,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 10,
+          "verse": 1
+        }
+      ],
+      "en": "Now the Philistines fought against Israel; and the men of Israel fled from before the Philistines, and fell down slain on Mount Gilboa.",
+      "ko": "블레셋 사람과 이스라엘이 싸우더니 이스라엘 사람들이 블레셋 사람 앞에서 도망하다가 길보아산에서 죽임을 받고 엎드러지니라",
+      "source_text_hash": "2224f27c504aba2ef8de0178133830063a133164532a6e7803ef19a9dfc3165c",
+      "translation_text_hash": "b355cc8b67489495454294579fd700d5ec2518aa6bb82bbb082bc4cc77cd9fa5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "블레셋 사람과 이스라엘이 싸우더니 이스라엘 사람들이 블레셋 사람 앞에서 도망하다가 길보아산에서 죽임을 받고 엎드러지니라"
+      ],
+      "raw_text_hashes": [
+        "b355cc8b67489495454294579fd700d5ec2518aa6bb82bbb082bc4cc77cd9fa5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:10:2",
+      "sequence": 10662,
+      "chapter_label": "1CH 10",
+      "verse_label": "2",
+      "locator": {
+        "book": "1CH",
+        "chapter": 10,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 10,
+          "verse": 2
+        }
+      ],
+      "en": "The Philistines followed hard after Saul and after his sons; and the Philistines killed Jonathan, Abinadab, and Malchishua, the sons of Saul.",
+      "ko": "블레셋 사람이 사울과 그 아들들을 추격하여 사울의 아들 요나단과 아비나답과 말기수아를 죽이고",
+      "source_text_hash": "f5d251539018de99e68a84923b464addbc06cf23bf1cf0b4367c3083095f8709",
+      "translation_text_hash": "d5c0c752a4667afa17b476df858268ee19c3332dd6c7e0faa8c21a2417ccf00e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "블레셋 사람이 사울과 그 아들들을 추격하여 사울의 아들 요나단과 아비나답과 말기수아를 죽이고"
+      ],
+      "raw_text_hashes": [
+        "d5c0c752a4667afa17b476df858268ee19c3332dd6c7e0faa8c21a2417ccf00e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:10:3",
+      "sequence": 10663,
+      "chapter_label": "1CH 10",
+      "verse_label": "3",
+      "locator": {
+        "book": "1CH",
+        "chapter": 10,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 10,
+          "verse": 3
+        }
+      ],
+      "en": "The battle went hard against Saul, and the archers overtook him; and he was distressed by reason of the archers.",
+      "ko": "사울을 맹렬히 치며 활 쏘는 자가 사울에게 따라 미치매 사울이 그 쏘는 자를 인하여 심히 군급하여",
+      "source_text_hash": "78050a427baa77ab3f8cc57cd1916a1a7f9f6274d5aa1582ffe4b25f21b5a8ff",
+      "translation_text_hash": "7cb4ea82ec6c505f2908e951a407d263efe8b6f8c0a7732732367d5497e58800",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울을 맹렬히 치며 활 쏘는 자가 사울에게 따라 미치매 사울이 그 쏘는 자를 인하여 심히 군급하여"
+      ],
+      "raw_text_hashes": [
+        "7cb4ea82ec6c505f2908e951a407d263efe8b6f8c0a7732732367d5497e58800"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:10:4",
+      "sequence": 10664,
+      "chapter_label": "1CH 10",
+      "verse_label": "4",
+      "locator": {
+        "book": "1CH",
+        "chapter": 10,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 10,
+          "verse": 4
+        }
+      ],
+      "en": "Then Saul said to his armor bearer, “Draw your sword, and thrust me through with it, lest these uncircumcised come and abuse me.” But his armor bearer would not, for he was terrified. Therefore Saul took his sword and fell on it.",
+      "ko": "자기의 병기 가진 자에게 이르되 너는 칼을 빼어 나를 찌르라 저 할례 없는 자가 와서 나를 욕되게 할까 두려워하노라 그러나 그 병기 가진 자가 심히 두려워하여 즐겨 행치 아니하매 사울이 자기 칼을 취하고 그 위에 엎드러지니",
+      "source_text_hash": "a9511df1e02f21ba7f0b079f0617068ba844040a14a2ae2758f4d20bbc2e7948",
+      "translation_text_hash": "5c3d12765b4b1dfc8530364300774401d444257b8f755ed477440d5394302de2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자기의 병기 가진 자에게 이르되 너는 칼을 빼어 나를 찌르라 저 할례 없는 자가 와서 나를 욕되게 할까 두려워하노라 그러나 그 병기 가진 자가 심히 두려워하여 즐겨 행치 아니하매 사울이 자기 칼을 취하고 그 위에 엎드러지니"
+      ],
+      "raw_text_hashes": [
+        "5c3d12765b4b1dfc8530364300774401d444257b8f755ed477440d5394302de2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:10:5",
+      "sequence": 10665,
+      "chapter_label": "1CH 10",
+      "verse_label": "5",
+      "locator": {
+        "book": "1CH",
+        "chapter": 10,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 10,
+          "verse": 5
+        }
+      ],
+      "en": "When his armor bearer saw that Saul was dead, he likewise fell on his sword and died.",
+      "ko": "병기 가진 자가 사울의 죽음을 보고 자기도 칼에 엎드러져 죽으니라",
+      "source_text_hash": "bb359e41c748ed522e1a60eeb6c3c43c27c0c9942c8091e3a51c67a24124da6f",
+      "translation_text_hash": "e42c7cf88f12b4271ab4277a97e34f965666389385511fb79cbca4217e4b48ca",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "병기 가진 자가 사울의 죽음을 보고 자기도 칼에 엎드러져 죽으니라"
+      ],
+      "raw_text_hashes": [
+        "e42c7cf88f12b4271ab4277a97e34f965666389385511fb79cbca4217e4b48ca"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:10:6",
+      "sequence": 10666,
+      "chapter_label": "1CH 10",
+      "verse_label": "6",
+      "locator": {
+        "book": "1CH",
+        "chapter": 10,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 10,
+          "verse": 6
+        }
+      ],
+      "en": "So Saul died with his three sons; and all his house died together.",
+      "ko": "이와 같이 사울과 그 세 아들과 그 온 집이 함께 죽으니라",
+      "source_text_hash": "6fc911781559412c8ceb37fcfa1b05eb516cf44dc3821de2f474a9abe2b604b7",
+      "translation_text_hash": "6eb5b7f489e6c6884422917944f7d0a9131b88a4ff26be235b11608d6c1176ce",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이와 같이 사울과 그 세 아들과 그 온 집이 함께 죽으니라"
+      ],
+      "raw_text_hashes": [
+        "6eb5b7f489e6c6884422917944f7d0a9131b88a4ff26be235b11608d6c1176ce"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:10:7",
+      "sequence": 10667,
+      "chapter_label": "1CH 10",
+      "verse_label": "7",
+      "locator": {
+        "book": "1CH",
+        "chapter": 10,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 10,
+          "verse": 7
+        }
+      ],
+      "en": "When all the men of Israel who were in the valley saw that they fled, and that Saul and his sons were dead, they abandoned their cities, and fled; and the Philistines came and lived in them.",
+      "ko": "골짜기에 있는 모든 이스라엘 사람이 저희의 도망한 것과 사울과 그 아들들의 다 죽은 것을 보고 그 성읍들을 버리고 도망하매 블레셋 사람이 와서 거기 거하니라",
+      "source_text_hash": "a9af2a3b1e305454abffea918e6270a3b1c32997dfbe462b07f51447283afdca",
+      "translation_text_hash": "74b796e66adca834bd3754fa5aceffb042dedc544a680bfc3b4d8b83c5c189f2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "골짜기에 있는 모든 이스라엘 사람이 저희의 도망한 것과 사울과 그 아들들의 다 죽은 것을 보고 그 성읍들을 버리고 도망하매 블레셋 사람이 와서 거기 거하니라"
+      ],
+      "raw_text_hashes": [
+        "74b796e66adca834bd3754fa5aceffb042dedc544a680bfc3b4d8b83c5c189f2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:10:8",
+      "sequence": 10668,
+      "chapter_label": "1CH 10",
+      "verse_label": "8",
+      "locator": {
+        "book": "1CH",
+        "chapter": 10,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 10,
+          "verse": 8
+        }
+      ],
+      "en": "On the next day, when the Philistines came to strip the slain, they found Saul and his sons fallen on Mount Gilboa.",
+      "ko": "이튿날에 블레셋 사람이 와서 죽임을 당한 자를 벗기다가 사울과 그 아들들이 길보아산에 엎드러졌음을 보고",
+      "source_text_hash": "942029aec5fa023295f080091e7de1a1f5e6288be671cc9e30d2b44b9c190a2b",
+      "translation_text_hash": "dd1d20c7ce692ffd3bd0c247be7cd01e9b2284d96f37ac2d96f7640951658c79",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이튿날에 블레셋 사람이 와서 죽임을 당한 자를 벗기다가 사울과 그 아들들이 길보아산에 엎드러졌음을 보고"
+      ],
+      "raw_text_hashes": [
+        "dd1d20c7ce692ffd3bd0c247be7cd01e9b2284d96f37ac2d96f7640951658c79"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:10:9",
+      "sequence": 10669,
+      "chapter_label": "1CH 10",
+      "verse_label": "9",
+      "locator": {
+        "book": "1CH",
+        "chapter": 10,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 10,
+          "verse": 9
+        }
+      ],
+      "en": "They stripped him and took his head and his armor, then sent into the land of the Philistines all around to carry the news to their idols and to the people.",
+      "ko": "곧 사울을 벗기고 그 머리와 갑옷을 취하고 사람을 블레셋 땅 사방에 보내어 모든 우상과 뭇 백성에게 광포하게 하고",
+      "source_text_hash": "df9be14103b6598f2d52ba9ff8789533507ffbc7f40655b0a3bde02b393e3aa9",
+      "translation_text_hash": "026907493499ef9b8d379b0229795bfebd12ed321f44f03f0c44fe0172421a0e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 사울을 벗기고 그 머리와 갑옷을 취하고 사람을 블레셋 땅 사방에 보내어 모든 우상과 뭇 백성에게 광포하게 하고"
+      ],
+      "raw_text_hashes": [
+        "026907493499ef9b8d379b0229795bfebd12ed321f44f03f0c44fe0172421a0e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:10:10",
+      "sequence": 10670,
+      "chapter_label": "1CH 10",
+      "verse_label": "10",
+      "locator": {
+        "book": "1CH",
+        "chapter": 10,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 10,
+          "verse": 10
+        }
+      ],
+      "en": "They put his armor in the house of their gods, and fastened his head in the house of Dagon.",
+      "ko": "사울의 갑옷을 그 신의 묘에 두고 그 머리를 다곤의 묘에 단지라",
+      "source_text_hash": "03e8ecbc5448b444ac9292147ab9301b262d30e7754f09deb0f7e0356e957e4f",
+      "translation_text_hash": "b3af2b05c02e03aba4c05975cb8cadece51d10ef599fc95cc18c6417ea399998",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울의 갑옷을 그 신의 묘에 두고 그 머리를 다곤의 묘에 단지라"
+      ],
+      "raw_text_hashes": [
+        "b3af2b05c02e03aba4c05975cb8cadece51d10ef599fc95cc18c6417ea399998"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:10:11",
+      "sequence": 10671,
+      "chapter_label": "1CH 10",
+      "verse_label": "11",
+      "locator": {
+        "book": "1CH",
+        "chapter": 10,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 10,
+          "verse": 11
+        }
+      ],
+      "en": "When all Jabesh Gilead heard all that the Philistines had done to Saul,",
+      "ko": "길르앗야베스 모든 사람이 블레셋 사람의 사울에게 행한 모든 일을 듣고",
+      "source_text_hash": "2381973d7322576ed5808e2ebbc54a39a5ae50aefc7f09566748f1d3102710a3",
+      "translation_text_hash": "344e2f8c58d55339d031c1afb6bcdb9dcd13a5fe1936186ec35bc2a57cc7532c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "길르앗야베스 모든 사람이 블레셋 사람의 사울에게 행한 모든 일을 듣고"
+      ],
+      "raw_text_hashes": [
+        "344e2f8c58d55339d031c1afb6bcdb9dcd13a5fe1936186ec35bc2a57cc7532c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:10:12",
+      "sequence": 10672,
+      "chapter_label": "1CH 10",
+      "verse_label": "12",
+      "locator": {
+        "book": "1CH",
+        "chapter": 10,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 10,
+          "verse": 12
+        }
+      ],
+      "en": "all the valiant men arose and took away the body of Saul and the bodies of his sons, and brought them to Jabesh, and buried their bones under the oak in Jabesh, and fasted seven days.",
+      "ko": "용사들이 다 일어나서 사울의 시체와 그 아들들의 시체를 취하여 야베스로 가져다가 그곳 상수리나무 아래 그 해골을 장사하고 칠일을 금식하였더라",
+      "source_text_hash": "9f54e82719a35765eb39b1166fc15e2e1a191fd2e58dfee36bbd57025df570d8",
+      "translation_text_hash": "524ee25d5c9127a08f99e993db560293c5e2e70c88bd3ebf593c4c8e20264d45",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "용사들이 다 일어나서 사울의 시체와 그 아들들의 시체를 취하여 야베스로 가져다가 그곳 상수리나무 아래 그 해골을 장사하고 칠일을 금식하였더라"
+      ],
+      "raw_text_hashes": [
+        "524ee25d5c9127a08f99e993db560293c5e2e70c88bd3ebf593c4c8e20264d45"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:10:13",
+      "sequence": 10673,
+      "chapter_label": "1CH 10",
+      "verse_label": "13",
+      "locator": {
+        "book": "1CH",
+        "chapter": 10,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 10,
+          "verse": 13
+        }
+      ],
+      "en": "So Saul died for his trespass which he committed against the LORD, because of the LORD’s word, which he didn’t keep, and also because he asked counsel of one who had a familiar spirit, to inquire,",
+      "ko": "사울의 죽은 것은 여호와께 범죄하였음이라 저가 여호와의 말씀을 지키지 아니하고 또 신접한 자에게 가르치기를 청하고",
+      "source_text_hash": "2cc75f9eab3e5ee674b5296be94db1528b6f36c669ce9b54ed81dec2237e0757",
+      "translation_text_hash": "7f01a1735b8f578253eb99635bf3cc2fa4fb1f189a86a1d4309dd08b6b53dafa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울의 죽은 것은 여호와께 범죄하였음이라 저가 여호와의 말씀을 지키지 아니하고 또 신접한 자에게 가르치기를 청하고"
+      ],
+      "raw_text_hashes": [
+        "7f01a1735b8f578253eb99635bf3cc2fa4fb1f189a86a1d4309dd08b6b53dafa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:10:14",
+      "sequence": 10674,
+      "chapter_label": "1CH 10",
+      "verse_label": "14",
+      "locator": {
+        "book": "1CH",
+        "chapter": 10,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 10,
+          "verse": 14
+        }
+      ],
+      "en": "and didn’t inquire of the LORD. Therefore he killed him, and turned the kingdom over to David the son of Jesse.",
+      "ko": "여호와께 묻지 아니하였으므로 여호와께서 저를 죽이시고 그 나라를 이새의 아들 다윗에게 돌리셨더라",
+      "source_text_hash": "414d2ce849cd6c5c361c9b71053d052f34e65d303eb9cc7d0428b70f42b02c7e",
+      "translation_text_hash": "f36ce794fee15f32cae11d042f2148dbd802ab5c1b7a696cf302f6a5de281dbb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께 묻지 아니하였으므로 여호와께서 저를 죽이시고 그 나라를 이새의 아들 다윗에게 돌리셨더라"
+      ],
+      "raw_text_hashes": [
+        "f36ce794fee15f32cae11d042f2148dbd802ab5c1b7a696cf302f6a5de281dbb"
+      ]
+    }
+  ]
+}

@@ -353,7 +353,7 @@ check(account.includes("runtimeReadiness()") &&
 /* FILE_INTAKE_CONTRACT — local chooser/preflight live, upload/model still off */
 check(html.includes('id="easyFileInput"') && html.includes('type="file"'),
   "FILE_INTAKE_CONTRACT: real browser file chooser exists");
-check(html.includes(".pdf,.docx,.pptx,.xlsx,.hwpx,.jpg,.jpeg,.png,.webp"),
+check(html.includes(".pdf,.docx,.pptx,.xlsx,.hwp,.hwpx,.jpg,.jpeg,.png,.webp"),
   "FILE_INTAKE_CONTRACT: bounded supported extensions");
 check(intake.includes("MAX_DOCUMENT_BYTES = 2 * 1024 * 1024") &&
       intake.includes("MAX_IMAGE_BYTES = 4 * 1024 * 1024"),

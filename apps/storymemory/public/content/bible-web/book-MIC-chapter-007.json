@@ -1,0 +1,653 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:MIC:chapter:007",
+  "unit_ordinal": 900,
+  "unit_label": "MIC 7",
+  "book_code": "MIC",
+  "chapter_number": 7,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:MIC:7:1",
+      "sequence": 22666,
+      "chapter_label": "MIC 7",
+      "verse_label": "1",
+      "locator": {
+        "book": "MIC",
+        "chapter": 7,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 7,
+          "verse": 1
+        }
+      ],
+      "en": "Misery is mine! Indeed, I am like one who gathers the summer fruits, as gleanings of the vineyard. There is no cluster of grapes to eat. My soul desires to eat the early fig.",
+      "ko": "재앙이로다 나여 나는 여름 실과를 딴 후와 포도를 거둔 후 같아서 먹을 송이가 없으며 내 마음에 사모하는 처음 익은 무화과가 없도다",
+      "source_text_hash": "2bb9e8b6ffd1cb0b530437a4e0c6f02d852a3cacc609a88c714053d568bf97f9",
+      "translation_text_hash": "065ba173d6bbd05810581ac1ae07cc8f4e11ac456f00a2fea2940f2072977fa6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "재앙이로다 나여 나는 여름 실과를 딴 후와 포도를 거둔 후 같아서 먹을 송이가 없으며 내 마음에 사모하는 처음 익은 무화과가 없도다"
+      ],
+      "raw_text_hashes": [
+        "065ba173d6bbd05810581ac1ae07cc8f4e11ac456f00a2fea2940f2072977fa6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MIC:7:2",
+      "sequence": 22667,
+      "chapter_label": "MIC 7",
+      "verse_label": "2",
+      "locator": {
+        "book": "MIC",
+        "chapter": 7,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 7,
+          "verse": 2
+        }
+      ],
+      "en": "The godly man has perished out of the earth, and there is no one upright among men. They all lie in wait for blood; every man hunts his brother with a net.",
+      "ko": "이와 같이 선인이 세상에서 끊쳤고 정직자가 인간에 없도다 무리가 다 피를 흘리려고 매복하며 각기 그물로 형제를 잡으려 하고",
+      "source_text_hash": "634b1bbf8e09cba2edc9741a96504b7ce42c86bd5fcad2adbcacb06c19b5c61e",
+      "translation_text_hash": "6883e65ac2af172e8b208b9d6aeb04580630309045e228ccd6576a0c293329b4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이와 같이 선인이 세상에서 끊쳤고 정직자가 인간에 없도다 무리가 다 피를 흘리려고 매복하며 각기 그물로 형제를 잡으려 하고"
+      ],
+      "raw_text_hashes": [
+        "6883e65ac2af172e8b208b9d6aeb04580630309045e228ccd6576a0c293329b4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MIC:7:3",
+      "sequence": 22668,
+      "chapter_label": "MIC 7",
+      "verse_label": "3",
+      "locator": {
+        "book": "MIC",
+        "chapter": 7,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 7,
+          "verse": 3
+        }
+      ],
+      "en": "Their hands are on that which is evil to do it diligently. The ruler and judge ask for a bribe. The powerful man dictates the evil desire of his soul. Thus they conspire together.",
+      "ko": "두 손으로 악을 부지런히 행하도다 그 군장과 재판자는 뇌물을 구하며 대인은 마음의 악한 사욕을 발하며 서로 연락을 취하니",
+      "source_text_hash": "82624a552060a9a4bdcd84a50eed1eb071270ec6da063cdeb601f1e379d17ebd",
+      "translation_text_hash": "02663b644e8d4abb0be4895722846c5da7afa20c2bbf51d6822ab4804c2981f6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "두 손으로 악을 부지런히 행하도다 그 군장과 재판자는 뇌물을 구하며 대인은 마음의 악한 사욕을 발하며 서로 연락을 취하니"
+      ],
+      "raw_text_hashes": [
+        "02663b644e8d4abb0be4895722846c5da7afa20c2bbf51d6822ab4804c2981f6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MIC:7:4",
+      "sequence": 22669,
+      "chapter_label": "MIC 7",
+      "verse_label": "4",
+      "locator": {
+        "book": "MIC",
+        "chapter": 7,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 7,
+          "verse": 4
+        }
+      ],
+      "en": "The best of them is like a brier. The most upright is worse than a thorn hedge. The day of your watchmen, even your visitation, has come; now is the time of their confusion.",
+      "ko": "그들의 가장 선한 자라도 가시 같고 가장 정직한 자라도 찔레 울타리보다 더하도다 그들의 파숫군들의 날 곧 그들의 형벌의 날이 임하였으니 이제는 그들이 요란하리로다",
+      "source_text_hash": "1a20010262dda447d12acf3dd464f410984c4e62ca0cde11a73d48abc0ee68eb",
+      "translation_text_hash": "4ff84c690de19cb23bc4c7b0462bf22ba5e746893d0a5d9fe3467f14d7cc635d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들의 가장 선한 자라도 가시 같고 가장 정직한 자라도 찔레 울타리보다 더하도다 그들의 파숫군들의 날 곧 그들의 형벌의 날이 임하였으니 이제는 그들이 요란하리로다"
+      ],
+      "raw_text_hashes": [
+        "4ff84c690de19cb23bc4c7b0462bf22ba5e746893d0a5d9fe3467f14d7cc635d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MIC:7:5",
+      "sequence": 22670,
+      "chapter_label": "MIC 7",
+      "verse_label": "5",
+      "locator": {
+        "book": "MIC",
+        "chapter": 7,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 7,
+          "verse": 5
+        }
+      ],
+      "en": "Don’t trust in a neighbor. Don’t put confidence in a friend. With the woman lying in your embrace, be careful of the words of your mouth!",
+      "ko": "너희는 이웃을 믿지 말며 친구를 의지하지 말며 네 품에 누운 여인에게라도 네 입의 문을 지킬찌어다",
+      "source_text_hash": "b8168f976c3a0072de2dec11d9ec7e26540f38574e7429d2817c90beb3d1d2d5",
+      "translation_text_hash": "cf15335f9ba0d6179acbf5133ca502f1d0a36bdbdad2d190b3aa661e749f4421",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 이웃을 믿지 말며 친구를 의지하지 말며 네 품에 누운 여인에게라도 네 입의 문을 지킬찌어다"
+      ],
+      "raw_text_hashes": [
+        "cf15335f9ba0d6179acbf5133ca502f1d0a36bdbdad2d190b3aa661e749f4421"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MIC:7:6",
+      "sequence": 22671,
+      "chapter_label": "MIC 7",
+      "verse_label": "6",
+      "locator": {
+        "book": "MIC",
+        "chapter": 7,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 7,
+          "verse": 6
+        }
+      ],
+      "en": "For the son dishonors the father, the daughter rises up against her mother, the daughter-in-law against her mother-in-law; a man’s enemies are the men of his own house.",
+      "ko": "아들이 아비를 멸시하며 딸이 어미를 대적하며 며느리가 시어미를 대적하리니 사람의 원수가 곧 자기의 집안 사람이리로다",
+      "source_text_hash": "d3729b7c64600e2671d91b80973f91cb07295dd14f29b6e58a24e89c6cd219a3",
+      "translation_text_hash": "c54e48a8d8faa30975f0d2b5a412f31a5465e8022779cea11895cf3930f25b1a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아들이 아비를 멸시하며 딸이 어미를 대적하며 며느리가 시어미를 대적하리니 사람의 원수가 곧 자기의 집안 사람이리로다"
+      ],
+      "raw_text_hashes": [
+        "c54e48a8d8faa30975f0d2b5a412f31a5465e8022779cea11895cf3930f25b1a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MIC:7:7",
+      "sequence": 22672,
+      "chapter_label": "MIC 7",
+      "verse_label": "7",
+      "locator": {
+        "book": "MIC",
+        "chapter": 7,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 7,
+          "verse": 7
+        }
+      ],
+      "en": "But as for me, I will look to the LORD. I will wait for the God of my salvation. My God will hear me.",
+      "ko": "오직 나는 여호와를 우러러보며 나를 구원하시는 하나님을 바라보나니 나의 하나님이 나를 들으시리로다",
+      "source_text_hash": "646ec2067bf045606feaa4012d15d8ed3a73867143dbeee0e1251424c9f1b59f",
+      "translation_text_hash": "275f9bd3141d511201a3cc893ff48d56a5dd2ed12f7091265c640e923afb34e4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 나는 여호와를 우러러보며 나를 구원하시는 하나님을 바라보나니 나의 하나님이 나를 들으시리로다"
+      ],
+      "raw_text_hashes": [
+        "275f9bd3141d511201a3cc893ff48d56a5dd2ed12f7091265c640e923afb34e4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MIC:7:8",
+      "sequence": 22673,
+      "chapter_label": "MIC 7",
+      "verse_label": "8",
+      "locator": {
+        "book": "MIC",
+        "chapter": 7,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 7,
+          "verse": 8
+        }
+      ],
+      "en": "Don’t rejoice against me, my enemy. When I fall, I will arise. When I sit in darkness, the LORD will be a light to me.",
+      "ko": "나의 대적이여 나로 인하여 기뻐하지 말찌어다 나는 엎드러질찌라도 일어날 것이요 어두운데 앉을찌라도 여호와께서 나의 빛이 되실 것임이로다",
+      "source_text_hash": "2c941c3b86966b2b04fe6f47a1899d1cb60364ad02db4934fd24fef292472cae",
+      "translation_text_hash": "7cd80b61acf687e47768c7f2d88b953e6852fdc6e9dd9886731c27609383ba29",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 대적이여 나로 인하여 기뻐하지 말찌어다 나는 엎드러질찌라도 일어날 것이요 어두운데 앉을찌라도 여호와께서 나의 빛이 되실 것임이로다"
+      ],
+      "raw_text_hashes": [
+        "7cd80b61acf687e47768c7f2d88b953e6852fdc6e9dd9886731c27609383ba29"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MIC:7:9",
+      "sequence": 22674,
+      "chapter_label": "MIC 7",
+      "verse_label": "9",
+      "locator": {
+        "book": "MIC",
+        "chapter": 7,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 7,
+          "verse": 9
+        }
+      ],
+      "en": "I will bear the indignation of the LORD, because I have sinned against him, until he pleads my case and executes judgment for me. He will bring me out to the light. I will see his righteousness.",
+      "ko": "내가 여호와께 범죄하였으니 주께서 나를 위하여 심판하사 신원하시기까지는 그의 노를 당하려니와 주께서 나를 인도하사 광명에 이르게 하시리니 내가 그의 의를 보리로다",
+      "source_text_hash": "a708313613668122ca9ffdb8373e2d63083b4f5c6fb165580158946cb2103f71",
+      "translation_text_hash": "0ab1138c26e92224e95f1483a8aebe146fbaec638cccfdbe838dc77d8b32bda7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 여호와께 범죄하였으니 주께서 나를 위하여 심판하사 신원하시기까지는 그의 노를 당하려니와 주께서 나를 인도하사 광명에 이르게 하시리니 내가 그의 의를 보리로다"
+      ],
+      "raw_text_hashes": [
+        "0ab1138c26e92224e95f1483a8aebe146fbaec638cccfdbe838dc77d8b32bda7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MIC:7:10",
+      "sequence": 22675,
+      "chapter_label": "MIC 7",
+      "verse_label": "10",
+      "locator": {
+        "book": "MIC",
+        "chapter": 7,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 7,
+          "verse": 10
+        }
+      ],
+      "en": "Then my enemy will see it, and shame will cover her who said to me, “Where is the LORD your God?” My eyes will see her. Now she will be trodden down like the mire of the streets.",
+      "ko": "나의 대적이 이것을 보고 부끄러워하리니 그는 전에 내게 말하기를 네 하나님 여호와가 어디 있느냐 하던 자라 그가 거리의 진흙 같이 밟히리니 그것을 내가 목도하리로다",
+      "source_text_hash": "593c64bb235b4ebead93c0451cc9ce6aae731a70290ddf2672f982b024dcbe09",
+      "translation_text_hash": "d01e6f43a7a560b1d520d3899c5715e63fc6b0000227a21583f4ac3c52edb3b5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 대적이 이것을 보고 부끄러워하리니 그는 전에 내게 말하기를 네 하나님 여호와가 어디 있느냐 하던 자라 그가 거리의 진흙 같이 밟히리니 그것을 내가 목도하리로다"
+      ],
+      "raw_text_hashes": [
+        "d01e6f43a7a560b1d520d3899c5715e63fc6b0000227a21583f4ac3c52edb3b5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MIC:7:11",
+      "sequence": 22676,
+      "chapter_label": "MIC 7",
+      "verse_label": "11",
+      "locator": {
+        "book": "MIC",
+        "chapter": 7,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 7,
+          "verse": 11
+        }
+      ],
+      "en": "A day to build your walls! In that day, he will extend your boundary.",
+      "ko": "네 성벽을 건축하는 날 곧 그 날에는 지경이 넓혀질 것이라",
+      "source_text_hash": "6972f68761724fce79c24ef1a501fc67061629939852cc8059bd37c0b4abbf59",
+      "translation_text_hash": "86d2464b1c696a1648b23bef9947d58771ab3dde2aa1ffb9ebf88482270dba97",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 성벽을 건축하는 날 곧 그 날에는 지경이 넓혀질 것이라"
+      ],
+      "raw_text_hashes": [
+        "86d2464b1c696a1648b23bef9947d58771ab3dde2aa1ffb9ebf88482270dba97"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MIC:7:12",
+      "sequence": 22677,
+      "chapter_label": "MIC 7",
+      "verse_label": "12",
+      "locator": {
+        "book": "MIC",
+        "chapter": 7,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 7,
+          "verse": 12
+        }
+      ],
+      "en": "In that day they will come to you from Assyria and the cities of Egypt, and from Egypt even to the River, and from sea to sea, and mountain to mountain.",
+      "ko": "그 날에는 앗수르에서 애굽 성읍들에까지, 애굽에서 하수까지, 이 바다에서 저 바다까지, 이 산에서 저 산까지의 사람들이 네게로 돌아올 것이나",
+      "source_text_hash": "00a108d372ef6d1d4680b78e0801e6a548f2fc022c7b689fe843e1ed87d92fce",
+      "translation_text_hash": "6cc99897a7661a14daa91aa4bf46119fdf262856751dd8a88dc4d95bf7c44a06",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날에는 앗수르에서 애굽 성읍들에까지, 애굽에서 하수까지, 이 바다에서 저 바다까지, 이 산에서 저 산까지의 사람들이 네게로 돌아올 것이나"
+      ],
+      "raw_text_hashes": [
+        "6cc99897a7661a14daa91aa4bf46119fdf262856751dd8a88dc4d95bf7c44a06"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MIC:7:13",
+      "sequence": 22678,
+      "chapter_label": "MIC 7",
+      "verse_label": "13",
+      "locator": {
+        "book": "MIC",
+        "chapter": 7,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 7,
+          "verse": 13
+        }
+      ],
+      "en": "Yet the land will be desolate because of those who dwell therein, for the fruit of their doings.",
+      "ko": "그 땅은 그 거민의 행위의 열매로 인하여 황무하리로다",
+      "source_text_hash": "8445674445b39b24dde0edb070f5c93ba9046211b29dfd13fc04fc77edd5dc65",
+      "translation_text_hash": "8f6d4fe12721cc35553d5dfc24a387d32b947fc5abe6d50f8c284e79897d535a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 땅은 그 거민의 행위의 열매로 인하여 황무하리로다"
+      ],
+      "raw_text_hashes": [
+        "8f6d4fe12721cc35553d5dfc24a387d32b947fc5abe6d50f8c284e79897d535a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MIC:7:14",
+      "sequence": 22679,
+      "chapter_label": "MIC 7",
+      "verse_label": "14",
+      "locator": {
+        "book": "MIC",
+        "chapter": 7,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 7,
+          "verse": 14
+        }
+      ],
+      "en": "Shepherd your people with your staff, the flock of your heritage, who dwell by themselves in a forest. Let them feed in the middle of fertile pasture land, in Bashan and Gilead, as in the days of old.",
+      "ko": "원컨대 주는 주의 지팡이로 주의 백성 곧 갈멜속 삼림에 홀로 거하는 주의 기업의 떼를 먹이시되 그들을 옛날 같이 바산과 길르앗에서 먹이옵소서",
+      "source_text_hash": "e15fccf410164108764340c3ec050a74df357c254acc8d2071963e079d77d590",
+      "translation_text_hash": "c88cb9aa1897c3e1761a42703ffa715c5b62a65459994112dbbcf103505982cb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "원컨대 주는 주의 지팡이로 주의 백성 곧 갈멜속 삼림에 홀로 거하는 주의 기업의 떼를 먹이시되 그들을 옛날 같이 바산과 길르앗에서 먹이옵소서"
+      ],
+      "raw_text_hashes": [
+        "c88cb9aa1897c3e1761a42703ffa715c5b62a65459994112dbbcf103505982cb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MIC:7:15",
+      "sequence": 22680,
+      "chapter_label": "MIC 7",
+      "verse_label": "15",
+      "locator": {
+        "book": "MIC",
+        "chapter": 7,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 7,
+          "verse": 15
+        }
+      ],
+      "en": "“As in the days of your coming out of the land of Egypt, I will show them marvelous things.”",
+      "ko": "가라사대 네가 애굽 땅에서 나오던 날과 같이 내가 그들에게 기사를 보이리라",
+      "source_text_hash": "dbe950ea8d84fbe70f07bcc84db38bc2332a67ced3db5c0ce68796a6f6391d98",
+      "translation_text_hash": "652f79880b8b95b39b88c06addc3c91527252d9887e24a5cce3d0e67806b23af",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가라사대 네가 애굽 땅에서 나오던 날과 같이 내가 그들에게 기사를 보이리라"
+      ],
+      "raw_text_hashes": [
+        "652f79880b8b95b39b88c06addc3c91527252d9887e24a5cce3d0e67806b23af"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MIC:7:16",
+      "sequence": 22681,
+      "chapter_label": "MIC 7",
+      "verse_label": "16",
+      "locator": {
+        "book": "MIC",
+        "chapter": 7,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 7,
+          "verse": 16
+        }
+      ],
+      "en": "The nations will see and be ashamed of all their might. They will lay their hand on their mouth. Their ears will be deaf.",
+      "ko": "가로되 열방이 보고 자기의 세력을 부끄려서 손으로 그 입을 막을 것이요 귀는 막힐 것이오며",
+      "source_text_hash": "e269d43811053659ead0db6d7a73cdb44807ba17ad59fcfe8c85aeb3f19e5219",
+      "translation_text_hash": "16960883a2933027faf33baacf7008617944af90dad6f4af4f8d90ace55cb454",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 열방이 보고 자기의 세력을 부끄려서 손으로 그 입을 막을 것이요 귀는 막힐 것이오며"
+      ],
+      "raw_text_hashes": [
+        "16960883a2933027faf33baacf7008617944af90dad6f4af4f8d90ace55cb454"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MIC:7:17",
+      "sequence": 22682,
+      "chapter_label": "MIC 7",
+      "verse_label": "17",
+      "locator": {
+        "book": "MIC",
+        "chapter": 7,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 7,
+          "verse": 17
+        }
+      ],
+      "en": "They will lick the dust like a serpent. Like crawling things of the earth, they will come trembling out of their dens. They will come with fear to the LORD our God, and will be afraid because of you.",
+      "ko": "그들이 뱀처럼 티끌을 핥으며 땅에 기는 벌레처럼 떨며 그 좁은 구멍에서 나와서 두려워하며 우리 하나님 여호와께로 돌아와서 주로 인하여 두려워하리이다",
+      "source_text_hash": "d4e1d0f59da22cbf4187c0d0f0f916bd0eb920d96714216c158c1fb38192e665",
+      "translation_text_hash": "c5d3fd457b18b41060ea36a3287d92e457b9f26bdf05a0f0a36c03cf30263f93",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 뱀처럼 티끌을 핥으며 땅에 기는 벌레처럼 떨며 그 좁은 구멍에서 나와서 두려워하며 우리 하나님 여호와께로 돌아와서 주로 인하여 두려워하리이다"
+      ],
+      "raw_text_hashes": [
+        "c5d3fd457b18b41060ea36a3287d92e457b9f26bdf05a0f0a36c03cf30263f93"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MIC:7:18",
+      "sequence": 22683,
+      "chapter_label": "MIC 7",
+      "verse_label": "18",
+      "locator": {
+        "book": "MIC",
+        "chapter": 7,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 7,
+          "verse": 18
+        }
+      ],
+      "en": "Who is a God like you, who pardons iniquity, and passes over the disobedience of the remnant of his heritage? He doesn’t retain his anger forever, because he delights in loving kindness.",
+      "ko": "주와 같은 신이 어디있으리이까 주께서는 죄악을 사유하시며 그 기업의 남은 자의 허물을 넘기시며 인애를 기뻐하심으로 노를 항상 품지 아니하시나이다",
+      "source_text_hash": "b266cf2bf95216d82d35942da4b9657e9286e6af6290455ab4805f513c39f241",
+      "translation_text_hash": "d099c2acf08d8b36cfdec28a9d1db4536d83196c8810440c34a9af93d0996da3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주와 같은 신이 어디있으리이까 주께서는 죄악을 사유하시며 그 기업의 남은 자의 허물을 넘기시며 인애를 기뻐하심으로 노를 항상 품지 아니하시나이다"
+      ],
+      "raw_text_hashes": [
+        "d099c2acf08d8b36cfdec28a9d1db4536d83196c8810440c34a9af93d0996da3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MIC:7:19",
+      "sequence": 22684,
+      "chapter_label": "MIC 7",
+      "verse_label": "19",
+      "locator": {
+        "book": "MIC",
+        "chapter": 7,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 7,
+          "verse": 19
+        }
+      ],
+      "en": "He will again have compassion on us. He will tread our iniquities under foot. You will cast all their sins into the depths of the sea.",
+      "ko": "다시 우리를 긍휼히 여기셔서 우리의 죄악을 발로 밟으시고 우리의 모든 죄를 깊은 바다에 던지시리이다",
+      "source_text_hash": "2072fa91fcf67301b6d03c891b12fd26e05ef837f2d590ecde2d72873f915792",
+      "translation_text_hash": "a1d83331099f12f6039ebb6b085480ad07dc68880434fceb61cd822c1e396fe5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다시 우리를 긍휼히 여기셔서 우리의 죄악을 발로 밟으시고 우리의 모든 죄를 깊은 바다에 던지시리이다"
+      ],
+      "raw_text_hashes": [
+        "a1d83331099f12f6039ebb6b085480ad07dc68880434fceb61cd822c1e396fe5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MIC:7:20",
+      "sequence": 22685,
+      "chapter_label": "MIC 7",
+      "verse_label": "20",
+      "locator": {
+        "book": "MIC",
+        "chapter": 7,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 7,
+          "verse": 20
+        }
+      ],
+      "en": "You will give truth to Jacob, and mercy to Abraham, as you have sworn to our fathers from the days of old.",
+      "ko": "주께서 옛적에 우리 열조에게 맹세하신대로 야곱에게 성실을 베푸시며 아브라함에게 인애를 더하시리이다",
+      "source_text_hash": "6bde4e169211ef434c47fb045c3b89919306bad21b7cc0cb5b8a5ab99d9fcbb9",
+      "translation_text_hash": "bede783372c3bad88da1574f290f68f55b22f5c0145b9c7bdd2f92b5e45d3f14",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 옛적에 우리 열조에게 맹세하신대로 야곱에게 성실을 베푸시며 아브라함에게 인애를 더하시리이다"
+      ],
+      "raw_text_hashes": [
+        "bede783372c3bad88da1574f290f68f55b22f5c0145b9c7bdd2f92b5e45d3f14"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1005 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1CH:chapter:025",
+  "unit_ordinal": 363,
+  "unit_label": "1CH 25",
+  "book_code": "1CH",
+  "chapter_number": 25,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1CH:25:1",
+      "sequence": 11048,
+      "chapter_label": "1CH 25",
+      "verse_label": "1",
+      "locator": {
+        "book": "1CH",
+        "chapter": 25,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 25,
+          "verse": 1
+        }
+      ],
+      "en": "Moreover, David and the captains of the army set apart for the service certain of the sons of Asaph, of Heman, and of Jeduthun, who were to prophesy with harps, with stringed instruments, and with cymbals. The number of those who did the work according to their service was:",
+      "ko": "다윗이 군대 장관들로 더불어 아삽과 헤만과 여두둔의 자손 중에서 구별하여 섬기게 하되 수금과 비파와 제금을 잡아 신령한 노래를 하게 하였으니 그 직무대로 일하는 자의 수효가 이러하니라",
+      "source_text_hash": "4fe0447b15d67e975d55be929112c2d4d16c0a5af2f9e7a20936a8cf8b590332",
+      "translation_text_hash": "d2a5c3120c69e3c080485f36cd2a8f83db365c10f219d200eb4482180e7fe3f4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 군대 장관들로 더불어 아삽과 헤만과 여두둔의 자손 중에서 구별하여 섬기게 하되 수금과 비파와 제금을 잡아 신령한 노래를 하게 하였으니 그 직무대로 일하는 자의 수효가 이러하니라"
+      ],
+      "raw_text_hashes": [
+        "d2a5c3120c69e3c080485f36cd2a8f83db365c10f219d200eb4482180e7fe3f4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:25:2",
+      "sequence": 11049,
+      "chapter_label": "1CH 25",
+      "verse_label": "2",
+      "locator": {
+        "book": "1CH",
+        "chapter": 25,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 25,
+          "verse": 2
+        }
+      ],
+      "en": "of the sons of Asaph: Zaccur, Joseph, Nethaniah, and Asharelah. The sons of Asaph were under the hand of Asaph, who prophesied at the order of the king.",
+      "ko": "아삽의 아들 중 삭굴과 요셉과 느다냐와 아사렐라니 이 아삽의 아들들이 아삽의 수하에 속하여 왕의 명령을 좇아 신령한 노래를 하며",
+      "source_text_hash": "2acbf7b616f1ed69cc8db0100030b1d263a2afa0a1fd3d19a4bfab3538df6254",
+      "translation_text_hash": "4db5a040891e8befb4ab52d02678fd455e74b944005f7e7ae8c3ec50be1c2136",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아삽의 아들 중 삭굴과 요셉과 느다냐와 아사렐라니 이 아삽의 아들들이 아삽의 수하에 속하여 왕의 명령을 좇아 신령한 노래를 하며"
+      ],
+      "raw_text_hashes": [
+        "4db5a040891e8befb4ab52d02678fd455e74b944005f7e7ae8c3ec50be1c2136"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:25:3",
+      "sequence": 11050,
+      "chapter_label": "1CH 25",
+      "verse_label": "3",
+      "locator": {
+        "book": "1CH",
+        "chapter": 25,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 25,
+          "verse": 3
+        }
+      ],
+      "en": "Of Jeduthun, the sons of Jeduthun: Gedaliah, Zeri, Jeshaiah, Shimei, Hashabiah, and Mattithiah, six, under the hands of their father Jeduthun, who prophesied in giving thanks and praising the LORD with the harp.",
+      "ko": "여두둔에게 이르러는 그 아들 그달리야와 스리와 여사야와 하사뱌와 맛디디야 여섯 사람이니 그 아비 여두둔의 수하에 속하여 수금을 잡아 신령한 노래를 하며 여호와께 감사하며 찬양하며",
+      "source_text_hash": "94ccb473e88dd0856fd160b28b21d291a2514b05e4ca761720863aaaccaffb07",
+      "translation_text_hash": "7fc08c035b29297009db5c9497b7bbb2dbe44ab1f396021730fbcdf01c643d2f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여두둔에게 이르러는 그 아들 그달리야와 스리와 여사야와 하사뱌와 맛디디야 여섯 사람이니 그 아비 여두둔의 수하에 속하여 수금을 잡아 신령한 노래를 하며 여호와께 감사하며 찬양하며"
+      ],
+      "raw_text_hashes": [
+        "7fc08c035b29297009db5c9497b7bbb2dbe44ab1f396021730fbcdf01c643d2f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:25:4",
+      "sequence": 11051,
+      "chapter_label": "1CH 25",
+      "verse_label": "4",
+      "locator": {
+        "book": "1CH",
+        "chapter": 25,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 25,
+          "verse": 4
+        }
+      ],
+      "en": "Of Heman, the sons of Heman: Bukkiah, Mattaniah, Uzziel, Shebuel, Jerimoth, Hananiah, Hanani, Eliathah, Giddalti, Romamti-Ezer, Joshbekashah, Mallothi, Hothir, and Mahazioth.",
+      "ko": "헤만에게 이르러는 그 아들 북기야와 맛다냐와 웃시엘과 스브엘과 여리못과 하나냐와 하나니와 엘리아다와 깃달디와 로암디에셀과 요스브가사와 말로디와 호딜과 마하시옷이라",
+      "source_text_hash": "45f84f57702febd107eaa62b303e6341e542a5cd713452b7fbd01cf02e836199",
+      "translation_text_hash": "2a368ad749a142c6da296ad46ff9ed019da4312ca2df762e11749f0e94b98531",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "헤만에게 이르러는 그 아들 북기야와 맛다냐와 웃시엘과 스브엘과 여리못과 하나냐와 하나니와 엘리아다와 깃달디와 로암디에셀과 요스브가사와 말로디와 호딜과 마하시옷이라"
+      ],
+      "raw_text_hashes": [
+        "2a368ad749a142c6da296ad46ff9ed019da4312ca2df762e11749f0e94b98531"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:25:5",
+      "sequence": 11052,
+      "chapter_label": "1CH 25",
+      "verse_label": "5",
+      "locator": {
+        "book": "1CH",
+        "chapter": 25,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 25,
+          "verse": 5
+        }
+      ],
+      "en": "All these were the sons of Heman the king’s seer in the words of God, to lift up the horn. God gave to Heman fourteen sons and three daughters.",
+      "ko": "이는 다 헤만의 아들들이니 나팔을 부는 자며 헤만은 하나님의 말씀을 받드는 왕의 선견자라 하나님이 헤만에게 열 네 아들과 세 딸을 주셨더라",
+      "source_text_hash": "237e70b1e5c9b514a70c833e09cc374d3d26286b76e572ce2f097d3f2f0b9e63",
+      "translation_text_hash": "a3a67ed73bb5be349ae4d6a1d13297c822470f6b9c29418a6e84cc67d143bd18",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 다 헤만의 아들들이니 나팔을 부는 자며 헤만은 하나님의 말씀을 받드는 왕의 선견자라 하나님이 헤만에게 열 네 아들과 세 딸을 주셨더라"
+      ],
+      "raw_text_hashes": [
+        "a3a67ed73bb5be349ae4d6a1d13297c822470f6b9c29418a6e84cc67d143bd18"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:25:6",
+      "sequence": 11053,
+      "chapter_label": "1CH 25",
+      "verse_label": "6",
+      "locator": {
+        "book": "1CH",
+        "chapter": 25,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 25,
+          "verse": 6
+        }
+      ],
+      "en": "All these were under the hands of their father for song in the LORD’s house, with cymbals, stringed instruments, and harps, for the service of God’s house: Asaph, Jeduthun, and Heman being under the order of the king.",
+      "ko": "이들이 다 그 아비의 수하에 속하여 제금과 비파와 수금을 잡아 여호와 하나님의 전에서 노래하여 섬겼으며 아삽과 여두둔과 헤만은 왕의 수하에 속하였으니",
+      "source_text_hash": "aa390d3be608bafe26592e0dbae02e52eee64ef083ab29105def34e55a9bc431",
+      "translation_text_hash": "f26088dc355bcbb78065ec4f2adef0237932c75fad29286bd1a12351a73cd81b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이들이 다 그 아비의 수하에 속하여 제금과 비파와 수금을 잡아 여호와 하나님의 전에서 노래하여 섬겼으며 아삽과 여두둔과 헤만은 왕의 수하에 속하였으니"
+      ],
+      "raw_text_hashes": [
+        "f26088dc355bcbb78065ec4f2adef0237932c75fad29286bd1a12351a73cd81b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:25:7",
+      "sequence": 11054,
+      "chapter_label": "1CH 25",
+      "verse_label": "7",
+      "locator": {
+        "book": "1CH",
+        "chapter": 25,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 25,
+          "verse": 7
+        }
+      ],
+      "en": "The number of them, with their brothers who were instructed in singing to the LORD, even all who were skillful, was two hundred eighty-eight.",
+      "ko": "저희와 모든 형제 곧 여호와 찬송하기를 배워 익숙한 자의 수효가 이백 팔십 팔인이라",
+      "source_text_hash": "9eb7ecd27953e13df978ba20f0a6b1c1835b8198acfbedb506d81f46f14f49f3",
+      "translation_text_hash": "ce0a22288091e82003aa374d89d1b7cd52ec69df3275a1bfea86686239623e58",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희와 모든 형제 곧 여호와 찬송하기를 배워 익숙한 자의 수효가 이백 팔십 팔인이라"
+      ],
+      "raw_text_hashes": [
+        "ce0a22288091e82003aa374d89d1b7cd52ec69df3275a1bfea86686239623e58"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:25:8",
+      "sequence": 11055,
+      "chapter_label": "1CH 25",
+      "verse_label": "8",
+      "locator": {
+        "book": "1CH",
+        "chapter": 25,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 25,
+          "verse": 8
+        }
+      ],
+      "en": "They cast lots for their offices, all alike, the small as well as the great, the teacher as well as the student.",
+      "ko": "이 무리의 큰 자나 작은 자나 스승이나 제자를 무론하고 일례로 제비 뽑아 직임을 얻었으니",
+      "source_text_hash": "8003fa91990ff2c598ed7e88adddaa91ec0720e7f39c0ab831cce37fc05d87a5",
+      "translation_text_hash": "fcd2b8e6e9c07762301744144d2b660dd9917dc33177d3f9d6bf8b13cef512d8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 무리의 큰 자나 작은 자나 스승이나 제자를 무론하고 일례로 제비 뽑아 직임을 얻었으니"
+      ],
+      "raw_text_hashes": [
+        "fcd2b8e6e9c07762301744144d2b660dd9917dc33177d3f9d6bf8b13cef512d8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:25:9",
+      "sequence": 11056,
+      "chapter_label": "1CH 25",
+      "verse_label": "9",
+      "locator": {
+        "book": "1CH",
+        "chapter": 25,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 25,
+          "verse": 9
+        }
+      ],
+      "en": "Now the first lot came out for Asaph to Joseph; the second to Gedaliah, he and his brothers and sons were twelve;",
+      "ko": "첫째로 제비 뽑힌 자는 아삽의 아들 중 요셉이요 둘째는 그달리야니 저와 그 형제와 아들 십 이인이요",
+      "source_text_hash": "4b1abbbf24356d9bc3a8b79462965e8419b4f18b7a2f6e1a7b0a55b19bea5ecf",
+      "translation_text_hash": "c180a0410135118518e48f00b0fd79df5f74cf9dfa07ae7bb7dc375abd828a1e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "첫째로 제비 뽑힌 자는 아삽의 아들 중 요셉이요 둘째는 그달리야니 저와 그 형제와 아들 십 이인이요"
+      ],
+      "raw_text_hashes": [
+        "c180a0410135118518e48f00b0fd79df5f74cf9dfa07ae7bb7dc375abd828a1e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:25:10",
+      "sequence": 11057,
+      "chapter_label": "1CH 25",
+      "verse_label": "10",
+      "locator": {
+        "book": "1CH",
+        "chapter": 25,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 25,
+          "verse": 10
+        }
+      ],
+      "en": "the third to Zaccur, his sons and his brothers, twelve;",
+      "ko": "세째는 삭굴이니 그 아들과 형제와 십 이인이요",
+      "source_text_hash": "c91fc47c24b9c12b8bf60a544456bec6f928fddafa59bbe339a7e56380192ac7",
+      "translation_text_hash": "a9d018410d37ce57197f27fdbd4e8d8873243e056d37faf57b85bc167be2f43c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "세째는 삭굴이니 그 아들과 형제와 십 이인이요"
+      ],
+      "raw_text_hashes": [
+        "a9d018410d37ce57197f27fdbd4e8d8873243e056d37faf57b85bc167be2f43c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:25:11",
+      "sequence": 11058,
+      "chapter_label": "1CH 25",
+      "verse_label": "11",
+      "locator": {
+        "book": "1CH",
+        "chapter": 25,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 25,
+          "verse": 11
+        }
+      ],
+      "en": "the fourth to Izri, his sons and his brothers, twelve;",
+      "ko": "네째는 이스리니 그 아들과 형제와 십 이인이요",
+      "source_text_hash": "31223605c91df996049a0708e34380f12bc0ee08824db1688cffa1e3f0fb3b57",
+      "translation_text_hash": "80ecf759292a825e1603b072f85d82ff87fd2205a13278e8b459a9211f1829a7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네째는 이스리니 그 아들과 형제와 십 이인이요"
+      ],
+      "raw_text_hashes": [
+        "80ecf759292a825e1603b072f85d82ff87fd2205a13278e8b459a9211f1829a7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:25:12",
+      "sequence": 11059,
+      "chapter_label": "1CH 25",
+      "verse_label": "12",
+      "locator": {
+        "book": "1CH",
+        "chapter": 25,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 25,
+          "verse": 12
+        }
+      ],
+      "en": "the fifth to Nethaniah, his sons and his brothers, twelve;",
+      "ko": "다섯째는 느다냐니 그 아들과 형제와 십 이인이요",
+      "source_text_hash": "1f69cc081d77749ac2a7f87b54c84f7dd6223544e120b00b57cc766d1bd3b799",
+      "translation_text_hash": "55255ff7498c880833cb7b06eb14081c1c15f143cbd06c730a0de0f6c29c8c08",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다섯째는 느다냐니 그 아들과 형제와 십 이인이요"
+      ],
+      "raw_text_hashes": [
+        "55255ff7498c880833cb7b06eb14081c1c15f143cbd06c730a0de0f6c29c8c08"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:25:13",
+      "sequence": 11060,
+      "chapter_label": "1CH 25",
+      "verse_label": "13",
+      "locator": {
+        "book": "1CH",
+        "chapter": 25,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 25,
+          "verse": 13
+        }
+      ],
+      "en": "the sixth to Bukkiah, his sons and his brothers, twelve;",
+      "ko": "여섯째는 북기야니 그 아들과 형제와 십 이인이요",
+      "source_text_hash": "f23918912cf68ab7577a1f545c20614a1b40349b51e4a3a94a589e43f2837665",
+      "translation_text_hash": "3c3691b21d3d9c9bd5b897391d9bcc40fa412a21a9b21f94ed116b7a5fbd0b91",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여섯째는 북기야니 그 아들과 형제와 십 이인이요"
+      ],
+      "raw_text_hashes": [
+        "3c3691b21d3d9c9bd5b897391d9bcc40fa412a21a9b21f94ed116b7a5fbd0b91"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:25:14",
+      "sequence": 11061,
+      "chapter_label": "1CH 25",
+      "verse_label": "14",
+      "locator": {
+        "book": "1CH",
+        "chapter": 25,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 25,
+          "verse": 14
+        }
+      ],
+      "en": "the seventh to Jesharelah, his sons and his brothers, twelve;",
+      "ko": "일곱째는 여사렐라니 그 아들과 형제와 십 이인이요",
+      "source_text_hash": "9d5e77b834dafee0ca73a992bb2335d9af8037eda5f116284a12002b622f1260",
+      "translation_text_hash": "4e456f3f8e3184dfb7c3341f320f45909a590e133981c32abd16eaefcda8a441",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "일곱째는 여사렐라니 그 아들과 형제와 십 이인이요"
+      ],
+      "raw_text_hashes": [
+        "4e456f3f8e3184dfb7c3341f320f45909a590e133981c32abd16eaefcda8a441"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:25:15",
+      "sequence": 11062,
+      "chapter_label": "1CH 25",
+      "verse_label": "15",
+      "locator": {
+        "book": "1CH",
+        "chapter": 25,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 25,
+          "verse": 15
+        }
+      ],
+      "en": "the eighth to Jeshaiah, his sons and his brothers, twelve;",
+      "ko": "여덟째는 여사야니 그 아들과 형제와 십 이인이요",
+      "source_text_hash": "b7be026aa7c03050b53c0d9495e12077555908ef394e3ffb90c70ff94097fab6",
+      "translation_text_hash": "dfdd6dafd6c981e9322625b376e69b32be947ad9777c0e17731b3e6c81151958",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여덟째는 여사야니 그 아들과 형제와 십 이인이요"
+      ],
+      "raw_text_hashes": [
+        "dfdd6dafd6c981e9322625b376e69b32be947ad9777c0e17731b3e6c81151958"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:25:16",
+      "sequence": 11063,
+      "chapter_label": "1CH 25",
+      "verse_label": "16",
+      "locator": {
+        "book": "1CH",
+        "chapter": 25,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 25,
+          "verse": 16
+        }
+      ],
+      "en": "the ninth to Mattaniah, his sons and his brothers, twelve;",
+      "ko": "아홉째는 맛다냐니 그 아들과 형제와 십 이인이요",
+      "source_text_hash": "7e80a44ef5c421ccb9126677ae6a52c1cd2073b14b7ee54fe3b9eadbfb563855",
+      "translation_text_hash": "ab5fdd44ade1d5d7e4dcf82274b8dbf376ce39ea244b81bef32913f52a8eef6c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아홉째는 맛다냐니 그 아들과 형제와 십 이인이요"
+      ],
+      "raw_text_hashes": [
+        "ab5fdd44ade1d5d7e4dcf82274b8dbf376ce39ea244b81bef32913f52a8eef6c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:25:17",
+      "sequence": 11064,
+      "chapter_label": "1CH 25",
+      "verse_label": "17",
+      "locator": {
+        "book": "1CH",
+        "chapter": 25,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 25,
+          "verse": 17
+        }
+      ],
+      "en": "the tenth to Shimei, his sons and his brothers, twelve;",
+      "ko": "열째는 시므이니 그 아들과 형제와 십 이인이요",
+      "source_text_hash": "1eebe8c187b96e21d224ad97ce47794abd523584c00181ffb4f7e14ea3ec77b8",
+      "translation_text_hash": "3cc7ad92c8fcf6ca857433511641ed13adfcbe452bdefb854966064f98819381",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "열째는 시므이니 그 아들과 형제와 십 이인이요"
+      ],
+      "raw_text_hashes": [
+        "3cc7ad92c8fcf6ca857433511641ed13adfcbe452bdefb854966064f98819381"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:25:18",
+      "sequence": 11065,
+      "chapter_label": "1CH 25",
+      "verse_label": "18",
+      "locator": {
+        "book": "1CH",
+        "chapter": 25,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 25,
+          "verse": 18
+        }
+      ],
+      "en": "the eleventh to Azarel, his sons and his brothers, twelve;",
+      "ko": "열 한째는 아사렐이니 그 아들과 형제와 십 이인이요",
+      "source_text_hash": "d67de37d439d86b46cb9ef658077b54b080fccf13b84b9e768adff4c9bc42d73",
+      "translation_text_hash": "ec2c308d68d028054f152171296902e8c5dd1c2f614f9a2422a0e6827711506a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "열 한째는 아사렐이니 그 아들과 형제와 십 이인이요"
+      ],
+      "raw_text_hashes": [
+        "ec2c308d68d028054f152171296902e8c5dd1c2f614f9a2422a0e6827711506a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:25:19",
+      "sequence": 11066,
+      "chapter_label": "1CH 25",
+      "verse_label": "19",
+      "locator": {
+        "book": "1CH",
+        "chapter": 25,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 25,
+          "verse": 19
+        }
+      ],
+      "en": "the twelfth to Hashabiah, his sons and his brothers, twelve;",
+      "ko": "열 둘째는 하사뱌니 그 아들과 형제와 십 이인이요",
+      "source_text_hash": "6240b2a35078cf3490214172e309dd4c3d6271b9eb386dd1a32bd6b0d81cf319",
+      "translation_text_hash": "213116e625cad4e67868607f761721198c00326405b25d877c83b89951f8ff7c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "열 둘째는 하사뱌니 그 아들과 형제와 십 이인이요"
+      ],
+      "raw_text_hashes": [
+        "213116e625cad4e67868607f761721198c00326405b25d877c83b89951f8ff7c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:25:20",
+      "sequence": 11067,
+      "chapter_label": "1CH 25",
+      "verse_label": "20",
+      "locator": {
+        "book": "1CH",
+        "chapter": 25,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 25,
+          "verse": 20
+        }
+      ],
+      "en": "for the thirteenth, Shubael, his sons and his brothers, twelve;",
+      "ko": "열 세째는 수바엘이니 그 아들과 형제와 십 이인이요",
+      "source_text_hash": "05bcb2c4a4aa63dc3e8f7b7375e22253eb32134a6bdd2f03ee578503919a1a09",
+      "translation_text_hash": "67997167eeb134563e1cc7aea8f07c4300bf2eae374c7592f711149143ed734a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "열 세째는 수바엘이니 그 아들과 형제와 십 이인이요"
+      ],
+      "raw_text_hashes": [
+        "67997167eeb134563e1cc7aea8f07c4300bf2eae374c7592f711149143ed734a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:25:21",
+      "sequence": 11068,
+      "chapter_label": "1CH 25",
+      "verse_label": "21",
+      "locator": {
+        "book": "1CH",
+        "chapter": 25,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 25,
+          "verse": 21
+        }
+      ],
+      "en": "for the fourteenth, Mattithiah, his sons and his brothers, twelve;",
+      "ko": "열 네째는 맛디디야니 그 아들과 형제와 십 이인이요",
+      "source_text_hash": "f33e9e501c3d0a49b5a57715c745d43fd4310782c1f20d6615060d0c848b8ef4",
+      "translation_text_hash": "c7b86cd4f9f841f28dbe4715d156a8839c20ae423429b412adde72e1d2833b36",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "열 네째는 맛디디야니 그 아들과 형제와 십 이인이요"
+      ],
+      "raw_text_hashes": [
+        "c7b86cd4f9f841f28dbe4715d156a8839c20ae423429b412adde72e1d2833b36"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:25:22",
+      "sequence": 11069,
+      "chapter_label": "1CH 25",
+      "verse_label": "22",
+      "locator": {
+        "book": "1CH",
+        "chapter": 25,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 25,
+          "verse": 22
+        }
+      ],
+      "en": "for the fifteenth to Jeremoth, his sons and his brothers, twelve;",
+      "ko": "열 다섯째는 여레못이니 그 아들과 형제와 십 이인이요",
+      "source_text_hash": "b70a9ef87ad038a46690115c760804501cfbed7e64ea71d12273a926394de11d",
+      "translation_text_hash": "9ebaa8a02e10332143942fd9837e3197ef49e2e7577ab02ddd644ffaddd1c10f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "열 다섯째는 여레못이니 그 아들과 형제와 십 이인이요"
+      ],
+      "raw_text_hashes": [
+        "9ebaa8a02e10332143942fd9837e3197ef49e2e7577ab02ddd644ffaddd1c10f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:25:23",
+      "sequence": 11070,
+      "chapter_label": "1CH 25",
+      "verse_label": "23",
+      "locator": {
+        "book": "1CH",
+        "chapter": 25,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 25,
+          "verse": 23
+        }
+      ],
+      "en": "for the sixteenth to Hananiah, his sons and his brothers, twelve;",
+      "ko": "열 여섯째는 하나냐니 그 아들과 형제와 십 이인이요",
+      "source_text_hash": "b5219a237c6091dd2b63dca37d27f7a04c2754b7023b144ce0d832f7c7942fad",
+      "translation_text_hash": "d4b03c8decbe4098b209e6ead0935f8376a98e99a6b5704923777917d170ad1f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "열 여섯째는 하나냐니 그 아들과 형제와 십 이인이요"
+      ],
+      "raw_text_hashes": [
+        "d4b03c8decbe4098b209e6ead0935f8376a98e99a6b5704923777917d170ad1f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:25:24",
+      "sequence": 11071,
+      "chapter_label": "1CH 25",
+      "verse_label": "24",
+      "locator": {
+        "book": "1CH",
+        "chapter": 25,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 25,
+          "verse": 24
+        }
+      ],
+      "en": "for the seventeenth to Joshbekashah, his sons and his brothers, twelve;",
+      "ko": "열 일곱째는 요스브가사니 그 아들과 형제와 십 이인이요",
+      "source_text_hash": "9ac0773a590f768884c33923545b724f4fe5b1c50ad8537dfb5cd63ad09ea609",
+      "translation_text_hash": "59d22c6c2d34e5ec687c1341ffae47fb09b4362db78a6bde8e585b29daa657ed",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "열 일곱째는 요스브가사니 그 아들과 형제와 십 이인이요"
+      ],
+      "raw_text_hashes": [
+        "59d22c6c2d34e5ec687c1341ffae47fb09b4362db78a6bde8e585b29daa657ed"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:25:25",
+      "sequence": 11072,
+      "chapter_label": "1CH 25",
+      "verse_label": "25",
+      "locator": {
+        "book": "1CH",
+        "chapter": 25,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 25,
+          "verse": 25
+        }
+      ],
+      "en": "for the eighteenth to Hanani, his sons and his brothers, twelve;",
+      "ko": "열 여덟째는 하나니니 그 아들과 형제와 십 이인이요",
+      "source_text_hash": "ed3a8984312e77d8c6c5d3da25f299b97380d4ddfa96bb6e1d7d9cac4bb72c8d",
+      "translation_text_hash": "0daf0e940d1390c801c715308bc1d77379e4a321ed3251ce41631092fdc0930a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "열 여덟째는 하나니니 그 아들과 형제와 십 이인이요"
+      ],
+      "raw_text_hashes": [
+        "0daf0e940d1390c801c715308bc1d77379e4a321ed3251ce41631092fdc0930a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:25:26",
+      "sequence": 11073,
+      "chapter_label": "1CH 25",
+      "verse_label": "26",
+      "locator": {
+        "book": "1CH",
+        "chapter": 25,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 25,
+          "verse": 26
+        }
+      ],
+      "en": "for the nineteenth to Mallothi, his sons and his brothers, twelve;",
+      "ko": "열 아홉째는 말로디니 그 아들과 형제와 십 이인이요",
+      "source_text_hash": "842ad171aaece741a0202ca1437ba69f547972f0c2606533d46e2efa8cd065e9",
+      "translation_text_hash": "03b2b5818d4f3cdb444e3353b3c33c9ed0fcac48753e25a0547c6495b11e04d2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "열 아홉째는 말로디니 그 아들과 형제와 십 이인이요"
+      ],
+      "raw_text_hashes": [
+        "03b2b5818d4f3cdb444e3353b3c33c9ed0fcac48753e25a0547c6495b11e04d2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:25:27",
+      "sequence": 11074,
+      "chapter_label": "1CH 25",
+      "verse_label": "27",
+      "locator": {
+        "book": "1CH",
+        "chapter": 25,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 25,
+          "verse": 27
+        }
+      ],
+      "en": "for the twentieth to Eliathah, his sons and his brothers, twelve;",
+      "ko": "스무째는 엘리아다니 그 아들과 형제와 십 이인이요",
+      "source_text_hash": "c2b71944dfdeb7c33c969c71a32f671734f7134964ac6d289fa27487b06156c0",
+      "translation_text_hash": "50cb3df9b1f9022282e721d6f3251bf2cf860594b69f6032e9fa27fe2d768172",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "스무째는 엘리아다니 그 아들과 형제와 십 이인이요"
+      ],
+      "raw_text_hashes": [
+        "50cb3df9b1f9022282e721d6f3251bf2cf860594b69f6032e9fa27fe2d768172"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:25:28",
+      "sequence": 11075,
+      "chapter_label": "1CH 25",
+      "verse_label": "28",
+      "locator": {
+        "book": "1CH",
+        "chapter": 25,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 25,
+          "verse": 28
+        }
+      ],
+      "en": "for the twenty-first to Hothir, his sons and his brothers, twelve;",
+      "ko": "스물 한째는 호딜이니 그 아들과 형제와 십 이인이요",
+      "source_text_hash": "2de9da4ce72a182e9f1517a173bb98ec59d920a87bb0106b151983722f8dfcf0",
+      "translation_text_hash": "b84d2e1912324dd1061d43ff48b00470f091e8e3a3c8f948a2fd780c83921a80",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "스물 한째는 호딜이니 그 아들과 형제와 십 이인이요"
+      ],
+      "raw_text_hashes": [
+        "b84d2e1912324dd1061d43ff48b00470f091e8e3a3c8f948a2fd780c83921a80"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:25:29",
+      "sequence": 11076,
+      "chapter_label": "1CH 25",
+      "verse_label": "29",
+      "locator": {
+        "book": "1CH",
+        "chapter": 25,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 25,
+          "verse": 29
+        }
+      ],
+      "en": "for the twenty-second to Giddalti, his sons and his brothers, twelve;",
+      "ko": "스물 둘째는 깃달디니 그 아들과 형제와 십 이인이요",
+      "source_text_hash": "89c280017404299f4037e44d96cbf4186fdc7855fc1bad861d015803e7e2f443",
+      "translation_text_hash": "c3b80a7572fdcfa261fca132f5e7dbf7ae8d7dce96247bc3ab4db0803f24c9d2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "스물 둘째는 깃달디니 그 아들과 형제와 십 이인이요"
+      ],
+      "raw_text_hashes": [
+        "c3b80a7572fdcfa261fca132f5e7dbf7ae8d7dce96247bc3ab4db0803f24c9d2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:25:30",
+      "sequence": 11077,
+      "chapter_label": "1CH 25",
+      "verse_label": "30",
+      "locator": {
+        "book": "1CH",
+        "chapter": 25,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 25,
+          "verse": 30
+        }
+      ],
+      "en": "for the twenty-third to Mahazioth, his sons and his brothers, twelve;",
+      "ko": "스물 세째는 마하시옷이니 그 아들과 형제와 십 이인이요",
+      "source_text_hash": "90b7fe08a08ccd31c252dda424d2df0accd995af7c942720427ba346cbd50249",
+      "translation_text_hash": "8aec8e3b8ea9b79235db1ce525b93bbcdb87bdae174de5a25108f5dbb3db583e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "스물 세째는 마하시옷이니 그 아들과 형제와 십 이인이요"
+      ],
+      "raw_text_hashes": [
+        "8aec8e3b8ea9b79235db1ce525b93bbcdb87bdae174de5a25108f5dbb3db583e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:25:31",
+      "sequence": 11078,
+      "chapter_label": "1CH 25",
+      "verse_label": "31",
+      "locator": {
+        "book": "1CH",
+        "chapter": 25,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 25,
+          "verse": 31
+        }
+      ],
+      "en": "for the twenty-fourth to Romamti-Ezer, his sons and his brothers, twelve.",
+      "ko": "스물 네째는 로암디에셀이니 그 아들과 형제와 십 이인이었더라",
+      "source_text_hash": "5a0692f9932620dc48a37416a18570efd916e6e3a7a12ea13354b8461381ac33",
+      "translation_text_hash": "30213d013a91dfbe06f44af39d5cc2b9fa0b06506cd1bc329e243d7faa934cee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "스물 네째는 로암디에셀이니 그 아들과 형제와 십 이인이었더라"
+      ],
+      "raw_text_hashes": [
+        "30213d013a91dfbe06f44af39d5cc2b9fa0b06506cd1bc329e243d7faa934cee"
+      ]
+    }
+  ]
+}

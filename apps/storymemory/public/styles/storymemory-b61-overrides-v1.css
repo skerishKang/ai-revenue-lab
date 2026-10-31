@@ -1,0 +1,137 @@
+/* ===== B61 FULL READER SHELL VISUAL REPAIR ===== */
+
+/* --- Global font tokens for reader shell --- */
+.memory-rail,.ai-panel,.paper-inner,.reader-stage{font-family:var(--font-bible)}
+
+/* --- LEFT PANEL: Improved readability --- */
+.memory-rail{padding:16px 12px;font-size:12px;line-height:1.5}
+.memory-rail .side-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid rgba(46,35,25,.06)}
+.memory-rail .side-head strong{font-family:var(--font-bible);font-weight:700;font-size:14px;letter-spacing:-.02em;color:var(--ink)}
+.memory-rail .side-head small{display:none}
+.memory-rail .memory-section-label{font-family:var(--sans);font-weight:600;font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:12px 0 6px}
+.memory-rail .memory-filter-nav{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px}
+.memory-rail .pill{font-family:var(--sans);font-size:10px;padding:4px 8px;border-radius:999px;border:1px solid var(--line);background:white;color:var(--ink)}
+.memory-rail .pill.on{background:var(--ink);color:white;border-color:var(--ink)}
+.memory-rail .memory-focus{min-height:40px;margin-bottom:8px}
+.memory-rail .memory-focus-empty b{font-family:var(--sans);font-size:10px;font-weight:600;letter-spacing:.06em;color:#5a534b}
+.memory-rail .memory-focus-empty span{display:block;font-family:var(--font-bible);font-size:12px;color:#6b6560;margin-top:4px;line-height:1.6}
+.memory-rail .memory-item{padding:6px 8px;border-radius:8px;margin-bottom:3px;cursor:pointer;transition:background .15s}
+.memory-rail .memory-item:hover{background:rgba(177,112,78,.06)}
+.memory-rail .memory-item b{font-family:var(--font-bible);font-weight:600;font-size:13px;color:var(--ink)}
+.memory-rail .memory-item small{font-family:var(--sans);font-size:10px;color:var(--muted);display:block;margin-top:1px}
+.memory-rail .annotation-stat b{font-family:var(--font-bible);font-weight:700;font-size:16px}
+.memory-rail .annotation-stat span{font-family:var(--sans);font-size:9px;color:var(--muted)}
+.memory-rail .memory-note-composer textarea{font-family:var(--font-bible);font-size:12px;border:1px solid var(--line);border-radius:8px;padding:8px;width:100%;resize:vertical}
+.memory-rail .memory-search-wrap{display:flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:8px;padding:5px 8px;margin-bottom:8px;background:white}
+.memory-rail .memory-search-wrap input{border:0;outline:none;font:400 12px var(--font-bible);flex:1;background:transparent}
+.memory-rail .global-memory-overview{display:none}
+
+/* --- CENTER READER: Maximum reading surface --- */
+.reader-stage-brand{display:none}
+.reader-ambient-number{display:none}
+.reader-nav{font-family:var(--sans);font-size:10px;padding:4px 10px;border-radius:6px;border:1px solid var(--line);background:rgba(255,255,255,.85);color:var(--ink);backdrop-filter:blur(4px);z-index:5;position:absolute;top:10px;left:12px}
+.focus-toggle{display:none!important}
+.reader-toolbar{display:none!important}
+.paper-stack{inset:0}
+.paper{inset:0;border-radius:0;box-shadow:none;background:var(--reader-paper)}
+.paper-lamp,.paper-grain,.paper-side-falloff,.paper-tone-strip,.print-edge-guide,.folio-hairline,.deckle-edge,.bookmark-ribbon,.paper-gutter,.bookplate,.paper-corner,.crop-mark{display:none!important}
+.paper-folio-mark{display:none}
+.paper-inner{position:absolute;inset:0;overflow:hidden;padding:10px clamp(28px,5vw,60px) 12px}
+.paper-eyebrow{display:none}
+.paper-running-head{display:none}
+.paper-rule-ornament{display:none}
+.paper-head{display:flex;justify-content:space-between;align-items:baseline;border-bottom:none;padding-bottom:0;margin-bottom:8px}
+.paper-head h1{margin:0;font:700 clamp(22px,2.8vw,34px)/1.15 var(--font-bible);letter-spacing:-.03em;color:var(--ink)}
+.paper-head small{display:none}
+#readerPageBody{overflow:hidden}
+#readerPageBody .verse{font:400 clamp(17px,1.4vw,21px)/1.9 var(--font-bible);margin:0 0 8px;word-break:keep-all;letter-spacing:-.005em;color:var(--ink)}
+#readerPageBody .verse-en{font:400 clamp(13px,1.1vw,15px)/1.65 var(--sans);color:var(--muted);margin:2px 0 12px;padding-left:22px;opacity:.72}
+.paper-footer{display:none}
+.page-turn-btn{position:absolute;top:50%;transform:translateY(-50%);width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:rgba(255,255,255,.85);color:var(--ink);font-size:14px;cursor:pointer;z-index:10;backdrop-filter:blur(4px)}
+.page-turn-prev{left:8px}
+.page-turn-next{right:8px}
+.reading-progress-edge{position:absolute;right:4px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;align-items:center;gap:4px;z-index:10}
+.progress-label{font:600 8px var(--sans);color:var(--muted)}
+.progress-line{width:2px;height:60px;background:rgba(0,0,0,.06);border-radius:2px;position:relative}
+.progress-line i{position:absolute;top:0;width:100%;background:var(--accent);border-radius:2px;transition:height .3s}
+
+/* --- RIGHT PANEL: B61-1613 reachability (was display:none) ---
+   AI panel visibility is governed by storymemory-b61-1613-reachability-v1.css
+   (body.ai-open overlay sheet). Do not re-hide here. */
+
+/* --- MOBILE: Full-width reader; panel sheets governed by
+   storymemory-b61-1613-reachability-v1.css (body.memory-open/ai-open).
+   Do not re-hide .memory-rail/.ai-panel here. --- */
+@media(max-width:768px){
+  body.focus-reading .memory-rail,body.focus-reading .ai-panel{display:none!important}
+  .reader-nav{font-size:9px;padding:3px 8px;top:6px;left:8px}
+  .paper-inner{padding:8px 16px 10px}
+  .paper-head h1{font-size:20px;letter-spacing:-.02em}
+  .paper-head{margin-bottom:6px;padding-bottom:0}
+  #readerPageBody .verse{font-size:16px;line-height:1.8;margin-bottom:6px}
+  #readerPageBody .verse-en{font-size:13px;padding-left:0;margin-bottom:8px}
+  .page-turn-btn{width:30px;height:30px;font-size:12px}
+  .reading-progress-edge{display:none}
+}
+
+/* ===== B61 LANDING SHELF DECLUTTER ===== */
+
+/* --- Top-right: hide non-essential controls by default --- */
+.today-entry{opacity:0;pointer-events:none;transition:opacity .2s}
+.library:hover .today-entry,.library.active:hover .today-entry{opacity:1;pointer-events:auto}
+.motion-control{opacity:0;pointer-events:none;transition:opacity .2s}
+.library:hover .motion-control,.library.active:hover .motion-control{opacity:1;pointer-events:auto}
+.shelf-label{display:none}
+
+/* --- Top-right: compact control group --- */
+.today-entry{top:28px;right:48px;padding:5px 10px;border-radius:6px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);font:600 9px var(--sans);color:rgba(247,242,234,.7);backdrop-filter:blur(6px);display:flex;align-items:center;gap:5px}
+.today-entry b{font-size:9px;background:rgba(200,120,77,.6);color:white;border-radius:4px;padding:1px 5px}
+.motion-control{top:28px;right:120px}
+.motion-toggle{padding:5px 10px;border-radius:6px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);font:600 9px var(--sans);color:rgba(247,242,234,.7);backdrop-filter:blur(6px)}
+.motion-toggle span{font-size:9px}
+.motion-toggle b{font-size:9px;color:rgba(247,242,234,.5)}
+
+/* --- Bottom: declutter selected book metadata --- */
+.lib-bottom{padding:0 48px 24px}
+.sel-meta{grid-template-columns:1fr auto;gap:12px;align-items:end}
+.counter{display:none}
+.selected-edition{display:none}
+.material-note{display:none}
+.object-plate{display:none}
+.finish-note{display:none}
+.edition-slip{display:none}
+.sel-title{font:600 clamp(24px,2.8vw,40px)/1.05 var(--font-bible);letter-spacing:-.03em;color:#f7f2ea}
+/* #1845 [A] selected-state meta text contrast raised (was .5/.35 — too faint) */
+.sel-note{font-family:var(--sans);font-size:11px;color:rgba(247,242,234,.86);margin-top:4px}
+.sel-progress{display:flex;align-items:center;gap:8px;margin-top:6px;color:rgba(247,242,234,.8);font-family:var(--sans);font-size:9px;letter-spacing:.05em}
+.sel-progress i{width:60px;height:2px;background:rgba(255,255,255,.16);border-radius:2px;overflow:hidden;display:block}
+.sel-progress b{display:block;height:100%;background:var(--accent);border-radius:2px}
+.lib-actions{gap:6px}
+.lib-actions .round{width:32px;height:32px;border-radius:50%;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.06);color:rgba(247,242,234,.7);font-size:12px;display:flex;align-items:center;justify-content:center}
+.lib-actions .round:hover{background:rgba(255,255,255,.12)}
+.lib-actions .open-btn{padding:6px 16px;border-radius:8px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.08);font:600 11px var(--sans);color:#f7f2ea;backdrop-filter:blur(4px)}
+.lib-actions .open-btn:hover{background:rgba(255,255,255,.15)}
+.markers{justify-self:end;display:flex;align-items:center;gap:4px}
+.markers .dot{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.2);transition:background .2s}
+.markers .dot.on{background:rgba(200,120,77,.7)}
+
+/* --- Shelf label hidden --- */
+.shelf-label{display:none!important}
+
+/* --- Hero text remains primary --- */
+.hero-title{font:500 clamp(44px,5.5vw,88px)/.88 var(--serif);letter-spacing:-.06em}
+.lib-copy{display:none}
+
+/* --- Mobile landing shelf --- */
+@media(max-width:768px){
+  .today-entry{display:none!important}
+  .motion-control{display:none!important}
+  .lib-bottom{padding:0 20px 16px}
+  .sel-title{font-size:22px}
+  .sel-note{font-size:10px}
+  .lib-actions{gap:5px}
+  .lib-actions .round{width:28px;height:28px;font-size:10px}
+  .lib-actions .open-btn{padding:5px 12px;font-size:10px}
+  .hero-title{font-size:36px}
+}
+

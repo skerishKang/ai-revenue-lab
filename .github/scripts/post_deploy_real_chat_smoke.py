@@ -100,7 +100,8 @@ def _engine_call(opener, path: str, *, stage: str, **kwargs):
         raise
 
 
-def engine_lane(opener) -> tuple[int, Any]:
+def engine_lane(opener, *, base_url=None) -> tuple[int, Any]:
+    target = {"origin": base_url} if base_url else {}
     username = os.environ.get(QA_USERNAME_ENV, "")
     password = os.environ.get(QA_PASSWORD_ENV, "")
     if not username or not password:
@@ -109,7 +110,7 @@ def engine_lane(opener) -> tuple[int, Any]:
         raise CanaryError("qa_credential_missing")
     status, body = _engine_call(
         opener, LOGIN, stage="login", method="POST",
-        payload={"identifier": username, "password": password},
+        payload={"identifier": username, "password": password}, **target,
     )
     if status != 200 or body.get("ok") is not True:
         # Diagnosis without discretion: the same 401 is a wrong password, a
@@ -120,14 +121,14 @@ def engine_lane(opener) -> tuple[int, Any]:
         server_code = error_code(body) if isinstance(body, dict) else "no_json_body"
         print(f"QA_LOGIN_DIAGNOSTIC login_http_status={status} server_error_code={server_code}")
         raise CanaryError("qa_login_refused")
-    status, state = _engine_call(opener, STATUS, stage="session")
+    status, state = _engine_call(opener, STATUS, stage="session", **target)
     if status != 200 or state.get("authenticated") is not True:
         state_code = error_code(state) if isinstance(state, dict) else "no_json_body"
         print(f"QA_SESSION_DIAGNOSTIC status_http_status={status} server_error_code={state_code}")
         raise CanaryError("qa_session_unverified")
     return _engine_call(
         opener, ORCHESTRATION, stage="orchestration", method="POST", timeout=CHAT_TIMEOUT_SECONDS,
-        payload=turn_payload(),
+        payload=turn_payload(), **target,
     )
 
 

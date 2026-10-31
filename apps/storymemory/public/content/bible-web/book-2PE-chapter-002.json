@@ -1,0 +1,717 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:2PE:chapter:002",
+  "unit_ordinal": 1158,
+  "unit_label": "2PE 2",
+  "book_code": "2PE",
+  "chapter_number": 2,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:2PE:2:1",
+      "sequence": 30498,
+      "chapter_label": "2PE 2",
+      "verse_label": "1",
+      "locator": {
+        "book": "2PE",
+        "chapter": 2,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "2PE",
+          "chapter": 2,
+          "verse": 1
+        }
+      ],
+      "en": "But false prophets also arose among the people, as false teachers will also be among you, who will secretly bring in destructive heresies, denying even the Master who bought them, bringing on themselves swift destruction.",
+      "ko": "그러나 민간에 또한 거짓 선지자들이 일어났었나니 이와 같이 너희 중에도 거짓 선생들이 있으리라 저희는 멸망케 할 이단을 가만히 끌어들여 자기들을 사신 주를 부인하고 임박한 멸망을 스스로 취하는 자들이라",
+      "source_text_hash": "009104fc36c1e55a4412da8816981bc11f956c30f19dee083ad1fa03481197d5",
+      "translation_text_hash": "24039715176e1f683d2beefae171422501e117eefec4a36704bc6d4c843adb1b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 민간에 또한 거짓 선지자들이 일어났었나니 이와 같이 너희 중에도 거짓 선생들이 있으리라 저희는 멸망케 할 이단을 가만히 끌어들여 자기들을 사신 주를 부인하고 임박한 멸망을 스스로 취하는 자들이라"
+      ],
+      "raw_text_hashes": [
+        "24039715176e1f683d2beefae171422501e117eefec4a36704bc6d4c843adb1b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2PE:2:2",
+      "sequence": 30499,
+      "chapter_label": "2PE 2",
+      "verse_label": "2",
+      "locator": {
+        "book": "2PE",
+        "chapter": 2,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "2PE",
+          "chapter": 2,
+          "verse": 2
+        }
+      ],
+      "en": "Many will follow their immoral ways, and as a result, the way of the truth will be maligned.",
+      "ko": "여럿이 저희 호색하는 것을 좇으리니 이로 인하여 진리의 도가 훼방을 받을 것이요",
+      "source_text_hash": "af2addbfafd333f22bc6c3296bf75009176379caa988101774c408743b4f5379",
+      "translation_text_hash": "40f6c6cfd1f0b1a7bbdea616e5a7bf1beb78df51ffee5e21ac25bbc653745a06",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여럿이 저희 호색하는 것을 좇으리니 이로 인하여 진리의 도가 훼방을 받을 것이요"
+      ],
+      "raw_text_hashes": [
+        "40f6c6cfd1f0b1a7bbdea616e5a7bf1beb78df51ffee5e21ac25bbc653745a06"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2PE:2:3",
+      "sequence": 30500,
+      "chapter_label": "2PE 2",
+      "verse_label": "3",
+      "locator": {
+        "book": "2PE",
+        "chapter": 2,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "2PE",
+          "chapter": 2,
+          "verse": 3
+        }
+      ],
+      "en": "In covetousness they will exploit you with deceptive words: whose sentence now from of old doesn’t linger, and their destruction will not slumber.",
+      "ko": "저희가 탐심을 인하여 지은 말을 가지고 너희로 이를 삼으니 저희 심판은 옛적부터 지체하지 아니하며 저희 멸망은 자지 아니하느니라",
+      "source_text_hash": "43fa42937cbd5c81a02d872bdd3e9ee265b954fc0fb793bcac22e4e52c4433cb",
+      "translation_text_hash": "d4481cb2aa78857a576451f5ceb4d42659a4bc2ab72af18963b3b6abaaf0ed8b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 탐심을 인하여 지은 말을 가지고 너희로 이를 삼으니 저희 심판은 옛적부터 지체하지 아니하며 저희 멸망은 자지 아니하느니라"
+      ],
+      "raw_text_hashes": [
+        "d4481cb2aa78857a576451f5ceb4d42659a4bc2ab72af18963b3b6abaaf0ed8b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2PE:2:4",
+      "sequence": 30501,
+      "chapter_label": "2PE 2",
+      "verse_label": "4",
+      "locator": {
+        "book": "2PE",
+        "chapter": 2,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "2PE",
+          "chapter": 2,
+          "verse": 4
+        }
+      ],
+      "en": "For if God didn’t spare angels when they sinned, but cast them down to Tartarus, and committed them to pits of darkness to be reserved for judgment;",
+      "ko": "하나님이 범죄한 천사들을 용서치 아니하시고 지옥에 던져 어두운 구덩이에 두어 심판때까지 지키게 하셨으며",
+      "source_text_hash": "9b8de97750d6156b7757193c7904b03193b093a123a34a55a81c1a1c3f667e95",
+      "translation_text_hash": "056eefffe0501aea118c1c43b187bf8007d6edac6a808ba3f9f5448dd34b71b7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 범죄한 천사들을 용서치 아니하시고 지옥에 던져 어두운 구덩이에 두어 심판때까지 지키게 하셨으며"
+      ],
+      "raw_text_hashes": [
+        "056eefffe0501aea118c1c43b187bf8007d6edac6a808ba3f9f5448dd34b71b7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2PE:2:5",
+      "sequence": 30502,
+      "chapter_label": "2PE 2",
+      "verse_label": "5",
+      "locator": {
+        "book": "2PE",
+        "chapter": 2,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "2PE",
+          "chapter": 2,
+          "verse": 5
+        }
+      ],
+      "en": "and didn’t spare the ancient world, but preserved Noah with seven others, a preacher of righteousness, when he brought a flood on the world of the ungodly,",
+      "ko": "옛 세상을 용서치 아니하시고 오직 의를 전파하는 노아와 그 일곱 식구를 보존하시고 경건치 아니한 자들의 세상에 홍수를 내리셨으며",
+      "source_text_hash": "25f226a26f20e74ce4b6e5b0a15bb79cddeb7beb0cacc208d4ba74f34ebf672d",
+      "translation_text_hash": "409f2a067dec0b0d3d1c43444d89ee170a1673582661a27ef2b95ea6642acfb2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "옛 세상을 용서치 아니하시고 오직 의를 전파하는 노아와 그 일곱 식구를 보존하시고 경건치 아니한 자들의 세상에 홍수를 내리셨으며"
+      ],
+      "raw_text_hashes": [
+        "409f2a067dec0b0d3d1c43444d89ee170a1673582661a27ef2b95ea6642acfb2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2PE:2:6",
+      "sequence": 30503,
+      "chapter_label": "2PE 2",
+      "verse_label": "6",
+      "locator": {
+        "book": "2PE",
+        "chapter": 2,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "2PE",
+          "chapter": 2,
+          "verse": 6
+        }
+      ],
+      "en": "and turning the cities of Sodom and Gomorrah into ashes, condemned them to destruction, having made them an example to those who would live in an ungodly way,",
+      "ko": "소돔과 고모라 성을 멸망하기로 정하여 재가 되게 하사 후세에 경건치 아니할 자들에게 본을 삼으셨으며",
+      "source_text_hash": "0ac112d76a92b059c1363c77521bc4ea61c8efed577f8b5061f1a671efee82c2",
+      "translation_text_hash": "9e2e79e2dbcadf42b50a7f79f770c05cbe251dbd52939781db977963016803c6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "소돔과 고모라 성을 멸망하기로 정하여 재가 되게 하사 후세에 경건치 아니할 자들에게 본을 삼으셨으며"
+      ],
+      "raw_text_hashes": [
+        "9e2e79e2dbcadf42b50a7f79f770c05cbe251dbd52939781db977963016803c6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2PE:2:7",
+      "sequence": 30504,
+      "chapter_label": "2PE 2",
+      "verse_label": "7",
+      "locator": {
+        "book": "2PE",
+        "chapter": 2,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "2PE",
+          "chapter": 2,
+          "verse": 7
+        }
+      ],
+      "en": "and delivered righteous Lot, who was very distressed by the lustful life of the wicked",
+      "ko": "무법한 자의 음란한 행실을 인하여 고통하는 의로운 롯을 건지셨으니",
+      "source_text_hash": "0993ec991111893cb2f489de76ae512cc0e0426dc8ad0d4c9524cd6f13d92b6c",
+      "translation_text_hash": "18009c5929ea856d3027025b33afe03ccc3efd31ceda8eabc3a55f9b96865ca7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무법한 자의 음란한 행실을 인하여 고통하는 의로운 롯을 건지셨으니"
+      ],
+      "raw_text_hashes": [
+        "18009c5929ea856d3027025b33afe03ccc3efd31ceda8eabc3a55f9b96865ca7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2PE:2:8",
+      "sequence": 30505,
+      "chapter_label": "2PE 2",
+      "verse_label": "8",
+      "locator": {
+        "book": "2PE",
+        "chapter": 2,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "2PE",
+          "chapter": 2,
+          "verse": 8
+        }
+      ],
+      "en": "(for that righteous man dwelling among them was tormented in his righteous soul from day to day with seeing and hearing lawless deeds),",
+      "ko": "(이 의인이 저희 중에 거하여 날마다 저 불법한 행실을 보고 들음으로 그 의로운 심령을 상하니라)",
+      "source_text_hash": "c06abe95411b529559afc3bb079486da0b1997bf36d21500c0281b68b61416a5",
+      "translation_text_hash": "c835ea262389b6a7c67afd3a1acc4c67ad1251e12ff03f6fb448c547b40e388e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "(이 의인이 저희 중에 거하여 날마다 저 불법한 행실을 보고 들음으로 그 의로운 심령을 상하니라)"
+      ],
+      "raw_text_hashes": [
+        "c835ea262389b6a7c67afd3a1acc4c67ad1251e12ff03f6fb448c547b40e388e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2PE:2:9",
+      "sequence": 30506,
+      "chapter_label": "2PE 2",
+      "verse_label": "9",
+      "locator": {
+        "book": "2PE",
+        "chapter": 2,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "2PE",
+          "chapter": 2,
+          "verse": 9
+        }
+      ],
+      "en": "then the Lord knows how to deliver the godly out of temptation and to keep the unrighteous under punishment for the day of judgment,",
+      "ko": "주께서 경건한 자는 시험에서 건지시고 불의한 자는 형벌 아래 두어 심판날까지 지키시며",
+      "source_text_hash": "94baf2a3229e8363ea8acfbb6276af63517ef75c3325f6ac841e33c69226e009",
+      "translation_text_hash": "6e0097439bef4571fbeae45a900dea40c89a6e2c9f0a86f538850c236d5e446c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 경건한 자는 시험에서 건지시고 불의한 자는 형벌 아래 두어 심판날까지 지키시며"
+      ],
+      "raw_text_hashes": [
+        "6e0097439bef4571fbeae45a900dea40c89a6e2c9f0a86f538850c236d5e446c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2PE:2:10",
+      "sequence": 30507,
+      "chapter_label": "2PE 2",
+      "verse_label": "10",
+      "locator": {
+        "book": "2PE",
+        "chapter": 2,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "2PE",
+          "chapter": 2,
+          "verse": 10
+        }
+      ],
+      "en": "but chiefly those who walk after the flesh in the lust of defilement and despise authority. Daring, self-willed, they are not afraid to speak evil of dignitaries,",
+      "ko": "육체를 따라 더러운 정욕 가운데서 행하며 주관하는 이를 멸시하는 자들에게 특별히 형벌하실 줄을 아시느니라 이들은 담대하고 고집하여 떨지 않고 영광 있는 자를 훼방하거니와",
+      "source_text_hash": "dec148cb901e1aa83b9a29e6dffc6aaa6374e5f827a160a46c25f845d77c7450",
+      "translation_text_hash": "3d3ab44be3cdeba0303a5d6a142a90148f2050467ab6f3eabb4d370683f2c9b1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "육체를 따라 더러운 정욕 가운데서 행하며 주관하는 이를 멸시하는 자들에게 특별히 형벌하실 줄을 아시느니라 이들은 담대하고 고집하여 떨지 않고 영광 있는 자를 훼방하거니와"
+      ],
+      "raw_text_hashes": [
+        "3d3ab44be3cdeba0303a5d6a142a90148f2050467ab6f3eabb4d370683f2c9b1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2PE:2:11",
+      "sequence": 30508,
+      "chapter_label": "2PE 2",
+      "verse_label": "11",
+      "locator": {
+        "book": "2PE",
+        "chapter": 2,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "2PE",
+          "chapter": 2,
+          "verse": 11
+        }
+      ],
+      "en": "whereas angels, though greater in might and power, don’t bring a slanderous judgment against them before the Lord.",
+      "ko": "더 큰 힘과 능력을 가진 천사들이라도 주 앞에서 저희를 거스려 훼방하는 송사를 하지 아니하느니라",
+      "source_text_hash": "e17d63b5b1892b97b02f788d5675d1666d0afb55b2871e418f6f2e3d774a7c2d",
+      "translation_text_hash": "5426c6cc062bfab64143953aeb8ab1ae0bb9a4f89140defe7646442114b81c74",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "더 큰 힘과 능력을 가진 천사들이라도 주 앞에서 저희를 거스려 훼방하는 송사를 하지 아니하느니라"
+      ],
+      "raw_text_hashes": [
+        "5426c6cc062bfab64143953aeb8ab1ae0bb9a4f89140defe7646442114b81c74"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2PE:2:12",
+      "sequence": 30509,
+      "chapter_label": "2PE 2",
+      "verse_label": "12",
+      "locator": {
+        "book": "2PE",
+        "chapter": 2,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "2PE",
+          "chapter": 2,
+          "verse": 12
+        }
+      ],
+      "en": "But these, as unreasoning creatures, born natural animals to be taken and destroyed, speaking evil in matters about which they are ignorant, will in their destroying surely be destroyed,",
+      "ko": "그러나 이 사람들은 본래 잡혀 죽기 위하여 난 이성 없는 짐승 같아서 그 알지 못한 것을 훼방하고 저희 멸망 가운데서 멸망을 당하며",
+      "source_text_hash": "dd9ade5d09a7f5022e8c1665b9735524bb90208d0029940c806175cd63979ac6",
+      "translation_text_hash": "b49af941a27b632c405e65b8d127ef50d2270ebb521a22ab19c03d72b9ed2b6b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 이 사람들은 본래 잡혀 죽기 위하여 난 이성 없는 짐승 같아서 그 알지 못한 것을 훼방하고 저희 멸망 가운데서 멸망을 당하며"
+      ],
+      "raw_text_hashes": [
+        "b49af941a27b632c405e65b8d127ef50d2270ebb521a22ab19c03d72b9ed2b6b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2PE:2:13",
+      "sequence": 30510,
+      "chapter_label": "2PE 2",
+      "verse_label": "13",
+      "locator": {
+        "book": "2PE",
+        "chapter": 2,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "2PE",
+          "chapter": 2,
+          "verse": 13
+        }
+      ],
+      "en": "receiving the wages of unrighteousness; people who count it pleasure to revel in the daytime, spots and defects, reveling in their deceit while they feast with you;",
+      "ko": "불의의 값으로 불의를 당하며 낮에 연락을 기쁘게 여기는 자들이니 점과 흠이라 너희와 함께 연회할 때에 저희 간사한 가운데 연락하며",
+      "source_text_hash": "cc8db63407f481d5fabda343b973123e5095ffe3d692e5cd0ebc3cb0bcc3c0a1",
+      "translation_text_hash": "b7f07178840084c8fa0010acd5c092ce9a988586ae7dd3779c964173332fb7d1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "불의의 값으로 불의를 당하며 낮에 연락을 기쁘게 여기는 자들이니 점과 흠이라 너희와 함께 연회할 때에 저희 간사한 가운데 연락하며"
+      ],
+      "raw_text_hashes": [
+        "b7f07178840084c8fa0010acd5c092ce9a988586ae7dd3779c964173332fb7d1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2PE:2:14",
+      "sequence": 30511,
+      "chapter_label": "2PE 2",
+      "verse_label": "14",
+      "locator": {
+        "book": "2PE",
+        "chapter": 2,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "2PE",
+          "chapter": 2,
+          "verse": 14
+        }
+      ],
+      "en": "having eyes full of adultery, and who can’t cease from sin, enticing unsettled souls, having a heart trained in greed, accursed children!",
+      "ko": "음심이 가득한 눈을 가지고 범죄하기를 쉬지 아니하고 굳세지 못한 영혼들을 유혹하며 탐욕에 연단된 마음을 가진 자들이니 저주의 자식이라",
+      "source_text_hash": "6be0b720d40a86a952f57e8b416e449a637788ec1e407e064e726a6297892619",
+      "translation_text_hash": "5246e189dbe8b944cddb7c6b3ecdd3d7bfffb411a6fab00b8dc5f6db9adbc6bc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "음심이 가득한 눈을 가지고 범죄하기를 쉬지 아니하고 굳세지 못한 영혼들을 유혹하며 탐욕에 연단된 마음을 가진 자들이니 저주의 자식이라"
+      ],
+      "raw_text_hashes": [
+        "5246e189dbe8b944cddb7c6b3ecdd3d7bfffb411a6fab00b8dc5f6db9adbc6bc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2PE:2:15",
+      "sequence": 30512,
+      "chapter_label": "2PE 2",
+      "verse_label": "15",
+      "locator": {
+        "book": "2PE",
+        "chapter": 2,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "2PE",
+          "chapter": 2,
+          "verse": 15
+        }
+      ],
+      "en": "Forsaking the right way, they went astray, having followed the way of Balaam the son of Beor, who loved the wages of wrongdoing;",
+      "ko": "저희가 바른 길을 떠나 미혹하여 브올의 아들 발람의 길을 좇는도다 그는 불의의 삯을 사랑하다가",
+      "source_text_hash": "0ad7638881b5a40730aa6b9a33a4e5b9b75d9353ec6b1ca771f304cf4a330b39",
+      "translation_text_hash": "042c02b7d0c0aee5d3254667413a85c739fdc52dc99ddef4cf7196204fd05801",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 바른 길을 떠나 미혹하여 브올의 아들 발람의 길을 좇는도다 그는 불의의 삯을 사랑하다가"
+      ],
+      "raw_text_hashes": [
+        "042c02b7d0c0aee5d3254667413a85c739fdc52dc99ddef4cf7196204fd05801"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2PE:2:16",
+      "sequence": 30513,
+      "chapter_label": "2PE 2",
+      "verse_label": "16",
+      "locator": {
+        "book": "2PE",
+        "chapter": 2,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "2PE",
+          "chapter": 2,
+          "verse": 16
+        }
+      ],
+      "en": "but he was rebuked for his own disobedience. A speechless donkey spoke with a man’s voice and stopped the madness of the prophet.",
+      "ko": "자기의 불법을 인하여 책망을 받되 말 못하는 나귀가 사람의 소리로 말하여 이 선지자의 미친 것을 금지하였느니라",
+      "source_text_hash": "d9286cd4433bb708eef44b70adefba4cfb49fba10c94211f75882ee87b1557d0",
+      "translation_text_hash": "48ca70cc2d5e67ae505992d3b1b456d5c101425b2a932fa3a1b5b1b3b740155e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자기의 불법을 인하여 책망을 받되 말 못하는 나귀가 사람의 소리로 말하여 이 선지자의 미친 것을 금지하였느니라"
+      ],
+      "raw_text_hashes": [
+        "48ca70cc2d5e67ae505992d3b1b456d5c101425b2a932fa3a1b5b1b3b740155e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2PE:2:17",
+      "sequence": 30514,
+      "chapter_label": "2PE 2",
+      "verse_label": "17",
+      "locator": {
+        "book": "2PE",
+        "chapter": 2,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "2PE",
+          "chapter": 2,
+          "verse": 17
+        }
+      ],
+      "en": "These are wells without water, clouds driven by a storm, for whom the blackness of darkness has been reserved forever.",
+      "ko": "이 사람들은 물 없는 샘이요 광풍에 밀려 가는 안개니 저희를 위하여 캄캄한 어두움이 예비되어 있나니",
+      "source_text_hash": "256efe4533d61de758c5942d369ed1afa9ebed69df492e2c0c55357987fe8664",
+      "translation_text_hash": "795630deea5f957b881fe7850240f0de1fbfe75157777b6f906d6701f648b9cb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 사람들은 물 없는 샘이요 광풍에 밀려 가는 안개니 저희를 위하여 캄캄한 어두움이 예비되어 있나니"
+      ],
+      "raw_text_hashes": [
+        "795630deea5f957b881fe7850240f0de1fbfe75157777b6f906d6701f648b9cb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2PE:2:18",
+      "sequence": 30515,
+      "chapter_label": "2PE 2",
+      "verse_label": "18",
+      "locator": {
+        "book": "2PE",
+        "chapter": 2,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "2PE",
+          "chapter": 2,
+          "verse": 18
+        }
+      ],
+      "en": "For, uttering great swelling words of emptiness, they entice in the lusts of the flesh, by licentiousness, those who are indeed escaping from those who live in error;",
+      "ko": "저희가 허탄한 자랑의 말을 토하여 미혹한데 행하는 사람들에게서 겨우 피한 자들을 음란으로써 육체의 정욕 중에서 유혹하여",
+      "source_text_hash": "13adb7c3ae21a5bfbec5c02738698cf765d1222cec6e69cbf2cb12eac2ce4934",
+      "translation_text_hash": "c8cc61d5da0971d02d1823c98abcf25e832199bc366494226ce0dc88cf5638d3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 허탄한 자랑의 말을 토하여 미혹한데 행하는 사람들에게서 겨우 피한 자들을 음란으로써 육체의 정욕 중에서 유혹하여"
+      ],
+      "raw_text_hashes": [
+        "c8cc61d5da0971d02d1823c98abcf25e832199bc366494226ce0dc88cf5638d3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2PE:2:19",
+      "sequence": 30516,
+      "chapter_label": "2PE 2",
+      "verse_label": "19",
+      "locator": {
+        "book": "2PE",
+        "chapter": 2,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "2PE",
+          "chapter": 2,
+          "verse": 19
+        }
+      ],
+      "en": "promising them liberty, while they themselves are bondservants of corruption; for a man is brought into bondage by whoever overcomes him.",
+      "ko": "저희에게 자유를 준다 하여도 자기는 멸망의 종들이니 누구든지 진 자는 이긴 자의 종이 됨이니라",
+      "source_text_hash": "876213be22357e304c72a4345c067e0c4331ca270b3d8ee0005b6dc1060310a7",
+      "translation_text_hash": "40ca0e639fa644f4a22ee492c2798aa5071a3213fb75bb914fb677f0c508c645",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희에게 자유를 준다 하여도 자기는 멸망의 종들이니 누구든지 진 자는 이긴 자의 종이 됨이니라"
+      ],
+      "raw_text_hashes": [
+        "40ca0e639fa644f4a22ee492c2798aa5071a3213fb75bb914fb677f0c508c645"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2PE:2:20",
+      "sequence": 30517,
+      "chapter_label": "2PE 2",
+      "verse_label": "20",
+      "locator": {
+        "book": "2PE",
+        "chapter": 2,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "2PE",
+          "chapter": 2,
+          "verse": 20
+        }
+      ],
+      "en": "For if, after they have escaped the defilement of the world through the knowledge of the Lord and Savior Jesus Christ, they are again entangled in it and overcome, the last state has become worse for them than the first.",
+      "ko": "만일 저희가 우리 주 되신 구주 예수 그리스도를 앎으로 세상의 더러움을 피한 후에 다시 그 중에 얽매이고 지면 그 나중 형편이 처음보다 더 심하리니",
+      "source_text_hash": "8a6293388201feff4f3e5d35626b614a8b8a6becaa578f14437f8ae28e41189e",
+      "translation_text_hash": "e897e42a4fb245cb2376a917cdafaf41076e4245586f5717a281650a39463639",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 저희가 우리 주 되신 구주 예수 그리스도를 앎으로 세상의 더러움을 피한 후에 다시 그 중에 얽매이고 지면 그 나중 형편이 처음보다 더 심하리니"
+      ],
+      "raw_text_hashes": [
+        "e897e42a4fb245cb2376a917cdafaf41076e4245586f5717a281650a39463639"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2PE:2:21",
+      "sequence": 30518,
+      "chapter_label": "2PE 2",
+      "verse_label": "21",
+      "locator": {
+        "book": "2PE",
+        "chapter": 2,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "2PE",
+          "chapter": 2,
+          "verse": 21
+        }
+      ],
+      "en": "For it would be better for them not to have known the way of righteousness, than after knowing it, to turn back from the holy commandment delivered to them.",
+      "ko": "의의 도를 안 후에 받은 거룩한 명령을 저버리는 것보다 알지 못하는 것이 도리어 저희에게 나으니라",
+      "source_text_hash": "1fcb03e174beaf0a25a5d10773ea7f609fb475cf28957cd0271bfef48c156f79",
+      "translation_text_hash": "81b701c80ee593d4225e7092ad0081fea85f5fcb6c57fc2f6bbbc23798d2ae23",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "의의 도를 안 후에 받은 거룩한 명령을 저버리는 것보다 알지 못하는 것이 도리어 저희에게 나으니라"
+      ],
+      "raw_text_hashes": [
+        "81b701c80ee593d4225e7092ad0081fea85f5fcb6c57fc2f6bbbc23798d2ae23"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2PE:2:22",
+      "sequence": 30519,
+      "chapter_label": "2PE 2",
+      "verse_label": "22",
+      "locator": {
+        "book": "2PE",
+        "chapter": 2,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "2PE",
+          "chapter": 2,
+          "verse": 22
+        }
+      ],
+      "en": "But it has happened to them according to the true proverb, “The dog turns to his own vomit again,” and “the sow that has washed to wallowing in the mire.”",
+      "ko": "참 속담에 이르기를 개가 그 토하였던 것에 돌아가고 돼지가 씻었다가 더러운 구덩이에 도로 누웠다 하는 말이 저희에게 응하였도다",
+      "source_text_hash": "e49ea5ceaf45fbb34b069963fd8ed6c70995282222f0bda27f6c41118dd54ca8",
+      "translation_text_hash": "a45cc1e0607cbda5bc70f85fc9ace82d19ad7cb780005a2cd738021ac45e5084",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "참 속담에 이르기를 개가 그 토하였던 것에 돌아가고 돼지가 씻었다가 더러운 구덩이에 도로 누웠다 하는 말이 저희에게 응하였도다"
+      ],
+      "raw_text_hashes": [
+        "a45cc1e0607cbda5bc70f85fc9ace82d19ad7cb780005a2cd738021ac45e5084"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1037 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:LUK:chapter:015",
+  "unit_ordinal": 988,
+  "unit_label": "LUK 15",
+  "book_code": "LUK",
+  "chapter_number": 15,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:LUK:15:1",
+      "sequence": 25590,
+      "chapter_label": "LUK 15",
+      "verse_label": "1",
+      "locator": {
+        "book": "LUK",
+        "chapter": 15,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 15,
+          "verse": 1
+        }
+      ],
+      "en": "Now all the tax collectors and sinners were coming close to him to hear him.",
+      "ko": "모든 세리와 죄인들이 말씀을 들으러 가까이 나아오니",
+      "source_text_hash": "c6546bb7710e6eef83692ab52aee081167adaada00e517558f7598c1f3ba644b",
+      "translation_text_hash": "7fe7d15ebe6e2a1933780bde79e41e25e0f742a342b84d47efb1ca695a2dbe11",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 세리와 죄인들이 말씀을 들으러 가까이 나아오니"
+      ],
+      "raw_text_hashes": [
+        "7fe7d15ebe6e2a1933780bde79e41e25e0f742a342b84d47efb1ca695a2dbe11"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:15:2",
+      "sequence": 25591,
+      "chapter_label": "LUK 15",
+      "verse_label": "2",
+      "locator": {
+        "book": "LUK",
+        "chapter": 15,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 15,
+          "verse": 2
+        }
+      ],
+      "en": "The Pharisees and the scribes murmured, saying, “This man welcomes sinners, and eats with them.”",
+      "ko": "바리새인과 서기관들이 원망하여 가로되 이 사람이 죄인을 영접하고 음식을 같이 먹는다 하더라",
+      "source_text_hash": "1d434ab8df5d233c471d2dae4ce4077f3bd9ad7a9066a967d8c2a03f7ab86a41",
+      "translation_text_hash": "2010e446d0dc144fc2abc0c53df3e257abc8b00f897cacf25112ff1b33b96fe9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바리새인과 서기관들이 원망하여 가로되 이 사람이 죄인을 영접하고 음식을 같이 먹는다 하더라"
+      ],
+      "raw_text_hashes": [
+        "2010e446d0dc144fc2abc0c53df3e257abc8b00f897cacf25112ff1b33b96fe9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:15:3",
+      "sequence": 25592,
+      "chapter_label": "LUK 15",
+      "verse_label": "3",
+      "locator": {
+        "book": "LUK",
+        "chapter": 15,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 15,
+          "verse": 3
+        }
+      ],
+      "en": "He told them this parable:",
+      "ko": "예수께서 저희에게 이 비유로 이르시되",
+      "source_text_hash": "dff1b306ae92b7a565416133245b5804e077a8cbaa6859b40133fb065d3a7f39",
+      "translation_text_hash": "c6092ed63b30d0f94009fbeb472e5a253d665af44263c2e465e012d7c9203f09",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 저희에게 이 비유로 이르시되"
+      ],
+      "raw_text_hashes": [
+        "c6092ed63b30d0f94009fbeb472e5a253d665af44263c2e465e012d7c9203f09"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:15:4",
+      "sequence": 25593,
+      "chapter_label": "LUK 15",
+      "verse_label": "4",
+      "locator": {
+        "book": "LUK",
+        "chapter": 15,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 15,
+          "verse": 4
+        }
+      ],
+      "en": "“Which of you men, if you had one hundred sheep and lost one of them, wouldn’t leave the ninety-nine in the wilderness and go after the one that was lost, until he found it?",
+      "ko": "너희 중에 어느 사람이 양 일백 마리가 있는데 그 중에 하나를 잃으면 아흔 아홉 마리를 들에 두고 그 잃은 것을 찾도록 찾아 다니지 아니하느냐",
+      "source_text_hash": "ee6a47812527023ac826300bbae1e7a37dbcf92eb583baec0dd6d166cbf6d3ae",
+      "translation_text_hash": "a347c056f7edba280742b47d0ce14a3b39a250492b3079579b3d3bb2685da52f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 중에 어느 사람이 양 일백 마리가 있는데 그 중에 하나를 잃으면 아흔 아홉 마리를 들에 두고 그 잃은 것을 찾도록 찾아 다니지 아니하느냐"
+      ],
+      "raw_text_hashes": [
+        "a347c056f7edba280742b47d0ce14a3b39a250492b3079579b3d3bb2685da52f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:15:5",
+      "sequence": 25594,
+      "chapter_label": "LUK 15",
+      "verse_label": "5",
+      "locator": {
+        "book": "LUK",
+        "chapter": 15,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 15,
+          "verse": 5
+        }
+      ],
+      "en": "When he has found it, he carries it on his shoulders, rejoicing.",
+      "ko": "또 찾은즉 즐거워 어깨에 메고",
+      "source_text_hash": "1556d080ff59baa125fd18929053bd3bc29da7f680ad769a1894682c58d16fdc",
+      "translation_text_hash": "ece3dcf58af10508c609980d5e671793ae7a390e7d868999bb7969a38683a283",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 찾은즉 즐거워 어깨에 메고"
+      ],
+      "raw_text_hashes": [
+        "ece3dcf58af10508c609980d5e671793ae7a390e7d868999bb7969a38683a283"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:15:6",
+      "sequence": 25595,
+      "chapter_label": "LUK 15",
+      "verse_label": "6",
+      "locator": {
+        "book": "LUK",
+        "chapter": 15,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 15,
+          "verse": 6
+        }
+      ],
+      "en": "When he comes home, he calls together his friends and his neighbors, saying to them, ‘Rejoice with me, for I have found my sheep which was lost!’",
+      "ko": "집에 와서 그 벗과 이웃을 불러 모으고 말하되 나와 함께 즐기자 나의 잃은 양을 찾았노라 하리라",
+      "source_text_hash": "a3cfc1eaa5f28eb315742bcd50a8ffb04d3f5907615133470b712387b8a36602",
+      "translation_text_hash": "81b2fdd59272a551923d6436864aa97692a215ae2a57eb55ecfcd2811d0a7d54",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "집에 와서 그 벗과 이웃을 불러 모으고 말하되 나와 함께 즐기자 나의 잃은 양을 찾았노라 하리라"
+      ],
+      "raw_text_hashes": [
+        "81b2fdd59272a551923d6436864aa97692a215ae2a57eb55ecfcd2811d0a7d54"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:15:7",
+      "sequence": 25596,
+      "chapter_label": "LUK 15",
+      "verse_label": "7",
+      "locator": {
+        "book": "LUK",
+        "chapter": 15,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 15,
+          "verse": 7
+        }
+      ],
+      "en": "I tell you that even so there will be more joy in heaven over one sinner who repents, than over ninety-nine righteous people who need no repentance.",
+      "ko": "내가 너희에게 이르노니 이와 같이 죄인 하나가 회개하면 하늘에서는 회개할 것 없는 의인 아흔 아홉을 인하여 기뻐하는 것보다 더하리라",
+      "source_text_hash": "7b47546e59e9df45e146a7df3010df31b4fef6410252c677be3ea5a3eb876858",
+      "translation_text_hash": "4a4795d4f82890a856a6d621ad237deb8c9637e3fdd68087d14df0993fefd73a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너희에게 이르노니 이와 같이 죄인 하나가 회개하면 하늘에서는 회개할 것 없는 의인 아흔 아홉을 인하여 기뻐하는 것보다 더하리라"
+      ],
+      "raw_text_hashes": [
+        "4a4795d4f82890a856a6d621ad237deb8c9637e3fdd68087d14df0993fefd73a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:15:8",
+      "sequence": 25597,
+      "chapter_label": "LUK 15",
+      "verse_label": "8",
+      "locator": {
+        "book": "LUK",
+        "chapter": 15,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 15,
+          "verse": 8
+        }
+      ],
+      "en": "“Or what woman, if she had ten drachmacoins, if she lost one drachma coin, wouldn’t light a lamp, sweep the house, and seek diligently until she found it?",
+      "ko": "어느 여자가 열 드라크마가 있는데 하나를 잃으면 등불을 켜고 집을 쓸며 찾도록 부지런히 찾지 아니하겠느냐",
+      "source_text_hash": "fc18b3995125656e06f722334b0ba1ff01fd83db71ef1d3ebaf4a10d643013c3",
+      "translation_text_hash": "aeb2e81d738f4b95d24a66017e12afde4d650152014f5d587be1e3a8feef5e6c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어느 여자가 열 드라크마가 있는데 하나를 잃으면 등불을 켜고 집을 쓸며 찾도록 부지런히 찾지 아니하겠느냐"
+      ],
+      "raw_text_hashes": [
+        "aeb2e81d738f4b95d24a66017e12afde4d650152014f5d587be1e3a8feef5e6c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:15:9",
+      "sequence": 25598,
+      "chapter_label": "LUK 15",
+      "verse_label": "9",
+      "locator": {
+        "book": "LUK",
+        "chapter": 15,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 15,
+          "verse": 9
+        }
+      ],
+      "en": "When she has found it, she calls together her friends and neighbors, saying, ‘Rejoice with me, for I have found the drachma which I had lost!’",
+      "ko": "또 찾은즉 벗과 이웃을 불러 모으고 말하되 나와 함께 즐기자 잃은 드라크마를 찾았노라 하리라",
+      "source_text_hash": "f0804ad3d588b11eb2c323e3546c048fc5a7a3758a9241187e932601f27f8b12",
+      "translation_text_hash": "f6b18fd3aa6eae573e252bc59a9b9f283d20e41cef3c4a41d33f442f4df40e7b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 찾은즉 벗과 이웃을 불러 모으고 말하되 나와 함께 즐기자 잃은 드라크마를 찾았노라 하리라"
+      ],
+      "raw_text_hashes": [
+        "f6b18fd3aa6eae573e252bc59a9b9f283d20e41cef3c4a41d33f442f4df40e7b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:15:10",
+      "sequence": 25599,
+      "chapter_label": "LUK 15",
+      "verse_label": "10",
+      "locator": {
+        "book": "LUK",
+        "chapter": 15,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 15,
+          "verse": 10
+        }
+      ],
+      "en": "Even so, I tell you, there is joy in the presence of the angels of God over one sinner repenting.”",
+      "ko": "내가 너희에게 이르노니 이와 같이 죄인 하나가 회개하면 하나님의 사자들 앞에 기쁨이 되느니라",
+      "source_text_hash": "c15fd2dddea76da1001acdd1bcc6453ed63dbac81295b124523a16325888056d",
+      "translation_text_hash": "74754ba55e516472c3eaf9b706a166a8ba5a0f491f19361d46f98e599c732aaf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너희에게 이르노니 이와 같이 죄인 하나가 회개하면 하나님의 사자들 앞에 기쁨이 되느니라"
+      ],
+      "raw_text_hashes": [
+        "74754ba55e516472c3eaf9b706a166a8ba5a0f491f19361d46f98e599c732aaf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:15:11",
+      "sequence": 25600,
+      "chapter_label": "LUK 15",
+      "verse_label": "11",
+      "locator": {
+        "book": "LUK",
+        "chapter": 15,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 15,
+          "verse": 11
+        }
+      ],
+      "en": "He said, “A certain man had two sons.",
+      "ko": "또 가라사대 어떤 사람이 두 아들이 있는데",
+      "source_text_hash": "c2b1364cbce1e379faddb4735ab999a6b25453b8191405e8e23ed6e2a1e2e132",
+      "translation_text_hash": "e7449f8e19483fb3de573beba448cceb9f9e02d52fd15848df6f525ece257a3e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 가라사대 어떤 사람이 두 아들이 있는데"
+      ],
+      "raw_text_hashes": [
+        "e7449f8e19483fb3de573beba448cceb9f9e02d52fd15848df6f525ece257a3e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:15:12",
+      "sequence": 25601,
+      "chapter_label": "LUK 15",
+      "verse_label": "12",
+      "locator": {
+        "book": "LUK",
+        "chapter": 15,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 15,
+          "verse": 12
+        }
+      ],
+      "en": "The younger of them said to his father, ‘Father, give me my share of your property.’ So he divided his livelihood between them.",
+      "ko": "그 둘째가 아비에게 말하되 아버지여 재산 중에서 내게 돌아올 분깃을 내게 주소서 하는지라 아비가 그 살림을 각각 나눠 주었더니",
+      "source_text_hash": "521c5b1a3aafc9d1489ffa8c8f3089d848a74e404f0af53a221b73d39843acba",
+      "translation_text_hash": "2fbb973560d07371beeee6c34d036e9fd2cf1d8e4b9b425e938b2633e5237005",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 둘째가 아비에게 말하되 아버지여 재산 중에서 내게 돌아올 분깃을 내게 주소서 하는지라 아비가 그 살림을 각각 나눠 주었더니"
+      ],
+      "raw_text_hashes": [
+        "2fbb973560d07371beeee6c34d036e9fd2cf1d8e4b9b425e938b2633e5237005"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:15:13",
+      "sequence": 25602,
+      "chapter_label": "LUK 15",
+      "verse_label": "13",
+      "locator": {
+        "book": "LUK",
+        "chapter": 15,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 15,
+          "verse": 13
+        }
+      ],
+      "en": "Not many days after, the younger son gathered all of this together and traveled into a far country. There he wasted his property with riotous living.",
+      "ko": "그 후 며칠이 못되어 둘째 아들이 재물을 다 모아가지고 먼 나라에 가 거기서 허랑방탕하여 그 재산을 허비하더니",
+      "source_text_hash": "81144074003756f0962d3eb84215f4f9a9894937281afcc430ea50c77ecc373b",
+      "translation_text_hash": "49f0325266122165e35297edf17f5b4c86fd82b065d1e44cebfc7e0e2f3776d7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 후 며칠이 못되어 둘째 아들이 재물을 다 모아가지고 먼 나라에 가 거기서 허랑방탕하여 그 재산을 허비하더니"
+      ],
+      "raw_text_hashes": [
+        "49f0325266122165e35297edf17f5b4c86fd82b065d1e44cebfc7e0e2f3776d7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:15:14",
+      "sequence": 25603,
+      "chapter_label": "LUK 15",
+      "verse_label": "14",
+      "locator": {
+        "book": "LUK",
+        "chapter": 15,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 15,
+          "verse": 14
+        }
+      ],
+      "en": "When he had spent all of it, there arose a severe famine in that country, and he began to be in need.",
+      "ko": "다 없이한 후 그 나라에 크게 흉년이 들어 저가 비로소 궁핍한지라",
+      "source_text_hash": "604346298db9ba170f1a32c4da653757f2b4591a2175c539b5ac01805b213e08",
+      "translation_text_hash": "689bd04f86b4df23f391ef267087307373b5ad321c55683d32e6a66bfdd52019",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다 없이한 후 그 나라에 크게 흉년이 들어 저가 비로소 궁핍한지라"
+      ],
+      "raw_text_hashes": [
+        "689bd04f86b4df23f391ef267087307373b5ad321c55683d32e6a66bfdd52019"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:15:15",
+      "sequence": 25604,
+      "chapter_label": "LUK 15",
+      "verse_label": "15",
+      "locator": {
+        "book": "LUK",
+        "chapter": 15,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 15,
+          "verse": 15
+        }
+      ],
+      "en": "He went and joined himself to one of the citizens of that country, and he sent him into his fields to feed pigs.",
+      "ko": "가서 그 나라 백성 중 하나에게 붙여 사니 그가 저를 들로 보내어 돼지를 치게 하였는데",
+      "source_text_hash": "5c21c4f84aae95549c92b4f43f49e05f8d71ffdfb684b24a46cfcf36bd99bd1d",
+      "translation_text_hash": "cdaf40842402fcbed6b93a91b5ed29cca1c65b4e2000199920d2c99449a13d7b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가서 그 나라 백성 중 하나에게 붙여 사니 그가 저를 들로 보내어 돼지를 치게 하였는데"
+      ],
+      "raw_text_hashes": [
+        "cdaf40842402fcbed6b93a91b5ed29cca1c65b4e2000199920d2c99449a13d7b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:15:16",
+      "sequence": 25605,
+      "chapter_label": "LUK 15",
+      "verse_label": "16",
+      "locator": {
+        "book": "LUK",
+        "chapter": 15,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 15,
+          "verse": 16
+        }
+      ],
+      "en": "He wanted to fill his belly with the pods that the pigs ate, but no one gave him any.",
+      "ko": "저가 돼지 먹는 쥐엄 열매로 배를 채우고자 하되 주는 자가 없는지라",
+      "source_text_hash": "b70d96872b9d97934a5477d641eee8225742cbf74a641524d2a8918b03ee6b69",
+      "translation_text_hash": "546df6ec668eafa852b922320398c7c1d2faf5d6804e450813b6f1548ed9466a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 돼지 먹는 쥐엄 열매로 배를 채우고자 하되 주는 자가 없는지라"
+      ],
+      "raw_text_hashes": [
+        "546df6ec668eafa852b922320398c7c1d2faf5d6804e450813b6f1548ed9466a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:15:17",
+      "sequence": 25606,
+      "chapter_label": "LUK 15",
+      "verse_label": "17",
+      "locator": {
+        "book": "LUK",
+        "chapter": 15,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 15,
+          "verse": 17
+        }
+      ],
+      "en": "But when he came to himself, he said, ‘How many hired servants of my father’s have bread enough to spare, and I’m dying with hunger!",
+      "ko": "이에 스스로 돌이켜 가로되 내 아버지에게는 양식이 풍족한 품군이 얼마나 많은고 나는 여기서 주려 죽는구나",
+      "source_text_hash": "efcaba4b17e43587f767b693a7217caa66104a9b60d28f072350c7542697fe7f",
+      "translation_text_hash": "328263a8ab447c7f13bd89d7feae5764e0647749792fc8e9e1c04c9fabbb5bfc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 스스로 돌이켜 가로되 내 아버지에게는 양식이 풍족한 품군이 얼마나 많은고 나는 여기서 주려 죽는구나"
+      ],
+      "raw_text_hashes": [
+        "328263a8ab447c7f13bd89d7feae5764e0647749792fc8e9e1c04c9fabbb5bfc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:15:18",
+      "sequence": 25607,
+      "chapter_label": "LUK 15",
+      "verse_label": "18",
+      "locator": {
+        "book": "LUK",
+        "chapter": 15,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 15,
+          "verse": 18
+        }
+      ],
+      "en": "I will get up and go to my father, and will tell him, “Father, I have sinned against heaven and in your sight.",
+      "ko": "내가 일어나 아버지께 가서 이르기를 아버지여 내가 하늘과 아버지께 죄를 얻었사오니",
+      "source_text_hash": "fd6b8ac3b53ab6c7e0876346e7129838b1a05a74b845c76bbe91b8a6f32727f9",
+      "translation_text_hash": "bcd893de6a28ec520d74e88a34e353bf1aca6137decc257c3415d30f5dc09cba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 일어나 아버지께 가서 이르기를 아버지여 내가 하늘과 아버지께 죄를 얻었사오니"
+      ],
+      "raw_text_hashes": [
+        "bcd893de6a28ec520d74e88a34e353bf1aca6137decc257c3415d30f5dc09cba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:15:19",
+      "sequence": 25608,
+      "chapter_label": "LUK 15",
+      "verse_label": "19",
+      "locator": {
+        "book": "LUK",
+        "chapter": 15,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 15,
+          "verse": 19
+        }
+      ],
+      "en": "I am no more worthy to be called your son. Make me as one of your hired servants.”’",
+      "ko": "지금부터는 아버지의 아들이라 일컬음을 감당치 못하겠나이다 나를 품군의 하나로 보소서 하리라 하고",
+      "source_text_hash": "acf1038ace3f098b926a9a706dbb527098e05745426fedd673fbcfb340709762",
+      "translation_text_hash": "1fbde12b5a86eb0d3f8da2bf657800953118d978e88b8d47eadf17c0e65e1965",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "지금부터는 아버지의 아들이라 일컬음을 감당치 못하겠나이다 나를 품군의 하나로 보소서 하리라 하고"
+      ],
+      "raw_text_hashes": [
+        "1fbde12b5a86eb0d3f8da2bf657800953118d978e88b8d47eadf17c0e65e1965"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:15:20",
+      "sequence": 25609,
+      "chapter_label": "LUK 15",
+      "verse_label": "20",
+      "locator": {
+        "book": "LUK",
+        "chapter": 15,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 15,
+          "verse": 20
+        }
+      ],
+      "en": "“He arose and came to his father. But while he was still far off, his father saw him and was moved with compassion, and ran, fell on his neck, and kissed him.",
+      "ko": "이에 일어나서 아버지께로 돌아가니라 아직도 상거가 먼데 아버지가 저를 보고 측은히 여겨 달려가 목을 안고 입을 맞추니",
+      "source_text_hash": "4bcdaa5d6fd5ace5936c29a44fbdb46963d89a723d2a8734ca48b330d18e7607",
+      "translation_text_hash": "cfa85902ea12e269f4bdab729d998407b9c13ea38732b59e50d40b6cbb3e90b0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 일어나서 아버지께로 돌아가니라 아직도 상거가 먼데 아버지가 저를 보고 측은히 여겨 달려가 목을 안고 입을 맞추니"
+      ],
+      "raw_text_hashes": [
+        "cfa85902ea12e269f4bdab729d998407b9c13ea38732b59e50d40b6cbb3e90b0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:15:21",
+      "sequence": 25610,
+      "chapter_label": "LUK 15",
+      "verse_label": "21",
+      "locator": {
+        "book": "LUK",
+        "chapter": 15,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 15,
+          "verse": 21
+        }
+      ],
+      "en": "The son said to him, ‘Father, I have sinned against heaven and in your sight. I am no longer worthy to be called your son.’",
+      "ko": "아들이 가로되 아버지여 내가 하늘과 아버지께 죄를 얻었사오니 지금부터는 아버지의 아들이라 일컬음을 감당치 못하겠나이다 하나",
+      "source_text_hash": "472249ebce1db645991902b3a05459e443042365bd311abb2e0f922098cf35f3",
+      "translation_text_hash": "a6f413b5443ac86683f6ecda62bcc89de345e0f6c472dff5ca9e7006a55640e8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아들이 가로되 아버지여 내가 하늘과 아버지께 죄를 얻었사오니 지금부터는 아버지의 아들이라 일컬음을 감당치 못하겠나이다 하나"
+      ],
+      "raw_text_hashes": [
+        "a6f413b5443ac86683f6ecda62bcc89de345e0f6c472dff5ca9e7006a55640e8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:15:22",
+      "sequence": 25611,
+      "chapter_label": "LUK 15",
+      "verse_label": "22",
+      "locator": {
+        "book": "LUK",
+        "chapter": 15,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 15,
+          "verse": 22
+        }
+      ],
+      "en": "“But the father said to his servants, ‘Bring out the best robe and put it on him. Put a ring on his hand and sandals on his feet.",
+      "ko": "아버지는 종들에게 이르되 제일 좋은 옷을 내어다가 입히고 손에 가락지를 끼우고 발에 신을 신기라",
+      "source_text_hash": "210648e8669646c070d5a2d1896581fc7d3cd20a158024ccfc6a4468689b4dea",
+      "translation_text_hash": "aa229534609abc8e6d5c1b917b64ba26939515d56d1dfc05477f2a8a82699605",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아버지는 종들에게 이르되 제일 좋은 옷을 내어다가 입히고 손에 가락지를 끼우고 발에 신을 신기라"
+      ],
+      "raw_text_hashes": [
+        "aa229534609abc8e6d5c1b917b64ba26939515d56d1dfc05477f2a8a82699605"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:15:23",
+      "sequence": 25612,
+      "chapter_label": "LUK 15",
+      "verse_label": "23",
+      "locator": {
+        "book": "LUK",
+        "chapter": 15,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 15,
+          "verse": 23
+        }
+      ],
+      "en": "Bring the fattened calf, kill it, and let’s eat and celebrate;",
+      "ko": "그리고 살진 송아지를 끌어다가 잡으라 우리가 먹고 즐기자",
+      "source_text_hash": "15e7f3e81793f45fb3bfd7ad97f7765f48ea3d9dfe9d75a39e47938569b8617d",
+      "translation_text_hash": "c330bd467f193dcd53f375c14571585e79de93659463880f5445d186e9f478db",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그리고 살진 송아지를 끌어다가 잡으라 우리가 먹고 즐기자"
+      ],
+      "raw_text_hashes": [
+        "c330bd467f193dcd53f375c14571585e79de93659463880f5445d186e9f478db"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:15:24",
+      "sequence": 25613,
+      "chapter_label": "LUK 15",
+      "verse_label": "24",
+      "locator": {
+        "book": "LUK",
+        "chapter": 15,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 15,
+          "verse": 24
+        }
+      ],
+      "en": "for this, my son, was dead and is alive again. He was lost and is found.’ Then they began to celebrate.",
+      "ko": "이 내 아들은 죽었다가 다시 살아났으며 내가 잃었다가 다시 얻었노라 하니 저희가 즐거워하더라",
+      "source_text_hash": "1b0ff55495f9506f87eb679a3c34ef5a62c06b0f6fef20b0b0a2f471a967b3dc",
+      "translation_text_hash": "5a0b6a615e49bf93d5d4654143a66c4ed5207a65b2907b1033a1c883c53751fa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 내 아들은 죽었다가 다시 살아났으며 내가 잃었다가 다시 얻었노라 하니 저희가 즐거워하더라"
+      ],
+      "raw_text_hashes": [
+        "5a0b6a615e49bf93d5d4654143a66c4ed5207a65b2907b1033a1c883c53751fa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:15:25",
+      "sequence": 25614,
+      "chapter_label": "LUK 15",
+      "verse_label": "25",
+      "locator": {
+        "book": "LUK",
+        "chapter": 15,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 15,
+          "verse": 25
+        }
+      ],
+      "en": "“Now his elder son was in the field. As he came near to the house, he heard music and dancing.",
+      "ko": "맏아들은 밭에 있다가 돌아와 집에 가까왔을 때에 풍류와 춤추는 소리를 듣고",
+      "source_text_hash": "830e0d6ccef16443c525c5bee83af47752fa1d715ac643fb6f92644aa91b0d27",
+      "translation_text_hash": "e4dcfc13b6739f288f78720337237fb6b0181db80d2845435488298f1f380017",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "맏아들은 밭에 있다가 돌아와 집에 가까왔을 때에 풍류와 춤추는 소리를 듣고"
+      ],
+      "raw_text_hashes": [
+        "e4dcfc13b6739f288f78720337237fb6b0181db80d2845435488298f1f380017"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:15:26",
+      "sequence": 25615,
+      "chapter_label": "LUK 15",
+      "verse_label": "26",
+      "locator": {
+        "book": "LUK",
+        "chapter": 15,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 15,
+          "verse": 26
+        }
+      ],
+      "en": "He called one of the servants to him and asked what was going on.",
+      "ko": "한 종을 불러 이 무슨 일인가 물은대",
+      "source_text_hash": "926d9dbb220dee22906c945673e745f8d89940cc335c7ed3043a12e75a82d5f4",
+      "translation_text_hash": "ba1db2e76e05bcdcee96d739b8820ca6e621d15360daed56da30d4a174d9e246",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "한 종을 불러 이 무슨 일인가 물은대"
+      ],
+      "raw_text_hashes": [
+        "ba1db2e76e05bcdcee96d739b8820ca6e621d15360daed56da30d4a174d9e246"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:15:27",
+      "sequence": 25616,
+      "chapter_label": "LUK 15",
+      "verse_label": "27",
+      "locator": {
+        "book": "LUK",
+        "chapter": 15,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 15,
+          "verse": 27
+        }
+      ],
+      "en": "He said to him, ‘Your brother has come, and your father has killed the fattened calf, because he has received him back safe and healthy.’",
+      "ko": "대답하되 당신의 동생이 돌아왔으매 당신의 아버지가 그의 건강한 몸을 다시 맞아 들이게 됨을 인하여 살진 송아지를 잡았나이다 하니",
+      "source_text_hash": "1c0a7a705b0292b692b3a48679aef3d1fe8924adb6a71b1127a903d4e9d9dd92",
+      "translation_text_hash": "3f3bd90d0c19895701434e9593b8d78c1af37bd5095f7547ad10c90e8d222144",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대답하되 당신의 동생이 돌아왔으매 당신의 아버지가 그의 건강한 몸을 다시 맞아 들이게 됨을 인하여 살진 송아지를 잡았나이다 하니"
+      ],
+      "raw_text_hashes": [
+        "3f3bd90d0c19895701434e9593b8d78c1af37bd5095f7547ad10c90e8d222144"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:15:28",
+      "sequence": 25617,
+      "chapter_label": "LUK 15",
+      "verse_label": "28",
+      "locator": {
+        "book": "LUK",
+        "chapter": 15,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 15,
+          "verse": 28
+        }
+      ],
+      "en": "But he was angry and would not go in. Therefore his father came out and begged him.",
+      "ko": "저가 노하여 들어가기를 즐겨 아니하거늘 아버지가 나와서 권한대",
+      "source_text_hash": "eecda6745ca1fb73e32e68597b85e19428595c4a2e3af78c38d9679f8f710cc0",
+      "translation_text_hash": "f61b9eca10ad384f5df5c21608e4582a076973772bd0b646bc40416814e5c22c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 노하여 들어가기를 즐겨 아니하거늘 아버지가 나와서 권한대"
+      ],
+      "raw_text_hashes": [
+        "f61b9eca10ad384f5df5c21608e4582a076973772bd0b646bc40416814e5c22c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:15:29",
+      "sequence": 25618,
+      "chapter_label": "LUK 15",
+      "verse_label": "29",
+      "locator": {
+        "book": "LUK",
+        "chapter": 15,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 15,
+          "verse": 29
+        }
+      ],
+      "en": "But he answered his father, ‘Behold, these many years I have served you, and I never disobeyed a commandment of yours, but you never gave me a goat, that I might celebrate with my friends.",
+      "ko": "아버지께 대답하여 가로되 내가 여러 해 아버지를 섬겨 명을 어김이 없거늘 내게는 염소 새끼라도 주어 나와 내 벗으로 즐기게 하신 일이 없더니",
+      "source_text_hash": "3555e8e2230fbd329e39040739e6216b37c69a683446a100688d5257443e71a3",
+      "translation_text_hash": "816bd005beee57e4aecc7926ddaa238eaec238065f97b32a4651c9aa31f81581",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아버지께 대답하여 가로되 내가 여러 해 아버지를 섬겨 명을 어김이 없거늘 내게는 염소 새끼라도 주어 나와 내 벗으로 즐기게 하신 일이 없더니"
+      ],
+      "raw_text_hashes": [
+        "816bd005beee57e4aecc7926ddaa238eaec238065f97b32a4651c9aa31f81581"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:15:30",
+      "sequence": 25619,
+      "chapter_label": "LUK 15",
+      "verse_label": "30",
+      "locator": {
+        "book": "LUK",
+        "chapter": 15,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 15,
+          "verse": 30
+        }
+      ],
+      "en": "But when this your son came, who has devoured your living with prostitutes, you killed the fattened calf for him.’",
+      "ko": "아버지의 살림을 창기와 함께 먹어버린 이 아들이 돌아오매 이를 위하여 살진 송아지를 잡으셨나이다",
+      "source_text_hash": "81023ca88ec7a1380059dc5cc34a103fb51c23957b0772707a9ec45ebeea3e62",
+      "translation_text_hash": "cd8f418720cb1af31b579c933e4fb9960592bf2ef24d2830faab28b37bd42097",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아버지의 살림을 창기와 함께 먹어버린 이 아들이 돌아오매 이를 위하여 살진 송아지를 잡으셨나이다"
+      ],
+      "raw_text_hashes": [
+        "cd8f418720cb1af31b579c933e4fb9960592bf2ef24d2830faab28b37bd42097"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:15:31",
+      "sequence": 25620,
+      "chapter_label": "LUK 15",
+      "verse_label": "31",
+      "locator": {
+        "book": "LUK",
+        "chapter": 15,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 15,
+          "verse": 31
+        }
+      ],
+      "en": "“He said to him, ‘Son, you are always with me, and all that is mine is yours.",
+      "ko": "아버지가 이르되 얘 너는 항상 나와 함께 있으니 내 것이 다 네 것이로되",
+      "source_text_hash": "72bfca9a0bf3e43cc6a316406f2e9a13de72f7648833e1270228c02379b46e44",
+      "translation_text_hash": "4be0d6ab877a9f2756e39582d66d3caa717457f3553ae4553422239ecea06b12",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아버지가 이르되 얘 너는 항상 나와 함께 있으니 내 것이 다 네 것이로되"
+      ],
+      "raw_text_hashes": [
+        "4be0d6ab877a9f2756e39582d66d3caa717457f3553ae4553422239ecea06b12"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:15:32",
+      "sequence": 25621,
+      "chapter_label": "LUK 15",
+      "verse_label": "32",
+      "locator": {
+        "book": "LUK",
+        "chapter": 15,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 15,
+          "verse": 32
+        }
+      ],
+      "en": "But it was appropriate to celebrate and be glad, for this, your brother, was dead, and is alive again. He was lost, and is found.’”",
+      "ko": "이 네 동생은 죽었다가 살았으며 내가 잃었다가 얻었기로 우리가 즐거워하고 기뻐하는 것이 마땅하다 하니라",
+      "source_text_hash": "a8a54461e5662e50af5fc5543a669d291d1c4d3011854eb62587a30dcc9271f6",
+      "translation_text_hash": "b83f8530b16dd6f84cf70e3070e55fa53a7befbc32e4dab1793dac0d1ceb4c33",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 네 동생은 죽었다가 살았으며 내가 잃었다가 얻었기로 우리가 즐거워하고 기뻐하는 것이 마땅하다 하니라"
+      ],
+      "raw_text_hashes": [
+        "b83f8530b16dd6f84cf70e3070e55fa53a7befbc32e4dab1793dac0d1ceb4c33"
+      ]
+    }
+  ]
+}
