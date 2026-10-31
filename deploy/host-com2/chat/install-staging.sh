@@ -29,7 +29,8 @@ for required in \
   apps/padiem-chat/migrations \
   packages/padiem-ai-core/padiem_ai_core \
   packages/padiem-control-plane/padiem_control_plane \
-  apps/korean-ai-code-agent/src/kagent; do
+  apps/korean-ai-code-agent/src/kagent \
+  apps/padiem-ai-engine/clients/python/padiem_ai_engine_client; do
   [[ -e "$source_root/$required" ]] || fail SOURCE_MISSING
 done
 mountpoint -q /mnt/d || fail HDD_NOT_MOUNTED
@@ -50,7 +51,8 @@ for pair in \
   "app:$source_root/apps/padiem-chat/app" \
   "padiem_ai_core:$source_root/packages/padiem-ai-core/padiem_ai_core" \
   "padiem_control_plane:$source_root/packages/padiem-control-plane/padiem_control_plane" \
-  "kagent:$source_root/apps/korean-ai-code-agent/src/kagent"; do
+  "kagent:$source_root/apps/korean-ai-code-agent/src/kagent" \
+  "padiem_ai_engine_client:$source_root/apps/padiem-ai-engine/clients/python/padiem_ai_engine_client"; do
   link=${pair%%:*}; target=${pair#*:}
   ln -sfn "$target" "$app/$link"
 done
