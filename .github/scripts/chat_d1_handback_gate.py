@@ -40,9 +40,21 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
-import sqlite3
+import sys
 from datetime import datetime, timezone
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+import chat_d1_digest as digest  # noqa: E402
+from chat_d1_digest import (  # noqa: E402
+    GateError,
+    file_sha256 as _file_sha256,
+    key_columns as _key_columns,
+    read_only as _read_only,
+    rows as _rows,
+    snapshot,
+)
 
 EXIT_OK = 0
 EXIT_USAGE = 2
@@ -50,130 +62,12 @@ EXIT_REFUSED = 3
 
 PLAN_SCHEMA = "chat-d1-handback/plan/v1"
 
-#: COM2 queue authority (PR #6115/#6121) — never overwritten by a handback.
-OWNED_BY_QUEUE = frozenset({
-    "oracle_mesh_dispatch",
-    "mesh_device_presence",
-    "pc_pairing_codes",
-    "pc_device_links",
-})
-#: Stage 2-C broker storage.
-OWNED_BY_BROKER = frozenset({
-    "local_agent_broker_state",
-    "local_agent_broker_used_command_id",
-    "local_agent_command_material",
-    "local_agent_http_session",
-    "local_agent_office_artifact",
-    "local_agent_office_part",
-    "local_agent_text_result",
-})
-#: Bookkeeping that never travels as data.
-SYSTEM_TABLES = frozenset({
-    "d1_migrations",
-    "padiem_local_migration_ledger",
-    "chat_copy_snapshot",
-    "chat_migration_runs",
-    "chat_migration_summary",
-    "chat_migration_snapshot",
-})
-SKIP_TABLES = OWNED_BY_QUEUE | OWNED_BY_BROKER | SYSTEM_TABLES
-
 #: A handback is a bounded recovery action, not a re-import.
 MAX_STATEMENTS = 50_000
 
 
-class GateError(ValueError):
-    """A fixed, public-safe refusal. Never carries SQL bodies or row data."""
-
-
 def _now() -> str:
     return datetime.now(timezone.utc).isoformat(timespec="milliseconds").replace("+00:00", "Z")
-
-
-def _read_only(path: str | Path) -> sqlite3.Connection:
-    resolved = Path(path).resolve()
-    if not resolved.is_file():
-        raise GateError("CHAT_HANDBACK_FILE_MISSING")
-    return sqlite3.connect(f"file:{resolved.as_posix()}?mode=ro", uri=True)
-
-
-def _tables(connection: sqlite3.Connection) -> list[str]:
-    return [
-        str(row[0])
-        for row in connection.execute(
-            "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' "
-            "ORDER BY name"
-        )
-    ]
-
-
-def _columns(connection: sqlite3.Connection, table: str) -> list[str]:
-    return [str(row[1]) for row in connection.execute(f'PRAGMA table_info("{table}")')]
-
-
-def _key_columns(connection: sqlite3.Connection, table: str) -> list[str]:
-    rows = [
-        (int(row[5]), str(row[1]))
-        for row in connection.execute(f'PRAGMA table_info("{table}")')
-        if int(row[5]) > 0
-    ]
-    rows.sort()
-    return [name for _position, name in rows]
-
-
-def _row_digest(columns: list[str], row: tuple) -> str:
-    payload = json.dumps(
-        [columns, [None if value is None else str(value) for value in row]],
-        ensure_ascii=False,
-        separators=(",", ":"),
-    )
-    return hashlib.sha256(payload.encode("utf-8")).hexdigest()
-
-
-def _key_text(parts) -> str:
-    return json.dumps([None if part is None else str(part) for part in parts])
-
-
-def _rows(connection: sqlite3.Connection, table: str) -> tuple[list[str], dict[str, tuple]]:
-    columns = _columns(connection, table)
-    keys = _key_columns(connection, table)
-    if not keys:
-        raise GateError("CHAT_HANDBACK_NO_PRIMARY_KEY")
-    key_indexes = [columns.index(name) for name in keys]
-    selected = ", ".join(f'"{name}"' for name in columns)
-    found: dict[str, tuple] = {}
-    for row in connection.execute(f'SELECT {selected} FROM "{table}"'):
-        found[_key_text([row[index] for index in key_indexes])] = row
-    return columns, found
-
-
-def _comparable_tables(connection: sqlite3.Connection) -> list[str]:
-    return [name for name in _tables(connection) if name not in SKIP_TABLES]
-
-
-def snapshot(path: str | Path) -> dict[str, dict[str, str]]:
-    """Per-table ``{key: row digest}`` for every comparable table."""
-
-    connection = _read_only(path)
-    try:
-        tables = _comparable_tables(connection)
-        if not tables:
-            raise GateError("CHAT_HANDBACK_NO_TABLES")
-        out: dict[str, dict[str, str]] = {}
-        for table in tables:
-            columns, rows = _rows(connection, table)
-            out[table] = {key: _row_digest(columns, row) for key, row in rows.items()}
-        return out
-    finally:
-        connection.close()
-
-
-def _file_sha256(path: str | Path) -> str:
-    digest = hashlib.sha256()
-    with Path(path).open("rb") as handle:
-        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
-            digest.update(chunk)
-    return digest.hexdigest()
 
 
 def build_plan(baseline_path: str | Path, handback_path: str | Path) -> dict:
