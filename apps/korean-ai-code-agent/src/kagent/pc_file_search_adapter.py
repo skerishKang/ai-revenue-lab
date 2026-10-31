@@ -47,6 +47,7 @@ from dataclasses import dataclass
 import os
 import re
 import subprocess
+import time
 from typing import Any, Callable, Mapping, Protocol, Sequence
 
 # Bounded outcome codes. They are the only thing a caller may branch on.
@@ -109,10 +110,10 @@ def _hidden_system_on_path(root: str, path: str) -> bool:
 def _everything_exclusions(root: str) -> str:
     components = "|".join(re.escape(name) for name in sorted(EXCLUDED_COMPONENTS))
     # Windows paths in Everything are matched in full-path mode.
-    folders = r'!path:regex:"(^|[\\/])(?:' + components + r')([\\/]|$)"'
+    folders = r'!path:regex:"(?i)(^|[\\/])(?:' + components + r')([\\/]|$)"'
     root_path = re.escape(root.rstrip("\\/"))
     filenames = "|".join(re.escape(name) for name in sorted(EXCLUDED_ROOT_FILES))
-    root_files = r'!path:regex:"^' + root_path + r'[\\/](?:' + filenames + r')$"'
+    root_files = r'!path:regex:"(?i)^' + root_path + r'[\\/](?:' + filenames + r')$"'
     return folders + " " + root_files
 
 #: The code page the port asks the ES CLI to convert its output to. ES writes
@@ -139,6 +140,13 @@ EVERYTHING_MINIMUM_VERSION: tuple[int, int] = (1, 5)
 
 class PcFileSearchError(RuntimeError):
     """A search that could not be performed (never a result)."""
+
+
+class PcFileSearchTimeout(PcFileSearchError):
+    """Timeout plus complete newline-delimited rows already received."""
+    def __init__(self, rows=()):
+        super().__init__("search timed out")
+        self.rows = tuple(rows)
 
 
 class PcFileSearchIndexNotReady(PcFileSearchError):
@@ -278,6 +286,15 @@ def _default_process_runner(
             timeout=timeout,
             check=False,
         )
+    except subprocess.TimeoutExpired as exc:
+        raw = exc.output or b""
+        try:
+            partial = _decode_everything_output(raw)
+            # The final unterminated record may have been cut in the middle.
+            rows = partial.splitlines() if partial.endswith(("\n", "\r")) else partial.splitlines()[:-1]
+        except PcFileSearchError:
+            rows = []
+        raise PcFileSearchTimeout(rows) from exc
     except (OSError, subprocess.SubprocessError) as exc:
         raise PcFileSearchError("the local searcher could not be executed") from exc
     return (
@@ -513,6 +530,103 @@ class EverythingEsCliSearchPort:
         return rows
 
 
+
+    def search_page(self, *, query: str, root: str, offset: int, limit: int, timeout: float) -> Sequence[str]:
+        """One sorted index page; filters run inside Everything's query."""
+        executable = self._resolve_executable()
+        if executable is None:
+            raise PcFileSearchError("the local searcher is not installed")
+        started = time.monotonic()
+        try:
+            code, version_text, _ = self._runner([executable, "-get-everything-version"], timeout=timeout)
+        except PcFileSearchTimeout as exc:
+            raise PcFileSearchTimeout() from exc
+        version = _parse_everything_version(version_text) if code == 0 else None
+        if version is None or version < EVERYTHING_MINIMUM_VERSION:
+            raise PcFileSearchUnsupported("unsupported searcher")
+        timeout -= time.monotonic() - started
+        if timeout <= 0:
+            raise PcFileSearchTimeout()
+        argv = [executable, "-path", root, "-s", "-offset", str(offset),
+                "-n", str(limit), "-full-path", "-timeout", str(self._index_wait_ms),
+                "-code-page", str(EVERYTHING_OUTPUT_CODE_PAGE), "-search*",
+                everything_search_argument(query) + " " + _everything_exclusions(root)]
+        code, stdout, _stderr = self._runner(argv, timeout=timeout)
+        if code == self.ES_EXIT_IPC_FAILED:
+            raise PcFileSearchIndexNotReady("the local index could not answer")
+        if code:
+            raise PcFileSearchError("the local searcher failed")
+        return [line.strip() for line in stdout.splitlines() if line.strip()]
+
+
+def search_pc_files_page(*, scopes: Sequence[PcFileSearchScope], query: str, port: Any,
+                         cursor: Mapping[str, Any] | None = None,
+                         limit: int = MAX_SEARCH_RESULTS, timeout: float = 10.0,
+                         clock: Callable[[], float] = time.monotonic) -> dict[str, Any]:
+    """Search verified folders using label+raw offset. Index changes may shift pages."""
+    if not scopes or not isinstance(query, str) or not query.strip():
+        raise PcFileSearchError("scope and query required")
+    if isinstance(limit, bool) or not isinstance(limit, int) or limit < 1 or timeout <= 0:
+        raise PcFileSearchError("invalid limit or timeout")
+    if any(not isinstance(s, PcFileSearchScope) or not s.multiple_roots for s in scopes):
+        raise PcFileSearchError("verified labeled scopes required")
+    labels = [s.label for s in scopes]
+    if len(set(labels)) != len(labels):
+        raise PcFileSearchError("duplicate labels")
+    if cursor is None:
+        index, offset = 0, 0
+    else:
+        if not isinstance(cursor, Mapping) or set(cursor) != {"label", "offset"}:
+            raise PcFileSearchError("invalid cursor")
+        if cursor["label"] not in labels or type(cursor["offset"]) is not int or cursor["offset"] < 0:
+            raise PcFileSearchError("invalid cursor")
+        index, offset = labels.index(cursor["label"]), cursor["offset"]
+    start = clock()
+    entries = []
+    def result(complete, reason, next_cursor):
+        return {"entries": entries, "complete": complete, "reason": reason,
+                "cursor": next_cursor, "index_may_change_between_pages": True}
+    while index < len(scopes):
+        scope = scopes[index]
+        remaining = timeout - (clock() - start)
+        if remaining <= 0:
+            return result(False, "timeout", {"label": scope.label, "offset": offset})
+        requested = limit - len(entries)
+        timed_out = False
+        try:
+            rows = list(port.search_page(query=query, root=scope.root, offset=offset,
+                                         limit=requested, timeout=remaining))
+        except PcFileSearchTimeout as exc:
+            rows, timed_out = list(exc.rows), True
+        if len(rows) > requested:
+            raise PcFileSearchError("search page exceeds requested limit")
+        resolved_root = os.path.realpath(scope.root)
+        for row in rows:
+            resolved = _resolve_inside(scope.root, row if isinstance(row, str) else "")
+            if resolved is None:
+                continue
+            relative = _relative_to_root(resolved_root, resolved)
+            if relative is None or not _candidate_allowed(scope.root, row, resolved):
+                continue
+            size, modified, is_directory = _entry_metadata(resolved)
+            item = PcFileSearchEntry(name=relative.rsplit("/", 1)[-1], relative_path=relative,
+                                     size_bytes=size, modified_at=modified,
+                                     is_directory=is_directory, folder_label=scope.label)
+            entries.append({**item.safe_dict(), "folder_label": scope.label, "read": item.read_payload()})
+        offset += len(rows)
+        if timed_out:
+            return result(False, "timeout", {"label": scope.label, "offset": offset})
+        if len(entries) >= limit:
+            return result(False, "limit", {"label": scope.label, "offset": offset})
+        if len(rows) < requested:
+            index += 1
+            offset = 0
+    if cursor is not None:
+        # Offset pagination lacks a stable index generation/snapshot proof.
+        return result(False, "index_unverified", None)
+    return result(True, "done", None)
+
+
 def _resolve_inside(root: str, candidate: str) -> str | None:
     """Resolve a match and prove it stays inside the allowed folder.
 
@@ -548,6 +662,23 @@ def _relative_to_root(resolved_root: str, resolved: str) -> str | None:
         return None
     return "/".join(parts)
 
+
+
+def _candidate_allowed(root: str, candidate: str, resolved: str) -> bool:
+    # Check both the indexed spelling and resolved spelling: a junction inside
+    # an excluded directory must not bypass the lexical exclusion.
+    try:
+        lexical_relative = os.path.relpath(candidate, root)
+        resolved_root = os.path.realpath(root)
+        resolved_relative = os.path.relpath(resolved, resolved_root)
+    except (ValueError, OSError):
+        return False
+    return not (
+        _excluded_relative(lexical_relative)
+        or _excluded_relative(resolved_relative)
+        or _hidden_system_on_path(root, candidate)
+        or _hidden_system_on_path(resolved_root, resolved)
+    )
 
 def _entry_metadata(path: str) -> tuple[int | None, str | None, bool]:
     """Size, modification time and the folder flag — never the body."""
@@ -622,7 +753,7 @@ def search_pc_files(
             excluded += 1
             continue
         relative = _relative_to_root(resolved_root, resolved)
-        if relative is None or _excluded_relative(relative) or _hidden_system_on_path(resolved_root, resolved):
+        if relative is None or not _candidate_allowed(scope.root, row, resolved):
             excluded += 1
             continue
         size_bytes, modified_at, is_directory = _entry_metadata(resolved)

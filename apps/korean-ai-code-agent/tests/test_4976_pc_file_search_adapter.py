@@ -732,3 +732,102 @@ def test_everything_query_applies_path_exclusion(tmp_path):
     assert calls[-1][-1] == "report " + adapter._everything_exclusions(str(tmp_path))
     for name in ("appdata", "windows", "programdata", "ssh", "git"):
         assert name in calls[-1][-1].lower()
+
+
+def test_multi_root_pages_continue_without_duplicates(tmp_path):
+    roots = [tmp_path / "one", tmp_path / "two"]
+    labels = ["One", "Two"]
+    rows = {}
+    scopes = []
+    for root, label in zip(roots, labels):
+        root.mkdir()
+        files = [root / "a.txt", root / "b.txt"]
+        for file in files:
+            file.write_text("x", encoding="utf8")
+        rows[str(root)] = [str(f) for f in files]
+        scopes.append(PcFileSearchScope(root=str(root), device_id=DEVICE_ID, local_device_id=DEVICE_ID, label=label, multiple_roots=True))
+    class Port:
+        def search_page(self, *, query, root, offset, limit, timeout):
+            return rows[root][offset:offset + limit]
+    all_paths, cursor = [], None
+    for _ in range(8):
+        page = adapter.search_pc_files_page(scopes=scopes, query="x", port=Port(), cursor=cursor, limit=1)
+        all_paths.extend(item["read"]["path"] for item in page["entries"])
+        if page["cursor"] is None:
+            assert page["complete"] is False and page["reason"] == "index_unverified"
+            break
+        assert page["reason"] == "limit"
+        cursor = page["cursor"]
+    assert all_paths == ["One/a.txt", "One/b.txt", "Two/a.txt", "Two/b.txt"]
+    assert len(set(all_paths)) == 4
+
+
+def test_paged_timeout_preserves_complete_rows_and_cursor(tmp_path):
+    root = tmp_path / "drive"
+    root.mkdir()
+    file = root / "ready.txt"
+    file.write_text("x", encoding="utf8")
+    scope = PcFileSearchScope(root=str(root), device_id=DEVICE_ID, local_device_id=DEVICE_ID, label="One", multiple_roots=True)
+    class Port:
+        def search_page(self, **kwargs):
+            raise adapter.PcFileSearchTimeout([str(file)])
+    page = adapter.search_pc_files_page(scopes=[scope], query="x", port=Port(), limit=2)
+    assert page["complete"] is False and page["reason"] == "timeout"
+    assert page["cursor"] == {"label": "One", "offset": 1}
+    assert page["entries"][0]["read"]["path"] == "One/ready.txt"
+
+
+def test_paged_result_rejects_excluded_matches(tmp_path):
+    root = tmp_path / "drive"
+    blocked = root / ".ssh" / "secret"
+    blocked.parent.mkdir(parents=True)
+    blocked.write_text("x", encoding="utf8")
+    good = root / "good"
+    good.write_text("x", encoding="utf8")
+    scope = PcFileSearchScope(root=str(root), device_id=DEVICE_ID, local_device_id=DEVICE_ID, label="One", multiple_roots=True)
+    class Port:
+        def search_page(self, *, offset, **kwargs):
+            return [str(blocked), str(good)][offset:]
+    page = adapter.search_pc_files_page(scopes=[scope], query="x", port=Port(), limit=4)
+    assert [x["read"]["path"] for x in page["entries"]] == ["One/good"]
+    assert page["complete"] is True
+
+
+def test_paged_es_uses_offset_and_fails_closed_on_old_version(tmp_path):
+    executable = tmp_path / "es.exe"
+    executable.write_text("", encoding="utf8")
+    calls = []
+    def runner(argv, *, timeout):
+        calls.append(argv)
+        return (0, "1.5.0" if "-get-everything-version" in argv else "", "")
+    port = EverythingEsCliSearchPort(executable=str(executable), runner=runner)
+    assert port.search_page(query="x", root=str(tmp_path), offset=7, limit=2, timeout=10) == []
+    assert calls[-1][calls[-1].index("-offset") + 1] == "7"
+    assert "-s" in calls[-1] and "!path:regex:" in calls[-1][-1]
+    calls.clear()
+    def old(argv, *, timeout):
+        calls.append(argv)
+        return 0, "1.4.1", ""
+    port = EverythingEsCliSearchPort(executable=str(executable), runner=old)
+    with pytest.raises(PcFileSearchUnsupported):
+        port.search_page(query="x", root=str(tmp_path), offset=0, limit=1, timeout=10)
+    assert all("-search*" not in call for call in calls)
+
+
+def test_runner_timeout_keeps_only_complete_output_lines(monkeypatch):
+    def timeout(*args, **kwargs):
+        raise subprocess.TimeoutExpired(args[0], kwargs["timeout"], output=b"first\npartial")
+    monkeypatch.setattr(adapter.subprocess, "run", timeout)
+    with pytest.raises(adapter.PcFileSearchTimeout) as caught:
+        adapter._default_process_runner(["fake"], timeout=0.1)
+    assert caught.value.rows == ("first",)
+
+
+def test_empty_timeout_is_not_success(tmp_path):
+    scope = PcFileSearchScope(root=str(tmp_path), device_id=DEVICE_ID, local_device_id=DEVICE_ID, label="one", multiple_roots=True)
+    class Port:
+        def search_page(self, **kwargs):
+            raise adapter.PcFileSearchTimeout()
+    page = adapter.search_pc_files_page(scopes=[scope], query="x", port=Port())
+    assert page["entries"] == [] and page["complete"] is False
+    assert page["reason"] == "timeout" and page["cursor"] == {"label": "one", "offset": 0}
