@@ -11,6 +11,11 @@ preview_urls = false
 # swap is ONE change and the revert is the reverse ONE change.
 # routes = [{ pattern = "chat.padiem.net", custom_domain = true }]
 
+[assets]
+directory = "../padiem-chat/static"
+binding = "ASSETS"
+
+# PADIEM_COM2_EDGE_SECRET is supplied separately as a Worker secret.
 [vars]
 FRONT_ORIGIN = "https://chat-com2.padiem.net"
 # "static" → 503 maintenance page; "service" → padiem-chat Python Worker.

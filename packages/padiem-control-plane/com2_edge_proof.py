@@ -16,11 +16,12 @@ TLS_VERSIONS = frozenset({"TLSv1.2", "TLSv1.3"})
 
 
 class EdgeProofVerifier:
-    def __init__(self, secret: str, replay_db: str, *, window: int = 300):
+    def __init__(self, secret: str, replay_db: str, *, window: int = 300, all_requests: bool = False):
         if not isinstance(secret, str) or len(secret) < 32:
             raise ValueError("edge proof secret required")
         if not 1 <= window <= 300 or not replay_db or replay_db == ":memory:":
             raise ValueError("durable replay database and bounded window required")
+        self._all_requests = all_requests
         self._key = secret.encode("utf-8")
         self._db = replay_db
         self._window = window
@@ -34,7 +35,8 @@ class EdgeProofVerifier:
             request_id = headers.get("x-padiem-edge-id")
             tls = headers.get("x-padiem-edge-tls")
             proof = headers.get("x-padiem-edge-proof")
-            if (method != "GET" or path != "/api/claw/connector/gateway/session"
+            if (not isinstance(method, str) or not method or "\n" in method
+                or not isinstance(path, str) or not path.startswith("/") or "\n" in path
                 or not isinstance(at_text, str) or not at_text.isascii() or not at_text.isdigit()
                 or not isinstance(request_id, str) or not ID_RE.fullmatch(request_id)
                 or tls not in TLS_VERSIONS or not isinstance(proof, str) or not PROOF_RE.fullmatch(proof)):
