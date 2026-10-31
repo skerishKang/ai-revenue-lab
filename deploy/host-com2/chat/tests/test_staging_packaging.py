@@ -121,13 +121,16 @@ class StagingCheckConfig(unittest.TestCase):
             module.DATA = data
             with unittest.mock.patch.dict(os.environ, self._full_env(data, secret), clear=True):
                 self.assertTrue(module.ready())
+            disabled = self._full_env(data, secret)
+            disabled["PADIEM_CHAT_SHARED_LOGIN_ENABLED"] = "false"
+            with unittest.mock.patch.dict(os.environ, disabled, clear=True):
+                self.assertTrue(module.ready())
             for broken in (
                 {"PADIEM_LOCAL_DEV": "1"},
                 {"PADIEM_CHAT_PUBLIC_BASE_URL": "https://chat.padiem.net"},
                 {"PADIEM_CHAT_COOKIE_SECURE": "false"},
                 {"PADIEM_CHAT_SESSION_SECRET": "short"},
                 {"PADIEM_CHAT_RUNTIME_MODE": "b14"},
-                {"PADIEM_CHAT_SHARED_LOGIN_ENABLED": "false"},
                 {"PC_QUEUE_BACKEND": "d1"},
                 {"PC_QUEUE_ORIGIN": "http://127.0.0.1:8797"},
                 {"PADIEM_CHAT_QUEUE_ALLOW_LOOPBACK_HTTP": "0"},

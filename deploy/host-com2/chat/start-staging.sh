@@ -17,13 +17,26 @@ if systemctl is-active --quiet "$unit"; then
   exit 0
 fi
 if ss -ltn 2>/dev/null | grep -qE '[:.]8801[[:space:]]'; then fail PORT_8801_IN_USE; fi
-runuser -u padiem-chat -- "$app/venv/bin/python" "$app/check_config_staging.py" >/dev/null \
+set -a
+source "$app/.env"
+set +a
+runuser -u padiem-chat -m -- "$app/venv/bin/python" "$app/check_config_staging.py" >/dev/null \
   || fail CONFIG_NOT_READY
 systemctl start "$unit"
 if ! systemctl is-active --quiet "$unit"; then
   systemctl --no-pager --full status "$unit" >&2 || true
   fail NOT_ACTIVE
 fi
+for _ in $(seq 1 30); do
+  if runuser -u padiem-chat -- "$app/venv/bin/python" "$app/health.py" \
+    --url http://127.0.0.1:8801/health >/dev/null 2>&1; then
+    runuser -u padiem-chat -- "$app/venv/bin/python" "$app/health.py" \
+      --url http://127.0.0.1:8801/health
+    echo "CHAT_STAGING_START=PASS PORT=8801"
+    exit 0
+  fi
+  sleep 2
+done
 runuser -u padiem-chat -- "$app/venv/bin/python" "$app/health.py" \
   --url http://127.0.0.1:8801/health || fail HEALTH_FAILED
 echo "CHAT_STAGING_START=PASS PORT=8801"
