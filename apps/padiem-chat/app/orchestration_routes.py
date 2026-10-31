@@ -5,6 +5,7 @@ from __future__ import annotations
 from .file_lane import file_resolver
 
 import json
+import logging
 import re
 from typing import Any
 
@@ -29,7 +30,11 @@ from .model_policy import (
 from .orchestration_bridge import B62EngineOrchestrationBridge, B62OrchestrationError
 from .public_chat import public_chat_result
 from .request_contract import BrowserRequestError, _validate_payload_async
+from .pc_correlation import run_hash
 from .usage_gate import UsageGate
+
+_PC_TRACE_LOG = logging.getLogger("padiem_chat.pc_correlation")
+_PC_TRACE_LOG.setLevel(logging.INFO)
 
 MAX_ORCHESTRATION_BROWSER_BODY_BYTES = 256 * 1024
 _CONTINUATION_RE = re.compile(r"^cont_[A-Za-z0-9_-]{8,123}$")
@@ -177,7 +182,16 @@ async def api_orchestration(request: Request) -> JSONResponse:
         return _error("unauthorized", "이 기능을 사용하려면 로그인이 필요합니다.", 401)
     try:
         raw = await _json_body(request)
+        # Assign the same canonical run before logging even for older clients
+        # that do not supply one; the PC branch below reuses it for the Engine.
+        trace_run_id = raw.get("pc_run_id") if isinstance(raw, dict) else None
+        if isinstance(raw, dict) and trace_run_id is None:
+            from .chat_pc_drive import _new_lane_run_id
+            trace_run_id = _new_lane_run_id()
+        trace_run = run_hash(trace_run_id)
+        _PC_TRACE_LOG.info("pc_chat stage=request_received run_hash=%s", trace_run or "none")
         messages, skill, tool_request, attachments, conversation_id, project_id, custom = await _validate_payload_async(raw, file_resolver=file_resolver(request))
+        _PC_TRACE_LOG.info("pc_chat stage=contract_accepted run_hash=%s", trace_run or "none")
         user_credential_ref = None
         if custom is not None:
             from .byok_bridge import resolve_reference
@@ -223,7 +237,7 @@ async def api_orchestration(request: Request) -> JSONResponse:
             policy = resolve_model_policy(messages)
             product_identity = PADIEM_IDENTITY_INSTRUCTION
     except BrowserRequestError as exc:
-        return _error("invalid_request", str(exc), 422)
+        return _error(exc.code, str(exc), 422)
     except ModelPolicyError as exc:
         return _error(exc.code, exc.message, 422)
     except B62OrchestrationError as exc:
@@ -302,7 +316,7 @@ async def api_orchestration(request: Request) -> JSONResponse:
         if pc_context is None:
             # A text-only BYOK turn stages message history, never a PC run.
             pc_context = {"workspace_id": "personal", "subject_id": None, "pc_tools": None}
-        from .chat_pc_drive import ChatPCDriveError, _client_lane_run_id, _new_lane_run_id, pc_scope_notice_for_run
+        from .chat_pc_drive import ChatPCDriveError, _client_lane_run_id, pc_scope_notice_for_run
         from .claw_live_events import chat_pc_orchestration_sse
         begin = getattr(store, "begin_chat_stream_turn", None)
         finish = getattr(store, "finish_chat_stream_turn", None)
@@ -320,7 +334,7 @@ async def api_orchestration(request: Request) -> JSONResponse:
             except Exception:
                 return _error("history_context_incomplete", "대화 맥락을 현재 복원할 수 없습니다.", 503)
         try:
-            pc_run_id = _client_lane_run_id(raw.get("pc_run_id")) or _new_lane_run_id()
+            pc_run_id = _client_lane_run_id(raw.get("pc_run_id")) or trace_run_id
             saved_id = await begin(
                 user_id=uid, run_id=pc_run_id, workspace_id=pc_context["workspace_id"],
                 user_text=user_text, conversation_id=conversation_id,

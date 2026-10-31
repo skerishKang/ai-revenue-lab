@@ -11,6 +11,7 @@ from types import SimpleNamespace
 
 from starlette.requests import Request
 
+from store_seam import attach_dispatch_seam
 from app.history import (
     D1HistoryStore,
     PRODUCT_SCOPE_CHAT,
@@ -59,6 +60,7 @@ def _store(*, dispatch=None, run_row=None, messages=None, reads=None,
     store._first = first
     store._all = all_rows
     store.get_local_task_correlation = local_correlation
+    attach_dispatch_seam(store)  # the seam the real store answers dispatch reads through
     return store
 
 

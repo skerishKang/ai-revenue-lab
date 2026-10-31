@@ -376,7 +376,6 @@ def valid_payload(app_id: str, ref: str = _VALID_REF) -> dict[str, Any]:
                 # carries an inert explicit route because the suspended Router
                 # auto route is never a valid Engine model.
                 "model": "testowner/example-model.v1",
-                "allow_external_fallback": False,
             },
         },
         "messages": [{"role": "user", "content": "synthetic a6 probe"}],

@@ -70,7 +70,8 @@ def test_chat_does_not_pin_owner_tier_dispatch_to_one_attempt():
         product_tier="free",
         tier_stream_fallback=True,
     )
-    assert profile.model_policy["allow_external_fallback"] is False
+    # B5: the retired knob is no longer policy vocabulary.
+    assert "allow_external_fallback" not in profile.model_policy
     assert "max_attempts" not in profile.model_policy
     assert profile.model_policy["product_tier"] == "free"
     completed = b14_client._agent_profile(

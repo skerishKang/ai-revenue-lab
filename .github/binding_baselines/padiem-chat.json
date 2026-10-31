@@ -128,6 +128,14 @@
       "type": "d1"
     },
     {
+      "name": "PADIEM_CHAT_FILE_LANE_ORIGIN",
+      "type": "plain_text"
+    },
+    {
+      "name": "PADIEM_CHAT_FILE_LANE_TICKET_SECRET",
+      "type": "secrets_store_secret"
+    },
+    {
       "name": "PADIEM_CHAT_GLOBAL_DAILY_LIMIT",
       "type": "plain_text"
     },
@@ -298,6 +306,18 @@
     {
       "name": "PADIEM_WORKSPACE_FILES",
       "type": "r2_bucket"
+    },
+    {
+      "name": "PC_AGENT_INSTALL_URL",
+      "type": "plain_text"
+    },
+    {
+      "name": "PC_QUEUE_BACKEND",
+      "type": "plain_text"
+    },
+    {
+      "name": "PC_QUEUE_ORIGIN",
+      "type": "plain_text"
     },
     {
       "name": "PC_QUEUE_SERVICE_SECRET",

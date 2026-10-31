@@ -358,9 +358,8 @@ def test_request_poll_real_read_result_reaches_the_same_conversation(monkeypatch
     read_calls: list[dict] = []
 
     class ReadPort:
-        def read_bytes(self, *, node_ref, file_path, timeout_seconds):
-            read_calls.append({"node_ref": node_ref, "file_path": file_path,
-                               "timeout_seconds": timeout_seconds})
+        def read_bytes(self, *, node_ref, file_path, **kwargs):
+            read_calls.append({"node_ref": node_ref, "file_path": file_path, **kwargs})
             return TEXT_BYTES
 
     executor = OracleMeshExecutor(
@@ -374,8 +373,7 @@ def test_request_poll_real_read_result_reaches_the_same_conversation(monkeypatch
     )
     outcome = executor.execute(dispatched)
     assert outcome.exit_code == 0 and outcome.body == TEXT_BYTES
-    assert read_calls == [{"node_ref": NODE, "file_path": FILE_PATH,
-                           "timeout_seconds": None}]
+    assert read_calls == [{"node_ref": NODE, "file_path": FILE_PATH}]
 
     # 3. the executor submits; the server verifies and appends once
     submitted = []
@@ -642,7 +640,8 @@ def test_executor_holds_the_result_across_a_store_failure(monkeypatch):
     reads = []
 
     class ReadPort:
-        def read_bytes(self, *, node_ref, file_path, timeout_seconds):
+        def read_bytes(self, *, node_ref, file_path, **kwargs):
+            assert "timeout_seconds" not in kwargs
             reads.append(file_path)
             return TEXT_BYTES
 

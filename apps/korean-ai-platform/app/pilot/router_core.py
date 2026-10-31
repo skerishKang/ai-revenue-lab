@@ -1,21 +1,14 @@
 """Router Core for Business 14 Alpha.
 
-Implements Manual and Automatic (b14/auto) routing with deterministic
-model selection, fallback logic, and no-safe-route handling.
+Implements manual routing with deterministic model selection, fallback
+logic, and no-safe-route handling.
 
 Manual:
   - Specific catalog model ID → single upstream call
   - No provider switching unless explicit
-
-Automatic (D14, #2044):
-  - model = "b14/auto"
-  - Resolves through the owner-designated fixed chain in
-    app.pilot.routing_policy (ROUTING_POLICY_ID = "fixed_chain_v1").
-    No scorer is consulted; task_type / required_capabilities /
-    optimize_for / provider_order / allow_paid are accepted but ignored
-    (recorded as ignored_options in reason_codes).
-  - allow_external_fallback=False → one attempt; otherwise the chain walk is
-    the chain length. No attempt count narrows it (#4317).
+  - The owner-selected free-tier primary with a trusted product grade
+    receives exactly one preselected grade fallback (tier_fallback);
+    no other route offers catalog substitutions (#2085 no-auto policy).
   - Fallback on: timeout, transport failure, HTTP 429, HTTP 5xx
   - No fallback on: HTTP 400/401/403/404/409/422/any other 4xx,
     malformed request, malformed upstream response, missing key,
@@ -45,8 +38,6 @@ from app.pilot.errors import NoSafeRoute, RoutingError
 
 class RouteMode(str, enum.Enum):
     MANUAL = "manual"
-    AUTO = "auto"
-    AUTO_FALLBACK = "auto_fallback"
 
 
 class EvidenceStatus(str, enum.Enum):
@@ -165,7 +156,6 @@ def _platform_secret_present(cm) -> bool:
 
 def resolve_manual_route(
     model_id: str,
-    allow_external_fallback: bool = False,
     product_tier: str = "free",
 ) -> RouteDecision:
     """Resolve a manual route for a specific model ID.
@@ -176,7 +166,6 @@ def resolve_manual_route(
     Manual routes default to no arbitrary catalog substitutions. An owner-
     selected primary with trusted product grade instead receives
     exactly one preselected grade fallback on recoverable provider failure.
-    The generic allow_external_fallback flag does not disable this fixed pair.
 
     The number of candidates this route may try is the number of candidates
     it allows: the selected model plus its eligible fallback list. No separate
@@ -218,14 +207,7 @@ def resolve_manual_route(
         )
 
     # Free-only TokenHarbor routes may never fall back to another provider's
-    # paid model, even when a client requests external fallback.
-    if cm.platform_provider_id == "tokenharbor" and allow_external_fallback:
-        raise NoSafeRoute(
-            reason_code="tokenharbor_free_only_fallback_disabled",
-            message="TokenHarbor free-only routes do not allow external fallback.",
-            upstream_called=False,
-        )
-
+    # paid model; external fallback is not offered to any manual route.
     cred_ok, cred_status, cred_source, plat_pid = _credential_status_for(cm)
 
     # Platform-owned secret missing -> fail closed with zero upstream calls.
@@ -261,29 +243,10 @@ def resolve_manual_route(
                     "route_id": f"platform:{target.model_id}",
                     "reason": "owner_selected_tier_fallback",
                 })
-    elif allow_external_fallback:
-        all_models = get_catalog_models()
-        fallback_candidates = [
-            {
-                "model_id": m.model_id,
-                "upstream_model": m.upstream_model,
-                "provider": m.provider,
-                "route_id": f"platform:{m.model_id}",
-                "platform_provider_id": m.platform_provider_id,
-                "reason": "catalog_alternative",
-            }
-            for m in all_models
-            if m.model_id != model_id
-            and not excluded_from_owner_customer_selection(m.model_id)
-            and not free_candidate_excluded_from_execution(m.model_id)
-            and m.model_id != "experiential/qwen3.8-flash-next-uncensored"
-        ][:3]  # limit to top 3 fallback candidates
 
     reason_codes = ["manual_selection"]
     if owner_tier_pair:
         reason_codes.append("owner_selected_tier_fallback:" + product_tier)
-    elif not allow_external_fallback:
-        reason_codes.append("external_fallback_disabled")
 
     return RouteDecision(
         route_mode=RouteMode.MANUAL.value,
@@ -292,7 +255,7 @@ def resolve_manual_route(
         selected_upstream_model=cm.upstream_model,
         selected_route_id=route_id,
         reason_codes=reason_codes,
-        fallback_allowed=bool(fallback_candidates) if owner_tier_pair else allow_external_fallback,
+        fallback_allowed=bool(fallback_candidates),
         eligible_fallback=fallback_candidates,
         excluded_candidates=[],
         credential_available=cred_ok,
@@ -308,31 +271,17 @@ def resolve_manual_route(
 
 
 def resolve_route(model_id: str, business14_options: dict[str, Any] | None = None) -> RouteDecision:
-    """Resolve any route (manual or auto) without making upstream calls.
+    """Resolve a manual route without making upstream calls.
 
-    - If model_id == "b14/auto": use the owner-designated fixed chain
-      (app.pilot.routing_policy, D14 #2044)
-    - Otherwise: use manual routing with the specific model_id
+    The retired ``b14/auto`` id never reaches this module: request validation
+    rejects it as a string. Every resolved route is manual.
 
     Returns RouteDecision. Raises NoSafeRoute if routing fails.
     """
     opts = business14_options or {}
 
-    if model_id.strip() == "b14/auto":
-        # D14 (#2044): owner-designated fixed chain, no scorer. Imported
-        # lazily because routing_policy depends on this module's types.
-        from app.pilot.routing_policy import resolve_chain_route
-
-        allow_external_fallback = opts.get("allow_external_fallback", True)
-        return resolve_chain_route(
-            allow_external_fallback=allow_external_fallback,
-            requested_options=opts,
-        )
-
-    allow_external_fallback = opts.get("allow_external_fallback", False)
     return resolve_manual_route(
         model_id,
-        allow_external_fallback=allow_external_fallback,
         product_tier=opts.get("product_tier", "free"),
     )
 

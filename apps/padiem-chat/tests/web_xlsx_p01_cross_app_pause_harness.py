@@ -67,6 +67,10 @@ def _load_b62_app():
 
 
 _load_b62_app()
+# The Engine owns the app package in this subprocess. Chat also has a small
+# number of absolute app imports; resolve those missing modules from Chat.
+# Engine modules already imported above keep their original identities.
+sys.modules["app"].__path__.append(str(CHAT / "app"))
 
 import httpx  # noqa: E402
 from chatapp.app_factory import create_app  # noqa: E402

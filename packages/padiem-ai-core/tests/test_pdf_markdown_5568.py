@@ -19,6 +19,8 @@ from io import BytesIO
 from pathlib import Path
 
 import pytest
+
+pypdf = pytest.importorskip("pypdf")
 from pypdf import PdfWriter
 from pypdf.generic import DecodedStreamObject, DictionaryObject, NameObject, NumberObject
 

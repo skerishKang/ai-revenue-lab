@@ -15,6 +15,12 @@ on:
       - ".github/scripts/b54_engine_d1_0009_0013_schema.py"
       - ".github/scripts/b54_engine_d1_0009_0013_foreign_keys.py"
       - ".github/tests/test_b54_engine_d1_0009_0013_gate.py"
+      - ".github/workflows/b54-engine-d1-0012-0013-apply.yml"
+      - ".github/scripts/b54_engine_d1_0012_0013_*.py"
+      - ".github/tests/test_b54_engine_d1_0012_0013_*.py"
+      - "docs/operations/ENGINE_D1_0012_0013_GATE_20261030.md"
+      - ".github/scripts/b54_engine_d1_0012_0013_apply_evidence.py"
+      - ".github/tests/test_b54_engine_d1_0012_0013_apply_evidence.py"
       - "apps/padiem-ai-engine/migrations/**"
   workflow_dispatch:
 
@@ -43,7 +49,7 @@ jobs:
         run: python -m pip install --quiet pyyaml pytest
 
       - name: Run gate contract tests
-        run: python -m pytest -q .github/tests/test_b54_engine_d1_provision_gate.py .github/tests/test_b54_engine_d1_0009_0013_gate.py
+        run: python -m pytest -q .github/tests/test_b54_engine_d1_provision_gate.py .github/tests/test_b54_engine_d1_0009_0013_gate.py .github/tests/test_b54_engine_d1_0012_0013_apply_evidence.py .github/tests/test_b54_engine_d1_0012_0013_payload.py .github/tests/test_b54_engine_d1_0012_0013_contract.py
 
       - name: Record no provisioning performed
         run: |

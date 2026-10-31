@@ -57,8 +57,14 @@ class N {
   append(...children) { children.forEach((child) => this.appendChild(child)); }
   removeChild(child) { const i = this.children.indexOf(child); if (i >= 0) this.children.splice(i, 1); }
   insertBefore(child, ref) {
+    // A real document raises NotFoundError when the reference node is not a
+    // child. Tolerating that here is what let util-menu.js:1507/#1787 pass this
+    // harness while the SNS and meeting panels failed in production.
+    if (ref != null && this.children.indexOf(ref) < 0) {
+      throw new Error("NotFoundError: The node before which the new node is to be inserted is not a child of this node.");
+    }
+    if (ref == null) return this.appendChild(child);
     const i = this.children.indexOf(ref);
-    if (i < 0) return this.appendChild(child);
     this.children.splice(i, 0, child);
     child.parentNode = this;
     return child;
@@ -311,6 +317,42 @@ function spawnSession(windowState = {}) {
     utilView.appendChild(tab);
   });
 
+  // #5908: the quick-run toolbox grid and the sidebar submenu the shipped
+  // markup carries around the panels, plus the Claw entries two cards route
+  // to. Clicks on the fake Claw controls are recorded so the tools scenario
+  // can observe the real module's routing.
+  const toolGrid = mk("section", "utilToolGrid", "util-tool-grid");
+  toolGrid.setAttribute("aria-label", "빠른 실행 도구함");
+  [["speech", "열기"], ["sns", "열기"], ["meeting", "열기"], ["pdfmd", "이력 열기"], ["claw-quote", "Claw에서 작성"], ["claw-excel", "Claw에서 진행"]].forEach(([key, label]) => {
+    const card = mk("div", null, "util-tool-card");
+    const open = mk("button", null, "util-tool-open");
+    open.setAttribute("data-util-tool", key);
+    open.textContent = label;
+    card.appendChild(open);
+    toolGrid.appendChild(card);
+  });
+  utilView.appendChild(toolGrid);
+
+  const utilSubmenu = mk("div", "utilSubmenu", "util-submenu");
+  ["speech", "sns", "meeting", "pdfmd"].forEach((key) => {
+    const item = mk("button", null, "util-submenu-item");
+    // dataset, not setAttribute: the shim does not sync data-* attributes
+    // into dataset, and the shipped module reads item.dataset.util here.
+    item.dataset.util = key;
+    utilSubmenu.appendChild(item);
+  });
+  shell.appendChild(utilSubmenu);
+
+  const clawNavClicks = [];
+  const clawChipClicks = [];
+  const clawNav = mk("button", "clawNavButton", "side-item");
+  clawNav.addEventListener("click", () => clawNavClicks.push("claw"));
+  shell.appendChild(clawNav);
+  const clawChip = mk("button", "clawQuoteCard", "claw-chip");
+  clawChip.setAttribute("aria-pressed", "false");
+  clawChip.addEventListener("click", () => clawChipClicks.push("quote"));
+  shell.appendChild(clawChip);
+
   // The speech form is shipped markup in index.html, so the harness builds the
   // same field set the browser would hand to `new FormData(form)`.
   const speechPanel = mk("div", "utilSpeechPanel", "util-panel");
@@ -412,7 +454,7 @@ function spawnSession(windowState = {}) {
   };
   vm.createContext(ctx);
   vm.runInContext(fs.readFileSync(utilMenuPath, "utf8"), ctx, { filename: "util-menu.js" });
-  return { root, utilView, navBtn, byId };
+  return { root, utilView, navBtn, byId, clawNavClicks, clawChipClicks };
 }
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -426,6 +468,26 @@ function find(session, id) {
   const found = session.root._descendants().find((n) => n.id === id) || null;
   if (!found) throw new Error("element missing: #" + id);
   return found;
+}
+
+// The lazy builders mount the save-status line above the action row. That order
+// is exactly what broke in production, so the built shape is read back here
+// instead of being inferred from a submit that never gets that far.
+function formShape(session, panelId, formId, stateId) {
+  const panel = session.byId[panelId];
+  const form = panel._descendants().find((n) => n.id === formId) || null;
+  if (!form) {
+    return { built: false, placeholderLeft: panel.children.length, loaded: panel.dataset.loaded || null };
+  }
+  const stateAt = form.children.findIndex((n) => n.id === stateId);
+  const actionsAt = form.children.findIndex((n) => n.classList.contains("util-form-actions"));
+  return {
+    built: true,
+    loaded: panel.dataset.loaded || null,
+    statusLineIndex: stateAt,
+    actionsIndex: actionsAt,
+    statusAboveActions: stateAt >= 0 && actionsAt >= 0 && stateAt < actionsAt,
+  };
 }
 const labels = (nodes) => nodes.map((n) => text(n).trim());
 
@@ -723,6 +785,7 @@ const SCENARIOS = {
     const igPrompt = chatPayloads[chatPayloads.length - 1].messages[0].content;
 
     return {
+      formBuild: formShape(session, "utilSnsPanel", "utilSnsForm", "utilSnsSaveState"),
       blogPrompt,
       fbPrompt,
       igPrompt,
@@ -1371,6 +1434,7 @@ const SCENARIOS = {
     storedFiles.filter((f) => f.name.endsWith(".txt") && f.name.indexOf("활동집 - ") !== 0).forEach((f) => { savedRecordBodies[f.name] = f.content; });
 
     return {
+      formBuild: formShape(session, "utilMeetingPanel", "utilMeetingForm", "utilMeetingSaveState"),
       prompt,
       generated,
       edited,
@@ -1392,6 +1456,52 @@ const SCENARIOS = {
       reentryRecordCount: reentryRecordButtons.length,
       endpoints: endpointSet(),
       alerts,
+      pageErrors,
+    };
+  },
+
+  // #5908: the quick-run toolbox cards. The four util cards must land on the
+  // same panels/switch the submenu drives; the two Claw cards must route to
+  // the existing Claw workspace (and, for 견적서, preselect its existing chip)
+  // instead of inventing a second engine here.
+  async tools() {
+    const session = spawnSession();
+    await session.navBtn.dispatch("click");
+    await sleep(10);
+    const grid = find(session, "utilToolGrid");
+    const buttons = grid.querySelectorAll("[data-util-tool]");
+    const keys = buttons.map((b) => b.getAttribute("data-util-tool"));
+
+    const panelIds = ["utilSpeechPanel", "utilSnsPanel", "utilMeetingPanel", "utilPdfmdPanel"];
+    const visiblePanels = () => panelIds.filter((id) => !find(session, id).hidden);
+    const activeSubmenu = () => session.byId.utilSubmenu.querySelectorAll(".util-submenu-item")
+      .filter((i) => i.classList.contains("active"))
+      .map((i) => i.dataset.util);
+
+    await buttons.find((b) => b.getAttribute("data-util-tool") === "speech").dispatch("click");
+    await sleep(10);
+    const visibleAfterSpeech = visiblePanels();
+    const activeSubAfterSpeech = activeSubmenu();
+
+    await buttons.find((b) => b.getAttribute("data-util-tool") === "pdfmd").dispatch("click");
+    await sleep(10);
+    const visibleAfterPdfmd = visiblePanels();
+
+    await buttons.find((b) => b.getAttribute("data-util-tool") === "claw-quote").dispatch("click");
+    await sleep(10);
+    const afterQuote = { clawNav: session.clawNavClicks.length, chip: session.clawChipClicks.length };
+
+    await buttons.find((b) => b.getAttribute("data-util-tool") === "claw-excel").dispatch("click");
+    await sleep(10);
+    const afterExcel = { clawNav: session.clawNavClicks.length, chip: session.clawChipClicks.length };
+
+    return {
+      keys,
+      visibleAfterSpeech,
+      activeSubAfterSpeech,
+      visibleAfterPdfmd,
+      afterQuote,
+      afterExcel,
       pageErrors,
     };
   },

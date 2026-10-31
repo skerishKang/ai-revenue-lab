@@ -170,22 +170,17 @@ def install_gateway_multimodal_contract(gateway_module: Any) -> None:
         body["business14"] = opts
 
         model_id = body["model"]
-        if model_id != "b14/auto":
-            catalog_model = get_catalog_by_id(model_id)
-            if catalog_model is None:
-                raise invalid_body_cls(
-                    "multimodal image input is supported only by Business 14 catalog routing"
-                )
-            if "image" not in catalog_model.capabilities:
-                raise NoSafeRoute(
-                    reason_code="manual_model_capability_mismatch",
-                    message="선택한 모델은 이미지 입력을 지원하지 않습니다.",
-                    upstream_called=False,
-                )
-            # Manual fallback candidates are not capability-filtered in the legacy
-            # manual router. Disable fallback rather than risk an image request
-            # reaching a text-only model.
-            opts["allow_external_fallback"] = False
+        catalog_model = get_catalog_by_id(model_id)
+        if catalog_model is None:
+            raise invalid_body_cls(
+                "multimodal image input is supported only by Business 14 catalog routing"
+            )
+        if "image" not in catalog_model.capabilities:
+            raise NoSafeRoute(
+                reason_code="manual_model_capability_mismatch",
+                message="선택한 모델은 이미지 입력을 지원하지 않습니다.",
+                upstream_called=False,
+            )
 
         return body
 

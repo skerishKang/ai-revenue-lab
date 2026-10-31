@@ -18,7 +18,6 @@ from app.pilot.b14_runtime_config import runtime_config
 @pytest.fixture(autouse=True)
 def _enable_archived_auto_route_tests(monkeypatch):
     """Archived fixed-chain tests explicitly opt in; live default stays deferred."""
-    monkeypatch.setenv("B14_ENABLE_FUTURE_AUTO", "1")
 
 
 @pytest.fixture(autouse=True)
@@ -82,10 +81,12 @@ def test_unknown_price_model_is_never_implicitly_classified_free():
 
 
 
-def test_gateway_resolve_endpoint_ignores_allow_paid_for_fixed_chain(client, monkeypatch):
-    """D14 (#2044): /api/pilot/router/resolve b14/auto ignores allow_paid (fixed chain)."""
+def test_gateway_rejects_the_retired_auto_id_and_drops_scorer_options(
+    client, monkeypatch
+):
+    """B7: b14/auto is refused outright. B4 grace: the scorer-era names are
+    accepted, logged, and dropped — they never reach routing."""
     monkeypatch.setenv("PADIEM_B14_CREDENTIAL_01", "sk-test-agnes-route-0123456789")
-    monkeypatch.delenv("PADIEM_B14_CREDENTIAL_12", raising=False)
     resp_default = client.post(
         "/api/pilot/router/resolve",
         json={
@@ -94,38 +95,33 @@ def test_gateway_resolve_endpoint_ignores_allow_paid_for_fixed_chain(client, mon
             "business14": {"task_type": "coding"},
         },
     )
-    assert resp_default.status_code == 200
-    data_default = resp_default.json()
-    assert data_default["selected_model"] == "agnes-ai/agnes-3.0-flash"
-    assert "routing_policy:fixed_chain_v1" in data_default["reason_codes"]
+    assert resp_default.status_code == 422
+    assert resp_default.json()["error"]["code"] == "invalid_body"
 
-    # Explicit allow_paid=True changes nothing: same chain head, recorded as ignored.
+    # B4 grace: the retired names are accepted, logged, and dropped.
     resp_opt_in = client.post(
         "/api/pilot/router/resolve",
         json={
-            "model": "b14/auto",
+            "model": "agnes-ai/agnes-3.0-flash",
             "messages": [{"role": "user", "content": "hi"}],
             "business14": {"task_type": "coding", "allow_paid": True},
         },
     )
     assert resp_opt_in.status_code == 200
-    data_opt_in = resp_opt_in.json()
-    assert data_opt_in["selected_model"] == data_default["selected_model"]
-    assert any(
-        rc.startswith("ignored_options:") and "allow_paid" in rc
-        for rc in data_opt_in["reason_codes"]
-    )
+    assert resp_opt_in.json()["selected_model"] == "agnes-ai/agnes-3.0-flash"
 
 
-def test_gateway_allow_paid_must_be_boolean_422(client):
-    """business14.allow_paid with non-boolean value returns 422."""
+def test_gateway_allow_paid_is_dropped_whatever_the_value(client, monkeypatch):
+    """B4 grace: allow_paid is ignored (logged), so its type is not checked."""
+    monkeypatch.setenv("PADIEM_B14_CREDENTIAL_01", "sk-test-agnes-route-0123456789")
     resp = client.post(
         "/api/pilot/router/resolve",
         json={
-            "model": "b14/auto",
+            "model": "agnes-ai/agnes-3.0-flash",
             "messages": [{"role": "user", "content": "hi"}],
             "business14": {"allow_paid": "yes"},
         },
     )
-    assert resp.status_code == 422
-    assert "business14.allow_paid must be a boolean" in resp.json()["error"]["message"]
+    # B4 grace: allow_paid is dropped whatever the value.
+    assert resp.status_code == 200
+    assert "allow_paid" not in (resp.json().get("business14") or {})

@@ -256,7 +256,8 @@ async def test_current_question_streams_after_search_and_done_exposes_safe_evide
     assert provider.search_calls == [(CURRENT[0]["content"], 5)]
     assert len(seen) == 1
     assert seen[0]["model"] == DEFAULT_B14_MODEL_ID
-    assert seen[0]["business14"]["allow_external_fallback"] is False
+    # B5: the retired fallback knob no longer travels on the wire.
+    assert "allow_external_fallback" not in seen[0]["business14"]
     assert "max_attempts" not in seen[0]["business14"]
     assert "웹 근거 사용 규칙" in seen[0]["messages"][0]["content"]
 

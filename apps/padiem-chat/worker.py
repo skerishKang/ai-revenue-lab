@@ -9,6 +9,9 @@ from __future__ import annotations
 
 import json
 import asyncio
+import builtins
+import re
+import time
 from dataclasses import replace
 from datetime import datetime, timezone
 from typing import Any
@@ -996,6 +999,51 @@ class CloudflareExternalHttpTransport(httpx.AsyncBaseTransport):
         )
 
 
+_FETCH_STATIC_ROUTES = frozenset({"/health", "/api/auth/status", "/api/admin/session"})
+_FETCH_VERSION_RE = re.compile(r"[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}\Z")
+_FETCH_EXCEPTION_NAMES = frozenset(
+    name for name, value in vars(builtins).items()
+    if isinstance(value, type) and issubclass(value, BaseException)
+) | {"JsException"}
+
+
+def _log_fetch_exception(stage: str, exc: Exception, env: Any, path: Any,
+                         method: Any, app: Any, started: float) -> None:
+    """Best-effort, bounded diagnostic; never render exception or request data."""
+    try:
+        name = type(exc).__name__
+        if name not in _FETCH_EXCEPTION_NAMES:
+            name = "OtherException"
+        version = "unknown"
+        metadata = getattr(env, "CF_VERSION_METADATA", None)
+        if metadata is not None:
+            candidate = metadata.get("id") if isinstance(metadata, dict) else getattr(metadata, "id", None)
+            if isinstance(candidate, str) and _FETCH_VERSION_RE.fullmatch(candidate):
+                version = candidate.lower()
+        route = path if path in _FETCH_STATIC_ROUTES else "<unmatched>"
+        if app is not None and isinstance(path, str):
+            from app.request_telemetry import resolve_route_template
+            scope = {"type": "http", "path": path, "method": method if isinstance(method, str) else "GET"}
+            route = resolve_route_template(app, scope)
+        # A resolver must never accidentally turn request data into a log.
+        if not isinstance(route, str) or len(route) > 160 or not re.fullmatch(r"[A-Za-z0-9_/{}/:.<>-]+", route):
+            route = "<unmatched>"
+        elapsed_ms = max(0, int((time.monotonic() - started) * 1000))
+        print(f"chat_fetch_exception stage={stage} exception={name} version={version} route={route} elapsed_ms={elapsed_ms}")
+    except Exception:
+        # A diagnostics failure must never change the original exception.
+        pass
+
+
+def _log_fetch_exception_safe(stage: str, exc: Exception, worker: Any, request: Any,
+                              path: Any, app: Any, started: float) -> None:
+    try:
+        _log_fetch_exception(stage, exc, worker.env, path,
+                             getattr(request, "method", None), app, started)
+    except Exception:
+        pass
+
+
 class Default(WorkerEntrypoint):
     async def scheduled(self, event: Any, env: Any, ctx: Any) -> None:
         del event, ctx
@@ -1757,65 +1805,75 @@ class Default(WorkerEntrypoint):
                 "chat initialization is still running") from None
 
     async def fetch(self, request: Any) -> Any:
-        import asgi
-
-        path = urlparse(request.url).path
-
-        connector_wss_response = await maybe_dispatch_connector_gateway(
-            request=request, worker_env=self.env, response_factory=Response,
-        )
-        if connector_wss_response is not None:
-            return connector_wss_response
-
+        started = time.monotonic()
+        stage = "entry"
+        path = None
+        app = None
         try:
-            app = await self._get_worker_app()
-        except ConfigError:
-            response = Response(
-                "Padiem Chat runtime configuration is invalid.",
-                status=503,
-                headers={"Content-Type": "text/plain; charset=utf-8"},
+            import asgi
+
+            path = urlparse(request.url).path
+
+            connector_wss_response = await maybe_dispatch_connector_gateway(
+                request=request, worker_env=self.env, response_factory=Response,
             )
-            return _apply_headers(response, path)
-        except ChatInitUnavailableError:
-            # A slow or hung initialization answers a retryable 503 instead of
-            # holding the request open until the runtime reaps it.
-            response = Response(
-                "Padiem Chat is still starting. Try again shortly.",
-                status=503,
-                headers={"Content-Type": "text/plain; charset=utf-8"},
+            if connector_wss_response is not None:
+                return connector_wss_response
+
+            stage = "init"
+            try:
+                app = await self._get_worker_app()
+            except ConfigError:
+                response = Response(
+                    "Padiem Chat runtime configuration is invalid.",
+                    status=503,
+                    headers={"Content-Type": "text/plain; charset=utf-8"},
+                )
+                return _apply_headers(response, path)
+            except ChatInitUnavailableError:
+                # A slow or hung initialization answers a retryable 503 instead of
+                # holding the request open until the runtime reaps it.
+                response = Response(
+                    "Padiem Chat is still starting. Try again shortly.",
+                    status=503,
+                    headers={"Content-Type": "text/plain; charset=utf-8"},
+                )
+                return _apply_headers(response, path)
+
+            stage = "asgi"
+            # The ASGI app is cached across invocations. Bind waitUntil ONLY while
+            # serving this request, otherwise an old ctx could own new log exports.
+            from app.request_telemetry import (
+                install_export_scheduler, reset_export_scheduler,
             )
-            return _apply_headers(response, path)
+            from pyodide.ffi import create_proxy
 
-        # The ASGI app is cached across invocations. Bind waitUntil ONLY while
-        # serving this request, otherwise an old ctx could own new log exports.
-        from app.request_telemetry import (
-            install_export_scheduler, reset_export_scheduler,
-        )
-        from pyodide.ffi import create_proxy
+            def _schedule_log_export(awaitable):
+                # #6225: the handle the runtime receives is released when the
+                # background awaitable settles — a settled PyProxy must not
+                # outlive the request that created it. The awaitable itself is a
+                # pure-Python object, so the export body and its scheduling are
+                # unchanged; only the JS handle's lifetime is bounded here.
+                async def _export_and_release():
+                    try:
+                        await awaitable
+                    finally:
+                        proxy.destroy()
 
-        def _schedule_log_export(awaitable):
-            # #6225: the handle the runtime receives is released when the
-            # background awaitable settles — a settled PyProxy must not
-            # outlive the request that created it. The awaitable itself is a
-            # pure-Python object, so the export body and its scheduling are
-            # unchanged; only the JS handle's lifetime is bounded here.
-            async def _export_and_release():
-                try:
-                    await awaitable
-                finally:
-                    proxy.destroy()
+                proxy = create_proxy(_export_and_release())
+                self.ctx.waitUntil(proxy)
 
-            proxy = create_proxy(_export_and_release())
-            self.ctx.waitUntil(proxy)
+            export_context = install_export_scheduler(_schedule_log_export)
+            try:
+                response = await asgi.fetch(app, request.js_object, self.env)
+            finally:
+                reset_export_scheduler(export_context)
+            return _apply_headers(
+                response,
+                path,
+                b66_quote_base_url=getattr(app.state, "b66_quote_base_url", None),
+            )
 
-        export_context = install_export_scheduler(_schedule_log_export)
-        try:
-            response = await asgi.fetch(app, request.js_object, self.env)
-        finally:
-            reset_export_scheduler(export_context)
-        return _apply_headers(
-            response,
-            path,
-            b66_quote_base_url=getattr(app.state, "b66_quote_base_url", None),
-        )
-
+        except Exception as exc:
+            _log_fetch_exception_safe(stage, exc, self, request, path, app, started)
+            raise

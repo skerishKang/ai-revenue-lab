@@ -107,10 +107,7 @@ def _chat_payload(model_id: str = MODEL_ID) -> dict:
         "max_tokens": 32,
         "stream": False,
         "business14": {
-            "allow_paid": True,
-            "max_attempts": 1,
             "max_retries": 0,
-            "allow_external_fallback": False,
         },
     }
 

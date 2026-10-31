@@ -115,6 +115,7 @@ def _run_loop(answer, *, stop_at=3600.0, environ=None, hold=LANE_HOLD_SECONDS):
 
     def factory(**kwargs):
         executor = _Scripted(answer, clock)
+        executor.idle_poll_max_seconds = kwargs["idle_poll_max_seconds"]
         made["executor"] = executor
         return executor
 
@@ -185,6 +186,21 @@ class TestTheIdleWaitGrows(unittest.TestCase):
         self.assertEqual(clock.gaps[:10], [1, 2, 4, 8, 16, 32, 60, 60, 60, 60])
         self.assertEqual(clock.gaps[10], IDLE_POLL_BASE_SECONDS,
                          "the ask right after work waits one second, as before")
+
+    def test_eight_second_setting_caps_actual_idle_loop(self):
+        clock, _ = _run_loop(lambda _round: ROUND_IDLE, stop_at=160.0,
+                             environ={"ORACLE_MESH_IDLE_POLL_MAX_SECONDS": "8"})
+        self.assertEqual(clock.gaps[:7], [1, 2, 4, 8, 8, 8, 8])
+
+    def test_invalid_ceiling_falls_back_to_60_and_logs_once(self):
+        for value in ("0", "-3", "abc", "", "1.5"):
+            with self.subTest(value=value), patch("sys.stderr") as stderr:
+                clock, _ = _run_loop(lambda _round: ROUND_IDLE, stop_at=600.0,
+                                     environ={"ORACLE_MESH_IDLE_POLL_MAX_SECONDS": value})
+                self.assertEqual(clock.gaps[:7], [1, 2, 4, 8, 16, 32, 60])
+                self.assertEqual(stderr.write.call_count, 2)
+                self.assertIn("invalid ORACLE_MESH_IDLE_POLL_MAX_SECONDS",
+                              stderr.write.call_args_list[0].args[0])
 
     def test_one_second_ceiling_is_exactly_the_cadence_this_lane_had(self):
         clock, _ = _run_loop(lambda _round: ROUND_IDLE, stop_at=120.0,
@@ -282,6 +298,87 @@ def _outcome():
     from kagent.local_agent_oracle_mesh_executor import OracleMeshExecutionOutcome
 
     return OracleMeshExecutionOutcome(termination="exited", exit_code=0, body=b"ok")
+
+
+if __name__ == "__main__":
+    unittest.main()
+
+def _assert_main_real_factory_and_real_loop_honor_environment_cap(tmp_path):
+    """A real executor polls a disposable local HTTP server, with no factory/loop double."""
+    import os
+    import subprocess
+    import sys
+    import threading
+    import time
+    from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+    from pathlib import Path
+
+    observed = []
+    ready = threading.Event()
+
+    class Handler(BaseHTTPRequestHandler):
+        def do_POST(self):
+            self.rfile.read(int(self.headers.get("Content-Length", "0")))
+            observed.append((self.path, time.monotonic()))
+            body = b'{"ok":true,"dispatch":null}'
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+            if len(observed) >= 4:
+                ready.set()
+
+        def log_message(self, *_args):
+            pass
+
+    server = ThreadingHTTPServer(("127.0.0.1", 0), Handler)
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    secret = tmp_path / "synthetic-channel.txt"
+    password = tmp_path / "synthetic-password.txt"
+    secret.write_text("synthetic-channel-secret-for-test", encoding="utf-8")
+    password.write_text("synthetic-password", encoding="utf-8")
+    env = dict(os.environ)
+    env.update({
+        "ORACLE_MESH_CHAT_ORIGIN": "https://chat.example.test",
+        "ORACLE_MESH_QUEUE_ORIGIN": "http://127.0.0.1:%d" % server.server_port,
+        "ORACLE_MESH_CHANNEL_SECRET_FILE": str(secret),
+        "ORACLE_MESH_MESHCTRL_JS": str(tmp_path / "meshctrl.js"),
+        "ORACLE_MESH_LOGIN_USER": "synthetic",
+        "ORACLE_MESH_PASSWORD_FILE": str(password),
+        "ORACLE_MESH_WORK_DIR": str(tmp_path),
+        "ORACLE_MESH_IDLE_POLL_MAX_SECONDS": "2",
+        "PYTHONPATH": str(Path(__file__).resolve().parents[1] / "src"),
+    })
+    env.pop("MESH_FAILOVER_DEVICE_ID", None)
+    process = subprocess.Popen(
+        [sys.executable, "-c",
+         "from kagent.local_agent_oracle_mesh_executor import main; main()"],
+        env=env, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE,
+    )
+    try:
+        assert ready.wait(12), "real loop did not reach four local polls"
+        assert all(path == POLL_PATH for path, _ in observed[:4])
+        gaps = [observed[i + 1][1] - observed[i][1] for i in range(3)]
+        assert 0.7 <= gaps[0] < 3.5
+        assert all(1.6 <= gap < 3.5 for gap in gaps[1:]), gaps
+    finally:
+        process.terminate()
+        process.wait(timeout=5)
+        if process.stderr is not None:
+            process.stderr.close()
+        server.shutdown()
+        server.server_close()
+        thread.join(timeout=5)
+
+class TestRealMainConfiguration(unittest.TestCase):
+    def test_main_real_factory_and_real_loop_honor_environment_cap(self):
+        import tempfile
+        from pathlib import Path
+
+        with tempfile.TemporaryDirectory() as directory:
+            _assert_main_real_factory_and_real_loop_honor_environment_cap(Path(directory))
 
 
 if __name__ == "__main__":

@@ -98,34 +98,43 @@ class FakeTaskAlertStore:
         self.alerts: dict[str, list[Any]] = {}
 
     async def list_tasks(
-        self, workspace_id: str, limit: int = 256
+        self, workspace_id: str, *, member_id: str, limit: int = 256
     ) -> list[Any]:
-        return list(self.tasks.get(workspace_id, []))[:limit]
-
-    async def list_alerts(
-        self, workspace_id: str, *, member_id: str | None = None, limit: int = 256
-    ) -> list[Any]:
-        raw = list(self.alerts.get(workspace_id, []))
-        if member_id is not None:
-            raw = [
-                a for a in raw
-                if getattr(a, "is_visible_to", lambda m: True)(member_id)
-            ]
+        # Mirrors the durable store after the #2952 follow-up: the owner
+        # predicate is part of the read, not applied by the caller afterwards.
+        raw = [
+            t
+            for t in self.tasks.get(workspace_id, [])
+            if getattr(t, "member_id", None) == member_id
+        ]
         return raw[:limit]
 
-    async def get_task(self, task_id: str, *, workspace_id: str) -> Any | None:
+    async def list_alerts(
+        self, workspace_id: str, *, member_id: str, limit: int = 256
+    ) -> list[Any]:
+        raw = list(self.alerts.get(workspace_id, []))
+        raw = [
+            a for a in raw
+            if getattr(a, "is_visible_to", lambda m: True)(member_id)
+        ]
+        return raw[:limit]
+
+    async def get_task(
+        self, task_id: str, *, workspace_id: str, member_id: str
+    ) -> Any | None:
+        # Mirrors the durable store after #2952: the member is part of the read.
         for task in self.tasks.get(workspace_id, []):
-            if getattr(task, "task_id", None) == task_id:
+            if getattr(task, "task_id", None) == task_id and getattr(task, "member_id", None) == member_id:
                 return task
         return None
 
     async def get_alert(
-        self, alert_id: str, *, workspace_id: str, member_id: str | None = None
+        self, alert_id: str, *, workspace_id: str, member_id: str
     ) -> Any | None:
         for alert in self.alerts.get(workspace_id, []):
             if getattr(alert, "alert_id", None) != alert_id:
                 continue
-            if member_id is not None and not alert.is_visible_to(member_id):
+            if not alert.is_visible_to(member_id):
                 return None
             return alert
         return None

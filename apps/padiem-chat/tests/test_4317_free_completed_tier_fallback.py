@@ -77,7 +77,7 @@ async def test_the_completed_chat_path_leaves_the_attempt_count_to_b14():
     # allows. A local pin would deny the owner-pinned recovery chain.
     assert "max_attempts" not in business
     # Arbitrary catalog substitution stays disabled.
-    assert business["allow_external_fallback"] is False
+    assert "allow_external_fallback" not in business
     # The verified product grade travels, so B14 resolves that grade's roster.
     assert business["product_tier"] == "free"
 
@@ -119,7 +119,7 @@ async def test_the_verified_grade_travels_with_the_completed_request(
     _url, payload = service.calls[0]
     assert payload["business14"]["product_tier"] == expected_tier
     assert "max_attempts" not in payload["business14"]
-    assert payload["business14"]["allow_external_fallback"] is False
+    assert "allow_external_fallback" not in payload["business14"]
 
 
 class _ChunkStream(httpx.AsyncByteStream):
@@ -159,7 +159,7 @@ def _assert_no_local_attempt_budget(business: dict) -> None:
     # allows. A number here could only narrow that list.
     assert "max_attempts" not in business
     # Arbitrary catalog substitution stays disabled on every Chat surface.
-    assert business["allow_external_fallback"] is False
+    assert "allow_external_fallback" not in business
 
 
 @pytest.mark.asyncio
