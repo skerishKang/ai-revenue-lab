@@ -13,6 +13,7 @@ from pathlib import Path
 import pytest
 import uvicorn
 import websockets
+from websockets.legacy.client import connect as websocket_connect
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "packages/padiem-control-plane"))
 from com2_edge_proof import EdgeProofVerifier
@@ -88,7 +89,7 @@ async def test_actual_socket_proof_handshake_and_disconnect(tmp_path):
         assert server.started
         url = f"ws://127.0.0.1:{port}{PATH}"
         headers = signed("a" * 32)
-        async with websockets.connect(url, extra_headers=headers) as ws:
+        async with websocket_connect(url, extra_headers=headers) as ws:
             await ws.send(json.dumps({"type": "begin", "challenge_id": CHALLENGE, "device_id": DEVICE, "proof_ref": "pairing-proof:" + "b" * 64}))
             nonce = json.loads(await ws.recv())
             assert nonce["type"] == "nonce"
@@ -96,7 +97,7 @@ async def test_actual_socket_proof_handshake_and_disconnect(tmp_path):
             assert json.loads(await ws.recv())["type"] == "bootstrap_verified"
             # Device disappears before credential fetch.
         assert broker.calls == ["begin", "finish"]
-        async with websockets.connect(url, extra_headers=signed("c" * 32)) as ws:
+        async with websocket_connect(url, extra_headers=signed("c" * 32)) as ws:
             await ws.send(json.dumps({"type": "begin", "challenge_id": CHALLENGE, "device_id": DEVICE, "proof_ref": "pairing-proof:" + "b" * 64}))
             assert json.loads(await ws.recv())["type"] == "nonce"
             await ws.send(json.dumps({"type": "finish", "lease_ref": LEASE, "proof_hex": "d" * 64}))
@@ -108,7 +109,7 @@ async def test_actual_socket_proof_handshake_and_disconnect(tmp_path):
             assert closed.value.code == 1000
         for bad in ({}, headers, dict(signed("b" * 32), **{"x-padiem-edge-proof": "v1=" + "0" * 64})):
             with pytest.raises(websockets.exceptions.InvalidStatusCode):
-                async with websockets.connect(url, extra_headers=bad):
+                async with websocket_connect(url, extra_headers=bad):
                     pass
         assert broker.calls == ["begin", "finish", "begin", "finish", "authorize"]
     finally:
@@ -138,3 +139,96 @@ async def test_loopback_identity_rpc_is_scoped_and_signed():
             binding.revoke_all_auth_sessions
     with pytest.raises(ValueError):
         LoopbackRpcBinding(port=443, secret=SECRET, methods=_IDENTITY_METHODS)
+
+
+class SuccessfulIdentity(Identity):
+    async def authorize_connector_enrollment_redeem(self, payload):
+        return {"ok": True, "authorization": {
+            "challenge_id": CHALLENGE, "consent_id": "consent.test",
+            "device_id": DEVICE, "owner_subject_id": "subject.test",
+            "account_ref": "account.test", "workspace_ref": "workspace.test",
+            "authorized_at": datetime.now(timezone.utc).isoformat(),
+            "dispatch_authorized": False, "grants_read": False, "grants_write": False,
+        }}
+
+
+class SuccessfulBroker(Broker):
+    async def get_enrollment_binding(self, payload):
+        return {"ok": True, "binding": {
+            "challenge_id": CHALLENGE, "consent_ref": "consent.test", "owner_ref": "subject.test",
+            "account_ref": "account.test", "workspace_ref": "workspace.test", "device_id": DEVICE,
+            "bound_at": datetime.now(timezone.utc).isoformat(), "server_owned_binding": True,
+            "client_supplied_receipt_trusted": False, "raw_pairing_secret": False,
+        }}
+
+    async def verify_enrollment_bootstrap(self, payload):
+        return {"ok": True, "bootstrap": {
+            "challenge_id": CHALLENGE, "device_id": DEVICE,
+            "proof_valid": True, "challenge_consumed": False,
+        }}
+
+    async def redeem_enrollment(self, payload):
+        import base64
+        now = datetime.now(timezone.utc)
+        return {"ok": True, "enrollment": {
+            "binding_ref": "pairing-binding.test", "device_id": DEVICE,
+            "account_ref": "account.test", "workspace_ref": "workspace.test",
+            "credential_ref": "credential.test", "credential_generation": 1,
+            "issued_at": now.isoformat(), "credential_expires_at": (now + timedelta(days=30)).isoformat(),
+            "challenge_id": CHALLENGE, "server_owned_binding_refs": True,
+            "raw_device_credential": False, "production_ready": False,
+        }, "credential_b64": base64.b64encode(b"synthetic-test-credential-123456").decode(),
+            "credential_returned_once": True, "public_http_route": False}
+
+
+@pytest.mark.asyncio
+async def test_actual_socket_successful_pairing_with_service_doubles(tmp_path):
+    import base64
+    from app.canonical_connector_credential_handoff import installation_proof, INSTALL_ACK_TRANSCRIPT_VERSION
+
+    broker = SuccessfulBroker()
+    gateway = create_com2_gateway(verifier=EdgeProofVerifier(SECRET, str(tmp_path / "seen.db")),
+                                  identity_binding=SuccessfulIdentity(), broker_binding=broker)
+    sock = socket.socket()
+    sock.bind(("127.0.0.1", 0))
+    sock.listen(128)
+    port = sock.getsockname()[1]
+    server = uvicorn.Server(uvicorn.Config(gateway, log_level="critical", lifespan="off"))
+    thread = threading.Thread(target=server.run, kwargs={"sockets": [sock]}, daemon=True)
+    thread.start()
+    try:
+        for _ in range(300):
+            if server.started: break
+            await asyncio.sleep(0.01)
+        assert server.started
+        url = f"ws://127.0.0.1:{port}{PATH}"
+        async with websocket_connect(url, extra_headers=signed("e" * 32)) as ws:
+            await ws.send(json.dumps({"type": "begin", "challenge_id": CHALLENGE, "device_id": DEVICE, "proof_ref": "pairing-proof:" + "b" * 64}))
+            assert json.loads(await ws.recv())["type"] == "nonce"
+            await ws.send(json.dumps({"type": "finish", "lease_ref": LEASE, "proof_hex": "d" * 64}))
+            assert json.loads(await ws.recv())["type"] == "bootstrap_verified"
+            await ws.send(json.dumps({"type": "credential_fetch", "counter": 1, "proof_hex": "e" * 64}))
+            delivered = json.loads(await ws.recv())
+            assert delivered["type"] == "credential_once"
+            credential = base64.b64decode(delivered["credential_b64"])
+            ack = {
+                "challenge_id": CHALLENGE, "device_id": DEVICE,
+                "binding_ref": "pairing-binding.test", "credential_generation": 1,
+                "proof_kind": "protected_store_save_readback",
+                "transcript_version": INSTALL_ACK_TRANSCRIPT_VERSION,
+                "local_store_confirmed": True,
+                "proof_hex": installation_proof(credential=credential, challenge_id=CHALLENGE,
+                    device_id=DEVICE, binding_ref="pairing-binding.test", credential_generation=1),
+            }
+            body = json.dumps(ack, separators=(",", ":"), sort_keys=True).encode()
+            await ws.send(json.dumps({"type": "install_ack", "counter": 2, "proof_hex": "f" * 64,
+                                      "body_b64": base64.b64encode(body).decode()}))
+            assert json.loads(await ws.recv()) == {"type": "terminal", "status": "paired_offline", "can_retry_challenge": False}
+            with pytest.raises(websockets.exceptions.ConnectionClosedOK) as closed:
+                await ws.recv()
+            assert closed.value.code == 1000
+        assert broker.calls == ["begin", "finish", "authorize", "authorize"]
+    finally:
+        server.should_exit = True
+        await asyncio.to_thread(thread.join, 5)
+        sock.close()

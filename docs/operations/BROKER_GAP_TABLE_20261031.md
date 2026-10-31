@@ -22,10 +22,21 @@ RPC bindings are restricted to 127.0.0.1 ports 8799 (broker) and 8802 (identity)
 and the pairing method allowlists. The edge signer is still a separate release
 dependency: the trusted edge must strip client proof headers before signing.
 
-A real loopback socket test exercises begin/finish, a disconnect, a
-security-hold terminal close, and missing, forged and replayed proofs. It does
-not establish a complete successful credential install or live-device pairing.
+Real loopback socket tests exercise begin/finish, a disconnect, a security-hold
+terminal close, missing/forged/replayed edge proofs, and a successful synthetic
+credential/ACK exchange ending paired_offline and normal close. Identity and
+broker replies are test doubles; no real-device installation is established.
 The identity differential suite now exercises the twelve allowed methods'
 successful results as well as rejected envelopes against the DO class and the
 COM2 SQLite-backed HTTP ingress. This is local test evidence; no live COM2
 service, Cloudflare runtime, edge signer or real device was operated.
+
+
+Host configuration is default off. A future staged activation must provide
+`PADIEM_COM2_CONNECTOR_GATEWAY_ENABLED=true`, the readable file paths
+`PADIEM_COM2_EDGE_SECRET_FILE`, `PADIEM_COM2_IDENTITY_RPC_SECRET_FILE`,
+`PADIEM_COM2_BROKER_RPC_SECRET_FILE`, and a durable writable
+`PADIEM_COM2_EDGE_REPLAY_DB` under the Chat host data directory. Each secret
+must match its respective peer and be kept separate. The staged host installer
+includes the WebSocket backend and edge verifier module; installation and
+service startup were not executed by this change.
