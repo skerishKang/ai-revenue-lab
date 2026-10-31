@@ -258,3 +258,56 @@ class _HealthServer:
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class P01CodeStage(unittest.TestCase):
+    def test_stage_reinstall_and_missing_entry(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            source = root / "checkout" / "apps" / "padiem-ai-engine"
+            target = root / "p01"
+            target.mkdir()
+            for name in ("app", "clients", "ingress", "migrations"):
+                (source / name).mkdir(parents=True)
+            for name in ("asgi.py", "worker.py", "worker_identity.py"):
+                (source / name).write_text("# entry\n", encoding="utf-8")
+            file = source / "app" / "local_admission_binding.py"
+            file.write_text("revision = 1\n", encoding="utf-8")
+            command = ["bash", str(HERE / "stage_code.sh"), str(root / "checkout"), str(target)]
+            subprocess.run(command, check=True, capture_output=True)
+            installed = target / "app" / "app" / "local_admission_binding.py"
+            self.assertEqual(installed.read_text(encoding="utf-8"), "revision = 1\n")
+            file.write_text("revision = 2\n", encoding="utf-8")
+            subprocess.run(command, check=True, capture_output=True)
+            self.assertEqual(installed.read_text(encoding="utf-8"), "revision = 2\n")
+            snapshots = list((target / "rollback").glob("*/app/local_admission_binding.py"))
+            self.assertEqual(len(snapshots), 1)
+            self.assertEqual(snapshots[0].read_text(encoding="utf-8"), "revision = 1\n")
+            (source / "asgi.py").unlink()
+            result = subprocess.run(command, capture_output=True, text=True)
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("ASGI_ENTRY_MISSING", result.stderr)
+            self.assertEqual(installed.read_text(encoding="utf-8"), "revision = 2\n")
+
+    def test_checkout_symlink_is_snapshotted_before_switch(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            source = root / "checkout" / "apps" / "padiem-ai-engine"
+            target = root / "p01"
+            target.mkdir()
+            for name in ("app", "clients", "ingress", "migrations"):
+                (source / name).mkdir(parents=True)
+            for name in ("asgi.py", "worker.py", "worker_identity.py"):
+                (source / name).write_text("# entry\n", encoding="utf-8")
+            old = root / "old-checkout"
+            old.mkdir()
+            (old / "asgi.py").write_text("original\n", encoding="utf-8")
+            (target / "app").symlink_to(old, target_is_directory=True)
+            subprocess.run(["bash", str(HERE / "stage_code.sh"),
+                            str(root / "checkout"), str(target)], check=True, capture_output=True)
+            (old / "asgi.py").write_text("changed\n", encoding="utf-8")
+            snapshots = list((target / "rollback").glob("*/asgi.py"))
+            self.assertEqual(len(snapshots), 1)
+            self.assertEqual(snapshots[0].read_text(encoding="utf-8"), "original\n")
