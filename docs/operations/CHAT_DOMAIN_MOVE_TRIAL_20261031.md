@@ -1,24 +1,20 @@
 # Chat Custom Domain 이동 실측 계획
 
-상태: **스크립트·시험·양식만 작성. 배포·Cloudflare 조회·변경·실측 미실행.**
+상태: 시험 Worker를 이용한 실측 결과는 `CHAT_DOMAIN_DETACH_TRIAL_RESULT_20261031.json`을 참조한다.
 
 이 절차는 `chat-cutover-test.padiem.net` 하나를 무해한 시험 Worker A에서 B로 옮기고, 별도 실행으로 A에 돌려놓는다. 운영 `chat.padiem.net`, `chat-com2.padiem.net`, tunnel, D1, 실제 Chat Worker는 대상이 아니다. 스크립트가 다른 hostname·Worker·zone을 거부한다.
 
 ## 1. 확인할 질문과 호출
 
-| 질문 | 증거 |
-| --- | --- |
-| 기존 A 연결을 PUT 한 번으로 B로 바꿀 수 있는가 | PUT 시도 수 1, API 결과, 즉시·관찰 종료 후 소유 조회, HTTP fixture B 응답 |
-| 응답이 끊기는가 | PUT 전부터 별도 스레드에서 수집한 HTTP 표본, 실패 수·상태·관측 시각·최대 표본 간격 |
-| DNS/인증서 변화가 지연되는가 | baseline과 비교한 DNS 주소 집합·TLS leaf 인증서 SHA-256 및 첫 변화 관측 시각 |
-| 되돌리기는 얼마나 걸리는가 | 별도 rollback 실행의 PUT 소요·즉시 소유 조회·첫 A 응답 시간 |
+시험 도메인을 삭제 후 대상 Worker에 재부착하고, 조회로 소유자를 확인한다.
+이전 소유자가 존재하는 동안 PUT만 보내는 방법은 사용하지 않는다.
 
 - 조회: `GET /accounts/{account_id}/workers/domains?hostname=chat-cutover-test.padiem.net`
-- 이동·복귀: `PUT /accounts/{account_id}/workers/domains` (**Attach Worker Domain**).
-- payload는 고정 hostname, 목표 service, 읽어서 대조한 zone ID, `enabled=true`, `previews_enabled=false`다. 삭제·재생성 폴백은 없다.
-- 공식 API는 Attach를 정의하지만 이미 다른 Worker가 소유한 hostname의 단일 PUT 교체 동작을 명시적으로 보장하지 않는다. 이 시험의 목적이 그 부분의 실측이다.
-
-근거: [Attach Worker Domain API](https://developers.cloudflare.com/api/resources/workers/subresources/domains/methods/update/), [Custom Domains](https://developers.cloudflare.com/workers/configuration/routing/custom-domains/), [Workers 권한](https://developers.cloudflare.com/workers/authorization/workers/).
+- 분리: `DELETE /accounts/{account_id}/workers/domains/{domain_id}`
+- 부착: `PUT /accounts/{account_id}/workers/domains`
+- 삭제의 HTTP 200 빈 본문은 성공이다. 삭제 후 부재와 부착 후 목표 소유자를 조회한다.
+- 부착이 실패하거나 시간 초과되면 실제 소유자를 조회한다. 부재가 확인된 경우에만 원래 Worker에 즉시 재부착하고 다시 조회한다. 이미 다른 소유자가 있거나 조회가 불확실하면 변경 없이 그 상태를 보고하고 멈춘다.
+- 삭제 시작부터 HTTP·DNS·TLS를 관측한다. API 응답 본문은 토큰과 헤더를 제외해 저장소 밖 증거에 보관한다.
 
 ## 2. CTO가 별도로 승인할 준비 작업
 
@@ -76,20 +72,20 @@ python .github/scripts/chat_domain_move_trial.py rollback \
   --out /secure/evidence/chat-domain-rollback.json
 ```
 
-각 실행의 PUT은 최대 한 번이다. PUT timeout·API 오류는 실제 적용 여부를 확정할 수 없어 `put_outcome=UNKNOWN`으로 남긴다. 읽기 관측과 소유 재조회는 이어가고 결과 파일을 보존한다. 자동 재시도·삭제·재생성·rollback은 하지 않는다. `UNKNOWN`, 예상하지 못한 소유, 응답 미수렴이면 CTO가 읽기 증거를 검토하기 전 변경 명령을 다시 실행하지 않는다.
+각 실행은 DELETE 한 번과 목표 PUT 한 번을 수행한다. 목표 부착 실패 후 부재가 확인되면 복구 PUT을 한 번 수행한다. 각 실패에서 최종 소유 Worker, `ABSENT` 또는 `UNKNOWN`을 보고하고 중단한다. 어떤 경우에도 응답 불확실성을 성공으로 판정하지 않는다.
 
 종료코드 0은 `READ_ONLY_READY` 또는 `OBSERVED_TARGET`이다. 실패 표본이 있어도 최종 target에 도달하면 `OBSERVED_TARGET`일 수 있으므로 이 코드는 **무중단 승인**이 아니다. 운영 적용 판단에는 JSON 측정값과 아래 해석 한계를 함께 사용한다. 거부·불확실성·미수렴은 종료코드 2다.
 
 ## 5. 측정값의 뜻과 한계
 
-- HTTP observer는 PUT 전에 첫 표본을 확보하고, PUT이 대기하는 동안에도 계속 돈다. DNS/TLS는 별도 스레드라 이 검사가 HTTP observer를 직접 막지 않는다.
-- `first_target_response_seconds`는 PUT 시작부터 첫 target fixture 응답을 **관측한** 시간이다. rollback에서는 첫 A 응답으로 계산한다. `owner_immediate_readback_seconds`는 첫 소유 조회 완료까지, `put_seconds`는 API 왕복 시간이다.
+- HTTP observer는 DELETE 전에 첫 표본을 확보하고, PUT이 대기하는 동안에도 계속 돈다. DNS/TLS는 별도 스레드라 이 검사가 HTTP observer를 직접 막지 않는다.
+- `first_target_response_seconds`는 DELETE 시작부터 첫 target fixture 응답을 **관측한** 시간이다. rollback에서는 첫 A 응답으로 계산한다. `owner_immediate_readback_seconds`는 첫 소유 조회 완료까지, `put_seconds`는 API 왕복 시간이다.
 - `http_failed_samples=0`은 기록된 해상도에서 실패를 관측하지 못했다는 뜻이다. 실제 단절 0초를 증명하지 않는다. `http_failure_observation_span_seconds`와 각 `recovery_bracket_seconds`는 표본 구간이며 지속 장애의 확정 길이가 아니다. 중간에 짧은 복구·장애가 있었을 수 있다.
 - 요청 완료 시간과 DNS resolver 대기 때문에 실제 간격은 설정한 interval보다 길 수 있다. `http_sample_gap_max_seconds`와 개별 표본 start/end를 함께 본다. HTTP timeout은 재사용한 게이트의 30초, TLS connect timeout 기본은 5초이고 `--connect-timeout`으로 바꿀 수 있다. OS DNS resolver 자체 timeout은 시스템 설정을 따른다.
 - `dns_first_observed_change_seconds=null`은 조회한 resolver에서 주소 변화가 없었다는 뜻이다. Custom Domain Worker 교체는 같은 Cloudflare 주소를 유지할 수 있다. 이 값은 authoritative DNS TTL·전체 지역 전파 지연이 아니다. TTL/지역 비교가 필요하면 실행 레인이 별도 DNS 자료를 양식에 첨부한다.
 - TLS 표본은 leaf의 `certificate_not_before_utc`·`certificate_not_after_utc`와 `observed_utc`도 기록한다. `tls_first_observed_newer_not_before_seconds`는 baseline보다 늦은 notBefore를 처음 본 시간이다. notBefore는 인증서의 유효 시작일이며 CA 발급 이벤트 시각을 뜻하지 않는다. UTC 관측 시각과 `put_started_utc`·`put_ended_utc`를 이용해 아래 외부 기록과 대조한다.
 - `tls_first_observed_certificate_change_seconds=null`은 같은 leaf fingerprint를 관측했다는 뜻이다. fingerprint가 바뀌어도 다른 edge 인증서일 수 있어 재발급을 증명하지 못한다. 스크립트는 항상 `certificate_reissuance=NOT_ESTABLISHED_BY_FINGERPRINT_SAMPLING`을 남긴다.
-- 한 실행 위치·한 resolver·짧은 관찰 창의 결과를 전체 Cloudflare edge의 무중단 보장으로 확대하지 않는다. 실패 후에도 샘플·타이밍·소유 정보는 유지하며 응답 원문, 토큰, Authorization, 계정/zone ID는 기록하지 않는다.
+- 한 실행 위치·한 resolver·짧은 관찰 창의 결과를 전체 Cloudflare edge의 무중단 보장으로 확대하지 않는다. 실패 후에도 샘플·타이밍·소유 정보는 유지하며 HTTP 관측 응답 원문과 토큰·Authorization 헤더는 기록하지 않는다. DELETE와 PUT API 응답은 §7에 따라 저장소 밖 증거에 기록한다.
 
 ### 5.1 승인된 실행 레인의 인증서 시각 대조 절차
 
@@ -103,3 +99,11 @@ python .github/scripts/chat_domain_move_trial.py rollback \
 
 기록 양식: `docs/operations/templates/CHAT_DOMAIN_MOVE_TRIAL_RESULT.json`.
 양식을 복사해 실행자, 승인 근거, 위치, 최초 준비 시간, switch/rollback 결과 파일, 실제 판단을 채운다. `NOT_MEASURED`를 실제 관측값으로 대체하기 전에는 운영 검증 완료로 쓰지 않는다. 실측 JSON은 저장소 밖 승인된 증거 위치에 보관한다. 운영 전환 결정은 CTO가 내리며 이 시험이 자동으로 운영 게이트를 실행하지 않는다.
+
+
+## 7. API 응답 증거
+
+DELETE, 목표 PUT, 필요 시 복구 PUT의 HTTP 상태와 Cloudflare 응답 본문 전체를
+`api_responses`에 순서대로 기록한다. HTTP 200의 빈 DELETE 본문은 빈 본문으로 기록한다.
+응답에 토큰이 포함되면 토큰만 가리며 요청 헤더는 저장하지 않는다.
+응답 원문과 자원 식별자가 담긴 증거는 저장소 밖에 둔다.
