@@ -55,8 +55,10 @@ def test_the_speech_form_groups_into_sections():
 def test_the_speech_controls_draw_readable_outlines():
     scoped = "#utilSpeechPanel .util-form input"
     assert scoped in UTIL_CSS
-    # #6100: the ink border rides the input-only token now; the fallback keeps the original navy.
-    assert "border: 1px solid var(--input-border-strong, rgba(51, 74, 91, .34)); background: #ffffff;" in UTIL_CSS
+    # The control reuses the theme border and surface, including dark mode.
+    assert "border: 1px solid var(--input-border-strong, var(--line, rgba(26, 34, 48, .12))); background: var(--panel, #ffffff);" in UTIL_CSS
+    assert '#utilSpeechPanel .util-fieldset legend' in UTIL_CSS
+    assert 'font-weight: 600; color: var(--text, #17202a)' in UTIL_CSS
     assert "#utilSpeechPanel .util-form input:hover" in UTIL_CSS
     assert "#utilSpeechPanel .util-form label" in UTIL_CSS and "font-weight: 600" in UTIL_CSS
 
