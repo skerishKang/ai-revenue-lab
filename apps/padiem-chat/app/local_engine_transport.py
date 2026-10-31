@@ -35,8 +35,10 @@ from padiem_ai_engine_client import (
     ENGINE_ORCHESTRATE_RESUME_PATH,
     ENGINE_ORCHESTRATE_STREAM_PATH,
     ENGINE_RESEARCH_PATH,
+    EngineStreamTransportResponse,
     EngineTransportResponse,
 )
+from padiem_ai_engine_client.orchestration_stream import MAX_NDJSON_TERMINAL_LINE_BYTES
 
 # Same envelope as ``worker_orchestration``: a Host/Worker parity test pins these
 # values, so a later widening of one side cannot silently skip the other.
@@ -66,6 +68,13 @@ ALLOWED_PATHS = frozenset(
 
 LOOPBACK_HOSTS = frozenset({"127.0.0.1", "localhost", "::1"})
 DEFAULT_TIMEOUT_SECONDS = 30.0
+# The Worker path has no client-side read cap; its bound is the deployment's
+# model idle budget. The host uses the same number the Engine itself applies.
+DEFAULT_STREAM_TIMEOUT_SECONDS = 600.0
+# A non-200 Engine answer is one bounded JSON error, never a stream.
+MAX_STREAM_ERROR_BODY_BYTES = 64 * 1024
+STREAM_CHUNK_BYTES = 65_536
+STREAM_PATHS = frozenset({ENGINE_ORCHESTRATE_STREAM_PATH})
 
 
 class LocalEngineTransportError(ValueError):
@@ -118,11 +127,13 @@ class LocalEngineHttpTransport:
         client: httpx.AsyncClient | None = None,
         timeout: float = DEFAULT_TIMEOUT_SECONDS,
         max_response_bytes: int = MAX_ENGINE_RESPONSE_BYTES,
+        stream_timeout: float = DEFAULT_STREAM_TIMEOUT_SECONDS,
     ) -> None:
         self._origin = local_engine_origin(origin)
         self._client = client
         self._timeout = timeout
         self._max_response_bytes = max_response_bytes
+        self._stream_timeout = stream_timeout
         if client is not None and getattr(client, "follow_redirects", False):
             raise LocalEngineTransportError(
                 "local engine client must not follow redirects"
@@ -158,12 +169,91 @@ class LocalEngineHttpTransport:
         url: str,
         headers: Mapping[str, str],
         body: bytes | None,
-    ) -> None:
-        """Refuse rather than buffer: NDJSON streaming is not part of this lane."""
+    ) -> EngineStreamTransportResponse:
+        """Carry the Engine's NDJSON stream one chunk at a time (#3930 parity).
 
-        del method, url, headers, body
-        raise LocalEngineTransportError(
-            "local engine NDJSON streaming is not supported on the CPython host"
+        Same target rules as the Worker transport: POST on the one stream path,
+        bounded request body, no redirects. Unlike the completed lane this never
+        buffers the answer: each chunk is handed on as it arrives, and closing
+        the iterator tears the Engine connection down so the Engine's own
+        disconnect watcher stops the Core run.
+        """
+
+        path, normalized_method, forwarded = self._validated(
+            method=method,
+            url=url,
+            headers=headers,
+            body=body,
+            extra_paths=STREAM_PATHS,
+        )
+        if normalized_method != "POST" or path not in STREAM_PATHS:
+            raise LocalEngineTransportError(
+                "Engine stream target or request is unsupported"
+            )
+        target = self._origin + path
+        client = self._client
+        owns_client = client is None
+        if client is None:
+            client = httpx.AsyncClient(
+                follow_redirects=False, timeout=self._stream_timeout
+            )
+        try:
+            request = client.build_request(
+                normalized_method, target, headers=forwarded, content=body
+            )
+            response = await client.send(request, stream=True)
+        except httpx.HTTPError:
+            if owns_client:
+                await client.aclose()
+            raise LocalEngineTransportError(
+                "local engine stream request failed"
+            ) from None
+        content_type = str(response.headers.get("content-type", ""))
+        status = int(response.status_code)
+
+        if status != 200:
+            # The Engine answers an error as JSON, not as events. Read it bounded
+            # so the client can report the status instead of parsing garbage.
+            buffered = bytearray()
+            try:
+                async for chunk in response.aiter_bytes():
+                    buffered.extend(chunk)
+                    if len(buffered) > MAX_STREAM_ERROR_BODY_BYTES:
+                        break
+            except httpx.HTTPError:
+                pass
+            finally:
+                await response.aclose()
+                if owns_client:
+                    await client.aclose()
+            return EngineStreamTransportResponse(
+                status=status,
+                chunks=_once(bytes(buffered)),
+                headers={"content-type": content_type or "application/json"},
+            )
+
+        async def iter_chunks():
+            try:
+                async for chunk in response.aiter_bytes():
+                    if len(chunk) > MAX_NDJSON_TERMINAL_LINE_BYTES:
+                        raise LocalEngineTransportError(
+                            "Engine stream chunk exceeded the safety bound"
+                        )
+                    for start in range(0, len(chunk), STREAM_CHUNK_BYTES):
+                        yield chunk[start:start + STREAM_CHUNK_BYTES]
+            except httpx.HTTPError:
+                raise LocalEngineTransportError(
+                    "local engine stream was interrupted"
+                ) from None
+            finally:
+                await response.aclose()
+                if owns_client:
+                    await client.aclose()
+
+        return EngineStreamTransportResponse(
+            status=status,
+            chunks=iter_chunks(),
+            headers={"content-type": content_type or "application/x-ndjson"},
         )
 
     def _validated(
@@ -173,6 +263,7 @@ class LocalEngineHttpTransport:
         url: object,
         headers: Mapping[str, str],
         body: bytes | None,
+        extra_paths: frozenset[str] = frozenset(),
     ) -> tuple[str, str, dict[str, str]]:
         normalized_method = method.upper() if isinstance(method, str) else ""
         parsed = urlparse(url) if isinstance(url, str) else None
@@ -183,7 +274,7 @@ class LocalEngineHttpTransport:
             or parsed.netloc != expected_netloc
             or parsed.query
             or parsed.fragment
-            or parsed.path not in ALLOWED_PATHS
+            or parsed.path not in (ALLOWED_PATHS | extra_paths)
             or normalized_method not in {"GET", "POST"}
             or (parsed.path == ENGINE_HEALTH_PATH and normalized_method != "GET")
             or (parsed.path != ENGINE_HEALTH_PATH and normalized_method != "POST")
@@ -248,6 +339,7 @@ class LocalEngineHttpTransport:
 
 __all__ = [
     "ALLOWED_PATHS",
+    "DEFAULT_STREAM_TIMEOUT_SECONDS",
     "DEFAULT_TIMEOUT_SECONDS",
     "LOOPBACK_HOSTS",
     "LocalEngineHttpTransport",
@@ -256,6 +348,15 @@ __all__ = [
     "MAX_ENGINE_MODEL_REQUEST_BYTES",
     "MAX_ENGINE_REQUEST_BYTES",
     "MAX_ENGINE_RESPONSE_BYTES",
+    "MAX_STREAM_ERROR_BODY_BYTES",
     "MODEL_REQUEST_PATHS",
+    "STREAM_PATHS",
     "local_engine_origin",
 ]
+
+
+async def _once(payload: bytes):
+    """A single-frame iterator for a non-200 Engine answer."""
+
+    if payload:
+        yield payload
