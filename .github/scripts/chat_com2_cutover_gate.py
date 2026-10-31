@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Manual Chat front gate. No network or mutation happens at import time.
 
-Only switch deploys; switch/rollback each use one Attach Worker Domain PUT.
-No tunnel edits, secret creation, D1 operations, unfreeze or automatic rollback.
+Only switch deploys. Switch and rollback detach, attach and verify the domain.
+A failed attachment is restored to the original Worker when absence is verified.
 Responses and child stdout/stderr are private inputs, never log messages.
 """
 from __future__ import annotations
@@ -18,6 +18,7 @@ import urllib.request
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+from chat_domain_transfer import transfer, TransferError, read_owner
 from chat_rehearsal_evidence import (
     EvidenceError as Refused, REHEARSAL_STAGES, https_url, identity,
     parse_json, require, validate_rehearsal, verify_summary,
@@ -93,6 +94,8 @@ class Gate:
                                  method=method, headers={"Authorization": "Bearer " + token, "Content-Type": "application/json"},
                                  data=None if payload is None else json.dumps(payload).encode())
         require(200 <= status < 300, "cloudflare_http_failed")
+        if method == "DELETE" and status == 200 and not raw:
+            return None
         result = parse_json(raw)
         require(result.get("success") is True, "cloudflare_api_failed")
         return result["result"]
@@ -230,21 +233,30 @@ class Gate:
         require(self.domain()["service"] == LEGACY, "deployment_changed_domain")
 
     def move_domain(self, target):
-        require(target in (FRONT, LEGACY), "domain_target_invalid")
-        self.exact_main()
-        before = self.domain()
-        if before["service"] == target:
-            require(target == LEGACY, "switch_source_not_legacy")
-            print("DOMAIN_ALREADY_AT_TARGET=yes")
-            return
-        # Exactly one documented Attach Worker Domain call. A conflict/timeout
-        # is a stop, NEVER a DELETE + recreate, retry or automatic rollback.
-        self.cf("/workers/domains", method="PUT", payload={
-            "hostname": HOST, "service": target, "zone_id": before["zone_id"],
-            "enabled": True, "previews_enabled": False,
-        })
-        after = self.domain()
-        require(after["service"] == target and after["zone_id"] == before["zone_id"], "domain_move_unverified")
+        def read_rows():
+            return self.cf("/workers/domains?hostname=" + HOST)
+
+        def mutate(method, path, payload):
+            return self.cf(path, method=method, payload=payload)
+
+        def report(stage, owner):
+            print("DOMAIN_OWNER_STATE=" + owner + " STAGE=" + stage)
+
+        try:
+            require(target in (FRONT, LEGACY), "domain_target_invalid")
+            self.exact_main()
+            before = self.domain()
+            if before["service"] == target:
+                require(target == LEGACY, "switch_source_not_legacy")
+                print("DOMAIN_ALREADY_AT_TARGET=yes")
+                return
+            transfer(host=HOST, before=before, target=target, read_rows=read_rows,
+                     mutate=mutate, report=report)
+        except TransferError as error:
+            raise Refused(error.stage) from None
+        except Exception:
+            report("preflight_failed", read_owner(read_rows, HOST))
+            raise
 
     def execute(self):
         validate_dispatch(self.env)
@@ -279,8 +291,9 @@ class Gate:
 
 
 def main():
+    instance = Gate()
     try:
-        Gate().execute()
+        instance.execute()
         return 0
     except Refused as error:
         print("CHAT_COM2_GATE=REFUSED reason=" + str(error))
@@ -288,6 +301,8 @@ def main():
         # Never stringify exceptions containing requests, signed URLs, JSON,
         # subprocess stdout/stderr, tokens or binding values.
         print("CHAT_COM2_GATE=REFUSED reason=unexpected_failure")
+    owner = read_owner(lambda: instance.cf("/workers/domains?hostname=" + HOST), HOST)
+    print("DOMAIN_OWNER_STATE=" + owner + " STAGE=final")
     if os.environ.get("MODE") == "switch":
         print("ROLLBACK_GUIDANCE=wait_for_run_end_then_rollback_mode_keep_write_freeze")
     return 2

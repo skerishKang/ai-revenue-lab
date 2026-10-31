@@ -39,7 +39,7 @@ def arguments(mode="switch", execute=False, **changes):
 
 
 def domain(service=trial.WORKERS["A"], **changes):
-    result = dict(hostname=trial.HOST, service=service, zone_id=ZONE, zone_name="padiem.net",
+    result = dict(hostname=trial.HOST, service=service, id="e" * 40, zone_id=ZONE, zone_name="padiem.net",
                   enabled=True, previews_enabled=False)
     result.update(changes)
     return result
@@ -73,19 +73,21 @@ def setup(monkeypatch, mode="switch", execute=False):
     state = {"owner": source}
     def cf(path, **kwargs):
         calls.append((path, kwargs))
-        if kwargs.get("method") == "PUT":
-            assert kwargs["payload"]["service"] == trial.WORKERS[target]
-            state["owner"] = target
+        method = kwargs.get("method", "GET")
+        if method == "DELETE":
+            state["owner"] = None
+            return None
+        if method == "PUT":
+            state["owner"] = next(key for key, value in trial.WORKERS.items()
+                                  if value == kwargs["payload"]["service"])
             return {}
-        return [domain(trial.WORKERS[state["owner"]])]
+        return [] if state["owner"] is None else [domain(trial.WORKERS[state["owner"]])]
     monkeypatch.setattr(instance.api, "cf", cf)
-    def fake_put(before):
-        instance.api.cf("/workers/domains", method="PUT", payload={
-            "hostname": trial.HOST, "service": trial.WORKERS[target], "zone_id": before["zone_id"],
-            "enabled": True, "previews_enabled": False,
-        })
-        instance.result["api_response"] = {"http_status": 200, "body": {"success": True, "result": {}}}
-    monkeypatch.setattr(instance, "put_domain", fake_put)
+    def fake_mutate(method, path, payload):
+        if method == "PUT":
+            instance.result["put_attempts"] += 1
+        return instance.api.cf(path, method=method, payload=payload)
+    monkeypatch.setattr(instance, "mutate_domain", fake_mutate)
     monkeypatch.setattr(instance.api, "account", lambda: None)
     monkeypatch.setattr(instance.api, "exact_main", lambda: None)
     monkeypatch.setattr(trial, "http_sample", lambda host: http(source))
@@ -102,7 +104,7 @@ def test_default_dry_run_only_reads_and_records_plan(monkeypatch, mode):
     assert all(not kwargs for _, kwargs in calls)
     assert instance.result["put_attempts"] == 0
     assert instance.result["outcome"] == "READ_ONLY_READY"
-    assert instance.result["planned_change"]["method"] == "PUT"
+    assert instance.result["planned_change"]["method"] == "DELETE_THEN_PUT"
 
 
 def test_dry_run_is_default_and_execute_is_mutually_exclusive():
@@ -182,20 +184,37 @@ def test_rollback_put_once_to_a(monkeypatch):
     assert instance.result["outcome"] == "STOP_REVIEW_REQUIRED"
 
 
-def test_put_error_keeps_sampling_and_readback_without_retry(monkeypatch):
-    instance, _ = setup(monkeypatch, execute=True)
-    methods = []
+def test_put_error_recovers_original_and_keeps_sampling(monkeypatch):
+    instance, calls = setup(monkeypatch, execute=True)
+    original = instance.api.cf
     def cf(path, **kwargs):
-        methods.append(kwargs.get("method", "GET"))
-        if kwargs.get("method") == "PUT":
+        if kwargs.get("method") == "PUT" and kwargs["payload"]["service"] == trial.WORKERS["B"]:
+            calls.append((path, kwargs))
             raise trial.Refused("transport_failed")
-        return [domain()]
+        return original(path, **kwargs)
     monkeypatch.setattr(instance.api, "cf", cf)
     instance.execute()
-    assert methods.count("PUT") == 1
-    assert methods[-1] == "GET"
-    assert instance.result["put_outcome"] == "UNKNOWN"
+    puts = [kw["payload"]["service"] for _, kw in calls if kw.get("method") == "PUT"]
+    assert puts == [trial.WORKERS["B"], trial.WORKERS["A"]]
+    assert instance.result["owner_state"] == trial.WORKERS["A"]
     assert instance.result["samples"] is not None
+    assert instance.result["outcome"] == "STOP_REVIEW_REQUIRED"
+
+
+def test_failed_immediate_readback_cannot_become_success(monkeypatch):
+    instance, _ = setup(monkeypatch, execute=True)
+    original = instance.domain
+    count = 0
+    def domain_with_temporary_failure():
+        nonlocal count
+        count += 1
+        if count == 3:
+            raise trial.Refused("transport_failed")
+        return original()
+    monkeypatch.setattr(instance, "domain", domain_with_temporary_failure)
+    instance.execute()
+    assert instance.result["owner_after_matches"] is True
+    assert instance.result["error_code"] == "immediate_readback_unverified"
     assert instance.result["outcome"] == "STOP_REVIEW_REQUIRED"
 
 
@@ -304,46 +323,21 @@ def test_put_captures_http_status_and_complete_error_envelope(monkeypatch):
         return 409, {"ignored": "headers"}, json.dumps(envelope).encode()
     monkeypatch.setattr(trial, "request", request)
     with pytest.raises(trial.Refused, match="cloudflare_put_not_successful"):
-        instance.put_domain(domain())
+        instance.mutate_domain("PUT", "/workers/domains", {"service": trial.WORKERS["B"]})
     assert instance.result["api_response"] == {"http_status": 409, "body": envelope}
     assert len(calls) == 1 and calls[0][1]["method"] == "PUT"
     assert token not in json.dumps(instance.result["api_response"])
 
-def test_override_uses_wranger_endpoint_and_never_dns_override(monkeypatch):
-    account = "c" * 32
-    args = arguments(execute=True, override_existing_origin=True)
-    instance = trial.Trial(args, {
+def test_delete_empty_response_is_recorded_and_accepted(monkeypatch):
+    instance = trial.Trial(arguments(execute=True), {
         "CHAT_CUTOVER_TRIAL_ZONE_ID": ZONE,
-        "CLOUDFLARE_ACCOUNT_ID": account, "CLOUDFLARE_API_TOKEN": "synthetic",
+        "CLOUDFLARE_ACCOUNT_ID": "c" * 32, "CLOUDFLARE_API_TOKEN": "synthetic",
     })
-    calls = []
-    def request(url, **kw):
-        calls.append((url, kw))
-        return 200, {}, b'{"success":true,"errors":[],"messages":[],"result":{}}'
-    monkeypatch.setattr(trial, "request", request)
-    instance.put_domain(domain())
-    assert len(calls) == 1
-    url, kw = calls[0]
-    assert url.endswith("/workers/scripts/" + trial.WORKERS["B"] + "/domains/records")
-    payload = json.loads(kw["data"])
-    assert payload["override_existing_origin"] is True
-    assert payload["override_existing_dns_record"] is False
-    assert payload["origins"] == [{"hostname": trial.HOST, "zone_id": ZONE,
-                                   "enabled": True, "previews_enabled": False}]
+    monkeypatch.setattr(trial, "request", lambda *a, **kw: (200, {}, b""))
+    instance.mutate_domain("DELETE", "/workers/domains/" + "e" * 40, None)
+    assert instance.result["api_responses"] == [
+        {"method": "DELETE", "http_status": 200, "body": {"non_json_body": ""}}]
 
-def test_override_rejects_other_target_domain_before_put(monkeypatch):
-    instance, calls = setup(monkeypatch, execute=True)
-    instance.args.override_existing_origin = True
-    original = instance.api.cf
-    def cf(path, **kw):
-        if path == "/workers/domains":
-            return [domain(trial.WORKERS["B"], hostname="different-test.padiem.net")]
-        return original(path, **kw)
-    monkeypatch.setattr(instance.api, "cf", cf)
-    with pytest.raises(trial.Refused, match="trial_target_has_other_domains"):
-        instance.execute()
-    assert instance.result["put_attempts"] == 0
-    assert not any(kw.get("method") == "PUT" for _, kw in calls)
 
 def test_put_response_scrubs_credential_echo(monkeypatch):
     token = "synthetic-sensitive-token"
@@ -355,5 +349,5 @@ def test_put_response_scrubs_credential_echo(monkeypatch):
         403, {}, json.dumps({"success": False, "errors": [{"code": 1, "message": token}],
                              "messages": [], "result": None}).encode()))
     with pytest.raises(trial.Refused):
-        instance.put_domain(domain())
+        instance.mutate_domain("PUT", "/workers/domains", {"service": trial.WORKERS["B"]})
     assert token not in json.dumps(instance.result["api_response"])

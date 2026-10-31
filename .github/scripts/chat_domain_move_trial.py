@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
 """Staging-only custom-domain measurement; default is read-only dry-run.
 
-This script does not create/deploy Workers or attach a missing hostname. Each
-explicit switch/rollback issues at most one PUT. An uncertain write is never
-retried or automatically reversed. The Cloudflare PUT status and response body
-are recorded in local evidence. Request headers and token values are never recorded.
+This script does not create or deploy Workers. Explicit switch/rollback
+detaches, attaches and verifies ownership; failed attachments are recovered
+when absence is verified. API bodies are evidence, headers and tokens are not.
 """
 from __future__ import annotations
 
@@ -24,6 +23,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from chat_com2_cutover_gate import Gate, Refused, require, request  # noqa: E402
+from chat_domain_transfer import transfer, TransferError, read_owner  # noqa: E402
 
 HOST = "chat-cutover-test.padiem.net"
 WORKERS = {"A": "padiem-chat-cutover-trial-a", "B": "padiem-chat-cutover-trial-b"}
@@ -171,13 +171,13 @@ class Trial:
             "target_worker": WORKERS[self.target], "outcome": "NOT_RUN",
             "put_attempts": 0, "put_outcome": "NOT_ATTEMPTED", "put_seconds": None,
             "put_started_utc": None, "put_ended_utc": None,
-            "api_response": None, "override_existing_origin": getattr(args, "override_existing_origin", False),
+            "api_response": None, "api_responses": [], "owner_state": None,
             "owner_before": None, "owner_after": None, "owner_after_matches": None,
             "owner_immediate": None, "owner_immediate_matches": None,
             "owner_immediate_readback_seconds": None,
             "observation_seconds": args.observe_seconds, "interval_seconds": args.interval_seconds,
             "baseline": None, "samples": None, "measurement": None, "error_code": None,
-            "planned_change": {"method": "PUT", "endpoint": "/accounts/{account_id}/workers/domains",
+            "planned_change": {"method": "DELETE_THEN_PUT", "endpoint": "/accounts/{account_id}/workers/domains",
                                "hostname": HOST, "service": WORKERS[self.target]},
         }
 
@@ -203,39 +203,36 @@ class Trial:
                 "trial_domain_scope_mismatch")
         return row
 
-    def put_domain(self, before):
-        """One API request; preserve status and complete JSON body, never headers."""
+    def mutate_domain(self, method, path, payload):
+        """Record each response, including errors, without headers or credentials."""
         account = self.env.get("CLOUDFLARE_ACCOUNT_ID", "")
         token = self.env.get("CLOUDFLARE_API_TOKEN", "")
-        require(bool(token) and bool(re.fullmatch(r"[0-9a-f]{32}", account)), "cloudflare_credentials_missing")
-        override = getattr(self.args, "override_existing_origin", False)
-        if override:
-            path = "/workers/scripts/" + WORKERS[self.target] + "/domains/records"
-            payload = {
-                "override_scope": True,
-                "override_existing_origin": True,
-                "override_existing_dns_record": False,
-                "origins": [{"hostname": HOST, "zone_id": before["zone_id"],
-                             "enabled": True, "previews_enabled": False}],
-            }
-        else:
-            path = "/workers/domains"
-            payload = {"hostname": HOST, "service": WORKERS[self.target],
-                       "zone_id": before["zone_id"], "enabled": True, "previews_enabled": False}
-        status, _, raw = request("https://api.cloudflare.com/client/v4/accounts/" + account + path,
-                                 method="PUT", headers={"Authorization": "Bearer " + token,
-                                 "Content-Type": "application/json"},
-                                 data=json.dumps(payload).encode())
-        # API envelopes do not contain the request header. If an upstream error
-        # echoes a credential anyway, ensure it cannot enter local evidence.
+        require(bool(token) and bool(re.fullmatch(r"[0-9a-f]{32}", account)),
+                "cloudflare_credentials_missing")
+        if method == "PUT":
+            self.result["put_attempts"] += 1
+        try:
+            status, _, raw = request("https://api.cloudflare.com/client/v4/accounts/" + account + path,
+                method=method, headers={"Authorization": "Bearer " + token,
+                "Content-Type": "application/json"},
+                data=None if payload is None else json.dumps(payload).encode())
+        except Exception:
+            self.result["api_responses"].append({"method": method, "http_status": None,
+                                                  "body": None, "error": "transport_failed"})
+            raise Refused("transport_failed") from None
         text = raw.decode("utf-8", errors="replace").replace(token, "[REDACTED]")
         try:
             body = json.loads(text)
         except (TypeError, ValueError):
             body = {"non_json_body": text}
-        self.result["api_response"] = {"http_status": status, "body": body}
-        require(200 <= status < 300 and isinstance(body, dict) and body.get("success") is True,
-                "cloudflare_put_not_successful")
+        entry = {"method": method, "http_status": status, "body": body}
+        self.result["api_responses"].append(entry)
+        if method == "PUT":
+            self.result["api_response"] = {"http_status": status, "body": body}
+        require(200 <= status < 300 and
+                ((method == "DELETE" and status == 200 and not raw) or
+                 (isinstance(body, dict) and body.get("success") is True)),
+                "cloudflare_" + method.lower() + "_not_successful")
 
     def execute(self):
         self.validate()
@@ -253,27 +250,26 @@ class Trial:
             self.result["outcome"] = "READ_ONLY_READY"
             return
         self.api.exact_main()
-        require(self.domain()["service"] == WORKERS[self.source], "trial_source_owner_changed")
-        if getattr(self.args, "override_existing_origin", False):
-            # Wrangler replace-state must not affect a second domain.
-            rows = self.api.cf("/workers/domains")
-            require(not any(row.get("service") == WORKERS[self.target] and
-                            row.get("hostname") != HOST for row in rows),
-                    "trial_target_has_other_domains")
+        before = self.domain()
+        require(before["service"] == WORKERS[self.source], "trial_source_owner_changed")
         sampler = Sampler(HOST, self.args.interval_seconds, self.args.connect_timeout)
         sampler.start()
         started = time.monotonic()
         put_start = started - sampler.epoch
-        self.result["put_attempts"] = 1
         self.result["put_outcome"] = "UNKNOWN"
         self.result["put_started_utc"] = utc_now()
+        def report(stage, owner):
+            self.result["owner_state"] = owner
+            self.result["error_code"] = stage
+            print("DOMAIN_OWNER_STATE=" + owner + " STAGE=" + stage)
+
         try:
-            self.put_domain(before)
+            transfer(host=HOST, before=before, target=WORKERS[self.target],
+                     read_rows=lambda: self.api.cf("/workers/domains?hostname=" + HOST),
+                     mutate=self.mutate_domain, report=report)
             self.result["put_outcome"] = "API_SUCCESS"
-        except Refused:
-            # A timeout or even an error response does not prove no change.
-            # Preserve that uncertainty and keep collecting read-only evidence.
-            self.result["error_code"] = "put_outcome_unknown"
+        except TransferError as error:
+            self.result["error_code"] = error.stage
         finally:
             self.result["put_seconds"] = time.monotonic() - started
             self.result["put_ended_utc"] = utc_now()
@@ -294,7 +290,11 @@ class Trial:
             self.result["error_code"] = self.result["error_code"] or "owner_readback_unverified"
         self.result["measurement"] = measurement(self.result["samples"], baseline, self.target, put_start)
         converged = self.result["measurement"]["first_target_response_seconds"] is not None
-        passed = self.result["put_outcome"] == "API_SUCCESS" and self.result["owner_after_matches"] is True and converged
+        if not converged:
+            self.result["error_code"] = self.result["error_code"] or "http_target_not_observed"
+        passed = (self.result["put_outcome"] == "API_SUCCESS" and
+                  self.result["owner_after_matches"] is True and converged and
+                  self.result["error_code"] is None)
         self.result["outcome"] = "OBSERVED_TARGET" if passed else "STOP_REVIEW_REQUIRED"
 
 
@@ -305,11 +305,10 @@ def parser():
     result.add_argument("--target-sha", required=True)
     result.add_argument("--out", required=True, help="new result JSON; existing file is refused")
     mode = result.add_mutually_exclusive_group()
-    mode.add_argument("--execute", action="store_true", help="explicit CTO-authorized single PUT")
+    mode.add_argument("--execute", action="store_true", help="explicit CTO-authorized detach and attach")
     mode.add_argument("--dry-run", dest="execute", action="store_false", help="read-only inspection (default)")
     result.set_defaults(execute=False)
     result.add_argument("--confirmation", default="")
-    result.add_argument("--override-existing-origin", action="store_true", help="use Wrangler origin override; never override DNS")
     result.add_argument("--observe-seconds", type=float, default=30)
     result.add_argument("--interval-seconds", type=float, default=0.25)
     result.add_argument("--connect-timeout", type=float, default=5)
@@ -328,12 +327,20 @@ def main(argv=None):
     try:
         trial.execute()
     except Refused as error:
+        trial.result["owner_state"] = read_owner(lambda: trial.api.cf("/workers/domains?hostname=" + HOST), HOST)
+        print("DOMAIN_OWNER_STATE=" + trial.result["owner_state"] + " STAGE=preflight_failed")
         trial.result["outcome"] = "REFUSED"
         trial.result["error_code"] = str(error)
     except Exception:
+        trial.result["owner_state"] = read_owner(lambda: trial.api.cf("/workers/domains?hostname=" + HOST), HOST)
+        print("DOMAIN_OWNER_STATE=" + trial.result["owner_state"] + " STAGE=unexpected_failure")
         trial.result["outcome"] = "STOP_REVIEW_REQUIRED"
         trial.result["error_code"] = "unexpected_failure"
     finally:
+        if trial.result["outcome"] not in {"READ_ONLY_READY", "OBSERVED_TARGET"}:
+            trial.result["owner_state"] = read_owner(
+                lambda: trial.api.cf("/workers/domains?hostname=" + HOST), HOST)
+            print("DOMAIN_OWNER_STATE=" + trial.result["owner_state"] + " STAGE=final")
         trial.result["ended_utc"] = utc_now()
         with output:
             json.dump(trial.result, output, indent=2, sort_keys=True)
@@ -341,7 +348,7 @@ def main(argv=None):
     print("DOMAIN_TRIAL=" + trial.result["outcome"])
     if trial.result["outcome"] in {"READ_ONLY_READY", "OBSERVED_TARGET"}:
         return 0
-    print("NEXT=inspect_readonly_ownership_no_retry_no_automatic_rollback")
+    print("NEXT=inspect_reported_ownership_before_further_action")
     return 2
 
 
