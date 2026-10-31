@@ -60,3 +60,16 @@ A prior grouped test run stopped after the first test. Its exact cause was not
 captured and did not recur in three isolated, 25-second-bounded repetitions
 (7 passed each). The in-process parity bridge now bounds its queue receive to
 five seconds so a missing actor message cannot block that wait indefinitely.
+
+## Identity handoff resolved in COM2 local test
+
+The COM2 route now keeps its live actors in the existing
+`_pending_pc_wss_by_id` registry and removes them on disconnect; the existing
+Cloudflare actor and handoff lookup are unchanged. The local socket test now
+uses a separately issued canonical pairing for each path, a synthetic Identity
+and signed owner, and the existing native completion host. Both direct Broker
+and edge-signed Chat relay reach the signed credential fetch, owner/Identity
+authorization, one-time credential transfer, authenticated install ACK,
+`paired_offline` terminal, client-initiated WebSocket 1000 close, and actor
+cleanup. The ACK simulates protected-store readback; it is not Windows DPAPI
+or a real Identity/PC deployment test.

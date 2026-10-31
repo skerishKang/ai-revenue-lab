@@ -75,12 +75,14 @@ def _admit(ws, *, secret, storage, now=None):
 def make_route(*, owner, secret):
     # Only called by an explicitly enabled app; use the same broker database.
     owner._storage.sql.exec("CREATE TABLE IF NOT EXISTS com2_pc_offer_replay (request_id TEXT PRIMARY KEY, expires_at INTEGER NOT NULL)")
-    owner._com2_pc_sessions = set()
+    # Match the canonical actor registry used by the identity handoff.
+    # This registry belongs to this broker instance, never to a client.
+    owner._pending_pc_wss_by_id = {}
 
     async def endpoint(ws):
         if (not _enabled(owner.env)
             or getattr(owner.env, "LOCAL_AGENT_BROKER_PENDING_PC_WSS_ENABLED", None) != "enabled"
-            or len(owner._com2_pc_sessions) >= MAX_PENDING_PC_WSS_PER_DO
+            or len(owner._pending_pc_wss_by_id) >= MAX_PENDING_PC_WSS_PER_DO
             or not _admit(ws, secret=secret, storage=owner._storage)):
             await ws.close(code=1008)
             return
@@ -93,7 +95,7 @@ def make_route(*, owner, secret):
         actor = LivePcWssOffer(storage=owner._storage, socket=sock, verifier=_verify)
         # Reserve the slot before the first await so simultaneous upgrades
         # cannot exceed the same-process session cap.
-        owner._com2_pc_sessions.add(actor)
+        owner._pending_pc_wss_by_id[actor] = actor
         try:
             await ws.accept()
             while True:
@@ -104,7 +106,7 @@ def make_route(*, owner, secret):
             pass
         finally:
             actor.mark_disconnected()
-            owner._com2_pc_sessions.discard(actor)
+            owner._pending_pc_wss_by_id.pop(actor, None)
             if actor._request_ref:
                 owner._pending_pc_live_by_ref.pop(actor._request_ref, None)
             await sock.close()
