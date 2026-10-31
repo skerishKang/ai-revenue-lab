@@ -26,6 +26,8 @@ class VerifyStagingTest(unittest.TestCase):
                     {'type': 'plain_text', 'name': 'PADIEM_CHAT_SHARED_AUTH_COMPARE_ENABLED', 'text': 'false'},
                     {'type': 'plain_text', 'name': 'PADIEM_CHAT_SHARED_LOGIN_ENABLED', 'text': 'true'},
                     {'type': 'plain_text', 'name': 'PADIEM_CHAT_SHARED_AUTH_CLIENT_ID', 'text': 'b62-staging'},
+                    {'type': 'plain_text', 'name': 'PADIEM_CHAT_SHARED_AUTH_CLIENT_KID', 'text': module.STAGING_CLIENT_KID},
+                    *[{'type': 'secret_text', 'name': name} for name in module.STAGING_AUTH_SECRETS],
                     {'type': 'plain_text', 'name': 'PADIEM_CHAT_PUBLIC_BASE_URL', 'text': 'https://padiem-chat-staging.charliekant.workers.dev'}]
         service = {'type': 'service', 'name': 'IDENTITY_AUTHORITY_SERVICE', 'service': 'padiem-control-plane-identity'}
         module.verify_bindings({'resources': {'bindings': bindings}}, before=True)
@@ -34,6 +36,11 @@ class VerifyStagingTest(unittest.TestCase):
         module.verify_bindings({'resources': {'bindings': legacy}}, before=True)
         module.verify_bindings({'resources': {'bindings': bindings + [service]}})
         module.verify_bindings({'resources': {'bindings': bindings + [service]}}, before=True)
+        with self.assertRaises(ValueError):
+            module.verify_bindings({'resources': {'bindings': bindings + [service, {'type': 'secret_text', 'name': 'UNAPPROVED'}]}})
+        for secret in module.STAGING_AUTH_SECRETS:
+            with self.subTest(missing=secret), self.assertRaises(ValueError):
+                module.verify_bindings({'resources': {'bindings': [b for b in bindings if b['name'] != secret] + [service]}})
         for extra in ([], [{'type': 'service', 'name': 'PRODUCTION', 'service': 'other'}],
                       [{**service, 'service': 'other'}], [service, service],
                       [{**service, 'environment': 'staging'}], [{**service, 'entrypoint': 'other'}]):

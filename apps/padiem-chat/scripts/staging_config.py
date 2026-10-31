@@ -8,6 +8,8 @@ from urllib.parse import urlsplit
 PRODUCTION_DB = "702bb62b-36f5-41a0-973f-c4f663ee01e6"
 STAGING_DB = "e064ac35-6e45-4fd8-9a2c-c3ae6583c964"
 PRODUCTION_HOSTS = {"chat.padiem.net", "queue.padiem.net"}
+STAGING_CLIENT_KID = 'b62-staging-66873f6620f5a65e'
+STAGING_AUTH_SECRETS = ("PADIEM_CHAT_SHARED_AUTH_CLIENT_PRIVATE_JWK", "PADIEM_CHAT_SHARED_AUTH_COMPARE_STATE_KEY")
 IDENTITY_SERVICE = ("IDENTITY_AUTHORITY_SERVICE", "padiem-control-plane-identity")
 UUID = re.compile(r"[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}\Z")
 
@@ -40,6 +42,7 @@ def make_config(database_id, public_origin, queue_origin):
         "vars": {"PADIEM_CHAT_PUBLIC_BASE_URL": public_origin, "PC_QUEUE_BACKEND": "d1", "PC_QUEUE_ORIGIN": queue_origin,
                  "PADIEM_CHAT_SHARED_LOGIN_ENABLED": "true", "PADIEM_CHAT_SHARED_AUTH_COMPARE_ENABLED": "false",
                  "PADIEM_CHAT_SHARED_AUTH_CLIENT_ID": "b62-staging",
+                 "PADIEM_CHAT_SHARED_AUTH_CLIENT_KID": STAGING_CLIENT_KID,
                  "PADIEM_CHAT_RUNTIME_MODE": "mock", "PADIEM_CHAT_LIVE_ENABLED": "false"},
         "observability": {"enabled": True, "head_sampling_rate": 1},
     }

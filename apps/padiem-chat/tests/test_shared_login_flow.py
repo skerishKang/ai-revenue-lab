@@ -195,3 +195,16 @@ async def test_worker_configuration_preserves_default_and_uses_staging_origin(co
     assert query['redirect_uri'] == [origin + '/auth/shared/callback']
     assert flow.callback == origin + '/auth/shared/callback'
     assert (await flow.refresh(request(origin='https://wrong.example.test'))).status_code == 403
+
+
+@pytest.mark.asyncio
+async def test_missing_shared_login_configuration_logs_only_missing_names(capsys):
+    marker = 'synthetic-private-value-not-for-log'
+    env = {'PADIEM_CHAT_SHARED_LOGIN_ENABLED': 'true',
+           'PADIEM_CHAT_SHARED_AUTH_CLIENT_PRIVATE_JWK': marker}
+    assert await create_worker_shared_login_flow(env, object()) is None
+    out = capsys.readouterr()
+    assert 'PADIEM_CHAT_SHARED_AUTH_COMPARE_STATE_KEY' in out.out
+    assert 'PADIEM_CHAT_SHARED_AUTH_CLIENT_KID' in out.out
+    assert 'PADIEM_CHAT_SHARED_AUTH_CLIENT_PRIVATE_JWK' not in out.out
+    assert marker not in out.out + out.err
