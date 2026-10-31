@@ -17,6 +17,8 @@ that, read-only:
   ``{"keys": [...]}`` list, or ``{"objects": [{"key": ...}]}``; several lists
   are unioned, because each storage bucket is inventoried on its own),
 * tolerate a UTF-8 BOM, which the Windows-side dumps carry,
+* skip rows the product already soft-deleted (a non-empty ``deleted_at``), which
+  are rows whose object the mirror dropped on purpose,
 * report referenced / missing counts per table and exit 1 on any gap.
 
 Key values are never printed and never written by default: the JSON artifact
@@ -65,6 +67,8 @@ class TableReference:
     column: str
     keys: int
     missing: int
+    #: Keys this column held only on soft-deleted rows, so not counted.
+    excluded: int = 0
 
 
 @dataclass(slots=True)
@@ -77,6 +81,8 @@ class ReferenceReport:
     tables: list[TableReference] = field(default_factory=list)
     unique_keys: int = 0
     missing_keys: int = 0
+    #: Referenced keys that only a soft-deleted row carried.
+    excluded_keys: int = 0
     missing_digest: str = ""
     #: Populated for the report but stripped from the JSON unless the operator
     #: explicitly asks for it: object paths embed customer identifiers.
@@ -153,6 +159,21 @@ def _read_inventory_file(path: Path) -> set[str]:
     return keys
 
 
+def has_soft_delete(connection: sqlite3.Connection, table: str) -> bool:
+    """True when the table keeps deleted rows and marks them with ``deleted_at``.
+
+    The product removes the object from the mirror when it deletes a row, so
+    such a row is not a reference a rollback has to restore. The table name is
+    never assumed: the column is looked up, and a table without it is scanned
+    exactly as before.
+    """
+
+    return any(
+        str(row[1]).lower() == "deleted_at"
+        for row in connection.execute(f'PRAGMA table_info("{table}")')
+    )
+
+
 def load_inventories(paths: Iterable[str | Path]) -> tuple[set[str], str, int]:
     """Union the key sets of every inventory file, with a file-set digest.
 
@@ -209,20 +230,39 @@ def check(
         referenced: set[str] = set()
         missing_values: set[str] = set()
         for table, column in columns:
-            values = {
-                str(row[0]).strip()
-                for row in connection.execute(f'SELECT "{column}" FROM "{table}"')
-                if row[0] is not None and str(row[0]).strip()
-            }
-            missing = values - inventory
+            soft_deleted = has_soft_delete(connection, table)
+            kept: set[str] = set()
+            dropped: set[str] = set()
+            query = (
+                f'SELECT "{column}", '
+                + ('"deleted_at"' if soft_deleted else "NULL")
+                + f' FROM "{table}"'
+            )
+            for row in connection.execute(query):
+                value = "" if row[0] is None else str(row[0]).strip()
+                if not value:
+                    continue
+                if soft_deleted and row[1] is not None and str(row[1]).strip():
+                    dropped.add(value)
+                else:
+                    kept.add(value)
+            # A key that a live row still carries is a reference even when a
+            # deleted row also pointed at it.
+            excluded = dropped - kept
+            missing = kept - inventory
             report.tables.append(
                 TableReference(
-                    table=table, column=column, keys=len(values), missing=len(missing)
+                    table=table,
+                    column=column,
+                    keys=len(kept),
+                    missing=len(missing),
+                    excluded=len(excluded),
                 )
             )
-            referenced |= values
+            referenced |= kept
             missing_values |= missing
             report.missing_keys += len(missing)
+            report.excluded_keys += len(excluded)
             if missing:
                 report.missing_digest = hashlib.sha256(
                     "\n".join(sorted(missing)).encode("utf-8")
@@ -240,12 +280,14 @@ def _emit(report: ReferenceReport) -> None:
     print(
         f"CHAT_OBJECT_REFERENCE={state} tables={len(report.tables)} "
         f"inventories={report.inventory_files} keys={report.unique_keys} "
-        f"missing={report.missing_keys}"
+        f"missing={report.missing_keys} "
+        f"excluded_soft_deleted={report.excluded_keys}"
     )
     for table in report.tables:
         print(
             f"CHAT_OBJECT_TABLE {table.table}.{table.column} "
-            f"keys={table.keys} missing={table.missing}"
+            f"keys={table.keys} missing={table.missing} "
+            f"excluded_soft_deleted={table.excluded}"
         )
     if report.missing_keys:
         # Which table and column the gap came from, counts only: the operator

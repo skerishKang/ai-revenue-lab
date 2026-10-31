@@ -75,7 +75,7 @@ PADIEM_CHAT_WRITE_FREEZE_PATHS=/auth/google/callback,/auth/lovetree/start,/api/c
 | 2 늦은 쓰기 확인 | 4개 동결 경로 GET 503 확인 + D1 스냅숏 2회 비교(관찰 창 10분) + §4b 관찰 목록 확인 | 12분 | 두 스냅숏의 행 수·정렬 해시·`updated_at` 최대값 차이 0, 동결 경로 4개 모두 503 | 창 유지, 원인 경로를 목록에 추가 |
 | 3 D1 내보내기 | `wrangler d1 export --remote` | 5분 | 파일 크기 > 0, 표 수가 기준선과 동일 | 재시도 |
 | 4 COM2 반영 | 동기화 러너로 내보내기 반영 | 5분 | 반영 스크립트 종료 코드 0 | 핸드백 |
-| 4b 객체 참조 | `chat_object_reference_check`로 참조 키 ↔ 버킷별 미러 목록 합집합 대조 | 3분 | `CHAT_OBJECT_REFERENCE=MATCH` (종료 코드 0) | 누락 키를 R2로 올린 뒤 재실행, 해결되지 않으면 6번 대신 CTO 보고 |
+| 4b 객체 참조 | `chat_object_reference_check`로 참조 키 ↔ 버킷별 미러 목록 합집합 대조, 소프트 삭제 행 제외(`deleted_at`이 있는 표는 `deleted_at IS NULL` 행만 셈) | 3분 | `CHAT_OBJECT_REFERENCE=MATCH` (종료 코드 0) | 누락 키를 R2로 올린 뒤 재실행, 해결되지 않으면 6번 대신 CTO 보고 |
 | 5 패리티 | `chat_copy_parity` | 2분 | `CHAT_COPY_PARITY=MATCH` (종료 코드 0) | 6번 |
 | 6 되돌림 | `chat_d1_handback_gate` plan → apply | 10분 | 적용 후 5번이 `MATCH` | 창 유지, CTO 보고 |
 
