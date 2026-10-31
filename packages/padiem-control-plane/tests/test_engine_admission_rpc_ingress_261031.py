@@ -300,27 +300,6 @@ def test_the_service_binding_surface_is_unchanged() -> None:
     assert stub.calls == [("fetch_entitlement_snapshot", {"product_id": "b62", "subject": {}})]
 
 
-def test_the_staging_instance_is_its_own_worker_with_its_own_namespace() -> None:
-    config = json.loads(
-        (ADAPTER_ROOT / "wrangler.engine-admission-authority.jsonc").read_text(
-            encoding="utf-8"
-        )
-    )
-    staging = config["env"]["staging"]
-
-    assert config["name"] == "padiem-control-plane-engine-admission"
-    assert config["workers_dev"] is False
-    assert staging["name"] == "padiem-control-plane-engine-admission-staging"
-    assert staging["name"] != config["name"]
-    # workers.dev only: no zone route may exist on the staging instance.
-    assert staging["workers_dev"] is True
-    assert "routes" not in staging and "routes" not in config
-    # Its own Durable Object namespace, same reviewed class and binding name.
-    assert staging["durable_objects"] == config["durable_objects"]
-    # Staging never reads the production identity authority.
-    staging_identity = {
-        entry["binding"]: entry["service"] for entry in staging["services"]
-    }
-    assert staging_identity["CONTROL_PLANE_IDENTITY"] != "padiem-control-plane-identity"
-    # Same reviewed product boundary in both instances.
-    assert staging["vars"] == config["vars"]
+# The staging-instance config assertion lives outside this package, in
+# .github/tests/test_engine_admission_staging_config_261031.py: the foundation
+# package gate refuses the config tool's name in any .py inside it.
