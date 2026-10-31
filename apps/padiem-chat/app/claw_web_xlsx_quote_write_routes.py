@@ -318,6 +318,7 @@ async def web_xlsx_quote_edit_download(request: Request) -> Response:
     try:
         data = await store.get_for_tenant(
             tenant_id=workspace, document_id=receipt["revision_document_id"],
+            user_id=owner,
         )
         if data is None:
             return _error(404, "owner_web_xlsx_revision_expired")

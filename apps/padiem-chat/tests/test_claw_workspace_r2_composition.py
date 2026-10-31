@@ -27,6 +27,7 @@ from app.workspace_storage import (
 NOW = datetime(2026, 9, 9, 10, 0, tzinfo=timezone.utc)
 TENANT = "tenant_0123456789abcdef0123456789abcdef"
 OTHER_TENANT = "tenant_fedcba9876543210fedcba9876543210"
+USER = "usr_0123456789abcdef0123456789abcdef"
 
 
 class _FakeStatement:
@@ -42,11 +43,12 @@ class _FakeStatement:
     async def run(self) -> dict[str, object]:
         sql = self._sql
         if sql.startswith("INSERT INTO claw_document_metadata"):
-            (document_id, tenant_id, object_key, filename, media_type,
+            (document_id, tenant_id, user_id, object_key, filename, media_type,
              byte_length, created_at, expires_at) = self._values
             self._db.rows[document_id] = {
                 "document_id": document_id,
                 "tenant_id": tenant_id,
+                "user_id": user_id,
                 "object_key": object_key,
                 "filename": filename,
                 "media_type": media_type,
@@ -64,9 +66,16 @@ class _FakeStatement:
         raise AssertionError(f"unexpected SQL: {sql!r}")
 
     async def first(self) -> dict[str, object] | None:
-        (document_id,) = self._values
+        owner_bound = "AND user_id=?" in self._sql
+        if owner_bound:
+            document_id, user_id = self._values
+        else:
+            (document_id,) = self._values
+            user_id = None
         row = self._db.rows.get(document_id)
         if row is None or row.get("deleted_at") is not None:
+            return None
+        if owner_bound and row.get("user_id") != user_id:
             return None
         return {k: v for k, v in row.items() if k != "deleted_at"}
 
@@ -120,17 +129,17 @@ async def test_both_bindings_compose_a_tenant_bound_workspace_store() -> None:
     assert isinstance(app.state._workspace_metadata_store, D1ClawDocumentMetadataStore)
 
     saved = await store.put_generated_docx(
-        tenant_id=TENANT, filename="quote.docx", body=b"PK-docx-bytes", now=NOW
+        tenant_id=TENANT, user_id=USER, filename="quote.docx", body=b"PK-docx-bytes", now=NOW
     )
     assert saved.object_key.startswith(f"workspaces/{TENANT}/claw/documents/{saved.document_id}/")
 
     metadata, body = await store.get_for_tenant(
-        tenant_id=TENANT, document_id=saved.document_id, now=NOW
+        tenant_id=TENANT, document_id=saved.document_id, user_id=USER, now=NOW
     )
     assert body == b"PK-docx-bytes"
     with pytest.raises(WorkspaceStorageAccessError):
         await store.get_for_tenant(
-            tenant_id=OTHER_TENANT, document_id=saved.document_id, now=NOW
+            tenant_id=OTHER_TENANT, document_id=saved.document_id, user_id=USER, now=NOW
         )
 
 
