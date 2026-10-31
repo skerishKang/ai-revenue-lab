@@ -11,12 +11,9 @@ lifecycle records, in order, without buffering, and the Chat bridge projects the
 Engine's terminal code into one bounded B62 error instead of hanging or leaking
 Engine text.
 
-What it does not prove: a model answer. The Engine host has no model-execution
-binding in this composition, so a run ends at ``run_failed`` with
-``upstream_unavailable`` before any B14 call — the synthetic B14 records zero
-requests, which the test asserts rather than hides. The answer path needs the
-Engine's model-execution surface, which is an owner-level provider decision, not
-a test-fixture choice.
+The Engine host has a real model-execution binding. The synthetic B14 fixture
+provides explicit unavailable and successful responses to test both terminal
+contracts, with a fresh fixture per test.
 """
 
 from __future__ import annotations
@@ -180,12 +177,18 @@ def _wait_tcp(port: int, seconds: float = 40.0) -> bool:
     return False
 
 
-@pytest.fixture(scope="module")
-def engine_host(tmp_path_factory):
+@pytest.fixture
+def engine_host(tmp_path_factory, request):
     b14 = _B14()
     b14_port = _free_port()
-    _serve(b14, b14_port)
+    b14_server = _serve(b14, b14_port)
     engine_port = _free_port()
+    unavailable_socket = None
+    upstream_port = b14_port
+    if request.node.name == "test_a_turn_streams_the_engines_own_records_in_order":
+        unavailable_socket = socket.socket()
+        unavailable_socket.bind(("127.0.0.1", 0))
+        upstream_port = unavailable_socket.getsockname()[1]
     import os
 
     env = dict(os.environ)
@@ -194,7 +197,7 @@ def engine_host(tmp_path_factory):
             "PADIEM_ENGINE_CPYTHON_HOST": "1",
             "P01_HOST": "127.0.0.1",
             "P01_PORT": str(engine_port),
-            "PADIEM_ENGINE_LOCAL_B14_ORIGIN": f"http://127.0.0.1:{b14_port}",
+            "PADIEM_ENGINE_LOCAL_B14_ORIGIN": f"http://127.0.0.1:{upstream_port}",
             "PADIEM_ENGINE_LOCAL_DB": str(
                 tmp_path_factory.mktemp("engine") / "engine.sqlite3"
             ),
@@ -226,6 +229,9 @@ def engine_host(tmp_path_factory):
         assert _wait_tcp(engine_port), "engine host app did not answer on its port"
         yield {"origin": f"http://127.0.0.1:{engine_port}", "b14": b14}
     finally:
+        if unavailable_socket is not None:
+            unavailable_socket.close()
+        b14_server.should_exit = True
         process.terminate()
         try:
             process.communicate(timeout=15)
@@ -327,9 +333,9 @@ async def test_a_turn_streams_the_engines_own_records_in_order(engine_host) -> N
     assert error is not None
     assert error.code == "upstream_unavailable"
     assert "AI 연결" in error.user_message
-    # No model-execution binding in this composition: the synthetic B14 is never
-    # called, which is why the run stops at run_failed above.
+    # The configured model service is unreachable in this test.
     assert engine_host["b14"].calls == []
+
 
 
 async def test_a_second_turn_still_streams_after_an_early_close(engine_host) -> None:
@@ -361,16 +367,13 @@ async def test_a_second_turn_still_streams_after_an_early_close(engine_host) -> 
         subject_id=None,
         session_id="c2",
     )
-    from app.orchestration_bridge import B62OrchestrationError
+    records = [record async for record in second]
+    kinds = [str(record["event"]["kind"]) for record in records if "event" in record]
+    assert kinds[:2] == ["run_started", "context_prepared"]
+    assert kinds[-1] == "run_completed"
+    assert records[-1]["result"].answer == "합성 답변"
+    assert engine_host["b14"].calls
 
-    kinds: list[str] = []
-    try:
-        async for record in second:
-            kinds.append(str(record["event"]["kind"]))
-    except B62OrchestrationError:
-        pass
-    assert kinds[0] == "run_started"
-    assert kinds[-1] in {"run_failed", "run_completed"}
 
 
 async def test_the_engine_refuses_a_wrong_credential(engine_host) -> None:
