@@ -922,6 +922,7 @@ smLibraryScene.addEventListener('click',e=>{
 
 window.addEventListener('keydown',e=>{if(document.getElementById('library').classList.contains('active')){if(e.key==='ArrowLeft')document.getElementById('prevBook').click();if(e.key==='ArrowRight')document.getElementById('nextBook').click();if(e.key==='Enter')document.getElementById('openBook').click()}});
 /* ===== v2.9.8 Personal Reading Home / Today ===== */
+let __smInitialReaderSetup=false;
 let __smTodayContinueContext='고린도전서 3장';
 
 function todayLocalDay(ts=Date.now()){
@@ -948,7 +949,7 @@ function allReaderProgressEntries(){
 function bestContinueReading(){
   const entries=allReaderProgressEntries();
   if(entries.length)return entries[0];
-  return {context:__smCurrentReaderLabel||'고린도전서 3장',mode:'page',page:Number(readerPageIndex||0),scrollRatio:0,updatedAt:Date.now()};
+  return {context:__smCurrentReaderLabel||'고린도전서 3장',mode:'page',page:0,scrollRatio:0,updatedAt:0,recommendation:true};
 }
 function progressVisual(p){
   if(p?.mode==='flow'){
@@ -999,7 +1000,6 @@ function recentReadingThread(){
   return [...contexts.values()].sort((a,b)=>b.updatedAt-a.updatedAt).slice(0,3);
 }
 function todayRecallItems(){
-  recordCurrentContextEntityLedger();
   const queue=buildRecallQueue();
   return queue.filter(item=>Number(recallItemState(item.id).nextDue||0)<=Date.now());
 }
@@ -1859,6 +1859,7 @@ function saveContextEntityLedger(){
 loadContextEntityLedger();
 
 function recordCurrentContextEntityLedger(){
+  if(__smInitialReaderSetup)return;
   if(!__smCurrentReaderLabel||!Array.isArray(READER_PAGES))return;
   const names=['바울','아볼로','고린도','하나님의 밭'];
   const pages=[];
@@ -4601,7 +4602,7 @@ let readerViewMode='page';
 
 function readerProgressStorageKey(){return window.StoryMemoryReaderViewRuntimeV1.readerProgressStorageKey.apply(this,arguments);}
 function readStoredReaderProgress(){return window.StoryMemoryReaderViewRuntimeV1.readStoredReaderProgress.apply(this,arguments);}
-function saveReaderProgress(extra={}){return window.StoryMemoryReaderViewRuntimeV1.saveReaderProgress.apply(this,arguments);}
+function saveReaderProgress(extra={}){if(__smInitialReaderSetup)return;return window.StoryMemoryReaderViewRuntimeV1.saveReaderProgress.apply(this,arguments);}
 function syncReaderViewButtons(){return window.StoryMemoryReaderViewRuntimeV1.syncReaderViewButtons.apply(this,arguments);}
 function flowSectionMarkup(html,index){return window.StoryMemoryReaderViewRuntimeV1.flowSectionMarkup.apply(this,arguments);}
 function renderFlowReader({restoreRatio=null,focusPage=null}={}){return window.StoryMemoryReaderViewRuntimeV1.renderFlowReader.apply(this,arguments);}
@@ -4718,7 +4719,8 @@ document.getElementById('pageTurnPrev').onclick=()=>animateReaderPageTurn(-1);
 document.getElementById('pageTurnNext').onclick=()=>animateReaderPageTurn(1);
 
 function animateReaderPageTurn(step){return window.StoryMemoryReaderViewRuntimeV1.animateReaderPageTurn.apply(this,arguments);}
-setReaderContext({kind:'bible',book:'성경',volume:'고린도전서',chapter:3,chapterCount:16});
+__smInitialReaderSetup=true;
+try{setReaderContext({kind:'bible',book:'성경',volume:'고린도전서',chapter:3,chapterCount:16});}finally{__smInitialReaderSetup=false;}
 requestAnimationFrame(()=>{try{renderTodayHome()}catch(_){}});
 
 requestAnimationFrame(()=>{
