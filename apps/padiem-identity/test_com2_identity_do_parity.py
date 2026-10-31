@@ -74,6 +74,53 @@ async def test_twelve_rpc_envelopes_match_actual_do_entrypoint(monkeypatch, tmp_
             headers = {"x-padiem-service-at": str(at), "x-padiem-service-proof": proof_for(SECRET, method="POST", path=path, at=at, body=body)}
             response = await client.post(path, content=body, headers=headers)
             assert response.json() == await do.resolve_product_user_for_subject(reverse)
+
+            # Seed identical owner/session/context rows in each *real* store,
+            # then exercise the three consent methods through the HTTP ingress.
+            from datetime import datetime, timedelta, timezone
+            from padiem_control_plane.contracts import CanonicalSubjectRef, SubjectType
+            import canonical_connector_enrollment_consent_rpc as consent_rpc
+            instant = datetime.now(timezone.utc)
+            class FrozenDatetime(datetime):
+                @classmethod
+                def now(cls, tz=None):
+                    return instant if tz is not None else instant.replace(tzinfo=None)
+            monkeypatch.setattr(consent_rpc, "datetime", FrozenDatetime)
+            monkeypatch.setattr(consent_rpc.secrets, "token_hex", lambda n: "b" * (n * 2))
+            session_id = None
+            for side in (do, authority):
+                for name in ("CONTROL_PLANE_CONNECTOR_ENROLLMENT_RPC_ENABLED",
+                             "CONTROL_PLANE_CONNECTOR_ENROLLMENT_SCOPE_APPROVED",
+                             "CONTROL_PLANE_CONNECTOR_ENROLLMENT_SCHEMA_INSTALLED"):
+                    setattr(side.env, name, "true")
+                tenant = side._store.create_tenant(now=instant)
+                side._store.assign_tenant_membership(tenant_id=tenant.tenant_id, canonical_subject_id=subject, now=instant, role="owner")
+                linked = side._store.resolve_or_create_product_link(product_id="b54-padiem-claw", product_user_id="usr_claw", auth_provider="google", provider_subject="synthetic-provider", now=instant)
+                assert linked.canonical_subject_id == subject
+                session = side._store.establish_auth_session(product_id="b54-padiem-claw", subject=CanonicalSubjectRef(subject_type=SubjectType.USER, subject_id=subject), authenticated_at=instant, not_after=instant + timedelta(hours=1), now=instant)
+                if session_id is None:
+                    session_id = session.session_id
+                assert session.session_id == session_id
+                side._storage.sql.exec("INSERT INTO canonical_connector_context (product_id, subject_id, actor_ref, account_ref, workspace_ref, created_at) VALUES (?, ?, ?, ?, ?, ?)", "b62", subject, "actor.test", "account.test", "workspace.test", instant.isoformat())
+                side._connector_enrollment_records.install_schema()
+                granted = await side.grant_connector_enrollment_consent({"session_id": session_id, "device_id": "device.test", "confirmed": True, "confirmation_version": "pc-enrollment-consent-v1"})
+                assert granted["ok"], granted
+                assert granted["consent"]["consent_id"] == "consent." + "b" * 32
+            consent_id = "consent." + "b" * 32
+            challenge = "pairing." + "f" * 32
+            vectors = (
+                ("resolve_connector_enrollment_consent_for_device", {"session_id": session_id, "device_id": "device.test"}),
+                ("bind_connector_enrollment_challenge", {"session_id": session_id, "challenge_id": challenge, "expires_at": (instant + timedelta(minutes=5)).isoformat()}),
+                ("authorize_connector_enrollment_redeem", {"challenge_id": challenge, "consent_id": consent_id, "device_id": "device.test", "owner_ref": subject, "account_ref": "account.test", "workspace_ref": "workspace.test"}),
+            )
+            for method, payload in vectors:
+                expected = await getattr(do, method)(payload)
+                path = "/internal/rpc/" + method
+                body = json.dumps(payload).encode()
+                at = int(time.time())
+                headers = {"x-padiem-service-at": str(at), "x-padiem-service-proof": proof_for(SECRET, method="POST", path=path, at=at, body=body)}
+                response = await client.post(path, content=body, headers=headers)
+                assert expected["ok"] and response.json() == expected, method
     finally:
         authority._storage.close()
         sys.modules.pop("identity_authority_worker", None)
