@@ -36,10 +36,16 @@ __all__ = [
     "PROOF_HEADER",
     "PROOF_VERSION",
     "RPC_PATH_PREFIX",
+    "DEFAULT_SERVICE_ID_POLICY",
+    "SERVICE_ID_HEADER",
+    "SERVICE_ID_POLICIES",
+    "SERVICE_ID_POLICY_ENV",
     "handle_internal_rpc",
     "proof_for",
+    "proof_for_v2",
     "resolve_ingress_secret",
     "rpc_method_from_path",
+    "service_id_policy_from_env",
 ]
 
 RPC_PATH_PREFIX = "/internal/rpc/"
@@ -49,6 +55,22 @@ PROOF_VERSION = b"v1"
 MAX_BODY_BYTES = 512 * 1024
 MAX_CLOCK_SKEW_SECONDS = 300
 _METHOD_RE = re.compile(r"^[a-z][a-z0-9_]{2,63}$")
+
+# Replay defence (#6417). Every signed request names itself once, and the id is
+# part of the signature, so a captured request cannot be re-signed under another
+# id. The clock window alone cannot stop a byte-identical replay inside 300 s;
+# ``replay_guard`` records each id for the life of that window.
+#
+# ``service_id_policy``:
+#   "required" — no id, or a v1 proof with an id header, is refused;
+#   "optional" — transitional: a v1 proof with no id is still accepted;
+#   "legacy"   — v1 only (existing behaviour, retained for one release).
+SERVICE_ID_HEADER = "x-padiem-service-id"
+PROOF_VERSION_V2 = b"v2"
+SERVICE_ID_POLICIES = ("required", "optional", "legacy")
+DEFAULT_SERVICE_ID_POLICY = "optional"
+SERVICE_ID_POLICY_ENV = "PADIEM_RPC_SERVICE_ID_POLICY"
+_SERVICE_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{15,127}$")
 _NO_STORE = {"cache-control": "no-store", "content-type": "application/json"}
 
 
@@ -61,6 +83,31 @@ def proof_for(secret: str, *, method: str, path: str, at: int, body: bytes) -> s
         (PROOF_VERSION, method.encode("ascii"), path.encode("utf-8"), str(at).encode("ascii"), body)
     )
     return "v1=" + hmac.new(secret.encode("utf-8"), signed, hashlib.sha256).hexdigest()
+
+
+def proof_for_v2(
+    secret: str, *, method: str, path: str, at: int, service_id: str, body: bytes
+) -> str:
+    """The id-bound proof: the v1 fields plus the request id, under ``v2``."""
+
+    signed = b"\n".join(
+        (
+            PROOF_VERSION_V2,
+            method.encode("ascii"),
+            path.encode("utf-8"),
+            str(at).encode("ascii"),
+            service_id.encode("utf-8"),
+            body,
+        )
+    )
+    return "v2=" + hmac.new(secret.encode("utf-8"), signed, hashlib.sha256).hexdigest()
+
+
+def service_id_policy_from_env(value: Any) -> str:
+    """The configured policy, defaulting to ``optional`` for one release."""
+
+    text = "" if value is None else str(value).strip().lower()
+    return text if text in SERVICE_ID_POLICIES else DEFAULT_SERVICE_ID_POLICY
 
 
 def rpc_method_from_path(path: str) -> str | None:
@@ -105,6 +152,8 @@ async def handle_internal_rpc(
     allowed_methods: frozenset[str],
     dispatcher: Any,
     now: int | None = None,
+    service_id_policy: str = DEFAULT_SERVICE_ID_POLICY,
+    replay_guard: Any = None,
 ) -> tuple[int, dict[str, Any], dict[str, str]] | None:
     """Answer one ingress request, or ``None`` when the path is not ours.
 
@@ -141,9 +190,39 @@ async def handle_internal_rpc(
     current = int(time.time()) if now is None else int(now)
     if abs(current - at) > MAX_CLOCK_SKEW_SECONDS:
         return _error(403, "rpc_proof_stale", "Service proof expired.")
-    expected = proof_for(secret, method="POST", path=path, at=at, body=body)
-    if not hmac.compare_digest(expected, proof_raw):
-        return _error(403, "rpc_proof_invalid", "Service proof invalid.")
+    policy = service_id_policy if service_id_policy in SERVICE_ID_POLICIES else DEFAULT_SERVICE_ID_POLICY
+    service_id = request.headers.get(SERVICE_ID_HEADER)
+    if service_id is not None and (
+        not isinstance(service_id, str) or not _SERVICE_ID_RE.fullmatch(service_id)
+    ):
+        return _error(403, "rpc_service_id_invalid", "Service request id invalid.")
+    if policy == "required" and service_id is None:
+        return _error(403, "rpc_service_id_required", "Service request id required.")
+    if service_id is not None:
+        expected_v2 = proof_for_v2(
+            secret, method="POST", path=path, at=at, service_id=service_id, body=body
+        )
+        if not hmac.compare_digest(expected_v2, proof_raw):
+            # An id that is not inside the signature is not a request identity.
+            legacy = proof_for(secret, method="POST", path=path, at=at, body=body)
+            if hmac.compare_digest(legacy, proof_raw):
+                return _error(403, "rpc_service_id_unsigned", "Service request id is not signed.")
+            return _error(403, "rpc_proof_invalid", "Service proof invalid.")
+        if replay_guard is None:
+            return _error(
+                503,
+                "rpc_replay_guard_unavailable",
+                "Service request replay guard unavailable.",
+            )
+        claimed = await replay_guard.claim(
+            service_id, expires_at=at + MAX_CLOCK_SKEW_SECONDS
+        )
+        if not claimed:
+            return _error(409, "rpc_replay_detected", "Service request was already used.")
+    else:
+        expected = proof_for(secret, method="POST", path=path, at=at, body=body)
+        if not hmac.compare_digest(expected, proof_raw):
+            return _error(403, "rpc_proof_invalid", "Service proof invalid.")
     try:
         payload = json.loads(body.decode("utf-8"))
     except (UnicodeDecodeError, json.JSONDecodeError):
