@@ -122,6 +122,22 @@ def group_model_ids() -> dict[str,list[str]]:
 def installed_model_ids() -> frozenset[str]:
     return frozenset(m["id"] for m in read_registry()["models"])
 
+def credential_binding_names(path: Path = REGISTRY_PATH) -> frozenset[str]:
+    """Every platform credential NAME the registry declares, enabled or not.
+
+    Both entrypoints derive their per-request credential scope from this, so a
+    new Provider is onboarded by this file plus the value on its own host;
+    neither the Worker entrypoint nor the COM2 adapter keeps a second list that
+    an onboarding would also have to edit. Disabled Providers are included so a
+    Provider can be turned on without touching code. Names only — never values.
+    """
+    return frozenset(
+        entry["credential_binding_name"]
+        for entry in read_registry(path)["providers"].values()
+        if entry["credential_source"] == CredentialSource.PLATFORM_SECRET.value
+        and entry["credential_binding_name"]
+    )
+
 def install_models(data:dict|None=None) -> None:
     """Install the one canonical registry into existing B14 execution adapters."""
     from .catalog import CATALOG_BY_ID, CATALOG_MODELS, CatalogModel
