@@ -37,7 +37,31 @@ Cloudflare Workers에는 파일시스템이 없어 환경변수만 쓸 수 있�
 
 ## 4. 늦은 쓰기 경로
 
-목록은 **기본 비어 있습니다.** 아스트라5의 쓰기 효과 기준 분류표(쓰기를 하는 GET, 응답 뒤 쓰기)가 나오면 `PADIEM_CHAT_WRITE_FREEZE_PATHS`에 경로를 넣기만 하면 코드 변경 없이 같은 503으로 막힙니다. 접두사 매칭(`/api/auth/*`)을 지원하므로 OAuth 시작·콜백 묶음도 한 항목으로 덮습니다.
+아스트라5의 분류표(`CHAT_LATE_WRITE_INVENTORY_20261031.md`, #6367)에서 **쓰기 효과가 확인된 GET 4개**를 `PADIEM_CHAT_WRITE_FREEZE_PATHS` 예시 값으로 고정합니다. 운영 설정은 바꾸지 않습니다 — ③ 실행 때 CTO가 채웁니다.
+
+```text
+PADIEM_CHAT_WRITE_FREEZE_PATHS=/auth/google/callback,/auth/lovetree/start,/api/connectors/github/start,/api/connectors/github/callback
+```
+
+| 경로 | 확인된 쓰기 대상 |
+| --- | --- |
+| `/auth/google/callback` | `users`, `control_plane_identity_shadow`, `padiem_android_auth_handoffs`, `lovetree_login_handoffs`, `b66_signup_alert_delivery`, `b66_signup_alert_outbox` |
+| `/auth/lovetree/start` | `lovetree_login_handoffs` |
+| `/api/connectors/github/start` | `claw_github_oauth_states` |
+| `/api/connectors/github/callback` | `claw_github_oauth_states`, `claw_github_connections` |
+
+4개를 그대로 적고 접두사(`*`)로 묶지 않습니다. `/auth/*` 같은 접두사는 로그인 읽기 경로까지 함께 503으로 만들어, 창 안의 로그인 실패가 동결 때문인지 아닌지 구분할 수 없게 합니다.
+
+## 4b. 경로로 막을 수 없는 것 — 창 전에 멈춘다
+
+동결 스위치는 HTTP 요청만 막습니다. 아래 넷은 정지 창을 열기 전에 따로 멈추고, 진행 중인 작업이 끝났다는 증거를 남깁니다.
+
+| 대상 | 확인된 쓰기 | 창 전에 할 일 |
+| --- | --- | --- |
+| 예약 실행(automation) | `claw_occurrences`, `claw_runs`, `claw_proposals`, `claw_task_alert`, `claw_run_history`, `claw_push_subscription` 삭제 | 새 tick 중단 → 진행 중 실행·history·push 투영 완료 대기 |
+| WSS `/api/claw/connector/gateway/session` | Broker 권위 `canonical_local_agent_gateway_bootstrap` (Chat D1 표 아님) | 이미 열린 소켓은 동결을 통과하므로 연결 종료·드레인 확인 |
+| queue 소비·외부 producer | 권위·대상 미확인 | 운영 큐 소비 중지, 스테이징 큐(8830)와 분리된 상태 확인 |
+| 텔레메트리 `waitUntil` | 외부 전송, Chat D1 쓰기 미확인 | 차단 목록에 넣지 않고 2번 관찰 창에서 확인 |
 
 ## 5. 리허설 절차
 
@@ -47,14 +71,17 @@ Cloudflare Workers에는 파일시스템이 없어 환경변수만 쓸 수 있�
 | --- | --- | --- | --- | --- |
 | 0 사전 | 최신 main SHA 고정, 스위치 준비, 기준선 스냅숏 보관 | 5분 | `git rev-parse HEAD` = 기록한 SHA | 중단 |
 | 1 쓰기 정지 | 센티널 생성(호스트) 또는 스위치 설정 후 배포 | 2분 | 쓰기 503·`code=maintenance`, `/health`·`/api/auth/status` 200 | 스위치 롤백 |
-| 2 늦은 쓰기 확인 | 분류표 경로 GET 503 확인 + D1 스냅숏 2회 비교(관찰 창 10분) | 12분 | 두 스냅숏의 행 수·정렬 해시·`updated_at` 최대값 차이 0 | 창 유지, 원인 경로를 목록에 추가 |
+| 1b 창 전 중지 | 예약 실행 tick 중단, WSS 드레인, queue 소비 중지(§4b) | 3분 | 새 tick 0, 열린 WSS 0, 운영 큐 소비 중지 확인 | 창을 열지 않고 원인 해결 |
+| 2 늦은 쓰기 확인 | 4개 동결 경로 GET 503 확인 + D1 스냅숏 2회 비교(관찰 창 10분) + §4b 관찰 목록 확인 | 12분 | 두 스냅숏의 행 수·정렬 해시·`updated_at` 최대값 차이 0, 동결 경로 4개 모두 503 | 창 유지, 원인 경로를 목록에 추가 |
 | 3 D1 내보내기 | `wrangler d1 export --remote` | 5분 | 파일 크기 > 0, 표 수가 기준선과 동일 | 재시도 |
 | 4 COM2 반영 | 동기화 러너로 내보내기 반영 | 5분 | 반영 스크립트 종료 코드 0 | 핸드백 |
 | 4b 객체 참조 | `chat_object_reference_check`로 참조 키 ↔ 미러 목록 대조 | 3분 | `CHAT_OBJECT_REFERENCE=MATCH` (종료 코드 0) | 누락 키를 R2로 올린 뒤 재실행, 해결되지 않으면 6번 대신 CTO 보고 |
 | 5 패리티 | `chat_copy_parity` | 2분 | `CHAT_COPY_PARITY=MATCH` (종료 코드 0) | 6번 |
 | 6 되돌림 | `chat_d1_handback_gate` plan → apply | 10분 | 적용 후 5번이 `MATCH` | 창 유지, CTO 보고 |
 
-총 목표 45분 이내. 6번은 데이터를 되돌리는 경로이고, 스위치를 끄는 것은 별개입니다. 4b는 6번 뒤에도 한 번 더 돌립니다.
+총 목표 48분 이내(1b 3분 추가). 6번은 데이터를 되돌리는 경로이고, 스위치를 끄는 것은 별개입니다. 4b는 6번 뒤에도 한 번 더 돌립니다.
+
+관찰 목록(분류표의 미확인 항목을 2번 창에서 확인): 전체 SQL 저장소의 HTTP·비동기 진입점 역추적, 일부 GET의 부수 호출, WSS Broker의 추가 저장 대상, 스트리밍 완료·취소 후 저장, queue 소비·외부 producer. 창 안에서 새 쓰기 경로가 확인되면 목록에 추가하고 창을 유지합니다.
 
 ## 6. 합성 리허설 실행 결과
 
@@ -99,5 +126,5 @@ STEP parity-after exit=0
 
 - 운영 스위치를 켜지 않았고, 운영 D1·COM2 운영 DB에 접근하지 않았습니다.
 - 실제 80표 3,308행 규모의 리허설은 하지 않았습니다(합성 2표). ③ 실행 시 같은 절차로 운영 규모를 한 번 돕니다.
-- 늦은 쓰기 분류표가 아직 없어 경로 목록은 비어 있습니다.
+- 동결 경로에는 확인된 GET 4개만 예시로 적었고 운영 설정에는 적용하지 않았습니다. 분류표의 미확인 항목은 §5의 관찰 목록으로 옮겼습니다.
 - 객체 단계는 합성 DB와 합성 미러 목록으로만 검증했습니다(실제 R2 목록 미조회). 계획은 `CHAT_OBJECT_ROLLBACK_PLAN_20261031.md`.
