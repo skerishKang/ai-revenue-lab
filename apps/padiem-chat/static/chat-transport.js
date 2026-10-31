@@ -6,7 +6,8 @@
   const calendarTurnIdsByRequest = new WeakMap();
 
   function errorFor(data, fallback, status) {
-    const message = data?.error?.code === "stale_chat_client" ? '화면이 오래되었습니다. 새로고침이 필요합니다.' : data && data.error && typeof data.error.message === "string" && data.error.message.trim() ? data.error.message : fallback;
+    // Keep server text out of the screen; retain the code for recovery and the reference note.
+    const message = streamErrorMessage(data, status);
     const error = new Error(message);
     if (data && data.error && typeof data.error.code === "string") error.code = data.error.code;
     if (status === 422 || (data && data.ok === false && data.error)) error.terminalRecord = true;
@@ -23,12 +24,27 @@
     return STREAM_LOSS_CODES.has(data?.error?.code);
   }
 
-  function streamErrorMessage(data) {
+  function streamErrorMessage(data, status) {
     const code = data?.error?.code;
-    if (code === "upstream_timeout") return "응답 시간이 초과되었습니다. 다시 시도해 주세요.";
-    return typeof code === "string" && /^[a-z][a-z0-9_]{0,63}$/.test(code)
-      ? `요청을 처리하지 못했습니다 (${code}). 다시 시도해 주세요.`
-      : "요청을 처리하지 못했습니다. 다시 시도해 주세요.";
+    switch (code) {
+      case "stale_chat_client":
+        return "화면이 오래되었습니다. 새로고침한 뒤 다시 시도해 주세요.";
+      case "upstream_timeout":
+        return "응답 시간이 초과되었습니다. 다시 시도해 주세요.";
+      case "invalid_request":
+      case "input_schema_rejected":
+        return "요청 내용을 확인할 수 없습니다. 내용을 확인한 뒤 다시 시도해 주세요.";
+      case "entitlement_unavailable":
+      case "live_abuse_gate_unavailable":
+      case "orchestration_unavailable":
+      case "ai_chat_unavailable":
+      case "engine_not_configured":
+      case "provider_server_error":
+        return "지금은 서비스를 이용할 수 없습니다. 잠시 후 다시 시도해 주세요.";
+      default:
+        if (!code && status === 503) return "지금은 서비스를 이용할 수 없습니다. 잠시 후 다시 시도해 주세요.";
+        return "요청을 처리하지 못했습니다. 잠시 후 다시 시도해 주세요.";
+    }
   }
 
   function normalizeStreamFrame(frame) {
