@@ -521,11 +521,5 @@ def create_local_app() -> Any:
     from app.factory import create_app
 
     app = create_app()
-    # #2107: the Owner's credential and Provider screen lives here and only
-    # here. create_app() is the Cloudflare door and never gets these routes, so
-    # there is no production handler to guard, feature-flag or forget to flag.
-    from app.pilot.com2_admin import routes as com2_admin_routes
-
-    app.router.routes.extend(com2_admin_routes)
     app.add_middleware(LocalRequestScopeMiddleware)
     return app

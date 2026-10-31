@@ -38,6 +38,7 @@
 
 <h2>1 · 공급사와 자격증명</h2>
 <form class="admin-panel" method="post" action="{{ provider_save_path }}">
+  <input type="hidden" name="csrf_token" value="{{ request.state.csrf_token }}">
   <div class="admin-grid">
     <div>
       <label for="provider_id">공급사 id</label>
@@ -121,6 +122,7 @@
 
 <h2>연결 테스트</h2>
 <form class="admin-panel" method="post" action="{{ provider_test_path }}">
+  <input type="hidden" name="csrf_token" value="{{ request.state.csrf_token }}">
   <div class="admin-grid">
     <div>
       <label for="test_provider_id">이미 등록한 공급사 id</label>

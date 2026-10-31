@@ -3,7 +3,7 @@
 Owner decision: a new Provider is onboarded by typing a secret name and value on
 this host, then adding its models — and the screen must never be reachable by
 any other authority than the person sitting at the machine. That is why this
-router is mounted by ``app.local_runtime.create_local_app`` and not by
+router is mounted by the separate ``app.com2_admin_runtime`` app and not by
 ``app.factory.create_app``: the Cloudflare Worker door has no route to remove,
 disable or misconfigure, and a value cannot be posted to the production
 deployment because the handler does not exist there.
@@ -20,7 +20,7 @@ from __future__ import annotations
 from typing import Any
 
 from starlette.requests import Request
-from starlette.responses import HTMLResponse, JSONResponse, RedirectResponse
+from starlette.responses import HTMLResponse, RedirectResponse
 from starlette.routing import Route
 
 from app.pilot import com2_provider_settings as settings
@@ -350,25 +350,11 @@ def _hosts(raw: str) -> list[str]:
     return [value.strip().lower() for value in raw.split(",") if value.strip()]
 
 
-def _require_service_proof(endpoint):
-    """The local management surface accepts only the existing service authority."""
-    async def guarded(request: Request):
-        from app.pilot.service_proof import service_proof_denial, service_proof_message
-        denial = await service_proof_denial(request, await request.body())
-        if denial is not None:
-            return JSONResponse(
-                {"error": {"code": denial.code, "message": service_proof_message()}},
-                status_code=denial.status_code,
-            )
-        return await endpoint(request)
-    return guarded
-
-
 routes = [
-    Route(SECRETS_PATH, _require_service_proof(secrets_page), methods=["GET"]),
-    Route(SECRETS_PATH, _require_service_proof(save_secret), methods=["POST"]),
-    Route(f"{SECRETS_PATH}/delete", _require_service_proof(delete_secret), methods=["POST"]),
-    Route(f"{PROVIDER_PATH}/new", _require_service_proof(provider_form), methods=["GET"]),
-    Route(PROVIDER_PATH, _require_service_proof(save_provider), methods=["POST"]),
-    Route(f"{PROVIDER_PATH}/test", _require_service_proof(test_provider), methods=["POST"]),
+    Route(SECRETS_PATH, secrets_page, methods=["GET"]),
+    Route(SECRETS_PATH, save_secret, methods=["POST"]),
+    Route(f"{SECRETS_PATH}/delete", delete_secret, methods=["POST"]),
+    Route(f"{PROVIDER_PATH}/new", provider_form, methods=["GET"]),
+    Route(PROVIDER_PATH, save_provider, methods=["POST"]),
+    Route(f"{PROVIDER_PATH}/test", test_provider, methods=["POST"]),
 ]

@@ -20,7 +20,8 @@ from pathlib import Path
 import pytest
 from starlette.testclient import TestClient
 
-from app.local_runtime import SECRET_DIR_ENV, create_local_app
+from app.local_runtime import SECRET_DIR_ENV
+from app.com2_admin_runtime import create_admin_app
 from app.pilot import com2_admin
 from app.pilot.model_registry_file import REGISTRY_PATH, read_registry
 
@@ -45,6 +46,10 @@ def host(tmp_path, monkeypatch):
     os.chmod(secret_dir, 0o700)
     registry = tmp_path / "b14_models.json"
     shutil.copyfile(REGISTRY_PATH, registry)
+    token = tmp_path / "admin-token"
+    token.write_text("test-admin-token-" + "z" * 40, encoding="utf-8")
+    token.chmod(0o600)
+    monkeypatch.setenv("B14_ADMIN_TOKEN_FILE", str(token))
     monkeypatch.setenv(SECRET_DIR_ENV, str(secret_dir))
     monkeypatch.setenv("B14_REGISTRY_PATH", str(registry))
     monkeypatch.delenv(SYNTHETIC, raising=False)
@@ -57,9 +62,25 @@ def host(tmp_path, monkeypatch):
     install_models()
 
 
+class LoggedInAdmin(TestClient):
+    def __init__(self):
+        super().__init__(create_admin_app(), base_url="http://127.0.0.1:8781")
+
+    def login(self):
+        response = super().post("/login", data={"token": "test-admin-token-" + "z" * 40}, follow_redirects=False)
+        assert response.status_code == 303
+
+    def post(self, url, *, data=None, **kwargs):
+        import re
+        page = self.get(SECRETS)
+        csrf = re.search(r'name="csrf_token" value="([^"]+)"', page.text)
+        assert csrf is not None
+        return super().post(url, data={**(data or {}), "csrf_token": csrf.group(1)}, **kwargs)
+
 @pytest.fixture()
 def admin(host):
-    with TestClient(create_local_app()) as client:
+    with LoggedInAdmin() as client:
+        client.login()
         yield client
 
 
@@ -195,7 +216,9 @@ def test_one_key_three_models_deepseek_first_and_still_unrouted(admin, host) -> 
     # file written by the screen is what the health surface resolves. Outside a
     # request that file is deliberately invisible — resolve_secret reads the
     # environment, not the host directory.
-    health = admin.get("/api/pilot/health").json()
+    from app.local_runtime import create_local_app
+    with TestClient(create_local_app()) as main_client:
+        health = main_client.get("/api/pilot/health").json()
     states = {row["id"]: row for row in health["business14"]["providers"]}
     assert states["syntheticmanager"]["has_key"] is True
     assert states["syntheticmanager"]["registered"] is True
@@ -291,7 +314,8 @@ def test_settings_survive_a_restart(admin, host) -> None:
     from app.pilot.model_registry_file import install_models
 
     install_models()
-    with TestClient(create_local_app()) as restarted:
+    with LoggedInAdmin() as restarted:
+        restarted.login()
         listing = restarted.get(SECRETS).text
     assert SYNTHETIC in listing and "등록됨" in listing
     assert SYNTHETIC in {

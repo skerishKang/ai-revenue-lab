@@ -19,6 +19,7 @@ umask 077
 SRC_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 APP_ROOT=/opt/padiem/b14
 UNIT_TARGET=/etc/systemd/system/padiem-b14.service
+ADMIN_UNIT_TARGET=/etc/systemd/system/padiem-b14-admin.service
 DROPIN_TARGET_DIR=/etc/systemd/system/padiem-b14.service.d
 LOGROTATE_TARGET=/etc/logrotate.d/padiem-b14
 INGRESS_TARGET=/opt/padiem/cloudflared/config.yml
@@ -64,6 +65,7 @@ write_staged() {
 }
 
 write_staged "$SRC_DIR/padiem-b14.service.example" "$UNIT_TARGET" unit
+write_staged "$SRC_DIR/padiem-b14-admin.service.example" "$ADMIN_UNIT_TARGET" admin_unit
 
 if ! $DRY_RUN; then install -d -o root -g root -m 0755 "$DROPIN_TARGET_DIR"; fi
 write_staged "$SRC_DIR/20-log-to-file.conf.example" "$DROPIN_TARGET_DIR/20-log-to-file.conf" dropin
