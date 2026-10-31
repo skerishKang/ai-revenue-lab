@@ -265,6 +265,16 @@ def build_app():
         b66_pdf_renderer_client=pdf_renderer,
     )
 
+    # Reuse the Worker's D1-backed stores on the local SQLite facade.
+    # The explicit COM2 queue below replaces them when that backend is selected.
+    from .mesh_device_presence_store import D1MeshDevicePresenceStore
+    from .pc_device_pairing_store import D1PcPairingStore
+    from .claw_pc_device_selection_store import D1PcDeviceSelectionStore
+    app.state.mesh_device_presence_store = D1MeshDevicePresenceStore(db)
+    app.state.pc_device_pairing_store = D1PcPairingStore(db)
+    app.state.claw_pc_device_selection_store = D1PcDeviceSelectionStore(db)
+    app.state.pc_pairing_install_url = (os.getenv("PC_AGENT_INSTALL_URL") or "").strip()
+
     queue_client = build_queue_client(_queue_env())
     if queue_client is not None:
         # The same three replacements worker.py performs when its env selects
@@ -274,6 +284,24 @@ def build_app():
         app.state.mesh_device_presence_store = QueueBackedPresenceStore(queue_client)
         app.state.history_store = QueueForwardingHistoryStore(
             app.state.history_store, queue_client
+        )
+
+    # The same server-owned v2 loopback authority as the connector gateway.
+    # Missing configuration leaves the existing unconfigured source in place.
+    broker_secret_file = os.getenv("PADIEM_COM2_BROKER_RPC_SECRET_FILE", "").strip()
+    if host_flag and broker_secret_file:
+        from .claw_device_directory_routes import BrokerDeviceDirectorySource
+        from .com2_connector_websocket import LoopbackRpcBinding
+        try:
+            broker_secret = Path(broker_secret_file).read_text(encoding="utf-8").strip()
+        except OSError as exc:
+            raise ConfigError("PADIEM_COM2_BROKER_RPC_SECRET_FILE is unreadable") from exc
+        directory_binding = LoopbackRpcBinding(
+            port=8799, secret=broker_secret, sign_request_id=True,
+            methods=frozenset({"device_directory", "set_owner_usage", "android_saf_profiles"}),
+        )
+        app.state.claw_device_directory_source = BrokerDeviceDirectorySource(
+            directory_binding, presence_store=app.state.mesh_device_presence_store,
         )
 
     if settings.runtime_mode == "b14":
