@@ -16,21 +16,34 @@ from test_engine_admission_rpc_ingress_261031 import _load_worker as _load_admis
 
 
 class Cursor:
-    def __init__(self, cursor):
-        self.rowsWritten = max(cursor.rowcount, 0)
+    def __init__(self, cursor, rows_mode):
+        self._cursor = cursor
+        if rows_mode == 'none':
+            self.rowsWritten = None
+        elif rows_mode == 'normal':
+            self.rowsWritten = max(cursor.rowcount, 0)
+
+    def toArray(self):
+        if self._cursor.description is None:
+            return []
+        return self._cursor.fetchall()
 
 
 class Sql:
-    def __init__(self):
+    def __init__(self, rows_mode):
         self.db = sqlite3.connect(':memory:', isolation_level=None)
+        self.rows_mode = rows_mode
+        self.fail = False
 
     def exec(self, statement, *args):
-        return Cursor(self.db.execute(statement, args))
+        if self.fail:
+            raise RuntimeError('synthetic storage failure')
+        return Cursor(self.db.execute(statement, args), self.rows_mode)
 
 
 class Storage:
-    def __init__(self):
-        self.sql = Sql()
+    def __init__(self, rows_mode='normal'):
+        self.sql = Sql(rows_mode)
 
 
 def request(method, *, request_id=None):
@@ -49,7 +62,8 @@ def request(method, *, request_id=None):
 
 
 @pytest.mark.parametrize('kind', ['identity', 'admission'])
-def test_existing_do_initializes_replay_table_and_refuses_duplicates(kind):
+@pytest.mark.parametrize('rows_mode', ['absent', 'none', 'normal'])
+def test_existing_do_initializes_replay_table_and_refuses_duplicates(kind, rows_mode):
     async def run():
         if kind == 'identity':
             module = _load_identity_worker()
@@ -63,7 +77,7 @@ def test_existing_do_initializes_replay_table_and_refuses_duplicates(kind):
             method = 'fetch_entitlement_snapshot'
             binding = 'CONTROL_PLANE_ENGINE_ADMISSION'
             secret_binding = 'PADIEM_ENGINE_ADMISSION_RPC_INGRESS_SECRET'
-        storage = Storage()
+        storage = Storage(rows_mode)
         do = object.__new__(do_type)
         do._service_ids = SqliteServiceIdReplayStore(storage)
         calls = []
@@ -81,6 +95,12 @@ def test_existing_do_initializes_replay_table_and_refuses_duplicates(kind):
         assert second.status == 409
         assert json.loads(second.body)['error']['code'] == 'rpc_replay_detected'
         assert len(calls) == 1
+        storage.sql.fail = True
+        failed = await worker.fetch(request(method, request_id='request-0000000000000002'))
+        assert failed.status == 503
+        assert json.loads(failed.body)['error']['code'] == 'rpc_replay_guard_error'
+        assert len(calls) == 1
+        storage.sql.fail = False
         required = await worker.fetch(request(method))
         assert required.status == 403
         env.PADIEM_RPC_SERVICE_ID_POLICY = 'optional'
@@ -101,3 +121,39 @@ def test_durable_store_recreates_table_and_releases_expired_ids():
         storage.sql.db.execute('DROP TABLE service_request_ids')
         assert await store.claim('id', expires_at=120) is True
     asyncio.run(run())
+
+
+@pytest.mark.parametrize('reply', [
+    {'ok': False, 'error': {'code': 'synthetic'}},
+    {'ok': True}, {'ok': True, 'claimed': None}, None,
+])
+def test_invalid_or_error_envelope_is_503_not_replay(reply):
+    from service_id_replay import DurableObjectServiceIdReplayGuard
+    from internal_rpc_ingress import handle_internal_rpc
+    async def run():
+        class Stub:
+            async def claim_service_id(self, payload):
+                return reply
+        class Dispatch:
+            async def resolve_auth_session(self, payload):
+                raise AssertionError('failed guard must not dispatch')
+        response = await handle_internal_rpc(
+            request('resolve_auth_session', request_id='request-0000000000000003'),
+            secret=SECRET, allowed_methods=frozenset({'resolve_auth_session'}),
+            dispatcher=Dispatch(), service_id_policy='required',
+            replay_guard=DurableObjectServiceIdReplayGuard(Stub()))
+        assert response[0] == 503
+        assert response[1]['error']['code'] == 'rpc_replay_guard_error'
+    asyncio.run(run())
+
+
+@pytest.mark.parametrize('claimed', [True, False])
+def test_replay_guard_accepts_valid_rpc_proxy_envelope(claimed):
+    from service_id_replay import DurableObjectServiceIdReplayGuard
+    class Proxy:
+        def to_py(self):
+            return {'ok': True, 'claimed': claimed}
+    class Stub:
+        async def claim_service_id(self, payload):
+            return Proxy()
+    assert asyncio.run(DurableObjectServiceIdReplayGuard(Stub()).claim('id', expires_at=10)) is claimed

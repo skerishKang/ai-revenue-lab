@@ -214,11 +214,16 @@ async def handle_internal_rpc(
                 "rpc_replay_guard_unavailable",
                 "Service request replay guard unavailable.",
             )
-        claimed = await replay_guard.claim(
-            service_id, expires_at=at + MAX_CLOCK_SKEW_SECONDS
-        )
-        if not claimed:
+        try:
+            claimed = await replay_guard.claim(
+                service_id, expires_at=at + MAX_CLOCK_SKEW_SECONDS
+            )
+        except Exception:
+            return _error(503, "rpc_replay_guard_error", "Service request replay guard failed.")
+        if claimed is False:
             return _error(409, "rpc_replay_detected", "Service request was already used.")
+        if claimed is not True:
+            return _error(503, "rpc_replay_guard_error", "Service request replay guard failed.")
     else:
         expected = proof_for(secret, method="POST", path=path, at=at, body=body)
         if not hmac.compare_digest(expected, proof_raw):

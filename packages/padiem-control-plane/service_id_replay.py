@@ -55,7 +55,7 @@ class MemoryServiceIdReplayStore:
 class SqliteServiceIdReplayStore:
     """The Durable Object's own SQLite, using the storage API the DO already has.
 
-    A unique primary key and INSERT OR IGNORE atomically claim each ID.
+    DO requests execute serially; claim uses a lookup followed by an insert.
     """
 
     def __init__(self, storage: Any, *, clock: Callable[[], int] | None = None) -> None:
@@ -67,11 +67,17 @@ class SqliteServiceIdReplayStore:
         self._storage.sql.exec(_SCHEMA)
         current = int(self._clock())
         self._storage.sql.exec(_PRUNE, current)
-        cursor = self._storage.sql.exec(
-            "INSERT OR IGNORE INTO service_request_ids (service_id, expires_at) VALUES (?, ?)",
+        existing = _rows(self._storage.sql.exec(
+            "SELECT service_id FROM service_request_ids WHERE service_id=?", service_id,
+        ))
+        if existing:
+            return False
+        self._storage.sql.exec(
+            "INSERT INTO service_request_ids (service_id, expires_at) VALUES (?, ?)",
             service_id, max(int(expires_at), current + 1),
         )
-        return cursor.rowsWritten == 1
+        return True
+
 
 
 class DurableObjectServiceIdReplayGuard:
@@ -89,6 +95,12 @@ class DurableObjectServiceIdReplayGuard:
         answer = await self._stub.claim_service_id(
             {"service_id": service_id, "expires_at": int(expires_at)}
         )
-        if not isinstance(answer, dict) or answer.get("ok") is not True:
-            return False
-        return answer.get("claimed") is True
+        # Worker RPC responses may arrive as JavaScript proxies in Pyodide.
+        if not isinstance(answer, dict):
+            convert = getattr(answer, "to_py", None)
+            if callable(convert):
+                answer = convert()
+        if (not isinstance(answer, dict) or answer.get("ok") is not True
+                or type(answer.get("claimed")) is not bool):
+            raise RuntimeError("replay guard failed")
+        return answer["claimed"]
