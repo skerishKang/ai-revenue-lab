@@ -191,3 +191,28 @@ def test_service_refuses_to_boot_without_secret_or_pepper(tmp_path):
     short["PADIEM_BROKER_RPC_INGRESS_SECRET"] = "short"
     with pytest.raises(broker_service.BrokerConfigError):
         broker_service.build_app(environ=short)
+
+
+@pytest.mark.asyncio
+async def test_real_app_rejects_malformed_rpc_envelopes(broker_app):
+    """Signed HTTP requests reach the real ingress and broker composition."""
+    transport = httpx.ASGITransport(app=broker_app)
+    path = "/internal/rpc/open_session"
+    async with httpx.AsyncClient(transport=transport, base_url="http://broker.local") as client:
+        for body in (b"{", b"[]", b"null"):
+            response = await client.post(
+                path, content=body,
+                headers={"content-type": "application/json", **_proof(path, body)},
+            )
+            assert response.status_code == 400
+            assert response.json()["error"]["code"] == "rpc_invalid_json"
+        body = b"{}"
+        bad = _proof(path, body)
+        bad["x-padiem-service-proof"] = "v1=" + "0" * 64
+        response = await client.post(path, content=body, headers=bad)
+        assert response.status_code == 403
+        assert response.json()["error"]["code"] == "rpc_proof_invalid"
+        response = await client.post(path, content=body, headers=_proof(path, body))
+        assert response.status_code == 200
+        assert response.json()["ok"] is False
+        assert isinstance(response.json()["error"]["code"], str)
