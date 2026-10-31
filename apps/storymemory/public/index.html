@@ -5276,6 +5276,9 @@ function __smV319RefreshMemoryRail(){
     item.classList.toggle('memory-future',distance.state==='future');
     item.dataset.memoryVisibility=distance.state;
     item.dataset.memoryPinned=pinned?'true':'false';
+    // Hide unpinned examples that have no evidence in the current reading. Pins remain available.
+    if(distance.state==='unknown' && !pinned)item.style.setProperty('display','none','important');
+    else item.style.removeProperty('display');
     let small=item.querySelector(':scope > small');
     if(!small){small=document.createElement('small');item.append(small)}
     small.textContent=`${meta.label} · ${distance.label}`;
