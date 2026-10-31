@@ -348,3 +348,160 @@ def test_digest_implementation_is_shared(
     assert staging.digest is digest
     assert staging.parity is parity
     assert parity.digest is digest
+
+
+def _run_with_migrations(
+    root: Path, out: Path, migrations: Path, *extra: str
+) -> int:
+    return staging.main(
+        [
+            "--pointer", str(_pointer(root)),
+            "--generations-dir", str(root / "generations"),
+            "--out", str(out),
+            "--migrations-dir", str(migrations),
+            *extra,
+        ]
+    )
+
+
+def test_a_pending_tail_is_applied_after_the_parity_verdict(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """The 2026-10-31 case: the generation stops at 078, the repo has 079."""
+
+    root = tmp_path / "sync"
+    source = _generation_db(root, ledger=MIGRATIONS[:2])
+    source_sha = _sha(source)
+    out = tmp_path / "staging" / "chat.sqlite3"
+
+    assert _run(root, out, "--apply-pending") == 0
+    printed = _lines(capsys)
+
+    assert "STAGING_DB_PENDING_APPLIED count=1" in printed
+    assert "names=003_project_files.sql" in printed
+    assert "STAGING_DB_FROM_GENERATION=READY" in printed
+    assert "STAGING_DB_SOURCE_UNCHANGED=YES" in printed
+    # The copy matched the generation before it was advanced.
+    assert printed.index("CHAT_COPY_PARITY=MATCH") < printed.index(
+        "STAGING_DB_PENDING_APPLIED"
+    )
+    assert _sha(source) == source_sha
+
+    created = sqlite3.connect(out)
+    try:
+        d1 = {row[0] for row in created.execute("SELECT name FROM d1_migrations")}
+        local = {
+            row[0]
+            for row in created.execute("SELECT name FROM padiem_local_migration_ledger")
+        }
+        assert d1 == set(MIGRATIONS)
+        assert local == set(MIGRATIONS)
+        assert created.execute("SELECT COUNT(*) FROM users").fetchone()[0] == 3
+    finally:
+        created.close()
+
+
+def test_the_pending_migration_sql_really_runs_on_the_copy(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    root = tmp_path / "sync"
+    _generation_db(root, ledger=MIGRATIONS[:2])
+    migrations = _migrations(root, MIGRATIONS[:2])
+    (migrations / "003_project_files.sql").write_text(
+        "CREATE TABLE staging_probe (id TEXT PRIMARY KEY);\n"
+        "INSERT INTO staging_probe VALUES ('ok');\n",
+        encoding="utf-8",
+    )
+    out = tmp_path / "staging.sqlite3"
+
+    assert _run_with_migrations(root, out, migrations, "--apply-pending") == 0
+    _lines(capsys)
+
+    created = sqlite3.connect(out)
+    try:
+        assert created.execute("SELECT id FROM staging_probe").fetchall() == [("ok",)]
+    finally:
+        created.close()
+
+
+def test_without_the_flag_the_historical_refusal_is_unchanged(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    root = tmp_path / "sync"
+    _generation_db(root, ledger=MIGRATIONS[:2])
+    out = tmp_path / "staging.sqlite3"
+
+    assert _run(root, out) == 1
+    assert "STAGING_DB_REFUSED reason=staging_ledger_incomplete" in _lines(capsys)
+    assert not out.exists()
+
+
+def test_an_unknown_ledger_name_still_refuses_while_pending_is_allowed(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    root = tmp_path / "sync"
+    _generation_db(
+        root, ledger=MIGRATIONS[:2], extra_ledger=("080_not_in_repo.sql",)
+    )
+    out = tmp_path / "staging.sqlite3"
+
+    assert _run(root, out, "--apply-pending") == 1
+    assert "STAGING_DB_REFUSED reason=staging_ledger_unknown" in _lines(capsys)
+    assert not out.exists()
+
+
+def test_a_hole_in_the_pending_set_refuses_instead_of_replaying(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """003 applied while 002 is missing is not "one migration behind"."""
+
+    root = tmp_path / "sync"
+    _generation_db(root, ledger=(MIGRATIONS[0], MIGRATIONS[2]))
+    out = tmp_path / "staging.sqlite3"
+
+    assert _run(root, out, "--apply-pending") == 1
+    assert "STAGING_DB_REFUSED reason=staging_ledger_gap" in _lines(capsys)
+    assert not out.exists()
+
+
+def test_a_parity_mismatch_stops_before_the_copy_is_advanced(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    root = tmp_path / "sync"
+    _generation_db(root, ledger=MIGRATIONS[:2])
+    out = tmp_path / "staging.sqlite3"
+    monkeypatch.setattr(
+        staging.parity, "main", lambda argv: staging.parity.EXIT_DRIFT
+    )
+
+    assert _run(root, out, "--apply-pending") == 1
+    printed = _lines(capsys)
+    assert "STAGING_DB_PENDING_APPLIED count=0" in printed
+
+    created = sqlite3.connect(out)
+    try:
+        names = {row[0] for row in created.execute("SELECT name FROM d1_migrations")}
+        assert names == set(MIGRATIONS[:2])
+    finally:
+        created.close()
+
+
+def test_a_failing_pending_migration_leaves_no_staging_database(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    root = tmp_path / "sync"
+    source = _generation_db(root, ledger=MIGRATIONS[:2])
+    source_sha = _sha(source)
+    migrations = _migrations(root, MIGRATIONS[:2])
+    (migrations / "003_project_files.sql").write_text(
+        "CREATE TABLE broken (id TEXT PRIMARY KEY;\n", encoding="utf-8"
+    )
+    out = tmp_path / "staging.sqlite3"
+
+    assert _run_with_migrations(root, out, migrations, "--apply-pending") == 1
+    assert (
+        "STAGING_DB_REFUSED reason=staging_pending_migration_failed"
+        in _lines(capsys)
+    )
+    assert not out.exists()
+    assert _sha(source) == source_sha

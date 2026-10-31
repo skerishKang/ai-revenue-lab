@@ -30,7 +30,19 @@ Usage:
     python .github/scripts/chat_staging_db_from_generation.py \\
         --pointer D:/PADIEM-Servers/snapshots/current_generation.json \\
         --generations-dir D:/PADIEM-Servers/snapshots/generations \\
-        --out /mnt/d/padiem/chat-staging/chat.sqlite3 [--force] [--json report.json]
+        --out /mnt/d/padiem/chat-staging/chat.sqlite3 \\
+        [--force] [--apply-pending] [--json report.json]
+
+``--apply-pending`` exists because Production D1 can be behind the repository when
+staging is rebuilt: on 2026-10-31 the published generation carried 001–078 while
+the repo already had 079. The order is fixed and the copy must match the
+generation *before* it is advanced:
+
+    copy → parity MATCH → apply only the contiguous pending tail → both ledgers → report
+
+An unknown ledger name still refuses, and a hole in the pending set (079 applied
+while 050 is missing) refuses instead of guessing: only the tail of the expected
+order is ever applied. Without the flag the historical refusal is unchanged.
 """
 from __future__ import annotations
 
@@ -92,6 +104,8 @@ class StagingReport:
     ledger_applied: int = 0
     ledger_missing: list[str] = field(default_factory=list)
     ledger_unknown: list[str] = field(default_factory=list)
+    pending_requested: bool = False
+    pending_applied: list[str] = field(default_factory=list)
     emptied_tables: dict[str, int] = field(default_factory=dict)
     local_ledger_rows: int = 0
     staging_tables: int = 0
@@ -165,23 +179,29 @@ def migration_names(migrations_dir: str | Path) -> list[str]:
     return sorted(path.name for path in directory.glob("*.sql"))
 
 
-def ledger_state(
-    connection: sqlite3.Connection, expected: list[str]
-) -> tuple[list[str], list[str], int]:
-    """``(missing, unknown, applied count)`` against the export's own ledger."""
+def ledger_names(connection: sqlite3.Connection) -> list[str]:
+    """Names wrangler recorded as applied inside the export."""
 
     if D1_LEDGER_TABLE not in digest.tables(connection):
         raise StagingError("staging_ledger_table_missing")
-    applied = sorted(
+    return sorted(
         {
             str(row[0])
             for row in connection.execute(f'SELECT name FROM "{D1_LEDGER_TABLE}"')
         }
     )
+
+
+def ledger_state(
+    connection: sqlite3.Connection, expected: list[str]
+) -> tuple[list[str], list[str], list[str]]:
+    """``(missing, unknown, applied names)`` against the export's own ledger."""
+
+    applied = ledger_names(connection)
     expected_set = set(expected)
     missing = [name for name in expected if name not in set(applied)]
     unknown = [name for name in applied if name not in expected_set]
-    return missing, unknown, len(applied)
+    return missing, unknown, applied
 
 
 def _count(connection: sqlite3.Connection, table: str) -> int:
@@ -203,13 +223,13 @@ def empty_owned_tables(connection: sqlite3.Connection) -> dict[str, int]:
 
 
 def seed_local_ledger(
-    connection: sqlite3.Connection, expected: list[str]
+    connection: sqlite3.Connection, applied: list[str]
 ) -> int:
-    """Mark the copied schema as migrated for the local host's own ledger.
+    """Mark exactly the export's applied migrations in the host's own ledger.
 
     The staging database is a *populated* copy, so the CPython host must not
-    replay 001…079 over it. The local ledger records exactly the export's
-    applied migrations, keeping the app's startup path a no-op while leaving
+    replay 001…079 over it. Only names the export itself applied are recorded,
+    so a pending tail stays pending until it is really applied, while leaving
     wrangler's ``d1_migrations`` untouched for audit.
     """
 
@@ -220,7 +240,7 @@ def seed_local_ledger(
     applied_at: dict[str, str] = {}
     for row in connection.execute(f'SELECT name, applied_at FROM "{D1_LEDGER_TABLE}"'):
         applied_at[str(row[0])] = str(row[1]) if row[1] else _utc_now()
-    rows = [(name, applied_at.get(name, _utc_now())) for name in expected]
+    rows = [(name, applied_at.get(name, _utc_now())) for name in applied]
     connection.executemany(
         f"INSERT OR REPLACE INTO {LOCAL_LEDGER_TABLE} (name, applied_at) VALUES (?, ?)",
         rows,
@@ -228,6 +248,70 @@ def seed_local_ledger(
     return int(
         connection.execute(f"SELECT COUNT(*) FROM {LOCAL_LEDGER_TABLE}").fetchone()[0]
     )
+
+
+def pending_tail(expected: list[str], missing: list[str]) -> list[str]:
+    """The pending set, only when it is the contiguous tail of ``expected``.
+
+    A hole means the copy is not simply behind: something applied later without
+    an earlier migration, and replaying over that is a guess. Refuse instead.
+    """
+
+    if not missing:
+        return []
+    tail = expected[len(expected) - len(missing):]
+    if list(missing) != list(tail):
+        raise StagingError("staging_ledger_gap")
+    return list(tail)
+
+
+def _discard(path: Path) -> None:
+    """Remove a staging database and its sidecars after a failed advance."""
+
+    path.unlink(missing_ok=True)
+    for stale in (
+        path.with_name(path.name + "-journal"),
+        path.with_name(path.name + "-wal"),
+        path.with_name(path.name + "-shm"),
+    ):
+        stale.unlink(missing_ok=True)
+
+
+def apply_pending_migrations(
+    destination: Path,
+    migrations_dir: str | Path,
+    names: list[str],
+) -> list[str]:
+    """Apply ``names`` in order to the copy and record each in both ledgers."""
+
+    connection = sqlite3.connect(
+        f"file:{destination.resolve().as_posix()}?mode=rwc",
+        uri=True,
+        isolation_level=None,
+    )
+    applied: list[str] = []
+    try:
+        connection.execute("PRAGMA journal_mode=DELETE")
+        for name in names:
+            try:
+                sql = (Path(migrations_dir) / name).read_text(encoding="utf-8")
+                connection.executescript(sql)
+            except sqlite3.Error:
+                raise StagingError("staging_pending_migration_failed") from None
+            applied_at = _utc_now()
+            connection.execute(
+                f'INSERT INTO "{D1_LEDGER_TABLE}" (name, applied_at) VALUES (?, ?)',
+                (name, applied_at),
+            )
+            connection.execute(
+                f"INSERT OR REPLACE INTO {LOCAL_LEDGER_TABLE} "
+                "(name, applied_at) VALUES (?, ?)",
+                (name, applied_at),
+            )
+            applied.append(name)
+        return applied
+    finally:
+        connection.close()
 
 
 def _check_out_path(out: Path, source: Path, generations_dir: Path, force: bool) -> None:
@@ -251,8 +335,14 @@ def build_staging_db(
     label: str = DEFAULT_LABEL,
     migrations_dir: str | Path = DEFAULT_MIGRATIONS_DIR,
     force: bool = False,
+    apply_pending: bool = False,
 ) -> StagingReport:
-    """Copy the current generation into ``out`` and verify it; never touch D1."""
+    """Copy the current generation into ``out`` and verify it; never touch D1.
+
+    ``apply_pending`` advances the copy past the generation, so parity is
+    measured on the untouched copy first and the pending tail is applied only
+    to a copy that already matched.
+    """
 
     report = StagingReport()
     generation, source = resolve_generation(pointer, generations_dir, label)
@@ -267,6 +357,7 @@ def build_staging_db(
     report.source = str(source)
     report.out = str(destination)
     report.migrations_expected = len(expected)
+    report.pending_requested = apply_pending
 
     sha_before = digest.file_sha256(source)
     report.source_sha256 = sha_before
@@ -280,11 +371,12 @@ def build_staging_db(
         missing, unknown, applied = ledger_state(handle, expected)
         report.ledger_missing = missing
         report.ledger_unknown = unknown
-        report.ledger_applied = applied
-        if missing:
-            raise StagingError("staging_ledger_incomplete")
+        report.ledger_applied = len(applied)
         if unknown:
             raise StagingError("staging_ledger_unknown")
+        if missing and not apply_pending:
+            raise StagingError("staging_ledger_incomplete")
+        pending = pending_tail(expected, missing)
 
         destination.parent.mkdir(parents=True, exist_ok=True)
         if destination.exists():
@@ -306,7 +398,7 @@ def build_staging_db(
             target.execute("PRAGMA journal_mode=DELETE")
             handle.backup(target)
             report.emptied_tables = empty_owned_tables(target)
-            report.local_ledger_rows = seed_local_ledger(target, expected)
+            report.local_ledger_rows = seed_local_ledger(target, applied)
             target_integrity = target.execute("PRAGMA integrity_check").fetchone()[0]
             if target_integrity != "ok":
                 raise StagingError("staging_target_integrity_failed")
@@ -319,6 +411,30 @@ def build_staging_db(
     if not report.source_unchanged:
         raise StagingError("staging_source_modified")
 
+    # The verdict is printed by the parity tool itself: one measurement, one format.
+    # It runs on the untouched copy, because after a pending migration the copy is
+    # intentionally ahead of the generation and the two are no longer comparable.
+    report.parity_exit = parity.main(
+        ["--d1", str(source), "--com2", str(destination)]
+    )
+    report.ready = report.parity_exit == parity.EXIT_MATCH
+
+    if report.ready and pending:
+        try:
+            report.pending_applied = apply_pending_migrations(
+                destination, migrations_dir, pending
+            )
+        except StagingError:
+            # A half-applied staging database is worse than none.
+            _discard(destination)
+            raise
+        report.local_ledger_rows += len(report.pending_applied)
+        report.source_unchanged = digest.file_sha256(source) == sha_before
+        if not report.source_unchanged:
+            raise StagingError("staging_source_modified")
+
+    report.staging_tables = 0
+    report.staging_rows = 0
     verify = digest.read_only(destination)
     try:
         report.staging_tables = len(digest.tables(verify))
@@ -328,12 +444,6 @@ def build_staging_db(
     finally:
         verify.close()
     report.staging_bytes = destination.stat().st_size
-
-    # The verdict is printed by the parity tool itself: one measurement, one format.
-    report.parity_exit = parity.main(
-        ["--d1", str(source), "--com2", str(destination)]
-    )
-    report.ready = report.parity_exit == parity.EXIT_MATCH
     return report
 
 
@@ -354,6 +464,12 @@ def _emit(report: StagingReport) -> None:
     print(f"STAGING_DB_EMPTIED tables={len(report.emptied_tables)} rows={emptied}")
     print(
         f"STAGING_DB_SOURCE_UNCHANGED={'YES' if report.source_unchanged else 'NO'}"
+    )
+    pending_names = ",".join(report.pending_applied) or "none"
+    print(
+        f"STAGING_DB_PENDING_APPLIED count={len(report.pending_applied)} "
+        f"requested={'YES' if report.pending_requested else 'NO'} "
+        f"names={pending_names}"
     )
     verdict = "READY" if report.ready else "FAILED"
     print(
@@ -384,6 +500,10 @@ def main(argv: list[str] | None = None) -> int:
         "--force", action="store_true",
         help="replace an existing staging database instead of refusing",
     )
+    parser.add_argument(
+        "--apply-pending", action="store_true",
+        help="apply the repository migrations the generation is still missing",
+    )
     parser.add_argument("--json", help="write the counts-only report as JSON")
     args = parser.parse_args(argv)
 
@@ -395,6 +515,7 @@ def main(argv: list[str] | None = None) -> int:
             label=args.label,
             migrations_dir=args.migrations_dir,
             force=args.force,
+            apply_pending=args.apply_pending,
         )
     except StagingError as exc:
         print(f"STAGING_DB_REFUSED reason={exc}")
