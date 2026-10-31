@@ -21,6 +21,9 @@ import sqlite3
 from datetime import datetime, timezone
 from pathlib import Path
 from types import SimpleNamespace
+from typing import Any
+
+import httpx
 
 from .app_factory import create_app
 from .b66_b14_free_first_resolver import B66ExplicitQuoteModelResolver
@@ -34,7 +37,10 @@ from .local_service_bridge import (
     LocalB66PdfRendererClient,
     compose_local_b14_transports,
 )
+from .local_p01_engine import build_local_engine_client
 from .maintenance_mode import apply_write_freeze
+from .orchestration_composition import compose_orchestration_bridge
+from .orchestration_routes import install_orchestration_routes
 from .project_files import D1ProjectFileStore
 from .queue_store_proxy import (
     QueueBackedPairingStore,
@@ -100,6 +106,35 @@ def _ensure_session_secret(data_dir: Path) -> None:
     data_dir.mkdir(parents=True, exist_ok=True)
     secret_file.write_text(generated, encoding="utf-8")
     os.environ["PADIEM_CHAT_SESSION_SECRET"] = generated
+
+
+def compose_host_orchestration(
+    app: Any,
+    *,
+    env: Any,
+    settings: Settings,
+    db_binding: Any,
+    client: httpx.AsyncClient | None = None,
+) -> Any | None:
+    """Attach the Engine orchestration bridge to the CPython host.
+
+    This is the Worker's own composition (``orchestration_composition``); the
+    host's loopback transport is the only difference. It stays off unless all
+    three server-owned prerequisites are present, and its routes are installed
+    only together with a real bridge, so a host without them keeps today's
+    direct-B14 behaviour and its existing 404s.
+    """
+
+    bridge = compose_orchestration_bridge(
+        env=env,
+        settings=settings,
+        db_binding=db_binding,
+        build_client=lambda: build_local_engine_client(env, client=client)[0],
+    )
+    if bridge is None:
+        return None
+    install_orchestration_routes(app, bridge)
+    return bridge
 
 
 def build_app():
@@ -242,6 +277,13 @@ def build_app():
             await gateway(websocket.scope, websocket.receive, websocket.send)
 
         app.router.routes.insert(0, WebSocketRoute(CONNECTOR_GATEWAY_WSS_PATH, connector_gateway))
+
+    # The Worker's orchestration bridge, over this host's loopback Engine
+    # transport (#5115 step ②). Off unless the same three server-owned switches
+    # are present; without them every chat route keeps the direct B14 path.
+    compose_host_orchestration(
+        app, env=os.environ, settings=settings, db_binding=db,
+    )
 
     # The write window (#5573, #5115 step ③): reads keep working, mutations
     # answer 503 while the sentinel file exists or the environment switch is on.
