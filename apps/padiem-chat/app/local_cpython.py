@@ -364,7 +364,8 @@ def build_app():
             methods=_IDENTITY_METHODS,
         )
         broker = LoopbackRpcBinding(
-            port=8799, secret=secret_file("PADIEM_COM2_BROKER_RPC_SECRET_FILE"),
+            port=int(os.getenv("PADIEM_COM2_BROKER_RPC_PORT", "8799")),
+            secret=secret_file("PADIEM_COM2_BROKER_RPC_SECRET_FILE"),
             methods=_BROKER_METHODS,
             # The broker ingress consumes the signed id (#6424), so this lane
             # signs one exactly like the identity lane does.

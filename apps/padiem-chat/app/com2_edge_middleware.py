@@ -25,6 +25,7 @@ class EdgeProofMiddleware:
                 method="GET" if kind == "websocket" else scope.get("method", ""),
                 path=scope.get("path", ""), headers=Headers(scope=scope),
             )
+            print("MIDDLEWARE verify", repr(scope.get("path")), "=>", valid, flush=True)
         if not valid:
             if kind == "websocket":
                 await send({"type": "websocket.close", "code": 1008})

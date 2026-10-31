@@ -197,25 +197,32 @@ def _open_surfaces(browser, server, width, theme, locale):
     page = browser.new_page(viewport={"width": width, "height": 850})
     errors: list[str] = []
     page.on("pageerror", lambda error: errors.append(str(error)))
+    page.route("**/api/auth/status", lambda route: route.fulfill(json={
+        "ready": True, "authenticated": True, "session_state": "signed_in",
+        "user": {"name": "Synthetic User"}, "history_ready": True,
+    }))
     page.goto(server, wait_until="domcontentloaded")
+    page.wait_for_function("() => window.PadiemAuthGate?.authenticated() === true", timeout=15000)
     page.locator("#clawDeviceManagerToggle").wait_for(state="attached")
-    # Presentation state only; app.js owns session and navigation gates.
     page.evaluate("""() => {
       document.querySelector('.app-shell').setAttribute('data-state', 'claw');
       document.getElementById('clawWorkspace').hidden = false;
     }""")
+    page.locator("#clawWorkspace").wait_for(state="visible", timeout=5000)
     page.locator("#clawDeviceManagerToggle").wait_for(state="visible", timeout=10000)
+    page.locator("#clawDeviceGuidanceToggle").wait_for(state="visible", timeout=10000)
     body = _directory_fixture()
     page.route("**" + ENDPOINT, lambda route: route.fulfill(
         status=200, content_type="application/json", body=body))
     page.locator("#clawDeviceManagerToggle").click()
-    page.locator("#clawDeviceManagerList li").first.wait_for()
+    page.locator("#clawDeviceManagerList li").first.wait_for(timeout=5000)
     page.evaluate("(t) => document.documentElement.setAttribute('data-theme', t)", theme)
     page.evaluate("""(loc) => {
       const btn = document.querySelector(`[data-locale-value="${loc}"]`)
         || document.querySelector(`[data-locale-value="${loc.toUpperCase()}"]`);
       if (btn) btn.click();
     }""", locale)
+    page.wait_for_timeout(200)
     page.evaluate("() => document.querySelector('#clawDeviceGuidanceToggle').click()")
     page.locator("#clawDeviceGuidancePanel").wait_for(state="visible")
     return page, errors

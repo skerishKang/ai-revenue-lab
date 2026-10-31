@@ -139,7 +139,7 @@ def test_a_stream_closed_between_keepalives_cancels_the_read_nobody_receives():
             raise
 
     async def scenario():
-        gen = _stream_with_keepalive(slow_upstream(), interval=0.01)
+        gen = _stream_with_keepalive(slow_upstream(), interval=1.0)
         assert await gen.__anext__() == "a"
         assert await gen.__anext__() is _KEEPALIVE_SENTINEL
         await gen.aclose()
