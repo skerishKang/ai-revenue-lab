@@ -92,9 +92,8 @@ if ! $DRY_RUN; then
   cp -f "$SRC_DIR/../../../apps/korean-ai-platform/b14.env.example" "$APP_ROOT/env/b14.env.example" 2>/dev/null \
     || note "env_example_copy_skipped"
   # The secret and registry directories belong to systemd (StateDirectory), so
-  # this script neither creates them nor touches their ownership: a DynamicUser
-  # uid is assigned at start and a root-owned 0700 directory would lock the
-  # service out of its own credentials. The registry is seeded from the
+  # this script neither creates them nor touches their ownership: systemd assigns
+  # them to the static padiem-b14 account at start. The registry is seeded from the
   # checkout only when the host has none, and never overwritten — what the
   # Owner registers on this machine survives the next deploy.
   REGISTRY_STATE="/var/lib/padiem-b14/b14-registry/b14_models.json"

@@ -49,6 +49,7 @@ ReadWritePaths=/opt/padiem/b14/ledger /opt/padiem/b14/logs
 # b14-secrets holds one 0600 file per credential name; b14-registry holds the
 # one registry file this deployment reads. The checkout stays read-only.
 StateDirectory=padiem-b14/b14-secrets padiem-b14/b14-registry
+StateDirectoryMode=0700
 LimitNOFILE=8192
 UMask=0077
 
