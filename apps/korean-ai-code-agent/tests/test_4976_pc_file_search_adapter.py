@@ -831,3 +831,14 @@ def test_empty_timeout_is_not_success(tmp_path):
     page = adapter.search_pc_files_page(scopes=[scope], query="x", port=Port())
     assert page["entries"] == [] and page["complete"] is False
     assert page["reason"] == "timeout" and page["cursor"] == {"label": "one", "offset": 0}
+
+
+def test_timeout_keeps_complete_unicode_rows_before_cut_character(monkeypatch):
+    complete = "한글.txt\n".encode("utf8")
+    incomplete = "가".encode("utf8")[:1]
+    def timeout(*args, **kwargs):
+        raise subprocess.TimeoutExpired(args[0], kwargs["timeout"], output=complete + incomplete)
+    monkeypatch.setattr(adapter.subprocess, "run", timeout)
+    with pytest.raises(adapter.PcFileSearchTimeout) as caught:
+        adapter._default_process_runner(["fake"], timeout=0.1)
+    assert caught.value.rows == ("한글.txt",)

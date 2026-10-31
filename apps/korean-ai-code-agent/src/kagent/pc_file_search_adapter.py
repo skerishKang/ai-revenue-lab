@@ -288,10 +288,12 @@ def _default_process_runner(
         )
     except subprocess.TimeoutExpired as exc:
         raw = exc.output or b""
+        # Strip a possibly incomplete trailing byte sequence before UTF-8 decode,
+        # preserving complete Korean paths on preceding lines.
+        separator = b"\n" if isinstance(raw, bytes) else "\n"
+        complete = raw.rpartition(separator)[0] if separator in raw else raw[:0]
         try:
-            partial = _decode_everything_output(raw)
-            # The final unterminated record may have been cut in the middle.
-            rows = partial.splitlines() if partial.endswith(("\n", "\r")) else partial.splitlines()[:-1]
+            rows = _decode_everything_output(complete).splitlines()
         except PcFileSearchError:
             rows = []
         raise PcFileSearchTimeout(rows) from exc
