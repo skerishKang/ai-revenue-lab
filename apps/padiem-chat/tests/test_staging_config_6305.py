@@ -19,7 +19,8 @@ class StagingConfigTest(unittest.TestCase):
         self.assertEqual(config["vars"]["PC_QUEUE_BACKEND"], "d1")
         self.assertEqual(config["vars"]["PADIEM_CHAT_SHARED_AUTH_CLIENT_ID"], "b62-staging")
         self.assertEqual(config["vars"]["PADIEM_CHAT_PUBLIC_BASE_URL"], CHAT)
-        self.assertFalse({"routes", "services", "r2_buckets", "secrets_store_secrets"} & config.keys())
+        self.assertEqual(config["services"], [{"binding": "IDENTITY_AUTHORITY_SERVICE", "service": "padiem-control-plane-identity"}])
+        self.assertFalse({"routes", "r2_buckets", "secrets_store_secrets"} & config.keys())
 
     def test_production_config_is_unchanged_and_login_defaults_off(self):
         manifest = Path(__file__).parents[1] / "wrangler.toml"

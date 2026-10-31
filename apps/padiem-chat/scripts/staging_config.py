@@ -31,6 +31,8 @@ def make_config(database_id, public_origin, queue_origin):
         "build": {"command": "uv run python scripts/build_b66_worker_dependencies.py"},
         "assets": {"directory": ".b66-worker-src/static", "binding": "ASSETS"},
         "version_metadata": {"binding": "CF_VERSION_METADATA"},
+        # The shared-login staging trial uses the canonical identity authority.
+        "services": [{"binding": "IDENTITY_AUTHORITY_SERVICE", "service": "padiem-control-plane-identity"}],
         "d1_databases": [{"binding": "PADIEM_CHAT_DB", "database_name": "padiem-chat-staging-db", "database_id": database_id}],
         # Start on isolated D1 while Qoder provisions the separate staging queue
         # and secret. Never silently fall back to an operational queue.
