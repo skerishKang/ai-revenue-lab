@@ -1,4 +1,6 @@
 """Attach only a verified common-session identity; the legacy guard still runs."""
+import logging
+
 from starlette.requests import Request
 
 from .shared_auth_adapter import SharedAuthUnavailable
@@ -19,5 +21,5 @@ class SharedSessionMiddleware:
                     if isinstance(user, str) and user:
                         scope.setdefault('state', {})['padiem_shared_user_id'] = user
                 except SharedAuthUnavailable:
-                    pass
+                    logging.getLogger(__name__).warning("shared_session_verification_or_identity_lookup_failed")
         await self.app(scope, receive, send)

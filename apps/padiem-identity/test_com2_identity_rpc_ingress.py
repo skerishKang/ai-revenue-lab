@@ -40,6 +40,8 @@ async def test_enrollment_routes_match_canonical_disabled_authority():
             assert (await client.post(path, content=body)).status_code == 403
         path = "/internal/rpc/grant_connector_enrollment_consent"
         response = await client.post(path, content=b"{}")
+        assert response.status_code == 403
+        response = await client.post("/internal/rpc/unknown_method", content=b"{}")
         assert response.status_code == 404
 
 

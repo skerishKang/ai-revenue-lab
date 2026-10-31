@@ -82,7 +82,7 @@ def test_every_referenced_key_is_mirrored(pair, capsys):
     assert check_mod.main(["--db", str(db), "--inventory", str(inventory)]) == check_mod.EXIT_MATCH
 
     out = capsys.readouterr().out
-    assert "CHAT_OBJECT_REFERENCE=MATCH tables=2 keys=3 missing=0" in out
+    assert "CHAT_OBJECT_REFERENCE=MATCH tables=2 inventories=1 keys=3 missing=0" in out
     assert "claw_document_metadata.object_key keys=2 missing=0" in out
 
 
@@ -211,3 +211,224 @@ def test_the_json_report_keeps_keys_out_unless_asked(tmp_path):
     ]) == check_mod.EXIT_GAP
     payload = json.loads(out.read_text(encoding="utf-8"))
     assert payload["missing_key_values"] == ["org/a/late.pdf"]
+
+
+def test_a_bom_inventory_is_read(tmp_path, capsys):
+    """A Windows-side dump starts with a BOM; it is still a valid inventory."""
+
+    inventory = tmp_path / "inventory.json"
+    inventory.write_text("\ufeff" + json.dumps({"keys": INVENTORY}), encoding="utf-8")
+    assert check_mod.load_inventory(inventory) == set(INVENTORY)
+
+    db = _db(tmp_path / "d1.sqlite3", {
+        "claw_document_metadata": [("d1", "org/a/doc-1/file.pdf", "file.pdf")],
+    })
+    assert check_mod.main([
+        "--db", str(db), "--inventory", str(inventory),
+    ]) == check_mod.EXIT_MATCH
+    capsys.readouterr()
+
+
+def test_bucket_inventories_are_unioned(tmp_path, capsys):
+    """Each bucket has its own list; a key only has to appear in one of them."""
+
+    db = _db(tmp_path / "d1.sqlite3", BASE_ROWS)
+    media = tmp_path / "media.json"
+    media.write_text(
+        json.dumps({"objects": [{"key": "org/a/doc-1/file.pdf"}]}), encoding="utf-8"
+    )
+    workspace = tmp_path / "workspace.json"
+    workspace.write_text(
+        "\ufeff" + json.dumps({
+            "keys": ["org/a/doc-2/sheet.xlsx", "org/a/assets/logo.png"],
+        }),
+        encoding="utf-8",
+    )
+
+    report = check_mod.check(db, [media, workspace])
+    assert report.matches
+    assert report.inventory_files == 2
+    assert report.unique_keys == 3
+
+    assert check_mod.main([
+        "--db", str(db),
+        "--mirror-inventory", str(media),
+        "--mirror-inventory", str(workspace),
+    ]) == check_mod.EXIT_MATCH
+    out = capsys.readouterr().out
+    assert "CHAT_OBJECT_REFERENCE=MATCH tables=2 inventories=2 keys=3 missing=0" in out
+
+
+def test_a_key_in_no_bucket_names_the_table_and_column(tmp_path, capsys):
+    db = _db(
+        tmp_path / "d1.sqlite3",
+        {
+            "claw_document_metadata": [("d1", "org/a/doc-1/file.pdf", "file.pdf")],
+            "b66_quote_asset": [("a1", "org/a/assets/late.png", 1200)],
+        },
+    )
+    media = tmp_path / "media.json"
+    media.write_text(json.dumps(INVENTORY), encoding="utf-8")
+    workspace = tmp_path / "workspace.json"
+    workspace.write_text(
+        json.dumps({"keys": ["org/a/doc-1/file.pdf"]}), encoding="utf-8"
+    )
+
+    assert check_mod.main([
+        "--db", str(db),
+        "--inventory", str(media),
+        "--inventory", str(workspace),
+    ]) == check_mod.EXIT_GAP
+
+    out = capsys.readouterr().out
+    assert "CHAT_OBJECT_MISSING_SOURCES b66_quote_asset.object_key=1" in out
+    assert "claw_document_metadata.object_key=0" not in out
+    # Counts only: the object path stays out of the log.
+    assert "late.png" not in out
+
+
+def test_the_multi_bucket_digest_ignores_argument_order(tmp_path):
+    db = _db(tmp_path / "d1.sqlite3", BASE_ROWS)
+    media = tmp_path / "media.json"
+    media.write_text(json.dumps({"keys": INVENTORY}), encoding="utf-8")
+    workspace = tmp_path / "workspace.json"
+    workspace.write_text(
+        json.dumps({"keys": ["org/a/doc-1/file.pdf"]}), encoding="utf-8"
+    )
+
+    forward = check_mod.check(db, [media, workspace])
+    reverse = check_mod.check(db, [workspace, media])
+    single = check_mod.check(db, media)
+
+    assert forward.inventory_sha256 == reverse.inventory_sha256
+    assert forward.inventory_sha256 != single.inventory_sha256
+    assert forward.matches and reverse.matches and single.matches
+
+
+def test_an_empty_bucket_still_refuses_the_run(tmp_path):
+    """A bucket that dumped empty is a broken export, not a bucket without keys."""
+
+    db = _db(tmp_path / "d1.sqlite3", BASE_ROWS)
+    media = tmp_path / "media.json"
+    media.write_text(json.dumps({"keys": INVENTORY}), encoding="utf-8")
+    empty = tmp_path / "workspace.json"
+    empty.write_text(json.dumps({"keys": []}), encoding="utf-8")
+
+    with pytest.raises(check_mod.CheckError) as excinfo:
+        check_mod.check(db, [media, empty])
+    assert "CHAT_OBJECT_INVENTORY_EMPTY" in str(excinfo.value)
+
+
+def _soft_delete_db(path: Path, rows: list[tuple[str, str, str | None]]) -> Path:
+    """A table that keeps deleted rows and marks them with ``deleted_at``."""
+
+    connection = sqlite3.connect(path)
+    # No UNIQUE on object_key: a live row and a deleted row can share a key.
+    connection.execute(
+        "CREATE TABLE claw_document_metadata "
+        "(document_id TEXT PRIMARY KEY, object_key TEXT NOT NULL, deleted_at TEXT)"
+    )
+    for row in rows:
+        connection.execute(
+            'INSERT INTO "claw_document_metadata" VALUES (?, ?, ?)', row
+        )
+    connection.commit()
+    connection.close()
+    return path
+
+
+def test_a_soft_deleted_row_is_not_a_reference(tmp_path, capsys):
+    db = _soft_delete_db(
+        tmp_path / "d1.sqlite3",
+        [
+            ("d1", "org/a/doc-1/file.pdf", None),
+            ("d2", "org/a/doc-2/removed.pdf", "2026-10-13T04:11:00Z"),
+            ("d3", "org/a/doc-3/blank.pdf", ""),
+        ],
+    )
+    inventory = tmp_path / "inventory.json"
+    inventory.write_text(
+        json.dumps({"keys": ["org/a/doc-1/file.pdf", "org/a/doc-3/blank.pdf"]}),
+        encoding="utf-8",
+    )
+
+    report = check_mod.check(db, inventory)
+    assert report.matches
+    assert report.excluded_keys == 1
+    assert report.tables[0].keys == 2
+
+    assert check_mod.main([
+        "--db", str(db), "--inventory", str(inventory),
+    ]) == check_mod.EXIT_MATCH
+    out = capsys.readouterr().out
+    assert (
+        "CHAT_OBJECT_REFERENCE=MATCH tables=1 inventories=1 keys=2 missing=0 "
+        "excluded_soft_deleted=1"
+    ) in out
+    assert "removed.pdf" not in out
+
+
+def test_a_live_row_without_its_object_is_still_a_gap(tmp_path, capsys):
+    db = _soft_delete_db(
+        tmp_path / "d1.sqlite3",
+        [
+            ("d1", "org/a/doc-1/file.pdf", None),
+            ("d2", "org/a/doc-2/late.pdf", None),
+            ("d3", "org/a/doc-3/removed.pdf", "2026-10-13T04:11:00Z"),
+        ],
+    )
+    inventory = tmp_path / "inventory.json"
+    inventory.write_text(
+        json.dumps({"keys": ["org/a/doc-1/file.pdf"]}), encoding="utf-8"
+    )
+
+    assert check_mod.main([
+        "--db", str(db), "--inventory", str(inventory),
+    ]) == check_mod.EXIT_GAP
+    out = capsys.readouterr().out
+    assert "missing=1 excluded_soft_deleted=1" in out
+    assert "CHAT_OBJECT_MISSING_SOURCES claw_document_metadata.object_key=1" in out
+    assert "late.pdf" not in out and "removed.pdf" not in out
+
+
+def test_a_key_on_a_live_and_a_deleted_row_is_still_a_reference(tmp_path, capsys):
+    db = _soft_delete_db(
+        tmp_path / "d1.sqlite3",
+        [
+            ("d1", "org/a/shared.bin", None),
+            ("d2", "org/a/shared.bin", "2026-10-13T04:11:00Z"),
+        ],
+    )
+    inventory = tmp_path / "inventory.json"
+    inventory.write_text(json.dumps({"keys": ["org/a/shared.bin"]}), encoding="utf-8")
+
+    report = check_mod.check(db, inventory)
+    assert report.matches
+    assert report.excluded_keys == 0
+
+    inventory.write_text(json.dumps({"keys": ["org/a/other.bin"]}), encoding="utf-8")
+    assert check_mod.main([
+        "--db", str(db), "--inventory", str(inventory),
+    ]) == check_mod.EXIT_GAP
+    out = capsys.readouterr().out
+    assert "missing=1 excluded_soft_deleted=0" in out
+
+
+def test_a_table_without_deleted_at_is_scanned_whole(tmp_path, capsys):
+    db = _db(
+        tmp_path / "d1.sqlite3",
+        {"claw_document_metadata": [("d1", "org/a/doc-1/late.pdf", "late.pdf")]},
+    )
+    inventory = tmp_path / "inventory.json"
+    inventory.write_text(
+        json.dumps({"keys": ["org/a/doc-1/file.pdf"]}), encoding="utf-8"
+    )
+
+    assert not check_mod.has_soft_delete(
+        sqlite3.connect(db), "claw_document_metadata"
+    )
+    assert check_mod.main([
+        "--db", str(db), "--inventory", str(inventory),
+    ]) == check_mod.EXIT_GAP
+    out = capsys.readouterr().out
+    assert "missing=1 excluded_soft_deleted=0" in out

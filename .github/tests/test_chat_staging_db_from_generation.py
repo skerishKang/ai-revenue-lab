@@ -9,6 +9,7 @@ import hashlib
 import importlib
 import json
 import sqlite3
+import stat
 import sys
 from pathlib import Path
 
@@ -505,3 +506,98 @@ def test_a_failing_pending_migration_leaves_no_staging_database(
     )
     assert not out.exists()
     assert _sha(source) == source_sha
+
+
+def _record_metadata(monkeypatch: pytest.MonkeyPatch, sink: list) -> None:
+    def chown(path, uid, gid):
+        sink.append(("chown", uid, gid))
+
+    def chmod(path, mode):
+        sink.append(("chmod", mode))
+
+    monkeypatch.setattr(staging.os, "chown", chown, raising=False)
+    monkeypatch.setattr(staging, "_chmod", chmod)
+
+
+def test_replacing_keeps_the_existing_owner_and_mode(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The root-run bug: a replaced chat.sqlite3 must stay openable by the service."""
+
+    root = tmp_path / "sync"
+    _generation_db(root)
+    out = tmp_path / "staging.sqlite3"
+    out.write_text("old staging file", encoding="utf-8")
+    info = out.stat()
+    calls: list = []
+    _record_metadata(monkeypatch, calls)
+
+    assert _run(root, out, "--force") == 0
+    printed = _lines(capsys)
+
+    mode = stat.S_IMODE(info.st_mode)
+    assert f"STAGING_DB_OWNERSHIP source=existing uid={info.st_uid} gid={info.st_gid}" in printed
+    assert f"mode={mode:04o}" in printed
+    assert ("chown", info.st_uid, info.st_gid) in calls
+    assert ("chmod", mode) in calls
+    assert "STAGING_DB_FROM_GENERATION=READY" in printed
+
+
+def test_a_new_database_uses_the_requested_owner_and_mode(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    root = tmp_path / "sync"
+    _generation_db(root)
+    out = tmp_path / "staging.sqlite3"
+    calls: list = []
+    _record_metadata(monkeypatch, calls)
+
+    assert _run(root, out, "--owner", "1234:5678", "--mode", "0640") == 0
+    printed = _lines(capsys)
+
+    assert "STAGING_DB_OWNERSHIP source=argument uid=1234 gid=5678 mode=0640" in printed
+    assert ("chown", 1234, 5678) in calls
+    assert ("chmod", 0o640) in calls
+
+
+def test_an_unapplied_owner_refuses_and_leaves_no_database(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    root = tmp_path / "sync"
+    _generation_db(root)
+    out = tmp_path / "staging.sqlite3"
+    out.write_text("old staging file", encoding="utf-8")
+
+    def refuse(path, mode):
+        raise OSError("chmod not permitted")
+
+    monkeypatch.setattr(staging, "_chmod", refuse)
+
+    assert _run(root, out, "--force") == 1
+    assert "STAGING_DB_REFUSED reason=staging_owner_unapplied" in _lines(capsys)
+    assert not out.exists()
+
+
+def test_a_root_run_without_an_owner_argument_refuses(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    root = tmp_path / "sync"
+    _generation_db(root)
+    out = tmp_path / "staging.sqlite3"
+    monkeypatch.setattr(staging, "_effective_uid", lambda: 0)
+
+    assert _run(root, out) == 2
+    assert "STAGING_DB_REFUSED reason=staging_owner_required" in _lines(capsys)
+    assert not out.exists()
+
+
+def test_an_invalid_owner_argument_is_a_usage_refusal(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    root = tmp_path / "sync"
+    _generation_db(root)
+    out = tmp_path / "staging.sqlite3"
+
+    assert _run(root, out, "--mode", "999") == 2
+    assert "STAGING_DB_REFUSED reason=staging_owner_invalid" in _lines(capsys)
+    assert not out.exists()
