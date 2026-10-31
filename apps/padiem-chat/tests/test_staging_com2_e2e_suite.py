@@ -50,7 +50,8 @@ def test_suite_over_loopback(files_ready, pc_ready):
             time.sleep(0.05)
         assert server.started
         cookie = SESSION_COOKIE + "=" + create_session_token(settings, profile.id)
-        assert suite.run(f"http://127.0.0.1:{port}", cookie) == 8
+        assert suite.run(f"http://127.0.0.1:{port}", cookie) == (8, 0)
+        assert suite.run(f"http://127.0.0.1:{port}", "") == (2, 6)
     finally:
         server.should_exit = True
         thread.join(timeout=10)
@@ -65,3 +66,9 @@ def test_suite_over_loopback(files_ready, pc_ready):
 def test_reject_non_loopback_before_connect(url):
     with pytest.raises(ValueError):
         suite.run(url, "session=x")
+
+
+@pytest.mark.parametrize("origin", ["http://chat-com2-staging.padiem.net", "//evil.test"])
+def test_reject_non_https_expected_origin(origin):
+    with pytest.raises(ValueError):
+        suite.run("http://127.0.0.1:8801", "session=x", origin)
