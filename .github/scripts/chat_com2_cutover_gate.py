@@ -159,7 +159,7 @@ class Gate:
         print("REHEARSAL_EVIDENCE=PASS signature=Ed25519 max_age_hours=24")
 
     def probe(self, origin, path, expected, *, method="GET", maintenance=False):
-        status, response_headers, raw = request(origin + path, method=method)
+        status, response_headers, raw = request(origin + path, method=method, headers={"User-Agent": "padiem-boot-recovery/1.0"})
         require(status == expected, "probe_status_mismatch")
         lower = {key.lower(): value for key, value in response_headers.items()}
         require("x-padiem-front" not in lower, "front_fallback_detected")
