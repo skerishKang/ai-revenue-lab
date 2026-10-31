@@ -467,6 +467,9 @@
     }
 
     async function load(silent) {
+      if (window.PadiemAuthGate?.authenticated() === false) {
+        lastLinks = []; view.list.replaceChildren(); say(false, t.login); return;
+      }
       if (!silent) say(true, t.loading);
       const result = await request(PAIRINGS, { method: "GET" });
       if (!result.ok) {
@@ -650,6 +653,7 @@
     view.connectButton.addEventListener("click", () => { void actions.connect(); });
     view.scriptButton.addEventListener("click", () => { void actions.connectScript(); });
     view.issueButton.addEventListener("click", () => { void actions.issue(); });
+    window.addEventListener("padiem:auth-state", () => { void load(true); });
     window.addEventListener("pageshow", () => { void load(); });
     document.addEventListener("visibilitychange", () => {
       if (document.visibilityState === "visible") void load(true);
