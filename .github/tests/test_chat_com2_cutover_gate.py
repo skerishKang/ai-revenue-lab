@@ -113,7 +113,7 @@ def run_record(workflow=gate.WORKFLOW, **changes):
 
 def domain_row(service=gate.LEGACY, **changes):
     result = {
-        "hostname": gate.HOST, "service": service, "enabled": True,
+        "hostname": gate.HOST, "service": service, "id": "e" * 40, "enabled": True,
         "zone_name": "padiem.net", "zone_id": ZONE, "previews_enabled": False,
     }
     result.update(changes)
@@ -227,45 +227,132 @@ def test_deploy_preserves_vars_and_enforces_canonical_static_origin(monkeypatch)
     assert calls[1] == ("verify", {"deployed": True})
 
 
-@pytest.mark.parametrize("target", [gate.FRONT, gate.LEGACY])
-def test_domain_change_is_one_put_then_readback(monkeypatch, target):
-    instance = gate.Gate(environment("switch" if target == gate.FRONT else "rollback"))
+def stateful_gate(monkeypatch, target, *, fail_attach=False, unknown_after_failure=False):
     source = gate.LEGACY if target == gate.FRONT else gate.FRONT
+    instance = gate.Gate(environment("switch" if target == gate.FRONT else "rollback"))
+    monkeypatch.setattr(instance, "exact_main", lambda: None)
+    state = {"owner": source, "attach_failed": False}
     events = []
-    rows = iter([domain_row(source), domain_row(target)])
-    monkeypatch.setattr(instance, "exact_main", lambda: events.append("main"))
-    monkeypatch.setattr(instance, "domain", lambda: next(rows))
-    monkeypatch.setattr(instance, "cf", lambda path, **kw: events.append((path, kw)))
+    def cf(path, **kwargs):
+        method = kwargs.get("method", "GET")
+        events.append((method, path, kwargs.get("payload")))
+        if method == "GET":
+            if state["attach_failed"] and unknown_after_failure:
+                raise gate.Refused("transport_failed")
+            return [] if state["owner"] is None else [domain_row(state["owner"])]
+        if method == "DELETE":
+            state["owner"] = None
+        elif method == "PUT":
+            desired = kwargs["payload"]["service"]
+            if desired == target and fail_attach:
+                state["attach_failed"] = True
+                raise gate.Refused("transport_failed")
+            state["owner"] = desired
+    monkeypatch.setattr(instance, "cf", cf)
+    return instance, state, events
+
+
+@pytest.mark.parametrize("target", [gate.FRONT, gate.LEGACY])
+def test_domain_detach_attach_and_verified_owner(monkeypatch, target):
+    instance, state, events = stateful_gate(monkeypatch, target)
     instance.move_domain(target)
-    assert events == ["main", ("/workers/domains", {"method": "PUT", "payload": {
-        "hostname": gate.HOST, "service": target, "zone_id": ZONE, "enabled": True,
-        "previews_enabled": False,
-    }})]
+    writes = [(method, payload) for method, _, payload in events if method != "GET"]
+    assert [method for method, _ in writes] == ["DELETE", "PUT"]
+    assert writes[1][1]["service"] == target
+    assert state["owner"] == target
+    assert events[-1][0] == "GET"
 
 
-def test_domain_put_failure_is_not_retried_or_deleted(monkeypatch):
-    instance = gate.Gate(environment("switch"))
-    calls = []
-    monkeypatch.setattr(instance, "exact_main", lambda: None)
-    monkeypatch.setattr(instance, "domain", lambda: domain_row())
-    def failed(path, **kwargs):
-        calls.append((path, kwargs["method"]))
-        raise gate.Refused("cloudflare_http_failed")
-    monkeypatch.setattr(instance, "cf", failed)
-    with pytest.raises(gate.Refused, match="cloudflare_http_failed"):
-        instance.move_domain(gate.FRONT)
-    assert calls == [("/workers/domains", "PUT")]
+@pytest.mark.parametrize("target", [gate.FRONT, gate.LEGACY])
+def test_failed_attach_recovers_source_and_reports_owner(monkeypatch, capsys, target):
+    instance, state, events = stateful_gate(monkeypatch, target, fail_attach=True)
+    source = state["owner"]
+    with pytest.raises(gate.Refused, match="attach_failed_recovered"):
+        instance.move_domain(target)
+    assert state["owner"] == source
+    assert [method for method, _, _ in events if method != "GET"] == ["DELETE", "PUT", "PUT"]
+    assert "DOMAIN_OWNER_STATE=" + source in capsys.readouterr().out
 
 
-def test_domain_wrong_readback_refuses_without_second_mutation(monkeypatch):
-    instance = gate.Gate(environment("switch"))
-    calls = []
-    monkeypatch.setattr(instance, "exact_main", lambda: None)
-    monkeypatch.setattr(instance, "domain", lambda: domain_row())
-    monkeypatch.setattr(instance, "cf", lambda path, **kw: calls.append(kw))
-    with pytest.raises(gate.Refused, match="domain_move_unverified"):
-        instance.move_domain(gate.FRONT)
-    assert len(calls) == 1
+@pytest.mark.parametrize("target", [gate.FRONT, gate.LEGACY])
+def test_uncertain_owner_does_not_retry_attachment(monkeypatch, capsys, target):
+    instance, state, events = stateful_gate(monkeypatch, target, fail_attach=True,
+                                            unknown_after_failure=True)
+    with pytest.raises(gate.Refused, match="attach_failed"):
+        instance.move_domain(target)
+    assert [method for method, _, _ in events if method != "GET"] == ["DELETE", "PUT"]
+    assert "DOMAIN_OWNER_STATE=UNKNOWN" in capsys.readouterr().out
+
+
+@pytest.mark.parametrize("target", [gate.FRONT, gate.LEGACY])
+def test_delete_timeout_reports_actual_owner_and_never_attaches(monkeypatch, capsys, target):
+    instance, state, events = stateful_gate(monkeypatch, target)
+    original = instance.cf
+    def cf(path, **kwargs):
+        if kwargs.get("method") == "DELETE":
+            state["owner"] = None
+            events.append(("DELETE", path, None))
+            raise gate.Refused("transport_failed")
+        return original(path, **kwargs)
+    monkeypatch.setattr(instance, "cf", cf)
+    with pytest.raises(gate.Refused, match="delete_failed"):
+        instance.move_domain(target)
+    assert "DOMAIN_OWNER_STATE=ABSENT" in capsys.readouterr().out
+    assert [method for method, _, _ in events if method != "GET"] == ["DELETE"]
+
+
+@pytest.mark.parametrize("target", [gate.FRONT, gate.LEGACY])
+def test_attach_timeout_after_success_reports_target_without_recovery(monkeypatch, capsys, target):
+    instance, state, events = stateful_gate(monkeypatch, target)
+    original = instance.cf
+    def cf(path, **kwargs):
+        if kwargs.get("method") == "PUT":
+            state["owner"] = target
+            events.append(("PUT", path, kwargs["payload"]))
+            raise gate.Refused("transport_failed")
+        return original(path, **kwargs)
+    monkeypatch.setattr(instance, "cf", cf)
+    with pytest.raises(gate.Refused, match="attach_failed"):
+        instance.move_domain(target)
+    assert "DOMAIN_OWNER_STATE=" + target in capsys.readouterr().out
+    assert [method for method, _, _ in events if method != "GET"] == ["DELETE", "PUT"]
+
+
+@pytest.mark.parametrize("target", [gate.FRONT, gate.LEGACY])
+def test_attach_success_but_absent_readback_restores_source(monkeypatch, capsys, target):
+    instance, state, events = stateful_gate(monkeypatch, target)
+    source = state["owner"]
+    original = instance.cf
+    def cf(path, **kwargs):
+        if kwargs.get("method") == "PUT" and kwargs["payload"]["service"] == target:
+            events.append(("PUT", path, kwargs["payload"]))
+            return {}
+        return original(path, **kwargs)
+    monkeypatch.setattr(instance, "cf", cf)
+    with pytest.raises(gate.Refused, match="attach_failed_recovered"):
+        instance.move_domain(target)
+    assert state["owner"] == source
+    assert "DOMAIN_OWNER_STATE=" + source in capsys.readouterr().out
+
+
+@pytest.mark.parametrize("target", [gate.FRONT, gate.LEGACY])
+def test_failed_recovery_reports_absent(monkeypatch, capsys, target):
+    instance, state, events = stateful_gate(monkeypatch, target, fail_attach=True)
+    original = instance.cf
+    def cf(path, **kwargs):
+        if kwargs.get("method") == "PUT" and kwargs["payload"]["service"] != target:
+            events.append(("PUT", path, kwargs["payload"]))
+            raise gate.Refused("transport_failed")
+        return original(path, **kwargs)
+    monkeypatch.setattr(instance, "cf", cf)
+    with pytest.raises(gate.Refused, match="recovery_failed"):
+        instance.move_domain(target)
+    assert "DOMAIN_OWNER_STATE=ABSENT" in capsys.readouterr().out
+
+
+def test_delete_http_200_empty_body_is_success(monkeypatch):
+    monkeypatch.setattr(gate, "request", lambda *a, **kw: (200, {}, b""))
+    assert gate.Gate(environment()).cf("/workers/domains/" + "e" * 40, method="DELETE") is None
 
 
 @pytest.mark.parametrize("rows,reason", [
