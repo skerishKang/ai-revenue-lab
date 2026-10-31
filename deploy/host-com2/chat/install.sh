@@ -46,6 +46,7 @@ for pair in \
   "app:$source_root/apps/padiem-chat/app" \
   "padiem_ai_core:$source_root/packages/padiem-ai-core/padiem_ai_core" \
   "padiem_control_plane:$source_root/packages/padiem-control-plane/padiem_control_plane" \
+  "com2_edge_proof.py:$source_root/packages/padiem-control-plane/com2_edge_proof.py" \
   "kagent:$source_root/apps/korean-ai-code-agent/src/kagent"; do
   link=${pair%%:*}; target=${pair#*:}
   ln -sfn "$target" "$app/$link"

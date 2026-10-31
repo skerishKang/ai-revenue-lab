@@ -56,6 +56,13 @@ async def test_twelve_rpc_envelopes_match_actual_do_entrypoint(monkeypatch, tmp_
                 assert not expected["ok"], method
             # A successful link uses the same DO logic on both adapters. Pin the
             # synthetic token source; compare authority outputs and persisted lookup.
+            from datetime import datetime, timedelta, timezone
+            instant = datetime.now(timezone.utc)
+            class FrozenDatetime(datetime):
+                @classmethod
+                def now(cls, tz=None):
+                    return instant if tz is not None else instant.replace(tzinfo=None)
+            monkeypatch.setattr(worker, "datetime", FrozenDatetime)
             do._store._random_hex = lambda n: "a" * (n * 2)
             authority._store._random_hex = lambda n: "a" * (n * 2)
             payload = {"product_id": "b62", "product_user_id": "usr_test", "auth_provider": "google", "provider_subject": "synthetic-provider"}
@@ -65,7 +72,7 @@ async def test_twelve_rpc_envelopes_match_actual_do_entrypoint(monkeypatch, tmp_
             headers = {"x-padiem-service-at": str(at), "x-padiem-service-proof": proof_for(SECRET, method="POST", path=path, at=at, body=body)}
             response = await client.post(path, content=body, headers=headers)
             expected = await do.resolve_or_create_product_link(payload)
-            assert expected["ok"] and response.json()["ok"]
+            assert expected["ok"] and response.json() == expected
             subject = expected["link"]["canonical_subject_id"]
             assert response.json()["link"]["canonical_subject_id"] == subject
             reverse = {"product_id": "b62", "canonical_subject_id": subject}
@@ -77,14 +84,8 @@ async def test_twelve_rpc_envelopes_match_actual_do_entrypoint(monkeypatch, tmp_
 
             # Seed identical owner/session/context rows in each *real* store,
             # then exercise the three consent methods through the HTTP ingress.
-            from datetime import datetime, timedelta, timezone
             from padiem_control_plane.contracts import CanonicalSubjectRef, SubjectType
             import canonical_connector_enrollment_consent_rpc as consent_rpc
-            instant = datetime.now(timezone.utc)
-            class FrozenDatetime(datetime):
-                @classmethod
-                def now(cls, tz=None):
-                    return instant if tz is not None else instant.replace(tzinfo=None)
             monkeypatch.setattr(consent_rpc, "datetime", FrozenDatetime)
             monkeypatch.setattr(consent_rpc.secrets, "token_hex", lambda n: "b" * (n * 2))
             session_id = None
@@ -121,6 +122,40 @@ async def test_twelve_rpc_envelopes_match_actual_do_entrypoint(monkeypatch, tmp_
                 headers = {"x-padiem-service-at": str(at), "x-padiem-service-proof": proof_for(SECRET, method="POST", path=path, at=at, body=body)}
                 response = await client.post(path, content=body, headers=headers)
                 assert expected["ok"] and response.json() == expected, method
+
+            # Compare the remaining legacy success paths over the same seeded
+            # identity and context. The authority owns the clock in each call.
+            monkeypatch.setattr(worker, "datetime", FrozenDatetime)
+            async def compare(method, payload):
+                expected = await getattr(do, method)(payload)
+                path = "/internal/rpc/" + method
+                body = json.dumps(payload).encode()
+                at = int(time.time())
+                headers = {"x-padiem-service-at": str(at), "x-padiem-service-proof": proof_for(SECRET, method="POST", path=path, at=at, body=body)}
+                response = await client.post(path, content=body, headers=headers)
+                assert response.status_code == 200
+                assert expected["ok"] and response.json() == expected, (method, expected, response.json())
+                return expected
+
+            for side in (do, authority):
+                side._store._random_hex = lambda n: "c" * (n * 2)
+            established = await compare("establish_auth_session", {
+                "product_id": "b62", "subject": {"subject_type": "user", "subject_id": subject},
+                "authenticated_at": instant.isoformat(), "not_after": (instant + timedelta(hours=1)).isoformat(),
+            })
+            b62_session = established["session"]["session_id"]
+            await compare("resolve_auth_session", {"session_id": b62_session})
+            await compare("resolve_current_auth_session", {"product_id": "b62", "product_user_id": "usr_test"})
+            await compare("resolve_connector_workspace", {"session_id": b62_session})
+            await compare("resolve_connector_context", {"session_id": b62_session})
+            await compare("revoke_auth_session", {"product_id": "b62", "session_id": b62_session})
+            for side in (do, authority):
+                side._store._random_hex = lambda n: "d" * (n * 2)
+            await compare("establish_auth_session", {
+                "product_id": "b62", "subject": {"subject_type": "user", "subject_id": subject},
+                "authenticated_at": instant.isoformat(), "not_after": (instant + timedelta(hours=1)).isoformat(),
+            })
+            await compare("revoke_all_auth_sessions", {"product_id": "b62", "product_user_id": "usr_test"})
     finally:
         authority._storage.close()
         sys.modules.pop("identity_authority_worker", None)
