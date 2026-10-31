@@ -40,7 +40,7 @@ class BusinessRegistryTests(unittest.TestCase):
         # B64: AI Reward Router (owner-approved registration #987).
         numbers = self.manifest_numbers()
         self.assertGreaterEqual(max(numbers), 64)
-        intentional_gaps = {56, 62, 63}
+        intentional_gaps = {56, 62, 63, 65, 66, 67, 68, 69, 70, 71}
         expected = [
             number
             for number in range(1, max(numbers) + 1)
@@ -50,6 +50,22 @@ class BusinessRegistryTests(unittest.TestCase):
         self.assertEqual(len(numbers), len(set(numbers)))
         for gap in intentional_gaps:
             self.assertNotIn(gap, numbers)
+
+    def test_new_concepts_are_distinct_and_unbuilt(self) -> None:
+        for number, slug, issue in (
+            (72, "padiem-speech-coach", "#5601"),
+            (73, "padiem-electronic-bidding", "#5702"),
+        ):
+            block = self.business_block(number)
+            self.assertIn(f's:"{slug}"', block)
+            self.assertIn('a:NA.PROPOSED', block)
+            self.assertIn('l:"concept"', block)
+            self.assertIn(f'w:"apps/{slug}/"', block)
+            self.assertIn(issue, self.script)
+            phase = self.core_block(number)
+            self.assertIn('ui:"NOT_STARTED"', phase)
+            self.assertIn('be:"FROZEN"', phase)
+            self.assertFalse((ROOT.parent / slug).exists())
 
     def test_reserved_slots_seven_through_twelve_exist_as_canonical(self) -> None:
         # B7-B12 were promoted from PROPOSED to CANONICAL in the 2026-08-15

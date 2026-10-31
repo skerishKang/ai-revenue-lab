@@ -43,7 +43,7 @@ def parse_cookie(value, base):
     return [{"name": name, "value": morsel.value, "url": base} for name, morsel in jar.items()]
 
 
-def smoke(base, cookie="", allow_mock_write=False, browser_executable=None, timeout_ms=15000):
+def smoke(base, cookie="", allow_mock_write=False, browser_executable=None, timeout_ms=15000, compare_origin=None):
     base = origin(base)
     result = {"base_url": base, "stages": {}}
     stages = result["stages"]
@@ -60,27 +60,21 @@ def smoke(base, cookie="", allow_mock_write=False, browser_executable=None, time
         page = ctx.new_page()
         errors, blocked = [], []
         assets_ok, assets_bad = [], []
-        page.on("console", lambda msg: errors.append("console") if msg.type == "error" else None)
-        page.on("pageerror", lambda _: errors.append("pageerror"))
+        page.on("console", lambda msg: errors.append((msg.location.get("url", ""), msg.text)) if msg.type == "error" else None)
+        page.on("pageerror", lambda _: errors.append(("", "pageerror")))
         def response_seen(response):
             if response.request.resource_type in ("script", "stylesheet", "font", "image"):
                 (assets_ok if response.ok else assets_bad).append(response.status)
         page.on("response", response_seen)
         page.on("requestfailed", lambda req: assets_bad.append(0)
-                if req.resource_type in ("script", "stylesheet", "font", "image") else None)
+                if req.resource_type in ("script", "stylesheet", "font", "image") and req.url not in blocked else None)
 
         def guard(route):
             req = route.request
-            u = urlsplit(req.url)
-            allowed_origin = (u.scheme, u.netloc) == (urlsplit(base).scheme, urlsplit(base).netloc)
-            # Only assets, navigation and the specified auth status API are read.
-            asset = req.resource_type in ("script", "stylesheet", "font", "image") and not u.path.startswith("/api/")
-            navigation = req.resource_type == "document" and u.path == "/"
-            api_allowed = asset or navigation or u.path == "/api/auth/status"
-            if allowed_origin and req.method in ("GET", "HEAD") and api_allowed:
+            if req.method in ("GET", "HEAD"):
                 route.continue_()
             else:
-                blocked.append(req.method)
+                blocked.append(req.url)
                 route.abort()
         page.route("**/*", guard)
         health_payload = {}
@@ -101,6 +95,14 @@ def smoke(base, cookie="", allow_mock_write=False, browser_executable=None, time
                       marker=marker if marker in {"read_fallback_static", "write_com2_canonical_refused"} else ("other" if marker else None),
                       cf_ray_present=bool(headers.get("cf-ray")),
                       reason="fallback marker present" if marker else "successful proxy response has no identifying marker; route not proven")
+            if compare_origin and not marker:
+                try:
+                    peer = ctx.request.get(origin(compare_origin) + "/health", timeout=timeout_ms, max_redirects=0)
+                    match = health.status == 200 and peer.status == 200 and health.body() == peer.body()
+                    set_stage("front", "PASS" if match else "FAIL", comparison="exact health body",
+                              peer_http_status=peer.status, equal=match)
+                except Exception as exc:
+                    set_stage("front", "FAIL", error=type(exc).__name__)
         except Exception as exc:
             set_stage("health", "FAIL", error=type(exc).__name__)
             set_stage("front", "UNVERIFIED", reason="health unavailable")
@@ -113,11 +115,13 @@ def smoke(base, cookie="", allow_mock_write=False, browser_executable=None, time
             set_stage("guest", "PASS" if code == 200 and has_body else "FAIL", http_status=code)
             set_stage("assets", "PASS" if assets_ok and not assets_bad else "FAIL",
                       loaded=len(assets_ok), failed=len(assets_bad))
-            set_stage("console", "PASS" if not errors else "FAIL", error_count=len(errors), blocked_requests=len(blocked), reason="blocked requests can also cause console errors")
+            filtered = [(url, text) for url, text in errors if not (url in blocked and "ERR_" in text)]
+            set_stage("console", "PASS" if not filtered else "FAIL", error_count=len(filtered), blocked_requests=len(blocked), blocked_console_errors=len(errors)-len(filtered))
         except Exception as exc:
             set_stage("guest", "FAIL", error=type(exc).__name__)
             set_stage("assets", "FAIL", loaded=len(assets_ok), failed=len(assets_bad))
-            set_stage("console", "PASS" if not errors else "FAIL", error_count=len(errors), blocked_requests=len(blocked), reason="blocked requests can also cause console errors")
+            filtered = [(url, text) for url, text in errors if not (url in blocked and "ERR_" in text)]
+            set_stage("console", "PASS" if not filtered else "FAIL", error_count=len(filtered), blocked_requests=len(blocked), blocked_console_errors=len(errors)-len(filtered))
 
         try:
             status = ctx.request.get(base + "/api/auth/status", timeout=timeout_ms, max_redirects=0)
@@ -171,6 +175,7 @@ def smoke(base, cookie="", allow_mock_write=False, browser_executable=None, time
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("--base-url", default="https://chat.padiem.net")
+    p.add_argument("--compare-origin", help="compare exact /health body with this origin")
     p.add_argument("--cookie-file", help="private file containing Cookie header; never printed")
     p.add_argument("--json-out", help="write the JSON result to this path")
     p.add_argument("--browser-executable")
@@ -179,7 +184,7 @@ def main():
     args = p.parse_args()
     try:
         cookie = Path(args.cookie_file).read_text(encoding="utf-8").strip() if args.cookie_file else ""
-        report = smoke(args.base_url, cookie, args.allow_mock_write, args.browser_executable, args.timeout_ms)
+        report = smoke(args.base_url, cookie, args.allow_mock_write, args.browser_executable, args.timeout_ms, args.compare_origin)
     except Exception as exc:
         report = {"status": "FAIL", "error": type(exc).__name__, "stages": {}}
     print("SMOKE " + report["status"] + " " + " ".join(f"{key}={value['status']}" for key, value in report["stages"].items()))

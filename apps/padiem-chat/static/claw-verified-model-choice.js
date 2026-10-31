@@ -19,7 +19,7 @@
     &&typeof x.individual_model_name==="string"
     &&x.individual_model_name.length>0&&x.individual_model_name.length<=100
     &&x.customer_selectable===true);}
- async function load(){const ticket=++seq;select.disabled=true;clear();status.textContent=tr("claw-verified-model-loading");
+ async function load(){if(window.PadiemAuthGate?.authenticated()===false)return;const ticket=++seq;select.disabled=true;clear();status.textContent=tr("claw-verified-model-loading");
   try{const tier=window.PadiemTierSelection?.get?.()||"free";
    const r=await fetch("/api/claw/verified-model-choices?tier="+encodeURIComponent(tier),{credentials:"same-origin",cache:"no-store"});
    if(!r.ok)throw Error("not_authenticated");const data=await r.json();

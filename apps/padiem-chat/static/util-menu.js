@@ -513,6 +513,7 @@
   }
 
   async function pcLinked() {
+    if (window.PadiemAuthGate?.authenticated() === false) return null;
     try {
       const res = await fetch("/api/pc/pairings", { credentials: "include", cache: "no-store" });
       if (!res.ok) return null;
