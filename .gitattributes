@@ -64,3 +64,9 @@ apps/padiem-chat/static/index.html text eol=lf
 apps/padiem-chat/static/padiem-glass.css text eol=lf
 apps/padiem-chat/static/padiem-glass-portrait.css text eol=lf
 apps/padiem-chat/static/theme-init.js text eol=lf
+
+# Staging service units and environment examples must stay LF on Windows checkouts.
+deploy/host-com2/broker/*.service text eol=lf
+deploy/host-com2/broker/*.env.example text eol=lf
+deploy/host-com2/identity/*.service text eol=lf
+deploy/host-com2/identity/*-staging.env.example text eol=lf
