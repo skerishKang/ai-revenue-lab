@@ -1,8 +1,9 @@
 """CPython host runtime for the P01 Engine (COM2, loopback 8811).
 
-``worker.py`` is and stays the Cloudflare entrypoint and the production binding
-authority. This module is the second door for the same application on a host
-that has no Workers runtime:
+``worker_identity.py`` is and stays the Cloudflare entrypoint and the production
+binding authority (``wrangler.toml`` ``main``). This module is the second door for
+the same application on a host that has no Workers runtime, and it dispatches
+through that same entry so a host never answers from the legacy composition:
 
     python3 -m uvicorn asgi:app --host 127.0.0.1 --port 8811
 
@@ -125,6 +126,13 @@ class LocalResponse:
     """``workers.Response`` stand-in: one status, headers and a byte body."""
 
     def __init__(self, body: Any = b"", *, status: int = 200, headers: Mapping[str, str] | None = None) -> None:
+        get_reader = getattr(body, "getReader", None)
+        if callable(get_reader) and not isinstance(body, (bytes, bytearray, str)):
+            # A Service Binding response body is read through ``getReader()``.
+            self.body = body
+            self.status = int(status)
+            self.headers = dict(headers or {})
+            return
         if isinstance(body, LocalReadableStream):
             # The NDJSON builder hands a stream, not a frame; keep it opaque.
             self.body = body
@@ -146,6 +154,50 @@ class WorkerEntrypoint:
     def __init__(self, *args: Any, env: Any = None, **kwargs: Any) -> None:
         del args, kwargs
         self.env = env
+
+
+class _BytesReader:
+    """The ``reader`` a JS ReadableStream hands out, over one byte payload."""
+
+    def __init__(self, payload: bytes) -> None:
+        self._payload = bytes(payload)
+        self._sent = False
+
+    async def read(self) -> Any:
+        if self._sent:
+            return _ReaderResult(done=True, value=None)
+        self._sent = True
+        return _ReaderResult(done=False, value=self._payload)
+
+    async def cancel(self) -> None:
+        self._sent = True
+
+    def releaseLock(self) -> None:
+        return None
+
+
+class _ReaderResult:
+    """``{done, value}`` with attribute access, as the JS reader result has."""
+
+    def __init__(self, *, done: bool, value: Any) -> None:
+        self.done = done
+        self.value = value
+
+
+class LocalByteStream:
+    """A ReadableStream-shaped byte body for the Service Binding transport.
+
+    ``LocalB14Binding`` answers with an HTTP body, while the binding transport
+    reads responses the way a Worker does — through ``body.getReader()``. Without
+    this adapter every B14 answer is unreadable and the run reports the model
+    service as unavailable even though B14 replied.
+    """
+
+    def __init__(self, payload: bytes) -> None:
+        self._payload = bytes(payload)
+
+    def getReader(self) -> _BytesReader:
+        return _BytesReader(self._payload)
 
 
 class _StreamController:
@@ -292,7 +344,12 @@ class LocalB14Binding:
 
     async def fetch(self, request: Any) -> LocalResponse:
         path = urlsplit(str(request.url)).path
-        headers = dict(getattr(request, "headers", {}) or {})
+        # ``LocalRequest.headers`` is a ``_Headers`` view with ``items()`` but no
+        # ``keys()``, so ``dict(headers)`` raised here and every B14 call ended as
+        # "Service Binding is unavailable" before a socket was opened.
+        raw_headers = getattr(request, "headers", None)
+        items = getattr(raw_headers, "items", None)
+        headers = dict(items()) if callable(items) else dict(raw_headers or {})
         body = getattr(request, "body", b"")
         if not isinstance(body, (bytes, bytearray)):
             body = bytes(body)
@@ -307,7 +364,9 @@ class LocalB14Binding:
             except httpx.HTTPError:
                 raise LocalRuntimeError("p01_local_b14_unreachable") from None
         return LocalResponse(
-            response.content,
+            # The binding transport reads ``body.getReader()``; hand it a stream
+            # rather than raw bytes so a real B14 answer is readable.
+            LocalByteStream(response.content),
             status=response.status_code,
             headers={"content-type": response.headers.get("content-type", "application/json")},
         )
@@ -534,7 +593,11 @@ def create_local_app(values: Mapping[str, str] | None = None) -> LocalEngineApp:
     entry_requirements(source)
     bind_address(source)
     install_worker_shims()
-    import worker as engine_worker  # noqa: PLC0415 - after the stand-in is installed
+    # The deployed Worker's entry is ``worker_identity.py`` (wrangler.toml
+    # ``main``). The host must dispatch through the same canonical composition —
+    # the legacy ``worker.Default`` carries the narrower preview bundle, and a
+    # host running it would answer from a different Engine than Production.
+    import worker_identity as engine_worker  # noqa: PLC0415 - after the stand-in
 
     entry = engine_worker.Default.__new__(engine_worker.Default)
     entry.env = _env_view(source)
