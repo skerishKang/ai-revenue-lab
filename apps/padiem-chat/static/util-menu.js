@@ -1963,7 +1963,94 @@
         // re-arrange this list itself, so what the user sees is exactly the
         // sequence the book builder reads.
         let order = meetingFiles.slice();
+        let selected = new Set();
+        const period = el("div", "util-form");
+        period.id = "utilBookPeriod";
+        period.style.display = "flex";
+        period.style.flexWrap = "wrap";
+        period.style.gap = "8px";
+        const startLabel = el("label", null, "시작일 ");
+        const endLabel = el("label", null, "종료일 ");
+        const startDate = document.createElement("input");
+        const endDate = document.createElement("input");
+        startDate.type = endDate.type = "date";
+        startDate.id = "utilBookPeriodStart";
+        endDate.id = "utilBookPeriodEnd";
+        startDate.style.maxWidth = endDate.style.maxWidth = "100%";
+        startDate.style.boxSizing = endDate.style.boxSizing = "border-box";
+        startLabel.style.minWidth = endLabel.style.minWidth = "0";
+        startLabel.style.maxWidth = endLabel.style.maxWidth = "100%";
+        startLabel.appendChild(startDate);
+        endLabel.appendChild(endDate);
+        period.append(startLabel, endLabel);
+        const periodStatus = el("p", "util-empty");
+        periodStatus.id = "utilBookPeriodStatus";
+        periodStatus.setAttribute("aria-live", "polite");
+        periodStatus.textContent = "본문의 회의 일시를 우선하고, 없으면 기록 생성일을 사용합니다.";
+        const isoDate = (d) => {
+          const pad = (n) => String(n).padStart(2, "0");
+          return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate());
+        };
+        const validDate = (value) => {
+          const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value || "");
+          if (!match) return "";
+          const year = Number(match[1]), month = Number(match[2]), day = Number(match[3]);
+          const parsed = new Date(year, month - 1, day);
+          return parsed.getFullYear() === year && parsed.getMonth() === month - 1 && parsed.getDate() === day ? value : "";
+        };
+        let periodRequest = 0;
+        async function applyPeriod() {
+          const requestId = ++periodRequest;
+          const from = validDate(startDate.value), to = validDate(endDate.value);
+          if (!from || !to || from > to) {
+            periodStatus.textContent = "시작일과 종료일을 확인해 주세요.";
+            return;
+          }
+          periodStatus.textContent = "회의 기록의 날짜를 확인하고 있습니다.";
+          try {
+            const dated = await Promise.all(meetingFiles.map(async (file) => {
+              const body = await readStoredBody(currentPid, file.id);
+              if (!body.ok && !body.empty) throw new Error("record_unavailable");
+              const match = /(?:^|\n)\s*회의\s*일시\s*[:：]\s*(\d{4}-\d{2}-\d{2})(?=$|[\sT])/.exec(body.text || "");
+              const meetingDate = match ? validDate(match[1]) : "";
+              const created = file.created_at ? new Date(file.created_at) : null;
+              const date = meetingDate || (created && !Number.isNaN(created.getTime()) ? isoDate(created) : "");
+              return { file, date };
+            }));
+            if (requestId !== periodRequest) return;
+            // Undated records are never guessed into a period.
+            selected = new Set(dated.filter((item) => item.date && item.date >= from && item.date <= to).map((item) => item.file.id));
+            dated.sort((a, b) => (a.date || "9999-99-99").localeCompare(b.date || "9999-99-99"));
+            order = dated.map((item) => item.file);
+            renderRows();
+            periodStatus.textContent = selected.size ? selected.size + "개 기록을 선택했습니다. 선택과 순서를 바꿀 수 있습니다." : "해당 기간의 회의 기록이 없습니다.";
+          } catch (_) {
+            if (requestId === periodRequest) periodStatus.textContent = "회의 기록을 읽지 못했습니다. 다시 확인해 주세요.";
+          }
+        }
+        startDate.addEventListener("change", () => { if (endDate.value) void applyPeriod(); });
+        endDate.addEventListener("change", () => { if (startDate.value) void applyPeriod(); });
+        const quick = [
+          ["이번 달", (d) => [new Date(d.getFullYear(), d.getMonth(), 1), new Date(d.getFullYear(), d.getMonth() + 1, 0)]],
+          ["지난달", (d) => [new Date(d.getFullYear(), d.getMonth() - 1, 1), new Date(d.getFullYear(), d.getMonth(), 0)]],
+          ["이번 분기", (d) => { const m = Math.floor(d.getMonth() / 3) * 3; return [new Date(d.getFullYear(), m, 1), new Date(d.getFullYear(), m + 3, 0)]; }],
+          ["올해", (d) => [new Date(d.getFullYear(), 0, 1), new Date(d.getFullYear(), 11, 31)]],
+        ];
+        quick.forEach(([label, range]) => {
+          const button = el("button", null, label);
+          button.type = "button";
+          button.addEventListener("click", () => {
+            const [from, to] = range(new Date());
+            startDate.value = isoDate(from); endDate.value = isoDate(to);
+            void applyPeriod();
+          });
+          period.appendChild(button);
+        });
+        arc.append(period, periodStatus);
         const ul = document.createElement("ul");
+        function rememberSelection() {
+          selected = new Set(Array.from(ul.querySelectorAll(".util-book-check")).filter((cb) => cb.checked).map((cb) => cb.value));
+        }
         function renderRows() {
           ul.replaceChildren();
           order.forEach((f, index) => {
@@ -1971,10 +2058,15 @@
             li.style.display = "flex";
             li.style.alignItems = "center";
             li.style.gap = "8px";
+            li.style.flexWrap = "wrap";
             const cb = document.createElement("input");
             cb.type = "checkbox";
             cb.value = f.id;
             cb.className = "util-book-check";
+            cb.checked = selected.has(f.id);
+            cb.addEventListener("change", () => {
+              if (cb.checked) selected.add(f.id); else selected.delete(f.id);
+            });
             cb.setAttribute("aria-label", f.name + " 책/활동집에 포함");
             li.appendChild(cb);
             const btn = document.createElement("button");
@@ -1985,6 +2077,8 @@
             btn.dataset.fileId = f.id;
             btn.textContent = "고쳐 쓰기: " + f.name + " (" + (f.content_chars || 0) + "자)";
             btn.style.flex = "1";
+            btn.style.minWidth = "0";
+            btn.style.overflowWrap = "anywhere";
             btn.addEventListener("click", async () => { await openMeetingForEdit(f); });
             li.appendChild(btn);
             const up = document.createElement("button");
@@ -1997,6 +2091,7 @@
             up.addEventListener("click", () => {
               const to = index - 1;
               if (to < 0) return;
+              rememberSelection();
               const [moved] = order.splice(index, 1);
               order.splice(to, 0, moved);
               renderRows();
@@ -2011,6 +2106,7 @@
             down.addEventListener("click", () => {
               const to = index + 1;
               if (to >= order.length) return;
+              rememberSelection();
               const [moved] = order.splice(index, 1);
               order.splice(to, 0, moved);
               renderRows();
